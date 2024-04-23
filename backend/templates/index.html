@@ -1,0 +1,22 @@
+<html>
+<head>
+    <title>CoLD Web App</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles-dark.css') }}">
+    <style>
+
+    </style>
+</head>
+<body>
+    <h2>Search CoLD</h2>
+    <form method="post">
+        <input type="text" name="search_string">
+        <input type="submit" value="Search">
+    </form>
+    {% if request.form.search_string %}
+        <p>Search results for "{{ request.form.search_string }}"</p>
+    {% endif %}
+    {% if search_output %}
+        <div>{{ search_output|safe }}</div> <!-- Use |safe to render HTML content -->
+    {% endif %}
+</body>
+</html>
