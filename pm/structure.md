@@ -65,3 +65,30 @@ Below is a suggested directory structure that segregates the backend and fronten
 - RESTful API: Implement a RESTful API in Flask to interact between the frontend and backend. This approach makes it easier to scale and manage different parts of the application.
 
 By following this structure, you can ensure that your application remains organized and scalable, with clear separation of concerns between client-side and server-side logic.
+
+
+
+## Actual Directory Structure
+
+```{lua}
+/my-web-app
+|-- /backend
+|   |-- /static         # Static files served by Flask
+|   |   |-- /css
+|   |   |-- /js
+|   |   |-- /img
+|   |-- /templates      # Jinja2 templates for Flask
+|   |   |-- index.html
+|   |-- requirements.txt    # Python dependencies
+|   |-- app.py              # Entry point to start the Flask app
+|-- /frontend
+|   |-- /src                # All source code for the UI
+|   |   |-- /components     # UI components
+|   |   |-- /services       # Services to connect to backend
+|   |   |-- App.js
+|   |   |-- index.js
+|   |-- package.json        # Node.js project and dependencies
+|   |-- webpack.config.js   # Bundling and optimization settings
+|-- .gitignore
+|-- README.md
+```
