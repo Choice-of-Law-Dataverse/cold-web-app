@@ -5,7 +5,7 @@
     - [X] Remove CI/CD connection between GitHub and Azure (FA)
     - [ ] Separate branches: main/dev/...
 - Connect to Postgres
-    - [ ] create postgres user "webapp" and make sure both FA and SW have the same .evn file (SW)
+    - [X] create postgres user "webapp" and make sure both FA and SW have the same .env file (SW)
     - [ ] Recreate Data Points from relations (replace IDs with actual values) (SW)
     - [ ] clear IP address firewall issue (SW)
 - [ ] Deployment
