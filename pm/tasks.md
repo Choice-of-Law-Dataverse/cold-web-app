@@ -24,6 +24,7 @@
 - [ ] Sort
     - [ ] By date (not available as structured data yet)
     - [ ] By ...
-- [ ] Save search queries to new Airtable Base
+- Save search queries to new Airtable Base
     - [ ] Decide whether CoLD BASE or new base (SW)
+    - [ ] Set up pipeline from logfile via Airtable API to base
 - [ ] 
