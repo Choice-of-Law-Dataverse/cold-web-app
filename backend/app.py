@@ -11,7 +11,6 @@ app = Flask(__name__)
 
 # get environment variables
 load_dotenv()
-AIRTABLE_API_KEY = os.getenv("AIRTABLE_API_KEY")
 POSTGRES_AZURE_DBNAME = os.getenv("POSTGRES_AZURE_DBNAME")
 POSTGRES_AZURE_HOST = os.getenv("POSTGRES_AZURE_HOST")
 POSTGRES_AZURE_USER = os.getenv("POSTGRES_AZURE_USER")
