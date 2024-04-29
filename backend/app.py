@@ -11,16 +11,10 @@ app = Flask(__name__)
 
 # get environment variables
 load_dotenv()
-POSTGRES_AZURE_DBNAME = os.getenv("POSTGRES_AZURE_DBNAME")
-POSTGRES_AZURE_HOST = os.getenv("POSTGRES_AZURE_HOST")
-POSTGRES_AZURE_USER = os.getenv("POSTGRES_AZURE_USER")
-POSTGRES_AZURE_PASSWORD = os.getenv("POSTGRES_AZURE_PASSWORD")
-
-# DB Connection parameters for further use
-dbname = POSTGRES_AZURE_DBNAME
-user = POSTGRES_AZURE_USER
-password = POSTGRES_AZURE_PASSWORD
-host = POSTGRES_AZURE_HOST
+dbname = os.getenv("POSTGRES_AZURE_DBNAME")
+host= os.getenv("POSTGRES_AZURE_HOST")
+user = os.getenv("POSTGRES_AZURE_USER")
+password = os.getenv("POSTGRES_AZURE_PASSWORD")
 
 def highlight_search_terms_with_context(value, search_terms, max_length=1000):
     """Highlights all search terms within the value, showing an optimal context around them."""
