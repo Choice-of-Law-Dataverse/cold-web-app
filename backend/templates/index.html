@@ -12,7 +12,7 @@
     </script>
 </head>
 <body>
-    <button onclick="switchTheme()">Switch Theme</button>
+    <button id="theme-button" onclick="switchTheme()">Switch Theme</button>
     <h2>Search CoLD</h2>
     <form method="post">
         <input type="text" name="search_string">
@@ -30,6 +30,8 @@
             var link = document.getElementById('theme-link');
             var currentTheme = link.href.split('/').pop().split('-')[1].split('.')[0];
             var newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            // var nocache = new Date().getTime(); // Add a timestamp to the URL to prevent caching
+            // link.href = '/static/styles-' + newTheme + '.css?' + nocache;
             link.href = '/static/styles-' + newTheme + '.css';
             localStorage.setItem('theme', newTheme); // Save the new theme to local storage
         }
