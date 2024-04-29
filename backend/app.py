@@ -1,5 +1,5 @@
 import os
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, session, redirect, url_for
 from markupsafe import escape, Markup
 from datetime import datetime
 import psycopg2
@@ -11,6 +11,9 @@ app = Flask(__name__)
 
 # get environment variables
 load_dotenv()
+# session management
+app.secret_key = os.getenv("FLASK_KEY")
+# postgres
 dbname = os.getenv("POSTGRES_AZURE_DBNAME")
 host= os.getenv("POSTGRES_AZURE_HOST")
 user = os.getenv("POSTGRES_AZURE_USER")
