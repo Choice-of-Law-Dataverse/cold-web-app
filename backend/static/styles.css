@@ -1,3 +1,14 @@
+/* General design */
+body {
+    background-color: #fff;/*#2c2f33;*/
+    color: #333;/*#ffffff;*/
+}
+
+/* Change all fonts to helvetica */
+body, h1, h2, h3, h4, h5, h6, p, input[type="text"], input[type="submit"] {
+    font-family: "Helvetica", sans-serif;
+}
+
 /* Style the text input field to make it bigger */
 input[type="text"] {
     font-size: 16px; /* Increase the font size */
