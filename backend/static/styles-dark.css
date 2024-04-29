@@ -18,7 +18,14 @@ body, h1, h2, h3, h4, h5, h6, p, input[type="text"], input[type="submit"] {
     height: 50px;
     cursor: pointer;
     outline: none;
-    transition: background-color 0.3s;
+    transition: background-color 0.9s;
+}
+
+.header {
+    display: flex;
+    align-items: center; /* Align items vertically in the center */
+    padding: 10px;
+    margin-bottom: 20px;
 }
 
 /* Style the text input field to make it bigger */
