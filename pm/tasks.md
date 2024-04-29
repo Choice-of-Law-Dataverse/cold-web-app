@@ -27,4 +27,6 @@
 - Save search queries to new Airtable Base
     - [ ] Decide whether CoLD BASE or new base (SW)
     - [ ] Set up pipeline from logfile via Airtable API to base
-- [ ] 
+- Data manipulation
+    - [ ] Change column titles to have spaces instead of underscores and capital letters
+    - [ ] Replace ID values with most expressive values from linked tables
