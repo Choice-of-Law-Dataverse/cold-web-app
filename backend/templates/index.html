@@ -7,6 +7,8 @@
     </style>
 </head>
 <body>
+    <form action="{{ url_for('switch_theme') }}" method="post">
+        <input type="submit">Toggle Theme</button>
     <h2>Search CoLD</h2>
     <form method="post">
         <input type="text" name="search_string">
