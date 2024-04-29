@@ -48,6 +48,29 @@ Below is a suggested directory structure that segregates the backend and fronten
     - /static and /templates: Static assets and HTML templates for Flask. While most of the frontend will be handled by your chosen framework, these are useful for error pages or initial server-side rendering.
 2. run.py: This is the startup script for your Flask application. It imports the app and runs it.
 
+### Architecture of the backend
+
+#### Prompts
+```
+I have a postgres database, which has regular tables, one-to-many relationships between tables as well as many-to-many relationships stored in junction tables. I need to build a web app which fulfills the following requirements:
+- it has a search bar that takes user input and transforms it into keywords that are used to query the database
+- relevant results contain of rows from all queried tables in the database. They are returned in a list-like display.
+- when an entry in a relevant row is an NA value, this specific entry is not displayed while the other values from the same row are still shown.
+- when an entry in a relevant row is a reference id to the row of another table, depending on the table being referenced I need to define another column in this referenced table from which the value will be displayed instead of the reference id.
+- when the id of a relevant row is found in a junction table, the related table found through the associated id will be searched for a specified column and this value will be added to the list-like data display.
+Use Flask as a main engine and html, css, and if necessary js to get this done. The focus for now is the backend. The frontend is a bridge to be crossed at a later point.
+```
+```
+Lets go one more abstraction level up and tell me what components I need to fulfill my previously set requirements without considering implementation in code.
+```
+
+#### Components
+0. **Setup**: Flask to create and run the web server, handle requests, integrate with other components like the database
+1. **Search Query Processor**: (1) Input Parsing: This component takes user input from the search bar, processes it (possibly cleaning and splitting into keywords), and prepares it for querying the database. (2) Query Construction: Based on the processed input, this component constructs SQL queries that can handle like searches (for partial matches), exact matches, and logical conditions across multiple tables.
+2. **Result Formatter**: Data Fetching and Transformation: Once data is queried from the database, this component transforms the raw data into a more useful format. This includes: (1) Handling NA Values: Removing or replacing NA values so they are not displayed. (2) Resolving Foreign Keys: For foreign key values, fetching the corresponding display values from the referenced tables. (3) Many-to-Many Relationships: When an ID appears in a junction table, fetching additional related data as specified.
+3. **Data Display Logic**: Result Presentation: Defines how the results are presented to the user. While initially this might be simple JSON via Flask, eventually it could evolve into a more structured HTML/CSS presentation with JavaScript enhancements.
+4. **Experimental Frontend**: First scaffolding to show the data from the backend.
+
 ## Frontend - Framework (e.g., React, Vue, Angular)
 1. /src Directory: This is where all the frontend source files reside.
     - /components: React components or similar entities in other frameworks.
