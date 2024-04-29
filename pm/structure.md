@@ -66,6 +66,10 @@ Lets go one more abstraction level up and tell me what components I need to fulf
 
 #### Components
 0. **Setup**: Flask to create and run the web server, handle requests, integrate with other components like the database
+    - Database Connection Function
+        - Purpose: Establish and manage connections to the PostgreSQL database.
+    - Basic Tasks:
+        - 
 1. **Search Query Processor**: (1) Input Parsing: This component takes user input from the search bar, processes it (possibly cleaning and splitting into keywords), and prepares it for querying the database. (2) Query Construction: Based on the processed input, this component constructs SQL queries that can handle like searches (for partial matches), exact matches, and logical conditions across multiple tables.
 2. **Result Formatter**: Data Fetching and Transformation: Once data is queried from the database, this component transforms the raw data into a more useful format. This includes: (1) Handling NA Values: Removing or replacing NA values so they are not displayed. (2) Resolving Foreign Keys: For foreign key values, fetching the corresponding display values from the referenced tables. (3) Many-to-Many Relationships: When an ID appears in a junction table, fetching additional related data as specified.
 3. **Data Display Logic**: Result Presentation: Defines how the results are presented to the user. While initially this might be simple JSON via Flask, eventually it could evolve into a more structured HTML/CSS presentation with JavaScript enhancements.
