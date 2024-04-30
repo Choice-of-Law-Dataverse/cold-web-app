@@ -68,10 +68,52 @@ Lets go one more abstraction level up and tell me what components I need to fulf
 0. **Setup**: Flask to create and run the web server, handle requests, integrate with other components like the database
     - Database Connection Function
         - Purpose: Establish and manage connections to the PostgreSQL database.
-    - Basic Tasks:
-        - 
+        - Basic Tasks:
+            - Open and close connections to ensure efficient use of resources.
+            - Use a connection pooler to manage multiple connections simultaneously for better performance.
+    - Search Route Handler
+        - Purpose: Serve as the main endpoint for receiving search requests from the frontend.
+        - Basic Tasks:
+            - Receive search parameters from a GET or POST request.
+            - Call the search query function and pass the user input.
+            - Receive the formatted results and return them to the user, likely in JSON format for easy frontend integration.
+    - Error Handling Function
+        - Purpose: Provide a centralized error management mechanism to handle and log errors gracefully.
+        - Basic Tasks:
+            - Catch exceptions during database operations or data processing.
+            - Log error details for debugging and monitoring.
+            - Return user-friendly error messages or error codes to the frontend.
+    - Database Schema Validation Function
+        - Purpose: Validate that the database schema matches the expected structure required for the queries to function correctly.
+        - Basic Tasks:
+            - Periodically check the schema integrity.
+            - Ensure that all required tables and columns exist and have the correct data types.
 1. **Search Query Processor**: (1) Input Parsing: This component takes user input from the search bar, processes it (possibly cleaning and splitting into keywords), and prepares it for querying the database. (2) Query Construction: Based on the processed input, this component constructs SQL queries that can handle like searches (for partial matches), exact matches, and logical conditions across multiple tables.
+    - Search Query Function
+        - Purpose: Handle incoming search requests, process the user's input, and generate appropriate SQL queries.
+        - Basic Tasks:
+            - Parse the user input to extract keywords or criteria.
+            - Construct dynamic SQL queries based on the parsed input, considering safety measures to prevent SQL injection.
+            - Execute the queries against the database.
 2. **Result Formatter**: Data Fetching and Transformation: Once data is queried from the database, this component transforms the raw data into a more useful format. This includes: (1) Handling NA Values: Removing or replacing NA values so they are not displayed. (2) Resolving Foreign Keys: For foreign key values, fetching the corresponding display values from the referenced tables. (3) Many-to-Many Relationships: When an ID appears in a junction table, fetching additional related data as specified.
+    - Data Formatting Function
+        - Purpose: Format the raw query results before sending them to the user.
+        - Basic Tasks:
+            - Check for NA values in the result set and omit or replace them as necessary.
+            - Resolve foreign key references by replacing IDs with meaningful data from related tables.
+            - Handle many-to-many relationships by fetching related data via junction tables.
+    - Reference Data Resolution Function
+        - Purpose: Fetch and replace foreign key IDs with corresponding values from referenced tables.
+        - Basic Tasks:
+            - Determine which table and column to query based on the foreign key.
+            - Execute a sub-query to fetch the relevant data from the determined table.
+            - Return the fetched value to replace the original ID in the results.
+    - Many-to-Many Relation Handler Function
+        - Purpose: Manage the extraction of data from tables linked through a junction table.
+        - Basic Tasks:
+            - Identify the related tables and columns involved in a many-to-many relationship via the junction table.
+            - Query the related tables to gather additional information needed for the results.
+            - Integrate this data into the main query results.
 3. **Data Display Logic**: Result Presentation: Defines how the results are presented to the user. While initially this might be simple JSON via Flask, eventually it could evolve into a more structured HTML/CSS presentation with JavaScript enhancements.
 4. **Experimental Frontend**: First scaffolding to show the data from the backend.
 
