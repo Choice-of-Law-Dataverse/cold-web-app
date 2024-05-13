@@ -105,6 +105,19 @@ def search_all_tables(search_string):
     }
     return final_results  # Convert the dictionary to JSON format and return it
 
+def list_to_dict(lst):
+    """
+    Converts a list of dictionaries into a dictionary using the index of each item in the list as the key.
+
+    Args:
+        lst (list): The list of dictionaries.
+
+    Returns:
+        dict: A dictionary where each key is the index of the item in the list and each value is the corresponding dictionary.
+    """
+    result_dict = {i: item for i, item in enumerate(lst)}
+    return result_dict
+
 def print_keys(nested_dict):
     """
     Recursively prints all keys from a nested dictionary.
@@ -114,28 +127,55 @@ def print_keys(nested_dict):
     """
     for key, value in nested_dict.items():
         print(key)  # Print the key
+        if type(value) == list:
+            value = list_to_dict(value)
         if isinstance(value, dict):
             print_keys(value)  # Recursively call print_keys if the value is also a dictionary
 
-def filter_na(nested_dict):
+def parse_results(nested_dict):
     """
-    Recursively filters out 'NA' and 'NaN' values from a nested dictionary.
+    Recursively transforms lists into dictionaries within a nested dictionary structure and prints all keys.
 
     Args:
-    nested_dict (dict): The dictionary to filter.
+        nested_dict (dict): The dictionary to transform.
 
     Returns:
-    dict: A new dictionary with 'NA' and 'NaN' values filtered out.
+        dict: A new dictionary with lists transformed into dictionaries and all nested structures preserved.
+    """
+    transformed_dict = {}
+    for key, value in nested_dict.items():
+        if isinstance(value, list):  # Convert list to dict if the value is a list
+            value = list_to_dict(value)
+        if isinstance(value, dict):  # Recursively call if the value is a dictionary
+            value = parse_results(value)
+        transformed_dict[key] = value
+    return transformed_dict
+
+def filter_na(nested_dict):
+    """
+    Recursively filters out 'NA' and 'NaN' values from a nested dictionary,
+    independent of their case (case-insensitive).
+
+    Args:
+        nested_dict (dict): The dictionary to filter.
+
+    Returns:
+        dict: A new dictionary with 'NA' and 'NaN' values filtered out.
     """
     filtered_dict = {}
     for key, value in nested_dict.items():
-        if value == "NA" or value == "NaN":
-            continue  # Skip adding this key-value pair to the filtered dictionary
+        # Convert value to string and check in a case-insensitive manner
+        if isinstance(value, str) and value.strip().upper() in ["NA", "NAN"]:
+            continue
+
+        # Recursively apply filtering if the value is a dictionary
         if isinstance(value, dict):
-            # Recursively apply filtering if the value is a dictionary
             value = filter_na(value)
-        if value or value == 0 or value is False:  # Ensure filtered values like 0 or False are not omitted
+
+        # Only add the value to the new dictionary if it's not an empty dictionary
+        if value or isinstance(value, (int, float, bool)) or (isinstance(value, dict) and value):
             filtered_dict[key] = value
+
     return filtered_dict
 
 # Run
@@ -146,6 +186,7 @@ if __name__ == "__main__":
     # define search string
     search_string = "submarine"
     # print keys of the nested dictionary
-    print_keys(search_all_tables(search_string))
+    #print_keys(search_all_tables(search_string))
     # print dict without NAs
-    print(filter_na(search_all_tables(search_string)))
+    #print(filter_na(search_all_tables(search_string)))
+    print(filter_na(parse_results(search_all_tables(search_string))))
