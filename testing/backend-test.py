@@ -93,7 +93,64 @@ def check_tables():
     except Exception as e:
         print("Failed to fetch tables:", e)
 
+def list_to_dict(lst):
+    """
+    Converts a list of dictionaries into a dictionary using the index of each item in the list as the key.
 
+    Args:
+        lst (list): The list of dictionaries.
+
+    Returns:
+        dict: A dictionary where each key is the index of the item in the list and each value is the corresponding dictionary.
+    """
+    result_dict = {i: item for i, item in enumerate(lst)}
+    return result_dict
+    
+def parse_results(nested_dict):
+    """
+    Recursively transforms lists into dictionaries within a nested dictionary structure and prints all keys.
+
+    Args:
+        nested_dict (dict): The dictionary to transform.
+
+    Returns:
+        dict: A new dictionary with lists transformed into dictionaries and all nested structures preserved.
+    """
+    transformed_dict = {}
+    for key, value in nested_dict.items():
+        if isinstance(value, list):  # Convert list to dict if the value is a list
+            value = list_to_dict(value)
+        if isinstance(value, dict):  # Recursively call if the value is a dictionary
+            value = parse_results(value)
+        transformed_dict[key] = value
+    return transformed_dict
+
+def filter_na(nested_dict):
+    """
+    Recursively filters out 'NA' and 'NaN' values from a nested dictionary,
+    independent of their case (case-insensitive).
+
+    Args:
+        nested_dict (dict): The dictionary to filter.
+
+    Returns:
+        dict: A new dictionary with 'NA' and 'NaN' values filtered out.
+    """
+    filtered_dict = {}
+    for key, value in nested_dict.items():
+        # Convert value to string and check in a case-insensitive manner
+        if isinstance(value, str) and value.strip().upper() in ["NA", "NAN"]:
+            continue
+
+        # Recursively apply filtering if the value is a dictionary
+        if isinstance(value, dict):
+            value = filter_na(value)
+
+        # Only add the value to the new dictionary if it's not an empty dictionary
+        if value or isinstance(value, (int, float, bool)) or (isinstance(value, dict) and value):
+            filtered_dict[key] = value
+
+    return filtered_dict
 
 @app.route('/search', methods=['POST'])
 def handle_search():
@@ -107,7 +164,7 @@ def handle_search():
     print(search_string)
     if not search_string:
         return jsonify({'error': 'No search string provided'}), 400
-    results = search_all_tables(search_string)
+    results = filter_na(parse_results(search_all_tables(search_string)))
     #print(results)
     print(type(results))
     return results, 200#jsonify(results), 200
