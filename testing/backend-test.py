@@ -21,6 +21,7 @@ def search_all_tables(search_string):
     total_matches = 0  # Initialize a counter for the total number of matches
 
     search_terms = search_string.split()
+    print(search_terms)
     conn = psycopg2.connect(dbname=POSTGRES_AZURE_DBNAME, user=POSTGRES_AZURE_USER, password=POSTGRES_AZURE_PASSWORD, host=POSTGRES_AZURE_HOST, sslmode="require")
     cur = conn.cursor()
 
@@ -41,7 +42,7 @@ def search_all_tables(search_string):
                 term_condition = sql.SQL(" OR ").join(column_conditions)
                 term_query_parts.append(sql.SQL("(") + term_condition + sql.SQL(")"))
 
-            full_query = sql.SQL(" AND ").join(term_query_parts)
+            full_query = sql.SQL(" OR ").join(term_query_parts)
             query = sql.SQL("SELECT * FROM {} WHERE ").format(sql.Identifier(table_name)) + full_query
             params = [f"%{term}%" for term in search_terms for _ in range(len(columns))]
             
@@ -105,7 +106,7 @@ def list_to_dict(lst):
     """
     result_dict = {i: item for i, item in enumerate(lst)}
     return result_dict
-    
+
 def parse_results(nested_dict):
     """
     Recursively transforms lists into dictionaries within a nested dictionary structure and prints all keys.
@@ -158,7 +159,7 @@ def handle_search():
     Handle search operations from HTTP POST request.
     Expects data with a 'search_string' key.
     """
-    check_tables()  # Call this function from your main if applicable
+    #check_tables()  # Call this function from your main if applicable
     data = request.json
     search_string = data.get('search_string')
     print(search_string)
