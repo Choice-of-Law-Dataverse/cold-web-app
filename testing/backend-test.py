@@ -229,6 +229,7 @@ def handle_search():
     if not search_string:
         return jsonify({'error': 'No search string provided'}), 400
     if filter_string:
+        print(filter_string)
         results = filter_na(parse_results(search_selected_tables(search_string, filter_string)))
     else:
         results = filter_na(parse_results(search_all_tables(search_string)))
