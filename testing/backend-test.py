@@ -1,5 +1,6 @@
 # import libraries
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import psycopg2
 from psycopg2 import sql
 from psycopg2.extras import RealDictCursor
@@ -15,6 +16,7 @@ POSTGRES_AZURE_PASSWORD = os.getenv("POSTGRES_AZURE_PASSWORD")
 
 # Create Flask app
 app = Flask(__name__)
+CORS(app) # Enable Cross-Origin Resource Sharing
 
 def search_all_tables(search_string):
     results = {}
