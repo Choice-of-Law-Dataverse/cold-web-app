@@ -104,7 +104,7 @@ def search_selected_tables(search_string, filter_string):
                 term_condition = sql.SQL(" OR ").join(column_conditions)
                 term_query_parts.append(sql.SQL("(") + term_condition + sql.SQL(")"))
 
-            full_query = sql.SQL(" OR ").join(term_query_parts)
+            full_query = sql.SQL(" AND ").join(term_query_parts)
             query = sql.SQL("SELECT * FROM {} WHERE ").format(sql.Identifier(table_name)) + full_query
             params = [f"%{term}%" for term in search_terms for _ in range(len(columns))]
             
