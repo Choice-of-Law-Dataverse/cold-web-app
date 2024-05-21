@@ -161,3 +161,4 @@ cython_debug/
 
 # backend testing
 backend/testing.ipynb
+testing/*
