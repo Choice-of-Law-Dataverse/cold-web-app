@@ -24,6 +24,7 @@ class DatabaseProcessor:
 
     def fetch_data(self, query):
         df = pd.read_sql(query, self.conn)
+        print(df.head())
         return df
 
     def concatenate_values(self, row):
@@ -32,8 +33,15 @@ class DatabaseProcessor:
 
     def process_data(self, df):
         concatenated_strings = df.apply(self.concatenate_values, axis=1)
-        embeddings = concatenated_strings.apply(self.get_embedding)
+        print(concatenated_strings)
+        embeddings = concatenated_strings.apply(self.mock_embedding)
+        print(embeddings)
         return embeddings
+
+    def mock_embedding(self, text):
+        # This function should return a numpy array of length 1024
+        # For demonstration purposes, returning a dummy array
+        return np.random.rand(64)
 
     # function to calculate vector embeddings for a given text
     def get_embedding(self, text):
@@ -62,6 +70,10 @@ class DatabaseProcessor:
         embedding = mxbai.embeddings(
             model="mixedbread-ai/mxbai-embed-large-v1",
             input=[text],
+            normalized=true,
+            encoding_format='ubinary',
+            dimensions=512,
+            truncation_strategy='start',
             prompt="Represent this sentence for searching relevant passages"
         )
 
@@ -72,7 +84,7 @@ class DatabaseProcessor:
 
     def add_embedding_column(self, table_name):
         self.cursor.execute(f"""
-        ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS embedding vector(1024);
+        ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS embedding vector(64);
         """)
         self.conn.commit()
 
@@ -88,8 +100,9 @@ class DatabaseProcessor:
     def process_table(self, select_query, table_name):
         df = self.fetch_data(select_query)
         embeddings = self.process_data(df)
-        self.add_embedding_column(table_name)
-        self.update_embeddings(table_name, df, embeddings)
+        print(embeddings)
+        #self.add_embedding_column(table_name)
+        #self.update_embeddings(table_name, df, embeddings)
 
 def main():
     conn_params = {
