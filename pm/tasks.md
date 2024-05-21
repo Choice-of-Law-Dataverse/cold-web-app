@@ -30,3 +30,6 @@
 - Data manipulation
     - [ ] Change column titles to have spaces instead of underscores and capital letters
     - [ ] Replace ID values with most expressive values from linked tables
+- Data Download
+    - [ ] Raw Data Download as CSV until 11.06.
+    - [ ] Provide API Routes for download
