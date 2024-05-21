@@ -1,0 +1,216 @@
+import psycopg2
+import numpy as np
+import pandas as pd
+from tqdm import tqdm
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
+class DatabaseProcessor:
+    def __init__(self, conn_params):
+        self.conn_params = conn_params
+        self.conn = None
+        self.cursor = None
+
+    def connect(self):
+        self.conn = psycopg2.connect(**self.conn_params)
+        self.cursor = self.conn.cursor()
+
+    def close(self):
+        if self.cursor:
+            self.cursor.close()
+        if self.conn:
+            self.conn.close()
+
+    def fetch_data(self, query):
+        df = pd.read_sql(query, self.conn)
+        return df
+
+    def concatenate_values(self, row):
+        values = [str(val) for val in row if pd.notna(val) and val != "NA"]
+        return ' '.join(values) if values else 'NA'
+
+    def process_data(self, df):
+        concatenated_strings = df.apply(self.concatenate_values, axis=1)
+        embeddings = concatenated_strings.apply(self.get_embedding)
+        return embeddings
+
+    # function to calculate vector embeddings for a given text
+    def get_embedding(self, text):
+        import numpy as np
+        # LOCAL IMPLEMENTATION
+        
+        #from sentence_transformers import SentenceTransformer
+        #from sentence_transformers.util import cos_sim
+        #from sentence_transformers.quantization import quantize_embeddings
+
+        # 1. Specify preffered dimensions
+        #dimensions = 512
+        # 2. load model
+        #model = SentenceTransformer("mixedbread-ai/mxbai-embed-large-v1", truncate_dim=dimensions)
+
+        #embedding = model.encode(text)
+        #return embedding
+
+        
+        # API IMPLEMENTATION
+        
+        from mixedbread_ai.client import MixedbreadAI
+        
+        mxbai = MixedbreadAI(api_key=os.getenv("MIXEDBREAD_API_KEY"))
+
+        embedding = mxbai.embeddings(
+            model="mixedbread-ai/mxbai-embed-large-v1",
+            input=[text],
+            prompt="Represent this sentence for searching relevant passages"
+        )
+
+        # convert embedding to np.array
+        embedding = np.array(embedding.data[0].embedding)
+
+        return embedding
+
+    def add_embedding_column(self, table_name):
+        self.cursor.execute(f"""
+        ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS embedding vector(1024);
+        """)
+        self.conn.commit()
+
+    def update_embeddings(self, table_name, df, embeddings):
+        update_query = f"""
+        UPDATE {table_name} SET embedding = %s WHERE question = %s AND answer = %s;
+        """
+        for idx, row in tqdm(df.iterrows(), total=df.shape[0], desc=f'Updating {table_name} embeddings'):
+            embedding = embeddings[idx].tolist()  # Convert np.array to list
+            self.cursor.execute(update_query, (embedding, row['question'], row['answer']))
+        self.conn.commit()
+
+    def process_table(self, select_query, table_name):
+        df = self.fetch_data(select_query)
+        embeddings = self.process_data(df)
+        self.add_embedding_column(table_name)
+        self.update_embeddings(table_name, df, embeddings)
+
+def main():
+    conn_params = {
+        'dbname': os.getenv("POSTGRES_AZURE_DBNAME"),
+        'user': os.getenv("POSTGRES_AZURE_USER"),
+        'password': os.getenv("POSTGRES_AZURE_PASSWORD"),
+        'host': os.getenv("POSTGRES_AZURE_HOST"),
+        'port': os.getenv("POSTGRES_AZURE_PORT")
+    }
+
+    db_processor = DatabaseProcessor(conn_params)
+    db_processor.connect()
+
+    try:
+        answers_query = """
+        SELECT 
+            q.question, 
+            a.answer, 
+            a.open_text_field, 
+            a.more_information, 
+            j.jd_name AS jurisdiction
+        FROM 
+            answers a
+        JOIN 
+            questions q ON a.question = q.record_id
+        JOIN 
+            jurisdictions j ON a.jurisdiction = j.record_id;
+        """
+        db_processor.process_table(answers_query, 'answers')
+        
+        questions_query = """
+        SELECT
+            question,
+            themes
+        FROM
+            questions;
+        """
+        db_processor.process_table(questions_query, 'questions')
+
+        jurisdictions_query = """
+        SELECT
+            jurisdictions_id,
+            jd_name,
+            jd_type,
+            region,
+            north_south_divide
+        FROM
+            jurisdictions;
+        """
+        db_processor.process_table(jurisdictions_query, 'jurisdictions')
+
+        legislations_query = """
+        SELECT 
+            l.title_english, 
+            l.title_official,
+            l.publication_date,
+            l.entry_into_force,
+            l.type_of_legislation,
+            l.observations,
+            COALESCE(STRING_AGG(j.jd_name, ', '), 'NA') AS jurisdiction
+        FROM 
+            legislations l
+        LEFT JOIN 
+            jurisdictionslegislations jl ON l.legislations_id = jl.legislations_id
+        LEFT JOIN 
+            jurisdictions j ON jl.jurisdictions_id = j.jurisdictions_id
+        GROUP BY 
+            l.legislations_id;
+        """
+        db_processor.process_table(legislations_query, 'legislations')
+
+        legal_provisions_query = """
+        SELECT
+            lp.article,
+            lp.original_text,
+            lp.english_text,
+            COALESCE(STRING_AGG(l.title_english, ', '), 'NA') AS legislation,
+            COALESCE(STRING_AGG(j.jd_name, ', '), 'NA') AS jurisdiction
+        FROM
+            legal_provisions lp
+        LEFT JOIN
+            legislationslegal_provisions llp ON lp.legal_provisions_id = llp.legal_provisions_id
+        LEFT JOIN
+            legislations l ON llp.legislations_id = l.legislations_id
+        LEFT JOIN
+            jurisdictionslegal_provisions jlp ON lp.legal_provisions_id = jlp.legal_provisions_id
+        LEFT JOIN
+            jurisdictions j ON jlp.jurisdictions_id = j.jurisdictions_id
+        GROUP BY
+            lp.legal_provisions_id;
+        """
+        db_processor.process_table(legal_provisions_query, 'legal_provisions')
+
+        court_decisions_query = """
+        SELECT
+            cd.court_case,
+            cd.abstract,
+            cd.relevant_rules_of_law,
+            cd.choice_of_law_issue,
+            cd.court_position,
+            cd.translated_excerpt,
+            cd.legal_rules_used_by_court,
+            cd.case_content,
+            cd.additional_information,
+            cd.observations,
+            cd.case_quote,
+            cd.relevant_facts,
+            COALESCE(STRING_AGG(j.jd_name, ', '), 'NA') AS jurisdiction
+        FROM
+            court_decisions cd
+        LEFT JOIN
+            jurisdictionscourt_decisions jcd ON cd.court_decisions_id = jcd.court_decisions_id
+        LEFT JOIN
+            jurisdictions j ON jcd.jurisdictions_id = j.jurisdictions_id
+        GROUP BY
+            cd.court_decisions_id;
+        """
+        db_processor.process_table(court_decisions_query, 'court_decisions')
+    
+    finally:
+        db_processor.close()
+
+if __name__ == "__main__":
+    main()
