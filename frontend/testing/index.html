@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Interface</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="search-bar">
+            <h1>CoLD Search</h1>
+            <input type="text" id="searchInput" placeholder="Enter search text">
+            <div id="categoryContainer">
+                <label>
+                    <input type="checkbox" value="answers" class="category-checkbox"> Answers
+                </label>
+                <label>
+                    <input type="checkbox" value="questions" class="category-checkbox"> Questions
+                </label>
+                <label>
+                    <input type="checkbox" value="legislations" class="category-checkbox"> Legislations
+                </label>
+                <label>
+                    <input type="checkbox" value="court_decisions" class="category-checkbox"> Court Decisions
+                </label>
+                <!-- Add more checkboxes as needed -->
+            </div>
+            <button id="searchButton">Search</button>
+        </div>
+        <div id="results" class="results-container"></div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
