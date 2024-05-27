@@ -33,7 +33,7 @@ class DatabaseProcessor:
 
     def process_data(self, df):
         concatenated_strings = df.apply(self.concatenate_values, axis=1)
-        embeddings = concatenated_strings.apply(self.mock_embedding)
+        embeddings = concatenated_strings.apply(self.get_embedding)
         return embeddings
 
     def mock_embedding(self, text):
@@ -68,7 +68,7 @@ class DatabaseProcessor:
         embedding = mxbai.embeddings(
             model="mixedbread-ai/mxbai-embed-large-v1",
             input=[text],
-            normalized=true,
+            normalized=True,
             encoding_format='ubinary',
             dimensions=512,
             truncation_strategy='start',
@@ -133,6 +133,9 @@ def main():
         JOIN 
             jurisdictions j ON a.jurisdiction = j.record_id;
         """
+        update_answers_query = """
+        UPDATE answers SET embedding = %s WHERE question = %s AND answer = %s;
+        """
         #db_processor.process_table(answers_query, 'answers')
         
         questions_query = """
@@ -141,6 +144,9 @@ def main():
             themes
         FROM
             questions;
+        """
+        update_questions_query= """
+        UPDATE questions SET embedding = %s WHERE question = %s AND themes = %s;
         """
         db_processor.process_table(questions_query, 'questions')
 
@@ -153,6 +159,9 @@ def main():
             north_south_divide
         FROM
             jurisdictions;
+        """
+        update_jurisdictions_query = """
+        UPDATE jurisdictions SET embedding = %s WHERE jurisdictions_id = %s AND jd_name = %s;
         """
         #db_processor.process_table(jurisdictions_query, 'jurisdictions')
 
@@ -173,6 +182,9 @@ def main():
             jurisdictions j ON jl.jurisdictions_id = j.jurisdictions_id
         GROUP BY 
             l.legislations_id;
+        """
+        update_legislations_query = """
+        UPDATE legislations SET embedding = %s WHERE title_english = %s AND title_official = %s;
         """
         #db_processor.process_table(legislations_query, 'legislations')
 
@@ -195,6 +207,9 @@ def main():
             jurisdictions j ON jlp.jurisdictions_id = j.jurisdictions_id
         GROUP BY
             lp.legal_provisions_id;
+        """
+        update_legal_provisions_query = """
+        UPDATE legal_provisions SET embedding = %s WHERE article = %s AND original_text = %s;
         """
         #db_processor.process_table(legal_provisions_query, 'legal_provisions')
 
@@ -221,6 +236,9 @@ def main():
             jurisdictions j ON jcd.jurisdictions_id = j.jurisdictions_id
         GROUP BY
             cd.court_decisions_id;
+        """
+        update_court_decisions_query = """
+        UPDATE court_decisions SET embedding = %s WHERE court_case = %s AND abstract = %s;
         """
         #db_processor.process_table(court_decisions_query, 'court_decisions')
     
