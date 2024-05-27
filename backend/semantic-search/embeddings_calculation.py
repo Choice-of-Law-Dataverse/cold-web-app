@@ -33,9 +33,7 @@ class DatabaseProcessor:
 
     def process_data(self, df):
         concatenated_strings = df.apply(self.concatenate_values, axis=1)
-        print(concatenated_strings)
         embeddings = concatenated_strings.apply(self.mock_embedding)
-        print(embeddings)
         return embeddings
 
     def mock_embedding(self, text):
@@ -131,7 +129,7 @@ def main():
         JOIN 
             jurisdictions j ON a.jurisdiction = j.record_id;
         """
-        db_processor.process_table(answers_query, 'answers')
+        #db_processor.process_table(answers_query, 'answers')
         
         questions_query = """
         SELECT
@@ -152,7 +150,7 @@ def main():
         FROM
             jurisdictions;
         """
-        db_processor.process_table(jurisdictions_query, 'jurisdictions')
+        #db_processor.process_table(jurisdictions_query, 'jurisdictions')
 
         legislations_query = """
         SELECT 
@@ -172,7 +170,7 @@ def main():
         GROUP BY 
             l.legislations_id;
         """
-        db_processor.process_table(legislations_query, 'legislations')
+        #db_processor.process_table(legislations_query, 'legislations')
 
         legal_provisions_query = """
         SELECT
@@ -194,7 +192,7 @@ def main():
         GROUP BY
             lp.legal_provisions_id;
         """
-        db_processor.process_table(legal_provisions_query, 'legal_provisions')
+        #db_processor.process_table(legal_provisions_query, 'legal_provisions')
 
         court_decisions_query = """
         SELECT
@@ -220,7 +218,7 @@ def main():
         GROUP BY
             cd.court_decisions_id;
         """
-        db_processor.process_table(court_decisions_query, 'court_decisions')
+        #db_processor.process_table(court_decisions_query, 'court_decisions')
     
     finally:
         db_processor.close()
