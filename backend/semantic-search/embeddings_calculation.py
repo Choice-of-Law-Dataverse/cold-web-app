@@ -88,25 +88,29 @@ class DatabaseProcessor:
 
     def update_embeddings(self, table_name, df, embeddings):
         update_query = f"""
-        UPDATE {table_name} SET embedding = %s WHERE question = %s AND answer = %s;
+        UPDATE {table_name} SET embedding = %s WHERE question = %s AND themes = %s;
         """
         for idx, row in tqdm(df.iterrows(), total=df.shape[0], desc=f'Updating {table_name} embeddings'):
             embedding = embeddings[idx].tolist()  # Convert np.array to list
-            self.cursor.execute(update_query, (embedding, row['question'], row['answer']))
+            self.cursor.execute(update_query, (embedding, row['question'], row['themes']))
         self.conn.commit()
 
     def process_table(self, select_query, table_name):
         df = self.fetch_data(select_query)
         embeddings = self.process_data(df)
         print(embeddings)
-        #self.add_embedding_column(table_name)
-        #self.update_embeddings(table_name, df, embeddings)
+        print("Add embedding column if not exists")
+        self.add_embedding_column(table_name)
+        print("Added embedding column succesfully")
+        print("Now updating embeddings")
+        self.update_embeddings(table_name, df, embeddings)
+        print("Successfully updated embeddings")
 
 def main():
     conn_params = {
         'dbname': os.getenv("POSTGRES_AZURE_DBNAME"),
-        'user': os.getenv("POSTGRES_AZURE_USER"),
-        'password': os.getenv("POSTGRES_AZURE_PASSWORD"),
+        'user': os.getenv("POSTGRES_AZURE_USER_ADMIN"),
+        'password': os.getenv("POSTGRES_AZURE_PASSWORD_ADMIN"),
         'host': os.getenv("POSTGRES_AZURE_HOST"),
         'port': os.getenv("POSTGRES_AZURE_PORT")
     }
