@@ -33,7 +33,7 @@ class DatabaseProcessor:
 
     def process_data(self, df):
         concatenated_strings = df.apply(self.concatenate_values, axis=1)
-        embeddings = concatenated_strings.apply(self.mock_embedding)
+        embeddings = concatenated_strings.apply(self.get_embedding)
         return embeddings
 
     def mock_embedding(self, text):
@@ -148,7 +148,7 @@ def main():
         update_questions_query= """
         UPDATE questions SET embedding = %s WHERE question = %s AND themes = %s;
         """
-        #db_processor.process_table(update_questions_query, 'question', 'themes', questions_query, 'questions')
+        db_processor.process_table(update_questions_query, 'question', 'themes', questions_query, 'questions')
 
         jurisdictions_query = """
         SELECT
@@ -163,7 +163,7 @@ def main():
         update_jurisdictions_query = """
         UPDATE jurisdictions SET embedding = %s WHERE jurisdictions_id = %s AND jd_name = %s;
         """
-        #db_processor.process_table(update_jurisdictions_query, 'jurisdictions_id', 'jd_name', jurisdictions_query, 'jurisdictions')
+        db_processor.process_table(update_jurisdictions_query, 'jurisdictions_id', 'jd_name', jurisdictions_query, 'jurisdictions')
 
         legislations_query = """
         SELECT 
@@ -186,7 +186,7 @@ def main():
         update_legislations_query = """
         UPDATE legislations SET embedding = %s WHERE title_english = %s AND title_official = %s;
         """
-        #db_processor.process_table(update_legislations_query, 'title_english', 'title_official', legislations_query, 'legislations')
+        db_processor.process_table(update_legislations_query, 'title_english', 'title_official', legislations_query, 'legislations')
 
         legal_provisions_query = """
         SELECT
@@ -211,7 +211,7 @@ def main():
         update_legal_provisions_query = """
         UPDATE legal_provisions SET embedding = %s WHERE article = %s AND original_text = %s;
         """
-        #db_processor.process_table(update_legal_provisions_query, 'article', 'original_text', legal_provisions_query, 'legal_provisions')
+        db_processor.process_table(update_legal_provisions_query, 'article', 'original_text', legal_provisions_query, 'legal_provisions')
 
         court_decisions_query = """
         SELECT
@@ -240,7 +240,7 @@ def main():
         update_court_decisions_query = """
         UPDATE court_decisions SET embedding = %s WHERE court_case = %s AND abstract = %s;
         """
-        #db_processor.process_table(update_court_decisions_query, 'court_case', 'abstract', court_decisions_query, 'court_decisions')
+        db_processor.process_table(update_court_decisions_query, 'court_case', 'abstract', court_decisions_query, 'court_decisions')
     
     finally:
         db_processor.close()
