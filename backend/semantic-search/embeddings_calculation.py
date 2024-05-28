@@ -35,8 +35,14 @@ class DatabaseProcessor:
     def process_data(self, df):
         concatenated_strings = df.apply(self.concatenate_values, axis=1)
         #embeddings = concatenated_strings.apply(self.mock_embedding)
-        embeddings = concatenated_strings.apply(lambda text: self.get_embedding_local(text))
+        embeddings = concatenated_strings.apply(lambda text: self.get_embedding_with_delay(text))
         return embeddings
+    
+    def get_embedding_with_delay(self, text):
+        time.sleep(1)  # Wait for 1 second
+        embedding = self.get_embedding_api(text)
+        print(f"Processed embedding for text: {text[:50]}...")  # Show only first 50 chars for brevity
+        return embedding
 
     def mock_embedding(self, text):
         # This function should return a numpy array of length 1024
@@ -57,7 +63,7 @@ class DatabaseProcessor:
         embedding = model.encode(text)
 
         # convert embedding to np.array
-        embedding = np.array(embedding.data[0].embedding)
+        #embedding = np.array(embedding.data[0].embedding)
 
         return embedding
 
@@ -252,10 +258,8 @@ def main():
         # record end time
         end = time.time()
         
-        # print the difference between start 
-        # and end time in milli. secs
-        print("The time of execution of above program is :",
-            (end-start), "sec")
+        # print the difference between start and end time in secs
+        print("The time of execution of above program is :", (end-start), "sec")
 
 if __name__ == "__main__":
     main()
