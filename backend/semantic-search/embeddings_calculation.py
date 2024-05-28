@@ -43,26 +43,26 @@ class DatabaseProcessor:
         # For demonstration purposes, returning a dummy array
         return np.random.rand(64)
 
-    # function to calculate vector embeddings for a given text
-    def get_embedding(self, text):
+    def get_embedding_local(self, text):
         import numpy as np
-        # LOCAL IMPLEMENTATION
-        
-        #from sentence_transformers import SentenceTransformer
-        #from sentence_transformers.util import cos_sim
-        #from sentence_transformers.quantization import quantize_embeddings
+        from sentence_transformers import SentenceTransformer
+        from sentence_transformers.util import cos_sim
+        from sentence_transformers.quantization import quantize_embeddings
 
         # 1. Specify preffered dimensions
-        #dimensions = 512
+        dimensions = 512
         # 2. load model
-        #model = SentenceTransformer("mixedbread-ai/mxbai-embed-large-v1", truncate_dim=dimensions)
+        model = SentenceTransformer("mixedbread-ai/mxbai-embed-large-v1", truncate_dim=dimensions)
 
-        #embedding = model.encode(text)
-        #return embedding
+        embedding = model.encode(text)
 
-        
-        # API IMPLEMENTATION
-        
+        # convert embedding to np.array
+        embedding = np.array(embedding.data[0].embedding)
+
+        return embedding
+
+    def get_embedding_api(self, text):
+        import numpy as np
         from mixedbread_ai.client import MixedbreadAI
         
         mxbai = MixedbreadAI(api_key=os.getenv("MIXEDBREAD_API_KEY"))
