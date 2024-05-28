@@ -5,6 +5,7 @@ from tqdm import tqdm
 import os
 from dotenv import load_dotenv
 load_dotenv()
+import time
 
 class DatabaseProcessor:
     def __init__(self, conn_params):
@@ -33,7 +34,8 @@ class DatabaseProcessor:
 
     def process_data(self, df):
         concatenated_strings = df.apply(self.concatenate_values, axis=1)
-        embeddings = concatenated_strings.apply(self.get_embedding)
+        #embeddings = concatenated_strings.apply(self.mock_embedding)
+        embeddings = concatenated_strings.apply(lambda text: self.get_embedding(text))
         return embeddings
 
     def mock_embedding(self, text):
@@ -104,6 +106,9 @@ class DatabaseProcessor:
         print("Successfully updated embeddings")
 
 def main():
+    # record start time
+    start = time.time()
+
     conn_params = {
         'dbname': os.getenv("POSTGRES_AZURE_DBNAME"),
         'user': os.getenv("POSTGRES_AZURE_USER_ADMIN"),
@@ -241,9 +246,16 @@ def main():
         UPDATE court_decisions SET embedding = %s WHERE court_case = %s AND abstract = %s;
         """
         db_processor.process_table(update_court_decisions_query, 'court_case', 'abstract', court_decisions_query, 'court_decisions')
-    
+
     finally:
         db_processor.close()
+        # record end time
+        end = time.time()
+        
+        # print the difference between start 
+        # and end time in milli. secs
+        print("The time of execution of above program is :",
+            (end-start) * 10**3, "ms")
 
 if __name__ == "__main__":
     main()
