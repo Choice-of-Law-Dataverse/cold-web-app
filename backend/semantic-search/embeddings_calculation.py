@@ -255,7 +255,7 @@ def main():
         # print the difference between start 
         # and end time in milli. secs
         print("The time of execution of above program is :",
-            (end-start) * 10**3, "ms")
+            (end-start), "sec")
 
 if __name__ == "__main__":
     main()
