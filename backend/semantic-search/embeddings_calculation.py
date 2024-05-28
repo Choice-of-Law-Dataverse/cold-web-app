@@ -35,7 +35,7 @@ class DatabaseProcessor:
     def process_data(self, df):
         concatenated_strings = df.apply(self.concatenate_values, axis=1)
         #embeddings = concatenated_strings.apply(self.mock_embedding)
-        embeddings = concatenated_strings.apply(lambda text: self.get_embedding(text))
+        embeddings = concatenated_strings.apply(lambda text: self.get_embedding_local(text))
         return embeddings
 
     def mock_embedding(self, text):
