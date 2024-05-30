@@ -10,43 +10,6 @@ document.getElementById('searchButton').addEventListener('click', function() {
     fetchResults(searchInput, selectedCategories);
 });
 
-function toggleDropdown() {
-    document.getElementById("options").classList.toggle("show");
-}
-
-window.onclick = function(event) {
-    if (!event.target.matches('.dropdown button')) {
-        var dropdowns = document.getElementsByClassName("dropdown-content");
-        for (var i = 0; i < dropdowns.length; i++) {
-            var openDropdown = dropdowns[i];
-            if (openDropdown.classList.contains('show')) {
-                openDropdown.classList.remove('show');
-            }
-        }
-    }
-}
-
-document.querySelectorAll('.dropdown-content input[type="checkbox"]').forEach(checkbox => {
-    checkbox.addEventListener('change', function() {
-        const text = this.value;
-        const selectedItems = document.querySelector('.selected-items');
-        const existingItem = selectedItems.querySelector(`[data-value="${text}"]`);
-
-        if (this.checked) {
-            if (!existingItem) {
-                const selectedItem = document.createElement('div');
-                selectedItem.setAttribute('data-value', text);
-                selectedItem.innerText = text;
-                selectedItems.appendChild(selectedItem);
-            }
-        } else {
-            if (existingItem) {
-                existingItem.remove();
-            }
-        }
-    });
-});
-
 function fetchResults(searchText, categories) {
     const query = {
         search_string: searchText
