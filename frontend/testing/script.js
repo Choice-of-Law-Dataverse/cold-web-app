@@ -1,23 +1,20 @@
 document.getElementById('searchButton').addEventListener('click', function() {
     const searchInput = document.getElementById('searchInput').value;
-    const selectedCategories = Array.from(document.querySelectorAll('.category-checkbox:checked')).map(checkbox => checkbox.value);
+    const isSemanticSearch = document.getElementById('toggleSwitch').checked;
 
     if (!searchInput) {
         alert('Please enter search text.');
         return;
     }
 
-    fetchResults(searchInput, selectedCategories);
+    fetchResults(searchInput, isSemanticSearch);
 });
 
-function fetchResults(searchText, categories) {
+function fetchResults(searchText, isSemanticSearch) {
     const query = {
-        search_string: searchText
+        search_string: searchText,
+        use_semantic_search: isSemanticSearch
     };
-
-    if (categories.length > 0) {
-        query.filter_string = categories.join(',');
-    }
 
     fetch('http://127.0.0.1:5000/search', {
         method: 'POST',
