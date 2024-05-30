@@ -4,6 +4,9 @@ from flask_cors import CORS
 import psycopg2
 from psycopg2 import sql
 from psycopg2.extras import RealDictCursor
+import numpy as np
+from mixedbread_ai.client import MixedbreadAI
+from scipy.spatial.distance import cosine
 import os
 from dotenv import load_dotenv
 
@@ -17,6 +20,24 @@ POSTGRES_AZURE_PASSWORD = os.getenv("POSTGRES_AZURE_PASSWORD")
 # Create Flask app
 app = Flask(__name__)
 CORS(app) # Enable Cross-Origin Resource Sharing
+
+def get_embedding_api(self, text):
+        mxbai = MixedbreadAI(api_key=os.getenv("MIXEDBREAD_API_KEY"))
+
+        embedding = mxbai.embeddings(
+            model="mixedbread-ai/mxbai-embed-large-v1",
+            input=[text],
+            normalized=True,
+            encoding_format='ubinary',
+            dimensions=512,
+            truncation_strategy='start',
+            prompt="Represent this sentence for searching relevant passages"
+        )
+
+        # convert embedding to np.array
+        embedding = np.array(embedding.data[0].embedding)
+
+        return embedding
 
 def search_all_tables(search_string):
     results = {}
@@ -76,6 +97,73 @@ def search_all_tables(search_string):
         'tables': results
     }
     return final_results  # Convert the dictionary to JSON format and return it
+
+def search_all_tables_semantic(search_string):
+    results = {}
+    total_matches = 0  # Initialize a counter for the total number of matches
+
+    # Calculate the embedding for the search string
+    search_embedding = get_embedding_api(search_string)
+    
+    conn = psycopg2.connect(dbname=POSTGRES_AZURE_DBNAME, user=POSTGRES_AZURE_USER, password=POSTGRES_AZURE_PASSWORD, host=POSTGRES_AZURE_HOST, sslmode="require")
+    cur = conn.cursor()
+
+    try:
+        cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
+        tables = cur.fetchall()
+
+        for table in tables:
+            table_name = table[0]
+            cur.execute(sql.SQL("SELECT column_name FROM information_schema.columns WHERE table_name = %s AND table_schema = 'public'"), (table_name,))
+            columns = cur.fetchall()
+            if not columns:
+                continue
+            
+            # Check if the table has an "embedding" column
+            if ('embedding',) not in columns:
+                continue
+
+            # Select all rows from the table
+            query = sql.SQL("SELECT * FROM {}").format(sql.Identifier(table_name))
+            cur.execute(query)
+            rows = cur.fetchall()
+            if not rows:
+                continue
+
+            table_results = {
+                'matches': 0,
+                'results': []
+            }
+
+            for row in rows:
+                row_dict = {cur.description[idx].name: row[idx] for idx in range(len(row))}
+                row_embedding = np.fromstring(row_dict['embedding'][1:-1], sep=',')  # Convert the string embedding back to a numpy array
+                
+                # Calculate the cosine similarity
+                similarity = 1 - cosine(search_embedding, row_embedding)
+                
+                if similarity > 0.8:  # Example threshold, adjust as needed
+                    row_dict['similarity'] = similarity
+                    table_results['results'].append(row_dict)
+                    table_results['matches'] += 1
+                    total_matches += 1
+
+            if table_results['matches'] > 0:
+                results[table_name] = table_results
+                
+    except psycopg2.Error as e:
+        print(f"Error: {e}")
+        return {'error': str(e)}, 500
+    finally:
+        cur.close()
+        conn.close()
+
+    # Wrap the total matches and all table results into a final JSON response
+    final_results = {
+        'total_matches': total_matches,
+        'tables': results
+    }
+    return final_results
 
 def search_selected_tables(search_string, filter_string):
     results = {}
@@ -227,14 +315,18 @@ def handle_search():
     data = request.json
     search_string = data.get('search_string')
     filter_string = data.get('filter_string')
+    use_semantic_search = data.get('use_semantic_search', False)
     print(search_string)
     if not search_string:
         return jsonify({'error': 'No search string provided'}), 400
-    if filter_string:
-        print(filter_string)
-        results = filter_na(parse_results(search_selected_tables(search_string, filter_string)))
+    if use_semantic_search:
+        results = filter_na(parse_results(search_all_tables_semantic(search_string)))
     else:
-        results = filter_na(parse_results(search_all_tables(search_string)))
+        if filter_string:
+            print(filter_string)
+            results = filter_na(parse_results(search_selected_tables(search_string, filter_string)))
+        else:
+            results = filter_na(parse_results(search_all_tables(search_string)))
     #print(results)
     print(type(results))
     return results, 200#jsonify(results), 200
