@@ -28,10 +28,27 @@ body {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    min-width: 30vh;
-    max-width: 40vh;
+    min-width: 40vh;
+    max-width: 50vh;
 }
-
+@media (max-width: 600px) {
+    #searchInput {
+        min-width: 30vh;
+        max-width: 40vh;
+    }
+}
+@media (min-width: 601px) and (max-width: 1200px) {
+    #searchInput {
+        min-width: 40vh;
+        max-width: 50vh;
+    }
+}
+@media (min-width: 1201px) {
+    #searchInput {
+        min-width: 50vh;
+        max-width: 60vh;
+    }
+}
 /*SEARCH BUTTON*/
 #searchButton {
     padding: 10px 20px;
@@ -41,6 +58,24 @@ body {
     color: white;
     cursor: pointer;
     margin-top: 10px;
+}
+@media (max-width: 600px) {
+    #searchButton {
+        padding: 8px 16px;
+        margin-top: 8px;
+    }
+}
+@media (min-width: 601px) and (max-width: 1200px) {
+    #searchButton {
+        padding: 10px 20px;
+        margin-top: 10px;
+    }
+}
+@media (min-width: 1201px) {
+    #searchButton {
+        padding: 12px 24px;
+        margin-top: 12px;
+    }
 }
 
 /*SEMANTIC SEARCH TOGGLE*/
