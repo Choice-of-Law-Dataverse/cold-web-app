@@ -351,6 +351,7 @@ def handle_search():
     if use_semantic_search:
         results = filter_na(parse_results(search_all_tables_semantic(search_string)))
         sorted_results = sort_by_similarity(flatten_and_transform_data(results))  # Flatten and sort results by similarity
+        return jsonify({'results': sorted_results, 'total_matches': len(sorted_results)}), 200
     else:
         if filter_string:
             print(filter_string)
@@ -358,10 +359,7 @@ def handle_search():
         else:
             results = filter_na(parse_results(search_all_tables(search_string)))
         sorted_results = results  # No need to flatten and sort for non-semantic search
-
-    print(type(sorted_results))
-    #print(sorted_results)
-    return jsonify({'results': sorted_results, 'total_matches': len(sorted_results)}), 200
+        return results, 200
 
 if __name__ == "__main__":
     app.run(debug=True)
