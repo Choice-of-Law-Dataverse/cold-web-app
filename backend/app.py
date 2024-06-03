@@ -21,7 +21,7 @@ POSTGRES_AZURE_PASSWORD = os.getenv("POSTGRES_AZURE_PASSWORD")
 app = Flask(__name__)
 CORS(app) # Enable Cross-Origin Resource Sharing
 
-def get_embedding_api(self, text):
+def get_embedding_api(text):
         mxbai = MixedbreadAI(api_key=os.getenv("MIXEDBREAD_API_KEY"))
 
         embedding = mxbai.embeddings(
