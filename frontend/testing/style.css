@@ -1,60 +1,198 @@
 body {
     font-family: "Helvetica", sans-serif;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
     height: 100vh;
     background-color: #f0f0f0;
 }
 
-.container {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    width: 80%;
-    max-width: 800px;
-    margin-top: 20px;
-}
-
-.search-bar {
+.main-content {
+    padding: 0;
     display: flex;
+    justify-content: center;
+    align-items: flex-start;
     flex-direction: column;
     gap: 10px;
+    width: 70%;
+    max-width: 1200px;
+    margin-top: 20px;
     margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
     align-items: center;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+@media (max-width: 600px) {
+    .main-content {
+        width: 90%;
+    }
 }
 
+/*SEARCH INPUT*/
 #searchInput {
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
-    width: 100%;
-    max-width: 500px;
+    min-width: 40vh;
+    max-width: 50vh;
+}
+@media (max-width: 600px) {
+    #searchInput {
+        min-width: 30vh;
+        max-width: 40vh;
+    }
+}
+@media (min-width: 601px) and (max-width: 1200px) {
+    #searchInput {
+        min-width: 40vh;
+        max-width: 50vh;
+    }
+}
+@media (min-width: 1201px) {
+    #searchInput {
+        min-width: 50vh;
+        max-width: 60vh;
+    }
+}
+/*SEARCH BUTTON*/
+#searchButton {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background-color: #6F4DFA;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+}
+@media (max-width: 600px) {
+    #searchButton {
+        padding: 8px 16px;
+        margin-top: 8px;
+    }
+}
+@media (min-width: 601px) and (max-width: 1200px) {
+    #searchButton {
+        padding: 10px 20px;
+        margin-top: 10px;
+    }
+}
+@media (min-width: 1201px) {
+    #searchButton {
+        padding: 12px 24px;
+        margin-top: 12px;
+    }
 }
 
-#categoryContainer {
+/*SEMANTIC SEARCH TOGGLE*/
+.toggle-container {
     display: flex;
-    flex-direction: left;
-    gap: 5px;
     align-items: center;
+    gap: 10px;
+}
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+}
+
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 20px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #6F4DFA;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+/*DROPDOWN*/
+.dropdown {
+    position: relative;
+    display: inline-block;
+    width: auto;
+}
+
+.dropdown button {
+    background-color: #EFEDFD;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: white;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    border-radius: 4px;
+    padding: 10px;
+    z-index: 1;
+    min-width: 180px;
+    max-width: 500px;
+    right: 0;
+}
+
+.dropdown-content label {
+    display: block;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.dropdown-content label:hover {
+    background-color: #f1f1f1;
+}
+
+.show {
+    display: block;
+}
+
+.selected-items {
+      width:100px;
+    margin-top: 5px;
+    padding: 5px;
+    border: 1px solid #ccc;
+}
+
+.selected-items div {
+    margin-bottom: 5px;
 }
 
 .category-checkbox {
     margin-right: 10px;
 }
 
-#searchButton {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    background-color: #007BFF;
-    color: white;
-    cursor: pointer;
-}
-
+/*RESULTS*/
 .results-container {
     margin-top: 20px;
     padding: 10px;
@@ -82,7 +220,7 @@ body {
 
 .collapsible {
     cursor: pointer;
-    color: #007BFF;
+    color: #6F4DFA;
     text-decoration: underline;
 }
 
