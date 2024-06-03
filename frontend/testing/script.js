@@ -24,11 +24,11 @@ function fetchResults(searchText, isSemanticSearch) {
         body: JSON.stringify(query)
     })
     .then(response => response.json())
-    .then(data => displayResults(data))
+    .then(data => displayResults(data, isSemanticSearch))
     .catch(error => console.error('Error:', error));
 }
 
-function displayResults(data) {
+function displayResults(data, isSemanticSearch) {
     const resultsContainer = document.getElementById('results');
     resultsContainer.innerHTML = ''; // Clear previous results
 
@@ -36,32 +36,53 @@ function displayResults(data) {
     totalMatches.textContent = `Total Matches: ${data.total_matches}`;
     resultsContainer.appendChild(totalMatches);
 
-    Object.keys(data.tables).forEach(table => {
-        const tableData = data.tables[table];
-        const matches = tableData.matches;
-
-        const header = document.createElement('h2');
-        header.textContent = formatTitle(table) + ` (Matches: ${matches})`;
-        resultsContainer.appendChild(header);
-
-        const results = tableData.results;
-        for (const key in results) {
+    if (isSemanticSearch) {
+        // Handle semantic search results
+        data.results.forEach(result => {
             const resultItem = document.createElement('div');
             resultItem.className = 'result-item';
 
-            const resultData = results[key];
-            for (const resultKey in resultData) {
+            Object.keys(result).forEach(key => {
                 const keyElement = document.createElement('div');
                 keyElement.className = 'result-key';
-                keyElement.textContent = formatTitle(resultKey);
+                keyElement.textContent = formatTitle(key);
                 resultItem.appendChild(keyElement);
 
-                const valueElement = createCollapsibleContent(resultData[resultKey]);
+                const valueElement = createCollapsibleContent(result[key]);
                 resultItem.appendChild(valueElement);
-            }
+            });
+
             resultsContainer.appendChild(resultItem);
-        }
-    });
+        });
+    } else {
+        // Handle regular search results
+        Object.keys(data.tables).forEach(table => {
+            const tableData = data.tables[table];
+            const matches = tableData.matches;
+
+            const header = document.createElement('h2');
+            header.textContent = formatTitle(table) + ` (Matches: ${matches})`;
+            resultsContainer.appendChild(header);
+
+            const results = tableData.results;
+            for (const key in results) {
+                const resultItem = document.createElement('div');
+                resultItem.className = 'result-item';
+
+                const resultData = results[key];
+                for (const resultKey in resultData) {
+                    const keyElement = document.createElement('div');
+                    keyElement.className = 'result-key';
+                    keyElement.textContent = formatTitle(resultKey);
+                    resultItem.appendChild(keyElement);
+
+                    const valueElement = createCollapsibleContent(resultData[resultKey]);
+                    resultItem.appendChild(valueElement);
+                }
+                resultsContainer.appendChild(resultItem);
+            }
+        });
+    }
 }
 
 function formatTitle(title) {
@@ -72,7 +93,7 @@ function createCollapsibleContent(text) {
     const COLLAPSE_THRESHOLD = 100; // Adjust this threshold as needed
     const container = document.createElement('div');
     
-    if (text.length > COLLAPSE_THRESHOLD) {
+    if (typeof text === 'string' && text.length > COLLAPSE_THRESHOLD) {
         const preview = document.createElement('span');
         preview.textContent = text.slice(0, COLLAPSE_THRESHOLD) + '... ';
         container.appendChild(preview);
