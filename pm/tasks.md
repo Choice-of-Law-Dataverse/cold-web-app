@@ -16,6 +16,10 @@
 - [ ] Simple Search
     - [X] Keywords
     - [ ] Semantic Search
+        - [X] Calculate embeddings and update postgres db (using pgvector)
+        - [ ] Add Semantic Search Function to Flask Backend
+        - [ ] Adapt Flask Backend to receive user input whether to use semantic search or keyword search
+        - [ ] Adapt preliminary Frontend to post requests including information over semantic vs. keyword search
 - [ ] Filters
     - [ ] Define filtering categories
             - [ ] Apply search to filtered data
