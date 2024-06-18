@@ -101,3 +101,83 @@ LEFT JOIN
 	jurisdictions j ON jcd.jurisdictions_id = j.jurisdictions_id
 GROUP BY
 	cd.court_decisions_id;
+
+
+
+
+-- TABLES AND THEIR RELEVANT COLUMNS
+
+-- Answers
+-- What is the French legal framework for Choice of Law? --> Filter by Jurisdiction as first instance
+-- ID
+-- Questions
+-- Jurisdiction name
+-- Answer
+-- More information
+-- Legal provisions
+-- Secondary Legal Provisions
+-- Legislation
+-- Cases
+-- Themes (from Question)
+
+
+-- Questions
+-- Irrelevant for data search
+
+
+-- Jurisdictions
+-- Irrelevant for data search
+
+
+-- Legislation
+-- When were the HCCH Principles adopted in Mozambique?
+-- ID
+-- Title (English translation)
+-- Official title
+-- Publication date
+-- Entry into force
+-- Jurisdiction name
+-- Type (from Jurisdiction)
+-- Answers
+-- Relevant Privisions // AS LONG AS DATA IN THERE, KEEP
+-- Full text of the provisions // AS LONG AS DATA IN THERE, KEEP
+-- Type of legislation
+-- Official Source (URL)
+-- Official Source (PDF)
+-- Legal provisions
+
+
+-- Legal provisions
+-- Everything
+-- Double Check for jurisdiction cols / record ID
+-- Complementary provisions
+
+
+-- Court decisions
+-- ID
+-- Case
+-- Jurisdiction name
+-- Type (from Jurisdictions) --> not essential for court decisions although it would be nice to have a generic link between jds and their types
+-- Answers
+-- Link
+-- Attachment
+-- Abstract
+-- cd.relevant_rules_of_law,
+-- cd.choice_of_law_issue,
+-- cd.court_position,
+-- cd.translated_excerpt,
+-- cd.legal_rules_used_by_court,
+-- cd.case_content,
+-- Themes
+-- cd.case_quote,
+-- cd.relevant_facts,
+
+-- Copyright issues // FOR DISPLAY LOGIC: IF THERE IS AN ISSUE, NO PDF SHOULD BE PROVIDED BUT THE RECORD CAN BE SHOWN
+-- cd.additional_information, -- not relevant
+-- Judicial hierarchy from Jurisdictions
+
+
+
+-- Concepts
+-- Concept
+-- Definition
