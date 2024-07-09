@@ -1,19 +1,18 @@
+--SELECT * FROM tblDLXiRXUqdQKVRm;
 SELECT 
-    a.id,
-    q.question, 
-    a.answer, 
-    a.open_text_field, 
-    a.more_information, 
-    j.jd_name AS jurisdiction
+    [a].[fields.id],
+    [q].[fields.question], 
+    [a].[fields.answer], 
+    [a].[fields.Open text field], 
+    [a].[fields.More information], 
+    [j].[fields.Name] AS jurisdiction
 FROM 
-    answers a
+    tbl3aGDFioDMVFCj1 AS a
 JOIN 
-    questions q ON a.question = q.record_id
+    tblDLXiRXUqdQKVRm AS q ON [a].[fields.question] = [q].[fields.Record ID]
 JOIN 
-    jurisdictions j ON a.jurisdiction = j.record_id
-JOIN
-    ;
-	
+    tbl3HFtHN0X1BR2o4 AS j ON [a].[fields.Jurisdiction] = [j].[fields.Record ID];
+
 -- In "{jurisdiction}", the answer to the question "{question}" is "{answer}". {more_information}.
 
 -- Answers
