@@ -1,23 +1,28 @@
 -- LEGISLATIONS TABLE
--- NOTE THAT POR-30 MISSES A VALUE FOR ITS JD, SO NEEDS TO BE UPDATED VIA AIRTABLE! (THE FOLLOWING CODE RETRIEVES ONE LESS ROW THAN ACTUALLY PRESENT IN LEGISLATIONS)
 SELECT 
     -- l.legislations_id,
-    l.title_english, 
-    l.title_official,
-    l.publication_date,
-    l.entry_into_force,
-    l.type_of_legislation,
-    l.observations,
-    COALESCE(STRING_AGG(j.jd_name, ', '), 'NA') AS jurisdiction
+    l.[fields.Title (English translation)], 
+    l.[fields.Official title],
+    l.[fields.Publication date],
+    l.[fields.Entry into force],
+    --l.type_of_legislation,
+    l.[fields.Observations],
+    COALESCE(STRING_AGG(j.[fields.Name], ', '), 'NA') AS jurisdiction
 FROM 
-    legislations l
+    tblOAXICRQjFFDUhh l
+OUTER APPLY (
+	SELECT value AS jurisdictions_id
+	FROM STRING_SPLIT([l].[fields.Jurisdictions], ',')
+) AS split_jl
 LEFT JOIN 
-    jurisdictionslegislations jl ON l.legislations_id = jl.legislations_id
-LEFT JOIN 
-    jurisdictions j ON jl.jurisdictions_id = j.jurisdictions_id
-GROUP BY 
-    l.legislations_id;
--- ORDER BY l.legislations_id ASC;
+    tbl3HFtHN0X1BR2o4 j ON split_jl.jurisdictions_id = j.ID
+GROUP BY
+	l.[fields.Title (English translation)], 
+    l.[fields.Official title],
+    l.[fields.Publication date],
+    l.[fields.Entry into force],
+    --l.type_of_legislation,
+    l.[fields.Observations];
 
 
 -- Legislation
