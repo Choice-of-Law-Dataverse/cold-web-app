@@ -1,26 +1,42 @@
 -- COURT_DECISIONS TABLE
 SELECT
-	cd.court_case,
-	cd.abstract,
-	cd.relevant_rules_of_law,
-	cd.choice_of_law_issue,
-	cd.court_position,
-	cd.translated_excerpt,
-	cd.legal_rules_used_by_court,
-	cd.case_content,
-	cd.additional_information,
-	cd.observations,
-	cd.case_quote,
-	cd.relevant_facts,
-	COALESCE(STRING_AGG(j.jd_name, ', '), 'NA') AS jurisdiction
+    [cd].[fields.Case],
+    [cd].[fields.Abstract],
+    [cd].[fields.Relevant rules of law involved],
+    [cd].[fields.Choice of law issue],
+    [cd].[fields.Court's position],
+    [cd].[fields.Translated excerpt],
+    [cd].[fields.Text of the relevant legal provisions],
+    [cd].[fields.Content],
+    [cd].[fields.Additional information],
+    [cd].[fields.Observations],
+    [cd].[fields.Quote],
+    [cd].[fields.Relevant facts],
+    COALESCE(STRING_AGG([j].[fields.Name], ', '), 'NA') AS jurisdictions
 FROM
-	court_decisions cd
+    tbl8hWTY8ArXzJCr2 cd
+OUTER APPLY (
+    SELECT value AS jurisdictions_id
+    FROM STRING_SPLIT([cd].[fields.Jurisdictions], ',')
+) AS split_jcd
 LEFT JOIN
-	jurisdictionscourt_decisions jcd ON cd.court_decisions_id = jcd.court_decisions_id
-LEFT JOIN
-	jurisdictions j ON jcd.jurisdictions_id = j.jurisdictions_id
+    tbl3HFtHN0X1BR2o4 j ON split_jcd.[jurisdictions_id] = [j].[ID]
+-- WHERE
+    -- [cd].[fields.Case] = 'Bundesgerichtshof, BGH (Federal Supreme Court of Justice), 29 November 2023, VIII ZR 7/23'
 GROUP BY
-	cd.court_decisions_id;
+    [cd].[ID],
+    [cd].[fields.Case],
+    [cd].[fields.Abstract],
+    [cd].[fields.Relevant rules of law involved],
+    [cd].[fields.Choice of law issue],
+    [cd].[fields.Court's position],
+    [cd].[fields.Translated excerpt],
+    [cd].[fields.Text of the relevant legal provisions],
+    [cd].[fields.Content],
+    [cd].[fields.Additional information],
+    [cd].[fields.Observations],
+    [cd].[fields.Quote],
+    [cd].[fields.Relevant facts];
 
 -- Court decisions
 -- ID
