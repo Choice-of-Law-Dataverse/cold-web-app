@@ -7,6 +7,7 @@ load_dotenv()
 import time
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
 
 class DatabaseProcessor:
     def __init__(self, connection_string):
@@ -34,7 +35,7 @@ class DatabaseProcessor:
 
     def process_data(self, df):
         concatenated_strings = df.apply(self.concatenate_values, axis=1)
-        embeddings = concatenated_strings.apply(lambda text: self.mock_embedding(text))#get_embedding_with_delay(text))
+        embeddings = concatenated_strings.apply(lambda text: self.mock_embedding(text)) # get_embedding_with_delay(text))
         return embeddings
     
     def get_embedding_with_delay(self, text):
@@ -51,10 +52,8 @@ class DatabaseProcessor:
     def get_embedding_local(self, text):
         import numpy as np
         from sentence_transformers import SentenceTransformer
-        from sentence_transformers.util import cos_sim
-        from sentence_transformers.quantization import quantize_embeddings
 
-        # 1. Specify preffered dimensions
+        # 1. Specify preferred dimensions
         dimensions = 512
         # 2. load model
         model = SentenceTransformer("mixedbread-ai/mxbai-embed-large-v1", truncate_dim=dimensions)
@@ -62,9 +61,7 @@ class DatabaseProcessor:
         embedding = model.encode(text)
 
         # convert embedding to np.array
-        #embedding = np.array(embedding.data[0].embedding)
-
-        return embedding
+        return np.array(embedding)
 
     def get_embedding_api(self, text):
         import numpy as np
@@ -87,17 +84,26 @@ class DatabaseProcessor:
 
         return embedding
 
-    def add_embedding_column(self, table_name):
-        with self.engine.connect() as conn:
-            conn.execute(f"""
-            ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS embedding VARBINARY(MAX);
-            """)
+    def add_embedding_column(self, table_name, column_name='embedding', column_type='VARBINARY(MAX)'):
+        if not self.engine:
+            raise Exception("Database not connected. Call connect() before using this method.")
+        
+        inspector = sa.inspect(self.engine)
+        columns = [col['name'] for col in inspector.get_columns(table_name)]
+
+        if column_name not in columns:
+            with self.engine.connect() as connection:
+                connection.execute(sa.text(f'ALTER TABLE {table_name} ADD {column_name} {column_type}'))
+                print(f"Column '{column_name}' added to table '{table_name}'.")
 
     def update_embeddings(self, update_query, id_row1, id_row2, table_name, df, embeddings):
         with self.engine.connect() as conn:
             for idx, row in tqdm(df.iterrows(), total=df.shape[0], desc=f'Updating {table_name} embeddings'):
                 embedding = embeddings[idx].tobytes()  # Convert np.array to bytes
-                conn.execute(update_query, (embedding, row[id_row1], row[id_row2]))
+                conn.execute(
+                    text(update_query),
+                    {"embedding": embedding, "question": row[id_row1], "jurisdiction": row[id_row2]}
+                )
 
     def process_table(self, update_query, id_row1, id_row2, select_query, table_name):
         df = self.fetch_data(select_query)
@@ -114,7 +120,7 @@ def main():
     # record start time
     start = time.time()
 
-    connection_string = os.getenv("AZURE_SQL_CONNECTION_STRING")
+    connection_string = os.getenv("AZURE_SQL_CONNECTION_STRING_ADMIN")
 
     db_processor = DatabaseProcessor(connection_string)
     db_processor.connect()
@@ -122,35 +128,33 @@ def main():
     try:
         answers_query = """
         SELECT 
-            [a].[fields.id],
-            [q].[fields.question], 
-            [a].[fields.answer], 
+            [a].[fields.ID],
+            [q].[fields.Question], 
+            [a].[fields.Answer], 
             [a].[fields.Open text field], 
             [a].[fields.More information], 
             [j].[fields.Name] AS jurisdiction
         FROM 
             tbl3aGDFioDMVFCj1 AS a
         JOIN 
-            tblDLXiRXUqdQKVRm AS q ON [a].[fields.question] = [q].[fields.Record ID]
+            tblDLXiRXUqdQKVRm AS q ON [a].[fields.Question] = [q].[fields.Record ID]
         JOIN 
             tbl3HFtHN0X1BR2o4 AS j ON [a].[fields.Jurisdiction] = [j].[fields.Record ID];
         """
         update_answers_query = """
         UPDATE tbl3aGDFioDMVFCj1
-        SET embedding = ?
-        WHERE [fields.question] = (SELECT q.[fields.Record ID] FROM tblDLXiRXUqdQKVRm q WHERE q.[fields.Question] = ?)
-        AND tbl3HFtHN0X1BR2o4 = (SELECT j.[fields.Record ID] FROM tbl3HFtHN0X1BR2o4 j WHERE j.[fields-Name] = ?);
+        SET embedding = :embedding
+        WHERE [fields.Question] = (SELECT [fields.Record ID] FROM tblDLXiRXUqdQKVRm q WHERE q.[fields.Question] = :question)
+        AND [fields.Jurisdiction] = (SELECT [fields.Record ID] FROM tbl3HFtHN0X1BR2o4 j WHERE j.[fields.Name] = :jurisdiction);
         """
-        db_processor.process_table(update_answers_query, '[fields.Question]', '[fields.Jurisdiction]', answers_query, 'tbl3aGDFioDMVFCj1')
+        db_processor.process_table(update_answers_query, 'fields.Question', 'jurisdiction', answers_query, 'tbl3aGDFioDMVFCj1')
 
         legislations_query = """
         SELECT 
-            -- l.legislations_id,
             l.[fields.Title (English translation)], 
             l.[fields.Official title],
             l.[fields.Publication date],
             l.[fields.Entry into force],
-            --l.type_of_legislation,
             l.[fields.Observations],
             COALESCE(STRING_AGG(j.[fields.Name], ', '), 'NA') AS jurisdiction
         FROM 
@@ -166,13 +170,12 @@ def main():
             l.[fields.Official title],
             l.[fields.Publication date],
             l.[fields.Entry into force],
-            --l.type_of_legislation,
             l.[fields.Observations];
         """
         update_legislations_query = """
-        UPDATE tblOAXICRQjFFDUhh SET embedding = ? WHERE [fields.Title (English translation)] = ? AND l.[fields.Official title] = ?;
+        UPDATE tblOAXICRQjFFDUhh SET embedding = :embedding WHERE [fields.Title (English translation)] = :title AND l.[fields.Official title] = :official_title;
         """
-        db_processor.process_table(update_legislations_query, '[fields.Title (English translation)]', '[fields.Official title]', legislations_query, 'tblOAXICRQjFFDUhh')
+        db_processor.process_table(update_legislations_query, 'fields.Title (English translation)', 'fields.Official title', legislations_query, 'tblOAXICRQjFFDUhh')
 
         legal_provisions_query = """
         SELECT
@@ -202,9 +205,9 @@ def main():
             lp.[fields.Full text of the provision (English translation)];
         """
         update_legal_provisions_query = """
-        UPDATE tbl9T17hyxLey2LG1 SET embedding = ? WHERE [fields.Article] = ? AND [fields.Full text of the provision (Original language)] = ?;
+        UPDATE tbl9T17hyxLey2LG1 SET embedding = :embedding WHERE [fields.Article] = :article AND [fields.Full text of the provision (Original language)] = :original_text;
         """
-        db_processor.process_table(update_legal_provisions_query, '[fields.Article]', '[fields.Full text of the provision (Original language)]', legal_provisions_query, 'tbl9T17hyxLey2LG1')
+        db_processor.process_table(update_legal_provisions_query, 'fields.Article', 'fields.Full text of the provision (Original language)', legal_provisions_query, 'tbl9T17hyxLey2LG1')
 
         court_decisions_query = """
         SELECT
@@ -229,8 +232,6 @@ def main():
         ) AS split_jcd
         LEFT JOIN
             tbl3HFtHN0X1BR2o4 j ON split_jcd.[jurisdictions_id] = [j].[ID]
-        -- WHERE
-            -- [cd].[fields.Case] = 'Bundesgerichtshof, BGH (Federal Supreme Court of Justice), 29 November 2023, VIII ZR 7/23'
         GROUP BY
             [cd].[ID],
             [cd].[fields.Case],
@@ -247,9 +248,9 @@ def main():
             [cd].[fields.Relevant facts];
         """
         update_court_decisions_query = """
-        UPDATE tbl8hWTY8ArXzJCr2 SET embedding = ? WHERE [fields.Case] = ? AND [fields.Abstract] = ?;
+        UPDATE tbl8hWTY8ArXzJCr2 SET embedding = :embedding WHERE [fields.Case] = :case AND [fields.Abstract] = :abstract;
         """
-        db_processor.process_table(update_court_decisions_query, '[fields.Case]', '[fields.Abstract]', court_decisions_query, 'tbl8hWTY8ArXzJCr2')
+        db_processor.process_table(update_court_decisions_query, 'fields.Case', 'fields.Abstract', court_decisions_query, 'tbl8hWTY8ArXzJCr2')
 
     finally:
         db_processor.close()
