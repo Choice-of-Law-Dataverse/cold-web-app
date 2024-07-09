@@ -1,22 +1,29 @@
 -- LEGAL_PROVISIONS TABLE
 SELECT
-    lp.article,
-    lp.original_text,
-    lp.english_text,
-	COALESCE(STRING_AGG(l.title_english, ', '), 'NA') AS legislation,
-    COALESCE(STRING_AGG(j.jd_name, ', '), 'NA') AS jurisdiction
+    lp.[fields.Article],
+    lp.[fields.Full text of the provision (Original language)],
+    lp.[fields.Full text of the provision (English translation)],
+	COALESCE(STRING_AGG(l.[fields.Title (English translation)], ', '), 'NA') AS legislation,
+    COALESCE(STRING_AGG(j.[fields.Name], ', '), 'NA') AS jurisdiction
 FROM
-    legal_provisions lp
+    tbl9T17hyxLey2LG1 lp
+OUTER APPLY (
+	SELECT value AS legislations_id
+	FROM STRING_SPLIT([lp].[fields.Corresponding legislation], ',')
+) AS split_llp
 LEFT JOIN
-	legislationslegal_provisions llp ON lp.legal_provisions_id = llp.legal_provisions_id
+	tblOAXICRQjFFDUhh l ON split_llp.legislations_id = l.ID
+OUTER APPLY (
+	SELECT value as jurisdictions_id
+	FROM STRING_SPLIT([lp].[fields.Jurisdictions], ',')
+) AS split_jlp
 LEFT JOIN
-	legislations l ON llp.legislations_id = l.legislations_id
-LEFT JOIN
-    jurisdictionslegal_provisions jlp ON lp.legal_provisions_id = jlp.legal_provisions_id
-LEFT JOIN
-    jurisdictions j ON jlp.jurisdictions_id = j.jurisdictions_id
+    tbl3HFtHN0X1BR2o4 j ON split_jlp.jurisdictions_id = j.ID
 GROUP BY
-    lp.legal_provisions_id;
+    lp.ID,
+	lp.[fields.Article],
+    lp.[fields.Full text of the provision (Original language)],
+    lp.[fields.Full text of the provision (English translation)];
 
 -- Legal provisions
 -- Everything
