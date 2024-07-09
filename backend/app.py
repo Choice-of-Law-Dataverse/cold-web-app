@@ -1,9 +1,9 @@
 # import libraries
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import psycopg2
-from psycopg2 import sql
-from psycopg2.extras import RealDictCursor
+#import psycopg2
+#from psycopg2 import sql
+#from psycopg2.extras import RealDictCursor
 import numpy as np
 from mixedbread_ai.client import MixedbreadAI
 from scipy.spatial.distance import cosine
@@ -18,9 +18,75 @@ POSTGRES_AZURE_HOST = os.getenv("POSTGRES_AZURE_HOST")
 POSTGRES_AZURE_USER = os.getenv("POSTGRES_AZURE_USER")
 POSTGRES_AZURE_PASSWORD = os.getenv("POSTGRES_AZURE_PASSWORD")
 
+# PyODBC connection string
+connection_string = os.getenv("AZURE_SQL_CONNECTION_STRING")
+
 # Create Flask app
 app = Flask(__name__)
 CORS(app) # Enable Cross-Origin Resource Sharing
+
+
+"""
+DATABASE CLASS
+"""
+
+import sqlalchemy as sa
+from sqlalchemy.orm import sessionmaker
+
+def get_engine(connection_string):
+    """
+    Create an SQLAlchemy engine.
+    """
+    engine = sa.create_engine(f"mssql+pyodbc:///?odbc_connect={connection_string}")
+    return engine
+
+def create_session(engine):
+    """
+    Create a new session with the provided SQLAlchemy engine.
+    """
+    Session = sessionmaker(bind=engine)
+    session = Session()
+    return session
+
+def close_session(session):
+    """
+    Close the given session.
+    """
+    session.close()
+
+def reflect_metadata(engine):
+    """
+    Reflect the existing database metadata.
+    """
+    metadata = sa.MetaData()
+    metadata.reflect(bind=engine)
+    return metadata
+
+def query_data(session, query):
+    """
+    Execute a query and return the results.
+    """
+    result = session.execute(query)
+    return result.fetchall()
+
+class Database:
+    def __init__(self, connection_string):
+        self.engine = get_engine(connection_string)
+        self.metadata = reflect_metadata(self.engine)
+        self.session = create_session(self.engine)
+
+    def get_all_entries(self):
+        all_entries = {}
+        try:
+            for table_name, table in self.metadata.tables.items():
+                query = table.select()
+                result = self.session.execute(query)
+                columns = result.keys()
+                entries = [dict(zip(columns, row)) for row in result.fetchall()]
+                all_entries[table_name] = entries
+        finally:
+            close_session(self.session)
+        return all_entries
 
 def get_embedding_api(text):
         mxbai = MixedbreadAI(api_key=os.getenv("MIXEDBREAD_API_KEY"))
@@ -40,64 +106,36 @@ def get_embedding_api(text):
 
         return embedding
 
-def search_all_tables(search_string):
+def search_all_tables(search_string, connection_string):
+    # Initialize a dictionary to store the search results
     results = {}
     total_matches = 0  # Initialize a counter for the total number of matches
-
     search_terms = search_string.split()
-    print(search_terms)
-    conn = psycopg2.connect(dbname=POSTGRES_AZURE_DBNAME, user=POSTGRES_AZURE_USER, password=POSTGRES_AZURE_PASSWORD, host=POSTGRES_AZURE_HOST, sslmode="require")
-    cur = conn.cursor()
 
-    try:
-        cur.execute("SELECT table_name FROM information_schema.tables WHERE table_schema = 'public'")
-        tables = cur.fetchall()
+    # Connect to the database
+    db = Database(connection_string)
 
-        for table in tables:
-            table_name = table[0]
-            cur.execute(sql.SQL("SELECT column_name FROM information_schema.columns WHERE table_name = %s AND table_schema = 'public'"), (table_name,))
-            columns = cur.fetchall()
-            if not columns:
-                continue
+    # Get all entries from all tables
+    all_entries = db.get_all_entries()
 
-            term_query_parts = []
-            for term in search_terms:
-                column_conditions = [sql.SQL("CAST({} AS TEXT) ILIKE %s").format(sql.Identifier(column[0])) for column in columns]
-                term_condition = sql.SQL(" OR ").join(column_conditions)
-                term_query_parts.append(sql.SQL("(") + term_condition + sql.SQL(")"))
+    # Search through all entries
+    for table, entries in all_entries.items():
+        matching_entries = []
+        for entry in entries:
+            # Check if any search term is found in any value of the entry
+            if any(search_term.lower() in str(value).lower() for search_term in search_terms for value in entry.values()):
+                matching_entries.append(entry)
 
-            full_query = sql.SQL(" AND ").join(term_query_parts)
-            query = sql.SQL("SELECT * FROM {} WHERE ").format(sql.Identifier(table_name)) + full_query
-            params = [f"%{term}%" for term in search_terms for _ in range(len(columns))]
-            
-            #print("Now executing:\n", query)
-            cur.execute(query, params)
-            rows = cur.fetchall()
-
-            if rows:
-                table_results = {
-                    'matches': len(rows),
-                    'results': []
-                }
-                for row in rows:
-                    result_details = {col.name: row[idx] if isinstance(row[idx], (int, float, str, bool)) else str(row[idx]) for idx, col in enumerate(cur.description)}
-                    table_results['results'].append(result_details)
-                results[table_name] = table_results
-                total_matches += len(rows)  # Increment the total_matches by the number of matches found
-                
-    except psycopg2.Error as e:
-        print(f"Error: {e}")
-        return jsonify({'error': str(e)}), 500
-    finally:
-        cur.close()
-        conn.close()
+        if matching_entries:
+            results[table] = matching_entries
+            total_matches += len(matching_entries)
 
     # Wrap the total matches and all table results into a final JSON response
     final_results = {
         'total_matches': total_matches,
         'tables': results
     }
-    return final_results  # Convert the dictionary to JSON format and return it
+    return final_results
 
 def search_all_tables_semantic(search_string):
     results = {}
@@ -357,7 +395,7 @@ def handle_search():
             print(filter_string)
             results = filter_na(parse_results(search_selected_tables(search_string, filter_string)))
         else:
-            results = filter_na(parse_results(search_all_tables(search_string)))
+            results = filter_na(parse_results(search_all_tables(search_string, connection_string)))
         sorted_results = results  # No need to flatten and sort for non-semantic search
         return results, 200
 
