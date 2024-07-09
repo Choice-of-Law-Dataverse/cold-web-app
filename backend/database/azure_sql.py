@@ -3,9 +3,8 @@ from sqlalchemy.orm import sessionmaker
 
 def get_engine(connection_string):
     """
-    Load the connection string from the environment and create an SQLAlchemy engine.
+    Create an SQLAlchemy engine.
     """
-    connection_string = connection_string
     engine = sa.create_engine(f"mssql+pyodbc:///?odbc_connect={connection_string}")
     return engine
 
@@ -44,14 +43,14 @@ class Database:
         self.metadata = reflect_metadata(self.engine)
         self.session = create_session(self.engine)
 
-    def get_all_entries(self) -> Dict[str, List[Dict[str, Any]]]:
+    def get_all_entries(self):
         all_entries = {}
         try:
             for table_name, table in self.metadata.tables.items():
                 query = table.select()
-                result = self.session.execute(query).fetchall()
-                # Convert result to a list of dictionaries
-                entries = [dict(row) for row in result]
+                result = self.session.execute(query)
+                columns = result.keys()
+                entries = [dict(zip(columns, row)) for row in result.fetchall()]
                 all_entries[table_name] = entries
         finally:
             close_session(self.session)
