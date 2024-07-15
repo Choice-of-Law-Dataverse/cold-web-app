@@ -13,7 +13,9 @@ search_service = SearchService()
 def handle_search():
     data = request.json
     search_string = data.get('search_string')
+    print(search_string)
     filter_string = data.get('filter_string')
+    print(filter_string)
     use_semantic_search = data.get('use_semantic_search', False)
 
     if not search_string:
