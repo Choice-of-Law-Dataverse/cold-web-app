@@ -1,5 +1,4 @@
 import numpy as np
-from scipy.spatial.distance import cosine
 from config import Config
 from .database import Database
 from .embeddings import EmbeddingService
