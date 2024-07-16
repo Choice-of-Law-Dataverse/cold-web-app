@@ -161,6 +161,7 @@ cython_debug/
 
 # backend testing
 backend/testing.ipynb
+backend/test.py
 testing/*
 
 # FA Notes
