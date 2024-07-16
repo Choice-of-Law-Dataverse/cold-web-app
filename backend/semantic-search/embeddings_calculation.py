@@ -1,4 +1,3 @@
-import psycopg2
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -6,25 +5,27 @@ import os
 from dotenv import load_dotenv
 load_dotenv()
 import time
+import sqlalchemy as sa
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import text
 
 class DatabaseProcessor:
-    def __init__(self, conn_params):
-        self.conn_params = conn_params
-        self.conn = None
-        self.cursor = None
+    def __init__(self, connection_string):
+        self.connection_string = connection_string
+        self.engine = None
+        self.session = None
 
     def connect(self):
-        self.conn = psycopg2.connect(**self.conn_params)
-        self.cursor = self.conn.cursor()
+        self.engine = sa.create_engine(f"mssql+pyodbc:///?odbc_connect={self.connection_string}")
+        Session = sessionmaker(bind=self.engine)
+        self.session = Session()
 
     def close(self):
-        if self.cursor:
-            self.cursor.close()
-        if self.conn:
-            self.conn.close()
+        if self.session:
+            self.session.close()
 
     def fetch_data(self, query):
-        df = pd.read_sql(query, self.conn)
+        df = pd.read_sql(query, self.engine)
         print(df.head())
         return df
 
@@ -34,8 +35,7 @@ class DatabaseProcessor:
 
     def process_data(self, df):
         concatenated_strings = df.apply(self.concatenate_values, axis=1)
-        #embeddings = concatenated_strings.apply(self.mock_embedding)
-        embeddings = concatenated_strings.apply(lambda text: self.get_embedding_with_delay(text))
+        embeddings = concatenated_strings.apply(lambda text: self.mock_embedding(text)) # get_embedding_with_delay(text))
         return embeddings
     
     def get_embedding_with_delay(self, text):
@@ -52,10 +52,8 @@ class DatabaseProcessor:
     def get_embedding_local(self, text):
         import numpy as np
         from sentence_transformers import SentenceTransformer
-        from sentence_transformers.util import cos_sim
-        from sentence_transformers.quantization import quantize_embeddings
 
-        # 1. Specify preffered dimensions
+        # 1. Specify preferred dimensions
         dimensions = 512
         # 2. load model
         model = SentenceTransformer("mixedbread-ai/mxbai-embed-large-v1", truncate_dim=dimensions)
@@ -63,9 +61,7 @@ class DatabaseProcessor:
         embedding = model.encode(text)
 
         # convert embedding to np.array
-        #embedding = np.array(embedding.data[0].embedding)
-
-        return embedding
+        return np.array(embedding)
 
     def get_embedding_api(self, text):
         import numpy as np
@@ -88,17 +84,26 @@ class DatabaseProcessor:
 
         return embedding
 
-    def add_embedding_column(self, table_name):
-        self.cursor.execute(f"""
-        ALTER TABLE {table_name} ADD COLUMN IF NOT EXISTS embedding vector(64);
-        """)
-        self.conn.commit()
+    def add_embedding_column(self, table_name, column_name='embedding', column_type='VARBINARY(MAX)'):
+        if not self.engine:
+            raise Exception("Database not connected. Call connect() before using this method.")
+        
+        inspector = sa.inspect(self.engine)
+        columns = [col['name'] for col in inspector.get_columns(table_name)]
+
+        if column_name not in columns:
+            with self.engine.connect() as connection:
+                connection.execute(sa.text(f'ALTER TABLE {table_name} ADD {column_name} {column_type}'))
+                print(f"Column '{column_name}' added to table '{table_name}'.")
 
     def update_embeddings(self, update_query, id_row1, id_row2, table_name, df, embeddings):
-        for idx, row in tqdm(df.iterrows(), total=df.shape[0], desc=f'Updating {table_name} embeddings'):
-            embedding = embeddings[idx].tolist()  # Convert np.array to list
-            self.cursor.execute(update_query, (embedding, row[id_row1], row[id_row2]))
-        self.conn.commit()
+        with self.engine.connect() as conn:
+            for idx, row in tqdm(df.iterrows(), total=df.shape[0], desc=f'Updating {table_name} embeddings'):
+                embedding = embeddings[idx].tobytes()  # Convert np.array to bytes
+                conn.execute(
+                    text(update_query),
+                    {"embedding": embedding, "question": row[id_row1], "jurisdiction": row[id_row2]}
+                )
 
     def process_table(self, update_query, id_row1, id_row2, select_query, table_name):
         df = self.fetch_data(select_query)
@@ -106,7 +111,7 @@ class DatabaseProcessor:
         print(embeddings)
         print("Add embedding column if not exists")
         self.add_embedding_column(table_name)
-        print("Added embedding column succesfully")
+        print("Added embedding column successfully")
         print("Now updating embeddings")
         self.update_embeddings(update_query, id_row1, id_row2, table_name, df, embeddings)
         print("Successfully updated embeddings")
@@ -115,143 +120,137 @@ def main():
     # record start time
     start = time.time()
 
-    conn_params = {
-        'dbname': os.getenv("POSTGRES_AZURE_DBNAME"),
-        'user': os.getenv("POSTGRES_AZURE_USER_ADMIN"),
-        'password': os.getenv("POSTGRES_AZURE_PASSWORD_ADMIN"),
-        'host': os.getenv("POSTGRES_AZURE_HOST"),
-        'port': os.getenv("POSTGRES_AZURE_PORT")
-    }
+    connection_string = os.getenv("AZURE_SQL_CONNECTION_STRING_ADMIN")
 
-    db_processor = DatabaseProcessor(conn_params)
+    db_processor = DatabaseProcessor(connection_string)
     db_processor.connect()
 
     try:
         answers_query = """
         SELECT 
-            q.question, 
-            a.answer, 
-            a.open_text_field, 
-            a.more_information, 
-            j.jd_name AS jurisdiction
+            [a].[fields.ID],
+            [q].[fields.Question], 
+            [a].[fields.Answer], 
+            [a].[fields.Open text field], 
+            [a].[fields.More information], 
+            [j].[fields.Name] AS jurisdiction
         FROM 
-            answers a
+            tbl3aGDFioDMVFCj1 AS a
         JOIN 
-            questions q ON a.question = q.record_id
+            tblDLXiRXUqdQKVRm AS q ON [a].[fields.Question] = [q].[fields.Record ID]
         JOIN 
-            jurisdictions j ON a.jurisdiction = j.record_id;
+            tbl3HFtHN0X1BR2o4 AS j ON [a].[fields.Jurisdiction] = [j].[fields.Record ID];
         """
         update_answers_query = """
-        UPDATE answers
-        SET embedding = %s
-        WHERE question = (SELECT q.record_id FROM questions q WHERE q.question = %s)
-        AND jurisdiction = (SELECT j.record_id FROM jurisdictions j WHERE j.jd_name = %s);
+        UPDATE tbl3aGDFioDMVFCj1
+        SET embedding = :embedding
+        WHERE [fields.Question] = (SELECT [fields.Record ID] FROM tblDLXiRXUqdQKVRm q WHERE q.[fields.Question] = :question)
+        AND [fields.Jurisdiction] = (SELECT [fields.Record ID] FROM tbl3HFtHN0X1BR2o4 j WHERE j.[fields.Name] = :jurisdiction);
         """
-        db_processor.process_table(update_answers_query, 'question', 'jurisdiction', answers_query, 'answers')
-        
-        questions_query = """
-        SELECT
-            question,
-            themes
-        FROM
-            questions;
-        """
-        update_questions_query= """
-        UPDATE questions SET embedding = %s WHERE question = %s AND themes = %s;
-        """
-        db_processor.process_table(update_questions_query, 'question', 'themes', questions_query, 'questions')
-
-        jurisdictions_query = """
-        SELECT
-            jurisdictions_id,
-            jd_name,
-            jd_type,
-            region,
-            north_south_divide
-        FROM
-            jurisdictions;
-        """
-        update_jurisdictions_query = """
-        UPDATE jurisdictions SET embedding = %s WHERE jurisdictions_id = %s AND jd_name = %s;
-        """
-        db_processor.process_table(update_jurisdictions_query, 'jurisdictions_id', 'jd_name', jurisdictions_query, 'jurisdictions')
+        db_processor.process_table(update_answers_query, 'fields.Question', 'jurisdiction', answers_query, 'tbl3aGDFioDMVFCj1')
 
         legislations_query = """
         SELECT 
-            l.title_english, 
-            l.title_official,
-            l.publication_date,
-            l.entry_into_force,
-            l.type_of_legislation,
-            l.observations,
-            COALESCE(STRING_AGG(j.jd_name, ', '), 'NA') AS jurisdiction
+            l.[fields.Title (English translation)], 
+            l.[fields.Official title],
+            l.[fields.Publication date],
+            l.[fields.Entry into force],
+            l.[fields.Observations],
+            COALESCE(STRING_AGG(j.[fields.Name], ', '), 'NA') AS jurisdiction
         FROM 
-            legislations l
+            tblOAXICRQjFFDUhh l
+        OUTER APPLY (
+            SELECT value AS jurisdictions_id
+            FROM STRING_SPLIT([l].[fields.Jurisdictions], ',')
+        ) AS split_jl
         LEFT JOIN 
-            jurisdictionslegislations jl ON l.legislations_id = jl.legislations_id
-        LEFT JOIN 
-            jurisdictions j ON jl.jurisdictions_id = j.jurisdictions_id
-        GROUP BY 
-            l.legislations_id;
+            tbl3HFtHN0X1BR2o4 j ON split_jl.jurisdictions_id = j.ID
+        GROUP BY
+            l.[fields.Title (English translation)], 
+            l.[fields.Official title],
+            l.[fields.Publication date],
+            l.[fields.Entry into force],
+            l.[fields.Observations];
         """
         update_legislations_query = """
-        UPDATE legislations SET embedding = %s WHERE title_english = %s AND title_official = %s;
+        UPDATE tblOAXICRQjFFDUhh SET embedding = :embedding WHERE [fields.Title (English translation)] = :title AND l.[fields.Official title] = :official_title;
         """
-        db_processor.process_table(update_legislations_query, 'title_english', 'title_official', legislations_query, 'legislations')
+        db_processor.process_table(update_legislations_query, 'fields.Title (English translation)', 'fields.Official title', legislations_query, 'tblOAXICRQjFFDUhh')
 
         legal_provisions_query = """
         SELECT
-            lp.article,
-            lp.original_text,
-            lp.english_text,
-            COALESCE(STRING_AGG(l.title_english, ', '), 'NA') AS legislation,
-            COALESCE(STRING_AGG(j.jd_name, ', '), 'NA') AS jurisdiction
+            lp.[fields.Article],
+            lp.[fields.Full text of the provision (Original language)],
+            lp.[fields.Full text of the provision (English translation)],
+            COALESCE(STRING_AGG(l.[fields.Title (English translation)], ', '), 'NA') AS legislation,
+            COALESCE(STRING_AGG(j.[fields.Name], ', '), 'NA') AS jurisdiction
         FROM
-            legal_provisions lp
+            tbl9T17hyxLey2LG1 lp
+        OUTER APPLY (
+            SELECT value AS legislations_id
+            FROM STRING_SPLIT([lp].[fields.Corresponding legislation], ',')
+        ) AS split_llp
         LEFT JOIN
-            legislationslegal_provisions llp ON lp.legal_provisions_id = llp.legal_provisions_id
+            tblOAXICRQjFFDUhh l ON split_llp.legislations_id = l.ID
+        OUTER APPLY (
+            SELECT value as jurisdictions_id
+            FROM STRING_SPLIT([lp].[fields.Jurisdictions], ',')
+        ) AS split_jlp
         LEFT JOIN
-            legislations l ON llp.legislations_id = l.legislations_id
-        LEFT JOIN
-            jurisdictionslegal_provisions jlp ON lp.legal_provisions_id = jlp.legal_provisions_id
-        LEFT JOIN
-            jurisdictions j ON jlp.jurisdictions_id = j.jurisdictions_id
+            tbl3HFtHN0X1BR2o4 j ON split_jlp.jurisdictions_id = j.ID
         GROUP BY
-            lp.legal_provisions_id;
+            lp.ID,
+            lp.[fields.Article],
+            lp.[fields.Full text of the provision (Original language)],
+            lp.[fields.Full text of the provision (English translation)];
         """
         update_legal_provisions_query = """
-        UPDATE legal_provisions SET embedding = %s WHERE article = %s AND original_text = %s;
+        UPDATE tbl9T17hyxLey2LG1 SET embedding = :embedding WHERE [fields.Article] = :article AND [fields.Full text of the provision (Original language)] = :original_text;
         """
-        db_processor.process_table(update_legal_provisions_query, 'article', 'original_text', legal_provisions_query, 'legal_provisions')
+        db_processor.process_table(update_legal_provisions_query, 'fields.Article', 'fields.Full text of the provision (Original language)', legal_provisions_query, 'tbl9T17hyxLey2LG1')
 
         court_decisions_query = """
         SELECT
-            cd.court_case,
-            cd.abstract,
-            cd.relevant_rules_of_law,
-            cd.choice_of_law_issue,
-            cd.court_position,
-            cd.translated_excerpt,
-            cd.legal_rules_used_by_court,
-            cd.case_content,
-            cd.additional_information,
-            cd.observations,
-            cd.case_quote,
-            cd.relevant_facts,
-            COALESCE(STRING_AGG(j.jd_name, ', '), 'NA') AS jurisdiction
+            [cd].[fields.Case],
+            [cd].[fields.Abstract],
+            [cd].[fields.Relevant rules of law involved],
+            [cd].[fields.Choice of law issue],
+            [cd].[fields.Court's position],
+            [cd].[fields.Translated excerpt],
+            [cd].[fields.Text of the relevant legal provisions],
+            [cd].[fields.Content],
+            [cd].[fields.Additional information],
+            [cd].[fields.Observations],
+            [cd].[fields.Quote],
+            [cd].[fields.Relevant facts],
+            COALESCE(STRING_AGG([j].[fields.Name], ', '), 'NA') AS jurisdictions
         FROM
-            court_decisions cd
+            tbl8hWTY8ArXzJCr2 cd
+        OUTER APPLY (
+            SELECT value AS jurisdictions_id
+            FROM STRING_SPLIT([cd].[fields.Jurisdictions], ',')
+        ) AS split_jcd
         LEFT JOIN
-            jurisdictionscourt_decisions jcd ON cd.court_decisions_id = jcd.court_decisions_id
-        LEFT JOIN
-            jurisdictions j ON jcd.jurisdictions_id = j.jurisdictions_id
+            tbl3HFtHN0X1BR2o4 j ON split_jcd.[jurisdictions_id] = [j].[ID]
         GROUP BY
-            cd.court_decisions_id;
+            [cd].[ID],
+            [cd].[fields.Case],
+            [cd].[fields.Abstract],
+            [cd].[fields.Relevant rules of law involved],
+            [cd].[fields.Choice of law issue],
+            [cd].[fields.Court's position],
+            [cd].[fields.Translated excerpt],
+            [cd].[fields.Text of the relevant legal provisions],
+            [cd].[fields.Content],
+            [cd].[fields.Additional information],
+            [cd].[fields.Observations],
+            [cd].[fields.Quote],
+            [cd].[fields.Relevant facts];
         """
         update_court_decisions_query = """
-        UPDATE court_decisions SET embedding = %s WHERE court_case = %s AND abstract = %s;
+        UPDATE tbl8hWTY8ArXzJCr2 SET embedding = :embedding WHERE [fields.Case] = :case AND [fields.Abstract] = :abstract;
         """
-        db_processor.process_table(update_court_decisions_query, 'court_case', 'abstract', court_decisions_query, 'court_decisions')
+        db_processor.process_table(update_court_decisions_query, 'fields.Case', 'fields.Abstract', court_decisions_query, 'tbl8hWTY8ArXzJCr2')
 
     finally:
         db_processor.close()
