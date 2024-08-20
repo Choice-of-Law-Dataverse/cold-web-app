@@ -1,6 +1,6 @@
 <template>
     <section>
-      <p>This page will be displayed at the /about route.</p>
+      <p>About Choice of Law.</p>
     </section>
   </template>
 
