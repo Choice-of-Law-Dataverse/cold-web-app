@@ -6,7 +6,7 @@
         size="xl"
         v-model="searchText"
         @keyup.enter="performSearch"
-        placeholder="Search..."
+        placeholder="Enter your search terms here"
         style="width: 40vw;"
       />
       <UButton
