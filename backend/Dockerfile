@@ -21,9 +21,6 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
 # Set the working directory in the container to /app
 WORKDIR /app
 
-# Copy the .env file into the container at /app
-COPY .env /app/
-
 # Copy the requirements file into the container at /app
 COPY requirements.txt /app/
 
