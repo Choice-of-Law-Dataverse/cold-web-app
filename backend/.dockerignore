@@ -3,7 +3,7 @@ __pycache__/
 *.pyc
 
 # Ignore environment variables file
-#.env
+.env
 
 # Ignore any other files or directories you don't want in the container
 .git
