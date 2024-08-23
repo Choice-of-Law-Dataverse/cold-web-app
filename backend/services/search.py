@@ -10,6 +10,11 @@ class SearchService:
 
     def basic_search(self, search_string):
         all_entries = self.db.get_all_entries()
+
+        # Check if the database retrieval failed
+        if all_entries is None:
+            return {"error": "Failed to retrieve data from the database. Please try again later."}
+
         results = {}
         total_matches = 0
         search_terms = search_string.lower().split()
