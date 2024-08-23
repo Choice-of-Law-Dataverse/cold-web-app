@@ -9,3 +9,7 @@ services:
       - "5000:5000"
     env_file:
       - .env
+    environment:
+      MIXEDBREAD_API_KEY: ${MIXEDBREAD_API_KEY}
+      AZURE_SQL_CONNECTION_STRING: ${AZURE_SQL_CONNECTION_STRING}
+      TEST: ${TEST}
