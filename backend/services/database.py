@@ -5,7 +5,7 @@ from sqlalchemy.exc import SQLAlchemyError
 class Database:
     def __init__(self, connection_string):
         print(f"Connection string: {connection_string}")
-        self.engine = sa.create_engine(f"mssql+pyodbc:///?odbc_connect={connection_string}")
+        self.engine = sa.create_engine(f"{connection_string}")
         self.metadata = sa.MetaData()
 
         try:
