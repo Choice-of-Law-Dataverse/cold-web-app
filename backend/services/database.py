@@ -29,7 +29,7 @@ class Database:
                 all_entries[table_name] = entries
         except SQLAlchemyError as e:
             print(f"Error getting all entries: {e}")
-            return None
+            return e
         finally:
             self.session.close()
         return all_entries
