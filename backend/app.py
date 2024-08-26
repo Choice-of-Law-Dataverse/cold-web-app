@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import logging
 from config import Config
 from services.search import SearchService
 
 # Create Flask app
+logging.basicConfig(level=logging.DEBUG)
 app = Flask(__name__)
 CORS(app)
 
