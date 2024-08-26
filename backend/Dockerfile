@@ -21,15 +21,20 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - \
 # Set the working directory in the container to /app
 WORKDIR /app
 
-# Copy the application code into the container
-COPY . /app/
+# Copy the requirements file into the container at /app
+COPY requirements.txt /app/
 
 # Install any dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the rest of the application code into the container
+COPY . /app/
+
 # Expose the port on which your app will run (usually 5000 for Flask)
 EXPOSE 5000
 
-# Start a shell instead of the Flask app
-CMD ["bash", "-c", "echo 'Starting debug script...'; env; odbcinst -q -d; flask run --host=0.0.0.0"]
+# Define environment variable for Flask
+ENV FLASK_APP=app.py
 
+# Command to run the Flask app
+CMD ["flask", "run", "--host=0.0.0.0"]
