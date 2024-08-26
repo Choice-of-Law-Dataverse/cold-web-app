@@ -4,6 +4,7 @@ from sqlalchemy.exc import SQLAlchemyError
 
 class Database:
     def __init__(self, connection_string):
+        print(f"Connection string: {connection_string}")
         self.engine = sa.create_engine(f"mssql+pyodbc:///?odbc_connect={connection_string}")
         self.metadata = sa.MetaData()
 
@@ -29,7 +30,6 @@ class Database:
                 all_entries[table_name] = entries
         except SQLAlchemyError as e:
             print(f"Error getting all entries: {e}")
-            return e
         finally:
             self.session.close()
         return all_entries
