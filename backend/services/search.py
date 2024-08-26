@@ -7,7 +7,7 @@ from utils.utils import filter_na, parse_results, sort_by_similarity, flatten_an
 
 class SearchService:
     def __init__(self):
-        self.db = Database(Config.AZURE_SQL_CONNECTION_STRING)
+        self.db = Database(Config.AZURE_POSTGRESQL_DUMMY_CONN_STRING)
         self.test = Config.TEST
 
     def basic_search(self, search_string):
