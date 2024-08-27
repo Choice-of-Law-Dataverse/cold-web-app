@@ -27,6 +27,9 @@ COPY requirements.txt /app/
 # Install any dependencies specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Install Gunicorn
+RUN pip install gunicorn
+
 # Copy the rest of the application code into the container
 COPY . /app/
 
@@ -36,5 +39,5 @@ EXPOSE 5000
 # Define environment variable for Flask
 ENV FLASK_APP=app.py
 
-# Command to run the Flask app
-CMD ["flask", "run", "--host=0.0.0.0"]
+# Command to run the Gunicorn server
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
