@@ -1,58 +1,53 @@
 <template>
-    <UContainer style="margin-top: 50px; width: 80%; max-width: 1200px; margin-left: auto; margin-right: auto;">
-      <!-- <p>Total Matches: {{ data.total_matches }}</p> -->
-  
-      <template v-if="isSemanticSearch">
-        <div class="results-grid">
-          <div v-for="(result, index) in data.results" :key="index" class="result-item">
-            <UCard>
-              <div v-for="(value, key) in result" :key="key">
-                <div class="result-key">{{ formatTitle(key) }}</div>
-                <div class="result-value" v-html="createCollapsibleContent(value)"></div>
-              </div>
-            </UCard>
+  <UContainer style="margin-top: 50px; width: 80%; max-width: 1200px; margin-left: auto; margin-right: auto;">
+    <div class="results-grid">
+      <div v-for="(resultData, key) in allResults" :key="key" class="result-item">
+        <UCard>
+          <div v-for="(value, resultKey) in resultData" :key="resultKey">
+            <div class="result-key">{{ formatTitle(resultKey) }}</div>
+            <div class="result-value" v-html="createCollapsibleContent(value)"></div>
           </div>
-        </div>
-      </template>
+        </UCard>
+      </div>
+    </div>
+  </UContainer>
+</template>
   
-      <template v-else>
-        <div class="results-grid">
-          <div v-for="(tableData, table) in data.tables" :key="table">
-            <!-- <h2>{{ formatTitle(table) }} (Matches: {{ tableData.matches }})</h2> -->
-            <div v-for="(resultData, key) in tableData.results" :key="key" class="result-item">
-              <UCard>
-                <div v-for="(value, resultKey) in resultData" :key="resultKey">
-                  <div class="result-key">{{ formatTitle(resultKey) }}</div>
-                  <div class="result-value" v-html="createCollapsibleContent(value)"></div>
-                </div>
-              </UCard>
-            </div>
-          </div>
-        </div>
-      </template>
-    </UContainer>
-  </template>
-  
-  <script setup lang="ts">
-  import { ref } from 'vue'
-  
-  // Props
-  defineProps({
-    data: Object,
-    isSemanticSearch: Boolean,
-  })
-  
-  // Utility functions
-  function formatTitle(key) {
-    // Your existing logic for formatting titles
-    return key.replace(/_/g, ' ').toUpperCase();
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+
+// Define props and assign them to a variable
+const props = defineProps<{
+  data: {
+    tables: Record<string, {
+      matches: number;
+      results: Record<string, any>;
+    }>
   }
-  
-  function createCollapsibleContent(value) {
-    // Your existing logic for creating collapsible content
-    return value; // Simplified for example purposes, replace with your actual logic
+}>()
+
+// Computed property to gather all results from all tables
+const allResults = computed(() => {
+  let results = [];
+  for (const table in props.data.tables) {
+    results = results.concat(Object.values(props.data.tables[table].results));
   }
-  </script>
+  return results;
+})
+
+// Utility functions
+function formatTitle(key: string): string {
+  // Your existing logic for formatting titles
+  return key.replace(/_/g, ' ').toUpperCase();
+}
+
+function createCollapsibleContent(value: string): string {
+  // Your existing logic for creating collapsible content
+  return value; // Simplified for example purposes, replace with your actual logic
+}
+</script>
+
+
   
   <style scoped>
   /* Container style is defined inline in the template */

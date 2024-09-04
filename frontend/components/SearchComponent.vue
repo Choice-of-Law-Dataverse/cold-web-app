@@ -36,12 +36,12 @@ const isSemanticSearch = useState('isSemanticSearch', () => false) // Persistent
 const performSearch = async () => {
   if (searchText.value.trim()) {
     try {
-      const response = await fetch('https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/search', {
+      const response = await fetch('https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/curated_search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ search_string: searchText.value, use_semantic_search: isSemanticSearch.value }),
+        body: JSON.stringify({ search_string: searchText.value }),
       })
       results.value = await response.json()
     } catch (error) {
