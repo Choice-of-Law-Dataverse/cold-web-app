@@ -33,3 +33,27 @@ class Database:
         finally:
             self.session.close()
         return all_entries
+
+    def get_entries_from_tables(self, list_of_tables):
+        if not self.metadata:
+            return None
+
+        entries_from_tables = {}
+        try:
+            for table_name in list_of_tables:
+                # Check if the table exists in the metadata
+                if table_name in self.metadata.tables:
+                    table = self.metadata.tables[table_name]
+                    query = table.select()
+                    result = self.session.execute(query)
+                    columns = result.keys()
+                    entries = [dict(zip(columns, row)) for row in result.fetchall()]
+                    entries_from_tables[table_name] = entries
+                else:
+                    print(f"Table {table_name} does not exist in the database.")
+        except SQLAlchemyError as e:
+            print(f"Error getting entries from tables: {e}")
+        finally:
+            self.session.close()
+
+        return entries_from_tables
