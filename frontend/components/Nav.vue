@@ -4,10 +4,12 @@ const route = useRoute()
 const links = [{
   label: 'Search',
   to: '/'
-}, {
-  label: 'About',
-  to: '/about'
-}]
+},
+// {
+//   label: 'About',
+//   to: '/about'
+// }
+]
 </script>
 
 <template>
