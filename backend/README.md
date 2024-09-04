@@ -12,7 +12,15 @@ The docker image has been pushed to dockerhub using:
 
 ## Endpoints
 **url/search**
-`curl ...`
+```
+curl -X POST http://localhost:5000/search \
+-H "Content-Type: application/json" \
+-d '{"search_string": <search query>, "use_semantic_search": false}'
+```
 
 **url/curated_search**
-`curl ...`
+```
+curl -X POST http://localhost:5000/curated_search \
+-H "Content-Type: application/json" \
+-d '{"search_string": <search query>}'
+```
