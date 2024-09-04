@@ -18,6 +18,7 @@
               <div class="result-key">{{ keyMap[resultKey] }}</div>
               <div class="result-value" v-html="createCollapsibleContent(resultData[resultKey])"></div>
               <div style="margin-top: 2em;"></div>
+              <div><a href="/">Show more</a></div>
             </div>
           </template>
         </UCard>
@@ -82,11 +83,7 @@ function createCollapsibleContent(value: string): string {
 </script>
 
 
-
-
-
-  
-  <style scoped>
+<style scoped>
   /* Container style is defined inline in the template */
   
   .results-grid {
@@ -109,6 +106,10 @@ function createCollapsibleContent(value: string): string {
     word-wrap: break-word; /* Allows breaking within words if necessary */
     word-break: break-word; /* Breaks words that are too long */
     white-space: pre-wrap; /* Preserves whitespace and line breaks, but also allows wrapping */
+  }
+
+  a {
+    text-decoration: underline;
   }
   </style>
   
