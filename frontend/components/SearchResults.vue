@@ -1,6 +1,6 @@
 <template>
     <UContainer style="margin-top: 50px; width: 80%; max-width: 1200px; margin-left: auto; margin-right: auto;">
-      <p>Total Matches: {{ data.total_matches }}</p>
+      <!-- <p>Total Matches: {{ data.total_matches }}</p> -->
   
       <template v-if="isSemanticSearch">
         <div class="results-grid">
@@ -18,7 +18,7 @@
       <template v-else>
         <div class="results-grid">
           <div v-for="(tableData, table) in data.tables" :key="table">
-            <h2>{{ formatTitle(table) }} (Matches: {{ tableData.matches }})</h2>
+            <!-- <h2>{{ formatTitle(table) }} (Matches: {{ tableData.matches }})</h2> -->
             <div v-for="(resultData, key) in tableData.results" :key="key" class="result-item">
               <UCard>
                 <div v-for="(value, resultKey) in resultData" :key="resultKey">
