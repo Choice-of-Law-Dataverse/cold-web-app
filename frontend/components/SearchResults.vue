@@ -3,16 +3,29 @@
     <div class="results-grid">
       <div v-for="(resultData, key) in allResults" :key="key" class="result-item">
         <UCard>
-          <div v-for="(value, resultKey) in resultData" :key="resultKey">
-            <div class="result-key">{{ formatTitle(resultKey) }}</div>
-            <div class="result-value" v-html="createCollapsibleContent(value)"></div>
-          </div>
+          <!-- Conditional rendering based on the type of search result -->
+          <template v-if="isAnswer(resultData)">
+            <!-- Display for Answers -->
+            <div v-for="resultKey in answerKeys" :key="resultKey">
+              <div class="result-key">{{ keyMap[resultKey] }}</div>
+              <div class="result-value" v-html="createCollapsibleContent(resultData[resultKey])"></div>
+              <div style="margin-top: 2em;"></div>
+            </div>
+          </template>
+          <template v-else>
+            <!-- Display for Court decisions -->
+            <div v-for="resultKey in courtDecisionKeys" :key="resultKey">
+              <div class="result-key">{{ keyMap[resultKey] }}</div>
+              <div class="result-value" v-html="createCollapsibleContent(resultData[resultKey])"></div>
+              <div style="margin-top: 2em;"></div>
+            </div>
+          </template>
         </UCard>
       </div>
     </div>
   </UContainer>
 </template>
-  
+
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 
@@ -26,6 +39,20 @@ const props = defineProps<{
   }
 }>()
 
+// Define the keys and their order for "Answers"
+const answerKeys = ['Questions', 'Name (from Jurisdiction)', 'Answer']
+
+// Define the keys and their order for "Court decisions"
+const courtDecisionKeys = ['Case']
+
+// Define a keyMap to rename the keys for display
+const keyMap: Record<string, string> = {
+  Answer: 'ANSWER',
+  'Name (from Jurisdiction)': 'JURISDICTION',
+  Questions: 'QUESTION',
+  Case: 'CASE TITLE'
+}
+
 // Computed property to gather all results from all tables
 const allResults = computed(() => {
   let results = [];
@@ -36,6 +63,13 @@ const allResults = computed(() => {
 })
 
 // Utility functions
+
+// Function to detect if the resultData is for an "Answer"
+function isAnswer(resultData: Record<string, any>): boolean {
+  // Assuming that "Answer" is a key that exists only in "Answers" type results
+  return 'Answer' in resultData;
+}
+
 function formatTitle(key: string): string {
   // Your existing logic for formatting titles
   return key.replace(/_/g, ' ').toUpperCase();
@@ -46,6 +80,9 @@ function createCollapsibleContent(value: string): string {
   return value; // Simplified for example purposes, replace with your actual logic
 }
 </script>
+
+
+
 
 
   
@@ -63,6 +100,7 @@ function createCollapsibleContent(value: string): string {
   }
   
   .result-key {
+    font-size: x-small;
     font-weight: bold;
   }
   
