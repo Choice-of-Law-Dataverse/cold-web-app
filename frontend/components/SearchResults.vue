@@ -8,19 +8,37 @@
             <!-- Display for Answers -->
             <div v-for="resultKey in answerKeys" :key="resultKey">
               <div class="result-key">{{ keyMap[resultKey] }}</div>
-              <div class="result-value" v-html="createCollapsibleContent(resultData[resultKey])"></div>
+              <div class="result-value">
+                <!-- Check if 'Legal provision articles' is empty -->
+                <template v-if="resultKey === 'Legal provision articles'">
+                  {{ resultData[resultKey] || 'No legal provisions' }}
+                </template>
+                <!-- Display other keys normally -->
+                <template v-else>
+                  {{ resultData[resultKey] }}
+                </template>
+              </div>
               <div style="margin-top: 2em;"></div>
             </div>
           </template>
           <template v-else>
-            <!-- Display for Court decisions -->
-            <div v-for="resultKey in courtDecisionKeys" :key="resultKey">
-              <div class="result-key">{{ keyMap[resultKey] }}</div>
-              <div class="result-value" v-html="createCollapsibleContent(resultData[resultKey])"></div>
-              <div style="margin-top: 2em;"></div>
+          <!-- Display for Court decisions -->
+          <div v-for="resultKey in courtDecisionKeys" :key="resultKey">
+            <div class="result-key">{{ keyMap[resultKey] }}</div>
+            <div class="result-value">
+              <!-- Check if 'Choice of law issue' is empty and display default text -->
+              <template v-if="resultKey === 'Choice of law issue'">
+                {{ resultData[resultKey] || 'No choice of law issue' }}
+              </template>
+              <!-- Otherwise, render the value using createCollapsibleContent -->
+              <template v-else>
+                <span v-html="createCollapsibleContent(resultData[resultKey])"></span>
+              </template>
             </div>
-              <div><a href="/">Show more</a></div>
-          </template>
+            <div style="margin-top: 2em;"></div>
+          </div>
+          <div><a href="/">Show more</a></div>
+        </template>
         </UCard>
       </div>
     </div>
