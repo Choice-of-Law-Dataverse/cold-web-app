@@ -20,7 +20,7 @@
     
     <!-- Display search results below the input and button -->
     <div>
-      <SearchResults v-if="results" :data="results" :isSemanticSearch="isSemanticSearch" />
+      <SearchResults v-if="results" :data="results" />
     </div>
   </div>
 </template>
@@ -28,10 +28,9 @@
 <script setup lang="ts">
 import { useState } from '#imports'  // Correct import for Nuxt 3
 
-// Persist the search text across page navigations
-const searchText = useState('searchText', () => '') // Empty string as initial value
-const results = useState('results', () => null) // Persistent search results
-const isSemanticSearch = useState('isSemanticSearch', () => false) // Persistent search type
+// Regular ref for non-persistent search text and results
+const searchText = ref('') // Empty string as initial value
+const results = ref(null) // Non-persistent search results
 
 const performSearch = async () => {
   if (searchText.value.trim()) {
