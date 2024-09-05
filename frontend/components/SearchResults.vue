@@ -18,8 +18,8 @@
               <div class="result-key">{{ keyMap[resultKey] }}</div>
               <div class="result-value" v-html="createCollapsibleContent(resultData[resultKey])"></div>
               <div style="margin-top: 2em;"></div>
-              <div><a href="/">Show more</a></div>
             </div>
+              <div><a href="/">Show more</a></div>
           </template>
         </UCard>
       </div>
@@ -39,17 +39,22 @@ const props = defineProps({
 })
 
 // Define the keys and their order for "Answers"
-const answerKeys = ['Questions', 'Name (from Jurisdiction)', 'Answer']
+const answerKeys = ['Questions', 'Name (from Jurisdiction)', 'Answer', 'Legal provision articles']
 
 // Define the keys and their order for "Court decisions"
-const courtDecisionKeys = ['Case']
+const courtDecisionKeys = ['Case', 'Jurisdiction Names', 'Choice of law issue']
 
 // Define a keyMap to rename the keys for display
 const keyMap = {
+  // Answers
   Answer: 'ANSWER',
   'Name (from Jurisdiction)': 'JURISDICTION',
   Questions: 'QUESTION',
-  Case: 'CASE TITLE'
+  'Legal provision articles': 'LEGAL PROVISIONS',
+  // Court Decisions
+  Case: 'CASE TITLE',
+  'Jurisdiction Names': 'JURISDICTION',
+  'Choice of law issue': 'CHOICE OF LAW ISSUE'
 }
 
 // Computed property to gather all results from all tables
