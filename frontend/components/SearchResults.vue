@@ -110,6 +110,8 @@ function createCollapsibleContent(value: string): string {
 
   a {
     text-decoration: underline;
+    text-underline-offset: 6px;
+    text-decoration-thickness: 1px;
   }
   </style>
   
