@@ -31,14 +31,12 @@
 import { ref, computed } from 'vue'
 
 // Define props and assign them to a variable
-const props = defineProps<{
+const props = defineProps({
   data: {
-    tables: Record<string, {
-      matches: number;
-      results: Record<string, any>;
-    }>
+    type: Object,
+    default: () => ({ tables: {} }) // Provide default value for data
   }
-}>()
+})
 
 // Define the keys and their order for "Answers"
 const answerKeys = ['Questions', 'Name (from Jurisdiction)', 'Answer']
@@ -47,7 +45,7 @@ const answerKeys = ['Questions', 'Name (from Jurisdiction)', 'Answer']
 const courtDecisionKeys = ['Case']
 
 // Define a keyMap to rename the keys for display
-const keyMap: Record<string, string> = {
+const keyMap = {
   Answer: 'ANSWER',
   'Name (from Jurisdiction)': 'JURISDICTION',
   Questions: 'QUESTION',
@@ -66,14 +64,9 @@ const allResults = computed(() => {
 // Utility functions
 
 // Function to detect if the resultData is for an "Answer"
-function isAnswer(resultData: Record<string, any>): boolean {
+function isAnswer(resultData) {
   // Assuming that "Answer" is a key that exists only in "Answers" type results
   return 'Answer' in resultData;
-}
-
-function formatTitle(key: string): string {
-  // Your existing logic for formatting titles
-  return key.replace(/_/g, ' ').toUpperCase();
 }
 
 function createCollapsibleContent(value: string): string {

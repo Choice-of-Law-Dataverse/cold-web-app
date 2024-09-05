@@ -26,7 +26,6 @@
 </template>
 
 <script setup lang="ts">
-import { useState } from '#imports'  // Correct import for Nuxt 3
 
 // Regular ref for non-persistent search text and results
 const searchText = ref('') // Empty string as initial value
