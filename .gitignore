@@ -166,3 +166,7 @@ testing/*
 
 # FA Notes
 notes_fa.txt
+
+# nuxt and node
+frontend/.nuxt
+frontend/node_modules
