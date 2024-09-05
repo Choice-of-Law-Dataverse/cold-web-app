@@ -11,11 +11,6 @@ npx nuxi@latest module add ui
 Start the front-end development server on `http://localhost:3000`:
 
 ```bash
+cd frontend
 npm run dev
-```
-
-Start the back-end:
-
-```bash
-python3 backend/app.py
 ```
