@@ -1,0 +1,22 @@
+meta {
+  name: curated_search
+  type: http
+  seq: 2
+}
+
+post {
+  url: https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/curated_search
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "search_string": "party autonomy switzerland",
+    "use_semantic_search": false
+  }
+}
