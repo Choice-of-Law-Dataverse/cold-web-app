@@ -1,22 +1,21 @@
 <template>
-    <UPopover overlay>
-      <UButton color="white" label="Open" />
-  
-      <!-- Accessing the `close` method in the panel slot -->
-      <template #panel="{ close }">
-      <div class="p-4 custom-popover-width" style="position: relative;">
-        <!-- Close link with icon -->
-        <a href="#" class="close-link" @click.prevent="close">
-          <!-- Icon before the text -->
-          <span class="icon-wrapper">
-            <UIcon name="i-material-symbols:close" />
-        </span>
-          Close
-        </a>
-          
-          <p class="result-key">NAME</p>
-          <p class="result-value">Swi-148 Art. 116</p>
-  
+  <div>
+    <!-- Button to trigger modal -->
+    <UButton label="Open LegalProvisionModal" @click="isOpen = true" />
+    
+    <!-- Modal with custom width and centered positioning -->
+    <UModal v-model="isOpen" :ui="{ width: 'w-full sm:max-w-4xl' }" prevent-close>
+      <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
+              Swi-148 Art. 116
+            </h3>
+            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="isOpen = false" />
+          </div>
+        </template>
+
+        <!-- Modal Content -->  
           <p class="result-key">JURISDICTION</p>
           <p class="result-value">Switzerland</p>
   
@@ -27,20 +26,13 @@
           <p class="result-value">
             1 Contracts are governed by the law chosen by the parties.2 The choice of law must be express or result with certainty from the provisions of the contract or from the circumstances; apart from that, it is governed by the chosen law.3 The choice of law may be made or changed at any time. If a choice of law is made after the conclusion of the contract, it has retroactive effect as of the time of conclusion of the contract. The rights of third parties are reserved.
           </p>
-        </div>
-      </template>
-    </UPopover>
-  </template>
-  
+      </UCard>
+    </UModal>
+  </div>
+</template>
 
 <style scoped>
-  /* Container style is defined inline in the template */
 
-  .custom-popover-width {
-  width: 60vw;
-  position: relative;
-  margin: 3em;
-}
 
 .close-link {
   position: absolute;
@@ -80,4 +72,8 @@
     text-decoration-thickness: 1px;
   }
   </style>
+
+<script setup lang="ts">
+const isOpen = ref(false)
+</script>
   
