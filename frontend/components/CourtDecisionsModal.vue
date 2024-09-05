@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- Button to trigger modal -->
-    <UButton label="Open" @click="isOpen = true" />
+    <UButton label="Open CourtDecisionsModal" @click="isOpen = true" />
     
     <!-- Modal with custom width and centered positioning -->
     <UModal v-model="isOpen" :ui="{ width: 'w-full sm:max-w-4xl' }" prevent-close>
