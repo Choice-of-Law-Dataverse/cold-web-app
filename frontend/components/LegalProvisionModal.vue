@@ -9,7 +9,7 @@
         <template #header>
           <div class="flex items-center justify-between">
             <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
-              Swi-148 Art. 116
+              [PLACEHOLDER] Swi-148 Art. 116
             </h3>
             <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="emitClose" />
           </div>
@@ -23,8 +23,7 @@
           <p class="result-value">Art. 116</p>
   
           <p class="result-key">FULL TEXT OF THE PROVISION</p>
-          <p class="result-value">
-            1 Contracts are governed by the law chosen by the parties.2 The choice of law must be express or result with certainty from the provisions of the contract or from the circumstances; apart from that, it is governed by the chosen law.3 The choice of law may be made or changed at any time. If a choice of law is made after the conclusion of the contract, it has retroactive effect as of the time of conclusion of the contract. The rights of third parties are reserved.
+          <p class="result-value">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then
           </p>
       </UCard>
     </UModal>
