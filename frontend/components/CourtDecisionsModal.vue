@@ -98,7 +98,7 @@
 
 <script setup lang="ts">
 
-import { ref, defineEmits, watch } from 'vue'
+import { defineEmits } from 'vue'
 
 // Accept `isVisible` prop from the parent component
 const props = defineProps({
@@ -107,16 +107,10 @@ const props = defineProps({
 
 // Emit event for closing the modal
 const emit = defineEmits(['close'])
-//const isOpen = ref(true)  // This controls the internal modal's open state
-
-watch(() => props.isVisible, (newVal) => {
-  console.log("Modal visibility changed:", newVal);
-})
 
 // Function to emit the close event
 function emitClose() {
   emit('close')
-  //isOpen.value = false  // Close the modal internally
 }
 
 </script>

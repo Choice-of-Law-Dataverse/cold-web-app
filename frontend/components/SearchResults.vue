@@ -39,8 +39,8 @@
             </div>
             <div style="margin-top: 2em;"></div>
           </div>
-          <!-- <div><a href="/">Show more</a></div> -->
-          <UButton label="Open CourtDecisionsModal" @click="openModal" />
+          <div><a href="#" @click.prevent="openModal">Show more</a></div>
+          <!-- <UButton label="Open CourtDecisionsModal" @click="openModal" /> -->
         </template>
         
       </UCard>
@@ -60,9 +60,7 @@ const isModalOpen = ref(false)
 
 // Function to open the modal
 function openModal() {
-  console.log("Button clicked, opening modal...");
   isModalOpen.value = true
-  console.log("Modal open state: ", isModalOpen.value);
 }
 
 // Define props and assign them to a variable
