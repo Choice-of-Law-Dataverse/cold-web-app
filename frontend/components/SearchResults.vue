@@ -10,10 +10,20 @@
             <div v-for="resultKey in answerKeys" :key="resultKey">
               <div class="result-key">{{ keyMap[resultKey] }}</div>
               <div class="result-value">
-                <!-- Check if 'Legal provision articles' is empty -->
+                
                 <template v-if="resultKey === 'Legal provision articles'">
-                  {{ resultData[resultKey] || 'No legal provisions' }}
-                </template>
+                  <div v-if="resultData[resultKey]">
+                    <!-- Render as link if there are legal provisions -->
+                     <a href="#" @click.prevent="openLegalProvisionModal">
+                      {{ resultData[resultKey] }}
+                    </a>
+                  </div>
+                  <div v-else>
+                    <!-- Display fallback text if there are no legal provisions -->
+                   No legal provision
+                    </div>
+                  </template>
+
                 <!-- Display other keys normally -->
                 <template v-else>
                   {{ resultData[resultKey] }}
@@ -21,7 +31,6 @@
               </div>
               <div style="margin-top: 2em;"></div>
             </div>
-            <div><a href="#" @click.prevent="openLegalProvisionModal">Open Legal Provision</a></div>
           </template>
           
           <template v-else>
