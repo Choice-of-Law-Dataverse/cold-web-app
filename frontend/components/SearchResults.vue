@@ -3,6 +3,7 @@
     <div class="results-grid">
       <div v-for="(resultData, key) in allResults" :key="key" class="result-item">
         <UCard>
+          
           <!-- Conditional rendering based on the type of search result -->
           <template v-if="isAnswer(resultData)">
             <!-- Display for Answers -->
@@ -21,6 +22,7 @@
               <div style="margin-top: 2em;"></div>
             </div>
           </template>
+          
           <template v-else>
           <!-- Display for Court decisions -->
           <div v-for="resultKey in courtDecisionKeys" :key="resultKey">
@@ -37,16 +39,31 @@
             </div>
             <div style="margin-top: 2em;"></div>
           </div>
-          <div><a href="/">Show more</a></div>
+          <!-- <div><a href="/">Show more</a></div> -->
+          <UButton label="Open CourtDecisionsModal" @click="openModal" />
         </template>
-        </UCard>
+        
+      </UCard>
       </div>
     </div>
+    <!-- Pass isModalOpen to CourtDecisionsModal as isVisible -->
+    <CourtDecisionsModal v-if="isModalOpen" :isVisible="isModalOpen" @close="isModalOpen = false" />
   </UContainer>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import CourtDecisionsModal from '~/components/CourtDecisionsModal.vue'
+
+// Control the modal visibility
+const isModalOpen = ref(false)
+
+// Function to open the modal
+function openModal() {
+  console.log("Button clicked, opening modal...");
+  isModalOpen.value = true
+  console.log("Modal open state: ", isModalOpen.value);
+}
 
 // Define props and assign them to a variable
 const props = defineProps({
