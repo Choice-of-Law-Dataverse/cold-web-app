@@ -18,10 +18,8 @@
                       {{ resultData[resultKey] }}
                     </a>
                   </div>
-                  <div v-else>
-                    <!-- Display fallback text if there are no legal provisions -->
-                   No legal provision
-                    </div>
+                  <!-- Display fallback text if there are no legal provisions -->
+                  <div v-else>No legal provision</div>
                   </template>
 
                 <!-- Display other keys normally -->
