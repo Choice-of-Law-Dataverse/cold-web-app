@@ -56,7 +56,6 @@
 
 <style scoped>
 
-
 .close-link {
   position: absolute;
   top: -20px;
