@@ -1,17 +1,17 @@
 <template>
   <div>
     <!-- Button to trigger modal -->
-    <UButton label="Open LegalProvisionModal" @click="isOpen = true" />
+    <!-- <UButton label="Open LegalProvisionModal" @click="isOpen = true" /> -->
     
     <!-- Modal with custom width and centered positioning -->
-    <UModal v-model="isOpen" :ui="{ width: 'w-full sm:max-w-4xl' }" prevent-close>
+    <UModal :modelValue="isVisible" :ui="{ width: 'w-full sm:max-w-4xl' }" prevent-close @close="emitClose">
       <UCard :ui="{ ring: '', divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
         <template #header>
           <div class="flex items-center justify-between">
             <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
               Swi-148 Art. 116
             </h3>
-            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="isOpen = false" />
+            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="emitClose" />
           </div>
         </template>
 
@@ -74,6 +74,20 @@
   </style>
 
 <script setup lang="ts">
-const isOpen = ref(false)
+
+import { defineEmits } from 'vue'
+
+// Accept `isVisible` prop from the parent component
+const props = defineProps({
+  isVisible: Boolean
+})
+
+// Emit event for closing the modal
+const emit = defineEmits(['close'])
+
+// Function to emit the close event
+function emitClose() {
+  emit('close')
+}
+
 </script>
-  

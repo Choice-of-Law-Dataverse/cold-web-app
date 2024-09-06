@@ -21,6 +21,7 @@
               </div>
               <div style="margin-top: 2em;"></div>
             </div>
+            <div><a href="#" @click.prevent="openLegalProvisionModal">Open Legal Provision</a></div>
           </template>
           
           <template v-else>
@@ -39,15 +40,20 @@
             </div>
             <div style="margin-top: 2em;"></div>
           </div>
-          <div><a href="#" @click.prevent="openModal">Show more</a></div>
+          <div><a href="#" @click.prevent="openCourtDecisionsModal">Show more</a></div>
           <!-- <UButton label="Open CourtDecisionsModal" @click="openModal" /> -->
         </template>
         
       </UCard>
       </div>
     </div>
-    <!-- Pass isModalOpen to CourtDecisionsModal as isVisible -->
-    <CourtDecisionsModal v-if="isModalOpen" :isVisible="isModalOpen" @close="isModalOpen = false" />
+
+    <!-- Pass isCourtDecisionsModalOpen to CourtDecisionsModal as isVisible -->
+    <CourtDecisionsModal v-if="isCourtDecisionsModalOpen" :isVisible="isCourtDecisionsModalOpen" @close="isCourtDecisionsModalOpen = false" />
+
+    <!-- Pass isLegalProvisionModalOpen to LegalProvisionModal as isVisible -->
+    <LegalProvisionModal v-if="isLegalProvisionModalOpen" :isVisible="isLegalProvisionModalOpen" @close="isLegalProvisionModalOpen = false" />
+  
   </UContainer>
 </template>
 
@@ -56,11 +62,16 @@ import { ref, computed } from 'vue'
 import CourtDecisionsModal from '~/components/CourtDecisionsModal.vue'
 
 // Control the modal visibility
-const isModalOpen = ref(false)
+const isCourtDecisionsModalOpen = ref(false)
+const isLegalProvisionModalOpen = ref(false)
 
 // Function to open the modal
-function openModal() {
-  isModalOpen.value = true
+function openCourtDecisionsModal() {
+  isCourtDecisionsModalOpen.value = true
+}
+
+function openLegalProvisionModal() {
+  isLegalProvisionModalOpen.value = true
 }
 
 // Define props and assign them to a variable
