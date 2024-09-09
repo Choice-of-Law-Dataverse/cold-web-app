@@ -27,9 +27,10 @@
             <p class="result-key">FULL TEXT OF THE PROVISION</p>
             <!-- Container for "Display:" and the select element -->
              <div class="right-container">
-              <p class="display-label">Display:</p>
+              <!-- <p class="display-label">Display:</p> -->
               <USelect
               size="2xs"
+              variant="none"
               :options="['English Translation', 'Original Language']"
               model-value="English Translation"/>
             </div>
