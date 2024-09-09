@@ -1,11 +1,11 @@
 <template>
     <div>
-        <h3>Search Suggestions:</h3>
+        <h3>Not sure what to search for? Try these searches:</h3>
       <div class="suggestions-container">
         <div v-for="(suggestion, index) in searchSuggestions" :key="index" class="suggestion-button">
           <UButton
-            color="primary"
-            variant="soft"
+            color="gray"
+            variant="solid"
             size="lg"
             @click="sendSuggestion(suggestion)"
           >
@@ -40,13 +40,13 @@
 h3 {
     font-size: medium;
     margin-bottom: 1em;
-    margin-top: 1em;
-    text-align: center; /* Center the text */
+    margin-top: 1.5em;
+    text-align: center;
   }
 
   .suggestions-container {
     display: flex;
-    gap: 10px; /* Adds space between buttons */
+    gap: 20px; /* Adds space between buttons */
   }
   
   .suggestion-button {
