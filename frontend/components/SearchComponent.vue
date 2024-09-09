@@ -20,6 +20,11 @@
     
     <!-- Display search results below the input and button -->
     <div>
+      <SearchSuggestions />
+    </div>
+
+    <!-- Display search results below the input and button -->
+    <div>
       <SearchResults v-if="results" :data="results" />
     </div>
   </div>
