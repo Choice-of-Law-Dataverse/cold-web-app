@@ -20,15 +20,21 @@
     </UButton>
     </div>
     
-    <!-- Display search results below the input and button -->
+    <!-- Display search suggestions below the input and button -->
     <div>
       <SearchSuggestions v-if="showSuggestions" @suggestion-selected="updateSearchText" />
     </div>
 
-    <!-- Display search results below the input and button -->
-    <div>
-      <SearchResults v-if="results" :data="results" />
+    <!-- Display message that no search results were found -->
+    <div v-if="noResults">
+      <NoSearchResults />
     </div>
+
+    <!-- Display search results below the input and button -->
+    <div v-if="results && !noResults">
+      <SearchResults :data="results" />
+    </div>
+
   </div>
 </template>
 
@@ -39,6 +45,7 @@ const searchText = ref('') // Empty string as initial value
 const results = ref(null) // Non-persistent search results
 const showSuggestions = ref(true); // Add this to control the visibility of the SearchSuggestions component
 const loading = ref(false); // Track the loading state
+const noResults = ref(false); // Track whether there are no results
 
 // Update search text when suggestion is clicked
 const updateSearchText = (suggestion: string) => {
@@ -51,6 +58,7 @@ const performSearch = async () => {
   showSuggestions.value = false; // Hide suggestions when the search button is clicked
   if (searchText.value.trim()) {
     loading.value = true; // Set loading to true when search starts
+    noResults.value = false; // Reset noResults before a new search
     try {
       const response = await fetch('https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/curated_search', {
         method: 'POST',
@@ -59,7 +67,15 @@ const performSearch = async () => {
         },
         body: JSON.stringify({ search_string: searchText.value }),
       })
-      results.value = await response.json()
+      
+      const data = await response.json();
+      results.value = data;
+
+      // Check if total_matches is 0
+      if (data.total_matches === 0) {
+        noResults.value = true; // Display NoSearchResults component
+      }
+
     } catch (error) {
       console.error('Error performing search:', error)
     } finally {
