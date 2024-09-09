@@ -7,6 +7,7 @@
             color="primary"
             variant="soft"
             size="lg"
+            @click="sendSuggestion(suggestion)"
           >
             {{ suggestion }}
           </UButton>
@@ -19,9 +20,18 @@
   export default {
     data() {
       return {
-        searchSuggestions: ["Search Suggestion 1", "Search Suggestion 2", "Search Suggestion 3"]
+        searchSuggestions: [
+            "Tacit Choice in Argentina",
+            "Party Autonomy in Switzerland",
+            "Public Policy Definition"
+        ]
       };
+    },
+    methods: {
+        sendSuggestion(suggestion) {
+      this.$emit('suggestion-selected', suggestion);
     }
+  }
   };
   </script>
   

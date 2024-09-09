@@ -20,7 +20,7 @@
     
     <!-- Display search results below the input and button -->
     <div>
-      <SearchSuggestions />
+      <SearchSuggestions v-if="showSuggestions" @suggestion-selected="updateSearchText" />
     </div>
 
     <!-- Display search results below the input and button -->
@@ -35,6 +35,14 @@
 // Regular ref for non-persistent search text and results
 const searchText = ref('') // Empty string as initial value
 const results = ref(null) // Non-persistent search results
+const showSuggestions = ref(true); // Add this to control the visibility of the SearchSuggestions component
+
+// Update search text when suggestion is clicked
+const updateSearchText = (suggestion: string) => {
+  searchText.value = suggestion;
+  showSuggestions.value = false; // Hide suggestions when a suggestion is clicked
+  performSearch(); // Trigger the search after updating the search text
+}
 
 const performSearch = async () => {
   if (searchText.value.trim()) {
