@@ -45,6 +45,7 @@ const updateSearchText = (suggestion: string) => {
 }
 
 const performSearch = async () => {
+  showSuggestions.value = false; // Hide suggestions when a suggestion is clicked
   if (searchText.value.trim()) {
     try {
       const response = await fetch('https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/curated_search', {
