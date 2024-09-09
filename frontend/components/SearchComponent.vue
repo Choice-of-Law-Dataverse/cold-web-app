@@ -11,11 +11,12 @@
       />
       <UButton
       :loading="loading"
+      loading-icon="i-material-symbols:progress-activity"
       style="margin-left: 20px;"
       size="xl"
       @click="performSearch"
       >
-      Search
+      {{ loading ? 'Searching' : 'Search' }}
     </UButton>
     </div>
     
