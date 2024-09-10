@@ -1,13 +1,20 @@
-# Build stage
-FROM node:18 AS build-stage
-WORKDIR /app
-COPY package*.json ./
-RUN npm install
-COPY . .
-RUN npm run generate
+# Base image
+FROM node:18-alpine
 
-# Production stage
-FROM nginx:stable-alpine AS production-stage
-COPY --from=build-stage /app/dist /usr/share/nginx/html
-EXPOSE 80
-CMD ["nginx", "-g", "daemon off;"]
+# Set working directory
+WORKDIR /app
+
+# Copy project files
+COPY . .
+
+# Install dependencies
+RUN npm install
+
+# Build the project
+RUN npm run build
+
+# Expose the application port
+EXPOSE 3000
+
+# Start the application
+CMD ["npm", "run", "start"]
