@@ -46,5 +46,21 @@ def handle_curated_search():
 
     return jsonify(results), 200
 
+@app.route('/curated_search/details', methods=['POST'])
+def handle_curated_details_search():
+    data = request.json
+    table = data.get('table')
+    print(table)
+    if not table:
+        return jsonify({'error': 'No table provided'}), 400
+    id = data.get('id')
+    print(id)
+    if not id:
+        return jsonify({'error': 'No id provided'}), 400
+
+    results = search_service.curated_details_search(search_string)
+
+    return jsonify(results), 200
+
 if __name__ == "__main__":
     app.run(debug=True)
