@@ -106,6 +106,16 @@ class SearchService:
     def curated_details_search(self, table, id):
         if table == 'Answers':
             entry = self.db.get_entry_by_id('Answers', id)
+            """
+            SELECT *
+            FROM "Legal provisions"
+            WHERE "Name" = 'Swi-148 Art. 117';
+            """
         elif table == 'Court decisions':
             entry = self.db.get_entry_by_id('Court decisions', id)
+            """
+            SELECT *
+            FROM "Court decisions"
+            WHERE "ID" = 'CHE-1017';
+            """
         return f"{self.test}...foo"
