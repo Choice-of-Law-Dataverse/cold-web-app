@@ -102,3 +102,6 @@ class SearchService:
             'tables': results
             }
         return filter_na(parse_results(final_results))
+
+    def curated_details_search(self, table, id):
+        return f"{self.test}...foo"
