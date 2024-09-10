@@ -104,4 +104,8 @@ class SearchService:
         return filter_na(parse_results(final_results))
 
     def curated_details_search(self, table, id):
+        if table == 'Answers':
+            entry = self.db.get_entry_by_id('Answers', id)
+        elif table == 'Court decisions':
+            entry = self.db.get_entry_by_id('Court decisions', id)
         return f"{self.test}...foo"
