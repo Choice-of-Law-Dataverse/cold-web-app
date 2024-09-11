@@ -163,3 +163,7 @@ cython_debug/
 backend/testing.ipynb
 backend/test.py
 testing/*
+
+# nuxt and node
+frontend/.nuxt
+frontend/node_modules
