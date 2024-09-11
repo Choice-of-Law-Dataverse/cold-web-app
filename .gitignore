@@ -163,6 +163,3 @@ cython_debug/
 backend/testing.ipynb
 backend/test.py
 testing/*
-
-# FA Notes
-notes_fa.txt
