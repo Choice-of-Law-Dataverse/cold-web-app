@@ -58,7 +58,7 @@ def handle_curated_details_search():
     if not id:
         return jsonify({'error': 'No id provided'}), 400
 
-    results = search_service.curated_details_search(search_string)
+    results = search_service.curated_details_search(table, id)
 
     return jsonify(results), 200
 
