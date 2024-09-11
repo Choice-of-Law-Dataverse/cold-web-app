@@ -1,0 +1,15 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    env_file:
+      - .env
+    environment:
+      MIXEDBREAD_API_KEY: ${MIXEDBREAD_API_KEY}
+      SQL_CONN_STRING: ${SQL_CONN_STRING}
+      TEST: ${TEST}
