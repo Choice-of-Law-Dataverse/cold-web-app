@@ -97,8 +97,6 @@
 
 <script setup lang="ts">
 
-import { defineEmits } from 'vue'
-
 // Accept `isVisible` prop from the parent component
 const props = defineProps({
   isVisible: Boolean
