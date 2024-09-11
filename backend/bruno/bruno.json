@@ -1,6 +1,6 @@
 {
   "version": "1",
-  "name": "test",
+  "name": "CoLD",
   "type": "collection",
   "ignore": [
     "node_modules",
