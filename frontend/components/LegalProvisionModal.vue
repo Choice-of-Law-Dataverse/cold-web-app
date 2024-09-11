@@ -102,8 +102,6 @@
 
 <script setup lang="ts">
 
-import { defineEmits } from 'vue'
-
 const selected = ref(false)
 
 // Accept `isVisible` prop from the parent component
