@@ -54,6 +54,7 @@ const updateSearchText = (suggestion: string) => {
   performSearch(); // Trigger the search after updating the search text
 }
 
+// https://developer.mozilla.org/en-US/docs/Web/API/Navigator
 const getBrowserInfo = () => {
   const userAgent = navigator.userAgent; // User agent string with browser and OS info
   const platform = navigator.platform; // Operating system platform
@@ -72,7 +73,7 @@ const getBrowserInfo = () => {
 
 const fetchUserInfo = async () => {
   try {
-    // Initial request to get the client hints
+    // Initial request to get the client hints (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers#client_hints)
     await fetch('https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/get_user_info', {
     // await fetch('http://localhost:5000/get_user_info', {
       method: 'GET',
@@ -117,9 +118,6 @@ const performSearch = async () => {
       browser_info_navigator: browserInfo, // Add browser and device info from navigator
       browser_info_hint: userInfo || {}, // Add user info (platform, version, etc.) from client hint
     };
-
-    // Print the request body to the console for testing purposes
-    console.log(JSON.stringify(requestBody));
 
     const response = await fetch('https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/curated_search', {
     // const response = await fetch('http://localhost:5000/curated_search', {
