@@ -54,11 +54,30 @@ const updateSearchText = (suggestion: string) => {
   performSearch(); // Trigger the search after updating the search text
 }
 
+const getBrowserInfo = () => {
+  const userAgent = navigator.userAgent; // User agent string with browser and OS info
+  const platform = navigator.platform; // Operating system platform
+  const language = navigator.language; // Browser's language setting
+  const screenWidth = window.screen.width; // Screen width
+  const screenHeight = window.screen.height; // Screen height
+
+  return {
+    userAgent, // Provides browser and OS information in a single string
+    platform, // Provides info about the operating system
+    language, // Browser language setting
+    screenWidth, // Screen width in pixels
+    screenHeight, // Screen height in pixels
+  };
+};
+
 const performSearch = async () => {
   showSuggestions.value = false; // Hide suggestions when the search button is clicked
   if (searchText.value.trim()) {
     loading.value = true; // Set loading to true when search starts
     noResults.value = false; // Reset noResults before a new search
+
+    // Get browser and device info
+    const browserInfo = getBrowserInfo();
 
     try {
       // Fetch the user's IP address using an external API
@@ -70,6 +89,7 @@ const performSearch = async () => {
       search_string: searchText.value,
       time: new Date().toISOString(), // Add timestamp as ISO string
       ip_address: userIp, // Add user's IP address
+      browser_info: browserInfo, // Add browser and device info
     };
 
     // Print the request body to the console for testing purposes
