@@ -32,11 +32,18 @@
               size="2xs"
               variant="none"
               :options="['Original Language', 'English Translation']"
-              model-value="Original Language"/>
+              v-model="selectedLanguage" 
+              />
             </div>
           </div>
-          <p class="result-value">{{ data?.['Full text of the provision (Original language)'] || '[Missing Text]' }}</p>
-      </UCard>
+          <!-- Conditionally display the full text based on the selected language -->
+           <p class="result-value">
+            {{ selectedLanguage === 'Original Language' 
+            ? (data?.['Full text of the provision (Original language)'] || '[Missing Text]') 
+            : (data?.['Full text of the provision (English translation)'] || '[Missing Text]') 
+            }}
+            </p>
+        </UCard>
     </UModal>
   </div>
 </template>
@@ -104,6 +111,7 @@
 import { defineProps, defineEmits } from 'vue';
 
 const selected = ref(false)
+const selectedLanguage = ref('Original Language'); // Used for Provision Language toggle
 
 // Accept `isVisible` prop from the parent component
 const props = defineProps({
