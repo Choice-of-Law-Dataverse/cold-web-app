@@ -14,7 +14,7 @@
                 <template v-if="resultKey === 'Legal provision articles'">
                   <div v-if="resultData[resultKey]">
                     <!-- Render as link if there are legal provisions -->
-                     <a href="#" @click.prevent="openLegalProvisionModal">
+                     <a href="#" @click.prevent="openLegalProvisionModal(resultData[resultKey])">
                       {{ resultData[resultKey] }}
                     </a>
                   </div>
@@ -72,12 +72,17 @@ import CourtDecisionModal from '~/components/CourtDecisionModal.vue'
 const isCourtDecisionModalOpen = ref(false)
 const isLegalProvisionModalOpen = ref(false)
 
+// Linking modals to dynamic data
+const resultKey = ref('Legal provision articles');
+const resultData = ref({});  // Placeholder for your actual data
+
 // Function to open the modal
 function openCourtDecisionModal() {
   isCourtDecisionModalOpen.value = true
 }
 
-function openLegalProvisionModal() {
+function openLegalProvisionModal(legalProvision) {
+  console.log(legalProvision) // Log resultData[resultKey] to the console
   isLegalProvisionModalOpen.value = true
 }
 
