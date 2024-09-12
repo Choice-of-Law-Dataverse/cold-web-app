@@ -61,7 +61,7 @@
     <CourtDecisionModal v-if="isCourtDecisionModalOpen" :isVisible="isCourtDecisionModalOpen" @close="isCourtDecisionModalOpen = false" />
 
     <!-- Pass isLegalProvisionModalOpen to LegalProvisionModal as isVisible -->
-    <LegalProvisionModal v-if="isLegalProvisionModalOpen" :isVisible="isLegalProvisionModalOpen" @close="isLegalProvisionModalOpen = false" />
+    <LegalProvisionModal v-if="isLegalProvisionModalOpen" :isVisible="isLegalProvisionModalOpen" :data="legalProvisionModalData" @close="isLegalProvisionModalOpen = false" />
   
   </UContainer>
 </template>
@@ -69,6 +69,8 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import CourtDecisionModal from '~/components/CourtDecisionModal.vue'
+import LegalProvisionModal from '~/components/LegalProvisionModal.vue'
+
 
 // Control the modal visibility
 const isCourtDecisionModalOpen = ref(false)
@@ -77,6 +79,8 @@ const isLegalProvisionModalOpen = ref(false)
 // Linking modals to dynamic data
 const resultKey = ref('Legal provision articles');
 const resultData = ref({});  // Placeholder for your actual data
+const legalProvisionModalData = ref(null);  // This will store the response data to be passed to the modal
+
 
 // Function to open the modal
 function openCourtDecisionModal() {
@@ -113,7 +117,9 @@ try {
   // Log the response data to the console (or handle it however you need)
   // console.log('Response data:', responseData);
 
-  // Optionally open the modal
+  legalProvisionModalData.value = responseData;  // Store the response data in the modalData ref
+
+  // Open the modal
   isLegalProvisionModalOpen.value = true;
 
 } catch (error) {
