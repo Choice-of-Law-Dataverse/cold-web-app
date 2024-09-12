@@ -9,7 +9,7 @@
         <template #header>
           <div class="flex items-center justify-between">
             <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
-              [PLACEHOLDER] Federal Court, 03.07.1985 - BGE 111 II 175
+              {{ data?.Case || '[Missing Title]' }} <!-- Display the Name value from data or a placeholder -->
             </h3>
             <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="emitClose" />
           </div>
@@ -99,7 +99,8 @@
 
 // Accept `isVisible` prop from the parent component
 const props = defineProps({
-  isVisible: Boolean
+  isVisible: Boolean,
+  data: Object  // Define the data prop to accept an object
 })
 
 // Emit event for closing the modal
