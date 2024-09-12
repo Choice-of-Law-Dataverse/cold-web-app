@@ -4,9 +4,7 @@ from pymongo.server_api import ServerApi
 from datetime import datetime
 import requests
 
-#uri = os.getenv('MONGODB_CONN_STRING')
-uri = "mongodb+srv://simonweigold:aussicht45%3FINSELI@cold-query-logging.ltft2.mongodb.net/?retryWrites=true&w=majority&appName=cold-query-logging"
-print(uri)
+uri = os.getenv('MONGODB_CONN_STRING')
 
 # Create a new client and connect to the server
 client = MongoClient(uri, server_api=ServerApi('1'))
@@ -30,18 +28,30 @@ def get_location(ip_address):
         print(f"Error getting location: {e}")
         return None
 
+# Function to extract Client Hints
+def get_client_hints(request):
+    return {
+        'brand': request.headers.get('Sec-CH-UA', 'Unknown'),
+        'mobile': request.headers.get('Sec-CH-UA-Mobile', 'Unknown'),
+        'platform': request.headers.get('Sec-CH-UA-Platform', 'Unknown Platform'),
+        'platform_version': request.headers.get('Sec-CH-UA-Platform-Version', 'Unknown Version'),
+        'model': request.headers.get('Sec-CH-UA-Model', 'Unknown Model')
+    }
+
 # Function to log the query and user information
 def log_query(request, search_string, results_count):
     timestamp = datetime.utcnow()
     ip_address = get_ip_address(request)
     location = get_location(ip_address)
     user_agent = request.headers.get('User-Agent')
+    client_hints = get_client_hints(request)
 
     log_data = {
         'timestamp': timestamp,
         'ip_address': ip_address,
         'location': location,
         'user_agent': user_agent,
+        'client_hints': client_hints,
         'search_string': search_string,
         'results_count': results_count
     }

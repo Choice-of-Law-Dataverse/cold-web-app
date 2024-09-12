@@ -66,31 +66,5 @@ def handle_curated_details_search():
     log_query(request, f"Details search in {table} for ID {id}", len(results))
     return jsonify(results), 200
 
-# Retrieve information about the user
-@app.route('/get_user_info', methods=['GET'])
-def get_user_info():
-    # Set the Accept-CH header to request client hints
-    response = jsonify({'message': 'Send Client Hints'})
-    response.headers.set('Accept-CH', 'Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version, Sec-CH-UA-Model, Sec-CH-UA, Sec-CH-UA-Mobile')
-    return response
-
-@app.route('/user_info', methods=['GET'])
-def user_info():
-    # Read the Client Hints from the headers
-    brand = request.headers.get('Sec-CH-UA', 'Unknown')
-    mobile = request.headers.get('Sec-CH-UA-Mobile', 'Unknown')
-    platform = request.headers.get('Sec-CH-UA-Platform', 'Unknown Platform')
-    platform_version = request.headers.get('Sec-CH-UA-Platform-Version', 'Unknown Version')
-    model = request.headers.get('Sec-CH-UA-Model', 'Unknown Model')
-
-    # Return the collected information
-    return jsonify({
-        'brand': brand,
-        'mobile': mobile,
-        'platform': platform,
-        'platform_version': platform_version,
-        'model': model
-    })
-
 if __name__ == "__main__":
     app.run(debug=True)
