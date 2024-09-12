@@ -84,8 +84,17 @@ function openCourtDecisionModal() {
 }
 
 function openLegalProvisionModal(legalProvision) {
-  console.log(legalProvision) // Log resultData[resultKey] to the console
-  isLegalProvisionModalOpen.value = true
+  // Create the JSON object
+  const provisionJson = {
+    table: "Legal provisions",
+    id: legalProvision.trim()  // Trim in case of extra spaces
+  };
+
+  // Log the JSON object to the console
+  console.log(provisionJson);
+
+  // Open the modal (or perform other actions)
+  isLegalProvisionModalOpen.value = true;
 }
 
 // Define props and assign them to a variable
