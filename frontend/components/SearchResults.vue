@@ -49,7 +49,7 @@
             </div>
             <div style="margin-top: 2em;"></div>
           </div>
-          <div><a href="#" @click.prevent="openCourtDecisionModal">Show more</a></div>
+          <div><a href="#" @click.prevent="openCourtDecisionModal(resultData)">Show more</a></div>
           <!-- <UButton label="Open CourtDecisionModal" @click="openModal" /> -->
         </template>
         
@@ -83,7 +83,13 @@ const legalProvisionModalData = ref(null);  // This will store the response data
 
 
 // Function to open the modal
-function openCourtDecisionModal() {
+function openCourtDecisionModal(data) {
+  // Create the JSON object
+  const decisionJson = {
+    table: "Court decisions",
+    id: data.ID.trim()  // Trim in case of extra spaces
+  };
+  console.log(decisionJson)
   isCourtDecisionModalOpen.value = true
 }
 
