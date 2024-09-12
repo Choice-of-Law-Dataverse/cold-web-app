@@ -13,13 +13,15 @@
                 
                 <template v-if="resultKey === 'Legal provision articles'">
                   <div v-if="resultData[resultKey]">
-                    <!-- Render as link if there are legal provisions -->
-                     <a href="#" @click.prevent="openLegalProvisionModal(resultData[resultKey])">
-                      {{ resultData[resultKey] }}
-                    </a>
+                    <!-- Split the resultData[resultKey] by commas and loop through each item -->
+                     <span v-for="(item, index) in resultData[resultKey].split(',')" :key="index" style="margin-right: 10px;">
+                      <a href="#" @click.prevent="openLegalProvisionModal(item)">
+                        {{ item.trim() }}
+                      </a>
+                    </span>
                   </div>
                   <!-- Display fallback text if there are no legal provisions -->
-                  <div v-else>No legal provision</div>
+                   <div v-else>No legal provision</div>
                   </template>
 
                 <!-- Display other keys normally -->
