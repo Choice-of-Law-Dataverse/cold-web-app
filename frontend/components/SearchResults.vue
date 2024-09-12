@@ -83,18 +83,43 @@ function openCourtDecisionModal() {
   isCourtDecisionModalOpen.value = true
 }
 
-function openLegalProvisionModal(legalProvision) {
+async function openLegalProvisionModal(legalProvision) {
   // Create the JSON object
   const provisionJson = {
     table: "Legal provisions",
     id: legalProvision.trim()  // Trim in case of extra spaces
   };
 
-  // Log the JSON object to the console
-  console.log(provisionJson);
+  // console.log(provisionJson);  // Log the object to confirm it's correct
 
-  // Open the modal (or perform other actions)
+try {
+  // Make a POST request to your desired URL (replace 'your-url' with the actual URL)
+  const response = await fetch('https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/curated_search/details', {
+    method: 'POST',  // Use POST to send data
+    headers: {
+      'Content-Type': 'application/json',  // Specify JSON content
+    },
+    body: JSON.stringify(provisionJson)  // Send the provisionJson as the request body
+  });
+
+  // Check if the response is OK (status 200-299)
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+
+  // Parse the JSON response from the server
+  const responseData = await response.json();
+
+  // Log the response data to the console (or handle it however you need)
+  // console.log('Response data:', responseData);
+
+  // Optionally open the modal
   isLegalProvisionModalOpen.value = true;
+
+} catch (error) {
+  // Handle any errors that occur during the fetch
+  console.error('Error fetching data:', error);
+}
 }
 
 // Define props and assign them to a variable
