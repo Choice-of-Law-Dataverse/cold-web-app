@@ -16,12 +16,15 @@
         </template>
 
         <!-- Modal Content -->
+
+        <!-- Display greyed out PDF download link until URL issue is fixed -->
         <div class="modal-content">
-          <span class="icon-wrapper">
+          <span class="icon-wrapper" style="color: grey; opacity: 0.5;">
             <UIcon name="i-material-symbols:file-open" />
           </span>
-          <a class="result-value">View original PDF<br><br></a>
-          
+          <a class="result-value" style="color: grey; opacity: 0.5; cursor: not-allowed;">View original PDF<br><br>
+          </a>
+
           <p class="result-key">JURISDICTION</p>
           <p class="result-value">{{ data?.['Jurisdiction Names'] || '[Missing Jurisdiction]' }}</p>
   
