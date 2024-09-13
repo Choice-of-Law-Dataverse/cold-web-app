@@ -3,6 +3,7 @@ from flask_cors import CORS
 import logging
 from config import Config
 from services.search import SearchService
+from services.query_logging import log_query
 
 # Create Flask app
 logging.basicConfig(level=logging.DEBUG)
@@ -31,6 +32,7 @@ def handle_search():
         else:
             results = search_service.basic_search(search_string)
 
+    log_query(request, search_string, len(results))
     return jsonify(results), 200
 
 @app.route('/curated_search', methods=['POST'])
@@ -44,6 +46,7 @@ def handle_curated_search():
 
     results = search_service.curated_search(search_string)
 
+    log_query(request, search_string, len(results))
     return jsonify(results), 200
 
 @app.route('/curated_search/details', methods=['POST'])
@@ -60,6 +63,7 @@ def handle_curated_details_search():
 
     results = search_service.curated_details_search(table, id)
 
+    log_query(request, f"Details search in {table} for ID {id}", len(results))
     return jsonify(results), 200
 
 # Retrieve information about the user
