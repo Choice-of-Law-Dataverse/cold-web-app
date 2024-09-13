@@ -9,45 +9,48 @@
         <template #header>
           <div class="flex items-center justify-between">
             <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-white">
-              [PLACEHOLDER] Federal Court, 03.07.1985 - BGE 111 II 175
+              {{ data?.Case || '[Missing Title]' }} <!-- Display the Name value from data or a placeholder -->
             </h3>
             <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="emitClose" />
           </div>
         </template>
 
         <!-- Modal Content -->
+
+        <!-- Display greyed out PDF download link until URL issue is fixed -->
         <div class="modal-content">
-          <span class="icon-wrapper">
+          <span class="icon-wrapper" style="color: grey; opacity: 0.5;">
             <UIcon name="i-material-symbols:file-open" />
           </span>
-          <a class="result-value">View original PDF<br><br></a>
-          
+          <a class="result-value" style="color: grey; opacity: 0.5; cursor: not-allowed;">View original PDF<br><br>
+          </a>
+
           <p class="result-key">JURISDICTION</p>
-          <p class="result-value">Switzerland</p>
+          <p class="result-value">{{ data?.['Jurisdiction Names'] || '[Missing Jurisdiction]' }}</p>
   
           <p class="result-key">ABSTRACT</p>
-          <p class="result-value">Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean. A small river named Duden flows by their place and supplies it with the necessary regelialia. It is a paradisematic country, in which roasted parts of sentences fly into your mouth. Even the all-powerful Pointing has no control about the blind texts it is an almost unorthographic life One day however a small line of blind text by the name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox advised her not to do so, because there were thousands of bad Commas, wild Question Marks and devious Semikoli, but the Little Blind Text didn’t listen. She packed her seven versalia, put her initial into the belt and made herself on the way. When she reached the first hills of the Italic Mountains, she had a last view back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet Village and the subline of her own road, the Line Lane. Pityful a rethoric question ran over her cheek, then</p>
+          <p class="result-value">{{ data?.Abstract || '[No Abstract available]' }}</p>
   
           <p class="result-key">RELEVANT FACTS / SUMMARY OF THE CASE</p>
-          <p class="result-value">…</p>
+          <p class="result-value">{{ data?.['Relevant facts / Summary of the case'] || '[Missing Relevant Facts or Summary]' }}</p>
 
           <p class="result-key">RELEVANT RULES OF LAW INVOLVED</p>
-          <p class="result-value">…</p>
+          <p class="result-value">{{ data?.['Relevant rules of law involved'] || '[Missing Relevant Rules]' }}</p>
 
           <p class="result-key">CHOICE OF LAW ISSUE</p>
-          <p class="result-value">…</p>
+          <p class="result-value">{{ data?.['Choice of law issue'] || '[Missing Choice of Law Issue]' }}</p>
 
           <p class="result-key">COURT'S POSITION</p>
-          <p class="result-value">…</p>
+          <p class="result-value">{{ data?.["Court's position"] || "[Missing Court's Positions]" }}</p>
 
           <p class="result-key">TEXT OF THE RELEVANT LEGAL PROVISIONS</p>
-          <p class="result-value">…</p>
+          <p class="result-value">{{ data?.['Text of the relevant legal provisions'] || "[Missing Text of Relevant Legal Provisions]" }}</p>
 
           <p class="result-key">QUOTE</p>
-          <p class="result-value">…</p>
+          <p class="result-value">{{ data?.['Quote'] || "[Missing Quote]" }}</p>
 
           <p class="result-key">TRANSLATED EXCERPT</p>
-          <p class="result-value">…</p>
+          <p class="result-value">{{ data?.['Translated excerpt'] || "[Missing Translated Excerpt]" }}</p>
         </div>
       </UCard>
     </UModal>
@@ -99,7 +102,8 @@
 
 // Accept `isVisible` prop from the parent component
 const props = defineProps({
-  isVisible: Boolean
+  isVisible: Boolean,
+  data: Object  // Define the data prop to accept an object
 })
 
 // Emit event for closing the modal
