@@ -40,7 +40,7 @@
             <div class="result-value">
               <!-- Check if 'Choice of law issue' is empty and display default text -->
               <template v-if="resultKey === 'Choice of law issue'">
-                {{ resultData[resultKey] || 'No choice of law issue' }}
+                {{ resultData[resultKey] || '[Missing Information]' }}
               </template>
               <!-- Otherwise, render the value using createCollapsibleContent -->
               <template v-else>
