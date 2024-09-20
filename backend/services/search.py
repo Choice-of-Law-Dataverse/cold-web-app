@@ -3,7 +3,7 @@ import numpy as np
 from config import Config
 from .database import Database
 from .embeddings import EmbeddingService
-from utils.utils import filter_na, parse_results, sort_by_similarity, flatten_and_transform_data
+from utils.utils import filter_na, parse_results, sort_by_similarity, flatten_and_transform_data, sort_by_priority_and_completeness
 
 class SearchService:
     def __init__(self):
@@ -41,7 +41,10 @@ class SearchService:
             'total_matches': total_matches,
             'tables': results
             }
-        return filter_na(parse_results(final_results))
+        # Sort data based on "Case rank" and completeness
+        sorted_results = sort_by_priority_and_completeness(final_results)
+
+        return filter_na(parse_results(sorted_results))
 
     def filtered_search(self, search_string, filter_string):
         return f"{self.test}...foo"
@@ -101,7 +104,11 @@ class SearchService:
             'total_matches': total_matches,
             'tables': results
             }
-        return filter_na(parse_results(final_results))
+            
+        # Sort data based on "Case rank" and completeness
+        sorted_results = sort_by_priority_and_completeness(final_results)
+
+        return filter_na(parse_results(sorted_results))
 
     def curated_details_search(self, table, id):
         print(table)
