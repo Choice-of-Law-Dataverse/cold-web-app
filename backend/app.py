@@ -6,8 +6,12 @@ from config import Config
 from services.search import SearchService
 from services.query_logging import log_query
 
-# Create Flask app
+# Set up logging
 logging.basicConfig(level=logging.DEBUG)
+# Set PyMongo log level to WARNING to suppress DEBUG messages
+logging.getLogger('pymongo').setLevel(logging.WARNING)
+
+# Create Flask app
 app = Flask(__name__)
 CORS(app)
 
