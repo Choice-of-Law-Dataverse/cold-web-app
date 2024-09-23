@@ -7,6 +7,20 @@
             "Answer": "Yes",
             "Case titles": "High Court (Obergericht) of the Canton Thurgau, 29.02.2008, ZBO.2007.13, RBOG 2008 No 8,Federal Court, 03.07.1985 - BGE 111 II 175 ,Federal Court, 30.03.1976 - BGE 102 II 143 ,High Court (Obergericht) of the Canton Zurich, 01.11.2013 - HG130034 ",
             "ID": "CHE_03-PA",
+            "Legislation titles": "Swiss Private International Law Act 1987, Bundesgesetz über das Internationale Privatrecht/Loi sur le droit international privé",
+            "Name (from Jurisdiction)": "Switzerland",
+            "Questions": "Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in your jurisdiction?"
+          },
+          "1": {
+            "Answer": "Yes",
+            "Case titles": "High Court (Obergericht) of the Canton Thurgau, 29.02.2008, ZBO.2007.13, RBOG 2008 No 8,Federal Court, 03.07.1985 - BGE 111 II 175 ,Federal Court, 30.03.1976 - BGE 102 II 143 ,High Court (Obergericht) of the Canton Zurich, 01.11.2013 - HG130034 ",
+            "ID": "CHE_03-PA",
+            "Legal provision articles": "Swi-148 Art. 116"
+          },
+          "2": {
+            "Answer": "Yes",
+            "Case titles": "High Court (Obergericht) of the Canton Thurgau, 29.02.2008, ZBO.2007.13, RBOG 2008 No 8,Federal Court, 03.07.1985 - BGE 111 II 175 ,Federal Court, 30.03.1976 - BGE 102 II 143 ,High Court (Obergericht) of the Canton Zurich, 01.11.2013 - HG130034 ",
+            "ID": "CHE_03-PA",
             "Legal provision articles": "Swi-148 Art. 116",
             "Legislation titles": "Swiss Private International Law Act 1987, Bundesgesetz über das Internationale Privatrecht/Loi sur le droit international privé",
             "Name (from Jurisdiction)": "Switzerland",
@@ -293,7 +307,7 @@
           },
           "18": {
             "Abstract": "Art. 15, 63 and 64 PILA; Art. 122 and 123 SCC; amendment of a foreign divorce decree.\nSupplement to a French divorce decree regarding the division of the termination benefit accumulated with a Swiss pension fund (E. 2).",
-            "Additional information": "Domestic (intra-regional) case. There is no international commercial contract, but there is a foreign element which is not sufficient to qualify for a choice of law analysis. \nIt's a valid case to understand how the connection factors of the PILA can be stripped of their application (exception clause).",
+            "Additional information": "foo",
             "Answer IDs": "CHE_12-TC,CHE_17-TC,CHE_30-AoC",
             "Case": "Federal Court, 11.02.2005 - BGE 131 III 289",
             "Choice of law issue": "Does a choice of law have to be made explicitly by both parties. Does filing an action before a court in a foreign country constitute a choice of law. Does a choice of court constitute a tacit choice of law. ",
