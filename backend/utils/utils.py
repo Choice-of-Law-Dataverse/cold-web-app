@@ -54,8 +54,10 @@ def sort_by_priority_and_completeness(results):
         """Count the number of non-empty fields to determine completeness."""
         return sum(1 for value in entry.values() if value not in (None, '', [], {}))
 
+    print(completeness_score(results))
+
     def sort_key(entry):
-        """Priority sorting by 'Case rank' first and then by completeness."""
+        #Priority sorting by 'Case rank' first and then by completeness.
         case_rank = entry.get('Case rank', None)
         table_name = entry.get('table', '')
 
@@ -71,3 +73,37 @@ def sort_by_priority_and_completeness(results):
 
     # Sort based on the computed key
     return sorted(results, key=sort_key)
+    #return results
+
+def sort_by_key_value_pairs(data):
+    # Access the 'Answers' and 'Court decisions' results
+    answers_results = data['tables']['Answers']['results']
+    court_results = data['tables']['Court decisions']['results']
+
+    # Define a helper function to count key-value pairs
+    def count_key_value_pairs(entry):
+        return len(entry)
+
+    # Sort 'Answers' based on the number of key-value pairs
+    sorted_answers = dict(sorted(answers_results.items(), 
+                                 key=lambda x: count_key_value_pairs(x[1]), 
+                                 reverse=True))
+    
+    # Sort 'Court decisions' based on the number of key-value pairs
+    sorted_court_decisions = dict(sorted(court_results.items(), 
+                                         key=lambda x: count_key_value_pairs(x[1]), 
+                                         reverse=True))
+    
+    # Return the sorted data, maintaining the original structure
+    return {
+        "tables": {
+            "Answers": {
+                "matches": data['tables']['Answers']['matches'],
+                "results": sorted_answers
+            },
+            "Court decisions": {
+                "matches": data['tables']['Court decisions']['matches'],
+                "results": sorted_court_decisions
+            }
+        }
+    }
