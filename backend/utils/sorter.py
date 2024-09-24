@@ -6,37 +6,22 @@ class Sorter:
         return sorted(results, key=lambda x: x.get('similarity', 0), reverse=True)
 
     def sort_by_completeness(self, data):
-        # Access the 'Answers' and 'Court decisions' results
-        answers_results = data['tables']['Answers']['results']
-        court_results = data['tables']['Court decisions']['results']
+        # Sort the 'results' entries by the number of key-value pairs (descending order)
+        for table, table_data in data['tables'].items():
+            results = table_data['results']
+            
+            # Sort the results based on the number of key-value pairs
+            sorted_results = sorted(results.items(), key=lambda x: len(x[1]), reverse=True)
+            
+            # Reset the index for each result entry
+            new_results = {}
+            for idx, (old_idx, result_data) in enumerate(sorted_results):
+                new_results[str(idx)] = result_data
+            
+            # Update the table with sorted and re-indexed results
+            data['tables'][table]['results'] = new_results
 
-        # Define a helper function to count key-value pairs
-        def count_key_value_pairs(entry):
-            return len(entry)
-
-        # Sort 'Answers' based on the number of key-value pairs
-        sorted_answers = dict(sorted(answers_results.items(), 
-                                    key=lambda x: count_key_value_pairs(x[1]), 
-                                    reverse=True))
-        
-        # Sort 'Court decisions' based on the number of key-value pairs
-        sorted_court_decisions = dict(sorted(court_results.items(), 
-                                            key=lambda x: count_key_value_pairs(x[1]), 
-                                            reverse=True))
-        
-        # Return the sorted data, maintaining the original structure
-        return {
-            "tables": {
-                "Answers": {
-                    "matches": data['tables']['Answers']['matches'],
-                    "results": sorted_answers
-                },
-                "Court decisions": {
-                    "matches": data['tables']['Court decisions']['matches'],
-                    "results": sorted_court_decisions
-                }
-            }
-        }
+        return data
 
     def sort_by_case_rank(self, data):
         # Extract the court decision results
