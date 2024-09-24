@@ -3,13 +3,15 @@ import numpy as np
 from config import Config
 from .database import Database
 from .embeddings import EmbeddingService
-from utils.utils import filter_na, parse_results, sort_by_similarity, flatten_and_transform_data, sort_by_priority_and_completeness, sort_by_key_value_pairs
+from utils.utils import filter_na, parse_results, flatten_and_transform_data
+from utils.sorter import Sorter
 
 class SearchService:
     def __init__(self):
         #self.db = Database(Config.AZURE_POSTGRESQL_DUMMY_CONN_STRING)
         self.db = Database(Config.SQL_CONN_STRING)
         self.test = Config.TEST
+        self.sorter = Sorter()
 
     def basic_search(self, search_string):
         all_entries = self.db.get_all_entries()
@@ -42,7 +44,7 @@ class SearchService:
             'tables': results
             }
         # Sort data based on "Case rank" and completeness
-        sorted_results = sort_by_priority_and_completeness(final_results)
+        sorted_results = self.sorter.sort_by_priority_and_completeness(final_results)
 
         return filter_na(parse_results(sorted_results))
 
@@ -107,7 +109,7 @@ class SearchService:
             'tables': results#sort_by_priority_and_completeness(results) # Sort data based on "Case rank" and completeness
             }
 
-        return sort_by_key_value_pairs(filter_na(parse_results(final_results)))
+        return self.sorter.sort_by_key_value_pairs(filter_na(parse_results(final_results)))
 
     def curated_details_search(self, table, id):
         print(table)
