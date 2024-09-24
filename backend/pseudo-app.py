@@ -20,10 +20,11 @@ def main(data):
 if __name__ == "__main__":
     # Simulating a sample request payload (normally obtained from request.json)
     sample_data = {
-        "search_string": "party autonomy switzerland"
+        "search_string": "morocco"
     }
     
     # Call main with sample data
     result = main(sample_data)
     
     utils.data_visualization.visualize_dict(result)
+    #print("foo")
