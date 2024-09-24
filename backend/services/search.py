@@ -109,7 +109,7 @@ class SearchService:
             'tables': results#sort_by_priority_and_completeness(results) # Sort data based on "Case rank" and completeness
             }
 
-        return self.sorter.sort_by_key_value_pairs(filter_na(parse_results(final_results)))
+        return self.sorter.sorting_chain(filter_na(parse_results(final_results)))
 
     def curated_details_search(self, table, id):
         print(table)
