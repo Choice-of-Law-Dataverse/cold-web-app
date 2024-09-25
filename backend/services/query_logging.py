@@ -1,13 +1,11 @@
-import os
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 from datetime import datetime
 import requests
-
-uri = os.getenv('MONGODB_CONN_STRING')
+from config import Config
 
 # Create a new client and connect to the server
-client = MongoClient(uri, server_api=ServerApi('1'))
+client = MongoClient(Config.MONGODB_CONN_STRING, server_api=ServerApi('1'))
 db = client['query_logs']
 collection = db['queries']
 

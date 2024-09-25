@@ -43,6 +43,3 @@ def flatten_and_transform_data(data):
             flattened_data.append(flattened_result)
     
     return flattened_data
-
-def sort_by_similarity(results):
-    return sorted(results, key=lambda x: x.get('similarity', 0), reverse=True)
