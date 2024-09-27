@@ -134,3 +134,67 @@ class SearchService:
             "id": "CHE-1017"
             """
         
+    def full_text_search(self, search_string):
+        # Prepare the SQL query with dynamic search string input
+        query = f"""
+        -- Search in "Answers" table
+        select 
+        'Answers' as source_table,               -- Column to indicate the source table
+        "Questions" as context,                  -- Context field (Questions for Answers table)
+        "Name (from Jurisdiction)" as name,      -- Name or Jurisdiction field
+        "Themes" as additional_info,             -- Themes as additional information
+        NULL as case_info,                       -- Placeholder for the "Case" column from Court decisions
+        ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+        ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
+        from "Answers"
+        where search @@ websearch_to_tsquery('english', '{search_string}')
+        or search @@ websearch_to_tsquery('simple', '{search_string}')
+
+        union all
+
+        -- Search in "Court decisions" table
+        select 
+        'Court decisions' as source_table,       -- Indicate the source table
+        NULL as context,                         -- Placeholder for Questions column from Answers
+        "Jurisdiction Names" as name,            -- Jurisdiction Names for Court decisions
+        "Additional information" as additional_info, -- Additional info from Court decisions
+        "Case" as case_info,                     -- The Case information from Court decisions
+        ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+        ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
+        from "Court decisions"
+        where search @@ websearch_to_tsquery('english', '{search_string}')
+        or search @@ websearch_to_tsquery('simple', '{search_string}')
+
+        -- Combine results and order by rank
+        order by rank desc;
+        """
+
+        # Execute the SQL query
+        all_entries = self.db.execute_query(query)
+
+        # Check if the query returned any results
+        if not all_entries:
+            return json.dumps({
+                f"{self.test}_error": "No results found for your search."
+            })
+
+        # Parse the results into the desired format
+        results = {
+            "test": self.test,
+            "total_matches": len(all_entries),
+            "results": []  # Combine all results into one list
+        }
+
+        # Iterate through the entries and append to the single results list
+        for entry in all_entries:
+            results["results"].append({
+                "source_table": entry.get("source_table"),
+                "context": entry.get("context"),
+                "name": entry.get("name"),
+                "additional_info": entry.get("additional_info"),
+                "case_info": entry.get("case_info"),
+                "rank": entry.get("rank")
+            })
+
+        # Return parsed results
+        return filter_na(parse_results(results))
