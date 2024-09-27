@@ -137,36 +137,156 @@ class SearchService:
     def full_text_search(self, search_string):
         # Prepare the SQL query with dynamic search string input
         query = f"""
-        -- Search in "Answers" table
-        select 
-        'Answers' as source_table,               -- Column to indicate the source table
-        "Questions" as context,                  -- Context field (Questions for Answers table)
-        "Name (from Jurisdiction)" as name,      -- Name or Jurisdiction field
-        "Themes" as additional_info,             -- Themes as additional information
-        NULL as case_info,                       -- Placeholder for the "Case" column from Court decisions
-        ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-        ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
-        from "Answers"
-        where search @@ websearch_to_tsquery('english', '{search_string}')
-        or search @@ websearch_to_tsquery('simple', '{search_string}')
+            -- Search in "Answers" table
+            select 
+            'Answers' as source_table,               -- Column to indicate the source table
+            -- mutual columns
+            "ID" as id,
+            "Questions" as questions,
+            "Record ID" as record_id,
+            "Themes" as themes,
+            -- answers columns
+            "Alpha-3 code (from Jurisdiction)" as alpha_3_a,
+            "Answer" as answer_a,
+            "Answer Rank" as answer_rank_a,
+            "Case titles" as case_titles_a,
+            "Cases" as cases_a,
+            "Created time" as created_time_a,
+            "data type sample" as data_type_sample_a,
+            "Interesting answer" as interesting_answer_a,
+            "Jurisdiction" as jurisdiction_a,
+            "Jurisdictions copy" as jurisdictions_copy_a,
+            "Keyword" as keyword_a,
+            "Legal provision articles" as legal_provisions_articles_a,
+            "Legislation" as legislation_a,
+            "Legislation titles" as legislation_titles_a,
+            "More information" as more_information_a,
+            "Name (from Jurisdiction)" as name_from_jurisdiction_a,
+            "OUP Book Quotation" as oup_book_quotation_a,
+            "Question" as question_a,
+            "Relevant provisions" as relevant_provisions_a,
+            "Secondary legal provision articles" as secondary_legal_provision_articles_a,
+            "Secondary legal provisions" as secondary_legal_provisions_a,
+            "test" as test_a,
+            "Theme Code (from Question)" as theme_code_from_question_a,
+            "Themes (from Question)" as themes_from_question_a,
+            "To review?" as to_review_a,
+            "Type (from Jurisdiction)" as type_from_jurisdiction_a,
+            -- court decision columns
+            NULL as abstract_cd,
+            NULL as additional_information_cd,
+            NULL as answer_ids_cd,
+            NULL as answers_cd,
+            NULL as ap_themes_cd,
+            NULL as case_cd,
+            NULL as case_rank_cd,
+            NULL as choice_of_law_issue_cd,
+            NULL as content_cd,
+            NULL as copyright_issues_cd,
+            NULL as courts_position_cd,
+            NULL as id_number_cd,
+            NULL as jurisdiction_from_forms_cd,
+            NULL as jurisdiction_name_cd,
+            NULL as jurisdiction_names_cd,
+            NULL as jurisdictions_cd,
+            NULL as observations_cd,
+            NULL as official_source_pdf_cd,
+            NULL as official_source_url_cd,
+            NULL as pinpoint_col_cd,
+            NULL as pinpoint_facts_cd,
+            NULL as pinpoint_rules_cd,
+            NULL as questions_2_cd,
+            NULL as quote_cd,
+            NULL as region_from_jurisdictions_cd,
+            NULL as relevant_facts_summary_of_the_case_cd,
+            NULL as relevant_rules_of_law_involved_cd,
+            NULL as selected_case_cd,
+            NULL as text_of_the_relevant_legal_provisions_cd,
+            NULL as translated_excerpt_cd,
+            NULL as type_from_jurisdictions_cd,
+            ts_rank(search, websearch_to_tsquery('english', 'party autonomy switzerland')) +
+            ts_rank(search, websearch_to_tsquery('simple', 'party autonomy switzerland')) as rank
+            from "Answers"
+            where search @@ websearch_to_tsquery('english', 'party autonomy switzerland')
+            or search @@ websearch_to_tsquery('simple', 'party autonomy switzerland')
 
-        union all
+            union all
 
-        -- Search in "Court decisions" table
-        select 
-        'Court decisions' as source_table,       -- Indicate the source table
-        NULL as context,                         -- Placeholder for Questions column from Answers
-        "Jurisdiction Names" as name,            -- Jurisdiction Names for Court decisions
-        "Additional information" as additional_info, -- Additional info from Court decisions
-        "Case" as case_info,                     -- The Case information from Court decisions
-        ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-        ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
-        from "Court decisions"
-        where search @@ websearch_to_tsquery('english', '{search_string}')
-        or search @@ websearch_to_tsquery('simple', '{search_string}')
+            -- Search in "Court decisions" table
+            select 
+            'Court decisions' as source_table,       -- Indicate the source table
+            -- mutual columns
+            "ID" as id,
+            "Questions" as questions,
+            "Record ID" as record_id,
+            "Themes" as themes,
+            -- answers columns
+            NULL as alpha_3_a,
+            NULL as answer_a,
+            NULL as answer_rank_a,
+            NULL as case_titles_a,
+            NULL as cases_a,
+            NULL as created_time_a,
+            NULL as data_type_sample_a,
+            NULL as interesting_answer_a,
+            NULL as jurisdiction_a,
+            NULL as jurisdictions_copy_a,
+            NULL as keyword_a,
+            NULL as legal_provisions_articles_a,
+            NULL as legislation_a,
+            NULL as legislation_titles_a,
+            NULL as more_information_a,
+            NULL as name_from_jurisdiction_a,
+            NULL as oup_book_quotation_a,
+            NULL as question_a,
+            NULL as relevant_provisions_a,
+            NULL as secondary_legal_provision_articles_a,
+            NULL as secondary_legal_provisions_a,
+            NULL as test_a,
+            NULL as theme_code_from_question_a,
+            NULL as themes_from_question_a,
+            NULL as to_review_a,
+            NULL as type_from_jurisdiction_a,
+            -- court decision columns
+            "Abstract" as abstract_cd,
+            "Additional information" as additional_information_cd,
+            CAST("Answer IDs" AS text) as answer_ids_cd,  -- Cast to text
+            "Answers" as answers_cd,
+            "AP themes" as ap_themes_cd,
+            "Case" as case_cd,
+            "Case rank" as case_rank_cd,
+            "Choice of law issue" as choice_of_law_issue_cd,
+            "Content" as content_cd,
+            "Copyright issues" as copyright_issues_cd,
+            "Court's position" as courts_position_cd,
+            "ID-number" as id_number_cd,
+            "Jurisdiction (from forms)" as jurisdiction_from_forms_cd,
+            "Jurisdiction Name" as jurisdiction_name_cd,
+            "Jurisdiction Names" as jurisdiction_names_cd,
+            "Jurisdictions" as jurisdictions_cd,
+            "Observations" as observations_cd,
+            "Official Source (PDF)" as official_source_pdf_cd,
+            "Official Source (URL)" as official_source_url_cd,
+            "Pinpoint CoL" as pinpoint_col_cd,
+            "Pinpoint facts" as pinpoint_facts_cd,
+            "Pinpoint rules" as pinpoint_rules_cd,
+            "Questions 2" as questions_2_cd,
+            "Quote" as quote_cd,
+            "Region (from Jurisdictions)" as region_from_jurisdictions_cd,
+            "Relevant facts / Summary of the case" as relevant_facts_summary_of_the_case_cd,
+            "Relevant rules of law involved" as relevant_rules_of_law_involved_cd,
+            "Selected case" as selected_case_cd,
+            "Text of the relevant legal provisions" as text_of_the_relevant_legal_provisions_cd,
+            "Translated excerpt" as translated_excerpt_cd,
+            CAST("Type (from Jurisdictions)" AS text) as type_from_jurisdictions_cd,  -- Ensure type matches
+            ts_rank(search, websearch_to_tsquery('english', 'party autonomy switzerland')) +
+            ts_rank(search, websearch_to_tsquery('simple', 'party autonomy switzerland')) as rank
+            from "Court decisions"
+            where search @@ websearch_to_tsquery('english', 'party autonomy switzerland')
+            or search @@ websearch_to_tsquery('simple', 'party autonomy switzerland')
 
-        -- Combine results and order by rank
-        order by rank desc;
+            -- Combine results and order by rank
+            order by rank desc;
         """
 
         # Execute the SQL query
@@ -182,19 +302,8 @@ class SearchService:
         results = {
             "test": self.test,
             "total_matches": len(all_entries),
-            "results": []  # Combine all results into one list
+            "results": all_entries  # Combine all results into one list
         }
-
-        # Iterate through the entries and append to the single results list
-        for entry in all_entries:
-            results["results"].append({
-                "source_table": entry.get("source_table"),
-                "context": entry.get("context"),
-                "name": entry.get("name"),
-                "additional_info": entry.get("additional_info"),
-                "case_info": entry.get("case_info"),
-                "rank": entry.get("rank")
-            })
 
         # Return parsed results
         return filter_na(parse_results(results))
