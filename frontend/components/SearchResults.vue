@@ -11,7 +11,7 @@
               <div class="result-key">{{ keyMap[resultKey] }}</div>
               <div class="result-value">
                 
-                <template v-if="resultKey === 'Legal provision articles'">
+                <template v-if="resultKey === 'legal_provisions_articles_a'">
                   <div v-if="resultData[resultKey]">
                     <!-- Split the resultData[resultKey] by commas and loop through each item -->
                      <span v-for="(item, index) in resultData[resultKey].split(',')" :key="index" style="margin-right: 10px;">
@@ -77,7 +77,7 @@ const isCourtDecisionModalOpen = ref(false)
 const isLegalProvisionModalOpen = ref(false)
 
 // Linking modals to dynamic data
-const resultKey = ref('Legal provision articles');
+const resultKey = ref('relevant_provisions_a');
 const resultData = ref({});  // Placeholder for your actual data
 
 // This will store the response data to be passed to the modal
@@ -130,7 +130,7 @@ async function openCourtDecisionModal(courtDecision) {
 async function openLegalProvisionModal(legalProvision) {
   // Create the JSON object
   const provisionJson = {
-    table: "Legal provisions",
+    table: "relevant_provisions_a",
     id: legalProvision.trim()  // Trim in case of extra spaces
   };
 
@@ -177,39 +177,34 @@ const props = defineProps({
 })
 
 // Define the keys and their order for "Answers"
-const answerKeys = ['Questions', 'Name (from Jurisdiction)', 'Answer', 'Legal provision articles']
+const answerKeys = ['questions', 'name_from_jurisdiction_a', 'answer_a', 'legal_provisions_articles_a']
 
 // Define the keys and their order for "Court decisions"
-const courtDecisionKeys = ['Case', 'Jurisdiction Names', 'Choice of law issue']
+const courtDecisionKeys = ['case_cd', 'jurisdiction_names_cd', 'choice_of_law_issue_cd']
 
 // Define a keyMap to rename the keys for display
 const keyMap = {
   // Answers
-  Answer: 'ANSWER',
-  'Name (from Jurisdiction)': 'JURISDICTION',
-  Questions: 'QUESTION',
-  'Legal provision articles': 'LEGAL PROVISIONS',
+  'answer_a': 'ANSWER',
+  'name_from_jurisdiction_a': 'JURISDICTION',
+  'questions': 'QUESTION',
+  'legal_provisions_articles_a': 'LEGAL PROVISIONS',
   // Court Decisions
-  Case: 'CASE TITLE',
-  'Jurisdiction Names': 'JURISDICTION',
-  'Choice of law issue': 'CHOICE OF LAW ISSUE'
+  'case_cd': 'CASE TITLE',
+  'jurisdiction_names_cd': 'JURISDICTION',
+  'choice_of_law_issue_cd': 'CHOICE OF LAW ISSUE'
 }
 
-// Computed property to gather all results from all tables
+// Gather all results
 const allResults = computed(() => {
-  let results = [];
-  for (const table in props.data.tables) {
-    results = results.concat(Object.values(props.data.tables[table].results));
-  }
-  return results;
+  return Object.values(props.data.results);
 })
 
 // Utility functions
 
-// Function to detect if the resultData is for an "Answer"
 function isAnswer(resultData) {
-  // Assuming that "Answer" is a key that exists only in "Answers" type results
-  return 'Answer' in resultData;
+  // Check if 'source_table' key exists and if its value is "Answers"
+  return resultData.source_table === 'Answers';
 }
 
 function createCollapsibleContent(value: string): string {

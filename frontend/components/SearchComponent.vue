@@ -119,7 +119,7 @@ const performSearch = async () => {
       browser_info_hint: userInfo || {}, // Add user info (platform, version, etc.) from client hint
     };
 
-    const response = await fetch('https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/curated_search', {
+    const response = await fetch('https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_text_search', {
     // const response = await fetch('http://localhost:5000/curated_search', {
       method: 'POST',
       headers: {
