@@ -13,7 +13,8 @@ def main(data):
     search_service = SearchService()  # Create or mock the search service instance
 
     # Simulating the call to the search function
-    results = search_service.curated_search(search_string)
+    #results = search_service.curated_search(search_string)
+    results = search_service.full_text_search(search_string)
 
     return results  # No need for jsonify as we're not using Flask
 

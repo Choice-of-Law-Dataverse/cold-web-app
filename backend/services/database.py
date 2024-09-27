@@ -92,3 +92,40 @@ class Database:
             self.session.close()
 
         return entry
+
+    def execute_query(self, query, params=None):
+        """
+        Execute a given SQL query and return the results as a list of dictionaries.
+        
+        Parameters:
+        - query: SQLAlchemy text query or SQL string
+        - params: Optional dictionary of query parameters
+        
+        Returns:
+        - List of results as dictionaries
+        """
+        try:
+            # Use the session to execute the query
+            result = self.session.execute(sa.text(query), params or {})
+            
+            # Fetch all rows from the result
+            rows = result.fetchall()
+            
+            # If there are no rows, return an empty list
+            if not rows:
+                return []
+
+            # Get column names from the result
+            columns = result.keys()
+            
+            # Convert the rows into a list of dictionaries
+            results = [dict(zip(columns, row)) for row in rows]
+            
+            return results
+
+        except SQLAlchemyError as e:
+            print(f"Error executing query: {e}")
+            return None
+
+        finally:
+            self.session.close()
