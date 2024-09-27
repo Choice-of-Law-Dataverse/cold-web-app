@@ -67,6 +67,18 @@ def handle_search():
     log_query(request, search_string, len(results))
     return jsonify(results), 200
 
+@app.route('/full_text_search', methods=['POST'])
+def handle_full_text_search():
+    data = request.json
+    search_string = data.get('search_string')
+
+    if not search_string:
+        return jsonify({'error': 'No search string provided'}), 400
+
+    results = search_service.full_text_search(search_string)
+    log_query(request, search_string, len(results))
+    return jsonify(results), 200
+
 @app.route('/curated_search', methods=['POST'])
 def handle_curated_search():
     """
