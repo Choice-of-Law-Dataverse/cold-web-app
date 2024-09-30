@@ -39,7 +39,7 @@
             <div class="result-key">{{ keyMap[resultKey] }}</div>
             <div class="result-value">
               <!-- Check if 'Choice of law issue' is empty and display default text -->
-              <template v-if="resultKey === 'Choice of law issue'">
+              <template v-if="resultKey === 'choice_of_law_issue_cd'">
                 {{ resultData[resultKey] || '[Missing Information]' }}
               </template>
               <!-- Otherwise, render the value using createCollapsibleContent -->
