@@ -130,11 +130,11 @@ async function openCourtDecisionModal(courtDecision) {
 async function openLegalProvisionModal(legalProvision) {
   // Create the JSON object
   const provisionJson = {
-    table: "relevant_provisions_a",
+    table: "Legal provisions",
     id: legalProvision.trim()  // Trim in case of extra spaces
   };
 
-  // console.log(provisionJson);  // Log the object to confirm it's correct
+  console.log(provisionJson);  // Log the object to confirm it's correct
 
 try {
   // Make a POST request to your desired URL (replace 'your-url' with the actual URL)
