@@ -294,11 +294,12 @@ class SearchService:
 
         # Check if the query returned any results
         if not all_entries:
-            return json.dumps({
+            empty = {
                 "test": self.test,
                 "total_matches": 0,
                 "results": []
-            })
+            }
+            return empty
 
         # Parse the results into the desired format
         results = {
