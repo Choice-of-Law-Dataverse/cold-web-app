@@ -295,7 +295,9 @@ class SearchService:
         # Check if the query returned any results
         if not all_entries:
             return json.dumps({
-                f"{self.test}_error": "No results found for your search."
+                "test": self.test,
+                "total_matches": 0,
+                "results": []
             })
 
         # Parse the results into the desired format
