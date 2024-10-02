@@ -204,11 +204,11 @@ class SearchService:
             NULL as text_of_the_relevant_legal_provisions_cd,
             NULL as translated_excerpt_cd,
             NULL as type_from_jurisdictions_cd,
-            ts_rank(search, websearch_to_tsquery('english', 'party autonomy switzerland')) +
-            ts_rank(search, websearch_to_tsquery('simple', 'party autonomy switzerland')) as rank
+            ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+            ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
             from "Answers"
-            where search @@ websearch_to_tsquery('english', 'party autonomy switzerland')
-            or search @@ websearch_to_tsquery('simple', 'party autonomy switzerland')
+            where search @@ websearch_to_tsquery('english', '{search_string}')
+            or search @@ websearch_to_tsquery('simple', '{search_string}')
 
             union all
 
@@ -279,11 +279,11 @@ class SearchService:
             "Text of the relevant legal provisions" as text_of_the_relevant_legal_provisions_cd,
             "Translated excerpt" as translated_excerpt_cd,
             CAST("Type (from Jurisdictions)" AS text) as type_from_jurisdictions_cd,  -- Ensure type matches
-            ts_rank(search, websearch_to_tsquery('english', 'party autonomy switzerland')) +
-            ts_rank(search, websearch_to_tsquery('simple', 'party autonomy switzerland')) as rank
+            ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+            ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
             from "Court decisions"
-            where search @@ websearch_to_tsquery('english', 'party autonomy switzerland')
-            or search @@ websearch_to_tsquery('simple', 'party autonomy switzerland')
+            where search @@ websearch_to_tsquery('english', '{search_string}')
+            or search @@ websearch_to_tsquery('simple', '{search_string}')
 
             -- Combine results and order by rank
             order by rank desc;
@@ -294,9 +294,12 @@ class SearchService:
 
         # Check if the query returned any results
         if not all_entries:
-            return json.dumps({
-                f"{self.test}_error": "No results found for your search."
-            })
+            empty = {
+                "test": self.test,
+                "total_matches": 0,
+                "results": []
+            }
+            return empty
 
         # Parse the results into the desired format
         results = {
