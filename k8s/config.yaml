@@ -19,8 +19,8 @@ spec:
     spec:
       containers:
       - name: backend
-        image: cold-flask-backend:latest
-        imagePullPolicy: Never
+        image: coldcontainerregistry.azurecr.io/cold-flask-backend:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 5000
         env:
@@ -58,7 +58,7 @@ spec:
     - protocol: TCP
       port: 5000
       targetPort: 5000
-  type: ClusterIP
+  type: LoadBalancer
 
 ---
 # Frontend Deployment
@@ -80,8 +80,8 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: cold-nuxt-frontend:latest
-        imagePullPolicy: Never
+        image: coldcontainerregistry.azurecr.io/cold-nuxt-frontend:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 3000
 
@@ -98,7 +98,7 @@ spec:
     - protocol: TCP
       port: 3000
       targetPort: 3000
-  type: ClusterIP
+  type: LoadBalancer
 
 ---
 # Ingress
