@@ -1,0 +1,129 @@
+# Combined Kubernetes configuration: deployment, service, ingress, and secrets
+
+# Backend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: cold-flask-backend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 5000
+        env:
+        - name: SQL_CONN_STRING
+          valueFrom:
+            secretKeyRef:
+              name: cold-flask-backend-env
+              key: SQL_CONN_STRING
+        - name: MIXEDBREAD_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cold-flask-backend-env
+              key: MIXEDBREAD_API_KEY
+        - name: TEST
+          valueFrom:
+            secretKeyRef:
+              name: cold-flask-backend-env
+              key: TEST
+        - name: MONGODB_CONN_STRING
+          valueFrom:
+            secretKeyRef:
+              name: cold-flask-backend-env
+              key: MONGODB_CONN_STRING
+
+---
+# Backend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      port: 5000
+      targetPort: 5000
+  type: ClusterIP
+
+---
+# Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  labels:
+    app: frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: cold-nuxt-frontend:latest
+        imagePullPolicy: Never
+        ports:
+        - containerPort: 3000
+
+---
+# Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP
+
+---
+# Ingress
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: web-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+spec:
+  rules:
+  - host: your-domain.com
+    http:
+      paths:
+      - path: /api
+        pathType: Prefix
+        backend:
+          service:
+            name: backend-service
+            port:
+              number: 5000
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: frontend-service
+            port:
+              number: 3000
