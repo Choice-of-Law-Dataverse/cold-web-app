@@ -19,8 +19,8 @@ spec:
     spec:
       containers:
       - name: backend
-        image: coldcontainerregistry.azurecr.io/cold-flask-backend:latest
-        imagePullPolicy: Always
+        image: cold-flask-backend:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 5000
         env:
@@ -44,11 +44,6 @@ spec:
             secretKeyRef:
               name: cold-flask-backend-env
               key: MONGODB_CONN_STRING
-        - name: OPENAI_API_KEY
-          valueFrom:
-            secretKeyRef:
-              name: cold-flask-backend-env
-              key: OPENAI_API_KEY
 
 ---
 # Backend Service
@@ -63,7 +58,7 @@ spec:
     - protocol: TCP
       port: 5000
       targetPort: 5000
-  type: LoadBalancer
+  type: ClusterIP
 
 ---
 # Frontend Deployment
@@ -85,8 +80,8 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: coldcontainerregistry.azurecr.io/cold-nuxt-frontend:latest
-        imagePullPolicy: Always
+        image: cold-nuxt-frontend:latest
+        imagePullPolicy: Never
         ports:
         - containerPort: 3000
 
@@ -103,7 +98,7 @@ spec:
     - protocol: TCP
       port: 3000
       targetPort: 3000
-  type: LoadBalancer
+  type: ClusterIP
 
 ---
 # Ingress
