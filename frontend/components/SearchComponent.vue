@@ -145,3 +145,7 @@ const performSearch = async () => {
 }
 
 </script>
+
+<style scoped>
+
+</style>

@@ -57,6 +57,25 @@
   </div>
 </template>
 
+<script setup lang="ts">
+
+// Accept `isVisible` prop from the parent component
+const props = defineProps({
+  isVisible: Boolean,
+  data: Object  // Define the data prop to accept an object
+})
+
+// Emit event for closing the modal
+const emit = defineEmits(['close'])
+
+// Function to emit the close event
+function emitClose() {
+  emit('close')
+}
+
+</script>
+
+
 <style scoped>
 
 .close-link {
@@ -97,22 +116,3 @@
     text-decoration-thickness: 1px;
   }
   </style>
-
-<script setup lang="ts">
-
-// Accept `isVisible` prop from the parent component
-const props = defineProps({
-  isVisible: Boolean,
-  data: Object  // Define the data prop to accept an object
-})
-
-// Emit event for closing the modal
-const emit = defineEmits(['close'])
-
-// Function to emit the close event
-function emitClose() {
-  emit('close')
-}
-
-</script>
-  
