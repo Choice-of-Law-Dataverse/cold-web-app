@@ -54,6 +54,10 @@
   margin-bottom: 2em;
 }
 
+.no-margin {
+  margin-bottom: 0;
+}
+
 a {
   text-decoration: underline;
   text-underline-offset: 6px;
