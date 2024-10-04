@@ -38,21 +38,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-h3 {
-  font-size: medium;
-  margin-bottom: 1em;
-  margin-top: 1.5em;
-  text-align: center;
-}
-
-.suggestions-container {
-  display: flex;
-  gap: 20px; /* Adds space between buttons */
-}
-
-.suggestion-button {
-  flex-shrink: 0; /* Prevents the buttons from shrinking */
-}
-</style>

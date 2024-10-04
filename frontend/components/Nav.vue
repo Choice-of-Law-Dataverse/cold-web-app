@@ -22,5 +22,3 @@ const links = [
   // }
 ]
 </script>
-
-<style scoped></style>

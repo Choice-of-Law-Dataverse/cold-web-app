@@ -217,27 +217,3 @@ function isAnswer(resultData) {
   return resultData.source_table === 'Answers'
 }
 </script>
-
-<style scoped>
-.result-item {
-  margin-bottom: 1rem;
-}
-
-.result-key {
-  font-size: x-small;
-  font-weight: bold;
-}
-
-/* Adding styles to ensure text wrapping */
-.result-value {
-  word-wrap: break-word; /* Allows breaking within words if necessary */
-  word-break: break-word; /* Breaks words that are too long */
-  white-space: pre-wrap; /* Preserves whitespace and line breaks, but also allows wrapping */
-}
-
-a {
-  text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-thickness: 1px;
-}
-</style>
