@@ -15,9 +15,7 @@
       >
         <template #header>
           <div class="flex items-center justify-between">
-            <h3
-              class="text-base font-semibold leading-6 text-gray-900 dark:text-white"
-            >
+            <h3>
               {{ data?.Name || '[Missing Name]' }}
               <!-- Display the Name value from data or a placeholder -->
             </h3>
@@ -41,7 +39,7 @@
 
         <!-- Container for provision text and language selection -->
         <div class="provision-container">
-          <p class="result-key">FULL TEXT OF THE PROVISION</p>
+          <p class="result-key">Full Text of the Provision</p>
           <div class="right-container">
             <USelect
               size="2xs"

@@ -46,7 +46,6 @@
                   {{ resultData[resultKey] }}
                 </template>
               </div>
-              <div style="margin-top: 2em"></div>
             </div>
           </template>
 
@@ -63,7 +62,6 @@
                   <span>{{ resultData[resultKey] }}</span>
                 </template>
               </div>
-              <div style="margin-top: 2em"></div>
             </div>
             <div>
               <a href="#" @click.prevent="openCourtDecisionModal(resultData)"
