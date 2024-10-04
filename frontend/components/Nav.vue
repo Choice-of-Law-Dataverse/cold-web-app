@@ -1,9 +1,7 @@
 <template>
   <div class="flex items-center border-b border-gray-200 dark:border-gray-800">
     <!-- Web App Name -->
-    <div class="font-bold whitespace-nowrap ml-4">
-      Choice of Law Dataverse
-    </div>
+    <div class="font-bold whitespace-nowrap ml-4">Choice of Law Dataverse</div>
 
     <!-- Horizontal Navigation Links -->
     <UHorizontalNavigation :links="links" class="ml-6" />
@@ -13,17 +11,16 @@
 <script setup lang="ts">
 const route = useRoute()
 
-const links = [{
-  label: 'Search',
-  to: '/'
-},
-// {
-//   label: 'About',
-//   to: '/about'
-// }
+const links = [
+  {
+    label: 'Search',
+    to: '/',
+  },
+  // {
+  //   label: 'About',
+  //   to: '/about'
+  // }
 ]
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>
