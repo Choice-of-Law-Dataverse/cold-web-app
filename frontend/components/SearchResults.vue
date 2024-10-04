@@ -59,11 +59,8 @@
                 <template v-if="resultKey === 'choice_of_law_issue_cd'">
                   {{ resultData[resultKey] || '[Missing Information]' }}
                 </template>
-                <!-- Otherwise, render the value using createCollapsibleContent -->
                 <template v-else>
-                  <span
-                    v-html="createCollapsibleContent(resultData[resultKey])"
-                  ></span>
+                  <span>{{ resultData[resultKey] }}</span>
                 </template>
               </div>
               <div style="margin-top: 2em"></div>
@@ -218,11 +215,6 @@ const allResults = computed(() => {
 function isAnswer(resultData) {
   // Check if 'source_table' key exists and if its value is "Answers"
   return resultData.source_table === 'Answers'
-}
-
-function createCollapsibleContent(value: string): string {
-  // Your existing logic for creating collapsible content
-  return value // Simplified for example purposes, replace with your actual logic
 }
 </script>
 
