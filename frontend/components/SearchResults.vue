@@ -18,9 +18,14 @@
           <!-- Conditional rendering based on the type of search result -->
           <template v-if="isAnswer(resultData)">
             <!-- Display for Answers -->
-            <div v-for="resultKey in answerKeys" :key="resultKey">
+            <div v-for="(resultKey, index) in answerKeys" :key="resultKey">
               <div class="result-key">{{ keyMap[resultKey] }}</div>
-              <div class="result-value">
+              <div
+                :class="[
+                  'result-value',
+                  { 'no-margin': index === answerKeys.length - 1 },
+                ]"
+              >
                 <template v-if="resultKey === 'legal_provisions_articles_a'">
                   <div v-if="resultData[resultKey]">
                     <!-- Split the resultData[resultKey] by commas and loop through each item -->
