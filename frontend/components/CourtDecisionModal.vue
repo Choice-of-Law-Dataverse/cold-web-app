@@ -62,27 +62,31 @@ const props = defineProps<{
 const emit = defineEmits(['close'])
 const emitClose = () => emit('close')
 
-// Define key-value pairs for rendering
-const keyValuePairs = computed(() => ({
-  JURISDICTION: props.data?.['Jurisdiction Names'] || '[Missing Jurisdiction]',
-  ABSTRACT: props.data?.Abstract || '[No Abstract available]',
-  'RELEVANT FACTS / SUMMARY OF THE CASE':
-    props.data?.['Relevant facts / Summary of the case'] ||
-    '[Missing Relevant Facts or Summary]',
-  'RELEVANT RULES OF LAW INVOLVED':
-    props.data?.['Relevant rules of law involved'] ||
-    '[Missing Relevant Rules]',
-  'CHOICE OF LAW ISSUE':
-    props.data?.['Choice of law issue'] || '[Missing Choice of Law Issue]',
-  "COURT'S POSITION":
-    props.data?.["Court's position"] || "[Missing Court's Positions]",
-  'TEXT OF THE RELEVANT LEGAL PROVISIONS':
-    props.data?.['Text of the relevant legal provisions'] ||
+// Define fallback messages for missing data
+const missingMessages = {
+  'Jurisdiction Names': '[Missing Jurisdiction]',
+  Abstract: '[No Abstract available]',
+  'Relevant facts / Summary of the case': '[Missing Relevant Facts or Summary]',
+  'Relevant rules of law involved': '[Missing Relevant Rules]',
+  'Choice of law issue': '[Missing Choice of Law Issue]',
+  "Court's position": "[Missing Court's Positions]",
+  'Text of the relevant legal provisions':
     '[Missing Text of Relevant Legal Provisions]',
-  QUOTE: props.data?.['Quote'] || '[Missing Quote]',
-  'TRANSLATED EXCERPT':
-    props.data?.['Translated excerpt'] || '[Missing Translated Excerpt]',
-}))
+  Quote: '[Missing Quote]',
+  'Translated excerpt': '[Missing Translated Excerpt]',
+}
+
+// Dynamically generate key-value pairs
+const keyValuePairs = computed(() => {
+  return Object.entries(missingMessages).reduce(
+    (acc, [column, missingText]) => {
+      const key = column.toUpperCase()
+      acc[key] = props.data?.[column] || missingText
+      return acc
+    },
+    {}
+  )
+})
 </script>
 
 <style scoped>
