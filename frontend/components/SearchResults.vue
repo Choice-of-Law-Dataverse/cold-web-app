@@ -113,49 +113,12 @@ const resultData = ref({}) // Placeholder for your actual data
 const legalProvisionModalData = ref(null)
 const courtDecisionModalData = ref(null)
 
-// Function to open the modal
-async function openCourtDecisionModal(courtDecision) {
-  // Create the JSON object
-  const decisionJson = {
-    table: 'Court decisions',
-    id: courtDecision.id.trim(), // Trim in case of extra spaces
-  }
-
-  try {
-    const response = await fetch(
-      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/curated_search/details',
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(decisionJson), // Send the provisionJson as the request body
-      }
-    )
-
-    // Check if the response is OK (status 200-299)
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`)
-    }
-
-    // Parse the JSON response from the server
-    const responseData = await response.json()
-
-    courtDecisionModalData.value = responseData // Store the response data in the modalData ref
-
-    // Open the modal
-    isCourtDecisionModalOpen.value = true
-  } catch (error) {
-    // Handle any errors that occur during the fetch
-    console.error('Error fetching data:', error)
-  }
-}
-
-async function openLegalProvisionModal(legalProvision) {
-  // Create the JSON object
-  const provisionJson = {
-    table: 'Legal provisions',
-    id: legalProvision.trim(), // Trim in case of extra spaces
+// Generic function to open a modal for either court decisions or legal provisions
+async function openModal(type, id, modalDataRef, isModalOpenRef) {
+  // Create the JSON object dynamically based on the type
+  const jsonPayload = {
+    table: type, // Either 'Court decisions' or 'Legal provisions'
+    id: id.trim(), // Trim in case of extra spaces
   }
 
   try {
@@ -166,7 +129,7 @@ async function openLegalProvisionModal(legalProvision) {
         headers: {
           'Content-Type': 'application/json', // Specify JSON content
         },
-        body: JSON.stringify(provisionJson), // Send the provisionJson as the request body
+        body: JSON.stringify(jsonPayload), // Send the jsonPayload as the request body
       }
     )
 
@@ -178,14 +141,35 @@ async function openLegalProvisionModal(legalProvision) {
     // Parse the JSON response from the server
     const responseData = await response.json()
 
-    legalProvisionModalData.value = responseData // Store the response data in the modalData ref
+    // Store the response data in the appropriate modalData ref
+    modalDataRef.value = responseData
 
-    // Open the modal
-    isLegalProvisionModalOpen.value = true
+    // Open the modal by setting the isModalOpen ref to true
+    isModalOpenRef.value = true
   } catch (error) {
     // Handle any errors that occur during the fetch
     console.error('Error fetching data:', error)
   }
+}
+
+// Function to open the court decision modal
+async function openCourtDecisionModal(courtDecision) {
+  await openModal(
+    'Court decisions', // Type of data
+    courtDecision.id, // ID for the court decision
+    courtDecisionModalData, // Ref to hold the response data
+    isCourtDecisionModalOpen // Ref to track the modal's open state
+  )
+}
+
+// Function to open the legal provision modal
+async function openLegalProvisionModal(legalProvision) {
+  await openModal(
+    'Legal provisions', // Type of data
+    legalProvision, // ID for the legal provision
+    legalProvisionModalData, // Ref to hold the response data
+    isLegalProvisionModalOpen // Ref to track the modal's open state
+  )
 }
 
 // Define props and assign them to a variable
