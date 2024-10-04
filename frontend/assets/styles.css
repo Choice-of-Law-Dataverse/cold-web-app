@@ -43,6 +43,7 @@
 .result-key {
   font-size: x-small;
   font-weight: bold;
+  text-transform: uppercase;
 }
 
 /* Text wrapping */
