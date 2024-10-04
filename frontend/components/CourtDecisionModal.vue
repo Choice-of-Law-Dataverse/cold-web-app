@@ -30,73 +30,19 @@
             />
           </div>
         </template>
-
         <!-- Modal Content -->
-
-        <!-- Display greyed out PDF download link until URL issue is fixed -->
-        <div class="modal-content">
-          <span class="icon-wrapper" style="color: grey; opacity: 0.5">
+        <div v-if="props.isVisible" class="modal-content">
+          <!-- Greyed out PDF download link -->
+          <div class="icon-wrapper greyed-out">
             <UIcon name="i-material-symbols:file-open" />
-          </span>
-          <a
-            class="result-value"
-            style="color: grey; opacity: 0.5; cursor: not-allowed"
-            >View original PDF<br /><br />
-          </a>
+          </div>
+          <a class="result-value greyed-out">View original PDF<br /><br /></a>
 
-          <p class="result-key">JURISDICTION</p>
-          <p class="result-value">
-            {{ data?.['Jurisdiction Names'] || '[Missing Jurisdiction]' }}
-          </p>
-
-          <p class="result-key">ABSTRACT</p>
-          <p class="result-value">
-            {{ data?.Abstract || '[No Abstract available]' }}
-          </p>
-
-          <p class="result-key">RELEVANT FACTS / SUMMARY OF THE CASE</p>
-          <p class="result-value">
-            {{
-              data?.['Relevant facts / Summary of the case'] ||
-              '[Missing Relevant Facts or Summary]'
-            }}
-          </p>
-
-          <p class="result-key">RELEVANT RULES OF LAW INVOLVED</p>
-          <p class="result-value">
-            {{
-              data?.['Relevant rules of law involved'] ||
-              '[Missing Relevant Rules]'
-            }}
-          </p>
-
-          <p class="result-key">CHOICE OF LAW ISSUE</p>
-          <p class="result-value">
-            {{
-              data?.['Choice of law issue'] || '[Missing Choice of Law Issue]'
-            }}
-          </p>
-
-          <p class="result-key">COURT'S POSITION</p>
-          <p class="result-value">
-            {{ data?.["Court's position"] || "[Missing Court's Positions]" }}
-          </p>
-
-          <p class="result-key">TEXT OF THE RELEVANT LEGAL PROVISIONS</p>
-          <p class="result-value">
-            {{
-              data?.['Text of the relevant legal provisions'] ||
-              '[Missing Text of Relevant Legal Provisions]'
-            }}
-          </p>
-
-          <p class="result-key">QUOTE</p>
-          <p class="result-value">{{ data?.['Quote'] || '[Missing Quote]' }}</p>
-
-          <p class="result-key">TRANSLATED EXCERPT</p>
-          <p class="result-value">
-            {{ data?.['Translated excerpt'] || '[Missing Translated Excerpt]' }}
-          </p>
+          <!-- Reusable key-value rendering -->
+          <div v-for="(value, label) in keyValuePairs" :key="label">
+            <p class="result-key">{{ label }}</p>
+            <p class="result-value">{{ value }}</p>
+          </div>
         </div>
       </UCard>
     </UModal>
@@ -104,19 +50,47 @@
 </template>
 
 <script setup lang="ts">
-// Define props and emit in a more concise way
-const { isVisible, data } = defineProps<{
+import { computed } from 'vue'
+
+// Define props without destructuring to maintain reactivity
+const props = defineProps<{
   isVisible: boolean
   data: Record<string, any>
 }>()
 
-const emit = defineEmits(['close'])
-
 // Emit the close event
+const emit = defineEmits(['close'])
 const emitClose = () => emit('close')
+
+// Define key-value pairs for rendering
+const keyValuePairs = computed(() => ({
+  JURISDICTION: props.data?.['Jurisdiction Names'] || '[Missing Jurisdiction]',
+  ABSTRACT: props.data?.Abstract || '[No Abstract available]',
+  'RELEVANT FACTS / SUMMARY OF THE CASE':
+    props.data?.['Relevant facts / Summary of the case'] ||
+    '[Missing Relevant Facts or Summary]',
+  'RELEVANT RULES OF LAW INVOLVED':
+    props.data?.['Relevant rules of law involved'] ||
+    '[Missing Relevant Rules]',
+  'CHOICE OF LAW ISSUE':
+    props.data?.['Choice of law issue'] || '[Missing Choice of Law Issue]',
+  "COURT'S POSITION":
+    props.data?.["Court's position"] || "[Missing Court's Positions]",
+  'TEXT OF THE RELEVANT LEGAL PROVISIONS':
+    props.data?.['Text of the relevant legal provisions'] ||
+    '[Missing Text of Relevant Legal Provisions]',
+  QUOTE: props.data?.['Quote'] || '[Missing Quote]',
+  'TRANSLATED EXCERPT':
+    props.data?.['Translated excerpt'] || '[Missing Translated Excerpt]',
+}))
 </script>
 
 <style scoped>
+.greyed-out {
+  color: grey;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
 .close-link {
   position: absolute;
   top: -20px;
@@ -139,6 +113,7 @@ const emitClose = () => emit('close')
 .result-key {
   font-size: x-small;
   font-weight: bold;
+  margin-top: 1em;
 }
 
 /* Adding styles to ensure text wrapping */
