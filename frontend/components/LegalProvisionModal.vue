@@ -32,20 +32,17 @@
         </template>
 
         <!-- Modal Content -->
-        <p class="result-key">JURISDICTION</p>
-        <p class="result-value">
-          {{ data?.['Jurisdiction name'] || '[Missing Jurisdiction]' }}
-        </p>
 
-        <p class="result-key">ARTICLE</p>
-        <p class="result-value">{{ data?.Article || '[Missing Article]' }}</p>
+        <!-- Render dynamically generated key-value pairs -->
+        <div v-for="(value, label) in keyValuePairs" :key="label">
+          <p class="result-key">{{ label }}</p>
+          <p class="result-value">{{ value }}</p>
+        </div>
 
-        <!-- Container with flexbox for aligned content -->
+        <!-- Container for provision text and language selection -->
         <div class="provision-container">
           <p class="result-key">FULL TEXT OF THE PROVISION</p>
-          <!-- Container for "Display:" and the select element -->
           <div class="right-container">
-            <!-- <p class="display-label">Display:</p> -->
             <USelect
               size="2xs"
               variant="none"
@@ -54,33 +51,59 @@
             />
           </div>
         </div>
-        <!-- Conditionally display the full text based on the selected language -->
-        <p class="result-value">
-          {{
-            selectedLanguage === 'Original Language'
-              ? data?.['Full text of the provision (Original language)'] ||
-                '[Missing Text]'
-              : data?.['Full text of the provision (English translation)'] ||
-                '[Missing Text]'
-          }}
-        </p>
+
+        <!-- Conditionally display the full text of the provision -->
+        <p class="result-value">{{ provisionText }}</p>
       </UCard>
     </UModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 // Define reactive variables
-const selected = ref(false)
 const selectedLanguage = ref('Original Language')
 
-// Destructure props directly
-const { isVisible, data } = defineProps<{
+// Define props for the modal data
+const props = defineProps<{
   isVisible: boolean
   data: Record<string, any>
 }>()
+
+// Fallback messages for missing data
+const missingMessages = {
+  'Jurisdiction name': '[Missing Jurisdiction]',
+  Article: '[Missing Article]',
+  'Full text of the provision (Original language)': '[Missing Text]',
+  'Full text of the provision (English translation)': '[Missing Text]',
+}
+
+// Dynamically generate key-value pairs for jurisdiction and article
+const keyValuePairs = computed(() => {
+  return Object.entries(missingMessages).reduce(
+    (acc, [column, missingText]) => {
+      const key = column.toUpperCase().replace(/_/g, ' ')
+      if (
+        column !== 'Full text of the provision (Original language)' &&
+        column !== 'Full text of the provision (English translation)'
+      ) {
+        acc[key] = props.data?.[column] || missingText
+      }
+      return acc
+    },
+    {}
+  )
+})
+
+// Computed property to determine which provision text to display
+const provisionText = computed(() => {
+  return selectedLanguage.value === 'Original Language'
+    ? props.data?.['Full text of the provision (Original language)'] ||
+        missingMessages['Full text of the provision (Original language)']
+    : props.data?.['Full text of the provision (English translation)'] ||
+        missingMessages['Full text of the provision (English translation)']
+})
 
 // Emit the close event using arrow function
 const emit = defineEmits(['close'])
