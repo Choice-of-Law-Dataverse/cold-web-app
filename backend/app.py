@@ -155,6 +155,16 @@ def handle_curated_details_search():
     log_query(request, f"Details search in {table} for ID {id}", len(results))
     return jsonify(results), 200
 
+@app.route('/full_table', methods=['POST'])
+def return_full_table():
+  data = request.json
+  table = data.get('table')
+  if not table:
+    return jsonify({'error': 'No table provided'}), 400
+  results = search_service.full_table(table)
+  log_query(request, f"Full table retrieval in {table}", len(results))
+  return jsonify(results), 200
+
 @app.route('/get_user_info', methods=['GET'])
 def get_user_info():
     """
