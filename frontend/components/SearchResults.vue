@@ -9,6 +9,7 @@
     "
   >
     <div class="results-grid">
+      <h2>Search Results</h2>
       <div
         v-for="(resultData, key) in allResults"
         :key="key"

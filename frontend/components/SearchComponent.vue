@@ -49,6 +49,11 @@
         @suggestion-selected="updateSearchText"
       />
     </div>
+    
+    <!-- Display Helper Chatbot -->
+     <div v-if="results && !noResults">
+      <HelperChatbot />
+    </div>
 
     <!-- Display message that no search results were found -->
     <div v-if="noResults">
