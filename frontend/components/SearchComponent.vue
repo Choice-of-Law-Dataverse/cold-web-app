@@ -49,10 +49,10 @@
         @suggestion-selected="updateSearchText"
       />
     </div>
-    
+
     <!-- Display Helper Chatbot -->
-     <div v-if="results && !noResults">
-      <HelperChatbot />
+    <div v-if="results && !noResults">
+      <HelperChatbot :searchText="searchText" />
     </div>
 
     <!-- Display message that no search results were found -->
@@ -68,6 +68,9 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
+import HelperChatbot from './HelperChatbot.vue' // Import HelperChatbot
+
 // Regular ref for non-persistent search text and results
 const searchText = ref('') // Empty string as initial value
 const results = ref(null) // Non-persistent search results

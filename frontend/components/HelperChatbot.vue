@@ -12,6 +12,10 @@
     <UCard
       :style="{ backgroundColor: '#f5f5f5', boxShadow: 'none', border: 'none' }"
     >
+      <div v-if="searchText">
+        <!-- <p>Search Query: {{ searchText }}</p> -->
+      </div>
+      <div v-if="category">Category: {{ category }}</div>
       <div v-if="definition">{{ definition }}</div>
       <div v-else>
         <p>No matching definition found yet.</p>
@@ -22,30 +26,75 @@
 
 <script>
 export default {
+  props: {
+    searchText: {
+      type: String,
+      required: true,
+    },
+  },
   data() {
     return {
-      category: 'Dépeçage (concept)', // Example category, this should be passed dynamically
+      category: null, // Will be dynamically set based on searchText
       definition: null,
     }
   },
-  mounted() {
-    this.processCategory()
+  watch: {
+    // Watch for changes in searchText and trigger processCategory when it changes
+    searchText(newSearchText) {
+      if (newSearchText) {
+        this.classifyQuery(newSearchText)
+      }
+    },
   },
   methods: {
-    processCategory() {
-      // Step 1: Split the category into the term and the table
-      const term = this.category.split(' (')[0]
-      const tableType = this.category.match(/\(([^)]+)\)/)[1]
+    async classifyQuery(query) {
+      try {
+        // Step 1: Call classify_query API to classify the search query
+        const response = await fetch(
+          'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/classify_query',
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ query: query }),
+          }
+        )
 
+        const category = await response.text() // Category returned from API
+        this.category = category
+
+        // Process the category to fetch relevant data
+        this.processCategory()
+      } catch (error) {
+        console.error('Error classifying query:', error)
+      }
+    },
+    processCategory() {
+      if (!this.category) {
+        console.error('Category not set.')
+        return
+      }
+
+      // Step 2: Split the category into the term and table
+      const term = this.category.split(' (')[0]
+      const tableType = this.category.match(/\(([^)]+)\)/)
+
+      if (!tableType) {
+        console.error('Invalid category format.')
+        return
+      }
+
+      const type = tableType[1]
       let table = ''
 
-      if (tableType === 'concept') {
+      if (type === 'concept') {
         table = 'Concepts'
-      } else if (tableType === 'principle') {
+      } else if (type === 'principle') {
         table = 'HCCH Principles themes'
       }
 
-      // Step 2: Make the API call with the table
+      // Step 3: Make the API call with the term and table
       this.fetchData(term, table)
     },
 
@@ -64,7 +113,7 @@ export default {
 
         const data = await response.json()
 
-        // Step 3: Find the entry with the appropriate matching key
+        // Step 4: Find the entry with the appropriate matching key
         let matchedEntry
         if (table === 'HCCH Principles themes') {
           // For "HCCH Principles themes", match against the "Theme" key
@@ -79,7 +128,6 @@ export default {
         }
 
         if (matchedEntry) {
-          // Step 4: If table is "HCCH Principles themes", get "Full text" key, otherwise get "Definition"
           if (table === 'HCCH Principles themes') {
             this.definition =
               matchedEntry['Full text'] || 'No full text found for this term.'
