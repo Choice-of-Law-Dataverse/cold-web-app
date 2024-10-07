@@ -44,6 +44,11 @@ spec:
             secretKeyRef:
               name: cold-flask-backend-env
               key: MONGODB_CONN_STRING
+        - name: OPENAI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: cold-flask-backend-env
+              key: OPENAI_API_KEY
 
 ---
 # Backend Service
