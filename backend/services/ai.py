@@ -1,12 +1,12 @@
 from config import Config
 import requests
 
-class gpt:
+class GPT:
     def __init__(self):
         self.openai_api_key = Config.OPENAI_API_KEY
 
     # Define the function that sends a request to OpenAI API
-    def classify_user_query(api_key, user_query):
+    def classify_user_query(self, user_query):
         # API endpoint
         url = "https://api.openai.com/v1/chat/completions"
 
@@ -54,7 +54,7 @@ class gpt:
 
         # Check if request was successful
         if response.status_code == 200:
-            return response.json()  # Return the response content as a JSON object
+            return response.json()['choices'][0]['message']['content']
         else:
             return {
                 "error": f"Request failed with status code {response.status_code}",

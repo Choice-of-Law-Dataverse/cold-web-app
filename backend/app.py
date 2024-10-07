@@ -5,6 +5,7 @@ import logging
 from config import Config
 from services.search import SearchService
 from services.query_logging import log_query
+from services.ai import GPT
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
@@ -19,6 +20,7 @@ CORS(app)
 swagger = Swagger(app)
 
 search_service = SearchService()
+gpt = GPT()
 
 @app.route('/search', methods=['POST'])
 def handle_search():
@@ -217,6 +219,14 @@ def user_info():
         'platform_version': platform_version,
         'model': model
     })
+  
+@app.route('/classify_query', methods=['POST'])
+def classify_query():
+  data = request.json
+  query = data.get('query')
+  print(query)
+  classification = gpt.classify_user_query(query)
+  return classification
 
 if __name__ == "__main__":
     app.run(debug=True)
