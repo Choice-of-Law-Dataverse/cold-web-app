@@ -133,6 +133,11 @@ class SearchService:
             "table": "Court decisions",
             "id": "CHE-1017"
             """
+    
+    def full_table(self, table):
+        print(table)
+        results = self.db.execute_query(f'SELECT * FROM "{table}"')
+        return results
         
     def full_text_search(self, search_string):
         # Prepare the SQL query with dynamic search string input

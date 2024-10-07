@@ -1,0 +1,21 @@
+meta {
+  name: full-table
+  type: http
+  seq: 10
+}
+
+post {
+  url: http://localhost:5000/full_table
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "table": "HCCH Principles themes"
+  }
+}

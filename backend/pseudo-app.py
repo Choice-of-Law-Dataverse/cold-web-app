@@ -18,6 +18,11 @@ def main(data):
 
     return results  # No need for jsonify as we're not using Flask
 
+def return_full_table():
+    search_service = SearchService()
+    results = search_service.full_table("Concepts")
+    return results
+
 if __name__ == "__main__":
     # Simulating a sample request payload (normally obtained from request.json)
     sample_data = {
@@ -25,6 +30,7 @@ if __name__ == "__main__":
     }
     
     # Call main with sample data
-    result = main(sample_data)
+    #result = main(sample_data)
+    result = return_full_table()
     
-    utils.data_visualization.visualize_dict(result)
+    print(result)
