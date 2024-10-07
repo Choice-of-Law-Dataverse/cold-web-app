@@ -1,0 +1,21 @@
+meta {
+  name: classify-query
+  type: http
+  seq: 11
+}
+
+post {
+  url: http://localhost:5000/classify_query
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "query": "what is choice of law?"
+  }
+}
