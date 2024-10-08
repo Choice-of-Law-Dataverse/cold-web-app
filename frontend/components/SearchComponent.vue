@@ -62,11 +62,11 @@
     <div v-if="results && !noResults">
       <SearchResults :data="results" />
     </div>
-  </div>
 
-  <!-- Display message that no search results were found -->
-  <div v-if="noResults">
-    <NoSearchResults />
+    <!-- Display message that no search results were found -->
+    <div v-if="noResults">
+      <NoSearchResults />
+    </div>
   </div>
 </template>
 
