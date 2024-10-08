@@ -50,25 +50,37 @@
       />
     </div>
 
-    <!-- Display message that no search results were found -->
-    <div v-if="noResults">
-      <NoSearchResults />
+    <!-- Display Helper Chatbot -->
+    <div v-if="results && !noResults">
+      <HelperChatbot
+        :searchText="searchText"
+        :searchPerformed="searchPerformed"
+      />
     </div>
 
     <!-- Display search results below the input and button -->
     <div v-if="results && !noResults">
       <SearchResults :data="results" />
     </div>
+
+    <!-- Display message that no search results were found -->
+    <div v-if="noResults">
+      <NoSearchResults />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { ref, nextTick } from 'vue'
+import HelperChatbot from './HelperChatbot.vue' // Import HelperChatbot
+
 // Regular ref for non-persistent search text and results
 const searchText = ref('') // Empty string as initial value
 const results = ref(null) // Non-persistent search results
 const showSuggestions = ref(true) // Add this to control the visibility of the SearchSuggestions component
 const loading = ref(false) // Track the loading state
 const noResults = ref(false) // Track whether there are no results
+const searchPerformed = ref(false) // This will track whether the search was performed
 
 // Update search text when suggestion is clicked
 const updateSearchText = (suggestion: string) => {
@@ -129,6 +141,7 @@ const performSearch = async () => {
   if (searchText.value.trim()) {
     loading.value = true // Set loading to true when search starts
     noResults.value = false // Reset noResults before a new search
+    searchPerformed.value = false // Reset before performing the search
 
     // Get browser and device info
     const browserInfo = getBrowserInfo()
@@ -172,6 +185,8 @@ const performSearch = async () => {
       console.error('Error performing search:', error)
     } finally {
       loading.value = false // Set loading to false when search completes
+      await nextTick() // Ensure the DOM updates before setting searchPerformed to true
+      searchPerformed.value = true
     }
   }
 }
