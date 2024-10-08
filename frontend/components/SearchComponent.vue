@@ -139,7 +139,6 @@ const fetchUserInfo = async () => {
 const performSearch = async () => {
   showSuggestions.value = false // Hide suggestions when the search button is clicked
   if (searchText.value.trim()) {
-    console.log('Search started') // Log when search starts
     loading.value = true // Set loading to true when search starts
     noResults.value = false // Reset noResults before a new search
     searchPerformed.value = false // Reset before performing the search
@@ -188,7 +187,6 @@ const performSearch = async () => {
       loading.value = false // Set loading to false when search completes
       await nextTick() // Ensure the DOM updates before setting searchPerformed to true
       searchPerformed.value = true
-      console.log('Search performed:', searchPerformed.value) // Log when search is performed
     }
   }
 }
