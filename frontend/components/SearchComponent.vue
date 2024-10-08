@@ -55,15 +55,15 @@
       <HelperChatbot :searchText="searchText" />
     </div>
 
-    <!-- Display message that no search results were found -->
-    <div v-if="noResults">
-      <NoSearchResults />
-    </div>
-
     <!-- Display search results below the input and button -->
     <div v-if="results && !noResults">
       <SearchResults :data="results" />
     </div>
+  </div>
+
+  <!-- Display message that no search results were found -->
+  <div v-if="noResults">
+    <NoSearchResults />
   </div>
 </template>
 
