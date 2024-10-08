@@ -42,22 +42,16 @@ export default {
       definition: null,
     }
   },
-  mounted() {
-    console.log('HelperChatbot mounted') // Add this log to check if HelperChatbot is being rendered
-  },
   watch: {
     // Watch for changes in searchPerformed and trigger classifyQuery when true
     searchPerformed(newVal) {
-      console.log('searchPerformed changed in HelperChatbot:', newVal)
       if (newVal) {
-        console.log('searchPerformed is true, calling classifyQuery')
         this.classifyQuery(this.searchText) // Only run this when searchPerformed is true
       }
     },
   },
   methods: {
     async classifyQuery(query) {
-      console.log('Classifying query:', query) // Debug log
       try {
         // Step 1: Call classify_query API to classify the search query
         const response = await fetch(
@@ -72,7 +66,6 @@ export default {
         )
 
         const category = await response.text() // Category returned from API
-        console.log('Category received:', category) // Debug log
         this.category = category
 
         // Process the category to fetch relevant data
@@ -86,10 +79,6 @@ export default {
         console.error('Category not set.')
         return
       }
-
-      // Simulate processing the category and fetching the definition
-      this.definition = `Definition for ${this.category}`
-      console.log('Definition set:', this.definition) // Debug log
 
       // Step 2: Split the category into the term and table
       const term = this.category.split(' (')[0]
@@ -156,7 +145,6 @@ export default {
       } catch (error) {
         console.error('Error fetching data:', error)
       }
-      console.log(term, table)
     },
   },
 }
