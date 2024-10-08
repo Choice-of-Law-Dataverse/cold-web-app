@@ -8,15 +8,40 @@
       margin-right: auto;
     "
   >
-    <h2>Helper Chatbot Response</h2>
+    <!-- <h2>Helper Chatbot Response</h2> -->
     <UCard
-      :style="{ backgroundColor: '#f5f5f5', boxShadow: 'none', border: 'none' }"
+      :style="{
+        backgroundColor: 'rgb(250, 250, 250)',
+      }"
     >
-      <div v-if="searchText">
-        <!-- <p>Search Query: {{ searchText }}</p> -->
+      <div v-if="definition">
+        <!-- Robot icon with font-size large and dark grey color -->
+        <UIcon
+          name="i-material-symbols:smart-toy-outline"
+          :style="{ fontSize: 'large', color: 'rgb(60, 60, 60)' }"
+        />
+
+        <!-- SMS icon with font-size large, margin-bottom 6px, and dark grey color -->
+        <UIcon
+          name="i-material-symbols:sms-outline"
+          :style="{
+            fontSize: 'large',
+            marginBottom: '6px',
+            color: 'rgb(60, 60, 60)',
+          }"
+        />
       </div>
-      <div v-if="category">Category: {{ category }}</div>
-      <div v-if="definition">{{ definition }}</div>
+
+      <div v-if="definition">
+        {{ definition }}
+      </div>
+
+      <div v-if="category">
+        <small
+          ><br />
+          Category: {{ category }}</small
+        >
+      </div>
       <div v-else>
         <p>No matching definition found yet.</p>
       </div>
