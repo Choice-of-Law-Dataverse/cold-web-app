@@ -52,7 +52,10 @@
 
     <!-- Display Helper Chatbot -->
     <div v-if="results && !noResults">
-      <HelperChatbot :searchText="searchText" />
+      <HelperChatbot
+        :searchText="searchText"
+        :searchPerformed="searchPerformed"
+      />
     </div>
 
     <!-- Display search results below the input and button -->
@@ -68,7 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, nextTick } from 'vue'
 import HelperChatbot from './HelperChatbot.vue' // Import HelperChatbot
 
 // Regular ref for non-persistent search text and results
@@ -77,6 +80,7 @@ const results = ref(null) // Non-persistent search results
 const showSuggestions = ref(true) // Add this to control the visibility of the SearchSuggestions component
 const loading = ref(false) // Track the loading state
 const noResults = ref(false) // Track whether there are no results
+const searchPerformed = ref(false) // This will track whether the search was performed
 
 // Update search text when suggestion is clicked
 const updateSearchText = (suggestion: string) => {
@@ -135,8 +139,10 @@ const fetchUserInfo = async () => {
 const performSearch = async () => {
   showSuggestions.value = false // Hide suggestions when the search button is clicked
   if (searchText.value.trim()) {
+    console.log('Search started') // Log when search starts
     loading.value = true // Set loading to true when search starts
     noResults.value = false // Reset noResults before a new search
+    searchPerformed.value = false // Reset before performing the search
 
     // Get browser and device info
     const browserInfo = getBrowserInfo()
@@ -180,6 +186,9 @@ const performSearch = async () => {
       console.error('Error performing search:', error)
     } finally {
       loading.value = false // Set loading to false when search completes
+      await nextTick() // Ensure the DOM updates before setting searchPerformed to true
+      searchPerformed.value = true
+      console.log('Search performed:', searchPerformed.value) // Log when search is performed
     }
   }
 }
