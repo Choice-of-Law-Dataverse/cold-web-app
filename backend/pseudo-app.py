@@ -4,7 +4,7 @@ import utils.data_visualization
 
 def main(data):
     # Simulating the search string input (normally received via request.json)
-    search_string = data.get("search_string", "party autonomy switzerland")
+    search_string = data.get("search_string", "arbitral tribunal")
 
     if not search_string:
         return {'error': 'No search string provided'}, 400
@@ -26,11 +26,11 @@ def return_full_table():
 if __name__ == "__main__":
     # Simulating a sample request payload (normally obtained from request.json)
     sample_data = {
-        "search_string": "party autonomy switzerland"
+        "search_string": "tacit choice argentina"
     }
     
     # Call main with sample data
-    #result = main(sample_data)
-    result = return_full_table()
+    result = main(sample_data)
+    #result = return_full_table()
     
     print(result)
