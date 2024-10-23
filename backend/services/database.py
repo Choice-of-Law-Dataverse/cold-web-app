@@ -63,6 +63,8 @@ class Database:
         
         # Map id column names to tables
         id_columns = {
+            'Answers': 'ID',
+            'Legislation': 'ID',
             'Legal provisions': 'Name',
             'Court decisions': 'ID'
         }
