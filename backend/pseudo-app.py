@@ -26,11 +26,13 @@ def return_full_table():
 if __name__ == "__main__":
     # Simulating a sample request payload (normally obtained from request.json)
     sample_data = {
-        "search_string": "tacit choice argentina"
+        "search_string": "SIL Ceramiche SPA v Mezuraj ShPK [2013] High Court of Albania 11214-02700-00-2013"
     }
     
     # Call main with sample data
     result = main(sample_data)
     #result = return_full_table()
+
+    visualize_dict = utils.data_visualization.visualize_dict(result)
     
-    print(result)
+    #print(result)
