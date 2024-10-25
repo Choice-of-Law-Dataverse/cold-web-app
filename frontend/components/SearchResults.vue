@@ -17,8 +17,9 @@
       >
         <UCard>
           <!-- Conditional rendering based on the type of search result -->
+
+          <!-- Display for Answers -->
           <template v-if="isAnswer(resultData)">
-            <!-- Display for Answers -->
             <div v-for="(resultKey, index) in answerKeys" :key="resultKey">
               <div class="result-key">{{ keyMap[resultKey] }}</div>
               <div
@@ -27,9 +28,8 @@
                   { 'no-margin': index === answerKeys.length - 1 },
                 ]"
               >
-                <template v-if="resultKey === 'legal_provisions_articles_a'">
+                <template v-if="resultKey === 'Legal provision articles'">
                   <div v-if="resultData[resultKey]">
-                    <!-- Split the resultData[resultKey] by commas and loop through each item -->
                     <span
                       v-for="(item, index) in resultData[resultKey].split(',')"
                       :key="index"
@@ -43,11 +43,8 @@
                       </a>
                     </span>
                   </div>
-                  <!-- Display fallback text if there are no legal provisions -->
                   <div v-else>No legal provision</div>
                 </template>
-
-                <!-- Display other keys normally -->
                 <template v-else>
                   {{ resultData[resultKey] }}
                 </template>
@@ -55,13 +52,12 @@
             </div>
           </template>
 
-          <template v-else>
-            <!-- Display for Court decisions -->
+          <!-- Display for Court decisions -->
+          <template v-else-if="isCourtDecision(resultData)">
             <div v-for="resultKey in courtDecisionKeys" :key="resultKey">
               <div class="result-key">{{ keyMap[resultKey] }}</div>
               <div class="result-value">
-                <!-- Check if 'Choice of law issue' is empty and display default text -->
-                <template v-if="resultKey === 'choice_of_law_issue_cd'">
+                <template v-if="resultKey === 'Choice of law issue'">
                   {{ resultData[resultKey] || '[Missing Information]' }}
                 </template>
                 <template v-else>
@@ -74,6 +70,24 @@
                 >Show more</a
               >
             </div>
+          </template>
+
+          <!-- Display for Legislation -->
+          <template v-else-if="isLegislation(resultData)">
+            <div
+              v-for="legislationKey in legislationKeys"
+              :key="legislationKey"
+            >
+              <div class="result-key">{{ keyMap[legislationKey] }}</div>
+              <div class="result-value">
+                {{ resultData[legislationKey] || '[Missing Information]' }}
+              </div>
+            </div>
+          </template>
+
+          <!-- Default case if no source_table matches -->
+          <template v-else>
+            <div>No matching source found</div>
           </template>
         </UCard>
       </div>
@@ -107,7 +121,7 @@ const isCourtDecisionModalOpen = ref(false)
 const isLegalProvisionModalOpen = ref(false)
 
 // Linking modals to dynamic data
-const resultKey = ref('relevant_provisions_a')
+const resultKey = ref('Relevant provisions')
 const resultData = ref({}) // Placeholder for your actual data
 
 // This will store the response data to be passed to the modal
@@ -183,30 +197,32 @@ const props = defineProps({
 
 // Define the keys and their order for "Answers"
 const answerKeys = [
-  'questions',
-  'name_from_jurisdiction_a',
-  'answer_a',
-  'legal_provisions_articles_a',
+  'Questions',
+  'Name (from Jurisdiction)',
+  'Answer',
+  'Legal provision articles',
 ]
 
 // Define the keys and their order for "Court decisions"
-const courtDecisionKeys = [
-  'case_cd',
-  'jurisdiction_names_cd',
-  'choice_of_law_issue_cd',
-]
+const courtDecisionKeys = ['Case', 'Jurisdiction Names', 'Choice of law issue']
+
+// Define the keys and their order for "Court decisions"
+const legislationKeys = ['Title (in English)', 'Jurisdiction name']
 
 // Define a keyMap to rename the keys for display
 const keyMap = {
   // Answers
-  answer_a: 'ANSWER',
-  name_from_jurisdiction_a: 'JURISDICTION',
-  questions: 'QUESTION',
-  legal_provisions_articles_a: 'LEGAL PROVISIONS',
+  Answer: 'ANSWER',
+  'Name (from Jurisdiction)': 'JURISDICTION',
+  Questions: 'QUESTION',
+  'Legal provision articles': 'LEGAL PROVISIONS',
   // Court Decisions
-  case_cd: 'CASE TITLE',
-  jurisdiction_names_cd: 'JURISDICTION',
-  choice_of_law_issue_cd: 'CHOICE OF LAW ISSUE',
+  Case: 'CASE TITLE',
+  'Jurisdiction Names': 'JURISDICTION',
+  'Choice of law issue': 'CHOICE OF LAW ISSUE',
+  // Legislations
+  'Title (in English)': 'TITLE',
+  'Jurisdiction name': 'JURISDICTION',
 }
 
 // Gather all results
@@ -217,7 +233,14 @@ const allResults = computed(() => {
 // Utility functions
 
 function isAnswer(resultData) {
-  // Check if 'source_table' key exists and if its value is "Answers"
   return resultData.source_table === 'Answers'
+}
+
+function isCourtDecision(resultData) {
+  return resultData.source_table === 'Court decisions'
+}
+
+function isLegislation(resultData) {
+  return resultData.source_table === 'Legislation'
 }
 </script>
