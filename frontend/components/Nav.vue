@@ -4,13 +4,15 @@
     <div class="font-bold whitespace-nowrap ml-4"><a href="/">CoLD</a></div>
 
     <!-- Search Input -->
-    <UInput
+    <SearchInput />
+    <!-- <UInput
       size="xl"
       v-model="searchText"
-      placeholder="Enter your search terms here"
+      @keyup.enter="performSearch"
+      placeholder="Search the entire Dataverse"
       style="width: 40vw"
       class="mr-auto"
-    />
+    /> -->
 
     <!-- Horizontal Navigation Links -->
     <UHorizontalNavigation :links="links" class="ml-6" />
@@ -18,9 +20,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+//import { ref } from 'vue'
 const route = useRoute()
-const searchText = ref('') // Define searchText to bind to the input
+//const searchText = ref('') // Define searchText to bind to the input
 
 const links = [
   // {
