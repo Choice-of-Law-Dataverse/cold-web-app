@@ -27,7 +27,7 @@
                   { 'no-margin': index === answerKeys.length - 1 },
                 ]"
               >
-                <template v-if="resultKey === 'legal_provisions_articles_a'">
+                <template v-if="resultKey === 'Legal provision articles'">
                   <div v-if="resultData[resultKey]">
                     <!-- Split the resultData[resultKey] by commas and loop through each item -->
                     <span
@@ -61,7 +61,7 @@
               <div class="result-key">{{ keyMap[resultKey] }}</div>
               <div class="result-value">
                 <!-- Check if 'Choice of law issue' is empty and display default text -->
-                <template v-if="resultKey === 'choice_of_law_issue_cd'">
+                <template v-if="resultKey === 'Choice of law issue'">
                   {{ resultData[resultKey] || '[Missing Information]' }}
                 </template>
                 <template v-else>
@@ -107,7 +107,7 @@ const isCourtDecisionModalOpen = ref(false)
 const isLegalProvisionModalOpen = ref(false)
 
 // Linking modals to dynamic data
-const resultKey = ref('relevant_provisions_a')
+const resultKey = ref('Relevant provisions')
 const resultData = ref({}) // Placeholder for your actual data
 
 // This will store the response data to be passed to the modal
@@ -183,30 +183,30 @@ const props = defineProps({
 
 // Define the keys and their order for "Answers"
 const answerKeys = [
-  'questions',
-  'name_from_jurisdiction_a',
-  'answer_a',
-  'legal_provisions_articles_a',
+  'Questions',
+  'Name (from Jurisdiction)',
+  'Answer',
+  'Legal provision articles',
 ]
 
 // Define the keys and their order for "Court decisions"
 const courtDecisionKeys = [
-  'case_cd',
-  'jurisdiction_names_cd',
-  'choice_of_law_issue_cd',
+  'Case',
+  'Jurisdiction Names',
+  'Choice of law issue',
 ]
 
 // Define a keyMap to rename the keys for display
 const keyMap = {
   // Answers
-  answer_a: 'ANSWER',
-  name_from_jurisdiction_a: 'JURISDICTION',
-  questions: 'QUESTION',
-  legal_provisions_articles_a: 'LEGAL PROVISIONS',
+  "Answer": 'ANSWER',
+  "Name (from Jurisdiction)": 'JURISDICTION',
+  "Questions": 'QUESTION',
+  "Legal provision articles": 'LEGAL PROVISIONS',
   // Court Decisions
-  case_cd: 'CASE TITLE',
-  jurisdiction_names_cd: 'JURISDICTION',
-  choice_of_law_issue_cd: 'CHOICE OF LAW ISSUE',
+  "Case": 'CASE TITLE',
+  "Jurisdiction Names": 'JURISDICTION',
+  "Choice of law issue": 'CHOICE OF LAW ISSUE',
 }
 
 // Gather all results
