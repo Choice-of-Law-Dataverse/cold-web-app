@@ -17,8 +17,9 @@
       >
         <UCard>
           <!-- Conditional rendering based on the type of search result -->
+
+          <!-- Display for Answers -->
           <template v-if="isAnswer(resultData)">
-            <!-- Display for Answers -->
             <div v-for="(resultKey, index) in answerKeys" :key="resultKey">
               <div class="result-key">{{ keyMap[resultKey] }}</div>
               <div
@@ -29,7 +30,6 @@
               >
                 <template v-if="resultKey === 'Legal provision articles'">
                   <div v-if="resultData[resultKey]">
-                    <!-- Split the resultData[resultKey] by commas and loop through each item -->
                     <span
                       v-for="(item, index) in resultData[resultKey].split(',')"
                       :key="index"
@@ -43,11 +43,8 @@
                       </a>
                     </span>
                   </div>
-                  <!-- Display fallback text if there are no legal provisions -->
                   <div v-else>No legal provision</div>
                 </template>
-
-                <!-- Display other keys normally -->
                 <template v-else>
                   {{ resultData[resultKey] }}
                 </template>
@@ -55,12 +52,11 @@
             </div>
           </template>
 
-          <template v-else>
-            <!-- Display for Court decisions -->
+          <!-- Display for Court decisions -->
+          <template v-else-if="isCourtDecision(resultData)">
             <div v-for="resultKey in courtDecisionKeys" :key="resultKey">
               <div class="result-key">{{ keyMap[resultKey] }}</div>
               <div class="result-value">
-                <!-- Check if 'Choice of law issue' is empty and display default text -->
                 <template v-if="resultKey === 'Choice of law issue'">
                   {{ resultData[resultKey] || '[Missing Information]' }}
                 </template>
@@ -74,6 +70,24 @@
                 >Show more</a
               >
             </div>
+          </template>
+
+          <!-- Display for Legislation -->
+          <template v-else-if="isLegislation(resultData)">
+            <div
+              v-for="legislationKey in legislationKeys"
+              :key="legislationKey"
+            >
+              <div class="result-key">{{ keyMap[legislationKey] }}</div>
+              <div class="result-value">
+                {{ resultData[legislationKey] || '[Missing Information]' }}
+              </div>
+            </div>
+          </template>
+
+          <!-- Default case if no source_table matches -->
+          <template v-else>
+            <div>No matching source found</div>
           </template>
         </UCard>
       </div>
@@ -190,23 +204,25 @@ const answerKeys = [
 ]
 
 // Define the keys and their order for "Court decisions"
-const courtDecisionKeys = [
-  'Case',
-  'Jurisdiction Names',
-  'Choice of law issue',
-]
+const courtDecisionKeys = ['Case', 'Jurisdiction Names', 'Choice of law issue']
+
+// Define the keys and their order for "Court decisions"
+const legislationKeys = ['Title (in English)', 'Jurisdiction name']
 
 // Define a keyMap to rename the keys for display
 const keyMap = {
   // Answers
-  "Answer": 'ANSWER',
-  "Name (from Jurisdiction)": 'JURISDICTION',
-  "Questions": 'QUESTION',
-  "Legal provision articles": 'LEGAL PROVISIONS',
+  Answer: 'ANSWER',
+  'Name (from Jurisdiction)': 'JURISDICTION',
+  Questions: 'QUESTION',
+  'Legal provision articles': 'LEGAL PROVISIONS',
   // Court Decisions
-  "Case": 'CASE TITLE',
-  "Jurisdiction Names": 'JURISDICTION',
-  "Choice of law issue": 'CHOICE OF LAW ISSUE',
+  Case: 'CASE TITLE',
+  'Jurisdiction Names': 'JURISDICTION',
+  'Choice of law issue': 'CHOICE OF LAW ISSUE',
+  // Legislations
+  'Title (in English)': 'TITLE',
+  'Jurisdiction name': 'JURISDICTION',
 }
 
 // Gather all results
@@ -217,7 +233,14 @@ const allResults = computed(() => {
 // Utility functions
 
 function isAnswer(resultData) {
-  // Check if 'source_table' key exists and if its value is "Answers"
   return resultData.source_table === 'Answers'
+}
+
+function isCourtDecision(resultData) {
+  return resultData.source_table === 'Court decisions'
+}
+
+function isLegislation(resultData) {
+  return resultData.source_table === 'Legislation'
 }
 </script>
