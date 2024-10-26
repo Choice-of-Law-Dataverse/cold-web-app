@@ -72,6 +72,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <BackButton />
   <div v-if="loading">Loading...</div>
   <div v-else>
     <h1>Legal Instrument Details</h1>
