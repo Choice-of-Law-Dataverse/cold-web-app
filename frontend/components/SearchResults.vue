@@ -227,7 +227,7 @@ const keyMap = {
 
 // Gather all results
 const allResults = computed(() => {
-  return Object.values(props.data.results)
+  return Object.values(props.data.tables)
 })
 
 // Utility functions
