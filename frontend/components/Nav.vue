@@ -7,18 +7,10 @@
     <UInput
       size="xl"
       v-model="searchText"
-      placeholder="Enter your search terms here"
+      placeholder="Search the entire Dataverse"
       style="width: 40vw"
     />
     <UButton @click="emitSearch">Search</UButton>
-    <!-- <UInput
-      size="xl"
-      v-model="searchText"
-      @keyup.enter="performSearch"
-      placeholder="Search the entire Dataverse"
-      style="width: 40vw"
-      class="mr-auto"
-    /> -->
 
     <!-- Horizontal Navigation Links -->
     <UHorizontalNavigation :links="links" class="ml-6" />
@@ -29,15 +21,10 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-// const route = useRoute()
 const searchText = ref('') // Define searchText to bind to the input
 const router = useRouter() // Router instance to handle navigation
 
 const links = [
-  // {
-  //   label: 'CoLD',
-  //   to: '/',
-  // },
   {
     label: 'About',
     to: '/about',
