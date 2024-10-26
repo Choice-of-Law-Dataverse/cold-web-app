@@ -10,6 +10,7 @@
       <SearchResults
         v-if="!loading && searchResults.length"
         :data="{ tables: searchResults }"
+        :total-matches="totalMatches"
       />
 
       <p v-if="!loading && !searchResults.length">No results found.</p>
@@ -28,6 +29,7 @@ import SearchResults from '../components/SearchResults.vue' // Adjust path if ne
 const searchQuery = ref('') // Holds the search query from the URL
 const searchResults = ref([]) // Stores search results to be displayed
 const loading = ref(false) // Tracks the loading state for the API call
+const totalMatches = ref(0) // Save number of total matches
 
 const route = useRoute() // Provides access to route parameters
 
@@ -49,6 +51,9 @@ async function fetchSearchResults(query) {
 
     if (!response.ok) throw new Error('Network response was not ok')
     const data = await response.json()
+
+    // Extract total matches and results
+    totalMatches.value = data.total_matches || 0
     searchResults.value = Object.values(data.results)
   } catch (error) {
     console.error('Error fetching search results:', error)
