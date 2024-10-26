@@ -4,7 +4,13 @@
     <div class="font-bold whitespace-nowrap ml-4"><a href="/">CoLD</a></div>
 
     <!-- Search Input -->
-    <SearchInput />
+    <UInput
+      size="xl"
+      v-model="searchText"
+      placeholder="Enter your search terms here"
+      style="width: 40vw"
+    />
+    <UButton @click="emitSearch">Search</UButton>
     <!-- <UInput
       size="xl"
       v-model="searchText"
@@ -20,9 +26,12 @@
 </template>
 
 <script setup lang="ts">
-//import { ref } from 'vue'
-const route = useRoute()
-//const searchText = ref('') // Define searchText to bind to the input
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+
+// const route = useRoute()
+const searchText = ref('') // Define searchText to bind to the input
+const router = useRouter() // Router instance to handle navigation
 
 const links = [
   // {
@@ -38,4 +47,11 @@ const links = [
     to: '/contact',
   },
 ]
+
+function emitSearch() {
+  if (searchText.value.trim()) {
+    // Only navigate if there's a non-empty search term
+    router.push({ name: 'search', query: { q: searchText.value } })
+  }
+}
 </script>

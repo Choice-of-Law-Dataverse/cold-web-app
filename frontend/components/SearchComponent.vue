@@ -43,20 +43,20 @@
     </div>
 
     <!-- Display search suggestions below the input and button -->
-    <div>
+    <!-- <div>
       <SearchSuggestions
         v-if="showSuggestions"
         @suggestion-selected="updateSearchText"
       />
-    </div>
+    </div> -->
 
     <!-- Display Helper Chatbot -->
-    <div v-if="results && !noResults">
+    <!-- <div v-if="results && !noResults">
       <HelperChatbot
         :searchText="searchText"
         :searchPerformed="searchPerformed"
       />
-    </div>
+    </div> -->
 
     <!-- Display search results below the input and button -->
     <div v-if="results && !noResults">
@@ -72,7 +72,7 @@
 
 <script setup lang="ts">
 import { ref, nextTick } from 'vue'
-import HelperChatbot from './HelperChatbot.vue' // Import HelperChatbot
+// import HelperChatbot from './HelperChatbot.vue' // Import HelperChatbot
 
 // Regular ref for non-persistent search text and results
 const searchText = ref('') // Empty string as initial value
