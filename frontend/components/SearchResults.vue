@@ -47,6 +47,8 @@
                     </span>
                   </div>
                   <div v-else>No legal provision</div>
+                  <br />
+                  <NuxtLink :to="`/question/${resultData.id}`">Open</NuxtLink>
                 </template>
                 <template v-else>
                   {{ resultData[resultKey] }}
