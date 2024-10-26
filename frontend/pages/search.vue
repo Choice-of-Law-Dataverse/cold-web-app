@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h1>Search Results</h1>
+    <!-- <h1>Search Results</h1> -->
     <div v-if="searchQuery">
-      <p>Results for: "{{ searchQuery }}"</p>
+      <!-- <p>Results for: "{{ searchQuery }}"</p> -->
 
       <p v-if="loading">Loading...</p>
 
