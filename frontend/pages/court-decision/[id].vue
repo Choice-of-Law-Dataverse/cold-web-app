@@ -32,6 +32,28 @@ async function fetchCourtDecision(id: string) {
   }
 }
 
+// Define the keys and labels for dynamic rendering
+const keyLabelPairs = [
+  { key: 'Jurisdiction Names', label: 'Jurisdiction' },
+  { key: 'Themes', label: 'Themes' },
+  { key: 'Case', label: 'Case Title' },
+  { key: 'Abstract', label: 'Abstract' },
+  {
+    key: 'Relevant facts / Summary of the case',
+    label: 'RELEVANT FACTS / SUMMARY OF THE CASE',
+  },
+  {
+    key: 'Relevant rules of law involved',
+    label: 'RELEVANT RULES OF LAW INVOLVED',
+  },
+  { key: 'Choice of law issue', label: 'choice of law issue' },
+  { key: "Court's position", label: "COURT'S POSITION" },
+  {
+    key: 'Text of the relevant legal provisions',
+    label: 'TEXT OF THE RELEVANT LEGAL PROVISIONS',
+  },
+]
+
 onMounted(() => {
   const id = route.params.id as string // Get ID from the route
   fetchCourtDecision(id)
@@ -43,51 +65,17 @@ onMounted(() => {
   <div v-else>
     <h1>Court Decision Details</h1>
 
-    <p>
-      <strong>Jurisdiction Names:</strong>
-      {{ courtDecision?.['Jurisdiction Names'] || 'N/A' }}
-    </p>
-
-    <p><strong>Label: </strong>Court Decision</p>
-
-    <p>
-      <strong>Themes:</strong>
-      {{ courtDecision?.['Themes'] || 'N/A' }}
-    </p>
-
-    <p>
-      <strong>Case Title:</strong>
-      {{ courtDecision?.['Case'] || 'N/A' }}
-    </p>
-
-    <p>
-      <strong>Abstract:</strong>
-      {{ courtDecision?.['Abstract'] || 'N/A' }}
-    </p>
-
-    <p>
-      <strong>RELEVANT FACTS / SUMMARY OF THE CASE:</strong>
-      {{ courtDecision?.['Relevant facts / Summary of the case'] || 'N/A' }}
-    </p>
-
-    <p>
-      <strong>RELEVANT RULES OF LAW INVOLVED:</strong>
-      {{ courtDecision?.['Relevant rules of law involved'] || 'N/A' }}
-    </p>
-
-    <p>
-      <strong>choice of law issue:</strong>
-      {{ courtDecision?.['Choice of law issue'] || 'N/A' }}
-    </p>
-
-    <p>
-      <strong>COURT'S POSITION:</strong>
-      {{ courtDecision?.["Court's position"] || 'N/A' }}
-    </p>
-
-    <p>
-      <strong>TEXT OF THE RELEVANT LEGAL PROVISIONS:</strong>
-      {{ courtDecision?.['Text of the relevant legal provisions'] || 'N/A' }}
-    </p>
+    <!-- Loop over the keyLabelPairs array to display each key-value pair dynamically -->
+    <div v-for="(item, index) in keyLabelPairs" :key="index">
+      <p class="result-key">{{ item.label }}</p>
+      <p class="result-value">
+        {{ courtDecision?.[item.key] || 'N/A' }}
+      </p>
+      <!-- Insert hardcoded label after "Jurisdiction Names" -->
+      <p v-if="item.key === 'Jurisdiction Names'">
+        <p class="result-key">Label</p>
+        <p class="result-value">Court Decision</p>
+      </p>
+    </div>
   </div>
 </template>
