@@ -61,6 +61,7 @@ onMounted(() => {
 </script>
 
 <template>
+  <BackButton />
   <div v-if="loading">Loading...</div>
   <div v-else>
     <h1>Court Decision Details</h1>
@@ -71,11 +72,12 @@ onMounted(() => {
       <p class="result-value">
         {{ courtDecision?.[item.key] || 'N/A' }}
       </p>
+
       <!-- Insert hardcoded label after "Jurisdiction Names" -->
-      <p v-if="item.key === 'Jurisdiction Names'">
+      <template v-if="item.key === 'Jurisdiction Names'">
         <p class="result-key">Label</p>
         <p class="result-value">Court Decision</p>
-      </p>
+      </template>
     </div>
   </div>
 </template>
