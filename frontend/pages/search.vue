@@ -2,15 +2,17 @@
   <div>
     <h1>Search Results</h1>
     <div v-if="searchQuery">
-      <!-- Display the search query -->
       <p>Results for: "{{ searchQuery }}"</p>
 
-      <!-- Display results (replace with actual result rendering) -->
-      <ul>
-        <li v-for="result in searchResults" :key="result.id">
-          {{ result.title }}
-        </li>
-      </ul>
+      <p v-if="loading">Loading...</p>
+
+      <!-- Pass searchResults wrapped in `tables` to SearchResults.vue -->
+      <SearchResults
+        v-if="!loading && searchResults.length"
+        :data="{ tables: searchResults }"
+      />
+
+      <p v-if="!loading && !searchResults.length">No results found.</p>
     </div>
     <div v-else>
       <p>Please enter a search term in the navigation bar above.</p>
@@ -21,34 +23,50 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import SearchResults from '../components/SearchResults.vue' // Adjust path if needed
 
 const searchQuery = ref('') // Holds the search query from the URL
 const searchResults = ref([]) // Stores search results to be displayed
+const loading = ref(false) // Tracks the loading state for the API call
 
 const route = useRoute() // Provides access to route parameters
 
-// Function to fetch search results based on query
-function fetchSearchResults(query) {
-  // Mock fetch function for demonstration purposes
-  searchResults.value = [
-    { id: 1, title: `Result for "${query}" 1` },
-    { id: 2, title: `Result for "${query}" 2` },
-    { id: 3, title: `Result for "${query}" 3` },
-  ]
+// Function to fetch search results from the API
+async function fetchSearchResults(query) {
+  loading.value = true
+  searchResults.value = []
+
+  try {
+    const requestBody = { search_string: query }
+    const response = await fetch(
+      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_text_search',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(requestBody),
+      }
+    )
+
+    if (!response.ok) throw new Error('Network response was not ok')
+    const data = await response.json()
+    searchResults.value = Object.values(data.results)
+  } catch (error) {
+    console.error('Error fetching search results:', error)
+  } finally {
+    loading.value = false
+  }
 }
 
-// Watch for changes in the query parameter and fetch new results
 watch(
   () => route.query.q,
   (newQuery) => {
     if (newQuery) {
       searchQuery.value = newQuery
-      fetchSearchResults(newQuery) // Fetch results based on the new query
+      fetchSearchResults(newQuery)
     }
   }
 )
 
-// Fetch initial results if there's a query on first load
 onMounted(() => {
   if (route.query.q) {
     searchQuery.value = route.query.q
