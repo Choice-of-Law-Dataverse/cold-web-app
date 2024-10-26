@@ -69,9 +69,7 @@
               </div>
             </div>
             <div>
-              <a href="#" @click.prevent="openCourtDecisionModal(resultData)"
-                >Show more</a
-              >
+              <NuxtLink :to="`/court-decision/${resultData.id}`">Open</NuxtLink>
             </div>
           </template>
 
