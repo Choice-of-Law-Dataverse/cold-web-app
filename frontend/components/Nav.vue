@@ -7,6 +7,7 @@
     <UInput
       size="xl"
       v-model="searchText"
+      @keyup.enter="emitSearch"
       placeholder="Search the entire Dataverse"
       style="width: 40vw"
     />

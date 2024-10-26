@@ -8,6 +8,9 @@
       margin-right: auto;
     "
   >
+    <p style="text-align: right; padding-bottom: 50px">
+      {{ props.totalMatches }} Results
+    </p>
     <div class="results-grid">
       <!-- <h2>Search Results</h2> -->
       <div
@@ -192,6 +195,10 @@ const props = defineProps({
   data: {
     type: Object,
     default: () => ({ tables: {} }), // Provide default value for data
+  },
+  totalMatches: {
+    type: Number,
+    default: 0,
   },
 })
 
