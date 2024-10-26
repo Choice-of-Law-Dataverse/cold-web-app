@@ -84,6 +84,11 @@
                 {{ resultData[legislationKey] || '[Missing Information]' }}
               </div>
             </div>
+            <div>
+              <NuxtLink :to="`/legal-instrument/${resultData.id}`"
+                >Open</NuxtLink
+              >
+            </div>
           </template>
 
           <!-- Default case if no source_table matches -->
