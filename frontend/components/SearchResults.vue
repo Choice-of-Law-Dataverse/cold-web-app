@@ -23,72 +23,92 @@
 
           <!-- Display for Answers -->
           <template v-if="isAnswer(resultData)">
-            <div v-for="(resultKey, index) in answerKeys" :key="resultKey">
-              <div class="result-key">{{ keyMap[resultKey] }}</div>
-              <div
-                :class="[
-                  'result-value',
-                  { 'no-margin': index === answerKeys.length - 1 },
-                ]"
+            <div style="position: relative">
+              <!-- Position the "Open" link in the top right corner -->
+              <NuxtLink
+                :to="`/question/${resultData.id}`"
+                style="position: absolute; top: 10px; right: 10px"
               >
-                <template v-if="resultKey === 'Legal provision articles'">
-                  <div v-if="resultData[resultKey]">
-                    <span
-                      v-for="(item, index) in resultData[resultKey].split(',')"
-                      :key="index"
-                      style="margin-right: 10px"
-                    >
-                      <NuxtLink
-                        :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
+                Open
+              </NuxtLink>
+              <div v-for="(resultKey, index) in answerKeys" :key="resultKey">
+                <div class="result-key">{{ keyMap[resultKey] }}</div>
+                <div
+                  :class="[
+                    'result-value',
+                    { 'no-margin': index === answerKeys.length - 1 },
+                  ]"
+                >
+                  <template v-if="resultKey === 'Legal provision articles'">
+                    <div v-if="resultData[resultKey]">
+                      <span
+                        v-for="(item, index) in resultData[resultKey].split(
+                          ','
+                        )"
+                        :key="index"
+                        style="margin-right: 10px"
                       >
-                        {{ item.trim() }}
-                      </NuxtLink>
-                    </span>
-                  </div>
-                  <div v-else>No legal provision</div>
-                  <br />
-                  <NuxtLink :to="`/question/${resultData.id}`">Open</NuxtLink>
-                </template>
-                <template v-else>
-                  {{ resultData[resultKey] }}
-                </template>
+                        <NuxtLink
+                          :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
+                        >
+                          {{ item.trim() }}
+                        </NuxtLink>
+                      </span>
+                    </div>
+                    <div v-else>No legal provision</div>
+                  </template>
+                  <template v-else>
+                    {{ resultData[resultKey] }}
+                  </template>
+                </div>
               </div>
             </div>
           </template>
 
           <!-- Display for Court decisions -->
           <template v-else-if="isCourtDecision(resultData)">
-            <div v-for="resultKey in courtDecisionKeys" :key="resultKey">
-              <div class="result-key">{{ keyMap[resultKey] }}</div>
-              <div class="result-value">
-                <template v-if="resultKey === 'Choice of law issue'">
-                  {{ resultData[resultKey] || '[Missing Information]' }}
-                </template>
-                <template v-else>
-                  <span>{{ resultData[resultKey] }}</span>
-                </template>
+            <div style="position: relative">
+              <!-- Position the "Open" link in the top right corner -->
+              <NuxtLink
+                :to="`/court-decision/${resultData.id}`"
+                style="position: absolute; top: 10px; right: 10px"
+              >
+                Open
+              </NuxtLink>
+              <div v-for="resultKey in courtDecisionKeys" :key="resultKey">
+                <div class="result-key">{{ keyMap[resultKey] }}</div>
+                <div class="result-value">
+                  <template v-if="resultKey === 'Choice of law issue'">
+                    {{ resultData[resultKey] || '[Missing Information]' }}
+                  </template>
+                  <template v-else>
+                    <span>{{ resultData[resultKey] }}</span>
+                  </template>
+                </div>
               </div>
-            </div>
-            <div>
-              <NuxtLink :to="`/court-decision/${resultData.id}`">Open</NuxtLink>
             </div>
           </template>
 
           <!-- Display for Legislation -->
           <template v-else-if="isLegislation(resultData)">
-            <div
-              v-for="legislationKey in legislationKeys"
-              :key="legislationKey"
-            >
-              <div class="result-key">{{ keyMap[legislationKey] }}</div>
-              <div class="result-value">
-                {{ resultData[legislationKey] || '[Missing Information]' }}
-              </div>
-            </div>
-            <div>
-              <NuxtLink :to="`/legal-instrument/${resultData.id}`"
-                >Open</NuxtLink
+            <div style="position: relative">
+              <NuxtLink
+                :to="`/legal-instrument/${resultData.id}`"
+                style="position: absolute; top: 10px; right: 10px"
               >
+                Open
+              </NuxtLink>
+
+              <!-- Legislation details -->
+              <div
+                v-for="legislationKey in legislationKeys"
+                :key="legislationKey"
+              >
+                <div class="result-key">{{ keyMap[legislationKey] }}</div>
+                <div class="result-value">
+                  {{ resultData[legislationKey] || '[Missing Information]' }}
+                </div>
+              </div>
             </div>
           </template>
 
