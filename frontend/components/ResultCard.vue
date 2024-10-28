@@ -8,13 +8,13 @@
           <span v-if="jurisdiction">{{ jurisdiction }}</span>
 
           <!-- Display 'source_table' -->
-          <span v-if="resultData.source_table" class="source-table">
-            {{ resultData.source_table }}
+          <span v-if="formattedSourceTable" class="source-table">
+            {{ formattedSourceTable }}
           </span>
 
           <!-- Display 'Themes' -->
-          <span v-if="resultData.Themes" class="themes">
-            {{ resultData.Themes }}
+          <span v-if="formattedTheme" class="themes">
+            {{ formattedTheme }}
           </span>
         </div>
 
@@ -53,6 +53,31 @@ const jurisdiction = computed(() => {
     props.resultData['Name (from Jurisdiction)'] ||
     null
   )
+})
+
+// Computed property for "formattedSourceTable" to overwrite specific themes
+const formattedSourceTable = computed(() => {
+  const source_table = props.resultData.source_table
+  if (source_table === 'Court decisions') {
+    return 'Court decision'
+  }
+  if (source_table === 'Answers') {
+    return 'Question'
+  }
+  if (source_table === 'Legislation') {
+    return 'Legal Instrument'
+  }
+  // Add more overwrites as needed
+  return source_table
+})
+
+// Computed property for "formattedTheme" to overwrite specific themes
+const formattedTheme = computed(() => {
+  const Themes = props.resultData.Themes
+  if (Themes === 'None') {
+    return null
+  }
+  return Themes
 })
 
 // Methods
