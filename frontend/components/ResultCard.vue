@@ -1,16 +1,32 @@
 <template>
   <UCard>
-    <div style="position: relative">
-      <!-- "Open" link in the top-right corner -->
-      <NuxtLink
-        v-if="resultData.id"
-        :to="getLink()"
-        style="position: absolute; top: 10px; right: 10px"
-      >
-        Open
-      </NuxtLink>
+    <template #header>
+      <div class="header-container">
+        <!-- Left side of the header -->
+        <div class="header-left">
+          <!-- Display 'Name (from Jurisdiction)' or alternatives -->
+          <span v-if="jurisdiction">{{ jurisdiction }}</span>
 
-      <!-- Content slot for specific result type details -->
+          <!-- Display 'source_table' -->
+          <span v-if="resultData.source_table" class="source-table">
+            {{ resultData.source_table }}
+          </span>
+
+          <!-- Display 'Themes' -->
+          <span v-if="resultData.Themes" class="themes">
+            {{ resultData.Themes }}
+          </span>
+        </div>
+
+        <!-- Right side of the header with "Open" link -->
+        <div class="header-right">
+          <NuxtLink v-if="resultData.id" :to="getLink()">Open</NuxtLink>
+        </div>
+      </div>
+    </template>
+
+    <!-- Card content -->
+    <div>
       <slot />
     </div>
   </UCard>
@@ -29,6 +45,16 @@ const props = defineProps({
   },
 })
 
+// Computed property for "jurisdiction" to handle multiple field options
+const jurisdiction = computed(() => {
+  return (
+    props.resultData['Jurisdiction name'] ||
+    props.resultData['Jurisdiction Names'] ||
+    props.resultData['Name (from Jurisdiction)'] ||
+    null
+  )
+})
+
 // Methods
 const getLink = () => {
   // Determine the correct link based on the card type and resultData
@@ -44,3 +70,19 @@ const getLink = () => {
   }
 }
 </script>
+
+<style scoped>
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header-left span {
+  margin-right: 8px;
+}
+
+.header-right {
+  /* Aligns the "Open" link to the right */
+}
+</style>

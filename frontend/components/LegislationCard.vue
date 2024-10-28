@@ -18,12 +18,7 @@ const props = defineProps({
   },
 })
 
-const legislationKeys = [
-  'Jurisdiction name',
-  'source_table',
-  'Abbreviation',
-  'Title (in English)',
-]
+const legislationKeys = ['Abbreviation', 'Title (in English)']
 
 const keyMap = {
   // Legislations
