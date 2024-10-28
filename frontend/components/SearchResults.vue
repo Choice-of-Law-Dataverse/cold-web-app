@@ -27,7 +27,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 
 import LegislationCard from '@/components/LegislationCard.vue'
 import CourtDecisionCard from '@/components/CourtDecisionCard.vue'
@@ -59,66 +59,8 @@ const props = defineProps({
   },
 })
 
-// Define the keys and their order for "Answers"
-const answerKeys = [
-  'Name (from Jurisdiction)',
-  'source_table',
-  'Themes',
-  'Questions',
-  'Answer',
-  'Legal provision articles',
-]
-
-// Define the keys and their order for "Court decisions"
-const courtDecisionKeys = [
-  'Jurisdiction Names',
-  'source_table',
-  'Themes',
-  'Case',
-  'Choice of law issue',
-]
-
-// Define the keys and their order for "Legal Instrument"
-const legislationKeys = [
-  'Jurisdiction name',
-  'source_table',
-  'Abbreviation',
-  'Title (in English)',
-]
-
-// Define a keyMap to rename the keys for display
-const keyMap = {
-  // Answers
-  Answer: 'ANSWER',
-  'Name (from Jurisdiction)': 'JURISDICTION',
-  Questions: 'QUESTION',
-  'Legal provision articles': 'SOURCE',
-  // Court Decisions
-  Case: 'CASE TITLE',
-  'Jurisdiction Names': 'JURISDICTION',
-  'Choice of law issue': 'CHOICE OF LAW ISSUE',
-  // Legislations
-  'Title (in English)': 'TITLE',
-  'Jurisdiction name': 'JURISDICTION',
-  Abbreviation: 'Abbreviation',
-}
-
 // Gather all results
 const allResults = computed(() => {
   return Object.values(props.data.tables)
 })
-
-// Utility functions
-
-function isAnswer(resultData) {
-  return resultData.source_table === 'Answers'
-}
-
-function isCourtDecision(resultData) {
-  return resultData.source_table === 'Court decisions'
-}
-
-function isLegislation(resultData) {
-  return resultData.source_table === 'Legislation'
-}
 </script>
