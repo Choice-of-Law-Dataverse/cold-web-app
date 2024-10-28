@@ -38,12 +38,11 @@
                       :key="index"
                       style="margin-right: 10px"
                     >
-                      <a
-                        href="#"
-                        @click.prevent="openLegalProvisionModal(item)"
+                      <NuxtLink
+                        :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
                       >
                         {{ item.trim() }}
-                      </a>
+                      </NuxtLink>
                     </span>
                   </div>
                   <div v-else>No legal provision</div>
