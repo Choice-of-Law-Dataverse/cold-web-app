@@ -45,17 +45,9 @@ const props = defineProps({
 })
 
 // Define the keys and mappings specific to answer results
-const answerKeys = [
-  'Name (from Jurisdiction)',
-  'source_table',
-  'Themes',
-  'Questions',
-  'Answer',
-  'Legal provision articles',
-]
+const answerKeys = ['Questions', 'Answer', 'Legal provision articles']
 const keyMap = {
   Answer: 'ANSWER',
-  'Name (from Jurisdiction)': 'JURISDICTION',
   Questions: 'QUESTION',
   'Legal provision articles': 'SOURCE',
 }

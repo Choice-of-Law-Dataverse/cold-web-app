@@ -25,13 +25,7 @@ const props = defineProps({
 })
 
 // Define the keys and mappings specific to court decisions
-const courtDecisionKeys = [
-  'Jurisdiction Names',
-  'source_table',
-  'Themes',
-  'Case',
-  'Choice of law issue',
-]
+const courtDecisionKeys = ['Case', 'Choice of law issue']
 const keyMap = {
   Case: 'CASE TITLE',
   'Jurisdiction Names': 'JURISDICTION',
