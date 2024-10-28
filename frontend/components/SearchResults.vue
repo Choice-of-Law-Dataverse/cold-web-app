@@ -17,100 +17,10 @@
         :key="key"
         class="result-item"
       >
-        <UCard>
-          <!-- Conditional rendering based on the type of search result -->
-
-          <!-- Display for Answers -->
-          <template v-if="isAnswer(resultData)">
-            <div style="position: relative">
-              <!-- Position the "Open" link in the top right corner -->
-              <NuxtLink
-                :to="`/question/${resultData.id}`"
-                style="position: absolute; top: 10px; right: 10px"
-              >
-                Open
-              </NuxtLink>
-              <div v-for="(resultKey, index) in answerKeys" :key="resultKey">
-                <div class="result-key">{{ keyMap[resultKey] }}</div>
-                <div
-                  :class="[
-                    'result-value',
-                    { 'no-margin': index === answerKeys.length - 1 },
-                  ]"
-                >
-                  <template v-if="resultKey === 'Legal provision articles'">
-                    <div v-if="resultData[resultKey]">
-                      <span
-                        v-for="(item, index) in resultData[resultKey].split(
-                          ','
-                        )"
-                        :key="index"
-                        style="margin-right: 10px"
-                      >
-                        <NuxtLink
-                          :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
-                        >
-                          {{ item.trim() }}
-                        </NuxtLink>
-                      </span>
-                    </div>
-                    <div v-else>No legal provision</div>
-                  </template>
-                  <template v-else>
-                    {{ resultData[resultKey] }}
-                  </template>
-                </div>
-              </div>
-            </div>
-          </template>
-
-          <!-- Display for Court decisions -->
-          <template v-else-if="isCourtDecision(resultData)">
-            <div style="position: relative">
-              <!-- Position the "Open" link in the top right corner -->
-              <NuxtLink
-                :to="`/court-decision/${resultData.id}`"
-                style="position: absolute; top: 10px; right: 10px"
-              >
-                Open
-              </NuxtLink>
-              <div v-for="resultKey in courtDecisionKeys" :key="resultKey">
-                <div class="result-key">{{ keyMap[resultKey] }}</div>
-                <div class="result-value">
-                  <template v-if="resultKey === 'Choice of law issue'">
-                    {{ resultData[resultKey] || '[Missing Information]' }}
-                  </template>
-                  <template v-else>
-                    <span>{{ resultData[resultKey] }}</span>
-                  </template>
-                </div>
-              </div>
-            </div>
-          </template>
-
-          <!-- Display for Legislation -->
-          <template v-else-if="isLegislation(resultData)">
-            <div style="position: relative">
-              <NuxtLink
-                :to="`/legal-instrument/${resultData.id}`"
-                style="position: absolute; top: 10px; right: 10px"
-              >
-                Open
-              </NuxtLink>
-
-              <!-- Legislation details -->
-              <div
-                v-for="legislationKey in legislationKeys"
-                :key="legislationKey"
-              >
-                <div class="result-key">{{ keyMap[legislationKey] }}</div>
-                <div class="result-value">
-                  {{ resultData[legislationKey] || '[Missing Information]' }}
-                </div>
-              </div>
-            </div>
-          </template>
-        </UCard>
+        <component
+          :is="getResultComponent(resultData.source_table)"
+          :resultData="resultData"
+        />
       </div>
     </div>
   </UContainer>
@@ -118,6 +28,24 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+
+import LegislationCard from '@/components/LegislationCard.vue'
+import CourtDecisionCard from '@/components/CourtDecisionCard.vue'
+import AnswerCard from '@/components/AnswerCard.vue'
+import ResultCard from '@/components/ResultCard.vue'
+
+const getResultComponent = (source_table) => {
+  switch (source_table) {
+    case 'Legislation':
+      return LegislationCard
+    case 'Court decisions':
+      return CourtDecisionCard
+    case 'Answers':
+      return AnswerCard
+    default:
+      return ResultCard
+  }
+}
 
 // Define props and assign them to a variable
 const props = defineProps({
