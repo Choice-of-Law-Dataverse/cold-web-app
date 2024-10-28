@@ -208,17 +208,30 @@ const props = defineProps({
 
 // Define the keys and their order for "Answers"
 const answerKeys = [
-  'Questions',
   'Name (from Jurisdiction)',
+  'source_table',
+  'Themes',
+  'Questions',
   'Answer',
   'Legal provision articles',
 ]
 
 // Define the keys and their order for "Court decisions"
-const courtDecisionKeys = ['Case', 'Jurisdiction Names', 'Choice of law issue']
+const courtDecisionKeys = [
+  'Jurisdiction Names',
+  'source_table',
+  'Themes',
+  'Case',
+  'Choice of law issue',
+]
 
-// Define the keys and their order for "Court decisions"
-const legislationKeys = ['Title (in English)', 'Jurisdiction name']
+// Define the keys and their order for "Legal Instrument"
+const legislationKeys = [
+  'Jurisdiction name',
+  'source_table',
+  'Abbreviation',
+  'Title (in English)',
+]
 
 // Define a keyMap to rename the keys for display
 const keyMap = {
@@ -234,6 +247,7 @@ const keyMap = {
   // Legislations
   'Title (in English)': 'TITLE',
   'Jurisdiction name': 'JURISDICTION',
+  Abbreviation: 'Abbreviation',
 }
 
 // Gather all results
