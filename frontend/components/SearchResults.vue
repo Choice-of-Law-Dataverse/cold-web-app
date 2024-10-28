@@ -227,7 +227,7 @@ const keyMap = {
   Answer: 'ANSWER',
   'Name (from Jurisdiction)': 'JURISDICTION',
   Questions: 'QUESTION',
-  'Legal provision articles': 'LEGAL PROVISIONS',
+  'Legal provision articles': 'SOURCE',
   // Court Decisions
   Case: 'CASE TITLE',
   'Jurisdiction Names': 'JURISDICTION',
