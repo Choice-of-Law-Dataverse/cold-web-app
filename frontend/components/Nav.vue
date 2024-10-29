@@ -1,45 +1,80 @@
 <template>
-  <div class="flex items-center border-b border-gray-200 dark:border-gray-800">
-    <!-- Web App Name -->
-    <div class="font-bold whitespace-nowrap ml-4"><a href="/">CoLD</a></div>
+  <nav class="main-navigation">
+    <div class="container">
+      <div class="inner-content flex items-center justify-between">
+        <!-- Web App Name aligned to the first column -->
+        <div class="font-bold whitespace-nowrap" style="margin-left: 24px">
+          <a href="/">CoLD</a>
+        </div>
 
-    <!-- Search Input -->
-    <UInput
-      size="xl"
-      v-model="searchText"
-      @keyup.enter="emitSearch"
-      placeholder="Search the entire Dataverse"
-      style="width: 40vw"
-    />
-    <UButton @click="emitSearch">Search</UButton>
+        <!-- Search Input positioned from the center of column 2 to the end of column 10 -->
+        <div class="search-container">
+          <UInput
+            size="xl"
+            v-model="searchText"
+            @keyup.enter="emitSearch"
+            placeholder="Search the entire Dataverse"
+          />
+        </div>
 
-    <!-- Horizontal Navigation Links -->
-    <UHorizontalNavigation :links="links" class="ml-6" />
-  </div>
+        <!-- Navigation Links, naturally aligned in columns 11 and 12 -->
+        <div class="nav-links-container" style="margin-right: 12px">
+          <UHorizontalNavigation :links="links" />
+        </div>
+      </div>
+    </div>
+  </nav>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-const searchText = ref('') // Define searchText to bind to the input
-const router = useRouter() // Router instance to handle navigation
+const searchText = ref('')
+const router = useRouter()
 
 const links = [
-  {
-    label: 'About',
-    to: '/about',
-  },
-  {
-    label: 'Contact',
-    to: '/contact',
-  },
+  { label: 'About', to: '/about' },
+  { label: 'Contact', to: '/contact' },
 ]
 
 function emitSearch() {
   if (searchText.value.trim()) {
-    // Only navigate if there's a non-empty search term
     router.push({ name: 'search', query: { q: searchText.value } })
   }
 }
 </script>
+
+<style scoped>
+.main-navigation {
+  width: 100%;
+  height: 112px;
+  background-color: white;
+  border-bottom: 1px solid #e5e7eb;
+  display: flex;
+  align-items: center;
+}
+
+.container {
+  max-width: 100vw;
+  padding: 0 var(--gutter-width);
+}
+
+.inner-content {
+  max-width: var(--container-width);
+  margin: 0 auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.search-container {
+  flex: 0 0 calc(var(--column-width) * 9 + var(--gutter-width) * 8);
+  margin-left: calc(var(--column-width) / 2);
+}
+
+/* .nav-links-container {
+  margin-right: 12px;
+} */
+</style>

@@ -14,6 +14,7 @@
   // display: flex;
   flex-direction: column; /* Ensures children stack vertically */
   align-items: center; /* Centers children horizontally within the container */
+  position: relative; /* Required for absolute positioning within it */
 }
 
 
@@ -26,6 +27,28 @@
     width: 100%;
   }
 }
+
+/* Full-width navigation bar */
+// .main-navigation {
+//   width: 100%;
+//   height: 112px;
+//   background-color: white;
+//   border-bottom: 1px solid #e5e7eb; /* Adjust to your border color preference */
+//   display: flex;
+//   align-items: center;
+// }
+
+// .search-container {
+//   /* Center align in column 2 and span to column 10 */
+//   flex: 0 0 calc(var(--column-width) * 9 + var(--gutter-width) * 8); /* 9 columns wide */
+//   margin-left: calc(var(--column-width) / 2); /* Center within column 2 */
+// }
+
+// .nav-links-container {
+//   right: 12px;
+//   top: 50%;
+//   transform: translateY(-50%);
+// }
 
 .greyed-out {
   color: grey;
