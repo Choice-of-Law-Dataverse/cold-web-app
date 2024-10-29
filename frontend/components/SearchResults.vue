@@ -1,13 +1,5 @@
 <template>
-  <UContainer
-    style="
-      margin-top: 50px;
-      width: 80%;
-      max-width: 1200px;
-      margin-left: auto;
-      margin-right: auto;
-    "
-  >
+  <div class="container">
     <p style="text-align: right; padding-bottom: 50px">
       {{ props.totalMatches }} Results
     </p>
@@ -23,7 +15,7 @@
         />
       </div>
     </div>
-  </UContainer>
+  </div>
 </template>
 
 <script setup lang="ts">

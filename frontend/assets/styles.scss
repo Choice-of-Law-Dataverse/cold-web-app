@@ -9,10 +9,13 @@
 /* Centered container */
 .container {
   max-width: var(--container-width);
-  margin: 0 auto;
-  padding: 0 var(--gutter-width);
-  display: flex;
+  margin: 0 auto; /* Centers the container */
+  padding: 0 var(--gutter-width); /* Adds padding on both sides */
+  // display: flex;
+  flex-direction: column; /* Ensures children stack vertically */
+  align-items: center; /* Centers children horizontally within the container */
 }
+
 
 /* Utility classes for column spans */
 // Loop to generate col-span-1 to col-span-12
