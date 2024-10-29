@@ -1,35 +1,37 @@
 <template>
-  <UCard>
-    <template #header>
-      <div class="header-container">
-        <!-- Left side of the header -->
-        <div class="header-left">
-          <!-- Display 'Name (from Jurisdiction)' or alternatives -->
-          <span v-if="jurisdiction">{{ jurisdiction }}</span>
+  <div class="col-span-12">
+    <UCard>
+      <template #header>
+        <div class="header-container">
+          <!-- Left side of the header -->
+          <div class="header-left">
+            <!-- Display 'Name (from Jurisdiction)' or alternatives -->
+            <span v-if="jurisdiction">{{ jurisdiction }}</span>
 
-          <!-- Display 'source_table' -->
-          <span v-if="formattedSourceTable" class="source-table">
-            {{ formattedSourceTable }}
-          </span>
+            <!-- Display 'source_table' -->
+            <span v-if="formattedSourceTable" class="source-table">
+              {{ formattedSourceTable }}
+            </span>
 
-          <!-- Display 'Themes' -->
-          <span v-if="formattedTheme" class="themes">
-            {{ formattedTheme }}
-          </span>
+            <!-- Display 'Themes' -->
+            <span v-if="formattedTheme" class="themes">
+              {{ formattedTheme }}
+            </span>
+          </div>
+
+          <!-- Right side of the header with "Open" link -->
+          <div class="header-right">
+            <NuxtLink v-if="resultData.id" :to="getLink()">Open</NuxtLink>
+          </div>
         </div>
+      </template>
 
-        <!-- Right side of the header with "Open" link -->
-        <div class="header-right">
-          <NuxtLink v-if="resultData.id" :to="getLink()">Open</NuxtLink>
-        </div>
+      <!-- Card content -->
+      <div>
+        <slot />
       </div>
-    </template>
-
-    <!-- Card content -->
-    <div>
-      <slot />
-    </div>
-  </UCard>
+    </UCard>
+  </div>
 </template>
 
 <script setup>
