@@ -15,31 +15,14 @@
 }
 
 /* Utility classes for column spans */
-.col-span-1 {
-  flex: 0 0 calc(var(--column-width) * 1 + var(--gutter-width) * 0);
+// Loop to generate col-span-1 to col-span-12
+@for $i from 1 through 12 {
+  .col-span-#{$i} {
+    flex: 0 0 calc(var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1));
+    max-width: calc(var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1));
+    width: 100%;
+  }
 }
-
-.col-span-2 {
-  flex: 0 0 calc(var(--column-width) * 2 + var(--gutter-width) * 1);
-}
-
-.col-span-3 {
-  flex: 0 0 calc(var(--column-width) * 3 + var(--gutter-width) * 2);
-}
-
-.col-span-4 {
-  flex: 0 0 calc(var(--column-width) * 4 + var(--gutter-width) * 3);
-}
-
-.col-span-5 {
-  flex: 0 0 calc(var(--column-width) * 5 + var(--gutter-width) * 4);
-}
-
-.col-span-6 {
-  flex: 0 0 calc(var(--column-width) * 6 + var(--gutter-width) * 5);
-}
-
-/* Continue for col-span-7 to col-span-12 if needed */
 
 .greyed-out {
   color: grey;
