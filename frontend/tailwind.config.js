@@ -23,5 +23,16 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/aspect-ratio'),
+    function({ addBase, theme }) {
+      // Generate CSS variables for colors
+      addBase({
+        ':root': {
+          '--color-cold-gray': theme('colors.cold-gray'),
+        },
+      })
+    },
+  ],
 }

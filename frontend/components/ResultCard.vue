@@ -1,6 +1,6 @@
 <template>
   <div class="col-span-12">
-    <UCard>
+    <UCard class="cold-ucard">
       <template #header>
         <div class="header-container">
           <!-- Left side of the header -->
