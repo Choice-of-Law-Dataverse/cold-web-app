@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <BackButton />
     <div class="col-span-12">
+      <BackButton />
       <UCard>
         <!-- Header section -->
         <template #header>
