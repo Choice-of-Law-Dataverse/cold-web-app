@@ -1,18 +1,20 @@
 <template>
   <div class="container">
-    <p style="text-align: right; padding-bottom: 50px">
-      {{ props.totalMatches }} Results
-    </p>
-    <div class="results-grid">
-      <div
-        v-for="(resultData, key) in allResults"
-        :key="key"
-        class="result-item"
-      >
-        <component
-          :is="getResultComponent(resultData.source_table)"
-          :resultData="resultData"
-        />
+    <div class="col-span-12">
+      <p style="text-align: right; padding-bottom: 50px">
+        {{ props.totalMatches }} Results
+      </p>
+      <div class="results-grid">
+        <div
+          v-for="(resultData, key) in allResults"
+          :key="key"
+          class="result-item"
+        >
+          <component
+            :is="getResultComponent(resultData.source_table)"
+            :resultData="resultData"
+          />
+        </div>
       </div>
     </div>
   </div>

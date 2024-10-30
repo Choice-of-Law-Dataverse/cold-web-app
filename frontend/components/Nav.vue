@@ -3,7 +3,7 @@
     <div class="container">
       <div class="inner-content flex items-center justify-between">
         <!-- Web App Name aligned to the first column -->
-        <div class="font-bold whitespace-nowrap" style="margin-left: 24px">
+        <div class="font-bold whitespace-nowrap" style="margin-left: -24px">
           <a href="/">CoLD</a>
         </div>
 
