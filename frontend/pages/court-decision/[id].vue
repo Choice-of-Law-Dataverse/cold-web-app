@@ -1,6 +1,16 @@
+<template>
+  <DetailDisplay
+    :loading="loading"
+    :resultData="courtDecision"
+    :keyLabelPairs="keyLabelPairs"
+    formattedSourceTable="Court Decision"
+  />
+</template>
+
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import DetailDisplay from '~/components/DetailDisplay.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const courtDecision = ref(null) // Store fetched court decision data
@@ -34,8 +44,8 @@ async function fetchCourtDecision(id: string) {
 
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
-  { key: 'Jurisdiction Names', label: 'Jurisdiction' },
-  { key: 'Themes', label: 'Themes' },
+  // { key: 'Jurisdiction Names', label: 'Jurisdiction' },
+  // { key: 'Themes', label: 'Themes' },
   { key: 'Case', label: 'Case Title' },
   { key: 'Abstract', label: 'Abstract' },
   {
@@ -59,25 +69,3 @@ onMounted(() => {
   fetchCourtDecision(id)
 })
 </script>
-
-<template>
-  <BackButton />
-  <div v-if="loading">Loading...</div>
-  <div v-else>
-    <h1>Court Decision Details</h1>
-
-    <!-- Loop over the keyLabelPairs array to display each key-value pair dynamically -->
-    <div v-for="(item, index) in keyLabelPairs" :key="index">
-      <p class="result-key">{{ item.label }}</p>
-      <p class="result-value">
-        {{ courtDecision?.[item.key] || 'N/A' }}
-      </p>
-
-      <!-- Insert hardcoded label after "Jurisdiction Names" -->
-      <template v-if="item.key === 'Jurisdiction Names'">
-        <p class="result-key">Label</p>
-        <p class="result-value">Court Decision</p>
-      </template>
-    </div>
-  </div>
-</template>
