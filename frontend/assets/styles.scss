@@ -6,6 +6,10 @@
   );
 }
 
+body {
+  font-family: 'Inter', sans-serif !important; /* Apply globally */
+}
+
 /* Centered container */
 .container {
   max-width: var(--container-width);
