@@ -1,7 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+// nuxt.config.ts
 export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
-  modules: ["@nuxt/ui"],
-  css: ['@/assets/styles.scss']
+  modules: ['@nuxt/ui', '@nuxtjs/tailwindcss'],
+  css: ['@/assets/styles.scss', 'tailwindcss/tailwind.css'], // Tailwind last
+  tailwindcss: {
+    configPath: './tailwind.config.js',
+  },
 })
