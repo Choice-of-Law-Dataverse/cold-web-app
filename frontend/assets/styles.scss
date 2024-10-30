@@ -6,9 +6,7 @@
   );
 }
 
-body {
-  font-family: 'Inter', sans-serif !important; /* Apply globally */
-}
+
 
 /* Centered container */
 .container {
@@ -43,6 +41,46 @@ body {
     border-color: var(--color-cold-gray) !important;
   }
 }
+
+// Fonts
+body {
+  font-family: 'Inter', sans-serif !important; /* Apply globally */
+  color: var(--color-cold-night)
+}
+
+a {
+  color: var(--color-cold-purple) !important;
+  text-decoration: none !important;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+  padding: 5px 7px;
+}
+
+.label-jurisdiction {
+  @extend .label;
+  background-color: var(--color-cold-gray-alpha);
+}
+
+.label-source {
+  @extend .label;
+  background-color: var(--color-green);
+}
+
+.label-theme {
+  @extend .label;
+  color: var(--color-cold-night-alpha);
+  background-color: white;
+  padding: 4px 6px;
+  border: 1px solid var(--color-cold-night-alpha);
+}
+
+
+
+
 
 .greyed-out {
   color: grey;
@@ -105,11 +143,7 @@ body {
   margin-bottom: 0;
 }
 
-a {
-  text-decoration: underline;
-  text-underline-offset: 6px;
-  text-decoration-thickness: 1px;
-}
+
 
 .title-container {
   width: 100%;
