@@ -13,9 +13,11 @@ export default {
         'cold-purple': '#6F4DFA',
         'cold-green': '#4DFAB2',
         'cold-night': '#0F0035',
+        'cold-night-alpha': 'rgba(15, 0, 53, 0.5)', // 50% alpha
         'cold-black': '#262626',
         'cold-bg': '#FAFAFA',
         'cold-gray': '#E2E8F0',
+        'cold-gray-alpha': 'rgba(226, 232, 240, 0.5)', // 50% alpha
         'label-question': '#FFA8FB',
         'label-court-decision': '#FF7167',
         'label-legal-instrument': '#FF9D00',
@@ -30,7 +32,15 @@ export default {
       // Generate CSS variables for colors
       addBase({
         ':root': {
+          '--color-cold-purple': theme('colors.cold-purple'),
+          '--color-cold-night': theme('colors.cold-night'),
+          '--color-cold-night-alpha': theme('colors.cold-night-alpha'),
           '--color-cold-gray': theme('colors.cold-gray'),
+          '--color-cold-gray-alpha': theme('colors.cold-gray-alpha'),
+          '--color-label-question': theme('colors.label-question'),
+          '--color-label-court-decision': theme('colors.label-court-decision'),
+          '--color-label-legal-instrument': theme('colors.label-legal-instrument'),
+          '--color-label-literature': theme('colors.label-literature'),
         },
       })
     },

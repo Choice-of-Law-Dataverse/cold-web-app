@@ -4,17 +4,19 @@
       <template #header>
         <div class="header-container">
           <!-- Left side of the header -->
-          <div class="header-left">
+          <div class="header-left label">
             <!-- Display 'Name (from Jurisdiction)' or alternatives -->
-            <span v-if="jurisdiction">{{ jurisdiction }}</span>
+            <span v-if="jurisdiction" class="label-jurisdiction">{{
+              jurisdiction
+            }}</span>
 
             <!-- Display 'source_table' -->
-            <span v-if="formattedSourceTable" class="source-table">
+            <span v-if="formattedSourceTable" class="label-source">
               {{ formattedSourceTable }}
             </span>
 
             <!-- Display 'Themes' -->
-            <span v-if="formattedTheme" class="themes">
+            <span v-if="formattedTheme" class="label-theme">
               {{ formattedTheme }}
             </span>
           </div>
