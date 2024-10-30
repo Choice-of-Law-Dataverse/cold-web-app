@@ -2,7 +2,7 @@
   <div class="container">
     <div class="col-span-12">
       <BackButton />
-      <UCard>
+      <UCard class="cold-ucard">
         <!-- Header section -->
         <template #header>
           <div class="header-container">

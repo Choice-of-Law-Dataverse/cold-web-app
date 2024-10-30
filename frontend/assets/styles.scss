@@ -1,8 +1,3 @@
-// // assets/styles.scss
-// @import 'tailwindcss/base';
-// @import 'tailwindcss/components';
-// @import 'tailwindcss/utilities';
-
 :root {
   --column-width: 72px;
   --gutter-width: 24px;
@@ -33,27 +28,17 @@
   }
 }
 
-/* Full-width navigation bar */
-// .main-navigation {
-//   width: 100%;
-//   height: 112px;
-//   background-color: white;
-//   border-bottom: 1px solid #e5e7eb; /* Adjust to your border color preference */
-//   display: flex;
-//   align-items: center;
-// }
+.cold-ucard {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border-width: 1px !important;
+  border-color: var(--color-cold-gray) !important;
 
-// .search-container {
-//   /* Center align in column 2 and span to column 10 */
-//   flex: 0 0 calc(var(--column-width) * 9 + var(--gutter-width) * 8); /* 9 columns wide */
-//   margin-left: calc(var(--column-width) / 2); /* Center within column 2 */
-// }
-
-// .nav-links-container {
-//   right: 12px;
-//   top: 50%;
-//   transform: translateY(-50%);
-// }
+  /* Override the divider color */
+  & > * {
+    border-color: var(--color-cold-gray) !important;
+  }
+}
 
 .greyed-out {
   color: grey;
