@@ -1,10 +1,7 @@
 <template>
   <div>
-    <!-- <h1>Search Results</h1> -->
     <div v-if="searchQuery">
-      <!-- <p>Results for: "{{ searchQuery }}"</p> -->
-
-      <p v-if="loading">Loading...</p>
+      <p v-if="loading" align="center">Loading…</p>
 
       <!-- Pass searchResults wrapped in `tables` to SearchResults.vue -->
       <SearchResults
@@ -16,7 +13,9 @@
       <p v-if="!loading && !searchResults.length">No results found.</p>
     </div>
     <div v-else>
-      <p>Please enter a search term in the navigation bar above.</p>
+      <p align="center">
+        Please enter a search term in the navigation bar above.
+      </p>
     </div>
   </div>
 </template>
