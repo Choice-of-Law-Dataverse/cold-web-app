@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { computed, toRefs, defineProps } from 'vue'
+import { computed, defineProps } from 'vue'
 
 // Props
 const props = defineProps({
@@ -77,7 +77,7 @@ const formattedSourceTable = computed(() => {
     return 'Legal Instrument'
   }
   // Add more overwrites as needed
-  return source_table
+  return source_table || ''
 })
 
 const labelColorClass = computed(() => {
