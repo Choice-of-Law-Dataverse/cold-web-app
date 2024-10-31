@@ -14,6 +14,12 @@
             v-model="searchText"
             @keyup.enter="emitSearch"
             placeholder="Search the entire Dataverse"
+            style="
+              border-radius: 0 !important;
+              box-shadow: none !important;
+              border-width: 1px !important;
+              border-color: var(--color-cold-purple) !important;
+            "
           />
         </div>
 
