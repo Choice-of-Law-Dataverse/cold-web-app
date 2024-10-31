@@ -3,7 +3,7 @@
     :loading="loading"
     :resultData="courtDecision"
     :keyLabelPairs="keyLabelPairs"
-    formattedSourceTable="Court Decision"
+    formattedSourceTable="Court decisions"
   />
 </template>
 

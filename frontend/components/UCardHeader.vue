@@ -12,8 +12,8 @@
       </span>
 
       <!-- Display 'source_table' -->
-      <span v-if="formattedSourceTable" :class="['label', labelColorClass]">
-        {{ formattedSourceTable }}
+      <span v-if="adjustedSourceTable" :class="['label', labelColorClass]">
+        {{ adjustedSourceTable }}
       </span>
 
       <!-- Display 'Themes' -->
@@ -85,17 +85,34 @@ const formattedJurisdiction = computed(() => {
 // })
 
 // Display `cardType` if available, or use `resultData.source_table`
+// this works!
 const formattedSourceTable = computed(() => {
   return props.cardType || props.resultData?.source_table || ''
+})
+// console.log(formattedSourceTable)
+
+const adjustedSourceTable = computed(() => {
+  // Use the result from `formattedSourceTable` and apply label adjustments
+  switch (formattedSourceTable.value) {
+    case 'Court decisions':
+      return 'Court decision'
+    case 'Answers':
+      return 'Question'
+    case 'Legislation':
+      return 'Legal Instrument'
+    // Add more adjustments as needed
+    default:
+      return formattedSourceTable.value || '' // Fallback if no match
+  }
 })
 
 const labelColorClass = computed(() => {
   switch (formattedSourceTable.value) {
-    case 'Court decision':
+    case 'Court decisions':
       return 'label-court-decision'
-    case 'Question':
+    case 'Answers':
       return 'label-question'
-    case 'Legal Instrument':
+    case 'Legislation':
       return 'label-legal-instrument'
     default:
       return '' // No color for unknown labels
