@@ -19,10 +19,6 @@
             </span>
 
             <!-- Display 'Themes' -->
-            <!-- <span v-if="formattedTheme" class="label-theme"> -->
-            <!-- {{ formattedTheme }} -->
-            <!-- </span> -->
-            <!-- Loop through each theme and display it in a separate styled box -->
             <span
               v-for="(Theme, index) in formattedTheme"
               :key="index"
@@ -105,8 +101,8 @@ const formattedTheme = computed(() => {
   if (!themes || themes === 'None') {
     return [] // Return an empty array to avoid rendering issues
   }
-
-  return themes.split(',').map((theme) => theme.trim()) // Split and trim each theme
+  // Split the string into an array, trim each item, and filter out duplicates using Set
+  return [...new Set(themes.split(',').map((theme) => theme.trim()))]
 })
 
 // Methods
