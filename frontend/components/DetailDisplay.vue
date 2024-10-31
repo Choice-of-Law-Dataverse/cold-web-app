@@ -5,23 +5,11 @@
       <UCard class="cold-ucard">
         <!-- Header section -->
         <template #header>
-          <div class="header-container">
-            <!-- Left side of the header -->
-            <div class="header-left">
-              <!-- Display 'Name (from Jurisdiction)' or alternatives -->
-              <span v-if="jurisdiction">{{ jurisdiction }}</span>
-
-              <!-- Display 'formattedSourceTable' -->
-              <span v-if="formattedSourceTable" class="source-table">
-                {{ formattedSourceTable }}
-              </span>
-
-              <!-- Display 'Themes' -->
-              <span v-if="formattedTheme" class="themes">
-                {{ formattedTheme }}
-              </span>
-            </div>
-          </div>
+          <UCardHeader
+            v-if="resultData"
+            :resultData="resultData"
+            :cardType="formattedSourceTable"
+          />
         </template>
 
         <!-- Main content -->
@@ -32,12 +20,6 @@
             <div v-for="(item, index) in keyLabelPairs" :key="index">
               <p class="result-key">{{ item.label }}</p>
               <p class="result-value">{{ resultData?.[item.key] || 'N/A' }}</p>
-
-              <!-- Insert hardcoded label after "Jurisdiction Names" -->
-              <template v-if="item.key === 'Jurisdiction Names'">
-                <p class="result-key">Label</p>
-                <p class="result-value">{{ formattedSourceTable }}</p>
-              </template>
             </div>
           </div>
         </div>
@@ -49,6 +31,7 @@
 <script setup>
 import { computed, defineProps } from 'vue'
 import BackButton from '~/components/BackButton.vue'
+import UCardHeader from '~/components/UCardHeader.vue'
 
 // Props for reusability across pages
 const props = defineProps({
@@ -61,9 +44,16 @@ const props = defineProps({
   },
 })
 
+// Define `formattedSourceTable` locally to use in the header
+const formattedSourceTable = computed(() => {
+  const source_table = props.resultData?.source_table
+  if (source_table === 'Court decisions') return 'Court decision'
+  if (source_table === 'Answers') return 'Question'
+  if (source_table === 'Legislation') return 'Legal Instrument'
+  return source_table || ''
+})
+
 // Additional computed properties for other display elements
-const jurisdiction = computed(
-  () => props.resultData?.['Jurisdiction Names'] || null
-)
-const formattedTheme = computed(() => props.resultData?.Themes || null)
+// const jurisdiction = computed( // () => props.resultData?.['Jurisdiction Names'] || null // )
+// const formattedTheme = computed(() => props.resultData?.Themes || null)
 </script>
