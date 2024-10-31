@@ -6,9 +6,13 @@
           <!-- Left side of the header -->
           <div class="header-left label">
             <!-- Display 'Name (from Jurisdiction)' or alternatives -->
-            <span v-if="jurisdiction" class="label-jurisdiction">{{
-              jurisdiction
-            }}</span>
+            <span
+              v-for="(jurisdictionString, index) in formattedJurisdiction"
+              :key="index"
+              class="label-jurisdiction"
+            >
+              {{ jurisdictionString }}</span
+            >
 
             <!-- Display 'source_table' -->
             <span
@@ -56,14 +60,20 @@ const props = defineProps({
   },
 })
 
-// Computed property for "jurisdiction" to handle multiple field options
-const jurisdiction = computed(() => {
-  return (
+// Computed property for "jurisdiction" to handle multiple field options and duplicates
+const formattedJurisdiction = computed(() => {
+  const jurisdictionString =
     props.resultData['Jurisdiction name'] ||
     props.resultData['Jurisdiction Names'] ||
     props.resultData['Name (from Jurisdiction)'] ||
-    null
-  )
+    ''
+
+  if (!jurisdictionString) {
+    return [] // Return an empty array if no jurisdiction is found
+  }
+
+  // Split by comma, trim each item, and remove duplicates
+  return [...new Set(jurisdictionString.split(',').map((item) => item.trim()))]
 })
 
 // Computed property for "formattedSourceTable" to overwrite specific themes
