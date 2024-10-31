@@ -3,7 +3,7 @@
     <div class="container">
       <div class="inner-content flex items-center justify-between">
         <!-- Web App Name aligned to the first column -->
-        <div class="font-bold whitespace-nowrap" style="margin-left: -24px">
+        <div class="font-bold whitespace-nowrap">
           <a href="/">CoLD</a>
         </div>
 
@@ -18,7 +18,7 @@
         </div>
 
         <!-- Navigation Links, naturally aligned in columns 11 and 12 -->
-        <div class="nav-links-container" style="margin-right: 12px">
+        <div class="nav-links-container" style="margin-right: -10px">
           <UHorizontalNavigation :links="links" />
         </div>
       </div>
