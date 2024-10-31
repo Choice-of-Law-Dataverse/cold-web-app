@@ -19,8 +19,16 @@
             </span>
 
             <!-- Display 'Themes' -->
-            <span v-if="formattedTheme" class="label-theme">
-              {{ formattedTheme }}
+            <!-- <span v-if="formattedTheme" class="label-theme"> -->
+            <!-- {{ formattedTheme }} -->
+            <!-- </span> -->
+            <!-- Loop through each theme and display it in a separate styled box -->
+            <span
+              v-for="(Theme, index) in formattedTheme"
+              :key="index"
+              class="label-theme"
+            >
+              {{ Theme }}
             </span>
           </div>
 
@@ -91,13 +99,14 @@ const labelColorClass = computed(() => {
   }
 })
 
-// Computed property for "formattedTheme" to overwrite specific themes
 const formattedTheme = computed(() => {
-  const Themes = props.resultData.Themes
-  if (Themes === 'None') {
-    return null
+  const themes = props.resultData.Themes
+
+  if (!themes || themes === 'None') {
+    return [] // Return an empty array to avoid rendering issues
   }
-  return Themes
+
+  return themes.split(',').map((theme) => theme.trim()) // Split and trim each theme
 })
 
 // Methods
