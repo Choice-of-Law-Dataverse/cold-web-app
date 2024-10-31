@@ -57,17 +57,41 @@ a {
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
-  padding: 5px 7px;
+    padding: 4px 6px;
 }
 
 .label-jurisdiction {
   @extend .label;
   background-color: var(--color-cold-gray-alpha);
+  padding: 5px 7px;
 }
 
-.label-source {
+.label-question {
   @extend .label;
-  background-color: var(--color-green);
+  color: var(--color-label-question);
+  background-color: var(--color-label-question-alpha);
+  border: 1px solid var(--color-label-question);
+}
+
+.label-court-decision {
+  @extend .label;
+  color: var(--color-label-court-decision);
+  background-color: var(--color-label-court-decision-alpha);
+  border: 1px solid var(--color-label-court-decision);
+}
+
+.label-legal-instrument {
+  @extend .label;
+  color: var(--color-label-legal-instrument);
+  background-color: var(--color-label-legal-instrument-alpha);
+  border: 1px solid var(--color-label-legal-instrument);
+}
+
+.label-literature {
+  @extend .label;
+  color: var(--color-label-literature);
+  background-color: var(--color-label-literature-alpha);
+  border: 1px solid var(--color-label-literature);
 }
 
 .label-theme {

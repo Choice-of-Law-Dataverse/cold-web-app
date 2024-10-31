@@ -11,7 +11,10 @@
             }}</span>
 
             <!-- Display 'source_table' -->
-            <span v-if="formattedSourceTable" class="label-source">
+            <span
+              v-if="formattedSourceTable"
+              :class="['label', labelColorClass]"
+            >
               {{ formattedSourceTable }}
             </span>
 
@@ -73,6 +76,19 @@ const formattedSourceTable = computed(() => {
   }
   // Add more overwrites as needed
   return source_table
+})
+
+const labelColorClass = computed(() => {
+  switch (formattedSourceTable.value) {
+    case 'Court decision':
+      return 'label-court-decision'
+    case 'Question':
+      return 'label-question'
+    case 'Legal Instrument':
+      return 'label-legal-instrument'
+    default:
+      return '' // No color for unknown labels
+  }
 })
 
 // Computed property for "formattedTheme" to overwrite specific themes
