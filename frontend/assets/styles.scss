@@ -6,14 +6,11 @@
   );
 }
 
-
-
 /* Centered container */
 .container {
   max-width: var(--container-width);
   margin: 0 auto; /* Centers the container */
   padding: 0 var(--gutter-width); /* Adds padding on both sides */
-  // display: flex;
   flex-direction: column; /* Ensures children stack vertically */
   align-items: center; /* Centers children horizontally within the container */
   position: relative; /* Required for absolute positioning within it */
@@ -99,7 +96,7 @@ a {
   color: var(--color-cold-night-alpha);
   background-color: white;
   padding: 4px 6px;
-  border: 1px solid var(--color-cold-night-alpha);
+  border: 1px solid var(--color-cold-night-alpha-25);
 }
 
 
