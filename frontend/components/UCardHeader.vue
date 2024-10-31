@@ -130,8 +130,4 @@ function getLink() {
   justify-content: space-between;
   align-items: center;
 }
-
-.header-left span {
-  margin-right: 8px;
-}
 </style>

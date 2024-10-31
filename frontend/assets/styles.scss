@@ -11,6 +11,7 @@
   max-width: var(--container-width);
   margin: 0 auto; /* Centers the container */
   padding: 0 var(--gutter-width); /* Adds padding on both sides */
+  display: flex; /* Add this line */
   flex-direction: column; /* Ensures children stack vertically */
   align-items: center; /* Centers children horizontally within the container */
   position: relative; /* Required for absolute positioning within it */
