@@ -48,10 +48,6 @@ const props = defineProps({
   },
 })
 
-// Log to debug
-// console.log('UCardHeader - cardType:', props.cardType) // Should print "Court Decision"
-// console.log('UCardHeader - resultData:', props.resultData)
-
 // Computed property for "jurisdiction" to handle multiple field options and duplicates
 const formattedJurisdiction = computed(() => {
   const jurisdictionString =
@@ -68,28 +64,11 @@ const formattedJurisdiction = computed(() => {
   return [...new Set(jurisdictionString.split(',').map((item) => item.trim()))]
 })
 
-// Computed property for "formattedSourceTable" to overwrite specific themes
-// const formattedSourceTable = computed(() => {
-//   const source_table = props.resultData?.source_table
-//   if (source_table === 'Court decisions') {
-//     return 'Court decision'
-//   }
-//   if (source_table === 'Answers') {
-//     return 'Question'
-//   }
-//   if (source_table === 'Legislation') {
-//     return 'Legal Instrument'
-//   }
-//   // Add more overwrites as needed
-//   return source_table || ''
-// })
-
 // Display `cardType` if available, or use `resultData.source_table`
 // this works!
 const formattedSourceTable = computed(() => {
   return props.cardType || props.resultData?.source_table || ''
 })
-// console.log(formattedSourceTable)
 
 const adjustedSourceTable = computed(() => {
   // Use the result from `formattedSourceTable` and apply label adjustments

@@ -40,8 +40,4 @@ const props = defineProps({
   keyLabelPairs: Array,
   formattedSourceTable: String, // Receive the hard-coded value from [id].vue
 })
-
-// Additional computed properties for other display elements
-// const jurisdiction = computed( // () => props.resultData?.['Jurisdiction Names'] || null // )
-// const formattedTheme = computed(() => props.resultData?.Themes || null)
 </script>

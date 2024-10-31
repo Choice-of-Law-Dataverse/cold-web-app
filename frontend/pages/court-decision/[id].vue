@@ -44,8 +44,6 @@ async function fetchCourtDecision(id: string) {
 
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
-  // { key: 'Jurisdiction Names', label: 'Jurisdiction' },
-  // { key: 'Themes', label: 'Themes' },
   { key: 'Case', label: 'Case Title' },
   { key: 'Abstract', label: 'Abstract' },
   {
