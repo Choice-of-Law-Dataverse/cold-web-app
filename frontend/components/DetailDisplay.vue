@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps } from 'vue'
+import { defineProps } from 'vue'
 import BackButton from '~/components/BackButton.vue'
 import UCardHeader from '~/components/UCardHeader.vue'
 
@@ -38,19 +38,7 @@ const props = defineProps({
   loading: Boolean,
   resultData: Object,
   keyLabelPairs: Array,
-  formattedSourceTable: {
-    type: String,
-    default: 'N/A',
-  },
-})
-
-// Define `formattedSourceTable` locally to use in the header
-const formattedSourceTable = computed(() => {
-  const source_table = props.resultData?.source_table
-  if (source_table === 'Court decisions') return 'Court decision'
-  if (source_table === 'Answers') return 'Question'
-  if (source_table === 'Legislation') return 'Legal Instrument'
-  return source_table || ''
+  formattedSourceTable: String, // Receive the hard-coded value from [id].vue
 })
 
 // Additional computed properties for other display elements
