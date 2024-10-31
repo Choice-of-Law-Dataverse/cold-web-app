@@ -1,19 +1,15 @@
 <template>
-  <div class="container">
-    <div class="col-span-12">
-      <UCard>
-        <p>Popular Searches</p>
-        <div v-for="(suggestion, index) in searchSuggestions" :key="index">
-          <NuxtLink
-            :to="`/search?q=${formatQuery(suggestion)}`"
-            class="suggestion-link"
-          >
-            {{ suggestion }}
-          </NuxtLink>
-        </div>
-      </UCard>
+  <UCard class="cold-ucard">
+    <p>Popular Searches</p>
+    <div v-for="(suggestion, index) in searchSuggestions" :key="index">
+      <NuxtLink
+        :to="`/search?q=${formatQuery(suggestion)}`"
+        class="suggestion-link"
+      >
+        {{ suggestion }}
+      </NuxtLink>
     </div>
-  </div>
+  </UCard>
 </template>
 
 <script>

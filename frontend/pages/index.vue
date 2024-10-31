@@ -7,7 +7,7 @@ import PopularSearches from '~/components/PopularSearches.vue'
     <div class="col-span-12">
       <p>Choice of Law Dataverse</p>
       <p>Find relevant case law and choice of law answers for your case.</p>
+      <PopularSearches />
     </div>
   </div>
-  <PopularSearches />
 </template>
