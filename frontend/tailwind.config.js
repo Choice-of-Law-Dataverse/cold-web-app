@@ -13,7 +13,7 @@ export default {
         'cold-purple': '#6F4DFA',
         'cold-green': '#4DFAB2',
         'cold-night': '#0F0035',
-        'cold-night-alpha': 'rgba(15, 0, 53, 0.5)', // 50% alpha
+        'cold-night-alpha': '#0F003580', // 50% alpha; https://gist.github.com/lopspower/03fb1cc0ac9f32ef38f4
         'cold-black': '#262626',
         
         'cold-bg': '#FAFAFA',
