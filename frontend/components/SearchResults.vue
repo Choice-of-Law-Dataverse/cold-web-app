@@ -1,9 +1,9 @@
 <template>
   <div class="container">
     <div class="col-span-12">
-      <p style="text-align: right; padding-bottom: 50px">
+      <h2 style="text-align: right; padding-bottom: 50px">
         {{ props.totalMatches }} Results
-      </p>
+      </h2>
       <div class="results-grid">
         <div
           v-for="(resultData, key) in allResults"

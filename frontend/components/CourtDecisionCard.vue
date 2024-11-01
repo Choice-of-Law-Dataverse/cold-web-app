@@ -1,7 +1,7 @@
 <template>
   <ResultCard :resultData="resultData" cardType="Court decisions">
     <div v-for="key in courtDecisionKeys" :key="key">
-      <div class="result-key">{{ keyMap[key] }}</div>
+      <div class="label-key">{{ keyMap[key] }}</div>
       <div class="result-value">
         <!-- Customize content display based on the key, if needed -->
         <template v-if="key === 'Choice of law issue'">

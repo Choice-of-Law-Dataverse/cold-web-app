@@ -55,7 +55,12 @@ a {
   font-size: 12px;
   font-weight: bold;
   text-transform: uppercase;
-    padding: 4px 6px;
+  padding: 4px 6px;
+}
+
+.label-key {
+  @extend .label;
+  padding: 0;
 }
 
 .label-jurisdiction {
@@ -147,12 +152,6 @@ a {
   font-weight: bold;
 }
 
-.result-key {
-  font-size: x-small;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
 /* Text wrapping */
 .result-value {
   word-wrap: break-word; /* Allows breaking within words if necessary */
@@ -172,26 +171,16 @@ a {
   text-align: center; /* Ensure the text inside is centered */
 }
 
-h1,
-h2,
-h3 {
-  text-align: center;
-}
-
 h1 {
-  font-size: x-large;
-  font-weight: bold;
-  margin-bottom: 1em;
+  font-size: 32px !important;
+  font-weight: 700 !important; // Bold
+  // margin-bottom: 1em;
 }
 
 h2 {
-  font-size: large;
-  margin-bottom: 2em;
-}
-
-h3 {
-  font-size: medium;
-  margin: 1.5em 0 1em;
+  font-size: 20px !important;
+  font-weight: 600 !important; // SemiBold
+  // margin-bottom: 2em;
 }
 
 .suggestions-container {
