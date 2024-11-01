@@ -4,7 +4,7 @@
       <div class="label-key">{{ keyMap[key] }}</div>
       <div
         :class="[
-          'result-value',
+          valueClassMap[key] || 'result-value', // Use the mapped class or a default class
           { 'no-margin': index === answerKeys.length - 1 },
         ]"
       >
@@ -46,9 +46,17 @@ const props = defineProps({
 
 // Define the keys and mappings specific to answer results
 const answerKeys = ['Questions', 'Answer', 'Legal provision articles']
+
 const keyMap = {
   Answer: 'ANSWER',
   Questions: 'QUESTION',
   'Legal provision articles': 'SOURCE',
+}
+
+// Map different CSS styles to different typographic components
+const valueClassMap = {
+  Answer: 'result-value-large',
+  Questions: 'result-value-medium',
+  'Legal provision articles': 'result-value-medium',
 }
 </script>
