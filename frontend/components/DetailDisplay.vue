@@ -18,7 +18,7 @@
           <div v-else>
             <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
             <div v-for="(item, index) in keyLabelPairs" :key="index">
-              <p class="result-key">{{ item.label }}</p>
+              <p class="label-key">{{ item.label }}</p>
               <p class="result-value">{{ resultData?.[item.key] || 'N/A' }}</p>
             </div>
           </div>

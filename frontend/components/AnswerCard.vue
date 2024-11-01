@@ -1,7 +1,7 @@
 <template>
   <ResultCard :resultData="resultData" cardType="Answers">
     <div v-for="(key, index) in answerKeys" :key="key">
-      <div class="result-key">{{ keyMap[key] }}</div>
+      <div class="label-key">{{ keyMap[key] }}</div>
       <div
         :class="[
           'result-value',

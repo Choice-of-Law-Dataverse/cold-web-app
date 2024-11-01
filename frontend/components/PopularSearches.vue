@@ -1,6 +1,6 @@
 <template>
   <UCard class="cold-ucard">
-    <p>Popular Searches</p>
+    <h2>Popular Searches</h2>
     <div v-for="(suggestion, index) in searchSuggestions" :key="index">
       <NuxtLink
         :to="`/search?q=${formatQuery(suggestion)}`"

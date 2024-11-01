@@ -1,7 +1,7 @@
 <template>
   <ResultCard :resultData="resultData" cardType="Legislation">
     <div v-for="key in legislationKeys" :key="key">
-      <div class="result-key">{{ keyMap[key] }}</div>
+      <div class="label-key">{{ keyMap[key] }}</div>
       <div class="result-value">
         {{ resultData[key] || '[Missing Information]' }}
       </div>
