@@ -105,7 +105,29 @@ a {
   border: 1px solid var(--color-cold-night-alpha-25);
 }
 
+.result-value {
+  font-weight: 700 !important; // Bold
+  word-wrap: break-word; /* Allows breaking within words if necessary */
+  word-break: break-word; /* Breaks words that are too long */
+  white-space: pre-wrap; /* Preserves whitespace and line breaks, but also allows wrapping */
+  // margin-bottom: 2em;
+}
 
+.result-value-large {
+  @extend .result-value;
+  font-size: 28px !important;
+}
+
+.result-value-medium {
+  @extend .result-value;
+  font-size: 20px !important;
+}
+
+.result-value-small {
+  @extend .result-value;
+  font-size: 14px !important;
+  font-weight: 400 !important; // Regular
+}
 
 
 
@@ -150,14 +172,6 @@ a {
   text-align: right; /* Right align the "Display:" text */
   font-size: x-small;
   font-weight: bold;
-}
-
-/* Text wrapping */
-.result-value {
-  word-wrap: break-word; /* Allows breaking within words if necessary */
-  word-break: break-word; /* Breaks words that are too long */
-  white-space: pre-wrap; /* Preserves whitespace and line breaks, but also allows wrapping */
-  margin-bottom: 2em;
 }
 
 .no-margin {
