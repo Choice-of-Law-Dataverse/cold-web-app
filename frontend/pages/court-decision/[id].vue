@@ -3,6 +3,7 @@
     :loading="loading"
     :resultData="courtDecision"
     :keyLabelPairs="keyLabelPairs"
+    :valueClassMap="valueClassMap"
     formattedSourceTable="Court decisions"
   />
 </template>
@@ -48,19 +49,29 @@ const keyLabelPairs = [
   { key: 'Abstract', label: 'Abstract' },
   {
     key: 'Relevant facts / Summary of the case',
-    label: 'RELEVANT FACTS / SUMMARY OF THE CASE',
+    label: 'Relevant Facts / Summary of the Case',
   },
   {
     key: 'Relevant rules of law involved',
-    label: 'RELEVANT RULES OF LAW INVOLVED',
+    label: 'Relevant Rules of Law Involved',
   },
-  { key: 'Choice of law issue', label: 'choice of law issue' },
-  { key: "Court's position", label: "COURT'S POSITION" },
+  { key: 'Choice of law issue', label: 'Choice of Law Issue' },
+  { key: "Court's position", label: "Court's Position" },
   {
     key: 'Text of the relevant legal provisions',
-    label: 'TEXT OF THE RELEVANT LEGAL PROVISIONS',
+    label: 'Text of the Relevant Legal Provisions',
   },
 ]
+
+const valueClassMap = {
+  Case: 'result-value-large',
+  Abstract: 'result-value-small',
+  'Relevant facts / Summary of the case': 'result-value-small',
+  'Relevant rules of law involved': 'result-value-small',
+  'Choice of law issue': 'result-value-small',
+  "Court's position": 'result-value-small',
+  'Text of the relevant legal provisions': 'result-value-small',
+}
 
 onMounted(() => {
   const id = route.params.id as string // Get ID from the route

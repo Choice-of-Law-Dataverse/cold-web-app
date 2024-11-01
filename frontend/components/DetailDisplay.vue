@@ -19,7 +19,9 @@
             <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
             <div v-for="(item, index) in keyLabelPairs" :key="index">
               <p class="label-key">{{ item.label }}</p>
-              <p class="result-value">{{ resultData?.[item.key] || 'N/A' }}</p>
+              <p :class="[props.valueClassMap[item.key] || 'default-class']">
+                {{ resultData?.[item.key] || 'N/A' }}
+              </p>
             </div>
           </div>
         </div>
@@ -38,6 +40,7 @@ const props = defineProps({
   loading: Boolean,
   resultData: Object,
   keyLabelPairs: Array,
+  valueClassMap: Object,
   formattedSourceTable: String, // Receive the hard-coded value from [id].vue
 })
 </script>
