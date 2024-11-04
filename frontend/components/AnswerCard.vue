@@ -1,18 +1,33 @@
 <template>
   <ResultCard :resultData="resultData" cardType="Answers">
-    <div v-for="(key, index) in answerKeys" :key="key">
-      <div class="label-key">{{ keyMap[key] }}</div>
-      <div
-        :class="[
-          valueClassMap[key] || 'result-value', // Use the mapped class or a default class
-          { 'no-margin': index === answerKeys.length - 1 },
-        ]"
-      >
-        <!-- Specific handling for 'Legal provision articles' -->
-        <template v-if="key === 'Legal provision articles'">
-          <div v-if="resultData[key]">
+    <div class="answer-card-grid">
+      <!-- Question in the 1st column -->
+      <div class="grid-item" style="grid-column: 1 / span 4">
+        <div class="label-key">{{ keyMap.Questions }}</div>
+        <div :class="valueClassMap.Questions || 'result-value'">
+          {{ resultData.Questions }}
+        </div>
+      </div>
+
+      <!-- Answer in the 6th column -->
+      <div class="grid-item" style="grid-column: 6 / span 2">
+        <div class="label-key">{{ keyMap.Answer }}</div>
+        <div :class="valueClassMap.Answer || 'result-value'">
+          {{ resultData.Answer }}
+        </div>
+      </div>
+
+      <!-- Source in the 8th column -->
+      <div class="grid-item" style="grid-column: 8 / span 4">
+        <div class="label-key">{{ keyMap['Legal provision articles'] }}</div>
+        <div
+          :class="valueClassMap['Legal provision articles'] || 'result-value'"
+        >
+          <template v-if="resultData['Legal provision articles']">
             <span
-              v-for="(item, itemIndex) in resultData[key].split(',')"
+              v-for="(item, itemIndex) in resultData[
+                'Legal provision articles'
+              ].split(',')"
               :key="itemIndex"
               style="margin-right: 10px"
             >
@@ -22,14 +37,9 @@
                 {{ item.trim() }}
               </NuxtLink>
             </span>
-          </div>
-          <div v-else>No legal provision</div>
-        </template>
-
-        <!-- Default handling for other keys -->
-        <template v-else>
-          {{ resultData[key] }}
-        </template>
+          </template>
+          <template v-else> No legal provision </template>
+        </div>
       </div>
     </div>
   </ResultCard>
@@ -48,9 +58,9 @@ const props = defineProps({
 const answerKeys = ['Questions', 'Answer', 'Legal provision articles']
 
 const keyMap = {
-  Answer: 'ANSWER',
-  Questions: 'QUESTION',
-  'Legal provision articles': 'SOURCE',
+  Answer: 'Answer',
+  Questions: 'Question',
+  'Legal provision articles': 'Source',
 }
 
 // Map different CSS styles to different typographic components
@@ -60,3 +70,18 @@ const valueClassMap = {
   'Legal provision articles': 'result-value-medium',
 }
 </script>
+
+<style scoped>
+.answer-card-grid {
+  display: grid;
+  grid-template-columns: repeat(12, var(--column-width));
+  column-gap: var(--gutter-width);
+  align-items: start;
+}
+
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* Space between key and value */
+}
+</style>
