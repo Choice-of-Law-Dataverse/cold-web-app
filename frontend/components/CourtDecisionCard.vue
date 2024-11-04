@@ -1,19 +1,20 @@
 <template>
   <ResultCard :resultData="resultData" cardType="Court decisions">
-    <div v-for="key in courtDecisionKeys" :key="key">
-      <div class="label-key">{{ keyMap[key] }}</div>
-      <div
-        :class="[
-          valueClassMap[key] || 'result-value', // Use the mapped class or a default class
-        ]"
-      >
-        <!-- Customize content display based on the key, if needed -->
-        <template v-if="key === 'Choice of law issue'">
-          {{ resultData[key] || '[Missing Information]' }}
-        </template>
-        <template v-else>
-          <span>{{ resultData[key] }}</span>
-        </template>
+    <div class="court-decision-grid">
+      <!-- Case Title in the 1st column -->
+      <div class="grid-item" style="grid-column: 1 / span 4">
+        <div class="label-key">{{ keyMap.Case }}</div>
+        <div :class="valueClassMap.Case || 'result-value'">
+          {{ resultData.Case || '[Missing Information]' }}
+        </div>
+      </div>
+
+      <!-- Choice of Law Issue in the 6th column -->
+      <div class="grid-item" style="grid-column: 6 / span 6">
+        <div class="label-key">{{ keyMap['Choice of law issue'] }}</div>
+        <div :class="valueClassMap['Choice of law issue'] || 'result-value'">
+          {{ resultData['Choice of law issue'] || '[Missing Information]' }}
+        </div>
       </div>
     </div>
   </ResultCard>
@@ -41,3 +42,18 @@ const valueClassMap = {
   'Choice of law issue': 'result-value-small',
 }
 </script>
+
+<style scoped>
+.court-decision-grid {
+  display: grid;
+  grid-template-columns: repeat(12, var(--column-width));
+  column-gap: var(--gutter-width);
+  align-items: start;
+}
+
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* Space between key and value */
+}
+</style>
