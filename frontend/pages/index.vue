@@ -13,7 +13,11 @@ import PopularSearches from '~/components/PopularSearches.vue'
 </template>
 
 <style scoped>
+h1 {
+  margin-bottom: 12px;
+}
+
 h2 {
-  margin-bottom: 36px;
+  margin-bottom: 42px;
 }
 </style>
