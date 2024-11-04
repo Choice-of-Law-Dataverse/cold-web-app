@@ -33,12 +33,14 @@
   box-shadow: none !important;
   border-width: 1px !important;
   border-color: var(--color-cold-gray) !important;
+  margin-bottom: 24px;
 
   /* Override the divider color */
   & > * {
     border-color: var(--color-cold-gray) !important;
   }
 }
+
 
 // Fonts
 body {
