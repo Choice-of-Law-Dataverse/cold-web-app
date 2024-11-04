@@ -60,7 +60,7 @@ const router = useRouter()
 const route = useRoute()
 
 const links = [
-  { label: 'About', to: '/about' },
+  // { label: 'About', to: '/about' },
   { label: 'Contact', to: '/contact' },
 ]
 
