@@ -51,6 +51,6 @@ export default {
 .suggestions {
   display: flex;
   flex-wrap: wrap;
-  gap: 48px; /* Space between each suggestion link */
+  gap: 36px; /* Space between each suggestion link */
 }
 </style>
