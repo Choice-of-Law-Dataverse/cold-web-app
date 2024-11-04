@@ -43,6 +43,7 @@ export default {
       addBase({
         ':root': {
           '--color-cold-purple': theme('colors.cold-purple'),
+          '--color-cold-green': theme('colors.cold-green'),
           '--color-cold-night': theme('colors.cold-night'),
           '--color-cold-night-alpha': theme('colors.cold-night-alpha'),
           '--color-cold-night-alpha-25': theme('colors.cold-night-alpha-25'),
