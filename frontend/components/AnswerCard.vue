@@ -82,6 +82,5 @@ const valueClassMap = {
 .grid-item {
   display: flex;
   flex-direction: column;
-  gap: 4px; /* Space between key and value */
 }
 </style>

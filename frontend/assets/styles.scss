@@ -45,7 +45,7 @@
 // Fonts
 body {
   font-family: 'Inter', sans-serif !important; /* Apply globally */
-  color: var(--color-cold-night)
+  color: var(--color-cold-night);
 }
 
 a {
@@ -64,6 +64,7 @@ a {
 .label-key {
   @extend .label;
   padding: 0;
+  margin-bottom: 12px;
 }
 
 .label-jurisdiction {
@@ -130,6 +131,7 @@ a {
   @extend .result-value;
   font-size: 14px !important;
   font-weight: 400 !important; // Regular
+  line-height: 26px !important;
 }
 
 
