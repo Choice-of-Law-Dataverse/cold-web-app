@@ -35,17 +35,15 @@
         </div>
 
         <!-- Navigation Links, aligned in columns 11 and 12 -->
-        <div style="margin-right: -10px">
-          <div>
-            <ULink
-              v-for="(link, index) in links"
-              :key="index"
-              :to="link.to"
-              :class="['custom-nav-links', { active: route.path === link.to }]"
-            >
-              <span>{{ link.label }}</span>
-            </ULink>
-          </div>
+        <div>
+          <ULink
+            v-for="(link, index) in links"
+            :key="index"
+            :to="link.to"
+            :class="['custom-nav-links', { active: route.path === link.to }]"
+          >
+            <span>{{ link.label }}</span>
+          </ULink>
         </div>
       </div>
     </div>
@@ -155,5 +153,8 @@ a {
 
 :deep(.custom-nav-links.active) {
   text-decoration: underline !important;
+  text-underline-offset: 6px !important;
+  text-decoration-thickness: 2px !important;
+  text-decoration-color: var(--color-cold-purple) !important;
 }
 </style>
