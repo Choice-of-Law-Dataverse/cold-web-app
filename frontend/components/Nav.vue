@@ -41,7 +41,7 @@
               v-for="(link, index) in links"
               :key="index"
               :to="link.to"
-              class="custom-nav-links"
+              :class="['custom-nav-links', { active: route.path === link.to }]"
             >
               <span>{{ link.label }}</span>
             </ULink>
@@ -55,9 +55,11 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 
 const searchText = ref('')
 const router = useRouter()
+const route = useRoute()
 
 const links = [
   { label: 'About', to: '/about' },
@@ -151,11 +153,7 @@ a {
   font-weight: 600;
 }
 
-:deep(.custom-nav-links:hover) {
-  @extend .result-value;
-}
-
 :deep(.custom-nav-links.active) {
-  color: var(--color-cold-green) !important; /* Apply custom color */
+  text-decoration: underline !important;
 }
 </style>
