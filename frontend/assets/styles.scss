@@ -41,7 +41,6 @@
   }
 }
 
-
 // Fonts
 body {
   font-family: 'Inter', sans-serif !important; /* Apply globally */
@@ -55,7 +54,7 @@ a {
 
 .label {
   font-size: 12px;
-  font-weight: bold;
+  font-weight: 700 !important;
   text-transform: uppercase;
   padding: 4px 6px;
   margin-right: 12px;
@@ -176,7 +175,7 @@ a {
   margin-right: 8px; /* Add space between "Display:" and the dropdown */
   text-align: right; /* Right align the "Display:" text */
   font-size: x-small;
-  font-weight: bold;
+  font-weight: 700 !important;
 }
 
 .no-margin {
@@ -193,19 +192,15 @@ a {
 h1 {
   font-size: 32px !important;
   font-weight: 700 !important; // Bold
-  // margin-bottom: 1em;
 }
 
 h2 {
   font-size: 20px !important;
-  font-weight: 600 !important; // SemiBold
-}
-
-.suggestions-container {
-  display: flex;
-  gap: 20px; /* Adds space between buttons */
+  font-weight: 500 !important; // Medium
 }
 
 .suggestion-button {
-  flex-shrink: 0; /* Prevents the buttons from shrinking */
+  color: var(--color-cold-purple) !important;
+  font-size: 20px !important;
+  text-decoration: none !important;
 }

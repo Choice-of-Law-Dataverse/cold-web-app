@@ -3,15 +3,17 @@
     <div class="popular-searches-container">
       <h2 class="popular-title">Popular Searches</h2>
       <div class="suggestions">
-        <div
+        <UButton
           v-for="(suggestion, index) in searchSuggestions"
           :key="index"
-          class="suggestion-item"
+          :to="`/search?q=${formatQuery(suggestion)}`"
+          class="suggestion-button"
+          variant="link"
+          icon="i-material-symbols:arrow-forward"
+          trailing
         >
-          <NuxtLink :to="`/search?q=${formatQuery(suggestion)}`">
-            {{ suggestion }}
-          </NuxtLink>
-        </div>
+          {{ suggestion }}
+        </UButton>
       </div>
     </div>
   </UCard>
@@ -43,8 +45,6 @@ export default {
 }
 
 .popular-title {
-  font-weight: bold;
-  margin-right: 16px;
   white-space: nowrap; /* Prevents the title from wrapping to a new line */
 }
 
