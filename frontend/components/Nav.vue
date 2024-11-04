@@ -13,7 +13,10 @@
             size="xl"
             v-model="searchText"
             @keyup.enter="emitSearch"
+            class="input-custom-purple placeholder-purple"
             placeholder="Search the entire Dataverse"
+            icon="i-material-symbols:search"
+            :trailing="true"
             style="
               border-radius: 0 !important;
               box-shadow: none !important;
@@ -52,6 +55,17 @@ function emitSearch() {
 </script>
 
 <style scoped>
+.input-custom-purple ::v-deep(.u-input-icon),
+.input-custom-purple ::v-deep(.placeholder),
+.input-custom-purple ::v-deep(.iconify) {
+  color: var(--color-cold-purple) !important;
+}
+
+.input-custom-purple ::placeholder {
+  color: var(--color-cold-purple) !important;
+  opacity: 1;
+}
+
 .main-navigation {
   width: 100%;
   height: 112px;
