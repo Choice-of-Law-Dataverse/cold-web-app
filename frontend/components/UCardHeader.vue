@@ -26,8 +26,8 @@
       </span>
     </div>
 
-    <!-- Right side of the header with "Open" link -->
-    <div>
+    <!-- Right side of the header with "Open" link, only shown if showOpenLink is true -->
+    <div v-if="showOpenLink">
       <NuxtLink :to="getLink()" style="display: inline-block">Open</NuxtLink>
     </div>
   </div>
@@ -45,6 +45,10 @@ const props = defineProps({
   cardType: {
     type: String,
     required: true,
+  },
+  showOpenLink: {
+    type: Boolean,
+    default: true,
   },
 })
 
