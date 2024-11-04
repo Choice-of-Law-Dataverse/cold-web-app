@@ -3,8 +3,8 @@
     <div class="container">
       <div class="inner-content flex items-center justify-between">
         <!-- Web App Name aligned to the first column -->
-        <div class="font-bold whitespace-nowrap">
-          <a href="/">CoLD</a>
+        <div>
+          <h1><a href="/">CoLD</a></h1>
         </div>
 
         <!-- Search Input positioned from the center of column 2 to the end of column 10 -->
