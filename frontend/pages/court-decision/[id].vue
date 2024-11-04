@@ -64,7 +64,7 @@ const keyLabelPairs = [
 ]
 
 const valueClassMap = {
-  Case: 'result-value-large',
+  Case: 'result-value-medium',
   Abstract: 'result-value-small',
   'Relevant facts / Summary of the case': 'result-value-small',
   'Relevant rules of law involved': 'result-value-small',
