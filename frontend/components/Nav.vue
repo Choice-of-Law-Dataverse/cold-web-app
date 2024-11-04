@@ -34,9 +34,18 @@
           </button>
         </div>
 
-        <!-- Navigation Links, naturally aligned in columns 11 and 12 -->
-        <div class="nav-links-container" style="margin-right: -10px">
-          <UHorizontalNavigation :links="links" />
+        <!-- Navigation Links, aligned in columns 11 and 12 -->
+        <div style="margin-right: -10px">
+          <div>
+            <ULink
+              v-for="(link, index) in links"
+              :key="index"
+              :to="link.to"
+              class="custom-nav-links"
+            >
+              <span>{{ link.label }}</span>
+            </ULink>
+          </div>
         </div>
       </div>
     </div>
@@ -130,7 +139,23 @@ function emitSearch() {
   font-size: 1.5rem; /* Adjust icon size */
 }
 
-/* .nav-links-container {
-  margin-right: 12px;
-} */
+a {
+  color: var(--color-cold-night) !important;
+  text-decoration: none !important;
+}
+
+:deep(.custom-nav-links) {
+  color: var(--color-cold-night) !important; /* Apply custom color */
+  text-decoration: none !important; /* Remove underline */
+  margin-left: 48px;
+  font-weight: 600;
+}
+
+:deep(.custom-nav-links:hover) {
+  @extend .result-value;
+}
+
+:deep(.custom-nav-links.active) {
+  color: var(--color-cold-green) !important; /* Apply custom color */
+}
 </style>
