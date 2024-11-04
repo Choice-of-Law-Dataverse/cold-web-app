@@ -1,13 +1,20 @@
 <template>
   <ResultCard :resultData="resultData" cardType="Legislation">
-    <div v-for="key in legislationKeys" :key="key">
-      <div class="label-key">{{ keyMap[key] }}</div>
-      <div
-        :class="[
-          valueClassMap[key] || 'result-value', // Use the mapped class or a default class
-        ]"
-      >
-        {{ resultData[key] || '[Missing Information]' }}
+    <div class="legislation-card-grid">
+      <!-- Abbreviation in the 1st column -->
+      <div class="grid-item" style="grid-column: 1 / span 5">
+        <div class="label-key">{{ keyMap.Abbreviation }}</div>
+        <div :class="valueClassMap.Abbreviation || 'result-value'">
+          {{ resultData.Abbreviation || '[Missing Information]' }}
+        </div>
+      </div>
+
+      <!-- Title in the 6th column -->
+      <div class="grid-item" style="grid-column: 6 / span 7">
+        <div class="label-key">{{ keyMap['Title (in English)'] }}</div>
+        <div :class="valueClassMap['Title (in English)'] || 'result-value'">
+          {{ resultData['Title (in English)'] || '[Missing Information]' }}
+        </div>
       </div>
     </div>
   </ResultCard>
@@ -35,3 +42,18 @@ const valueClassMap = {
   Abbreviation: 'result-value-medium',
 }
 </script>
+
+<style scoped>
+.legislation-card-grid {
+  display: grid;
+  grid-template-columns: repeat(12, var(--column-width));
+  column-gap: var(--gutter-width);
+  align-items: start;
+}
+
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px; /* Space between key and value */
+}
+</style>
