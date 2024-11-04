@@ -13,16 +13,14 @@
         </template>
 
         <!-- Main content -->
-        <div class="detail-content">
-          <div v-if="loading">Loading...</div>
-          <div v-else>
-            <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
-            <div v-for="(item, index) in keyLabelPairs" :key="index">
-              <p class="label-key">{{ item.label }}</p>
-              <p :class="[props.valueClassMap[item.key] || 'default-class']">
-                {{ resultData?.[item.key] || 'N/A' }}
-              </p>
-            </div>
+        <div v-if="loading">Loading...</div>
+        <div v-else>
+          <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
+          <div v-for="(item, index) in keyLabelPairs" :key="index">
+            <p class="label-key">{{ item.label }}</p>
+            <p :class="[props.valueClassMap[item.key] || 'default-class']">
+              {{ resultData?.[item.key] || 'N/A' }}
+            </p>
           </div>
         </div>
       </UCard>
