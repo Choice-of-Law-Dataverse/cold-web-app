@@ -1,5 +1,15 @@
 <template>
-  <button @click="goBack">← Back to Results</button>
+  <div style="margin-bottom: 48px">
+    <UButton
+      @click="goBack"
+      variant="link"
+      icon="i-material-symbols:arrow-back"
+      :trailing="false"
+      class="suggestion-button"
+    >
+      Back to Results
+    </UButton>
+  </div>
 </template>
 
 <script setup>
@@ -11,11 +21,3 @@ function goBack() {
   router.back() // Takes the user to the previous page
 }
 </script>
-
-<style scoped>
-button {
-  padding: 10px 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
-</style>
