@@ -9,6 +9,7 @@
             v-if="resultData"
             :resultData="resultData"
             :cardType="formattedSourceTable"
+            :showOpenLink="false"
           />
         </template>
 
