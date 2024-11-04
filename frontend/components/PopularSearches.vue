@@ -1,13 +1,18 @@
 <template>
   <UCard class="cold-ucard">
-    <h2>Popular Searches</h2>
-    <div v-for="(suggestion, index) in searchSuggestions" :key="index">
-      <NuxtLink
-        :to="`/search?q=${formatQuery(suggestion)}`"
-        class="suggestion-link"
-      >
-        {{ suggestion }}
-      </NuxtLink>
+    <div class="popular-searches-container">
+      <h2 class="popular-title">Popular Searches</h2>
+      <div class="suggestions">
+        <div
+          v-for="(suggestion, index) in searchSuggestions"
+          :key="index"
+          class="suggestion-item"
+        >
+          <NuxtLink :to="`/search?q=${formatQuery(suggestion)}`">
+            {{ suggestion }}
+          </NuxtLink>
+        </div>
+      </div>
     </div>
   </UCard>
 </template>
@@ -29,3 +34,23 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+.popular-searches-container {
+  display: flex;
+  align-items: center;
+  gap: 48px; /* Space between items */
+}
+
+.popular-title {
+  font-weight: bold;
+  margin-right: 16px;
+  white-space: nowrap; /* Prevents the title from wrapping to a new line */
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px; /* Space between each suggestion link */
+}
+</style>
