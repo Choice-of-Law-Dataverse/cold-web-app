@@ -66,7 +66,7 @@ def handle_search():
     else:
         results = search_service.filtered_search(search_string, filter_string) if filter_string else search_service.basic_search(search_string)
 
-    log_query(request, search_string, len(results))
+    log_query(request, search_string, results['total_matches'], "search")
     return jsonify(results), 200
 
 @app.route('/full_text_search', methods=['POST'])
@@ -78,7 +78,7 @@ def handle_full_text_search():
         return jsonify({'error': 'No search string provided'}), 400
 
     results = search_service.full_text_search(search_string)
-    log_query(request, search_string, len(results))
+    log_query(request, search_string, results['total_matches'], "full_text_search")
     return jsonify(results), 200
 
 @app.route('/curated_search', methods=['POST'])
@@ -115,7 +115,7 @@ def handle_curated_search():
         return jsonify({'error': 'No search string provided'}), 400
 
     results = search_service.curated_search(search_string)
-    log_query(request, search_string, len(results))
+    log_query(request, search_string, len(results), "curated_search")
     return jsonify(results), 200
 
 @app.route('/curated_search/details', methods=['POST'])
@@ -154,7 +154,7 @@ def handle_curated_details_search():
         return jsonify({'error': 'No id provided'}), 400
 
     results = search_service.curated_details_search(table, id)
-    log_query(request, f"Details search in {table} for ID {id}", len(results))
+    log_query(request, f"Details search in {table} for ID {id}", len(results), "curated_search/details")
     return jsonify(results), 200
 
 @app.route('/full_table', methods=['POST'])
@@ -164,7 +164,7 @@ def return_full_table():
   if not table:
     return jsonify({'error': 'No table provided'}), 400
   results = search_service.full_table(table)
-  log_query(request, f"Full table retrieval in {table}", len(results))
+  log_query(request, f"Full table retrieval in {table}", len(results), "full_table")
   return jsonify(results), 200
 
 @app.route('/get_user_info', methods=['GET'])
