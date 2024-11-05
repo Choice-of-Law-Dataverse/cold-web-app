@@ -8,13 +8,17 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --production
+RUN npm install && \
+    npm install sass sass-loader sass-embedded-linux-musl-x64 --save-dev
 
 # Copy project files
 COPY . .
 
 # Build the Nuxt app
 RUN npm run build
+
+# Remove dev dependencies for a smaller production image
+RUN npm prune --production
 
 # Expose the application port
 EXPOSE 3000
