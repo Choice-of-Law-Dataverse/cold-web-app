@@ -1,14 +1,23 @@
 <script setup lang="ts">
-import SearchComponent from '~/components/SearchComponent.vue';
-import MainHeader from '~/components/MainHeader.vue';
+import PopularSearches from '~/components/PopularSearches.vue'
 </script>
 
 <template>
-  <div style="display: flex; align-items: center;">
-      <MainHeader />
+  <div class="container">
+    <div class="col-span-12">
+      <h1>Choice of Law Dataverse</h1>
+      <h2>Find relevant case law and choice of law answers for your case.</h2>
+      <PopularSearches />
     </div>
-    <div style="display: flex; align-items: center;">
-      <SearchComponent />
-    </div>
-  </template>
-  
+  </div>
+</template>
+
+<style scoped>
+h1 {
+  margin-bottom: 12px;
+}
+
+h2 {
+  margin-bottom: 42px;
+}
+</style>

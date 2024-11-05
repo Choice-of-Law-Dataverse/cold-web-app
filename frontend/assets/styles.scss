@@ -1,0 +1,206 @@
+:root {
+  --column-width: 72px;
+  --gutter-width: 24px;
+  --container-width: calc(
+    (var(--column-width) * 12) + (var(--gutter-width) * 11)
+  );
+}
+
+/* Centered container */
+.container {
+  max-width: var(--container-width);
+  margin: 0 auto; /* Centers the container */
+  padding: 0 var(--gutter-width); /* Adds padding on both sides */
+  display: flex; /* Add this line */
+  flex-direction: column; /* Ensures children stack vertically */
+  align-items: center; /* Centers children horizontally within the container */
+  position: relative; /* Required for absolute positioning within it */
+}
+
+
+/* Utility classes for column spans */
+// Loop to generate col-span-1 to col-span-12
+@for $i from 1 through 12 {
+  .col-span-#{$i} {
+    flex: 0 0 calc(var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1));
+    max-width: calc(var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1));
+    width: 100%;
+  }
+}
+
+.cold-ucard {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border-width: 1px !important;
+  border-color: var(--color-cold-gray) !important;
+  margin-bottom: 24px;
+
+  /* Override the divider color */
+  & > * {
+    border-color: var(--color-cold-gray) !important;
+  }
+}
+
+// Fonts
+body {
+  font-family: 'Inter', sans-serif !important; /* Apply globally */
+  color: var(--color-cold-night);
+}
+
+a {
+  color: var(--color-cold-purple) !important;
+  text-decoration: none !important;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  padding: 4px 6px;
+  margin-right: 12px;
+}
+
+.label-key {
+  @extend .label;
+  padding: 0;
+  margin-bottom: 12px;
+}
+
+.label-jurisdiction {
+  @extend .label;
+  background-color: var(--color-cold-gray-alpha);
+  padding: 5px 7px;
+}
+
+.label-question {
+  @extend .label;
+  color: var(--color-label-question);
+  background-color: var(--color-label-question-alpha);
+  border: 1px solid var(--color-label-question);
+}
+
+.label-court-decision {
+  @extend .label;
+  color: var(--color-label-court-decision);
+  background-color: var(--color-label-court-decision-alpha);
+  border: 1px solid var(--color-label-court-decision);
+}
+
+.label-legal-instrument {
+  @extend .label;
+  color: var(--color-label-legal-instrument);
+  background-color: var(--color-label-legal-instrument-alpha);
+  border: 1px solid var(--color-label-legal-instrument);
+}
+
+.label-literature {
+  @extend .label;
+  color: var(--color-label-literature);
+  background-color: var(--color-label-literature-alpha);
+  border: 1px solid var(--color-label-literature);
+}
+
+.label-theme {
+  @extend .label;
+  color: var(--color-cold-night-alpha);
+  background-color: white;
+  padding: 4px 6px;
+  border: 1px solid var(--color-cold-night-alpha-25);
+}
+
+.result-value {
+  font-weight: 700 !important; // Bold
+  word-wrap: break-word; /* Allows breaking within words if necessary */
+  word-break: break-word; /* Breaks words that are too long */
+  white-space: pre-wrap; /* Preserves whitespace and line breaks, but also allows wrapping */
+}
+
+.result-value-large {
+  @extend .result-value;
+  font-size: 28px !important;
+}
+
+.result-value-medium {
+  @extend .result-value;
+  font-size: 20px !important;
+  line-height: 28px !important;
+}
+
+.result-value-small {
+  @extend .result-value;
+  font-size: 14px !important;
+  font-weight: 400 !important; // Regular
+  line-height: 26px !important;
+}
+
+
+
+.greyed-out {
+  color: grey;
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.close-link {
+  position: absolute;
+  top: -20px;
+  right: -10px;
+  text-decoration: none;
+  cursor: pointer;
+  display: flex; /* Use flexbox to align icon and text horizontally */
+  align-items: center; /* Align icon and text vertically */
+}
+
+.icon-wrapper {
+  margin-right: 4px;
+  margin-top: 5px;
+}
+
+.result-item {
+  margin-bottom: 1rem;
+}
+
+.provision-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.right-container {
+  display: flex; /* Keep the label and select in a row */
+  align-items: center; /* Align them vertically */
+}
+
+.display-label {
+  margin-right: 8px; /* Add space between "Display:" and the dropdown */
+  text-align: right; /* Right align the "Display:" text */
+  font-size: x-small;
+  font-weight: 700 !important;
+}
+
+.no-margin {
+  margin-bottom: 0;
+}
+
+
+
+.title-container {
+  width: 100%;
+  text-align: center; /* Ensure the text inside is centered */
+}
+
+h1 {
+  font-size: 32px !important;
+  font-weight: 700 !important; // Bold
+}
+
+h2 {
+  font-size: 20px !important;
+  font-weight: 500 !important; // Medium
+}
+
+.suggestion-button {
+  color: var(--color-cold-purple) !important;
+  font-size: 20px !important;
+  text-decoration: none !important;
+}
