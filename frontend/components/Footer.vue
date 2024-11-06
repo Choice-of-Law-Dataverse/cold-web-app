@@ -19,19 +19,21 @@ h2 {
   font-size: 24px !important;
   line-height: 30px !important;
   font-weight: 700 !important;
+  margin-left: -24px !important;
 }
 
 p {
   font-size: 16px !important;
   font-weight: 700 !important;
   line-height: 20px !important;
+  margin-left: -24px !important;
 }
 
 .footer {
   width: 100%;
   background-color: var(--color-cold-night); /* Apply background color */
   color: white;
-  padding: 120px 0;
+  padding: 60px 0 120px 0;
   margin-top: 240px;
 }
 
@@ -63,7 +65,10 @@ p {
 }
 
 .footer-links {
+  font-weight: 700 !important;
   text-align: right;
+  margin-left: -24px !important;
+  margin-top: -100px !important;
 }
 
 .footer-links a {
