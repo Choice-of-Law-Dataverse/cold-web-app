@@ -8,3 +8,11 @@
     <Footer />
   </div>
 </template>
+
+<style scoped>
+main {
+  min-height: calc(
+    100vh - 112px - 80px
+  ); /* Adjust based on header and footer heights */
+}
+</style>
