@@ -83,4 +83,10 @@ const valueClassMap = {
   display: flex;
   flex-direction: column;
 }
+
+.label-key {
+  @extend .label;
+  padding: 0;
+  margin-top: 12px;
+}
 </style>
