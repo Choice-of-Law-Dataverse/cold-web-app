@@ -14,7 +14,7 @@
         </template>
 
         <!-- Main content -->
-        <div v-if="loading">Loading...</div>
+        <div v-if="loading" class="main-content-grid">Loading...</div>
         <div v-else class="main-content-grid">
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
           <div
@@ -59,5 +59,30 @@ const props = defineProps({
 .grid-item {
   grid-column: 1 / span 6; /* Start in the 1st column, span across 6 columns */
   margin-bottom: 48px; /* Space between each key-value pair */
+}
+
+.cold-ucard {
+  margin-bottom: 120px;
+}
+
+.cold-ucard ::v-deep(.px-4) {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.cold-ucard ::v-deep(.py-5) {
+  padding-top: 16px !important;
+  padding-bottom: 18px !important;
+}
+
+.cold-ucard ::v-deep(.sm\:px-6) {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+
+.label-key {
+  @extend .label;
+  padding: 0;
+  margin-top: -20px;
 }
 </style>

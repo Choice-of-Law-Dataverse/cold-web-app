@@ -28,19 +28,6 @@
   }
 }
 
-.cold-ucard {
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  border-width: 1px !important;
-  border-color: var(--color-cold-gray) !important;
-  margin-bottom: 24px;
-
-  /* Override the divider color */
-  & > * {
-    border-color: var(--color-cold-gray) !important;
-  }
-}
-
 // Fonts
 body {
   font-family: 'Inter', sans-serif !important; /* Apply globally */
@@ -56,7 +43,6 @@ a {
   font-size: 12px;
   font-weight: 700 !important;
   text-transform: uppercase;
-  padding: 4px 6px;
   margin-right: 12px;
 }
 
@@ -75,6 +61,7 @@ a {
 .label-question {
   @extend .label;
   color: var(--color-label-question);
+  padding: 4px 6px;
   background-color: var(--color-label-question-alpha);
   border: 1px solid var(--color-label-question);
 }
@@ -82,6 +69,7 @@ a {
 .label-court-decision {
   @extend .label;
   color: var(--color-label-court-decision);
+  padding: 4px 6px;
   background-color: var(--color-label-court-decision-alpha);
   border: 1px solid var(--color-label-court-decision);
 }
@@ -89,6 +77,7 @@ a {
 .label-legal-instrument {
   @extend .label;
   color: var(--color-label-legal-instrument);
+  padding: 4px 6px;
   background-color: var(--color-label-legal-instrument-alpha);
   border: 1px solid var(--color-label-legal-instrument);
 }
@@ -96,6 +85,7 @@ a {
 .label-literature {
   @extend .label;
   color: var(--color-label-literature);
+  padding: 4px 6px;
   background-color: var(--color-label-literature-alpha);
   border: 1px solid var(--color-label-literature);
 }
@@ -118,12 +108,15 @@ a {
 .result-value-large {
   @extend .result-value;
   font-size: 28px !important;
+  margin-bottom: 6px !important;
+  margin-top: -5px !important
 }
 
 .result-value-medium {
   @extend .result-value;
   font-size: 20px !important;
   line-height: 28px !important;
+  margin-bottom: 16px !important;
 }
 
 .result-value-small {
@@ -131,9 +124,8 @@ a {
   font-size: 14px !important;
   font-weight: 400 !important; // Regular
   line-height: 26px !important;
+  margin-bottom: 10px !important;
 }
-
-
 
 .greyed-out {
   color: grey;
@@ -181,8 +173,6 @@ a {
 .no-margin {
   margin-bottom: 0;
 }
-
-
 
 .title-container {
   width: 100%;

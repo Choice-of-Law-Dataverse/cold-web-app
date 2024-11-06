@@ -1,7 +1,7 @@
 <template>
   <div class="header-container">
     <!-- Left side of the header -->
-    <div class="header-left label">
+    <div>
       <!-- Display 'Name (from Jurisdiction)' or alternatives -->
       <span
         v-for="(jurisdictionString, index) in formattedJurisdiction"
