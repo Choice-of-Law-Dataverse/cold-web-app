@@ -42,14 +42,6 @@
       </UButton>
     </div>
 
-    <!-- Display search suggestions below the input and button -->
-    <!-- <div>
-      <SearchSuggestions
-        v-if="showSuggestions"
-        @suggestion-selected="updateSearchText"
-      />
-    </div> -->
-
     <!-- Display Helper Chatbot -->
     <!-- <div v-if="results && !noResults">
       <HelperChatbot

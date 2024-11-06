@@ -28,3 +28,24 @@ const props = defineProps({
   },
 })
 </script>
+
+<style scoped>
+.cold-ucard {
+  margin-bottom: 24px;
+}
+
+.cold-ucard ::v-deep(.px-4) {
+  padding-left: 32px !important;
+  padding-right: 0 !important;
+}
+
+.cold-ucard ::v-deep(.py-5) {
+  padding-top: 16px !important;
+  padding-bottom: 18px !important;
+}
+
+.cold-ucard ::v-deep(.sm\:px-6) {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+</style>
