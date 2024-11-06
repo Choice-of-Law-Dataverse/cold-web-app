@@ -1,44 +1,77 @@
 <template>
   <footer class="footer">
-    <div class="footer-content">
-      <p>© 2024 Your Company Name. All rights reserved.</p>
-      <nav class="footer-links">
-        <NuxtLink to="/about">About</NuxtLink>
+    <div class="container">
+      <div class="col-span-8 footer-text">
+        <h2>Choice of Law<br />Dataverse</h2>
+        <p style="margin-top: 12px">
+          Funded by the<br />Swiss National Science Foundation
+        </p>
+      </div>
+      <div class="col-span-4 footer-links">
         <NuxtLink to="/contact">Contact</NuxtLink>
-        <NuxtLink to="/privacy">Privacy Policy</NuxtLink>
-      </nav>
+      </div>
     </div>
   </footer>
 </template>
 
 <style scoped>
+h2 {
+  font-size: 24px !important;
+  line-height: 30px !important;
+  font-weight: 700 !important;
+}
+
+p {
+  font-size: 16px !important;
+  font-weight: 700 !important;
+  line-height: 20px !important;
+}
+
 .footer {
   width: 100%;
   background-color: var(--color-cold-night); /* Apply background color */
-  color: white; /* Text color */
-  padding: 20px 0; /* Spacing inside the footer */
+  color: white;
+  padding: 120px 0;
+  margin-top: 240px;
 }
 
-.footer-content {
-  max-width: var(--container-width); /* Center content within the grid */
+.container {
+  display: grid;
+  grid-template-columns: repeat(12, var(--column-width));
+  column-gap: var(--gutter-width);
+  max-width: var(--container-width);
   margin: 0 auto;
-  padding: 0 var(--gutter-width); /* Add padding on sides for alignment */
-  display: flex;
-  justify-content: space-between;
   align-items: center;
 }
 
-.footer-links {
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(
+    12,
+    var(--column-width)
+  ); /* Define 12 columns with custom width */
+  column-gap: var(--gutter-width); /* Add gap between columns */
+  max-width: var(--container-width); /* Align with main container width */
+  margin: 0 auto;
+  align-items: center;
+}
+
+.footer-text {
   display: flex;
-  gap: 24px; /* Space between links */
+  flex-direction: column;
+  gap: 8px;
+}
+
+.footer-links {
+  text-align: right;
 }
 
 .footer-links a {
-  color: white; /* Link color */
-  text-decoration: none;
+  color: white !important; /* Link color */
+  text-decoration: none !important;
 }
 
 .footer-links a:hover {
-  text-decoration: underline; /* Underline on hover */
+  text-decoration: none !important;
 }
 </style>
