@@ -1,3 +1,5 @@
+import re
+
 def list_to_dict(lst):
     return {i: item for i, item in enumerate(lst)}
 
@@ -43,3 +45,33 @@ def flatten_and_transform_data(data):
             flattened_data.append(flattened_result)
     
     return flattened_data
+
+def find_problematic_subdict(data):
+    problematic_dicts = []
+
+    def check_and_collect(subdict):
+        for key, value in subdict.items():
+            if isinstance(value, dict):
+                check_and_collect(value)
+            elif isinstance(value, list):
+                for item in value:
+                    if isinstance(item, dict):
+                        check_and_collect(item)
+            elif isinstance(value, str):
+                # Find non-ASCII characters in the string value
+                #problematic_chars = re.findall(r'[^\x00-\x7F]', value)
+                #problematic_chars = re.findall(r'[^\x20-\x7E\xA0-\xFF]', value)
+                problematic_chars = re.findall(r'[^\x00-\xFF]', value)
+                #problematic_chars = re.findall(r'[\x00-\x08\x0E-\x1F\x7F-\x9F]', value)
+                if problematic_chars:
+                    print(f"Problematic subdictionary found under key '{key}':")
+                    print(subdict)
+                    print("Problematic characters:")
+                    for char in problematic_chars:
+                        print(f"Character: '{char}' (Unicode: U+{ord(char):04X})")
+                    print("=" * 50)
+                    problematic_dicts.append(subdict)
+                    break
+
+    check_and_collect(data)
+    return problematic_dicts

@@ -1,10 +1,11 @@
 from config import Config
 from services.search import SearchService
 import utils.data_visualization
+from utils.utils import find_problematic_subdict
 
 def main(data):
     # Simulating the search string input (normally received via request.json)
-    search_string = data.get("search_string", "arbitral tribunal")
+    search_string = data.get("search_string", "party autonomy")
 
     if not search_string:
         return {'error': 'No search string provided'}, 400
@@ -32,7 +33,8 @@ if __name__ == "__main__":
     # Call main with sample data
     result = main(sample_data)
     #result = return_full_table()
+    find_problematic_subdict(result)
 
-    visualize_dict = utils.data_visualization.visualize_dict(result)
+    #visualize_dict = utils.data_visualization.visualize_dict(result)
     
     #print(result)
