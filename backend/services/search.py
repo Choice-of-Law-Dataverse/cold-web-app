@@ -181,7 +181,8 @@ class SearchService:
             or search @@ websearch_to_tsquery('simple', '{search_string}')
 
             -- Combine results and order by rank
-            order by rank desc;
+            order by rank desc
+            limit 250;
         """
 
         # Execute the SQL query
