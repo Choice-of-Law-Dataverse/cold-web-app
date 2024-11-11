@@ -114,25 +114,11 @@ class SearchService:
     def curated_details_search(self, table, id):
         print(table)
         print(id)
-        if table == 'Legal provisions' or table == 'Court decisions':
+        if table in ['Answers', 'Legislation', 'Legal provisions', 'Court decisions']:
             final_results = self.db.get_entry_by_id(table, id)
             return filter_na(parse_results(final_results))
-            """
-            SELECT *
-            FROM "Legal provisions"
-            WHERE "Name" = 'Swi-148 Art. 117';
-            "table": "Legal provisions",
-            "id": "Swi-148 Art. 117"
-            """
         else:
-            return filter_na(parse_results({"error": "this table does not exist or if you are sure it does please ask Simon to implement the detailed search for this table"}))
-            """
-            SELECT *
-            FROM "Court decisions"
-            WHERE "ID" = 'CHE-1017';
-            "table": "Court decisions",
-            "id": "CHE-1017"
-            """
+            return filter_na(parse_results({"error": "this table either does not exist or has not been implemented in this route"}))
     
     def full_table(self, table):
         print(table)
