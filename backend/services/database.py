@@ -84,6 +84,7 @@ class Database:
                         entry = dict(zip(columns, row))
                     else:
                         print(f"No entry found with id {entry_id} in table {table_name}.")
+                        return {"error": "no entry found with the specified id"}
                 else:
                     print(f"Table {table_name} does not have a mapped id column.")
             else:
