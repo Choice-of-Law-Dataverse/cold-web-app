@@ -4,7 +4,7 @@
       <UCard class="cold-ucard">
         <div class="main-content-grid">
           <div class="grid-item">
-            <h2>Interested in working together?</h2>
+            <h2>Do you have any questions?</h2>
             <p>
               Send us an email:
               <a href="mailto:fabian.aiolfi@unilu.ch">fabian.aiolfi@unilu.ch</a>
