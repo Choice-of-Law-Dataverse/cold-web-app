@@ -69,7 +69,8 @@ class Database:
             'Answers': 'ID',
             'Legislation': 'ID',
             'Legal provisions': 'Name',
-            'Court decisions': 'ID'
+            'Court decisions': 'ID',
+            'Jurisdictions': 'Alpha-3 code'
         }
 
         entry = {}

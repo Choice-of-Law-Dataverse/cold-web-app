@@ -114,7 +114,7 @@ class SearchService:
     def curated_details_search(self, table, id):
         print(table)
         print(id)
-        if table in ['Answers', 'Legislation', 'Legal provisions', 'Court decisions']:
+        if table in ['Answers', 'Legislation', 'Legal provisions', 'Court decisions', 'Jurisdictions']:
             final_results = self.db.get_entry_by_id(table, id)
             return filter_na(parse_results(final_results))
         else:
