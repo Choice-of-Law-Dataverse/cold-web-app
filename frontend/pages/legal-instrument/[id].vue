@@ -1,11 +1,21 @@
+<template>
+  <DetailDisplay
+    :loading="loading"
+    :resultData="legalInstrument"
+    :keyLabelPairs="keyLabelPairs"
+    :valueClassMap="valueClassMap"
+    formattedSourceTable="Legislation"
+  />
+</template>
+
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import DetailDisplay from '~/components/DetailDisplay.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const legalInstrument = ref(null) // Store fetched court decision data
 const loading = ref(true) // Track loading state
-const errorMessage = ref('') // To store an error message if it exists
 
 async function fetchLegalInstrument(id: string) {
   const jsonPayload = {
@@ -23,21 +33,11 @@ async function fetchLegalInstrument(id: string) {
       }
     )
 
-    if (!response.ok) throw new Error('Failed to fetch court decision')
+    if (!response.ok) throw new Error('Failed to fetch legislation')
 
-    const data = await response.json()
-
-    // Check if the response contains an error
-    if (data.error) {
-      errorMessage.value = data.error // Store the error message
-      legalInstrument.value = null // Clear court decision data
-    } else {
-      legalInstrument.value = data // Store actual data
-      errorMessage.value = '' // Clear any previous error
-    }
+    legalInstrument.value = await response.json()
   } catch (error) {
-    errorMessage.value = 'An unexpected error occurred'
-    console.error('Error fetching court decision:', error)
+    console.error('Error fetching legislation:', error)
   } finally {
     loading.value = false
   }
@@ -45,52 +45,36 @@ async function fetchLegalInstrument(id: string) {
 
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
-  { key: 'Jurisdiction Names', label: 'Jurisdiction' },
-  { key: 'Themes', label: 'Themes' },
-  { key: 'Case', label: 'Case Title' },
-  { key: 'Abstract', label: 'Abstract' },
+  { key: 'Abbreviation', label: 'Name' },
+  { key: 'Title (in English)', label: 'Official Title' },
   {
-    key: 'Relevant facts / Summary of the case',
-    label: 'RELEVANT FACTS / SUMMARY OF THE CASE',
+    key: 'Compatible with the HCCH Principles?',
+    label: 'Compatible with the HCCH Principles?',
   },
   {
-    key: 'Relevant rules of law involved',
-    label: 'RELEVANT RULES OF LAW INVOLVED',
+    key: 'Publication date',
+    label: 'Publication date',
   },
-  { key: 'Choice of law issue', label: 'choice of law issue' },
-  { key: "Court's position", label: "COURT'S POSITION" },
+  { key: 'Entry into force', label: 'Entry into force' },
+  { key: 'Official Source (URL)', label: 'Official Source' },
   {
-    key: 'Text of the relevant legal provisions',
-    label: 'TEXT OF THE RELEVANT LEGAL PROVISIONS',
+    key: 'Relevant Provisions',
+    label: 'Relevant Provisions',
   },
 ]
+
+const valueClassMap = {
+  Abbreviation: 'result-value-medium',
+  'Title (in English)': 'result-value-small',
+  'Compatible with the HCCH Principles?': 'result-value-medium',
+  'Publication date': 'result-value-small',
+  'Entry into force': 'result-value-small',
+  'Official Source': 'result-value-small',
+  'Relevant Provisions': 'result-value-small',
+}
 
 onMounted(() => {
   const id = route.params.id as string // Get ID from the route
   fetchLegalInstrument(id)
 })
 </script>
-
-<template>
-  <BackButton />
-  <div v-if="loading">Loading...</div>
-  <div v-else>
-    <h1>Legal Instrument Details</h1>
-    <p v-if="errorMessage">{{ errorMessage }}</p>
-    <div v-else>
-      <h1>Legal Instrument Details</h1>
-
-      <!-- Loop over the keyLabelPairs array to display each key-value pair dynamically -->
-      <div v-for="(item, index) in keyLabelPairs" :key="index">
-        <p class="result-key">{{ item.label }}</p>
-        <p class="result-value">
-          {{ legalInstrument?.[item.key] || 'N/A' }}
-        </p>
-        <!-- Insert hardcoded label after "Jurisdiction Names" -->
-        <p v-if="item.key === 'Jurisdiction Names'"></p>
-        <p class="result-key">Label</p>
-        <p class="result-value">Court Decision</p>
-      </div>
-    </div>
-  </div>
-</template>
