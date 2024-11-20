@@ -23,9 +23,21 @@
             class="grid-item"
           >
             <p class="label-key">{{ item.label }}</p>
-            <p :class="[props.valueClassMap[item.key] || 'default-class']">
-              {{ resultData?.[item.key] || 'N/A' }}
-            </p>
+            <!-- Dynamic slot with kebab-case conversion -->
+            <template
+              v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
+              :slot="item.key.replace(/ /g, '-').toLowerCase()"
+            >
+              <slot
+                :name="item.key.replace(/ /g, '-').toLowerCase()"
+                :value="resultData?.[item.key]"
+              />
+            </template>
+            <template v-else>
+              <p :class="[props.valueClassMap[item.key] || 'default-class']">
+                {{ resultData?.[item.key] || 'N/A' }}
+              </p>
+            </template>
           </div>
         </div>
       </UCard>
