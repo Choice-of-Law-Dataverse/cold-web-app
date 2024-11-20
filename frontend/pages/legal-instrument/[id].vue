@@ -69,7 +69,7 @@ const valueClassMap = {
   'Compatible with the HCCH Principles?': 'result-value-medium',
   'Publication date': 'result-value-small',
   'Entry into force': 'result-value-small',
-  'Official Source': 'result-value-small',
+  'Official Source (URL)': 'result-value-small',
   'Relevant Provisions': 'result-value-small',
 }
 
