@@ -101,4 +101,15 @@ onMounted(() => {
 .no-margin .label-key {
   margin-top: 0;
 }
+
+.anchor {
+  text-decoration: none;
+  color: var(--color-cold-night) !important;
+  display: block; /* Ensure the anchor behaves like a block element */
+  margin-top: 50px; /* Reapply the margin directly to the anchor */
+}
+
+.no-margin .anchor {
+  margin-top: 0; /* Remove the margin for the first item */
+}
 </style>
