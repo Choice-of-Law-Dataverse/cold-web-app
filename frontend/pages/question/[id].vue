@@ -8,27 +8,43 @@
   >
     <!-- Custom rendering for Legal provision articles -->
     <template #legal-provision-articles="{ value }">
-      <span v-for="(item, itemIndex) in value.split(',')" :key="itemIndex">
-        <div
-          :class="valueClassMap['Legal provision articles'] || 'result-value'"
-        >
-          <NuxtLink
-            :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
+      <div>
+        <div v-if="value && value.trim()">
+          <!-- Render each article on a new line -->
+          <div
+            v-for="(item, itemIndex) in value.split(',')"
+            :key="itemIndex"
+            :class="valueClassMap['Legal provision articles'] || 'result-value'"
           >
-            {{ item.trim() }}
-          </NuxtLink>
+            <NuxtLink
+              :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
+            >
+              {{ item.trim() }}
+            </NuxtLink>
+          </div>
         </div>
-      </span>
+        <div v-else>
+          <!-- Render N/A if no legal provision articles are available -->
+          <span>N/A</span>
+        </div>
+      </div>
     </template>
 
     <!-- Custom rendering for Case ID -->
     <template #case-id="{ value }">
       <div>
-        <CourtCaseLink
-          v-for="(caseId, index) in value.split(',')"
-          :key="index"
-          :caseId="caseId.trim()"
-        />
+        <div v-if="value && value.trim()">
+          <!-- Render links if value exists -->
+          <CourtCaseLink
+            v-for="(caseId, index) in value.split(',')"
+            :key="index"
+            :caseId="caseId.trim()"
+          />
+        </div>
+        <div v-else>
+          <!-- Render N/A if no case IDs are available -->
+          <span>N/A</span>
+        </div>
       </div>
     </template>
   </DetailDisplay>
