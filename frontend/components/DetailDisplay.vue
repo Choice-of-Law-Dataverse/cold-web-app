@@ -34,7 +34,6 @@
 </template>
 
 <script setup>
-//import { defineProps } from 'vue'
 import BackButton from '~/components/BackButton.vue'
 import UCardHeader from '~/components/UCardHeader.vue'
 
