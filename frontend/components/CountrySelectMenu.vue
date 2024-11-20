@@ -5,9 +5,9 @@
       <div class="suggestions">
         <USelectMenu
           searchable
-          searchable-placeholder="Search a jurisdiction..."
+          searchable-placeholder="Search a Jurisdiction..."
           class="w-72 lg:w-96"
-          placeholder="Select a jurisdiction"
+          placeholder="Select a Jurisdiction"
           :options="countries"
           v-model="selectedCountry"
           @change="navigateToCountry"
