@@ -14,6 +14,7 @@
             v-for="(provisionId, index) in value.split(',')"
             :key="index"
             :provisionId="provisionId.trim()"
+            :class="index === 0 ? 'no-margin' : ''"
           />
         </div>
         <div v-else>
@@ -87,7 +88,6 @@ const valueClassMap = {
   'Publication date': 'result-value-small',
   'Entry into force': 'result-value-small',
   'Official Source (URL)': 'result-value-small',
-  'Legal provisions IDs': 'result-value-small',
 }
 
 // Computed property to transform the API response
