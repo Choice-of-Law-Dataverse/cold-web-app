@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import PopularSearches from '~/components/PopularSearches.vue'
+import CountrySelectMenu from '~/components/CountrySelectMenu.vue'
 </script>
 
 <template>
@@ -8,6 +9,7 @@ import PopularSearches from '~/components/PopularSearches.vue'
       <h1>Choice of Law Dataverse</h1>
       <h2>Find relevant case law and choice of law answers for your case.</h2>
       <PopularSearches />
+      <CountrySelectMenu />
     </div>
   </div>
 </template>
