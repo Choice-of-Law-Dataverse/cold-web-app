@@ -58,8 +58,8 @@ const keyLabelPairs = [
   { key: 'Entry into force', label: 'Entry into force' },
   { key: 'Official Source (URL)', label: 'Official Source' },
   {
-    key: 'Relevant Provisions',
-    label: 'Relevant Provisions',
+    key: 'Legal provisions IDs',
+    label: 'Legal provisions IDs',
   },
 ]
 
@@ -70,7 +70,7 @@ const valueClassMap = {
   'Publication date': 'result-value-small',
   'Entry into force': 'result-value-small',
   'Official Source (URL)': 'result-value-small',
-  'Relevant Provisions': 'result-value-small',
+  'Legal provisions IDs': 'result-value-small',
 }
 
 // Computed property to transform the API response
