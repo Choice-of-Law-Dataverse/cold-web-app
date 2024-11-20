@@ -1,15 +1,30 @@
 <template>
   <DetailDisplay
     :loading="loading"
-    :resultData="answerData"
+    :resultData="processedAnswerData"
     :keyLabelPairs="keyLabelPairs"
     :valueClassMap="valueClassMap"
     formattedSourceTable="Question"
-  />
+  >
+    <!-- Custom rendering for Legal provision articles -->
+    <template #legal-provision-articles="{ value }">
+      <span v-for="(item, itemIndex) in value.split(',')" :key="itemIndex">
+        <div
+          :class="valueClassMap['Legal provision articles'] || 'result-value'"
+        >
+          <NuxtLink
+            :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
+          >
+            {{ item.trim() }}
+          </NuxtLink>
+        </div>
+      </span>
+    </template>
+  </DetailDisplay>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
 
@@ -57,8 +72,19 @@ const keyLabelPairs = [
 const valueClassMap = {
   Questions: 'result-value-medium',
   Answer: 'result-value-large',
-  'Relevant provisions': 'result-value-medium',
+  'Legal provision articles': 'result-value-medium',
 }
+
+// Preprocess data to handle custom rendering cases
+const processedAnswerData = computed(() => {
+  if (!answerData.value) return null
+
+  return {
+    ...answerData.value,
+    'Legal provision articles':
+      answerData.value['Legal provision articles'] || '',
+  }
+})
 
 onMounted(() => {
   const id = route.params.id as string // Get ID from the route
