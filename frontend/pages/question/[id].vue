@@ -24,15 +24,11 @@
     <!-- Custom rendering for Case ID -->
     <template #case-id="{ value }">
       <div>
-        <div
+        <CourtCaseLink
           v-for="(caseId, index) in value.split(',')"
           :key="index"
-          :class="valueClassMap['Case ID'] || 'result-value'"
-        >
-          <NuxtLink :to="`/court-decision/${caseId.trim()}`">
-            {{ caseId.trim() }}
-          </NuxtLink>
-        </div>
+          :caseId="caseId.trim()"
+        />
       </div>
     </template>
   </DetailDisplay>
@@ -42,6 +38,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
+import CourtCaseLink from '~/components/CourtCaseLink.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const answerData = ref(null) // Store fetched court decision data
