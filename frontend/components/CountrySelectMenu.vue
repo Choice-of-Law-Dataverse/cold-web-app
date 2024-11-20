@@ -21,23 +21,27 @@
 <script setup>
 // Import Nuxt's `useRouter` composable for navigation
 import { useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
 
-// Reactive state for the selected country
+// Reactive state
+const countries = ref([])
 const selectedCountry = ref(null)
 
-// List of countries to display in the menu
-const countries = ref([
-  'United States',
-  'United Kingdom',
-  'Germany',
-  'France',
-  'Switzerland',
-  'Australia',
-  'Canada',
-  'China',
-  'India',
-  'Japan',
-])
+// Fetch jurisdictions from the text file
+async function fetchJurisdictions() {
+  try {
+    const response = await fetch('/temp_jurisdictions.txt') // Path to the file in `public`
+    if (!response.ok) throw new Error('Failed to load jurisdictions file')
+    const text = await response.text()
+    countries.value = text
+      .split('\n')
+      .map((country) => country.trim())
+      .filter(Boolean) // Split and clean the list
+  } catch (error) {
+    console.error(error)
+    countries.value = [] // Fallback to an empty list if there's an error
+  }
+}
 
 // Nuxt Router instance
 const router = useRouter()
@@ -49,6 +53,11 @@ const navigateToCountry = (country) => {
     router.push(`/jurisdiction/${formattedCountry}`)
   }
 }
+
+// Load the jurisdictions when the component is mounted
+onMounted(() => {
+  fetchJurisdictions()
+})
 </script>
 
 <style scoped>
