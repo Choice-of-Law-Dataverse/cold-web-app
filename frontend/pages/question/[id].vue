@@ -48,7 +48,7 @@ const keyLabelPairs = [
   { key: 'Questions', label: 'Question' },
   { key: 'Answer', label: 'Answer' },
   {
-    key: 'Relevant provisions',
+    key: 'Legal provision articles',
     label: 'Source',
   },
   { key: 'Case titles', label: 'related cases' },
