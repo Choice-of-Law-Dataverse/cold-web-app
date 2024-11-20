@@ -3,8 +3,11 @@
     <div v-if="loading">Loading...</div>
     <div v-else-if="error">{{ error }}</div>
     <div v-else>
-      <div :class="['legal-provision', customClass]">
-        <p class="label-key">{{ title }}</p>
+      <div :id="anchorId" :class="['legal-provision', customClass]">
+        <!-- Anchor for the article title -->
+        <a :href="`#${anchorId}`" class="label-key anchor">
+          {{ title }}
+        </a>
         <p class="result-value-small">{{ content }}</p>
       </div>
     </div>
@@ -12,7 +15,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, nextTick } from 'vue'
 
 // Props
 const props = defineProps({
@@ -34,6 +37,24 @@ const error = ref<string | null>(null)
 
 // Compute the final class
 const customClass = computed(() => props.class)
+
+const anchorId = computed(() => {
+  const articleNumber = title.value
+    ? title.value.replace(/\s+/g, '')
+    : props.provisionId.replace(/\s+/g, '')
+  return articleNumber
+})
+
+const scrollToAnchor = async () => {
+  if (window.location.hash === `#${anchorId.value}`) {
+    // Wait for the DOM to render the component
+    await nextTick()
+    const anchorElement = document.getElementById(anchorId.value)
+    if (anchorElement) {
+      anchorElement.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+}
 
 // Fetch the provision details on mount
 async function fetchProvisionDetails() {
@@ -68,7 +89,7 @@ async function fetchProvisionDetails() {
 }
 
 onMounted(() => {
-  fetchProvisionDetails()
+  fetchProvisionDetails().then(scrollToAnchor)
 })
 </script>
 
