@@ -84,6 +84,7 @@ const processedLegalInstrument = computed(() => {
     ]
       ? 'Yes'
       : 'No',
+    Themes: legalInstrument.value['Themes name'], // Map Themes name to Themes
   }
 })
 
