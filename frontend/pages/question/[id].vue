@@ -39,6 +39,7 @@
             v-for="(caseId, index) in value.split(',')"
             :key="index"
             :caseId="caseId.trim()"
+            :class="valueClassMap['Case ID'] || 'result-value'"
           />
         </div>
         <div v-else>
