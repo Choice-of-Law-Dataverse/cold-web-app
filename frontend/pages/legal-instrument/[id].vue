@@ -1,7 +1,7 @@
 <template>
   <DetailDisplay
     :loading="loading"
-    :resultData="legalInstrument"
+    :resultData="processedLegalInstrument"
     :keyLabelPairs="keyLabelPairs"
     :valueClassMap="valueClassMap"
     formattedSourceTable="Legislation"
@@ -9,7 +9,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
 
@@ -72,6 +72,20 @@ const valueClassMap = {
   'Official Source (URL)': 'result-value-small',
   'Relevant Provisions': 'result-value-small',
 }
+
+// Computed property to transform the API response
+const processedLegalInstrument = computed(() => {
+  if (!legalInstrument.value) return null
+
+  return {
+    ...legalInstrument.value,
+    'Compatible with the HCCH Principles?': legalInstrument.value[
+      'Compatible with the HCCH Principles?'
+    ]
+      ? 'Yes'
+      : 'No',
+  }
+})
 
 onMounted(() => {
   const id = route.params.id as string // Get ID from the route
