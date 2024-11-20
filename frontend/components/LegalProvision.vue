@@ -3,10 +3,10 @@
     <div v-if="loading">Loading...</div>
     <div v-else-if="error">{{ error }}</div>
     <div v-else>
-      <p>
-        <strong>{{ title }}</strong>
-      </p>
-      <p>{{ content }}</p>
+      <div :class="['legal-provision', customClass]">
+        <p class="label-key">{{ title }}</p>
+        <p class="result-value-small">{{ content }}</p>
+      </div>
     </div>
   </div>
 </template>
@@ -20,6 +20,10 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  class: {
+    type: String,
+    default: '',
+  }, // Accept dynamic classes
 })
 
 // Reactive state for title and content
@@ -27,6 +31,9 @@ const title = ref<string | null>(null)
 const content = ref<string | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
+
+// Compute the final class
+const customClass = computed(() => props.class)
 
 // Fetch the provision details on mount
 async function fetchProvisionDetails() {
@@ -51,7 +58,7 @@ async function fetchProvisionDetails() {
     const data = await response.json()
     title.value = data.Article || 'Unknown Article'
     content.value =
-      data['Full text of the provision (English translation)'] ||
+      data['Full text of the provision (Original language)'] ||
       'No content available'
   } catch (err) {
     error.value = err.message
@@ -64,3 +71,13 @@ onMounted(() => {
   fetchProvisionDetails()
 })
 </script>
+
+<style scoped>
+.label-key {
+  margin-top: 50px;
+}
+
+.no-margin .label-key {
+  margin-top: 0;
+}
+</style>
