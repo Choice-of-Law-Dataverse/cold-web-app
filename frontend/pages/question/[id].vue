@@ -20,6 +20,21 @@
         </div>
       </span>
     </template>
+
+    <!-- Custom rendering for Case ID -->
+    <template #case-id="{ value }">
+      <div>
+        <div
+          v-for="(caseId, index) in value.split(',')"
+          :key="index"
+          :class="valueClassMap['Case ID'] || 'result-value'"
+        >
+          <NuxtLink :to="`/court-decision/${caseId.trim()}`">
+            {{ caseId.trim() }}
+          </NuxtLink>
+        </div>
+      </div>
+    </template>
   </DetailDisplay>
 </template>
 
@@ -66,13 +81,14 @@ const keyLabelPairs = [
     key: 'Legal provision articles',
     label: 'Source',
   },
-  { key: 'Case titles', label: 'related cases' },
+  { key: 'Case ID', label: 'related cases' },
 ]
 
 const valueClassMap = {
   Questions: 'result-value-medium',
   Answer: 'result-value-large',
   'Legal provision articles': 'result-value-medium',
+  'Case ID': 'result-value-small',
 }
 
 // Preprocess data to handle custom rendering cases
@@ -83,6 +99,7 @@ const processedAnswerData = computed(() => {
     ...answerData.value,
     'Legal provision articles':
       answerData.value['Legal provision articles'] || '',
+    'Case ID': answerData.value['Case ID'] || '',
   }
 })
 
