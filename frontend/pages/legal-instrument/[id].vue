@@ -5,13 +5,30 @@
     :keyLabelPairs="keyLabelPairs"
     :valueClassMap="valueClassMap"
     formattedSourceTable="Legislation"
-  />
+  >
+    <!-- Slot for Legal provisions -->
+    <template #legal-provisions-ids="{ value }">
+      <div>
+        <div v-if="value && value.trim()">
+          <LegalProvision
+            v-for="(provisionId, index) in value.split(',')"
+            :key="index"
+            :provisionId="provisionId.trim()"
+          />
+        </div>
+        <div v-else>
+          <span>N/A</span>
+        </div>
+      </div>
+    </template>
+  </DetailDisplay>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
+import LegalProvision from '~/components/LegalProvision.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const legalInstrument = ref(null) // Store fetched court decision data
