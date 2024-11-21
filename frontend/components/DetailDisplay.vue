@@ -4,7 +4,7 @@
       <BackButton />
       <UCard class="cold-ucard">
         <!-- Header section -->
-        <template #header>
+        <template #header v-if="showHeader">
           <UCardHeader
             v-if="resultData"
             :resultData="resultData"
@@ -59,6 +59,10 @@ const props = defineProps({
   keyLabelPairs: Array,
   valueClassMap: Object,
   formattedSourceTable: String, // Receive the hard-coded value from [id].vue
+  showHeader: {
+    type: Boolean,
+    default: true, // Default to true so headers are shown unless explicitly disabled
+  },
 })
 </script>
 
