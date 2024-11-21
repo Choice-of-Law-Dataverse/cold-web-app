@@ -1,13 +1,13 @@
 <template>
   <UCard class="cold-ucard">
     <div class="popular-searches-container">
-      <h2 class="popular-title">Temporary Jurisdiction Selector</h2>
+      <h2 class="popular-title">Temporary Jurisdiction Picker</h2>
       <div class="suggestions">
         <USelectMenu
           searchable
           searchable-placeholder="Search a Jurisdiction..."
           class="w-72 lg:w-96"
-          placeholder="Select a Jurisdiction"
+          placeholder="Pick a Jurisdiction"
           :options="countries"
           v-model="selectedCountry"
           @change="navigateToCountry"
