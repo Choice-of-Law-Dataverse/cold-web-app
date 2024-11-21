@@ -1,0 +1,28 @@
+meta {
+  name: full-table
+  type: http
+  seq: 10
+}
+
+post {
+  url: https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_table
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "table": "Answers",
+    "filters": [{"column": "Name (from Jurisdiction)", "value": "Switzerland"}]
+    //Example 2
+    //"table": "Answers",
+    //"filters": [{"column": "Name (from Jurisdiction)", "value": "Brazil"}, {"column": "Themes", "value": "Arbitration"}]
+    //Example 3
+    //"table": "Concepts",
+    //"filters": [{"column": "Source", "value": "LLM validation"}, {"column": "ID-number", "value": 3}]
+  }
+}

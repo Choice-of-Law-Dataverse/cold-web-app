@@ -124,6 +124,38 @@ class SearchService:
         print(table)
         results = self.db.execute_query(f'SELECT * FROM "{table}"')
         return results
+
+    def filtered_table(self, table, filters):
+        # Base query
+        query = f'SELECT * FROM "{table}"'
+        query_params = {}
+
+        # Check if filters are provided and construct WHERE clause
+        if filters:
+            conditions = []
+            for idx, filter_item in enumerate(filters):
+                column = filter_item.get('column')
+                value = filter_item.get('value')
+
+                if not column or value is None:
+                    raise ValueError(f"Invalid filter: {filter_item}")
+
+                # Use parameterized keys in the query and add them to query_params
+                param_key = f'param_{idx}'
+                conditions.append(f'"{column}" = :{param_key}')
+                query_params[param_key] = value
+
+            # Append the WHERE clause to the query only if there are conditions
+            if conditions:
+                query += f' WHERE {" AND ".join(conditions)}'
+
+        # Debug: Print the full query and parameters
+        print("Executing query:", query)
+        print("With parameters:", query_params)
+
+        # Execute the query with parameters as a dictionary
+        results = self.db.execute_query(query, query_params)
+        return results
         
     def full_text_search(self, search_string):
         # Prepare the SQL query with dynamic search string input
@@ -168,7 +200,7 @@ class SearchService:
 
             -- Combine results and order by rank
             order by rank desc
-            limit 250;
+            limit 150;
         """
 
         # Execute the SQL query
