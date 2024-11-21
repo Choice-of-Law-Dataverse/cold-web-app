@@ -1,30 +1,80 @@
 <template>
   <div class="col-span-12">
     <UCard class="cold-ucard">
-      <UTable class="styled-table" :rows="people" />
+      <UTable
+        v-if="!loading"
+        class="styled-table"
+        :rows="rows"
+        :columns="columns"
+      />
+      <p v-else>Loading...</p>
     </UCard>
   </div>
 </template>
 
 <script setup lang="ts">
-const people = [
-  {
-    theme: 'Preamble',
-    question:
-      'Is there a codification on choice of law or are there similar established rules?',
-    jurisdiction: 'Yes',
+import { ref, watch, onMounted } from 'vue'
+
+const props = defineProps({
+  jurisdiction: {
+    type: String,
+    required: true,
   },
-  {
-    theme: 'Preamble',
-    question: 'Are these rules part of a private international law instrument?',
-    jurisdiction: 'Yes',
-  },
-  {
-    theme: 'Preamble',
-    question: 'Are these rules a consequence of a recent law reform?',
-    jurisdiction: 'No',
-  },
-]
+})
+
+const loading = ref(true)
+const rows = ref([])
+const columns = ref([
+  { key: 'Name (from Jurisdiction)', label: 'Jurisdiction' },
+  { key: 'Questions', label: 'Question' },
+  { key: 'Answer', label: 'Answer' },
+  { key: 'Themes', label: 'Themes' },
+])
+
+async function fetchTableData(jurisdiction: string) {
+  const payload = {
+    table: 'Answers',
+    filters: [{ column: 'Name (from Jurisdiction)', value: jurisdiction }],
+  }
+
+  try {
+    const response = await fetch(
+      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_table',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to fetch table data')
+
+    const data = await response.json()
+    rows.value = data // Populate rows with API response
+  } catch (error) {
+    console.error('Error fetching table data:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Watch for jurisdiction changes
+watch(
+  () => props.jurisdiction,
+  (newJurisdiction) => {
+    if (newJurisdiction) {
+      loading.value = true
+      fetchTableData(newJurisdiction)
+    }
+  }
+)
+
+// Fetch data on component mount
+onMounted(() => {
+  if (props.jurisdiction) {
+    fetchTableData(props.jurisdiction)
+  }
+})
 </script>
 
 <style scoped>
