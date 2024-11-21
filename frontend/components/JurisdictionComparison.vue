@@ -25,9 +25,9 @@ const props = defineProps({
 const loading = ref(true)
 const rows = ref([])
 const columns = ref([
-  { key: 'Themes', label: 'Themes' },
+  { key: 'Themes', label: 'Themes', class: 'themes-column' },
   { key: 'Questions', label: 'Question' },
-  { key: 'Answer', label: props.jurisdiction || 'Answer' }, // Use jurisdiction name as label
+  { key: 'Answer', label: props.jurisdiction || 'Answer' },
 ])
 
 async function fetchTableData(jurisdiction: string) {
@@ -77,6 +77,33 @@ onMounted(() => {
 </script>
 
 <style scoped>
+::v-deep(thead th:nth-child(1)),
+::v-deep(tbody td:nth-child(1)) {
+  width: 200px !important; /* Set fixed width */
+  max-width: 200px !important; /* Prevent expansion */
+  white-space: normal; /* Allow text wrapping */
+  word-wrap: break-word; /* Break long words to wrap */
+  overflow-wrap: break-word; /* Ensure proper word wrapping */
+}
+
+::v-deep(thead th:nth-child(2)),
+::v-deep(tbody td:nth-child(2)) {
+  width: 800px !important; /* Set fixed width */
+  max-width: 800px !important; /* Prevent expansion */
+  white-space: normal; /* Allow text wrapping */
+  word-wrap: break-word; /* Break long words to wrap */
+  overflow-wrap: break-word; /* Ensure proper word wrapping */
+}
+
+::v-deep(thead th:nth-child(3)),
+::v-deep(tbody td:nth-child(3)) {
+  width: 150px !important; /* Set fixed width */
+  max-width: 150px !important; /* Prevent expansion */
+  white-space: normal; /* Allow text wrapping */
+  word-wrap: break-word; /* Break long words to wrap */
+  overflow-wrap: break-word; /* Ensure proper word wrapping */
+}
+
 /* Set the row height for all table rows */
 .cold-ucard ::v-deep(tbody tr) {
   height: 74px; /* Ensure all rows are 74px high */
