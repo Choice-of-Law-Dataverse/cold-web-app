@@ -5,6 +5,7 @@
     :keyLabelPairs="keyLabelPairs"
     :valueClassMap="valueClassMap"
     formattedSourceTable="Jurisdictions"
+    :showHeader="false"
   />
 </template>
 
