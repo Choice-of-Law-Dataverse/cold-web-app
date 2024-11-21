@@ -161,10 +161,20 @@ def handle_curated_details_search():
 def return_full_table():
   data = request.json
   table = data.get('table')
+  filters = data.get('filters', [])
+
   if not table:
     return jsonify({'error': 'No table provided'}), 400
-  results = search_service.full_table(table)
-  log_query(request, f"Full table retrieval in {table}", len(results), "full_table")
+  
+  try:
+    if filters:
+      results = search_service.filtered_table(table, filters)
+    else:
+      results = search_service.full_table(table)
+  except Exception as e:
+    return jsonify({'error': str(e)}), 500
+
+  log_query(request, f"Full table retrieval in {table} with filters {filters}", len(results), "full_table")
   return jsonify(results), 200
 
 @app.route('/get_user_info', methods=['GET'])
