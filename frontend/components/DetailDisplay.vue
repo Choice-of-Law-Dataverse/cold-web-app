@@ -1,51 +1,47 @@
 <template>
-  <div class="container">
-    <div class="col-span-12">
-      <BackButton />
-      <UCard class="cold-ucard">
-        <!-- Header section -->
-        <template #header v-if="showHeader">
-          <UCardHeader
-            v-if="resultData"
-            :resultData="resultData"
-            :cardType="formattedSourceTable"
-            :showOpenLink="false"
+  <BackButton />
+  <UCard class="cold-ucard">
+    <!-- Header section -->
+    <template #header v-if="showHeader">
+      <UCardHeader
+        v-if="resultData"
+        :resultData="resultData"
+        :cardType="formattedSourceTable"
+        :showOpenLink="false"
+      />
+    </template>
+
+    <!-- Main content -->
+    <div v-if="loading" class="main-content-grid">Loading...</div>
+    <div v-else class="main-content-grid">
+      <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
+      <div
+        v-for="(item, index) in keyLabelPairs"
+        :key="index"
+        class="grid-item"
+      >
+        <!-- Conditionally render the label -->
+        <p v-if="item.key !== 'Legal provisions IDs'" class="label-key">
+          {{ item.label }}
+        </p>
+        <!-- Dynamic slot with kebab-case conversion -->
+        <template
+          v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
+          :slot="item.key.replace(/ /g, '-').toLowerCase()"
+        >
+          <slot
+            :name="item.key.replace(/ /g, '-').toLowerCase()"
+            :value="resultData?.[item.key]"
           />
         </template>
-
-        <!-- Main content -->
-        <div v-if="loading" class="main-content-grid">Loading...</div>
-        <div v-else class="main-content-grid">
-          <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
-          <div
-            v-for="(item, index) in keyLabelPairs"
-            :key="index"
-            class="grid-item"
-          >
-            <!-- Conditionally render the label -->
-            <p v-if="item.key !== 'Legal provisions IDs'" class="label-key">
-              {{ item.label }}
-            </p>
-            <!-- Dynamic slot with kebab-case conversion -->
-            <template
-              v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
-              :slot="item.key.replace(/ /g, '-').toLowerCase()"
-            >
-              <slot
-                :name="item.key.replace(/ /g, '-').toLowerCase()"
-                :value="resultData?.[item.key]"
-              />
-            </template>
-            <template v-else>
-              <p :class="[props.valueClassMap[item.key] || 'default-class']">
-                {{ resultData?.[item.key] || 'N/A' }}
-              </p>
-            </template>
-          </div>
-        </div>
-      </UCard>
+        <template v-else>
+          <p :class="[props.valueClassMap[item.key] || 'default-class']">
+            {{ resultData?.[item.key] || 'N/A' }}
+          </p>
+        </template>
+      </div>
     </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup>
@@ -77,10 +73,6 @@ const props = defineProps({
 .grid-item {
   grid-column: 1 / span 6; /* Start in the 1st column, span across 6 columns */
   margin-bottom: 48px; /* Space between each key-value pair */
-}
-
-.cold-ucard {
-  margin-bottom: 120px;
 }
 
 .cold-ucard ::v-deep(.px-4) {

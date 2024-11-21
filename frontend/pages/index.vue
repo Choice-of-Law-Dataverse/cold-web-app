@@ -1,8 +1,3 @@
-<script setup lang="ts">
-import PopularSearches from '~/components/PopularSearches.vue'
-import CountrySelectMenu from '~/components/CountrySelectMenu.vue'
-</script>
-
 <template>
   <div class="container">
     <div class="col-span-12">
@@ -13,6 +8,11 @@ import CountrySelectMenu from '~/components/CountrySelectMenu.vue'
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import PopularSearches from '~/components/PopularSearches.vue'
+import CountrySelectMenu from '~/components/CountrySelectMenu.vue'
+</script>
 
 <style scoped>
 h1 {

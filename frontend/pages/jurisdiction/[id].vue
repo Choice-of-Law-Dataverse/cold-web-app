@@ -1,18 +1,24 @@
 <template>
-  <DetailDisplay
-    :loading="loading"
-    :resultData="jurisdictionData"
-    :keyLabelPairs="keyLabelPairs"
-    :valueClassMap="valueClassMap"
-    formattedSourceTable="Jurisdictions"
-    :showHeader="false"
-  />
+  <div class="container">
+    <div class="col-span-12">
+      <DetailDisplay
+        :loading="loading"
+        :resultData="courtDecision"
+        :keyLabelPairs="keyLabelPairs"
+        :valueClassMap="valueClassMap"
+        formattedSourceTable="Court decisions"
+        :showHeader="false"
+      />
+      <JurisdictionComparison />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
+import JurisdictionComparison from '~/components/JurisdictionComparison.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const jurisdictionData = ref(null) // Store fetched jurisdiction data

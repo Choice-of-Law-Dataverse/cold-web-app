@@ -1,28 +1,32 @@
 <template>
-  <DetailDisplay
-    :loading="loading"
-    :resultData="processedLegalInstrument"
-    :keyLabelPairs="keyLabelPairs"
-    :valueClassMap="valueClassMap"
-    formattedSourceTable="Legislation"
-  >
-    <!-- Slot for Legal provisions -->
-    <template #legal-provisions-ids="{ value }">
-      <div>
-        <div v-if="value && value.trim()">
-          <LegalProvision
-            v-for="(provisionId, index) in value.split(',')"
-            :key="index"
-            :provisionId="provisionId.trim()"
-            :class="index === 0 ? 'no-margin' : ''"
-          />
-        </div>
-        <div v-else>
-          <span>N/A</span>
-        </div>
-      </div>
-    </template>
-  </DetailDisplay>
+  <div class="container">
+    <div class="col-span-12">
+      <DetailDisplay
+        :loading="loading"
+        :resultData="processedLegalInstrument"
+        :keyLabelPairs="keyLabelPairs"
+        :valueClassMap="valueClassMap"
+        formattedSourceTable="Legislation"
+      >
+        <!-- Slot for Legal provisions -->
+        <template #legal-provisions-ids="{ value }">
+          <div>
+            <div v-if="value && value.trim()">
+              <LegalProvision
+                v-for="(provisionId, index) in value.split(',')"
+                :key="index"
+                :provisionId="provisionId.trim()"
+                :class="index === 0 ? 'no-margin' : ''"
+              />
+            </div>
+            <div v-else>
+              <span>N/A</span>
+            </div>
+          </div>
+        </template>
+      </DetailDisplay>
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
