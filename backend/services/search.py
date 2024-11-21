@@ -140,9 +140,9 @@ class SearchService:
                 if not column or value is None:
                     raise ValueError(f"Invalid filter: {filter_item}")
 
-                # Use parameterized keys in the query and add them to query_params
+                # Use LOWER() for case-insensitive matching
                 param_key = f'param_{idx}'
-                conditions.append(f'"{column}" = :{param_key}')
+                conditions.append(f'LOWER("{column}") = LOWER(:{param_key})')
                 query_params[param_key] = value
 
             # Append the WHERE clause to the query only if there are conditions
