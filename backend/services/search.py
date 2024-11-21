@@ -200,7 +200,7 @@ class SearchService:
 
             -- Combine results and order by rank
             order by rank desc
-            limit 250;
+            limit 150;
         """
 
         # Execute the SQL query
