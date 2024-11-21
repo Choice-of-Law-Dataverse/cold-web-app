@@ -25,10 +25,9 @@ const props = defineProps({
 const loading = ref(true)
 const rows = ref([])
 const columns = ref([
-  { key: 'Name (from Jurisdiction)', label: 'Jurisdiction' },
-  { key: 'Questions', label: 'Question' },
-  { key: 'Answer', label: 'Answer' },
   { key: 'Themes', label: 'Themes' },
+  { key: 'Questions', label: 'Question' },
+  { key: 'Answer', label: props.jurisdiction || 'Answer' }, // Use jurisdiction name as label
 ])
 
 async function fetchTableData(jurisdiction: string) {
