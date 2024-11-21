@@ -3,13 +3,17 @@
     <div class="col-span-12">
       <DetailDisplay
         :loading="loading"
-        :resultData="courtDecision"
+        :resultData="jurisdictionData"
         :keyLabelPairs="keyLabelPairs"
         :valueClassMap="valueClassMap"
-        formattedSourceTable="Court decisions"
+        formattedSourceTable="Jurisdictions"
         :showHeader="false"
       />
-      <JurisdictionComparison />
+      <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
+      <JurisdictionComparison
+        v-if="!loading && jurisdictionData?.Name"
+        :jurisdiction="jurisdictionData.Name"
+      />
     </div>
   </div>
 </template>
@@ -25,15 +29,15 @@ const jurisdictionData = ref(null) // Store fetched jurisdiction data
 const loading = ref(true) // Track loading state
 
 // Fetch the jurisdiction details
-async function fetchJurisdiction(id: string) {
+async function fetchJurisdiction(name: string) {
   const jsonPayload = {
     table: 'Jurisdictions',
-    id: id,
+    filters: [{ column: 'Name', value: name }],
   }
 
   try {
     const response = await fetch(
-      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/curated_search/details',
+      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_table',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -43,7 +47,13 @@ async function fetchJurisdiction(id: string) {
 
     if (!response.ok) throw new Error('Failed to fetch jurisdiction')
 
-    jurisdictionData.value = await response.json()
+    const data = await response.json()
+    // Extract the required values
+    jurisdictionData.value = {
+      Name: data[0]?.Name || 'N/A', // Default to 'N/A' if not found
+      'Jurisdictional differentiator':
+        data[0]?.['Jurisdictional differentiator'] || 'N/A',
+    }
   } catch (error) {
     console.error('Error fetching jurisdiction:', error)
   } finally {
@@ -67,7 +77,7 @@ const valueClassMap = {
 
 // Fetch jurisdiction data on component mount
 onMounted(() => {
-  const id = route.params.id as string // Get ID from the route
-  fetchJurisdiction(id)
+  const jurisdictionName = route.params.id as string // Get ID from the route
+  fetchJurisdiction(jurisdictionName)
 })
 </script>
