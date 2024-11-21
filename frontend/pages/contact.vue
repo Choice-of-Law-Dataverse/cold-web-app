@@ -4,12 +4,10 @@
       <UCard class="cold-ucard">
         <div class="main-content-grid">
           <div class="grid-item">
-            <h2>Interested in working together?</h2>
+            <h2>Do you have any questions?</h2>
             <p>
               Send us an email:
-              <a href="mailto:agatha.brandao@unilu.ch"
-                >agatha.brandao@unilu.ch</a
-              >
+              <a href="mailto:fabian.aiolfi@unilu.ch">fabian.aiolfi@unilu.ch</a>
             </p>
 
             <h2>Want to stay updated on the project?</h2>

@@ -1,13 +1,73 @@
+<template>
+  <div class="container">
+    <div class="col-span-12">
+      <DetailDisplay
+        :loading="loading"
+        :resultData="processedAnswerData"
+        :keyLabelPairs="keyLabelPairs"
+        :valueClassMap="valueClassMap"
+        formattedSourceTable="Question"
+      >
+        <!-- Custom rendering for Legal provision articles -->
+        <template #legal-provision-articles="{ value }">
+          <div>
+            <div v-if="value && value.trim()">
+              <!-- Render each article on a new line -->
+              <div
+                v-for="(item, itemIndex) in value.split(',')"
+                :key="itemIndex"
+                :class="
+                  valueClassMap['Legal provision articles'] || 'result-value'
+                "
+              >
+                <NuxtLink
+                  :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
+                >
+                  {{ item.trim() }}
+                </NuxtLink>
+              </div>
+            </div>
+            <div v-else>
+              <!-- Render N/A if no legal provision articles are available -->
+              <span>N/A</span>
+            </div>
+          </div>
+        </template>
+
+        <!-- Custom rendering for Case ID -->
+        <template #case-id="{ value }">
+          <div>
+            <div v-if="value && value.trim()">
+              <!-- Render links if value exists -->
+              <CourtCaseLink
+                v-for="(caseId, index) in value.split(',')"
+                :key="index"
+                :caseId="caseId.trim()"
+                :class="valueClassMap['Case ID'] || 'result-value'"
+              />
+            </div>
+            <div v-else>
+              <!-- Render N/A if no case IDs are available -->
+              <span>N/A</span>
+            </div>
+          </div>
+        </template>
+      </DetailDisplay>
+    </div>
+  </div>
+</template>
+
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import DetailDisplay from '~/components/DetailDisplay.vue'
+import CourtCaseLink from '~/components/CourtCaseLink.vue'
 
 const route = useRoute() // Access the route to get the ID param
-const Question = ref(null) // Store fetched court decision data
+const answerData = ref(null) // Store fetched court decision data
 const loading = ref(true) // Track loading state
-const errorMessage = ref('') // To store an error message if it exists
 
-async function fetchQuestion(id: string) {
+async function fetchAnswer(id: string) {
   const jsonPayload = {
     table: 'Answers',
     id: id,
@@ -23,21 +83,11 @@ async function fetchQuestion(id: string) {
       }
     )
 
-    if (!response.ok) throw new Error('Failed to fetch court decision')
+    if (!response.ok) throw new Error('Failed to fetch answer')
 
-    const data = await response.json()
-
-    // Check if the response contains an error
-    if (data.error) {
-      errorMessage.value = data.error // Store the error message
-      Question.value = null // Clear court decision data
-    } else {
-      Question.value = data // Store actual data
-      errorMessage.value = '' // Clear any previous error
-    }
+    answerData.value = await response.json()
   } catch (error) {
-    errorMessage.value = 'An unexpected error occurred'
-    console.error('Error fetching court decision:', error)
+    console.error('Error fetching answer:', error)
   } finally {
     loading.value = false
   }
@@ -45,52 +95,36 @@ async function fetchQuestion(id: string) {
 
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
-  { key: 'Jurisdiction Names', label: 'Jurisdiction' },
-  { key: 'Themes', label: 'Themes' },
-  { key: 'Case', label: 'Case Title' },
-  { key: 'Abstract', label: 'Abstract' },
+  { key: 'Questions', label: 'Question' },
+  { key: 'Answer', label: 'Answer' },
   {
-    key: 'Relevant facts / Summary of the case',
-    label: 'RELEVANT FACTS / SUMMARY OF THE CASE',
+    key: 'Legal provision articles',
+    label: 'Source',
   },
-  {
-    key: 'Relevant rules of law involved',
-    label: 'RELEVANT RULES OF LAW INVOLVED',
-  },
-  { key: 'Choice of law issue', label: 'choice of law issue' },
-  { key: "Court's position", label: "COURT'S POSITION" },
-  {
-    key: 'Text of the relevant legal provisions',
-    label: 'TEXT OF THE RELEVANT LEGAL PROVISIONS',
-  },
+  { key: 'Case ID', label: 'related cases' },
 ]
+
+const valueClassMap = {
+  Questions: 'result-value-medium',
+  Answer: 'result-value-large',
+  'Legal provision articles': 'result-value-medium',
+  'Case ID': 'result-value-small',
+}
+
+// Preprocess data to handle custom rendering cases
+const processedAnswerData = computed(() => {
+  if (!answerData.value) return null
+
+  return {
+    ...answerData.value,
+    'Legal provision articles':
+      answerData.value['Legal provision articles'] || '',
+    'Case ID': answerData.value['Case ID'] || '',
+  }
+})
 
 onMounted(() => {
   const id = route.params.id as string // Get ID from the route
-  fetchQuestion(id)
+  fetchAnswer(id)
 })
 </script>
-
-<template>
-  <BackButton />
-  <div v-if="loading">Loading...</div>
-  <div v-else>
-    <h1>Question Details</h1>
-    <p v-if="errorMessage">{{ errorMessage }}</p>
-    <div v-else>
-      <h1>Question Details</h1>
-
-      <!-- Loop over the keyLabelPairs array to display each key-value pair dynamically -->
-      <div v-for="(item, index) in keyLabelPairs" :key="index">
-        <p class="result-key">{{ item.label }}</p>
-        <p class="result-value">
-          {{ Question?.[item.key] || 'N/A' }}
-        </p>
-        <!-- Insert hardcoded label after "Jurisdiction Names" -->
-        <p v-if="item.key === 'Jurisdiction Names'"></p>
-        <p class="result-key">Label</p>
-        <p class="result-value">Court Decision</p>
-      </div>
-    </div>
-  </div>
-</template>

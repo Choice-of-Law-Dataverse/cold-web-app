@@ -1,11 +1,11 @@
 <template>
-  <ResultCard :resultData="resultData" cardType="Legislation">
+  <ResultCard :resultData="processedResultData" cardType="Legislation">
     <div class="legislation-card-grid">
       <!-- Abbreviation in the 1st column -->
       <div class="grid-item" style="grid-column: 1 / span 5">
         <div class="label-key">{{ keyMap.Abbreviation }}</div>
         <div :class="valueClassMap.Abbreviation || 'result-value'">
-          {{ resultData.Abbreviation || '[Missing Information]' }}
+          {{ processedResultData.Abbreviation || '[Missing Information]' }}
         </div>
       </div>
 
@@ -13,7 +13,9 @@
       <div class="grid-item" style="grid-column: 6 / span 7">
         <div class="label-key">{{ keyMap['Title (in English)'] }}</div>
         <div :class="valueClassMap['Title (in English)'] || 'result-value'">
-          {{ resultData['Title (in English)'] || '[Missing Information]' }}
+          {{
+            processedResultData['Title (in English)'] || '[Missing Information]'
+          }}
         </div>
       </div>
     </div>
@@ -29,8 +31,17 @@ const props = defineProps({
   },
 })
 
-const legislationKeys = ['Abbreviation', 'Title (in English)']
+// Computed property to process the result data
+const processedResultData = computed(() => {
+  if (!props.resultData) return null
 
+  return {
+    ...props.resultData,
+    Themes: props.resultData['Themes name'], // Map "Themes name" to "Themes"
+  }
+})
+
+// Map key labels
 const keyMap = {
   'Title (in English)': 'Title',
   Abbreviation: 'Abbreviation',

@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { computed, defineProps } from 'vue'
+import { computed } from 'vue'
 
 // Props
 const props = defineProps({
@@ -94,6 +94,7 @@ const labelColorClass = computed(() => {
     case 'Court decisions':
       return 'label-court-decision'
     case 'Answers':
+    case 'Question':
       return 'label-question'
     case 'Legislation':
       return 'label-legal-instrument'
