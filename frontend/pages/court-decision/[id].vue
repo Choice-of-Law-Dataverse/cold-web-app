@@ -1,11 +1,15 @@
 <template>
-  <DetailDisplay
-    :loading="loading"
-    :resultData="courtDecision"
-    :keyLabelPairs="keyLabelPairs"
-    :valueClassMap="valueClassMap"
-    formattedSourceTable="Court decisions"
-  />
+  <div class="container">
+    <div class="col-span-12">
+      <DetailDisplay
+        :loading="loading"
+        :resultData="courtDecision"
+        :keyLabelPairs="keyLabelPairs"
+        :valueClassMap="valueClassMap"
+        formattedSourceTable="Court decisions"
+      />
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">

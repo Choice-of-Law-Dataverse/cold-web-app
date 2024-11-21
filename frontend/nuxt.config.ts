@@ -10,4 +10,14 @@ export default defineNuxtConfig({
   tailwindcss: {
     configPath: './tailwind.config.js',
   },
-})
+  // Fix legacy JS bug (https://stackoverflow.com/a/79054778/22393957)
+  vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          api: 'modern',
+        },
+      },
+    },
+  },
+});

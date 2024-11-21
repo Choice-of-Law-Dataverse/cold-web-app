@@ -29,7 +29,6 @@
                 'Legal provision articles'
               ].split(',')"
               :key="itemIndex"
-              style="margin-right: 10px"
             >
               <NuxtLink
                 :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
