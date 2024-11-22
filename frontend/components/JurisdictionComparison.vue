@@ -37,6 +37,7 @@
           >
         </div>
       </div>
+      <hr style="margin-top: 8px" />
       <UTable
         v-if="!loading"
         class="styled-table"
@@ -305,7 +306,7 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
       {
         key: secondColumnKey,
         label: newJurisdiction.label,
-        class: 'text-right',
+        class: 'label',
       }, // Replace with new dropdown jurisdiction
     ]
 
@@ -340,7 +341,8 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
   width: 62px;
   height: 62px;
   border-radius: 50%;
-  background-color: var(--color-cold-gray);
+  border: 8px solid var(--color-cold-gray);
+  background-color: transparent;
   margin-left: 24px;
   margin-right: 24px;
 }
@@ -376,6 +378,13 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
 
 ::v-deep(thead th:nth-child(3)),
 ::v-deep(tbody td:nth-child(3)) {
+  width: 150px !important; /* Set fixed width */
+  max-width: 150px !important; /* Prevent expansion */
+  white-space: normal; /* Allow text wrapping */
+}
+
+::v-deep(thead th:nth-child(4)),
+::v-deep(tbody td:nth-child(4)) {
   width: 150px !important; /* Set fixed width */
   max-width: 150px !important; /* Prevent expansion */
   white-space: normal; /* Allow text wrapping */
