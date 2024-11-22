@@ -5,6 +5,7 @@
         <!-- Filter Dropdown -->
         <div class="flex items-center space-x-4 mb-4">
           <USelectMenu
+            searchable
             v-model="selectedTheme"
             :options="themeOptions"
             placeholder="Filter by Theme"
@@ -19,6 +20,8 @@
             >Reset</UButton
           >
           <USelectMenu
+            searchable
+            searchable-placeholder="Search a Jurisdiction..."
             v-model="selectedJurisdiction"
             :options="jurisdictionOptions"
             placeholder="Add Jurisdiction"
