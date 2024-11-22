@@ -18,6 +18,10 @@
             class="suggestion-button"
             >Reset</UButton
           >
+          <!-- Button to add Germany's answers -->
+          <UButton @click="addGermanyColumn" size="sm" variant="primary">
+            Add Germany
+          </UButton>
         </div>
       </div>
       <UTable
@@ -28,13 +32,13 @@
         :ui="{
           th: {
             base: 'text-left rtl:text-right',
-            padding: 'px-8 py-3.5' /* Adjust horizontal and vertical padding */,
+            padding: 'px-8 py-3.5',
             color: 'text-gray-900 dark:text-white',
             font: 'font-semibold',
             size: 'text-sm',
           },
           td: {
-            padding: 'px-8 py-2' /* Optionally adjust padding for data cells */,
+            padding: 'px-8 py-2',
           },
         }"
       />
@@ -206,6 +210,7 @@ async function fetchTableData(jurisdiction: string) {
     if (!response.ok) throw new Error('Failed to fetch table data')
 
     const data = await response.json()
+    rows.value = data
 
     // Sort rows based on desired order
     rows.value = data.sort((a, b) => {
@@ -215,6 +220,56 @@ async function fetchTableData(jurisdiction: string) {
     })
   } catch (error) {
     console.error('Error fetching table data:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Add Germany as a new column
+async function addGermanyColumn() {
+  const germanyJurisdiction = 'Germany'
+  const payload = {
+    table: 'Answers',
+    filters: [
+      { column: 'Name (from Jurisdiction)', value: germanyJurisdiction },
+    ],
+  }
+
+  try {
+    loading.value = true
+    const response = await fetch(
+      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_table',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to fetch Germany data')
+
+    const germanyData = await response.json()
+
+    // Add Germany column if it doesn't already exist
+    const columnKey = 'Answer_Germany'
+    if (!columns.value.find((col) => col.key === columnKey)) {
+      columns.value.push({
+        key: columnKey,
+        label: 'Germany',
+        class: 'text-right',
+      })
+    }
+
+    // Add Germany answers to rows
+    rows.value = rows.value.map((row) => {
+      const match = germanyData.find((item) => item.Questions === row.Questions)
+      return {
+        ...row,
+        [columnKey]: match?.Answer || 'N/A',
+      }
+    })
+  } catch (error) {
+    console.error('Error fetching Germany data:', error)
   } finally {
     loading.value = false
   }
