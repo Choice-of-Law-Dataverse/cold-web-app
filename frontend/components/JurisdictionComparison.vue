@@ -330,6 +330,10 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
 </script>
 
 <style scoped>
+::v-deep(.cold-uselectmenu span.block.truncate) {
+  color: var(--color-cold-night);
+}
+
 .comparison-title {
   display: flex;
   justify-content: center;
