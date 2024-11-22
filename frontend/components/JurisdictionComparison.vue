@@ -1,16 +1,25 @@
 <template>
   <div class="col-span-12">
-    <!-- Filter Dropdown -->
-    <div class="flex items-center space-x-4 mb-4">
-      <USelectMenu
-        v-model="selectedTheme"
-        :options="themeOptions"
-        placeholder="Filter by Theme"
-        class="w-40"
-      />
-      <UButton @click="resetFilters" size="sm">Reset</UButton>
-    </div>
     <UCard class="cold-ucard">
+      <div class="main-content-grid">
+        <!-- Filter Dropdown -->
+        <div class="flex items-center space-x-4 mb-4">
+          <USelectMenu
+            v-model="selectedTheme"
+            :options="themeOptions"
+            placeholder="Filter by Theme"
+            class="w-40"
+          />
+          <UButton
+            v-if="selectedTheme"
+            @click="resetFilters"
+            size="sm"
+            variant="link"
+            class="suggestion-button"
+            >Reset</UButton
+          >
+        </div>
+      </div>
       <UTable
         v-if="!loading"
         class="styled-table"
@@ -231,6 +240,17 @@ onMounted(() => {
 </script>
 
 <style scoped>
+.suggestion-button {
+  color: var(--color-cold-purple) !important;
+  font-size: 14px !important;
+}
+
+.main-content-grid {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr)); /* 12-column layout */
+  column-gap: var(--gutter-width); /* Gutter space between columns */
+  padding: 32px 32px 0;
+}
 ::v-deep(thead th:nth-child(1)),
 ::v-deep(tbody td:nth-child(1)) {
   width: 200px !important; /* Set fixed width */
