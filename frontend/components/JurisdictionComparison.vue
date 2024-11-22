@@ -18,10 +18,12 @@
             class="suggestion-button"
             >Reset</UButton
           >
-          <!-- Button to add Germany's answers -->
-          <UButton @click="addGermanyColumn" size="sm" variant="primary">
-            Add Germany
-          </UButton>
+          <USelectMenu
+            v-model="selectedJurisdiction"
+            :options="jurisdictionOptions"
+            placeholder="Add Jurisdiction"
+            class="w-72"
+          />
         </div>
       </div>
       <UTable
@@ -225,13 +227,36 @@ async function fetchTableData(jurisdiction: string) {
   }
 }
 
-// Add Germany as a new column
-async function addGermanyColumn() {
-  const germanyJurisdiction = 'Germany'
+// Watch for jurisdiction changes
+// watch(
+//   () => props.jurisdiction,
+//   (newJurisdiction) => {
+//     if (newJurisdiction) {
+//       loading.value = true
+//       fetchTableData(newJurisdiction)
+//     }
+//   }
+// )
+
+// Fetch data on component mount
+onMounted(() => {
+  if (props.jurisdiction) {
+    fetchTableData(props.jurisdiction)
+  }
+})
+
+///////////////////////////////////////
+// Selected jurisdiction for adding a column
+const selectedJurisdiction = ref(null)
+
+// Function to add selected jurisdiction as a column
+watch(selectedJurisdiction, async (newJurisdiction) => {
+  if (!newJurisdiction) return
+
   const payload = {
     table: 'Answers',
     filters: [
-      { column: 'Name (from Jurisdiction)', value: germanyJurisdiction },
+      { column: 'Name (from Jurisdiction)', value: newJurisdiction.value },
     ],
   }
 
@@ -246,52 +271,43 @@ async function addGermanyColumn() {
       }
     )
 
-    if (!response.ok) throw new Error('Failed to fetch Germany data')
+    if (!response.ok) throw new Error('Failed to fetch jurisdiction data')
 
-    const germanyData = await response.json()
+    const jurisdictionData = await response.json()
 
-    // Add Germany column if it doesn't already exist
-    const columnKey = 'Answer_Germany'
+    // Add column if it doesn't already exist
+    const columnKey = `Answer_${newJurisdiction.value}`
     if (!columns.value.find((col) => col.key === columnKey)) {
       columns.value.push({
         key: columnKey,
-        label: 'Germany',
+        label: newJurisdiction.label,
         class: 'text-right',
       })
     }
 
-    // Add Germany answers to rows
+    // Add jurisdiction answers to rows
     rows.value = rows.value.map((row) => {
-      const match = germanyData.find((item) => item.Questions === row.Questions)
+      const match = jurisdictionData.find(
+        (item) => item.Questions === row.Questions
+      )
       return {
         ...row,
         [columnKey]: match?.Answer || 'N/A',
       }
     })
   } catch (error) {
-    console.error('Error fetching Germany data:', error)
+    console.error('Error fetching jurisdiction data:', error)
   } finally {
     loading.value = false
   }
-}
-
-// Watch for jurisdiction changes
-watch(
-  () => props.jurisdiction,
-  (newJurisdiction) => {
-    if (newJurisdiction) {
-      loading.value = true
-      fetchTableData(newJurisdiction)
-    }
-  }
-)
-
-// Fetch data on component mount
-onMounted(() => {
-  if (props.jurisdiction) {
-    fetchTableData(props.jurisdiction)
-  }
 })
+
+// Options for the jurisdiction selector
+const jurisdictionOptions = ref([
+  { label: 'Germany', value: 'Germany' },
+  { label: 'France', value: 'France' },
+  { label: 'Italy', value: 'Italy' },
+])
 </script>
 
 <style scoped>
