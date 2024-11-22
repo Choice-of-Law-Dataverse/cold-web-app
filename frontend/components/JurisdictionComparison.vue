@@ -6,6 +6,18 @@
         class="styled-table"
         :rows="rows"
         :columns="columns"
+        :ui="{
+          th: {
+            base: 'text-left rtl:text-right',
+            padding: 'px-8 py-3.5' /* Adjust horizontal and vertical padding */,
+            color: 'text-gray-900 dark:text-white',
+            font: 'font-semibold',
+            size: 'text-sm',
+          },
+          td: {
+            padding: 'px-8 py-2' /* Optionally adjust padding for data cells */,
+          },
+        }"
       />
       <p v-else>Loading...</p>
     </UCard>
@@ -82,8 +94,8 @@ onMounted(() => {
   width: 200px !important; /* Set fixed width */
   max-width: 200px !important; /* Prevent expansion */
   white-space: normal; /* Allow text wrapping */
-  word-wrap: break-word; /* Break long words to wrap */
-  overflow-wrap: break-word; /* Ensure proper word wrapping */
+  /*word-wrap: break-word; /* Break long words to wrap */
+  /*overflow-wrap: break-word; /* Ensure proper word wrapping */
 }
 
 ::v-deep(thead th:nth-child(2)),
@@ -91,8 +103,8 @@ onMounted(() => {
   width: 800px !important; /* Set fixed width */
   max-width: 800px !important; /* Prevent expansion */
   white-space: normal; /* Allow text wrapping */
-  word-wrap: break-word; /* Break long words to wrap */
-  overflow-wrap: break-word; /* Ensure proper word wrapping */
+  /*word-wrap: break-word; /* Break long words to wrap */
+  /*overflow-wrap: break-word; /* Ensure proper word wrapping */
 }
 
 ::v-deep(thead th:nth-child(3)),
@@ -100,8 +112,8 @@ onMounted(() => {
   width: 150px !important; /* Set fixed width */
   max-width: 150px !important; /* Prevent expansion */
   white-space: normal; /* Allow text wrapping */
-  word-wrap: break-word; /* Break long words to wrap */
-  overflow-wrap: break-word; /* Ensure proper word wrapping */
+  /*word-wrap: break-word; /* Break long words to wrap */
+  /*overflow-wrap: break-word; /* Ensure proper word wrapping */
 }
 
 /* Set the row height for all table rows */
@@ -138,20 +150,20 @@ onMounted(() => {
 }
 
 /* Styling the table rows to indent text on left and right */
-.styled-table ::v-deep(tbody tr td),
-.styled-table ::v-deep(thead tr th) {
-  text-indent: 32px; /* Indent text on the left */
-  position: relative; /* Make sure the pseudo-element aligns properly */
-}
+/* .styled-table ::v-deep(tbody tr td), */
+/* .styled-table ::v-deep(thead tr th) { */
+/*text-indent: 32px; /* Indent text on the left */
+/*position: relative; /* Make sure the pseudo-element aligns properly */
+/* } */
 
 /* Add indentation for the right side using a pseudo-element */
-.styled-table ::v-deep(tbody tr td::after),
-.styled-table ::v-deep(thead tr th::after) {
-  content: ''; /* Empty content for pseudo-element */
-  display: block;
-  width: 32px; /* Create space on the right */
-  position: absolute;
-  right: 0;
-  height: 100%;
-}
+/* .styled-table ::v-deep(tbody tr td::after), */
+/* .styled-table ::v-deep(thead tr th::after) { */
+/* content: ''; Empty content for pseudo-element */
+/* display: block; */
+/* width: 32px; Create space on the right */
+/* position: absolute; */
+/* right: 0; */
+/* height: 100%; */
+/* } */
 </style>
