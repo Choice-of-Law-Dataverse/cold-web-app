@@ -13,11 +13,8 @@
           v-model="selectedJurisdiction"
           :options="jurisdictionOptions"
           placeholder="Compare with …"
-          class="w-72"
-          style="
-            box-shadow: none !important;
-            border: 1px solid var(--color-cold-gray) !important;
-          "
+          class="w-72 cold-uselectmenu"
+          size="xl"
         />
       </div>
 
@@ -29,7 +26,7 @@
             v-model="selectedTheme"
             :options="themeOptions"
             placeholder="Filter by Theme"
-            class="w-40"
+            class="cold-uselectmenu"
           />
           <UButton
             v-if="selectedTheme"
