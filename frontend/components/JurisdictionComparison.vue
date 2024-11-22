@@ -15,6 +15,10 @@
           placeholder="Compare with …"
           class="w-72 cold-uselectmenu"
           size="xl"
+          :popper="{ offsetDistance: 0 }"
+          :uiMenu="{
+            base: 'rounded-none text-base', // Dropdown container styles
+          }"
         />
       </div>
 
@@ -26,7 +30,9 @@
             v-model="selectedTheme"
             :options="themeOptions"
             placeholder="Filter by Theme"
-            class="cold-uselectmenu"
+            class="w-64 cold-uselectmenu"
+            size="sm"
+            style="font-size: 12px !important"
           />
           <UButton
             v-if="selectedTheme"
@@ -330,6 +336,10 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
 </script>
 
 <style scoped>
+::v-deep(.z-20.group.w-full [role='option']) {
+  line-height: 2 !important; /* Make the line height larger */
+}
+
 ::v-deep(.cold-uselectmenu span.block.truncate) {
   color: var(--color-cold-night);
 }
