@@ -14,6 +14,10 @@
           :options="jurisdictionOptions"
           placeholder="Compare with …"
           class="w-72"
+          style="
+            box-shadow: none !important;
+            border: 1px solid var(--color-cold-gray) !important;
+          "
         />
       </div>
 
