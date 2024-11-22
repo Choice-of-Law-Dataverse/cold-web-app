@@ -1,8 +1,24 @@
 <template>
   <div class="col-span-12">
     <UCard class="cold-ucard">
+      <!-- Centered Jurisdiction Name and Compare Dropdown -->
+      <div class="comparison-title">
+        <div class="result-value-large">
+          {{ props.jurisdiction }}
+        </div>
+        <div class="circle-placeholder"></div>
+        <USelectMenu
+          searchable
+          searchable-placeholder="Search a Jurisdiction..."
+          v-model="selectedJurisdiction"
+          :options="jurisdictionOptions"
+          placeholder="Compare with …"
+          class="w-72"
+        />
+      </div>
+
+      <!-- Filter Dropdown -->
       <div class="main-content-grid">
-        <!-- Filter Dropdown -->
         <div class="flex items-center space-x-4 mb-4">
           <USelectMenu
             searchable
@@ -19,14 +35,6 @@
             class="suggestion-button"
             >Reset</UButton
           >
-          <USelectMenu
-            searchable
-            searchable-placeholder="Search a Jurisdiction..."
-            v-model="selectedJurisdiction"
-            :options="jurisdictionOptions"
-            placeholder="Add Jurisdiction"
-            class="w-72"
-          />
         </div>
       </div>
       <UTable
@@ -320,6 +328,27 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
 </script>
 
 <style scoped>
+.comparison-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-top: 55px;
+}
+
+.circle-placeholder {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  background-color: var(--color-cold-gray);
+  margin-left: 24px;
+  margin-right: 24px;
+}
+
+.result-value-large {
+  margin-bottom: -4px !important;
+}
+
 .suggestion-button {
   color: var(--color-cold-purple) !important;
   font-size: 14px !important;
@@ -336,8 +365,6 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
   width: 200px !important; /* Set fixed width */
   max-width: 200px !important; /* Prevent expansion */
   white-space: normal; /* Allow text wrapping */
-  /*word-wrap: break-word; /* Break long words to wrap */
-  /*overflow-wrap: break-word; /* Ensure proper word wrapping */
 }
 
 ::v-deep(thead th:nth-child(2)),
@@ -345,8 +372,6 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
   width: 800px !important; /* Set fixed width */
   max-width: 800px !important; /* Prevent expansion */
   white-space: normal; /* Allow text wrapping */
-  /*word-wrap: break-word; /* Break long words to wrap */
-  /*overflow-wrap: break-word; /* Ensure proper word wrapping */
 }
 
 ::v-deep(thead th:nth-child(3)),
@@ -354,8 +379,6 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
   width: 150px !important; /* Set fixed width */
   max-width: 150px !important; /* Prevent expansion */
   white-space: normal; /* Allow text wrapping */
-  /*word-wrap: break-word; /* Break long words to wrap */
-  /*overflow-wrap: break-word; /* Ensure proper word wrapping */
 }
 
 /* Set the row height for all table rows */
@@ -390,22 +413,4 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
   width: 100%; /* Ensure the table spans the full width of the wrapper */
   overflow-x: auto; /* Handle horizontal scrolling if needed */
 }
-
-/* Styling the table rows to indent text on left and right */
-/* .styled-table ::v-deep(tbody tr td), */
-/* .styled-table ::v-deep(thead tr th) { */
-/*text-indent: 32px; /* Indent text on the left */
-/*position: relative; /* Make sure the pseudo-element aligns properly */
-/* } */
-
-/* Add indentation for the right side using a pseudo-element */
-/* .styled-table ::v-deep(tbody tr td::after), */
-/* .styled-table ::v-deep(thead tr th::after) { */
-/* content: ''; Empty content for pseudo-element */
-/* display: block; */
-/* width: 32px; Create space on the right */
-/* position: absolute; */
-/* right: 0; */
-/* height: 100%; */
-/* } */
 </style>
