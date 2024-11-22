@@ -64,11 +64,30 @@ const props = defineProps({
 
 const loading = ref(true)
 const rows = ref([])
+const jurisdictionOptions = ref([]) // Options for the dropdown
+const selectedJurisdiction = ref(null) // Selected jurisdiction for adding a column
+const selectedTheme = ref(null) // Selected theme for filtering
 const columns = ref([
   { key: 'Themes', label: 'Theme', class: 'label' },
   { key: 'Questions', label: 'Question', class: 'label' },
   { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
 ])
+
+// Computed filtered rows
+const filteredRows = computed(() => {
+  if (!selectedTheme.value) {
+    return rows.value
+  }
+
+  return rows.value.filter((row) =>
+    row.Themes.includes(selectedTheme.value.value)
+  )
+})
+
+// Reset filter button action
+const resetFilters = () => {
+  selectedTheme.value = null
+}
 
 // Dropdown options for themes
 const themeOptions = ref([
@@ -112,25 +131,6 @@ const themeOptions = ref([
     value: 'Entry into force and application in time',
   },
 ])
-
-// Selected theme for filtering
-const selectedTheme = ref(null)
-
-// Computed filtered rows
-const filteredRows = computed(() => {
-  if (!selectedTheme.value) {
-    return rows.value
-  }
-
-  return rows.value.filter((row) =>
-    row.Themes.includes(selectedTheme.value.value)
-  )
-})
-
-// Reset filter button action
-const resetFilters = () => {
-  selectedTheme.value = null
-}
 
 // Desired order for the questions
 const questionOrder = [
@@ -230,16 +230,30 @@ async function fetchTableData(jurisdiction: string) {
   }
 }
 
-// Watch for jurisdiction changes
-// watch(
-//   () => props.jurisdiction,
-//   (newJurisdiction) => {
-//     if (newJurisdiction) {
-//       loading.value = true
-//       fetchTableData(newJurisdiction)
-//     }
-//   }
-// )
+// Fetch jurisdictions from the text file
+async function fetchJurisdictions() {
+  try {
+    const response = await fetch('/temp_jurisdictions.txt') // Path to the file in `public`
+    if (!response.ok) throw new Error('Failed to load jurisdictions file')
+
+    const text = await response.text()
+    jurisdictionOptions.value = text
+      .split('\n')
+      .map((country) => ({
+        label: country.trim(), // Use the country name as the label
+        value: country.trim(), // Use the country name as the value
+      }))
+      .filter((option) => option.label && option.value) // Filter out any empty entries
+  } catch (error) {
+    console.error('Error loading jurisdictions:', error)
+    jurisdictionOptions.value = [] // Fallback to an empty list if there's an error
+  }
+}
+
+// Call the function to fetch jurisdictions on component mount
+onMounted(() => {
+  fetchJurisdictions()
+})
 
 // Fetch data on component mount
 onMounted(() => {
@@ -247,10 +261,6 @@ onMounted(() => {
     fetchTableData(props.jurisdiction)
   }
 })
-
-///////////////////////////////////////
-// Selected jurisdiction for adding a column
-const selectedJurisdiction = ref(null)
 
 // Function to add selected jurisdiction as a column
 watch(selectedJurisdiction, async (newJurisdiction) => {
@@ -307,13 +317,6 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
     loading.value = false
   }
 })
-
-// Options for the jurisdiction selector
-const jurisdictionOptions = ref([
-  { label: 'Germany', value: 'Germany' },
-  { label: 'France', value: 'France' },
-  { label: 'Italy', value: 'Italy' },
-])
 </script>
 
 <style scoped>
