@@ -6,7 +6,7 @@
         <USelectMenu
           searchable
           searchable-placeholder="Search a Jurisdiction..."
-          class="w-72 lg:w-96"
+          class="w-72 lg:w-96 cold-uselectmenu"
           placeholder="Pick a Jurisdiction"
           :options="countries"
           v-model="selectedCountry"

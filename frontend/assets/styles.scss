@@ -198,3 +198,16 @@ h2 {
 .cold-ucard {
   margin-bottom: 24px;
 }
+
+.ui-select {
+  box-shadow: none !important;
+  border: 1px solid var(--color-cold-gray) !important;
+  border-radius: 0 !important; /* Ensure the border is squared */
+}
+
+.cold-uselectmenu button {
+  box-shadow: none !important;
+  border: 1px solid var(--color-cold-gray) !important;
+  border-radius: 0 !important;
+  background-color: white !important;
+}
