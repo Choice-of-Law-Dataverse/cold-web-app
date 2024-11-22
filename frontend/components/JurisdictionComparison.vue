@@ -1,10 +1,20 @@
 <template>
   <div class="col-span-12">
+    <!-- Filter Dropdown -->
+    <div class="flex items-center space-x-4 mb-4">
+      <USelectMenu
+        v-model="selectedTheme"
+        :options="themeOptions"
+        placeholder="Filter by Theme"
+        class="w-40"
+      />
+      <UButton @click="resetFilters" size="sm">Reset</UButton>
+    </div>
     <UCard class="cold-ucard">
       <UTable
         v-if="!loading"
         class="styled-table"
-        :rows="rows"
+        :rows="filteredRows"
         :columns="columns"
         :ui="{
           th: {
@@ -25,7 +35,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 
 const props = defineProps({
   jurisdiction: {
@@ -41,6 +51,68 @@ const columns = ref([
   { key: 'Questions', label: 'Question', class: 'label' },
   { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
 ])
+
+// Dropdown options for themes
+const themeOptions = ref([
+  { label: 'Preamble', value: 'Preamble' },
+  { label: 'Arbitration', value: 'Arbitration' },
+  { label: 'Absence of choice', value: 'Absence of choice' },
+  { label: 'Party autonomy', value: 'Party autonomy' },
+  { label: 'Freedom of choice', value: 'Freedom of choice' },
+  { label: 'Partial choice', value: 'Partial choice' },
+  { label: 'Dépeçage', value: 'Dépeçage' },
+  { label: 'Rules of law', value: 'Rules of law' },
+  { label: 'Express and tacit choice', value: 'Express and tacit choice' },
+  { label: 'Mandatory rules', value: 'Mandatory rules' },
+  { label: 'Public policy', value: 'Public policy' },
+  { label: 'Scope of the Principles', value: 'Scope of the Principles' },
+  { label: 'Universal application', value: 'Universal application' },
+  {
+    label: 'Role of international instruments',
+    value: 'Role of international instruments',
+  },
+  {
+    label:
+      'Consent and material validity; choice of law in the battle of forms',
+    value:
+      'Consent and material validity; choice of law in the battle of forms',
+  },
+  { label: 'Formal validity', value: 'Formal validity' },
+  { label: 'Renvoi', value: 'Renvoi' },
+  {
+    label: 'Scope of the law applicable to the contract',
+    value: 'Scope of the law applicable to the contract',
+  },
+  { label: 'Set-off', value: 'Set-off' },
+  { label: 'Habitual residence', value: 'Habitual residence' },
+  {
+    label: 'Interpretation and uniformity of application',
+    value: 'Interpretation and uniformity of application',
+  },
+  {
+    label: 'Entry into force and application in time',
+    value: 'Entry into force and application in time',
+  },
+])
+
+// Selected theme for filtering
+const selectedTheme = ref(null)
+
+// Computed filtered rows
+const filteredRows = computed(() => {
+  if (!selectedTheme.value) {
+    return rows.value
+  }
+
+  return rows.value.filter((row) =>
+    row.Themes.includes(selectedTheme.value.value)
+  )
+})
+
+// Reset filter button action
+const resetFilters = () => {
+  selectedTheme.value = null
+}
 
 // Desired order for the questions
 const questionOrder = [
