@@ -37,9 +37,9 @@ const props = defineProps({
 const loading = ref(true)
 const rows = ref([])
 const columns = ref([
-  { key: 'Themes', label: 'Themes', class: 'themes-column' },
-  { key: 'Questions', label: 'Question' },
-  { key: 'Answer', label: props.jurisdiction || 'Answer' },
+  { key: 'Themes', label: 'Theme', class: 'label' },
+  { key: 'Questions', label: 'Question', class: 'label' },
+  { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
 ])
 
 async function fetchTableData(jurisdiction: string) {
