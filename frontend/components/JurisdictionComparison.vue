@@ -275,24 +275,27 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
 
     const jurisdictionData = await response.json()
 
-    // Add column if it doesn't already exist
-    const columnKey = `Answer_${newJurisdiction.value}`
-    if (!columns.value.find((col) => col.key === columnKey)) {
-      columns.value.push({
-        key: columnKey,
+    // Replace the second "Answer" column
+    const secondColumnKey = `Answer_${newJurisdiction.value}`
+    columns.value = [
+      columns.value[0], // Keep the "Themes" column
+      columns.value[1], // Keep the "Questions" column
+      { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' }, // Keep the page jurisdiction column
+      {
+        key: secondColumnKey,
         label: newJurisdiction.label,
         class: 'text-right',
-      })
-    }
+      }, // Replace with new dropdown jurisdiction
+    ]
 
-    // Add jurisdiction answers to rows
+    // Update rows with new jurisdiction data
     rows.value = rows.value.map((row) => {
       const match = jurisdictionData.find(
         (item) => item.Questions === row.Questions
       )
       return {
         ...row,
-        [columnKey]: match?.Answer || 'N/A',
+        [secondColumnKey]: match?.Answer || 'N/A',
       }
     })
   } catch (error) {
