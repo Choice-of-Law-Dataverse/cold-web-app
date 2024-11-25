@@ -343,14 +343,15 @@ async function updateComparison(jurisdiction) {
 // Watch for changes in `selectedJurisdiction`
 watch(selectedJurisdiction, (newJurisdiction) => {
   if (newJurisdiction) {
-    // Update the query parameter in the URL
+    // Transform spaces to '-' for the URL
+    const formattedJurisdiction = newJurisdiction.value.replace(/ /g, '-')
     router.replace({
       query: {
         ...router.currentRoute.value.query,
-        c: newJurisdiction.value,
+        c: formattedJurisdiction,
       },
     })
-    // Trigger table update
+    // Trigger table update with the original value
     updateComparison(newJurisdiction)
   }
 })
@@ -360,8 +361,10 @@ watch(
   () => props.compareJurisdiction,
   (newCompare) => {
     if (newCompare) {
+      // Transform '-' back to spaces for internal use
+      const originalValue = newCompare.replace(/-/g, ' ')
       const option = jurisdictionOptions.value.find(
-        (opt) => opt.value === newCompare
+        (opt) => opt.value === originalValue
       )
       if (option) {
         selectedJurisdiction.value = option // Trigger table update
@@ -373,10 +376,11 @@ watch(
 // Fetch jurisdictions and initialize on component mount
 onMounted(() => {
   fetchJurisdictions().then(() => {
-    // Initialize the selected jurisdiction if `compareJurisdiction` is set
     if (props.compareJurisdiction) {
+      // Transform '-' back to spaces for internal use
+      const originalValue = props.compareJurisdiction.replace(/-/g, ' ')
       const option = jurisdictionOptions.value.find(
-        (opt) => opt.value === props.compareJurisdiction
+        (opt) => opt.value === originalValue
       )
       if (option) {
         selectedJurisdiction.value = option // Trigger table update
