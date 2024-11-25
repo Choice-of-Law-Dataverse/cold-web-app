@@ -82,7 +82,7 @@ const valueClassMap = {
 
 // Fetch jurisdiction data on component mount
 onMounted(() => {
-  const jurisdictionName = (route.params.id as string).replace(/-/g, ' ') // Convert '-' to spaces
+  const jurisdictionName = (route.params.id as string).replace(/_/g, ' ') // Convert '_' to spaces
   fetchJurisdiction(jurisdictionName)
 })
 

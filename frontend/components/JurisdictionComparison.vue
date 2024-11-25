@@ -343,8 +343,8 @@ async function updateComparison(jurisdiction) {
 // Watch for changes in `selectedJurisdiction`
 watch(selectedJurisdiction, (newJurisdiction) => {
   if (newJurisdiction) {
-    // Transform spaces to '-' for the URL
-    const formattedJurisdiction = newJurisdiction.value.replace(/ /g, '-')
+    // Transform spaces to '_' for the URL
+    const formattedJurisdiction = newJurisdiction.value.replace(/ /g, '_')
     router.replace({
       query: {
         ...router.currentRoute.value.query,
@@ -361,8 +361,8 @@ watch(
   () => props.compareJurisdiction,
   (newCompare) => {
     if (newCompare) {
-      // Transform '-' back to spaces for internal use
-      const originalValue = newCompare.replace(/-/g, ' ')
+      // Transform '_' back to spaces for internal use
+      const originalValue = newCompare.replace(/_/g, ' ')
       const option = jurisdictionOptions.value.find(
         (opt) => opt.value === originalValue
       )
@@ -377,8 +377,8 @@ watch(
 onMounted(() => {
   fetchJurisdictions().then(() => {
     if (props.compareJurisdiction) {
-      // Transform '-' back to spaces for internal use
-      const originalValue = props.compareJurisdiction.replace(/-/g, ' ')
+      // Transform '_' back to spaces for internal use
+      const originalValue = props.compareJurisdiction.replace(/_/g, ' ')
       const option = jurisdictionOptions.value.find(
         (opt) => opt.value === originalValue
       )
