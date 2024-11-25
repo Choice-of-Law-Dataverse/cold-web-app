@@ -70,18 +70,24 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   jurisdiction: {
     type: String,
     required: true,
   },
+  compareJurisdiction: {
+    type: String,
+    default: null,
+  },
 })
 
+const router = useRouter() // Access the router to update the query parameters
 const loading = ref(true)
 const rows = ref([])
 const jurisdictionOptions = ref([]) // Options for the dropdown
-const selectedJurisdiction = ref(null) // Selected jurisdiction for adding a column
+const selectedJurisdiction = ref(props.compareJurisdiction) // Preselect compare jurisdiction
 const selectedTheme = ref(null) // Selected theme for filtering
 const columns = ref([
   { key: 'Themes', label: 'Theme', class: 'label' },
@@ -278,14 +284,14 @@ onMounted(() => {
   }
 })
 
-// Function to add selected jurisdiction as a column
-watch(selectedJurisdiction, async (newJurisdiction) => {
-  if (!newJurisdiction) return
+// Add selected jurisdiction as a column
+async function updateComparison(jurisdiction) {
+  if (!jurisdiction) return
 
   const payload = {
     table: 'Answers',
     filters: [
-      { column: 'Name (from Jurisdiction)', value: newJurisdiction.value },
+      { column: 'Name (from Jurisdiction)', value: jurisdiction.value },
     ],
   }
 
@@ -305,14 +311,14 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
     const jurisdictionData = await response.json()
 
     // Replace the second "Answer" column
-    const secondColumnKey = `Answer_${newJurisdiction.value}`
+    const secondColumnKey = `Answer_${jurisdiction.value}`
     columns.value = [
       columns.value[0], // Keep the "Themes" column
       columns.value[1], // Keep the "Questions" column
       { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' }, // Keep the page jurisdiction column
       {
         key: secondColumnKey,
-        label: newJurisdiction.label,
+        label: jurisdiction.label,
         class: 'label',
       }, // Replace with new dropdown jurisdiction
     ]
@@ -332,6 +338,41 @@ watch(selectedJurisdiction, async (newJurisdiction) => {
   } finally {
     loading.value = false
   }
+}
+
+// Watch for changes in `selectedJurisdiction` and update the table
+watch(selectedJurisdiction, (newJurisdiction) => {
+  updateComparison(newJurisdiction)
+})
+
+// Watch for changes in the `compareJurisdiction` prop and initialize
+watch(
+  () => props.compareJurisdiction,
+  (newCompare) => {
+    if (newCompare) {
+      const option = jurisdictionOptions.value.find(
+        (opt) => opt.value === newCompare
+      )
+      if (option) {
+        selectedJurisdiction.value = option // Trigger table update
+      }
+    }
+  }
+)
+
+// Fetch jurisdictions and initialize on component mount
+onMounted(() => {
+  fetchJurisdictions().then(() => {
+    // Initialize the selected jurisdiction if `compareJurisdiction` is set
+    if (props.compareJurisdiction) {
+      const option = jurisdictionOptions.value.find(
+        (opt) => opt.value === props.compareJurisdiction
+      )
+      if (option) {
+        selectedJurisdiction.value = option // Trigger table update
+      }
+    }
+  })
 })
 </script>
 
