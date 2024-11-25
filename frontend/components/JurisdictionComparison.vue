@@ -87,7 +87,7 @@ const router = useRouter() // Access the router to update the query parameters
 const loading = ref(true)
 const rows = ref([])
 const jurisdictionOptions = ref([]) // Options for the dropdown
-const selectedJurisdiction = ref(props.compareJurisdiction) // Preselect compare jurisdiction
+const selectedJurisdiction = ref(null) // Selected jurisdiction for comparison
 const selectedTheme = ref(null) // Selected theme for filtering
 const columns = ref([
   { key: 'Themes', label: 'Theme', class: 'label' },
@@ -340,9 +340,19 @@ async function updateComparison(jurisdiction) {
   }
 }
 
-// Watch for changes in `selectedJurisdiction` and update the table
+// Watch for changes in `selectedJurisdiction`
 watch(selectedJurisdiction, (newJurisdiction) => {
-  updateComparison(newJurisdiction)
+  if (newJurisdiction) {
+    // Update the query parameter in the URL
+    router.replace({
+      query: {
+        ...router.currentRoute.value.query,
+        c: newJurisdiction.value,
+      },
+    })
+    // Trigger table update
+    updateComparison(newJurisdiction)
+  }
 })
 
 // Watch for changes in the `compareJurisdiction` prop and initialize
