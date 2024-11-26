@@ -65,6 +65,7 @@
       >
         <template #Match-data="{ row }">
           <span
+            v-if="row.Match !== 'red-x'"
             :style="{
               backgroundColor:
                 row.Match === 'green'
@@ -75,6 +76,13 @@
             }"
             class="inline-block w-4 h-4 rounded-full"
           ></span>
+          <span
+            v-else
+            :style="{ color: 'var(--color-label-court-decision)' }"
+            class="text-lg"
+          >
+            ✖
+          </span>
         </template>
       </UTable>
       <p v-else>Loading...</p>
@@ -352,10 +360,48 @@ async function updateComparison(jurisdiction) {
 
       // Compute the match status
       const matchStatus = (() => {
-        const answer1 = row.Answer // Jurisdiction 1 answer
-        const answer2 = match?.Answer || 'N/A' // Jurisdiction 2 answer
-        if (answer1 === 'N/A' || answer2 === 'N/A') return 'gray' // Missing data
-        return answer1 === answer2 ? 'green' : 'red' // Match or mismatch
+        const answer1 = row.Answer?.trim() || 'N/A' // Jurisdiction 1 answer
+        const answer2 = match?.Answer?.trim() || 'N/A' // Jurisdiction 2 answer
+
+        // Gray cases: Any unclear or unavailable data, and explicitly "Unclear + Unclear"
+        const grayCases = [
+          'Unclear',
+          'Information is not available yet',
+          'No data',
+          'Jurisdiction does not cover this question',
+          //'Not applicable', // Single "Not applicable" should still be gray
+        ]
+        if (
+          grayCases.includes(answer1) ||
+          grayCases.includes(answer2) ||
+          (answer1 === 'Unclear' && answer2 === 'Unclear')
+        ) {
+          return 'gray'
+        }
+
+        // Green cases: Identical answers except "No" + "No", and explicitly allow "Not Applicable + Not Applicable"
+        if (
+          (answer1 === answer2 && answer1 !== 'No') ||
+          (answer1 === 'Not applicable' && answer2 === 'Not applicable')
+        ) {
+          return 'green'
+        }
+
+        // Red cases: Both answers are "No"
+        if (answer1 === 'No' && answer2 === 'No') {
+          return 'red'
+        }
+
+        // X cases: One answer is "Yes" and the other is "No"
+        if (
+          (answer1 === 'Yes' && answer2 === 'No') ||
+          (answer1 === 'No' && answer2 === 'Yes')
+        ) {
+          return 'red-x'
+        }
+
+        // Default to gray for anything unexpected
+        return 'gray'
       })()
 
       // Return the updated row with the second jurisdiction and match status
