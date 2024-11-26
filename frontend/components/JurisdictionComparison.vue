@@ -62,7 +62,18 @@
             padding: 'px-8 py-2',
           },
         }"
-      />
+      >
+        <template #cell(Match)="{ value }">
+          <span
+            :class="{
+              'bg-green-500': value === 'green',
+              'bg-red-500': value === 'red',
+              'bg-gray-500': value === 'gray',
+            }"
+            class="inline-block w-4 h-4 rounded-full"
+          ></span>
+        </template>
+      </UTable>
       <p v-else>Loading...</p>
     </UCard>
   </div>
@@ -313,24 +324,41 @@ async function updateComparison(jurisdiction) {
     // Replace the second "Answer" column
     const secondColumnKey = `Answer_${jurisdiction.value}`
     columns.value = [
-      columns.value[0], // Keep the "Themes" column
-      columns.value[1], // Keep the "Questions" column
-      { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' }, // Keep the page jurisdiction column
+      { key: 'Themes', label: 'Theme', class: 'label' },
+      { key: 'Questions', label: 'Question', class: 'label' },
+      { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
       {
         key: secondColumnKey,
         label: jurisdiction.label,
         class: 'label',
-      }, // Replace with new dropdown jurisdiction
+      },
     ]
+
+    // Add the Match column if it doesn't exist
+    if (!columns.value.some((col) => col.key === 'Match')) {
+      columns.value.push({ key: 'Match', label: '', class: 'match-column' })
+    }
 
     // Update rows with new jurisdiction data
     rows.value = rows.value.map((row) => {
+      // Find the answer for the second jurisdiction
       const match = jurisdictionData.find(
         (item) => item.Questions === row.Questions
       )
+
+      // Compute the match status
+      const matchStatus = (() => {
+        const answer1 = row.Answer // Jurisdiction 1 answer
+        const answer2 = match?.Answer || 'N/A' // Jurisdiction 2 answer
+        if (answer1 === 'N/A' || answer2 === 'N/A') return 'gray' // Missing data
+        return answer1 === answer2 ? 'green' : 'red' // Match or mismatch
+      })()
+
+      // Return the updated row with the second jurisdiction and match status
       return {
         ...row,
-        [secondColumnKey]: match?.Answer || 'N/A',
+        [secondColumnKey]: match?.Answer || 'N/A', // Add second jurisdiction's answer
+        Match: matchStatus, // Add the match status
       }
     })
   } catch (error) {
@@ -491,5 +519,37 @@ onMounted(() => {
 .table-wrapper {
   width: 100%; /* Ensure the table spans the full width of the wrapper */
   overflow-x: auto; /* Handle horizontal scrolling if needed */
+}
+
+.match-column {
+  text-align: center;
+}
+
+.bg-green-500 {
+  background-color: #16a34a; /* Tailwind green-500 */
+}
+
+.bg-red-500 {
+  background-color: #dc2626; /* Tailwind red-500 */
+}
+
+.bg-gray-500 {
+  background-color: #6b7280; /* Tailwind gray-500 */
+}
+
+.rounded-full {
+  border-radius: 50%;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.w-4 {
+  width: 1rem; /* Adjust as needed */
+}
+
+.h-4 {
+  height: 1rem; /* Adjust as needed */
 }
 </style>
