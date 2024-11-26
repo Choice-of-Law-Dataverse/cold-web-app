@@ -395,7 +395,9 @@ async function updateComparison(jurisdiction) {
         // X cases: One answer is "Yes" and the other is "No"
         if (
           (answer1 === 'Yes' && answer2 === 'No') ||
-          (answer1 === 'No' && answer2 === 'Yes')
+          (answer1 === 'No' && answer2 === 'Yes') ||
+          (answer1 === 'Yes' && answer2 === 'Not applicable') ||
+          (answer1 === 'Not applicable' && answer2 === 'Yes')
         ) {
           return 'red-x'
         }
