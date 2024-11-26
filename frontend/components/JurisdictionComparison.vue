@@ -44,6 +44,8 @@
           >
         </div>
       </div>
+      <MatchSummary :counts="matchCounts" />
+
       <hr style="margin-top: 8px" />
       <UTable
         v-if="!loading"
@@ -93,6 +95,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import MatchSummary from './MatchSummary.vue'
 
 const props = defineProps({
   jurisdiction: {
@@ -467,6 +470,19 @@ onMounted(() => {
       }
     }
   })
+})
+
+const matchCounts = computed(() => {
+  return rows.value.reduce(
+    (counts, row) => {
+      const match = row.Match
+      if (match) {
+        counts[match] = (counts[match] || 0) + 1
+      }
+      return counts
+    },
+    { green: 0, red: 0, 'red-x': 0, gray: 0 }
+  )
 })
 </script>
 
