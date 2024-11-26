@@ -3,18 +3,18 @@
     <UCard class="cold-ucard">
       <!-- Centered Jurisdiction Name and Compare Dropdown -->
       <div class="comparison-title">
-        <div class="result-value-large">
-          {{ props.jurisdiction }}
+        <div class="result-value-medium">
+          Questions for {{ props.jurisdiction }} and
         </div>
-        <div class="circle-placeholder"></div>
         <USelectMenu
           searchable
           searchable-placeholder="Search a Jurisdiction..."
           v-model="selectedJurisdiction"
           :options="jurisdictionOptions"
-          placeholder="Compare with …"
+          placeholder="Select Jurisdiction"
           class="w-72 cold-uselectmenu"
           size="xl"
+          style="margin-top: -16px; margin-left: 4px"
           :popper="{ offsetDistance: 0 }"
           :uiMenu="{
             base: 'rounded-none text-base', // Dropdown container styles
