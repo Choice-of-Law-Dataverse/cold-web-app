@@ -63,12 +63,15 @@
           },
         }"
       >
-        <template #cell(Match)="{ value }">
+        <template #Match-data="{ row }">
           <span
-            :class="{
-              'bg-green-500': value === 'green',
-              'bg-red-500': value === 'red',
-              'bg-gray-500': value === 'gray',
+            :style="{
+              backgroundColor:
+                row.Match === 'green'
+                  ? 'var(--color-cold-green)'
+                  : row.Match === 'red'
+                    ? 'var(--color-label-court-decision)'
+                    : 'var(--color-cold-gray)',
             }"
             class="inline-block w-4 h-4 rounded-full"
           ></span>
@@ -332,6 +335,7 @@ async function updateComparison(jurisdiction) {
         label: jurisdiction.label,
         class: 'label',
       },
+      { key: 'Match', label: '', class: 'match-column' },
     ]
 
     // Add the Match column if it doesn't exist
@@ -525,18 +529,6 @@ onMounted(() => {
   text-align: center;
 }
 
-.bg-green-500 {
-  background-color: #16a34a; /* Tailwind green-500 */
-}
-
-.bg-red-500 {
-  background-color: #dc2626; /* Tailwind red-500 */
-}
-
-.bg-gray-500 {
-  background-color: #6b7280; /* Tailwind gray-500 */
-}
-
 .rounded-full {
   border-radius: 50%;
 }
@@ -546,10 +538,10 @@ onMounted(() => {
 }
 
 .w-4 {
-  width: 1rem; /* Adjust as needed */
+  width: 12px;
 }
 
 .h-4 {
-  height: 1rem; /* Adjust as needed */
+  height: 12px;
 }
 </style>
