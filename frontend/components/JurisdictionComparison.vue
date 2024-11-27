@@ -479,8 +479,9 @@ onMounted(() => {
   })
 })
 
+// Computed property to calculate match counts dynamically
 const matchCounts = computed(() => {
-  return rows.value.reduce(
+  return filteredRows.value.reduce(
     (counts, row) => {
       const match = row.Match
       if (match) {
