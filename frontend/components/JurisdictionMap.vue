@@ -1,36 +1,21 @@
 <template>
   <UCard class="cold-ucard">
     <div class="popular-searches-container">
-      <h2 class="popular-title">Number of Court Decisions</h2>
-      <div style="height: 50vh; width: 50vw">
-        <!-- Basic Leaflet Map -->
-        <LMap
-          ref="map"
-          :zoom="10"
-          :center="[47.21322, -1.559482]"
-          :use-global-leaflet="false"
-        >
-          <LTileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&amp;copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
-            layer-type="base"
-            name="OpenStreetMap"
-          />
-        </LMap>
-      </div>
+      <h2 class="popular-title">Answer Coverage</h2>
 
-      <div style="height: 50vh; width: 50vw; margin-top: 50px">
+      <div style="height: 520px; width: 100%; margin-top: 50px">
         <!-- Overlay Leaflet Map -->
         <LMap
           ref="map"
-          :zoom="4"
-          :center="[37.8, -96]"
+          :zoom="1.5"
+          :center="[30, 0]"
           :use-global-leaflet="false"
           :options="{
             zoomControl: false,
             scrollWheelZoom: false,
             attributionControl: false,
             dragging: false,
+            doubleClickZoom: false,
           }"
         >
           <!-- Tile Layer -->
