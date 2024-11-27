@@ -13,20 +13,25 @@
       <JurisdictionComparison
         v-if="!loading && jurisdictionData?.Name"
         :jurisdiction="jurisdictionData.Name"
+        :compareJurisdiction="compareJurisdiction"
       />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
 import JurisdictionComparison from '~/components/JurisdictionComparison.vue'
 
 const route = useRoute() // Access the route to get the ID param
+const router = useRouter()
 const jurisdictionData = ref(null) // Store fetched jurisdiction data
 const loading = ref(true) // Track loading state
+
+// Extract `c` query parameter
+const compareJurisdiction = ref((route.query.c as string) || null)
 
 // Fetch the jurisdiction details
 async function fetchJurisdiction(name: string) {
@@ -77,7 +82,15 @@ const valueClassMap = {
 
 // Fetch jurisdiction data on component mount
 onMounted(() => {
-  const jurisdictionName = route.params.id as string // Get ID from the route
+  const jurisdictionName = (route.params.id as string).replace(/_/g, ' ') // Convert '_' to spaces
   fetchJurisdiction(jurisdictionName)
 })
+
+// Watch for changes to the `c` query parameter and update `compareJurisdiction`
+watch(
+  () => route.query.c,
+  (newCompare) => {
+    compareJurisdiction.value = (newCompare as string) || null
+  }
+)
 </script>

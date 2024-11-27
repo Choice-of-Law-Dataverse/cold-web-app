@@ -1,14 +1,38 @@
 <template>
   <div class="col-span-12">
     <UCard class="cold-ucard">
+      <!-- Centered Jurisdiction Name and Compare Dropdown -->
+      <div class="comparison-title flex items-center justify-center mb-4">
+        <div class="result-value-medium">
+          Questions for {{ props.jurisdiction }} and
+        </div>
+        <USelectMenu
+          searchable
+          searchable-placeholder="Search a Jurisdiction..."
+          v-model="selectedJurisdiction"
+          :options="jurisdictionOptions"
+          placeholder="Select Jurisdiction"
+          class="w-72 cold-uselectmenu"
+          size="xl"
+          style="margin-top: -16px; margin-left: 4px"
+          :popper="{ offsetDistance: 0 }"
+          :uiMenu="{
+            base: 'rounded-none text-base', // Dropdown container styles
+          }"
+        />
+      </div>
+
+      <!-- Filter and MatchSummary -->
       <div class="main-content-grid">
-        <!-- Filter Dropdown -->
-        <div class="flex items-center space-x-4 mb-4">
+        <!-- Left-aligned USelectMenu -->
+        <div class="filter-wrapper">
           <USelectMenu
+            searchable
             v-model="selectedTheme"
             :options="themeOptions"
             placeholder="Filter by Theme"
-            class="w-40"
+            class="cold-uselectmenu"
+            size="sm"
           />
           <UButton
             v-if="selectedTheme"
@@ -16,10 +40,20 @@
             size="sm"
             variant="link"
             class="suggestion-button"
-            >Reset</UButton
           >
+            Reset
+          </UButton>
+        </div>
+
+        <!-- Right-aligned MatchSummary -->
+        <div v-if="selectedJurisdiction" class="match-summary">
+          <MatchSummary :counts="matchCounts" />
         </div>
       </div>
+
+      <hr style="margin-top: 8px" />
+
+      <!-- Table -->
       <UTable
         v-if="!loading"
         class="styled-table"
@@ -28,16 +62,38 @@
         :ui="{
           th: {
             base: 'text-left rtl:text-right',
-            padding: 'px-8 py-3.5' /* Adjust horizontal and vertical padding */,
+            padding: 'px-8 py-3.5',
             color: 'text-gray-900 dark:text-white',
             font: 'font-semibold',
             size: 'text-sm',
           },
           td: {
-            padding: 'px-8 py-2' /* Optionally adjust padding for data cells */,
+            padding: 'px-8 py-2',
           },
         }"
-      />
+      >
+        <template #Match-data="{ row }">
+          <span
+            v-if="row.Match !== 'red-x'"
+            :style="{
+              backgroundColor:
+                row.Match === 'green'
+                  ? 'var(--color-cold-green)'
+                  : row.Match === 'red'
+                    ? 'var(--color-label-court-decision)'
+                    : 'var(--color-cold-gray)',
+            }"
+            class="inline-block w-4 h-4 rounded-full"
+          ></span>
+          <span
+            v-else
+            :style="{ color: 'var(--color-label-court-decision)' }"
+            class="text-lg"
+          >
+            ✖
+          </span>
+        </template>
+      </UTable>
       <p v-else>Loading...</p>
     </UCard>
   </div>
@@ -45,21 +101,47 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import MatchSummary from './MatchSummary.vue'
 
 const props = defineProps({
   jurisdiction: {
     type: String,
     required: true,
   },
+  compareJurisdiction: {
+    type: String,
+    default: null,
+  },
 })
 
+const router = useRouter() // Access the router to update the query parameters
 const loading = ref(true)
 const rows = ref([])
+const jurisdictionOptions = ref([]) // Options for the dropdown
+const selectedJurisdiction = ref(null) // Selected jurisdiction for comparison
+const selectedTheme = ref(null) // Selected theme for filtering
 const columns = ref([
   { key: 'Themes', label: 'Theme', class: 'label' },
   { key: 'Questions', label: 'Question', class: 'label' },
   { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
 ])
+
+// Computed filtered rows
+const filteredRows = computed(() => {
+  if (!selectedTheme.value) {
+    return rows.value
+  }
+
+  return rows.value.filter((row) =>
+    row.Themes.includes(selectedTheme.value.value)
+  )
+})
+
+// Reset filter button action
+const resetFilters = () => {
+  selectedTheme.value = null
+}
 
 // Dropdown options for themes
 const themeOptions = ref([
@@ -103,25 +185,6 @@ const themeOptions = ref([
     value: 'Entry into force and application in time',
   },
 ])
-
-// Selected theme for filtering
-const selectedTheme = ref(null)
-
-// Computed filtered rows
-const filteredRows = computed(() => {
-  if (!selectedTheme.value) {
-    return rows.value
-  }
-
-  return rows.value.filter((row) =>
-    row.Themes.includes(selectedTheme.value.value)
-  )
-})
-
-// Reset filter button action
-const resetFilters = () => {
-  selectedTheme.value = null
-}
 
 // Desired order for the questions
 const questionOrder = [
@@ -206,6 +269,7 @@ async function fetchTableData(jurisdiction: string) {
     if (!response.ok) throw new Error('Failed to fetch table data')
 
     const data = await response.json()
+    rows.value = data
 
     // Sort rows based on desired order
     rows.value = data.sort((a, b) => {
@@ -220,16 +284,30 @@ async function fetchTableData(jurisdiction: string) {
   }
 }
 
-// Watch for jurisdiction changes
-watch(
-  () => props.jurisdiction,
-  (newJurisdiction) => {
-    if (newJurisdiction) {
-      loading.value = true
-      fetchTableData(newJurisdiction)
-    }
+// Fetch jurisdictions from the text file
+async function fetchJurisdictions() {
+  try {
+    const response = await fetch('/temp_jurisdictions.txt') // Path to the file in `public`
+    if (!response.ok) throw new Error('Failed to load jurisdictions file')
+
+    const text = await response.text()
+    jurisdictionOptions.value = text
+      .split('\n')
+      .map((country) => ({
+        label: country.trim(), // Use the country name as the label
+        value: country.trim(), // Use the country name as the value
+      }))
+      .filter((option) => option.label && option.value) // Filter out any empty entries
+  } catch (error) {
+    console.error('Error loading jurisdictions:', error)
+    jurisdictionOptions.value = [] // Fallback to an empty list if there's an error
   }
-)
+}
+
+// Call the function to fetch jurisdictions on component mount
+onMounted(() => {
+  fetchJurisdictions()
+})
 
 // Fetch data on component mount
 onMounted(() => {
@@ -237,27 +315,248 @@ onMounted(() => {
     fetchTableData(props.jurisdiction)
   }
 })
+
+// Add selected jurisdiction as a column
+async function updateComparison(jurisdiction) {
+  if (!jurisdiction) return
+
+  const payload = {
+    table: 'Answers',
+    filters: [
+      { column: 'Name (from Jurisdiction)', value: jurisdiction.value },
+    ],
+  }
+
+  try {
+    loading.value = true
+    const response = await fetch(
+      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_table',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to fetch jurisdiction data')
+
+    const jurisdictionData = await response.json()
+
+    // Replace the second "Answer" column
+    const secondColumnKey = `Answer_${jurisdiction.value}`
+    columns.value = [
+      { key: 'Themes', label: 'Theme', class: 'label' },
+      { key: 'Questions', label: 'Question', class: 'label' },
+      { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
+      {
+        key: secondColumnKey,
+        label: jurisdiction.label,
+        class: 'label',
+      },
+      { key: 'Match', label: '', class: 'match-column' },
+    ]
+
+    // Add the Match column if it doesn't exist
+    if (!columns.value.some((col) => col.key === 'Match')) {
+      columns.value.push({ key: 'Match', label: '', class: 'match-column' })
+    }
+
+    // Update rows with new jurisdiction data
+    rows.value = rows.value.map((row) => {
+      // Find the answer for the second jurisdiction
+      const match = jurisdictionData.find(
+        (item) => item.Questions === row.Questions
+      )
+
+      // Compute the match status
+      const matchStatus = (() => {
+        const answer1 = row.Answer?.trim() || 'N/A' // Jurisdiction 1 answer
+        const answer2 = match?.Answer?.trim() || 'N/A' // Jurisdiction 2 answer
+
+        // Gray cases: Any unclear or unavailable data, and explicitly "Unclear + Unclear"
+        const grayCases = [
+          'Unclear',
+          'Information is not available yet',
+          'No data',
+          'Jurisdiction does not cover this question',
+          //'Not applicable', // Single "Not applicable" should still be gray
+        ]
+        if (
+          grayCases.includes(answer1) ||
+          grayCases.includes(answer2) ||
+          (answer1 === 'Unclear' && answer2 === 'Unclear')
+        ) {
+          return 'gray'
+        }
+
+        // Green cases: Identical answers except "No" + "No", and explicitly allow "Not Applicable + Not Applicable"
+        if (
+          (answer1 === answer2 && answer1 !== 'No') ||
+          (answer1 === 'Not applicable' && answer2 === 'Not applicable')
+        ) {
+          return 'green'
+        }
+
+        // Red cases: Both answers are "No"
+        if (answer1 === 'No' && answer2 === 'No') {
+          return 'red'
+        }
+
+        // X cases: One answer is "Yes" and the other is "No"
+        if (
+          (answer1 === 'Yes' && answer2 === 'No') ||
+          (answer1 === 'No' && answer2 === 'Yes') ||
+          (answer1 === 'Yes' && answer2 === 'Not applicable') ||
+          (answer1 === 'Not applicable' && answer2 === 'Yes')
+        ) {
+          return 'red-x'
+        }
+
+        // Default to gray for anything unexpected
+        return 'gray'
+      })()
+
+      // Return the updated row with the second jurisdiction and match status
+      return {
+        ...row,
+        [secondColumnKey]: match?.Answer || 'N/A', // Add second jurisdiction's answer
+        Match: matchStatus, // Add the match status
+      }
+    })
+  } catch (error) {
+    console.error('Error fetching jurisdiction data:', error)
+  } finally {
+    loading.value = false
+  }
+}
+
+// Watch for changes in `selectedJurisdiction`
+watch(selectedJurisdiction, (newJurisdiction) => {
+  if (newJurisdiction) {
+    // Transform spaces to '_' for the URL
+    const formattedJurisdiction = newJurisdiction.value.replace(/ /g, '_')
+    router.replace({
+      query: {
+        ...router.currentRoute.value.query,
+        c: formattedJurisdiction,
+      },
+    })
+    // Trigger table update with the original value
+    updateComparison(newJurisdiction)
+  }
+})
+
+// Watch for changes in the `compareJurisdiction` prop and initialize
+watch(
+  () => props.compareJurisdiction,
+  (newCompare) => {
+    if (newCompare) {
+      // Transform '_' back to spaces for internal use
+      const originalValue = newCompare.replace(/_/g, ' ')
+      const option = jurisdictionOptions.value.find(
+        (opt) => opt.value === originalValue
+      )
+      if (option) {
+        selectedJurisdiction.value = option // Trigger table update
+      }
+    }
+  }
+)
+
+// Fetch jurisdictions and initialize on component mount
+onMounted(() => {
+  fetchJurisdictions().then(() => {
+    if (props.compareJurisdiction) {
+      // Transform '_' back to spaces for internal use
+      const originalValue = props.compareJurisdiction.replace(/_/g, ' ')
+      const option = jurisdictionOptions.value.find(
+        (opt) => opt.value === originalValue
+      )
+      if (option) {
+        selectedJurisdiction.value = option // Trigger table update
+      }
+    }
+  })
+})
+
+// Computed property to calculate match counts dynamically
+const matchCounts = computed(() => {
+  return filteredRows.value.reduce(
+    (counts, row) => {
+      const match = row.Match
+      if (match) {
+        counts[match] = (counts[match] || 0) + 1
+      }
+      return counts
+    },
+    { green: 0, red: 0, 'red-x': 0, gray: 0 }
+  )
+})
 </script>
 
 <style scoped>
+::v-deep(.z-20.group.w-full [role='option']) {
+  line-height: 2 !important; /* Make the line height larger */
+}
+
+::v-deep(.cold-uselectmenu span.block.truncate) {
+  color: var(--color-cold-night);
+}
+
+.comparison-title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-top: 55px;
+}
+
+.circle-placeholder {
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: 8px solid var(--color-cold-gray);
+  background-color: transparent;
+  margin-left: 24px;
+  margin-right: 24px;
+}
+
+.result-value-large {
+  margin-bottom: -4px !important;
+}
+
 .suggestion-button {
   color: var(--color-cold-purple) !important;
   font-size: 14px !important;
 }
 
 .main-content-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr)); /* 12-column layout */
-  column-gap: var(--gutter-width); /* Gutter space between columns */
-  padding: 32px 32px 0;
+  display: flex; /* Use flexbox for layout */
+  justify-content: space-between; /* Space between left and right sections */
+  align-items: center; /* Vertically align items */
+  margin-bottom: 16px; /* Adjust spacing below */
 }
+
+.filter-wrapper {
+  margin-left: 32px;
+  margin-bottom: 6px;
+  display: flex; /* Group the dropdown and reset button */
+  align-items: center;
+  gap: 8px; /* Space between the dropdown and reset button */
+}
+
+.match-summary {
+  margin-left: auto; /* Push the MatchSummary component to the far right */
+  margin-right: 24px;
+  margin-bottom: 6px; /* Vertical alignment with Filter by Theme */
+  text-align: right;
+}
+
 ::v-deep(thead th:nth-child(1)),
 ::v-deep(tbody td:nth-child(1)) {
   width: 200px !important; /* Set fixed width */
   max-width: 200px !important; /* Prevent expansion */
   white-space: normal; /* Allow text wrapping */
-  /*word-wrap: break-word; /* Break long words to wrap */
-  /*overflow-wrap: break-word; /* Ensure proper word wrapping */
 }
 
 ::v-deep(thead th:nth-child(2)),
@@ -265,8 +564,6 @@ onMounted(() => {
   width: 800px !important; /* Set fixed width */
   max-width: 800px !important; /* Prevent expansion */
   white-space: normal; /* Allow text wrapping */
-  /*word-wrap: break-word; /* Break long words to wrap */
-  /*overflow-wrap: break-word; /* Ensure proper word wrapping */
 }
 
 ::v-deep(thead th:nth-child(3)),
@@ -274,8 +571,13 @@ onMounted(() => {
   width: 150px !important; /* Set fixed width */
   max-width: 150px !important; /* Prevent expansion */
   white-space: normal; /* Allow text wrapping */
-  /*word-wrap: break-word; /* Break long words to wrap */
-  /*overflow-wrap: break-word; /* Ensure proper word wrapping */
+}
+
+::v-deep(thead th:nth-child(4)),
+::v-deep(tbody td:nth-child(4)) {
+  width: 150px !important; /* Set fixed width */
+  max-width: 150px !important; /* Prevent expansion */
+  white-space: normal; /* Allow text wrapping */
 }
 
 /* Set the row height for all table rows */
@@ -311,21 +613,23 @@ onMounted(() => {
   overflow-x: auto; /* Handle horizontal scrolling if needed */
 }
 
-/* Styling the table rows to indent text on left and right */
-/* .styled-table ::v-deep(tbody tr td), */
-/* .styled-table ::v-deep(thead tr th) { */
-/*text-indent: 32px; /* Indent text on the left */
-/*position: relative; /* Make sure the pseudo-element aligns properly */
-/* } */
+.match-column {
+  text-align: center;
+}
 
-/* Add indentation for the right side using a pseudo-element */
-/* .styled-table ::v-deep(tbody tr td::after), */
-/* .styled-table ::v-deep(thead tr th::after) { */
-/* content: ''; Empty content for pseudo-element */
-/* display: block; */
-/* width: 32px; Create space on the right */
-/* position: absolute; */
-/* right: 0; */
-/* height: 100%; */
-/* } */
+.rounded-full {
+  border-radius: 50%;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.w-4 {
+  width: 12px;
+}
+
+.h-4 {
+  height: 12px;
+}
 </style>
