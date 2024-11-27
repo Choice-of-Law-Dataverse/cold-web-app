@@ -6,7 +6,7 @@
         <USelectMenu
           searchable
           searchable-placeholder="Search a Jurisdiction..."
-          class="w-72 lg:w-96"
+          class="w-72 lg:w-96 cold-uselectmenu"
           placeholder="Pick a Jurisdiction"
           :options="countries"
           v-model="selectedCountry"
@@ -49,7 +49,7 @@ const router = useRouter()
 // Navigate to the selected country's page
 const navigateToCountry = (country) => {
   if (country) {
-    const formattedCountry = country.replace(/\s+/g, '-').toLowerCase() // Format the country name
+    const formattedCountry = country.replace(/\s+/g, '_').toLowerCase() // Format the country name
     router.push(`/jurisdiction/${formattedCountry}`)
   }
 }
