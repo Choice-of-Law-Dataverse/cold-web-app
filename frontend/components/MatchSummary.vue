@@ -5,45 +5,66 @@
       :key="status"
       class="flex items-center space-x-2"
     >
-      <!-- Status Indicator -->
-      <template v-if="status !== 'red-x'">
-        <span
-          :style="{
-            backgroundColor:
-              status === 'green'
-                ? 'var(--color-cold-green)'
-                : status === 'red'
-                  ? 'var(--color-label-court-decision)'
-                  : 'var(--color-cold-gray)',
-          }"
-          class="inline-block w-4 h-4 rounded-full"
-        ></span>
-      </template>
-      <template v-else>
-        <span
-          :style="{ color: 'var(--color-label-court-decision)' }"
-          class="text-lg"
-        >
-          ✖
-        </span>
-      </template>
-
-      <!-- Count with Matching Color -->
-      <span
-        :style="{
-          color:
-            status === 'green'
-              ? 'var(--color-cold-green)'
-              : status === 'red'
-                ? 'var(--color-label-court-decision)'
-                : status === 'red-x'
-                  ? 'var(--color-label-court-decision)'
-                  : 'var(--color-cold-gray)',
+      <!-- Tooltip Wrapper -->
+      <!-- :text="`Count for status ${status}: ${count}`"  -->
+      <UTooltip
+        :text="`Text to be defined`"
+        :popper="{ arrow: true, placement: 'top' }"
+        :ui="{
+          background: 'bg-cold-night',
+          color: 'text-white',
+          base: 'pt-3 pr-3 pb-7 pl-3',
+          rounded: 'rounded-none',
+          ring: '',
+          arrow: {
+            base: 'before:visible before:block before:rotate-45 before:z-[-1] before:w-2 before:h-2',
+            background: 'before:bg-cold-night',
+            ring: '',
+          },
         }"
-        class="label"
       >
-        {{ count }}
-      </span>
+        <div class="flex items-center space-x-2">
+          <!-- Status Indicator -->
+          <template v-if="status !== 'red-x'">
+            <span
+              :style="{
+                backgroundColor:
+                  status === 'green'
+                    ? 'var(--color-cold-green)'
+                    : status === 'red'
+                      ? 'var(--color-label-court-decision)'
+                      : 'var(--color-cold-gray)',
+              }"
+              class="inline-block w-4 h-4 rounded-full"
+            ></span>
+          </template>
+          <template v-else>
+            <span
+              :style="{ color: 'var(--color-label-court-decision)' }"
+              class="text-lg"
+            >
+              ✖
+            </span>
+          </template>
+
+          <!-- Count with Matching Color -->
+          <span
+            :style="{
+              color:
+                status === 'green'
+                  ? 'var(--color-cold-green)'
+                  : status === 'red'
+                    ? 'var(--color-label-court-decision)'
+                    : status === 'red-x'
+                      ? 'var(--color-label-court-decision)'
+                      : 'var(--color-cold-gray)',
+            }"
+            class="label"
+          >
+            {{ count }}
+          </span>
+        </div>
+      </UTooltip>
     </div>
   </div>
 </template>
@@ -58,6 +79,10 @@ defineProps({
 </script>
 
 <style scoped>
+.bg-cold-night {
+  background-color: var(--color-cold-night);
+}
+
 .rounded-full {
   border-radius: 50%;
 }
