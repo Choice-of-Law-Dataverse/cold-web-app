@@ -46,7 +46,7 @@
         </div>
 
         <!-- Right-aligned MatchSummary -->
-        <div class="match-summary">
+        <div v-if="selectedJurisdiction" class="match-summary">
           <MatchSummary :counts="matchCounts" />
         </div>
       </div>
