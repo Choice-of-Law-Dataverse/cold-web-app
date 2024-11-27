@@ -77,6 +77,7 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 # Docker
 
 ## Building and Running the Container
+
 To build the container run:
 `docker build -t cold-nuxt-frontend .`
 To run the container run:
@@ -85,3 +86,10 @@ To run the container run:
 The docker image has been pushed to dockerhub using:
 `docker tag cold-nuxt-frontend simonweigold/cold-nuxt-frontend:latest`
 `docker push simonweigold/cold-nuxt-frontend:latest`
+
+# Nuxt Leaflet
+
+Resources for landing page map:
+
+- https://nuxt.com/modules/leaflet
+- Interactive Choropleth Map: https://leafletjs.com/examples/choropleth/
