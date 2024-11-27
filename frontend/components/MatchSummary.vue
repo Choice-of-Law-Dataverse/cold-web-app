@@ -1,23 +1,31 @@
 <template>
-  <div class="flex justify-end space-x-4">
+  <div class="flex space-x-4">
     <div
       v-for="(count, status) in counts"
       :key="status"
       class="flex items-center space-x-2"
     >
-      <span
-        :style="{
-          backgroundColor:
-            status === 'green'
-              ? 'var(--color-cold-green)'
-              : status === 'red'
-                ? 'var(--color-cold-red)'
-                : status === 'red-x'
-                  ? 'var(--color-cold-red)'
+      <template v-if="status !== 'red-x'">
+        <span
+          :style="{
+            backgroundColor:
+              status === 'green'
+                ? 'var(--color-cold-green)'
+                : status === 'red'
+                  ? 'var(--color-label-court-decision)'
                   : 'var(--color-cold-gray)',
-        }"
-        class="inline-block w-4 h-4 rounded-full"
-      ></span>
+          }"
+          class="inline-block w-4 h-4 rounded-full"
+        ></span>
+      </template>
+      <template v-else>
+        <span
+          :style="{ color: 'var(--color-label-court-decision)' }"
+          class="text-lg"
+        >
+          ✖
+        </span>
+      </template>
       <span class="text-sm">{{ count }}</span>
     </div>
   </div>
@@ -31,7 +39,3 @@ defineProps({
   },
 })
 </script>
-
-<style scoped>
-/* Optional: Style adjustments for alignment */
-</style>

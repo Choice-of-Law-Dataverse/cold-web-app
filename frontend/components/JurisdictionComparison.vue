@@ -2,7 +2,7 @@
   <div class="col-span-12">
     <UCard class="cold-ucard">
       <!-- Centered Jurisdiction Name and Compare Dropdown -->
-      <div class="comparison-title">
+      <div class="comparison-title flex items-center justify-center mb-4">
         <div class="result-value-medium">
           Questions for {{ props.jurisdiction }} and
         </div>
@@ -22,17 +22,17 @@
         />
       </div>
 
-      <!-- Filter Dropdown -->
+      <!-- Filter and MatchSummary -->
       <div class="main-content-grid">
-        <div class="flex items-center space-x-4 mb-4">
+        <!-- Left-aligned USelectMenu -->
+        <div class="filter-wrapper">
           <USelectMenu
             searchable
             v-model="selectedTheme"
             :options="themeOptions"
             placeholder="Filter by Theme"
-            class="w-64 cold-uselectmenu"
+            class="cold-uselectmenu"
             size="sm"
-            style="font-size: 12px !important"
           />
           <UButton
             v-if="selectedTheme"
@@ -40,13 +40,20 @@
             size="sm"
             variant="link"
             class="suggestion-button"
-            >Reset</UButton
           >
+            Reset
+          </UButton>
+        </div>
+
+        <!-- Right-aligned MatchSummary -->
+        <div class="match-summary">
+          <MatchSummary :counts="matchCounts" />
         </div>
       </div>
-      <MatchSummary :counts="matchCounts" />
 
       <hr style="margin-top: 8px" />
+
+      <!-- Table -->
       <UTable
         v-if="!loading"
         class="styled-table"
@@ -523,11 +530,26 @@ const matchCounts = computed(() => {
 }
 
 .main-content-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr)); /* 12-column layout */
-  column-gap: var(--gutter-width); /* Gutter space between columns */
-  padding: 32px 32px 0;
+  display: flex; /* Use flexbox for layout */
+  justify-content: space-between; /* Space between left and right sections */
+  align-items: center; /* Vertically align items */
+  margin-bottom: 16px; /* Adjust spacing below */
 }
+
+.filter-wrapper {
+  margin-left: 32px;
+  margin-bottom: 6px;
+  display: flex; /* Group the dropdown and reset button */
+  align-items: center;
+  gap: 8px; /* Space between the dropdown and reset button */
+}
+
+.match-summary {
+  margin-left: auto; /* Push the MatchSummary component to the far right */
+  margin-right: 24px;
+  text-align: right;
+}
+
 ::v-deep(thead th:nth-child(1)),
 ::v-deep(tbody td:nth-child(1)) {
   width: 200px !important; /* Set fixed width */
