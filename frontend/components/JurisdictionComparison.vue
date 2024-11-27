@@ -547,6 +547,7 @@ const matchCounts = computed(() => {
 .match-summary {
   margin-left: auto; /* Push the MatchSummary component to the far right */
   margin-right: 24px;
+  margin-bottom: 6px; /* Vertical alignment with Filter by Theme */
   text-align: right;
 }
 
