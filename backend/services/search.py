@@ -183,8 +183,8 @@ class SearchService:
             ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
             ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
             from "Court decisions"
-            where search @@ websearch_to_tsquery('english', 'arbitral tribunal')
-            or search @@ websearch_to_tsquery('simple', 'arbitral tribunal')
+            where search @@ websearch_to_tsquery('english', '{search_string}')
+            or search @@ websearch_to_tsquery('simple', '{search_string}')
 
             union all
 
@@ -192,8 +192,8 @@ class SearchService:
             select 
             'Legislation' as source_table,       -- Indicate the source table
             "ID" as id,
-            ts_rank(search, websearch_to_tsquery('english', 'arbitral tribunal')) +
-            ts_rank(search, websearch_to_tsquery('simple', 'arbitral tribunal')) as rank
+            ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+            ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
             from "Legislation"
             where search @@ websearch_to_tsquery('english', '{search_string}')
             or search @@ websearch_to_tsquery('simple', '{search_string}')
