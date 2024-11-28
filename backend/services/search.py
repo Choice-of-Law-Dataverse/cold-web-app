@@ -114,7 +114,7 @@ class SearchService:
     def curated_details_search(self, table, id):
         print(table)
         print(id)
-        if table in ['Answers', 'Legislation', 'Legal provisions', 'Court decisions']:
+        if table in ['Answers', 'Legislation', 'Legal provisions', 'Court decisions', 'Jurisdictions']:
             final_results = self.db.get_entry_by_id(table, id)
             return filter_na(parse_results(final_results))
         else:
@@ -123,6 +123,38 @@ class SearchService:
     def full_table(self, table):
         print(table)
         results = self.db.execute_query(f'SELECT * FROM "{table}"')
+        return results
+
+    def filtered_table(self, table, filters):
+        # Base query
+        query = f'SELECT * FROM "{table}"'
+        query_params = {}
+
+        # Check if filters are provided and construct WHERE clause
+        if filters:
+            conditions = []
+            for idx, filter_item in enumerate(filters):
+                column = filter_item.get('column')
+                value = filter_item.get('value')
+
+                if not column or value is None:
+                    raise ValueError(f"Invalid filter: {filter_item}")
+
+                # Use LOWER() for case-insensitive matching
+                param_key = f'param_{idx}'
+                conditions.append(f'LOWER("{column}") = LOWER(:{param_key})')
+                query_params[param_key] = value
+
+            # Append the WHERE clause to the query only if there are conditions
+            if conditions:
+                query += f' WHERE {" AND ".join(conditions)}'
+
+        # Debug: Print the full query and parameters
+        print("Executing query:", query)
+        print("With parameters:", query_params)
+
+        # Execute the query with parameters as a dictionary
+        results = self.db.execute_query(query, query_params)
         return results
         
     def full_text_search(self, search_string):
@@ -151,8 +183,8 @@ class SearchService:
             ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
             ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
             from "Court decisions"
-            where search @@ websearch_to_tsquery('english', 'arbitral tribunal')
-            or search @@ websearch_to_tsquery('simple', 'arbitral tribunal')
+            where search @@ websearch_to_tsquery('english', '{search_string}')
+            or search @@ websearch_to_tsquery('simple', '{search_string}')
 
             union all
 
@@ -160,15 +192,15 @@ class SearchService:
             select 
             'Legislation' as source_table,       -- Indicate the source table
             "ID" as id,
-            ts_rank(search, websearch_to_tsquery('english', 'arbitral tribunal')) +
-            ts_rank(search, websearch_to_tsquery('simple', 'arbitral tribunal')) as rank
+            ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+            ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
             from "Legislation"
             where search @@ websearch_to_tsquery('english', '{search_string}')
             or search @@ websearch_to_tsquery('simple', '{search_string}')
 
             -- Combine results and order by rank
             order by rank desc
-            limit 250;
+            limit 150;
         """
 
         # Execute the SQL query
