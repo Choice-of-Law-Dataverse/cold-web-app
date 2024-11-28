@@ -97,3 +97,4 @@ Resources for landing page map:
 - https://github.com/vue-leaflet/vue-leaflet/issues/153
 - https://stackoverflow.com/a/54857289/22393957
 - https://leaflet-extras.github.io/leaflet-providers/preview/
+- GeoJSON country vector maps: https://geojson-maps.kyd.au/
