@@ -37,7 +37,7 @@
           />
           <!-- GeoJSON Layer -->
           <LGeoJson
-            v-if="geoJsonData"
+            v-if="isDataReady"
             :geojson="geoJsonData"
             :options="{ onEachFeature }"
           />
@@ -48,13 +48,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 
 const geoJsonData = ref(null)
+const blueCountries = ref([]) // List of countries to color blue by ISO3 code
+const isDataReady = computed(
+  () => geoJsonData.value && blueCountries.value.length > 0
+)
 
 const onEachFeature = (feature, layer) => {
+  const isoCode = feature.properties.adm0_a3 // Get the ISO3 code
+  const isBlue = blueCountries.value.includes(isoCode)
+  //console.log('Feature ISO Code:', isoCode) // Debugging
+  //console.log('Is Blue:', blueCountries.value.includes(isoCode)) // Debugging
+
   layer.setStyle({
-    fillColor: '#6F4DFA',
+    fillColor: isBlue ? 'blue' : 'var(--color-cold-cream)', // Blue for listed countries
     weight: 1,
     color: 'white',
     fillOpacity: 1,
@@ -62,13 +71,25 @@ const onEachFeature = (feature, layer) => {
 }
 
 onMounted(async () => {
-  // Fetch the GeoJSON data from the public folder
-  const response = await fetch('/temp_custom.geo.json')
-  if (!response.ok) {
-    console.error('Failed to fetch GeoJSON file:', response.statusText)
+  // Fetch the GeoJSON data
+  const geoJsonResponse = await fetch('/temp_custom.geo.json')
+  if (!geoJsonResponse.ok) {
+    console.error('Failed to fetch GeoJSON file:', geoJsonResponse.statusText)
     return
   }
-  // Parse the JSON data
-  geoJsonData.value = await response.json()
+  geoJsonData.value = await geoJsonResponse.json()
+
+  // Fetch the list of countries to color blue
+  const countriesResponse = await fetch('/temp_answer_coverage.txt')
+  if (!countriesResponse.ok) {
+    console.error(
+      'Failed to fetch countries file:',
+      countriesResponse.statusText
+    )
+    return
+  }
+  const countriesText = await countriesResponse.text()
+  blueCountries.value = countriesText.split('\n').map((line) => line.trim())
+  //console.log('Loaded blueCountries:', blueCountries.value) // Debugging
 })
 </script>
