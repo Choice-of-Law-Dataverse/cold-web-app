@@ -58,6 +58,7 @@ const isDataReady = computed(
 
 const onEachFeature = (feature, layer) => {
   const isoCode = feature.properties.adm0_a3 // Get the ISO3 code
+  const countryName = feature.properties.name // Get the country's name
   const isCovered = coveredCountries.value.includes(isoCode)
 
   layer.setStyle({
@@ -67,6 +68,17 @@ const onEachFeature = (feature, layer) => {
     weight: 0.5,
     color: 'white',
     fillOpacity: 1,
+  })
+
+  // Add a tooltip with the country's name
+  layer.bindTooltip(countryName, {
+    permanent: false, // Show only on hover
+    direction: 'top', // Tooltip direction
+  })
+
+  // Add a click event to navigate to the country-specific URL
+  layer.on('click', () => {
+    window.location.href = `/jurisdiction/${countryName.toLowerCase()}`
   })
 }
 
