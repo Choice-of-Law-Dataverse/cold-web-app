@@ -167,3 +167,4 @@ testing/*
 # nuxt and node
 frontend/.nuxt
 frontend/node_modules
+frontend/public/temp_custom.geo.json
