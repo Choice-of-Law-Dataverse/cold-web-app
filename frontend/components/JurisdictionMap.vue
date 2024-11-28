@@ -3,12 +3,12 @@
     <div class="popular-searches-container">
       <h2 class="popular-title">Answer Coverage</h2>
 
-      <div style="height: 520px; width: 100%; margin-top: 50px">
+      <div style="height: 700px; width: 100%; margin-top: 50px">
         <!-- Overlay Leaflet Map -->
         <LMap
           ref="map"
           :zoom="1.5"
-          :center="[30, 0]"
+          :center="[40, 0]"
           :use-global-leaflet="false"
           :options="{
             zoomControl: false,
@@ -27,7 +27,7 @@
           <!-- White Background -->
           <LRectangle
             :bounds="[
-              [-90, 200],
+              [-120, 200],
               [90, -200],
             ]"
             :fill="true"
@@ -70,7 +70,12 @@ const geoJsonData = ref(null)
 const onEachFeature = (feature, layer) => {
   // Bind a tooltip or popup to each feature
   //layer.bindTooltip(feature.properties.name || 'Unnamed Feature')
-  layer.setStyle({ fillColor: '#6F4DFA', weight: 0, fillOpacity: 1 })
+  layer.setStyle({
+    fillColor: '#6F4DFA',
+    weight: 1,
+    color: 'white',
+    fillOpacity: 1,
+  })
 
   // Apply conditional styling
   // if (feature.properties.name === 'Specific Name') {
@@ -92,16 +97,27 @@ const onEachFeature = (feature, layer) => {
 //   tap: false, // Disable touch-based interactions
 // }
 
-onMounted(async () => {
-  // Fetch the GeoJSON data
-  const response = await fetch(
-    'https://leafletjs.com/examples/choropleth/us-states.js'
-  )
-  const jsonpData = await response.text()
+// onMounted(async () => {
+//   // Fetch the GeoJSON data
+//   const response = await fetch(
+//     'https://leafletjs.com/examples/choropleth/us-states.js'
+//   )
+//   const jsonpData = await response.text()
 
-  // Convert JSONP to JSON by extracting the object
-  const jsonString = jsonpData.match(/{.*}/s)[0]
-  geoJsonData.value = JSON.parse(jsonString)
+//   // Convert JSONP to JSON by extracting the object
+//   const jsonString = jsonpData.match(/{.*}/s)[0]
+//   geoJsonData.value = JSON.parse(jsonString)
+// })
+
+onMounted(async () => {
+  // Fetch the GeoJSON data from the public folder
+  const response = await fetch('/temp_custom.geo.json')
+  if (!response.ok) {
+    console.error('Failed to fetch GeoJSON file:', response.statusText)
+    return
+  }
+  // Parse the JSON data
+  geoJsonData.value = await response.json()
 })
 
 // const geoJsonData = {
