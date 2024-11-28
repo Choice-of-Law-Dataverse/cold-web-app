@@ -24,7 +24,17 @@
             :attribution="'&copy; OpenStreetMap contributors'"
             :max-zoom="19"
           />
-
+          <!-- White Background -->
+          <LRectangle
+            :bounds="[
+              [-90, 200],
+              [90, -200],
+            ]"
+            :fill="true"
+            color="white"
+            weight="0"
+            fill-opacity="1"
+          />
           <!-- GeoJSON Layer -->
           <LGeoJson
             v-if="geoJsonData"
@@ -42,7 +52,7 @@
 //import { ref, onMounted } from 'vue'
 //import 'leaflet/dist/leaflet.css'
 
-// const geoJsonData = ref(null)
+const geoJsonData = ref(null)
 
 // Style function for GeoJSON
 // const style = (feature) => {
@@ -82,38 +92,38 @@ const onEachFeature = (feature, layer) => {
 //   tap: false, // Disable touch-based interactions
 // }
 
-// onMounted(async () => {
-//   // Fetch the GeoJSON data
-//   const response = await fetch(
-//     'https://leafletjs.com/examples/choropleth/us-states.js'
-//   )
-//   const jsonpData = await response.text()
+onMounted(async () => {
+  // Fetch the GeoJSON data
+  const response = await fetch(
+    'https://leafletjs.com/examples/choropleth/us-states.js'
+  )
+  const jsonpData = await response.text()
 
-//   // Convert JSONP to JSON by extracting the object
-//   const jsonString = jsonpData.match(/{.*}/s)[0]
-//   geoJsonData.value = JSON.parse(jsonString)
-// })
+  // Convert JSONP to JSON by extracting the object
+  const jsonString = jsonpData.match(/{.*}/s)[0]
+  geoJsonData.value = JSON.parse(jsonString)
+})
 
-const geoJsonData = {
-  type: 'FeatureCollection',
-  features: [
-    {
-      type: 'Feature',
-      properties: { density: 100 },
-      geometry: {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [-102.05, 40],
-            [-102.05, 37],
-            [-94.61, 37],
-            [-94.61, 40],
-            [-102.05, 40],
-          ],
-        ],
-      },
-    },
-    // More features...
-  ],
-}
+// const geoJsonData = {
+//   type: 'FeatureCollection',
+//   features: [
+//     {
+//       type: 'Feature',
+//       properties: { density: 100 },
+//       geometry: {
+//         type: 'Polygon',
+//         coordinates: [
+//           [
+//             [-102.05, 40],
+//             [-102.05, 37],
+//             [-94.61, 37],
+//             [-94.61, 40],
+//             [-102.05, 40],
+//           ],
+//         ],
+//       },
+//     },
+//     // More features...
+//   ],
+// }
 </script>
