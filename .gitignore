@@ -168,3 +168,5 @@ testing/*
 frontend/.nuxt
 frontend/node_modules
 frontend/public/temp_custom.geo.json
+frontend/public/.Rhistory
+frontend/public/temp_Answers-All data.csv

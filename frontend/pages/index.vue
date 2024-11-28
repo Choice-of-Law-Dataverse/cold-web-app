@@ -4,8 +4,8 @@
       <h1>Choice of Law Dataverse</h1>
       <h2>Find relevant case law and choice of law answers for your case.</h2>
       <PopularSearches />
-      <CountrySelectMenu />
       <JurisdictionMap />
+      <CountrySelectMenu />
     </div>
   </div>
 </template>

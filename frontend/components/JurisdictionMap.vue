@@ -51,20 +51,20 @@
 import { ref, computed, onMounted } from 'vue'
 
 const geoJsonData = ref(null)
-const blueCountries = ref([]) // List of countries to color blue by ISO3 code
+const coveredCountries = ref([]) // List of countries to color by ISO3 code
 const isDataReady = computed(
-  () => geoJsonData.value && blueCountries.value.length > 0
+  () => geoJsonData.value && coveredCountries.value.length > 0
 )
 
 const onEachFeature = (feature, layer) => {
   const isoCode = feature.properties.adm0_a3 // Get the ISO3 code
-  const isBlue = blueCountries.value.includes(isoCode)
-  //console.log('Feature ISO Code:', isoCode) // Debugging
-  //console.log('Is Blue:', blueCountries.value.includes(isoCode)) // Debugging
+  const isCovered = coveredCountries.value.includes(isoCode)
 
   layer.setStyle({
-    fillColor: isBlue ? 'blue' : 'var(--color-cold-cream)', // Blue for listed countries
-    weight: 1,
+    fillColor: isCovered
+      ? 'var(--color-cold-purple)'
+      : 'var(--color-cold-gray)',
+    weight: 0.5,
     color: 'white',
     fillOpacity: 1,
   })
@@ -79,7 +79,7 @@ onMounted(async () => {
   }
   geoJsonData.value = await geoJsonResponse.json()
 
-  // Fetch the list of countries to color blue
+  // Fetch the list of countries to color
   const countriesResponse = await fetch('/temp_answer_coverage.txt')
   if (!countriesResponse.ok) {
     console.error(
@@ -89,7 +89,6 @@ onMounted(async () => {
     return
   }
   const countriesText = await countriesResponse.text()
-  blueCountries.value = countriesText.split('\n').map((line) => line.trim())
-  //console.log('Loaded blueCountries:', blueCountries.value) // Debugging
+  coveredCountries.value = countriesText.split('\n').map((line) => line.trim())
 })
 </script>
