@@ -7,8 +7,8 @@
         <!-- Overlay Leaflet Map -->
         <LMap
           ref="map"
-          :zoom="1.5"
-          :center="[35, 0]"
+          :zoom="zoom"
+          :center="center"
           :use-global-leaflet="false"
           :options="{
             zoomControl: false,
@@ -43,6 +43,13 @@
           />
         </LMap>
       </div>
+      <USelectMenu
+        class="w-72 lg:w-96"
+        placeholder="Select a Region"
+        size="xl"
+        :options="regionOptions"
+        v-model="selectedRegion"
+      />
     </div>
   </UCard>
 </template>
@@ -55,6 +62,32 @@ const coveredCountries = ref([]) // List of countries to color by ISO3 code
 const isDataReady = computed(
   () => geoJsonData.value && coveredCountries.value.length > 0
 )
+
+// Reactive variables for map zoom and center
+const zoom = ref(1.5)
+const center = ref([35, 0])
+const selectedRegion = ref(null)
+
+// List of regions with associated zoom and center
+const regionOptions = [
+  { label: 'World', value: { zoom: 1.5, center: [35, 0] } },
+  { label: 'North America', value: { zoom: 3, center: [40, -100] } },
+  { label: 'Europe', value: { zoom: 4, center: [50, 10] } },
+  { label: 'Asia', value: { zoom: 3.5, center: [40, 100] } },
+  { label: 'Africa', value: { zoom: 3.5, center: [0, 20] } },
+  { label: 'South America', value: { zoom: 4, center: [-30, -90] } },
+]
+
+// Watch selectedRegion to update map zoom and center
+watch(selectedRegion, (newRegion) => {
+  if (newRegion?.value) {
+    zoom.value = newRegion.value.zoom
+    center.value = newRegion.value.center
+  }
+})
+
+// Initialize selected region to default
+selectedRegion.value = regionOptions[0]
 
 const onEachFeature = (feature, layer) => {
   const isoCode = feature.properties.adm0_a3 // Get the ISO3 code
