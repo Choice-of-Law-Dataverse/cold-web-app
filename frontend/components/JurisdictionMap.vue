@@ -1,7 +1,17 @@
 <template>
   <UCard class="cold-ucard">
     <div class="popular-searches-container">
-      <h2 class="popular-title">Answer Coverage</h2>
+      <h2>Answer Coverage</h2>
+      <!-- Wrapper for USelectMenu to control positioning -->
+      <div class="select-menu-container">
+        <USelectMenu
+          class="w-72 lg:w-96"
+          placeholder="Select a Region"
+          size="xl"
+          :options="regionOptions"
+          v-model="selectedRegion"
+        />
+      </div>
 
       <div style="height: 600px; width: 100%; margin-top: 50px">
         <!-- Overlay Leaflet Map -->
@@ -43,13 +53,6 @@
           />
         </LMap>
       </div>
-      <USelectMenu
-        class="w-72 lg:w-96"
-        placeholder="Select a Region"
-        size="xl"
-        :options="regionOptions"
-        v-model="selectedRegion"
-      />
     </div>
   </UCard>
 </template>
@@ -137,3 +140,11 @@ onMounted(async () => {
   coveredCountries.value = countriesText.split('\n').map((line) => line.trim())
 })
 </script>
+
+<style scoped>
+.select-menu-container {
+  position: relative; /* Ensure it's positioned relative to control stacking */
+  z-index: 1000; /* High enough to appear above the map */
+  margin-bottom: -40px; /* Adjust spacing between the menu and map */
+}
+</style>
