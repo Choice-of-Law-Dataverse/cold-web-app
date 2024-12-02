@@ -3,7 +3,7 @@
     <div class="popular-searches-container">
       <h2>Answer Coverage</h2>
       <!-- Wrapper for USelectMenu to control positioning -->
-      <div class="select-menu-container">
+      <!-- <div class="select-menu-container">
         <USelectMenu
           class="w-72 lg:w-96"
           placeholder="Select a Region"
@@ -11,7 +11,7 @@
           :options="regionOptions"
           v-model="selectedRegion"
         />
-      </div>
+      </div> -->
 
       <div style="height: 600px; width: 100%; margin-top: 50px">
         <!-- Overlay Leaflet Map -->
@@ -97,13 +97,32 @@ const onEachFeature = (feature, layer) => {
   const countryName = feature.properties.name // Get the country's name
   const isCovered = coveredCountries.value.includes(isoCode)
 
-  layer.setStyle({
+  // Default style
+  const defaultStyle = {
     fillColor: isCovered
       ? 'var(--color-cold-purple)'
       : 'var(--color-cold-gray)',
     weight: 0.5,
     color: 'white',
     fillOpacity: 1,
+  }
+
+  // Hover style
+  const hoverStyle = {
+    ...defaultStyle,
+    fillOpacity: 0.8, // 80% alpha on hover
+  }
+
+  // Set default style
+  layer.setStyle(defaultStyle)
+
+  // Add hover events
+  layer.on('mouseover', () => {
+    layer.setStyle(hoverStyle)
+  })
+
+  layer.on('mouseout', () => {
+    layer.setStyle(defaultStyle)
   })
 
   // Add a tooltip with the country's name
@@ -142,9 +161,9 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.select-menu-container {
-  position: relative; /* Ensure it's positioned relative to control stacking */
-  z-index: 1000; /* High enough to appear above the map */
-  margin-bottom: -40px; /* Adjust spacing between the menu and map */
-}
+/* .select-menu-container { */
+/* position: relative; Ensure it's positioned relative to control stacking */
+/* z-index: 1000; High enough to appear above the map */
+/* margin-bottom: -40px; Adjust spacing between the menu and map */
+/* } */
 </style>
