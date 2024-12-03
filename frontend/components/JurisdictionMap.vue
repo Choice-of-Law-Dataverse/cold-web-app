@@ -1,193 +1,89 @@
 <template>
   <UCard class="cold-ucard">
-    <div class="popular-searches-container">
-      <!-- <h2>Answer Coverage</h2> -->
-      <!-- Wrapper for USelectMenu to control positioning -->
-      <!-- <div class="select-menu-container">
+    <div>
+      <!-- Map Container -->
+      <div
+        style="height: 600px; width: 100%; margin-top: 0px; position: relative"
+      >
+        <!-- Dropdown for selecting region -->
+        <div class="select-menu-container">
           <USelectMenu
+            :model-value="selectedRegion"
+            @update:modelValue="updateSelectedRegion"
             class="w-72 lg:w-96"
             placeholder="Select a Region"
             size="xl"
             :options="regionOptions"
-            v-model="selectedRegion"
           />
-        </div> -->
+        </div>
 
-      <div style="height: 600px; width: 100%; margin-top: 0px">
-        <!-- Overlay Leaflet Map -->
-        <LMap
-          ref="map"
-          :zoom="zoom"
-          :center="center"
-          :use-global-leaflet="false"
-          :options="{
-            zoomControl: false,
-            scrollWheelZoom: false,
-            attributionControl: false,
-            dragging: false,
-            doubleClickZoom: false,
-          }"
-        >
-          <div id="info-control" class="info">
-            <h2>Answer Coverage</h2>
-          </div>
-          <!-- Tile Layer -->
-          <LTileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            :attribution="'&copy; OpenStreetMap contributors'"
-            :max-zoom="19"
-          />
-          <!-- White Background -->
-          <LRectangle
-            :bounds="[
-              [-120, 200],
-              [90, -200],
-            ]"
-            :fill="true"
-            color="white"
-            weight="0"
-            fill-opacity="1"
-          />
-          <!-- GeoJSON Layer -->
-          <LGeoJson
-            v-if="isDataReady"
-            :geojson="geoJsonData"
-            :options="{ onEachFeature }"
-          />
-        </LMap>
+        <!-- All Regions Map -->
+        <div v-if="selectedRegion === 'all'" class="map-wrapper">
+          <MapAllRegions />
+        </div>
+
+        <!-- Europe Map -->
+        <div v-if="selectedRegion === 'europe'" class="map-wrapper">
+          <MapEurope />
+        </div>
+
+        <!-- North America Map -->
+        <div v-if="selectedRegion === 'n-america'" class="map-wrapper">
+          <MapNorthAmerica />
+        </div>
       </div>
     </div>
   </UCard>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref } from 'vue'
 
-const geoJsonData = ref(null)
-const coveredCountries = ref([]) // List of countries to color by ISO3 code
-const isDataReady = computed(
-  () => geoJsonData.value && coveredCountries.value.length > 0
-)
+import MapAllRegions from './Maps/MapAllRegions.vue'
+import MapEurope from './Maps/MapEurope.vue'
+import MapNorthAmerica from './Maps/MapNorthAmerica.vue'
 
-// Reactive variables for map zoom and center
-const zoom = ref(1.5)
-const center = ref([35, 0])
-const selectedRegion = ref(null)
+// Reactive property to track the selected region
+const selectedRegion = ref('all')
 
-// List of regions with associated zoom and center
-const regionOptions = [
-  { label: 'World', value: { zoom: 1.5, center: [35, 0] } },
-  { label: 'North America', value: { zoom: 3, center: [40, -100] } },
-  { label: 'Europe', value: { zoom: 4, center: [50, 10] } },
-  { label: 'Asia', value: { zoom: 3.5, center: [40, 100] } },
-  { label: 'Africa', value: { zoom: 3.5, center: [0, 20] } },
-  { label: 'South America', value: { zoom: 4, center: [-30, -90] } },
-]
-
-// Watch selectedRegion to update map zoom and center
-watch(selectedRegion, (newRegion) => {
-  if (newRegion?.value) {
-    zoom.value = newRegion.value.zoom
-    center.value = newRegion.value.center
-  }
-})
-
-// Initialize selected region to default
-selectedRegion.value = regionOptions[0]
-
-const onEachFeature = (feature, layer) => {
-  const isoCode = feature.properties.adm0_a3 // Get the ISO3 code
-  const countryName = feature.properties.name // Get the country's name
-  const isCovered = coveredCountries.value.includes(isoCode)
-
-  // Default style
-  const defaultStyle = {
-    fillColor: isCovered
-      ? 'var(--color-cold-purple)'
-      : 'var(--color-cold-gray)',
-    weight: 0.5,
-    color: 'white',
-    fillOpacity: 1,
-  }
-
-  // Hover style
-  const hoverStyle = {
-    ...defaultStyle,
-    fillOpacity: 0.8, // 80% alpha on hover
-  }
-
-  // Set default style
-  layer.setStyle(defaultStyle)
-
-  // Add hover events
-  layer.on('mouseover', () => {
-    layer.setStyle(hoverStyle)
-
-    // Update the info control
-    const infoControl = document.getElementById('info-control')
-    if (infoControl) {
-      infoControl.innerHTML = `
-        <h2>${countryName}</h2>
-        <h2>${isCovered ? 'Data available' : 'No data available'}</h2>
-      `
-    }
-  })
-
-  layer.on('mouseout', () => {
-    layer.setStyle(defaultStyle)
-
-    // Reset the info control
-    const infoControl = document.getElementById('info-control')
-    if (infoControl) {
-      infoControl.innerHTML = `
-        <h2>Answer Coverage</h2>
-      `
-    }
-  })
-
-  // Add a click event to navigate to the country-specific URL
-  layer.on('click', () => {
-    window.location.href = `/jurisdiction/${countryName.toLowerCase()}`
-  })
+const updateSelectedRegion = (option) => {
+  selectedRegion.value = option.value // Extract the `value` field
 }
 
-//   Add a tooltip with the country's name
-//     layer.bindTooltip(countryName, {
-//       permanent: false, // Show only on hover
-//       direction: 'top', // Tooltip direction
-//     })
-
-onMounted(async () => {
-  // Fetch the GeoJSON data
-  const geoJsonResponse = await fetch('/temp_custom.geo.json')
-  if (!geoJsonResponse.ok) {
-    console.error('Failed to fetch GeoJSON file:', geoJsonResponse.statusText)
-    return
-  }
-  geoJsonData.value = await geoJsonResponse.json()
-
-  // Fetch the list of countries to color
-  const countriesResponse = await fetch('/temp_answer_coverage.txt')
-  if (!countriesResponse.ok) {
-    console.error(
-      'Failed to fetch countries file:',
-      countriesResponse.statusText
-    )
-    return
-  }
-  const countriesText = await countriesResponse.text()
-  coveredCountries.value = countriesText.split('\n').map((line) => line.trim())
-})
+// Options for the USelectMenu
+const regionOptions = [
+  { label: 'All Regions', value: 'all' },
+  { label: 'Europe', value: 'europe' },
+  { label: 'North America', value: 'n-america' },
+]
 </script>
 
 <style scoped>
-.info {
+/* Ensure maps occupy the same space */
+.map-wrapper {
   position: absolute;
-  z-index: 1000;
-  background: white;
-  font-family: 'Inter', Arial, sans-serif; /* Replace with your global font */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 }
 
+.select-menu-container {
+  position: absolute;
+  top: 10px; /* Adjust as needed */
+  right: 10px; /* Adjust as needed */
+  z-index: 1000; /* Ensure it appears above the map */
+}
+
+/* Ensure the dropdown menu appears correctly */
+.select-menu-container .u-select-menu-dropdown {
+  z-index: 1100; /* Higher than the container for the dropdown */
+}
+
+/* Hide inactive maps */
+/* .map-wrapper:not([v-show]) {
+  display: none;
+} */
 /* .select-menu-container { */
 /* position: relative; Ensure it's positioned relative to control stacking */
 /* z-index: 1000; High enough to appear above the map */
