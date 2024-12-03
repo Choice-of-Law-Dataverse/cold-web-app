@@ -128,6 +128,7 @@ const onEachFeature = (feature, layer) => {
     if (infoControl) {
       infoControl.innerHTML = `
         <h2>${countryName}</h2>
+        <h2>${isCovered ? 'Data available' : 'No data available'}</h2>
       `
     }
   })
