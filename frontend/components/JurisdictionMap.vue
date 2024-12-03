@@ -17,19 +17,32 @@
           />
         </div>
 
-        <!-- All Regions Map -->
-        <div v-if="selectedRegion === 'all'" class="map-wrapper">
+        <div v-if="selectedRegion === 'Africa'" class="map-wrapper">
+          <MapAfrica />
+        </div>
+        <div v-if="selectedRegion === 'All Regions'" class="map-wrapper">
           <MapAllRegions />
         </div>
-
-        <!-- Europe Map -->
-        <div v-if="selectedRegion === 'europe'" class="map-wrapper">
+        <div v-if="selectedRegion === 'Arab States'" class="map-wrapper">
+          <MapArabStates />
+        </div>
+        <div v-if="selectedRegion === 'Asia & Pacific'" class="map-wrapper">
+          <MapAsiaPacific />
+        </div>
+        <div v-if="selectedRegion === 'Europe'" class="map-wrapper">
           <MapEurope />
         </div>
-
-        <!-- North America Map -->
-        <div v-if="selectedRegion === 'n-america'" class="map-wrapper">
+        <div v-if="selectedRegion === 'Middle East'" class="map-wrapper">
+          <MapMiddleEast />
+        </div>
+        <div v-if="selectedRegion === 'North America'" class="map-wrapper">
           <MapNorthAmerica />
+        </div>
+        <div
+          v-if="selectedRegion === 'South & Latin America'"
+          class="map-wrapper"
+        >
+          <MapSouthLatinAmerica />
         </div>
       </div>
     </div>
@@ -39,9 +52,14 @@
 <script setup>
 import { ref } from 'vue'
 
+import MapAfrica from './Maps/MapAfrica.vue'
 import MapAllRegions from './Maps/MapAllRegions.vue'
+import MapArabStates from './Maps/MapArabStates.vue'
+import MapAsiaPacific from './Maps/MapAsiaPacific.vue'
 import MapEurope from './Maps/MapEurope.vue'
+import MapMiddleEast from './Maps/MapMiddleEast.vue'
 import MapNorthAmerica from './Maps/MapNorthAmerica.vue'
+import MapSouthLatinAmerica from './Maps/MapSouthLatinAmerica.vue'
 
 // Reactive property to track the selected region
 const selectedRegion = ref('all')
@@ -52,9 +70,14 @@ const updateSelectedRegion = (option) => {
 
 // Options for the USelectMenu
 const regionOptions = [
-  { label: 'All Regions', value: 'all' },
-  { label: 'Europe', value: 'europe' },
-  { label: 'North America', value: 'n-america' },
+  { label: 'Africa', value: 'Africa' },
+  { label: 'All Regions', value: 'All Regions' },
+  { label: 'Arab States', value: 'Arab States' },
+  { label: 'Asia & Pacific', value: 'Asia & Pacific' },
+  { label: 'Europe', value: 'Europe' },
+  { label: 'Middle East', value: 'Middle East' },
+  { label: 'North America', value: 'North America' },
+  { label: 'South & Latin America', value: 'South & Latin America' },
 ]
 </script>
 

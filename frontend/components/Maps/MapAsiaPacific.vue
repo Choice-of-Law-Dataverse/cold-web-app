@@ -25,7 +25,7 @@
     <!-- White Background -->
     <LRectangle
       :bounds="[
-        [-120, 200],
+        [-120, 220],
         [90, -200],
       ]"
       :fill="true"
@@ -53,8 +53,8 @@ const isDataReady = computed(
 )
 
 // Map configuration
-const zoom = ref(4)
-const center = ref([55, 18])
+const zoom = ref(2.5)
+const center = ref([4, 120])
 
 defineProps({
   zoom: Number,
