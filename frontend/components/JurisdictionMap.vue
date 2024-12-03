@@ -97,45 +97,75 @@ const onEachFeature = (feature, layer) => {
   const countryName = feature.properties.name // Get the country's name
   const isCovered = coveredCountries.value.includes(isoCode)
 
-  // Default style
-  const defaultStyle = {
+  // Function to compute the default style dynamically
+  const getDefaultStyle = (isCovered) => ({
     fillColor: isCovered
       ? 'var(--color-cold-purple)'
       : 'var(--color-cold-gray)',
     weight: 0.5,
     color: 'white',
     fillOpacity: 1,
-  }
+  })
 
-  // Hover style
+  // Hover style for the hovered country
   const hoverStyle = {
-    ...defaultStyle,
-    fillOpacity: 0.8, // 80% alpha on hover
+    ...getDefaultStyle(isCovered),
+    fillOpacity: 1, // Full alpha on hover
   }
 
-  // Set default style
-  layer.setStyle(defaultStyle)
-
-  // Add hover events
-  layer.on('mouseover', () => {
-    layer.setStyle(hoverStyle)
+  // Alpha style for non-hovered countries
+  const otherCountryStyle = (isOtherCovered) => ({
+    ...getDefaultStyle(isOtherCovered),
+    fillOpacity: 0.4, // Dimmed opacity
   })
 
-  layer.on('mouseout', () => {
-    layer.setStyle(defaultStyle)
-  })
+  // Set default style initially
+  layer.setStyle(getDefaultStyle(isCovered))
 
-  // Add a tooltip with the country's name
-  layer.bindTooltip(countryName, {
-    permanent: false, // Show only on hover
-    direction: 'top', // Tooltip direction
-  })
+  // Add hover events only for covered (purple) countries
+  if (isCovered) {
+    layer.on('mouseover', () => {
+      // Set the style for the hovered country
+      layer.setStyle(hoverStyle)
+
+      // Dim other countries
+      layer._map.eachLayer((l) => {
+        if (l !== layer && l.feature) {
+          const isOtherCovered = coveredCountries.value.includes(
+            l.feature.properties.adm0_a3
+          )
+          l.setStyle(otherCountryStyle(isOtherCovered))
+        }
+      })
+    })
+
+    layer.on('mouseout', () => {
+      // Reset the style for the hovered country
+      layer.setStyle(getDefaultStyle(isCovered))
+
+      // Reset the style for all countries
+      layer._map.eachLayer((l) => {
+        if (l.feature) {
+          const isOtherCovered = coveredCountries.value.includes(
+            l.feature.properties.adm0_a3
+          )
+          l.setStyle(getDefaultStyle(isOtherCovered))
+        }
+      })
+    })
+  }
 
   // Add a click event to navigate to the country-specific URL
   layer.on('click', () => {
     window.location.href = `/jurisdiction/${countryName.toLowerCase()}`
   })
 }
+
+// Add a tooltip with the country's name
+// layer.bindTooltip(countryName, {
+//   permanent: false, // Show only on hover
+//   direction: 'top', // Tooltip direction
+// })
 
 onMounted(async () => {
   // Fetch the GeoJSON data
