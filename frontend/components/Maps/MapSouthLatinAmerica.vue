@@ -53,8 +53,8 @@ const isDataReady = computed(
 )
 
 // Map configuration
-const zoom = ref(4)
-const center = ref([55, 18])
+const zoom = ref(3)
+const center = ref([-20, -60])
 
 defineProps({
   zoom: Number,

@@ -1,63 +1,49 @@
 <template>
-  <div id="map-container-all" style="height: 100%">
-    <!-- Overlay Leaflet Map -->
-    <LMap
-      :key="mapKey"
-      ref="map"
-      :zoom="zoom"
-      :center="center"
-      :use-global-leaflet="false"
-      :options="{
-        zoomControl: false,
-        scrollWheelZoom: false,
-        attributionControl: false,
-        dragging: false,
-        doubleClickZoom: false,
-      }"
-    >
-      <div id="info-control" class="info">
-        <h2>Answer Coverage</h2>
-      </div>
-      <!-- Tile Layer -->
-      <LTileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        :attribution="'&copy; OpenStreetMap contributors'"
-        :max-zoom="19"
-      />
-      <!-- White Background -->
-      <LRectangle
-        :bounds="[
-          [-120, 200],
-          [90, -200],
-        ]"
-        :fill="true"
-        color="white"
-        weight="0"
-        fill-opacity="1"
-      />
-      <!-- GeoJSON Layer -->
-      <LGeoJson
-        v-if="isDataReady"
-        :geojson="geoJsonData"
-        :options="{ onEachFeature }"
-      />
-    </LMap>
-  </div>
+  <!-- Overlay Leaflet Map -->
+  <LMap
+    ref="map"
+    :zoom="zoom"
+    :center="center"
+    :use-global-leaflet="false"
+    :options="{
+      zoomControl: false,
+      scrollWheelZoom: false,
+      attributionControl: false,
+      dragging: false,
+      doubleClickZoom: false,
+    }"
+  >
+    <div id="info-control" class="info">
+      <h2>Answer Coverage</h2>
+    </div>
+    <!-- Tile Layer -->
+    <LTileLayer
+      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+      :attribution="'&copy; OpenStreetMap contributors'"
+      :max-zoom="19"
+    />
+    <!-- White Background -->
+    <LRectangle
+      :bounds="[
+        [-120, 200],
+        [90, -200],
+      ]"
+      :fill="true"
+      color="white"
+      weight="0"
+      fill-opacity="1"
+    />
+    <!-- GeoJSON Layer -->
+    <LGeoJson
+      v-if="isDataReady"
+      :geojson="geoJsonData"
+      :options="{ onEachFeature }"
+    />
+  </LMap>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-
-defineProps({
-  zoom: Number,
-  center: Array,
-})
-
-const mapKey = ref(Date.now()) // Use a unique timestamp as key
-
-// Map configuration
-const zoom = ref(3)
-const center = ref([50, -100])
+import { ref, computed, onMounted } from 'vue'
 
 // GeoJSON data and readiness state
 const geoJsonData = ref(null)
@@ -65,6 +51,15 @@ const coveredCountries = ref([]) // Example: Country coverage data
 const isDataReady = computed(
   () => geoJsonData.value && coveredCountries.value.length > 0
 )
+
+// Map configuration
+const zoom = ref(3)
+const center = ref([50, -100])
+
+defineProps({
+  zoom: Number,
+  center: Array,
+})
 
 // Example function for handling GeoJSON features
 const onEachFeature = (feature, layer) => {
@@ -94,10 +89,27 @@ const onEachFeature = (feature, layer) => {
   // Add hover events
   layer.on('mouseover', () => {
     layer.setStyle(hoverStyle)
+
+    // Update the info control
+    const infoControl = document.getElementById('info-control')
+    if (infoControl) {
+      infoControl.innerHTML = `
+        <h2>${countryName}</h2>
+        <h2>${isCovered ? 'Data available' : 'No data available'}</h2>
+      `
+    }
   })
 
   layer.on('mouseout', () => {
     layer.setStyle(defaultStyle)
+
+    // Reset the info control
+    const infoControl = document.getElementById('info-control')
+    if (infoControl) {
+      infoControl.innerHTML = `
+        <h2>Answer Coverage</h2>
+      `
+    }
   })
 
   // Add a click event to navigate to the country-specific URL
@@ -124,14 +136,6 @@ onMounted(async () => {
   } catch (error) {
     console.error(error)
   }
-})
-
-// Cleanup when component is unmounted
-onUnmounted(() => {
-  // Reset GeoJSON data and map key to force reinitialization
-  geoJsonData.value = null
-  coveredCountries.value = []
-  mapKey.value = Date.now() // Update key to force re-render
 })
 </script>
 
