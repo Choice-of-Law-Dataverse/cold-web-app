@@ -62,7 +62,7 @@ import MapNorthAmerica from './Maps/MapNorthAmerica.vue'
 import MapSouthLatinAmerica from './Maps/MapSouthLatinAmerica.vue'
 
 // Reactive property to track the selected region
-const selectedRegion = ref('all')
+const selectedRegion = ref('All Regions')
 
 const updateSelectedRegion = (option) => {
   selectedRegion.value = option.value // Extract the `value` field
@@ -70,8 +70,8 @@ const updateSelectedRegion = (option) => {
 
 // Options for the USelectMenu
 const regionOptions = [
-  { label: 'Africa', value: 'Africa' },
   { label: 'All Regions', value: 'All Regions' },
+  { label: 'Africa', value: 'Africa' },
   { label: 'Arab States', value: 'Arab States' },
   { label: 'Asia & Pacific', value: 'Asia & Pacific' },
   { label: 'Europe', value: 'Europe' },
