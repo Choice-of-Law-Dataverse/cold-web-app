@@ -1,6 +1,5 @@
 <template>
-  <div v-if="content" class="copy" v-html="htmlContent"></div>
-  <div v-else>Loading...</div>
+  <div class="copy" v-html="htmlContent"></div>
 </template>
 
 <script setup>
@@ -12,15 +11,15 @@ const htmlContent = ref('') // Store parsed HTML content
 
 onMounted(async () => {
   try {
-    const response = await fetch('/temp_about.txt') // Fetch the Markdown file
+    const response = await fetch('/temp_overview.txt') // Fetch the Markdown file
     if (response.ok) {
       content.value = await response.text() // Store raw Markdown
       htmlContent.value = marked(content.value) // Convert Markdown to HTML
     } else {
-      console.error('Failed to load about.txt:', response.statusText)
+      console.error('Failed to load text:', response.statusText)
     }
   } catch (error) {
-    console.error('Error loading about.txt:', error)
+    console.error('Error loading text:', error)
   }
 })
 </script>

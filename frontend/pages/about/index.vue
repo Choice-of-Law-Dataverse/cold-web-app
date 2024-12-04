@@ -20,9 +20,17 @@
             <div v-if="activeTab === 'overview'">
               <Overview />
             </div>
-
+            <div v-if="activeTab === 'open-educational-resources'">
+              <OpenEducationalResources />
+            </div>
+            <div v-if="activeTab === 'faq'">
+              <FAQ />
+            </div>
             <div v-else-if="activeTab === 'team'">
               <Team />
+            </div>
+            <div v-else-if="activeTab === 'press'">
+              <Press />
             </div>
           </div>
         </div>
@@ -35,12 +43,18 @@
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Overview from './Overview.vue'
+import OpenEducationalResources from './OpenEducationalResources.vue'
+import FAQ from './FAQ.vue'
 import Team from './Team.vue'
+import Press from './Press.vue'
 
 // Define the navigation links
 const links = [
   { label: 'Overview', key: 'overview' },
+  { label: 'Open Educational Resources', key: 'open-educational-resources' },
+  { label: 'FAQ', key: 'faq' },
   { label: 'Team', key: 'team' },
+  { label: 'Press', key: 'press' },
 ]
 
 // Initialize router and route
