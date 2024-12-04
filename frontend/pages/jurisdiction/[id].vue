@@ -34,10 +34,10 @@ const loading = ref(true) // Track loading state
 const compareJurisdiction = ref((route.query.c as string) || null)
 
 // Fetch the jurisdiction details
-async function fetchJurisdiction(name: string) {
+async function fetchJurisdiction(iso2: string) {
   const jsonPayload = {
     table: 'Jurisdictions',
-    filters: [{ column: 'Name', value: name }],
+    filters: [{ column: 'Alpha-2 code', value: iso2 }],
   }
 
   try {
