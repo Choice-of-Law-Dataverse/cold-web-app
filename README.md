@@ -1,16 +1,9 @@
 # cold-web-app
 repository for building and deploying the cold web app.
 
-## Run locally
-Make sure you have Nuxt and Nuxt UI set up
-```bash
-npx nuxi@latest init <project-name>
-npx nuxi@latest module add ui
-```
+## Versioning and Deployment Policy
+We continuously deploy the backend and frontend independently of each other. Each component evolves at its own pace, with versioning applied as changes are introduced.
 
-Start the front-end development server on `http://localhost:3000`:
+When creating a new "official" release of the repository, we align the version numbers of the backend and frontend to the highest version number between the two, ensuring consistency. This may involve incrementing the version of the component that is "lagging behind" to match the other.
 
-```bash
-cd frontend
-npm run dev
-```
+This approach allows for flexibility in development while maintaining coherence in official releases.
