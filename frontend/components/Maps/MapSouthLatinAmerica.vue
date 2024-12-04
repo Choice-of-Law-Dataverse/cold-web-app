@@ -63,7 +63,7 @@ defineProps({
 
 // Example function for handling GeoJSON features
 const onEachFeature = (feature, layer) => {
-  const isoCode = feature.properties.adm0_a3 // Get the ISO3 code
+  const isoCode = feature.properties.iso_a2_eh // Get the ISO2 code
   const countryName = feature.properties.name // Get the country's name
   const isCovered = coveredCountries.value.includes(isoCode)
 
@@ -114,7 +114,7 @@ const onEachFeature = (feature, layer) => {
 
   // Add a click event to navigate to the country-specific URL
   layer.on('click', () => {
-    window.location.href = `/jurisdiction/${countryName.toLowerCase()}`
+    window.location.href = `/jurisdiction/${isoCode.toLowerCase()}`
   })
 }
 

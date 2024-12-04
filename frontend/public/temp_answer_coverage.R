@@ -15,19 +15,29 @@ library(here)
 # Import Answers table from Airtable
 answers <- read.csv(here("frontend", "public", "temp_Answers-All data.csv"))
 
+# Import Jurisdictions
+jurisdictions <- read.csv(here("frontend", "public", "temp_Jurisdictions-All data.csv"))
+
 
 # Preprocessing ----------------------------
 
+jurisdictions <- jurisdictions %>% 
+  select(Alpha.3.code, Alpha.2.code) %>%
+  rename(iso2 = Alpha.2.code,
+         iso3 = Alpha.3.code) %>% 
+  distinct(iso2, .keep_all = T)
+
 answers <- answers %>% 
   select(ID, Answer, Alpha.3.code..from.Jurisdiction.) %>% 
-  rename(jurisdiction = Alpha.3.code..from.Jurisdiction.) %>% 
+  rename(iso3 = Alpha.3.code..from.Jurisdiction.) %>% 
   dplyr::filter(Answer != "No data") %>% 
-  dplyr::filter(Answer != "") 
+  dplyr::filter(Answer != "") %>% 
+  left_join(jurisdictions, by = "iso3")
 
 
 # Process Data ----------------------------
 
-distinct_jurisdictions <- answers %>% distinct(jurisdiction)
+distinct_jurisdictions <- answers %>% distinct(iso2)
 
 
 # Export ----------------------------
