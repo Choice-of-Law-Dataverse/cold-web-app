@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import Overview from './Overview.vue'
 import Team from './Team.vue'
 
@@ -9,8 +10,17 @@ const links = [
   { label: 'Team', key: 'team' },
 ]
 
-// Reactive variable to track the active tab
-const activeTab = ref('overview')
+// Initialize router and route
+const router = useRouter()
+const route = useRoute()
+
+// Reactive variable to track the active tab, default to 'overview'
+const activeTab = ref(route.query.tab || 'overview')
+
+// Watch for changes in activeTab and update the URL query
+watch(activeTab, (newTab) => {
+  router.replace({ query: { ...route.query, tab: newTab } })
+})
 
 // Function to set the active tab
 const setActiveTab = (key) => {

@@ -1,3 +1,6 @@
 <template>
-  <h2>Overview Page</h2>
+  <div>
+    <h2>Overview</h2>
+    <p>This is the overview section of the About page.</p>
+  </div>
 </template>
