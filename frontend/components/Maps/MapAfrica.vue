@@ -138,12 +138,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style scoped>
-.info {
-  position: absolute;
-  z-index: 1000;
-  background: white;
-  font-family: 'Inter', Arial, sans-serif; /* Replace with your global font */
-}
-</style>

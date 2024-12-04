@@ -10,7 +10,7 @@
           <USelectMenu
             :model-value="selectedRegion"
             @update:modelValue="updateSelectedRegion"
-            class="w-72 lg:w-96"
+            class="w-12 lg:w-60"
             placeholder="Select a Region"
             size="xl"
             :options="regionOptions"
@@ -93,8 +93,8 @@ const regionOptions = [
 
 .select-menu-container {
   position: absolute;
-  top: 10px; /* Adjust as needed */
-  right: 10px; /* Adjust as needed */
+  top: 12px; /* Adjust as needed */
+  right: 12px; /* Adjust as needed */
   z-index: 1000; /* Ensure it appears above the map */
 }
 
