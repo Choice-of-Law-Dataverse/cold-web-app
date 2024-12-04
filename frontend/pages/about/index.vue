@@ -111,7 +111,7 @@ li.active {
 
 .custom-nav {
   margin-top: 32px;
-  margin-left: 24px;
+  margin-left: 12px;
 }
 
 /* Ensure no default list styles appear */
