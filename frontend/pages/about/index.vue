@@ -12,11 +12,19 @@
                 v-for="link in links"
                 :key="link.key"
                 :class="[
-                  'px-4 py-2 cursor-pointer',
+                  'result-value-small cursor-pointer',
                   activeTab === link.key
-                    ? 'text-blue-500 border-b-2 border-blue-500'
-                    : 'text-gray-600 hover:text-blue-400',
+                    ? 'active font-bold text-cold-purple'
+                    : 'text-cold-night',
                 ]"
+                :style="
+                  activeTab === link.key
+                    ? {
+                        color: 'var(--color-cold-purple)',
+                        borderColor: 'var(--color-cold-purple)',
+                      }
+                    : {}
+                "
                 @click="setActiveTab(link.key)"
               >
                 {{ link.label }}
@@ -87,8 +95,18 @@ const setActiveTab = (key) => {
 </script>
 
 <style scoped>
+ul {
+  border-bottom: 1px solid var(--color-cold-gray); /* Gray line */
+  position: relative;
+}
+
 li {
-  padding-bottom: 20px !important; /* Adds space between text and the gray line */
+  padding-bottom: 0px !important; /* Adjust spacing between text and gray line */
+}
+
+li.active {
+  border-bottom: 1px solid var(--color-cold-purple) !important; /* Active item underline */
+  margin-bottom: -1px !important; /* Offset to align with the gray line */
 }
 
 .custom-nav {
