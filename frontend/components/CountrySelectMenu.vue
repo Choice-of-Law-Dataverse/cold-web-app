@@ -46,11 +46,23 @@ async function fetchJurisdictions() {
 // Nuxt Router instance
 const router = useRouter()
 
-// Navigate to the selected country's page
-const navigateToCountry = (country) => {
+const navigateToCountry = async (country) => {
   if (country) {
-    const formattedCountry = country.replace(/\s+/g, '_').toLowerCase() // Format the country name
-    router.push(`/jurisdiction/${formattedCountry}`)
+    try {
+      const response = await fetch(
+        `https://restcountries.com/v3.1/name/${country}?fields=cca2`
+      )
+      const data = await response.json()
+
+      if (data && data[0] && data[0].cca2) {
+        const isoCode = data[0].cca2.toLowerCase() // Convert to lowercase
+        router.push(`/jurisdiction/${isoCode}`)
+      } else {
+        console.error(`ISO2 code not found for country: ${country}`)
+      }
+    } catch (error) {
+      console.error('Error fetching ISO2 code:', error)
+    }
   }
 }
 

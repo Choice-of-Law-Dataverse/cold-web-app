@@ -199,6 +199,17 @@ h2 {
   margin-bottom: 24px;
 }
 
+
+// Info Box in Jurisdiction Map
+.info {
+  position: absolute;
+  z-index: 1000;
+  background: white;
+  font-family: 'Inter', Arial, sans-serif; /* Replace with your global font */
+  padding-right: 12px;
+  padding-bottom: 6px;
+}
+
 .cold-uselectmenu button {
   box-shadow: none !important;
   border: 1px solid var(--color-cold-gray) !important;
