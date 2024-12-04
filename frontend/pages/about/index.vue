@@ -2,19 +2,30 @@
   <div class="container">
     <div class="col-span-12">
       <UCard class="cold-ucard">
+        <!-- Custom Navigation -->
+        <div class="custom-nav">
+          <nav>
+            <ul
+              class="flex space-x-4 border-b border-gray-200 dark:border-gray-800 list-none"
+            >
+              <li
+                v-for="link in links"
+                :key="link.key"
+                :class="[
+                  'px-4 py-2 cursor-pointer',
+                  activeTab === link.key
+                    ? 'text-blue-500 border-b-2 border-blue-500'
+                    : 'text-gray-600 hover:text-blue-400',
+                ]"
+                @click="setActiveTab(link.key)"
+              >
+                {{ link.label }}
+              </li>
+            </ul>
+          </nav>
+        </div>
         <div class="main-content-grid">
-          <!-- Horizontal Navigation -->
           <div class="grid-item">
-            <UHorizontalNavigation
-              :links="
-                links.map((link) => ({
-                  ...link,
-                  click: () => setActiveTab(link.key),
-                }))
-              "
-              class="border-b border-gray-200 dark:border-gray-800"
-            />
-
             <!-- Tab Content -->
 
             <div v-if="activeTab === 'overview'">
@@ -76,6 +87,26 @@ const setActiveTab = (key) => {
 </script>
 
 <style scoped>
+li {
+  padding-bottom: 20px !important; /* Adds space between text and the gray line */
+}
+
+.custom-nav {
+  margin-top: 32px;
+  margin-left: 24px;
+}
+
+/* Ensure no default list styles appear */
+.list-none {
+  list-style: none !important;
+}
+
+/* Add some spacing and hover effects to the navigation links */
+.flex li {
+  padding: 0.5rem 1rem;
+  transition: color 0.3s ease;
+}
+
 .main-content-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr)); /* 12-column layout */
