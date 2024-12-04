@@ -1,0 +1,66 @@
+The Choice of Law Dataverse is a Repository
+CoLD contains carefully curated private international law data, helping experts stay up to date on legal changes across the world.
+
+The Choice of Law Dataverse is a Community
+Our main objective is to transform data points into knowledge through collaboration within a community.
+
+The Choice of Law Dataverse is Open Research
+The Dataverse promotes sharing, preserving, citing, exploring and analyzing research data on choice of law
+CoLD is licensed under CC BY 4.0
+
+Why Do You Need CoLD?
+The core subject of CoLD is of significant importance to the resolution of real-world international commercial disputes. Rules of law chosen by the parties (or otherwise identified as applicable by judges or arbitrators) can significantly impact the outcome of a case before courts or an arbitral tribunal, and a framework on how to choose these rules is therefore necessary.
+Undertaking research in this area across fragmented databases is very burdensome to legal practitioners and scholars. When a dispute arises, clients ultimately bear the costs. These costs stand to be reduced—and access to justice thereby stands to be improved—where legal practitioners have access to a Dataverse.
+
+Learn more about the core subject
+The discipline in which this research project is inserted is private international law, also known as conflict of laws. It refers to a set of rules of law (of domestic, regional, international or supranational nature) that can determine (i) which court has jurisdiction and (ii) which law governs a given legal transaction or dispute. Our research is concerned solely with the second aspect, i.e., the determination of the applicable law.
+
+What’s the Methodology Behind CoLD?
+In order to systematize diverse rules and case law decisions in a uniform manner, comparative law methodology is applied. A high-quality database is the result of comprehensive global research efforts on the topic of choice of law, and the ultimate goal is to add more data points to the main dataset. Information will be “in motion”, constantly updated and connected to the users.
+
+Learn more about the objectives
+Our specific objectives are the following:
+
+To expand the scope of data collection to more African, Asian and Latin American countries.
+
+To update the existing information.
+
+To translate relevant data points into English. 
+
+To present the information in a systematic and orderly manner.
+
+To design a user-friendly online platform as a sustainable data-sharing strategy.
+
+To provide a comprehensive overview of national, regional, supranational, and international rules and approaches to choice of law.
+
+To determine good practices which may be transferable to other jurisdictions, notably where a body of rules is not consolidated and courts have not adopted a position on a given choice of law issue. 
+
+To identify convergent trends in party autonomy across the five continents.
+
+To forecast new directions regarding the future of transnational rules on conflict of laws.
+
+Who Supports CoLD?
+Swiss National Science Foundation: “The Hague Principles and Beyond”, Project No. 179515 (2018–2021)
+Forschungskommission der Universität Luzern: Start up funding (2022)
+Swiss National Science Foundation: “Choice of Law Dataverse: promoting transparency and access in private international law data”, Project No. 215469 (2023-2026)
+Provost's administrative support, University of Lucerne (2023-2026)
+
+Who Endorses CoLD?
+
+The Research Centre for Private International Law in Emerging Countries
+Led by Prof Jan L Neels and Prof Eesa A Fredericks (Project Partners), the Research Centre for Private International Law in Emerging Countries at the University of Johannesburg develops studies on the harmonization of international commercial law, most notably the African Principles on the Law Applicable to International Commercial Contracts.
+
+The Hague Conference on Private International Law
+We count with the support of the Hague Conference on Private International Law (HCCH) and its wide network of specialists. This project will also follow the future work of the HCCH on the law applicable to international commercial contracts.
+
+UdEM
+Prof Geneviève Saumier is the dean of Faculty of Law of the Université de Montréal and also serves as a Project Partner for the Dataverse. She has worked closely with the HCCH and has developed numerous studies on private international law.
+
+CEDEP
+CEDEP is a research institute with global outreach that promotes courses and events closely related to the studies developed by this project.
+
+Federal Office of Justice
+The Swiss Federal Office of Justice has shown interest in using the Dataverse as a valuable source of information for undertaking its international analyses.
+
+The Lucerne Master in Computational Social Sciences
+This is an interdisciplinary master’s program at the University of Lucerne in which students can collaborate with our project. A Capstone Project on the integration of ChatGPT in the Dataverse was conducted (Feb/2024) and is now consolidated as a sub-research project.
