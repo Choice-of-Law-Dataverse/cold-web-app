@@ -16,10 +16,6 @@
 import { ref, onMounted } from 'vue'
 import { marked } from 'marked' // Import the Markdown parser
 
-marked.setOptions({
-  //gfm: true, // Enable GitHub Flavored Markdown
-})
-
 const content = ref('') // Reactive variable for storing the file content
 const htmlContent = ref('') // Store parsed HTML content
 
@@ -39,6 +35,22 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* Add consistent spacing between list items */
+::v-deep(ol > li),
+::v-deep(ol ol > li),
+::v-deep(ol ol ol > li),
+::v-deep(ol ol ol ol > li) {
+  margin-bottom: 0px !important; /* Adjust as needed for consistent spacing */
+}
+
+/* Ensure sub-lists are indented without extra spacing */
+::v-deep(ol ol),
+::v-deep(ol ol ol),
+::v-deep(ol ol ol ol) {
+  margin-top: 0 !important;
+  margin-bottom: -48px !important;
+}
+
 /* Reset the counter for the top-level list */
 ::v-deep(ol) {
   counter-reset: list-counter; /* Initialize the counter */
@@ -59,7 +71,7 @@ onMounted(async () => {
 ::v-deep(ol ol) {
   counter-reset: sub-list-counter; /* Reset the sub-list counter */
   list-style: none; /* Remove the default numbering */
-  margin-left: 20px; /* Indent for sub-lists */
+  margin-left: 24px; /* Indent for sub-lists */
 }
 
 ::v-deep(ol ol > li) {
@@ -74,7 +86,7 @@ onMounted(async () => {
 ::v-deep(ol ol ol) {
   counter-reset: sub-sub-list-counter; /* Reset the sub-sub-list counter */
   list-style: none; /* Remove the default numbering */
-  margin-left: 20px; /* Indent for sub-sub-lists */
+  margin-left: 24px; /* Indent for sub-sub-lists */
 }
 
 ::v-deep(ol ol ol > li) {
@@ -90,7 +102,7 @@ onMounted(async () => {
 ::v-deep(ol ol ol ol) {
   counter-reset: sub-sub-sub-list-counter; /* Reset the fourth-level counter */
   list-style: none; /* Remove the default numbering */
-  margin-left: 20px; /* Indent for sub-sub-sub-lists */
+  margin-left: 24px; /* Indent for sub-sub-sub-lists */
 }
 
 ::v-deep(ol ol ol ol > li) {
@@ -113,10 +125,16 @@ onMounted(async () => {
 
 .grid-item {
   grid-column: 1 / span 6; /* Start in the 1st column, span across 6 columns */
-  margin-bottom: 48px; /* Space between items */
 }
 
 ::v-deep(h2) {
-  margin-top: 20px;
+  margin-top: 48px;
+  margin-bottom: -36px;
+}
+
+/* Hack */
+::v-deep(h3) {
+  font-size: 20px !important;
+  font-weight: 500 !important;
 }
 </style>
