@@ -36,8 +36,4 @@ onMounted(async () => {
   grid-column: 1 / span 6; /* Start in the 1st column, span across 6 columns */
   margin-bottom: 48px; /* Space between each key-value pair */
 }
-
-::v-deep(h2) {
-  margin-top: 60px;
-}
 </style>
