@@ -1,0 +1,43 @@
+1. A numbered list
+    1. A nested numbered list
+    1. Which is numbered
+        1. asoidnasoi
+1. Which is numbered
+
+## Questionnaire
+
+Besides displaying the relevant information on legal provisions and case law decisions, the main dataset on choice of law contains an analytical layer. The work is organized around a questionnaire designed to systematize standard answers about choice of law rules in various jurisdictions. It covers the following topics:
+
+1. **Codification of private international law**: The first set of questions revolves around whether rules of private international law are codified and if there is any ongoing revision. Based on the response, further questions explore the role of HCCH Principles in this context.
+
+2. **Party autonomy**: This section focuses on the acceptance and implementation of the principle of party autonomy in international commercial contracts. It includes questions about the ability of parties to choose rules of law to govern their contract and whether this can be done for specific parts of the contract.
+
+3. **Tacit choice**: This part addresses whether a choice of law needs to be explicitly stated or if it can be made tacitly. Various scenarios are explored, such as the role of a choice of forum clause or an arbitration clause in indicating a tacit choice of law.
+
+4. **Mandatory rules and public policy**: Questions in this section inquire about overriding mandatory provisions, their application, and the concept of public policy in commercial law.
+
+5. **Arbitration**: This segment explores the authority of arbitral tribunals to apply the HCCH Principles and interpret mandatory provisions.
+
+6. **Absence of choice**: Questions here deal with the legal framework (including the use of connecting factors by adjudicators) for situations where the parties have not chosen the applicable law to govern the contract.
+
+7. **Future guidance and revisions**: The final part asks about the desirability of a future version of the HCCH Principles, the need for further guidance on topics surrounding applicable law in international contracts (e.g., in protecting weaker parties), and suggestions for other topics that might need revision or guidance.
+
+Each section of the questionnaire is structured to branch out based on the responses to initial questions, leading to more specific follow-up questions. This structure aims to gather detailed and nuanced information about the choice of law in international contracts from different jurisdictions.
+
+## Preamble
+
+1. Is there a codification on choice of law or similar established rules?
+
+    1.1. Are these rules part of a private international law instrument? ddddd  oausd oudh ouas oasuhd saoudhs douah doasuhd oauh
+
+    1.2. Are these rules a consequence of a law reform?
+
+        1.2.1. If a codification of private international law exists, is any revision of these rules under discussion?
+
+1.2.2 Could the HCCH Principles be expected to play a model role in this regard?
+
+1.2.3 If an implementation is not under discussion, could the HCCH Principles be expected to play any role in **interpreting** rules of private international law?
+
+1.2.3.1 If an implementation is not under discussion, could the HCCH Principles be expected to play any role in **supplementing** rules of private international law?
+
+1.2.3.2 If an implementation is not under discussion, could the HCCH Principles be expected to play any role in **developing** rules of private international law?
