@@ -1,21 +1,56 @@
 <template>
   <div class="background">
-    <h2>The Choice of Law Dataverse is a Community</h2>
-    Our main objective is to transform data points into knowledge through
-    collaboration within a community.
+    <div class="grid">
+      <!-- Left Column -->
+      <div class="icon">
+        <Icon
+          name="i-material-symbols:groups-outline"
+          size="120"
+          color="var(--color-cold-night)"
+        />
+      </div>
+
+      <!-- Right Column -->
+      <div class="text">
+        <h2>The Choice of Law Dataverse is a Community</h2>
+        <p>
+          Our main objective is to transform data points into knowledge through
+          collaboration within a community.
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-h2 {
-  margin-top: 0px !important;
-}
-
+/* General Layout */
 .background {
   background-color: var(--color-cold-cream); /* Use the CSS variable */
-  padding-left: 48px;
-  padding-right: 48px;
-  padding-top: 36px;
-  padding-bottom: 42px;
+  padding: 36px 48px 60px 48px;
+}
+
+/* Grid Layout for Two Columns */
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* Adjust column sizes as needed */
+  column-gap: 24px; /* Space between columns */
+  align-items: center; /* Vertically center the content */
+}
+
+.icon {
+  display: flex;
+  justify-content: center; /* Horizontally center the icon */
+  align-items: center; /* Vertically center the icon */
+  padding-right: 24px;
+}
+
+/* Text Styling */
+.text h2 {
+  margin-top: 0px !important;
+  margin-bottom: 16px; /* Adjust spacing */
+}
+
+.text p {
+  margin: 0;
 }
 </style>

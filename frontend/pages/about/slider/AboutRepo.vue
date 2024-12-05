@@ -26,7 +26,7 @@
 /* General Layout */
 .background {
   background-color: var(--color-cold-cream); /* Use the CSS variable */
-  padding: 36px 48px 42px 48px;
+  padding: 36px 48px 60px 48px;
 }
 
 /* Grid Layout for Two Columns */
