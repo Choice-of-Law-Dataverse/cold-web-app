@@ -39,21 +39,52 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* Reset the counter for the top-level list */
 ::v-deep(ol) {
-  list-style: decimal !important; /* Ensure numbers are displayed */
-  /*margin-left: 14px; /* Add some left padding if needed */
+  counter-reset: list-counter; /* Initialize the counter */
+  list-style: none; /* Remove the default numbering */
+  margin-left: 0;
+  padding-left: 0;
+}
+
+::v-deep(ol > li) {
+  counter-increment: list-counter; /* Increment the counter for each list item */
+}
+
+::v-deep(ol > li::before) {
+  content: counter(list-counter) '. '; /* Display the counter number */
 }
 
 ::v-deep(ol ol) {
-  /*list-style: decimal !important; /* Sub-numbering style (optional) */
-  margin-left: 20px !important; /* Further indent nested lists */
+  counter-reset: sub-list-counter; /* Reset the sub-list counter */
+  list-style: none; /* Remove the default numbering */
+  margin-left: 20px; /* Indent for sub-lists */
+}
+
+::v-deep(ol ol > li) {
+  counter-increment: sub-list-counter; /* Increment the sub-list counter */
+}
+
+::v-deep(ol ol > li::before) {
+  content: counter(list-counter) '.' counter(sub-list-counter) '. '; /* Display hierarchical numbering */
 }
 
 ::v-deep(ol ol ol) {
-  /*list-style: lower-roman !important; /* Third-level numbering style (optional) */
-  margin-left: 20px !important;
+  counter-reset: sub-sub-list-counter; /* Reset the sub-sub-list counter */
+  list-style: none; /* Remove the default numbering */
+  margin-left: 20px; /* Indent for sub-sub-lists */
 }
 
+::v-deep(ol ol ol > li) {
+  counter-increment: sub-sub-list-counter; /* Increment the sub-sub-list counter */
+}
+
+::v-deep(ol ol ol > li::before) {
+  content: counter(list-counter) '.' counter(sub-list-counter) '.'
+    counter(sub-sub-list-counter) '. '; /* Display hierarchical numbering */
+}
+
+/* -------------------------------------------------- */
 .main-content-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr)); /* 12-column layout */
