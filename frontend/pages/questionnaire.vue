@@ -53,6 +53,7 @@ onMounted(async () => {
 
 ::v-deep(ol > li::before) {
   content: counter(list-counter) '. '; /* Display the counter number */
+  font-weight: bold;
 }
 
 ::v-deep(ol ol) {
@@ -67,6 +68,7 @@ onMounted(async () => {
 
 ::v-deep(ol ol > li::before) {
   content: counter(list-counter) '.' counter(sub-list-counter) '. '; /* Display hierarchical numbering */
+  font-weight: bold;
 }
 
 ::v-deep(ol ol ol) {
@@ -82,6 +84,23 @@ onMounted(async () => {
 ::v-deep(ol ol ol > li::before) {
   content: counter(list-counter) '.' counter(sub-list-counter) '.'
     counter(sub-sub-list-counter) '. '; /* Display hierarchical numbering */
+  font-weight: bold;
+}
+
+::v-deep(ol ol ol ol) {
+  counter-reset: sub-sub-sub-list-counter; /* Reset the fourth-level counter */
+  list-style: none; /* Remove the default numbering */
+  margin-left: 20px; /* Indent for sub-sub-sub-lists */
+}
+
+::v-deep(ol ol ol ol > li) {
+  counter-increment: sub-sub-sub-list-counter; /* Increment the fourth-level counter */
+}
+
+::v-deep(ol ol ol ol > li::before) {
+  content: counter(list-counter) '.' counter(sub-list-counter) '.'
+    counter(sub-sub-list-counter) '.' counter(sub-sub-sub-list-counter) '. '; /* Display hierarchical numbering */
+  font-weight: bold;
 }
 
 /* -------------------------------------------------- */
