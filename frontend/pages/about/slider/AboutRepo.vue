@@ -13,6 +13,9 @@ h2 {
 
 .background {
   background-color: var(--color-cold-cream); /* Use the CSS variable */
-  padding: 48px;
+  padding-left: 48px;
+  padding-right: 48px;
+  padding-top: 36px;
+  padding-bottom: 42px;
 }
 </style>
