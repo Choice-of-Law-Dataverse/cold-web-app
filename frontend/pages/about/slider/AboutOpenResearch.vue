@@ -15,9 +15,15 @@
 </template>
 
 <style scoped>
+h2 {
+  margin-top: 0px !important;
+}
+
 .background {
   background-color: var(--color-cold-cream); /* Use the CSS variable */
-  padding: 20px; /* Optional: Add some padding for aesthetics */
-  border-radius: 8px; /* Optional: Add rounded corners */
+  padding-left: 48px;
+  padding-right: 48px;
+  padding-top: 36px;
+  padding-bottom: 42px;
 }
 </style>

@@ -1,6 +1,22 @@
 <template>
   <div class="carousel-wrapper">
-    <UCarousel :items="items" :ui="{ item: 'basis-full' }" arrows indicators>
+    <UCarousel
+      :items="items"
+      :ui="{ item: 'basis-full' }"
+      :prev-button="{
+        icon: 'i-material-symbols:arrow-left-alt',
+        class: 'custom-button custom-prev-button',
+        size: '32px',
+      }"
+      :next-button="{
+        color: 'gray',
+        icon: 'i-material-symbols:arrow-right-alt',
+        class: 'custom-button custom-next-button',
+        size: '32px',
+      }"
+      arrows
+      indicators
+    >
       <template v-slot="{ item }">
         <component :is="item" />
       </template>
@@ -37,7 +53,27 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+::v-deep(.custom-button) {
+  background: none !important; /* Remove background */
+  border: none !important; /* Remove border */
+  box-shadow: none !important; /* Remove any shadow */
+  color: var(--color-cold-purple) !important; /* Set the icon color */
+  font-size: 32px; /* Increase the icon size */
+}
+
+::v-deep(.custom-prev-button) {
+  left: -54px;
+}
+
+::v-deep(.custom-next-button) {
+  right: -54px;
+}
+
 .carousel-wrapper {
-  width: 150%; /* Set the carousel width to 80% of the parent container */
+  width: 150%;
+  margin-left: 140%; /* Push the left edge by 50% of the parent's width */
+  transform: translateX(-75%); /* Pull back by 50% of the wrapper's width */
+  margin-top: 24px;
+  margin-bottom: 60px;
 }
 </style>
