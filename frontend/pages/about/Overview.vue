@@ -70,7 +70,7 @@ onMounted(async () => {
   background: none !important; /* Remove background */
   border: none !important; /* Remove border */
   box-shadow: none !important; /* Remove any shadow */
-  color: var(--color-cold-purple) !important; /* Set the icon color */
+  color: var(--color-cold-night) !important; /* Set the icon color */
   font-size: 32px; /* Increase the icon size */
 }
 
