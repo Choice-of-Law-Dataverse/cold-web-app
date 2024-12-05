@@ -216,3 +216,9 @@ h2 {
   border-radius: 0 !important;
   background-color: white !important;
 }
+
+.copy {
+  @extend .result-value-small;
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+}

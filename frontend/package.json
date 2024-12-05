@@ -12,10 +12,12 @@
   },
   "dependencies": {
     "@nuxt/fonts": "^0.10.2",
+    "@nuxt/icon": "^1.9.0",
     "@nuxt/ui": "^2.18.4",
     "@nuxtjs/leaflet": "^1.2.4",
     "axios": "^1.7.4",
     "leaflet": "^1.9.4",
+    "marked": "^15.0.3",
     "nuxt": "^3.12.4",
     "vue": "latest"
   },
