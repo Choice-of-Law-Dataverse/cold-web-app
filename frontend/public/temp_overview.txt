@@ -3,10 +3,17 @@ The core subject of CoLD is of significant importance to the resolution of real-
 
 Undertaking research in this area across fragmented databases is very burdensome to legal practitioners and scholars. When a dispute arises, clients ultimately bear the costs. These costs stand to be reduced—and access to justice thereby stands to be improved—where legal practitioners have access to a Dataverse.
 
+<details>
+<summary>Learn more about the core subject</summary>
+
 The discipline in which this research project is inserted is private international law, also known as conflict of laws. It refers to a set of rules of law (of domestic, regional, international or supranational nature) that can determine (i) which court has jurisdiction and (ii) which law governs a given legal transaction or dispute. Our research is concerned solely with the second aspect, i.e., [the determination of the applicable law](/about?tab=faq).
+</details>
 
 ## What’s the Methodology Behind CoLD?
 In order to systematize diverse rules and case law decisions in a uniform manner, [comparative law methodology](/questionnaire) is applied. A high-quality database is the result of comprehensive global research efforts on the topic of choice of law, and the ultimate goal is to add more data points to the main dataset. Information will be “in motion”, constantly updated and connected to the users.
+
+<details>
+<summary>Learn more about the objectives</summary>
 
 Our specific objectives are the following:
 - To expand the scope of data collection to more African, Asian and Latin American countries.
@@ -18,6 +25,9 @@ Our specific objectives are the following:
 - To determine good practices which may be transferable to other jurisdictions, notably where a body of rules is not consolidated and courts have not adopted a position on a given choice of law issue. 
 - To identify convergent trends in party autonomy across the five continents.
 - To forecast new directions regarding the future of transnational rules on conflict of laws.
+</details>
+
+
 
 ## Who Supports CoLD?
 - Swiss National Science Foundation: “The Hague Principles and Beyond”, Project No. 179515 (2018–2021)

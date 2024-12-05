@@ -89,4 +89,8 @@ onMounted(async () => {
   margin-top: 24px;
   margin-bottom: 60px;
 }
+
+::v-deep(summary) {
+  margin-bottom: -60px;
+}
 </style>
