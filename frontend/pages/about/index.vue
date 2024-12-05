@@ -141,7 +141,7 @@ p {
   margin-bottom: 36px;
 }
 
-h2 {
-  margin-bottom: 8px;
+::v-deep(h2) {
+  margin-top: 20px;
 }
 </style>
