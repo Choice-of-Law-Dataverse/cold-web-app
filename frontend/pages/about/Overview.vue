@@ -20,6 +20,19 @@
       <template v-slot="{ item }">
         <component :is="item" />
       </template>
+
+      <!-- Custom Indicator Slot -->
+      <template #indicator="{ onClick, index, active }">
+        <button
+          @click="onClick(index)"
+          :class="['h-2 w-2 rounded-full']"
+          :style="{
+            backgroundColor: active
+              ? 'var(--color-cold-night)'
+              : 'var(--color-cold-night-alpha-25)',
+          }"
+        />
+      </template>
     </UCarousel>
   </div>
   <div class="copy" v-html="htmlContent"></div>
