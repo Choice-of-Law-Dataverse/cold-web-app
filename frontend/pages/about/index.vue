@@ -144,4 +144,14 @@ p {
 ::v-deep(h2) {
   margin-top: 20px;
 }
+
+::v-deep(ul) {
+  list-style-type: disc !important;
+  padding-left: 12px !important;
+  margin: -32px 0 0 0 !important;
+}
+
+::v-deep(li) {
+  margin-bottom: -18px; /* Optional spacing between list items */
+}
 </style>
