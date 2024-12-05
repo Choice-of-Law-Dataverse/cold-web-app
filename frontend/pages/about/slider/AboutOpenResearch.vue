@@ -17,6 +17,12 @@
           The Dataverse promotes sharing, preserving, citing, exploring and
           analyzing research data on choice of law
         </p>
+        <small
+          >CoLD is licensed under
+          <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1"
+            >CC BY 4.0</a
+          ></small
+        >
       </div>
     </div>
   </div>
