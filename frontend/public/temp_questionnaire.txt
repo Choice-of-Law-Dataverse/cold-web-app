@@ -1,22 +1,17 @@
-## Questionnaire
-
+### Questionnaire
 Besides displaying the relevant information on legal provisions and case law decisions, the main dataset on choice of law contains an analytical layer. The work is organized around a questionnaire designed to systematize standard answers about choice of law rules in various jurisdictions. It covers the following topics:
 
-0. **Codification of private international law**: The first set of questions revolves around whether rules of private international law are codified and if there is any ongoing revision. Based on the response, further questions explore the role of HCCH Principles in this context.
-
-0. **Party autonomy**: This section focuses on the acceptance and implementation of the principle of party autonomy in international commercial contracts. It includes questions about the ability of parties to choose rules of law to govern their contract and whether this can be done for specific parts of the contract.
-
-0. **Tacit choice**: This part addresses whether a choice of law needs to be explicitly stated or if it can be made tacitly. Various scenarios are explored, such as the role of a choice of forum clause or an arbitration clause in indicating a tacit choice of law.
-
-0. **Mandatory rules and public policy**: Questions in this section inquire about overriding mandatory provisions, their application, and the concept of public policy in commercial law.
-
-0. **Arbitration**: This segment explores the authority of arbitral tribunals to apply the HCCH Principles and interpret mandatory provisions.
-
-0. **Absence of choice**: Questions here deal with the legal framework (including the use of connecting factors by adjudicators) for situations where the parties have not chosen the applicable law to govern the contract.
-
-0. **Future guidance and revisions**: The final part asks about the desirability of a future version of the HCCH Principles, the need for further guidance on topics surrounding applicable law in international contracts (e.g., in protecting weaker parties), and suggestions for other topics that might need revision or guidance.
+1. **Codification of private international law**: The first set of questions revolves around whether rules of private international law are codified and if there is any ongoing revision. Based on the response, further questions explore the role of HCCH Principles in this context.
+2. **Party autonomy**: This section focuses on the acceptance and implementation of the principle of party autonomy in international commercial contracts. It includes questions about the ability of parties to choose rules of law to govern their contract and whether this can be done for specific parts of the contract.
+3. **Tacit choice**: This part addresses whether a choice of law needs to be explicitly stated or if it can be made tacitly. Various scenarios are explored, such as the role of a choice of forum clause or an arbitration clause in indicating a tacit choice of law.
+4. **Mandatory rules and public policy**: Questions in this section inquire about overriding mandatory provisions, their application, and the concept of public policy in commercial law.
+5. **Arbitration**: This segment explores the authority of arbitral tribunals to apply the HCCH Principles and interpret mandatory provisions.
+6. **Absence of choice**: Questions here deal with the legal framework (including the use of connecting factors by adjudicators) for situations where the parties have not chosen the applicable law to govern the contract.
+7. **Future guidance and revisions**: The final part asks about the desirability of a future version of the HCCH Principles, the need for further guidance on topics surrounding applicable law in international contracts (e.g., in protecting weaker parties), and suggestions for other topics that might need revision or guidance.
 
 Each section of the questionnaire is structured to branch out based on the responses to initial questions, leading to more specific follow-up questions. This structure aims to gather detailed and nuanced information about the choice of law in international contracts from different jurisdictions.
+
+
 
 ## Preamble
 0. Is there a codification on choice of law or similar established rules?
@@ -34,13 +29,13 @@ Each section of the questionnaire is structured to branch out based on the respo
     ## Dépeçage
 0. Are the parties allowed to choose different laws for different parts or aspects of the contract? 
     0. Are the parties allowed to choose the applicable law with respect to only one part or aspect of their contract?
-    ## Partial choice
+    ## Partial Choice
 0. Are the parties allowed to make or modify the choice of law at any time?
     0. May an internal modification of the agreement on the applicable law after the conclusion of the contract be valid even if a specific form is requested for the original choice?
     0. May a choice of law or modification made after the conclusion of the contract have an impact on the rights of third parties?
 0. Is a connection required between the chosen law and the parties or their transaction? 
 0. Are the parties prevented from choosing the law of a third country with which there is no connection (a “neutral law”)?
-    ## Rules of law
+    ## Rules of Law
     0. Are there any published cases in your jurisdiction in which an agreement by the parties on the applicable law was not respected for lack of such a connection?
 0. Are the parties allowed to choose non-State law (“rules of law”) to govern their contract?
 0. Are there any particular requirements or restrictions with regard to the eligible rules of law?
@@ -67,7 +62,7 @@ Each section of the questionnaire is structured to branch out based on the respo
     ## Public Policy
     0. If the courts in your jurisdiction apply overriding mandatory provisions of the law of the forum under certain circumstances, which?
 0. Do the courts apply overriding mandatory provisions of other jurisdictions?
-0. Do the courts take into account overriding mandatory provisions of other jurisdictions?
+    0. Do the courts take into account overriding mandatory provisions of other jurisdictions?
 0. Is there a definition for “public policy”?
     ## Arbitration
     0. Is there a particular notion or understanding of public policy with regard to the field of commercial law?
@@ -76,7 +71,7 @@ Each section of the questionnaire is structured to branch out based on the respo
 0. Do the courts apply or take into account the public policy of a State whose law would be applicable in the absence of a choice of law?
 0. Do arbitral tribunals have the authority to apply the HCCH Principles?
 0. Do arbitral tribunals apply or take into account overriding mandatory provisions or the public policy of a law other than the law chosen by the parties?
-    ## Future version of the HCCH Principles
+    ## Future Version of the HCCH Principles
 0. Does the codification on arbitration, if any, include conflict of laws rules?
     0. Is any revision of the lex arbitri under discussion?
 0. Is there a legal framework to tackle the issue of absence of choice?
