@@ -73,12 +73,14 @@ def handle_search():
 def handle_full_text_search():
     data = request.json
     search_string = data.get('search_string')
+    filters = data.get('filters', [])
+    print(filters)
 
     if not search_string:
         return jsonify({'error': 'No search string provided'}), 400
 
-    results = search_service.full_text_search(search_string)
-    log_query(request, search_string, results['total_matches'], "full_text_search")
+    results = search_service.full_text_search(search_string, filters)
+    #log_query(request, search_string, results['total_matches'], "full_text_search")
     return jsonify(results), 200
 
 @app.route('/curated_search', methods=['POST'])
