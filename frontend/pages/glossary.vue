@@ -14,7 +14,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { marked } from 'marked'
 
 // Custom renderer for marked
@@ -32,22 +32,25 @@ const renderer = {
                 ${token.text}
               </h2>`
     }
-    return false // Use default renderer for other headings
+    // Return false to use the default renderer for other headings
+    return false
   },
 }
 
 // Extend marked with the custom renderer
 marked.use({ renderer })
 
-const content = ref('') // Store raw Markdown content
-const htmlContent = ref('') // Store parsed HTML content
+const content = ref('') // Raw Markdown content
+const htmlContent = ref('') // Parsed HTML content
 
 onMounted(async () => {
   try {
-    const response = await fetch('/temp_glossary.txt') // Fetch the Markdown file
+    const response = await fetch('/temp_glossary.txt')
     if (response.ok) {
-      content.value = await response.text() // Store raw Markdown
-      htmlContent.value = marked.parse(content.value) // Parse Markdown to HTML
+      content.value = await response.text()
+      htmlContent.value = marked.parse(content.value) // Parse Markdown with custom headings
+      await nextTick()
+      scrollToAnchor()
     } else {
       console.error('Failed to load text:', response.statusText)
     }
@@ -55,6 +58,17 @@ onMounted(async () => {
     console.error('Error loading text:', error)
   }
 })
+
+// Scroll to the anchor link if it exists in the URL
+function scrollToAnchor() {
+  const anchor = window.location.hash
+  if (anchor) {
+    const targetElement = document.querySelector(anchor)
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+}
 </script>
 
 <style scoped>
@@ -70,6 +84,6 @@ onMounted(async () => {
 }
 
 ::v-deep(h2) {
-  margin-left: -82px !important; /* Hack to prevent indent */
+  margin-left: -82px !important;
 }
 </style>
