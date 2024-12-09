@@ -69,19 +69,7 @@ onMounted(async () => {
   grid-column: 1 / span 6; /* Start in the 1st column, span across 6 columns */
 }
 
-h2 {
-  position: relative;
-  margin-top: 48px;
-}
-
-.anchor-link {
-  text-decoration: none;
-  color: #888; /* Light grey for the anchor */
-  margin-right: 8px;
-  font-size: 0.8em;
-}
-
-.anchor-link:hover {
-  color: #333; /* Darker color on hover */
+::v-deep(h2) {
+  margin-left: -82px !important; /* Hack to prevent indent */
 }
 </style>
