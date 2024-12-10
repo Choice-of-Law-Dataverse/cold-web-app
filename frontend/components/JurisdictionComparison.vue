@@ -101,6 +101,23 @@
             ✖
           </span>
         </template>
+
+        <template
+          v-for="column in columns"
+          :key="column.key"
+          #[`${column.key}-data`]="{ row }"
+        >
+          <NuxtLink
+            v-if="column.key.startsWith('Answer')"
+            :to="`/question/${row[column.key + '_ID'] || row.ID}`"
+            class="text-blue-500 hover:underline"
+          >
+            {{ row[column.key] }}
+          </NuxtLink>
+          <span v-else>
+            {{ row[column.key] }}
+          </span>
+        </template>
       </UTable>
       <p v-else>Loading...</p>
     </UCard>
@@ -431,7 +448,8 @@ async function updateComparison(jurisdiction) {
       return {
         ...row,
         [secondColumnKey]: match?.Answer || 'N/A', // Add second jurisdiction's answer
-        Match: matchStatus, // Add the match status
+        [`${secondColumnKey}_ID`]: match?.ID || null, // Add second jurisdiction's ID
+        Match: matchStatus, // Add match status
       }
     })
   } catch (error) {
