@@ -72,6 +72,14 @@
           },
         }"
       >
+        <template #Answer-data="{ row }">
+          <NuxtLink
+            :to="`/question/${row.ID}`"
+            class="text-blue-500 hover:underline"
+          >
+            {{ row.Answer }}
+          </NuxtLink>
+        </template>
         <template #Match-data="{ row }">
           <span
             v-if="row.Match !== 'red-x'"
@@ -269,7 +277,10 @@ async function fetchTableData(jurisdiction: string) {
     if (!response.ok) throw new Error('Failed to fetch table data')
 
     const data = await response.json()
-    rows.value = data
+    rows.value = data.map((item) => ({
+      ...item,
+      ID: item.ID, // Ensure ID is stored
+    }))
 
     // Sort rows based on desired order
     rows.value = data.sort((a, b) => {
