@@ -168,7 +168,7 @@ class SearchService:
             column = filter_item.get('column')
             values = filter_item.get('values', [])
             if column and values:
-                if column.lower() in ['name (from jurisdiction)', 'jurisdiction name']:
+                if column.lower() in ['name (from jurisdiction)', 'jurisdiction name', 'jurisdictions']:
                     jurisdictions.extend(values)
                 elif column.lower() in ['themes', 'themes name']:
                     themes.extend(values)
