@@ -275,40 +275,46 @@ const questionOrder = [
   'Should the HCCH Principles be incorporated into a new HCCH instrument?',
 ]
 
-async function fetchTableData(jurisdiction: string) {
+async function fetchData(url, payload) {
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    })
+    if (!response.ok) throw new Error('Fetch failed')
+    return await response.json()
+  } catch (error) {
+    console.error('Error fetching data:', error)
+    return []
+  }
+}
+
+async function fetchTableData(jurisdiction) {
   const payload = {
     table: 'Answers',
     filters: [{ column: 'Name (from Jurisdiction)', value: jurisdiction }],
   }
 
   try {
-    const response = await fetch(
+    const data = await fetchData(
       'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_table',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      }
+      payload
     )
 
-    if (!response.ok) throw new Error('Failed to fetch table data')
-
-    const data = await response.json()
     rows.value = data.map((item) => ({
       ...item,
-      ID: item.ID, // Ensure ID is stored
+      ID: item.ID,
     }))
 
-    // Sort rows based on desired order
-    rows.value = data.sort((a, b) => {
-      const indexA = questionOrder.indexOf(a.Questions)
-      const indexB = questionOrder.indexOf(b.Questions)
-      return indexA - indexB
-    })
+    rows.value = rows.value.sort(
+      (a, b) =>
+        questionOrder.indexOf(a.Questions) - questionOrder.indexOf(b.Questions)
+    )
   } catch (error) {
     console.error('Error fetching table data:', error)
   } finally {
-    loading.value = false
+    loading.value = false // Always set loading to false
   }
 }
 
@@ -332,15 +338,19 @@ async function fetchJurisdictions() {
   }
 }
 
-// Call the function to fetch jurisdictions on component mount
 onMounted(() => {
   fetchJurisdictions()
-})
-
-// Fetch data on component mount
-onMounted(() => {
   if (props.jurisdiction) {
     fetchTableData(props.jurisdiction)
+  }
+  if (props.compareJurisdiction) {
+    const originalValue = props.compareJurisdiction.replace(/_/g, ' ')
+    const option = jurisdictionOptions.value.find(
+      (opt) => opt.value === originalValue
+    )
+    if (option) {
+      selectedJurisdiction.value = option // Trigger table update
+    }
   }
 })
 
@@ -356,107 +366,64 @@ async function updateComparison(jurisdiction) {
   }
 
   try {
-    loading.value = true
-    const response = await fetch(
+    loading.value = true // Set loading to true at the beginning
+
+    const jurisdictionData = await fetchData(
       'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_table',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      }
+      payload
     )
 
-    if (!response.ok) throw new Error('Failed to fetch jurisdiction data')
-
-    const jurisdictionData = await response.json()
-
-    // Replace the second "Answer" column
     const secondColumnKey = `Answer_${jurisdiction.value}`
     columns.value = [
       { key: 'Themes', label: 'Theme', class: 'label' },
       { key: 'Questions', label: 'Question', class: 'label' },
       { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
-      {
-        key: secondColumnKey,
-        label: jurisdiction.label,
-        class: 'label',
-      },
+      { key: secondColumnKey, label: jurisdiction.label, class: 'label' },
       { key: 'Match', label: '', class: 'match-column' },
     ]
 
-    // Add the Match column if it doesn't exist
-    if (!columns.value.some((col) => col.key === 'Match')) {
-      columns.value.push({ key: 'Match', label: '', class: 'match-column' })
-    }
-
-    // Update rows with new jurisdiction data
     rows.value = rows.value.map((row) => {
-      // Find the answer for the second jurisdiction
       const match = jurisdictionData.find(
         (item) => item.Questions === row.Questions
       )
-
-      // Compute the match status
-      const matchStatus = (() => {
-        const answer1 = row.Answer?.trim() || 'N/A' // Jurisdiction 1 answer
-        const answer2 = match?.Answer?.trim() || 'N/A' // Jurisdiction 2 answer
-
-        // Gray cases: Any unclear or unavailable data, and explicitly "Unclear + Unclear"
-        const grayCases = [
-          'Unclear',
-          'Information is not available yet',
-          'No data',
-          'Jurisdiction does not cover this question',
-          //'Not applicable', // Single "Not applicable" should still be gray
-        ]
-        if (
-          grayCases.includes(answer1) ||
-          grayCases.includes(answer2) ||
-          (answer1 === 'Unclear' && answer2 === 'Unclear')
-        ) {
-          return 'gray'
-        }
-
-        // Green cases: Identical answers except "No" + "No", and explicitly allow "Not Applicable + Not Applicable"
-        if (
-          (answer1 === answer2 && answer1 !== 'No') ||
-          (answer1 === 'Not applicable' && answer2 === 'Not applicable')
-        ) {
-          return 'green'
-        }
-
-        // Red cases: Both answers are "No"
-        if (answer1 === 'No' && answer2 === 'No') {
-          return 'red'
-        }
-
-        // X cases: One answer is "Yes" and the other is "No"
-        if (
-          (answer1 === 'Yes' && answer2 === 'No') ||
-          (answer1 === 'No' && answer2 === 'Yes') ||
-          (answer1 === 'Yes' && answer2 === 'Not applicable') ||
-          (answer1 === 'Not applicable' && answer2 === 'Yes')
-        ) {
-          return 'red-x'
-        }
-
-        // Default to gray for anything unexpected
-        return 'gray'
-      })()
-
-      // Return the updated row with the second jurisdiction and match status
       return {
         ...row,
-        [secondColumnKey]: match?.Answer || 'N/A', // Add second jurisdiction's answer
-        [`${secondColumnKey}_ID`]: match?.ID || null, // Add second jurisdiction's ID
-        Match: matchStatus, // Add match status
+        [secondColumnKey]: match?.Answer || 'N/A',
+        [`${secondColumnKey}_ID`]: match?.ID || null,
+        Match: computeMatchStatus(row.Answer, match?.Answer),
       }
     })
   } catch (error) {
-    console.error('Error fetching jurisdiction data:', error)
+    console.error('Error updating comparison:', error)
   } finally {
-    loading.value = false
+    loading.value = false // Always set loading to false
   }
+}
+
+function computeMatchStatus(answer1, answer2) {
+  const grayCases = ['Unclear', 'Information is not available yet', 'No data']
+  if (
+    grayCases.includes(answer1) ||
+    grayCases.includes(answer2) ||
+    (answer1 === 'Unclear' && answer2 === 'Unclear')
+  )
+    return 'gray'
+
+  if (
+    (answer1 === answer2 && answer1 !== 'No') ||
+    (answer1 === 'Not applicable' && answer2 === 'Not applicable')
+  )
+    return 'green'
+
+  if (answer1 === 'No' && answer2 === 'No') return 'red'
+
+  if (
+    (answer1 === 'Yes' && answer2 === 'No') ||
+    (answer1 === 'No' && answer2 === 'Yes')
+  )
+    return 'red-x'
+
+  return 'gray'
 }
 
 // Watch for changes in `selectedJurisdiction`
@@ -491,22 +458,6 @@ watch(
     }
   }
 )
-
-// Fetch jurisdictions and initialize on component mount
-onMounted(() => {
-  fetchJurisdictions().then(() => {
-    if (props.compareJurisdiction) {
-      // Transform '_' back to spaces for internal use
-      const originalValue = props.compareJurisdiction.replace(/_/g, ' ')
-      const option = jurisdictionOptions.value.find(
-        (opt) => opt.value === originalValue
-      )
-      if (option) {
-        selectedJurisdiction.value = option // Trigger table update
-      }
-    }
-  })
-})
 
 // Computed property to calculate match counts dynamically
 const matchCounts = computed(() => {
