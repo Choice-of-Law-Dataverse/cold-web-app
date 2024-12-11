@@ -157,81 +157,157 @@ class SearchService:
         results = self.db.execute_query(query, query_params)
         return results
         
-    def full_text_search(self, search_string):
-        # Prepare the SQL query with dynamic search string input
+    def full_text_search(self, search_string, filters=[]):
+        # Initialize filter arrays for params
+        tables = []
+        jurisdictions = []
+        themes = []
+
+        # Process filters into appropriate arrays
+        for filter_item in filters:
+            column = filter_item.get('column')
+            values = filter_item.get('values', [])
+            if column and values:
+                if column.lower() in ['name (from jurisdiction)', 'jurisdiction name', 'jurisdictions']:
+                    jurisdictions.extend(values)
+                elif column.lower() in ['themes', 'themes name']:
+                    themes.extend(values)
+                elif column.lower() in ['source_table', 'tables']:
+                    tables.extend(values)
+
+        # Convert filter arrays to SQL-compatible lists
+        def to_sql_array(values):
+            if values:
+                return f"ARRAY[{', '.join(f'{repr(v)}' for v in values)}]::text[]"
+            else:
+                return "NULL"
+
+        tables_sql = to_sql_array(tables)
+        jurisdictions_sql = to_sql_array(jurisdictions)
+        themes_sql = to_sql_array(themes)
+
+        # Define the dynamic SQL query
         query = f"""
-            -- COMBINED SEARCH
-
-            -- Search in "Answers", "Court decisions", and "Legislation" tables with the same query
-
+            WITH params AS (
+                SELECT 
+                    {tables_sql}::text[] AS tables,
+                    {jurisdictions_sql}::text[] AS jurisdictions,
+                    {themes_sql}::text[] AS themes
+            )
             -- Search in "Answers" table
-            select 
-            'Answers' as source_table,               -- Column to indicate the source table
-            "ID" as id,
-            ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-            ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
-            from "Answers"
-            where search @@ websearch_to_tsquery('english', '{search_string}')
-            or search @@ websearch_to_tsquery('simple', '{search_string}')
+            SELECT 
+                'Answers' AS source_table,
+                "ID" AS id,
+                ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+            FROM "Answers", params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Answers' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                    OR "Name (from Jurisdiction)" = ANY(params.jurisdictions)
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL 
+                    OR EXISTS (
+                        SELECT 1
+                        FROM unnest(params.themes) AS theme_filter
+                        WHERE "Themes" ILIKE '%' || theme_filter || '%'
+                    )
+                )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
 
-            union all
+            UNION ALL
 
             -- Search in "Court decisions" table
-            select 
-            'Court decisions' as source_table,       -- Indicate the source table
-            "ID" as id,
-            ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-            ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
-            from "Court decisions"
-            where search @@ websearch_to_tsquery('english', '{search_string}')
-            or search @@ websearch_to_tsquery('simple', '{search_string}')
+            SELECT 
+                'Court decisions' AS source_table,
+                "ID" AS id,
+                ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+            FROM "Court decisions", params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Court decisions' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                    OR "Jurisdiction Names" = ANY(params.jurisdictions)
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL 
+                    OR EXISTS (
+                        SELECT 1
+                        FROM unnest(params.themes) AS theme_filter
+                        WHERE "Themes" ILIKE '%' || theme_filter || '%'
+                    )
+                )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
 
-            union all
+            UNION ALL
 
-            -- Search in "Court decisions" table
-            select 
-            'Legislation' as source_table,       -- Indicate the source table
-            "ID" as id,
-            ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-            ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) as rank
-            from "Legislation"
-            where search @@ websearch_to_tsquery('english', '{search_string}')
-            or search @@ websearch_to_tsquery('simple', '{search_string}')
+            -- Search in "Legislation" table
+            SELECT 
+                'Legislation' AS source_table,
+                "ID" AS id,
+                ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+            FROM "Legislation", params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Legislation' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                    OR "Jurisdiction name" = ANY(params.jurisdictions)
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL 
+                    OR EXISTS (
+                        SELECT 1
+                        FROM unnest(params.themes) AS theme_filter
+                        WHERE "Themes name" ILIKE '%' || theme_filter || '%'
+                    )
+                )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
 
             -- Combine results and order by rank
-            order by rank desc
-            limit 150;
+            ORDER BY rank DESC
+            LIMIT 150;
         """
 
-        # Execute the SQL query
-        all_entries = self.db.execute_query(query)
+        # Debug: Print the final query
+        #print("Executing Query:", query)
 
-        # Check if the query returned any results
-        if not all_entries:
-            empty = {
+        # Execute the query
+        try:
+            all_entries = self.db.execute_query(query)
+        except Exception as e:
+            print(f"Error executing query: {e}")
+            return {
                 "test": self.test,
                 "total_matches": 0,
                 "results": []
             }
-            return empty
 
-        # Parse the results into the desired format
+        # Check if any results were returned
+        if not all_entries:
+            return {
+                "test": self.test,
+                "total_matches": 0,
+                "results": []
+            }
+
+        # Parse results
         results = {
             "test": self.test,
             "total_matches": len(all_entries),
-            "results": all_entries  # Combine all results into one list
+            "results": all_entries
         }
 
-        # Augment the results with the additional columns from the respective tables
-        for index, value in enumerate(results['results']):
-            # Fetch additional data from the source table
-            additional_data = self.db.get_entry_by_id(value['source_table'], value['id'])
-            if additional_data:
-                # remove unwanted columns
-                additional_data.pop('search', None)
-                additional_data.pop('Content', None)
-                # Merge additional data into the result (update the specific entry in the list)
-                results['results'][index].update(additional_data)
-
-        # Return parsed results
         return filter_na(parse_results(results))
