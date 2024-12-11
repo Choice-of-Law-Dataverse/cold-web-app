@@ -238,19 +238,23 @@ async function fetchJurisdictions() {
 }
 
 onMounted(() => {
-  fetchJurisdictions()
-  if (props.jurisdiction) {
-    fetchTableData(props.jurisdiction)
-  }
-  if (props.compareJurisdiction) {
-    const originalValue = props.compareJurisdiction.replace(/_/g, ' ')
-    const option = jurisdictionOptions.value.find(
-      (opt) => opt.value === originalValue
-    )
-    if (option) {
-      selectedJurisdiction.value = option // Trigger table update
+  fetchJurisdictions().then(() => {
+    if (props.jurisdiction) {
+      fetchTableData(props.jurisdiction)
     }
-  }
+
+    const compareQuery = router.currentRoute.value.query.c
+    if (compareQuery) {
+      const originalValue = compareQuery.replace(/_/g, ' ') // Transform '_' back to spaces
+      const option = jurisdictionOptions.value.find(
+        (opt) => opt.value === originalValue
+      )
+      if (option) {
+        selectedJurisdiction.value = option // Update dropdown
+        updateComparison(option) // Trigger table update
+      }
+    }
+  })
 })
 
 // Add selected jurisdiction as a column
@@ -345,6 +349,36 @@ watch(
     }
   }
 )
+
+// Watch for changes in the URL query parameter
+watch(
+  () => router.currentRoute.value.query.c,
+  (newCompare) => {
+    if (newCompare) {
+      const originalValue = newCompare.replace(/_/g, ' ') // Transform '_' back to spaces
+      const option = jurisdictionOptions.value.find(
+        (opt) => opt.value === originalValue
+      )
+      if (option) {
+        selectedJurisdiction.value = option // Update dropdown
+        updateComparison(option) // Trigger table update
+      }
+    }
+  }
+)
+
+watch(selectedJurisdiction, (newJurisdiction) => {
+  if (newJurisdiction) {
+    const formattedJurisdiction = newJurisdiction.value.replace(/ /g, '_') // Transform spaces to '_'
+    router.replace({
+      query: {
+        ...router.currentRoute.value.query,
+        c: formattedJurisdiction,
+      },
+    })
+    updateComparison(newJurisdiction) // Trigger table update
+  }
+})
 
 // Computed property to calculate match counts dynamically
 const matchCounts = computed(() => {
