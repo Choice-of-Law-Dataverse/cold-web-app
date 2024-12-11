@@ -37,7 +37,7 @@ def get_client_hints(request):
     }
 
 # Function to log the query and user information
-def log_query(request, search_string, results_count, route):
+def log_query(request, search_string, filters, results_count, route):
     timestamp = datetime.utcnow()
     ip_address = get_ip_address(request)
     location = get_location(ip_address)
@@ -51,6 +51,7 @@ def log_query(request, search_string, results_count, route):
         'user_agent': user_agent,
         'client_hints': client_hints,
         'search_string': search_string,
+        'filters': filters,
         'results_count': results_count,
         'route': route
     }
