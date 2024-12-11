@@ -310,4 +310,15 @@ class SearchService:
             "results": all_entries
         }
 
+        # Augment the results with the additional columns from the respective tables
+        for index, value in enumerate(results['results']):
+            # Fetch additional data from the source table
+            additional_data = self.db.get_entry_by_id(value['source_table'], value['id'])
+            if additional_data:
+                # remove unwanted columns
+                additional_data.pop('search', None)
+                additional_data.pop('Content', None)
+                # Merge additional data into the result (update the specific entry in the list)
+                results['results'][index].update(additional_data)
+
         return filter_na(parse_results(results))
