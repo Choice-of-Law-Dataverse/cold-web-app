@@ -177,7 +177,10 @@ class SearchService:
 
         # Convert filter arrays to SQL-compatible lists
         def to_sql_array(values):
-            return f"ARRAY[{', '.join(f'\'{v.replace('\'', '\'\'')}\'' for v in values)}]::text[]" if values else "NULL"
+            if values:
+                return f"ARRAY[{', '.join(f'{repr(v)}' for v in values)}]::text[]"
+            else:
+                return "NULL"
 
         tables_sql = to_sql_array(tables)
         jurisdictions_sql = to_sql_array(jurisdictions)
@@ -187,9 +190,9 @@ class SearchService:
         query = f"""
             WITH params AS (
                 SELECT 
-                    {tables_sql} AS tables,
-                    {jurisdictions_sql} AS jurisdictions,
-                    {themes_sql} AS themes
+                    {tables_sql}::text[] AS tables,
+                    {jurisdictions_sql}::text[] AS jurisdictions,
+                    {themes_sql}::text[] AS themes
             )
             -- Search in "Answers" table
             SELECT 
@@ -279,7 +282,7 @@ class SearchService:
         """
 
         # Debug: Print the final query
-        print("Executing Query:", query)
+        #print("Executing Query:", query)
 
         # Execute the query
         try:
