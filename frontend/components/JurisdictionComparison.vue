@@ -254,13 +254,18 @@ function updateRows(jurisdictionData, jurisdiction) {
   })
 }
 
+// Watch when the user changes the selected jurisdiction
+watch(selectedJurisdiction, (newJurisdiction) => {
+  if (newJurisdiction) {
+    updateRouterQuery(newJurisdiction.value) // Update the URL
+    updateComparison(newJurisdiction) // Fetch new table data
+  }
+})
+
+// Watch for URL query updates to sync the dropdown
 watch(
-  () => [selectedJurisdiction.value, router.currentRoute.value.query.c],
-  ([newJurisdiction, newCompare]) => {
-    if (newJurisdiction) {
-      updateRouterQuery(newJurisdiction.value)
-      updateComparison(newJurisdiction)
-    }
+  () => router.currentRoute.value.query.c,
+  (newCompare) => {
     if (newCompare) {
       syncCompareJurisdiction(newCompare)
     }
@@ -271,7 +276,7 @@ function updateRouterQuery(jurisdiction) {
   router.replace({
     query: {
       ...router.currentRoute.value.query,
-      c: jurisdiction.replace(/ /g, '_'),
+      c: jurisdiction.replace(/ /g, '_'), // Encode spaces
     },
   })
 }
@@ -281,7 +286,9 @@ function syncCompareJurisdiction(compare) {
   const option = jurisdictionOptions.value.find(
     (opt) => opt.value === originalValue
   )
-  if (option) selectedJurisdiction.value = option
+  if (option) {
+    selectedJurisdiction.value = option // Update dropdown
+  }
 }
 
 // Computed property to calculate match counts dynamically
