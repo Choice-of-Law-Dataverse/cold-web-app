@@ -191,10 +191,10 @@ async function fetchData(url, payload) {
   }
 }
 
-async function fetchTableData(jurisdiction) {
+async function fetchFilteredTableData(filters) {
   const payload = {
     table: 'Answers',
-    filters: [{ column: 'Name (from Jurisdiction)', value: jurisdiction }],
+    filters: filters,
   }
 
   try {
@@ -202,20 +202,29 @@ async function fetchTableData(jurisdiction) {
       'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_table',
       payload
     )
-
-    rows.value = data.map((item) => ({
+    return data.map((item) => ({
       ...item,
       ID: item.ID,
     }))
+  } catch (error) {
+    console.error('Error fetching filtered table data:', error)
+    return [] // Fallback to empty data
+  }
+}
 
-    rows.value = rows.value.sort(
+async function fetchTableData(jurisdiction) {
+  loading.value = true
+  try {
+    const data = await fetchFilteredTableData([
+      { column: 'Name (from Jurisdiction)', value: jurisdiction },
+    ])
+
+    rows.value = data.sort(
       (a, b) =>
         questionOrder.indexOf(a.Questions) - questionOrder.indexOf(b.Questions)
     )
-  } catch (error) {
-    console.error('Error fetching table data:', error)
   } finally {
-    loading.value = false // Always set loading to false
+    loading.value = false
   }
 }
 
@@ -262,24 +271,13 @@ async function updateComparison(jurisdiction) {
   if (!jurisdiction) return
 
   loading.value = true
-
   try {
-    const payload = {
-      table: 'Answers',
-      filters: [
-        { column: 'Name (from Jurisdiction)', value: jurisdiction.value },
-      ],
-    }
-
-    const jurisdictionData = await fetchData(
-      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_table',
-      payload
-    )
+    const jurisdictionData = await fetchFilteredTableData([
+      { column: 'Name (from Jurisdiction)', value: jurisdiction.value },
+    ])
 
     updateColumns(jurisdiction)
     updateRows(jurisdictionData, jurisdiction)
-  } catch (error) {
-    console.error('Error updating comparison:', error)
   } finally {
     loading.value = false
   }
@@ -327,58 +325,34 @@ function computeMatchStatus(answer1, answer2) {
 }
 
 watch(
-  [selectedJurisdiction, () => props.compareJurisdiction],
+  () => [selectedJurisdiction.value, router.currentRoute.value.query.c],
   ([newJurisdiction, newCompare]) => {
     if (newJurisdiction) {
-      const formattedJurisdiction = newJurisdiction.value.replace(/ /g, '_')
-      router.replace({
-        query: {
-          ...router.currentRoute.value.query,
-          c: formattedJurisdiction,
-        },
-      })
+      updateRouterQuery(newJurisdiction.value)
       updateComparison(newJurisdiction)
     }
-
     if (newCompare) {
-      const originalValue = newCompare.replace(/_/g, ' ')
-      const option = jurisdictionOptions.value.find(
-        (opt) => opt.value === originalValue
-      )
-      if (option) selectedJurisdiction.value = option
+      syncCompareJurisdiction(newCompare)
     }
   }
 )
 
-// Watch for changes in the URL query parameter
-watch(
-  () => router.currentRoute.value.query.c,
-  (newCompare) => {
-    if (newCompare) {
-      const originalValue = newCompare.replace(/_/g, ' ') // Transform '_' back to spaces
-      const option = jurisdictionOptions.value.find(
-        (opt) => opt.value === originalValue
-      )
-      if (option) {
-        selectedJurisdiction.value = option // Update dropdown
-        updateComparison(option) // Trigger table update
-      }
-    }
-  }
-)
+function updateRouterQuery(jurisdiction) {
+  router.replace({
+    query: {
+      ...router.currentRoute.value.query,
+      c: jurisdiction.replace(/ /g, '_'),
+    },
+  })
+}
 
-watch(selectedJurisdiction, (newJurisdiction) => {
-  if (newJurisdiction) {
-    const formattedJurisdiction = newJurisdiction.value.replace(/ /g, '_') // Transform spaces to '_'
-    router.replace({
-      query: {
-        ...router.currentRoute.value.query,
-        c: formattedJurisdiction,
-      },
-    })
-    updateComparison(newJurisdiction) // Trigger table update
-  }
-})
+function syncCompareJurisdiction(compare) {
+  const originalValue = compare.replace(/_/g, ' ')
+  const option = jurisdictionOptions.value.find(
+    (opt) => opt.value === originalValue
+  )
+  if (option) selectedJurisdiction.value = option
+}
 
 // Computed property to calculate match counts dynamically
 const matchCounts = computed(() => {
