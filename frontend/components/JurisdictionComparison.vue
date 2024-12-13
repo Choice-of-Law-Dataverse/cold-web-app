@@ -117,9 +117,9 @@ const themeOptions = ref(themeOptionsData)
 import questionOrderData from './assets/questionOrder.json'
 const questionOrder = questionOrderData
 
-function updateFilteredRows(newRows) {
-  rows.value = newRows // Update rows in the parent
-}
+// function updateFilteredRows(newRows) {
+//   rows.value = newRows // Update rows in the parent
+// }
 
 async function fetchData(url, payload) {
   try {
