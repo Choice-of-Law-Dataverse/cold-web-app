@@ -54,72 +54,11 @@
       <hr style="margin-top: 8px" />
 
       <!-- Table -->
-      <UTable
-        v-if="!loading"
-        class="styled-table"
+      <ComparisonTable
         :rows="filteredRows"
         :columns="columns"
-        :ui="{
-          th: {
-            base: 'text-left rtl:text-right',
-            padding: 'px-8 py-3.5',
-            color: 'text-gray-900 dark:text-white',
-            font: 'font-semibold',
-            size: 'text-sm',
-          },
-          td: {
-            padding: 'px-8 py-2',
-          },
-        }"
-      >
-        <template #Answer-data="{ row }">
-          <NuxtLink
-            :to="`/question/${row.ID}`"
-            class="text-blue-500 hover:underline"
-          >
-            {{ row.Answer }}
-          </NuxtLink>
-        </template>
-        <template #Match-data="{ row }">
-          <span
-            v-if="row.Match !== 'red-x'"
-            :style="{
-              backgroundColor:
-                row.Match === 'green'
-                  ? 'var(--color-cold-green)'
-                  : row.Match === 'red'
-                    ? 'var(--color-label-court-decision)'
-                    : 'var(--color-cold-gray)',
-            }"
-            class="inline-block w-4 h-4 rounded-full"
-          ></span>
-          <span
-            v-else
-            :style="{ color: 'var(--color-label-court-decision)' }"
-            class="text-lg"
-          >
-            ✖
-          </span>
-        </template>
-
-        <template
-          v-for="column in columns"
-          :key="column.key"
-          #[`${column.key}-data`]="{ row }"
-        >
-          <NuxtLink
-            v-if="column.key.startsWith('Answer')"
-            :to="`/question/${row[column.key + '_ID'] || row.ID}`"
-            class="text-blue-500 hover:underline"
-          >
-            {{ row[column.key] }}
-          </NuxtLink>
-          <span v-else>
-            {{ row[column.key] }}
-          </span>
-        </template>
-      </UTable>
-      <p v-else>Loading...</p>
+        :loading="loading"
+      />
     </UCard>
   </div>
 </template>
@@ -128,6 +67,7 @@
 import { ref, watch, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import MatchSummary from './MatchSummary.vue'
+import ComparisonTable from './ComparisonTable.vue'
 
 const props = defineProps({
   jurisdiction: {
@@ -304,24 +244,9 @@ function updateRows(jurisdictionData, jurisdiction) {
       ...row,
       [secondColumnKey]: match?.Answer || 'N/A',
       [`${secondColumnKey}_ID`]: match?.ID || null,
-      Match: computeMatchStatus(row.Answer, match?.Answer),
+      Match: { answer1: row.Answer, answer2: match?.Answer || 'N/A' },
     }
   })
-}
-
-function computeMatchStatus(answer1, answer2) {
-  const grayCases = ['Unclear', 'Information is not available yet', 'No data']
-
-  if (grayCases.includes(answer1) || grayCases.includes(answer2)) return 'gray'
-  if (answer1 === answer2 && answer1 !== 'No') return 'green'
-  if (answer1 === 'No' && answer2 === 'No') return 'red'
-  if (
-    (answer1 === 'Yes' && answer2 === 'No') ||
-    (answer1 === 'No' && answer2 === 'Yes')
-  )
-    return 'red-x'
-
-  return 'gray'
 }
 
 watch(
@@ -486,25 +411,5 @@ const matchCounts = computed(() => {
 .table-wrapper {
   width: 100%; /* Ensure the table spans the full width of the wrapper */
   overflow-x: auto; /* Handle horizontal scrolling if needed */
-}
-
-.match-column {
-  text-align: center;
-}
-
-.rounded-full {
-  border-radius: 50%;
-}
-
-.inline-block {
-  display: inline-block;
-}
-
-.w-4 {
-  width: 12px;
-}
-
-.h-4 {
-  height: 12px;
 }
 </style>
