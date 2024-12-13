@@ -29,27 +29,24 @@
     </template>
 
     <template #Match-data="{ row }">
-      <template v-if="row.Match && row.Match.answer1 && row.Match.answer2">
-        <span
-          v-if="
-            computeMatchStatus(row.Match.answer1, row.Match.answer2) !== 'red-x'
-          "
-          :style="{
-            backgroundColor: getBackgroundColor(
-              computeMatchStatus(row.Match.answer1, row.Match.answer2)
-            ),
-          }"
-          class="inline-block w-4 h-4 rounded-full"
-        ></span>
-        <span
-          v-else
-          :style="{ color: 'var(--color-label-court-decision)' }"
-          class="text-lg"
-        >
-          ✖
-        </span>
-      </template>
-      <span v-else>Invalid Data</span>
+      <span
+        v-if="
+          computeMatchStatus(row.Match.answer1, row.Match.answer2) !== 'red-x'
+        "
+        :style="{
+          backgroundColor: getBackgroundColor(
+            computeMatchStatus(row.Match.answer1, row.Match.answer2)
+          ),
+        }"
+        class="inline-block w-4 h-4 rounded-full"
+      ></span>
+      <span
+        v-else
+        :style="{ color: 'var(--color-label-court-decision)' }"
+        class="text-lg"
+      >
+        ✖
+      </span>
     </template>
 
     <!-- Dynamic Columns -->
@@ -118,21 +115,17 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  computeMatchStatus: {
+    type: Function,
+    required: true,
+  },
 })
 
-function computeMatchStatus(answer1, answer2) {
-  const grayCases = ['Unclear', 'Information is not available yet', 'No data']
+const emit = defineEmits(['update-rows'])
 
-  if (grayCases.includes(answer1) || grayCases.includes(answer2)) return 'gray'
-  if (answer1 === answer2 && answer1 !== 'No') return 'green'
-  if (answer1 === 'No' && answer2 === 'No') return 'red'
-  if (
-    (answer1 === 'Yes' && answer2 === 'No') ||
-    (answer1 === 'No' && answer2 === 'Yes')
-  )
-    return 'red-x'
-
-  return 'gray'
+// Example function to update rows (emit changes back to parent)
+function filterRows(newFilteredRows) {
+  emit('update-rows', newFilteredRows)
 }
 
 function getBackgroundColor(status) {

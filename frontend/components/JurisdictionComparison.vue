@@ -57,6 +57,7 @@
       <ComparisonTable
         :rows="filteredRows"
         :columns="columns"
+        :computeMatchStatus="computeMatchStatus"
         :loading="loading"
       />
     </UCard>
@@ -115,6 +116,10 @@ const themeOptions = ref(themeOptionsData)
 // Desired order for the questions
 import questionOrderData from './assets/questionOrder.json'
 const questionOrder = questionOrderData
+
+function updateFilteredRows(newRows) {
+  rows.value = newRows // Update rows in the parent
+}
 
 async function fetchData(url, payload) {
   try {
@@ -285,13 +290,29 @@ const matchCounts = computed(() => {
     (counts, row) => {
       const match = row.Match
       if (match) {
-        counts[match] = (counts[match] || 0) + 1
+        const status = computeMatchStatus(match.answer1, match.answer2)
+        counts[status] = (counts[status] || 0) + 1
       }
       return counts
     },
     { green: 0, red: 0, 'red-x': 0, gray: 0 }
   )
 })
+
+function computeMatchStatus(answer1, answer2) {
+  const grayCases = ['Unclear', 'Information is not available yet', 'No data']
+
+  if (grayCases.includes(answer1) || grayCases.includes(answer2)) return 'gray'
+  if (answer1 === answer2 && answer1 !== 'No') return 'green'
+  if (answer1 === 'No' && answer2 === 'No') return 'red'
+  if (
+    (answer1 === 'Yes' && answer2 === 'No') ||
+    (answer1 === 'No' && answer2 === 'Yes')
+  )
+    return 'red-x'
+
+  return 'gray'
+}
 </script>
 
 <style scoped>
