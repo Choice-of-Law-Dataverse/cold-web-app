@@ -6,19 +6,12 @@
         <div class="result-value-medium">
           Questions for {{ props.jurisdiction }} and
         </div>
-        <USelectMenu
-          searchable
-          searchable-placeholder="Search a Jurisdiction..."
+        <JurisdictionSelectMenu
           v-model="selectedJurisdiction"
-          :options="jurisdictionOptions"
-          placeholder="Select Jurisdiction"
+          :countries="jurisdictionOptions"
+          @countrySelected="updateComparison"
           class="w-72 cold-uselectmenu"
-          size="xl"
           style="margin-top: -16px; margin-left: 4px"
-          :popper="{ offsetDistance: 0 }"
-          :uiMenu="{
-            base: 'rounded-none text-base', // Dropdown container styles
-          }"
         />
       </div>
 
@@ -69,6 +62,7 @@ import { ref, watch, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import MatchSummary from './MatchSummary.vue'
 import ComparisonTable from './ComparisonTable.vue'
+import JurisdictionSelectMenu from './JurisdictionSelectMenu.vue'
 
 const props = defineProps({
   jurisdiction: {
