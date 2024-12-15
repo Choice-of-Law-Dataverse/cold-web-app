@@ -185,24 +185,22 @@ async function fetchJurisdictions() {
   }
 }
 
-onMounted(() => {
-  fetchJurisdictions().then(() => {
-    if (props.jurisdiction) {
-      fetchTableData(props.jurisdiction)
-    }
+onMounted(async () => {
+  await fetchJurisdictions() // Ensure jurisdictions are loaded first
 
-    const compareQuery = router.currentRoute.value.query.c
-    if (compareQuery) {
-      const originalValue = compareQuery.replace(/_/g, ' ') // Transform '_' back to spaces
-      const option = jurisdictionOptions.value.find(
-        (opt) => opt.value === originalValue
-      )
-      if (option) {
-        selectedJurisdiction.value = option // Update dropdown
-        updateComparison(option) // Trigger table update
-      }
+  const compareQuery = router.currentRoute.value.query.c
+  if (compareQuery) {
+    await syncCompareJurisdiction(compareQuery) // Sync the dropdown
+    const jurisdiction = selectedJurisdiction.value
+    if (jurisdiction) {
+      updateComparison(jurisdiction) // Update the table
     }
-  })
+  }
+
+  // If a primary jurisdiction is set via props, load its data
+  if (props.jurisdiction) {
+    fetchTableData(props.jurisdiction)
+  }
 })
 
 // Add selected jurisdiction as a column
@@ -259,11 +257,19 @@ watch(selectedJurisdiction, (newJurisdiction) => {
 // Watch for URL query updates to sync the dropdown
 watch(
   () => router.currentRoute.value.query.c,
-  (newCompare) => {
+  async (newCompare) => {
     if (newCompare) {
-      syncCompareJurisdiction(newCompare)
+      if (!jurisdictionOptions.value.length) {
+        await fetchJurisdictions() // Ensure jurisdictions are loaded
+      }
+      await syncCompareJurisdiction(newCompare) // Sync dropdown
+      const jurisdiction = selectedJurisdiction.value
+      if (jurisdiction) {
+        updateComparison(jurisdiction) // Update table data
+      }
     }
-  }
+  },
+  { immediate: true }
 )
 
 async function updateRouterQuery(jurisdiction) {
@@ -290,7 +296,7 @@ async function updateRouterQuery(jurisdiction) {
 }
 
 async function syncCompareJurisdiction(compare) {
-  const isoCode = compare.toUpperCase() // Convert ISO2 to match case
+  const isoCode = compare.toUpperCase() // Ensure ISO2 code is uppercase
   try {
     // Fetch full name using ISO2 code
     const response = await fetch(
@@ -304,13 +310,15 @@ async function syncCompareJurisdiction(compare) {
         (opt) => opt.value === fullName
       )
       if (option) {
-        selectedJurisdiction.value = option // Update dropdown
+        selectedJurisdiction.value = option // Update dropdown selection
+      } else {
+        console.warn(`Jurisdiction not found in dropdown for: ${fullName}`)
       }
     } else {
       console.error(`Full name not found for ISO2 code: ${compare}`)
     }
   } catch (error) {
-    console.error('Error fetching full name:', error)
+    console.error('Error syncing compare jurisdiction:', error)
   }
 }
 
