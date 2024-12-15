@@ -251,8 +251,8 @@ function updateRows(jurisdictionData, jurisdiction) {
 // Watch when the user changes the selected jurisdiction
 watch(selectedJurisdiction, (newJurisdiction) => {
   if (newJurisdiction) {
-    updateRouterQuery(newJurisdiction.value) // Update the URL
-    updateComparison(newJurisdiction) // Fetch new table data
+    updateRouterQuery(newJurisdiction.value) // Fetch ISO2 and update query
+    updateComparison(newJurisdiction) // Fetch new comparison data
   }
 })
 
@@ -266,22 +266,51 @@ watch(
   }
 )
 
-function updateRouterQuery(jurisdiction) {
-  router.replace({
-    query: {
-      ...router.currentRoute.value.query,
-      c: jurisdiction.replace(/ /g, '_'), // Encode spaces
-    },
-  })
+async function updateRouterQuery(jurisdiction) {
+  try {
+    const response = await fetch(
+      `https://restcountries.com/v3.1/name/${jurisdiction}?fields=cca2`
+    )
+    const data = await response.json()
+
+    if (data && data[0] && data[0].cca2) {
+      const isoCode = data[0].cca2.toLowerCase() // Convert ISO2 code to lowercase
+      router.replace({
+        query: {
+          ...router.currentRoute.value.query,
+          c: isoCode, // Update query with ISO2 code
+        },
+      })
+    } else {
+      console.error(`ISO2 code not found for jurisdiction: ${jurisdiction}`)
+    }
+  } catch (error) {
+    console.error('Error fetching ISO2 code:', error)
+  }
 }
 
-function syncCompareJurisdiction(compare) {
-  const originalValue = compare.replace(/_/g, ' ')
-  const option = jurisdictionOptions.value.find(
-    (opt) => opt.value === originalValue
-  )
-  if (option) {
-    selectedJurisdiction.value = option // Update dropdown
+async function syncCompareJurisdiction(compare) {
+  const isoCode = compare.toUpperCase() // Convert ISO2 to match case
+  try {
+    // Fetch full name using ISO2 code
+    const response = await fetch(
+      `https://restcountries.com/v3.1/alpha/${isoCode}?fields=name`
+    )
+    const data = await response.json()
+
+    if (data && data.name?.common) {
+      const fullName = data.name.common
+      const option = jurisdictionOptions.value.find(
+        (opt) => opt.value === fullName
+      )
+      if (option) {
+        selectedJurisdiction.value = option // Update dropdown
+      }
+    } else {
+      console.error(`Full name not found for ISO2 code: ${compare}`)
+    }
+  } catch (error) {
+    console.error('Error fetching full name:', error)
   }
 }
 
