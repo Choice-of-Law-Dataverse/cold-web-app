@@ -21,12 +21,12 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
 import JurisdictionComparison from '~/components/JurisdictionComparison.vue'
 
 const route = useRoute() // Access the route to get the ID param
-const router = useRouter()
+//const router = useRouter()
 const jurisdictionData = ref(null) // Store fetched jurisdiction data
 const loading = ref(true) // Track loading state
 

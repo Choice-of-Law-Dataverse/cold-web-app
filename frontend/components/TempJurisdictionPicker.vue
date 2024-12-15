@@ -3,15 +3,9 @@
     <div class="popular-searches-container">
       <h2 class="popular-title">Temporary Jurisdiction Picker</h2>
       <div class="suggestions">
-        <USelectMenu
-          searchable
-          searchable-placeholder="Search a Jurisdiction..."
-          class="w-72 lg:w-96 cold-uselectmenu"
-          placeholder="Pick a Jurisdiction"
-          :options="countries"
-          v-model="selectedCountry"
-          @change="navigateToCountry"
-          size="xl"
+        <JurisdictionSelectMenu
+          :countries="countries"
+          @countrySelected="navigateToCountry"
         />
       </div>
     </div>
@@ -19,33 +13,32 @@
 </template>
 
 <script setup>
-// Import Nuxt's `useRouter` composable for navigation
+// Imports
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
+import JurisdictionSelectMenu from './JurisdictionSelectMenu.vue'
 
-// Reactive state
+// Reactive states
 const countries = ref([])
-const selectedCountry = ref(null)
+const router = useRouter()
 
 // Fetch jurisdictions from the text file
 async function fetchJurisdictions() {
   try {
-    const response = await fetch('/temp_jurisdictions.txt') // Path to the file in `public`
+    const response = await fetch('/temp_jurisdictions.txt') // Path to file in `public`
     if (!response.ok) throw new Error('Failed to load jurisdictions file')
     const text = await response.text()
     countries.value = text
       .split('\n')
       .map((country) => country.trim())
-      .filter(Boolean) // Split and clean the list
+      .filter(Boolean) // Clean up list
   } catch (error) {
     console.error(error)
-    countries.value = [] // Fallback to an empty list if there's an error
+    countries.value = [] // Fallback to empty list
   }
 }
 
-// Nuxt Router instance
-const router = useRouter()
-
+// Navigate to country route
 const navigateToCountry = async (country) => {
   if (country) {
     try {
@@ -66,10 +59,8 @@ const navigateToCountry = async (country) => {
   }
 }
 
-// Load the jurisdictions when the component is mounted
-onMounted(() => {
-  fetchJurisdictions()
-})
+// Fetch data on mount
+onMounted(fetchJurisdictions)
 </script>
 
 <style scoped>
@@ -80,12 +71,12 @@ onMounted(() => {
 }
 
 .popular-title {
-  white-space: nowrap; /* Prevents the title from wrapping to a new line */
+  white-space: nowrap; /* Prevents title from wrapping */
 }
 
 .suggestions {
   display: flex;
   flex-wrap: wrap;
-  gap: 36px; /* Space between each suggestion link */
+  gap: 36px; /* Space between suggestions */
 }
 </style>
