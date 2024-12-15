@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 import PopularSearches from '~/components/PopularSearches.vue'
-import CountrySelectMenu from '~/components/CountrySelectMenu.vue'
+import CountrySelectMenu from '~/components/TempJurisdictionPicker.vue'
 import JurisdictionMap from '~/components/JurisdictionMap.vue'
 </script>
 
