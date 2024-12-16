@@ -48,7 +48,11 @@
             : valueClassMap['Legal provision articles'] || 'result-value'
         "
       >
-        {{ fallbackData['More information'].trim() }}
+        {{
+          fallbackData['More information']
+            .replace(/\n/g, ' ') // Remove line breaks
+            .trim()
+        }}
       </div>
     </div>
 
