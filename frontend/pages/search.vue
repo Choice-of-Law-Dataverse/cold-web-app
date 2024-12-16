@@ -53,7 +53,6 @@ async function fetchSearchResults(query) {
     const userHost = window.location.hostname
 
     const requestBody = {
-      // search_string: searchText.value,
       search_string: query,
       time: new Date().toISOString(), // Add timestamp as ISO string
       ip_address: userIp, // Add user's IP address
