@@ -10,28 +10,11 @@
       >
         <!-- Custom rendering for Legal provision articles -->
         <template #legal-provision-articles="{ value }">
-          <div>
-            <div v-if="value && value.trim()">
-              <!-- Render each article on a new line -->
-              <div
-                v-for="(item, itemIndex) in value.split(',')"
-                :key="itemIndex"
-                :class="
-                  valueClassMap['Legal provision articles'] || 'result-value'
-                "
-              >
-                <NuxtLink
-                  :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
-                >
-                  {{ item.trim() }}
-                </NuxtLink>
-              </div>
-            </div>
-            <div v-else>
-              <!-- Render N/A if no legal provision articles are available -->
-              <span>N/A</span>
-            </div>
-          </div>
+          <LegalProvisionRenderer
+            :value="value"
+            :fallbackData="processedAnswerData"
+            :valueClassMap="valueClassMap"
+          />
         </template>
 
         <!-- Custom rendering for Case ID -->
