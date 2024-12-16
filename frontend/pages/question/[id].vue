@@ -10,71 +10,11 @@
       >
         <!-- Custom rendering for Legal provision articles -->
         <template #legal-provision-articles="{ value }">
-          <div>
-            <div v-if="value && value.trim()">
-              <!-- Render each article on a new line -->
-              <div
-                v-for="(item, itemIndex) in value.split(',')"
-                :key="itemIndex"
-                :class="
-                  valueClassMap['Legal provision articles'] || 'result-value'
-                "
-              >
-                <NuxtLink
-                  :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
-                >
-                  {{ item.trim() }}
-                </NuxtLink>
-              </div>
-            </div>
-            <!-- Fallback to Legislation-ID as links -->
-            <div
-              v-else-if="
-                processedAnswerData['Legislation-ID'] &&
-                processedAnswerData['Legislation-ID'].trim()
-              "
-            >
-              <div
-                v-for="(item, itemIndex) in processedAnswerData[
-                  'Legislation-ID'
-                ].split(',')"
-                :key="itemIndex"
-                :class="
-                  valueClassMap['Legal provision articles'] || 'result-value'
-                "
-              >
-                <NuxtLink
-                  :to="`/legal-instrument/${item.trim().split(' ')[0]}${item.trim().split(' ').slice(1).join('')}`"
-                >
-                  {{ item.trim() }}
-                </NuxtLink>
-              </div>
-            </div>
-
-            <!-- Fallback to More information -->
-            <div
-              v-else-if="
-                processedAnswerData['More information'] &&
-                processedAnswerData['More information'].trim()
-              "
-            >
-              <div
-                :class="
-                  processedAnswerData['More information'].length > 45
-                    ? 'result-value-small'
-                    : valueClassMap['Legal provision articles'] ||
-                      'result-value'
-                "
-              >
-                {{ processedAnswerData['More information'].trim() }}
-              </div>
-            </div>
-
-            <!-- Render N/A -->
-            <div v-else>
-              <span>N/A</span>
-            </div>
-          </div>
+          <LegalProvisionRenderer
+            :value="value"
+            :fallbackData="processedAnswerData"
+            :valueClassMap="valueClassMap"
+          />
         </template>
 
         <!-- Custom rendering for Case ID -->
