@@ -44,6 +44,10 @@ def log_query(request, search_string, filters, results_count, route):
     user_agent = request.headers.get('User-Agent')
     client_hints = get_client_hints(request)
 
+    # Extract hostname from the JSON payload
+    data = request.json
+    hostname = data.get('hostname', 'Unknown')  # Default to 'Unknown' if not provided
+
     log_data = {
         'timestamp': timestamp,
         'ip_address': ip_address,
@@ -53,7 +57,8 @@ def log_query(request, search_string, filters, results_count, route):
         'search_string': search_string,
         'filters': filters,
         'results_count': results_count,
-        'route': route
+        'route': route,
+        'hostname': hostname
     }
 
     collection.insert_one(log_data)
