@@ -59,15 +59,14 @@
               "
             >
               <div
-                v-for="(item, itemIndex) in processedAnswerData[
-                  'More information'
-                ].split(',')"
-                :key="itemIndex"
                 :class="
-                  valueClassMap['Legal provision articles'] || 'result-value'
+                  processedAnswerData['More information'].length > 45
+                    ? 'result-value-small'
+                    : valueClassMap['Legal provision articles'] ||
+                      'result-value'
                 "
               >
-                {{ item.trim() }}
+                {{ processedAnswerData['More information'].trim() }}
               </div>
             </div>
 
