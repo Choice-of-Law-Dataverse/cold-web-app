@@ -27,8 +27,52 @@
                 </NuxtLink>
               </div>
             </div>
+            <!-- Fallback to Legislation-ID as links -->
+            <div
+              v-else-if="
+                processedAnswerData['Legislation-ID'] &&
+                processedAnswerData['Legislation-ID'].trim()
+              "
+            >
+              <div
+                v-for="(item, itemIndex) in processedAnswerData[
+                  'Legislation-ID'
+                ].split(',')"
+                :key="itemIndex"
+                :class="
+                  valueClassMap['Legal provision articles'] || 'result-value'
+                "
+              >
+                <NuxtLink
+                  :to="`/legal-instrument/${item.trim().split(' ')[0]}${item.trim().split(' ').slice(1).join('')}`"
+                >
+                  {{ item.trim() }}
+                </NuxtLink>
+              </div>
+            </div>
+
+            <!-- Fallback to More information -->
+            <div
+              v-else-if="
+                processedAnswerData['More information'] &&
+                processedAnswerData['More information'].trim()
+              "
+            >
+              <div
+                v-for="(item, itemIndex) in processedAnswerData[
+                  'More information'
+                ].split(',')"
+                :key="itemIndex"
+                :class="
+                  valueClassMap['Legal provision articles'] || 'result-value'
+                "
+              >
+                {{ item.trim() }}
+              </div>
+            </div>
+
+            <!-- Render N/A -->
             <div v-else>
-              <!-- Render N/A if no legal provision articles are available -->
               <span>N/A</span>
             </div>
           </div>
