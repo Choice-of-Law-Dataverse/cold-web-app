@@ -23,21 +23,11 @@
         <div
           :class="valueClassMap['Legal provision articles'] || 'result-value'"
         >
-          <template v-if="resultData['Legal provision articles']">
-            <span
-              v-for="(item, itemIndex) in resultData[
-                'Legal provision articles'
-              ].split(',')"
-              :key="itemIndex"
-            >
-              <NuxtLink
-                :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
-              >
-                {{ item.trim() }}
-              </NuxtLink>
-            </span>
-          </template>
-          <template v-else> No legal provision </template>
+          <LegalProvisionRenderer
+            :value="resultData['Legal provision articles']"
+            :fallbackData="resultData"
+            :valueClassMap="valueClassMap"
+          />
         </div>
       </div>
     </div>
