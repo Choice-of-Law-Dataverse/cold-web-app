@@ -54,7 +54,7 @@ onMounted(async () => {
 /* Reset the counter for the top-level list */
 ::v-deep(ol) {
   counter-reset: list-counter; /* Initialize the counter */
-  list-style: none; /* Remove the default numbering */
+  list-style: none !important; /* Remove the default numbering */
   margin-left: 0;
   padding-left: 0;
 }
@@ -70,7 +70,7 @@ onMounted(async () => {
 
 ::v-deep(ol ol) {
   counter-reset: sub-list-counter; /* Reset the sub-list counter */
-  list-style: none; /* Remove the default numbering */
+  list-style: none !important; /* Remove the default numbering */
   margin-left: 24px; /* Indent for sub-lists */
 }
 
@@ -85,7 +85,7 @@ onMounted(async () => {
 
 ::v-deep(ol ol ol) {
   counter-reset: sub-sub-list-counter; /* Reset the sub-sub-list counter */
-  list-style: none; /* Remove the default numbering */
+  list-style: none !important; /* Remove the default numbering */
   margin-left: 24px; /* Indent for sub-sub-lists */
 }
 
@@ -101,7 +101,7 @@ onMounted(async () => {
 
 ::v-deep(ol ol ol ol) {
   counter-reset: sub-sub-sub-list-counter; /* Reset the fourth-level counter */
-  list-style: none; /* Remove the default numbering */
+  list-style: none !important; /* Remove the default numbering */
   margin-left: 24px; /* Indent for sub-sub-sub-lists */
 }
 

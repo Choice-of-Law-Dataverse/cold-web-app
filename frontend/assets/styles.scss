@@ -222,3 +222,19 @@ h2 {
   margin-top: 0px !important;
   margin-bottom: 0px !important;
 }
+
+/* Custom style for ordered and unordered lists */
+ol {
+  list-style: decimal !important; /* Ensure numbers appear */
+}
+
+ul {
+  list-style-type: disc;
+  margin: 0;
+  padding: 0 0 0 1.5rem;
+}
+
+li {
+  margin: 0.5rem 0;
+  margin-left: 1rem;
+}

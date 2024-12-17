@@ -3,7 +3,9 @@
     <!-- Main content section with reused styles -->
     <div class="main-content-grid">
       <div class="grid-item">
-        <ContentDoc path="/jurisdiction_comparison_info" />
+        <p class="result-value-small">
+          <ContentDoc path="/jurisdiction_comparison_info" />
+        </p>
       </div>
     </div>
   </UCard>
