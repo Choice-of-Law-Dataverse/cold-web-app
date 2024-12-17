@@ -21,6 +21,7 @@ export default {
         'cold-bg': '#FAFAFA',
         'cold-gray': '#E2E8F0',
         'cold-gray-alpha': '#E2E8F080', // 50% alpha
+        'cold-dark-gray': '#F1F3F7', 
         
         'label-question': '#FFA8FB',
         'label-question-alpha': '#FFA8FB1A', // 10% alpha
@@ -52,6 +53,7 @@ export default {
           
           '--color-cold-gray': theme('colors.cold-gray'),
           '--color-cold-gray-alpha': theme('colors.cold-gray-alpha'),
+          '--cold-dark-gray': theme('colors.cold-dark-gray'),
           
           '--color-label-question': theme('colors.label-question'),
           '--color-label-question-alpha': theme('colors.label-question-alpha'),

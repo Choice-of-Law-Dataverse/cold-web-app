@@ -22,8 +22,9 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import DetailDisplay from '~/components/DetailDisplay.vue'
-import JurisdictionComparison from '~/components/JurisdictionComparison.vue'
+//import DetailDisplay from '~/components/DetailDisplay.vue'
+//import JurisdictionComparison from '~/components/JurisdictionComparison.vue'
+//import JurisdictionComparisonInfo from '~/components/JurisdictionComparisonInfo.vue'
 
 const route = useRoute() // Access the route to get the ID param
 //const router = useRouter()

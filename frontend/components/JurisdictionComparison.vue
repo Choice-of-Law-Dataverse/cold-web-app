@@ -1,52 +1,79 @@
 <template>
   <div class="col-span-12">
-    <UCard class="cold-ucard">
-      <!-- Centered Jurisdiction Name and Compare Dropdown -->
-      <div class="comparison-title flex items-center justify-center mb-4">
-        <div class="result-value-medium">
-          Questions for {{ props.jurisdiction }} and
-        </div>
-        <JurisdictionSelectMenu
-          v-model="selectedJurisdiction"
-          :countries="jurisdictionOptions"
-          @countrySelected="updateComparison"
-          class="w-72 cold-uselectmenu"
-          style="margin-top: -16px; margin-left: 4px"
+    <UCard class="cold-ucard relative">
+      <!-- Help/Cancel Icon -->
+      <div class="absolute top-5 right-5">
+        <Icon
+          v-if="!showInfo"
+          name="i-material-symbols:help-outline"
+          size="24"
+          style="color: var(--color-cold-purple)"
+          class="cursor-pointer"
+          @click="toggleInfo"
+        />
+        <Icon
+          v-else
+          name="i-material-symbols:cancel-outline"
+          size="24"
+          style="color: var(--color-cold-purple)"
+          class="cursor-pointer"
+          @click="toggleInfo"
         />
       </div>
 
-      <!-- Filter and MatchSummary -->
-      <div class="main-content-grid">
-        <!-- Left-aligned USelectMenu -->
-        <div class="filter-wrapper">
-          <USelectMenu
-            searchable
-            v-model="selectedTheme"
-            :options="themeOptions"
-            placeholder="Filter by Theme"
-            class="cold-uselectmenu"
-            size="sm"
+      <!-- Conditional Rendering -->
+      <div v-if="showInfo">
+        <!-- JurisdictionComparisonInfo Component -->
+        <JurisdictionComparisonInfo />
+      </div>
+      <div v-else>
+        <!-- Centered Jurisdiction Name and Compare Dropdown -->
+        <div class="comparison-title flex items-center justify-center mb-4">
+          <div class="result-value-medium">
+            Questions for {{ props.jurisdiction }} and
+          </div>
+          <JurisdictionSelectMenu
+            v-model="selectedJurisdiction"
+            :countries="jurisdictionOptions"
+            @countrySelected="updateComparison"
+            class="w-72 cold-uselectmenu"
+            style="margin-top: -16px; margin-left: 4px"
           />
-          <UButton
-            v-if="selectedTheme"
-            @click="resetFilters"
-            size="sm"
-            variant="link"
-            class="suggestion-button"
-          >
-            Reset
-          </UButton>
         </div>
 
-        <!-- Right-aligned MatchSummary -->
-        <div v-if="selectedJurisdiction" class="match-summary">
-          <MatchSummary :counts="matchCounts" />
+        <!-- Filter and MatchSummary -->
+        <div class="main-content-grid">
+          <!-- Left-aligned USelectMenu -->
+          <div class="filter-wrapper">
+            <USelectMenu
+              searchable
+              v-model="selectedTheme"
+              :options="themeOptions"
+              placeholder="Filter by Theme"
+              class="cold-uselectmenu"
+              size="sm"
+            />
+            <UButton
+              v-if="selectedTheme"
+              @click="resetFilters"
+              size="sm"
+              variant="link"
+              class="suggestion-button"
+            >
+              Reset
+            </UButton>
+          </div>
+
+          <!-- Right-aligned MatchSummary -->
+          <div v-if="selectedJurisdiction" class="match-summary">
+            <MatchSummary :counts="matchCounts" />
+          </div>
         </div>
       </div>
 
       <hr style="margin-top: 8px" />
 
-      <!-- Table -->
+      <!-- Table Always Visible -->
       <ComparisonTable
         :rows="filteredRows"
         :columns="columns"
@@ -81,6 +108,7 @@ const rows = ref([])
 const jurisdictionOptions = ref([]) // Options for the dropdown
 const selectedJurisdiction = ref(null) // Selected jurisdiction for comparison
 const selectedTheme = ref(null) // Selected theme for filtering
+const showInfo = ref(false) // Reactive state to toggle the JurisdictionComparisonInfo component
 const columns = ref([
   { key: 'Themes', label: 'Theme', class: 'label' },
   { key: 'Questions', label: 'Question', class: 'label' },
@@ -114,6 +142,11 @@ const questionOrder = questionOrderData
 // function updateFilteredRows(newRows) {
 //   rows.value = newRows // Update rows in the parent
 // }
+
+// Function to toggle the state
+function toggleInfo() {
+  showInfo.value = !showInfo.value
+}
 
 async function fetchData(url, payload) {
   try {
