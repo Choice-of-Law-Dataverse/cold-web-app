@@ -1,12 +1,22 @@
 <template>
   <div class="col-span-12">
     <UCard class="cold-ucard relative">
-      <!-- Help Icon -->
-      <div class="absolute top-2 right-2">
+      <!-- Help/Cancel Icon -->
+      <div class="absolute top-5 right-5">
         <Icon
+          v-if="!showInfo"
           name="i-material-symbols:help-outline"
           size="24"
-          class="text-gray-500 cursor-pointer"
+          style="color: var(--color-cold-purple)"
+          class="cursor-pointer"
+          @click="toggleInfo"
+        />
+        <Icon
+          v-else
+          name="i-material-symbols:cancel-outline"
+          size="24"
+          style="color: var(--color-cold-purple)"
+          class="cursor-pointer"
           @click="toggleInfo"
         />
       </div>
