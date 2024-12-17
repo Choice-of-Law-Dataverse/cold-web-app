@@ -1,6 +1,5 @@
 <template>
   <UCard class="cold-ucard">
-    <p>Info go here</p>
-    <ContentDoc path="/example" />
+    <ContentDoc path="/jurisdiction_comparison_info" />
   </UCard>
 </template>
