@@ -9,7 +9,6 @@
         formattedSourceTable="Jurisdictions"
         :showHeader="false"
       />
-      <JurisdictionComparisonInfo />
       <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
       <JurisdictionComparison
         v-if="!loading && jurisdictionData?.Name"
