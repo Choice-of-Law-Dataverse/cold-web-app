@@ -201,6 +201,7 @@ h2 {
 
 .cold-ucard-info {
   @extend .cold-ucard;
+  margin-bottom: -8px;
   background-color: var(--cold-dark-gray) !important;
 }
 

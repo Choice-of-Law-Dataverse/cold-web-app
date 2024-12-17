@@ -21,7 +21,7 @@
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr)); /* 12-column layout */
   column-gap: var(--gutter-width); /* Match your existing gutter width */
-  padding: 0px 0px 0px 32px; /* Optional padding to match card's interior */
+  padding: 24px 0px 24px 32px; /* Optional padding to match card's interior */
 }
 
 .grid-item {
