@@ -24,6 +24,10 @@
   padding: 24px 0px 24px 32px; /* Optional padding to match card's interior */
 }
 
+::v-deep(li) {
+  margin-left: 1rem !important;
+}
+
 .grid-item {
   grid-column: 1 / span 6; /* Spans 6 out of 12 columns */
 }
