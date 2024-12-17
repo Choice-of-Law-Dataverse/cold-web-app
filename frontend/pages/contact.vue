@@ -4,13 +4,14 @@
       <UCard class="cold-ucard">
         <div class="main-content-grid">
           <div class="grid-item">
-            <h2>Do you have any questions?</h2>
+            <h2>Contact Us</h2>
             <p>
-              Send us an email:
+              We'd love to receive your questions, inquiries and feedback.<br />
+              Just send us an email:
               <a href="mailto:fabian.aiolfi@unilu.ch">fabian.aiolfi@unilu.ch</a>
             </p>
 
-            <h2>Want to stay updated on the project?</h2>
+            <h2>Stay Updated</h2>
             <p>
               Follow CoLD on
               <a
@@ -26,7 +27,7 @@
               >.
             </p>
 
-            <h2>Want to come over for a coffee?</h2>
+            <h2>Visit Us</h2>
             <p>
               Our offices are in Lucerne, Switzerland: <br />
               <br />

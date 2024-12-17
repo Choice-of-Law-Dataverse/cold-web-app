@@ -46,6 +46,13 @@
         </div>
       </div>
     </div>
+    <p
+      class="result-value-small"
+      style="margin: 10px 0 -14px -3px !important; font-size: 12px !important"
+    >
+      Is your jurisdiction missing?
+      <NuxtLink to="/contact">Contact us</NuxtLink>
+    </p>
   </UCard>
 </template>
 
