@@ -1,9 +1,13 @@
 <template>
   <div class="container">
     <div class="col-span-12">
-      <h2 style="text-align: right; padding-bottom: 50px">
-        {{ props.totalMatches }} Results
-      </h2>
+      <!-- Flexbox Container -->
+      <div class="filters-header flex items-center justify-between mb-6">
+        <SearchFilters />
+        <h2 class="text-right">{{ props.totalMatches }} Results</h2>
+      </div>
+
+      <!-- Results Grid -->
       <div class="results-grid">
         <div
           v-for="(resultData, key) in allResults"
@@ -58,3 +62,17 @@ const allResults = computed(() => {
   return Object.values(props.data.tables)
 })
 </script>
+
+<style scoped>
+.filters-header {
+  display: flex;
+  align-items: center; /* Vertically align items */
+  justify-content: space-between; /* Space between SearchFilters and h2 */
+  padding-bottom: 12px;
+}
+
+.filters-header h2 {
+  margin: 0; /* Remove default margin for better alignment */
+  padding-bottom: 0; /* Override inline padding if needed */
+}
+</style>
