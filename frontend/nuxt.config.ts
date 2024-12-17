@@ -5,7 +5,10 @@ export default defineNuxtConfig({
   ssr: true, // Ensure SSR is enabled
   modules: ['@nuxt/ui', '@nuxtjs/tailwindcss', '@nuxt/fonts', '@nuxtjs/leaflet', '@nuxt/icon', '@nuxt/content'],
   content: {
-    documentDriven: true
+    documentDriven: true,
+    markdown: {
+      anchorLinks: false,
+    }
   },
   colorMode: {
     preference: 'light'
