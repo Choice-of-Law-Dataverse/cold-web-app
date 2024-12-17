@@ -61,7 +61,7 @@ async function fetchSearchResults(query) {
     // try {
     // const requestBody = { search_string: query }
     const response = await fetch(
-      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_text_search',
+      'http://backend-service:5000/full_text_search',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -123,7 +123,7 @@ const fetchUserInfo = async () => {
   try {
     // Initial request to get the client hints (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers#client_hints)
     await fetch(
-      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/get_user_info',
+      'http://backend-service:5000/get_user_info',
       {
         method: 'GET',
       }
@@ -131,7 +131,7 @@ const fetchUserInfo = async () => {
 
     // After getting client hints from the browser, make a second request
     const response = await fetch(
-      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/user_info',
+      'http://backend-service:5000/user_info',
       {
         method: 'GET',
       }

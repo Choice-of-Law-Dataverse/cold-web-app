@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: simonweigold/kubernetes-demo-backend:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 5000
+          env:
+            - name: SQL_CONN_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: SQL_CONN_STRING
+            - name: MONGO_DB_CONN_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: MONGO_DB_CONN_STRING
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: OPENAI_API_KEY
+            - name: TEST
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: TEST
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 5000
+      targetPort: 5000
+  type: ClusterIP
