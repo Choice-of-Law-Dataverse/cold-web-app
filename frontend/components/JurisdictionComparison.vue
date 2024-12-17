@@ -1,6 +1,11 @@
 <template>
   <div class="col-span-12">
-    <UCard class="cold-ucard">
+    <UCard class="cold-ucard relative">
+      <!-- Help Icon -->
+      <div class="absolute top-6 right-6">
+        <Icon name="i-material-symbols:help-outline" size="24" />
+      </div>
+
       <!-- Centered Jurisdiction Name and Compare Dropdown -->
       <div class="comparison-title flex items-center justify-center mb-4">
         <div class="result-value-medium">
