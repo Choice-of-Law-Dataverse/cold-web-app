@@ -49,17 +49,18 @@ async function fetchSearchResults(query) {
     // Fetch detailed user info (browser, platform, etc.)
     const userInfo = await fetchUserInfo() // Call the fetchUserInfo function and await the result
 
+    // Retrieve hostname to differentiate between alpha and beta users
+    const userHost = window.location.hostname
+
     const requestBody = {
-      // search_string: searchText.value,
       search_string: query,
       time: new Date().toISOString(), // Add timestamp as ISO string
       ip_address: userIp, // Add user's IP address
       browser_info_navigator: browserInfo, // Add browser and device info from navigator
       browser_info_hint: userInfo || {}, // Add user info (platform, version, etc.) from client hint
+      hostname: userHost, // Include the current hostname
     }
 
-    // try {
-    // const requestBody = { search_string: query }
     const response = await fetch(
       'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_text_search',
       {
