@@ -8,6 +8,8 @@
         </p>
       </div>
       <div class="col-span-4 footer-links">
+        <NuxtLink to="/disclaimer">Disclaimer</NuxtLink>
+        <NuxtLink to="/about">About</NuxtLink>
         <NuxtLink to="/contact">Contact</NuxtLink>
       </div>
     </div>
@@ -74,6 +76,7 @@ p {
 .footer-links a {
   color: white !important; /* Link color */
   text-decoration: none !important;
+  margin-left: 36px;
 }
 
 .footer-links a:hover {

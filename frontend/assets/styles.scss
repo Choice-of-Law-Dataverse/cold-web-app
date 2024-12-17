@@ -199,6 +199,11 @@ h2 {
   margin-bottom: 24px;
 }
 
+.cold-ucard-info {
+  @extend .cold-ucard;
+  margin-bottom: -8px;
+  background-color: var(--cold-dark-gray) !important;
+}
 
 // Info Box in Jurisdiction Map
 .info {
@@ -221,4 +226,20 @@ h2 {
   @extend .result-value-small;
   margin-top: 0px !important;
   margin-bottom: 0px !important;
+}
+
+/* Custom style for ordered and unordered lists */
+ol {
+  list-style: decimal !important; /* Ensure numbers appear */
+}
+
+ul {
+  list-style-type: disc;
+  margin: 0;
+  padding: 0 0 0 1.5rem;
+}
+
+li {
+  margin: 0.5rem 0;
+  // margin-left: 0rem;
 }
