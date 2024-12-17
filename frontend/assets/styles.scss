@@ -199,6 +199,10 @@ h2 {
   margin-bottom: 24px;
 }
 
+.cold-ucard-info {
+  @extend .cold-ucard;
+  background-color: var(--cold-dark-gray) !important;
+}
 
 // Info Box in Jurisdiction Map
 .info {

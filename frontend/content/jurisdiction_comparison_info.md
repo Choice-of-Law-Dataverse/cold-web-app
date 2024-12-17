@@ -1,6 +1,6 @@
 This analysis is derived from a [data collection survey](/questionnaire). These answers are simplified summaries of assessments provided by [various specialists worldwide](/about?tab=team).
 
-The answers are classified into four categories:
+The answers are classified into four categories.
 
 1. **Yes**. Legal authorities confirm a positive answer to the issue, or there are legal provisions or court decisions that point in this direction.
 2. **No**. Legal authorities provide a negative answer to the issue, or there are legal provisions or court decisions indicating so.
@@ -9,6 +9,4 @@ The answers are classified into four categories:
 
 The answers might also indicate multiple interpretation criteria. If the answer is logically precluded or does not apply to the context of a given legal system, the record is displayed as "Not applicable".
 
-You can click on an answer to find more information and contextualize the reasons behind the answer.
-
-Some jurisdictions do not contain systematized data. These answers appear as "Information is not available yet" or "No data".
+You can click on an answer to find more information and contextualize the reasons behind the answer. Some jurisdictions do not contain systematized data. These answers appear as "Information is not available yet" or "No data".
