@@ -10,7 +10,7 @@
 </template>
 
 <script setup lang="ts">
-const types = ['All Types', 'Question']
+const types = ['All Types', 'Court Decisions', 'Legal Instruments', 'Questions']
 
 defineProps({
   modelValue: {
