@@ -45,10 +45,15 @@ async function fetchSearchResults(query, selectedFilter = 'All Types') {
   loading.value = true
   searchResults.value = []
 
-  const filters =
-    selectedFilter === 'Question'
-      ? [{ column: 'tables', values: ['Answers'] }]
-      : []
+  const filterMapping = {
+    Questions: 'Answers',
+    'Court Decisions': 'Court decisions',
+    'Legal Instruments': 'Legislation',
+  }
+
+  const filters = filterMapping[selectedFilter]
+    ? [{ column: 'tables', values: [filterMapping[selectedFilter]] }]
+    : []
 
   const requestBody = {
     search_string: query,
