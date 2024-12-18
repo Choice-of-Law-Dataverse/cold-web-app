@@ -3,7 +3,7 @@
     <div class="col-span-12">
       <!-- Flexbox Container -->
       <div class="filters-header flex items-center justify-between mb-6">
-        <SearchFilters @filter-changed="onFilterChanged" />
+        <SearchFilters v-model="currentFilter" />
         <h2 class="text-right">{{ props.totalMatches }} Results</h2>
       </div>
 
@@ -25,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 
 import LegislationCard from '@/components/LegislationCard.vue'
 import CourtDecisionCard from '@/components/CourtDecisionCard.vue'
@@ -62,12 +62,14 @@ const allResults = computed(() => {
   return Object.values(props.data.tables)
 })
 
-const emit = defineEmits(['filter-updated']) // Emit filter updates to search.vue
+const emit = defineEmits(['filter-updated'])
 
-// Handle filter change and send it up
-const onFilterChanged = (filterValue) => {
-  emit('filter-updated', filterValue)
-}
+const currentFilter = defineModel('filter', { default: 'All Types' }) // Two-way binding
+
+// Watch for changes and emit them up to parent
+watch(currentFilter, (newFilter) => {
+  emit('filter-updated', newFilter)
+})
 </script>
 
 <style scoped>

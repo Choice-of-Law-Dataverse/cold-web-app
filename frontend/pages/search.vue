@@ -8,6 +8,7 @@
         v-if="!loading && searchResults.length"
         :data="{ tables: searchResults }"
         :total-matches="totalMatches"
+        v-model:filter="filter"
         @filter-updated="onFilterUpdated"
       />
 
