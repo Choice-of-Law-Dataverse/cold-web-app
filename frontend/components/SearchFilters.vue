@@ -1,8 +1,8 @@
 <template>
   <USelectMenu
-    class="w-72 lg:w-96 cold-uselectmenu"
+    class="lg:w-60 cold-uselectmenu"
     placeholder="All Types"
-    size="xl"
+    size="lg"
     :options="types"
     :model-value="modelValue"
     @update:modelValue="emit('update:modelValue', $event)"
