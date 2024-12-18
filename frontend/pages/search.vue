@@ -39,6 +39,24 @@ const filter = ref({
   theme: route.query.theme || 'All Themes',
 })
 
+// Function to handle a new search
+const onSearchInput = (newQuery) => {
+  searchQuery.value = newQuery // Update the searchQuery state
+
+  // Update the URL query string with the new search term
+  router.push({
+    query: {
+      q: newQuery,
+      type: filter.value.type !== 'All Types' ? filter.value.type : undefined,
+      theme:
+        filter.value.theme !== 'All Themes' ? filter.value.theme : undefined,
+    },
+  })
+
+  // Fetch new results with the updated search query and current filters
+  fetchSearchResults(newQuery, filter.value)
+}
+
 // Watch for changes in filter and fetch results
 watch(filter, (newFilters) => {
   router.push({
@@ -50,6 +68,16 @@ watch(filter, (newFilters) => {
   })
   fetchSearchResults(searchQuery.value, newFilters)
 })
+
+watch(
+  () => route.query.q,
+  (newQuery) => {
+    if (newQuery) {
+      searchQuery.value = newQuery
+      fetchSearchResults(newQuery, filter.value)
+    }
+  }
+)
 
 // Function to fetch search results from the API
 async function fetchSearchResults(query, filters) {
