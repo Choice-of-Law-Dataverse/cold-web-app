@@ -9,6 +9,6 @@
 </template>
 
 <script setup lang="ts">
-const types = ['All Types', 'Question', 'Court Case', 'Legal Instrument']
+const types = ['All Types', 'Question']
 const selected = ref(types[0])
 </script>
