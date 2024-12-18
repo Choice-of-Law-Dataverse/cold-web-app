@@ -65,7 +65,13 @@ const links = [
 
 function emitSearch() {
   if (searchText.value.trim()) {
-    router.push({ name: 'search', query: { q: searchText.value } })
+    router.push({
+      name: 'search',
+      query: {
+        ...route.query, // Retain existing query parameters (filters)
+        q: searchText.value, // Update the search query
+      },
+    })
   }
 }
 
