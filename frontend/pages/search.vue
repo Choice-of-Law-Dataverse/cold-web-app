@@ -8,6 +8,7 @@
         v-if="!loading && searchResults.length"
         :data="{ tables: searchResults }"
         :total-matches="totalMatches"
+        @filter-updated="onFilterUpdated"
       />
 
       <p v-if="!loading && !searchResults.length">No results found.</p>
@@ -29,38 +30,32 @@ const searchQuery = ref('') // Holds the search query from the URL
 const searchResults = ref([]) // Stores search results to be displayed
 const loading = ref(false) // Tracks the loading state for the API call
 const totalMatches = ref(0) // Save number of total matches to display at top of search results
-
+const filter = ref('All Types')
 const route = useRoute() // Provides access to route parameters
 
+// Handle filter updates
+const onFilterUpdated = (newFilter) => {
+  filter.value = newFilter
+  fetchSearchResults(searchQuery.value, filter.value)
+}
+
 // Function to fetch search results from the API
-async function fetchSearchResults(query) {
+async function fetchSearchResults(query, selectedFilter = 'All Types') {
   loading.value = true
   searchResults.value = []
 
-  // Get browser and device info
-  const browserInfo = getBrowserInfo()
+  const filters =
+    selectedFilter === 'Question'
+      ? [{ column: 'tables', values: ['Answers'] }]
+      : []
+
+  const requestBody = {
+    search_string: query,
+    filters, // Add filters dynamically
+    time: new Date().toISOString(),
+  }
 
   try {
-    // Fetch the user's IP address using an external API
-    const ipResponse = await fetch('https://api.ipify.org?format=json')
-    const ipData = await ipResponse.json()
-    const userIp = ipData.ip
-
-    // Fetch detailed user info (browser, platform, etc.)
-    const userInfo = await fetchUserInfo() // Call the fetchUserInfo function and await the result
-
-    // Retrieve hostname to differentiate between alpha and beta users
-    const userHost = window.location.hostname
-
-    const requestBody = {
-      search_string: query,
-      time: new Date().toISOString(), // Add timestamp as ISO string
-      ip_address: userIp, // Add user's IP address
-      browser_info_navigator: browserInfo, // Add browser and device info from navigator
-      browser_info_hint: userInfo || {}, // Add user info (platform, version, etc.) from client hint
-      hostname: userHost, // Include the current hostname
-    }
-
     const response = await fetch(
       'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_text_search',
       {
@@ -70,10 +65,7 @@ async function fetchSearchResults(query) {
       }
     )
 
-    if (!response.ok) throw new Error('Network response was not ok')
     const data = await response.json()
-
-    // Extract total matches and results
     totalMatches.value = data.total_matches || 0
     searchResults.value = Object.values(data.results)
   } catch (error) {

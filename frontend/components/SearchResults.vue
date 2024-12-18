@@ -3,7 +3,7 @@
     <div class="col-span-12">
       <!-- Flexbox Container -->
       <div class="filters-header flex items-center justify-between mb-6">
-        <SearchFilters />
+        <SearchFilters @filter-changed="onFilterChanged" />
         <h2 class="text-right">{{ props.totalMatches }} Results</h2>
       </div>
 
@@ -61,6 +61,13 @@ const props = defineProps({
 const allResults = computed(() => {
   return Object.values(props.data.tables)
 })
+
+const emit = defineEmits(['filter-updated']) // Emit filter updates to search.vue
+
+// Handle filter change and send it up
+const onFilterChanged = (filterValue) => {
+  emit('filter-updated', filterValue)
+}
 </script>
 
 <style scoped>
