@@ -51,9 +51,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 const searchText = ref('')
 const router = useRouter()
@@ -69,6 +68,12 @@ function emitSearch() {
     router.push({ name: 'search', query: { q: searchText.value } })
   }
 }
+
+onMounted(() => {
+  if (route.query.q) {
+    searchText.value = route.query.q
+  }
+})
 </script>
 
 <style scoped>
