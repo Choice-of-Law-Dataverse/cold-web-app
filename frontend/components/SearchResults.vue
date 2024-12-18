@@ -2,8 +2,12 @@
   <div class="container">
     <div class="col-span-12">
       <!-- Flexbox Container -->
-      <div class="filters-header flex items-center justify-between mb-6">
-        <SearchFilters v-model="currentFilter" />
+      <div class="filters-header mb-6">
+        <!-- Types Filter -->
+        <SearchFilters :options="typeOptions" v-model="currentTypeFilter" />
+
+        <!-- Themes Filter -->
+        <SearchFilters :options="themeOptions" v-model="currentThemeFilter" />
         <h2 class="text-right">{{ props.totalMatches }} Results</h2>
       </div>
 
@@ -31,6 +35,7 @@ import LegislationCard from '@/components/LegislationCard.vue'
 import CourtDecisionCard from '@/components/CourtDecisionCard.vue'
 import AnswerCard from '@/components/AnswerCard.vue'
 import ResultCard from '@/components/ResultCard.vue'
+import SearchFilters from './SearchFilters.vue'
 
 const getResultComponent = (source_table) => {
   switch (source_table) {
@@ -45,11 +50,15 @@ const getResultComponent = (source_table) => {
   }
 }
 
-// Define props and assign them to a variable
+// Props to receive current filter values
 const props = defineProps({
   data: {
     type: Object,
-    default: () => ({ tables: {} }), // Provide default value for data
+    default: () => ({ tables: {} }), // Default to an object with an empty tables field
+  },
+  filters: {
+    type: Object,
+    required: true,
   },
   totalMatches: {
     type: Number,
@@ -59,17 +68,42 @@ const props = defineProps({
 
 // Gather all results
 const allResults = computed(() => {
-  return Object.values(props.data.tables)
+  return Object.values(props.data?.tables || {}) // Fallback to an empty object
 })
 
-const emit = defineEmits(['filter-updated'])
+const emit = defineEmits(['update:filters'])
 
-const currentFilter = defineModel('filter', { default: 'All Types' }) // Two-way binding
+const typeOptions = [
+  'All Types',
+  'Court Decisions',
+  'Legal Instruments',
+  'Questions',
+]
+const themeOptions = [
+  'All Themes',
+  'Party Autonomy',
+  'Express and Tacit Choice',
+  'Arbitration',
+]
 
-// Watch for changes and emit them up to parent
-watch(currentFilter, (newFilter) => {
-  emit('filter-updated', newFilter)
+// Reactive states initialized from props
+const currentTypeFilter = ref(props.filters.type || 'All Types')
+const currentThemeFilter = ref(props.filters.theme || 'All Themes')
+
+// Watch for changes in either filter and emit them up
+watch([currentTypeFilter, currentThemeFilter], ([newType, newTheme]) => {
+  emit('update:filters', { type: newType, theme: newTheme })
 })
+
+// Watch for prop changes to re-sync dropdowns when parent updates
+watch(
+  () => props.filters,
+  (newFilters) => {
+    currentTypeFilter.value = newFilters.type || 'All Types'
+    currentThemeFilter.value = newFilters.theme || 'All Themes'
+  },
+  { deep: true, immediate: true }
+)
 </script>
 
 <style scoped>

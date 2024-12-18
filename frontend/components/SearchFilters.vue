@@ -1,21 +1,26 @@
 <template>
-  <USelectMenu
-    class="lg:w-60 cold-uselectmenu"
-    placeholder="All Types"
-    size="lg"
-    :options="types"
-    :model-value="modelValue"
-    @update:modelValue="emit('update:modelValue', $event)"
-  />
+  <div>
+    <label class="block text-gray-700 text-sm mb-2">{{ label }}</label>
+    <USelectMenu
+      class="lg:w-60 cold-uselectmenu"
+      placeholder="All"
+      size="lg"
+      :options="options"
+      :model-value="modelValue"
+      @update:modelValue="emit('update:modelValue', $event)"
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
-const types = ['All Types', 'Court Decisions', 'Legal Instruments', 'Questions']
-
 defineProps({
+  options: {
+    type: Array as () => string[],
+    required: true,
+  },
   modelValue: {
     type: String,
-    default: 'All Types',
+    default: 'All',
   },
 })
 

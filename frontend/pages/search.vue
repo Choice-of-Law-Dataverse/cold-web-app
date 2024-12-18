@@ -8,8 +8,7 @@
         v-if="!loading && searchResults.length"
         :data="{ tables: searchResults }"
         :total-matches="totalMatches"
-        v-model:filter="filter"
-        @filter-updated="onFilterUpdated"
+        v-model:filters="filter"
       />
 
       <p v-if="!loading && !searchResults.length">No results found.</p>
@@ -33,42 +32,55 @@ const searchQuery = ref(route.query.q || '') // Holds the search query from the 
 const searchResults = ref([]) // Stores search results to be displayed
 const loading = ref(false) // Tracks the loading state for the API call
 const totalMatches = ref(0) // Save number of total matches to display at top of search results
-const filter = ref(route.query.filter || 'All Types') // Default to 'All Types'
 
-// Handle filter updates
-const onFilterUpdated = (newFilter) => {
-  filter.value = newFilter
+// Persistent filter state
+const filter = ref({
+  type: route.query.type || 'All Types',
+  theme: route.query.theme || 'All Themes',
+})
 
-  // Update the URL with the search query and filter
+// Watch for changes in filter and fetch results
+watch(filter, (newFilters) => {
   router.push({
     query: {
       q: searchQuery.value,
-      filter: newFilter !== 'All Types' ? newFilter : undefined, // Exclude if 'All Types'
+      type: newFilters.type !== 'All Types' ? newFilters.type : undefined,
+      theme: newFilters.theme !== 'All Themes' ? newFilters.theme : undefined,
     },
   })
-
-  fetchSearchResults(searchQuery.value, newFilter)
-}
+  fetchSearchResults(searchQuery.value, newFilters)
+})
 
 // Function to fetch search results from the API
-async function fetchSearchResults(query, selectedFilter = 'All Types') {
+async function fetchSearchResults(query, filters) {
   loading.value = true
   searchResults.value = []
 
-  const filterMapping = {
+  const requestBody = {
+    search_string: query,
+    filters: [],
+  }
+
+  // Add "Type" filter if not "All"
+  const typeFilterMapping = {
     Questions: 'Answers',
     'Court Decisions': 'Court decisions',
     'Legal Instruments': 'Legislation',
   }
 
-  const filters = filterMapping[selectedFilter]
-    ? [{ column: 'tables', values: [filterMapping[selectedFilter]] }]
-    : []
+  if (filters.type && filters.type !== 'All Types') {
+    requestBody.filters.push({
+      column: 'tables',
+      values: [typeFilterMapping[filters.type]],
+    })
+  }
 
-  const requestBody = {
-    search_string: query,
-    filters, // Add filters dynamically
-    time: new Date().toISOString(),
+  // Add "Themes" filter if not "All"
+  if (filters.theme && filters.theme !== 'All Themes') {
+    requestBody.filters.push({
+      column: 'themes',
+      values: [filters.theme],
+    })
   }
 
   try {
@@ -81,6 +93,8 @@ async function fetchSearchResults(query, selectedFilter = 'All Types') {
       }
     )
 
+    if (!response.ok) throw new Error('Failed to fetch results')
+
     const data = await response.json()
     totalMatches.value = data.total_matches || 0
     searchResults.value = Object.values(data.results)
@@ -91,24 +105,14 @@ async function fetchSearchResults(query, selectedFilter = 'All Types') {
   }
 }
 
-watch(
-  () => route.query.q,
-  (newQuery) => {
-    if (newQuery) {
-      searchQuery.value = newQuery
-      fetchSearchResults(newQuery)
-    }
-  }
-)
+// Log for debugging
+// watch(filter, (newFilters) => {
+//   console.log('Updated Filter:', newFilters) // Debugging
+//   fetchSearchResults(searchQuery.value, newFilters) // Fetch new results
+// })
 
 onMounted(() => {
-  if (route.query.q) {
-    searchQuery.value = route.query.q
-  }
-  if (route.query.filter) {
-    filter.value = route.query.filter
-  }
-
+  if (route.query.q) searchQuery.value = route.query.q
   fetchSearchResults(searchQuery.value, filter.value)
 })
 
