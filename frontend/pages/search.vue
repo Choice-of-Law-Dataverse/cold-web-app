@@ -24,20 +24,30 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import SearchResults from '../components/SearchResults.vue' // Adjust path if needed
 
-const searchQuery = ref('') // Holds the search query from the URL
+const route = useRoute()
+const router = useRouter()
+const searchQuery = ref(route.query.q || '') // Holds the search query from the URL
 const searchResults = ref([]) // Stores search results to be displayed
 const loading = ref(false) // Tracks the loading state for the API call
 const totalMatches = ref(0) // Save number of total matches to display at top of search results
-const filter = ref('All Types')
-const route = useRoute() // Provides access to route parameters
+const filter = ref(route.query.filter || 'All Types') // Default to 'All Types'
 
 // Handle filter updates
 const onFilterUpdated = (newFilter) => {
   filter.value = newFilter
-  fetchSearchResults(searchQuery.value, filter.value)
+
+  // Update the URL with the search query and filter
+  router.push({
+    query: {
+      q: searchQuery.value,
+      filter: newFilter !== 'All Types' ? newFilter : undefined, // Exclude if 'All Types'
+    },
+  })
+
+  fetchSearchResults(searchQuery.value, newFilter)
 }
 
 // Function to fetch search results from the API
@@ -94,8 +104,12 @@ watch(
 onMounted(() => {
   if (route.query.q) {
     searchQuery.value = route.query.q
-    fetchSearchResults(searchQuery.value)
   }
+  if (route.query.filter) {
+    filter.value = route.query.filter
+  }
+
+  fetchSearchResults(searchQuery.value, filter.value)
 })
 
 // Set up functions to retrieve user data (https://developer.mozilla.org/en-US/docs/Web/API/Navigator)
