@@ -81,9 +81,25 @@ const typeOptions = [
 ]
 const themeOptions = [
   'All Themes',
-  'Party Autonomy',
-  'Express and Tacit Choice',
+  'Absence of choice',
+  'Preamble',
+  'Party autonomy',
+  'Freedom of choice',
+  'Partial choice',
+  'Dépeçage',
+  'Rules of law',
+  'Express and tacit choice',
+  'Mandatory rules',
+  'Public policy',
   'Arbitration',
+  'Scope of the Principles',
+  'Formal validity of the choice of law',
+  'Agreement on the choice of law and battle of forms',
+  'Severability',
+  'Exclusion of renvoi',
+  'Scope of the chosen law',
+  'Assignment',
+  'Establishment',
 ]
 
 // Reactive states initialized from props
