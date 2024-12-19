@@ -35,8 +35,9 @@ const totalMatches = ref(0) // Save number of total matches to display at top of
 
 // Persistent filter state
 const filter = ref({
-  type: route.query.type || 'All Types',
+  jurisdiction: route.query.jurisdiction || 'All Jurisdictions',
   theme: route.query.theme || 'All Themes',
+  type: route.query.type || 'All Types',
 })
 
 // Function to handle a new search
@@ -47,9 +48,13 @@ const onSearchInput = (newQuery) => {
   router.push({
     query: {
       q: newQuery,
-      type: filter.value.type !== 'All Types' ? filter.value.type : undefined,
+      jurisdiction:
+        filter.value.jurisdiction !== 'All Jurisdictions'
+          ? filter.value.jurisdiction
+          : undefined,
       theme:
         filter.value.theme !== 'All Themes' ? filter.value.theme : undefined,
+      type: filter.value.type !== 'All Types' ? filter.value.type : undefined,
     },
   })
 
@@ -58,16 +63,30 @@ const onSearchInput = (newQuery) => {
 }
 
 // Watch for changes in filter and fetch results
-watch(filter, (newFilters) => {
-  router.push({
-    query: {
-      q: searchQuery.value,
-      type: newFilters.type !== 'All Types' ? newFilters.type : undefined,
-      theme: newFilters.theme !== 'All Themes' ? newFilters.theme : undefined,
-    },
-  })
-  fetchSearchResults(searchQuery.value, newFilters)
-})
+watch(
+  filter,
+  (newFilters, oldFilters) => {
+    // Avoid unnecessary calls by checking if filters have changed
+    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return
+
+    // Update the URL without full navigation
+    router.replace({
+      query: {
+        q: searchQuery.value,
+        jurisdiction:
+          newFilters.jurisdiction !== 'All Jurisdictions'
+            ? newFilters.jurisdiction
+            : undefined,
+        theme: newFilters.theme !== 'All Themes' ? newFilters.theme : undefined,
+        type: newFilters.type !== 'All Types' ? newFilters.type : undefined,
+      },
+    })
+
+    // Fetch search results
+    fetchSearchResults(searchQuery.value, newFilters)
+  },
+  { deep: true }
+)
 
 watch(
   () => route.query.q,
@@ -89,17 +108,11 @@ async function fetchSearchResults(query, filters) {
     filters: [],
   }
 
-  // Add "Type" filter if not "All"
-  const typeFilterMapping = {
-    Questions: 'Answers',
-    'Court Decisions': 'Court decisions',
-    'Legal Instruments': 'Legislation',
-  }
-
-  if (filters.type && filters.type !== 'All Types') {
+  // Add "Jurisdictions" filter if not "All"
+  if (filters.jurisdiction && filters.jurisdiction !== 'All Jurisdictions') {
     requestBody.filters.push({
-      column: 'tables',
-      values: [typeFilterMapping[filters.type]],
+      column: 'jurisdictions',
+      values: [filters.jurisdiction],
     })
   }
 
@@ -108,6 +121,21 @@ async function fetchSearchResults(query, filters) {
     requestBody.filters.push({
       column: 'themes',
       values: [filters.theme],
+    })
+  }
+
+  // Set up mapping: Filter options have different wording to table names
+  const typeFilterMapping = {
+    Questions: 'Answers',
+    'Court Decisions': 'Court decisions',
+    'Legal Instruments': 'Legislation',
+  }
+
+  // Add "Type" filter if not "All"
+  if (filters.type && filters.type !== 'All Types') {
+    requestBody.filters.push({
+      column: 'tables',
+      values: [typeFilterMapping[filters.type]],
     })
   }
 
@@ -132,12 +160,6 @@ async function fetchSearchResults(query, filters) {
     loading.value = false
   }
 }
-
-// Log for debugging
-// watch(filter, (newFilters) => {
-//   console.log('Updated Filter:', newFilters) // Debugging
-//   fetchSearchResults(searchQuery.value, newFilters) // Fetch new results
-// })
 
 onMounted(() => {
   if (route.query.q) searchQuery.value = route.query.q

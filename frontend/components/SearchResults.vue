@@ -3,11 +3,18 @@
     <div class="col-span-12">
       <!-- Flexbox Container -->
       <div class="filters-header mb-6">
-        <!-- Types Filter -->
-        <SearchFilters :options="typeOptions" v-model="currentTypeFilter" />
+        <!-- Jurisdictions Filter -->
+        <SearchFilters
+          :options="jurisdictionOptions"
+          v-model="currentJurisdictionFilter"
+        />
 
         <!-- Themes Filter -->
         <SearchFilters :options="themeOptions" v-model="currentThemeFilter" />
+
+        <!-- Types Filter -->
+        <SearchFilters :options="typeOptions" v-model="currentTypeFilter" />
+
         <h2 class="text-right">{{ props.totalMatches }} Results</h2>
       </div>
 
@@ -73,12 +80,13 @@ const allResults = computed(() => {
 
 const emit = defineEmits(['update:filters'])
 
-const typeOptions = [
-  'All Types',
-  'Court Decisions',
-  'Legal Instruments',
-  'Questions',
+const jurisdictionOptions = [
+  'All Jurisdictions',
+  'Switzerland',
+  'Germany',
+  'Brazil',
 ]
+
 const themeOptions = [
   'All Themes',
   'Absence of choice',
@@ -102,21 +110,40 @@ const themeOptions = [
   'Establishment',
 ]
 
+const typeOptions = [
+  'All Types',
+  'Court Decisions',
+  'Legal Instruments',
+  'Questions',
+]
+
 // Reactive states initialized from props
-const currentTypeFilter = ref(props.filters.type || 'All Types')
+const currentJurisdictionFilter = ref(
+  props.filters.theme || 'All Jurisdictions'
+)
 const currentThemeFilter = ref(props.filters.theme || 'All Themes')
+const currentTypeFilter = ref(props.filters.type || 'All Types')
 
 // Watch for changes in either filter and emit them up
-watch([currentTypeFilter, currentThemeFilter], ([newType, newTheme]) => {
-  emit('update:filters', { type: newType, theme: newTheme })
-})
+watch(
+  [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
+  ([newJurisdiction, newTheme, newType]) => {
+    emit('update:filters', {
+      jurisdiction: newJurisdiction,
+      theme: newTheme,
+      type: newType,
+    })
+  }
+)
 
 // Watch for prop changes to re-sync dropdowns when parent updates
 watch(
   () => props.filters,
   (newFilters) => {
-    currentTypeFilter.value = newFilters.type || 'All Types'
+    currentJurisdictionFilter.value =
+      newFilters.jurisdiction || 'All Jurisdictions'
     currentThemeFilter.value = newFilters.theme || 'All Themes'
+    currentTypeFilter.value = newFilters.type || 'All Types'
   },
   { deep: true, immediate: true }
 )
