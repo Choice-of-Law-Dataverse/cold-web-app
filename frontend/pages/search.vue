@@ -136,8 +136,27 @@ async function fetchSearchResults(query, filters) {
   }
 
   try {
+    // Retrieve hostname
+    const userHost = window.location.hostname
+
+    // Fetch user's IP address
+    const ipResponse = await fetch('https://api.ipify.org?format=json')
+    const ipData = await ipResponse.json()
+    const userIp = ipData.ip
+
+    // Fetch detailed user info (browser, platform, etc.)
+    const userInfo = await fetchUserInfo()
+    const browserInfo = getBrowserInfo()
+
+    // Add additional data to requestBody
+    requestBody.ip_address = userIp
+    requestBody.browser_info_navigator = browserInfo
+    requestBody.browser_info_hint = userInfo || {}
+    requestBody.hostname = userHost
+
     const response = await fetch(
       'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_text_search',
+      //'http://localhost:5000/full_text_search',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
