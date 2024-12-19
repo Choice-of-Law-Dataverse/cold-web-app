@@ -6,7 +6,7 @@
         <UButton
           v-for="(suggestion, index) in searchSuggestions"
           :key="index"
-          :to="`/search?q=${formatQuery(suggestion)}`"
+          @click="handleSuggestionClick(suggestion)"
           class="suggestion-button"
           variant="link"
           icon="i-material-symbols:arrow-forward"
@@ -20,6 +20,8 @@
 </template>
 
 <script>
+import eventBus from '@/eventBus'
+
 export default {
   data() {
     return {
@@ -31,7 +33,17 @@ export default {
   },
   methods: {
     formatQuery(query) {
-      return query.replace(/ /g, '+') // Replaces spaces with '+'
+      return query.replace(/ /g, '+')
+    },
+    handleSuggestionClick(suggestion) {
+      // Emit an event to update the search input
+      eventBus.emit('update-search', suggestion)
+
+      // Pass the query directly with spaces
+      this.$router.push({
+        name: 'search',
+        query: { q: suggestion }, // Pass suggestion directly without replacing spaces
+      })
     },
   },
 }

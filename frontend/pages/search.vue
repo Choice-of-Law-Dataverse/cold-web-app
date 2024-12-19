@@ -1,16 +1,13 @@
 <template>
   <div>
     <div v-if="searchQuery">
-      <p v-if="loading" align="center">Loading…</p>
-
-      <!-- Pass searchResults wrapped in `tables` to SearchResults.vue -->
+      <!-- Pass searchResults, totalMatches, and loading state -->
       <SearchResults
-        v-if="!loading && searchResults.length"
         :data="{ tables: searchResults }"
         :total-matches="totalMatches"
+        :loading="loading"
+        v-model:filters="filter"
       />
-
-      <p v-if="!loading && !searchResults.length">No results found.</p>
     </div>
     <div v-else>
       <p align="center">
@@ -22,45 +19,123 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import SearchResults from '../components/SearchResults.vue' // Adjust path if needed
 
-const searchQuery = ref('') // Holds the search query from the URL
+const route = useRoute()
+const router = useRouter()
+const searchQuery = ref(route.query.q || '') // Holds the search query from the URL
 const searchResults = ref([]) // Stores search results to be displayed
 const loading = ref(false) // Tracks the loading state for the API call
 const totalMatches = ref(0) // Save number of total matches to display at top of search results
 
-const route = useRoute() // Provides access to route parameters
+// Persistent filter state
+const filter = ref({
+  jurisdiction: route.query.jurisdiction || 'All Jurisdictions',
+  theme: route.query.theme || 'All Themes',
+  type: route.query.type || 'All Types',
+})
+
+// Function to handle a new search
+const onSearchInput = (newQuery) => {
+  searchQuery.value = newQuery // Update the searchQuery state
+
+  // Update the URL query string with the new search term
+  router.push({
+    query: {
+      q: newQuery,
+      jurisdiction:
+        filter.value.jurisdiction !== 'All Jurisdictions'
+          ? filter.value.jurisdiction
+          : undefined,
+      theme:
+        filter.value.theme !== 'All Themes' ? filter.value.theme : undefined,
+      type: filter.value.type !== 'All Types' ? filter.value.type : undefined,
+    },
+  })
+
+  // Fetch new results with the updated search query and current filters
+  fetchSearchResults(newQuery, filter.value)
+}
+
+// Watch for changes in filter and fetch results
+watch(
+  filter,
+  (newFilters, oldFilters) => {
+    // Avoid unnecessary calls by checking if filters have changed
+    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return
+
+    // Update the URL without full navigation
+    router.replace({
+      query: {
+        q: searchQuery.value,
+        jurisdiction:
+          newFilters.jurisdiction !== 'All Jurisdictions'
+            ? newFilters.jurisdiction
+            : undefined,
+        theme: newFilters.theme !== 'All Themes' ? newFilters.theme : undefined,
+        type: newFilters.type !== 'All Types' ? newFilters.type : undefined,
+      },
+    })
+
+    // Fetch search results
+    fetchSearchResults(searchQuery.value, newFilters)
+  },
+  { deep: true }
+)
+
+watch(
+  () => route.query.q,
+  (newQuery) => {
+    if (newQuery) {
+      searchQuery.value = newQuery
+      fetchSearchResults(newQuery, filter.value)
+    }
+  }
+)
 
 // Function to fetch search results from the API
-async function fetchSearchResults(query) {
+async function fetchSearchResults(query, filters) {
   loading.value = true
   searchResults.value = []
 
-  // Get browser and device info
-  const browserInfo = getBrowserInfo()
+  const requestBody = {
+    search_string: query,
+    filters: [],
+  }
+
+  // Add "Jurisdictions" filter if not "All"
+  if (filters.jurisdiction && filters.jurisdiction !== 'All Jurisdictions') {
+    requestBody.filters.push({
+      column: 'jurisdictions',
+      values: [filters.jurisdiction],
+    })
+  }
+
+  // Add "Themes" filter if not "All"
+  if (filters.theme && filters.theme !== 'All Themes') {
+    requestBody.filters.push({
+      column: 'themes',
+      values: [filters.theme],
+    })
+  }
+
+  // Set up mapping: Filter options have different wording to table names
+  const typeFilterMapping = {
+    Questions: 'Answers',
+    'Court Decisions': 'Court decisions',
+    'Legal Instruments': 'Legislation',
+  }
+
+  // Add "Type" filter if not "All"
+  if (filters.type && filters.type !== 'All Types') {
+    requestBody.filters.push({
+      column: 'tables',
+      values: [typeFilterMapping[filters.type]],
+    })
+  }
 
   try {
-    // Fetch the user's IP address using an external API
-    const ipResponse = await fetch('https://api.ipify.org?format=json')
-    const ipData = await ipResponse.json()
-    const userIp = ipData.ip
-
-    // Fetch detailed user info (browser, platform, etc.)
-    const userInfo = await fetchUserInfo() // Call the fetchUserInfo function and await the result
-
-    // Retrieve hostname to differentiate between alpha and beta users
-    const userHost = window.location.hostname
-
-    const requestBody = {
-      search_string: query,
-      time: new Date().toISOString(), // Add timestamp as ISO string
-      ip_address: userIp, // Add user's IP address
-      browser_info_navigator: browserInfo, // Add browser and device info from navigator
-      browser_info_hint: userInfo || {}, // Add user info (platform, version, etc.) from client hint
-      hostname: userHost, // Include the current hostname
-    }
-
     const response = await fetch(
       'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_text_search',
       {
@@ -70,10 +145,9 @@ async function fetchSearchResults(query) {
       }
     )
 
-    if (!response.ok) throw new Error('Network response was not ok')
-    const data = await response.json()
+    if (!response.ok) throw new Error('Failed to fetch results')
 
-    // Extract total matches and results
+    const data = await response.json()
     totalMatches.value = data.total_matches || 0
     searchResults.value = Object.values(data.results)
   } catch (error) {
@@ -83,21 +157,9 @@ async function fetchSearchResults(query) {
   }
 }
 
-watch(
-  () => route.query.q,
-  (newQuery) => {
-    if (newQuery) {
-      searchQuery.value = newQuery
-      fetchSearchResults(newQuery)
-    }
-  }
-)
-
 onMounted(() => {
-  if (route.query.q) {
-    searchQuery.value = route.query.q
-    fetchSearchResults(searchQuery.value)
-  }
+  if (route.query.q) searchQuery.value = route.query.q
+  fetchSearchResults(searchQuery.value, filter.value)
 })
 
 // Set up functions to retrieve user data (https://developer.mozilla.org/en-US/docs/Web/API/Navigator)
