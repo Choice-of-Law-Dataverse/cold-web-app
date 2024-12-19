@@ -30,8 +30,4 @@ const onSelect = (value) => {
 }
 </script>
 
-<style scoped>
-.cold-uselectmenu {
-  /* Add any specific styles here if needed */
-}
-</style>
+<style scoped></style>

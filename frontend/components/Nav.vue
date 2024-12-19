@@ -51,9 +51,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useRoute } from 'vue-router'
+import { ref, onMounted, onUnmounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import eventBus from '@/eventBus'
 
 const searchText = ref('')
 const router = useRouter()
@@ -66,9 +66,32 @@ const links = [
 
 function emitSearch() {
   if (searchText.value.trim()) {
-    router.push({ name: 'search', query: { q: searchText.value } })
+    router.push({
+      name: 'search',
+      query: {
+        ...route.query, // Retain existing query parameters (filters)
+        q: searchText.value, // Update the search query
+      },
+    })
   }
 }
+
+// Listen for events from PopularSearches.vue
+const updateSearchFromEvent = (query) => {
+  searchText.value = query // Update the search input field
+}
+
+onMounted(() => {
+  if (route.query.q) {
+    searchText.value = route.query.q
+  }
+  eventBus.on('update-search', updateSearchFromEvent)
+})
+
+// Clean up the event listener when the component is unmounted
+onUnmounted(() => {
+  eventBus.off('update-search', updateSearchFromEvent)
+})
 </script>
 
 <style scoped>
