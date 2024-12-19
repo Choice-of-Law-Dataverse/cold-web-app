@@ -1,6 +1,6 @@
 <template>
   <div>
-    <label class="block text-gray-700 text-sm mb-2">{{ label }}</label>
+    <!-- <label class="block text-gray-700 text-sm mb-2">{{ label }}</label> -->
     <USelectMenu
       class="lg:w-60 cold-uselectmenu"
       placeholder="All"
@@ -8,6 +8,7 @@
       :options="options"
       :model-value="modelValue"
       @update:modelValue="emit('update:modelValue', $event)"
+      searchable
     />
   </div>
 </template>
