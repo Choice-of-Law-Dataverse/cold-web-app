@@ -2,19 +2,23 @@
   <div class="container">
     <div class="col-span-12">
       <!-- Flexbox Container -->
-      <div class="filters-header mb-6">
-        <!-- Jurisdictions Filter -->
-        <SearchFilters
-          :options="jurisdictionOptions"
-          v-model="currentJurisdictionFilter"
-        />
+      <div class="filters-header mb-6 flex justify-between items-center">
+        <!-- Left-aligned group of filters -->
+        <div class="flex gap-4">
+          <!-- Jurisdictions Filter -->
+          <SearchFilters
+            :options="jurisdictionOptions"
+            v-model="currentJurisdictionFilter"
+          />
 
-        <!-- Themes Filter -->
-        <SearchFilters :options="themeOptions" v-model="currentThemeFilter" />
+          <!-- Themes Filter -->
+          <SearchFilters :options="themeOptions" v-model="currentThemeFilter" />
 
-        <!-- Types Filter -->
-        <SearchFilters :options="typeOptions" v-model="currentTypeFilter" />
+          <!-- Types Filter -->
+          <SearchFilters :options="typeOptions" v-model="currentTypeFilter" />
+        </div>
 
+        <!-- Right-aligned Results Heading -->
         <h2 class="text-right">{{ props.totalMatches }} Results</h2>
       </div>
 
