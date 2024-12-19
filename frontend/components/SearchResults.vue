@@ -1,20 +1,15 @@
 <template>
   <div class="container">
     <div class="col-span-12">
-      <!-- Flexbox Container -->
+      <!-- Flexbox Container: Filters and Results Heading -->
       <div class="filters-header mb-6 flex justify-between items-center">
         <!-- Left-aligned group of filters -->
         <div class="flex gap-4">
-          <!-- Jurisdictions Filter -->
           <SearchFilters
             :options="jurisdictionOptions"
             v-model="currentJurisdictionFilter"
           />
-
-          <!-- Themes Filter -->
           <SearchFilters :options="themeOptions" v-model="currentThemeFilter" />
-
-          <!-- Types Filter -->
           <SearchFilters :options="typeOptions" v-model="currentTypeFilter" />
         </div>
 
@@ -22,17 +17,26 @@
         <h2 class="text-right">{{ props.totalMatches }} Results</h2>
       </div>
 
-      <!-- Results Grid -->
-      <div class="results-grid">
-        <div
-          v-for="(resultData, key) in allResults"
-          :key="key"
-          class="result-item"
-        >
-          <component
-            :is="getResultComponent(resultData.source_table)"
-            :resultData="resultData"
-          />
+      <!-- Results Grid or Messages -->
+      <div class="results-content mt-4">
+        <!-- Loading State -->
+        <p v-if="loading">Loading…</p>
+
+        <!-- No Results -->
+        <p v-else-if="!allResults.length">No results found.</p>
+
+        <!-- Results Grid -->
+        <div v-else class="results-grid">
+          <div
+            v-for="(resultData, key) in allResults"
+            :key="key"
+            class="result-item"
+          >
+            <component
+              :is="getResultComponent(resultData.source_table)"
+              :resultData="resultData"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -74,6 +78,10 @@ const props = defineProps({
   totalMatches: {
     type: Number,
     default: 0,
+  },
+  loading: {
+    type: Boolean,
+    default: false,
   },
 })
 

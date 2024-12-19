@@ -1,17 +1,13 @@
 <template>
   <div>
     <div v-if="searchQuery">
-      <p v-if="loading" align="center">Loading…</p>
-
-      <!-- Pass searchResults wrapped in `tables` to SearchResults.vue -->
+      <!-- Pass searchResults, totalMatches, and loading state -->
       <SearchResults
-        v-if="!loading && searchResults.length"
         :data="{ tables: searchResults }"
         :total-matches="totalMatches"
+        :loading="loading"
         v-model:filters="filter"
       />
-
-      <p v-if="!loading && !searchResults.length">No results found.</p>
     </div>
     <div v-else>
       <p align="center">
