@@ -80,12 +80,32 @@ const allResults = computed(() => {
 
 const emit = defineEmits(['update:filters'])
 
-const jurisdictionOptions = [
-  'All Jurisdictions',
-  'Switzerland',
-  'Germany',
-  'Brazil',
-]
+// Jurisdiction options state
+const jurisdictionOptions = ref(['All Jurisdictions'])
+
+// Fetch jurisdictions from file
+const loadJurisdictions = async () => {
+  try {
+    const response = await fetch('/temp_jurisdictions.txt') // File path in public/
+    if (!response.ok) throw new Error('Failed to load jurisdictions')
+
+    const text = await response.text()
+    const jurisdictions = text
+      .split('\n') // Split text into lines
+      .map((line) => line.trim()) // Trim spaces
+      .filter((line) => line) // Remove empty lines
+
+    // Prepend "All Jurisdictions" to the list
+    jurisdictionOptions.value = ['All Jurisdictions', ...jurisdictions]
+  } catch (error) {
+    console.error('Error loading jurisdictions:', error)
+  }
+}
+
+// Call the function on mount
+onMounted(() => {
+  loadJurisdictions()
+})
 
 const themeOptions = [
   'All Themes',
