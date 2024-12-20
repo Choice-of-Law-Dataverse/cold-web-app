@@ -1,3 +1,5 @@
+// Layout -----------------------------------------------
+
 :root {
   --column-width: 72px;
   --gutter-width: 24px;
@@ -6,32 +8,45 @@
   );
 }
 
-/* Centered container */
+// Centered container
 .container {
   max-width: var(--container-width);
-  margin: 0 auto; /* Centers the container */
-  padding: 0 var(--gutter-width); /* Adds padding on both sides */
-  display: flex; 
-  flex-direction: column; /* Ensures children stack vertically */
-  align-items: center; /* Centers children horizontally within the container */
-  position: relative; /* Required for absolute positioning within it */
+  margin: 0 auto; // Centers the container
+  padding: 0 var(--gutter-width); // Adds padding on both sides
+  display: flex;
+  flex-direction: column; // Ensures children stack vertically
+  align-items: center; // Centers children horizontally within the container
+  position: relative; // Required for absolute positioning within it
 }
 
-
-/* Utility classes for column spans */
-// Loop to generate col-span-1 to col-span-12
+// Utility classes for column spans: Loop to generate col-span-1 to col-span-12
 @for $i from 1 through 12 {
   .col-span-#{$i} {
-    flex: 0 0 calc(var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1));
-    max-width: calc(var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1));
+    flex: 0
+      0
+      calc(var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1));
+    max-width: calc(
+      var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1)
+    );
     width: 100%;
   }
 }
 
-// Fonts
+// Fonts -----------------------------------------------
+
 body {
-  font-family: 'Inter', sans-serif !important; /* Apply globally */
+  font-family: 'Inter', sans-serif;
   color: var(--color-cold-night);
+}
+
+h1 {
+  font-size: 32px !important;
+  font-weight: 700 !important; // Bold
+}
+
+h2 {
+  font-size: 20px !important;
+  font-weight: 500 !important; // Medium
 }
 
 a {
@@ -39,6 +54,33 @@ a {
   text-decoration: none !important;
 }
 
+.title-container {
+  width: 100%;
+  text-align: center;
+}
+
+.copy {
+  @extend .result-value-small;
+  margin-top: 0px !important;
+  margin-bottom: 0px !important;
+}
+
+// Lists
+ol {
+  list-style: decimal !important; // Ensure numbers appear
+}
+
+ul {
+  list-style-type: disc;
+  margin: 0;
+  padding: 0 0 0 1.5rem;
+}
+
+li {
+  margin: 0.5rem 0;
+}
+
+// Labels
 .label {
   font-size: 12px !important;
   font-weight: 700 !important;
@@ -98,18 +140,19 @@ a {
   border: 1px solid var(--color-cold-night-alpha-25);
 }
 
+// Results
 .result-value {
   font-weight: 700 !important; // Bold
-  word-wrap: break-word; /* Allows breaking within words if necessary */
-  word-break: break-word; /* Breaks words that are too long */
-  white-space: pre-wrap; /* Preserves whitespace and line breaks, but also allows wrapping */
+  word-wrap: break-word; // Allows breaking within words if necessary
+  word-break: break-word; // Breaks words that are too long
+  white-space: pre-wrap; // Preserves whitespace and line breaks, but also allows wrapping
 }
 
 .result-value-large {
   @extend .result-value;
   font-size: 28px !important;
   margin-bottom: 6px !important;
-  margin-top: -5px !important
+  margin-top: -5px !important;
 }
 
 .result-value-medium {
@@ -127,67 +170,11 @@ a {
   margin-bottom: 10px !important;
 }
 
-.greyed-out {
-  color: grey;
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.close-link {
-  position: absolute;
-  top: -20px;
-  right: -10px;
-  text-decoration: none;
-  cursor: pointer;
-  display: flex; /* Use flexbox to align icon and text horizontally */
-  align-items: center; /* Align icon and text vertically */
-}
-
-.icon-wrapper {
-  margin-right: 4px;
-  margin-top: 5px;
-}
-
 .result-item {
   margin-bottom: 1rem;
 }
 
-.provision-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.right-container {
-  display: flex; /* Keep the label and select in a row */
-  align-items: center; /* Align them vertically */
-}
-
-.display-label {
-  margin-right: 8px; /* Add space between "Display:" and the dropdown */
-  text-align: right; /* Right align the "Display:" text */
-  font-size: x-small;
-  font-weight: 700 !important;
-}
-
-.no-margin {
-  margin-bottom: 0;
-}
-
-.title-container {
-  width: 100%;
-  text-align: center; /* Ensure the text inside is centered */
-}
-
-h1 {
-  font-size: 32px !important;
-  font-weight: 700 !important; // Bold
-}
-
-h2 {
-  font-size: 20px !important;
-  font-weight: 500 !important; // Medium
-}
+// UI Elements -----------------------------------------------
 
 .suggestion-button {
   color: var(--color-cold-purple) !important;
@@ -195,6 +182,25 @@ h2 {
   text-decoration: none !important;
 }
 
+// Info Box in Jurisdiction Map
+.info {
+  position: absolute;
+  z-index: 1000;
+  background: white;
+  font-family: 'Inter', Arial, sans-serif; // Replace with your global font
+  padding-right: 12px;
+  padding-bottom: 6px;
+}
+
+// USelectmenu
+.cold-uselectmenu button {
+  box-shadow: none !important;
+  border: 1px solid var(--color-cold-gray) !important;
+  border-radius: 0 !important;
+  background-color: white !important;
+}
+
+// CoLD Card
 .cold-ucard {
   margin-bottom: 24px;
 }
@@ -203,43 +209,4 @@ h2 {
   @extend .cold-ucard;
   margin-bottom: -8px;
   background-color: var(--cold-dark-gray) !important;
-}
-
-// Info Box in Jurisdiction Map
-.info {
-  position: absolute;
-  z-index: 1000;
-  background: white;
-  font-family: 'Inter', Arial, sans-serif; /* Replace with your global font */
-  padding-right: 12px;
-  padding-bottom: 6px;
-}
-
-.cold-uselectmenu button {
-  box-shadow: none !important;
-  border: 1px solid var(--color-cold-gray) !important;
-  border-radius: 0 !important;
-  background-color: white !important;
-}
-
-.copy {
-  @extend .result-value-small;
-  margin-top: 0px !important;
-  margin-bottom: 0px !important;
-}
-
-/* Custom style for ordered and unordered lists */
-ol {
-  list-style: decimal !important; /* Ensure numbers appear */
-}
-
-ul {
-  list-style-type: disc;
-  margin: 0;
-  padding: 0 0 0 1.5rem;
-}
-
-li {
-  margin: 0.5rem 0;
-  // margin-left: 0rem;
 }
