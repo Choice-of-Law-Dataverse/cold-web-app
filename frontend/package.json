@@ -21,6 +21,7 @@
     "marked": "^15.0.3",
     "mitt": "^3.0.1",
     "nuxt": "^3.12.4",
+    "nuxt-plotly": "^1.0.14",
     "vue": "latest"
   },
   "devDependencies": {
