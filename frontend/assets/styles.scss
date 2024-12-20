@@ -65,7 +65,7 @@ a {
   margin-bottom: 0px !important;
 }
 
-// Ordered and unordered lists
+// Lists
 ol {
   list-style: decimal !important; // Ensure numbers appear
 }
@@ -210,48 +210,3 @@ li {
   margin-bottom: -8px;
   background-color: var(--cold-dark-gray) !important;
 }
-
-// Purge Candidates -----------------------------------------------
-
-// .greyed-out {
-//   color: grey;
-//   opacity: 0.5;
-//   cursor: not-allowed;
-// }
-
-// .close-link {
-//   position: absolute;
-//   top: -20px;
-//   right: -10px;
-//   text-decoration: none;
-//   cursor: pointer;
-//   display: flex; // Use flexbox to align icon and text horizontally
-//   align-items: center; // Align icon and text vertically
-// }
-
-// .icon-wrapper {
-//   margin-right: 4px;
-//   margin-top: 5px;
-// }
-
-// .provision-container {
-//   display: flex;
-//   justify-content: space-between;
-//   align-items: center;
-// }
-
-// .right-container {
-//   display: flex; // Keep the label and select in a row
-//   align-items: center; // Align them vertically
-// }
-
-// .display-label {
-//   margin-right: 8px; // Add space between "Display:" and the dropdown
-//   text-align: right; // Right align the "Display:" text
-//   font-size: x-small;
-//   font-weight: 700 !important;
-// }
-
-// .no-margin {
-//   margin-bottom: 0;
-// }
