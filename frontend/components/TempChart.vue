@@ -8,7 +8,6 @@
           :layout="layout"
           :config="config"
           style="width: 100%"
-          @on-ready="myChartOnReady"
         ></nuxt-plotly>
       </client-only>
     </div>
@@ -16,43 +15,27 @@
 </template>
 
 <script setup lang="ts">
-import {
-  NuxtPlotlyConfig,
-  NuxtPlotlyData,
-  NuxtPlotlyLayout,
-  NuxtPlotlyHTMLElement,
-} from 'nuxt-plotly'
+import { NuxtPlotlyConfig, NuxtPlotlyData, NuxtPlotlyLayout } from 'nuxt-plotly'
 
-const x = [1, 2, 3, 4, 5]
-const y = [10, 20, 30, 20, 10]
+// Define the bar chart data
 const data: NuxtPlotlyData = [
-  { x: x, y: y, type: 'scatter', mode: 'markers', marker: { size: 20 } },
+  {
+    x: ['giraffes', 'orangutans', 'monkeys'], // Categories on the x-axis
+    y: [20, 14, 23], // Values on the y-axis
+    type: 'bar', // Specify bar chart
+  },
 ]
+
+// Define the layout for the chart
 const layout: NuxtPlotlyLayout = {
-  title: 'My graph on app.vue with <client-only>',
+  title: 'Court Decisions by Jurisdiction', // Title of the chart
+  xaxis: { title: 'Animals' }, // Label for x-axis
+  yaxis: { title: 'Count' }, // Label for y-axis
 }
 
-const config: NuxtPlotlyConfig = { scrollZoom: true, displayModeBar: false }
-
-function myChartOnReady(plotlyHTMLElement: NuxtPlotlyHTMLElement) {
-  const { $plotly } = useNuxtApp()
-  console.log({ $plotly })
-  console.log({ plotlyHTMLElement })
-
-  plotlyHTMLElement.on?.('plotly_afterplot', function () {
-    console.log('done plotting')
-  })
-
-  plotlyHTMLElement.on?.('plotly_click', function () {
-    alert('You clicked this Plotly chart!')
-
-    // use plotly function via `$plotly` to download chart image
-    $plotly.downloadImage(plotlyHTMLElement as HTMLElement, {
-      format: 'png',
-      width: 800,
-      height: 600,
-      filename: 'newplot',
-    })
-  })
+// Optional configuration
+const config: NuxtPlotlyConfig = {
+  scrollZoom: true, // Allow zooming
+  displayModeBar: false, // Hide the toolbar
 }
 </script>
