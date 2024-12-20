@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
-import { NuxtPlotlyConfig, NuxtPlotlyData, NuxtPlotlyLayout } from 'nuxt-plotly'
+import { NuxtPlotlyConfig, NuxtPlotlyData, NuxtPlotlyLayout } from 'nuxt-plotly' // https://nuxt.com/modules/nuxt-plotly
 
 // Reactive variable for the resolved color and render flag
 const coldGreen = ref('')
