@@ -11,19 +11,22 @@
   max-width: var(--container-width);
   margin: 0 auto; /* Centers the container */
   padding: 0 var(--gutter-width); /* Adds padding on both sides */
-  display: flex; 
+  display: flex;
   flex-direction: column; /* Ensures children stack vertically */
   align-items: center; /* Centers children horizontally within the container */
   position: relative; /* Required for absolute positioning within it */
 }
 
-
 /* Utility classes for column spans */
 // Loop to generate col-span-1 to col-span-12
 @for $i from 1 through 12 {
   .col-span-#{$i} {
-    flex: 0 0 calc(var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1));
-    max-width: calc(var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1));
+    flex: 0
+      0
+      calc(var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1));
+    max-width: calc(
+      var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1)
+    );
     width: 100%;
   }
 }
@@ -109,7 +112,7 @@ a {
   @extend .result-value;
   font-size: 28px !important;
   margin-bottom: 6px !important;
-  margin-top: -5px !important
+  margin-top: -5px !important;
 }
 
 .result-value-medium {
@@ -241,5 +244,4 @@ ul {
 
 li {
   margin: 0.5rem 0;
-  // margin-left: 0rem;
 }
