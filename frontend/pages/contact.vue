@@ -8,7 +8,7 @@
             <p>
               We'd love to receive your questions, inquiries and feedback.<br />
               Just send us an email:
-              <a href="mailto:fabian.aiolfi@unilu.ch">fabian.aiolfi@unilu.ch</a>
+              <a href="mailto:mail@cold.global">mail@cold.global</a>
             </p>
 
             <h2>Stay Updated</h2>
