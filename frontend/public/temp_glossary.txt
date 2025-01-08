@@ -1,5 +1,5 @@
 # Glossary
-
+Hello from Simon
 ## Absence of choice
 Absence of choice means that the parties have no agreement on choice of law (e.g., no choice of law clause inserted in their contract), or when a choice of law clause is invalid. In the absence of contractual choice, the adjudicator (judge or arbitrator) must determine the law applicable to the transaction/case.
 
