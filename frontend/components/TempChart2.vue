@@ -18,6 +18,14 @@ onMounted(async () => {
   // Dynamically import Plotly only on the client
   const Plotly = await import('plotly.js-dist-min')
 
+  // Fetch JSON data
+  const response = await fetch('count_jurisdictions.json')
+  const jurisdictionData = await response.json()
+
+  // Transform the JSON data for Plotly
+  const xValues = jurisdictionData.map((item) => item.n) // Extract 'n' values
+  const yValues = jurisdictionData.map((item) => item.jurisdiction) // Extract 'Jurisdiction.Names'
+
   // Fetch the Tailwind color from CSS variables
   const coldGreen = getComputedStyle(document.documentElement)
     .getPropertyValue('--color-cold-green')
@@ -26,8 +34,8 @@ onMounted(async () => {
   // Define the bar chart data
   chartData.value = [
     {
-      x: [20, 14, 23], // Values on the x-axis for horizontal bar chart
-      y: ['Giraffes', 'Orangutans', 'Monkeys'], // Categories on the y-axis
+      x: xValues, // Use the 'n' values for x-axis
+      y: yValues, // Use the 'Jurisdiction.Names' for y-axis
       type: 'bar', // Specify bar chart
       orientation: 'h', // Specify horizontal orientation
       marker: {
@@ -42,6 +50,8 @@ onMounted(async () => {
     //xaxis: { title: 'Count' }, // Label for x-axis
     //yaxis: { title: 'Animals' }, // Label for y-axis
     dragmode: false, // Disable drag to zoom
+    bargap: 0.4, // Adjust spacing between bars (smaller value = thicker bars)
+    height: chartData.value[0].y.length * 80, // Dynamically adjust chart height for y-axis labels
   }
 
   // Define the chart configuration
