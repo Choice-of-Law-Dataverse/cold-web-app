@@ -32,6 +32,10 @@ onMounted(async () => {
     .getPropertyValue('--color-cold-green')
     .trim()
 
+  const coldGray = getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-cold-gray')
+    .trim()
+
   // Define the bar chart data
   chartData.value = [
     {
@@ -48,16 +52,20 @@ onMounted(async () => {
   // Define the layout for the chart
   chartLayout.value = {
     dragmode: false, // Disable drag to zoom
-    bargap: 0.5, // Adjust spacing between bars (smaller value = thicker bars)
+    bargap: 0.7, // Adjust spacing between bars (smaller value = thicker bars)
     height: chartData.value[0].y.length * 40, // Dynamically adjust chart height for y-axis labels
     margin: {
       l: 180, // Increase left margin to accommodate long country names
       r: 20, // Right margin
       t: 30, // Top margin
-      b: 40, // Bottom margin
+      b: 20, // Bottom margin
     },
     xaxis: {
+      ticklen: 5, // Increase the length of the tick lines to create more space
+      tickcolor: 'rgba(0,0,0,0)', // Make the tick lines transparent if you don't want them visible
       side: 'top', // Move x-axis labels to the top
+      gridcolor: coldGray, // Use the Tailwind CSS color for gridlines
+      zerolinecolor: coldGray, // Same color for the x-axis 0-value line
     },
     yaxis: {
       ticklen: 20, // Increase the length of the tick lines to create more space
