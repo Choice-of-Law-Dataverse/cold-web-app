@@ -32,9 +32,9 @@
               Our offices are in Lucerne, Switzerland: <br />
               <br />
               Universität Luzern<br />
-              Frohburgstrasse 3<br />
-              Postfach<br />
-              6002 Luzern<br />
+              Inseliquai 8<br />
+              Room INS-1<br />
+              6005 Luzern<br />
               Switzerland
             </p>
           </div>
