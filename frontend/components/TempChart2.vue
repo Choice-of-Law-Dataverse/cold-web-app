@@ -18,6 +18,11 @@ onMounted(async () => {
   // Dynamically import Plotly only on the client
   const Plotly = await import('plotly.js-dist-min')
 
+  // Fetch the Tailwind color from CSS variables
+  const coldGreen = getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-cold-green')
+    .trim()
+
   // Define the bar chart data
   chartData.value = [
     {
@@ -25,6 +30,9 @@ onMounted(async () => {
       y: ['Giraffes', 'Orangutans', 'Monkeys'], // Categories on the y-axis
       type: 'bar', // Specify bar chart
       orientation: 'h', // Specify horizontal orientation
+      marker: {
+        color: coldGreen, // Apply the Tailwind color
+      },
     },
   ]
 
