@@ -1,5 +1,6 @@
 <template>
   <UCard class="cold-ucard">
+    <h2 class="popular-title">Court Decisions by Jurisdiction</h2>
     <div ref="plotlyContainer"></div>
   </UCard>
 </template>
@@ -17,17 +18,31 @@ onMounted(async () => {
   // Dynamically import Plotly only on the client
   const Plotly = await import('plotly.js-dist-min')
 
+  // Define the bar chart data
   chartData.value = [
     {
-      x: [1, 2, 3, 4, 5],
-      y: [10, 15, 13, 17, 21],
-      type: 'scatter',
-      mode: 'lines+markers',
-      marker: { color: 'red' },
+      x: [20, 14, 23], // Values on the x-axis for horizontal bar chart
+      y: ['Giraffes', 'Orangutans', 'Monkeys'], // Categories on the y-axis
+      type: 'bar', // Specify bar chart
+      orientation: 'h', // Specify horizontal orientation
     },
   ]
-  chartLayout.value = { title: 'Sample Plot' }
-  chartConfig.value = { responsive: true }
+
+  // Define the layout for the chart
+  chartLayout.value = {
+    //title: 'Court Decisions by Jurisdiction', // Title of the chart
+    //xaxis: { title: 'Count' }, // Label for x-axis
+    //yaxis: { title: 'Animals' }, // Label for y-axis
+    dragmode: false, // Disable drag to zoom
+  }
+
+  // Define the chart configuration
+  chartConfig.value = {
+    scrollZoom: false, // Disable zooming
+    displayModeBar: false, // Hide the toolbar
+    staticPlot: true, // Keep interactivity except zoom
+    responsive: true, // Ensure responsiveness
+  }
 
   if (plotlyContainer.value) {
     Plotly.newPlot(
