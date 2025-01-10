@@ -6,7 +6,7 @@
       <PopularSearches />
       <JurisdictionMap />
       <CountrySelectMenu />
-      <TempChart />
+      <TempChart2 />
     </div>
   </div>
 </template>
@@ -15,7 +15,8 @@
 import PopularSearches from '~/components/PopularSearches.vue'
 import JurisdictionMap from '~/components/JurisdictionMap.vue'
 import CountrySelectMenu from '~/components/TempJurisdictionPicker.vue'
-import TempChart from '~/components/TempChart.vue'
+// import TempChart from '~/components/TempChart.vue'
+import TempChart2 from '~/components/TempChart2.vue'
 </script>
 
 <style scoped>
