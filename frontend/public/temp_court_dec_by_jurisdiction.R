@@ -25,7 +25,8 @@ count_jurisdictions <- court_decisions %>%
   count(Jurisdiction.Names) %>% 
   rename(jurisdiction = Jurisdiction.Names) %>% 
   arrange(desc(n)) %>% 
-  head(10)
+  head(10) %>% 
+  arrange(n)
 
 
 # Export ----------------------------

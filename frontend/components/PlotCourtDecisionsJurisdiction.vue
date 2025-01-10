@@ -1,6 +1,7 @@
 <template>
   <UCard class="cold-ucard">
     <h2 class="popular-title">Court Decisions by Jurisdiction</h2>
+    <p class="result-value-small">Top 10 Jurisdictions</p>
     <div ref="plotlyContainer"></div>
   </UCard>
 </template>
@@ -46,12 +47,25 @@ onMounted(async () => {
 
   // Define the layout for the chart
   chartLayout.value = {
-    //title: 'Court Decisions by Jurisdiction', // Title of the chart
-    //xaxis: { title: 'Count' }, // Label for x-axis
-    //yaxis: { title: 'Animals' }, // Label for y-axis
     dragmode: false, // Disable drag to zoom
-    bargap: 0.4, // Adjust spacing between bars (smaller value = thicker bars)
-    height: chartData.value[0].y.length * 80, // Dynamically adjust chart height for y-axis labels
+    bargap: 0.5, // Adjust spacing between bars (smaller value = thicker bars)
+    height: chartData.value[0].y.length * 40, // Dynamically adjust chart height for y-axis labels
+    margin: {
+      l: 180, // Increase left margin to accommodate long country names
+      r: 20, // Right margin
+      t: 30, // Top margin
+      b: 40, // Bottom margin
+    },
+    xaxis: {
+      side: 'top', // Move x-axis labels to the top
+    },
+    yaxis: {
+      ticklen: 20, // Increase the length of the tick lines to create more space
+      tickcolor: 'rgba(0,0,0,0)', // Make the tick lines transparent if you don't want them visible
+    },
+    font: {
+      family: 'Inter, sans-serif', // Set the global font to Inter
+    },
   }
 
   // Define the chart configuration
