@@ -19,6 +19,7 @@ court_decisions <- read.csv(here("frontend", "public", "temp_Court decisions-Cou
 
 # Data Processing ----------------------------
 
+# Create top 10 list
 count_jurisdictions <- court_decisions %>% 
   separate_rows(Jurisdiction.Names, sep = ", ") %>% # Separate EU onto separate lines
   group_by(Jurisdiction.Names) %>% 
@@ -27,6 +28,11 @@ count_jurisdictions <- court_decisions %>%
   arrange(desc(n)) %>% 
   head(10) %>% 
   arrange(n)
+
+# Add search URL
+count_jurisdictions <- count_jurisdictions %>% 
+  mutate(url = paste0("/search?q=court&jurisdiction=", jurisdiction, "&type=Court+Decisions")) %>% 
+  mutate(url = gsub(" ", "+", url))
 
 
 # Export ----------------------------
