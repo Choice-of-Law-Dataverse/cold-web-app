@@ -26,15 +26,23 @@ onMounted(async () => {
   // Transform the JSON data for Plotly
   const xValues = jurisdictionData.map((item) => item.n) // Extract 'n' values
   const yValues = jurisdictionData.map((item) => item.jurisdiction) // Extract 'Jurisdiction.Names'
+  const links = jurisdictionData.map((item) => item.url) // Extract URLs (add this to your JSON)
 
   // Fetch the Tailwind color from CSS variables
   const coldGreen = getComputedStyle(document.documentElement)
     .getPropertyValue('--color-cold-green')
     .trim()
 
+  const coldGreenAlpha = getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-cold-green-alpha')
+    .trim()
+
   const coldGray = getComputedStyle(document.documentElement)
     .getPropertyValue('--color-cold-gray')
     .trim()
+
+  // Initialize the colors for the bars
+  const initialColors = Array(xValues.length).fill(coldGreen)
 
   // Define the bar chart data
   chartData.value = [
@@ -44,15 +52,17 @@ onMounted(async () => {
       type: 'bar', // Specify bar chart
       orientation: 'h', // Specify horizontal orientation
       marker: {
-        color: coldGreen, // Apply the Tailwind color
+        color: [...initialColors], // Apply initial colors
       },
+      customdata: links, // Add URLs to customdata
+      hoverinfo: 'none',
     },
   ]
 
   // Define the layout for the chart
   chartLayout.value = {
     dragmode: false, // Disable drag to zoom
-    bargap: 0.65, // Adjust spacing between bars (smaller value = thicker bars)
+    bargap: 0.5, // Adjust spacing between bars (smaller value = thicker bars)
     height: chartData.value[0].y.length * 35, // Dynamically adjust chart height for y-axis labels
     margin: {
       l: 200, // Increase left margin to accommodate long country names
@@ -81,17 +91,45 @@ onMounted(async () => {
   chartConfig.value = {
     scrollZoom: false, // Disable zooming
     displayModeBar: false, // Hide the toolbar
-    staticPlot: true, // Keep interactivity except zoom
+    staticPlot: false, // Keep interactivity except zoom
     responsive: true, // Ensure responsiveness
   }
 
+  // Render the chart
   if (plotlyContainer.value) {
-    Plotly.newPlot(
+    const plot = await Plotly.newPlot(
       plotlyContainer.value,
       chartData.value,
       chartLayout.value,
       chartConfig.value
     )
+
+    // Add hover effect to change bar color
+    plot.on('plotly_hover', function (data) {
+      const colors = [...data.points[0].data.marker.color] // Copy current colors
+      const pointIndex = data.points[0].pointNumber // Index of the hovered bar
+
+      colors[pointIndex] = coldGreenAlpha // Set the hover color for the specific bar
+
+      const update = { 'marker.color': [colors] } // Create the update payload
+      Plotly.restyle(plotlyContainer.value, update) // Apply the hover color
+    })
+
+    // colors[pointIndex] = coldGreenAlpha // Set the hover color for the specific bar
+
+    // Reset bar colors on mouse out
+    plot.on('plotly_unhover', function () {
+      const update = { 'marker.color': [initialColors] } // Reset to initial colors
+      Plotly.restyle(plotlyContainer.value, update)
+    })
+
+    // Add click event for navigation
+    plot.on('plotly_click', (data) => {
+      const clickedUrl = data.points[0].customdata
+      if (clickedUrl) {
+        window.location.href = clickedUrl
+      }
+    })
   } else {
     console.error('Plotly container is not ready')
   }
