@@ -52,10 +52,10 @@ onMounted(async () => {
   // Define the layout for the chart
   chartLayout.value = {
     dragmode: false, // Disable drag to zoom
-    bargap: 0.7, // Adjust spacing between bars (smaller value = thicker bars)
-    height: chartData.value[0].y.length * 40, // Dynamically adjust chart height for y-axis labels
+    bargap: 0.65, // Adjust spacing between bars (smaller value = thicker bars)
+    height: chartData.value[0].y.length * 35, // Dynamically adjust chart height for y-axis labels
     margin: {
-      l: 180, // Increase left margin to accommodate long country names
+      l: 200, // Increase left margin to accommodate long country names
       r: 20, // Right margin
       t: 30, // Top margin
       b: 20, // Bottom margin
@@ -73,6 +73,7 @@ onMounted(async () => {
     },
     font: {
       family: 'Inter, sans-serif', // Set the global font to Inter
+      size: 14,
     },
   }
 
