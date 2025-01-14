@@ -8,7 +8,7 @@
       <!-- Tooltip Wrapper -->
       <!-- :text="`Count for status ${status}: ${count}`"  -->
       <UTooltip
-        :text="`Text to be defined`"
+        :text="getTooltipText(status, count)"
         :popper="{ arrow: true, placement: 'top' }"
         :ui="{
           background: 'bg-cold-night',
@@ -76,6 +76,20 @@ defineProps({
     required: true,
   },
 })
+
+// Function to return tooltip text based on status and count
+function getTooltipText(status: string, count: number): string {
+  switch (status) {
+    case 'green':
+      return `Positive Match`
+    case 'red':
+      return `Negative Match`
+    case 'red-x':
+      return `Mismatch`
+    default:
+      return `Not Applicable`
+  }
+}
 </script>
 
 <style scoped>
