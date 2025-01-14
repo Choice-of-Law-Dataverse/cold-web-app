@@ -104,23 +104,22 @@ onMounted(async () => {
       chartConfig.value
     )
 
+    // Get the drag layer for pointer adjustments
+    const dragLayer = document.getElementsByClassName('nsewdrag')[0]
+
     // Add hover effect to change bar color
-    plot.on('plotly_hover', function (data) {
-      const colors = [...data.points[0].data.marker.color] // Copy current colors
-      const pointIndex = data.points[0].pointNumber // Index of the hovered bar
-
-      colors[pointIndex] = coldGreenAlpha // Set the hover color for the specific bar
-
-      const update = { 'marker.color': [colors] } // Create the update payload
-      Plotly.restyle(plotlyContainer.value, update) // Apply the hover color
+    // Add hover effect to change the pointer style
+    plot.on('plotly_hover', function () {
+      if (dragLayer) {
+        dragLayer.style.cursor = 'pointer' // Change cursor to pointer
+      }
     })
 
-    // colors[pointIndex] = coldGreenAlpha // Set the hover color for the specific bar
-
-    // Reset bar colors on mouse out
+    // Reset pointer style on unhover
     plot.on('plotly_unhover', function () {
-      const update = { 'marker.color': [initialColors] } // Reset to initial colors
-      Plotly.restyle(plotlyContainer.value, update)
+      if (dragLayer) {
+        dragLayer.style.cursor = '' // Reset cursor to default
+      }
     })
 
     // Add click event for navigation
