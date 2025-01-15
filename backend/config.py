@@ -11,3 +11,4 @@ class Config:
     TEST = os.getenv("TEST")
     MONGODB_CONN_STRING = os.getenv("MONGODB_CONN_STRING")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    IPINFO_ACCESS_TOKEN= os.getenv("IPINFO_ACCESS_TOKEN")
