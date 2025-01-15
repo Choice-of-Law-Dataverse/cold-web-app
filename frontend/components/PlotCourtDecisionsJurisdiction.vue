@@ -1,7 +1,9 @@
 <template>
   <UCard class="cold-ucard">
     <h2 class="popular-title">Top 10 Jurisdictions by Court Decisions</h2>
-    <p class="result-value-small">Click a bar to view decisions</p>
+    <p class="result-value-small">
+      Click bars to see a jurisdiction's decisions
+    </p>
     <div ref="plotlyContainer"></div>
   </UCard>
 </template>
@@ -39,6 +41,10 @@ onMounted(async () => {
 
   const coldGray = getComputedStyle(document.documentElement)
     .getPropertyValue('--color-cold-gray')
+    .trim()
+
+  const coldNight = getComputedStyle(document.documentElement)
+    .getPropertyValue('--color-cold-night')
     .trim()
 
   // Initialize the colors for the bars
@@ -84,6 +90,7 @@ onMounted(async () => {
     font: {
       family: 'Inter, sans-serif', // Set the global font to Inter
       size: 14,
+      color: coldNight,
     },
   }
 
@@ -143,3 +150,9 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.result-value-small {
+  line-height: 36px !important;
+}
+</style>
