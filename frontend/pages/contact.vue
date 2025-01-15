@@ -8,7 +8,7 @@
             <p>
               We'd love to receive your questions, inquiries and feedback.<br />
               Just send us an email:
-              <a href="mailto:fabian.aiolfi@unilu.ch">fabian.aiolfi@unilu.ch</a>
+              <a href="mailto:mail@cold.global">mail@cold.global</a>
             </p>
 
             <h2>Stay Updated</h2>
@@ -32,9 +32,9 @@
               Our offices are in Lucerne, Switzerland: <br />
               <br />
               Universität Luzern<br />
-              Frohburgstrasse 3<br />
-              Postfach<br />
-              6002 Luzern<br />
+              Inseliquai 8<br />
+              Room INS-1<br />
+              6005 Luzern<br />
               Switzerland
             </p>
           </div>

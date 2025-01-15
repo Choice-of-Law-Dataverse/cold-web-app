@@ -168,6 +168,7 @@ li {
   font-weight: 400 !important; // Regular
   line-height: 26px !important;
   margin-bottom: 10px !important;
+  white-space: normal;
 }
 
 .result-item {
@@ -209,4 +210,9 @@ li {
   @extend .cold-ucard;
   margin-bottom: -8px;
   background-color: var(--cold-dark-gray) !important;
+}
+
+// Curser on plot
+.js-plotly-plot .nsewdrag {
+  cursor: default; /* Set default arrow cursor for non-interactive elements */
 }

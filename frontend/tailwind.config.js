@@ -12,6 +12,7 @@ export default {
       colors: {
         'cold-purple': '#6F4DFA',
         'cold-green': '#4DFAB2',
+        'cold-green-alpha': '#4DFAB280',
         'cold-cream': '#FFF0D9',
         'cold-night': '#0F0035',
         'cold-night-alpha': '#0F003580', // 50% alpha; https://gist.github.com/lopspower/03fb1cc0ac9f32ef38f4
@@ -46,6 +47,7 @@ export default {
         ':root': {
           '--color-cold-purple': theme('colors.cold-purple'),
           '--color-cold-green': theme('colors.cold-green'),
+          '--color-cold-green-alpha': theme('colors.cold-green-alpha'),
           '--color-cold-cream': theme('colors.cold-cream'),
           '--color-cold-night': theme('colors.cold-night'),
           '--color-cold-night-alpha': theme('colors.cold-night-alpha'),

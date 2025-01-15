@@ -6,14 +6,18 @@
       <PopularSearches />
       <JurisdictionMap />
       <CountrySelectMenu />
+      <div style="width: 60%">
+        <PlotCourtDecisionsJurisdiction />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import PopularSearches from '~/components/PopularSearches.vue'
-import CountrySelectMenu from '~/components/TempJurisdictionPicker.vue'
 import JurisdictionMap from '~/components/JurisdictionMap.vue'
+import CountrySelectMenu from '~/components/TempJurisdictionPicker.vue'
+import PlotCourtDecisionsJurisdiction from '~/components/PlotCourtDecisionsJurisdiction.vue'
 </script>
 
 <style scoped>
