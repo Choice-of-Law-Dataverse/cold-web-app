@@ -210,3 +210,8 @@ li {
   margin-bottom: -8px;
   background-color: var(--cold-dark-gray) !important;
 }
+
+// Curser on plot
+.js-plotly-plot .nsewdrag {
+  cursor: default; /* Set default arrow cursor for non-interactive elements */
+}
