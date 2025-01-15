@@ -3,7 +3,16 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
   ssr: true, // Ensure SSR is enabled
-  modules: ['@nuxt/ui', '@nuxtjs/tailwindcss', '@nuxt/fonts', '@nuxtjs/leaflet', '@nuxt/icon', '@nuxt/content', 'nuxt-purgecss'],
+  modules: [
+    '@nuxt/ui',
+    '@nuxtjs/tailwindcss',
+    '@nuxt/fonts',
+    '@nuxtjs/leaflet',
+    '@nuxt/icon',
+    '@nuxt/content',
+    'nuxt-purgecss',
+    'nuxt-plotly',
+  ],
   purgecss: {
     enabled: false, // Disable for the time being
     rejected: true, // Enable logging of rejected (removed) selectors
@@ -27,8 +36,11 @@ export default defineNuxtConfig({
   tailwindcss: {
     configPath: './tailwind.config.js',
   },
-  // Fix legacy JS bug (https://stackoverflow.com/a/79054778/22393957)
   vite: {
+    optimizeDeps: {
+      include: ["plotly.js-dist-min"],
+    },
+    // Fix legacy JS bug (https://stackoverflow.com/a/79054778/22393957)
     css: {
       preprocessorOptions: {
         scss: {
