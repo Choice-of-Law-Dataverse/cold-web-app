@@ -1,7 +1,7 @@
 <template>
   <UCard class="cold-ucard">
-    <h2 class="popular-title">Court Decisions by Jurisdiction</h2>
-    <p class="result-value-small">Top 10 Jurisdictions</p>
+    <h2 class="popular-title">Top 10 Jurisdictions by Court Decisions</h2>
+    <p class="result-value-small">Click a bar to view decisions</p>
     <div ref="plotlyContainer"></div>
   </UCard>
 </template>
@@ -109,10 +109,16 @@ onMounted(async () => {
 
     // Add hover effect to change bar color
     // Add hover effect to change the pointer style
-    plot.on('plotly_hover', function () {
+    plot.on('plotly_hover', function (data) {
       if (dragLayer) {
         dragLayer.style.cursor = 'pointer' // Change cursor to pointer
       }
+      // Change bar color on hover
+      const colors = [...data.points[0].data.marker.color] // Copy current colors
+      const pointIndex = data.points[0].pointNumber // Index of the hovered bar
+      colors[pointIndex] = coldGreenAlpha // Set the hover color for the specific bar
+      const update = { 'marker.color': [colors] } // Create the update payload
+      Plotly.restyle(plotlyContainer.value, update) // Apply the hover color
     })
 
     // Reset pointer style on unhover
@@ -120,6 +126,9 @@ onMounted(async () => {
       if (dragLayer) {
         dragLayer.style.cursor = 'default' // Reset cursor to default
       }
+      // Reset bar colors on unhover
+      const update = { 'marker.color': [initialColors] } // Reset to initial colors
+      Plotly.restyle(plotlyContainer.value, update)
     })
 
     // Add click event for navigation
