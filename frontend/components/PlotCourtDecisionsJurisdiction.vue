@@ -118,7 +118,7 @@ onMounted(async () => {
     // Reset pointer style on unhover
     plot.on('plotly_unhover', function () {
       if (dragLayer) {
-        dragLayer.style.cursor = '' // Reset cursor to default
+        dragLayer.style.cursor = 'default' // Reset cursor to default
       }
     })
 
