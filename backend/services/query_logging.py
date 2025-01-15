@@ -3,9 +3,6 @@ from pymongo.server_api import ServerApi
 from datetime import datetime
 import requests
 from config import Config
-import os
-from dotenv import load_dotenv
-load_dotenv()
 
 # Create a new client and connect to the server
 client = MongoClient(Config.MONGODB_CONN_STRING, server_api=ServerApi('1'))
@@ -22,7 +19,7 @@ def get_ip_address(request):
 
 # Function to get location from IP address
 def get_location(ip_address):
-    access_token = os.getenv('IPINFO_ACCESS_TOKEN')
+    access_token = Config.IPINFO_ACCESS_TOKEN
     try:
         response = requests.get(f'http://ipinfo.io/{ip_address}/json?token={access_token}')
         return response.json()
