@@ -14,17 +14,15 @@
           title="CoLD Newsletter"
           buttonText="Subscribe on Substack"
           :buttonLink="links.substack"
+          iconName="i-bi:substack"
+          :iconStyle="{ color: '#333333' }"
         />
         <ConnectCard
           title="CoLD on LinkedIn"
           buttonText="Follow Us"
           :buttonLink="links.linkedin"
-        />
-        <ConnectCard
-          title="Questions? Feedback?"
-          buttonText="Contact Us"
-          buttonLink="/contact"
-          :newTab="false"
+          iconName="i-mdi:linkedin"
+          :iconStyle="{ color: '#666666' }"
         />
       </div>
     </div>
