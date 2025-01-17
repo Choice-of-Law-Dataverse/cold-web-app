@@ -8,23 +8,15 @@
             <p>
               We'd love to receive your questions, inquiries and feedback.<br />
               Just send us an email:
-              <a href="mailto:mail@cold.global">mail@cold.global</a>
+              <a :href="links.email">mail@cold.global</a>
             </p>
 
             <h2>Stay Updated</h2>
             <p>
               Follow CoLD on
-              <a
-                href="https://www.linkedin.com/company/choice-of-law-dataverse"
-                target="_blank"
-                >LinkedIn</a
-              >
+              <a :href="links.linkedin" target="_blank">LinkedIn</a>
               and subscribe to the newsletter on
-              <a
-                href="https://choiceoflawdataverse.substack.com/subscribe"
-                target="_blank"
-                >Substack</a
-              >.
+              <a :href="links.substack" target="_blank">Substack</a>.
             </p>
 
             <h2>Visit Us</h2>
@@ -43,6 +35,18 @@
     </div>
   </div>
 </template>
+
+<script>
+import { externalLinks } from '~/utils/externalLinks'
+
+export default {
+  data() {
+    return {
+      links: externalLinks,
+    }
+  },
+}
+</script>
 
 <style scoped>
 .main-content-grid {
