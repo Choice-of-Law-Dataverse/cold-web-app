@@ -9,6 +9,9 @@
       <div style="width: 60%">
         <PlotCourtDecisionsJurisdiction />
       </div>
+      <div style="width: 33%">
+        <ConnectCard />
+      </div>
     </div>
   </div>
 </template>
@@ -18,6 +21,7 @@ import PopularSearches from '~/components/PopularSearches.vue'
 import JurisdictionMap from '~/components/JurisdictionMap.vue'
 import CountrySelectMenu from '~/components/TempJurisdictionPicker.vue'
 import PlotCourtDecisionsJurisdiction from '~/components/PlotCourtDecisionsJurisdiction.vue'
+import ConnectCard from '~/components/LandingPage/ConnectCard.vue'
 </script>
 
 <style scoped>
