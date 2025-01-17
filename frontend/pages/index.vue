@@ -10,18 +10,36 @@
         <PlotCourtDecisionsJurisdiction />
       </div>
       <div style="width: 33%">
-        <ConnectCard title="CoLD Newsletter" />
+        <ConnectCard
+          title="CoLD Newsletter"
+          buttonText="Subscribe on Substack"
+          :buttonLink="links.substack"
+        />
+        <ConnectCard
+          title="CoLD on LinkedIn"
+          buttonText="Follow Us"
+          :buttonLink="links.linkedin"
+        />
+        <ConnectCard
+          title="Questions? Feedback?"
+          buttonText="Contact Us"
+          buttonLink="/contact"
+          :newTab="false"
+        />
       </div>
     </div>
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import PopularSearches from '~/components/PopularSearches.vue'
 import JurisdictionMap from '~/components/JurisdictionMap.vue'
 import CountrySelectMenu from '~/components/TempJurisdictionPicker.vue'
 import PlotCourtDecisionsJurisdiction from '~/components/PlotCourtDecisionsJurisdiction.vue'
 import ConnectCard from '~/components/LandingPage/ConnectCard.vue'
+
+import { externalLinks } from '~/utils/externalLinks'
+const links = externalLinks
 </script>
 
 <style scoped>

@@ -2,19 +2,27 @@
   <UCard class="cold-ucard">
     <h2 class="popular-title">{{ title }}</h2>
     <div class="icon-container">
-      <a :href="links.substack" target="_blank" rel="noopener noreferrer">
+      <a
+        :href="buttonLink"
+        :target="newTab ? '_blank' : '_self'"
+        :rel="newTab ? 'noopener noreferrer' : ''"
+      >
         <Icon name="i-bi:substack" size="96" style="color: #ff6719" />
       </a>
     </div>
     <div class="link-container">
-      <a :href="links.substack" target="_blank" rel="noopener noreferrer">
+      <a
+        :href="buttonLink"
+        :target="newTab ? '_blank' : '_self'"
+        :rel="newTab ? 'noopener noreferrer' : ''"
+      >
         <UButton
           class="suggestion-button"
           variant="link"
           icon="i-material-symbols:arrow-forward"
           trailing
         >
-          Subscribe on Substack
+          {{ buttonText }}
         </UButton>
       </a>
     </div>
@@ -22,18 +30,25 @@
 </template>
 
 <script setup>
-import { externalLinks } from '~/utils/externalLinks'
-
 // Define props
 const props = defineProps({
   title: {
     type: String,
     required: true,
   },
+  buttonText: {
+    type: String,
+    required: true,
+  },
+  buttonLink: {
+    type: String,
+    required: true,
+  },
+  newTab: {
+    type: Boolean,
+    default: true,
+  },
 })
-
-// Data variables
-const links = externalLinks
 </script>
 
 <style scoped>
