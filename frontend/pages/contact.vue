@@ -36,16 +36,9 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { externalLinks } from '~/utils/externalLinks'
-
-export default {
-  data() {
-    return {
-      links: externalLinks,
-    }
-  },
-}
+const links = externalLinks
 </script>
 
 <style scoped>
