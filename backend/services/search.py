@@ -14,137 +14,6 @@ class SearchService:
         self.test = Config.TEST
         self.sorter = Sorter()
 
-    def basic_search(self, search_string):
-        all_entries = self.db.get_all_entries()
-
-        # Check if the database retrieval failed without an exception
-        if all_entries is None:
-            return json.dumps(
-                {
-                    f"{self.test}_error": "Failed to retrieve data from the database. Please try again later."
-                }
-            )
-
-        results = {}
-        total_matches = 0
-        search_terms = search_string.lower().split()
-
-        for table, entries in all_entries.items():
-            matching_entries = [
-                entry
-                for entry in entries
-                if all(
-                    any(search_term in str(value).lower() for value in entry.values())
-                    for search_term in search_terms
-                )
-            ]
-            if matching_entries:
-                results[table] = {
-                    "matches": len(matching_entries),
-                    "results": matching_entries,
-                }
-                total_matches += len(matching_entries)
-
-        final_results = {
-            "test": self.test,
-            "total_matches": total_matches,
-            "tables": results,
-        }
-        # Sort data based on "Case rank" and completeness
-        sorted_results = self.sorter.sort_by_priority_and_completeness(final_results)
-
-        return filter_na(parse_results(sorted_results))
-
-    def filtered_search(self, search_string, filter_string):
-        return f"{self.test}...foo"
-
-    def semantic_search(self, search_string):
-        return f"{self.test}...foo"
-
-    def curated_search(self, search_string):
-        all_entries = self.db.get_entries_from_tables(["Answers", "Court decisions"])
-
-        # Check if the database retrieval failed without an exception
-        if all_entries is None:
-            return json.dumps(
-                {
-                    f"{self.test}_error": "Failed to retrieve data from the database. Please try again later."
-                }
-            )
-
-        # Pre-selection of columns for each table
-        selected_columns = {
-            "Answers": [
-                "ID",
-                "Name (from Jurisdiction)",
-                "Questions",
-                "Answer",
-                "More information",
-                "Legal provision articles",
-                "Secondary legal provision articles",
-                "Legislation titles",
-                "Case titles",
-            ],
-            "Court decisions": [
-                "ID",
-                "Case",
-                "Jurisdiction Names",
-                "Abstract",
-                "Content",
-                "Additional information",
-                "Themes",
-                "Observations",
-                "Relevant facts / Summary of the case",
-                "Relevant rules of law involved",
-                "Choice of law issue",
-                "Court's position",
-                "Text of the relevant legal provisions",
-                "Quote",
-                "Translated excerpt",
-                "Case rank",
-                "Pinpoint facts",
-                "Pinpoint rules",
-                "Pinpoint CoL",
-                "Answer IDs",
-            ],
-        }
-
-        results = {}
-        total_matches = 0
-        search_terms = search_string.lower().split()
-
-        for table, entries in all_entries.items():
-            # Filter out only the relevant columns
-            filtered_entries = [
-                {key: entry[key] for key in selected_columns[table] if key in entry}
-                for entry in entries
-            ]
-
-            matching_entries = [
-                entry
-                for entry in filtered_entries
-                if all(
-                    any(search_term in str(value).lower() for value in entry.values())
-                    for search_term in search_terms
-                )
-            ]
-            if matching_entries:
-                results[table] = {
-                    "matches": len(matching_entries),
-                    "results": matching_entries,
-                }
-                total_matches += len(matching_entries)
-
-        # print(results)
-
-        final_results = {
-            "test": self.test,
-            "total_matches": total_matches,
-            "tables": results,  # sort_by_priority_and_completeness(results) # Sort data based on "Case rank" and completeness
-        }
-
-        return self.sorter.sorting_chain(filter_na(parse_results(final_results)))
-
     def curated_details_search(self, table, id):
         print(table)
         print(id)
@@ -203,40 +72,123 @@ class SearchService:
         results = self.db.execute_query(query, query_params)
         return results
 
-    def full_text_search(self, search_string, filters=[]):
-        # Initialize filter arrays for params
+    """
+    =======================================================================
+    FULL TEXT SEARCH AND HELPER FUNCTIONS
+    =======================================================================
+    """
+
+    def _extract_filters(self, filters):
         tables = []
         jurisdictions = []
         themes = []
-
-        # Process filters into appropriate arrays
+        
         for filter_item in filters:
             column = filter_item.get("column")
             values = filter_item.get("values", [])
             if column and values:
-                if column.lower() in [
-                    "name (from jurisdiction)",
-                    "jurisdiction name",
-                    "jurisdictions",
-                ]:
+                col_lower = column.lower()
+                if col_lower in ["name (from jurisdiction)", "jurisdiction name", "jurisdictions"]:
                     jurisdictions.extend(values)
-                elif column.lower() in ["themes", "themes name"]:
+                elif col_lower in ["themes", "themes name"]:
                     themes.extend(values)
-                elif column.lower() in ["source_table", "tables"]:
+                elif col_lower in ["source_table", "tables"]:
                     tables.extend(values)
+        return tables, jurisdictions, themes
 
-        # Convert filter arrays to SQL-compatible lists
-        def to_sql_array(values):
-            if values:
-                return f"ARRAY[{', '.join(f'{repr(v)}' for v in values)}]::text[]"
-            else:
-                return "NULL"
+    def _build_empty_search_query(self, tables, jurisdictions, themes):
+        """Return a UNION of all relevant tables using the same filter structure,
+        but *without* the search conditions.*"""
 
-        tables_sql = to_sql_array(tables)
-        jurisdictions_sql = to_sql_array(jurisdictions)
-        themes_sql = to_sql_array(themes)
+        tables_sql = self._to_sql_array(tables) or "NULL"
+        jurisdictions_sql = self._to_sql_array(jurisdictions) or "NULL"
+        themes_sql = self._to_sql_array(themes) or "NULL"
 
-        # Define the dynamic SQL query
+        # Notice we do not do ts_rank(...) or search conditions here.
+        # Instead, we just select a constant "rank" so we can still ORDER BY (uselessly, but consistent).
+        query = f"""
+            WITH params AS (
+                SELECT
+                    {tables_sql}::text[] AS tables,
+                    {jurisdictions_sql}::text[] AS jurisdictions,
+                    {themes_sql}::text[] AS themes
+            )
+            -- Answers
+            SELECT 
+                'Answers' AS source_table,
+                "ID" AS id,
+                1.0 AS rank
+            FROM "Answers", params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Answers' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                    OR "Name (from Jurisdiction)" = ANY(params.jurisdictions)
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL 
+                    OR EXISTS (
+                        SELECT 1
+                        FROM unnest(params.themes) AS theme_filter
+                        WHERE "Themes" ILIKE '%' || theme_filter || '%'
+                    )
+                )
+
+            UNION ALL
+
+            -- Court decisions
+            SELECT 
+                'Court decisions' AS source_table,
+                "ID" AS id,
+                1.0 AS rank
+            FROM "Court decisions", params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Court decisions' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                    OR "Jurisdiction Names" = ANY(params.jurisdictions)
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL 
+                    OR EXISTS (
+                        SELECT 1
+                        FROM unnest(params.themes) AS theme_filter
+                        WHERE "Themes" ILIKE '%' || theme_filter || '%'
+                    )
+                )
+
+            UNION ALL
+
+            -- Legislation
+            SELECT 
+                'Legislation' AS source_table,
+                "ID" AS id,
+                1.0 AS rank
+            FROM "Legislation", params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Legislation' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                    OR "Jurisdiction name" = ANY(params.jurisdictions)
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL 
+                    OR EXISTS (
+                        SELECT 1
+                        FROM unnest(params.themes) AS theme_filter
+                        WHERE "Themes name" ILIKE '%' || theme_filter || '%'
+                    )
+                )
+            ORDER BY rank DESC
+            LIMIT 150;
+        """
+        return query
+
+    def _build_fulltext_query(self, search_string, tables, jurisdictions, themes):
+        tables_sql = self._to_sql_array(tables) or "NULL"
+        jurisdictions_sql = self._to_sql_array(jurisdictions) or "NULL"
+        themes_sql = self._to_sql_array(themes) or "NULL"
+        
         query = f"""
             WITH params AS (
                 SELECT 
@@ -330,39 +282,48 @@ class SearchService:
             ORDER BY rank DESC
             LIMIT 150;
         """
+        return query
 
-        # Debug: Print the final query
-        # print("Executing Query:", query)
+    def _to_sql_array(self, values):
+        """
+        Convert a list of strings to a text[] literal in SQL:
+        e.g. ['foo', 'bar'] -> ARRAY['foo','bar']::text[]
+        Return None if the list is empty.
+        """
+        if values:
+            return f"ARRAY[{', '.join(repr(v) for v in values)}]::text[]"
+        return None
 
-        # Execute the query
+    def full_text_search(self, search_string, filters=[]):
+        tables, jurisdictions, themes = self._extract_filters(filters)
+
+        if not search_string or not search_string.strip():
+            query = self._build_empty_search_query(tables, jurisdictions, themes)
+        else:
+            query = self._build_fulltext_query(search_string, tables, jurisdictions, themes)
+
         try:
             all_entries = self.db.execute_query(query)
         except Exception as e:
             print(f"Error executing query: {e}")
             return {"test": self.test, "total_matches": 0, "results": []}
 
-        # Check if any results were returned
         if not all_entries:
             return {"test": self.test, "total_matches": 0, "results": []}
-
-        # Parse results
+        
         results = {
             "test": self.test,
             "total_matches": len(all_entries),
             "results": all_entries,
         }
 
-        # Augment the results with the additional columns from the respective tables
         for index, value in enumerate(results["results"]):
-            # Fetch additional data from the source table
             additional_data = self.db.get_entry_by_id(
                 value["source_table"], value["id"]
             )
             if additional_data:
-                # remove unwanted columns
                 additional_data.pop("search", None)
                 additional_data.pop("Content", None)
-                # Merge additional data into the result (update the specific entry in the list)
                 results["results"][index].update(additional_data)
-
+        
         return filter_na(parse_results(results))
