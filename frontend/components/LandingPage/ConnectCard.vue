@@ -7,7 +7,9 @@
         :target="newTab ? '_blank' : '_self'"
         :rel="newTab ? 'noopener noreferrer' : ''"
       >
-        <Icon name="i-bi:substack" size="96" style="color: #ff6719" />
+        <!-- <Icon :name="iconName" size="96" style="color: #ff6719" /> -->
+        <!-- <Icon name="i-bi:substack" size="96" :style="iconStyle" /> -->
+        <Icon :name="iconName" size="96" :style="iconStyle" />
       </a>
     </div>
     <div class="link-container">
@@ -43,6 +45,16 @@ const props = defineProps({
   buttonLink: {
     type: String,
     required: true,
+  },
+  iconName: {
+    type: String,
+    required: true,
+  },
+  iconStyle: {
+    type: Object,
+    default: () => ({
+      color: '#ff6719', // Default color
+    }),
   },
   newTab: {
     type: Boolean,
