@@ -1,5 +1,6 @@
 from anytree import Node, RenderTree
 
+
 def dict_to_tree(d, parent=None):
     for k, v in d.items():
         node = Node(k, parent=parent)
@@ -15,6 +16,7 @@ def dict_to_tree(d, parent=None):
         else:
             Node(trim_value(v), parent=node)
 
+
 def trim_value(value):
     """
     Trims a string to a maximum of seven words.
@@ -23,14 +25,15 @@ def trim_value(value):
     if isinstance(value, str):
         words = value.split()
         if len(words) > 7:
-            return ' '.join(words[:7]) + '...'
+            return " ".join(words[:7]) + "..."
         return value
     return value
+
 
 def visualize_dict(data):
     """
     Converts a nested dictionary into a tree structure and prints it.
-    
+
     :param data: The nested dictionary to visualize.
     """
     root = Node("root")

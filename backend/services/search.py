@@ -6,9 +6,10 @@ from .embeddings import EmbeddingService
 from utils.utils import filter_na, parse_results, flatten_and_transform_data
 from utils.sorter import Sorter
 
+
 class SearchService:
     def __init__(self):
-        #self.db = Database(Config.AZURE_POSTGRESQL_DUMMY_CONN_STRING)
+        # self.db = Database(Config.AZURE_POSTGRESQL_DUMMY_CONN_STRING)
         self.db = Database(Config.SQL_CONN_STRING)
         self.test = Config.TEST
         self.sorter = Sorter()
@@ -18,9 +19,11 @@ class SearchService:
 
         # Check if the database retrieval failed without an exception
         if all_entries is None:
-            return json.dumps({
-                f"{self.test}_error": "Failed to retrieve data from the database. Please try again later."
-            })
+            return json.dumps(
+                {
+                    f"{self.test}_error": "Failed to retrieve data from the database. Please try again later."
+                }
+            )
 
         results = {}
         total_matches = 0
@@ -28,21 +31,25 @@ class SearchService:
 
         for table, entries in all_entries.items():
             matching_entries = [
-                entry for entry in entries
-                if all(any(search_term in str(value).lower() for value in entry.values()) for search_term in search_terms)
+                entry
+                for entry in entries
+                if all(
+                    any(search_term in str(value).lower() for value in entry.values())
+                    for search_term in search_terms
+                )
             ]
             if matching_entries:
                 results[table] = {
-                    'matches': len(matching_entries),
-                    'results': matching_entries
+                    "matches": len(matching_entries),
+                    "results": matching_entries,
                 }
                 total_matches += len(matching_entries)
 
         final_results = {
-            'test': self.test,
-            'total_matches': total_matches,
-            'tables': results
-            }
+            "test": self.test,
+            "total_matches": total_matches,
+            "tables": results,
+        }
         # Sort data based on "Case rank" and completeness
         sorted_results = self.sorter.sort_by_priority_and_completeness(final_results)
 
@@ -55,28 +62,51 @@ class SearchService:
         return f"{self.test}...foo"
 
     def curated_search(self, search_string):
-        all_entries = self.db.get_entries_from_tables(['Answers', 'Court decisions'])
+        all_entries = self.db.get_entries_from_tables(["Answers", "Court decisions"])
 
         # Check if the database retrieval failed without an exception
         if all_entries is None:
-            return json.dumps({
-                f"{self.test}_error": "Failed to retrieve data from the database. Please try again later."
-            })
+            return json.dumps(
+                {
+                    f"{self.test}_error": "Failed to retrieve data from the database. Please try again later."
+                }
+            )
 
         # Pre-selection of columns for each table
         selected_columns = {
-            'Answers': [
-                'ID', 'Name (from Jurisdiction)', 'Questions', 'Answer', 'More information', 
-                'Legal provision articles', 'Secondary legal provision articles', 
-                'Legislation titles', 'Case titles'
+            "Answers": [
+                "ID",
+                "Name (from Jurisdiction)",
+                "Questions",
+                "Answer",
+                "More information",
+                "Legal provision articles",
+                "Secondary legal provision articles",
+                "Legislation titles",
+                "Case titles",
             ],
-            'Court decisions': [
-                'ID', 'Case', 'Jurisdiction Names', 'Abstract', 'Content', 
-                'Additional information', 'Themes', 'Observations', 'Relevant facts / Summary of the case', 
-                'Relevant rules of law involved', 'Choice of law issue', 'Court\'s position', 
-                'Text of the relevant legal provisions', 'Quote', 'Translated excerpt', 
-                'Case rank', 'Pinpoint facts', 'Pinpoint rules', 'Pinpoint CoL', 'Answer IDs'
-            ]
+            "Court decisions": [
+                "ID",
+                "Case",
+                "Jurisdiction Names",
+                "Abstract",
+                "Content",
+                "Additional information",
+                "Themes",
+                "Observations",
+                "Relevant facts / Summary of the case",
+                "Relevant rules of law involved",
+                "Choice of law issue",
+                "Court's position",
+                "Text of the relevant legal provisions",
+                "Quote",
+                "Translated excerpt",
+                "Case rank",
+                "Pinpoint facts",
+                "Pinpoint rules",
+                "Pinpoint CoL",
+                "Answer IDs",
+            ],
         }
 
         results = {}
@@ -91,35 +121,51 @@ class SearchService:
             ]
 
             matching_entries = [
-                entry for entry in filtered_entries
-                if all(any(search_term in str(value).lower() for value in entry.values()) for search_term in search_terms)
+                entry
+                for entry in filtered_entries
+                if all(
+                    any(search_term in str(value).lower() for value in entry.values())
+                    for search_term in search_terms
+                )
             ]
             if matching_entries:
                 results[table] = {
-                    'matches': len(matching_entries),
-                    'results': matching_entries
+                    "matches": len(matching_entries),
+                    "results": matching_entries,
                 }
                 total_matches += len(matching_entries)
-        
-        #print(results)
+
+        # print(results)
 
         final_results = {
-            'test': self.test,
-            'total_matches': total_matches,
-            'tables': results#sort_by_priority_and_completeness(results) # Sort data based on "Case rank" and completeness
-            }
+            "test": self.test,
+            "total_matches": total_matches,
+            "tables": results,  # sort_by_priority_and_completeness(results) # Sort data based on "Case rank" and completeness
+        }
 
         return self.sorter.sorting_chain(filter_na(parse_results(final_results)))
 
     def curated_details_search(self, table, id):
         print(table)
         print(id)
-        if table in ['Answers', 'Legislation', 'Legal provisions', 'Court decisions', 'Jurisdictions']:
+        if table in [
+            "Answers",
+            "Legislation",
+            "Legal provisions",
+            "Court decisions",
+            "Jurisdictions",
+        ]:
             final_results = self.db.get_entry_by_id(table, id)
             return filter_na(parse_results(final_results))
         else:
-            return filter_na(parse_results({"error": "this table either does not exist or has not been implemented in this route"}))
-    
+            return filter_na(
+                parse_results(
+                    {
+                        "error": "this table either does not exist or has not been implemented in this route"
+                    }
+                )
+            )
+
     def full_table(self, table):
         print(table)
         results = self.db.execute_query(f'SELECT * FROM "{table}"')
@@ -134,14 +180,14 @@ class SearchService:
         if filters:
             conditions = []
             for idx, filter_item in enumerate(filters):
-                column = filter_item.get('column')
-                value = filter_item.get('value')
+                column = filter_item.get("column")
+                value = filter_item.get("value")
 
                 if not column or value is None:
                     raise ValueError(f"Invalid filter: {filter_item}")
 
                 # Use LOWER() for case-insensitive matching
-                param_key = f'param_{idx}'
+                param_key = f"param_{idx}"
                 conditions.append(f'LOWER("{column}") = LOWER(:{param_key})')
                 query_params[param_key] = value
 
@@ -156,7 +202,7 @@ class SearchService:
         # Execute the query with parameters as a dictionary
         results = self.db.execute_query(query, query_params)
         return results
-        
+
     def full_text_search(self, search_string, filters=[]):
         # Initialize filter arrays for params
         tables = []
@@ -165,14 +211,18 @@ class SearchService:
 
         # Process filters into appropriate arrays
         for filter_item in filters:
-            column = filter_item.get('column')
-            values = filter_item.get('values', [])
+            column = filter_item.get("column")
+            values = filter_item.get("values", [])
             if column and values:
-                if column.lower() in ['name (from jurisdiction)', 'jurisdiction name', 'jurisdictions']:
+                if column.lower() in [
+                    "name (from jurisdiction)",
+                    "jurisdiction name",
+                    "jurisdictions",
+                ]:
                     jurisdictions.extend(values)
-                elif column.lower() in ['themes', 'themes name']:
+                elif column.lower() in ["themes", "themes name"]:
                     themes.extend(values)
-                elif column.lower() in ['source_table', 'tables']:
+                elif column.lower() in ["source_table", "tables"]:
                     tables.extend(values)
 
         # Convert filter arrays to SQL-compatible lists
@@ -282,43 +332,37 @@ class SearchService:
         """
 
         # Debug: Print the final query
-        #print("Executing Query:", query)
+        # print("Executing Query:", query)
 
         # Execute the query
         try:
             all_entries = self.db.execute_query(query)
         except Exception as e:
             print(f"Error executing query: {e}")
-            return {
-                "test": self.test,
-                "total_matches": 0,
-                "results": []
-            }
+            return {"test": self.test, "total_matches": 0, "results": []}
 
         # Check if any results were returned
         if not all_entries:
-            return {
-                "test": self.test,
-                "total_matches": 0,
-                "results": []
-            }
+            return {"test": self.test, "total_matches": 0, "results": []}
 
         # Parse results
         results = {
             "test": self.test,
             "total_matches": len(all_entries),
-            "results": all_entries
+            "results": all_entries,
         }
 
         # Augment the results with the additional columns from the respective tables
-        for index, value in enumerate(results['results']):
+        for index, value in enumerate(results["results"]):
             # Fetch additional data from the source table
-            additional_data = self.db.get_entry_by_id(value['source_table'], value['id'])
+            additional_data = self.db.get_entry_by_id(
+                value["source_table"], value["id"]
+            )
             if additional_data:
                 # remove unwanted columns
-                additional_data.pop('search', None)
-                additional_data.pop('Content', None)
+                additional_data.pop("search", None)
+                additional_data.pop("Content", None)
                 # Merge additional data into the result (update the specific entry in the list)
-                results['results'][index].update(additional_data)
+                results["results"][index].update(additional_data)
 
         return filter_na(parse_results(results))

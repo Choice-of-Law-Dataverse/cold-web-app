@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 class Config:
     AZURE_POSTGRESQL_DUMMY_CONN_STRING = os.getenv("AZURE_POSTGRESQL_DUMMY_CONN_STRING")
     AZURE_SQL_CONNECTION_STRING = os.getenv("AZURE_SQL_CONNECTION_STRING")
@@ -11,4 +12,4 @@ class Config:
     TEST = os.getenv("TEST")
     MONGODB_CONN_STRING = os.getenv("MONGODB_CONN_STRING")
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-    IPINFO_ACCESS_TOKEN= os.getenv("IPINFO_ACCESS_TOKEN")
+    IPINFO_ACCESS_TOKEN = os.getenv("IPINFO_ACCESS_TOKEN")
