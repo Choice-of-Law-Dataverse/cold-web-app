@@ -10,7 +10,7 @@
         <PlotCourtDecisionsJurisdiction />
       </div>
       <div style="width: 33%">
-        <ConnectCard />
+        <ConnectCard title="CoLD Newsletter" />
       </div>
     </div>
   </div>
