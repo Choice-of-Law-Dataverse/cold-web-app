@@ -1,6 +1,7 @@
 <template>
   <UCard class="cold-ucard">
-    <div class="popular-searches-container">
+    <!-- <div class="popular-searches-container"> -->
+    <div class="container mx-auto px-6 flex flex-col items-center relative">
       <h2 class="popular-title">Popular Searches</h2>
       <div class="suggestions">
         <UButton
