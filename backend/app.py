@@ -35,7 +35,7 @@ def handle_full_text_search():
         search_string if search_string else "EMPTY_SEARCH",
         filters,
         results["total_matches"],
-        "full_text_search"
+        "full_text_search",
     )
     return jsonify(results), 200
 

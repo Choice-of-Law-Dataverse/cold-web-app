@@ -82,13 +82,17 @@ class SearchService:
         tables = []
         jurisdictions = []
         themes = []
-        
+
         for filter_item in filters:
             column = filter_item.get("column")
             values = filter_item.get("values", [])
             if column and values:
                 col_lower = column.lower()
-                if col_lower in ["name (from jurisdiction)", "jurisdiction name", "jurisdictions"]:
+                if col_lower in [
+                    "name (from jurisdiction)",
+                    "jurisdiction name",
+                    "jurisdictions",
+                ]:
                     jurisdictions.extend(values)
                 elif col_lower in ["themes", "themes name"]:
                     themes.extend(values)
@@ -188,7 +192,7 @@ class SearchService:
         tables_sql = self._to_sql_array(tables) or "NULL"
         jurisdictions_sql = self._to_sql_array(jurisdictions) or "NULL"
         themes_sql = self._to_sql_array(themes) or "NULL"
-        
+
         query = f"""
             WITH params AS (
                 SELECT 
@@ -300,7 +304,9 @@ class SearchService:
         if not search_string or not search_string.strip():
             query = self._build_empty_search_query(tables, jurisdictions, themes)
         else:
-            query = self._build_fulltext_query(search_string, tables, jurisdictions, themes)
+            query = self._build_fulltext_query(
+                search_string, tables, jurisdictions, themes
+            )
 
         try:
             all_entries = self.db.execute_query(query)
@@ -310,7 +316,7 @@ class SearchService:
 
         if not all_entries:
             return {"test": self.test, "total_matches": 0, "results": []}
-        
+
         results = {
             "test": self.test,
             "total_matches": len(all_entries),
@@ -325,5 +331,5 @@ class SearchService:
                 additional_data.pop("search", None)
                 additional_data.pop("Content", None)
                 results["results"][index].update(additional_data)
-        
+
         return filter_na(parse_results(results))

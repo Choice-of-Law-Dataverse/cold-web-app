@@ -5,7 +5,7 @@ meta {
 }
 
 post {
-  url: https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_text_search
+  url: http://localhost:5000/full_text_search
   body: json
   auth: none
 }
@@ -16,7 +16,8 @@ headers {
 
 body:json {
   {
-    "search_string": "finance",
-    "filters": [{"column": "tables", "values": ["Court decisions"]}, {"column": "jurisdictions", "values": ["Switzerland", "France", "Germany", "Italy"]}, {"column": "themes", "values": ["Party autonomy"]}]
+    //"search_string": "",
+    //"filters": [{"column": "tables", "values": ["Court decisions"]}, {"column": "jurisdictions", "values": ["Switzerland", "France", "Germany", "Italy"]}, {"column": "themes", "values": ["Party autonomy"]}]
+    "filters": [{"column": "tables", "values": ["Court decisions"]}, {"column": "jurisdictions", "values": ["France,European Union"]}]
   }
 }
