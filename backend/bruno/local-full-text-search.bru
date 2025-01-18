@@ -1,0 +1,23 @@
+meta {
+  name: local-full-text-search
+  type: http
+  seq: 15
+}
+
+post {
+  url: http://localhost:5000/full_text_search
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    //"search_string": "",
+    //"filters": [{"column": "tables", "values": ["Court decisions"]}, {"column": "jurisdictions", "values": ["Switzerland", "France", "Germany", "Italy"]}, {"column": "themes", "values": ["Party autonomy"]}]
+    "filters": [{"column": "tables", "values": ["Court decisions"]}, {"column": "jurisdictions", "values": ["France,European Union"]}]
+  }
+}
