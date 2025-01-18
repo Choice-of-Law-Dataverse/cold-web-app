@@ -1,12 +1,14 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
 
+
 def get_engine(connection_string):
     """
     Create an SQLAlchemy engine.
     """
     engine = sa.create_engine(f"mssql+pyodbc:///?odbc_connect={connection_string}")
     return engine
+
 
 def create_session(engine):
     """
@@ -16,11 +18,13 @@ def create_session(engine):
     session = Session()
     return session
 
+
 def close_session(session):
     """
     Close the given session.
     """
     session.close()
+
 
 def reflect_metadata(engine):
     """
@@ -30,12 +34,14 @@ def reflect_metadata(engine):
     metadata.reflect(bind=engine)
     return metadata
 
+
 def query_data(session, query):
     """
     Execute a query and return the results.
     """
     result = session.execute(query)
     return result.fetchall()
+
 
 class Database:
     def __init__(self, connection_string):
