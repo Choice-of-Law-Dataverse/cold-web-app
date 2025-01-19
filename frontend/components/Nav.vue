@@ -15,7 +15,7 @@
           v-model="searchText"
           @keyup.enter="emitSearch"
           class="input-custom-purple placeholder-purple"
-          placeholder="Search the entire Dataverse"
+          :placeholder="searchPlaceholder"
           icon="i-material-symbols:search"
           :trailing="true"
           style="
@@ -26,7 +26,6 @@
             border-color: var(--color-cold-purple) !important;
           "
         />
-        <!-- Clickable icon overlay button -->
         <button @click="emitSearch" class="icon-button">
           <span
             class="iconify i-material-symbols:search"
@@ -51,11 +50,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import eventBus from '@/eventBus'
 
+// Reactive state
 const searchText = ref('')
+const isSmallScreen = ref(false)
+
 const router = useRouter()
 const route = useRoute()
 
@@ -76,20 +78,41 @@ function emitSearch() {
   }
 }
 
+// Dynamically update the placeholder
+const searchPlaceholder = computed(() =>
+  isSmallScreen.value ? 'Search' : 'Search the entire Dataverse'
+)
+
+// Check screen size
+function checkScreenSize() {
+  isSmallScreen.value = window.innerWidth < 640 // Tailwind's `sm` breakpoint
+}
+
 // Listen for events from PopularSearches.vue
 const updateSearchFromEvent = (query) => {
   searchText.value = query // Update the search input field
 }
 
+// Lifecycle hooks
 onMounted(() => {
+  // Initialize screen size
+  checkScreenSize()
+
+  // Add resize event listener
+  window.addEventListener('resize', checkScreenSize)
+
+  // Initialize search text from query
   if (route.query.q) {
     searchText.value = route.query.q
   }
+
+  // Listen for events from PopularSearches.vue
   eventBus.on('update-search', updateSearchFromEvent)
 })
 
-// Clean up the event listener when the component is unmounted
 onUnmounted(() => {
+  // Clean up event listeners
+  window.removeEventListener('resize', checkScreenSize)
   eventBus.off('update-search', updateSearchFromEvent)
 })
 </script>
