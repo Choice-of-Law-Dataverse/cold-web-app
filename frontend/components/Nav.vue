@@ -1,6 +1,6 @@
 <template>
   <nav class="bg-white border-b border-cold-gray w-full px-6 h-[110px]">
-    <div class="inner-content flex items-center justify-between h-full">
+    <div class="flex items-center justify-between h-full space-x-8">
       <!-- Web App Name aligned to the first column -->
       <div>
         <h1>
@@ -35,7 +35,8 @@
       </div>
 
       <!-- Navigation Links, aligned in columns 11 and 12 -->
-      <div>
+      <!-- <div class="sm:space-x-4 md:space-x-8 lg:space-x-12"> -->
+      <div class="space-x-8">
         <ULink
           v-for="(link, index) in links"
           :key="index"
@@ -134,20 +135,6 @@ onUnmounted(() => {
   opacity: 1;
 }
 
-/* .main-navigation {
-  width: 100%;
-  height: 112px;
-  background-color: white;
-  border-bottom: 1px solid #e5e7eb;
-  display: flex;
-  align-items: center;
-} */
-
-/* .container {
-  max-width: 100vw;
-  /*padding: 0 var(--gutter-width);*/
-/*} */
-
 .inner-content {
   max-width: var(--container-width);
   margin: 0 auto;
@@ -193,7 +180,7 @@ a {
 :deep(.custom-nav-links) {
   color: var(--color-cold-night) !important; /* Apply custom color */
   text-decoration: none !important; /* Remove underline */
-  margin-left: 48px;
+  /*margin-left: 48px;*/
   font-weight: 600;
 }
 
