@@ -1,13 +1,11 @@
 <template>
   <div class="bg-cold-bg min-h-screen">
-    <div class="container mx-auto px-6">
-      <Nav />
-      <UContainer class="mt-12" />
-      <main class="flex-1 flex flex-col">
-        <NuxtPage />
-      </main>
-      <Footer />
-    </div>
+    <Nav />
+    <UContainer class="mt-12" />
+    <main class="flex-1 flex flex-col">
+      <NuxtPage />
+    </main>
+    <!-- <Footer /> -->
   </div>
 </template>
 

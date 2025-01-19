@@ -1,50 +1,50 @@
 <template>
-  <nav class="main-navigation">
-    <div class="container">
-      <div class="inner-content flex items-center justify-between">
-        <!-- Web App Name aligned to the first column -->
-        <div>
-          <h1><a href="/">CoLD</a></h1>
-        </div>
+  <nav class="bg-white border-b border-cold-gray w-full px-6 h-[110px]">
+    <div class="inner-content flex items-center justify-between h-full">
+      <!-- Web App Name aligned to the first column -->
+      <div>
+        <h1>
+          <a href="/" class="font-bold text-cold-night">CoLD</a>
+        </h1>
+      </div>
 
-        <!-- Search Input positioned from the center of column 2 to the end of column 10 -->
-        <div class="search-container">
-          <UInput
-            size="xl"
-            v-model="searchText"
-            @keyup.enter="emitSearch"
-            class="input-custom-purple placeholder-purple"
-            placeholder="Search the entire Dataverse"
-            icon="i-material-symbols:search"
-            :trailing="true"
-            style="
-              width: 100%; /* Full width inside the container */
-              border-radius: 0 !important;
-              box-shadow: none !important;
-              border-width: 1px !important;
-              border-color: var(--color-cold-purple) !important;
-            "
-          />
-          <!-- Clickable icon overlay button -->
-          <button @click="emitSearch" class="icon-button">
-            <span
-              class="iconify i-material-symbols:search"
-              aria-hidden="true"
-            ></span>
-          </button>
-        </div>
+      <!-- Search Input positioned from the center of column 2 to the end of column 10 -->
+      <div class="search-container">
+        <UInput
+          size="xl"
+          v-model="searchText"
+          @keyup.enter="emitSearch"
+          class="input-custom-purple placeholder-purple"
+          placeholder="Search the entire Dataverse"
+          icon="i-material-symbols:search"
+          :trailing="true"
+          style="
+            width: 100%; /* Full width inside the container */
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            border-width: 1px !important;
+            border-color: var(--color-cold-purple) !important;
+          "
+        />
+        <!-- Clickable icon overlay button -->
+        <button @click="emitSearch" class="icon-button">
+          <span
+            class="iconify i-material-symbols:search"
+            aria-hidden="true"
+          ></span>
+        </button>
+      </div>
 
-        <!-- Navigation Links, aligned in columns 11 and 12 -->
-        <div>
-          <ULink
-            v-for="(link, index) in links"
-            :key="index"
-            :to="link.to"
-            :class="['custom-nav-links', { active: route.path === link.to }]"
-          >
-            <span>{{ link.label }}</span>
-          </ULink>
-        </div>
+      <!-- Navigation Links, aligned in columns 11 and 12 -->
+      <div>
+        <ULink
+          v-for="(link, index) in links"
+          :key="index"
+          :to="link.to"
+          :class="['custom-nav-links', { active: route.path === link.to }]"
+        >
+          <span>{{ link.label }}</span>
+        </ULink>
       </div>
     </div>
   </nav>
@@ -111,19 +111,19 @@ onUnmounted(() => {
   opacity: 1;
 }
 
-.main-navigation {
+/* .main-navigation {
   width: 100%;
   height: 112px;
   background-color: white;
   border-bottom: 1px solid #e5e7eb;
   display: flex;
   align-items: center;
-}
+} */
 
-.container {
+/* .container {
   max-width: 100vw;
-  padding: 0 var(--gutter-width);
-}
+  /*padding: 0 var(--gutter-width);*/
+/*} */
 
 .inner-content {
   max-width: var(--container-width);

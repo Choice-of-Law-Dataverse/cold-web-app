@@ -5,7 +5,7 @@
       <h2>Find relevant case law and choice of law answers for your case.</h2>
       <PopularSearches />
       <JurisdictionMap />
-      <CountrySelectMenu />
+      <!-- <CountrySelectMenu /> -->
       <div style="width: 60%">
         <PlotCourtDecisionsJurisdiction />
       </div>
