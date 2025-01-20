@@ -2,7 +2,7 @@
   <main class="px-6">
     <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
       <!-- Header Section -->
-      <div class="col-span-12 grid grid-cols-1 md:grid-cols-12">
+      <div class="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6">
         <div class="col-span-12">
           <h1 class="text-3xl font-bold mb-3 md:text-left">
             Choice of Law Dataverse
@@ -27,7 +27,7 @@
           <PlotCourtDecisionsJurisdiction />
         </div>
 
-        <div class="col-span-12 md:col-span-4">
+        <div class="col-span-12 sm:col-span-4">
           <ConnectCard
             title="CoLD Newsletter"
             buttonText="Subscribe on Substack"
@@ -36,7 +36,7 @@
           />
         </div>
 
-        <div class="col-span-12 md:col-span-4">
+        <div class="col-span-12 sm:col-span-4">
           <ConnectCard
             title="CoLD on LinkedIn"
             buttonText="Follow Us"
@@ -45,7 +45,7 @@
           />
         </div>
 
-        <div class="col-span-12 md:col-span-4">
+        <div class="col-span-12 sm:col-span-4">
           <ConnectCard
             title="Questions? Feedback?"
             buttonText="Contact Us"
