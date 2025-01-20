@@ -17,9 +17,9 @@
           <PopularSearches />
           <!-- </div> -->
           <JurisdictionMap />
+          <CountrySelectMenu />
         </div>
-        <!-- <CountrySelectMenu />
-      <div style="width: 60%">
+        <!-- <div style="width: 60%">
         <PlotCourtDecisionsJurisdiction />
       </div>
       <div style="width: 33%">
