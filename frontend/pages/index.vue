@@ -4,10 +4,10 @@
       <!-- Header Section -->
       <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
         <div class="col-span-12">
-          <h1 class="text-3xl font-bold mb-3 text-center md:text-left">
+          <h1 class="text-3xl font-bold mb-3 md:text-left">
             Choice of Law Dataverse
           </h1>
-          <h2 class="text-xl font-medium mb-6 text-center md:text-left">
+          <h2 class="text-xl font-medium mb-6 md:text-left">
             Find relevant case law and choice of law answers for your case.
           </h2>
         </div>
