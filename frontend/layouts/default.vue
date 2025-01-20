@@ -4,7 +4,7 @@
     <Nav />
 
     <!-- Main Content Area -->
-    <main class="flex-1 flex flex-col mt-12">
+    <main class="flex-1 mt-12">
       <NuxtPage />
     </main>
 

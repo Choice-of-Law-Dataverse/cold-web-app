@@ -14,13 +14,12 @@
 
 // Centered container
 .container {
-  max-width: var(--container-width);
-  margin: 0 auto; // Centers the container
-  padding: 0 var(--gutter-width); // Adds padding on both sides
-  display: flex;
-  flex-direction: column; // Ensures children stack vertically
-  align-items: center; // Centers children horizontally within the container
-  position: relative; // Required for absolute positioning within it
+  max-width: var(--container-width); /* Matches 12-column layout */
+  margin: 0 auto; /* Centers the container */
+  padding: 0 var(--gutter-width); /* Adds responsive padding */
+  display: grid; /* Use grid for flexible layouts */
+  grid-template-columns: repeat(12, 1fr); /* 12-column grid */
+  gap: var(--gutter-width); /* Gutter spacing between columns */
 }
 
 // Utility classes for column spans: Loop to generate col-span-1 to col-span-12
