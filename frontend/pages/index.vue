@@ -1,11 +1,24 @@
 <template>
-  <div class="container">
-    <div class="col-span-12">
-      <h1>Choice of Law Dataverse</h1>
-      <h2>Find relevant case law and choice of law answers for your case.</h2>
-      <PopularSearches />
-      <JurisdictionMap />
-      <!-- <CountrySelectMenu /> -->
+  <main class="px-6">
+    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
+      <!-- Header Section -->
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+        <div class="col-span-12">
+          <h1 class="text-3xl font-bold mb-3 text-center md:text-left">
+            Choice of Law Dataverse
+          </h1>
+          <h2 class="text-xl font-medium mb-6 text-center md:text-left">
+            Find relevant case law and choice of law answers for your case.
+          </h2>
+        </div>
+
+        <!-- Popular Searches -->
+        <div class="col-span-12">
+          <PopularSearches />
+        </div>
+        <!-- </div> -->
+        <!-- <JurisdictionMap />
+      <CountrySelectMenu />
       <div style="width: 60%">
         <PlotCourtDecisionsJurisdiction />
       </div>
@@ -30,8 +43,11 @@
           iconName="i-material-symbols:alternate-email"
         />
       </div>
+    </div> -->
+        <!-- </div> -->
+      </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup>
@@ -46,11 +62,11 @@ const links = externalLinks
 </script>
 
 <style scoped>
-h1 {
+/* h1 {
   margin-bottom: 12px;
 }
 
 h2 {
   margin-bottom: 42px;
-}
+} */
 </style>
