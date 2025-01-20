@@ -1,19 +1,17 @@
 <template>
-  <footer
-    class="bg-cold-night text-white px-6 md:px-6 py-12 min-h-[300px] mt-24"
-  >
+  <footer class="bg-cold-night text-white px-6 py-12 min-h-[300px] mt-24">
     <div
       class="mx-auto grid grid-cols-1 md:grid-cols-12 md:gap-6 items-start"
-      style="max-width: var(--container-width); width: 100%"
+      style="max-width: var(--container-width)"
     >
       <div class="md:col-span-8 flex flex-col gap-3">
-        <h1 class="leading-tight">Choice of Law<br />Dataverse</h1>
-        <h2 class="leading-snug">
+        <h2 class="!font-bold leading-tight">Choice of Law<br />Dataverse</h2>
+        <p class="leading-snug">
           Funded by the<br />Swiss National Science Foundation
-        </h2>
+        </p>
       </div>
       <!-- Footer Links -->
-      <h2
+      <div
         class="md:col-span-4 flex flex-row md:justify-end gap-8 mt-12 md:mt-0 mb-4 md:mb-0 whitespace-nowrap"
       >
         <NuxtLink to="/disclaimer" class="!text-white whitespace-nowrap">
@@ -25,7 +23,7 @@
         <NuxtLink to="/contact" class="!text-white whitespace-nowrap">
           Contact
         </NuxtLink>
-      </h2>
+      </div>
     </div>
   </footer>
 </template>
