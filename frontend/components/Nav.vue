@@ -1,50 +1,56 @@
 <template>
   <nav class="bg-white border-b border-cold-gray w-full px-6 h-[110px]">
-    <div class="flex items-center justify-between h-full space-x-8">
-      <!-- Web App Name aligned to the first column -->
-      <div>
-        <h1>
-          <a href="/" class="font-bold text-cold-night">CoLD</a>
-        </h1>
-      </div>
+    <div
+      class="mx-auto h-full"
+      style="max-width: var(--container-width); width: 100%"
+    >
+      <div
+        class="flex items-center justify-between h-full space-x-4 sm:space-x-8"
+      >
+        <!-- Web App Name aligned to the first column -->
+        <div>
+          <h1>
+            <a href="/" class="font-bold text-cold-night">CoLD</a>
+          </h1>
+        </div>
 
-      <!-- Search Input positioned from the center of column 2 to the end of column 10 -->
-      <div class="search-container">
-        <UInput
-          size="xl"
-          v-model="searchText"
-          @keyup.enter="emitSearch"
-          class="input-custom-purple placeholder-purple"
-          :placeholder="searchPlaceholder"
-          icon="i-material-symbols:search"
-          :trailing="true"
-          style="
-            width: 100%; /* Full width inside the container */
-            border-radius: 0 !important;
-            box-shadow: none !important;
-            border-width: 1px !important;
-            border-color: var(--color-cold-purple) !important;
-          "
-        />
-        <button @click="emitSearch" class="icon-button">
-          <span
-            class="iconify i-material-symbols:search"
-            aria-hidden="true"
-          ></span>
-        </button>
-      </div>
+        <!-- Search Input positioned from the center of column 2 to the end of column 10 -->
+        <div class="search-container">
+          <UInput
+            size="xl"
+            v-model="searchText"
+            @keyup.enter="emitSearch"
+            class="input-custom-purple placeholder-purple"
+            :placeholder="searchPlaceholder"
+            icon="i-material-symbols:search"
+            :trailing="true"
+            style="
+              width: 100%; /* Full width inside the container */
+              border-radius: 0 !important;
+              box-shadow: none !important;
+              border-width: 1px !important;
+              border-color: var(--color-cold-purple) !important;
+            "
+          />
+          <button @click="emitSearch" class="icon-button">
+            <span
+              class="iconify i-material-symbols:search"
+              aria-hidden="true"
+            ></span>
+          </button>
+        </div>
 
-      <!-- Navigation Links, aligned in columns 11 and 12 -->
-      <!-- <div class="sm:space-x-4 md:space-x-8 lg:space-x-12"> -->
-      <div class="space-x-8">
-        <ULink
-          v-for="(link, index) in links"
-          :key="index"
-          :to="link.to"
-          :class="['custom-nav-links', { active: route.path === link.to }]"
-        >
-          <span>{{ link.label }}</span>
-        </ULink>
+        <!-- Navigation Links, aligned in columns 11 and 12 -->
+        <div class="space-x-4 sm:space-x-8">
+          <ULink
+            v-for="(link, index) in links"
+            :key="index"
+            :to="link.to"
+            :class="['custom-nav-links', { active: route.path === link.to }]"
+          >
+            <span>{{ link.label }}</span>
+          </ULink>
+        </div>
       </div>
     </div>
   </nav>
