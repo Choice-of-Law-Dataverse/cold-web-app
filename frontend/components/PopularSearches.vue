@@ -17,7 +17,7 @@
           icon="i-material-symbols:arrow-forward"
           trailing
         >
-          {{ suggestion }}
+          <span class="break-words text-left">{{ suggestion }}</span>
         </UButton>
       </div>
     </div>
@@ -55,19 +55,17 @@ export default {
 </script>
 
 <style scoped>
-/* .popular-searches-container { */
-/* display: flex; */
-/* align-items: center; */
-/* gap: 48px; Space between items */
-/* } */
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem; /* Adjust spacing between buttons */
+}
 
-/* .popular-title { */
-/* white-space: nowrap; Prevents the title from wrapping to a new line */
-/* } */
-
-/* .suggestions { */
-/* display: flex; */
-/* flex-wrap: wrap; */
-/* gap: 36px; Space between each suggestion link */
-/* } */
+.suggestion-button {
+  max-width: 100%; /* Ensure the button doesn’t overflow */
+  white-space: normal; /* Allow text wrapping */
+  text-align: left; /* Align text to the left */
+  padding: 0.5rem 1rem; /* Adjust padding for better fit */
+  word-break: break-word; /* Break long words */
+}
 </style>
