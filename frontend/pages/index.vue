@@ -15,10 +15,10 @@
         <!-- Popular Searches -->
         <div class="col-span-12">
           <PopularSearches />
+          <!-- </div> -->
+          <JurisdictionMap />
         </div>
-        <!-- </div> -->
-        <!-- <JurisdictionMap />
-      <CountrySelectMenu />
+        <!-- <CountrySelectMenu />
       <div style="width: 60%">
         <PlotCourtDecisionsJurisdiction />
       </div>
