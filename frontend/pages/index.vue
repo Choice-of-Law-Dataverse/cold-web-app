@@ -15,14 +15,16 @@
         <!-- Popular Searches -->
         <div class="col-span-12">
           <PopularSearches />
-          <!-- </div> -->
+
           <JurisdictionMap />
           <CountrySelectMenu />
         </div>
-        <!-- <div style="width: 60%">
-        <PlotCourtDecisionsJurisdiction />
-      </div>
-      <div style="width: 33%">
+
+        <div class="col-span-8">
+          <PlotCourtDecisionsJurisdiction />
+        </div>
+
+        <!-- <div style="width: 33%">
         <ConnectCard
           title="CoLD Newsletter"
           buttonText="Subscribe on Substack"
