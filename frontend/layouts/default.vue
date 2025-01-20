@@ -1,18 +1,14 @@
 <template>
-  <div class="bg-cold-bg min-h-screen">
+  <div class="bg-cold-bg min-h-screen flex flex-col">
+    <!-- Navigation Bar -->
     <Nav />
-    <UContainer class="mt-12" />
-    <main class="flex-1 flex flex-col">
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col mt-12">
       <NuxtPage />
     </main>
+
+    <!-- Footer -->
     <!-- <Footer /> -->
   </div>
 </template>
-
-<style scoped>
-/* main {
-  min-height: calc(
-    100vh - 112px - 80px
-  ); /* Adjust based on header and footer heights */
-/*} */
-</style>
