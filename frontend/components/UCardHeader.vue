@@ -1,11 +1,13 @@
 <template>
-  <div class="header-container">
-    <!-- Left side of the header -->
-    <div>
+  <div class="header-container flex items-center justify-between">
+    <!-- Left side of the header: Tags -->
+    <div
+      class="tags-container flex items-center gap-2 overflow-x-auto scrollbar-hidden"
+    >
       <!-- Display 'Name (from Jurisdiction)' or alternatives -->
       <span
         v-for="(jurisdictionString, index) in formattedJurisdiction"
-        :key="index"
+        :key="`jurisdiction-${index}`"
         class="label-jurisdiction"
       >
         {{ jurisdictionString }}
@@ -19,16 +21,18 @@
       <!-- Display 'Themes' -->
       <span
         v-for="(theme, index) in formattedTheme"
-        :key="index"
+        :key="`theme-${index}`"
         class="label-theme"
       >
         {{ theme }}
       </span>
     </div>
 
-    <!-- Right side of the header with "Open" link, only shown if showOpenLink is true -->
-    <div v-if="showOpenLink">
-      <NuxtLink :to="getLink()" style="display: inline-block">Open</NuxtLink>
+    <!-- Right side of the header: "Open" link -->
+    <div v-if="showOpenLink" class="flex-shrink-0 ml-4">
+      <NuxtLink :to="getLink()" class="text-cold-blue hover:underline">
+        Open
+      </NuxtLink>
     </div>
   </div>
 </template>
@@ -134,5 +138,34 @@ function getLink() {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+/* Ensure horizontal scrolling for tags without a visible scrollbar */
+.tags-container {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* Hide the scrollbar for a cleaner look */
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Edge */
+}
+.scrollbar-hidden {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Label styles for tags (jurisdiction, source_table, themes) */
+.label-jurisdiction,
+.label-theme,
+.label {
+  display: inline-block;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+  background-color: var(--color-cold-gray);
+  border-radius: 0.25rem;
+  white-space: nowrap;
 }
 </style>
