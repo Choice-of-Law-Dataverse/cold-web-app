@@ -1,61 +1,63 @@
 <template>
-  <div class="container">
-    <div class="col-span-12">
-      <UCard class="cold-ucard">
-        <!-- Custom Navigation -->
-        <div class="custom-nav">
-          <nav>
-            <ul
-              class="flex space-x-4 border-b border-gray-200 dark:border-gray-800 list-none"
-            >
-              <li
-                v-for="link in links"
-                :key="link.key"
-                :class="[
-                  'result-value-small cursor-pointer',
-                  activeTab === link.key
-                    ? 'active font-bold text-cold-purple'
-                    : 'text-cold-night',
-                ]"
-                :style="
-                  activeTab === link.key
-                    ? {
-                        color: 'var(--color-cold-purple)',
-                        borderColor: 'var(--color-cold-purple)',
-                      }
-                    : {}
-                "
-                @click="setActiveTab(link.key)"
+  <main class="px-6">
+    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
+      <div class="col-span-12">
+        <UCard class="cold-ucard">
+          <!-- Custom Navigation -->
+          <div class="custom-nav">
+            <nav>
+              <ul
+                class="flex space-x-4 border-b border-gray-200 dark:border-gray-800 list-none"
               >
-                {{ link.label }}
-              </li>
-            </ul>
-          </nav>
-        </div>
-        <div class="main-content-grid">
-          <div class="grid-item">
-            <!-- Tab Content -->
+                <li
+                  v-for="link in links"
+                  :key="link.key"
+                  :class="[
+                    'result-value-small cursor-pointer',
+                    activeTab === link.key
+                      ? 'active font-bold text-cold-purple'
+                      : 'text-cold-night',
+                  ]"
+                  :style="
+                    activeTab === link.key
+                      ? {
+                          color: 'var(--color-cold-purple)',
+                          borderColor: 'var(--color-cold-purple)',
+                        }
+                      : {}
+                  "
+                  @click="setActiveTab(link.key)"
+                >
+                  {{ link.label }}
+                </li>
+              </ul>
+            </nav>
+          </div>
+          <div class="main-content-grid">
+            <div class="grid-item">
+              <!-- Tab Content -->
 
-            <div v-if="activeTab === 'overview'">
-              <Overview />
-            </div>
-            <div v-if="activeTab === 'open-educational-resources'">
-              <OpenEducationalResources />
-            </div>
-            <div v-if="activeTab === 'faq'">
-              <FAQ />
-            </div>
-            <div v-else-if="activeTab === 'team'">
-              <Team />
-            </div>
-            <div v-else-if="activeTab === 'press'">
-              <Press />
+              <div v-if="activeTab === 'overview'">
+                <Overview />
+              </div>
+              <div v-if="activeTab === 'open-educational-resources'">
+                <OpenEducationalResources />
+              </div>
+              <div v-if="activeTab === 'faq'">
+                <FAQ />
+              </div>
+              <div v-else-if="activeTab === 'team'">
+                <Team />
+              </div>
+              <div v-else-if="activeTab === 'press'">
+                <Press />
+              </div>
             </div>
           </div>
-        </div>
-      </UCard>
+        </UCard>
+      </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

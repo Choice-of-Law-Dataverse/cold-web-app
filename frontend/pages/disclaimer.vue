@@ -1,15 +1,17 @@
 <template>
-  <div class="container">
-    <div class="col-span-12">
-      <UCard class="cold-ucard">
-        <div class="main-content-grid">
-          <div class="grid-item">
-            <ContentDoc path="/disclaimer" />
+  <main class="px-6">
+    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
+      <div class="col-span-12">
+        <UCard class="cold-ucard">
+          <div class="main-content-grid">
+            <div class="grid-item">
+              <ContentDoc path="/disclaimer" />
+            </div>
           </div>
-        </div>
-      </UCard>
+        </UCard>
+      </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <style scoped>
