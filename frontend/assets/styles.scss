@@ -100,13 +100,13 @@ li {
 .label-jurisdiction {
   @extend .label;
   background-color: var(--color-cold-gray-alpha);
-  padding: 5px 7px;
+  padding: 3px 7px;
 }
 
 .label-question {
   @extend .label;
   color: var(--color-label-question);
-  padding: 4px 6px;
+  padding: 2px 6px;
   background-color: var(--color-label-question-alpha);
   border: 1px solid var(--color-label-question);
 }
@@ -114,7 +114,7 @@ li {
 .label-court-decision {
   @extend .label;
   color: var(--color-label-court-decision);
-  padding: 4px 6px;
+  padding: 2px 6px;
   background-color: var(--color-label-court-decision-alpha);
   border: 1px solid var(--color-label-court-decision);
 }
@@ -122,7 +122,7 @@ li {
 .label-legal-instrument {
   @extend .label;
   color: var(--color-label-legal-instrument);
-  padding: 4px 6px;
+  padding: 2px 6px;
   background-color: var(--color-label-legal-instrument-alpha);
   border: 1px solid var(--color-label-legal-instrument);
 }
@@ -130,7 +130,7 @@ li {
 .label-literature {
   @extend .label;
   color: var(--color-label-literature);
-  padding: 4px 6px;
+  padding: 2px 6px;
   background-color: var(--color-label-literature-alpha);
   border: 1px solid var(--color-label-literature);
 }
@@ -139,7 +139,7 @@ li {
   @extend .label;
   color: var(--color-cold-night-alpha);
   background-color: white;
-  padding: 4px 6px;
+  padding: 2px 6px;
   border: 1px solid var(--color-cold-night-alpha-25);
 }
 

@@ -2,7 +2,7 @@
   <div class="header-container flex items-center justify-between">
     <!-- Left side of the header: Tags -->
     <div
-      class="tags-container flex items-center gap-2 overflow-x-auto scrollbar-hidden"
+      class="tags-container flex items-center overflow-x-auto scrollbar-hidden"
     >
       <!-- Display 'Name (from Jurisdiction)' or alternatives -->
       <span
@@ -153,19 +153,5 @@ function getLink() {
 .scrollbar-hidden {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
-}
-
-/* Label styles for tags (jurisdiction, source_table, themes) */
-.label-jurisdiction,
-.label-theme,
-.label {
-  display: inline-block;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: white;
-  background-color: var(--color-cold-gray);
-  border-radius: 0.25rem;
-  white-space: nowrap;
 }
 </style>
