@@ -29,10 +29,16 @@
     </div>
 
     <!-- Fade-out effect -->
-    <div class="fade-out"></div>
+    <div
+      class="fade-out"
+      :class="{
+        'open-link-true': showOpenLink,
+        'open-link-false': !showOpenLink,
+      }"
+    ></div>
 
     <!-- Right side of the header: "Open" link -->
-    <div v-if="showOpenLink" class="flex-shrink-0 ml-4">
+    <div v-if="showOpenLink" class="open-link ml-4">
       <NuxtLink :to="getLink()"> Open </NuxtLink>
     </div>
   </div>
@@ -161,11 +167,27 @@ function getLink() {
 .fade-out {
   position: absolute;
   top: 0;
-  right: 50px; /* Place the fade-out just before the "Open" link */
+  /*right: 50px; /* Place the fade-out just before the "Open" link */
   width: 60px; /* Width of the gradient */
   height: 100%;
   background: linear-gradient(to left, white, transparent); /* White fade */
   pointer-events: none; /* Ensure it doesn’t block interactions */
+}
+
+/* Adjust the fade-out position based on whether the "Open" link is shown */
+.fade-out.open-link-true {
+  right: 50px; /* Positioned just before the "Open" link */
+}
+
+.fade-out.open-link-false {
+  right: 0; /* Positioned at the edge of the container */
+}
+
+/* Right-aligned open link */
+.open-link {
+  flex-shrink: 0; /* Prevent shrinking */
+  position: relative;
+  z-index: 20; /* Ensure it's above the fade-out */
 }
 
 /* Hide the scrollbar for a cleaner look */
