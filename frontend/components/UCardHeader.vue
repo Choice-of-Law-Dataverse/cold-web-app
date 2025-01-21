@@ -28,11 +28,12 @@
       </span>
     </div>
 
+    <!-- Fade-out effect -->
+    <div class="fade-out"></div>
+
     <!-- Right side of the header: "Open" link -->
     <div v-if="showOpenLink" class="flex-shrink-0 ml-4">
-      <NuxtLink :to="getLink()" class="text-cold-blue hover:underline">
-        Open
-      </NuxtLink>
+      <NuxtLink :to="getLink()"> Open </NuxtLink>
     </div>
   </div>
 </template>
@@ -138,12 +139,33 @@ function getLink() {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative; /* Ensure fade-out positions correctly */
 }
 
 /* Ensure horizontal scrolling for tags without a visible scrollbar */
 .tags-container {
   overflow-x: auto;
   white-space: nowrap;
+  flex-grow: 1; /* Ensures it takes up available space */
+}
+
+.fade-out-container {
+  position: relative;
+  flex-shrink: 0; /* Prevent it from shrinking */
+  width: 50px; /* Match the width of the fade effect */
+  margin-left: -50px; /* Align the fade-out right before the "Open" link */
+  z-index: 1; /* Ensures it appears above the scrolling content */
+}
+
+/* Fade-out effect */
+.fade-out {
+  position: absolute;
+  top: 0;
+  right: 50px; /* Place the fade-out just before the "Open" link */
+  width: 60px; /* Width of the gradient */
+  height: 100%;
+  background: linear-gradient(to left, white, transparent); /* White fade */
+  pointer-events: none; /* Ensure it doesn’t block interactions */
 }
 
 /* Hide the scrollbar for a cleaner look */
