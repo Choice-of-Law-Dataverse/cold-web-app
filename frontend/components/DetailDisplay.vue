@@ -25,10 +25,7 @@
           class="flex flex-col"
         >
           <!-- Conditionally render the label -->
-          <p
-            v-if="item.key !== 'Legal provisions IDs'"
-            class="font-medium text-gray-700 mb-2"
-          >
+          <p v-if="item.key !== 'Legal provisions IDs'" class="label-key">
             {{ item.label }}
           </p>
           <!-- Dynamic slot with kebab-case conversion -->
