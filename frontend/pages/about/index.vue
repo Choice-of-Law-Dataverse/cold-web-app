@@ -3,18 +3,18 @@
     <div class="mx-auto w-full" style="max-width: var(--container-width)">
       <UCard class="cold-ucard">
         <!-- Custom Navigation -->
-        <nav class="custom-nav mt-8">
+        <nav class="custom-nav">
           <ul
-            class="flex flex-wrap gap-4 border-b border-gray-200 dark:border-gray-800"
+            class="flex space-x-4 border-b border-gray-200 dark:border-gray-800 list-none"
           >
             <li
               v-for="link in links"
               :key="link.key"
               :class="[
-                'cursor-pointer py-2 px-4 text-sm transition',
+                'result-value-small cursor-pointer',
                 activeTab === link.key
-                  ? 'font-bold text-cold-purple border-b-2 border-cold-purple'
-                  : 'text-cold-night hover:text-cold-purple',
+                  ? 'active font-bold text-cold-purple'
+                  : 'text-cold-night',
               ]"
               @click="setActiveTab(link.key)"
             >
