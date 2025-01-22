@@ -16,7 +16,7 @@
       <div v-if="loading" class="py-8 px-6">Loading...</div>
       <div
         v-else
-        class="main-content flex flex-col gap-12 py-8 px-6 w-full lg:w-6/12"
+        class="main-content prose -space-y-10 flex flex-col gap-12 py-8 px-6 w-full"
       >
         <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
         <div
@@ -25,7 +25,7 @@
           class="flex flex-col"
         >
           <!-- Conditionally render the label -->
-          <p v-if="item.key !== 'Legal provisions IDs'" class="label-key">
+          <p v-if="item.key !== 'Legal provisions IDs'" class="label-key -mb-1">
             {{ item.label }}
           </p>
           <!-- Dynamic slot with kebab-case conversion -->
@@ -103,6 +103,6 @@ const props = defineProps({
 .label-key {
   @extend .label;
   padding: 0;
-  margin-top: -20px;
+  /* margin-top: -20px; */
 }
 </style>

@@ -64,8 +64,8 @@ a {
 
 .copy {
   @extend .result-value-small;
-  margin-top: 0px !important;
-  margin-bottom: 0px !important;
+  margin-top: 24px !important;
+  margin-bottom: 24px !important;
 }
 
 // Lists
@@ -94,7 +94,7 @@ li {
 .label-key {
   @extend .label;
   padding: 0;
-  margin-bottom: 12px;
+  // margin-bottom: 12px;
 }
 
 .label-jurisdiction {
@@ -155,14 +155,14 @@ li {
   @extend .result-value;
   font-size: 28px !important;
   margin-bottom: 6px !important;
-  margin-top: -5px !important;
+  // margin-top: -5px !important;
 }
 
 .result-value-medium {
   @extend .result-value;
   font-size: 20px !important;
   line-height: 28px !important;
-  margin-bottom: 16px !important;
+  // margin-bottom: 16px !important;
 }
 
 .result-value-small {
@@ -170,12 +170,12 @@ li {
   font-size: 14px !important;
   font-weight: 400 !important; // Regular
   line-height: 26px !important;
-  margin-bottom: 10px !important;
+  // margin-bottom: 10px !important;
   white-space: normal;
 }
 
 .result-item {
-  margin-bottom: 1rem;
+  // margin-bottom: 1rem;
 }
 
 // UI Elements -----------------------------------------------
@@ -221,6 +221,6 @@ li {
   cursor: default; /* Set default arrow cursor for non-interactive elements */
 }
 
-* {
-  outline: 1px solid red; /* Highlights every element */
-}
+// * {
+//   outline: 1px solid red; /* Highlights every element */
+// }

@@ -1,61 +1,50 @@
 <template>
   <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <div class="col-span-12">
-        <UCard class="cold-ucard">
-          <!-- Custom Navigation -->
-          <div class="custom-nav">
-            <nav>
-              <ul
-                class="flex space-x-4 border-b border-gray-200 dark:border-gray-800 list-none"
-              >
-                <li
-                  v-for="link in links"
-                  :key="link.key"
-                  :class="[
-                    'result-value-small cursor-pointer',
-                    activeTab === link.key
-                      ? 'active font-bold text-cold-purple'
-                      : 'text-cold-night',
-                  ]"
-                  :style="
-                    activeTab === link.key
-                      ? {
-                          color: 'var(--color-cold-purple)',
-                          borderColor: 'var(--color-cold-purple)',
-                        }
-                      : {}
-                  "
-                  @click="setActiveTab(link.key)"
-                >
-                  {{ link.label }}
-                </li>
-              </ul>
-            </nav>
-          </div>
-          <div class="main-content-grid">
-            <div class="grid-item">
-              <!-- Tab Content -->
+    <div class="mx-auto w-full" style="max-width: var(--container-width)">
+      <UCard class="cold-ucard">
+        <!-- Custom Navigation -->
+        <nav class="custom-nav mt-8">
+          <ul
+            class="flex flex-wrap gap-4 border-b border-gray-200 dark:border-gray-800"
+          >
+            <li
+              v-for="link in links"
+              :key="link.key"
+              :class="[
+                'cursor-pointer py-2 px-4 text-sm transition',
+                activeTab === link.key
+                  ? 'font-bold text-cold-purple border-b-2 border-cold-purple'
+                  : 'text-cold-night hover:text-cold-purple',
+              ]"
+              @click="setActiveTab(link.key)"
+            >
+              {{ link.label }}
+            </li>
+          </ul>
+        </nav>
 
-              <div v-if="activeTab === 'overview'">
-                <Overview />
-              </div>
-              <div v-if="activeTab === 'open-educational-resources'">
-                <OpenEducationalResources />
-              </div>
-              <div v-if="activeTab === 'faq'">
-                <FAQ />
-              </div>
-              <div v-else-if="activeTab === 'team'">
-                <Team />
-              </div>
-              <div v-else-if="activeTab === 'press'">
-                <Press />
-              </div>
-            </div>
+        <!-- Main Content -->
+        <div
+          class="main-conten prose -space-y-10 flex flex-col gap-12 px-6 w-full"
+        >
+          <!-- Tab Content -->
+          <div v-if="activeTab === 'overview'">
+            <Overview />
           </div>
-        </UCard>
-      </div>
+          <div v-else-if="activeTab === 'open-educational-resources'">
+            <OpenEducationalResources />
+          </div>
+          <div v-else-if="activeTab === 'faq'">
+            <FAQ />
+          </div>
+          <div v-else-if="activeTab === 'team'">
+            <Team />
+          </div>
+          <div v-else-if="activeTab === 'press'">
+            <Press />
+          </div>
+        </div>
+      </UCard>
     </div>
   </main>
 </template>
@@ -127,33 +116,8 @@ li.active {
   transition: color 0.3s ease;
 }
 
-.main-content-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr)); /* 12-column layout */
-  column-gap: var(--gutter-width); /* Gutter space between columns */
-  padding: 32px; /* Optional padding to match the card's interior padding */
-}
-
-.grid-item {
-  grid-column: 1 / span 6; /* Start in the 1st column, span across 6 columns */
-  margin-bottom: 48px; /* Space between items */
-}
-
-p {
-  margin-bottom: 36px;
-}
-
-::v-deep(h2) {
-  margin-top: 20px;
-}
-
 ::v-deep(ul) {
   list-style-type: disc !important;
   padding-left: 12px !important;
-  margin: -32px 0 0 0 !important;
-}
-
-::v-deep(li) {
-  margin-bottom: -18px; /* Optional spacing between list items */
 }
 </style>
