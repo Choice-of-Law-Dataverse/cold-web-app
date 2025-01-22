@@ -28,7 +28,9 @@
       </div>
       <div v-else>
         <!-- Centered Jurisdiction Name and Compare Dropdown -->
-        <div class="comparison-title flex items-center justify-center mb-4">
+        <div
+          class="comparison-title flex flex-col md:flex-row items-center justify-center gap-4 px-6 mb-4 text-center md:text-left"
+        >
           <div class="result-value-medium">
             Questions for {{ props.jurisdiction }} and
           </div>
@@ -36,8 +38,7 @@
             v-model="selectedJurisdiction"
             :countries="jurisdictionOptions"
             @countrySelected="updateComparison"
-            class="w-72 cold-uselectmenu"
-            style="margin-top: -16px; margin-left: 4px"
+            class="w-full md:w-72 cold-uselectmenu"
           />
         </div>
 
