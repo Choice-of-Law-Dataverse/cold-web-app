@@ -1,39 +1,37 @@
 <template>
   <main class="px-6">
     <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <div class="col-span-12">
-        <UCard class="cold-ucard">
-          <div class="main-content-grid">
-            <div class="grid-item">
-              <h2>Contact Us</h2>
-              <p>
-                We'd love to receive your questions, inquiries and feedback.<br />
-                Just send us an email:
-                <a :href="links.email">mail@cold.global</a>
-              </p>
+      <UCard class="cold-ucard">
+        <div
+          class="main-content prose -space-y-0 flex flex-col gap-12 px-6 w-full"
+        >
+          <h2>Contact Us</h2>
+          <p>
+            We'd love to receive your questions, inquiries and feedback.<br />
+            Just send us an email:
+            <a :href="links.email">mail@cold.global</a>
+          </p>
 
-              <h2>Stay Updated</h2>
-              <p>
-                Follow CoLD on
-                <a :href="links.linkedin" target="_blank">LinkedIn</a>
-                and subscribe to the newsletter on
-                <a :href="links.substack" target="_blank">Substack</a>.
-              </p>
+          <h2>Stay Updated</h2>
+          <p>
+            Follow CoLD on
+            <a :href="links.linkedin" target="_blank">LinkedIn</a>
+            and subscribe to the newsletter on
+            <a :href="links.substack" target="_blank">Substack</a>.
+          </p>
 
-              <h2>Visit Us</h2>
-              <p>
-                Our offices are in Lucerne, Switzerland: <br />
-                <br />
-                Universität Luzern<br />
-                Inseliquai 8<br />
-                Room INS-1<br />
-                6005 Luzern<br />
-                Switzerland
-              </p>
-            </div>
-          </div>
-        </UCard>
-      </div>
+          <h2>Visit Us</h2>
+          <p>
+            Our offices are in Lucerne, Switzerland: <br />
+            <br />
+            Universität Luzern<br />
+            Inseliquai 8<br />
+            Room INS-1<br />
+            6005 Luzern<br />
+            Switzerland
+          </p>
+        </div>
+      </UCard>
     </div>
   </main>
 </template>
