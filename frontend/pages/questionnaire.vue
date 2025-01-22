@@ -1,15 +1,12 @@
 <template>
   <main class="px-6">
     <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <div class="col-span-12">
-        <UCard class="cold-ucard">
-          <div class="main-content-grid">
-            <div class="grid-item">
-              <div class="copy" v-html="htmlContent"></div>
-            </div>
-          </div>
-        </UCard>
-      </div>
+      <UCard class="cold-ucard">
+        <div
+          class="copy main-content prose -space-y-10 flex flex-col gap-12 px-6 w-full"
+          v-html="htmlContent"
+        ></div>
+      </UCard>
     </div>
   </main>
 </template>
@@ -42,15 +39,15 @@ onMounted(async () => {
 ::v-deep(ol ol > li),
 ::v-deep(ol ol ol > li),
 ::v-deep(ol ol ol ol > li) {
-  margin-bottom: 0px !important; /* Adjust as needed for consistent spacing */
+  margin-bottom: 24px !important; /* Adjust as needed for consistent spacing*/
 }
 
 /* Ensure sub-lists are indented without extra spacing */
 ::v-deep(ol ol),
 ::v-deep(ol ol ol),
 ::v-deep(ol ol ol ol) {
-  margin-top: 0 !important;
-  margin-bottom: -48px !important;
+  /* margin-top: 24px !important; */
+  /* margin-bottom: 24px !important; */
 }
 
 /* Reset the counter for the top-level list */
@@ -115,28 +112,5 @@ onMounted(async () => {
   content: counter(list-counter) '.' counter(sub-list-counter) '.'
     counter(sub-sub-list-counter) '.' counter(sub-sub-sub-list-counter) '. '; /* Display hierarchical numbering */
   font-weight: bold;
-}
-
-/* -------------------------------------------------- */
-.main-content-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr)); /* 12-column layout */
-  column-gap: var(--gutter-width); /* Gutter space between columns */
-  padding: 32px; /* Optional padding to match the card's interior padding */
-}
-
-.grid-item {
-  grid-column: 1 / span 6; /* Start in the 1st column, span across 6 columns */
-}
-
-::v-deep(h2) {
-  margin-top: 48px;
-  margin-bottom: -36px;
-}
-
-/* Hack */
-::v-deep(h3) {
-  font-size: 20px !important;
-  font-weight: 500 !important;
 }
 </style>

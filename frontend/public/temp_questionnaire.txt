@@ -9,10 +9,8 @@ Besides displaying the relevant information on legal provisions and case law dec
 6. **Absence of choice**: Questions here deal with the legal framework (including the use of [connecting factors](/glossary#connecting-factors) by adjudicators) for situations where the parties have not chosen the applicable law to govern the contract.
 7. **Future guidance and revisions**: The final part asks about the desirability of a future version of the HCCH Principles, the need for further guidance on topics surrounding applicable law in [international contracts](/glossary#international-commercial-contracts) (e.g., in protecting [weaker parties](/glossary#weaker-vulnerable-parties)), and suggestions for other topics that might need revision or guidance.
 
-Each section of the questionnaire is structured to branch out based on the responses to initial questions, leading to more specific follow-up questions. This structure aims to gather detailed and nuanced information about choice of law in international contracts from different jurisdictions.
-
-
-
+Each section of the questionnaire is structured to branch out based on the responses to initial questions, leading to more specific follow-up questions. This structure aims to gather detailed and nuanced information about choice of law in international contracts from different jurisdictions.  
+&nbsp;
 ## Preamble
 0. Is there a [codification](/glossary#pil-codification) on choice of law or are there similar established rules?
     0. Are these rules part of a private international law instrument?
