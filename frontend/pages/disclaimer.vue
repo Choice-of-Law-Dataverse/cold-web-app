@@ -1,15 +1,13 @@
 <template>
   <main class="px-6">
     <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <div class="col-span-12">
-        <UCard class="cold-ucard">
-          <div class="main-content-grid">
-            <div class="grid-item">
-              <ContentDoc path="/disclaimer" />
-            </div>
-          </div>
-        </UCard>
-      </div>
+      <UCard class="cold-ucard">
+        <div
+          class="main-content prose -space-y-10 flex flex-col gap-12 px-6 w-full"
+        >
+          <ContentDoc path="/disclaimer" />
+        </div>
+      </UCard>
     </div>
   </main>
 </template>
