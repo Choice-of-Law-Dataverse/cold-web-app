@@ -48,14 +48,14 @@
         >
           <!-- Left-aligned USelectMenu -->
           <div
-            class="filter-wrapper flex flex-col items-center sm:flex-row sm:items-center justify-center gap-2 w-full sm:w-auto"
+            class="filter-wrapper flex flex-col items-center sm:flex-row sm:items-center justify-center w-full sm:w-auto"
           >
             <USelectMenu
               searchable
               v-model="selectedTheme"
               :options="themeOptions"
               placeholder="Filter by Theme"
-              class="cold-uselectmenu w-full sm:w-auto text-center"
+              class="cold-uselectmenu w-full text-center"
               size="sm"
             />
             <UButton
