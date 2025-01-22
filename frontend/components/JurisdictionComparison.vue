@@ -43,15 +43,19 @@
         </div>
 
         <!-- Filter and MatchSummary -->
-        <div class="main-content-grid">
+        <div
+          class="main-content-grid flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 px-4 sm:px-6"
+        >
           <!-- Left-aligned USelectMenu -->
-          <div class="filter-wrapper">
+          <div
+            class="filter-wrapper flex flex-col items-center sm:flex-row sm:items-center justify-center gap-2 w-full sm:w-auto"
+          >
             <USelectMenu
               searchable
               v-model="selectedTheme"
               :options="themeOptions"
               placeholder="Filter by Theme"
-              class="cold-uselectmenu"
+              class="cold-uselectmenu w-full sm:w-auto text-center"
               size="sm"
             />
             <UButton
@@ -66,7 +70,10 @@
           </div>
 
           <!-- Right-aligned MatchSummary -->
-          <div v-if="selectedJurisdiction" class="match-summary">
+          <div
+            v-if="selectedJurisdiction"
+            class="match-summary flex justify-center sm:justify-start w-full sm:w-auto"
+          >
             <MatchSummary :counts="matchCounts" />
           </div>
         </div>
