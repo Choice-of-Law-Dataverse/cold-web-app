@@ -44,7 +44,7 @@
 
         <!-- Filter and MatchSummary -->
         <div
-          class="main-content-grid flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 px-4 sm:px-6"
+          class="main-content-grid flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 !px-4 !sm:px-8"
         >
           <!-- Left-aligned USelectMenu -->
           <div
@@ -55,7 +55,7 @@
               v-model="selectedTheme"
               :options="themeOptions"
               placeholder="Filter by Theme"
-              class="cold-uselectmenu w-full text-center"
+              class="cold-uselectmenu w-full max-w-full sm:w-auto text-center"
               size="sm"
             />
             <UButton
@@ -430,15 +430,8 @@ function computeMatchStatus(answer1, answer2) {
   font-size: 14px !important;
 }
 
-.main-content-grid {
-  display: flex; /* Use flexbox for layout */
-  justify-content: space-between; /* Space between left and right sections */
-  align-items: center; /* Vertically align items */
-  margin-bottom: 16px; /* Adjust spacing below */
-}
-
 .filter-wrapper {
-  margin-left: 32px;
+  /* margin-left: 32px; */
   margin-bottom: 6px;
   display: flex; /* Group the dropdown and reset button */
   align-items: center;
