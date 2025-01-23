@@ -1,43 +1,45 @@
 <template>
-  <div class="container">
-    <div class="col-span-12">
-      <DetailDisplay
-        :loading="loading"
-        :resultData="processedAnswerData"
-        :keyLabelPairs="keyLabelPairs"
-        :valueClassMap="valueClassMap"
-        formattedSourceTable="Question"
-      >
-        <!-- Custom rendering for Legal provision articles -->
-        <template #legal-provision-articles="{ value }">
-          <LegalProvisionRenderer
-            :value="value"
-            :fallbackData="processedAnswerData"
-            :valueClassMap="valueClassMap"
-          />
-        </template>
+  <main class="px-6">
+    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
+      <div class="col-span-12">
+        <DetailDisplay
+          :loading="loading"
+          :resultData="processedAnswerData"
+          :keyLabelPairs="keyLabelPairs"
+          :valueClassMap="valueClassMap"
+          formattedSourceTable="Question"
+        >
+          <!-- Custom rendering for Legal provision articles -->
+          <template #legal-provision-articles="{ value }">
+            <LegalProvisionRenderer
+              :value="value"
+              :fallbackData="processedAnswerData"
+              :valueClassMap="valueClassMap"
+            />
+          </template>
 
-        <!-- Custom rendering for Case ID -->
-        <template #case-id="{ value }">
-          <div>
-            <div v-if="value && value.trim()">
-              <!-- Render links if value exists -->
-              <CourtCaseLink
-                v-for="(caseId, index) in value.split(',')"
-                :key="index"
-                :caseId="caseId.trim()"
-                :class="valueClassMap['Case ID'] || 'result-value'"
-              />
+          <!-- Custom rendering for Case ID -->
+          <template #case-id="{ value }">
+            <div>
+              <div v-if="value && value.trim()">
+                <!-- Render links if value exists -->
+                <CourtCaseLink
+                  v-for="(caseId, index) in value.split(',')"
+                  :key="index"
+                  :caseId="caseId.trim()"
+                  :class="valueClassMap['Case ID'] || 'result-value'"
+                />
+              </div>
+              <div v-else>
+                <!-- Render N/A if no case IDs are available -->
+                <span>N/A</span>
+              </div>
             </div>
-            <div v-else>
-              <!-- Render N/A if no case IDs are available -->
-              <span>N/A</span>
-            </div>
-          </div>
-        </template>
-      </DetailDisplay>
+          </template>
+        </DetailDisplay>
+      </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

@@ -3,11 +3,12 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import SQLAlchemyError
 import time
 
+
 class Database:
     def __init__(self, connection_string, max_retries=3, retry_delay=0.5):
         """
         Initialize the database module.
-        
+
         Parameters:
         - connection_string: Database connection string.
         - max_retries: Maximum number of retries for fetching data.
@@ -78,7 +79,9 @@ class Database:
                             query = table.select()
                             result = session.execute(query)
                             columns = result.keys()
-                            entries = [dict(zip(columns, row)) for row in result.fetchall()]
+                            entries = [
+                                dict(zip(columns, row)) for row in result.fetchall()
+                            ]
                             entries_from_tables[table_name] = entries
                         else:
                             print(f"Table {table_name} does not exist in the database.")
@@ -93,11 +96,11 @@ class Database:
             return None
 
         id_columns = {
-            'Answers': 'ID',
-            'Legislation': 'ID',
-            'Legal provisions': 'Name',
-            'Court decisions': 'ID',
-            'Jurisdictions': 'Alpha-3 code'
+            "Answers": "ID",
+            "Legislation": "ID",
+            "Legal provisions": "Name",
+            "Court decisions": "ID",
+            "Jurisdictions": "Alpha-3 code",
         }
 
         def fetch_entry():
@@ -116,10 +119,14 @@ class Database:
                                 columns = result.keys()
                                 entry = dict(zip(columns, row))
                             else:
-                                print(f"No entry found with id {entry_id} in table {table_name}.")
+                                print(
+                                    f"No entry found with id {entry_id} in table {table_name}."
+                                )
                                 return {"error": "no entry found with the specified id"}
                         else:
-                            print(f"Table {table_name} does not have a mapped id column.")
+                            print(
+                                f"Table {table_name} does not have a mapped id column."
+                            )
                     else:
                         print(f"Table {table_name} does not exist in the database.")
                 except SQLAlchemyError as e:

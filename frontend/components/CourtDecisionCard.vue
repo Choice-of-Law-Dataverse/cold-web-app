@@ -1,8 +1,8 @@
 <template>
   <ResultCard :resultData="resultData" cardType="Court decisions">
-    <div class="court-decision-grid">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
       <!-- Case Title in the 1st column -->
-      <div class="grid-item" style="grid-column: 1 / span 4">
+      <div class="md:col-span-4">
         <div class="label-key">{{ keyMap.Case }}</div>
         <div :class="valueClassMap.Case || 'result-value'">
           {{ resultData.Case || '[Missing Information]' }}
@@ -10,7 +10,7 @@
       </div>
 
       <!-- Choice of Law Issue in the 6th column -->
-      <div class="grid-item" style="grid-column: 6 / span 6">
+      <div class="md:col-start-6 md:col-span-6">
         <div class="label-key">{{ keyMap['Choice of law issue'] }}</div>
         <div :class="valueClassMap['Choice of law issue'] || 'result-value'">
           {{ resultData['Choice of law issue'] || '[Missing Information]' }}

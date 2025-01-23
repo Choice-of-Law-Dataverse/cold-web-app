@@ -1,8 +1,8 @@
 <template>
   <ResultCard :resultData="processedResultData" cardType="Legislation">
-    <div class="legislation-card-grid">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
       <!-- Abbreviation in the 1st column -->
-      <div class="grid-item" style="grid-column: 1 / span 5">
+      <div class="md:col-span-5">
         <div class="label-key">{{ keyMap.Abbreviation }}</div>
         <div :class="valueClassMap.Abbreviation || 'result-value'">
           {{ processedResultData.Abbreviation || '[Missing Information]' }}
@@ -10,7 +10,7 @@
       </div>
 
       <!-- Title in the 6th column -->
-      <div class="grid-item" style="grid-column: 6 / span 7">
+      <div class="md:col-start-6 md:col-span-7">
         <div class="label-key">{{ keyMap['Title (in English)'] }}</div>
         <div :class="valueClassMap['Title (in English)'] || 'result-value'">
           {{

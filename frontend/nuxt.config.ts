@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     ],
   },
   content: {
-    documentDriven: true,
+    documentDriven: false,
     markdown: {
       anchorLinks: false,
     }
@@ -47,6 +47,14 @@ export default defineNuxtConfig({
           api: 'modern',
         },
       },
+    },
+  },
+  app: {
+    head: {
+      title: 'CoLD',
+      meta: [
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      ],
     },
   },
 });
