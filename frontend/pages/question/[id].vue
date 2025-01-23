@@ -52,6 +52,8 @@ const route = useRoute() // Access the route to get the ID param
 const answerData = ref(null) // Store fetched court decision data
 const loading = ref(true) // Track loading state
 
+const config = useRuntimeConfig()
+
 async function fetchAnswer(id: string) {
   const jsonPayload = {
     table: 'Answers',
@@ -60,7 +62,7 @@ async function fetchAnswer(id: string) {
 
   try {
     const response = await fetch(
-      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/curated_search/details',
+      `${config.public.apiBaseUrl}/curated_search/details`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
