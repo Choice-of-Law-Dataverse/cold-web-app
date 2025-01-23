@@ -1,22 +1,24 @@
 <template>
-  <div class="container">
-    <div class="col-span-12">
-      <DetailDisplay
-        :loading="loading"
-        :resultData="jurisdictionData"
-        :keyLabelPairs="keyLabelPairs"
-        :valueClassMap="valueClassMap"
-        formattedSourceTable="Jurisdictions"
-        :showHeader="false"
-      />
-      <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
-      <JurisdictionComparison
-        v-if="!loading && jurisdictionData?.Name"
-        :jurisdiction="jurisdictionData.Name"
-        :compareJurisdiction="compareJurisdiction"
-      />
+  <main class="px-6">
+    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
+      <div class="col-span-12">
+        <DetailDisplay
+          :loading="loading"
+          :resultData="jurisdictionData"
+          :keyLabelPairs="keyLabelPairs"
+          :valueClassMap="valueClassMap"
+          formattedSourceTable="Jurisdictions"
+          :showHeader="false"
+        />
+        <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
+        <JurisdictionComparison
+          v-if="!loading && jurisdictionData?.Name"
+          :jurisdiction="jurisdictionData.Name"
+          :compareJurisdiction="compareJurisdiction"
+        />
+      </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

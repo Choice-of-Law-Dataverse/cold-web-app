@@ -1,12 +1,11 @@
 <template>
   <UCard class="cold-ucard-info">
-    <!-- Main content section with reused styles -->
-    <div class="main-content-grid">
-      <div class="grid-item">
-        <p class="result-value-small">
-          <ContentDoc path="/jurisdiction_comparison_info" />
-        </p>
-      </div>
+    <div
+      class="main-content prose -space-y-10 flex flex-col gap-12 px-6 w-full"
+    >
+      <p class="result-value-small">
+        <ContentDoc path="/jurisdiction_comparison_info" />
+      </p>
     </div>
   </UCard>
 </template>
