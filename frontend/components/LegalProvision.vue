@@ -35,6 +35,8 @@ const content = ref<string | null>(null)
 const loading = ref(true)
 const error = ref<string | null>(null)
 
+const config = useRuntimeConfig()
+
 // Compute the final class
 const customClass = computed(() => props.class)
 
@@ -65,7 +67,7 @@ async function fetchProvisionDetails() {
 
   try {
     const response = await fetch(
-      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/curated_search/details',
+      `${config.public.apiBaseUrl}/curated_search/details`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
