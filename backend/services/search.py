@@ -190,7 +190,7 @@ class SearchService:
             -- Literature
             SELECT 
                 'Literature' AS source_table,
-                "ID" AS id,
+                "Key" AS id,
                 1.0 AS rank
             FROM "Literature", params
             WHERE 
@@ -300,7 +300,7 @@ class SearchService:
             -- Search in "Literature" table
             SELECT 
                 'Literature' AS source_table,
-                "ID" AS id,
+                "Key" AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
                 ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
             FROM "Literature", params
