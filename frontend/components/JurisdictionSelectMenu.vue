@@ -29,5 +29,3 @@ const onSelect = (value) => {
   emit('countrySelected', value) // Emit the selected value
 }
 </script>
-
-<style scoped></style>

@@ -1,8 +1,10 @@
 <template>
   <UCard class="cold-ucard">
-    <div class="popular-searches-container">
+    <div
+      class="popular-searches-container flex flex-col md:flex-row gap-6 md:items-center"
+    >
       <h2 class="popular-title">Temporary Jurisdiction Picker</h2>
-      <div class="suggestions">
+      <div class="suggestions w-full md:w-auto">
         <JurisdictionSelectMenu
           :countries="countries"
           @countrySelected="navigateToCountry"
@@ -66,8 +68,7 @@ onMounted(fetchJurisdictions)
 <style scoped>
 .popular-searches-container {
   display: flex;
-  align-items: center;
-  gap: 48px; /* Space between items */
+  flex-wrap: wrap;
 }
 
 .popular-title {
@@ -77,6 +78,5 @@ onMounted(fetchJurisdictions)
 .suggestions {
   display: flex;
   flex-wrap: wrap;
-  gap: 36px; /* Space between suggestions */
 }
 </style>

@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 // Layout -----------------------------------------------
 
 :root {
@@ -10,13 +14,12 @@
 
 // Centered container
 .container {
-  max-width: var(--container-width);
-  margin: 0 auto; // Centers the container
-  padding: 0 var(--gutter-width); // Adds padding on both sides
-  display: flex;
-  flex-direction: column; // Ensures children stack vertically
-  align-items: center; // Centers children horizontally within the container
-  position: relative; // Required for absolute positioning within it
+  max-width: var(--container-width); /* Matches 12-column layout */
+  margin: 0 auto; /* Centers the container */
+  padding: 0 var(--gutter-width); /* Adds responsive padding */
+  display: grid; /* Use grid for flexible layouts */
+  grid-template-columns: repeat(12, 1fr); /* 12-column grid */
+  gap: var(--gutter-width); /* Gutter spacing between columns */
 }
 
 // Utility classes for column spans: Loop to generate col-span-1 to col-span-12
@@ -61,8 +64,8 @@ a {
 
 .copy {
   @extend .result-value-small;
-  margin-top: 0px !important;
-  margin-bottom: 0px !important;
+  margin-top: 24px !important;
+  margin-bottom: 24px !important;
 }
 
 // Lists
@@ -91,19 +94,19 @@ li {
 .label-key {
   @extend .label;
   padding: 0;
-  margin-bottom: 12px;
+  // margin-bottom: 12px;
 }
 
 .label-jurisdiction {
   @extend .label;
   background-color: var(--color-cold-gray-alpha);
-  padding: 5px 7px;
+  padding: 3px 7px;
 }
 
 .label-question {
   @extend .label;
   color: var(--color-label-question);
-  padding: 4px 6px;
+  padding: 2px 6px;
   background-color: var(--color-label-question-alpha);
   border: 1px solid var(--color-label-question);
 }
@@ -111,7 +114,7 @@ li {
 .label-court-decision {
   @extend .label;
   color: var(--color-label-court-decision);
-  padding: 4px 6px;
+  padding: 2px 6px;
   background-color: var(--color-label-court-decision-alpha);
   border: 1px solid var(--color-label-court-decision);
 }
@@ -119,7 +122,7 @@ li {
 .label-legal-instrument {
   @extend .label;
   color: var(--color-label-legal-instrument);
-  padding: 4px 6px;
+  padding: 2px 6px;
   background-color: var(--color-label-legal-instrument-alpha);
   border: 1px solid var(--color-label-legal-instrument);
 }
@@ -127,7 +130,7 @@ li {
 .label-literature {
   @extend .label;
   color: var(--color-label-literature);
-  padding: 4px 6px;
+  padding: 2px 6px;
   background-color: var(--color-label-literature-alpha);
   border: 1px solid var(--color-label-literature);
 }
@@ -136,7 +139,7 @@ li {
   @extend .label;
   color: var(--color-cold-night-alpha);
   background-color: white;
-  padding: 4px 6px;
+  padding: 2px 6px;
   border: 1px solid var(--color-cold-night-alpha-25);
 }
 
@@ -152,14 +155,14 @@ li {
   @extend .result-value;
   font-size: 28px !important;
   margin-bottom: 6px !important;
-  margin-top: -5px !important;
+  // margin-top: -5px !important;
 }
 
 .result-value-medium {
   @extend .result-value;
   font-size: 20px !important;
   line-height: 28px !important;
-  margin-bottom: 16px !important;
+  // margin-bottom: 16px !important;
 }
 
 .result-value-small {
@@ -167,12 +170,12 @@ li {
   font-size: 14px !important;
   font-weight: 400 !important; // Regular
   line-height: 26px !important;
-  margin-bottom: 10px !important;
+  // margin-bottom: 10px !important;
   white-space: normal;
 }
 
 .result-item {
-  margin-bottom: 1rem;
+  // margin-bottom: 1rem;
 }
 
 // UI Elements -----------------------------------------------
@@ -181,6 +184,7 @@ li {
   color: var(--color-cold-purple) !important;
   font-size: 20px !important;
   text-decoration: none !important;
+  padding: 0 !important;
 }
 
 // Info Box in Jurisdiction Map
@@ -216,3 +220,7 @@ li {
 .js-plotly-plot .nsewdrag {
   cursor: default; /* Set default arrow cursor for non-interactive elements */
 }
+
+// * {
+//   outline: 1px solid red; /* Highlights every element */
+// }

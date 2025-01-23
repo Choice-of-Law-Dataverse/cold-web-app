@@ -12,33 +12,43 @@
     </template>
 
     <!-- Main content -->
-    <div v-if="loading" class="main-content-grid">Loading...</div>
-    <div v-else class="main-content-grid">
-      <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
+    <div class="flex">
+      <div v-if="loading" class="py-8 px-6">Loading...</div>
       <div
-        v-for="(item, index) in keyLabelPairs"
-        :key="index"
-        class="grid-item"
+        v-else
+        class="main-content prose -space-y-10 flex flex-col gap-12 py-8 px-6 w-full"
       >
-        <!-- Conditionally render the label -->
-        <p v-if="item.key !== 'Legal provisions IDs'" class="label-key">
-          {{ item.label }}
-        </p>
-        <!-- Dynamic slot with kebab-case conversion -->
-        <template
-          v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
-          :slot="item.key.replace(/ /g, '-').toLowerCase()"
+        <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
+        <div
+          v-for="(item, index) in keyLabelPairs"
+          :key="index"
+          class="flex flex-col"
         >
-          <slot
-            :name="item.key.replace(/ /g, '-').toLowerCase()"
-            :value="resultData?.[item.key]"
-          />
-        </template>
-        <template v-else>
-          <p :class="[props.valueClassMap[item.key] || 'default-class']">
-            {{ resultData?.[item.key] || 'N/A' }}
+          <!-- Conditionally render the label -->
+          <p v-if="item.key !== 'Legal provisions IDs'" class="label-key -mb-1">
+            {{ item.label }}
           </p>
-        </template>
+          <!-- Dynamic slot with kebab-case conversion -->
+          <template
+            v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
+            :slot="item.key.replace(/ /g, '-').toLowerCase()"
+          >
+            <slot
+              :name="item.key.replace(/ /g, '-').toLowerCase()"
+              :value="resultData?.[item.key]"
+            />
+          </template>
+          <template v-else>
+            <p
+              :class="[
+                props.valueClassMap[item.key] || 'text-gray-800',
+                'text-sm leading-relaxed',
+              ]"
+            >
+              {{ resultData?.[item.key] || 'N/A' }}
+            </p>
+          </template>
+        </div>
       </div>
     </div>
   </UCard>
@@ -63,17 +73,17 @@ const props = defineProps({
 </script>
 
 <style scoped>
-.main-content-grid {
+/* .main-content-grid {
   display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr)); /* 12-column layout */
-  column-gap: var(--gutter-width); /* Gutter space between columns */
-  padding: 32px; /* Optional padding to match the card's interior padding */
-}
+/*column-gap: var(--gutter-width); /* Gutter space between columns */
+/*padding: 32px; /* Optional padding to match the card's interior padding */
+/*} */
 
-.grid-item {
+/* .grid-item {
   grid-column: 1 / span 6; /* Start in the 1st column, span across 6 columns */
-  margin-bottom: 48px; /* Space between each key-value pair */
-}
+/* margin-bottom: 48px; /* Space between each key-value pair */
+/*} */
 
 .cold-ucard ::v-deep(.px-4) {
   padding-left: 0 !important;
@@ -93,6 +103,6 @@ const props = defineProps({
 .label-key {
   @extend .label;
   padding: 0;
-  margin-top: -20px;
+  /* margin-top: -20px; */
 }
 </style>

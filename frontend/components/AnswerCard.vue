@@ -1,8 +1,8 @@
 <template>
   <ResultCard :resultData="resultData" cardType="Answers">
-    <div class="answer-card-grid">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
       <!-- Question in the 1st column -->
-      <div class="grid-item" style="grid-column: 1 / span 4">
+      <div class="md:col-span-4">
         <div class="label-key">{{ keyMap.Questions }}</div>
         <div :class="valueClassMap.Questions || 'result-value'">
           {{ resultData.Questions }}
@@ -10,7 +10,7 @@
       </div>
 
       <!-- Answer in the 6th column -->
-      <div class="grid-item" style="grid-column: 6 / span 2">
+      <div class="md:col-start-6 md:col-span-2">
         <div class="label-key">{{ keyMap.Answer }}</div>
         <div :class="valueClassMap.Answer || 'result-value'">
           {{ resultData.Answer }}
@@ -18,7 +18,7 @@
       </div>
 
       <!-- Source in the 8th column -->
-      <div class="grid-item" style="grid-column: 8 / span 4">
+      <div class="md:col-start-8 md:col-span-4">
         <div class="label-key">{{ keyMap['Legal provision articles'] }}</div>
         <div
           :class="valueClassMap['Legal provision articles'] || 'result-value'"

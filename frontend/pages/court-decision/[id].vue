@@ -1,15 +1,17 @@
 <template>
-  <div class="container">
-    <div class="col-span-12">
-      <DetailDisplay
-        :loading="loading"
-        :resultData="courtDecision"
-        :keyLabelPairs="keyLabelPairs"
-        :valueClassMap="valueClassMap"
-        formattedSourceTable="Court decisions"
-      />
+  <main class="px-6">
+    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
+      <div class="col-span-12">
+        <DetailDisplay
+          :loading="loading"
+          :resultData="courtDecision"
+          :keyLabelPairs="keyLabelPairs"
+          :valueClassMap="valueClassMap"
+          formattedSourceTable="Court decisions"
+        />
+      </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">
