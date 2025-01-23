@@ -101,6 +101,7 @@ class Database:
             "Legal provisions": "Name",
             "Court decisions": "ID",
             "Jurisdictions": "Alpha-3 code",
+            "Literature": "Key",
         }
 
         def fetch_entry():
