@@ -1,46 +1,63 @@
 <template>
-  <div class="container">
-    <div class="col-span-12">
-      <!-- Flexbox Container: Filters and Results Heading -->
-      <div class="filters-header mb-6 flex justify-between items-center">
-        <!-- Left-aligned group of filters -->
-        <div class="flex gap-4">
-          <SearchFilters
-            :options="jurisdictionOptions"
-            v-model="currentJurisdictionFilter"
-          />
-          <SearchFilters :options="themeOptions" v-model="currentThemeFilter" />
-          <SearchFilters :options="typeOptions" v-model="currentTypeFilter" />
+  <main class="px-6">
+    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
+      <div class="col-span-12">
+        <!-- Flexbox/Grid Container: Filters and Results Heading -->
+        <div
+          class="filters-header mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4"
+        >
+          <!-- Left-aligned group of filters -->
+          <div class="flex flex-col sm:flex-row gap-4 w-full">
+            <SearchFilters
+              :options="jurisdictionOptions"
+              v-model="currentJurisdictionFilter"
+              class="w-full sm:w-auto"
+            />
+            <SearchFilters
+              :options="themeOptions"
+              v-model="currentThemeFilter"
+              class="w-full sm:w-auto"
+            />
+            <SearchFilters
+              :options="typeOptions"
+              v-model="currentTypeFilter"
+              class="w-full sm:w-auto"
+            />
+          </div>
+
+          <!-- Right-aligned Results Heading -->
+          <h2
+            class="text-right md:text-left w-full md:w-auto whitespace-nowrap"
+          >
+            {{ props.totalMatches }} Results
+          </h2>
         </div>
 
-        <!-- Right-aligned Results Heading -->
-        <h2 class="text-right">{{ props.totalMatches }} Results</h2>
-      </div>
+        <!-- Results Grid or Messages -->
+        <div class="results-content mt-4">
+          <!-- Loading State -->
+          <p v-if="loading">Loading…</p>
 
-      <!-- Results Grid or Messages -->
-      <div class="results-content mt-4">
-        <!-- Loading State -->
-        <p v-if="loading">Loading…</p>
+          <!-- No Results -->
+          <p v-else-if="!allResults.length">No results found.</p>
 
-        <!-- No Results -->
-        <p v-else-if="!allResults.length">No results found.</p>
-
-        <!-- Results Grid -->
-        <div v-else class="results-grid">
-          <div
-            v-for="(resultData, key) in allResults"
-            :key="key"
-            class="result-item"
-          >
-            <component
-              :is="getResultComponent(resultData.source_table)"
-              :resultData="resultData"
-            />
+          <!-- Results Grid -->
+          <div v-else class="results-grid">
+            <div
+              v-for="(resultData, key) in allResults"
+              :key="key"
+              class="result-item"
+            >
+              <component
+                :is="getResultComponent(resultData.source_table)"
+                :resultData="resultData"
+              />
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup lang="ts">

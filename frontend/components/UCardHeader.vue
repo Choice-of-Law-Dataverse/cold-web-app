@@ -1,11 +1,13 @@
 <template>
-  <div class="header-container">
-    <!-- Left side of the header -->
-    <div>
+  <div class="header-container flex items-center justify-between">
+    <!-- Left side of the header: Tags -->
+    <div
+      class="tags-container flex items-center overflow-x-auto scrollbar-hidden"
+    >
       <!-- Display 'Name (from Jurisdiction)' or alternatives -->
       <span
         v-for="(jurisdictionString, index) in formattedJurisdiction"
-        :key="index"
+        :key="`jurisdiction-${index}`"
         class="label-jurisdiction"
       >
         {{ jurisdictionString }}
@@ -19,16 +21,25 @@
       <!-- Display 'Themes' -->
       <span
         v-for="(theme, index) in formattedTheme"
-        :key="index"
+        :key="`theme-${index}`"
         class="label-theme"
       >
         {{ theme }}
       </span>
     </div>
 
-    <!-- Right side of the header with "Open" link, only shown if showOpenLink is true -->
-    <div v-if="showOpenLink">
-      <NuxtLink :to="getLink()" style="display: inline-block">Open</NuxtLink>
+    <!-- Fade-out effect -->
+    <div
+      class="fade-out"
+      :class="{
+        'open-link-true': showOpenLink,
+        'open-link-false': !showOpenLink,
+      }"
+    ></div>
+
+    <!-- Right side of the header: "Open" link -->
+    <div v-if="showOpenLink" class="open-link ml-4">
+      <NuxtLink :to="getLink()"> Open </NuxtLink>
     </div>
   </div>
 </template>
@@ -134,5 +145,57 @@ function getLink() {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative; /* Ensure fade-out positions correctly */
+}
+
+/* Ensure horizontal scrolling for tags without a visible scrollbar */
+.tags-container {
+  overflow-x: auto;
+  white-space: nowrap;
+  flex-grow: 1; /* Ensures it takes up available space */
+}
+
+.fade-out-container {
+  position: relative;
+  flex-shrink: 0; /* Prevent it from shrinking */
+  width: 50px; /* Match the width of the fade effect */
+  margin-left: -50px; /* Align the fade-out right before the "Open" link */
+  z-index: 1; /* Ensures it appears above the scrolling content */
+}
+
+/* Fade-out effect */
+.fade-out {
+  position: absolute;
+  top: 0;
+  /*right: 50px; /* Place the fade-out just before the "Open" link */
+  width: 60px; /* Width of the gradient */
+  height: 100%;
+  background: linear-gradient(to left, white, transparent); /* White fade */
+  pointer-events: none; /* Ensure it doesn’t block interactions */
+}
+
+/* Adjust the fade-out position based on whether the "Open" link is shown */
+.fade-out.open-link-true {
+  right: 50px; /* Positioned just before the "Open" link */
+}
+
+.fade-out.open-link-false {
+  right: 0; /* Positioned at the edge of the container */
+}
+
+/* Right-aligned open link */
+.open-link {
+  flex-shrink: 0; /* Prevent shrinking */
+  position: relative;
+  z-index: 20; /* Ensure it's above the fade-out */
+}
+
+/* Hide the scrollbar for a cleaner look */
+.scrollbar-hidden::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Edge */
+}
+.scrollbar-hidden {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 </style>

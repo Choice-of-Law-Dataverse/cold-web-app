@@ -28,7 +28,9 @@
       </div>
       <div v-else>
         <!-- Centered Jurisdiction Name and Compare Dropdown -->
-        <div class="comparison-title flex items-center justify-center mb-4">
+        <div
+          class="comparison-title flex flex-col md:flex-row items-center justify-center gap-4 px-6 mb-4 text-center md:text-left"
+        >
           <div class="result-value-medium">
             Questions for {{ props.jurisdiction }} and
           </div>
@@ -36,21 +38,24 @@
             v-model="selectedJurisdiction"
             :countries="jurisdictionOptions"
             @countrySelected="updateComparison"
-            class="w-72 cold-uselectmenu"
-            style="margin-top: -16px; margin-left: 4px"
+            class="w-full md:w-72 cold-uselectmenu"
           />
         </div>
 
         <!-- Filter and MatchSummary -->
-        <div class="main-content-grid">
+        <div
+          class="main-content-grid flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 !px-4 !sm:px-8"
+        >
           <!-- Left-aligned USelectMenu -->
-          <div class="filter-wrapper">
+          <div
+            class="filter-wrapper flex flex-col items-center sm:flex-row sm:items-center justify-center w-full sm:w-auto"
+          >
             <USelectMenu
               searchable
               v-model="selectedTheme"
               :options="themeOptions"
               placeholder="Filter by Theme"
-              class="cold-uselectmenu"
+              class="cold-uselectmenu w-full max-w-full sm:w-auto text-center"
               size="sm"
             />
             <UButton
@@ -65,7 +70,10 @@
           </div>
 
           <!-- Right-aligned MatchSummary -->
-          <div v-if="selectedJurisdiction" class="match-summary">
+          <div
+            v-if="selectedJurisdiction"
+            class="match-summary flex justify-center sm:justify-start w-full sm:w-auto"
+          >
             <MatchSummary :counts="matchCounts" />
           </div>
         </div>
@@ -422,15 +430,8 @@ function computeMatchStatus(answer1, answer2) {
   font-size: 14px !important;
 }
 
-.main-content-grid {
-  display: flex; /* Use flexbox for layout */
-  justify-content: space-between; /* Space between left and right sections */
-  align-items: center; /* Vertically align items */
-  margin-bottom: 16px; /* Adjust spacing below */
-}
-
 .filter-wrapper {
-  margin-left: 32px;
+  /* margin-left: 32px; */
   margin-bottom: 6px;
   display: flex; /* Group the dropdown and reset button */
   align-items: center;

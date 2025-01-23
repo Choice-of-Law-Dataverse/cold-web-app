@@ -1,16 +1,14 @@
 <template>
-  <div class="container">
-    <div class="col-span-12">
+  <main class="px-6">
+    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
       <UCard class="cold-ucard">
-        <div class="main-content-grid">
-          <div class="grid-item">
-            <!-- Rendered HTML content -->
-            <div class="copy" v-html="htmlContent"></div>
-          </div>
-        </div>
+        <div
+          class="copy main-content prose -space-y-10 flex flex-col gap-12 px-6 w-full"
+          v-html="htmlContent"
+        ></div>
       </UCard>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup>
@@ -84,6 +82,7 @@ function scrollToAnchor() {
 }
 
 ::v-deep(h2) {
-  margin-left: -82px !important;
+  /* margin-left: -82px !important; */
+  margin-top: 24px !important;
 }
 </style>

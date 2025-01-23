@@ -1,8 +1,13 @@
 <template>
   <UCard class="cold-ucard">
-    <div class="popular-searches-container">
-      <h2 class="popular-title">Popular Searches</h2>
-      <div class="suggestions">
+    <div class="popular-searches-container flex flex-col md:flex-row gap-8">
+      <!-- Title Section -->
+      <h2 class="popular-title text-left md:whitespace-nowrap">
+        Popular Searches
+      </h2>
+
+      <!-- Suggestions Section -->
+      <div class="suggestions flex flex-wrap gap-6">
         <UButton
           v-for="(suggestion, index) in searchSuggestions"
           :key="index"
@@ -12,7 +17,7 @@
           icon="i-material-symbols:arrow-forward"
           trailing
         >
-          {{ suggestion }}
+          <span class="break-words text-left">{{ suggestion }}</span>
         </UButton>
       </div>
     </div>
@@ -50,19 +55,17 @@ export default {
 </script>
 
 <style scoped>
-.popular-searches-container {
-  display: flex;
-  align-items: center;
-  gap: 48px; /* Space between items */
-}
-
-.popular-title {
-  white-space: nowrap; /* Prevents the title from wrapping to a new line */
-}
-
 .suggestions {
   display: flex;
   flex-wrap: wrap;
-  gap: 36px; /* Space between each suggestion link */
+  gap: 1rem; /* Adjust spacing between buttons */
+}
+
+.suggestion-button {
+  max-width: 100%; /* Ensure the button doesn’t overflow */
+  white-space: normal; /* Allow text wrapping */
+  text-align: left; /* Align text to the left */
+  padding: 0.5rem 1rem; /* Adjust padding for better fit */
+  word-break: break-word; /* Break long words */
 }
 </style>
