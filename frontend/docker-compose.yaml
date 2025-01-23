@@ -4,5 +4,7 @@ services:
     build: .
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
-      - API_BASE_URL: ${API_BASE_URL}
+      API_BASE_URL: ${API_BASE_URL}
