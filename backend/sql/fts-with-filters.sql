@@ -3,7 +3,7 @@
 -- Define filter values for tables, jurisdictions, and themes
 with params as (
     select 
-        array['Answers', 'Court decisions', 'Legislation']::text[] as tables, -- Example: ['Answers', 'Legislation']
+        array['Answers', 'Court decisions', 'Legislation', 'Literature']::text[] as tables, -- Example: ['Answers', 'Legislation']
         array['Peru', 'Argentina']::text[] as jurisdictions, -- Example: [] for no jurisdiction filter
         array['Freedom of choice', 'Public policy']::text[] as themes -- Example: [] for no themes filter
 )
@@ -85,6 +85,22 @@ where
             where "Themes name" ILIKE '%' || theme_filter || '%'
         ) -- Case-insensitive partial match for themes
     )
+    and (
+        search @@ websearch_to_tsquery('english', 'party autonomy')
+        or search @@ websearch_to_tsquery('simple', 'party autonomy')
+    )
+
+union all
+
+-- Search in "Literature" table
+select 
+    'Literature' as source_table,
+    "Key" as id,
+    ts_rank(search, websearch_to_tsquery('english', 'party autonomy')) +
+    ts_rank(search, websearch_to_tsquery('simple', 'party autonomy')) as rank
+from "Literature", params
+where 
+    (array_length(params.tables, 1) is null or 'Literature' = any(params.tables)) -- Filter by table (skip if empty)
     and (
         search @@ websearch_to_tsquery('english', 'party autonomy')
         or search @@ websearch_to_tsquery('simple', 'party autonomy')
