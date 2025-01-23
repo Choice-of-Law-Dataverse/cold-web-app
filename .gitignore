@@ -165,6 +165,7 @@ backend/test.py
 testing/*
 
 # nuxt and node
+frontend/.env
 frontend/.nuxt
 frontend/node_modules
 frontend/public/.Rhistory

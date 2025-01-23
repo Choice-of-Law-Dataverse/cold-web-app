@@ -23,6 +23,7 @@ class SearchService:
             "Legal provisions",
             "Court decisions",
             "Jurisdictions",
+            "Literature"
         ]:
             final_results = self.db.get_entry_by_id(table, id)
             return filter_na(parse_results(final_results))
@@ -183,6 +184,18 @@ class SearchService:
                         WHERE "Themes name" ILIKE '%' || theme_filter || '%'
                     )
                 )
+
+            UNION ALL
+
+            -- Literature
+            SELECT 
+                'Literature' AS source_table,
+                "ID"::text AS id,
+                1.0 AS rank
+            FROM "Literature", params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Literature' = ANY(params.tables))
+
             ORDER BY rank DESC
             LIMIT 150;
         """
@@ -277,6 +290,22 @@ class SearchService:
                         WHERE "Themes name" ILIKE '%' || theme_filter || '%'
                     )
                 )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
+
+            UNION ALL
+
+            -- Search in "Literature" table
+            SELECT 
+                'Literature' AS source_table,
+                "ID"::text AS id,
+                ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+            FROM "Literature", params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Literature' = ANY(params.tables))
                 AND (
                     search @@ websearch_to_tsquery('english', '{search_string}')
                     OR search @@ websearch_to_tsquery('simple', '{search_string}')
