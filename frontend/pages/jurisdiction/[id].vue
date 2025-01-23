@@ -36,6 +36,8 @@ const loading = ref(true) // Track loading state
 // Extract `c` query parameter
 const compareJurisdiction = ref((route.query.c as string) || null)
 
+const config = useRuntimeConfig()
+
 // Fetch the jurisdiction details
 async function fetchJurisdiction(iso2: string) {
   const jsonPayload = {
@@ -44,14 +46,11 @@ async function fetchJurisdiction(iso2: string) {
   }
 
   try {
-    const response = await fetch(
-      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_table',
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(jsonPayload),
-      }
-    )
+    const response = await fetch(`${config.public.apiBaseUrl}/full_table`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(jsonPayload),
+    })
 
     if (!response.ok) throw new Error('Failed to fetch jurisdiction')
 

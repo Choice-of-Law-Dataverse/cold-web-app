@@ -10,6 +10,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 
+const config = useRuntimeConfig()
+
 // Props
 const props = defineProps({
   caseId: {
@@ -30,7 +32,7 @@ async function fetchCaseTitle() {
 
   try {
     const response = await fetch(
-      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/curated_search/details',
+      `${config.public.apiBaseUrl}/curated_search/details`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },

@@ -123,6 +123,8 @@ const columns = ref([
   { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
 ])
 
+const config = useRuntimeConfig()
+
 // Computed filtered rows
 const filteredRows = computed(() => {
   if (!selectedTheme.value) {
@@ -179,9 +181,10 @@ async function fetchFilteredTableData(filters) {
 
   try {
     const data = await fetchData(
-      'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_table',
+      `${config.public.apiBaseUrl}/full_table`,
       payload
     )
+
     return data.map((item) => ({
       ...item,
       ID: item.ID,
