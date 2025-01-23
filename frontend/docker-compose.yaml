@@ -1,0 +1,8 @@
+version: '3.8'
+services:
+  nuxt-frontend:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - API_BASE_URL: ${API_BASE_URL}
