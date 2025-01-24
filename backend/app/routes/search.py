@@ -8,17 +8,20 @@ from app.services.search import SearchService
 from app.services.query_logging import log_query
 from app.auth import verify_jwt_token
 
-search_router = APIRouter(dependencies=[Depends(verify_jwt_token)])
-
 search_service = SearchService()
 
+router = APIRouter(
+    prefix="/search", tags=["Search"], dependencies=[Depends(verify_jwt_token)]
+)
 
-@search_router.post("/search")
+
+@router.post("/")
 def handle_full_text_search(request: Request, body: FullTextSearchRequest):
     search_string = body.search_string
     filters = body.filters or []
 
     results = search_service.full_text_search(search_string, filters)
+
     log_query(
         request,
         search_string if search_string else "EMPTY_SEARCH",
@@ -29,7 +32,7 @@ def handle_full_text_search(request: Request, body: FullTextSearchRequest):
     return results
 
 
-@search_router.post("/search/details")
+@router.post("/details")
 def handle_curated_details_search(request: Request, body: CuratedDetailsRequest):
     table = body.table
     record_id = body.id
@@ -45,7 +48,7 @@ def handle_curated_details_search(request: Request, body: CuratedDetailsRequest)
     return results
 
 
-@search_router.post("/search/full_table")
+@router.post("/full_table")
 def return_full_table(request: Request, body: FullTableRequest):
     table = body.table
     filters = body.filters or []

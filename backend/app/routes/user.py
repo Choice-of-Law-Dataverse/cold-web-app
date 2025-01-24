@@ -1,10 +1,13 @@
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, Depends
 from fastapi.responses import JSONResponse
+from app.auth import verify_jwt_token
 
-user_router = APIRouter()
+router = APIRouter(
+    prefix="/user", tags=["User"], dependencies=[Depends(verify_jwt_token)]
+)
 
 
-@user_router.get("/get_user_info")
+@router.get("/get_user_info")
 def get_user_info():
     # We can return a JSONResponse with headers
     response = JSONResponse({"message": "Send Client Hints"})
@@ -14,7 +17,7 @@ def get_user_info():
     return response
 
 
-@user_router.get("/user_info")
+@router.get("/user_info")
 def user_info(request: Request):
     brand = request.headers.get("Sec-CH-UA", "Unknown")
     mobile = request.headers.get("Sec-CH-UA-Mobile", "Unknown")
