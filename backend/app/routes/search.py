@@ -6,14 +6,14 @@ from app.schemas.requests import (
 )
 from app.services.search import SearchService
 from app.services.query_logging import log_query
-from app.security import verify_api_key
+from app.auth import verify_jwt_token
 
-search_router = APIRouter()
+search_router = APIRouter(dependencies=[Depends(verify_jwt_token)])
 
 search_service = SearchService()
 
 
-@search_router.post("/search", dependencies=[Depends(verify_api_key)])
+@search_router.post("/search")
 def handle_full_text_search(request: Request, body: FullTextSearchRequest):
     search_string = body.search_string
     filters = body.filters or []
@@ -29,7 +29,7 @@ def handle_full_text_search(request: Request, body: FullTextSearchRequest):
     return results
 
 
-@search_router.post("/search/details", dependencies=[Depends(verify_api_key)])
+@search_router.post("/search/details")
 def handle_curated_details_search(request: Request, body: CuratedDetailsRequest):
     table = body.table
     record_id = body.id
@@ -45,7 +45,7 @@ def handle_curated_details_search(request: Request, body: CuratedDetailsRequest)
     return results
 
 
-@search_router.post("/search/full_table", dependencies=[Depends(verify_api_key)])
+@search_router.post("/search/full_table")
 def return_full_table(request: Request, body: FullTableRequest):
     table = body.table
     filters = body.filters or []
