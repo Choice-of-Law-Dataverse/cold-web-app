@@ -23,7 +23,7 @@ class SearchService:
             "Legal provisions",
             "Court decisions",
             "Jurisdictions",
-            "Literature"
+            "Literature",
         ]:
             final_results = self.db.get_entry_by_id(table, id)
             return filter_na(parse_results(final_results))
