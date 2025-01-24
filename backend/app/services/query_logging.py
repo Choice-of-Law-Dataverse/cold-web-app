@@ -10,18 +10,9 @@ db = client["query_logs"]
 collection = db["queries"]
 
 
-# Function to extract IP address
-def get_ip_address(request):
-    if request.headers.get("X-Forwarded-For"):
-        ip = request.headers["X-Forwarded-For"].split(",")[0]
-    else:
-        ip = request.remote_addr
-    return ip
-
-
 # Function to get location from IP address
 def get_location(ip_address):
-    access_token = Config.IPINFO_ACCESS_TOKEN
+    access_token = config.IPINFO_ACCESS_TOKEN
     try:
         response = requests.get(
             f"http://ipinfo.io/{ip_address}/json?token={access_token}"
@@ -48,14 +39,10 @@ def get_client_hints(request):
 # Function to log the query and user information
 def log_query(request, search_string, filters, results_count, route):
     timestamp = datetime.utcnow()
-    ip_address = get_ip_address(request)
+    ip_address = request.client.host
     location = get_location(ip_address)
     user_agent = request.headers.get("User-Agent")
     client_hints = get_client_hints(request)
-
-    # Extract hostname from the JSON payload
-    data = request.json
-    hostname = data.get("hostname", "Unknown")  # Default to 'Unknown' if not provided
 
     log_data = {
         "timestamp": timestamp,
@@ -67,7 +54,6 @@ def log_query(request, search_string, filters, results_count, route):
         "filters": filters,
         "results_count": results_count,
         "route": route,
-        "hostname": hostname,
     }
 
     collection.insert_one(log_data)

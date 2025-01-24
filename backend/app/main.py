@@ -2,9 +2,7 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth import verify_jwt_token
-from app.routes.search import search_router
-from app.routes.user import user_router
-from app.routes.ai import ai_router
+from app.routes import ai, search, user
 from app.config import config
 
 app = FastAPI()
@@ -19,9 +17,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(search_router, prefix="/search", tags=["Search"])
-app.include_router(user_router, prefix="/user", tags=["User"])
-app.include_router(ai_router, prefix="/ai", tags=["AI"])
+app.include_router(search.router)
+app.include_router(user.router)
+app.include_router(ai.router)
+
 
 @app.get("/", dependencies=[Depends(verify_jwt_token)])
 def root():
