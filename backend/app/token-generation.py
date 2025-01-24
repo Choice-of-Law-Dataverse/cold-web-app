@@ -1,6 +1,11 @@
 import jwt
+import os
+from dotenv import load_dotenv
 
-SECRET = "youcannotpassbalrog"  # Must match your real secret
+load_dotenv()
+
+SECRET: str = os.getenv("JWT_SECRET", "MYSECRET") 
+
 payload = {"sub": "some-fixed-user", "role": "admin"}  # Example payload
 token = jwt.encode(payload, SECRET, algorithm="HS256")
 
