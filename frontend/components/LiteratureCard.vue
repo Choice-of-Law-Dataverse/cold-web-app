@@ -1,33 +1,42 @@
 <template>
   <ResultCard :resultData="processedResultData" cardType="Literature">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <!-- Title in the 1st column -->
-      <div class="md:col-span-5">
+      <!-- Title spans 4 columns -->
+      <div class="md:col-span-4">
         <div class="label-key">{{ keyMap.Title }}</div>
         <div :class="valueClassMap.Title || 'result-value'">
           {{ processedResultData.Title || '[Missing Information]' }}
         </div>
       </div>
 
-      <!-- Author in the 6th column -->
-      <div class="md:col-start-6 md:col-span-7">
-        <div class="label-key">{{ keyMap.Author }}</div>
-        <div :class="valueClassMap.Author || 'result-value'">
-          {{ processedResultData.Author || '[Missing Information]' }}
+      <!-- Author and Year on the same row -->
+      <div class="md:col-span-4 md:col-start-6">
+        <div class="grid grid-cols-2 gap-4">
+          <!-- Author -->
+          <div>
+            <div class="label-key">{{ keyMap.Author }}</div>
+            <div :class="valueClassMap.Author || 'result-value'">
+              {{ processedResultData.Author || '[Missing Information]' }}
+            </div>
+          </div>
+          <!-- Year -->
+          <div>
+            <div class="label-key">{{ keyMap.Date }}</div>
+            <div :class="valueClassMap.Date || 'result-value'">
+              {{ processedResultData.Date || '[Missing Information]' }}
+            </div>
+          </div>
         </div>
-        <!-- </div> -->
 
-        <!-- Year in the 7th column -->
-        <!-- <div class="md:col-start-7 md:col-span-7"> -->
-        <div class="label-key">{{ keyMap.Date }}</div>
-        <div :class="valueClassMap.Date || 'result-value'">
-          {{ processedResultData.Date || '[Missing Information]' }}
-        </div>
-        <div class="label-key">{{ keyMap['Publication Title'] }}</div>
-        <div :class="valueClassMap['Publication Title'] || 'result-value'">
-          {{
-            processedResultData['Publication Title'] || '[Missing Information]'
-          }}
+        <!-- Publication below Author and Year -->
+        <div class="mt-4">
+          <div class="label-key">{{ keyMap['Publication Title'] }}</div>
+          <div :class="valueClassMap['Publication Title'] || 'result-value'">
+            {{
+              processedResultData['Publication Title'] ||
+              '[Missing Information]'
+            }}
+          </div>
         </div>
       </div>
     </div>
