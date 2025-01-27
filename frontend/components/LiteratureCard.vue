@@ -15,6 +15,20 @@
         <div :class="valueClassMap.Author || 'result-value'">
           {{ processedResultData.Author || '[Missing Information]' }}
         </div>
+        <!-- </div> -->
+
+        <!-- Year in the 7th column -->
+        <!-- <div class="md:col-start-7 md:col-span-7"> -->
+        <div class="label-key">{{ keyMap.Date }}</div>
+        <div :class="valueClassMap.Date || 'result-value'">
+          {{ processedResultData.Date || '[Missing Information]' }}
+        </div>
+        <div class="label-key">{{ keyMap['Publication Title'] }}</div>
+        <div :class="valueClassMap['Publication Title'] || 'result-value'">
+          {{
+            processedResultData['Publication Title'] || '[Missing Information]'
+          }}
+        </div>
       </div>
     </div>
   </ResultCard>
@@ -43,12 +57,16 @@ const processedResultData = computed(() => {
 const keyMap = {
   Title: 'Title',
   Author: 'Author',
+  Date: 'Year',
+  'Publication Title': 'Publication',
 }
 
 // Map different CSS styles to different typographic components
 const valueClassMap = {
   Title: 'result-value-medium',
   Author: 'result-value-small',
+  Date: 'result-value-small',
+  'Publication Title': 'result-value-small',
 }
 </script>
 
