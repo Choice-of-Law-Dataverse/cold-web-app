@@ -150,8 +150,12 @@ class SearchService:
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Court decisions' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
-                    OR "Jurisdiction Names" = ANY(params.jurisdictions)
+                    array_length(params.jurisdictions, 1) is null -- Skip jurisdiction filter if empty
+                    or exists (
+                        select 1
+                        from unnest(params.jurisdictions) as jurisdiction_filter
+                        where "Jurisdiction Names" ILIKE '%' || jurisdiction_filter || '%'
+                    )
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
@@ -251,8 +255,12 @@ class SearchService:
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Court decisions' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
-                    OR "Jurisdiction Names" = ANY(params.jurisdictions)
+                    array_length(params.jurisdictions, 1) is null -- Skip jurisdiction filter if empty
+                    or exists (
+                        select 1
+                        from unnest(params.jurisdictions) as jurisdiction_filter
+                        where "Jurisdiction Names" ILIKE '%' || jurisdiction_filter || '%'
+                    )
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 

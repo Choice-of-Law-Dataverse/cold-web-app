@@ -47,7 +47,11 @@ where
     (array_length(params.tables, 1) is null or 'Court decisions' = any(params.tables)) -- Filter by table (skip if empty)
     and (
         array_length(params.jurisdictions, 1) is null -- Skip jurisdiction filter if empty
-        or "Jurisdiction Names" = any(params.jurisdictions)
+        or exists (
+			select 1
+			from unnest(params.jurisdictions) as jurisdiction_filter
+			where "Jurisdiction Names" ILIKE '%' || jurisdiction_filter || '%'
+		)
     )
     and (
         array_length(params.themes, 1) is null -- Skip theme filter if empty
