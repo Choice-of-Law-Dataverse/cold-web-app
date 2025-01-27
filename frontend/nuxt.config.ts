@@ -13,6 +13,11 @@ export default defineNuxtConfig({
     'nuxt-purgecss',
     'nuxt-plotly',
   ],
+  runtimeConfig: {
+    public: {
+      apiBaseUrl: process.env.API_BASE_URL
+    }
+  },
   purgecss: {
     enabled: false, // Disable for the time being
     rejected: true, // Enable logging of rejected (removed) selectors
