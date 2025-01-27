@@ -5,7 +5,7 @@ load_dotenv()
 
 
 class Config:
-    SQL_CONN_STRING = os.getenv("SQL_CONN_STRING")
+    SQL_CONN_STRING = os.getenv("SQL_CONN_STRING_PLAYGROUND")
     MIXEDBREAD_API_KEY = os.getenv("MIXEDBREAD_API_KEY")
     TEST = os.getenv("TEST")
     MONGODB_CONN_STRING = os.getenv("MONGODB_CONN_STRING")
