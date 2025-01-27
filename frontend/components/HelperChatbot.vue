@@ -50,6 +50,8 @@
 </template>
 
 <script>
+const config = useRuntimeConfig()
+
 export default {
   props: {
     searchText: {
@@ -80,13 +82,13 @@ export default {
       try {
         // Step 1: Call classify_query API to classify the search query
         const response = await fetch(
-          'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/classify_query',
+          `${config.public.apiBaseUrl}/classify_query`,
           {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ query: query }),
+            body: JSON.stringify({ query }),
           }
         )
 
@@ -129,16 +131,13 @@ export default {
 
     async fetchData(term, table) {
       try {
-        const response = await fetch(
-          'https://cold-web-app.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/full_table',
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ table: table }),
-          }
-        )
+        const response = await fetch(`${config.public.apiBaseUrl}/full_table`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ table }),
+        })
 
         const data = await response.json()
 
