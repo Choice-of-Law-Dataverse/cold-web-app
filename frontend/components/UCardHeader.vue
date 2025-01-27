@@ -109,6 +109,8 @@ const labelColorClass = computed(() => {
       return 'label-question'
     case 'Legislation':
       return 'label-legal-instrument'
+    case 'Literature':
+      return 'label-literature'
     default:
       return '' // No color for unknown labels
   }
@@ -134,6 +136,8 @@ function getLink() {
       return `/court-decision/${props.resultData.id}`
     case 'Legislation':
       return `/legal-instrument/${props.resultData.id}`
+    case 'Literature':
+      return `/literature/${props.resultData.id}`
     default:
       return '#'
   }
