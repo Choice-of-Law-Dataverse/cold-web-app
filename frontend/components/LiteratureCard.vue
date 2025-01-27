@@ -21,9 +21,12 @@
           </div>
           <!-- Year -->
           <div>
-            <div class="label-key">{{ keyMap.Date }}</div>
-            <div :class="valueClassMap.Date || 'result-value'">
-              {{ processedResultData.Date || '[Missing Information]' }}
+            <div class="label-key">{{ keyMap['Publication Year'] }}</div>
+            <div :class="valueClassMap['Publication Year'] || 'result-value'">
+              {{
+                processedResultData['Publication Year'] ||
+                '[Missing Information]'
+              }}
             </div>
           </div>
         </div>
@@ -66,7 +69,7 @@ const processedResultData = computed(() => {
 const keyMap = {
   Title: 'Title',
   Author: 'Author',
-  Date: 'Year',
+  'Publication Year': 'Year',
   'Publication Title': 'Publication',
 }
 
@@ -74,7 +77,7 @@ const keyMap = {
 const valueClassMap = {
   Title: 'result-value-medium',
   Author: 'result-value-small',
-  Date: 'result-value-small',
+  'Publication Year': 'result-value-small',
   'Publication Title': 'result-value-small',
 }
 </script>
