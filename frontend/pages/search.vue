@@ -125,6 +125,7 @@ async function fetchSearchResults(query, filters) {
     Questions: 'Answers',
     'Court Decisions': 'Court decisions',
     'Legal Instruments': 'Legislation',
+    Literature: 'Literature',
   }
 
   // Add "Type" filter if not "All"
