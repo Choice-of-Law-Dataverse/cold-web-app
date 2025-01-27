@@ -94,6 +94,8 @@ const adjustedSourceTable = computed(() => {
       return 'Question'
     case 'Legislation':
       return 'Legal Instrument'
+    case 'Literature':
+      return 'Literature'
     // Add more adjustments as needed
     default:
       return formattedSourceTable.value || '' // Fallback if no match
