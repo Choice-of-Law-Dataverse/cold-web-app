@@ -166,6 +166,7 @@ const typeOptions = [
   'All Types',
   'Court Decisions',
   'Legal Instruments',
+  'Literature',
   'Questions',
 ]
 
