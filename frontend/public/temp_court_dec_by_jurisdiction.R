@@ -31,7 +31,7 @@ count_jurisdictions <- court_decisions %>%
 
 # Add search URL
 count_jurisdictions <- count_jurisdictions %>% 
-  mutate(url = paste0("/search?q=court&jurisdiction=", jurisdiction, "&type=Court+Decisions")) %>% 
+  mutate(url = paste0("/search?jurisdiction=", jurisdiction, "&type=Court+Decisions")) %>% 
   mutate(url = gsub(" ", "+", url))
 
 
