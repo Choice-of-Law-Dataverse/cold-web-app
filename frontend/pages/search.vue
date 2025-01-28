@@ -1,5 +1,5 @@
 <template>
-  <div v-if="searchQuery">
+  <div v-if="searchQuery || hasActiveFilters">
     <!-- Pass searchResults, totalMatches, and loading state -->
     <SearchResults
       :data="{ tables: searchResults }"
@@ -16,7 +16,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchResults from '../components/SearchResults.vue' // Adjust path if needed
 
@@ -43,7 +43,7 @@ const onSearchInput = (newQuery) => {
   // Update the URL query string with the new search term
   router.push({
     query: {
-      q: newQuery,
+      q: newQuery || undefined, // Only include 'q' if it's not empty
       jurisdiction:
         filter.value.jurisdiction !== 'All Jurisdictions'
           ? filter.value.jurisdiction
@@ -55,8 +55,16 @@ const onSearchInput = (newQuery) => {
   })
 
   // Fetch new results with the updated search query and current filters
-  fetchSearchResults(newQuery, filter.value)
+  fetchSearchResults(newQuery || '', filter.value) // Allow empty search term
 }
+
+const hasActiveFilters = computed(() => {
+  return (
+    filter.value.jurisdiction !== 'All Jurisdictions' ||
+    filter.value.theme !== 'All Themes' ||
+    filter.value.type !== 'All Types'
+  )
+})
 
 // Watch for changes in filter and fetch results
 watch(
@@ -88,7 +96,7 @@ watch(
   () => route.query.q,
   (newQuery) => {
     if (newQuery) {
-      searchQuery.value = newQuery
+      searchQuery.value = newQuery || '' // Default to empty string
       fetchSearchResults(newQuery, filter.value)
     }
   }
@@ -177,8 +185,7 @@ async function fetchSearchResults(query, filters) {
 }
 
 onMounted(() => {
-  if (route.query.q) searchQuery.value = route.query.q
-  fetchSearchResults(searchQuery.value, filter.value)
+  fetchSearchResults(searchQuery.value || '', filter.value) // Allow empty search query
 })
 
 // Set up functions to retrieve user data (https://developer.mozilla.org/en-US/docs/Web/API/Navigator)
