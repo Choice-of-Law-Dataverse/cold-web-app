@@ -74,15 +74,21 @@ const links = [
 ]
 
 function emitSearch() {
+  const query = { ...route.query } // Retain existing query parameters (filters)
+
   if (searchText.value.trim()) {
-    router.push({
-      name: 'search',
-      query: {
-        ...route.query, // Retain existing query parameters (filters)
-        q: searchText.value, // Update the search query
-      },
-    })
+    // Update the search query if there's input
+    query.q = searchText.value.trim()
+  } else {
+    // Remove the search query (q) if the input is empty
+    delete query.q
   }
+
+  // Push the updated query to the router
+  router.push({
+    name: 'search',
+    query,
+  })
 }
 
 // Dynamically update the placeholder

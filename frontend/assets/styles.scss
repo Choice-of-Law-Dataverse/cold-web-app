@@ -187,6 +187,11 @@ li {
   padding: 0 !important;
 }
 
+.link-button {
+  @extend .suggestion-button;
+  font-size: 14px !important;
+}
+
 // Info Box in Jurisdiction Map
 .info {
   position: absolute;
