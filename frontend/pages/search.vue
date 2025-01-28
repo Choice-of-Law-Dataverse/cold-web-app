@@ -95,10 +95,8 @@ watch(
 watch(
   () => route.query.q,
   (newQuery) => {
-    if (newQuery) {
-      searchQuery.value = newQuery || '' // Default to empty string
-      fetchSearchResults(newQuery, filter.value)
-    }
+    // Ensure search results are fetched when query changes, even if it's empty
+    fetchSearchResults(newQuery || '', filter.value)
   }
 )
 
