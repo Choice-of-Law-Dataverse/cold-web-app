@@ -66,28 +66,38 @@ const hasActiveFilters = computed(() => {
   )
 })
 
+const searchText = ref(route.query.q || '') // Initialize searchText from query
+
+// Keep searchText in sync with searchQuery
+watch(searchQuery, (newQuery) => {
+  searchText.value = newQuery || ''
+})
+
 // Watch for changes in filter and fetch results
 watch(
   filter,
   (newFilters, oldFilters) => {
-    // Avoid unnecessary calls by checking if filters have changed
-    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return
+    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return // Avoid redundant updates
 
-    // Update the URL without full navigation
+    const query = {
+      ...route.query, // Retain existing query parameters
+      jurisdiction:
+        newFilters.jurisdiction !== 'All Jurisdictions'
+          ? newFilters.jurisdiction
+          : undefined,
+      theme: newFilters.theme !== 'All Themes' ? newFilters.theme : undefined,
+      type: newFilters.type !== 'All Types' ? newFilters.type : undefined,
+    }
+
+    // Remove `q` if searchText is empty
+    if (!searchText.value.trim()) {
+      delete query.q
+    }
+
     router.replace({
-      query: {
-        q: searchQuery.value,
-        jurisdiction:
-          newFilters.jurisdiction !== 'All Jurisdictions'
-            ? newFilters.jurisdiction
-            : undefined,
-        theme: newFilters.theme !== 'All Themes' ? newFilters.theme : undefined,
-        type: newFilters.type !== 'All Types' ? newFilters.type : undefined,
-      },
+      name: 'search',
+      query,
     })
-
-    // Fetch search results
-    fetchSearchResults(searchQuery.value, newFilters)
   },
   { deep: true }
 )
@@ -95,8 +105,8 @@ watch(
 watch(
   () => route.query.q,
   (newQuery) => {
-    // Ensure search results are fetched when query changes, even if it's empty
-    fetchSearchResults(newQuery || '', filter.value)
+    searchQuery.value = newQuery || '' // Update searchQuery state
+    fetchSearchResults(searchQuery.value, filter.value) // Trigger search results update
   }
 )
 
@@ -141,6 +151,8 @@ async function fetchSearchResults(query, filters) {
     })
   }
 
+  console.log('Request Body:', JSON.stringify(requestBody)) // Log the request body
+
   try {
     // Retrieve hostname
     const userHost = window.location.hostname
@@ -173,6 +185,8 @@ async function fetchSearchResults(query, filters) {
     if (!response.ok) throw new Error('Failed to fetch results')
 
     const data = await response.json()
+    console.log('Response Data:', data) // Log the API response
+
     totalMatches.value = data.total_matches || 0
     searchResults.value = Object.values(data.results)
   } catch (error) {
@@ -183,6 +197,15 @@ async function fetchSearchResults(query, filters) {
 }
 
 onMounted(() => {
+  if (route.query.q) {
+    searchText.value = route.query.q // Initialize search text from query
+  } else {
+    searchText.value = '' // Reset if no query
+  }
+})
+
+onMounted(() => {
+  console.log('onMounted triggered') // Debugging log
   fetchSearchResults(searchQuery.value || '', filter.value) // Allow empty search query
 })
 
