@@ -103,11 +103,22 @@ watch(
 )
 
 watch(
-  () => route.query.q,
+  () => route.query, // Watch the entire query object
   (newQuery) => {
-    searchQuery.value = newQuery || '' // Update searchQuery state
-    fetchSearchResults(searchQuery.value, filter.value) // Trigger search results update
-  }
+    console.log('Query changed:', newQuery) // Debugging log
+
+    // Update searchQuery and filters based on the URL
+    searchQuery.value = newQuery.q || ''
+    filter.value = {
+      jurisdiction: newQuery.jurisdiction || 'All Jurisdictions',
+      theme: newQuery.theme || 'All Themes',
+      type: newQuery.type || 'All Types',
+    }
+
+    // Trigger a new search with the updated query and filters
+    fetchSearchResults(searchQuery.value, filter.value)
+  },
+  { deep: true } // Deep watch to catch changes within the query object
 )
 
 // Function to fetch search results from the API
