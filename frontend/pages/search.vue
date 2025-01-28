@@ -1,5 +1,5 @@
 <template>
-  <div v-if="searchQuery">
+  <div>
     <!-- Pass searchResults, totalMatches, and loading state -->
     <SearchResults
       :data="{ tables: searchResults }"
@@ -8,15 +8,10 @@
       v-model:filters="filter"
     />
   </div>
-  <div v-else>
-    <p align="center">
-      Please enter a search term in the navigation bar above.
-    </p>
-  </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchResults from '../components/SearchResults.vue' // Adjust path if needed
 
@@ -43,7 +38,7 @@ const onSearchInput = (newQuery) => {
   // Update the URL query string with the new search term
   router.push({
     query: {
-      q: newQuery,
+      q: newQuery || undefined, // Only include 'q' if it's not empty
       jurisdiction:
         filter.value.jurisdiction !== 'All Jurisdictions'
           ? filter.value.jurisdiction
@@ -55,43 +50,68 @@ const onSearchInput = (newQuery) => {
   })
 
   // Fetch new results with the updated search query and current filters
-  fetchSearchResults(newQuery, filter.value)
+  fetchSearchResults(newQuery || '', filter.value) // Allow empty search term
 }
+
+const hasActiveFilters = computed(() => {
+  return (
+    filter.value.jurisdiction !== 'All Jurisdictions' ||
+    filter.value.theme !== 'All Themes' ||
+    filter.value.type !== 'All Types'
+  )
+})
+
+const searchText = ref(route.query.q || '') // Initialize searchText from query
+
+// Keep searchText in sync with searchQuery
+watch(searchQuery, (newQuery) => {
+  searchText.value = newQuery || ''
+})
 
 // Watch for changes in filter and fetch results
 watch(
   filter,
   (newFilters, oldFilters) => {
-    // Avoid unnecessary calls by checking if filters have changed
-    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return
+    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return // Avoid redundant updates
 
-    // Update the URL without full navigation
+    const query = {
+      ...route.query, // Retain existing query parameters
+      jurisdiction:
+        newFilters.jurisdiction !== 'All Jurisdictions'
+          ? newFilters.jurisdiction
+          : undefined,
+      theme: newFilters.theme !== 'All Themes' ? newFilters.theme : undefined,
+      type: newFilters.type !== 'All Types' ? newFilters.type : undefined,
+    }
+
+    // Remove `q` if searchText is empty
+    if (!searchText.value.trim()) {
+      delete query.q
+    }
+
     router.replace({
-      query: {
-        q: searchQuery.value,
-        jurisdiction:
-          newFilters.jurisdiction !== 'All Jurisdictions'
-            ? newFilters.jurisdiction
-            : undefined,
-        theme: newFilters.theme !== 'All Themes' ? newFilters.theme : undefined,
-        type: newFilters.type !== 'All Types' ? newFilters.type : undefined,
-      },
+      name: 'search',
+      query,
     })
-
-    // Fetch search results
-    fetchSearchResults(searchQuery.value, newFilters)
   },
   { deep: true }
 )
 
 watch(
-  () => route.query.q,
+  () => route.query, // Watch the entire query object
   (newQuery) => {
-    if (newQuery) {
-      searchQuery.value = newQuery
-      fetchSearchResults(newQuery, filter.value)
+    // Update searchQuery and filters based on the URL
+    searchQuery.value = newQuery.q || ''
+    filter.value = {
+      jurisdiction: newQuery.jurisdiction || 'All Jurisdictions',
+      theme: newQuery.theme || 'All Themes',
+      type: newQuery.type || 'All Types',
     }
-  }
+
+    // Trigger a new search with the updated query and filters
+    fetchSearchResults(searchQuery.value, filter.value)
+  },
+  { deep: true } // Deep watch to catch changes within the query object
 )
 
 // Function to fetch search results from the API
@@ -167,6 +187,7 @@ async function fetchSearchResults(query, filters) {
     if (!response.ok) throw new Error('Failed to fetch results')
 
     const data = await response.json()
+
     totalMatches.value = data.total_matches || 0
     searchResults.value = Object.values(data.results)
   } catch (error) {
@@ -177,8 +198,11 @@ async function fetchSearchResults(query, filters) {
 }
 
 onMounted(() => {
-  if (route.query.q) searchQuery.value = route.query.q
-  fetchSearchResults(searchQuery.value, filter.value)
+  // Initialize search text from query
+  searchText.value = route.query.q || ''
+
+  // Fetch search results based on query and filters
+  fetchSearchResults(searchQuery.value || '', filter.value)
 })
 
 // Set up functions to retrieve user data (https://developer.mozilla.org/en-US/docs/Web/API/Navigator)

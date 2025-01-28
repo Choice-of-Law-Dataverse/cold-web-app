@@ -9,7 +9,55 @@
           :valueClassMap="valueClassMap"
           formattedSourceTable="Jurisdictions"
           :showHeader="false"
-        />
+        >
+          <template #search-links>
+            <NuxtLink
+              :to="{
+                name: 'search',
+                query: {
+                  type: 'Court Decisions',
+                  jurisdiction: jurisdictionData?.Name || '',
+                },
+              }"
+              class="no-underline"
+            >
+              <UButton
+                class="link-button"
+                variant="link"
+                icon="i-material-symbols:arrow-forward"
+                trailing
+              >
+                <span class="break-words text-left">
+                  All court decisions from {{ jurisdictionData?.Name || 'N/A' }}
+                </span>
+              </UButton>
+            </NuxtLink>
+
+            <NuxtLink
+              :to="{
+                name: 'search',
+                query: {
+                  type: 'Legal Instruments',
+                  jurisdiction: jurisdictionData?.Name || '',
+                },
+              }"
+              class="no-underline"
+            >
+              <UButton
+                class="link-button"
+                variant="link"
+                icon="i-material-symbols:arrow-forward"
+                trailing
+              >
+                <span class="break-words text-left">
+                  All legal instruments from
+                  {{ jurisdictionData?.Name || 'N/A' }}
+                </span>
+              </UButton>
+            </NuxtLink>
+          </template>
+        </DetailDisplay>
+
         <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
         <JurisdictionComparison
           v-if="!loading && jurisdictionData?.Name"

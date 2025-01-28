@@ -49,6 +49,7 @@
             </p>
           </template>
         </div>
+        <slot name="search-links"></slot>
       </div>
     </div>
   </UCard>
