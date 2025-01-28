@@ -9,7 +9,13 @@
           :valueClassMap="valueClassMap"
           formattedSourceTable="Jurisdictions"
           :showHeader="false"
-        />
+        >
+          <template #search-links>
+            <a href="#">All court cases from Switzerland</a>
+            <a href="#">All legal instruments from Switzerland</a>
+          </template>
+        </DetailDisplay>
+
         <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
         <JurisdictionComparison
           v-if="!loading && jurisdictionData?.Name"
