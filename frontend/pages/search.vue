@@ -1,5 +1,5 @@
 <template>
-  <div v-if="searchQuery || hasActiveFilters">
+  <div>
     <!-- Pass searchResults, totalMatches, and loading state -->
     <SearchResults
       :data="{ tables: searchResults }"
@@ -7,11 +7,6 @@
       :loading="loading"
       v-model:filters="filter"
     />
-  </div>
-  <div v-else>
-    <p align="center">
-      Please enter a search term in the navigation bar above.
-    </p>
   </div>
 </template>
 
