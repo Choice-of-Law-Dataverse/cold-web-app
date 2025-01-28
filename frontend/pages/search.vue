@@ -105,8 +105,6 @@ watch(
 watch(
   () => route.query, // Watch the entire query object
   (newQuery) => {
-    console.log('Query changed:', newQuery) // Debugging log
-
     // Update searchQuery and filters based on the URL
     searchQuery.value = newQuery.q || ''
     filter.value = {
@@ -162,8 +160,6 @@ async function fetchSearchResults(query, filters) {
     })
   }
 
-  console.log('Request Body:', JSON.stringify(requestBody)) // Log the request body
-
   try {
     // Retrieve hostname
     const userHost = window.location.hostname
@@ -196,7 +192,6 @@ async function fetchSearchResults(query, filters) {
     if (!response.ok) throw new Error('Failed to fetch results')
 
     const data = await response.json()
-    console.log('Response Data:', data) // Log the API response
 
     totalMatches.value = data.total_matches || 0
     searchResults.value = Object.values(data.results)
@@ -210,8 +205,6 @@ async function fetchSearchResults(query, filters) {
 onMounted(() => {
   // Initialize search text from query
   searchText.value = route.query.q || ''
-
-  console.log('onMounted triggered') // Debugging log
 
   // Fetch search results based on query and filters
   fetchSearchResults(searchQuery.value || '', filter.value)
