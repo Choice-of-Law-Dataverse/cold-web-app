@@ -11,8 +11,27 @@
           :showHeader="false"
         >
           <template #search-links>
-            <a href="#">All court cases from Switzerland</a>
-            <a href="#">All legal instruments from Switzerland</a>
+            <UButton
+              class="link-button"
+              variant="link"
+              icon="i-material-symbols:arrow-forward"
+              trailing
+            >
+              <span class="break-words text-left"
+                >All court cases from Switzerland</span
+              >
+            </UButton>
+
+            <UButton
+              class="link-button"
+              variant="link"
+              icon="i-material-symbols:arrow-forward"
+              trailing
+            >
+              <span class="break-words text-left"
+                >All legal instruments from Switzerland</span
+              >
+            </UButton>
           </template>
         </DetailDisplay>
 
