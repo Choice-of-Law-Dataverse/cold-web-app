@@ -197,16 +197,13 @@ async function fetchSearchResults(query, filters) {
 }
 
 onMounted(() => {
-  if (route.query.q) {
-    searchText.value = route.query.q // Initialize search text from query
-  } else {
-    searchText.value = '' // Reset if no query
-  }
-})
+  // Initialize search text from query
+  searchText.value = route.query.q || ''
 
-onMounted(() => {
   console.log('onMounted triggered') // Debugging log
-  fetchSearchResults(searchQuery.value || '', filter.value) // Allow empty search query
+
+  // Fetch search results based on query and filters
+  fetchSearchResults(searchQuery.value || '', filter.value)
 })
 
 // Set up functions to retrieve user data (https://developer.mozilla.org/en-US/docs/Web/API/Navigator)
