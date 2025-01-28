@@ -11,28 +11,50 @@
           :showHeader="false"
         >
           <template #search-links>
-            <UButton
-              class="link-button"
-              variant="link"
-              icon="i-material-symbols:arrow-forward"
-              trailing
+            <NuxtLink
+              :to="{
+                name: 'search',
+                query: {
+                  type: 'Court Decisions',
+                  jurisdiction: jurisdictionData?.Name || '',
+                },
+              }"
+              class="no-underline"
             >
-              <span class="break-words text-left">
-                All court cases from {{ jurisdictionData?.Name || 'N/A' }}
-              </span>
-            </UButton>
-
-            <UButton
-              class="link-button"
-              variant="link"
-              icon="i-material-symbols:arrow-forward"
-              trailing
-            >
-              <span class="break-words text-left"
-                >All legal instruments from
-                {{ jurisdictionData?.Name || 'N/A' }}</span
+              <UButton
+                class="link-button"
+                variant="link"
+                icon="i-material-symbols:arrow-forward"
+                trailing
               >
-            </UButton>
+                <span class="break-words text-left">
+                  All court decisions from {{ jurisdictionData?.Name || 'N/A' }}
+                </span>
+              </UButton>
+            </NuxtLink>
+
+            <NuxtLink
+              :to="{
+                name: 'search',
+                query: {
+                  type: 'Legal Instruments',
+                  jurisdiction: jurisdictionData?.Name || '',
+                },
+              }"
+              class="no-underline"
+            >
+              <UButton
+                class="link-button"
+                variant="link"
+                icon="i-material-symbols:arrow-forward"
+                trailing
+              >
+                <span class="break-words text-left">
+                  All legal instruments from
+                  {{ jurisdictionData?.Name || 'N/A' }}
+                </span>
+              </UButton>
+            </NuxtLink>
           </template>
         </DetailDisplay>
 
