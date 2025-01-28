@@ -17,9 +17,9 @@
               icon="i-material-symbols:arrow-forward"
               trailing
             >
-              <span class="break-words text-left"
-                >All court cases from Switzerland</span
-              >
+              <span class="break-words text-left">
+                All court cases from {{ jurisdictionData?.Name || 'N/A' }}
+              </span>
             </UButton>
 
             <UButton
@@ -29,7 +29,8 @@
               trailing
             >
               <span class="break-words text-left"
-                >All legal instruments from Switzerland</span
+                >All legal instruments from
+                {{ jurisdictionData?.Name || 'N/A' }}</span
               >
             </UButton>
           </template>
