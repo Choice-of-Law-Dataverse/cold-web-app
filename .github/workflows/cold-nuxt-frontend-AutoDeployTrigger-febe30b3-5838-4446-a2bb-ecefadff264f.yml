@@ -36,7 +36,7 @@ jobs:
         with:
           appSourcePath: ${{ github.workspace }}/frontend
           _dockerfilePathKey_: ${{ github.workspace }}/frontend/Dockerfile
-          registryUrl: registry.hub.docker.com
+          registryUrl: docker.io
           registryUsername: ${{ secrets.COLDNUXTFRONTEND_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.COLDNUXTFRONTEND_REGISTRY_PASSWORD }}
           containerAppName: cold-nuxt-frontend

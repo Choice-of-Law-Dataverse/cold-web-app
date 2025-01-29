@@ -36,7 +36,7 @@ jobs:
         with:
           appSourcePath: ${{ github.workspace }}/backend
           _dockerfilePathKey_: ${{ github.workspace }}/backend/Dockerfile
-          registryUrl: registry.hub.docker.com
+          registryUrl: docker.io
           registryUsername: ${{ secrets.COLDWEBAPP_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.COLDWEBAPP_REGISTRY_PASSWORD }}
           containerAppName: cold-web-app
