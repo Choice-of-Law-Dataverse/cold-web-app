@@ -39,7 +39,10 @@
 
     <!-- Right side of the header: "Open" link -->
     <div v-if="showSuggestEdit" class="open-link ml-4">
-      <NuxtLink to="#"> Suggest Edit </NuxtLink>
+      <NuxtLink to="#" class="flex items-center space-x-1">
+        <span>Suggest Edit</span>
+        <UIcon name="i-material-symbols:edit-outline" />
+      </NuxtLink>
     </div>
     <div v-if="showOpenLink" class="open-link ml-4">
       <NuxtLink :to="getLink()"> Open </NuxtLink>
