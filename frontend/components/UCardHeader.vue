@@ -33,7 +33,9 @@
       class="fade-out"
       :class="{
         'open-link-true': showOpenLink,
+        'suggest-edit-true': showSuggestEdit,
         'open-link-false': !showOpenLink,
+        'suggest-edit-false': !showSuggestEdit,
       }"
     ></div>
 
@@ -185,19 +187,25 @@ function getLink() {
 .fade-out {
   position: absolute;
   top: 0;
-  /*right: 50px; /* Place the fade-out just before the "Open" link */
-  width: 60px; /* Width of the gradient */
+  right: 50px; /* Default: Positioned just before the right-aligned link */
+  width: 60px;
   height: 100%;
-  background: linear-gradient(to left, white, transparent); /* White fade */
-  pointer-events: none; /* Ensure it doesn’t block interactions */
+  background: linear-gradient(to left, white, transparent);
+  pointer-events: none;
+  z-index: 10; /* Ensure it’s above the scrolling tags */
 }
 
-/* Adjust the fade-out position based on whether the "Open" link is shown */
+/* Adjust position when only one of the links is shown */
 .fade-out.open-link-true {
-  right: 50px; /* Positioned just before the "Open" link */
+  right: 50px; /* Positioned before "Open" */
 }
 
-.fade-out.open-link-false {
+.fade-out.suggest-edit-true {
+  right: 130px; /* Positioned before "Suggest Edit" */
+}
+
+/* Ensures the fade-out is always correctly positioned */
+.fade-out.open-link-false.suggest-edit-false {
   right: 0; /* Positioned at the edge of the container */
 }
 
