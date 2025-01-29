@@ -63,10 +63,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 
+import ResultCard from '@/components/ResultCard.vue'
 import LegislationCard from '@/components/LegislationCard.vue'
+import LiteratureCard from '@/components/LiteratureCard.vue'
 import CourtDecisionCard from '@/components/CourtDecisionCard.vue'
 import AnswerCard from '@/components/AnswerCard.vue'
-import ResultCard from '@/components/ResultCard.vue'
 import SearchFilters from './SearchFilters.vue'
 
 const getResultComponent = (source_table) => {
@@ -77,6 +78,8 @@ const getResultComponent = (source_table) => {
       return CourtDecisionCard
     case 'Answers':
       return AnswerCard
+    case 'Literature':
+      return LiteratureCard
     default:
       return ResultCard
   }
@@ -163,6 +166,7 @@ const typeOptions = [
   'All Types',
   'Court Decisions',
   'Legal Instruments',
+  'Literature',
   'Questions',
 ]
 
