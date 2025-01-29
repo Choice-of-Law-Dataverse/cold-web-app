@@ -61,11 +61,11 @@ import { computed } from 'vue'
 
 const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
 
-// Computed property to generate the prefilled form URL
+// Computed property to generate the prefilled form URL with hidden field
 const suggestEditLink = computed(() => {
-  if (process.server) return '#' // Prevent issues on SSR
+  if (import.meta.server) return '#' // Prevent issues on SSR
   const currentPageURL = encodeURIComponent(window.location.href)
-  return `https://airtable.com/${airtableFormID}?prefill_URL=${currentPageURL}`
+  return `https://airtable.com/${airtableFormID}?prefill_URL=${currentPageURL}&hide_URL=true`
 })
 
 // Props
