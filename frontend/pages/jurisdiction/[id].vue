@@ -7,8 +7,6 @@
           :resultData="jurisdictionData"
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
-          formattedSourceTable="Jurisdictions"
-          :showHeader="false"
         >
           <template #search-links>
             <NuxtLink

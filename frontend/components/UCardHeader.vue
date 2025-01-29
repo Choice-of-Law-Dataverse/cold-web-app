@@ -38,6 +38,9 @@
     ></div>
 
     <!-- Right side of the header: "Open" link -->
+    <div v-if="showSuggestEdit" class="open-link ml-4">
+      <NuxtLink to="#"> Suggest Edit </NuxtLink>
+    </div>
     <div v-if="showOpenLink" class="open-link ml-4">
       <NuxtLink :to="getLink()"> Open </NuxtLink>
     </div>
@@ -56,6 +59,10 @@ const props = defineProps({
   cardType: {
     type: String,
     required: true,
+  },
+  showSuggestEdit: {
+    type: Boolean,
+    default: true,
   },
   showOpenLink: {
     type: Boolean,
