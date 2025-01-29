@@ -33,19 +33,40 @@
       class="fade-out"
       :class="{
         'open-link-true': showOpenLink,
+        'suggest-edit-true': showSuggestEdit,
         'open-link-false': !showOpenLink,
+        'suggest-edit-false': !showSuggestEdit,
       }"
     ></div>
 
-    <!-- Right side of the header: "Open" link -->
-    <div v-if="showOpenLink" class="open-link ml-4">
-      <NuxtLink :to="getLink()"> Open </NuxtLink>
+    <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
+    <div class="open-link ml-4">
+      <NuxtLink
+        v-if="showSuggestEdit"
+        :to="suggestEditLink"
+        class="flex items-center space-x-2"
+        target="_blank"
+      >
+        <span>Suggest Edit</span>
+        <UIcon name="i-material-symbols:edit-outline" />
+      </NuxtLink>
+
+      <NuxtLink v-else :to="getLink()"> Open </NuxtLink>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+
+const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
+
+// Computed property to generate the prefilled form URL with hidden field
+const suggestEditLink = computed(() => {
+  if (import.meta.server) return '#' // Prevent issues on SSR
+  const currentPageURL = encodeURIComponent(window.location.href)
+  return `https://airtable.com/${airtableFormID}?prefill_URL=${currentPageURL}&hide_URL=true`
+})
 
 // Props
 const props = defineProps({
@@ -56,6 +77,10 @@ const props = defineProps({
   cardType: {
     type: String,
     required: true,
+  },
+  showSuggestEdit: {
+    type: Boolean,
+    default: true,
   },
   showOpenLink: {
     type: Boolean,
@@ -173,19 +198,25 @@ function getLink() {
 .fade-out {
   position: absolute;
   top: 0;
-  /*right: 50px; /* Place the fade-out just before the "Open" link */
-  width: 60px; /* Width of the gradient */
+  right: 50px; /* Default: Positioned just before the right-aligned link */
+  width: 60px;
   height: 100%;
-  background: linear-gradient(to left, white, transparent); /* White fade */
-  pointer-events: none; /* Ensure it doesn’t block interactions */
+  background: linear-gradient(to left, white, transparent);
+  pointer-events: none;
+  z-index: 10; /* Ensure it’s above the scrolling tags */
 }
 
-/* Adjust the fade-out position based on whether the "Open" link is shown */
+/* Adjust position when only one of the links is shown */
 .fade-out.open-link-true {
-  right: 50px; /* Positioned just before the "Open" link */
+  right: 50px; /* Positioned before "Open" */
 }
 
-.fade-out.open-link-false {
+.fade-out.suggest-edit-true {
+  right: 130px; /* Positioned before "Suggest Edit" */
+}
+
+/* Ensures the fade-out is always correctly positioned */
+.fade-out.open-link-false.suggest-edit-false {
   right: 0; /* Positioned at the edge of the container */
 }
 
