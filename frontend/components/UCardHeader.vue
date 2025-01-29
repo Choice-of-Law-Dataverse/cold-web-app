@@ -43,12 +43,14 @@
     <div class="open-link ml-4">
       <NuxtLink
         v-if="showSuggestEdit"
-        to="#"
+        :to="suggestEditLink"
         class="flex items-center space-x-2"
+        target="_blank"
       >
         <span>Suggest Edit</span>
         <UIcon name="i-material-symbols:edit-outline" />
       </NuxtLink>
+
       <NuxtLink v-else :to="getLink()"> Open </NuxtLink>
     </div>
   </div>
@@ -56,6 +58,15 @@
 
 <script setup>
 import { computed } from 'vue'
+
+const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
+
+// Computed property to generate the prefilled form URL
+const suggestEditLink = computed(() => {
+  if (process.server) return '#' // Prevent issues on SSR
+  const currentPageURL = encodeURIComponent(window.location.href)
+  return `https://airtable.com/${airtableFormID}?prefill_URL=${currentPageURL}`
+})
 
 // Props
 const props = defineProps({
