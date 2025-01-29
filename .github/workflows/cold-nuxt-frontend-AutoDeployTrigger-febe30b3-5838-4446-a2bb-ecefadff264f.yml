@@ -35,8 +35,8 @@ jobs:
         uses: azure/container-apps-deploy-action@v2
         with:
           appSourcePath: ${{ github.workspace }}/frontend
-          _dockerfilePathKey_: _dockerfilePath_
-          registryUrl: docker.io
+          _dockerfilePathKey_: ${{ github.workspace }}/frontend/Dockerfile
+          registryUrl: registry.hub.docker.com
           registryUsername: ${{ secrets.COLDNUXTFRONTEND_REGISTRY_USERNAME }}
           registryPassword: ${{ secrets.COLDNUXTFRONTEND_REGISTRY_PASSWORD }}
           containerAppName: cold-nuxt-frontend
