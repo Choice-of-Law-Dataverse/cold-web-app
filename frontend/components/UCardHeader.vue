@@ -37,15 +37,17 @@
       }"
     ></div>
 
-    <!-- Right side of the header: "Open" link -->
-    <div v-if="showSuggestEdit" class="open-link ml-4">
-      <NuxtLink to="#" class="flex items-center space-x-1">
+    <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
+    <div class="open-link ml-4">
+      <NuxtLink
+        v-if="showSuggestEdit"
+        to="#"
+        class="flex items-center space-x-2"
+      >
         <span>Suggest Edit</span>
         <UIcon name="i-material-symbols:edit-outline" />
       </NuxtLink>
-    </div>
-    <div v-if="showOpenLink" class="open-link ml-4">
-      <NuxtLink :to="getLink()"> Open </NuxtLink>
+      <NuxtLink v-else :to="getLink()"> Open </NuxtLink>
     </div>
   </div>
 </template>
