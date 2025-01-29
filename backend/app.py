@@ -22,6 +22,9 @@ swagger = Swagger(app)
 search_service = SearchService()
 gpt = GPT()
 
+@app.route("/")
+def hello_alpha():
+    return {"message": "Hello from Alpha!"}, 200
 
 @app.route("/full_text_search", methods=["POST"])
 def handle_full_text_search():
