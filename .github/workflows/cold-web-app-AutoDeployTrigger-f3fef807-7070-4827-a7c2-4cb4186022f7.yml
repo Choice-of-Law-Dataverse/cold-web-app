@@ -41,7 +41,7 @@ jobs:
           registryPassword: ${{ secrets.COLDWEBAPP_REGISTRY_PASSWORD }}
           containerAppName: cold-web-app
           resourceGroup: cold
-          imageToBuild: simonweigold/cold-web-app:${{ github.sha }}
+          imageToBuild: simonweigold/cold-flask-backend:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
 
