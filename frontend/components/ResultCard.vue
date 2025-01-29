@@ -2,7 +2,11 @@
   <div class="col-span-12">
     <UCard class="cold-ucard">
       <template #header>
-        <UCardHeader :resultData="resultData" :cardType="cardType" />
+        <UCardHeader
+          :resultData="resultData"
+          :cardType="cardType"
+          :showSuggestEdit="false"
+        />
       </template>
 
       <!-- Card content -->
