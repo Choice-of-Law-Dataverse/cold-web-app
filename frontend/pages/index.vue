@@ -10,6 +10,9 @@
           <h2 class="text-xl font-medium mb-6 md:text-left">
             Find relevant case law and choice of law answers for your case.
           </h2>
+          <h3 class="text-lg font-normal mb-6 md:text-left" v-if="testVar">
+            Runtime TEST variable: {{ testVar }}
+          </h3>
         </div>
 
         <!-- Popular Searches -->
@@ -60,6 +63,7 @@
 </template>
 
 <script setup>
+import { useRuntimeConfig } from '#app'
 import PopularSearches from '~/components/PopularSearches.vue'
 import JurisdictionMap from '~/components/JurisdictionMap.vue'
 import CountrySelectMenu from '~/components/TempJurisdictionPicker.vue'
@@ -68,6 +72,9 @@ import ConnectCard from '~/components/LandingPage/ConnectCard.vue'
 
 import { externalLinks } from '~/utils/externalLinks'
 const links = externalLinks
+
+const config = useRuntimeConfig()
+const testVar = config.public.test
 </script>
 
 <style scoped>
