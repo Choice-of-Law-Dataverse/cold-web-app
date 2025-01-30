@@ -199,6 +199,7 @@ async function fetchSearchResults(query, filters) {
 }
 
 onMounted(() => {
+  console-log('API base URL (runtimeConfig):', config.public.apiBaseUrl)
   // Initialize search text from query
   searchText.value = route.query.q || ''
 
