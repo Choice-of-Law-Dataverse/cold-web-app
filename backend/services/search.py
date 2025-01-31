@@ -199,6 +199,14 @@ class SearchService:
             FROM "Literature", params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Literature' = ANY(params.tables))
+                AND (
+                    array_length(params.themes, 1) is null -- Skip theme filter if empty
+                    or exists (
+                        select 1
+                        from unnest(params.themes) as theme_filter
+                        where "Themes" ILIKE '%' || theme_filter || '%'
+                    ) -- Case-insensitive partial match for themes
+                )
 
             ORDER BY rank DESC
             LIMIT 150;
@@ -317,6 +325,14 @@ class SearchService:
                 AND (
                     search @@ websearch_to_tsquery('english', '{search_string}')
                     OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
+                AND (
+                    array_length(params.themes, 1) is null -- Skip theme filter if empty
+                    or exists (
+                        select 1
+                        from unnest(params.themes) as theme_filter
+                        where "Themes" ILIKE '%' || theme_filter || '%'
+                    ) -- Case-insensitive partial match for themes
                 )
 
             -- Combine results and order by rank
