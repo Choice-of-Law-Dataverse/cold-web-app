@@ -60,7 +60,7 @@ A “neutral law” or the “law of a third country” describes a choice of la
 When courts or arbitral tribunals “respect a choice of law clause,” it means they acknowledge and apply the specific legal system (the law of a particular country or set of rules) that the parties to a contract have agreed upon to govern their contract. This is a fundamental aspect of upholding party autonomy in contract law, especially in international contexts. Courts or arbitral tribunals will normally respect the parties' contractual choice of law clause, provided that the choice of law is made within the limits set out by the applicable law, usually the lex fori or the lex arbitri. 
 
 ## Partial choice
-N/A
+Partial choice is the prerogative of the parties to indicate that the chosen law does not apply to the entirety of the contract.
 
 ## Party autonomy
 Party autonomy refers to the power of the parties to a contract to choose a neutral law or the law they consider most appropriate for their specific contract. It enhances certainty and predictability within the parties’ primary contractual arrangement and recognizes that parties to a contract may be in the best position to determine which set of legal principles is most suitable for their transaction. Many States have reached this conclusion and, as a result, giving effect to party autonomy is the predominant view today. However, there are considerable differences regarding the scope of this concept (e.g. with respect to consumer or employment contracts).
