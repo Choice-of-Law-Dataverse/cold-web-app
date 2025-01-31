@@ -109,6 +109,14 @@ where
         search @@ websearch_to_tsquery('english', 'party autonomy')
         or search @@ websearch_to_tsquery('simple', 'party autonomy')
     )
+    and (
+        array_length(params.themes, 1) is null -- Skip theme filter if empty
+        or exists (
+            select 1
+            from unnest(params.themes) as theme_filter
+            where "Themes" ILIKE '%' || theme_filter || '%'
+        ) -- Case-insensitive partial match for themes
+    )
 
 -- Combine results and order by rank
 order by rank desc
