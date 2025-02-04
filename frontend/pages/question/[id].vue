@@ -41,15 +41,18 @@
             <div>
               <ul v-if="Array.isArray(value) && value.length">
                 <li
-                  v-for="(title, index) in value"
+                  v-for="(item, index) in value"
                   :key="index"
                   :class="
                     valueClassMap['Related Literature'] || 'result-value-small'
                   "
                 >
-                  {{ title }}
+                  <NuxtLink :to="`/literature/${item.id}`">
+                    {{ item.title }}
+                  </NuxtLink>
                 </li>
               </ul>
+
               <div v-else>
                 <span
                   :class="
@@ -129,9 +132,11 @@ async function fetchRelatedLiterature(themes: string) {
     if (!response.ok) throw new Error('Failed to fetch related literature')
 
     const data = await response.json()
-    relatedLiterature.value = Object.values(data.results).map(
-      (item: any) => item.Title
-    )
+
+    relatedLiterature.value = Object.values(data.results).map((item: any) => ({
+      title: item.Title,
+      id: item.id,
+    }))
   } catch (error) {
     console.error('Error fetching related literature:', error)
   }
@@ -167,7 +172,10 @@ const processedAnswerData = computed(() => {
       answerData.value['Legal provision articles'] || '',
     'Case ID': answerData.value['Case ID'] || '',
     'Related Literature': relatedLiterature.value.length
-      ? relatedLiterature.value
+      ? relatedLiterature.value.map((item) => ({
+          title: item.title,
+          id: item.id,
+        }))
       : [],
   }
 })
