@@ -68,6 +68,7 @@ import CourtCaseLink from '~/components/CourtCaseLink.vue'
 const route = useRoute() // Access the route to get the ID param
 const answerData = ref(null) // Store fetched court decision data
 const loading = ref(true) // Track loading state
+const relatedLiterature = ref([]) // Store related literature titles
 
 const config = useRuntimeConfig()
 
@@ -94,6 +95,37 @@ async function fetchAnswer(id: string) {
     console.error('Error fetching answer:', error)
   } finally {
     loading.value = false
+  }
+}
+
+async function fetchRelatedLiterature(themes: string) {
+  if (!themes) return
+
+  const jsonPayload = {
+    filters: [
+      { column: 'tables', values: ['Literature'] },
+      { column: 'themes', values: themes.split(', ').map((t) => t.trim()) },
+    ],
+  }
+
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/full_text_search`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to fetch related literature')
+
+    const data = await response.json()
+    relatedLiterature.value = Object.values(data.results).map(
+      (item: any) => item.Title
+    )
+  } catch (error) {
+    console.error('Error fetching related literature:', error)
   }
 }
 
@@ -126,12 +158,18 @@ const processedAnswerData = computed(() => {
     'Legal provision articles':
       answerData.value['Legal provision articles'] || '',
     'Case ID': answerData.value['Case ID'] || '',
-    'Related Literature': answerData.value['Related Literature'] || '', // Ensure field exists
+    'Related Literature': relatedLiterature.value.length
+      ? relatedLiterature.value.join(', ')
+      : 'No related literature available',
   }
 })
 
 onMounted(() => {
-  const id = route.params.id as string // Get ID from the route
-  fetchAnswer(id)
+  const id = route.params.id as string
+  fetchAnswer(id).then(() => {
+    if (answerData.value?.Themes) {
+      fetchRelatedLiterature(answerData.value.Themes)
+    }
+  })
 })
 </script>
