@@ -21,7 +21,7 @@ async def log_query(request: Request, call_next: Callable) -> Response:
     import json
     try:
         request_json = json.loads(body_bytes)
-    except (json.JSONDecodeError, UnivodeDecodeError):
+    except (json.JSONDecodeError, UnicodeDecodeError):
         request_json = None
 
     async def custom_receive():
