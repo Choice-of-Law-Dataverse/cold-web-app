@@ -148,7 +148,7 @@ const themeOptions = [
   'Partial choice',
   'Dépeçage',
   'Rules of law',
-  'Express and tacit choice',
+  'Tacit choice',
   'Mandatory rules',
   'Public policy',
   'Arbitration',
