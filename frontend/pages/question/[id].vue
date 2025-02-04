@@ -39,9 +39,17 @@
           <!-- Placeholder for Related Literature -->
           <template #related-literature="{ value }">
             <div>
-              <div v-if="value && value.trim()">
-                {{ value }}
-              </div>
+              <ul v-if="Array.isArray(value) && value.length">
+                <li
+                  v-for="(title, index) in value"
+                  :key="index"
+                  :class="
+                    valueClassMap['Related Literature'] || 'result-value-small'
+                  "
+                >
+                  {{ title }}
+                </li>
+              </ul>
               <div v-else>
                 <span
                   :class="
@@ -159,8 +167,8 @@ const processedAnswerData = computed(() => {
       answerData.value['Legal provision articles'] || '',
     'Case ID': answerData.value['Case ID'] || '',
     'Related Literature': relatedLiterature.value.length
-      ? relatedLiterature.value.join(', ')
-      : 'No related literature available',
+      ? relatedLiterature.value
+      : [],
   }
 })
 
