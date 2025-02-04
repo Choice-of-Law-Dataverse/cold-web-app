@@ -43,7 +43,13 @@
                 {{ value }}
               </div>
               <div v-else>
-                <span class="text-gray-500">N/A</span>
+                <span
+                  :class="
+                    valueClassMap['Related Literature'] || 'result-value-small'
+                  "
+                >
+                  N/A
+                </span>
               </div>
             </div>
           </template>
