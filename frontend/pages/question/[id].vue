@@ -36,6 +36,17 @@
               </div>
             </div>
           </template>
+          <!-- Placeholder for Related Literature -->
+          <template #related-literature="{ value }">
+            <div>
+              <div v-if="value && value.trim()">
+                {{ value }}
+              </div>
+              <div v-else>
+                <span class="text-gray-500">N/A</span>
+              </div>
+            </div>
+          </template>
         </DetailDisplay>
       </div>
     </div>
@@ -89,6 +100,7 @@ const keyLabelPairs = [
     label: 'Source',
   },
   { key: 'Case ID', label: 'related cases' },
+  { key: 'Related Literature', label: 'Related Literature' },
 ]
 
 const valueClassMap = {
@@ -96,6 +108,7 @@ const valueClassMap = {
   Answer: 'result-value-large',
   'Legal provision articles': 'result-value-medium',
   'Case ID': 'result-value-small',
+  'Related Literature': 'result-value-small',
 }
 
 // Preprocess data to handle custom rendering cases
@@ -107,6 +120,7 @@ const processedAnswerData = computed(() => {
     'Legal provision articles':
       answerData.value['Legal provision articles'] || '',
     'Case ID': answerData.value['Case ID'] || '',
+    'Related Literature': answerData.value['Related Literature'] || '', // Ensure field exists
   }
 })
 
