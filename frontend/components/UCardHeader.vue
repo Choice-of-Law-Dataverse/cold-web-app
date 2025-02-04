@@ -94,6 +94,7 @@ const formattedJurisdiction = computed(() => {
     props.resultData['Jurisdiction name'] ||
     props.resultData['Jurisdiction Names'] ||
     props.resultData['Name (from Jurisdiction)'] ||
+    props.resultData['Jurisdiction'] ||
     ''
 
   if (!jurisdictionString) {
