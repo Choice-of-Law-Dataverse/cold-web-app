@@ -1,8 +1,13 @@
+from datetime import datetime
+
+from fastapi import Request
 from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
-from datetime import datetime
-import requests
+
 from app.config import config
+from app.services.utils import get_location
+from app.schemas.logging import QueryLog
+
 
 # Create a new client and connect to the server
 client = MongoClient(config.MONGODB_CONN_STRING, server_api=ServerApi("1"))
@@ -10,51 +15,27 @@ db = client["query_logs"]
 collection = db["queries"]
 
 
-# Function to get location from IP address
-def get_location(ip_address):
-    access_token = config.IPINFO_ACCESS_TOKEN
-    try:
-        response = requests.get(
-            f"http://ipinfo.io/{ip_address}/json?token={access_token}"
-        )
-        return response.json()
-    except requests.RequestException as e:
-        print(f"Error getting location: {e}")
-        return None
+async def log_query(request: Request, call_next):
+    ip_address = request.client.host if request.client else "unknown"
+    user_agent = request.headers.get("User-Agent", "unknown")
+    client_hints = {k: v for k, v in request.headers.items() if k.lower().startswith("sec-ch")}
+    hostname = request.url.hostname
+    route = request.url.path
 
-
-# Function to extract Client Hints
-def get_client_hints(request):
-    return {
-        "brand": request.headers.get("Sec-CH-UA", "Unknown"),
-        "mobile": request.headers.get("Sec-CH-UA-Mobile", "Unknown"),
-        "platform": request.headers.get("Sec-CH-UA-Platform", "Unknown Platform"),
-        "platform_version": request.headers.get(
-            "Sec-CH-UA-Platform-Version", "Unknown Version"
-        ),
-        "model": request.headers.get("Sec-CH-UA-Model", "Unknown Model"),
-    }
-
-
-# Function to log the query and user information
-def log_query(request, search_string, filters, results_count, route):
-    timestamp = datetime.utcnow()
-    ip_address = request.client.host
     location = get_location(ip_address)
-    user_agent = request.headers.get("User-Agent")
-    client_hints = get_client_hints(request)
 
     log_data = {
-        "timestamp": timestamp,
+        "timestamp": datetime.utcnow(),
         "ip_address": ip_address,
         "location": location,
         "user_agent": user_agent,
         "client_hints": client_hints,
-        "search_string": search_string,
-        "filters": filters,
-        "results_count": results_count,
+        "hostname": hostname,
         "route": route,
     }
 
     collection.insert_one(log_data)
     print("Logged query:", log_data)
+
+    response = await call_next(request)
+    return response
