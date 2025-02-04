@@ -21,21 +21,24 @@
           <!-- Custom rendering for Case ID -->
           <template #case-id="{ value }">
             <div>
-              <div v-if="value && value.trim()">
-                <!-- Render links if value exists -->
-                <CourtCaseLink
-                  v-for="(caseId, index) in value.split(',')"
+              <ul v-if="Array.isArray(value) && value.length">
+                <li
+                  v-for="(caseId, index) in value"
                   :key="index"
-                  :caseId="caseId.trim()"
-                  :class="valueClassMap['Case ID'] || 'result-value'"
-                />
-              </div>
+                  :class="valueClassMap['Case ID'] || 'result-value-small'"
+                >
+                  <CourtCaseLink :caseId="caseId" />
+                </li>
+              </ul>
+
               <div v-else>
-                <!-- Render N/A if no case IDs are available -->
-                <span>N/A</span>
+                <span :class="valueClassMap['Case ID'] || 'result-value-small'">
+                  N/A
+                </span>
               </div>
             </div>
           </template>
+
           <!-- Placeholder for Related Literature -->
           <template #related-literature="{ value }">
             <div>
@@ -170,7 +173,10 @@ const processedAnswerData = computed(() => {
     ...answerData.value,
     'Legal provision articles':
       answerData.value['Legal provision articles'] || '',
-    'Case ID': answerData.value['Case ID'] || '',
+    'Case ID': answerData.value['Case ID']
+      ? answerData.value['Case ID'].split(',').map((caseId) => caseId.trim())
+      : [],
+
     'Related Literature': relatedLiterature.value.length
       ? relatedLiterature.value.map((item) => ({
           title: item.title,
