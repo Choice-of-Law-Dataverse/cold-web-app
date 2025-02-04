@@ -46,8 +46,8 @@ class SearchService:
         if filters:
             conditions = []
             for idx, filter_item in enumerate(filters):
-                column = filter_item.get("column")
-                value = filter_item.get("value")
+                column = filter_item.column
+                value = filter_item.value
 
                 if not column or value is None:
                     raise ValueError(f"Invalid filter: {filter_item}")
