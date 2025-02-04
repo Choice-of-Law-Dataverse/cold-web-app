@@ -19,6 +19,7 @@ class SearchService:
             "Legal provisions",
             "Court decisions",
             "Jurisdictions",
+            "Literature",
         ]:
             final_results = self.db.get_entry_by_id(table, id)
             return filter_na(parse_results(final_results))
@@ -80,8 +81,10 @@ class SearchService:
         themes = []
 
         for filter_item in filters:
-            column = filter_item.get("column")
-            values = filter_item.get("values", [])
+            column = filter_item.column
+            raw_values = filter_item.values
+            values = raw_values if isinstance(raw_values, list) else [raw_values] if raw_values is not None else []
+
             if column and values:
                 col_lower = column.lower()
                 if col_lower in [
