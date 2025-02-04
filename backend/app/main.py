@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth import verify_jwt_token
 from app.routes import ai, search, user
-from app.config import config
+from app.services.query_logging import log_query
 
 app = FastAPI()
 
@@ -16,6 +16,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.middleware("http")(log_query)
 
 app.include_router(search.router)
 app.include_router(user.router)
