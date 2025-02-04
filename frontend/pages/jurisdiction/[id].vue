@@ -8,7 +8,12 @@
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
         >
+          <template #literature-links>
+            <span class="label">related literature</span>
+          </template>
+
           <template #search-links>
+            <span class="label">related data</span>
             <NuxtLink
               :to="{
                 name: 'search',
