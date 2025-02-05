@@ -39,33 +39,12 @@
             </div>
           </template>
 
-          <!-- Placeholder for Related Literature -->
-          <template #related-literature="{ value }">
-            <div>
-              <ul v-if="Array.isArray(value) && value.length">
-                <li
-                  v-for="(item, index) in value"
-                  :key="index"
-                  :class="
-                    valueClassMap['Related Literature'] || 'result-value-small'
-                  "
-                >
-                  <NuxtLink :to="`/literature/${item.id}`">
-                    {{ item.title }}
-                  </NuxtLink>
-                </li>
-              </ul>
-
-              <div v-else>
-                <span
-                  :class="
-                    valueClassMap['Related Literature'] || 'result-value-small'
-                  "
-                >
-                  N/A
-                </span>
-              </div>
-            </div>
+          <!-- Related Literature -->
+          <template #related-literature>
+            <RelatedLiterature
+              :themes="processedAnswerData?.Themes || ''"
+              :valueClassMap="valueClassMap['Related Literature']"
+            />
           </template>
         </DetailDisplay>
       </div>
@@ -82,7 +61,6 @@ import CourtCaseLink from '~/components/CourtCaseLink.vue'
 const route = useRoute() // Access the route to get the ID param
 const answerData = ref(null) // Store fetched court decision data
 const loading = ref(true) // Track loading state
-const relatedLiterature = ref([]) // Store related literature titles
 
 const config = useRuntimeConfig()
 
@@ -112,39 +90,6 @@ async function fetchAnswer(id: string) {
   }
 }
 
-async function fetchRelatedLiterature(themes: string) {
-  if (!themes) return
-
-  const jsonPayload = {
-    filters: [
-      { column: 'tables', values: ['Literature'] },
-      { column: 'themes', values: themes.split(', ').map((t) => t.trim()) },
-    ],
-  }
-
-  try {
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/full_text_search`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(jsonPayload),
-      }
-    )
-
-    if (!response.ok) throw new Error('Failed to fetch related literature')
-
-    const data = await response.json()
-
-    relatedLiterature.value = Object.values(data.results).map((item: any) => ({
-      title: item.Title,
-      id: item.id,
-    }))
-  } catch (error) {
-    console.error('Error fetching related literature:', error)
-  }
-}
-
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
   { key: 'Questions', label: 'Question' },
@@ -154,7 +99,7 @@ const keyLabelPairs = [
     label: 'Source',
   },
   { key: 'Case ID', label: 'related cases' },
-  { key: 'Related Literature', label: 'Related Literature' },
+  { key: 'Related Literature', label: '' },
 ]
 
 const valueClassMap = {
@@ -162,7 +107,6 @@ const valueClassMap = {
   Answer: 'result-value-large',
   'Legal provision articles': 'result-value-medium',
   'Case ID': 'result-value-small',
-  'Related Literature': 'result-value-small',
 }
 
 // Preprocess data to handle custom rendering cases
@@ -176,13 +120,6 @@ const processedAnswerData = computed(() => {
     'Case ID': answerData.value['Case ID']
       ? answerData.value['Case ID'].split(',').map((caseId) => caseId.trim())
       : [],
-
-    'Related Literature': relatedLiterature.value.length
-      ? relatedLiterature.value.map((item) => ({
-          title: item.title,
-          id: item.id,
-        }))
-      : [],
   }
 })
 
@@ -190,7 +127,6 @@ onMounted(() => {
   const id = route.params.id as string
   fetchAnswer(id).then(() => {
     if (answerData.value?.Themes) {
-      fetchRelatedLiterature(answerData.value.Themes)
     }
   })
 })
