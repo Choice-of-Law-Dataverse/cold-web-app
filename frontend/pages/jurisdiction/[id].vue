@@ -8,10 +8,11 @@
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
         >
-          <template #literature-links>
-            <span class="label">related literature</span>
+          <template #literature="{ value }">
+            <p :class="valueClassMap['Literature'] || 'result-value-small'">
+              {{ value }}
+            </p>
           </template>
-
           <template #search-links>
             <span class="label">related data</span>
             <NuxtLink
@@ -108,9 +109,10 @@ async function fetchJurisdiction(iso2: string) {
     const data = await response.json()
     // Extract the required values
     jurisdictionData.value = {
-      Name: data[0]?.Name || 'N/A', // Default to 'N/A' if not found
+      Name: data[0]?.Name || 'N/A',
       'Jurisdictional differentiator':
         data[0]?.['Jurisdictional differentiator'] || 'N/A',
+      Literature: data[0]?.Literature || 'No related literature available', // Add this line
     }
   } catch (error) {
     console.error('Error fetching jurisdiction:', error)
@@ -126,6 +128,7 @@ const keyLabelPairs = [
     key: 'Jurisdictional differentiator',
     label: 'Jurisdictional differentiator',
   },
+  { key: 'Literature', label: 'Related Literature' }, // Add this
 ]
 
 const valueClassMap = {
