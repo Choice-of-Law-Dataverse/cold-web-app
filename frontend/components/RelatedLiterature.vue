@@ -12,10 +12,7 @@
         :key="index"
         :class="valueClassMap"
       >
-        <NuxtLink
-          :to="`/literature/${item.id}`"
-          class="text-blue-600 hover:underline"
-        >
+        <NuxtLink :to="`/literature/${item.id}`">
           {{ item.title }}
         </NuxtLink>
       </li>
