@@ -39,7 +39,7 @@
             </div>
           </template>
 
-          <!-- Placeholder for Related Literature -->
+          <!-- Related Literature -->
           <template #related-literature>
             <RelatedLiterature
               :themes="processedAnswerData?.Themes || ''"
@@ -107,7 +107,6 @@ const valueClassMap = {
   Answer: 'result-value-large',
   'Legal provision articles': 'result-value-medium',
   'Case ID': 'result-value-small',
-  'Related Literature': 'result-value-small',
 }
 
 // Preprocess data to handle custom rendering cases
@@ -128,7 +127,6 @@ onMounted(() => {
   const id = route.params.id as string
   fetchAnswer(id).then(() => {
     if (answerData.value?.Themes) {
-      fetchRelatedLiterature(answerData.value.Themes)
     }
   })
 })
