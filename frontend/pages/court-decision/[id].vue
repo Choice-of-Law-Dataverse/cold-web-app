@@ -8,7 +8,14 @@
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
           formattedSourceTable="Court decisions"
-        />
+        >
+          <template #related-literature>
+            <RelatedLiterature
+              :themes="courtDecision?.Themes || ''"
+              :valueClassMap="valueClassMap['Related Literature']"
+            />
+          </template>
+        </DetailDisplay>
       </div>
     </div>
   </main>
@@ -69,6 +76,7 @@ const keyLabelPairs = [
     key: 'Text of the relevant legal provisions',
     label: 'Text of the Relevant Legal Provisions',
   },
+  { key: 'Related Literature', label: '' },
 ]
 
 const valueClassMap = {
