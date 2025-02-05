@@ -21,7 +21,10 @@
               </UButton>
             </NuxtLink>
 
-            <p v-else class="text-gray-500">Loading literature details...</p>
+            <p v-else-if="literatureTitle === null">
+              No related literature available
+            </p>
+            <p v-else>Loading literature details...</p>
           </template>
 
           <template #search-links>
@@ -124,7 +127,14 @@ async function fetchJurisdiction(iso2: string) {
       Name: data[0]?.Name || 'N/A',
       'Jurisdictional differentiator':
         data[0]?.['Jurisdictional differentiator'] || 'N/A',
-      Literature: data[0]?.Literature || '',
+    }
+
+    // If "Literature" exists, fetch its title; otherwise, set a default value
+    if (data[0]?.Literature) {
+      jurisdictionData.value.Literature = data[0].Literature
+      fetchLiteratureTitle(jurisdictionData.value.Literature)
+    } else {
+      literatureTitle.value = null // Ensure no loading message stays forever
     }
 
     // Fetch literature title if a Literature ID exists
