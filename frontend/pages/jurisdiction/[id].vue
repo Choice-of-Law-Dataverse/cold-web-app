@@ -8,11 +8,18 @@
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
         >
-          <template #literature="{ value }">
-            <p :class="valueClassMap['Literature'] || 'result-value-small'">
-              {{ value }}
-            </p>
+          <template #literature>
+            <div>
+              <NuxtLink
+                v-if="literatureTitle && jurisdictionData?.Literature"
+                :to="`/literature/${jurisdictionData.Literature}`"
+              >
+                {{ literatureTitle }}
+              </NuxtLink>
+              <p v-else class="text-gray-500">Loading literature details...</p>
+            </div>
           </template>
+
           <template #search-links>
             <span class="label">related data</span>
             <NuxtLink
@@ -84,6 +91,7 @@ const route = useRoute() // Access the route to get the ID param
 //const router = useRouter()
 const jurisdictionData = ref(null) // Store fetched jurisdiction data
 const loading = ref(true) // Track loading state
+const literatureTitle = ref<string | null>(null)
 
 // Extract `c` query parameter
 const compareJurisdiction = ref((route.query.c as string) || null)
@@ -112,12 +120,43 @@ async function fetchJurisdiction(iso2: string) {
       Name: data[0]?.Name || 'N/A',
       'Jurisdictional differentiator':
         data[0]?.['Jurisdictional differentiator'] || 'N/A',
-      Literature: data[0]?.Literature || 'No related literature available', // Add this line
+      Literature: data[0]?.Literature || '',
+    }
+
+    // Fetch literature title if a Literature ID exists
+    if (jurisdictionData.value.Literature) {
+      fetchLiteratureTitle(jurisdictionData.value.Literature)
     }
   } catch (error) {
     console.error('Error fetching jurisdiction:', error)
   } finally {
     loading.value = false
+  }
+}
+
+async function fetchLiteratureTitle(id: string) {
+  const jsonPayload = {
+    table: 'Literature',
+    id: id,
+  }
+
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/curated_search/details`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to fetch literature details')
+
+    const data = await response.json()
+    literatureTitle.value = data.Title || 'Unknown Title' // Fallback title
+  } catch (error) {
+    console.error('Error fetching literature title:', error)
+    literatureTitle.value = 'Error'
   }
 }
 
