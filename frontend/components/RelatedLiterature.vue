@@ -50,7 +50,7 @@ async function fetchRelatedLiterature(themes: string) {
   const jsonPayload = {
     filters: [
       { column: 'tables', values: ['Literature'] },
-      { column: 'themes', values: themes.split(', ').map((t) => t.trim()) },
+      { column: 'themes', values: themes.split(',').map((t) => t.trim()) },
     ],
   }
 
