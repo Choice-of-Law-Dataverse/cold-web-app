@@ -9,15 +9,19 @@
           :valueClassMap="valueClassMap"
         >
           <template #literature>
-            <div>
-              <NuxtLink
-                v-if="literatureTitle && jurisdictionData?.Literature"
-                :to="`/literature/${jurisdictionData.Literature}`"
-              >
-                {{ literatureTitle }}
-              </NuxtLink>
-              <p v-else class="text-gray-500">Loading literature details...</p>
-            </div>
+            <NuxtLink
+              v-if="literatureTitle && jurisdictionData?.Literature"
+              :to="`/literature/${jurisdictionData.Literature}`"
+              class="no-underline pb-4 block pt-2"
+            >
+              <UButton class="link-button" variant="link">
+                <span class="break-words text-left">
+                  {{ literatureTitle }}
+                </span>
+              </UButton>
+            </NuxtLink>
+
+            <p v-else class="text-gray-500">Loading literature details...</p>
           </template>
 
           <template #search-links>
