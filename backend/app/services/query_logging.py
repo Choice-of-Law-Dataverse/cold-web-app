@@ -17,8 +17,9 @@ collection = db["queries"]
 async def log_query(request: Request, call_next: Callable) -> Response:
 
     body_bytes = await request.body()
-    
+
     import json
+
     try:
         request_json = json.loads(body_bytes)
     except (json.JSONDecodeError, UnicodeDecodeError):
@@ -31,7 +32,8 @@ async def log_query(request: Request, call_next: Callable) -> Response:
             "more_body": False,
         }
 
-    new_request = Request(request.scope, custom_receive)
+    # new_request = Request(request.scope, custom_receive)
+    request._receive = custom_receive
 
     ip_address = request.client.host if request.client else "unknown"
     user_agent = request.headers.get("User-Agent", "unknown")
@@ -57,5 +59,5 @@ async def log_query(request: Request, call_next: Callable) -> Response:
     collection.insert_one(log_data)
     print("Logged query:", log_data)
 
-    response = await call_next(new_request)
+    response = await call_next(request)
     return response
