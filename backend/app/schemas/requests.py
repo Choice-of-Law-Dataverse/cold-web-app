@@ -3,7 +3,7 @@ from pydantic import BaseModel
 
 class FilterOption(BaseModel):
     column: str
-    value: Union[str, int, float]
+    values: Union[List[str], str]
 
 class FullTextSearchRequest(BaseModel):
     search_string: Optional[str] = None
