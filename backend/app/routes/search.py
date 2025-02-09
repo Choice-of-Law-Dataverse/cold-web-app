@@ -47,5 +47,5 @@ def return_full_table(request: Request, body: FullTableRequest):
             results = search_service.full_table(table)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-        
+
     return results

@@ -83,7 +83,11 @@ class SearchService:
         for filter_item in filters:
             column = filter_item.column
             raw_values = filter_item.values
-            values = raw_values if isinstance(raw_values, list) else [raw_values] if raw_values is not None else []
+            values = (
+                raw_values
+                if isinstance(raw_values, list)
+                else [raw_values] if raw_values is not None else []
+            )
 
             if column and values:
                 col_lower = column.lower()
