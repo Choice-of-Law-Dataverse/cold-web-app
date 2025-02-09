@@ -7,6 +7,7 @@ from app.config import config
 =======================DATA HANDLING===========================
 """
 
+
 def list_to_dict(lst):
     return {i: item for i, item in enumerate(lst)}
 
@@ -94,11 +95,14 @@ def find_problematic_subdict(data):
 =========================QUERY LOGGING=======================
 """
 
+
 # Utility function to get location from IP address using an external API
 def get_location(ip_address: str):
     access_token = config.IPINFO_ACCESS_TOKEN
     try:
-        response = requests.get(f"http://ipinfo.io/{ip_address}/json?token={access_token}")
+        response = requests.get(
+            f"http://ipinfo.io/{ip_address}/json?token={access_token}"
+        )
         return response.json()
     except requests.RequestException as e:
         print(f"Error getting location: {e}")
