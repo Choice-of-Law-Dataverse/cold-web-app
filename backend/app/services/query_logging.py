@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Callable
 
 from fastapi import Request, Response
@@ -44,7 +44,7 @@ async def log_query(request: Request, call_next: Callable) -> Response:
     location = get_location(ip_address)
 
     log_data = {
-        "timestamp": datetime.utcnow(),
+        "timestamp": datetime.now(timezone.utc),
         "ip_address": ip_address,
         "location": location,
         "user_agent": user_agent,
