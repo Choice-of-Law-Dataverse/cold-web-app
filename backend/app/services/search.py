@@ -152,8 +152,12 @@ class SearchService:
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Court decisions' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
-                    OR "Jurisdiction Names" = ANY(params.jurisdictions)
+                    array_length(params.jurisdictions, 1) is null -- Skip jurisdiction filter if empty
+                    or exists (
+                        select 1
+                        from unnest(params.jurisdictions) as jurisdiction_filter
+                        where "Jurisdiction Names" ILIKE '%' || jurisdiction_filter || '%'
+                    )
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
@@ -186,6 +190,30 @@ class SearchService:
                         WHERE "Themes name" ILIKE '%' || theme_filter || '%'
                     )
                 )
+
+            UNION ALL
+
+            -- Literature
+            SELECT 
+                'Literature' AS source_table,
+                "ID"::text AS id,
+                1.0 AS rank
+            FROM "Literature", params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Literature' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                    OR "Jurisdiction" = ANY(params.jurisdictions)
+                )
+                AND (
+                    array_length(params.themes, 1) is null -- Skip theme filter if empty
+                    or exists (
+                        select 1
+                        from unnest(params.themes) as theme_filter
+                        where "Themes" ILIKE '%' || theme_filter || '%'
+                    ) -- Case-insensitive partial match for themes
+                )
+
             ORDER BY rank DESC
             LIMIT 150;
         """
@@ -241,8 +269,12 @@ class SearchService:
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Court decisions' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
-                    OR "Jurisdiction Names" = ANY(params.jurisdictions)
+                    array_length(params.jurisdictions, 1) is null -- Skip jurisdiction filter if empty
+                    or exists (
+                        select 1
+                        from unnest(params.jurisdictions) as jurisdiction_filter
+                        where "Jurisdiction Names" ILIKE '%' || jurisdiction_filter || '%'
+                    )
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
@@ -285,6 +317,34 @@ class SearchService:
                     OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
 
+            UNION ALL
+
+            -- Search in "Literature" table
+            SELECT 
+                'Literature' AS source_table,
+                "ID"::text AS id,
+                ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+            FROM "Literature", params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Literature' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                    OR "Jurisdiction" = ANY(params.jurisdictions)
+                )
+                AND (
+                    array_length(params.themes, 1) is null -- Skip theme filter if empty
+                    or exists (
+                        select 1
+                        from unnest(params.themes) as theme_filter
+                        where "Themes" ILIKE '%' || theme_filter || '%'
+                    ) -- Case-insensitive partial match for themes
+                )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
+                
             -- Combine results and order by rank
             ORDER BY rank DESC
             LIMIT 150;
