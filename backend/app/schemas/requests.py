@@ -2,14 +2,14 @@ from typing import List, Optional, Union
 from pydantic import BaseModel
 
 
-class FilterOption(BaseModel):
+class FTSFilterOption(BaseModel):
     column: str
     values: Union[List[str], str]
 
 
 class FullTextSearchRequest(BaseModel):
     search_string: Optional[str] = None
-    filters: Optional[List[FilterOption]] = None
+    filters: Optional[List[FTSFilterOption]] = None
 
 
 class CuratedDetailsRequest(BaseModel):
@@ -17,9 +17,14 @@ class CuratedDetailsRequest(BaseModel):
     id: str
 
 
+class FTFilterOption(BaseModel):
+    column: str
+    value: Union[List[str], str]
+
+
 class FullTableRequest(BaseModel):
     table: str
-    filters: Optional[List[FilterOption]] = None
+    filters: Optional[List[FTFilterOption]] = None
 
 
 class ClassifyQueryRequest(BaseModel):

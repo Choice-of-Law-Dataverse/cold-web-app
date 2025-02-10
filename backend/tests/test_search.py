@@ -146,7 +146,7 @@ def test_full_table_with_filters():
     payload = {
         "table": "Answers",
         "filters": [
-            {"column": "name", "values": "John Doe"}  # changed "value" to "values"
+            {"column": "name", "value": "John Doe"}  # changed "value" to "values"
         ],
     }
     response = client.post("/search/full_table", json=payload)
