@@ -1,4 +1,5 @@
 # CoLD FASTAPI
+[API Documentation](https://cold-container-test.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/docs)
 
 ## Local testing
 ```
