@@ -12,7 +12,7 @@
       <!-- Answer in the 6th column -->
       <div class="md:col-start-6 md:col-span-2">
         <div class="label-key">{{ keyMap.Answer }}</div>
-        <div :class="valueClassMap.Answer || 'result-value'">
+        <div :class="getAnswerClass(resultData.Answer)">
           {{ resultData.Answer }}
         </div>
       </div>
@@ -54,9 +54,14 @@ const keyMap = {
 
 // Map different CSS styles to different typographic components
 const valueClassMap = {
-  Answer: 'result-value-large',
+  //Answer: 'result-value-large',
   Questions: 'result-value-medium',
   'Legal provision articles': 'result-value-medium',
+}
+const getAnswerClass = (answer) => {
+  return answer === 'Yes' || answer === 'No'
+    ? 'result-value-large'
+    : 'result-value-medium'
 }
 </script>
 
