@@ -176,11 +176,14 @@ async function fetchSearchResults(query, filters) {
     requestBody.hostname = userHost
 
     const response = await fetch(
-      `${config.public.apiBaseUrl}/full_text_search`,
-      //'http://localhost:5000/full_text_search',
+      `${config.public.apiBaseUrl}/search/`,
+      //'http://localhost:5000/search/',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(requestBody),
       }
     )

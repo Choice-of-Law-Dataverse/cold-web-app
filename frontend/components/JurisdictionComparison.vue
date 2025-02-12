@@ -180,10 +180,23 @@ async function fetchFilteredTableData(filters) {
   }
 
   try {
-    const data = await fetchData(
-      `${config.public.apiBaseUrl}/full_table`,
-      payload
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
     )
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+
+    const data = await response.json()
 
     return data.map((item) => ({
       ...item,

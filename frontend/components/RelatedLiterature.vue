@@ -57,7 +57,10 @@ async function fetchRelatedLiterature(themes: string) {
   try {
     const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${config.public.FASTAPI}` },
+      headers: {
+        authorization: `Bearer ${config.public.FASTAPI}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify(jsonPayload),
     })
 
