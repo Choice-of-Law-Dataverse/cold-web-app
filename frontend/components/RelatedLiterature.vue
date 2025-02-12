@@ -55,14 +55,14 @@ async function fetchRelatedLiterature(themes: string) {
   }
 
   try {
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/full_text_search`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(jsonPayload),
-      }
-    )
+    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${config.public.FASTAPI}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonPayload),
+    })
 
     if (!response.ok) throw new Error('Failed to fetch related literature')
 
