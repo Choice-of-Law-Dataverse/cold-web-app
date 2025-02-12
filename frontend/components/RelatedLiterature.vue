@@ -19,22 +19,22 @@
     </ul>
 
     <!-- Show more button only if the list has more than 5 items and we haven't expanded -->
-    <button
+    <NuxtLink
       v-if="literatureList.length > 5 && !showAll"
-      @click="showAll = true"
-      class="mt-2 text-blue-500 underline"
+      @click.prevent="showAll = true"
+      class="link-button ml-4 list-none"
     >
-      Show more ({{ totalMatches }} total)
-    </button>
+      + Show more related literature
+    </NuxtLink>
 
     <!-- Show less button when expanded -->
-    <button
+    <NuxtLink
       v-if="literatureList.length > 5 && showAll"
       @click="showAll = false"
-      class="mt-2 text-blue-500 underline"
+      class="link-button ml-4 list-none"
     >
-      Show less
-    </button>
+      – Show less related literature
+    </NuxtLink>
 
     <p v-if="!literatureList.length && !loading" :class="valueClassMap">
       No related literature available
