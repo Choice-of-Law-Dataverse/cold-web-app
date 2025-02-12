@@ -113,11 +113,17 @@ async function fetchJurisdiction(iso2: string) {
   }
 
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/full_table`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(jsonPayload),
-    })
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
 
     if (!response.ok) throw new Error('Failed to fetch jurisdiction')
 
@@ -155,14 +161,14 @@ async function fetchLiteratureTitle(id: string) {
   }
 
   try {
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/curated_search/details`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(jsonPayload),
-      }
-    )
+    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${config.public.FASTAPI}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonPayload),
+    })
 
     if (!response.ok) throw new Error('Failed to fetch literature details')
 
