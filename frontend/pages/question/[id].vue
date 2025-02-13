@@ -11,15 +11,11 @@
         >
           <!-- Custom rendering for Legal provision articles -->
           <template #legal-provision-articles="{ value }">
-            <ul>
-              <li>
-                <LegalProvisionRenderer
-                  :value="value"
-                  :fallbackData="processedAnswerData"
-                  :valueClassMap="valueClassMap"
-                />
-              </li>
-            </ul>
+            <QuestionSourceList
+              :sources="Array.isArray(value) ? value : [value]"
+              :fallbackData="processedAnswerData"
+              :valueClassMap="valueClassMap"
+            />
           </template>
 
           <!-- Custom rendering for Case ID -->
