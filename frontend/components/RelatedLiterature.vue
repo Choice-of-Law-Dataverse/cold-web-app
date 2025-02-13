@@ -22,7 +22,10 @@
         v-if="literatureList.length > 5 && !showAll"
         class="list-none mt-[-2px]"
       >
-        <NuxtLink @click.prevent="showAll = true" class="link-button">
+        <NuxtLink
+          @click.prevent="showAll = true"
+          class="link-button cursor-pointer"
+        >
           <Icon
             name="material-symbols:add"
             class="text-base translate-y-[3px]"
@@ -30,11 +33,12 @@
           Show more related literature
         </NuxtLink>
       </li>
+
       <!-- Show less button when expanded -->
       <NuxtLink
         v-if="literatureList.length > 5 && showAll"
+        class="link-button list-none mt-[-2px] cursor-pointer"
         @click="showAll = false"
-        class="link-button list-none"
       >
         <Icon
           name="material-symbols:remove"
