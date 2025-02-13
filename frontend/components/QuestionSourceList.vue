@@ -22,7 +22,7 @@ defineProps({
   valueClassMap: Object,
   valueClass: {
     type: String,
-    default: 'result-value-medium',
+    default: 'result-value-small',
   },
   noLinkList: {
     type: Array,
