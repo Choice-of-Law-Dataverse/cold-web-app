@@ -18,7 +18,10 @@
       </div>
 
       <!-- Source in the 8th column -->
-      <div class="md:col-start-8 md:col-span-4">
+      <div
+        v-if="resultData.Answer !== 'No data'"
+        class="md:col-start-8 md:col-span-4"
+      >
         <div class="label-key">{{ keyMap['Legal provision articles'] }}</div>
         <QuestionSourceList
           :sources="
