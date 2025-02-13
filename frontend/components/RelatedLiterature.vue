@@ -23,7 +23,11 @@
         class="list-none mt-[-2px]"
       >
         <NuxtLink @click.prevent="showAll = true" class="link-button">
-          + Show more related literature
+          <Icon
+            name="material-symbols:add"
+            class="text-base translate-y-[3px]"
+          />
+          Show more related literature
         </NuxtLink>
       </li>
       <!-- Show less button when expanded -->
@@ -32,7 +36,11 @@
         @click="showAll = false"
         class="link-button list-none"
       >
-        – Show less related literature
+        <Icon
+          name="material-symbols:remove"
+          class="text-base translate-y-[3px]"
+        />
+        Show less related literature
       </NuxtLink>
     </ul>
 
