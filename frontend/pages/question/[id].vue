@@ -11,33 +11,15 @@
         >
           <!-- Custom rendering for Legal provision articles -->
           <template #legal-provision-articles="{ value }">
-            <ul v-if="Array.isArray(value) && value.length">
-              <li
-                v-for="(item, index) in value"
-                :key="index"
-                :class="
-                  valueClassMap['Legal provision articles'] ||
-                  'result-value-medium'
-                "
-              >
+            <ul>
+              <li>
                 <LegalProvisionRenderer
-                  :value="item"
+                  :value="value"
                   :fallbackData="processedAnswerData"
                   :valueClassMap="valueClassMap"
                 />
               </li>
             </ul>
-
-            <div v-else>
-              <span
-                :class="
-                  valueClassMap['Legal provision articles'] ||
-                  'result-value-medium'
-                "
-              >
-                N/A
-              </span>
-            </div>
           </template>
 
           <!-- Custom rendering for Case ID -->
@@ -104,10 +86,6 @@ async function fetchAnswer(id: string) {
 
     if (!response.ok) throw new Error('Failed to fetch answer')
 
-    const rawData = await response.json()
-    console.log('Raw API Response:', JSON.stringify(rawData, null, 2)) // Debugging
-    answerData.value = rawData
-
     answerData.value = await response.json()
   } catch (error) {
     console.error('Error fetching answer:', error)
@@ -131,7 +109,7 @@ const keyLabelPairs = [
 const valueClassMap = {
   Questions: 'result-value-medium',
   Answer: 'result-value-large',
-  'Legal provision articles': 'result-value-medium',
+  'Legal provision articles': 'result-value-small',
   'Case ID': 'result-value-small',
 }
 
@@ -141,16 +119,8 @@ const processedAnswerData = computed(() => {
 
   return {
     ...answerData.value,
-    'Legal provision articles': computed(() => {
-      const articles = answerData.value?.['Legal provision articles']
-
-      if (!articles) return [] // Ensure it's always an array
-
-      return Array.isArray(articles)
-        ? articles
-        : articles.split(',').map((item) => item.trim())
-    }),
-
+    'Legal provision articles':
+      answerData.value['Legal provision articles'] || '',
     'Case ID': answerData.value['Case ID']
       ? answerData.value['Case ID'].split(',').map((caseId) => caseId.trim())
       : [],
@@ -160,11 +130,6 @@ const processedAnswerData = computed(() => {
 onMounted(() => {
   const id = route.params.id as string
   fetchAnswer(id).then(() => {
-    console.log(
-      'Fetched Answer Data:',
-      JSON.parse(JSON.stringify(answerData.value))
-    )
-
     if (answerData.value?.Themes) {
     }
   })
