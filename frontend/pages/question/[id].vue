@@ -14,19 +14,16 @@
             <QuestionSourceList
               :sources="
                 [
-                  ...(Array.isArray(value) ? value : value ? [value] : []),
-                  ...(value
-                    ? []
-                    : [
-                        processedAnswerData?.['Legislation-ID'] ||
-                          processedAnswerData?.['More information'] ||
-                          null,
-                      ]),
-                  processedAnswerData?.['Name (from Jurisdiction)'] || null,
+                  value ||
+                    processedAnswerData?.['Legislation-ID'] ||
+                    processedAnswerData?.['More information'] ||
+                    'N/A',
+                  processedAnswerData?.['Name (from Jurisdiction)'],
                 ].filter(Boolean)
               "
               :fallbackData="processedAnswerData"
               :valueClassMap="valueClassMap"
+              :noLinkList="[processedAnswerData?.['More information']]"
             />
           </template>
 
