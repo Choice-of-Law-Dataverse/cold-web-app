@@ -20,15 +20,19 @@
       <!-- Source in the 8th column -->
       <div class="md:col-start-8 md:col-span-4">
         <div class="label-key">{{ keyMap['Legal provision articles'] }}</div>
-        <div
-          :class="valueClassMap['Legal provision articles'] || 'result-value'"
-        >
-          <LegalProvisionRenderer
-            :value="resultData['Legal provision articles']"
-            :fallbackData="resultData"
-            :valueClassMap="valueClassMap"
-          />
-        </div>
+        <QuestionSourceList
+          :sources="
+            [
+              resultData['Legal provision articles'] ||
+                resultData['Legislation-ID'], // ||
+              //resultData['More information'],
+              resultData['Name (from Jurisdiction)'],
+            ].filter(Boolean)
+          "
+          :fallbackData="resultData"
+          :valueClassMap="valueClassMap"
+          :noLinkList="[resultData['More information']]"
+        />
       </div>
     </div>
   </ResultCard>
@@ -56,7 +60,7 @@ const keyMap = {
 const valueClassMap = {
   //Answer: 'result-value-large',
   Questions: 'result-value-medium',
-  'Legal provision articles': 'result-value-medium',
+  'Legal provision articles': 'result-value-small',
 }
 const getAnswerClass = (answer) => {
   return answer === 'Yes' || answer === 'No'
