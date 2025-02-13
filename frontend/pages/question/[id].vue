@@ -14,10 +14,15 @@
             <QuestionSourceList
               :sources="
                 [
-                  value ||
-                    processedAnswerData?.['Legislation-ID'] ||
-                    processedAnswerData?.['More information'] ||
-                    'N/A',
+                  ...(value ||
+                  processedAnswerData?.['Legislation-ID'] ||
+                  processedAnswerData?.['More information']
+                    ? [
+                        value ||
+                          processedAnswerData?.['Legislation-ID'] ||
+                          processedAnswerData?.['More information'],
+                      ]
+                    : []),
                   processedAnswerData?.['Name (from Jurisdiction)'],
                 ].filter(Boolean)
               "
