@@ -12,7 +12,19 @@
           <!-- Custom rendering for Legal provision articles -->
           <template #legal-provision-articles="{ value }">
             <QuestionSourceList
-              :sources="Array.isArray(value) ? value : [value]"
+              :sources="
+                [
+                  ...(Array.isArray(value) ? value : value ? [value] : []),
+                  ...(value
+                    ? []
+                    : [
+                        processedAnswerData?.['Legislation-ID'] ||
+                          processedAnswerData?.['More information'] ||
+                          null,
+                      ]),
+                  processedAnswerData?.['Name (from Jurisdiction)'] || null,
+                ].filter(Boolean)
+              "
               :fallbackData="processedAnswerData"
               :valueClassMap="valueClassMap"
             />
@@ -112,7 +124,7 @@ const valueClassMap = {
 // Preprocess data to handle custom rendering cases
 const processedAnswerData = computed(() => {
   if (!answerData.value) return null
-
+  console.log(processedAnswerData)
   return {
     ...answerData.value,
     'Legal provision articles':
