@@ -16,25 +16,25 @@
           {{ item.title }}
         </NuxtLink>
       </li>
+
+      <!-- Show more link replaces the fourth bullet point -->
+      <li
+        v-if="literatureList.length > 5 && !showAll"
+        class="list-none mt-[-2px]"
+      >
+        <NuxtLink @click.prevent="showAll = true" class="link-button">
+          + Show more related literature
+        </NuxtLink>
+      </li>
+      <!-- Show less button when expanded -->
+      <NuxtLink
+        v-if="literatureList.length > 5 && showAll"
+        @click="showAll = false"
+        class="link-button list-none"
+      >
+        – Show less related literature
+      </NuxtLink>
     </ul>
-
-    <!-- Show more button only if the list has more than 5 items and we haven't expanded -->
-    <NuxtLink
-      v-if="literatureList.length > 5 && !showAll"
-      @click.prevent="showAll = true"
-      class="link-button ml-4 list-none"
-    >
-      + Show more related literature
-    </NuxtLink>
-
-    <!-- Show less button when expanded -->
-    <NuxtLink
-      v-if="literatureList.length > 5 && showAll"
-      @click="showAll = false"
-      class="link-button ml-4 list-none"
-    >
-      – Show less related literature
-    </NuxtLink>
 
     <p v-if="!literatureList.length && !loading" :class="valueClassMap">
       No related literature available
