@@ -55,13 +55,17 @@
       "
     >
       <UIcon
-        v-if="!isDisclaimerVisible"
         name="i-material-symbols:info-outline"
         size="18"
-        class="text-cold-purple mr-2 flex-shrink-0 pt-6"
+        class="text-cold-purple mr-2 flex-shrink-0 pt-6 cursor-pointer"
+        @click="isDisclaimerVisible = !isDisclaimerVisible"
       />
       <span class="flex-1">
-        <ContentDoc path="/map_disclaimer" class="inline-block" />
+        <ContentDoc
+          v-if="isDisclaimerVisible"
+          path="/map_disclaimer"
+          class="inline-block"
+        />
       </span>
     </p>
   </UCard>
@@ -97,6 +101,8 @@ const regionOptions = [
   { label: 'North America', value: 'North America' },
   { label: 'South & Latin America', value: 'South & Latin America' },
 ]
+
+const isDisclaimerVisible = ref(false)
 </script>
 
 <style scoped>
