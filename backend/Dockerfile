@@ -1,26 +1,20 @@
-# Use an official Python runtime as a parent image
-FROM python:3.11-slim
+# Start from a Python base image
+FROM python:3.10-slim
 
-# Set the working directory in the container to /app
+# Set work directory
 WORKDIR /app
 
-# Copy the requirements file into the container at /app
-COPY requirements.txt /app/
+# Copy requirements
+COPY requirements.txt .
 
-# Install any dependencies specified in requirements.txt
+# Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install Gunicorn
-RUN pip install gunicorn
+# Copy the rest of the code
+COPY . .
 
-# Copy the rest of the application code into the container
-COPY . /app/
+# Expose the port (optional)
+EXPOSE 8000
 
-# Expose the port on which your app will run (usually 5000 for Flask)
-EXPOSE 5000
-
-# Define environment variable for Flask
-ENV FLASK_APP=app.py
-
-# Command to run the Gunicorn server
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:5000", "app:app"]
+# Command to run the app
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
