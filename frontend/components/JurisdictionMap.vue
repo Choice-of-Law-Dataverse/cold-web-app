@@ -47,9 +47,9 @@
       </div>
     </div>
     <p
-      class="result-value-small flex items-top"
+      class="result-value-small flex items-start"
       style="
-        margin: 10px 0 -14px -3px !important;
+        margin: 0px 0px -14px -12px !important;
         font-size: 12px !important;
         line-height: 24px !important;
       "
@@ -57,10 +57,12 @@
       <UIcon
         v-if="!isDisclaimerVisible"
         name="i-material-symbols:info-outline"
-        size="24"
-        class="text-cold-purple mr-2"
+        size="18"
+        class="text-cold-purple mr-2 flex-shrink-0 pt-6"
       />
-      <ContentDoc path="/map_disclaimer" />
+      <span class="flex-1">
+        <ContentDoc path="/map_disclaimer" class="inline-block" />
+      </span>
     </p>
   </UCard>
 </template>
