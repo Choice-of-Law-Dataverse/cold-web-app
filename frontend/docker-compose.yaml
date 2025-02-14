@@ -8,3 +8,4 @@ services:
       - .env
     environment:
       API_BASE_URL: ${API_BASE_URL}
+      FASTAPI_API_TOKEN: ${FASTAPI_API_TOKEN}
