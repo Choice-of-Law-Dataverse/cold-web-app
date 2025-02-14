@@ -47,11 +47,20 @@
       </div>
     </div>
     <p
-      class="result-value-small"
-      style="margin: 10px 0 -14px -3px !important; font-size: 12px !important"
+      class="result-value-small flex items-top"
+      style="
+        margin: 10px 0 -14px -3px !important;
+        font-size: 12px !important;
+        line-height: 24px !important;
+      "
     >
-      Is your jurisdiction missing?
-      <NuxtLink to="/contact">Contact us</NuxtLink>
+      <UIcon
+        v-if="!isDisclaimerVisible"
+        name="i-material-symbols:info-outline"
+        size="24"
+        class="text-cold-purple mr-2"
+      />
+      <ContentDoc path="/map_disclaimer" />
     </p>
   </UCard>
 </template>
