@@ -1,6 +1,6 @@
 <template>
   <BackButton />
-  <NotificationBanner />
+  <NotificationBanner v-if="isJurisdictionPage" />
   <UCard class="cold-ucard">
     <!-- Header section -->
     <template #header v-if="showHeader">
@@ -57,6 +57,8 @@
 </template>
 
 <script setup>
+import { useRoute } from 'vue-router'
+
 import BackButton from '~/components/BackButton.vue'
 import UCardHeader from '~/components/UCardHeader.vue'
 
@@ -72,6 +74,9 @@ const props = defineProps({
     default: true, // Default to true so headers are shown unless explicitly disabled
   },
 })
+
+const route = useRoute()
+const isJurisdictionPage = route.path.startsWith('/jurisdiction/')
 </script>
 
 <style scoped>

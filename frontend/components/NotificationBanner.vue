@@ -1,8 +1,8 @@
 <template>
   <div class="notification-banner result-value-small">
     <UIcon
-      name="i-material-symbols:info-outline"
-      size="16"
+      name="i-material-symbols:flag-outline"
+      size="18"
       class="icon-adjust"
     />
     We don’t have a lot of data for this jurisdiction.
@@ -18,7 +18,7 @@
 }
 
 .icon-adjust {
-  @apply translate-y-[2px];
+  @apply translate-y-[3px];
   margin-right: 4px;
 }
 </style>
