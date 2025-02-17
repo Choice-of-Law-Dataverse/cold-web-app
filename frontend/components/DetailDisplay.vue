@@ -1,7 +1,7 @@
 <template>
   <BackButton />
   <NotificationBanner
-    v-if="isJurisdictionPage && resultData?.Name"
+    v-if="shouldShowBanner && resultData?.Name"
     :jurisdictionName="resultData.Name"
   />
 
@@ -81,6 +81,29 @@ const props = defineProps({
 
 const route = useRoute()
 const isJurisdictionPage = route.path.startsWith('/jurisdiction/')
+const jurisdictionCode = route.params.id?.toLowerCase() // Extract ISO2 code
+const coveredJurisdictions = ref([])
+const shouldShowBanner = ref(false)
+
+onMounted(async () => {
+  try {
+    const response = await fetch('/temp_answer_coverage.txt')
+    const text = await response.text()
+
+    // Convert the text file into an array of ISO2 codes
+    coveredJurisdictions.value = text
+      .split('\n')
+      .map((code) => code.trim().toLowerCase())
+
+    // Show banner only if jurisdictionCode is NOT in the covered list
+    shouldShowBanner.value =
+      isJurisdictionPage &&
+      jurisdictionCode &&
+      !coveredJurisdictions.value.includes(jurisdictionCode)
+  } catch (error) {
+    console.error('Failed to fetch covered jurisdictions:', error)
+  }
+})
 </script>
 
 <style scoped>
