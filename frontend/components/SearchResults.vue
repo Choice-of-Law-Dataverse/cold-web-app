@@ -39,7 +39,7 @@
           <p v-if="loading">Loading…</p>
 
           <!-- No Results -->
-          <p v-else-if="!allResults.length">No results found.</p>
+          <NoSearchResults v-else-if="!allResults.length" />
 
           <!-- Results Grid -->
           <div v-else class="results-grid">
