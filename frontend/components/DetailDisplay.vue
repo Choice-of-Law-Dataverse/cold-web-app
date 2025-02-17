@@ -1,5 +1,6 @@
 <template>
   <BackButton />
+  <NotificationBanner />
   <UCard class="cold-ucard">
     <!-- Header section -->
     <template #header v-if="showHeader">
