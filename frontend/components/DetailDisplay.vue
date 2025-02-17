@@ -1,6 +1,10 @@
 <template>
   <BackButton />
-  <NotificationBanner v-if="isJurisdictionPage" />
+  <NotificationBanner
+    v-if="isJurisdictionPage && resultData?.Name"
+    :jurisdictionName="resultData.Name"
+  />
+
   <UCard class="cold-ucard">
     <!-- Header section -->
     <template #header v-if="showHeader">

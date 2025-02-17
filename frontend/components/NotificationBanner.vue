@@ -5,11 +5,20 @@
       size="18"
       class="icon-adjust"
     />
-    We don’t have a lot of data for this jurisdiction.
+    We don’t have a lot of data for {{ jurisdictionName }}.
     <a href="/contact" class="contact-link">Contact us</a> if you want to
     contribute.
   </div>
 </template>
+
+<script setup>
+defineProps({
+  jurisdictionName: {
+    type: String,
+    required: true,
+  },
+})
+</script>
 
 <style scoped>
 .notification-banner {
