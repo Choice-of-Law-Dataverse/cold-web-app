@@ -1,7 +1,13 @@
 <template>
-  <div>
-    <h3>Sorry, there are no results for your search</h3>
+  <div class="no-results result-value-small">
+    Sorry, there are no results for your search.<br />
+    Do you think this is an error? Please contact us at
+    <a href="mailto:mail@cold.global">mail@cold.global</a>.
   </div>
 </template>
 
-<script></script>
+<style scoped>
+.no-results {
+  @apply text-center;
+}
+</style>
