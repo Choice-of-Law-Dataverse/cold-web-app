@@ -41,7 +41,7 @@
         </div>
 
         <!-- Navigation Links, aligned in columns 11 and 12 -->
-        <div class="space-x-4 sm:space-x-8">
+        <div class="space-x-3 sm:space-x-4">
           <ULink
             v-for="(link, index) in links"
             :key="index"
