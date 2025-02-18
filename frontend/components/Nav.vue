@@ -7,12 +7,17 @@
       <div
         class="flex items-center justify-between h-full space-x-4 sm:space-x-8"
       >
-        <!-- Search Input (Centered) -->
-        <div class="search-container">
+        <!-- Search Input -->
+        <div
+          class="search-container transition-all duration-300"
+          :class="{ expanded: isExpanded }"
+        >
           <UInput
             size="xl"
             v-model="searchText"
             @keyup.enter="emitSearch"
+            @focus="expandSearch"
+            @blur="collapseSearch"
             class="input-custom-purple placeholder-purple font-semibold"
             :placeholder="searchPlaceholder"
             icon="i-material-symbols:search"
@@ -32,25 +37,27 @@
             ></span>
           </button>
         </div>
-
-        <!-- Web App Name (Left) -->
-        <div class="flex-1 flex justify-center items-center">
+        <!-- Logo (Hidden when search is expanded) -->
+        <div
+          v-if="!isExpanded"
+          class="flex-1 flex justify-center items-center transition-all duration-300"
+        >
           <a href="/">
             <img
               src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_logo.svg"
               alt="CoLD Logo"
-              class="h-7 w-auto"
+              class="h-6 w-auto"
             />
           </a>
         </div>
 
-        <!-- Navigation Links (Right) -->
-        <div class="space-x-4 sm:space-x-5">
+        <!-- Navigation Links (Always visible) -->
+        <div class="space-x-3 sm:space-x-6">
           <ULink
             v-for="(link, index) in links"
             :key="index"
             :to="link.to"
-            :class="['custom-nav-links', { active: route.path === link.to }]"
+            class="custom-nav-links"
           >
             <span>{{ link.label }}</span>
           </ULink>
@@ -67,6 +74,7 @@ import eventBus from '@/eventBus'
 
 // Reactive state
 const searchText = ref('')
+const isExpanded = ref(false) // Track if the input is expanded
 const isSmallScreen = ref(false)
 
 const router = useRouter()
@@ -94,6 +102,16 @@ function emitSearch() {
     name: 'search',
     query,
   })
+}
+
+function expandSearch() {
+  isExpanded.value = true
+}
+
+function collapseSearch() {
+  if (!searchText.value) {
+    isExpanded.value = false
+  }
 }
 
 // Dynamically update the placeholder
@@ -164,6 +182,12 @@ onUnmounted(() => {
 .search-container {
   position: relative; /* Allow absolute positioning for icon */
   width: calc(var(--column-width) * 3 + var(--gutter-width) * 2);
+  transition: width 1.8s ease-in-out;
+}
+
+/* When expanded, span across available space */
+.search-container.expanded {
+  width: 100%; /* Expand to full width */
 }
 
 .input-custom-purple {
