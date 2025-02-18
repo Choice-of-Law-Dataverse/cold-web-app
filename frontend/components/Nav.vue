@@ -160,7 +160,7 @@ onUnmounted(() => {
 .search-container {
   position: relative; /* Allow absolute positioning for icon */
   width: calc(
-    var(--column-width) * 9 + var(--gutter-width) * 8
+    var(--column-width) * 3 + var(--gutter-width) * 2
   ); /* 9-column width */
   margin-left: calc(var(--column-width) / 2);
 }
