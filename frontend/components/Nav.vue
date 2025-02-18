@@ -25,11 +25,11 @@
             icon="i-material-symbols:search"
             :trailing="true"
             style="
-              width: 100%; /* Full width inside the container */
+              width: 100%;
               border-radius: 0 !important;
               box-shadow: none !important;
-              border-width: 1px !important;
-              border-color: var(--color-cold-purple) !important;
+              border: none !important;
+              background-color: var(--color-cold-purple-alpha) !important;
             "
           />
           <button @click="emitSearch" class="icon-button">
@@ -94,7 +94,7 @@ function emitSearch() {
 
 // Dynamically update the placeholder
 const searchPlaceholder = computed(() =>
-  isSmallScreen.value ? 'Search' : 'Search the entire Dataverse'
+  isSmallScreen.value ? 'Search' : 'Search'
 )
 
 // Check screen size
