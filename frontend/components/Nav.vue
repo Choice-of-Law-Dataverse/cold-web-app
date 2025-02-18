@@ -13,7 +13,7 @@
             size="xl"
             v-model="searchText"
             @keyup.enter="emitSearch"
-            class="input-custom-purple placeholder-purple"
+            class="input-custom-purple placeholder-purple font-semibold"
             :placeholder="searchPlaceholder"
             icon="i-material-symbols:search"
             :trailing="true"
@@ -37,7 +37,7 @@
         <div class="flex-1 flex justify-center items-center">
           <a href="/">
             <img
-              src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_logo_test.svg"
+              src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_logo.svg"
               alt="CoLD Logo"
               class="h-7 w-auto"
             />
