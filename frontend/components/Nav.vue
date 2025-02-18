@@ -34,14 +34,18 @@
         </div>
 
         <!-- Web App Name (Left) -->
-        <div class="flex-1 text-center">
-          <h1>
-            <a href="/" class="font-bold text-cold-night">CoLD</a>
-          </h1>
+        <div class="flex-1 flex justify-center items-center">
+          <a href="/">
+            <img
+              src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_logo_test.svg"
+              alt="CoLD Logo"
+              class="h-7 w-auto"
+            />
+          </a>
         </div>
 
         <!-- Navigation Links (Right) -->
-        <div class="space-x-3 sm:space-x-4">
+        <div class="space-x-4 sm:space-x-5">
           <ULink
             v-for="(link, index) in links"
             :key="index"
