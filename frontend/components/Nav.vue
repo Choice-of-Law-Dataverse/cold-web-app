@@ -69,7 +69,8 @@ const router = useRouter()
 const route = useRoute()
 
 const links = [
-  { label: 'About', to: '/about' },
+  { label: 'Learn', to: '/learn' },
+  { label: 'Resources', to: '/resources' },
   { label: 'Contact', to: '/contact' },
 ]
 

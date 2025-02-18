@@ -31,8 +31,8 @@
           class="main-conten prose -space-y-10 flex flex-col gap-12 px-6 w-full"
         >
           <!-- Tab Content -->
-          <div v-if="activeTab === 'overview'">
-            <Overview />
+          <div v-if="activeTab === 'about-cold'">
+            <AboutCoLD />
           </div>
           <div v-else-if="activeTab === 'open-educational-resources'">
             <OpenEducationalResources />
@@ -43,9 +43,6 @@
           <div v-else-if="activeTab === 'team'">
             <Team />
           </div>
-          <div v-else-if="activeTab === 'press'">
-            <Press />
-          </div>
         </div>
       </UCard>
     </div>
@@ -55,27 +52,25 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import Overview from './Overview.vue'
+import AboutCoLD from './AboutCoLD.vue'
 import OpenEducationalResources from './OpenEducationalResources.vue'
 import FAQ from './FAQ.vue'
 import Team from './Team.vue'
-import Press from './Press.vue'
 
 // Define the navigation links
 const links = [
-  { label: 'Overview', key: 'overview' },
+  { label: 'About CoLD', key: 'about-cold' },
+  { label: 'Team', key: 'team' },
   { label: 'Open Educational Resources', key: 'open-educational-resources' },
   { label: 'FAQ', key: 'faq' },
-  { label: 'Team', key: 'team' },
-  { label: 'Press', key: 'press' },
 ]
 
 // Initialize router and route
 const router = useRouter()
 const route = useRoute()
 
-// Reactive variable to track the active tab, default to 'overview'
-const activeTab = ref(route.query.tab || 'overview')
+// Reactive variable to track the active tab, default to 'about-cold'
+const activeTab = ref(route.query.tab || 'about-cold')
 
 // Watch for changes in activeTab and update the URL query
 watch(activeTab, (newTab) => {
