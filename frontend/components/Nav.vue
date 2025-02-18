@@ -7,14 +7,7 @@
       <div
         class="flex items-center justify-between h-full space-x-4 sm:space-x-8"
       >
-        <!-- Web App Name aligned to the first column -->
-        <div>
-          <h1>
-            <a href="/" class="font-bold text-cold-night">CoLD</a>
-          </h1>
-        </div>
-
-        <!-- Search Input positioned from the center of column 2 to the end of column 10 -->
+        <!-- Search Input (Centered) -->
         <div class="search-container">
           <UInput
             size="xl"
@@ -40,7 +33,14 @@
           </button>
         </div>
 
-        <!-- Navigation Links, aligned in columns 11 and 12 -->
+        <!-- Web App Name (Left) -->
+        <div class="flex-1 text-center">
+          <h1>
+            <a href="/" class="font-bold text-cold-night">CoLD</a>
+          </h1>
+        </div>
+
+        <!-- Navigation Links (Right) -->
         <div class="space-x-3 sm:space-x-4">
           <ULink
             v-for="(link, index) in links"
@@ -159,10 +159,7 @@ onUnmounted(() => {
 
 .search-container {
   position: relative; /* Allow absolute positioning for icon */
-  width: calc(
-    var(--column-width) * 3 + var(--gutter-width) * 2
-  ); /* 9-column width */
-  margin-left: calc(var(--column-width) / 2);
+  width: calc(var(--column-width) * 3 + var(--gutter-width) * 2);
 }
 
 .input-custom-purple {
