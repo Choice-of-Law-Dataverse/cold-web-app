@@ -1,5 +1,5 @@
 <template>
-  <h2>Downloads</h2>
+  <h2>Download Indexes</h2>
   <li>
     All court decisions (<a
       href="https://choiceoflawdataverse.blob.core.windows.net/full-tables/court-decisions.csv"
