@@ -1,0 +1,3 @@
+## How the Search Works [PLACEHOLDER]
+
+PostgreSQL, also called Postgres, is a relational database. Relational database means, that data is stored in a structured format, representing tables and columns. Postgres has an integrated feature called "Full Text Search", which allows to query the database and the data entries stored within by using textual queries (as opposed to using Structured Query Language (SQL), which has sophisticated methods of querying databases that are just as manifold in what can be achieved with them as they are complex in handling).
