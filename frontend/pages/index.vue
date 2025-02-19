@@ -4,11 +4,21 @@
       <!-- Header Section -->
       <div class="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6">
         <div class="col-span-12">
-          <h1 class="text-3xl font-bold mb-3 md:text-left">
-            Choice of Law Dataverse
-          </h1>
-          <h2 class="text-xl font-medium mb-6 md:text-left">
-            Find relevant case law and choice of law answers for your case.
+          <div class="text-[60px] leading-[68px] font-bold mb-3 md:text-left">
+            Choice of Law<br />
+            Dataverse
+          </div>
+          <h2 class="text-xl font-medium mb-6 md:text-left pt-4 pb-4">
+            Navigate private international law issues with precision.
+            <UButton
+              class="suggestion-button"
+              to="/about"
+              variant="link"
+              icon="i-material-symbols:arrow-forward"
+              trailing
+            >
+              <span>Learn more</span>
+            </UButton>
           </h2>
         </div>
 
