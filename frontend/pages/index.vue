@@ -64,6 +64,14 @@
             iconName="i-material-symbols:alternate-email"
           />
         </div>
+        <div class="col-span-12 sm:col-span-4">
+          <ConnectCard
+            title="Access New Features"
+            buttonText="Become a Beta Test User"
+            :buttonLink="links.beta"
+            iconName="i-material-symbols:cruelty-free"
+          />
+        </div>
       </div>
     </div>
   </main>
