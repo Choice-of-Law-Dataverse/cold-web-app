@@ -1,12 +1,10 @@
 <template>
   <main class="px-6">
     <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <UCard class="cold-ucard">
-        <div
-          class="copy main-content prose -space-y-10 flex flex-col gap-12 px-6 w-full"
-          v-html="htmlContent"
-        ></div>
-      </UCard>
+      <div
+        class="copy main-content prose -space-y-10 flex flex-col gap-12 px-6 w-full"
+        v-html="htmlContent"
+      ></div>
     </div>
   </main>
 </template>
