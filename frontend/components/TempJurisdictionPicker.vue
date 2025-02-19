@@ -19,21 +19,51 @@
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import JurisdictionSelectMenu from './JurisdictionSelectMenu.vue'
+import { useRuntimeConfig } from '#imports'
 
 // Reactive states
 const countries = ref([])
 const router = useRouter()
 
-// Fetch jurisdictions from the text file
+const config = useRuntimeConfig()
+
+// Fetch jurisdictions
 async function fetchJurisdictions() {
   try {
-    const response = await fetch('/temp_jurisdictions.txt') // Path to file in `public`
-    if (!response.ok) throw new Error('Failed to load jurisdictions file')
-    const text = await response.text()
-    countries.value = text
-      .split('\n')
-      .map((country) => country.trim())
-      .filter(Boolean) // Clean up list
+    const requestBody = {
+      table: 'Jurisdictions',
+    }
+
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search-full_table/`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to fetch jurisdictions from API')
+
+    const data = await response.json()
+    console.log('API Response:', data) // DEBUGGING: Check if data is valid
+
+    // Filter out jurisdictions where "Irrelevant?" is NOT null, then sort alphabetically
+    countries.value = data
+      .filter((jurisdiction) => {
+        console.log('Checking jurisdiction:', jurisdiction) // DEBUGGING
+        return jurisdiction['Irrelevant?'] === null
+      })
+      .map((jurisdiction) => {
+        console.log('Adding jurisdiction:', jurisdiction.Name) // DEBUGGING
+        return jurisdiction.Name
+      })
+      .sort((a, b) => a.localeCompare(b))
+
+    console.log('Filtered and sorted countries:', countries.value) // DEBUGGING
   } catch (error) {
     console.error(error)
     countries.value = [] // Fallback to empty list
