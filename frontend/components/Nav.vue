@@ -181,7 +181,7 @@ onUnmounted(() => {
 .search-container {
   position: relative; /* Allow absolute positioning for icon */
   width: calc(var(--column-width) * 3 + var(--gutter-width) * 2);
-  transition: width 0.8s ease-in-out;
+  /* transition: width 0.8s ease-in-out; */
 }
 
 /* When expanded, span across available space */
