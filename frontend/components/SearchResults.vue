@@ -54,6 +54,15 @@
               />
             </div>
           </div>
+          <div class="result-value-small text-center pt-4">
+            <UButton
+              to="/learn?tab=how-search-works"
+              variant="link"
+              icon="i-material-symbols:arrow-forward"
+              trailing
+              >Learn how the search works</UButton
+            >
+          </div>
         </div>
       </div>
     </div>

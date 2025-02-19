@@ -40,9 +40,6 @@
           <div v-if="activeTab === 'help'">
             <Help />
           </div>
-          <div v-if="activeTab === 'search'">
-            <Search />
-          </div>
           <div v-if="activeTab === 'downloads'">
             <Downloads />
           </div>
@@ -63,14 +60,12 @@ import Glossary from './Glossary.vue'
 import Help from './Help.vue'
 import Downloads from './Downloads.vue'
 import Press from './Press.vue'
-import Search from './Search.vue'
 
 // Define the navigation links
 const links = [
   { label: 'Questionnaire', key: 'questionnaire' },
   { label: 'Glossary', key: 'glossary' },
   { label: 'Help', key: 'help' },
-  { label: 'How Search Works', key: 'search' },
   { label: 'Downloads', key: 'downloads' },
   { label: 'Press', key: 'press' },
 ]

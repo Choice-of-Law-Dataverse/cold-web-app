@@ -43,6 +43,9 @@
           <div v-else-if="activeTab === 'team'">
             <Team />
           </div>
+          <div v-else-if="activeTab === 'how-search-works'">
+            <HowSearchWorks />
+          </div>
         </div>
       </UCard>
     </div>
@@ -56,6 +59,7 @@ import AboutCoLD from './AboutCoLD.vue'
 import OpenEducationalResources from './OpenEducationalResources.vue'
 import FAQ from './FAQ.vue'
 import Team from './Team.vue'
+import HowSearchWorks from './HowSearchWorks.vue'
 
 // Define the navigation links
 const links = [
@@ -63,6 +67,7 @@ const links = [
   { label: 'Team', key: 'team' },
   { label: 'Open Educational Resources', key: 'open-educational-resources' },
   { label: 'FAQ', key: 'faq' },
+  { label: 'How Search Works', key: 'how-search-works' },
 ]
 
 // Initialize router and route
