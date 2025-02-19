@@ -18,7 +18,7 @@ const htmlContent = ref('') // Store parsed HTML content
 
 onMounted(async () => {
   try {
-    const response = await fetch('/temp_questionnaire.txt') // Fetch the Markdown file
+    const response = await fetch('/temp_methodology.txt') // Fetch the Markdown file
     if (response.ok) {
       content.value = await response.text() // Store raw Markdown
       htmlContent.value = marked(content.value) // Convert Markdown to HTML

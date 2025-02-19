@@ -31,20 +31,18 @@
           class="main-conten prose -space-y-10 flex flex-col gap-12 px-6 w-full"
         >
           <!-- Tab Content -->
-          <div v-if="activeTab === 'questionnaire'">
-            <Questionnaire />
+          <div v-if="activeTab === 'about-cold'">
+            <AboutCoLD />
           </div>
-          <div v-if="activeTab === 'glossary'">
-            <Glossary />
+          <div v-else-if="activeTab === 'team'">
+            <Team />
           </div>
-          <div v-if="activeTab === 'help'">
-            <Help />
-          </div>
-          <div v-if="activeTab === 'downloads'">
-            <Downloads />
-          </div>
-          <div v-if="activeTab === 'press'">
+          <div v-else-if="activeTab === 'press'">
             <Press />
+          </div>
+
+          <div v-else-if="activeTab === 'how-search-works'">
+            <HowSearchWorks />
           </div>
         </div>
       </UCard>
@@ -55,18 +53,14 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import Questionnaire from './Questionnaire.vue'
-import Glossary from './Glossary.vue'
-import Help from './Help.vue'
-import Downloads from './Downloads.vue'
+import AboutCoLD from './AboutCoLD.vue'
+import Team from './Team.vue'
 import Press from './Press.vue'
 
 // Define the navigation links
 const links = [
-  { label: 'Questionnaire', key: 'questionnaire' },
-  { label: 'Glossary', key: 'glossary' },
-  { label: 'Help', key: 'help' },
-  { label: 'Downloads', key: 'downloads' },
+  { label: 'About CoLD', key: 'about-cold' },
+  { label: 'Team', key: 'team' },
   { label: 'Press', key: 'press' },
 ]
 
@@ -75,7 +69,7 @@ const router = useRouter()
 const route = useRoute()
 
 // Reactive variable to track the active tab, default to 'about-cold'
-const activeTab = ref(route.query.tab || 'questionnaire')
+const activeTab = ref(route.query.tab || 'about-cold')
 
 // Watch for changes in activeTab and update the URL query
 watch(activeTab, (newTab) => {
