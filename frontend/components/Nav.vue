@@ -1,5 +1,8 @@
 <template>
-  <nav class="bg-white border-b border-cold-gray w-full px-6 h-[110px]">
+  <nav
+    class="bg-white border-b border-cold-gray w-full px-6 h-[110px]"
+    :class="{ 'bg-purple-active': isExpanded }"
+  >
     <div
       class="mx-auto h-full"
       style="max-width: var(--container-width); width: 100%"
@@ -22,13 +25,15 @@
             :placeholder="searchPlaceholder"
             icon="i-material-symbols:search"
             :trailing="true"
-            style="
-              width: 100%;
-              border-radius: 0 !important;
-              box-shadow: none !important;
-              border: none !important;
-              background-color: var(--color-cold-purple-alpha) !important;
-            "
+            :style="{
+              width: '100%',
+              borderRadius: '0',
+              boxShadow: 'none',
+              border: 'none',
+              backgroundColor: isExpanded
+                ? 'transparent'
+                : 'var(--color-cold-purple-alpha)',
+            }"
           />
           <button @click="emitSearch" class="icon-button">
             <span
@@ -52,7 +57,7 @@
         </div>
 
         <!-- Navigation Links (Always visible) -->
-        <div class="space-x-3 sm:space-x-6">
+        <div v-if="!isExpanded" class="space-x-3 sm:space-x-6">
           <ULink
             v-for="(link, index) in links"
             :key="index"
@@ -227,5 +232,9 @@ a {
   text-underline-offset: 6px !important;
   text-decoration-thickness: 2px !important;
   text-decoration-color: var(--color-cold-purple) !important;
+}
+
+.bg-purple-active {
+  background-color: var(--color-cold-purple-alpha) !important;
 }
 </style>
