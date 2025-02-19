@@ -52,12 +52,12 @@ class SearchService:
                 if not column or value is None:
                     raise ValueError(f"Invalid filter: {filter_item}")
 
-                # Use LOWER() for case-insensitive matching
+                # Use ILIKE for case-insensitive partial matching
                 param_key = f"param_{idx}"
-                conditions.append(f'LOWER("{column}") = LOWER(:{param_key})')
-                query_params[param_key] = value
+                conditions.append(f'"{column}" ILIKE :{param_key}')
+                query_params[param_key] = f'%{value}%'
 
-            # Append the WHERE clause to the query only if there are conditions
+            # Append the WHERE clause to the query if conditions exist
             if conditions:
                 query += f' WHERE {" AND ".join(conditions)}'
 
