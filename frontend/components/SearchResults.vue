@@ -54,7 +54,7 @@
               />
             </div>
           </div>
-          <div class="result-value-small text-center pt-4">
+          <div v-if="!loading" class="result-value-small text-center pt-4">
             <UButton
               to="/learn?tab=how-search-works"
               variant="link"
