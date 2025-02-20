@@ -8,6 +8,11 @@
       <template v-if="noLinkList.includes(source)">
         <span>{{ source }}</span>
       </template>
+      <template v-else-if="typeof source === 'object' && source.id">
+        <NuxtLink :to="`/literature/${source.id}`">
+          {{ source.title }}
+        </NuxtLink>
+      </template>
       <template v-else>
         <LegalProvisionRenderer
           :value="source"
@@ -37,7 +42,7 @@ const props = defineProps({
 })
 
 const config = useRuntimeConfig()
-const primarySourceTitle = ref(null) // Store the fetched primary source title
+const primarySource = ref(null) // Store the fetched primary source title
 
 // Function to fetch the primary source from API
 async function fetchPrimarySource() {
@@ -70,7 +75,7 @@ async function fetchPrimarySource() {
 
     const data = await response.json()
     if (data.length > 0) {
-      primarySourceTitle.value = data[0].Title // Take the first title from the response
+      primarySource.value = { title: data[0].Title, id: data[0].ID }
     }
   } catch (error) {
     console.error('Error fetching primary source:', error)
@@ -79,7 +84,7 @@ async function fetchPrimarySource() {
 
 // Compute final list of sources, adding the fetched primary source
 const computedSources = computed(() => {
-  return [...props.sources, primarySourceTitle.value].filter(Boolean)
+  return [...props.sources, primarySource.value].filter(Boolean)
 })
 
 // Fetch the primary source when the component mounts
