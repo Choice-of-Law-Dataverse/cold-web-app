@@ -5,7 +5,7 @@
         <DetailDisplay
           :loading="loading"
           :resultData="processedAnswerData"
-          :keyLabelPairs="keyLabelPairs"
+          :keyLabelPairs="filteredKeyLabelPairs"
           :valueClassMap="valueClassMap"
           formattedSourceTable="Question"
         >
@@ -135,6 +135,15 @@ const processedAnswerData = computed(() => {
       ? answerData.value['Case ID'].split(',').map((caseId) => caseId.trim())
       : [],
   }
+})
+
+const filteredKeyLabelPairs = computed(() => {
+  if (processedAnswerData.value?.Answer === 'No data') {
+    return keyLabelPairs.filter(
+      (pair) => pair.key !== 'Legal provision articles'
+    )
+  }
+  return keyLabelPairs
 })
 
 onMounted(() => {
