@@ -5,16 +5,30 @@
         <DetailDisplay
           :loading="loading"
           :resultData="processedAnswerData"
-          :keyLabelPairs="keyLabelPairs"
+          :keyLabelPairs="filteredKeyLabelPairs"
           :valueClassMap="valueClassMap"
           formattedSourceTable="Question"
         >
           <!-- Custom rendering for Legal provision articles -->
           <template #legal-provision-articles="{ value }">
-            <LegalProvisionRenderer
-              :value="value"
+            <QuestionSourceList
+              :sources="
+                [
+                  ...(value ||
+                  processedAnswerData?.['Legislation-ID'] ||
+                  processedAnswerData?.['More information']
+                    ? [
+                        value ||
+                          processedAnswerData?.['Legislation-ID'] ||
+                          processedAnswerData?.['More information'],
+                      ]
+                    : []),
+                  processedAnswerData?.['Name (from Jurisdiction)'],
+                ].filter(Boolean)
+              "
               :fallbackData="processedAnswerData"
               :valueClassMap="valueClassMap"
+              :noLinkList="[processedAnswerData?.['More information']]"
             />
           </template>
 
@@ -105,14 +119,14 @@ const keyLabelPairs = [
 const valueClassMap = {
   Questions: 'result-value-medium',
   Answer: 'result-value-large',
-  'Legal provision articles': 'result-value-medium',
+  'Legal provision articles': 'result-value-small',
   'Case ID': 'result-value-small',
 }
 
 // Preprocess data to handle custom rendering cases
 const processedAnswerData = computed(() => {
   if (!answerData.value) return null
-
+  console.log(processedAnswerData)
   return {
     ...answerData.value,
     'Legal provision articles':
@@ -121,6 +135,15 @@ const processedAnswerData = computed(() => {
       ? answerData.value['Case ID'].split(',').map((caseId) => caseId.trim())
       : [],
   }
+})
+
+const filteredKeyLabelPairs = computed(() => {
+  if (processedAnswerData.value?.Answer === 'No data') {
+    return keyLabelPairs.filter(
+      (pair) => pair.key !== 'Legal provision articles'
+    )
+  }
+  return keyLabelPairs
 })
 
 onMounted(() => {
