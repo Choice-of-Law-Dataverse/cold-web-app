@@ -12,6 +12,7 @@
           <!-- Slot for Legal provisions -->
           <template #legal-provisions-ids="{ value }">
             <div>
+              <p>Selected Provisions</p>
               <div v-if="value && value.trim()">
                 <LegalProvision
                   v-for="(provisionId, index) in value.split(',')"

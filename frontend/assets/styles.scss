@@ -94,7 +94,11 @@ li {
 .label-key {
   @extend .label;
   padding: 0;
-  // margin-bottom: 12px;
+}
+
+.label-key-provision-article {
+  @extend .label-key;
+  font-weight: 500 !important;
 }
 
 .label-jurisdiction {
