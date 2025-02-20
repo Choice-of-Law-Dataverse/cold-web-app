@@ -28,7 +28,6 @@
             [
               resultData['Legal provision articles'] ||
                 resultData['Legislation-ID'], // ||
-              //resultData['More information'],
               resultData['Name (from Jurisdiction)'],
             ].filter(Boolean)
           "
