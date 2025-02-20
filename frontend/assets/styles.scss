@@ -89,12 +89,17 @@ li {
   font-weight: 700 !important;
   text-transform: uppercase;
   margin-right: 12px;
+  color: var(--color-cold-night);
 }
 
 .label-key {
   @extend .label;
   padding: 0;
-  // margin-bottom: 12px;
+}
+
+.label-key-provision-article {
+  @extend .label-key;
+  font-weight: 500 !important;
 }
 
 .label-jurisdiction {
