@@ -126,7 +126,7 @@ const valueClassMap = {
 // Preprocess data to handle custom rendering cases
 const processedAnswerData = computed(() => {
   if (!answerData.value) return null
-  //console.log(processedAnswerData)
+  //console.log('processedAnswerData', processedAnswerData)
   return {
     ...answerData.value,
     'Legal provision articles':
