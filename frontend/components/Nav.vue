@@ -24,7 +24,7 @@
             class="input-custom-purple placeholder-purple font-semibold"
             :placeholder="searchPlaceholder"
             icon="i-material-symbols:search"
-            :trailing="true"
+            :trailing="false"
             :style="{
               width: '100%',
               borderRadius: '0',
@@ -201,7 +201,7 @@ onUnmounted(() => {
 
 .icon-button {
   position: absolute;
-  right: 10px; /* Adjust based on the right padding of input */
+  left: 10px; /* Adjust based on the right padding of input */
   top: 50%;
   transform: translateY(-39%); /* Center vertically */
   background: none;
@@ -209,6 +209,7 @@ onUnmounted(() => {
   cursor: pointer;
   color: var(--color-cold-purple); /* Match icon color */
   padding: 0;
+  padding-left: 4px;
 }
 
 .icon-button .iconify {
