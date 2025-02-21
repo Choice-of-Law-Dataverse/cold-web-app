@@ -9,10 +9,16 @@
     <!-- Header section -->
     <template #header v-if="showHeader">
       <UCardHeader
-        v-if="resultData"
+        v-if="
+          resultData &&
+          formattedJurisdiction.length > 0 &&
+          formattedTheme.length > 0
+        "
         :resultData="resultData"
         :cardType="formattedSourceTable"
         :showOpenLink="false"
+        :formattedJurisdiction="formattedJurisdiction"
+        :formattedTheme="formattedTheme"
       />
     </template>
 
@@ -87,6 +93,8 @@ const props = defineProps({
     type: Boolean,
     default: true, // Default to true so headers are shown unless explicitly disabled
   },
+  formattedJurisdiction: { type: Array, required: false, default: () => [] },
+  formattedTheme: { type: Array, required: false, default: () => [] },
 })
 
 const route = useRoute()
@@ -113,6 +121,14 @@ onMounted(async () => {
   } catch (error) {
     console.error('Failed to fetch covered jurisdictions:', error)
   }
+})
+
+watchEffect(() => {
+  console.log(
+    'DetailDisplay - formattedJurisdiction:',
+    props.formattedJurisdiction
+  )
+  console.log('DetailDisplay - formattedTheme:', props.formattedTheme)
 })
 </script>
 

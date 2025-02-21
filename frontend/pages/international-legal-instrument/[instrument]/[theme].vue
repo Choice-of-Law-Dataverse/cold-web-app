@@ -8,6 +8,8 @@
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
           formattedSourceTable="Legislation"
+          :formattedJurisdiction="formattedJurisdiction"
+          :formattedTheme="formattedTheme"
         >
           <!-- Slot for Legal provisions -->
           <template #legal-provisions-ids="{ value }">
@@ -32,8 +34,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
+import { useNuxtApp } from '#app'
+const { isHydrating } = useNuxtApp()
 import DetailDisplay from '~/components/DetailDisplay.vue'
 import LegalProvision from '~/components/LegalProvision.vue'
 
@@ -46,9 +50,17 @@ const loading = ref(true) // Track loading state
 
 const config = useRuntimeConfig()
 
-const slugify = (text: string) => {
-  return text.toLowerCase().replace(/\s+/g, '-') // Convert spaces to hyphens
-}
+const formattedJurisdiction = ref([])
+const formattedTheme = ref([])
+
+watch(legalInstrument, (newValue) => {
+  if (newValue) {
+    formattedJurisdiction.value = [newValue['Instrument']]
+    formattedTheme.value = [newValue['Theme']]
+    console.log('Updated formattedJurisdiction:', formattedJurisdiction.value) // ✅ Debugging log
+    console.log('Updated formattedTheme:', formattedTheme.value) // ✅ Debugging log
+  }
+})
 
 const deslugify = (slug: string) => {
   return slug.replace(/-/g, ' ') // Convert hyphens back to spaces
@@ -86,9 +98,13 @@ async function fetchLegalInstrument(instrument: string, theme: string) {
       throw new Error('Failed to fetch international legal instrument')
 
     const result = await response.json()
+    console.log('API Response:', result)
 
     if (Array.isArray(result) && result.length > 0) {
-      legalInstrument.value = result[0] // Assuming you want the first result
+      legalInstrument.value = result[0] // ✅ Set data
+      console.log('Updated legalInstrument:', legalInstrument.value) // ✅ Log the new value
+
+      await nextTick() // ✅ Ensure Vue updates before dependent computed properties run
     } else {
       legalInstrument.value = null // Handle empty responses
     }
@@ -128,11 +144,5 @@ onMounted(async () => {
   fetchLegalInstrument(instrument, theme)
 
   await nextTick() // Ensure the DOM updates with the rendered content
-
-  // Check if the URL contains a hash and scroll to the corresponding element
-  // const anchor = document.querySelector(window.location.hash)
-  // if (anchor) {
-  //   anchor.scrollIntoView({ behavior: 'smooth' }) // Smoothly scroll to the element
-  // }
 })
 </script>

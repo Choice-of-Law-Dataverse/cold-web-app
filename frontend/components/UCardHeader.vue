@@ -1,5 +1,8 @@
 <template>
-  <div class="header-container flex items-center justify-between">
+  <div
+    class="header-container flex items-center justify-between"
+    :key="formattedJurisdiction + formattedTheme"
+  >
     <!-- Left side of the header: Tags -->
     <div
       class="tags-container flex items-center overflow-x-auto scrollbar-hidden"
@@ -86,10 +89,23 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  formattedJurisdiction: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
+  formattedTheme: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
 })
 
 // Computed property for "jurisdiction" to handle multiple field options and duplicates
 const formattedJurisdiction = computed(() => {
+  if (props.formattedJurisdiction.length > 0) {
+    return props.formattedJurisdiction
+  }
   const jurisdictionString =
     props.resultData['Jurisdiction name'] ||
     props.resultData['Jurisdiction Names'] ||
@@ -173,6 +189,13 @@ function getLink() {
       return '#'
   }
 }
+watchEffect(() => {
+  console.log(
+    'UCardHeader - formattedJurisdiction:',
+    props.formattedJurisdiction
+  )
+  console.log('UCardHeader - formattedTheme:', props.formattedTheme)
+})
 </script>
 
 <style scoped>
