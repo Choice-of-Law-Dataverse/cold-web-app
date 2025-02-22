@@ -76,6 +76,23 @@
           </template>
         </DetailDisplay>
 
+        <!-- ✅ Move the "Specialists" section OUTSIDE DetailDisplay -->
+        <section v-if="specialists.length" class="mt-8">
+          <h2 class="text-xl font-bold">Specialists</h2>
+          <ul class="mt-4">
+            <li
+              v-for="specialist in specialists"
+              :key="specialist.Specialist"
+              class="py-2 border-b"
+            >
+              {{ specialist.Specialist }}
+            </li>
+          </ul>
+        </section>
+        <p v-else-if="specialists.length === 0 && !loading" class="mt-4">
+          No specialists found for this jurisdiction.
+        </p>
+
         <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
         <JurisdictionComparison
           v-if="!loading && jurisdictionData?.Name"
@@ -88,17 +105,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
-//import DetailDisplay from '~/components/DetailDisplay.vue'
-//import JurisdictionComparison from '~/components/JurisdictionComparison.vue'
-//import JurisdictionComparisonInfo from '~/components/JurisdictionComparisonInfo.vue'
 
 const route = useRoute() // Access the route to get the ID param
-//const router = useRouter()
 const jurisdictionData = ref(null) // Store fetched jurisdiction data
 const loading = ref(true) // Track loading state
 const literatureTitle = ref<string | null>(null)
+const specialists = ref([])
 
 // Extract `c` query parameter
 const compareJurisdiction = ref((route.query.c as string) || null)
@@ -180,6 +194,43 @@ async function fetchLiteratureTitle(id: string) {
   }
 }
 
+// Function to fetch specialists
+const fetchSpecialists = async (jurisdictionName) => {
+  if (!jurisdictionName) return
+
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          table: 'Specialists',
+          filters: [{ column: 'Jurisdiction', value: jurisdictionName }],
+        }),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to fetch specialists')
+
+    specialists.value = await response.json()
+  } catch (error) {
+    console.error('Error fetching specialists:', error)
+    specialists.value = []
+  }
+}
+
+// Fetch specialists when jurisdictionData.Name changes
+watch(
+  () => jurisdictionData.value?.Name,
+  (newName) => {
+    if (newName) fetchSpecialists(newName)
+  }
+)
+
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
   { key: 'Name', label: 'Jurisdiction' },
@@ -199,6 +250,8 @@ const valueClassMap = {
 onMounted(() => {
   const jurisdictionName = (route.params.id as string).replace(/_/g, ' ') // Convert '_' to spaces
   fetchJurisdiction(jurisdictionName)
+  if (jurisdictionData.value?.Name)
+    fetchSpecialists(jurisdictionData.value.Name)
 })
 
 // Watch for changes to the `c` query parameter and update `compareJurisdiction`
