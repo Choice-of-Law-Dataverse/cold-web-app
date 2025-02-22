@@ -17,6 +17,7 @@
             ref="searchInput"
             v-model="searchText"
             @keyup.enter="emitSearch"
+            @keydown.esc="clearSearch"
             @focus="expandSearch"
             @blur="collapseSearch"
             class="input-custom-purple placeholder-purple font-semibold"
