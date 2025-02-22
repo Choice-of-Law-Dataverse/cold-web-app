@@ -14,6 +14,7 @@
         <div class="search-container" :class="{ expanded: isExpanded }">
           <UInput
             size="xl"
+            ref="searchInput"
             v-model="searchText"
             @keyup.enter="emitSearch"
             @focus="expandSearch"
@@ -80,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import eventBus from '@/eventBus'
 
@@ -91,6 +92,8 @@ const isSmallScreen = ref(false)
 
 const router = useRouter()
 const route = useRoute()
+
+const searchInput = ref(null)
 
 const links = [
   { label: 'About', to: '/about' },
@@ -115,6 +118,12 @@ function emitSearch() {
     query,
   })
   collapseSearch() // Shrink search field after search
+  nextTick().then(() => {
+    const inputEl = searchInput.value?.$el.querySelector('input')
+    if (inputEl) {
+      inputEl.blur()
+    }
+  })
 }
 
 function expandSearch() {
@@ -125,9 +134,14 @@ function collapseSearch() {
   isExpanded.value = false
 }
 
-const clearSearch = () => {
+const clearSearch = async () => {
   searchText.value = ''
   collapseSearch()
+  await nextTick()
+  const inputEl = searchInput.value?.$el.querySelector('input')
+  if (inputEl) {
+    inputEl.blur()
+  }
 }
 
 // Dynamically update the placeholder
