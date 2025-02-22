@@ -40,8 +40,8 @@
           <div v-else-if="activeTab === 'endorsements'">
             <Endorsements />
           </div>
-          <div v-else-if="activeTab === 'support'">
-            <Support />
+          <div v-else-if="activeTab === 'supporters'">
+            <Supporters />
           </div>
           <div v-else-if="activeTab === 'press'">
             <Press />
@@ -61,7 +61,7 @@ import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import AboutCoLD from './AboutCoLD.vue'
 import Endorsements from './Endorsements.vue'
-import Support from './Support.vue'
+import Supporters from './Supporters.vue'
 import Team from './Team.vue'
 import Press from './Press.vue'
 
@@ -69,7 +69,7 @@ import Press from './Press.vue'
 const links = [
   { label: 'About CoLD', key: 'about-cold' },
   { label: 'Team', key: 'team' },
-  { label: 'Support', key: 'support' },
+  { label: 'Supporters', key: 'supporters' },
   { label: 'Endorsements', key: 'endorsements' },
   { label: 'Press', key: 'press' },
 ]
