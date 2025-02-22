@@ -1,4 +1,4 @@
-This analysis is derived from a [data collection survey](/questionnaire). These answers are simplified summaries of assessments provided by [various specialists worldwide](/about?tab=team).
+This analysis is derived from a [data collection survey](/learn?tab=methodology#questionnaire). These answers are simplified summaries of assessments provided by [various specialists worldwide](/about?tab=team).
 
 The answers are classified into four categories.
 
