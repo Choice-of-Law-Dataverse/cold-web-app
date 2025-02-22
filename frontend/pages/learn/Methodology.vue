@@ -1,12 +1,11 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <div
-        class="copy main-content prose -space-y-10 flex flex-col gap-12 px-6 w-full"
-        v-html="htmlContent"
-      ></div>
-    </div>
-  </main>
+  <div class="main-content prose -space-y-10 flex flex-col gap-12 w-full">
+    <ContentDoc path="/methodology_intro" />
+    <hr />
+    <ContentDoc path="/methodology_search" />
+    <hr />
+    <div v-html="htmlContent"></div>
+  </div>
 </template>
 
 <script setup>
@@ -18,7 +17,7 @@ const htmlContent = ref('') // Store parsed HTML content
 
 onMounted(async () => {
   try {
-    const response = await fetch('/temp_methodology.txt') // Fetch the Markdown file
+    const response = await fetch('/methodology_questionnaire.txt') // Fetch the Markdown file
     if (response.ok) {
       content.value = await response.text() // Store raw Markdown
       htmlContent.value = marked(content.value) // Convert Markdown to HTML
