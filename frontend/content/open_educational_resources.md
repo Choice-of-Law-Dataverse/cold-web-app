@@ -1,13 +1,16 @@
 ## ‌Choice of Law in International Commercial Contracts
-This [book](https://global.oup.com/academic/product/choice-of-law-in-international-commercial-contracts-9780198840107?cc=ch&lang=en) is the main output of the previous research project, “Hague Principles and Beyond”. It contains over sixty reports dealing with the regulation of choice of law in a significant number of jurisdictions around the world and a general report. The book has been applauded by the academic community, and it is regarded as a definitive reference guide to the key choice of law principles on international contracts.
-[Read the General Comparative Report](https://fdslive.oup.com/www.oup.com/academic/pdf/13/9780198840107_chapter1.pdf)
+
+This <a href="https://global.oup.com/academic/product/choice-of-law-in-international-commercial-contracts-9780198840107?cc=ch&lang=en" target="_blank">book</a> is the main output of the previous research project, “Hague Principles and Beyond”. It contains over sixty reports dealing with the regulation of choice of law in a significant number of jurisdictions around the world and a general report. The book has been applauded by the academic community, and it is regarded as a definitive reference guide to the key choice of law principles on international contracts.
+<a href="https://fdslive.oup.com/www.oup.com/academic/pdf/13/9780198840107_chapter1.pdf" target="_blank">Read the General Comparative Report</a>.
 
 ## ‌Uniform Law Review
-Volume 22, Issue 2, June 2017 - special issue on the HCCH Principles ([available through paywall](https://academic.oup.com/ulr/issue/22/2))
+
+Volume 22, Issue 2, June 2017 - special issue on the HCCH Principles (<a href="https://academic.oup.com/ulr/issue/22/2" target="_blank">available through paywall</a>)
 
 ## Hague Conference on Private International Law
+
 Official materials from the Hague Conference on Private International Law
-Consult the [HCCH page](https://www.hcch.net/en/instruments/conventions/specialised-sections/choice-of-law-principles), regularly updated
+Consult the <a href="https://www.hcch.net/en/instruments/conventions/specialised-sections/choice-of-law-principles" target="_blank">HCCH page</a>, regularly updated.
 
 ## Selected List of Freely Available Texts
 
@@ -21,7 +24,7 @@ Consult the [HCCH page](https://www.hcch.net/en/instruments/conventions/speciali
 
 - Dimitrios K Stamatiadis, [‘The Hague Conference on Private International Law’ (2016)](/literature/105) 98 Studia Universitatis Moldaviae 262
 
-- José Antonio Moreno Rodriguez and María Mercedes Albornoz, [‘Reflections on the Mexico Convention in the Context of the Preparation of the Future Hague Instrument on International Contracts’ (2011)](/(literature/104)) 7 Journal of Private International Law 491
+- José Antonio Moreno Rodriguez and María Mercedes Albornoz, [‘Reflections on the Mexico Convention in the Context of the Preparation of the Future Hague Instrument on International Contracts’ (2011)](/literature/104) 7 Journal of Private International Law 491
 
 - Michael Douglas, [‘A Consideration of Current Issues in Private International Law’ [2017]](/literature/100) Australian Bar Review
 
@@ -51,7 +54,6 @@ Consult the [HCCH page](https://www.hcch.net/en/instruments/conventions/speciali
 
 - Michael Douglas and Nicholas Loadsmant, [‘The Impact of the Hague Principles on Choice of Law in International Commercial Contracts’ (2018)](/literature/81) 19 Melbourne Journal of International Law 1.
 
+[See all texts and references](/search?type=Literature)
 
-[See all texts and references](/search?type=Literature)  
-  
 [Contact us](/contact) if you want a reference to be included here
