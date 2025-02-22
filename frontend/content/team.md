@@ -3,32 +3,32 @@
 <img src="https://www.unilu.ch/fileadmin/_processed_/a/b/csm_Girsberger_Daniel_Q_d862e28b53.jpg" width="150"/>
 
 **Daniel Girsberger** Project Leader  
-[Daniel](https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/) is the grant holder of the SNF Project. He oversees the strategic and operational decisions and is responsible for data quality control for the Dataverse. Daniel steers the Scientific Board, composed of legal experts from all continents.
+<a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/" target="_blank">Daniel</a> is the grant holder of the SNF Project. He oversees the strategic and operational decisions and is responsible for data quality control for the Dataverse. Daniel steers the Scientific Board, composed of legal experts from all continents.
 
 <img src="https://www.unilu.ch/fileadmin/_processed_/b/2/csm_Brandao_de_Oliveira_Agatha-1452-20230619_f5c03e5ebb.jpg" width="150"/>
 
 **Agatha Brandão de Oliveira** Project Coordinator  
-[Agatha](https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/agatha-brandao-de-oliveira-mlaw) is responsible for the strategic vision and practical execution of the project. She manages a multidisciplinary staff and is in charge of fostering partnerships. Agatha also acts as a Senior Researcher for the Dataverse, with a focus on data input.
+<a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/agatha-brandao-de-oliveira-mlaw" target="_blank">Agatha</a> is responsible for the strategic vision and practical execution of the project. She manages a multidisciplinary staff and is in charge of fostering partnerships. Agatha also acts as a Senior Researcher for the Dataverse, with a focus on data input.
 
 <img src="https://www.unilu.ch/fileadmin/_processed_/b/a/csm_Weigold_Simon_Q_7a3afcd4c3.jpg" width="150"/>
 
 **Simon Weigold** Data Architect  
-[Simon](https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/simon-weigold-ma/) translates the project requirements into a data infrastructure. He implements data management procedures and facilitates systems used to input, store, review, and process data.
+<a href="https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/simon-weigold-ma/" target="_blank">Simon</a> translates the project requirements into a data infrastructure. He implements data management procedures and facilitates systems used to input, store, review, and process data.
 
 <img src="https://www.unilu.ch/fileadmin/_processed_/b/7/csm_Aiolfi_Fabian_Q_b751def4d4.jpg" width="150"/>
 
 **Fabian Aiolfi** Product Developer  
-[Fabian](https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/fabian-aiolfi-ma) is behind the conceptual development of the Dataverse. He coordinates user needs, academic input and technical feasibility to ensure that CoLD is user-friendly and useful.
+<a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/fabian-aiolfi-ma" target="_blank">Fabian</a> is behind the conceptual development of the Dataverse. He coordinates user needs, academic input and technical feasibility to ensure that CoLD is user-friendly and useful.
 
 <img src="https://www.unilu.ch/fileadmin/_processed_/3/c/csm_McMahon_Dominic-C_ba344cde89.jpg" width="150"/>
 
 **Dominic McMahon** Legal NLP Specialist & Data Analytics Lead  
-[Dominic](https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/dominic-mcmahon-mlaw/) has recently completed his Master's degree in Law at the University of Lucerne. He acts as a Researcher for the Dataverse, with a focus on data analysis and data input. Dominic is also responsible for administrative tasks and for the coordination of events.
+<a href="https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/dominic-mcmahon-mlaw/" target="_blank">Dominic</a> has recently completed his Master's degree in Law at the University of Lucerne. He acts as a Researcher for the Dataverse, with a focus on data analysis and data input. Dominic is also responsible for administrative tasks and for the coordination of events.
 
 <img src="https://www.unilu.ch/fileadmin/_processed_/6/6/csm_Shpakova_Olga_Q_451e7ba545.jpg" width="150"/>
 
 **Olga Shpakova** Data Scientist  
-Under the supervision of Prof. Daniel Girsberger and Agatha Brandão, [Olga](https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/olga-shpakova-bsc/) researches the application of large language models in the legal field. She has been employed as a research assistant in the project since March 2024.
+Under the supervision of Prof. Daniel Girsberger and Agatha Brandão, <a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/olga-shpakova-bsc/" target="_blank">Olga</a> researches the application of large language models in the legal field. She has been employed as a research assistant in the project since March 2024.
 
 ## Partners
 
