@@ -1,89 +1,3 @@
-## What’s the Methodology Behind CoLD?
-In order to systematize diverse rules and case law decisions in a uniform manner, [comparative law methodology](/questionnaire) is applied. A high-quality database is the result of comprehensive global research efforts on the topic of choice of law, and the ultimate goal is to add more data points to the main dataset. Information will be “in motion”, constantly updated and connected to the users.
-
-<details>
-<summary>Learn more about the objectives</summary>
-
-Our specific objectives are the following:
-- To expand the scope of data collection to more African, Asian and Latin American countries.
-- To update the existing information.
-- To translate relevant data points into English. 
-- To present the information in a systematic and orderly manner.
-- To design a user-friendly online platform as a sustainable data-sharing strategy.
-- To provide a comprehensive overview of national, regional, supranational, and international rules and approaches to choice of law.
-- To determine good practices which may be transferable to other jurisdictions, notably where a body of rules is not consolidated and courts have not adopted a position on a given choice of law issue. 
-- To identify convergent trends in party autonomy across the five continents.
-- To forecast new directions regarding the future of transnational rules on conflict of laws.
-</details>
-
-## PostgreSQL Full Text Search
-PostgreSQL, also called Postgres, is a relational database. Relational database means, that data is stored in a structured format, representing tables and columns.
-Postgres has an integrated feature called "Full Text Search", which allows to query the database and the data entries stored within by using textual queries (as opposed to using Structured Query Language (SQL), which has sophisticated methods of querying databases that are just as manifold in what can be achieved with them as they are complex in handling).
-
-### General functionality
-The Postgres Full Text Search works by comparing an input document (textual user query) with the data found in the database. It is unfeasible to use the raw data as it would be found in the database directly. Instead, the individual entries from a database table have to be translated into a list of documents. The following preparation steps make it possible to use the Postgres Full Text Search feature:
-
-1. **creating searchable documents**
-
-Take every row of a table you want to search. Each of these rows has to be turned into a searchable document. To make a row searchable, you first select the columns you deem fit for including their entries in the searchable content. Then, you transform the text into a list of tokens, more specifically: lexemes (basically word stems). This list of lexemes has been cleaned for stop words and each lexeme is complemented with its position in the original text. Imagine you had a sentence *"The court has decided on party autonomy and arbitration in Switzerland."*. This sentence would be transformed into a list that looks like this: *'arbitr':9 'autonomi':7 'court':2 'decid':4 'parti':6 'switzerland':11*
-```
-SELECT to_tsvector('The court has decided on party autonomy and arbitration in Switzerland.');
-```
-
-2. **parsing textual user queries**
-
-This list can now be used for comparison. To compare it with a textual user query, each query will have to undergo a transformation process similar as in step 1. Searching for *"court decision on party autonomy"* would thus be turned into *'court' & 'decis' & 'parti' & 'autonomi'*. Note that for user queries, the position of words within the original text is not stored.
-```
-SELECT to_tsquery('court & decision & on & party & autonomy');
-```
-
-3. **matching documents with queries**
-
-Finally, we can match the transformed query with all searchable documents in list form available and return whether there is infact a match or not. For some further granularity, we can score each comparison by measuring how relevant each document is to the query.
-Following the previous examples, matching and ranking the query from step 2 with the searchable document from step 1, returns a ranking score of *0.25948015*.
-Simple comparison:
-```
-SELECT to_tsquery('court & decision & on & party & autonomy') @@ to_tsvector('The court has decided on party autonomy and arbitration in Switzerland.');
-```
-Ranking:
-```
-SELECT
-    ts_rank(
-        to_tsvector('The court has decided on party autonomy and arbitration in Switzerland.'),
-        to_tsquery('court & decision & on & party & autonomy')
-		--to_tsquery('party & autonomy')
-		)
-```
-
-### Implementation in CoLD
-The way in which the Postgres Full Text Search feature has been implemented is by enabling Full Text Search for multiple tables in order to search each of them with the same query. The Full Text Search then returns a joint list of results with data entries from all searched tables in order of how well their ranking score matches the textual user query.
-Here I am providing an overview for which columns have been selected with which priority for the tables that can be searched using the full text feature. Note that each column to be included for text search can be weighted using weights (A, B, C, D), with A being the highest and D the lowest weight.
-
-1. **"Answers" table**
-- Questions (A)
-- Name (from Jurisdiction) (A)
-- More information (B)
-- Themes (C)
-
-2. **"Court decisions" table**
-- Case (A)
-- Jurisdiction Names (A)
-- English translation (B)
-- Additional information (C)
-
-3. **"Legislation" table**
-- Title (in English) (A)
-- Official title (A)
-- Jurisdiction name (B)
-- Publication date (B)
-- Entry into force (B)
-- Full text of the provisions (C)
-- Full text original (from Legal provisions) (C)
-- Full text english (from Legal provisions) (C)
-
-For every row in each table, the respective combination of the values from all specified columns becomes one searchable document. For each table, the match between search query and searchable documents is made separately. Once the matches and ranks are calculated for each table, they are joined into one list. This list is the final result of the search results.
-
-
 ## Questionnaire
 Besides displaying the relevant information on legal provisions and case law decisions, the main dataset on choice of law contains an analytical layer. The work is organized around a questionnaire designed to systematize standard answers about choice of law rules in various jurisdictions. It covers the following topics:
 
@@ -97,7 +11,7 @@ Besides displaying the relevant information on legal provisions and case law dec
 
 Each section of the questionnaire is structured to branch out based on the responses to initial questions, leading to more specific follow-up questions. This structure aims to gather detailed and nuanced information about choice of law in international contracts from different jurisdictions.  
 &nbsp;
-## Preamble
+### Preamble
 0. Is there a [codification](/learn?tab=glossary#pil-codification) on choice of law or are there similar established rules?
     0. Are these rules part of a private international law instrument?
     0. Are these rules a consequence of a recent [law reform](/learn?tab=glossary#revision-legal-reform)?
@@ -105,7 +19,7 @@ Each section of the questionnaire is structured to branch out based on the respo
         0. Could the HCCH Principles be expected to play a model role in this regard?
         0. If an implementation is not under discussion, could the HCCH Principles be expected to play any role in **interpreting**, **supplementing** or **developing** rules of private international law?
 0. Do the courts have the authority to [refer to](/learn?tab=glossary#refer-to-an-instrument) the HCCH Principles as [persuasive authority](/learn?tab=glossary#persuasive-authority)?
-    ## Party Autonomy and Freedom of Choice
+    ### Party Autonomy and Freedom of Choice
 0. Is the principle of [party autonomy](/learn?tab=glossary#party-autonomy) in respect of choice of law in [international commercial contracts](/learn?tab=glossary#international-commercial-contracts) widely accepted in your jurisdiction?
 0. Are the parties to an [international commercial contract](/learn?tab=glossary#international-commercial-contracts) thus allowed to choose the law [applicable to their contract](/learn?tab=glossary#observance-of-a-choice-of-law-clause)?
 0. Are the parties allowed to choose different laws for **different parts or aspects** of the contract? (See also [Dépeçage](/learn?tab=glossary#dpeage))
@@ -118,7 +32,7 @@ Each section of the questionnaire is structured to branch out based on the respo
 0. Are the parties allowed to choose [non-State law (“rules of law”)](/learn?tab=glossary#non-state-law-rules-of-law) to govern their contract?
 0. Are there any particular requirements or restrictions with regard to the eligible [rules of law](/learn?tab=glossary#non-state-law-rules-of-law)?
 0. Are the parties allowed to incorporate rules of law into their contract [by way of reference](/learn?tab=glossary#incorporate-rules-by-way-of-reference)? Are there any requirements for the effective incorporation of such rules? 
-    ## Express and Tacit Choice
+    ### Express and Tacit Choice
 0. Does your jurisdiction require a choice of law to be made [expressly](/learn?tab=glossary#express-choice)?
 0. Can a choice of law be made tacitly?
 0. Is [tacit choice](/learn?tab=glossary#tacit-choice) of law clearly distinguished from the position where there is no choice of law?
@@ -132,26 +46,26 @@ Each section of the questionnaire is structured to branch out based on the respo
 0. May a choice of court or arbitral tribunal **be taken into account** as one of the relevant factors in this regard?
 0. May the parties choose [non-State law](/learn?tab=glossary#non-state-law-rules-of-law) [tacitly](/learn?tab=glossary#tacit-choice)?
 0. Do the courts in your jurisdiction readily admit the existence of a [tacit choice](/learn?tab=glossary#tacit-choice) of law? Do legal authorities (doctrine) consider the existence of tacit agreements?
-    ## Mandatory Rules
+    ### Mandatory Rules
 0. Is there a definition of “overriding mandatory provision” or a similar concept (for instance, a rule of direct or immediate application; an internationally [mandatory rule](/learn?tab=glossary#mandatory-rules)) in your jurisdiction?
 0. Do the courts in your jurisdiction apply overriding mandatory provisions of the law of the forum under certain circumstances? If the courts in your jurisdiction sometimes apply overriding mandatory provisions of the law of the forum, under which circumstances will this be the case?
 0. Do the courts **apply** overriding mandatory provisions **of other jurisdictions**? Do the courts **take into account** overriding mandatory provisions of other jurisdictions?
-    ## Public Policy
+    ### Public Policy
 0. Is there a definition for “[public policy](/learn?tab=glossary#public-policy)”? Is there a particular notion or understanding of [public policy](/learn?tab=glossary#public-policy) with regard to the field of commercial law?
 0. Do the courts exclude the application of a provision of the law chosen by the parties if the result of such application would be manifestly incompatible with the [public policy](/learn?tab=glossary#public-policy) of the forum?
 0. Do the courts apply or take into account the [public policy](/learn?tab=glossary#public-policy) of a State whose law would be applicable in the absence of a choice of law?
-    ## Arbitration
+    ### Arbitration
 0. Do arbitral tribunals have the authority to apply the HCCH Principles?
 0. Do arbitral tribunals apply or take into account overriding mandatory provisions or the [public policy](/learn?tab=glossary#public-policy) of a law other than the law chosen by the parties? ([See also Arbitrators vs. State judges](/learn?tab=glossary#arbitrators-vs-state-judges))
 0. Does the codification on [arbitration](/learn?tab=glossary#arbitration), if any, include conflict of laws rules? Is any revision of the _lex arbitri_ under discussion?
-    ## Absence of Choice
+    ### Absence of Choice
 0. Is there a legal framework to tackle the issue of [absence of choice](/learn?tab=glossary#absence-of-choice)?
 0. Do clear [connecting factors](/learn?tab=glossary#connecting-factors) exist?
     0. Which are the most common [connecting factors](/learn?tab=glossary#connecting-factors)?
     0. Among these, what is the most frequently used connecting factor?
 0. Is this connecting factor suitable to be considered a general default rule?
 0. Are you aware of any recent [arbitral award](/learn?tab=glossary#arbitral-awards-vs-court-decisions) dealing with this issue?
-    ## Future Version of the HCCH Principles
+    ### Future Version of the HCCH Principles
 0. Is a future version of the HCCH Principles covering the law applicable in the absence of a choice of law by the parties desirable?
 0. Is further guidance on applicable law in [international contracts](/learn?tab=glossary#international-commercial-contracts) providing protection to [weaker parties](/learn?tab=glossary#weaker-vulnerable-parties) necessary?
 0. Are there other topics that should be considered for further guidance or revision of the HCCH Principles?
