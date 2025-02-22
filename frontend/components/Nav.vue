@@ -36,7 +36,7 @@
             <template #trailing>
               <UButton
                 v-show="searchText !== ''"
-                color="gray"
+                style="opacity: 1; color: var(--color-cold-night) !important"
                 variant="link"
                 icon="i-heroicons-x-mark-20-solid"
                 :padded="false"
@@ -172,13 +172,6 @@ onUnmounted(() => {
   color: var(--color-cold-purple) !important;
 }
 
-/* Make the original input's icon white and thus invisible */
-/* I.e., the icon that's not clickable */
-/* .input-custom-purple ::v-deep(.iconify) {
-  color: white !important;
-  opacity: 0 !important;
-} */
-
 /* Only hide the default left search icon */
 .input-custom-purple ::v-deep(.u-input__icon) {
   color: white !important;
@@ -189,7 +182,6 @@ onUnmounted(() => {
 .input-custom-purple ::v-deep(.u-button .iconify) {
   opacity: 1 !important;
   color: var(--color-cold-purple) !important;
-  /* z-index: 999 !important; */
 }
 
 .input-custom-purple ::placeholder {
