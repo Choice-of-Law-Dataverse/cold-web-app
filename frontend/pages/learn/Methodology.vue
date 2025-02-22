@@ -4,6 +4,8 @@
     <hr />
     <ContentDoc path="/methodology_search" />
     <hr />
+    <!-- Hack -->
+    <span id="questionnaire"></span>
     <div v-html="htmlContent"></div>
   </div>
 </template>
