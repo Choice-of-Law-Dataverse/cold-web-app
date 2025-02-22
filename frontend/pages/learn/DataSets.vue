@@ -1,36 +1,5 @@
 <template>
-  <h2>Download Indexes</h2>
-  <li>
-    All court decisions (<a
-      href="https://choiceoflawdataverse.blob.core.windows.net/full-tables/court-decisions.csv"
-      >CSV</a
-    >
-    |
-    <a
-      href="https://choiceoflawdataverse.blob.core.windows.net/full-tables/court-decisions.xlsx"
-      >XLSX</a
-    >)
-  </li>
-  <li>
-    All legislations (<a
-      href="https://choiceoflawdataverse.blob.core.windows.net/full-tables/legislations.csv"
-      >CSV</a
-    >
-    |
-    <a
-      href="https://choiceoflawdataverse.blob.core.windows.net/full-tables/legislations.xlsx"
-      >XLSX</a
-    >)
-  </li>
-  <li>
-    All literature entries (<a
-      href="https://choiceoflawdataverse.blob.core.windows.net/full-tables/literature.csv"
-      >CSV</a
-    >
-    |
-    <a
-      href="https://choiceoflawdataverse.blob.core.windows.net/full-tables/literature.xlsx"
-      >XLSX</a
-    >)
-  </li>
+  <div class="main-content prose -space-y-10 flex flex-col gap-12 w-full">
+    <ContentDoc path="/data_sets" />
+  </div>
 </template>
