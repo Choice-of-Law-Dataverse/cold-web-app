@@ -11,10 +11,7 @@
         class="flex items-center justify-between h-full space-x-4 sm:space-x-8"
       >
         <!-- Search Input -->
-        <div
-          class="search-container transition-all duration-300"
-          :class="{ expanded: isExpanded }"
-        >
+        <div class="search-container" :class="{ expanded: isExpanded }">
           <UInput
             size="xl"
             v-model="searchText"
@@ -24,7 +21,8 @@
             class="input-custom-purple placeholder-purple font-semibold"
             :placeholder="searchPlaceholder"
             icon="i-material-symbols:search"
-            :trailing="false"
+            autocomplete="off"
+            :ui="{ icon: { trailing: { pointer: '' } } }"
             :style="{
               width: '100%',
               borderRadius: '0',
@@ -34,7 +32,18 @@
                 ? 'transparent'
                 : 'var(--color-cold-purple-alpha)',
             }"
-          />
+          >
+            <template #trailing>
+              <UButton
+                v-show="searchText !== ''"
+                color="gray"
+                variant="link"
+                icon="i-heroicons-x-mark-20-solid"
+                :padded="false"
+                @click="clearSearch"
+              />
+            </template>
+          </UInput>
           <button @click="emitSearch" class="icon-button">
             <span
               class="iconify i-material-symbols:search"
@@ -43,10 +52,7 @@
           </button>
         </div>
         <!-- Logo (Hidden when search is expanded) -->
-        <div
-          v-if="!isExpanded"
-          class="flex-1 flex justify-center items-center transition-all duration-300"
-        >
+        <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
           <a href="/">
             <img
               src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_logo.svg"
@@ -118,6 +124,10 @@ function collapseSearch() {
   isExpanded.value = false
 }
 
+const clearSearch = () => {
+  searchText.value = ''
+}
+
 // Dynamically update the placeholder
 const searchPlaceholder = computed(() =>
   isSmallScreen.value ? 'Search' : 'Search'
@@ -164,9 +174,22 @@ onUnmounted(() => {
 
 /* Make the original input's icon white and thus invisible */
 /* I.e., the icon that's not clickable */
-.input-custom-purple ::v-deep(.iconify) {
+/* .input-custom-purple ::v-deep(.iconify) {
   color: white !important;
   opacity: 0 !important;
+} */
+
+/* Only hide the default left search icon */
+.input-custom-purple ::v-deep(.u-input__icon) {
+  color: white !important;
+  opacity: 0 !important;
+}
+
+/* Ensure the clear button icon is visible */
+.input-custom-purple ::v-deep(.u-button .iconify) {
+  opacity: 1 !important;
+  color: var(--color-cold-purple) !important;
+  /* z-index: 999 !important; */
 }
 
 .input-custom-purple ::placeholder {
