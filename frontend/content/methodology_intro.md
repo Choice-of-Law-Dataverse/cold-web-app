@@ -1,6 +1,6 @@
 ## What’s the Methodology Behind CoLD?
 
-In order to systematize diverse rules and case law decisions in a uniform manner, [comparative law methodology](/questionnaire) is applied. A high-quality database is the result of comprehensive global research efforts on the topic of choice of law, and the ultimate goal is to add more data points to the main dataset. Information will be “in motion”, constantly updated and connected to the users.
+In order to systematize diverse rules and case law decisions in a uniform manner, [comparative law methodology](/learn?tab=methodology#questionnaire) is applied. A high-quality database is the result of comprehensive global research efforts on the topic of choice of law, and the ultimate goal is to add more data points to the main dataset. Information will be “in motion”, constantly updated and connected to the users.
 
 Our specific objectives are the following:
 
