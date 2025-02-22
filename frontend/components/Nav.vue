@@ -40,6 +40,7 @@
                 variant="link"
                 icon="i-heroicons-x-mark-20-solid"
                 :padded="false"
+                @mousedown.prevent
                 @click="clearSearch"
               />
             </template>
@@ -126,6 +127,7 @@ function collapseSearch() {
 
 const clearSearch = () => {
   searchText.value = ''
+  collapseSearch()
 }
 
 // Dynamically update the placeholder
