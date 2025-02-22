@@ -160,6 +160,31 @@ const updateSearchFromEvent = (query) => {
   searchText.value = query // Update the search input field
 }
 
+function handleGlobalKeydown(e) {
+  // Only trigger if not already typing in an input or textarea
+  if (
+    e.key === 's' &&
+    !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)
+  ) {
+    e.preventDefault() // Prevent default browser actions
+    expandSearch()
+    nextTick(() => {
+      const inputEl = searchInput.value?.$el.querySelector('input')
+      if (inputEl) {
+        inputEl.focus()
+      }
+    })
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleGlobalKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleGlobalKeydown)
+})
+
 // Lifecycle hooks
 onMounted(() => {
   // Initialize screen size
