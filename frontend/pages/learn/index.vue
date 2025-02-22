@@ -31,24 +31,20 @@
           class="main-conten prose -space-y-10 flex flex-col gap-12 px-6 w-full"
         >
           <!-- Tab Content -->
-          <div v-if="activeTab === 'about-cold'">
-            <AboutCoLD />
+          <div v-if="activeTab === 'open-educational-resources'">
+            <OpenEducationalResources />
           </div>
-          <div v-else-if="activeTab === 'team'">
-            <Team />
+          <div v-else-if="activeTab === 'faq'">
+            <FAQ />
           </div>
-          <div v-else-if="activeTab === 'endorsements'">
-            <Endorsements />
+          <div v-if="activeTab === 'methodology'">
+            <Methodology />
           </div>
-          <div v-else-if="activeTab === 'supporters'">
-            <Supporters />
+          <div v-if="activeTab === 'glossary'">
+            <Glossary />
           </div>
-          <div v-else-if="activeTab === 'press'">
-            <Press />
-          </div>
-
-          <div v-else-if="activeTab === 'how-search-works'">
-            <HowSearchWorks />
+          <div v-if="activeTab === 'data-sets'">
+            <DataSets />
           </div>
         </div>
       </UCard>
@@ -59,27 +55,27 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import AboutCoLD from './AboutCoLD.vue'
-import Endorsements from './Endorsements.vue'
-import Supporters from './Supporters.vue'
-import Team from './Team.vue'
-import Press from './Press.vue'
+import OpenEducationalResources from './OpenEducationalResources.vue'
+import FAQ from './FAQ.vue'
+import Methodology from './Methodology.vue'
+import Glossary from './Glossary.vue'
+import DataSets from './DataSets.vue'
 
 // Define the navigation links
 const links = [
-  { label: 'About CoLD', key: 'about-cold' },
-  { label: 'Team', key: 'team' },
-  { label: 'Supporters', key: 'supporters' },
-  { label: 'Endorsements', key: 'endorsements' },
-  { label: 'Press', key: 'press' },
+  { label: 'Open Educational Resources', key: 'open-educational-resources' },
+  { label: 'FAQ', key: 'faq' },
+  { label: 'Methodology', key: 'methodology' },
+  { label: 'Glossary', key: 'glossary' },
+  { label: 'Data Sets', key: 'data-sets' },
 ]
 
 // Initialize router and route
 const router = useRouter()
 const route = useRoute()
 
-// Reactive variable to track the active tab, default to 'about-cold'
-const activeTab = ref(route.query.tab || 'about-cold')
+// Reactive variable to track the active tab, default to 'open-educational-resources'
+const activeTab = ref(route.query.tab || 'open-educational-resources')
 
 // Watch for changes in activeTab and update the URL query
 watch(activeTab, (newTab) => {

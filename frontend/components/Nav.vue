@@ -1,5 +1,8 @@
 <template>
-  <nav class="bg-white border-b border-cold-gray w-full px-6 h-[110px]">
+  <nav
+    class="bg-white border-b border-cold-gray w-full px-6 h-[110px]"
+    :class="{ 'bg-purple-active': isExpanded }"
+  >
     <div
       class="mx-auto h-full"
       style="max-width: var(--container-width); width: 100%"
@@ -7,31 +10,43 @@
       <div
         class="flex items-center justify-between h-full space-x-4 sm:space-x-8"
       >
-        <!-- Web App Name aligned to the first column -->
-        <div>
-          <h1>
-            <a href="/" class="font-bold text-cold-night">CoLD</a>
-          </h1>
-        </div>
-
-        <!-- Search Input positioned from the center of column 2 to the end of column 10 -->
-        <div class="search-container">
+        <!-- Search Input -->
+        <div class="search-container" :class="{ expanded: isExpanded }">
           <UInput
             size="xl"
+            ref="searchInput"
             v-model="searchText"
             @keyup.enter="emitSearch"
-            class="input-custom-purple placeholder-purple"
+            @keydown.esc="clearSearch"
+            @focus="expandSearch"
+            @blur="collapseSearch"
+            class="input-custom-purple placeholder-purple font-semibold"
             :placeholder="searchPlaceholder"
             icon="i-material-symbols:search"
-            :trailing="true"
-            style="
-              width: 100%; /* Full width inside the container */
-              border-radius: 0 !important;
-              box-shadow: none !important;
-              border-width: 1px !important;
-              border-color: var(--color-cold-purple) !important;
-            "
-          />
+            autocomplete="off"
+            :ui="{ icon: { trailing: { pointer: '' } } }"
+            :style="{
+              width: '100%',
+              borderRadius: '0',
+              boxShadow: 'none',
+              border: 'none',
+              backgroundColor: isExpanded
+                ? 'transparent'
+                : 'var(--color-cold-purple-alpha)',
+            }"
+          >
+            <template #trailing>
+              <UButton
+                v-show="isExpanded"
+                style="opacity: 1; color: var(--color-cold-night) !important"
+                variant="link"
+                icon="i-heroicons-x-mark-20-solid"
+                :padded="false"
+                @mousedown.prevent
+                @click="clearSearch"
+              />
+            </template>
+          </UInput>
           <button @click="emitSearch" class="icon-button">
             <span
               class="iconify i-material-symbols:search"
@@ -39,9 +54,19 @@
             ></span>
           </button>
         </div>
+        <!-- Logo (Hidden when search is expanded) -->
+        <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
+          <a href="/">
+            <img
+              src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_logo.svg"
+              alt="CoLD Logo"
+              class="h-6 w-auto"
+            />
+          </a>
+        </div>
 
-        <!-- Navigation Links, aligned in columns 11 and 12 -->
-        <div class="space-x-4 sm:space-x-8">
+        <!-- Navigation Links (Always visible) -->
+        <div v-if="!isExpanded" class="space-x-3 sm:space-x-6">
           <ULink
             v-for="(link, index) in links"
             :key="index"
@@ -57,19 +82,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import eventBus from '@/eventBus'
 
 // Reactive state
 const searchText = ref('')
+const isExpanded = ref(false) // Track if the input is expanded
 const isSmallScreen = ref(false)
 
 const router = useRouter()
 const route = useRoute()
 
+const searchInput = ref(null)
+
 const links = [
   { label: 'About', to: '/about' },
+  { label: 'Learn', to: '/learn' },
   { label: 'Contact', to: '/contact' },
 ]
 
@@ -89,11 +118,36 @@ function emitSearch() {
     name: 'search',
     query,
   })
+  collapseSearch() // Shrink search field after search
+  nextTick().then(() => {
+    const inputEl = searchInput.value?.$el.querySelector('input')
+    if (inputEl) {
+      inputEl.blur()
+    }
+  })
+}
+
+function expandSearch() {
+  isExpanded.value = true
+}
+
+function collapseSearch() {
+  isExpanded.value = false
+}
+
+const clearSearch = async () => {
+  searchText.value = ''
+  collapseSearch()
+  await nextTick()
+  const inputEl = searchInput.value?.$el.querySelector('input')
+  if (inputEl) {
+    inputEl.blur()
+  }
 }
 
 // Dynamically update the placeholder
 const searchPlaceholder = computed(() =>
-  isSmallScreen.value ? 'Search' : 'Search the entire Dataverse'
+  isSmallScreen.value ? 'Search' : 'Search'
 )
 
 // Check screen size
@@ -105,6 +159,31 @@ function checkScreenSize() {
 const updateSearchFromEvent = (query) => {
   searchText.value = query // Update the search input field
 }
+
+function handleGlobalKeydown(e) {
+  // Only trigger if not already typing in an input or textarea
+  if (
+    e.key === 's' &&
+    !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)
+  ) {
+    e.preventDefault() // Prevent default browser actions
+    expandSearch()
+    nextTick(() => {
+      const inputEl = searchInput.value?.$el.querySelector('input')
+      if (inputEl) {
+        inputEl.focus()
+      }
+    })
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleGlobalKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleGlobalKeydown)
+})
 
 // Lifecycle hooks
 onMounted(() => {
@@ -135,11 +214,16 @@ onUnmounted(() => {
   color: var(--color-cold-purple) !important;
 }
 
-/* Make the original input's icon white and thus invisible */
-/* I.e., the icon that's not clickable */
-.input-custom-purple ::v-deep(.iconify) {
+/* Only hide the default left search icon */
+.input-custom-purple ::v-deep(.u-input__icon) {
   color: white !important;
   opacity: 0 !important;
+}
+
+/* Ensure the clear button icon is visible */
+.input-custom-purple ::v-deep(.u-button .iconify) {
+  opacity: 1 !important;
+  color: var(--color-cold-purple) !important;
 }
 
 .input-custom-purple ::placeholder {
@@ -158,10 +242,14 @@ onUnmounted(() => {
 
 .search-container {
   position: relative; /* Allow absolute positioning for icon */
-  width: calc(
-    var(--column-width) * 9 + var(--gutter-width) * 8
-  ); /* 9-column width */
-  margin-left: calc(var(--column-width) / 2);
+  width: calc(var(--column-width) * 3 + var(--gutter-width) * 2);
+  /* transition: width 0.8s ease-in-out; */
+  transition: none !important;
+}
+
+/* When expanded, span across available space */
+.search-container.expanded {
+  width: 100%; /* Expand to full width */
 }
 
 .input-custom-purple {
@@ -170,7 +258,7 @@ onUnmounted(() => {
 
 .icon-button {
   position: absolute;
-  right: 10px; /* Adjust based on the right padding of input */
+  left: 10px; /* Adjust based on the right padding of input */
   top: 50%;
   transform: translateY(-39%); /* Center vertically */
   background: none;
@@ -178,6 +266,7 @@ onUnmounted(() => {
   cursor: pointer;
   color: var(--color-cold-purple); /* Match icon color */
   padding: 0;
+  padding-left: 4px;
 }
 
 .icon-button .iconify {
@@ -201,5 +290,9 @@ a {
   text-underline-offset: 6px !important;
   text-decoration-thickness: 2px !important;
   text-decoration-color: var(--color-cold-purple) !important;
+}
+
+.bg-purple-active {
+  background-color: var(--color-cold-purple-alpha) !important;
 }
 </style>

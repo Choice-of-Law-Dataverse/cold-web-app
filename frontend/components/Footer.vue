@@ -17,9 +17,6 @@
         <NuxtLink to="/disclaimer" class="!text-white whitespace-nowrap">
           Disclaimer
         </NuxtLink>
-        <NuxtLink to="/about" class="!text-white whitespace-nowrap">
-          About
-        </NuxtLink>
         <NuxtLink to="/contact" class="!text-white whitespace-nowrap">
           Contact
         </NuxtLink>
