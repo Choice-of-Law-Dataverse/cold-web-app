@@ -8,6 +8,9 @@
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
         >
+          <span>[Specialists Title Placeholder]</span>
+          <!-- Will appear exactly where 'custom-separator' is placed -->
+
           <template #literature>
             <NuxtLink
               v-if="literatureTitle && jurisdictionData?.Literature"
@@ -232,14 +235,27 @@ watch(
 )
 
 // Define the keys and labels for dynamic rendering
-const keyLabelPairs = [
-  { key: 'Name', label: 'Jurisdiction' },
-  {
-    key: 'Jurisdictional differentiator',
-    label: 'Jurisdictional differentiator',
-  },
-  { key: 'Literature', label: 'Related Literature' }, // Add this
-]
+// const keyLabelPairs = [
+//   { key: 'Name', label: 'Jurisdiction' },
+//   {
+//     key: 'Jurisdictional differentiator',
+//     label: 'Jurisdictional differentiator',
+//   },
+//   { key: 'Literature', label: 'Related Literature' }, // Add this
+// ]
+
+const keyLabelPairs = computed(() => {
+  const pairs = [
+    { key: 'Name', label: 'Jurisdiction' },
+    {
+      key: 'Jurisdictional differentiator',
+      label: 'Jurisdictional differentiator',
+    },
+    { key: 'custom-separator', label: 'Custom Content' }, // Insert custom content
+    { key: 'Literature', label: 'Related Literature' },
+  ]
+  return pairs
+})
 
 const valueClassMap = {
   Name: 'result-value-medium',
