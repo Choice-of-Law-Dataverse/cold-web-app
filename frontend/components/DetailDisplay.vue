@@ -29,29 +29,40 @@
           :key="index"
           class="flex flex-col"
         >
-          <!-- Conditionally render the label -->
-          <p v-if="item.key !== 'Legal provisions IDs'" class="label-key -mb-1">
-            {{ item.label }}
-          </p>
-          <!-- Dynamic slot with kebab-case conversion -->
-          <template
-            v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
-            :slot="item.key.replace(/ /g, '-').toLowerCase()"
-          >
-            <slot
-              :name="item.key.replace(/ /g, '-').toLowerCase()"
-              :value="resultData?.[item.key]"
-            />
+          <!-- Check if it's the special 'custom-separator' key -->
+          <template v-if="item.key === 'custom-separator'">
+            <slot></slot>
+            <!-- This will display "hello 2" -->
           </template>
           <template v-else>
+            <!-- Conditionally render the label -->
             <p
-              :class="[
-                props.valueClassMap[item.key] || 'text-gray-800',
-                'text-sm leading-relaxed',
-              ]"
+              v-if="item.key !== 'Legal provisions IDs'"
+              class="label-key -mb-1"
             >
-              {{ resultData?.[item.key] || 'N/A' }}
+              {{ item.label }}
             </p>
+            <!-- Dynamic slot with kebab-case conversion -->
+            <template
+              v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
+              :slot="item.key.replace(/ /g, '-').toLowerCase()"
+            >
+              <slot
+                :name="item.key.replace(/ /g, '-').toLowerCase()"
+                :value="resultData?.[item.key]"
+              />
+            </template>
+
+            <template v-else>
+              <p
+                :class="[
+                  props.valueClassMap[item.key] || 'text-gray-800',
+                  'text-sm leading-relaxed',
+                ]"
+              >
+                {{ resultData?.[item.key] || 'N/A' }}
+              </p>
+            </template>
           </template>
         </div>
         <slot name="search-links"></slot>
