@@ -8,8 +8,15 @@
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
         >
-          <span>[Specialists Title Placeholder]</span>
-          <!-- Will appear exactly where 'custom-separator' is placed -->
+          <section v-if="specialists.length">
+            [Specialist]
+            <li v-for="specialist in specialists" :key="specialist.Specialist">
+              {{ specialist.Specialist }}
+            </li>
+          </section>
+          <p v-else-if="specialists.length === 0 && !loading">
+            No specialists found for this jurisdiction.
+          </p>
 
           <template #literature>
             <NuxtLink
@@ -78,23 +85,6 @@
             </NuxtLink>
           </template>
         </DetailDisplay>
-
-        <!-- ✅ Move the "Specialists" section OUTSIDE DetailDisplay -->
-        <section v-if="specialists.length" class="mt-8">
-          <h2 class="text-xl font-bold">Specialists</h2>
-          <ul class="mt-4">
-            <li
-              v-for="specialist in specialists"
-              :key="specialist.Specialist"
-              class="py-2 border-b"
-            >
-              {{ specialist.Specialist }}
-            </li>
-          </ul>
-        </section>
-        <p v-else-if="specialists.length === 0 && !loading" class="mt-4">
-          No specialists found for this jurisdiction.
-        </p>
 
         <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
         <JurisdictionComparison
@@ -234,16 +224,6 @@ watch(
   }
 )
 
-// Define the keys and labels for dynamic rendering
-// const keyLabelPairs = [
-//   { key: 'Name', label: 'Jurisdiction' },
-//   {
-//     key: 'Jurisdictional differentiator',
-//     label: 'Jurisdictional differentiator',
-//   },
-//   { key: 'Literature', label: 'Related Literature' }, // Add this
-// ]
-
 const keyLabelPairs = computed(() => {
   const pairs = [
     { key: 'Name', label: 'Jurisdiction' },
@@ -251,7 +231,7 @@ const keyLabelPairs = computed(() => {
       key: 'Jurisdictional differentiator',
       label: 'Jurisdictional differentiator',
     },
-    { key: 'custom-separator', label: 'Custom Content' }, // Insert custom content
+    { key: 'Specialist', label: 'Specialist' },
     { key: 'Literature', label: 'Related Literature' },
   ]
   return pairs
