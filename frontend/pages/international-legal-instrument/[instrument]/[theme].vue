@@ -13,17 +13,14 @@
         >
           <template #select-international-instrument="{ value }">
             <div>
-              <label>Select an Instrument:</label>
-              <select v-model="selectedInstrument" @change="onSelectInstrument">
-                <option value="">--Choose an Instrument--</option>
-                <option
-                  v-for="inst in availableInstruments"
-                  :key="inst"
-                  :value="inst"
-                >
-                  {{ inst }}
-                </option>
-              </select>
+              <USelect
+                placeholder="Select International Instrument"
+                v-model="selectedInstrument"
+                variant="none"
+                :options="availableInstruments"
+                @update:model-value="onSelectInstrument"
+                class="max-w-[250px]"
+              />
             </div>
           </template>
 
@@ -218,10 +215,10 @@ const keyLabelPairs = computed(() => {
     },
     {
       key: 'Select International Instrument',
-      label: 'Select International Instrument',
+      label: '',
     },
 
-    { key: 'Comparison Full Text', label: 'Comparison Full Text' },
+    { key: 'Comparison Full Text', label: '' },
     { key: 'Source', label: 'Source' },
     { key: 'Source', label: 'Related Question' }, // 'Source' is a placeholder
     { key: 'Related Literature', label: '' },
@@ -245,7 +242,7 @@ const processedLegalInstrument = computed(() => {
     // Add the second instrument’s text
     'Comparison Full Text': secondaryInstrument.value
       ? secondaryInstrument.value['Full text'] // or the correct column name
-      : '', // or some fallback
+      : 'Compare with another Interational Instrument',
   }
 })
 
