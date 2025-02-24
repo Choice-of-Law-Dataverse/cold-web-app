@@ -124,16 +124,12 @@ const keyLabelPairs = computed(() => {
       key: 'Full text',
       label: `${legalInstrument.value.Instrument} Full Text`,
     },
+    { key: 'Source', label: 'Source' },
   ]
 })
 
 const valueClassMap = {
-  Abbreviation: 'result-value-medium',
-  'Title (in English)': 'result-value-small',
-  'Compatible with the HCCH Principles?': 'result-value-medium',
-  'Publication date': 'result-value-small',
-  'Entry into force': 'result-value-small',
-  'Official Source (URL)': 'result-value-small',
+  // Abbreviation: 'result-value-medium',
 }
 
 // Computed property to transform the API response
@@ -142,7 +138,7 @@ const processedLegalInstrument = computed(() => {
 
   return {
     ...legalInstrument.value,
-    Source: legalInstrument.value['Source'] || 'N/A', // Ensure a fallback if empty
+    Source: legalInstrument.value['Record ID'], // This is a placeholder
   }
 })
 
