@@ -36,8 +36,6 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
-//import { useNuxtApp } from '#app'
-//const { isHydrating } = useNuxtApp()
 import DetailDisplay from '~/components/DetailDisplay.vue'
 import LegalProvision from '~/components/LegalProvision.vue'
 
@@ -98,9 +96,9 @@ async function fetchLegalInstrument(instrument: string, theme: string) {
     const result = await response.json()
 
     if (Array.isArray(result) && result.length > 0) {
-      legalInstrument.value = result[0] // ✅ Set data
+      legalInstrument.value = result[0] // Set data
 
-      await nextTick() // ✅ Ensure Vue updates before dependent computed properties run
+      await nextTick() // Ensure Vue updates before dependent computed properties run
     } else {
       legalInstrument.value = null // Handle empty responses
     }
@@ -112,10 +110,22 @@ async function fetchLegalInstrument(instrument: string, theme: string) {
 }
 
 // Define the keys and labels for dynamic rendering
-const keyLabelPairs = [
-  { key: 'Provision', label: 'Provision' },
-  { key: 'Full text', label: 'Full Text' },
-]
+const keyLabelPairs = computed(() => {
+  // Wait until `legalInstrument` is fully available
+  if (!legalInstrument.value)
+    return [
+      { key: 'Provision', label: 'Provision' },
+      { key: 'Full text', label: 'Loading Full Text...' }, // Temporary label while data loads
+    ]
+
+  return [
+    { key: 'Provision', label: 'Provision' },
+    {
+      key: 'Full text',
+      label: `${legalInstrument.value.Instrument} Full Text`,
+    },
+  ]
+})
 
 const valueClassMap = {
   Abbreviation: 'result-value-medium',
