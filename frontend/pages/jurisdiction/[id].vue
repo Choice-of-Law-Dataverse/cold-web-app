@@ -8,6 +8,23 @@
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
         >
+          <section v-if="specialists.length">
+            <span class="label">Specialists</span>
+            <li
+              v-for="specialist in specialists"
+              :key="specialist.Specialist"
+              class="result-value-small"
+            >
+              {{ specialist.Specialist }}
+            </li>
+          </section>
+          <section v-else-if="specialists.length === 0 && !loading">
+            <span class="label">Specialist</span>
+            <p class="result-value-small">
+              No specialists found for this jurisdiction.
+            </p>
+          </section>
+
           <template #literature>
             <NuxtLink
               v-if="literatureTitle && jurisdictionData?.Literature"
@@ -21,7 +38,7 @@
               </UButton>
             </NuxtLink>
 
-            <p v-else-if="literatureTitle === null">
+            <p v-else-if="literatureTitle === null" class="result-value-small">
               No related literature available
             </p>
             <p v-else>Loading literature details...</p>
@@ -88,17 +105,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
-//import DetailDisplay from '~/components/DetailDisplay.vue'
-//import JurisdictionComparison from '~/components/JurisdictionComparison.vue'
-//import JurisdictionComparisonInfo from '~/components/JurisdictionComparisonInfo.vue'
 
 const route = useRoute() // Access the route to get the ID param
-//const router = useRouter()
 const jurisdictionData = ref(null) // Store fetched jurisdiction data
 const loading = ref(true) // Track loading state
 const literatureTitle = ref<string | null>(null)
+const specialists = ref([])
 
 // Extract `c` query parameter
 const compareJurisdiction = ref((route.query.c as string) || null)
@@ -180,15 +194,55 @@ async function fetchLiteratureTitle(id: string) {
   }
 }
 
-// Define the keys and labels for dynamic rendering
-const keyLabelPairs = [
-  { key: 'Name', label: 'Jurisdiction' },
-  {
-    key: 'Jurisdictional differentiator',
-    label: 'Jurisdictional differentiator',
-  },
-  { key: 'Literature', label: 'Related Literature' }, // Add this
-]
+// Function to fetch specialists
+const fetchSpecialists = async (jurisdictionName) => {
+  if (!jurisdictionName) return
+
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          table: 'Specialists',
+          filters: [{ column: 'Jurisdiction', value: jurisdictionName }],
+        }),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to fetch specialists')
+
+    specialists.value = await response.json()
+  } catch (error) {
+    console.error('Error fetching specialists:', error)
+    specialists.value = []
+  }
+}
+
+// Fetch specialists when jurisdictionData.Name changes
+watch(
+  () => jurisdictionData.value?.Name,
+  (newName) => {
+    if (newName) fetchSpecialists(newName)
+  }
+)
+
+const keyLabelPairs = computed(() => {
+  const pairs = [
+    { key: 'Name', label: 'Jurisdiction' },
+    {
+      key: 'Jurisdictional differentiator',
+      label: 'Jurisdictional differentiator',
+    },
+    { key: 'Specialist', label: 'Specialist' },
+    { key: 'Literature', label: 'Related Literature' },
+  ]
+  return pairs
+})
 
 const valueClassMap = {
   Name: 'result-value-medium',
@@ -199,6 +253,8 @@ const valueClassMap = {
 onMounted(() => {
   const jurisdictionName = (route.params.id as string).replace(/_/g, ' ') // Convert '_' to spaces
   fetchJurisdiction(jurisdictionName)
+  if (jurisdictionData.value?.Name)
+    fetchSpecialists(jurisdictionData.value.Name)
 })
 
 // Watch for changes to the `c` query parameter and update `compareJurisdiction`
