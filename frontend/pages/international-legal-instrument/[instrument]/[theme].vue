@@ -36,8 +36,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useNuxtApp } from '#app'
-const { isHydrating } = useNuxtApp()
+//import { useNuxtApp } from '#app'
+//const { isHydrating } = useNuxtApp()
 import DetailDisplay from '~/components/DetailDisplay.vue'
 import LegalProvision from '~/components/LegalProvision.vue'
 
