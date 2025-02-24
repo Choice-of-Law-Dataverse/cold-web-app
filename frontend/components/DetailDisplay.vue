@@ -9,11 +9,7 @@
     <!-- Header section -->
     <template #header v-if="showHeader">
       <UCardHeader
-        v-if="
-          resultData &&
-          formattedJurisdiction.length > 0 &&
-          formattedTheme.length > 0
-        "
+        v-if="resultData"
         :resultData="resultData"
         :cardType="formattedSourceTable"
         :showOpenLink="false"
@@ -122,29 +118,9 @@ onMounted(async () => {
     console.error('Failed to fetch covered jurisdictions:', error)
   }
 })
-
-watchEffect(() => {
-  console.log(
-    'DetailDisplay - formattedJurisdiction:',
-    props.formattedJurisdiction
-  )
-  console.log('DetailDisplay - formattedTheme:', props.formattedTheme)
-})
 </script>
 
 <style scoped>
-/* .main-content-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr)); /* 12-column layout */
-/*column-gap: var(--gutter-width); /* Gutter space between columns */
-/*padding: 32px; /* Optional padding to match the card's interior padding */
-/*} */
-
-/* .grid-item {
-  grid-column: 1 / span 6; /* Start in the 1st column, span across 6 columns */
-/* margin-bottom: 48px; /* Space between each key-value pair */
-/*} */
-
 .cold-ucard ::v-deep(.px-4) {
   padding-left: 0 !important;
   padding-right: 0 !important;
@@ -163,6 +139,5 @@ watchEffect(() => {
 .label-key {
   @extend .label;
   padding: 0;
-  /* margin-top: -20px; */
 }
 </style>

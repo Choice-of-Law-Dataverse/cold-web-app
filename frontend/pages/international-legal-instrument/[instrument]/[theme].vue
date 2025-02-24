@@ -57,8 +57,6 @@ watch(legalInstrument, (newValue) => {
   if (newValue) {
     formattedJurisdiction.value = [newValue['Instrument']]
     formattedTheme.value = [newValue['Theme']]
-    console.log('Updated formattedJurisdiction:', formattedJurisdiction.value) // ✅ Debugging log
-    console.log('Updated formattedTheme:', formattedTheme.value) // ✅ Debugging log
   }
 })
 
@@ -98,11 +96,9 @@ async function fetchLegalInstrument(instrument: string, theme: string) {
       throw new Error('Failed to fetch international legal instrument')
 
     const result = await response.json()
-    console.log('API Response:', result)
 
     if (Array.isArray(result) && result.length > 0) {
       legalInstrument.value = result[0] // ✅ Set data
-      console.log('Updated legalInstrument:', legalInstrument.value) // ✅ Log the new value
 
       await nextTick() // ✅ Ensure Vue updates before dependent computed properties run
     } else {
