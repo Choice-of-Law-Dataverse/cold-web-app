@@ -131,6 +131,7 @@ const keyLabelPairs = computed(() => {
       key: 'Full text',
       label: `${legalInstrument.value.Instrument} Full Text`,
     },
+    { key: 'Select Principle', label: 'Select Principle' },
     { key: 'Source', label: 'Source' },
     { key: 'Source', label: 'Related Question' }, // 'Source' is a placeholder
     { key: 'Related Literature', label: '' },
@@ -149,6 +150,7 @@ const processedLegalInstrument = computed(() => {
     ...legalInstrument.value,
     Source: '[In development]', //legalInstrument.value['Record ID'], // This is a placeholder
     'Related Question': '[In development]', // This is a placeholder
+    'Select Principle': 'Compare with another International Legal Instrument',
   }
 })
 
