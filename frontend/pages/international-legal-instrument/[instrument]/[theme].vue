@@ -12,14 +12,18 @@
           :formattedTheme="formattedTheme"
         >
           <template #select-international-instrument="{ value }">
-            <div>
-              <USelect
-                placeholder="Select International Instrument"
+            <div class="inline-flex items-center">
+              <USelectMenu
+                placeholder="Compare with another Interational Instrument"
                 v-model="selectedInstrument"
                 variant="none"
                 :options="availableInstruments"
                 @update:model-value="onSelectInstrument"
-                class="max-w-[250px]"
+                :popper="{ offsetDistance: -15, placement: 'bottom-start' }"
+                :uiMenu="{
+                  select: 'label',
+                  width: 'min-w-[200px] max-w-[200px]',
+                }"
               />
             </div>
           </template>
@@ -252,3 +256,9 @@ onMounted(async () => {
   await nextTick() // Ensure the DOM updates with the rendered content
 })
 </script>
+
+<style scoped>
+.custom-select .u-select-trigger {
+  text-transform: uppercase;
+}
+</style>
