@@ -20,7 +20,7 @@ app.add_middleware(
 app.middleware("http")(log_query)
 
 app.include_router(search.router)
-app.include_router(user.router)
+# app.include_router(user.router)
 app.include_router(ai.router)
 app.include_router(submarine.router)
 
