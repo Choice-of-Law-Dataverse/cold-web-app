@@ -62,10 +62,8 @@ Prof. José Moreno Rodríguez, National University of Asuncion
 Prof. Yuko Nishitani, Kyoto University  
 Prof. Marta Pertegás, Maastricht University
 
-## Specialists
-
-João Ribeiro-Bidaoui | Luca Castellani | Cyril Emery | Anna Veneziano | Justin Monsenepwo | Rui Dias | Carl Friedrich Nordmeier | Richard Frimpong Oppong | Yehya Ikram Ibrahim Badr | Fekadu Petros Gebremeskel | Robin Cupido | Khalid Zaher | Naoshi Takasugi | Hosam Osama Shaaban | HE Qisheng | Silke Noa Elrifai | Anselmo Reyes | John Lumbantobing | Bayu Seto Hardjowahono | Nadjma Yassari | Talia Einhorn | Amin Dawwas | Marie-Claude Najm Kobeh | Guangjian Tu | Effendy Othman | Victor Wong Teck Fung | Ahmad Zhaffir Rahmat | Silke Noa Elrifai | Tiong Min Yeo | Hayk Kupelyants | Kwang Hyun Suk | Hua-Kai Tsai | Kilian Bälz | Duc Luong Doan | Thi Hong Trinh Nguyen | Maria Hook | Francisco Garcimartín Alferez | Geert van Calster | Eiríkur Elís Þorláksson | Helmut Heiss | Giudita Cordero-Moss | Milana Karayanidi | Hannes Meyle | Nuray Eksi | Dmytro Vorobey | Andrew Dickinson | Donikë Qerimi | Paula María All | José Manuel Canelas Schütt | Carmen Tiburcio | Felipe Albuquerque | Jaime Gallegos-Zúñiga | Antonio Aljure | Anayansy Rojas Chan | Mauricio París | Pedro Mendoza Montano | Enrique Martinez Guzman | María Mercedes Albornoz | Nuria González-Martín | Carlos Alberto Arrue Montenegro | Rorick Tovar Galván | Sara Sotelo | Cecilia Fresnedo de Aguirre | Claudia Madrid Martínez | Neil B Cohen
-
 ## Former Assistants and Volunteers
 
-Linda Dosch | Rebecca Zimmerman | Anna Fonseca
+Linda Dosch  
+Rebecca Zimmerman  
+Anna Fonseca
