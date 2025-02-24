@@ -11,22 +11,22 @@
           :formattedJurisdiction="formattedJurisdiction"
           :formattedTheme="formattedTheme"
         >
-          <!-- Slot for Legal provisions -->
-          <template #legal-provisions-ids="{ value }">
+          <template #select-international-instrument="{ value }">
             <div>
-              <div v-if="value && value.trim()">
-                <LegalProvision
-                  v-for="(provisionId, index) in value.split(',')"
-                  :key="index"
-                  :provisionId="provisionId.trim()"
-                  :class="index === 0 ? 'no-margin' : ''"
-                />
-              </div>
-              <div v-else>
-                <span>N/A</span>
-              </div>
+              <label>Select an Instrument:</label>
+              <select v-model="selectedInstrument" @change="onSelectInstrument">
+                <option value="">--Choose an Instrument--</option>
+                <option
+                  v-for="inst in availableInstruments"
+                  :key="inst"
+                  :value="inst"
+                >
+                  {{ inst }}
+                </option>
+              </select>
             </div>
           </template>
+
           <!-- Related Literature -->
           <template #related-literature>
             <RelatedLiterature
@@ -44,7 +44,6 @@
 import { ref, onMounted, computed, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
-import LegalProvision from '~/components/LegalProvision.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const instrument = route.params.instrument as string
@@ -57,6 +56,16 @@ const config = useRuntimeConfig()
 
 const formattedJurisdiction = ref([])
 const formattedTheme = ref([])
+
+const availableInstruments = ref<string[]>([])
+const secondaryInstrument = ref(null) // Stores data for the selected instrument
+const selectedInstrument = ref('')
+
+function onSelectInstrument() {
+  if (selectedInstrument.value) {
+    fetchSecondaryInstrument(selectedInstrument.value) // only fetch the second instrument
+  }
+}
 
 watch(legalInstrument, (newValue) => {
   if (newValue) {
@@ -116,6 +125,82 @@ async function fetchLegalInstrument(instrument: string, theme: string) {
   }
 }
 
+async function fetchInstrumentsForTheme(themeParam: string) {
+  const jsonPayload = {
+    table: 'Themes',
+    filters: [{ column: 'Theme', value: deslugify(themeParam) }],
+  }
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
+    if (!response.ok) throw new Error('Failed to fetch instruments')
+
+    const result = await response.json()
+    if (Array.isArray(result)) {
+      // Extract the Instrument column
+      const allInstruments = result.map((row: any) => row.Instrument)
+      // Remove duplicates
+      availableInstruments.value = [...new Set(allInstruments)]
+    } else {
+      availableInstruments.value = []
+    }
+  } catch (error) {
+    console.error('Error fetching instruments:', error)
+  }
+}
+
+async function fetchSecondaryInstrument(instrumentParam: string) {
+  const jsonPayload = {
+    table: 'Themes',
+    filters: [
+      {
+        column: 'Instrument',
+        value: deslugify(instrumentParam),
+      },
+      {
+        column: 'Theme',
+        value: deslugify(theme),
+      },
+    ],
+  }
+
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to fetch second instrument')
+
+    const result = await response.json()
+    console.log('Secondary fetch result:', result)
+
+    if (Array.isArray(result) && result.length > 0) {
+      secondaryInstrument.value = result[0] // Store the second instrument data
+    } else {
+      secondaryInstrument.value = null
+    }
+  } catch (error) {
+    console.error('Error fetching second instrument:', error)
+  }
+}
+
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = computed(() => {
   // Wait until `legalInstrument` is fully available
@@ -131,7 +216,12 @@ const keyLabelPairs = computed(() => {
       key: 'Full text',
       label: `${legalInstrument.value.Instrument} Full Text`,
     },
-    { key: 'Select Principle', label: 'Select Principle' },
+    {
+      key: 'Select International Instrument',
+      label: 'Select International Instrument',
+    },
+
+    { key: 'Comparison Full Text', label: 'Comparison Full Text' },
     { key: 'Source', label: 'Source' },
     { key: 'Source', label: 'Related Question' }, // 'Source' is a placeholder
     { key: 'Related Literature', label: '' },
@@ -150,13 +240,18 @@ const processedLegalInstrument = computed(() => {
     ...legalInstrument.value,
     Source: '[In development]', //legalInstrument.value['Record ID'], // This is a placeholder
     'Related Question': '[In development]', // This is a placeholder
-    'Select Principle': 'Compare with another International Legal Instrument',
+    'Select International Instrument':
+      'Compare with another International Legal Instrument',
+    // Add the second instrument’s text
+    'Comparison Full Text': secondaryInstrument.value
+      ? secondaryInstrument.value['Full text'] // or the correct column name
+      : '', // or some fallback
   }
 })
 
 onMounted(async () => {
-  fetchLegalInstrument(instrument, theme)
-
+  await fetchLegalInstrument(instrument, theme)
+  await fetchInstrumentsForTheme(theme)
   await nextTick() // Ensure the DOM updates with the rendered content
 })
 </script>
