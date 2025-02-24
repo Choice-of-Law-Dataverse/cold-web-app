@@ -9,14 +9,21 @@
           :valueClassMap="valueClassMap"
         >
           <section v-if="specialists.length">
-            [Specialist]
-            <li v-for="specialist in specialists" :key="specialist.Specialist">
+            <span class="label">Specialists</span>
+            <li
+              v-for="specialist in specialists"
+              :key="specialist.Specialist"
+              class="result-value-small"
+            >
               {{ specialist.Specialist }}
             </li>
           </section>
-          <p v-else-if="specialists.length === 0 && !loading">
-            No specialists found for this jurisdiction.
-          </p>
+          <section v-else-if="specialists.length === 0 && !loading">
+            <span class="label">Specialist</span>
+            <p class="result-value-small">
+              No specialists found for this jurisdiction.
+            </p>
+          </section>
 
           <template #literature>
             <NuxtLink
@@ -31,7 +38,7 @@
               </UButton>
             </NuxtLink>
 
-            <p v-else-if="literatureTitle === null">
+            <p v-else-if="literatureTitle === null" class="result-value-small">
               No related literature available
             </p>
             <p v-else>Loading literature details...</p>
