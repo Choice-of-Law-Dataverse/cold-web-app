@@ -29,10 +29,9 @@
           :key="index"
           class="flex flex-col"
         >
-          <!-- Check if it's the special 'custom-separator' key -->
-          <template v-if="item.key === 'custom-separator'">
+          <!-- Check if it's the special 'Specialist' key -->
+          <template v-if="item.key === 'Specialist'">
             <slot></slot>
-            <!-- This will display "hello 2" -->
           </template>
           <template v-else>
             <!-- Conditionally render the label -->
