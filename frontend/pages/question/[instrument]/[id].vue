@@ -133,10 +133,8 @@ const keyLabelPairs = [
 ]
 
 const valueClassMap = {
-  Questions: 'result-value-medium',
-  Answer: 'result-value-large',
-  'Legal provision articles': 'result-value-small',
-  'Case ID': 'result-value-small',
+  'Adapted question': 'result-value-medium',
+  Position: 'result-value-large',
 }
 
 // Preprocess data to handle custom rendering cases

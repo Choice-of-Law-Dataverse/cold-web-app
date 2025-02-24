@@ -125,6 +125,7 @@ const keyLabelPairs = computed(() => {
       label: `${legalInstrument.value.Instrument} Full Text`,
     },
     { key: 'Source', label: 'Source' },
+    { key: 'Source', label: 'Related Question' }, // 'Source' is a placeholder
   ]
 })
 
@@ -138,7 +139,8 @@ const processedLegalInstrument = computed(() => {
 
   return {
     ...legalInstrument.value,
-    Source: legalInstrument.value['Record ID'], // This is a placeholder
+    Source: '[In development]', //legalInstrument.value['Record ID'], // This is a placeholder
+    'Related Question': '[In development]', // This is a placeholder
   }
 })
 
