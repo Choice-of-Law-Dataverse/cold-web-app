@@ -27,6 +27,13 @@
               </div>
             </div>
           </template>
+          <!-- Related Literature -->
+          <template #related-literature>
+            <RelatedLiterature
+              :themes="processedLegalInstrument?.Theme || ''"
+              :valueClassMap="valueClassMap['Related Literature']"
+            />
+          </template>
         </DetailDisplay>
       </div>
     </div>
@@ -126,6 +133,7 @@ const keyLabelPairs = computed(() => {
     },
     { key: 'Source', label: 'Source' },
     { key: 'Source', label: 'Related Question' }, // 'Source' is a placeholder
+    { key: 'Related Literature', label: '' },
   ]
 })
 
