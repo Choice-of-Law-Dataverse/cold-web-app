@@ -15,9 +15,9 @@ class SearchService:
         print(id)
         if table in [
             "Answers",
-            "Legislation",
-            "Legal provisions",
-            "Court decisions",
+            "Domestic Instruments",
+            "Domestic Legal Provisions",
+            "Court Decisions",
             "Jurisdictions",
             "Literature",
         ]:
@@ -52,18 +52,30 @@ class SearchService:
                 if not column or value is None:
                     raise ValueError(f"Invalid filter: {filter_item}")
 
-                # Use ILIKE for case-insensitive partial matching
                 param_key = f"param_{idx}"
-                conditions.append(f'"{column}" ILIKE :{param_key}')
-                query_params[param_key] = f'%{value}%'
+
+                # Determine the type of the filter value and choose the operator accordingly
+                if isinstance(value, str):
+                    # Use ILIKE for case-insensitive partial matching
+                    conditions.append(f'"{column}" ILIKE :{param_key}')
+                    query_params[param_key] = f"%{value}%"
+                elif isinstance(value, (int, float, bool)):
+                    # Use equality operator for integers, floats, and booleans
+                    conditions.append(f'"{column}" = :{param_key}')
+                    query_params[param_key] = value
+                else:
+                    # If you want to support other types later, add them here.
+                    raise ValueError(
+                        f"Unsupported filter type for column {column}: {value}"
+                    )
 
             # Append the WHERE clause to the query if conditions exist
             if conditions:
                 query += f' WHERE {" AND ".join(conditions)}'
 
         # Debug: Print the full query and parameters
-        print("Executing query:", query)
-        print("With parameters:", query_params)
+        # print("Executing query:", query)
+        # print("With parameters:", query_params)
 
         # Execute the query with parameters as a dictionary
         results = self.db.execute_query(query, query_params)
@@ -95,6 +107,7 @@ class SearchService:
                     "name (from jurisdiction)",
                     "jurisdiction name",
                     "jurisdictions",
+                    "jurisdiction",
                 ]:
                     jurisdictions.extend(values)
                 elif col_lower in ["themes", "themes name"]:
@@ -143,20 +156,20 @@ class SearchService:
 
             UNION ALL
 
-            -- Court decisions
+            -- Court Decisions
             SELECT 
-                'Court decisions' AS source_table,
+                'Court Decisions' AS source_table,
                 "ID" AS id,
                 1.0 AS rank
-            FROM "Court decisions", params
+            FROM "Court Decisions", params
             WHERE 
-                (array_length(params.tables, 1) IS NULL OR 'Court decisions' = ANY(params.tables))
+                (array_length(params.tables, 1) IS NULL OR 'Court Decisions' = ANY(params.tables))
                 AND (
                     array_length(params.jurisdictions, 1) is null -- Skip jurisdiction filter if empty
                     or exists (
                         select 1
                         from unnest(params.jurisdictions) as jurisdiction_filter
-                        where "Jurisdiction Names" ILIKE '%' || jurisdiction_filter || '%'
+                        where "Jurisdictions" ILIKE '%' || jurisdiction_filter || '%'
                     )
                 )
                 AND (
@@ -170,24 +183,24 @@ class SearchService:
 
             UNION ALL
 
-            -- Legislation
+            -- Domestic Instruments
             SELECT 
-                'Legislation' AS source_table,
+                'Domestic Instruments' AS source_table,
                 "ID" AS id,
                 1.0 AS rank
-            FROM "Legislation", params
+            FROM "Domestic Instruments", params
             WHERE 
-                (array_length(params.tables, 1) IS NULL OR 'Legislation' = ANY(params.tables))
+                (array_length(params.tables, 1) IS NULL OR 'Domestic Instruments' = ANY(params.tables))
                 AND (
                     array_length(params.jurisdictions, 1) IS NULL 
-                    OR "Jurisdiction name" = ANY(params.jurisdictions)
+                    OR "Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.themes) AS theme_filter
-                        WHERE "Themes name" ILIKE '%' || theme_filter || '%'
+                        WHERE "Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
 
@@ -202,15 +215,19 @@ class SearchService:
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Literature' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
-                    OR "Jurisdiction" = ANY(params.jurisdictions)
+                    array_length(params.jurisdictions, 1) is null -- Skip jurisdiction filter if empty
+                    or exists (
+                        select 1
+                        from unnest(params.jurisdictions) as jurisdiction_filter
+                        where "Jurisdiction" ILIKE '%' || jurisdiction_filter || '%'
+                    )
                 )
                 AND (
                     array_length(params.themes, 1) is null -- Skip theme filter if empty
                     or exists (
                         select 1
                         from unnest(params.themes) as theme_filter
-                        where "Themes" ILIKE '%' || theme_filter || '%'
+                        where "International Legal Provisions" ILIKE '%' || theme_filter || '%'
                     ) -- Case-insensitive partial match for themes
                 )
 
@@ -259,21 +276,21 @@ class SearchService:
 
             UNION ALL
 
-            -- Search in "Court decisions" table
+            -- Search in "Court Decisions" table
             SELECT 
-                'Court decisions' AS source_table,
+                'Court Decisions' AS source_table,
                 "ID" AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
                 ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
-            FROM "Court decisions", params
+            FROM "Court Decisions", params
             WHERE 
-                (array_length(params.tables, 1) IS NULL OR 'Court decisions' = ANY(params.tables))
+                (array_length(params.tables, 1) IS NULL OR 'Court Decisions' = ANY(params.tables))
                 AND (
                     array_length(params.jurisdictions, 1) is null -- Skip jurisdiction filter if empty
                     or exists (
                         select 1
                         from unnest(params.jurisdictions) as jurisdiction_filter
-                        where "Jurisdiction Names" ILIKE '%' || jurisdiction_filter || '%'
+                        where "Jurisdictions" ILIKE '%' || jurisdiction_filter || '%'
                     )
                 )
                 AND (
@@ -291,25 +308,25 @@ class SearchService:
 
             UNION ALL
 
-            -- Search in "Legislation" table
+            -- Search in "Domestic Instruments" table
             SELECT 
-                'Legislation' AS source_table,
+                'Domestic Instruments' AS source_table,
                 "ID" AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
                 ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
-            FROM "Legislation", params
+            FROM "Domestic Instruments", params
             WHERE 
-                (array_length(params.tables, 1) IS NULL OR 'Legislation' = ANY(params.tables))
+                (array_length(params.tables, 1) IS NULL OR 'Domestic Instruments' = ANY(params.tables))
                 AND (
                     array_length(params.jurisdictions, 1) IS NULL 
-                    OR "Jurisdiction name" = ANY(params.jurisdictions)
+                    OR "Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.themes) AS theme_filter
-                        WHERE "Themes name" ILIKE '%' || theme_filter || '%'
+                        WHERE "Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
                 AND (
@@ -329,15 +346,19 @@ class SearchService:
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Literature' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
-                    OR "Jurisdiction" = ANY(params.jurisdictions)
+                    array_length(params.jurisdictions, 1) is null -- Skip jurisdiction filter if empty
+                    or exists (
+                        select 1
+                        from unnest(params.jurisdictions) as jurisdiction_filter
+                        where "Jurisdiction" ILIKE '%' || jurisdiction_filter || '%'
+                    )
                 )
                 AND (
                     array_length(params.themes, 1) is null -- Skip theme filter if empty
                     or exists (
                         select 1
                         from unnest(params.themes) as theme_filter
-                        where "Themes" ILIKE '%' || theme_filter || '%'
+                        where "International Legal Provisions" ILIKE '%' || theme_filter || '%'
                     ) -- Case-insensitive partial match for themes
                 )
                 AND (

@@ -17,9 +17,12 @@ class CuratedDetailsRequest(BaseModel):
     id: str
 
 
+FilterValue = Union[str, int, bool]
+
+
 class FTFilterOption(BaseModel):
     column: str
-    value: Union[List[str], str]
+    value: Union[FilterValue, List[FilterValue]]
 
 
 class FullTableRequest(BaseModel):
