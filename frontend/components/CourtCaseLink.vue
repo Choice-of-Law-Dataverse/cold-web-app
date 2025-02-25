@@ -26,7 +26,7 @@ const title = ref<string | null>(null)
 // Fetch the court case title on mount
 async function fetchCaseTitle() {
   const payload = {
-    table: 'Court decisions',
+    table: 'Court Decisions',
     id: props.caseId,
   }
 

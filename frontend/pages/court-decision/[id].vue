@@ -34,7 +34,7 @@ const config = useRuntimeConfig()
 
 async function fetchCourtDecision(id: string) {
   const jsonPayload = {
-    table: 'Court decisions',
+    table: 'Court Decisions',
     id: id,
   }
 
