@@ -11,26 +11,6 @@
           :formattedJurisdiction="formattedJurisdiction"
           :formattedTheme="formattedTheme"
         >
-          <!-- <template #select-international-instrument="{ value }">
-            <div class="inline-flex items-center ml-[-10px] mb-[-30px]">
-              <USelectMenu
-                placeholder="Select Interational Instrument"
-                v-model="selectedInstrument"
-                variant="none"
-                :options="availableInstruments"
-                @update:model-value="onSelectInstrument"
-                :ui="{
-                  placeholder: 'text-[var(--color-cold-purple)]',
-                }"
-                :popper="{ offsetDistance: -15, placement: 'bottom-start' }"
-                :uiMenu="{
-                  select: 'label',
-                  width: 'min-w-[200px] max-w-[200px]',
-                }"
-              />
-            </div>
-          </template> -->
-
           <template #full-text="{ value }">
             <div class="grid grid-cols-2 gap-8">
               <!-- Left Column: Original Full Text -->
@@ -274,12 +254,6 @@ const keyLabelPairs = computed(() => {
       key: 'Full text',
       label: `${legalInstrument.value.Instrument} Full Text`,
     },
-    {
-      key: 'Select International Instrument',
-      label: '',
-    },
-
-    //{ key: 'Comparison Full Text', label: '' },
     { key: 'Source', label: 'Source' },
     { key: 'Source', label: 'Related Question' }, // 'Source' is a placeholder
     { key: 'Related Literature', label: '' },
