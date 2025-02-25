@@ -97,10 +97,10 @@ class Database:
 
         id_columns = {
             "Answers": "ID",
-            "Legislation": "ID",
-            "Legal provisions": "Name",
-            "Court decisions": "ID",
-            "Jurisdictions": "Alpha-3 code",
+            "Domestic Instruments": "ID",
+            "Domestic Legal Provisions": "Name",
+            "Court Decisions": "ID",
+            "Jurisdictions": "Alpha-3 Code",
             "Literature": "ID",
         }
 
