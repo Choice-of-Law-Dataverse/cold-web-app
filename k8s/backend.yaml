@@ -14,10 +14,10 @@ spec:
     spec:
       containers:
         - name: backend
-          image: simonweigold/kubernetes-demo-backend:latest
+          image: simonweigold/cold-fastapi-backend:1.0.3
           imagePullPolicy: Always
           ports:
-            - containerPort: 5000
+            - containerPort: 8000
           env:
             - name: SQL_CONN_STRING
               valueFrom:
@@ -34,12 +34,16 @@ spec:
                 secretKeyRef:
                   name: app-secrets
                   key: OPENAI_API_KEY
+            - name: IPINFO_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: app-secrets
+                  key: IPINFO_ACCESS_TOKEN
             - name: TEST
               valueFrom:
                 secretKeyRef:
                   name: app-secrets
                   key: TEST
-
 ---
 apiVersion: v1
 kind: Service
@@ -49,6 +53,6 @@ spec:
   selector:
     app: backend
   ports:
-    - port: 5000
-      targetPort: 5000
+    - port: 8000
+      targetPort: 8000
   type: ClusterIP
