@@ -106,10 +106,10 @@ async function fetchAnswer(id: string) {
 
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
-  { key: 'Questions', label: 'Question' },
+  { key: 'Question', label: 'Question' },
   { key: 'Answer', label: 'Answer' },
   {
-    key: 'Legal provision articles',
+    key: 'Legal Provision Articles',
     label: 'Source',
   },
   { key: 'Case ID', label: 'related cases' },
@@ -117,7 +117,7 @@ const keyLabelPairs = [
 ]
 
 const valueClassMap = {
-  Questions: 'result-value-medium',
+  Question: 'result-value-medium',
   Answer: 'result-value-large',
   'Legal provision articles': 'result-value-small',
   'Case ID': 'result-value-small',
