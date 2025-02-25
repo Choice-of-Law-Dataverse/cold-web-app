@@ -64,8 +64,16 @@
                   />
                 </div>
 
+                <!-- Placeholder text when no instrument is selected -->
+                <div
+                  v-if="!secondaryInstrument"
+                  class="text-sm text-gray-500 mt-2"
+                >
+                  {{ processedLegalInstrument?.['Comparison Full Text'] }}
+                </div>
+
                 <!-- Comparison Full Text -->
-                <div v-if="secondaryInstrument">
+                <div v-else>
                   <p class="label-key -mb-1">
                     {{ secondaryInstrument?.Instrument }} Full Text
                   </p>
@@ -288,14 +296,13 @@ const processedLegalInstrument = computed(() => {
 
   return {
     ...legalInstrument.value,
-    Source: '[In development]', //legalInstrument.value['Record ID'], // This is a placeholder
-    'Related Question': '[In development]', // This is a placeholder
-    'Select International Instrument':
-      'Compare with another International Legal Instrument',
-    // Add the second instrument’s text
+    Source: '[In development]',
+    'Related Question': '[In development]',
+    'Select International Instrument': '',
+    // ✅ Remove the fallback text from "Comparison Full Text"
     'Comparison Full Text': secondaryInstrument.value
-      ? secondaryInstrument.value['Full text'] // or the correct column name
-      : 'Compare with another Interational Instrument',
+      ? secondaryInstrument.value['Full text']
+      : 'Compare with another International Legal Instrument', // ✅ Empty string instead of duplicate text
   }
 })
 
