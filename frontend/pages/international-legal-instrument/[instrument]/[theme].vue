@@ -12,7 +12,7 @@
           :formattedTheme="formattedTheme"
         >
           <template #select-international-instrument="{ value }">
-            <div class="inline-flex items-center">
+            <div class="inline-flex items-center ml-[-10px] mb-[-30px]">
               <USelectMenu
                 placeholder="Compare with another Interational Instrument"
                 v-model="selectedInstrument"
