@@ -26,7 +26,7 @@
               <!-- Right Column: Select Instrument + Comparison Full Text -->
               <div>
                 <!-- Move USelectMenu to the top -->
-                <div class="ml-[-10px] mt-[9px]">
+                <div class="ml-[-10px] mt-[9px] mb-[-9px]">
                   <USelectMenu
                     placeholder="Select International Instrument"
                     v-model="selectedInstrument"
