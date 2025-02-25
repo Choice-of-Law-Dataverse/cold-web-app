@@ -60,33 +60,33 @@ async function fetchCourtDecision(id: string) {
 
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
-  { key: 'Case', label: 'Case Title' },
+  { key: 'Case Title', label: 'Case Title' },
   { key: 'Abstract', label: 'Abstract' },
   {
-    key: 'Relevant facts / Summary of the case',
-    label: 'Relevant Facts / Summary of the Case',
+    key: 'Relevant Facts',
+    label: 'Relevant Facts',
   },
+  // {
+  //   key: 'Relevant rules of law involved',
+  //   label: 'Relevant Rules of Law Involved',
+  // },
+  { key: 'Choice of Law Issue', label: 'Choice of Law Issue' },
+  { key: "Court's Position", label: "Court's Position" },
   {
-    key: 'Relevant rules of law involved',
-    label: 'Relevant Rules of Law Involved',
-  },
-  { key: 'Choice of law issue', label: 'Choice of Law Issue' },
-  { key: "Court's position", label: "Court's Position" },
-  {
-    key: 'Text of the relevant legal provisions',
+    key: 'Text of the Relevant Legal Provisions',
     label: 'Text of the Relevant Legal Provisions',
   },
   { key: 'Related Literature', label: '' },
 ]
 
 const valueClassMap = {
-  Case: 'result-value-medium',
+  'Case Title': 'result-value-medium',
   Abstract: 'result-value-small',
-  'Relevant facts / Summary of the case': 'result-value-small',
-  'Relevant rules of law involved': 'result-value-small',
-  'Choice of law issue': 'result-value-small',
-  "Court's position": 'result-value-small',
-  'Text of the relevant legal provisions': 'result-value-small',
+  'Relevant Facts': 'result-value-small',
+  //'Relevant rules of law involved': 'result-value-small',
+  'Choice of Law Issue': 'result-value-small',
+  "Court's Position": 'result-value-small',
+  'Text of the Relevant Legal Provisions': 'result-value-small',
 }
 
 onMounted(() => {
