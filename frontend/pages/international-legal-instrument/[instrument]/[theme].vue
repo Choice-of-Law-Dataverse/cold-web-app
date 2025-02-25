@@ -34,7 +34,7 @@
                     :options="availableInstruments"
                     @update:model-value="onSelectInstrument"
                     :ui="{
-                      placeholder: 'text-[var(--color-cold-purple)]',
+                      placeholder: 'text-[var(--color-cold-purple)] mb-[11px]',
                     }"
                     :popper="{ offsetDistance: -15, placement: 'bottom-start' }"
                     :uiMenu="{
