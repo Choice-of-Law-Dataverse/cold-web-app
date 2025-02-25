@@ -61,7 +61,7 @@ const scrollToAnchor = async () => {
 // Fetch the provision details on mount
 async function fetchProvisionDetails() {
   const payload = {
-    table: 'Legal provisions',
+    table: 'Domestic Legal Provisions',
     id: props.provisionId,
   }
 
