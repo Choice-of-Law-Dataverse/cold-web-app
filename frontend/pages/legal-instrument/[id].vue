@@ -46,7 +46,7 @@ const config = useRuntimeConfig()
 
 async function fetchLegalInstrument(id: string) {
   const jsonPayload = {
-    table: 'Legislation',
+    table: 'Domestic Instruments',
     id: id,
   }
 
