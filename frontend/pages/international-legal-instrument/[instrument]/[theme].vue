@@ -11,7 +11,7 @@
           :formattedJurisdiction="formattedJurisdiction"
           :formattedTheme="formattedTheme"
         >
-          <template #select-international-instrument="{ value }">
+          <!-- <template #select-international-instrument="{ value }">
             <div class="inline-flex items-center ml-[-10px] mb-[-30px]">
               <USelectMenu
                 placeholder="Select Interational Instrument"
@@ -28,6 +28,52 @@
                   width: 'min-w-[200px] max-w-[200px]',
                 }"
               />
+            </div>
+          </template> -->
+
+          <template #full-text="{ value }">
+            <div class="grid grid-cols-2 gap-8">
+              <!-- Left Column: Original Full Text -->
+              <div>
+                <p class="label-key -mb-1">
+                  {{ legalInstrument?.Instrument }} Full Text
+                </p>
+                <p class="text-sm leading-relaxed">
+                  {{ legalInstrument?.['Full text'] || 'N/A' }}
+                </p>
+              </div>
+
+              <!-- Right Column: Select Instrument + Comparison Full Text -->
+              <div>
+                <!-- Move USelectMenu to the top -->
+                <div class="mb-4 flex justify-end">
+                  <USelectMenu
+                    placeholder="Select International Instrument"
+                    v-model="selectedInstrument"
+                    variant="none"
+                    :options="availableInstruments"
+                    @update:model-value="onSelectInstrument"
+                    :ui="{
+                      placeholder: 'text-[var(--color-cold-purple)]',
+                    }"
+                    :popper="{ offsetDistance: -15, placement: 'bottom-start' }"
+                    :uiMenu="{
+                      select: 'label',
+                      width: 'min-w-[200px] max-w-[200px]',
+                    }"
+                  />
+                </div>
+
+                <!-- Comparison Full Text -->
+                <div v-if="secondaryInstrument">
+                  <p class="label-key -mb-1">
+                    {{ secondaryInstrument?.Instrument }} Full Text
+                  </p>
+                  <p class="text-sm leading-relaxed">
+                    {{ secondaryInstrument?.['Full text'] || 'N/A' }}
+                  </p>
+                </div>
+              </div>
             </div>
           </template>
 
@@ -211,7 +257,7 @@ const keyLabelPairs = computed(() => {
   if (!legalInstrument.value)
     return [
       { key: 'Provision', label: 'Provision' },
-      { key: 'Full text', label: 'Loading Full Text...' }, // Temporary label while data loads
+      { key: 'Full text', label: '' }, // Temporary label while data loads
     ]
 
   return [
@@ -225,7 +271,7 @@ const keyLabelPairs = computed(() => {
       label: '',
     },
 
-    { key: 'Comparison Full Text', label: '' },
+    //{ key: 'Comparison Full Text', label: '' },
     { key: 'Source', label: 'Source' },
     { key: 'Source', label: 'Related Question' }, // 'Source' is a placeholder
     { key: 'Related Literature', label: '' },
