@@ -14,11 +14,14 @@
           <template #select-international-instrument="{ value }">
             <div class="inline-flex items-center ml-[-10px] mb-[-30px]">
               <USelectMenu
-                placeholder="Compare with another Interational Instrument"
+                placeholder="Select Interational Instrument"
                 v-model="selectedInstrument"
                 variant="none"
                 :options="availableInstruments"
                 @update:model-value="onSelectInstrument"
+                :ui="{
+                  placeholder: 'text-[var(--color-cold-night)]',
+                }"
                 :popper="{ offsetDistance: -15, placement: 'bottom-start' }"
                 :uiMenu="{
                   select: 'label',
