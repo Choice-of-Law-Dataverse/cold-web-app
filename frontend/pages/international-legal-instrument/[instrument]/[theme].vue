@@ -47,16 +47,16 @@
                 <!-- Placeholder text when no instrument is selected -->
                 <div
                   v-if="!secondaryInstrument"
-                  class="text-sm text-gray-500 mt-2"
+                  class="text-sm text-gray-400 mt-2"
                 >
                   {{ processedLegalInstrument?.['Comparison Full Text'] }}
                 </div>
 
                 <!-- Comparison Full Text -->
                 <div v-else>
-                  <p class="label-key -mb-1">
+                  <!-- <p class="label-key -mb-1">
                     {{ secondaryInstrument?.Instrument }} Full Text
-                  </p>
+                  </p> -->
                   <p class="text-sm leading-relaxed">
                     {{ secondaryInstrument?.['Full text'] || 'N/A' }}
                   </p>
@@ -252,7 +252,8 @@ const keyLabelPairs = computed(() => {
     { key: 'Provision', label: 'Provision' },
     {
       key: 'Full text',
-      label: `${legalInstrument.value.Instrument} Full Text`,
+      //label: `${legalInstrument.value.Instrument} Full Text`,
+      label: '',
     },
     { key: 'Source', label: 'Source' },
     { key: 'Source', label: 'Related Question' }, // 'Source' is a placeholder
