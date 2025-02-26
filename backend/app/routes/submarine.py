@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import HTMLResponse
 
-router = APIRouter(prefix="/submarine", tags=["Submarine"])
+router = APIRouter(prefix="/api/submarine", tags=["Submarine"])
 
 
 @router.get("/", response_class=HTMLResponse)
