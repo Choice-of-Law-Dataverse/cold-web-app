@@ -16,6 +16,13 @@ spec:
                 name: frontend-service
                 port:
                   number: 3000
+          - path: /api/_content
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-service
+                port:
+                  number: 3000
           - path: /api
             pathType: Prefix
             backend:
