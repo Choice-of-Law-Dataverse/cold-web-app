@@ -1,33 +1,26 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: main-ingress
+  name: staging-ingress
   namespace: default
   annotations:
-    kubernetes.io/ingress.class: nginx
+    kubernetes.io/ingress.class: nginx-staging
 spec:
   rules:
-    #- host: "beta.cold.global"
+    #- host: "alpha.cold.global"
     - http:
         paths:
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: frontend-service
-                port:
-                  number: 3000
-          - path: /api/_content
-            pathType: Prefix
-            backend:
-              service:
-                name: frontend-service
+                name: staging-frontend-service
                 port:
                   number: 3000
           - path: /api
             pathType: Prefix
             backend:
               service:
-                name: backend-service
+                name: staging-backend-service
                 port:
-                  number: 8000
+                  number: 5000

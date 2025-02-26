@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: staging-backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: staging-backend
+  template:
+    metadata:
+      labels:
+        app: staging-backend
+    spec:
+      containers:
+      - name: staging-backend
+        image: simonweigold/kubernetes-demo-backend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 5000
+        env:
+          - name: AUTH_ADDRESS
+            value: staging-backend-service
+          - name: SECRET_MESSAGE
+            valueFrom:
+              secretKeyRef:
+                name: staging-backend-secrets
+                key: SECRET_MESSAGE
+          - name: NAME
+            valueFrom:
+              secretKeyRef:
+                name: staging-backend-secrets
+                key: NAME
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: staging-backend-service
+spec:
+  type: ClusterIP
+  selector:
+    app: backend
+  ports:
+    - port: 5000
+      protocol: TCP
+      targetPort: 5000
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: staging-backend-secrets
+type: Opaque
+stringData:
+  NAME: "Simon"
+  SECRET_MESSAGE: "This is a secret message from the manifest."

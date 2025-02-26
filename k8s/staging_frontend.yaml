@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: staging-frontend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: staging-frontend
+  template:
+    metadata:
+      labels:
+        app: staging-frontend
+    spec:
+      containers:
+      - name: staging-frontend
+        image: simonweigold/kubernetes-demo-frontend:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        env:
+          - name: BACKEND_URL
+            value: "http://backend-service:5000/api"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: staging-frontend-service
+spec:
+  selector:
+    app: staging-frontend
+  ports:
+    - protocol: TCP
+      port: 3000
+      targetPort: 3000
+  type: ClusterIP
