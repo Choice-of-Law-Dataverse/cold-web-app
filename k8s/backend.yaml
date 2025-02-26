@@ -22,27 +22,32 @@ spec:
             - name: SQL_CONN_STRING
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets
+                  name: cold-secrets
                   key: SQL_CONN_STRING
-            - name: MONGO_DB_CONN_STRING
+            - name: MONGODB_CONN_STRING
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets
-                  key: MONGO_DB_CONN_STRING
+                  name: cold-secrets
+                  key: MONGODB_CONN_STRING
             - name: OPENAI_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets
+                  name: cold-secrets
                   key: OPENAI_API_KEY
             - name: IPINFO_ACCESS_TOKEN
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets
+                  name: cold-secrets
                   key: IPINFO_ACCESS_TOKEN
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: cold-secrets
+                  key: JWT_SECRET
             - name: TEST
               valueFrom:
                 secretKeyRef:
-                  name: app-secrets
+                  name: cold-secrets
                   key: TEST
 ---
 apiVersion: v1
