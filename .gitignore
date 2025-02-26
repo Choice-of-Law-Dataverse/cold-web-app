@@ -173,3 +173,4 @@ frontend/public/temp_Jurisdictions-All data.csv
 
 # Secrets
 k8s/secrets.yaml
+k8s/nocodb.yaml
