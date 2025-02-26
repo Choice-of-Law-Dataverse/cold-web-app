@@ -5,7 +5,12 @@ from app.auth import verify_jwt_token
 from app.routes import ai, search, submarine, user
 from app.services.query_logging import log_query
 
-app = FastAPI()
+app = FastAPI(
+    title="CoLD API",
+    openapi_url="/api/openapi.json",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc"
+    )
 
 origins = ["*"]
 
