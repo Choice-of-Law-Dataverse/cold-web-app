@@ -10,7 +10,7 @@
           formattedSourceTable="Legislation"
         >
           <!-- Slot for Legal provisions -->
-          <template #legal-provisions-ids="{ value }">
+          <template #domestic-legal-provisions="{ value }">
             <div>
               <div v-if="value && value.trim()">
                 <div class="label-key pb-4 pt-4">Selected Provisions</div>
@@ -86,7 +86,7 @@ const keyLabelPairs = [
   { key: 'Source (URL)', label: 'Official Source' },
   {
     key: 'Domestic Legal Provisions',
-    label: 'Domestic Legal Provisions',
+    label: '',
   },
 ]
 
