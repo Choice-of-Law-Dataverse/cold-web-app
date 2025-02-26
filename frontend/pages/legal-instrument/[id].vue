@@ -79,14 +79,14 @@ const keyLabelPairs = [
     label: 'Compatible with the HCCH Principles?',
   },
   {
-    key: 'Publication date',
-    label: 'Publication date',
+    key: 'Publication Date',
+    label: 'Publication Date',
   },
-  { key: 'Entry into force', label: 'Entry into force' },
-  { key: 'Official Source (URL)', label: 'Official Source' },
+  { key: 'Entry Into Force', label: 'Entry Into Force' },
+  { key: 'Source (URL)', label: 'Official Source' },
   {
-    key: 'Legal provisions IDs',
-    label: 'Legal provisions IDs',
+    key: 'Domestic Legal Provisions',
+    label: 'Domestic Legal Provisions',
   },
 ]
 
@@ -94,9 +94,9 @@ const valueClassMap = {
   Abbreviation: 'result-value-medium',
   'Title (in English)': 'result-value-small',
   'Compatible with the HCCH Principles?': 'result-value-medium',
-  'Publication date': 'result-value-small',
-  'Entry into force': 'result-value-small',
-  'Official Source (URL)': 'result-value-small',
+  'Publication Date': 'result-value-small',
+  'Entry Into Force': 'result-value-small',
+  'Source (URL)': 'result-value-small',
 }
 
 // Computed property to transform the API response
@@ -110,7 +110,7 @@ const processedLegalInstrument = computed(() => {
     ]
       ? 'Yes'
       : 'No',
-    Themes: legalInstrument.value['Themes name'], // Map Themes name to Themes
+    Themes: legalInstrument.value['Themes Name'], // Map Themes name to Themes
   }
 })
 

@@ -75,13 +75,14 @@ async function fetchProvisionDetails() {
       body: JSON.stringify(payload),
     })
 
-    if (!response.ok)
+    if (!response.ok) {
       throw new Error(`Failed to fetch provision: ${props.provisionId}`)
-
+    }
     const data = await response.json()
+
     title.value = data.Article || 'Unknown Article'
     content.value =
-      data['Full text of the provision (Original language)'] ||
+      data['Full Text of the Provision (Original Language)'] ||
       'No content available'
   } catch (err) {
     error.value = err.message
