@@ -25,6 +25,6 @@ app.include_router(ai.router)
 app.include_router(submarine.router)
 
 
-@app.get("/", dependencies=[Depends(verify_jwt_token)])
+@app.get("/api")
 def root():
     return {"message": "Hello World from CoLD"}
