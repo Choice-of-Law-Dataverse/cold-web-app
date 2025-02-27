@@ -119,7 +119,7 @@ const adjustedSourceTable = computed(() => {
       return 'Court Decision'
     case 'Answers':
       return 'Question'
-    case 'Legislation':
+    case 'Domestic Instruments':
       return 'Legal Instrument'
     case 'Literature':
       return 'Literature'
@@ -136,7 +136,7 @@ const labelColorClass = computed(() => {
     case 'Answers':
     case 'Question':
       return 'label-question'
-    case 'Legislation':
+    case 'Domestic Instruments':
       return 'label-legal-instrument'
     case 'Literature':
       return 'label-literature'
@@ -163,7 +163,7 @@ function getLink() {
       return `/question/${props.resultData.id}`
     case 'Court Decisions':
       return `/court-decision/${props.resultData.id}`
-    case 'Legislation':
+    case 'Domestic Instruments':
       return `/legal-instrument/${props.resultData.id}`
     case 'Literature':
       return `/literature/${props.resultData.id}`
