@@ -16,18 +16,18 @@
                 [
                   ...(value ||
                   processedAnswerData?.['Legislation-ID'] ||
-                  processedAnswerData?.['More information']
+                  processedAnswerData?.['More Information']
                     ? [
                         value ||
                           processedAnswerData?.['Legislation-ID'] ||
-                          processedAnswerData?.['More information'],
+                          processedAnswerData?.['More Information'],
                       ]
                     : []),
                 ].filter(Boolean)
               "
               :fallbackData="processedAnswerData"
               :valueClassMap="valueClassMap"
-              :noLinkList="[processedAnswerData?.['More information']]"
+              :noLinkList="[processedAnswerData?.['More Information']]"
               :fetchOupChapter="true"
               :fetchPrimarySource="true"
             />
