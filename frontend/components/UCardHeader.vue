@@ -146,7 +146,9 @@ const labelColorClass = computed(() => {
 })
 
 const formattedTheme = computed(() => {
-  const themes = props.resultData.Themes
+  const themes =
+    props.resultData.Themes ??
+    props.resultData['International Legal Provisions']
 
   if (!themes || themes === 'None') {
     return [] // Return an empty array to avoid rendering issues
