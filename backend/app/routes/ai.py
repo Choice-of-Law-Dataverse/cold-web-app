@@ -6,7 +6,7 @@ from app.auth import verify_jwt_token
 
 gpt = GPT()
 
-router = APIRouter(prefix="/api/ai", tags=["AI"], dependencies=[Depends(verify_jwt_token)])
+router = APIRouter(prefix="/ai", tags=["AI"], dependencies=[Depends(verify_jwt_token)])
 
 
 @router.post("/classify_query")

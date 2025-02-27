@@ -3,7 +3,7 @@ from fastapi.responses import JSONResponse
 from app.auth import verify_jwt_token
 
 router = APIRouter(
-    prefix="/api/user", tags=["User"], dependencies=[Depends(verify_jwt_token)]
+    prefix="/user", tags=["User"], dependencies=[Depends(verify_jwt_token)]
 )
 
 

@@ -10,7 +10,7 @@ from app.auth import verify_jwt_token
 search_service = SearchService()
 
 router = APIRouter(
-    prefix="/api/search", tags=["Search"], dependencies=[Depends(verify_jwt_token)]
+    prefix="/search", tags=["Search"], dependencies=[Depends(verify_jwt_token)]
 )
 
 
