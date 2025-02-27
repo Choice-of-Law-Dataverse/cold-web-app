@@ -3,9 +3,9 @@
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
       <!-- Question in the 1st column -->
       <div class="md:col-span-4">
-        <div class="label-key">{{ keyMap.Questions }}</div>
-        <div :class="valueClassMap.Questions || 'result-value'">
-          {{ resultData.Questions }}
+        <div class="label-key">{{ keyMap.Question }}</div>
+        <div :class="valueClassMap.Question || 'result-value'">
+          {{ resultData.Question }}
         </div>
       </div>
 
@@ -51,18 +51,18 @@ const props = defineProps({
 })
 
 // Define the keys and mappings specific to answer results
-const answerKeys = ['Questions', 'Answer', 'Legal provision articles']
+const answerKeys = ['Question', 'Answer', 'Legal provision articles']
 
 const keyMap = {
   Answer: 'Answer',
-  Questions: 'Question',
+  Question: 'Question',
   'Legal provision articles': 'Source',
 }
 
 // Map different CSS styles to different typographic components
 const valueClassMap = {
   //Answer: 'result-value-large',
-  Questions: 'result-value-medium',
+  Question: 'result-value-medium',
   'Legal provision articles': 'result-value-small',
 }
 const getAnswerClass = (answer) => {
