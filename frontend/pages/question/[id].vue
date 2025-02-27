@@ -23,12 +23,13 @@
                           processedAnswerData?.['More information'],
                       ]
                     : []),
-                  processedAnswerData?.['Name (from Jurisdiction)'],
                 ].filter(Boolean)
               "
               :fallbackData="processedAnswerData"
               :valueClassMap="valueClassMap"
               :noLinkList="[processedAnswerData?.['More information']]"
+              :fetchPrimarySource="true"
+              :fetchOupChapter="true"
             />
           </template>
 

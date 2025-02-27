@@ -28,12 +28,13 @@
             [
               resultData['Legal provision articles'] ||
                 resultData['Legislation-ID'], // ||
-              resultData['Name (from Jurisdiction)'],
             ].filter(Boolean)
           "
           :fallbackData="resultData"
           :valueClassMap="valueClassMap"
           :noLinkList="[resultData['More information']]"
+          :fetchPrimarySource="true"
+          :fetchOupChapter="true"
         />
       </div>
     </div>

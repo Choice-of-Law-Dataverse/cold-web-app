@@ -39,6 +39,10 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
+  fetchOupChapter: {
+    type: Boolean,
+    default: false, // Only fetch if explicitly requested
+  },
 })
 
 const config = useRuntimeConfig()
@@ -83,10 +87,13 @@ async function fetchPrimarySource() {
   }
 }
 
-// Function to fetch OUP JD Chapter source
-// Function to fetch OUP JD Chapter source
+// Fetch OUP JD Chapter only if the prop is true
 async function fetchOupChapterSource() {
-  if (!props.fallbackData?.['Name (from Jurisdiction)']) return
+  if (
+    !props.fetchOupChapter ||
+    !props.fallbackData?.['Name (from Jurisdiction)']
+  )
+    return
 
   const jsonPayload = {
     table: 'Literature',
@@ -128,20 +135,16 @@ async function fetchOupChapterSource() {
 
 // Compute final list of sources
 const computedSources = computed(() => {
-  return props.sources
-    .map((source) =>
-      source === props.fallbackData?.['Name (from Jurisdiction)'] &&
-      oupChapterSource.value
-        ? oupChapterSource.value // Replace jurisdiction name with OUP chapter link
-        : source
-    )
-    .concat(primarySource.value) // Append primary source
-    .filter(Boolean)
+  return [
+    ...props.sources,
+    props.fetchOupChapter ? oupChapterSource.value : null,
+    primarySource.value,
+  ].filter(Boolean)
 })
 
 // Fetch both sources when the component mounts
 onMounted(() => {
-  fetchPrimarySource()
-  fetchOupChapterSource()
+  if (props.fetchPrimarySource) fetchPrimarySource()
+  if (props.fetchOupChapter) fetchOupChapterSource()
 })
 </script>
