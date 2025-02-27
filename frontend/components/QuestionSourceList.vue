@@ -43,6 +43,7 @@ const props = defineProps({
 
 const config = useRuntimeConfig()
 const primarySource = ref(null) // Store the fetched primary source title
+const oupChapterSource = ref(null) // Store the fetched OUP chapter source
 
 // Function to fetch the primary source from API
 async function fetchPrimarySource() {
@@ -82,13 +83,65 @@ async function fetchPrimarySource() {
   }
 }
 
-// Compute final list of sources, adding the fetched primary source
+// Function to fetch OUP JD Chapter source
+// Function to fetch OUP JD Chapter source
+async function fetchOupChapterSource() {
+  if (!props.fallbackData?.['Name (from Jurisdiction)']) return
+
+  const jsonPayload = {
+    table: 'Literature',
+    filters: [
+      {
+        column: 'Jurisdiction',
+        value: props.fallbackData['Name (from Jurisdiction)'],
+      },
+      {
+        column: 'OUP JD Chapter',
+        value: true,
+      },
+    ],
+  }
+
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to fetch OUP JD Chapter source')
+
+    const data = await response.json()
+    if (data.length > 0) {
+      oupChapterSource.value = { title: data[0].Title, id: data[0].ID }
+    }
+  } catch (error) {
+    console.error('Error fetching OUP JD Chapter source:', error)
+  }
+}
+
+// Compute final list of sources
 const computedSources = computed(() => {
-  return [...props.sources, primarySource.value].filter(Boolean)
+  return props.sources
+    .map((source) =>
+      source === props.fallbackData?.['Name (from Jurisdiction)'] &&
+      oupChapterSource.value
+        ? oupChapterSource.value // Replace jurisdiction name with OUP chapter link
+        : source
+    )
+    .concat(primarySource.value) // Append primary source
+    .filter(Boolean)
 })
 
-// Fetch the primary source when the component mounts
+// Fetch both sources when the component mounts
 onMounted(() => {
   fetchPrimarySource()
+  fetchOupChapterSource()
 })
 </script>
