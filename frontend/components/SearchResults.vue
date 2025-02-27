@@ -81,9 +81,9 @@ import SearchFilters from './SearchFilters.vue'
 
 const getResultComponent = (source_table) => {
   switch (source_table) {
-    case 'Legislation':
+    case 'Domestic Legal Provisions':
       return LegislationCard
-    case 'Court decisions':
+    case 'Court Decisions':
       return CourtDecisionCard
     case 'Answers':
       return AnswerCard
