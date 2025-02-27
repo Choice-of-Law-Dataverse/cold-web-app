@@ -1,11 +1,16 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, APIRouter, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth import verify_jwt_token
 from app.routes import ai, search, submarine, user
 from app.services.query_logging import log_query
 
-app = FastAPI()
+app = FastAPI(
+    title="CoLD API",
+    openapi_url="/api/openapi.json",
+    docs_url="/api/docs",
+    redoc_url="/api/redoc"
+    )
 
 origins = ["*"]
 
@@ -19,12 +24,15 @@ app.add_middleware(
 
 app.middleware("http")(log_query)
 
-app.include_router(search.router)
-# app.include_router(user.router)
-app.include_router(ai.router)
-app.include_router(submarine.router)
+api_router = APIRouter(prefix="/api/v1")
 
+api_router.include_router(search.router)
+# api_router.include_router(user.router)
+api_router.include_router(ai.router)
+api_router.include_router(submarine.router)
 
-@app.get("/", dependencies=[Depends(verify_jwt_token)])
+app.include_router(api_router)
+
+@app.get("/api/v1")
 def root():
     return {"message": "Hello World from CoLD"}

@@ -200,7 +200,7 @@ class SearchService:
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.themes) AS theme_filter
-                        WHERE "Themes" ILIKE '%' || theme_filter || '%'
+                        WHERE "Themes Name" ILIKE '%' || theme_filter || '%'
                     )
                 )
 
@@ -326,7 +326,7 @@ class SearchService:
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.themes) AS theme_filter
-                        WHERE "Themes" ILIKE '%' || theme_filter || '%'
+                        WHERE "Themes Name" ILIKE '%' || theme_filter || '%'
                     )
                 )
                 AND (
