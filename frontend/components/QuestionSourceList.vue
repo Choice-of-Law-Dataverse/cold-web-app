@@ -43,6 +43,10 @@ const props = defineProps({
     type: Boolean,
     default: false, // Only fetch if explicitly requested
   },
+  fetchPrimarySource: {
+    type: Boolean,
+    default: false, // Only fetch if explicitly requested
+  },
 })
 
 const config = useRuntimeConfig()
@@ -75,12 +79,21 @@ async function fetchPrimarySource() {
         body: JSON.stringify(jsonPayload),
       }
     )
-
     if (!response.ok) throw new Error('Failed to fetch primary source')
 
     const data = await response.json()
-    if (data.length > 0) {
-      primarySource.value = { title: data[0].Title, id: data[0].ID }
+
+    // Filter out entries where "OUP JD Chapter" is explicitly true
+    const nonOupEntries = data.filter(
+      (entry) => entry['OUP JD Chapter'] === null
+    )
+
+    // Select the first valid non-OUP entry as the primary source
+    if (nonOupEntries.length > 0) {
+      primarySource.value = nonOupEntries.map((entry) => ({
+        title: entry.Title,
+        id: entry.ID,
+      }))
     }
   } catch (error) {
     console.error('Error fetching primary source:', error)
@@ -138,13 +151,15 @@ const computedSources = computed(() => {
   return [
     ...props.sources,
     props.fetchOupChapter ? oupChapterSource.value : null,
-    primarySource.value,
+    ...(props.fetchPrimarySource && Array.isArray(primarySource.value)
+      ? primarySource.value
+      : []),
   ].filter(Boolean)
 })
 
 // Fetch both sources when the component mounts
 onMounted(() => {
-  if (props.fetchPrimarySource) fetchPrimarySource()
   if (props.fetchOupChapter) fetchOupChapterSource()
+  if (props.fetchPrimarySource) fetchPrimarySource()
 })
 </script>
