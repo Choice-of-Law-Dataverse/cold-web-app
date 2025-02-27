@@ -26,7 +26,7 @@ const title = ref<string | null>(null)
 // Fetch the court case title on mount
 async function fetchCaseTitle() {
   const payload = {
-    table: 'Court decisions',
+    table: 'Court Decisions',
     id: props.caseId,
   }
 
@@ -46,7 +46,7 @@ async function fetchCaseTitle() {
     }
 
     const data = await response.json()
-    title.value = data.Case || 'Unknown Title' // Fallback if the title is missing
+    title.value = data['Case Title'] || 'Unknown Title' // Fallback if the title is missing
   } catch (error) {
     console.error(`Error fetching case title for ID: ${props.caseId}`, error)
     title.value = 'Error'

@@ -119,7 +119,7 @@ const selectedTheme = ref(null) // Selected theme for filtering
 const showInfo = ref(false) // Reactive state to toggle the JurisdictionComparisonInfo component
 const columns = ref([
   { key: 'Themes', label: 'Theme', class: 'label' },
-  { key: 'Questions', label: 'Question', class: 'label' },
+  { key: 'Question', label: 'Question', class: 'label' },
   { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
 ])
 
@@ -217,7 +217,7 @@ async function fetchTableData(jurisdiction) {
 
     rows.value = data.sort(
       (a, b) =>
-        questionOrder.indexOf(a.Questions) - questionOrder.indexOf(b.Questions)
+        questionOrder.indexOf(a.Question) - questionOrder.indexOf(b.Question)
     )
   } finally {
     loading.value = false
@@ -281,7 +281,7 @@ function updateColumns(jurisdiction) {
   const secondColumnKey = `Answer_${jurisdiction.value}`
   columns.value = [
     { key: 'Themes', label: 'Theme', class: 'label' },
-    { key: 'Questions', label: 'Question', class: 'label' },
+    { key: 'Question', label: 'Question', class: 'label' },
     { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
     { key: secondColumnKey, label: jurisdiction.label, class: 'label' },
     { key: 'Match', label: '', class: 'match-column' },
@@ -292,7 +292,7 @@ function updateRows(jurisdictionData, jurisdiction) {
   const secondColumnKey = `Answer_${jurisdiction.value}`
   rows.value = rows.value.map((row) => {
     const match = jurisdictionData.find(
-      (item) => item.Questions === row.Questions
+      (item) => item.Question === row.Question
     )
     return {
       ...row,

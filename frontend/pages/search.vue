@@ -143,8 +143,8 @@ async function fetchSearchResults(query, filters) {
   // Set up mapping: Filter options have different wording to table names
   const typeFilterMapping = {
     Questions: 'Answers',
-    'Court Decisions': 'Court decisions',
-    'Legal Instruments': 'Legislation',
+    'Court Decisions': 'Court Decisions',
+    'Legal Instruments': 'Domestic Instruments',
     Literature: 'Literature',
   }
 

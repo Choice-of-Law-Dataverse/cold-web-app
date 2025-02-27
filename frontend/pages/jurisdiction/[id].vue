@@ -123,7 +123,7 @@ const config = useRuntimeConfig()
 async function fetchJurisdiction(iso2: string) {
   const jsonPayload = {
     table: 'Jurisdictions',
-    filters: [{ column: 'Alpha-2 code', value: iso2 }],
+    filters: [{ column: 'Alpha-2 Code', value: iso2 }],
   }
 
   try {
@@ -145,8 +145,8 @@ async function fetchJurisdiction(iso2: string) {
     // Extract the required values
     jurisdictionData.value = {
       Name: data[0]?.Name || 'N/A',
-      'Jurisdictional differentiator':
-        data[0]?.['Jurisdictional differentiator'] || 'N/A',
+      'Jurisdictional Differentiator':
+        data[0]?.['Jurisdictional Differentiator'] || 'N/A',
     }
 
     // If "Literature" exists, fetch its title; otherwise, set a default value
@@ -235,8 +235,8 @@ const keyLabelPairs = computed(() => {
   const pairs = [
     { key: 'Name', label: 'Jurisdiction' },
     {
-      key: 'Jurisdictional differentiator',
-      label: 'Jurisdictional differentiator',
+      key: 'Jurisdictional Differentiator',
+      label: 'Jurisdictional Differentiator',
     },
     { key: 'Specialist', label: 'Specialist' },
     { key: 'Literature', label: 'Related Literature' },
@@ -246,7 +246,7 @@ const keyLabelPairs = computed(() => {
 
 const valueClassMap = {
   Name: 'result-value-medium',
-  'Jurisdictional differentiator': 'result-value-small',
+  'Jurisdictional Differentiator': 'result-value-small',
 }
 
 // Fetch jurisdiction data on component mount

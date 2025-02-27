@@ -1,5 +1,5 @@
 <template>
-  <ResultCard :resultData="processedResultData" cardType="Legislation">
+  <ResultCard :resultData="processedResultData" cardType="Legal Instrument">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
       <!-- Abbreviation in the 1st column -->
       <div class="md:col-span-5">
@@ -37,7 +37,7 @@ const processedResultData = computed(() => {
 
   return {
     ...props.resultData,
-    Themes: props.resultData['Themes name'], // Map "Themes name" to "Themes"
+    Themes: props.resultData['Domestic Legal Provisions Themes'], // Map "Themes name" to "Themes"
   }
 })
 

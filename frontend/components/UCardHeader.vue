@@ -95,6 +95,7 @@ const formattedJurisdiction = computed(() => {
     props.resultData['Jurisdiction Names'] ||
     props.resultData['Name (from Jurisdiction)'] ||
     props.resultData['Jurisdiction'] ||
+    props.resultData['Jurisdictions'] ||
     ''
 
   if (!jurisdictionString) {
@@ -114,11 +115,11 @@ const formattedSourceTable = computed(() => {
 const adjustedSourceTable = computed(() => {
   // Use the result from `formattedSourceTable` and apply label adjustments
   switch (formattedSourceTable.value) {
-    case 'Court decisions':
-      return 'Court decision'
+    case 'Court Decisions':
+      return 'Court Decision'
     case 'Answers':
       return 'Question'
-    case 'Legislation':
+    case 'Legal Instrument':
       return 'Legal Instrument'
     case 'Literature':
       return 'Literature'
@@ -130,12 +131,12 @@ const adjustedSourceTable = computed(() => {
 
 const labelColorClass = computed(() => {
   switch (formattedSourceTable.value) {
-    case 'Court decisions':
+    case 'Court Decisions':
       return 'label-court-decision'
     case 'Answers':
     case 'Question':
       return 'label-question'
-    case 'Legislation':
+    case 'Legal Instrument':
       return 'label-legal-instrument'
     case 'Literature':
       return 'label-literature'
@@ -145,7 +146,9 @@ const labelColorClass = computed(() => {
 })
 
 const formattedTheme = computed(() => {
-  const themes = props.resultData.Themes
+  const themes =
+    props.resultData.Themes ??
+    props.resultData['International Legal Provisions']
 
   if (!themes || themes === 'None') {
     return [] // Return an empty array to avoid rendering issues
@@ -160,9 +163,9 @@ function getLink() {
   switch (props.cardType) {
     case 'Answers':
       return `/question/${props.resultData.id}`
-    case 'Court decisions':
+    case 'Court Decisions':
       return `/court-decision/${props.resultData.id}`
-    case 'Legislation':
+    case 'Legal Instrument':
       return `/legal-instrument/${props.resultData.id}`
     case 'Literature':
       return `/literature/${props.resultData.id}`
