@@ -144,7 +144,7 @@ async function fetchSearchResults(query, filters) {
   const typeFilterMapping = {
     Questions: 'Answers',
     'Court Decisions': 'Court Decisions',
-    'Legal Instruments': 'Domestic Legal Provisions',
+    'Legal Instruments': 'Domestic Instruments',
     Literature: 'Literature',
   }
 
