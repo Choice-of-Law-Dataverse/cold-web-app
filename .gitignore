@@ -173,3 +173,7 @@ frontend/public/temp_Answers-All data.csv
 frontend/public/temp_Jurisdictions-All data.csv
 frontend/public/temp_Court decisions-Court Decisions by Jurisdiction Web App Bar Chart.csv
 frontend/components/TestComponent.vue
+
+# Secrets
+k8s/secrets.yaml
+k8s/nocodb.yaml

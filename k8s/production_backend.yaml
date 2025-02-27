@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: simonweigold/cold-fastapi-backend:dev
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          env:
+            - name: SQL_CONN_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: cold-secrets
+                  key: SQL_CONN_STRING
+            - name: MONGODB_CONN_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: cold-secrets
+                  key: MONGODB_CONN_STRING
+            - name: OPENAI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: cold-secrets
+                  key: OPENAI_API_KEY
+            - name: IPINFO_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: cold-secrets
+                  key: IPINFO_ACCESS_TOKEN
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: cold-secrets
+                  key: JWT_SECRET
+            - name: TEST
+              valueFrom:
+                secretKeyRef:
+                  name: cold-secrets
+                  key: TEST
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP
