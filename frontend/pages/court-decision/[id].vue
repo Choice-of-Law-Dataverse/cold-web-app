@@ -7,7 +7,7 @@
           :resultData="courtDecision"
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
-          formattedSourceTable="Court decisions"
+          formattedSourceTable="Court Decisions"
         >
           <template #related-literature>
             <RelatedLiterature
