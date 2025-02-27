@@ -19,13 +19,8 @@ spec:
     spec:
       containers:
       - name: backend
-<<<<<<< HEAD
-        image: coldcontainerregistry.azurecr.io/cold-flask-backend:latest
-        imagePullPolicy: Always
-=======
         image: cold-flask-backend:latest
         imagePullPolicy: Never
->>>>>>> 133b07d (chore: move kubernetes config into ony file)
         ports:
         - containerPort: 5000
         env:
@@ -49,14 +44,11 @@ spec:
             secretKeyRef:
               name: cold-flask-backend-env
               key: MONGODB_CONN_STRING
-<<<<<<< HEAD
         - name: OPENAI_API_KEY
           valueFrom:
             secretKeyRef:
               name: cold-flask-backend-env
               key: OPENAI_API_KEY
-=======
->>>>>>> 133b07d (chore: move kubernetes config into ony file)
 
 ---
 # Backend Service
@@ -71,11 +63,7 @@ spec:
     - protocol: TCP
       port: 5000
       targetPort: 5000
-<<<<<<< HEAD
-  type: LoadBalancer
-=======
   type: ClusterIP
->>>>>>> 133b07d (chore: move kubernetes config into ony file)
 
 ---
 # Frontend Deployment
@@ -97,13 +85,8 @@ spec:
     spec:
       containers:
       - name: frontend
-<<<<<<< HEAD
-        image: coldcontainerregistry.azurecr.io/cold-nuxt-frontend:latest
-        imagePullPolicy: Always
-=======
         image: cold-nuxt-frontend:latest
         imagePullPolicy: Never
->>>>>>> 133b07d (chore: move kubernetes config into ony file)
         ports:
         - containerPort: 3000
 
@@ -120,11 +103,7 @@ spec:
     - protocol: TCP
       port: 3000
       targetPort: 3000
-<<<<<<< HEAD
-  type: LoadBalancer
-=======
   type: ClusterIP
->>>>>>> 133b07d (chore: move kubernetes config into ony file)
 
 ---
 # Ingress
