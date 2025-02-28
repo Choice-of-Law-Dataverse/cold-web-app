@@ -4,15 +4,21 @@
     <div v-else-if="error">{{ error }}</div>
     <div v-else>
       <div :id="anchorId" :class="['legal-provision', customClass]">
-        <!-- Anchor for the article title -->
-        <a :href="`#${anchorId}`" class="label-key-provision-article anchor">
-          {{ title }}
-          <UToggle
-            v-if="hasEnglishTranslation"
-            v-model="showEnglish"
-            size="2xs"
-          />
-        </a>
+        <div class="flex justify-between items-baseline">
+          <a
+            :href="`#${anchorId}`"
+            class="label-key-provision-article anchor flex-1 min-w-0"
+          >
+            {{ title }}
+          </a>
+          <div class="flex-none">
+            <UToggle
+              v-if="hasEnglishTranslation"
+              v-model="showEnglish"
+              size="2xs"
+            />
+          </div>
+        </div>
 
         <p class="result-value-small">{{ content }}</p>
       </div>
