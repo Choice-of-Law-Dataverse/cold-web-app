@@ -16,11 +16,20 @@
                 <USelectMenu
                   v-model="textType"
                   :options="[
-                    'Full Text of the Provision (Original Language)',
-                    'Full Text of the Provision (English Translation)',
+                    {
+                      label: 'Original Language',
+                      value: 'Full Text of the Provision (Original Language)',
+                    },
+                    {
+                      label: 'English Translation',
+                      value: 'Full Text of the Provision (English Translation)',
+                    },
                   ]"
+                  value-attribute="value"
+                  label-attribute="label"
                   class="mb-4"
                 />
+
                 <div class="label-key pb-4 pt-4">Selected Provisions</div>
                 <LegalProvision
                   v-for="(provisionId, index) in value.split(',')"
