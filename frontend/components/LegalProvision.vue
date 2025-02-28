@@ -6,7 +6,12 @@
       <div :id="anchorId" :class="['legal-provision', customClass]">
         <!-- Anchor for the article title -->
         <a :href="`#${anchorId}`" class="label-key-provision-article anchor">
-          {{ title }} <UToggle v-model="showEnglish" size="2xs" />
+          {{ title }}
+          <UToggle
+            v-if="hasEnglishTranslation"
+            v-model="showEnglish"
+            size="2xs"
+          />
         </a>
 
         <p class="result-value-small">{{ content }}</p>
