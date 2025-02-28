@@ -12,13 +12,13 @@
             {{ title }}
           </a>
           <div class="flex items-center gap-1" v-if="hasEnglishTranslation">
-            <span class="label-key-provision-article mr-[-1px]">ORG</span>
+            <span class="label-key-provision-toggle mr-[0px]">Original</span>
             <UToggle
               v-model="showEnglish"
               size="2xs"
               class="bg-[var(--color-cold-gray)]"
             />
-            <span class="label-key-provision-article">ENG</span>
+            <span class="label-key-provision-toggle">English</span>
           </div>
         </div>
 

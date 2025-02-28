@@ -102,6 +102,13 @@ li {
   font-weight: 500 !important;
 }
 
+.label-key-provision-toggle {
+  @extend .label-key;
+  font-weight: 500 !important;
+  text-transform: capitalize;
+  font-size: 10px !important;
+}
+
 .label-jurisdiction {
   @extend .label;
   background-color: var(--color-cold-gray-alpha);
