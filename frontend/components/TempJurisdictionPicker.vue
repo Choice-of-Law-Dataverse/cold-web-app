@@ -59,6 +59,7 @@ async function fetchJurisdictions() {
     countries.value = relevantJurisdictions
       .map((entry) => entry.Name)
       .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b)) // Sort alphabetically
   } catch (error) {
     console.error(error)
     countries.value = [] // Fallback to empty list
