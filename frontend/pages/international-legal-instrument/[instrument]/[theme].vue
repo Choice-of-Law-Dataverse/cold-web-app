@@ -7,7 +7,7 @@
           :resultData="processedLegalInstrument"
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
-          formattedSourceTable="Legislation"
+          formattedSourceTable="Legal Instrument"
           :formattedJurisdiction="formattedJurisdiction"
           :formattedTheme="formattedTheme"
         >
@@ -19,7 +19,7 @@
                   {{ legalInstrument?.Instrument }} Full Text
                 </p>
                 <p class="text-sm leading-relaxed">
-                  {{ legalInstrument?.['Full text'] || 'N/A' }}
+                  {{ legalInstrument?.['Full Text'] || 'N/A' }}
                 </p>
               </div>
 
@@ -58,7 +58,7 @@
                     {{ secondaryInstrument?.Instrument }} Full Text
                   </p> -->
                   <p class="text-sm leading-relaxed">
-                    {{ secondaryInstrument?.['Full text'] || 'N/A' }}
+                    {{ secondaryInstrument?.['Full Text'] || 'N/A' }}
                   </p>
                 </div>
               </div>
@@ -118,14 +118,14 @@ const deslugify = (slug: string) => {
 
 async function fetchLegalInstrument(instrument: string, theme: string) {
   const jsonPayload = {
-    table: 'Themes',
+    table: 'International Legal Provisions',
     filters: [
       {
         column: 'Instrument',
         value: deslugify(instrument),
       },
       {
-        column: 'Theme',
+        column: 'Title of the Provision',
         value: deslugify(theme),
       },
     ],
@@ -165,8 +165,10 @@ async function fetchLegalInstrument(instrument: string, theme: string) {
 
 async function fetchInstrumentsForTheme(themeParam: string) {
   const jsonPayload = {
-    table: 'Themes',
-    filters: [{ column: 'Theme', value: deslugify(themeParam) }],
+    table: 'International Legal Provisions',
+    filters: [
+      { column: 'Title of the Provision', value: deslugify(themeParam) },
+    ],
   }
   try {
     const response = await fetch(
@@ -198,14 +200,14 @@ async function fetchInstrumentsForTheme(themeParam: string) {
 
 async function fetchSecondaryInstrument(instrumentParam: string) {
   const jsonPayload = {
-    table: 'Themes',
+    table: 'International Legal Provisions',
     filters: [
       {
         column: 'Instrument',
         value: deslugify(instrumentParam),
       },
       {
-        column: 'Theme',
+        column: 'Title of the Provision',
         value: deslugify(theme),
       },
     ],
@@ -245,13 +247,13 @@ const keyLabelPairs = computed(() => {
   if (!legalInstrument.value)
     return [
       { key: 'Provision', label: 'Provision' },
-      { key: 'Full text', label: '' }, // Temporary label while data loads
+      { key: 'Full Text', label: '' }, // Temporary label while data loads
     ]
 
   return [
     { key: 'Provision', label: 'Provision' },
     {
-      key: 'Full text',
+      key: 'Full Text',
       //label: `${legalInstrument.value.Instrument} Full Text`,
       label: '',
     },
@@ -276,7 +278,7 @@ const processedLegalInstrument = computed(() => {
     'Select International Instrument': '',
     // ✅ Remove the fallback text from "Comparison Full Text"
     'Comparison Full Text': secondaryInstrument.value
-      ? secondaryInstrument.value['Full text']
+      ? secondaryInstrument.value['Full Text']
       : 'Compare with another International Legal Instrument', // ✅ Empty string instead of duplicate text
   }
 })
