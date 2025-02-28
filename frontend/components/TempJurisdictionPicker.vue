@@ -19,21 +19,47 @@
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import JurisdictionSelectMenu from './JurisdictionSelectMenu.vue'
+import { useRuntimeConfig } from '#app' // Import Nuxt's runtime config
 
 // Reactive states
 const countries = ref([])
 const router = useRouter()
+const config = useRuntimeConfig()
 
 // Fetch jurisdictions from the text file
 async function fetchJurisdictions() {
   try {
-    const response = await fetch('/temp_jurisdictions.txt') // Path to file in `public`
-    if (!response.ok) throw new Error('Failed to load jurisdictions file')
-    const text = await response.text()
-    countries.value = text
-      .split('\n')
-      .map((country) => country.trim())
-      .filter(Boolean) // Clean up list
+    const jsonPayload = {
+      table: 'Jurisdictions',
+      filters: [],
+    }
+
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to load jurisdictions')
+
+    const data = await response.json()
+
+    // Filter out jurisdictions where "Irrelevant?" is explicitly true
+    const relevantJurisdictions = data.filter(
+      (entry) => entry['Irrelevant?'] === null
+    )
+
+    // Extract the "Name" field
+    countries.value = relevantJurisdictions
+      .map((entry) => entry.Name)
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b)) // Sort alphabetically
   } catch (error) {
     console.error(error)
     countries.value = [] // Fallback to empty list
