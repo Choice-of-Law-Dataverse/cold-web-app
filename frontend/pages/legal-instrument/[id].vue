@@ -19,6 +19,8 @@
                   :key="index"
                   :provisionId="provisionId.trim()"
                   :class="index === 0 ? 'no-margin' : ''"
+                  :textType="textType"
+                  @update:hasEnglishTranslation="hasEnglishTranslation = $event"
                 />
               </div>
               <div v-else>
@@ -41,6 +43,8 @@ import LegalProvision from '~/components/LegalProvision.vue'
 const route = useRoute() // Access the route to get the ID param
 const legalInstrument = ref(null) // Store fetched court decision data
 const loading = ref(true) // Track loading state
+const textType = ref('Full Text of the Provision (English Translation)')
+const hasEnglishTranslation = ref(false)
 
 const config = useRuntimeConfig()
 

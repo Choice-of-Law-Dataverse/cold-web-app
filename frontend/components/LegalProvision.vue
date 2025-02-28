@@ -4,10 +4,44 @@
     <div v-else-if="error">{{ error }}</div>
     <div v-else>
       <div :id="anchorId" :class="['legal-provision', customClass]">
-        <!-- Anchor for the article title -->
-        <a :href="`#${anchorId}`" class="label-key-provision-article anchor">
-          {{ title }}
-        </a>
+        <div class="flex justify-between items-baseline">
+          <a
+            :href="`#${anchorId}`"
+            class="label-key-provision-article anchor flex-1 min-w-0"
+          >
+            {{ title }}
+          </a>
+          <div class="flex items-center gap-1" v-if="hasEnglishTranslation">
+            <!-- Original label (fades when English is active) -->
+            <span
+              class="label-key-provision-toggle mr-[-0px]"
+              :class="{
+                'opacity-25': showEnglish,
+                'opacity-100': !showEnglish,
+              }"
+            >
+              Original
+            </span>
+
+            <UToggle
+              v-model="showEnglish"
+              size="2xs"
+              class="bg-[var(--color-cold-gray)]"
+            />
+
+            <!-- English label (fades when Original is active) -->
+            <span
+              class="label-key-provision-toggle"
+              :class="{
+                'opacity-25': !showEnglish,
+                'opacity-100': showEnglish,
+              }"
+            >
+              English
+            </span>
+          </div>
+        </div>
+
         <p class="result-value-small">{{ content }}</p>
       </div>
     </div>
@@ -27,6 +61,10 @@ const props = defineProps({
     type: String,
     default: '',
   }, // Accept dynamic classes
+  textType: {
+    type: String,
+    required: true,
+  },
 })
 
 // Reactive state for title and content
@@ -36,6 +74,11 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 
 const config = useRuntimeConfig()
+
+const hasEnglishTranslation = ref(false)
+const emit = defineEmits(['update:hasEnglishTranslation'])
+const showEnglish = ref(true)
+const provisionData = ref<Record<string, string> | null>(null) // Store provision details
 
 // Compute the final class
 const customClass = computed(() => props.class)
@@ -81,9 +124,19 @@ async function fetchProvisionDetails() {
     const data = await response.json()
 
     title.value = data.Article || 'Unknown Article'
-    content.value =
-      data['Full Text of the Provision (Original Language)'] ||
-      'No content available'
+    hasEnglishTranslation.value =
+      'Full Text of the Provision (English Translation)' in data
+    emit('update:hasEnglishTranslation', hasEnglishTranslation.value)
+
+    provisionData.value = data // Store the fetched provision data
+
+    // Set initial content to English first, then fallback to Original Language
+    content.value = showEnglish.value
+      ? data['Full Text of the Provision (English Translation)'] ||
+        data['Full Text of the Provision (Original Language)'] ||
+        'No content available'
+      : data['Full Text of the Provision (Original Language)'] ||
+        'No content available'
   } catch (err) {
     error.value = err.message
   } finally {
@@ -93,6 +146,24 @@ async function fetchProvisionDetails() {
 
 onMounted(() => {
   fetchProvisionDetails().then(scrollToAnchor)
+})
+
+watch(
+  () => props.textType,
+  () => {
+    fetchProvisionDetails()
+  }
+)
+
+watch(showEnglish, () => {
+  if (provisionData.value) {
+    content.value = showEnglish.value
+      ? provisionData.value[
+          'Full Text of the Provision (English Translation)'
+        ] || 'No English translation available'
+      : provisionData.value['Full Text of the Provision (Original Language)'] ||
+        'No content available'
+  }
 })
 </script>
 
