@@ -6,9 +6,9 @@
       <div :id="anchorId" :class="['legal-provision', customClass]">
         <!-- Anchor for the article title -->
         <a :href="`#${anchorId}`" class="label-key-provision-article anchor">
-          {{ title }}
+          {{ title }} <UToggle v-model="showEnglish" size="2xs" />
         </a>
-        <UToggle v-model="showEnglish" size="2xs" />
+
         <p class="result-value-small">{{ content }}</p>
       </div>
     </div>
@@ -44,7 +44,7 @@ const config = useRuntimeConfig()
 
 const hasEnglishTranslation = ref(false)
 const emit = defineEmits(['update:hasEnglishTranslation'])
-const showEnglish = ref(false)
+const showEnglish = ref(true)
 const provisionData = ref<Record<string, string> | null>(null) // Store provision details
 
 // Compute the final class
@@ -97,10 +97,11 @@ async function fetchProvisionDetails() {
 
     provisionData.value = data // Store the fetched provision data
 
-    // Set initial content
+    // Set initial content to English first, then fallback to Original Language
     content.value = showEnglish.value
       ? data['Full Text of the Provision (English Translation)'] ||
-        'No English translation available'
+        data['Full Text of the Provision (Original Language)'] ||
+        'No content available'
       : data['Full Text of the Provision (Original Language)'] ||
         'No content available'
   } catch (err) {
