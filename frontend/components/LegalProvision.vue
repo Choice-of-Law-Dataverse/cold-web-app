@@ -41,6 +41,9 @@ const error = ref<string | null>(null)
 
 const config = useRuntimeConfig()
 
+const hasEnglishTranslation = ref(false)
+const emit = defineEmits(['update:hasEnglishTranslation'])
+
 // Compute the final class
 const customClass = computed(() => props.class)
 
@@ -85,7 +88,15 @@ async function fetchProvisionDetails() {
     const data = await response.json()
 
     title.value = data.Article || 'Unknown Article'
-    content.value = data[props.textType] || 'No content available'
+    hasEnglishTranslation.value =
+      'Full Text of the Provision (English Translation)' in data
+    emit('update:hasEnglishTranslation', hasEnglishTranslation.value)
+
+    const selectedTextType = hasEnglishTranslation.value
+      ? props.textType
+      : 'Full Text of the Provision (Original Language)'
+
+    content.value = data[selectedTextType] || 'No content available'
   } catch (err) {
     error.value = err.message
   } finally {
