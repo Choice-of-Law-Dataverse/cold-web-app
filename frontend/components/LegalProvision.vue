@@ -14,7 +14,7 @@
           <div class="flex items-center gap-1" v-if="hasEnglishTranslation">
             <!-- Original label (fades when English is active) -->
             <span
-              class="label-key-provision-toggle transition-opacity mr-[-0px]"
+              class="label-key-provision-toggle mr-[-0px]"
               :class="{
                 'opacity-25': showEnglish,
                 'opacity-100': !showEnglish,
@@ -31,7 +31,7 @@
 
             <!-- English label (fades when Original is active) -->
             <span
-              class="label-key-provision-toggle transition-opacity"
+              class="label-key-provision-toggle"
               :class="{
                 'opacity-25': !showEnglish,
                 'opacity-100': showEnglish,
