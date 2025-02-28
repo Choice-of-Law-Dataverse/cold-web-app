@@ -53,13 +53,18 @@
                 </div>
 
                 <!-- Comparison Full Text -->
-                <div v-else>
-                  <!-- <p class="label-key -mb-1">
-                    {{ secondaryInstrument?.Instrument }} Full Text
-                  </p> -->
+                <div v-if="secondaryInstrument">
                   <p class="text-sm leading-relaxed">
                     {{ secondaryInstrument?.['Full Text'] || 'N/A' }}
                   </p>
+
+                  <!-- Link to the selected legal instrument -->
+                  <NuxtLink
+                    :to="`/international-legal-instrument/${encodeURIComponent(selectedInstrument)}/${encodeURIComponent(theme)}`"
+                    class="text-blue-500 underline mt-2 inline-block"
+                  >
+                    View Full Instrument
+                  </NuxtLink>
                 </div>
               </div>
             </div>
