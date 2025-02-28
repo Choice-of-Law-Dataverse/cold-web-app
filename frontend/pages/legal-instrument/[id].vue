@@ -13,24 +13,6 @@
           <template #domestic-legal-provisions="{ value }">
             <div>
               <div v-if="value && value.trim()">
-                <USelectMenu
-                  v-if="hasEnglishTranslation"
-                  v-model="textType"
-                  :options="[
-                    {
-                      label: 'Original Language',
-                      value: 'Full Text of the Provision (Original Language)',
-                    },
-                    {
-                      label: 'English Translation',
-                      value: 'Full Text of the Provision (English Translation)',
-                    },
-                  ]"
-                  value-attribute="value"
-                  label-attribute="label"
-                  class="mb-4"
-                />
-
                 <div class="label-key pb-4 pt-4">Selected Provisions</div>
                 <LegalProvision
                   v-for="(provisionId, index) in value.split(',')"

@@ -8,6 +8,7 @@
         <a :href="`#${anchorId}`" class="label-key-provision-article anchor">
           {{ title }}
         </a>
+        <UToggle v-model="showEnglish" size="2xs" />
         <p class="result-value-small">{{ content }}</p>
       </div>
     </div>
@@ -43,6 +44,8 @@ const config = useRuntimeConfig()
 
 const hasEnglishTranslation = ref(false)
 const emit = defineEmits(['update:hasEnglishTranslation'])
+const showEnglish = ref(false)
+const provisionData = ref<Record<string, string> | null>(null) // Store provision details
 
 // Compute the final class
 const customClass = computed(() => props.class)
@@ -92,11 +95,14 @@ async function fetchProvisionDetails() {
       'Full Text of the Provision (English Translation)' in data
     emit('update:hasEnglishTranslation', hasEnglishTranslation.value)
 
-    const selectedTextType = hasEnglishTranslation.value
-      ? props.textType
-      : 'Full Text of the Provision (Original Language)'
+    provisionData.value = data // Store the fetched provision data
 
-    content.value = data[selectedTextType] || 'No content available'
+    // Set initial content
+    content.value = showEnglish.value
+      ? data['Full Text of the Provision (English Translation)'] ||
+        'No English translation available'
+      : data['Full Text of the Provision (Original Language)'] ||
+        'No content available'
   } catch (err) {
     error.value = err.message
   } finally {
@@ -114,6 +120,17 @@ watch(
     fetchProvisionDetails()
   }
 )
+
+watch(showEnglish, () => {
+  if (provisionData.value) {
+    content.value = showEnglish.value
+      ? provisionData.value[
+          'Full Text of the Provision (English Translation)'
+        ] || 'No English translation available'
+      : provisionData.value['Full Text of the Provision (Original Language)'] ||
+        'No content available'
+  }
+})
 </script>
 
 <style scoped>
