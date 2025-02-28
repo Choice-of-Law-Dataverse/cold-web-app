@@ -127,17 +127,42 @@ const jurisdictionOptions = ref(['All Jurisdictions'])
 // Fetch jurisdictions from file
 const loadJurisdictions = async () => {
   try {
-    const response = await fetch('/temp_jurisdictions.txt') // File path in public/
+    const config = useRuntimeConfig() // Ensure config is accessible
+
+    const jsonPayload = {
+      table: 'Jurisdictions',
+      filters: [],
+    }
+
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
+
     if (!response.ok) throw new Error('Failed to load jurisdictions')
 
-    const text = await response.text()
-    const jurisdictions = text
-      .split('\n') // Split text into lines
-      .map((line) => line.trim()) // Trim spaces
-      .filter((line) => line) // Remove empty lines
+    const data = await response.json()
+
+    // Filter out jurisdictions where "Irrelevant?" is explicitly true
+    const relevantJurisdictions = data.filter(
+      (entry) => entry['Irrelevant?'] === null
+    )
+
+    // Extract and sort the "Name" field
+    const sortedJurisdictions = relevantJurisdictions
+      .map((entry) => entry.Name)
+      .filter(Boolean)
+      .sort((a, b) => a.localeCompare(b))
 
     // Prepend "All Jurisdictions" to the list
-    jurisdictionOptions.value = ['All Jurisdictions', ...jurisdictions]
+    jurisdictionOptions.value = ['All Jurisdictions', ...sortedJurisdictions]
   } catch (error) {
     console.error('Error loading jurisdictions:', error)
   }
