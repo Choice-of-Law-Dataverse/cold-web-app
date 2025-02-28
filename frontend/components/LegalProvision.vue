@@ -12,13 +12,33 @@
             {{ title }}
           </a>
           <div class="flex items-center gap-1" v-if="hasEnglishTranslation">
-            <span class="label-key-provision-toggle mr-[0px]">Original</span>
+            <!-- Original label (fades when English is active) -->
+            <span
+              class="label-key-provision-toggle transition-opacity mr-[-0px]"
+              :class="{
+                'opacity-25': showEnglish,
+                'opacity-100': !showEnglish,
+              }"
+            >
+              Original
+            </span>
+
             <UToggle
               v-model="showEnglish"
               size="2xs"
               class="bg-[var(--color-cold-gray)]"
             />
-            <span class="label-key-provision-toggle">English</span>
+
+            <!-- English label (fades when Original is active) -->
+            <span
+              class="label-key-provision-toggle transition-opacity"
+              :class="{
+                'opacity-25': !showEnglish,
+                'opacity-100': showEnglish,
+              }"
+            >
+              English
+            </span>
           </div>
         </div>
 
