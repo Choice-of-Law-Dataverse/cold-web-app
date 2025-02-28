@@ -16,19 +16,20 @@
                 [
                   ...(value ||
                   processedAnswerData?.['Legislation-ID'] ||
-                  processedAnswerData?.['More information']
+                  processedAnswerData?.['More Information']
                     ? [
                         value ||
                           processedAnswerData?.['Legislation-ID'] ||
-                          processedAnswerData?.['More information'],
+                          processedAnswerData?.['More Information'],
                       ]
                     : []),
-                  processedAnswerData?.['Name (from Jurisdiction)'],
                 ].filter(Boolean)
               "
               :fallbackData="processedAnswerData"
               :valueClassMap="valueClassMap"
-              :noLinkList="[processedAnswerData?.['More information']]"
+              :noLinkList="[processedAnswerData?.['More Information']]"
+              :fetchOupChapter="true"
+              :fetchPrimarySource="true"
             />
           </template>
 
@@ -126,7 +127,6 @@ const valueClassMap = {
 // Preprocess data to handle custom rendering cases
 const processedAnswerData = computed(() => {
   if (!answerData.value) return null
-  //console.log(processedAnswerData)
   return {
     ...answerData.value,
     'Legal provision articles':
