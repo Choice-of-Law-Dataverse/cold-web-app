@@ -27,6 +27,10 @@ const props = defineProps({
     type: String,
     default: '',
   }, // Accept dynamic classes
+  textType: {
+    type: String,
+    required: true,
+  },
 })
 
 // Reactive state for title and content
@@ -81,9 +85,7 @@ async function fetchProvisionDetails() {
     const data = await response.json()
 
     title.value = data.Article || 'Unknown Article'
-    content.value =
-      data['Full Text of the Provision (Original Language)'] ||
-      'No content available'
+    content.value = data[props.textType] || 'No content available'
   } catch (err) {
     error.value = err.message
   } finally {
@@ -94,6 +96,13 @@ async function fetchProvisionDetails() {
 onMounted(() => {
   fetchProvisionDetails().then(scrollToAnchor)
 })
+
+watch(
+  () => props.textType,
+  () => {
+    fetchProvisionDetails()
+  }
+)
 </script>
 
 <style scoped>

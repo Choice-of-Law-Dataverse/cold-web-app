@@ -13,12 +13,21 @@
           <template #domestic-legal-provisions="{ value }">
             <div>
               <div v-if="value && value.trim()">
+                <USelectMenu
+                  v-model="textType"
+                  :options="[
+                    'Full Text of the Provision (Original Language)',
+                    'Full Text of the Provision (English Translation)',
+                  ]"
+                  class="mb-4"
+                />
                 <div class="label-key pb-4 pt-4">Selected Provisions</div>
                 <LegalProvision
                   v-for="(provisionId, index) in value.split(',')"
                   :key="index"
                   :provisionId="provisionId.trim()"
                   :class="index === 0 ? 'no-margin' : ''"
+                  :textType="textType"
                 />
               </div>
               <div v-else>
@@ -41,6 +50,7 @@ import LegalProvision from '~/components/LegalProvision.vue'
 const route = useRoute() // Access the route to get the ID param
 const legalInstrument = ref(null) // Store fetched court decision data
 const loading = ref(true) // Track loading state
+const textType = ref('Full Text of the Provision (Original Language)')
 
 const config = useRuntimeConfig()
 
