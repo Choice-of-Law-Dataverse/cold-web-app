@@ -227,15 +227,40 @@ async function fetchTableData(jurisdiction) {
 // Fetch jurisdictions from the text file
 async function fetchJurisdictions() {
   try {
-    const response = await fetch('/temp_jurisdictions.txt')
+    const config = useRuntimeConfig() // Ensure config is accessible
+
+    const jsonPayload = {
+      table: 'Jurisdictions',
+      filters: [],
+    }
+
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
+
     if (!response.ok) throw new Error('Failed to load jurisdictions')
 
-    const text = await response.text()
-    jurisdictionOptions.value = text
-      .split('\n')
-      .map((country) => country.trim())
+    const data = await response.json()
+
+    // Filter out jurisdictions where "Irrelevant?" is explicitly true
+    const relevantJurisdictions = data.filter(
+      (entry) => entry['Irrelevant?'] === null
+    )
+
+    // Extract, sort, and format the "Name" field
+    jurisdictionOptions.value = relevantJurisdictions
+      .map((entry) => entry.Name)
       .filter(Boolean)
-      .map((country) => ({ label: country, value: country }))
+      .sort((a, b) => a.localeCompare(b))
+      .map((name) => ({ label: name, value: name })) // Ensure correct structure
   } catch (error) {
     console.error('Error fetching jurisdictions:', error)
     jurisdictionOptions.value = [] // Fallback to an empty list
