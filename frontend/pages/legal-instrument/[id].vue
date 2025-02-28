@@ -75,8 +75,8 @@ const keyLabelPairs = [
   { key: 'Abbreviation', label: 'Name' },
   { key: 'Title (in English)', label: 'Official Title' },
   {
-    key: 'Compatible with the HCCH Principles?',
-    label: 'Compatible with the HCCH Principles?',
+    key: 'Compatible With the HCCH Principles?',
+    label: 'Compatible With the HCCH Principles?',
   },
   {
     key: 'Publication Date',
@@ -93,7 +93,7 @@ const keyLabelPairs = [
 const valueClassMap = {
   Abbreviation: 'result-value-medium',
   'Title (in English)': 'result-value-small',
-  'Compatible with the HCCH Principles?': 'result-value-medium',
+  'Compatible With the HCCH Principles?': 'result-value-medium',
   'Publication Date': 'result-value-small',
   'Entry Into Force': 'result-value-small',
   'Source (URL)': 'result-value-small',
@@ -105,8 +105,8 @@ const processedLegalInstrument = computed(() => {
 
   return {
     ...legalInstrument.value,
-    'Compatible with the HCCH Principles?': legalInstrument.value[
-      'Compatible with the HCCH Principles?'
+    'Compatible With the HCCH Principles?': legalInstrument.value[
+      'Compatible With the HCCH Principles?'
     ]
       ? 'Yes'
       : 'No',
