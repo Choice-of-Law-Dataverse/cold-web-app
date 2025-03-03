@@ -332,10 +332,21 @@ const keyLabelPairs = computed(() => {
     pairs.push({ key: 'Source', label: '' })
   }
 
-  pairs.push(
-    { key: 'Related Question', label: 'Related Question' },
-    { key: 'Related Literature', label: '' }
-  )
+  // Process HCCH Comparison to split questions into an array
+  const hcchComparison = legalInstrument.value['HCCH Comparison'] || ''
+  const relatedQuestions = hcchComparison
+    ? hcchComparison
+        .split(',')
+        .map((q) => q.trim())
+        .filter((q) => q.length)
+    : []
+
+  // Only add the Related Question field if there are questions
+  if (relatedQuestions.length > 0) {
+    pairs.push({ key: 'Related Question', label: 'Related Question' })
+  }
+
+  pairs.push({ key: 'Related Literature', label: '' })
 
   return pairs
 })
