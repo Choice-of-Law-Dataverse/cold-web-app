@@ -258,6 +258,39 @@ async function fetchSecondaryInstrument(instrumentParam: string) {
   }
 }
 
+async function fetchSourceURL(instrumentName) {
+  const jsonPayload = {
+    table: 'International Instruments',
+    filters: [{ column: 'Name', value: instrumentName }],
+  }
+
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to fetch source URL')
+
+    const result = await response.json()
+
+    if (Array.isArray(result) && result.length > 0) {
+      return result[0].URL ?? null // Extract URL if available
+    }
+  } catch (error) {
+    console.error('Error fetching source URL:', error)
+  }
+
+  return null // Default if nothing is found
+}
+
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = computed(() => {
   // Wait until `legalInstrument` is fully available
@@ -275,7 +308,7 @@ const keyLabelPairs = computed(() => {
       label: '',
     },
     { key: 'Source', label: 'Source' },
-    { key: 'Source', label: 'Related Question' }, // 'Source' is a placeholder
+    { key: 'Related Question', label: 'Related Question' }, // 'Source' is a placeholder
     { key: 'Related Literature', label: '' },
   ]
 })
@@ -290,7 +323,7 @@ const processedLegalInstrument = computed(() => {
 
   return {
     ...legalInstrument.value,
-    Source: '[In development]',
+    Source: legalInstrument.value.Source ?? 'No source available', // ✅ Replace placeholder
     'Related Question': '[In development]',
     'Select International Instrument': '',
     // ✅ Remove the fallback text from "Comparison Full Text"
@@ -303,6 +336,11 @@ const processedLegalInstrument = computed(() => {
 onMounted(async () => {
   await fetchLegalInstrument(instrument, theme)
   await fetchInstrumentsForTheme(theme)
+  if (legalInstrument.value) {
+    legalInstrument.value.Source = await fetchSourceURL(
+      legalInstrument.value.Instrument
+    )
+  }
   await nextTick() // Ensure the DOM updates with the rendered content
 })
 </script>
