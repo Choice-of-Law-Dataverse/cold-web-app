@@ -73,7 +73,7 @@
             </div>
           </template>
 
-          <template #source>
+          <template #source v-if="processedLegalInstrument?.Source">
             <UButton
               class="link-button mt-[-24px] mb-4"
               variant="link"
@@ -308,23 +308,28 @@ async function fetchSourceURL(instrumentName) {
 
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = computed(() => {
-  // Wait until `legalInstrument` is fully available
   if (!legalInstrument.value)
     return [
       { key: 'Provision', label: 'Provision' },
-      { key: 'Full Text', label: '' }, // Temporary label while data loads
+      { key: 'Full Text', label: '' },
     ]
 
-  return [
+  const pairs = [
     { key: 'Provision', label: 'Provision' },
-    {
-      key: 'Full Text',
-      label: '',
-    },
-    { key: 'Source', label: '' },
-    { key: 'Related Question', label: 'Related Question' },
-    { key: 'Related Literature', label: '' },
+    { key: 'Full Text', label: '' },
   ]
+
+  // Only include the Source field if a valid URL exists
+  if (legalInstrument.value.Source) {
+    pairs.push({ key: 'Source', label: '' })
+  }
+
+  pairs.push(
+    { key: 'Related Question', label: 'Related Question' },
+    { key: 'Related Literature', label: '' }
+  )
+
+  return pairs
 })
 
 const valueClassMap = {
@@ -337,7 +342,7 @@ const processedLegalInstrument = computed(() => {
 
   return {
     ...legalInstrument.value,
-    Source: legalInstrument.value.Source ?? 'No source available',
+    Source: legalInstrument.value.Source,
     'Related Question': '[In development]',
     'Select International Instrument': '',
     // ✅ Remove the fallback text from "Comparison Full Text"
