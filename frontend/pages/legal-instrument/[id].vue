@@ -71,24 +71,22 @@ async function fetchLegalInstrument(id: string) {
 }
 
 // Define the keys and labels for dynamic rendering
-const keyLabelPairs = [
-  { key: 'Abbreviation', label: 'Name' },
-  { key: 'Title (in English)', label: 'Official Title' },
-  {
-    key: 'Compatible With the HCCH Principles?',
-    label: 'Compatible With the HCCH Principles?',
-  },
-  {
-    key: 'Publication Date',
-    label: 'Publication Date',
-  },
-  { key: 'Entry Into Force', label: 'Entry Into Force' },
-  { key: 'Source (URL)', label: 'Official Source' },
-  {
-    key: 'Domestic Legal Provisions',
-    label: '',
-  },
-]
+const keyLabelPairs = computed(() =>
+  [
+    { key: 'Abbreviation', label: 'Name' },
+    { key: 'Title (in English)', label: 'Official Title' },
+    legalInstrument.value?.['Compatible With the HCCH Principles?']
+      ? {
+          key: 'Compatible With the HCCH Principles?',
+          label: 'Compatible With the HCCH Principles?',
+        }
+      : null,
+    { key: 'Publication Date', label: 'Publication Date' },
+    { key: 'Entry Into Force', label: 'Entry Into Force' },
+    { key: 'Source (URL)', label: 'Official Source' },
+    { key: 'Domestic Legal Provisions', label: '' },
+  ].filter(Boolean)
+)
 
 const valueClassMap = {
   Abbreviation: 'result-value-medium',
@@ -103,15 +101,16 @@ const valueClassMap = {
 const processedLegalInstrument = computed(() => {
   if (!legalInstrument.value) return null
 
-  return {
+  const processed = {
     ...legalInstrument.value,
-    'Compatible With the HCCH Principles?': legalInstrument.value[
-      'Compatible With the HCCH Principles?'
-    ]
-      ? 'Yes'
-      : 'No',
     Themes: legalInstrument.value['Themes Name'], // Map Themes name to Themes
   }
+
+  if (legalInstrument.value['Compatible With the HCCH Principles?']) {
+    processed['Compatible With the HCCH Principles?'] = 'Yes'
+  }
+
+  return processed
 })
 
 onMounted(async () => {
