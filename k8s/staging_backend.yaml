@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: staging-backend
-          image: simonweigold/cold-fastapi-backend:alpha-20250227
+          image: simonweigold/cold-fastapi-backend:alpha-20250303
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
