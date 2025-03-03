@@ -304,11 +304,10 @@ const keyLabelPairs = computed(() => {
     { key: 'Provision', label: 'Provision' },
     {
       key: 'Full Text',
-      //label: `${legalInstrument.value.Instrument} Full Text`,
       label: '',
     },
     { key: 'Source', label: 'Source' },
-    { key: 'Related Question', label: 'Related Question' }, // 'Source' is a placeholder
+    { key: 'Related Question', label: 'Related Question' },
     { key: 'Related Literature', label: '' },
   ]
 })
@@ -323,7 +322,7 @@ const processedLegalInstrument = computed(() => {
 
   return {
     ...legalInstrument.value,
-    Source: legalInstrument.value.Source ?? 'No source available', // ✅ Replace placeholder
+    Source: legalInstrument.value.Source ?? 'No source available',
     'Related Question': '[In development]',
     'Select International Instrument': '',
     // ✅ Remove the fallback text from "Comparison Full Text"
