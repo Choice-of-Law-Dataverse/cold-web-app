@@ -59,12 +59,15 @@
                   </p>
 
                   <!-- Link to the selected legal instrument -->
-                  <NuxtLink
+                  <UButton
+                    class="link-button"
+                    variant="link"
+                    icon="i-material-symbols:arrow-forward"
+                    trailing
                     :to="`/international-legal-instrument/${encodeURIComponent(selectedInstrument)}/${encodeURIComponent(theme)}`"
-                    class="text-blue-500 underline mt-2 inline-block"
                   >
-                    View Full Instrument
-                  </NuxtLink>
+                    Go to Legal Instrument
+                  </UButton>
                 </div>
               </div>
             </div>
