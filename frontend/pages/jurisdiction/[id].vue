@@ -223,6 +223,68 @@ const fetchSpecialists = async (jurisdictionName) => {
   }
 }
 
+async function fetchInternationalInstrument(name: string) {
+  const jsonPayload = {
+    table: 'International Instruments',
+    filters: [
+      {
+        column: 'Name',
+        value: name,
+      },
+    ],
+  }
+
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
+
+    if (!response.ok)
+      throw new Error('Failed to fetch international instrument')
+
+    const data = await response.json()
+    if (data && data.length > 0) {
+      // Use the returned "Name" as the jurisdiction's name
+      jurisdictionData.value = {
+        Name: data[0]?.Name || 'N/A',
+      }
+      // If there's a Literature field, fetch its title as before
+      if (data[0]?.Literature) {
+        jurisdictionData.value.Literature = data[0].Literature
+        fetchLiteratureTitle(jurisdictionData.value.Literature)
+      } else {
+        literatureTitle.value = null
+      }
+    } else {
+      jurisdictionData.value = null // or set an error message
+    }
+  } catch (error) {
+    console.error('Error fetching international instrument:', error)
+  }
+}
+
+async function fetchJurisdictionData(identifier: string) {
+  // Attempt to fetch as a domestic jurisdiction first
+  await fetchJurisdiction(identifier)
+
+  // If no valid data is returned (for example, Name is missing or 'N/A'),
+  // then try fetching from International Instruments
+  if (!jurisdictionData.value || jurisdictionData.value.Name === 'N/A') {
+    console.log(
+      'Domestic jurisdiction not found, trying international instruments...'
+    )
+    await fetchInternationalInstrument(identifier)
+  }
+}
+
 // Fetch specialists when jurisdictionData.Name changes
 watch(
   () => jurisdictionData.value?.Name,
@@ -251,6 +313,9 @@ const valueClassMap = {
 
 // Fetch jurisdiction data on component mount
 onMounted(() => {
+  const identifier = (route.params.id as string).replace(/_/g, ' ') // Convert '_' to spaces
+  fetchJurisdictionData(identifier)
+
   const jurisdictionName = (route.params.id as string).replace(/_/g, ' ') // Convert '_' to spaces
   fetchJurisdiction(jurisdictionName)
   if (jurisdictionData.value?.Name)
