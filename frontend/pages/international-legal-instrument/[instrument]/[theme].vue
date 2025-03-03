@@ -56,18 +56,18 @@
                 <div v-if="secondaryInstrument">
                   <p class="text-sm leading-relaxed">
                     {{ secondaryInstrument?.['Full Text'] || 'N/A' }}
-                  </p>
 
-                  <!-- Link to the selected legal instrument -->
-                  <UButton
-                    class="link-button"
-                    variant="link"
-                    icon="i-material-symbols:arrow-forward"
-                    trailing
-                    :to="`/international-legal-instrument/${encodeURIComponent(selectedInstrument)}/${encodeURIComponent(theme)}`"
-                  >
-                    Go to Legal Instrument
-                  </UButton>
+                    <!-- Link to the selected legal instrument -->
+                    <UButton
+                      class="link-button"
+                      variant="link"
+                      icon="i-material-symbols:arrow-forward"
+                      trailing
+                      :to="`/international-legal-instrument/${encodeURIComponent(selectedInstrument)}/${encodeURIComponent(theme)}`"
+                    >
+                      Go to Legal Instrument
+                    </UButton>
+                  </p>
                 </div>
               </div>
             </div>
