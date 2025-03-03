@@ -1,5 +1,6 @@
 <template>
   <BackButton />
+  <!-- Do not display NotificationBanner on International Instrument pages by checking if the page contains a Jurisdictional Differentiator, which International Instruments do not. -->
   <NotificationBanner
     v-if="
       shouldShowBanner &&
