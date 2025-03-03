@@ -76,7 +76,7 @@
           <!-- Related Literature -->
           <template #related-literature>
             <RelatedLiterature
-              :themes="processedLegalInstrument?.Theme || ''"
+              :themes="processedLegalInstrument['Title of the Provision'] || ''"
               :valueClassMap="valueClassMap['Related Literature']"
             />
           </template>
@@ -116,7 +116,7 @@ function onSelectInstrument() {
 watch(legalInstrument, (newValue) => {
   if (newValue) {
     formattedJurisdiction.value = [newValue['Instrument']]
-    formattedTheme.value = [newValue['Theme']]
+    formattedTheme.value = [newValue['Title of the Provision']]
   }
 })
 
