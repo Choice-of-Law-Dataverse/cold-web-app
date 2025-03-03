@@ -2,7 +2,7 @@ import json
 import numpy as np
 from app.config import config
 from app.services.database import Database
-from app.services.utils import filter_na, parse_results, flatten_and_transform_data
+from app.services.utils import filter_na, parse_results, flatten_and_transform_data, deduplicate_entries
 
 
 class SearchService:
@@ -503,10 +503,12 @@ class SearchService:
         if not all_entries:
             return {"test": self.test, "total_matches": 0, "results": []}
 
+        deduped_entries = deduplicate_entries(all_entries)
+
         results = {
             "test": self.test,
-            "total_matches": len(all_entries),
-            "results": all_entries,
+            "total_matches": len(deduped_entries),
+            "results": deduped_entries,
         }
 
         for index, value in enumerate(results["results"]):

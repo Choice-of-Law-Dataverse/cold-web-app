@@ -90,6 +90,24 @@ def find_problematic_subdict(data):
     check_and_collect(data)
     return problematic_dicts
 
+def deduplicate_entries(entries):
+    """
+    Remove duplicate entries from a list where duplicates have the same 'id' and 'source_table'.
+
+    Parameters:
+        entries (list): A list of dictionaries. Each dictionary should have 'id' and 'source_table' keys.
+
+    Returns:
+        list: A deduplicated list of entries.
+    """
+    seen = set()
+    deduped_entries = []
+    for entry in entries:
+        key = (entry.get("id"), entry.get("source_table"))
+        if key not in seen:
+            seen.add(key)
+            deduped_entries.append(entry)
+    return deduped_entries
 
 """
 =========================QUERY LOGGING=======================
