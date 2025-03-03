@@ -100,6 +100,10 @@
           v-if="!loading && jurisdictionData?.Name"
           :jurisdiction="jurisdictionData.Name"
           :compareJurisdiction="compareJurisdiction"
+          :isInternational="
+            !jurisdictionData?.['Jurisdictional Differentiator']
+          "
+          cardType="default"
         />
       </div>
     </div>

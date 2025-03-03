@@ -108,6 +108,14 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  isInternational: {
+    type: Boolean,
+    default: false,
+  },
+  cardType: {
+    type: String,
+    default: '', // use an empty string or a proper default value
+  },
 })
 
 const router = useRouter() // Access the router to update the query parameters
@@ -174,8 +182,10 @@ async function fetchData(url, payload) {
 }
 
 async function fetchFilteredTableData(filters) {
+  const tableName = props.isInternational ? 'HCCH Comparison' : 'Answers'
+
   const payload = {
-    table: 'Answers',
+    table: tableName,
     filters: filters,
   }
 
@@ -197,8 +207,15 @@ async function fetchFilteredTableData(filters) {
     }
 
     const data = await response.json()
+    const transformedData = props.isInternational
+      ? data.map((item) => ({
+          ...item,
+          Question: item['Adapted Question'],
+          Answer: item.Position,
+        }))
+      : data.map((item) => ({ ...item }))
 
-    return data.map((item) => ({
+    return transformedData.map((item) => ({
       ...item,
       ID: item.ID,
     }))
@@ -211,9 +228,11 @@ async function fetchFilteredTableData(filters) {
 async function fetchTableData(jurisdiction) {
   loading.value = true
   try {
-    const data = await fetchFilteredTableData([
-      { column: 'Name (from Jurisdiction)', value: jurisdiction },
-    ])
+    const filters = props.isInternational
+      ? [] // no filter for international instruments
+      : [{ column: 'Name (from Jurisdiction)', value: jurisdiction }]
+
+    const data = await fetchFilteredTableData(filters)
 
     rows.value = data.sort(
       (a, b) =>
