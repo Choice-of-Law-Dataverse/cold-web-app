@@ -88,6 +88,14 @@
             <span v-else>No source available</span>
           </template>
 
+          <template #related-question="{ value }">
+            <ul class="result-value-small">
+              <li v-for="(question, index) in value" :key="index">
+                {{ question }}
+              </li>
+            </ul>
+          </template>
+
           <!-- Related Literature -->
           <template #related-literature>
             <RelatedLiterature
@@ -340,10 +348,18 @@ const valueClassMap = {
 const processedLegalInstrument = computed(() => {
   if (!legalInstrument.value) return null
 
+  const hcchComparison = legalInstrument.value['HCCH Comparison'] || ''
+  const relatedQuestions = hcchComparison
+    ? hcchComparison
+        .split(',')
+        .map((q) => q.trim())
+        .filter((q) => q.length)
+    : []
+
   return {
     ...legalInstrument.value,
     Source: legalInstrument.value.Source,
-    'Related Question': '[In development]',
+    'Related Question': relatedQuestions,
     'Select International Instrument': '',
     // ✅ Remove the fallback text from "Comparison Full Text"
     'Comparison Full Text': secondaryInstrument.value
