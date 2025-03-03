@@ -46,7 +46,9 @@
 
           <template #search-links>
             <span class="label">related data</span>
+            <!-- Hide Court Cases button on International Instruments pages -->
             <NuxtLink
+              v-if="jurisdictionData?.['Jurisdictional Differentiator']"
               :to="{
                 name: 'search',
                 query: {
