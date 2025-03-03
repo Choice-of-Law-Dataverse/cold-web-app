@@ -75,7 +75,7 @@
 
           <template #source>
             <UButton
-              class="link-button mt-4"
+              class="link-button mt-[-24px] mb-4"
               variant="link"
               icon="i-material-symbols:open-in-new"
               trailing
@@ -321,7 +321,7 @@ const keyLabelPairs = computed(() => {
       key: 'Full Text',
       label: '',
     },
-    { key: 'Source', label: 'Source' },
+    { key: 'Source', label: '' },
     { key: 'Related Question', label: 'Related Question' },
     { key: 'Related Literature', label: '' },
   ]
