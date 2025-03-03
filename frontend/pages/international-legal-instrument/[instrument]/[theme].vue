@@ -63,7 +63,7 @@
                       variant="link"
                       icon="i-material-symbols:arrow-forward"
                       trailing
-                      :to="`/international-legal-instrument/${encodeURIComponent(selectedInstrument)}/${encodeURIComponent(theme)}`"
+                      :to="`/international-legal-instrument/${slugify(selectedInstrument)}/${encodeURIComponent(theme)}`"
                     >
                       Go to Legal Instrument
                     </UButton>
@@ -120,6 +120,14 @@ watch(legalInstrument, (newValue) => {
   }
   console.log('newValue: ', newValue)
 })
+
+const slugify = (str) => {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/[^\w-]/g, '') // Remove non-word characters except hyphens
+}
 
 const deslugify = (slug: string) => {
   return slug.replace(/-/g, ' ') // Convert hyphens back to spaces
