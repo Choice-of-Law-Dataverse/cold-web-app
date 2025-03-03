@@ -73,6 +73,21 @@
             </div>
           </template>
 
+          <template #source>
+            <UButton
+              class="link-button mt-4"
+              variant="link"
+              icon="i-material-symbols:open-in-new"
+              trailing
+              :to="processedLegalInstrument.Source"
+              v-if="processedLegalInstrument?.Source"
+              target="_blank"
+            >
+              View Source
+            </UButton>
+            <span v-else>No source available</span>
+          </template>
+
           <!-- Related Literature -->
           <template #related-literature>
             <RelatedLiterature
