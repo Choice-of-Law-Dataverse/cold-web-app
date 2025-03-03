@@ -95,7 +95,7 @@ const route = useRoute() // Access the route to get the ID param
 const instrument = route.params.instrument as string
 const theme = route.params.theme as string
 
-const legalInstrument = ref(null) // Store fetched court decision data
+const legalInstrument = ref(null) // Store fetched data
 const loading = ref(true) // Track loading state
 
 const config = useRuntimeConfig()
@@ -118,6 +118,7 @@ watch(legalInstrument, (newValue) => {
     formattedJurisdiction.value = [newValue['Instrument']]
     formattedTheme.value = [newValue['Title of the Provision']]
   }
+  console.log('newValue: ', newValue)
 })
 
 const deslugify = (slug: string) => {

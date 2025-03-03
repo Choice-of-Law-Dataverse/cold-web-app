@@ -163,13 +163,13 @@ const labelColorClass = computed(() => {
 
 const formattedTheme = computed(() => {
   const themes =
-    props.resultData.Themes ??
-    props.resultData['International Legal Provisions']
+    props.resultData['Title of the Provision'] ?? // New, renamed column
+    props.resultData.Themes ?? // Old column
+    props.resultData['International Legal Provisions'] // Fallback
 
   if (!themes || themes === 'None') {
     return [] // Return an empty array to avoid rendering issues
   }
-  // Split the string into an array, trim each item, and filter out duplicates using Set
   return [...new Set(themes.split(',').map((theme) => theme.trim()))]
 })
 
