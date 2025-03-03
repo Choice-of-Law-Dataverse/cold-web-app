@@ -1,7 +1,11 @@
 <template>
   <BackButton />
   <NotificationBanner
-    v-if="shouldShowBanner && resultData?.Name"
+    v-if="
+      shouldShowBanner &&
+      resultData?.Name &&
+      resultData?.['Jurisdictional Differentiator']
+    "
     :jurisdictionName="resultData.Name"
   />
 
