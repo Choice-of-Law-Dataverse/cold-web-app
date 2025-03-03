@@ -138,19 +138,42 @@ class SearchService:
                 'Answers' AS source_table,
                 "ID" AS id,
                 1.0 AS rank
-            FROM "Answers", params
+            FROM "Answers" AS ans, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Answers' = ANY(params.tables))
                 AND (
                     array_length(params.jurisdictions, 1) IS NULL 
-                    OR "Name (from Jurisdiction)" = ANY(params.jurisdictions)
+                    OR ans."Name (from Jurisdiction)" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.themes) AS theme_filter
-                        WHERE "Themes" ILIKE '%' || theme_filter || '%'
+                        WHERE ans."Themes" ILIKE '%' || theme_filter || '%'
+                    )
+                )
+
+            UNION ALL
+
+            -- HCCH Comparison
+            SELECT 
+                'HCCH Comparison' AS source_table,
+                "ID"::text AS id,
+                1.0 AS rank
+            FROM "HCCH Comparison" AS hc, params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'HCCH Comparison' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                    --OR "Name (from Jurisdiction)" = ANY(params.jurisdictions)
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL 
+                    OR EXISTS (
+                        SELECT 1
+                        FROM unnest(params.themes) AS theme_filter
+                        WHERE hc."Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
 
@@ -161,7 +184,7 @@ class SearchService:
                 'Court Decisions' AS source_table,
                 "ID" AS id,
                 1.0 AS rank
-            FROM "Court Decisions", params
+            FROM "Court Decisions" AS cd, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Court Decisions' = ANY(params.tables))
                 AND (
@@ -169,7 +192,7 @@ class SearchService:
                     or exists (
                         select 1
                         from unnest(params.jurisdictions) as jurisdiction_filter
-                        where "Jurisdictions" ILIKE '%' || jurisdiction_filter || '%'
+                        where cd."Jurisdictions" ILIKE '%' || jurisdiction_filter || '%'
                     )
                 )
                 AND (
@@ -177,7 +200,7 @@ class SearchService:
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.themes) AS theme_filter
-                        WHERE "Themes" ILIKE '%' || theme_filter || '%'
+                        WHERE cd."Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
 
@@ -188,20 +211,43 @@ class SearchService:
                 'Domestic Instruments' AS source_table,
                 "ID" AS id,
                 1.0 AS rank
-            FROM "Domestic Instruments", params
+            FROM "Domestic Instruments" AS di, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Domestic Instruments' = ANY(params.tables))
                 AND (
                     array_length(params.jurisdictions, 1) IS NULL 
-                    OR "Jurisdictions" = ANY(params.jurisdictions)
+                    OR di."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.themes) AS theme_filter
-                        WHERE "Themes Name" ILIKE '%' || theme_filter || '%'
+                        WHERE di."Themes Name" ILIKE '%' || theme_filter || '%'
                     )
+                )
+
+            UNION ALL
+
+            -- International Legal Provisions
+            SELECT 
+                'International Legal Provisions' AS source_table,
+                "ID" AS id,
+                1.0 AS rank
+            FROM "International Legal Provisions" AS ilp, params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'International Legal Provisions' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                    OR ilp."Instrument" = ANY(params.jurisdictions)
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL 
+                    --OR EXISTS (
+                        --SELECT 1
+                        --FROM unnest(params.themes) AS theme_filter
+                        --WHERE "Themes Name" ILIKE '%' || theme_filter || '%'
+                    --)
                 )
 
             UNION ALL
@@ -211,7 +257,7 @@ class SearchService:
                 'Literature' AS source_table,
                 "ID"::text AS id,
                 1.0 AS rank
-            FROM "Literature", params
+            FROM "Literature" AS lit, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Literature' = ANY(params.tables))
                 AND (
@@ -219,7 +265,7 @@ class SearchService:
                     or exists (
                         select 1
                         from unnest(params.jurisdictions) as jurisdiction_filter
-                        where "Jurisdiction" ILIKE '%' || jurisdiction_filter || '%'
+                        where lit."Jurisdiction" ILIKE '%' || jurisdiction_filter || '%'
                     )
                 )
                 AND (
@@ -227,7 +273,7 @@ class SearchService:
                     or exists (
                         select 1
                         from unnest(params.themes) as theme_filter
-                        where "International Legal Provisions" ILIKE '%' || theme_filter || '%'
+                        where lit."International Legal Provisions" ILIKE '%' || theme_filter || '%'
                     ) -- Case-insensitive partial match for themes
                 )
 
@@ -254,19 +300,47 @@ class SearchService:
                 "ID" AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
                 ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
-            FROM "Answers", params
+            FROM "Answers" AS ans, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Answers' = ANY(params.tables))
                 AND (
                     array_length(params.jurisdictions, 1) IS NULL 
-                    OR "Name (from Jurisdiction)" = ANY(params.jurisdictions)
+                    OR ans."Name (from Jurisdiction)" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.themes) AS theme_filter
-                        WHERE "Themes" ILIKE '%' || theme_filter || '%'
+                        WHERE ans."Themes" ILIKE '%' || theme_filter || '%'
+                    )
+                )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
+
+            UNION ALL
+
+            -- Search in "HCCH Comparison" table
+            SELECT 
+                'HCCH Comparison' AS source_table,
+                "ID"::text AS id,
+                ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+            FROM "HCCH Comparison" AS hc, params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'HCCH Comparison' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                    --OR "Name (from Jurisdiction)" = ANY(params.jurisdictions)
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL 
+                    OR EXISTS (
+                        SELECT 1
+                        FROM unnest(params.themes) AS theme_filter
+                        WHERE hc."Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
                 AND (
@@ -282,7 +356,7 @@ class SearchService:
                 "ID" AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
                 ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
-            FROM "Court Decisions", params
+            FROM "Court Decisions" AS cd, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Court Decisions' = ANY(params.tables))
                 AND (
@@ -290,7 +364,7 @@ class SearchService:
                     or exists (
                         select 1
                         from unnest(params.jurisdictions) as jurisdiction_filter
-                        where "Jurisdictions" ILIKE '%' || jurisdiction_filter || '%'
+                        where cd."Jurisdictions" ILIKE '%' || jurisdiction_filter || '%'
                     )
                 )
                 AND (
@@ -298,7 +372,7 @@ class SearchService:
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.themes) AS theme_filter
-                        WHERE "Themes" ILIKE '%' || theme_filter || '%'
+                        WHERE cd."Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
                 AND (
@@ -314,20 +388,48 @@ class SearchService:
                 "ID" AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
                 ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
-            FROM "Domestic Instruments", params
+            FROM "Domestic Instruments" AS di, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Domestic Instruments' = ANY(params.tables))
                 AND (
                     array_length(params.jurisdictions, 1) IS NULL 
-                    OR "Jurisdictions" = ANY(params.jurisdictions)
+                    OR di."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.themes) AS theme_filter
-                        WHERE "Themes Name" ILIKE '%' || theme_filter || '%'
+                        WHERE di."Themes Name" ILIKE '%' || theme_filter || '%'
                     )
+                )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
+
+            UNION ALL
+
+            -- Search in "International Legal Provisions" table
+            SELECT 
+                'International Legal Provisions' AS source_table,
+                "ID" AS id,
+                ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+            FROM "International Legal Provisions" AS ilp, params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'International Legal Provisions' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                    OR ilp."Instrument" = ANY(params.jurisdictions)
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL 
+                    --OR EXISTS (
+                        --SELECT 1
+                        --FROM unnest(params.themes) AS theme_filter
+                        --WHERE "Themes Name" ILIKE '%' || theme_filter || '%'
+                    --)
                 )
                 AND (
                     search @@ websearch_to_tsquery('english', '{search_string}')
@@ -342,7 +444,7 @@ class SearchService:
                 "ID"::text AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
                 ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
-            FROM "Literature", params
+            FROM "Literature" AS lit, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Literature' = ANY(params.tables))
                 AND (
@@ -350,7 +452,7 @@ class SearchService:
                     or exists (
                         select 1
                         from unnest(params.jurisdictions) as jurisdiction_filter
-                        where "Jurisdiction" ILIKE '%' || jurisdiction_filter || '%'
+                        where lit."Jurisdiction" ILIKE '%' || jurisdiction_filter || '%'
                     )
                 )
                 AND (
@@ -358,7 +460,7 @@ class SearchService:
                     or exists (
                         select 1
                         from unnest(params.themes) as theme_filter
-                        where "International Legal Provisions" ILIKE '%' || theme_filter || '%'
+                        where lit."International Legal Provisions" ILIKE '%' || theme_filter || '%'
                     ) -- Case-insensitive partial match for themes
                 )
                 AND (
