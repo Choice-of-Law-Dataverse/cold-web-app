@@ -97,7 +97,13 @@
 
         <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
         <JurisdictionComparison
-          v-if="!loading && jurisdictionData?.Name"
+          v-if="
+            !loading &&
+            jurisdictionData?.Name &&
+            (jurisdictionData['Jurisdictional Differentiator'] ||
+              (!jurisdictionData['Jurisdictional Differentiator'] &&
+                jurisdictionData.Name === 'HCCH Principles'))
+          "
           :jurisdiction="jurisdictionData.Name"
           :compareJurisdiction="compareJurisdiction"
           :isInternational="
