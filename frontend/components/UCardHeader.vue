@@ -202,13 +202,13 @@ function getLink() {
       return '#'
   }
 }
-watchEffect(() => {
-  console.log(
-    'UCardHeader - formattedJurisdiction:',
-    props.formattedJurisdiction
-  )
-  console.log('UCardHeader - formattedTheme:', props.formattedTheme)
-})
+// watchEffect(() => {
+//   console.log(
+//     'UCardHeader - formattedJurisdiction:',
+//     props.formattedJurisdiction
+//   )
+//   console.log('UCardHeader - formattedTheme:', props.formattedTheme)
+// })
 </script>
 
 <style scoped>
