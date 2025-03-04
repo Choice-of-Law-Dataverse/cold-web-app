@@ -77,6 +77,7 @@ import LegislationCard from '@/components/LegislationCard.vue'
 import LiteratureCard from '@/components/LiteratureCard.vue'
 import CourtDecisionCard from '@/components/CourtDecisionCard.vue'
 import AnswerCard from '@/components/AnswerCard.vue'
+import IntLegislationCard from '@/components/IntLegislationCard.vue'
 import SearchFilters from './SearchFilters.vue'
 
 const getResultComponent = (source_table) => {
@@ -89,6 +90,8 @@ const getResultComponent = (source_table) => {
       return AnswerCard
     case 'Literature':
       return LiteratureCard
+    case 'International Legal Provisions':
+      return IntLegislationCard
     default:
       return ResultCard
   }
