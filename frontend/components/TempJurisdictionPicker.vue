@@ -29,37 +29,49 @@ const config = useRuntimeConfig()
 // Fetch jurisdictions from the text file
 async function fetchJurisdictions() {
   try {
-    const jsonPayload = {
-      table: 'Jurisdictions',
-      filters: [],
-    }
+    const jsonPayloads = [
+      { table: 'Jurisdictions', filters: [] },
+      { table: 'International Instruments', filters: [] },
+    ]
 
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(jsonPayload),
-      }
+    // Fetch both tables concurrently
+    const responses = await Promise.all(
+      jsonPayloads.map((payload) =>
+        fetch(`${config.public.apiBaseUrl}/search/full_table`, {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${config.public.FASTAPI}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+      )
     )
 
-    if (!response.ok) throw new Error('Failed to load jurisdictions')
+    // Process both responses
+    const [jurisdictionsData, instrumentsData] = await Promise.all(
+      responses.map((res) =>
+        res.ok ? res.json() : Promise.reject('Failed to load data')
+      )
+    )
 
-    const data = await response.json()
-
-    // Filter out jurisdictions where "Irrelevant?" is explicitly true
-    const relevantJurisdictions = data.filter(
+    // Filter jurisdictions (only applies to "Jurisdictions" table)
+    const relevantJurisdictions = jurisdictionsData.filter(
       (entry) => entry['Irrelevant?'] === null
     )
 
-    // Extract the "Name" field
-    countries.value = relevantJurisdictions
+    // Extract "Name" field
+    const jurisdictionNames = relevantJurisdictions
       .map((entry) => entry.Name)
       .filter(Boolean)
-      .sort((a, b) => a.localeCompare(b)) // Sort alphabetically
+    const instrumentNames = instrumentsData
+      .map((entry) => entry.Name)
+      .filter(Boolean)
+
+    // Merge both lists, remove duplicates, and sort alphabetically
+    countries.value = [
+      ...new Set([...jurisdictionNames, ...instrumentNames]),
+    ].sort((a, b) => a.localeCompare(b))
   } catch (error) {
     console.error(error)
     countries.value = [] // Fallback to empty list
