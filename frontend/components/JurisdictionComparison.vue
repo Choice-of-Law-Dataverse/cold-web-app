@@ -274,10 +274,18 @@ async function fetchJurisdictions() {
       (entry) => entry['Irrelevant?'] === null
     )
 
-    // Extract, sort, and format the "Name" field
-    jurisdictionOptions.value = relevantJurisdictions
+    // Extract and format jurisdiction names
+    let jurisdictionNames = relevantJurisdictions
       .map((entry) => entry.Name)
       .filter(Boolean)
+
+    // Manually add "HCCH Principles" if not already in the list
+    if (!jurisdictionNames.includes('HCCH Principles')) {
+      jurisdictionNames.push('HCCH Principles')
+    }
+
+    // Sort and format the list
+    jurisdictionOptions.value = jurisdictionNames
       .sort((a, b) => a.localeCompare(b))
       .map((name) => ({ label: name, value: name })) // Ensure correct structure
   } catch (error) {
