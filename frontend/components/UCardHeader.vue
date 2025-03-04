@@ -112,6 +112,7 @@ const formattedJurisdiction = computed(() => {
     props.resultData['Name (from Jurisdiction)'] ||
     props.resultData['Jurisdiction'] ||
     props.resultData['Jurisdictions'] ||
+    props.resultData['Instrument'] ||
     ''
 
   if (!jurisdictionString) {
@@ -185,6 +186,8 @@ function getLink() {
       return `/legal-instrument/${props.resultData.id}`
     case 'Literature':
       return `/literature/${props.resultData.id}`
+    case 'International Legal Provisions':
+      return `/hello-world`
     default:
       return '#'
   }
