@@ -79,23 +79,33 @@ async function fetchJurisdictions() {
 }
 
 // Navigate to country route
-const navigateToCountry = async (country) => {
-  if (country) {
-    try {
-      const response = await fetch(
-        `https://restcountries.com/v3.1/name/${country}?fields=cca2`
-      )
-      const data = await response.json()
+const navigateToCountry = async (jurisdiction) => {
+  if (!jurisdiction) return
 
-      if (data && data[0] && data[0].cca2) {
-        const isoCode = data[0].cca2.toLowerCase() // Convert to lowercase
-        router.push(`/jurisdiction/${isoCode}`)
-      } else {
-        console.error(`ISO2 code not found for country: ${country}`)
-      }
-    } catch (error) {
-      console.error('Error fetching ISO2 code:', error)
+  try {
+    // Attempt to fetch country ISO code
+    const response = await fetch(
+      `https://restcountries.com/v3.1/name/${jurisdiction}?fields=cca2`
+    )
+    const data = await response.json()
+
+    if (Array.isArray(data) && data.length > 0 && data[0].cca2) {
+      // It's a country jurisdiction -> Use ISO2 code (lowercased)
+      const isoCode = data[0].cca2.toLowerCase()
+      router.push(`/jurisdiction/${isoCode}`)
+    } else {
+      // It's an International Instrument -> Format name (lowercased, spaces to hyphens)
+      const formattedInstrument = jurisdiction
+        .toLowerCase()
+        .replace(/\s+/g, '-')
+      router.push(`/jurisdiction/${formattedInstrument}`)
     }
+  } catch (error) {
+    console.error(`Error processing jurisdiction: ${jurisdiction}`, error)
+
+    // Assume it's an International Instrument if the country API fails
+    const formattedInstrument = jurisdiction.toLowerCase().replace(/\s+/g, '-')
+    router.push(`/jurisdiction/${formattedInstrument}`)
   }
 }
 
