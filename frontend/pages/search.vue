@@ -145,6 +145,7 @@ async function fetchSearchResults(query, filters) {
     Questions: 'Answers',
     'Court Decisions': 'Court Decisions',
     'Legal Instruments': 'Domestic Instruments',
+    'Legal Instruments': 'International Legal Provisions',
     Literature: 'Literature',
   }
 

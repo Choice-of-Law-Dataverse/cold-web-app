@@ -2,55 +2,100 @@
   <div>
     <span class="label">Related Literature</span>
 
-    <ul v-if="loading">
-      <li class="text-gray-500">Loading...</li>
-    </ul>
-
-    <ul v-else-if="literatureList.length">
-      <li
-        v-for="(item, index) in displayedLiterature"
-        :key="index"
-        :class="valueClassMap"
-      >
-        <NuxtLink :to="`/literature/${item.id}`">
-          {{ item.title }}
-        </NuxtLink>
-      </li>
-
-      <!-- Show more link replaces the fourth bullet point -->
-      <li
-        v-if="literatureList.length > 5 && !showAll"
-        class="list-none mt-[-2px]"
-      >
+    <!-- If we're using literature ID mode -->
+    <template v-if="useId">
+      <!-- While waiting for literature IDs to load, you might show a loading state if needed -->
+      <ul>
+        <li
+          v-for="(id, index) in displayedLiteratureIds"
+          :key="id"
+          :class="valueClassMap"
+        >
+          <NuxtLink :to="`/literature/${id}`">
+            {{ displayedLiteratureTitles[index] }}
+          </NuxtLink>
+        </li>
+        <li
+          v-if="literatureIds.length > 5 && !showAll"
+          class="list-none mt-[-2px]"
+        >
+          <NuxtLink
+            @click.prevent="showAll = true"
+            class="link-button cursor-pointer"
+          >
+            <Icon
+              name="material-symbols:add"
+              class="text-base translate-y-[3px]"
+            />
+            Show more related literature
+          </NuxtLink>
+        </li>
         <NuxtLink
-          @click.prevent="showAll = true"
-          class="link-button cursor-pointer"
+          v-if="literatureIds.length > 5 && showAll"
+          class="link-button list-none mt-[-2px] cursor-pointer"
+          @click="showAll = false"
         >
           <Icon
-            name="material-symbols:add"
+            name="material-symbols:remove"
             class="text-base translate-y-[3px]"
           />
-          Show more related literature
+          Show less related literature
         </NuxtLink>
-      </li>
+      </ul>
+    </template>
 
-      <!-- Show less button when expanded -->
-      <NuxtLink
-        v-if="literatureList.length > 5 && showAll"
-        class="link-button list-none mt-[-2px] cursor-pointer"
-        @click="showAll = false"
-      >
-        <Icon
-          name="material-symbols:remove"
-          class="text-base translate-y-[3px]"
-        />
-        Show less related literature
-      </NuxtLink>
-    </ul>
+    <!-- Else, use the normal themes-based display -->
+    <template v-else>
+      <ul v-if="loading">
+        <li class="text-gray-500">Loading...</li>
+      </ul>
 
-    <p v-if="!literatureList.length && !loading" :class="valueClassMap">
-      No related literature available
-    </p>
+      <ul v-else-if="literatureList.length">
+        <li
+          v-for="(item, index) in displayedLiterature"
+          :key="index"
+          :class="valueClassMap"
+        >
+          <NuxtLink :to="`/literature/${item.id}`">
+            {{ item.title }}
+          </NuxtLink>
+        </li>
+
+        <!-- Show more link replaces the fourth bullet point -->
+        <li
+          v-if="literatureList.length > 5 && !showAll"
+          class="list-none mt-[-2px]"
+        >
+          <NuxtLink
+            @click.prevent="showAll = true"
+            class="link-button cursor-pointer"
+          >
+            <Icon
+              name="material-symbols:add"
+              class="text-base translate-y-[3px]"
+            />
+            Show more related literature
+          </NuxtLink>
+        </li>
+
+        <!-- Show less button when expanded -->
+        <NuxtLink
+          v-if="literatureList.length > 5 && showAll"
+          class="link-button list-none mt-[-2px] cursor-pointer"
+          @click="showAll = false"
+        >
+          <Icon
+            name="material-symbols:remove"
+            class="text-base translate-y-[3px]"
+          />
+          Show less related literature
+        </NuxtLink>
+      </ul>
+
+      <p v-if="!literatureList.length && !loading" :class="valueClassMap">
+        No related literature available
+      </p>
+    </template>
   </div>
 </template>
 
@@ -69,6 +114,25 @@ const props = defineProps({
     type: String,
     default: 'result-value-small',
   },
+  literatureId: { type: String, default: '' },
+  literatureTitle: { type: [Array, String], default: '' },
+  useId: { type: Boolean, default: false },
+})
+
+// Split the literatureId string into an array
+const literatureIds = computed(() => {
+  return props.literatureId
+    ? props.literatureId.split(',').map((item) => item.trim())
+    : []
+})
+
+// Similarly, if the API returns multiple literature titles, split them too.
+const literatureTitles = computed(() => {
+  return Array.isArray(props.literatureTitle)
+    ? props.literatureTitle
+    : props.literatureTitle
+      ? [props.literatureTitle]
+      : []
 })
 
 // Reactive variables
@@ -85,6 +149,29 @@ const displayedLiterature = computed(() => {
       : literatureList.value
   }
   return literatureList.value
+})
+
+const displayedLiteratureIds = computed(() => {
+  if (!showAll.value && literatureIds.value.length > 5) {
+    return literatureIds.value.slice(0, 3)
+  }
+  return literatureIds.value
+})
+
+const displayedLiteratureTitles = computed(() => {
+  if (!showAll.value && literatureTitles.value.length > 5) {
+    return literatureTitles.value.slice(0, 3)
+  }
+  return literatureTitles.value
+})
+
+const isLoading = computed(() => {
+  if (props.useId) {
+    return (
+      literatureIds.value.length === 0 || literatureTitles.value.length === 0
+    )
+  }
+  return loading.value
 })
 
 // Function to fetch related literature

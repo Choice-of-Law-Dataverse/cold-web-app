@@ -1,5 +1,8 @@
 <template>
-  <div class="header-container flex items-center justify-between">
+  <div
+    class="header-container flex items-center justify-between"
+    :key="formattedJurisdiction + formattedTheme"
+  >
     <!-- Left side of the header: Tags -->
     <div
       class="tags-container flex items-center overflow-x-auto scrollbar-hidden"
@@ -86,16 +89,30 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  formattedJurisdiction: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
+  formattedTheme: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
 })
 
 // Computed property for "jurisdiction" to handle multiple field options and duplicates
 const formattedJurisdiction = computed(() => {
+  if (props.formattedJurisdiction.length > 0) {
+    return props.formattedJurisdiction
+  }
   const jurisdictionString =
     props.resultData['Jurisdiction name'] ||
     props.resultData['Jurisdiction Names'] ||
     props.resultData['Name (from Jurisdiction)'] ||
     props.resultData['Jurisdiction'] ||
     props.resultData['Jurisdictions'] ||
+    props.resultData['Instrument'] ||
     ''
 
   if (!jurisdictionString) {
@@ -120,6 +137,7 @@ const adjustedSourceTable = computed(() => {
     case 'Answers':
       return 'Question'
     case 'Legal Instrument':
+    case 'International Legal Provisions':
       return 'Legal Instrument'
     case 'Literature':
       return 'Literature'
@@ -137,6 +155,7 @@ const labelColorClass = computed(() => {
     case 'Question':
       return 'label-question'
     case 'Legal Instrument':
+    case 'International Legal Provisions':
       return 'label-legal-instrument'
     case 'Literature':
       return 'label-literature'
@@ -147,15 +166,23 @@ const labelColorClass = computed(() => {
 
 const formattedTheme = computed(() => {
   const themes =
-    props.resultData.Themes ??
-    props.resultData['International Legal Provisions']
+    props.resultData['Title of the Provision'] ?? // New, renamed column
+    props.resultData.Themes ?? // Old column
+    props.resultData['International Legal Provisions'] // Fallback
 
   if (!themes || themes === 'None') {
     return [] // Return an empty array to avoid rendering issues
   }
-  // Split the string into an array, trim each item, and filter out duplicates using Set
   return [...new Set(themes.split(',').map((theme) => theme.trim()))]
 })
+
+const slugify = (text) =>
+  text
+    .normalize('NFD') // Normalize to decomposed form (e.g., "é" -> "é")
+    .replace(/[\u0300-\u036f]/g, '') // Remove diacritical marks
+    .toLowerCase()
+    .replace(/\s+/g, '-') // Replace spaces with "-"
+    .replace(/[^a-z0-9\-]/g, '') // Remove non-alphanumeric characters except "-"
 
 // Methods
 function getLink() {
@@ -169,10 +196,19 @@ function getLink() {
       return `/legal-instrument/${props.resultData.id}`
     case 'Literature':
       return `/literature/${props.resultData.id}`
+    case 'International Legal Provisions':
+      return `/international-legal-instrument/${slugify(props.resultData.Instrument)}/${slugify(props.resultData['Title of the Provision'])}`
     default:
       return '#'
   }
 }
+// watchEffect(() => {
+//   console.log(
+//     'UCardHeader - formattedJurisdiction:',
+//     props.formattedJurisdiction
+//   )
+//   console.log('UCardHeader - formattedTheme:', props.formattedTheme)
+// })
 </script>
 
 <style scoped>

@@ -77,6 +77,7 @@ import LegislationCard from '@/components/LegislationCard.vue'
 import LiteratureCard from '@/components/LiteratureCard.vue'
 import CourtDecisionCard from '@/components/CourtDecisionCard.vue'
 import AnswerCard from '@/components/AnswerCard.vue'
+import IntLegislationCard from '@/components/IntLegislationCard.vue'
 import SearchFilters from './SearchFilters.vue'
 
 const getResultComponent = (source_table) => {
@@ -89,6 +90,8 @@ const getResultComponent = (source_table) => {
       return AnswerCard
     case 'Literature':
       return LiteratureCard
+    case 'International Legal Provisions':
+      return IntLegislationCard
     default:
       return ResultCard
   }
@@ -129,37 +132,49 @@ const loadJurisdictions = async () => {
   try {
     const config = useRuntimeConfig() // Ensure config is accessible
 
-    const jsonPayload = {
-      table: 'Jurisdictions',
-      filters: [],
-    }
+    const jsonPayloads = [
+      { table: 'Jurisdictions', filters: [] },
+      { table: 'International Instruments', filters: [] },
+    ]
 
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(jsonPayload),
-      }
+    // Fetch both tables concurrently
+    const responses = await Promise.all(
+      jsonPayloads.map((payload) =>
+        fetch(`${config.public.apiBaseUrl}/search/full_table`, {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${config.public.FASTAPI}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+      )
     )
 
-    if (!response.ok) throw new Error('Failed to load jurisdictions')
+    // Process both responses
+    const [jurisdictionsData, instrumentsData] = await Promise.all(
+      responses.map((res) =>
+        res.ok ? res.json() : Promise.reject('Failed to load data')
+      )
+    )
 
-    const data = await response.json()
-
-    // Filter out jurisdictions where "Irrelevant?" is explicitly true
-    const relevantJurisdictions = data.filter(
+    // Filter out "Irrelevant?" only for "Jurisdictions"
+    const relevantJurisdictions = jurisdictionsData.filter(
       (entry) => entry['Irrelevant?'] === null
     )
 
-    // Extract and sort the "Name" field
-    const sortedJurisdictions = relevantJurisdictions
+    // Extract "Name" fields
+    const jurisdictionNames = relevantJurisdictions
       .map((entry) => entry.Name)
       .filter(Boolean)
-      .sort((a, b) => a.localeCompare(b))
+    const instrumentNames = instrumentsData
+      .map((entry) => entry.Name)
+      .filter(Boolean)
+
+    // Merge both lists, remove duplicates, and sort alphabetically
+    const sortedJurisdictions = [
+      ...new Set([...jurisdictionNames, ...instrumentNames]),
+    ].sort((a, b) => a.localeCompare(b))
 
     // Prepend "All Jurisdictions" to the list
     jurisdictionOptions.value = ['All Jurisdictions', ...sortedJurisdictions]

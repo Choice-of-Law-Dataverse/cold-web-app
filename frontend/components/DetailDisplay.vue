@@ -1,7 +1,12 @@
 <template>
   <BackButton />
+  <!-- Do not display NotificationBanner on International Instrument pages by checking if the page contains a Jurisdictional Differentiator, which International Instruments do not. -->
   <NotificationBanner
-    v-if="shouldShowBanner && resultData?.Name"
+    v-if="
+      shouldShowBanner &&
+      resultData?.Name &&
+      resultData?.['Jurisdictional Differentiator']
+    "
     :jurisdictionName="resultData.Name"
   />
 
@@ -13,6 +18,8 @@
         :resultData="resultData"
         :cardType="formattedSourceTable"
         :showOpenLink="false"
+        :formattedJurisdiction="formattedJurisdiction"
+        :formattedTheme="formattedTheme"
       />
     </template>
 
@@ -87,6 +94,8 @@ const props = defineProps({
     type: Boolean,
     default: true, // Default to true so headers are shown unless explicitly disabled
   },
+  formattedJurisdiction: { type: Array, required: false, default: () => [] },
+  formattedTheme: { type: Array, required: false, default: () => [] },
 })
 
 const route = useRoute()
@@ -117,18 +126,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* .main-content-grid {
-  display: grid;
-  grid-template-columns: repeat(12, minmax(0, 1fr)); /* 12-column layout */
-/*column-gap: var(--gutter-width); /* Gutter space between columns */
-/*padding: 32px; /* Optional padding to match the card's interior padding */
-/*} */
-
-/* .grid-item {
-  grid-column: 1 / span 6; /* Start in the 1st column, span across 6 columns */
-/* margin-bottom: 48px; /* Space between each key-value pair */
-/*} */
-
 .cold-ucard ::v-deep(.px-4) {
   padding-left: 0 !important;
   padding-right: 0 !important;
@@ -147,6 +144,5 @@ onMounted(async () => {
 .label-key {
   @extend .label;
   padding: 0;
-  /* margin-top: -20px; */
 }
 </style>

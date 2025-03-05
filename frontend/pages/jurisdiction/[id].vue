@@ -18,6 +18,7 @@
               {{ specialist.Specialist }}
             </li>
           </section>
+
           <section v-else-if="specialists.length === 0 && !loading">
             <span class="label">Specialist</span>
             <p class="result-value-small">
@@ -26,27 +27,23 @@
           </section>
 
           <template #literature>
-            <NuxtLink
-              v-if="literatureTitle && jurisdictionData?.Literature"
-              :to="`/literature/${jurisdictionData.Literature}`"
-              class="no-underline pb-4 block pt-2"
-            >
-              <UButton class="link-button" variant="link">
-                <span class="break-words text-left">
-                  {{ literatureTitle }}
-                </span>
-              </UButton>
-            </NuxtLink>
-
-            <p v-else-if="literatureTitle === null" class="result-value-small">
+            <RelatedLiterature
+              v-if="jurisdictionData?.Literature"
+              :literature-id="jurisdictionData.Literature"
+              :literature-title="literatureTitle"
+              :valueClassMap="valueClassMap['Related Literature']"
+              use-id
+            />
+            <p v-else class="result-value-small">
               No related literature available
             </p>
-            <p v-else>Loading literature details...</p>
           </template>
 
           <template #search-links>
             <span class="label">related data</span>
+            <!-- Hide Court Cases button on International Instruments pages -->
             <NuxtLink
+              v-if="jurisdictionData?.['Jurisdictional Differentiator']"
               :to="{
                 name: 'search',
                 query: {
@@ -95,9 +92,19 @@
 
         <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
         <JurisdictionComparison
-          v-if="!loading && jurisdictionData?.Name"
+          v-if="
+            !loading &&
+            jurisdictionData?.Name &&
+            (jurisdictionData['Jurisdictional Differentiator'] ||
+              (!jurisdictionData['Jurisdictional Differentiator'] &&
+                jurisdictionData.Name === 'HCCH Principles'))
+          "
           :jurisdiction="jurisdictionData.Name"
           :compareJurisdiction="compareJurisdiction"
+          :isInternational="
+            !jurisdictionData?.['Jurisdictional Differentiator']
+          "
+          cardType="default"
         />
       </div>
     </div>
@@ -168,35 +175,55 @@ async function fetchJurisdiction(iso2: string) {
   }
 }
 
-async function fetchLiteratureTitle(id: string) {
-  const jsonPayload = {
-    table: 'Literature',
-    id: id,
+async function fetchLiteratureTitle(ids: string) {
+  if (!ids) {
+    literatureTitle.value = ''
+    return
   }
 
+  // Split IDs if multiple are provided
+  const idList = ids.split(',').map((id) => id.trim())
+
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonPayload),
-    })
-
-    if (!response.ok) throw new Error('Failed to fetch literature details')
-
-    const data = await response.json()
-    literatureTitle.value = data.Title || 'Unknown Title' // Fallback title
+    const titles = await Promise.all(
+      idList.map(async (id) => {
+        const jsonPayload = {
+          table: 'Literature',
+          id: id,
+        }
+        const response = await fetch(
+          `${config.public.apiBaseUrl}/search/details`,
+          {
+            method: 'POST',
+            headers: {
+              authorization: `Bearer ${config.public.FASTAPI}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(jsonPayload),
+          }
+        )
+        if (!response.ok) throw new Error('Failed to fetch literature details')
+        const data = await response.json()
+        return data.Title || 'Unknown Title'
+      })
+    )
+    literatureTitle.value = titles
   } catch (error) {
     console.error('Error fetching literature title:', error)
     literatureTitle.value = 'Error'
   }
 }
 
-// Function to fetch specialists
-const fetchSpecialists = async (jurisdictionName) => {
-  if (!jurisdictionName) return
+async function fetchInternationalInstrument(name: string) {
+  const jsonPayload = {
+    table: 'International Instruments',
+    filters: [
+      {
+        column: 'Name',
+        value: name,
+      },
+    ],
+  }
 
   try {
     const response = await fetch(
@@ -207,19 +234,114 @@ const fetchSpecialists = async (jurisdictionName) => {
           authorization: `Bearer ${config.public.FASTAPI}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          table: 'Specialists',
-          filters: [{ column: 'Jurisdiction', value: jurisdictionName }],
-        }),
+        body: JSON.stringify(jsonPayload),
       }
     )
 
-    if (!response.ok) throw new Error('Failed to fetch specialists')
+    if (!response.ok)
+      throw new Error('Failed to fetch international instrument')
 
-    specialists.value = await response.json()
+    const data = await response.json()
+    if (data && data.length > 0) {
+      // Use the returned "Name" as the jurisdiction's name
+      jurisdictionData.value = {
+        Name: data[0]?.Name || 'N/A',
+        Literature: data[0]?.Literature || null,
+        isInternational: true, // mark as international
+      }
+      // If there's a Literature field, fetch its title as before
+      if (data[0]?.Literature) {
+        fetchLiteratureTitle(data[0].Literature)
+      } else {
+        literatureTitle.value = null
+      }
+
+      specialists.value = data[0]?.Specialists
+        ? data[0].Specialists.split(',').map((spec) => ({
+            Specialist: spec.trim(),
+          }))
+        : []
+    } else {
+      jurisdictionData.value = null // or set an error message
+    }
   } catch (error) {
-    console.error('Error fetching specialists:', error)
-    specialists.value = []
+    console.error('Error fetching international instrument:', error)
+  }
+}
+
+async function fetchJurisdictionData(identifier: string) {
+  // Attempt to fetch as a domestic jurisdiction first
+  await fetchJurisdiction(identifier)
+
+  // If no valid data is returned (for example, Name is missing or 'N/A'),
+  // then try fetching from International Instruments
+  if (!jurisdictionData.value || jurisdictionData.value.Name === 'N/A') {
+    console.log(
+      'Domestic jurisdiction not found, trying international instruments...'
+    )
+    await fetchInternationalInstrument(identifier)
+  }
+}
+
+// Function to fetch specialists
+const fetchSpecialists = async (jurisdictionName) => {
+  if (!jurisdictionName) return
+
+  // If there's no "Jurisdictional Differentiator", assume it's an International Instrument.
+  if (!jurisdictionData.value?.['Jurisdictional Differentiator']) {
+    try {
+      const response = await fetch(
+        `${config.public.apiBaseUrl}/search/full_table`,
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${config.public.FASTAPI}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            table: 'International Instruments',
+            filters: [{ column: 'Name', value: jurisdictionName }],
+          }),
+        }
+      )
+      if (!response.ok)
+        throw new Error('Failed to fetch international instrument specialists')
+
+      const data = await response.json()
+      // Convert the Specialists string into an array of one object with key "Specialist"
+      specialists.value = data[0]?.Specialists
+        ? [{ Specialist: data[0].Specialists }]
+        : []
+    } catch (error) {
+      console.error(
+        'Error fetching international instrument specialists:',
+        error
+      )
+      specialists.value = []
+    }
+  } else {
+    // Otherwise, fetch from the Specialists table as before.
+    try {
+      const response = await fetch(
+        `${config.public.apiBaseUrl}/search/full_table`,
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${config.public.FASTAPI}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            table: 'Specialists',
+            filters: [{ column: 'Jurisdiction', value: jurisdictionName }],
+          }),
+        }
+      )
+      if (!response.ok) throw new Error('Failed to fetch specialists')
+      specialists.value = await response.json()
+    } catch (error) {
+      console.error('Error fetching specialists:', error)
+      specialists.value = []
+    }
   }
 }
 
@@ -227,7 +349,14 @@ const fetchSpecialists = async (jurisdictionName) => {
 watch(
   () => jurisdictionData.value?.Name,
   (newName) => {
-    if (newName) fetchSpecialists(newName)
+    // Only fetch specialists if the name is valid and we're not dealing with an international instrument.
+    if (
+      newName &&
+      newName !== 'N/A' &&
+      !jurisdictionData.value?.isInternational
+    ) {
+      fetchSpecialists(newName)
+    }
   }
 )
 
@@ -239,8 +368,12 @@ const keyLabelPairs = computed(() => {
       label: 'Jurisdictional Differentiator',
     },
     { key: 'Specialist', label: 'Specialist' },
-    { key: 'Literature', label: 'Related Literature' },
+    { key: 'Literature', label: '' },
   ]
+  // Only include "Jurisdictional Differentiator" if it exists in jurisdictionData
+  if (!jurisdictionData.value?.['Jurisdictional Differentiator']) {
+    return pairs.filter((pair) => pair.key !== 'Jurisdictional Differentiator')
+  }
   return pairs
 })
 
@@ -251,10 +384,10 @@ const valueClassMap = {
 
 // Fetch jurisdiction data on component mount
 onMounted(() => {
-  const jurisdictionName = (route.params.id as string).replace(/_/g, ' ') // Convert '_' to spaces
-  fetchJurisdiction(jurisdictionName)
-  if (jurisdictionData.value?.Name)
-    fetchSpecialists(jurisdictionData.value.Name)
+  const identifier = (route.params.id as string)
+    .toLowerCase()
+    .replace(/-/g, ' ')
+  fetchJurisdictionData(identifier)
 })
 
 // Watch for changes to the `c` query parameter and update `compareJurisdiction`
