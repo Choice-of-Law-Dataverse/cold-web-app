@@ -5,16 +5,13 @@
     <!-- If we're using literature ID mode -->
     <template v-if="useId">
       <ul>
-        <li v-for="(id, index) in literatureIds" :key="id">
-          <NuxtLink
-            :to="`/literature/${id}`"
-            class="no-underline pb-4 block pt-2"
-          >
-            <UButton class="link-button" variant="link">
-              <span class="break-words text-left">
-                {{ literatureTitles[index] }}
-              </span>
-            </UButton>
+        <li
+          v-for="(id, index) in literatureIds"
+          :key="id"
+          :class="valueClassMap"
+        >
+          <NuxtLink :to="`/literature/${id}`">
+            {{ literatureTitles[index] }}
           </NuxtLink>
         </li>
       </ul>

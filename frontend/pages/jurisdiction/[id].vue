@@ -368,7 +368,7 @@ const keyLabelPairs = computed(() => {
       label: 'Jurisdictional Differentiator',
     },
     { key: 'Specialist', label: 'Specialist' },
-    { key: 'Literature', label: 'Related Literature' },
+    { key: 'Literature', label: '' },
   ]
   // Only include "Jurisdictional Differentiator" if it exists in jurisdictionData
   if (!jurisdictionData.value?.['Jurisdictional Differentiator']) {
