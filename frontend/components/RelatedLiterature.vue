@@ -88,7 +88,7 @@ const props = defineProps({
     default: 'result-value-small',
   },
   literatureId: { type: String, default: '' },
-  literatureTitle: { type: String, default: '' },
+  literatureTitle: { type: [Array, String], default: '' },
   useId: { type: Boolean, default: false },
 })
 
@@ -101,10 +101,11 @@ const literatureIds = computed(() => {
 
 // Similarly, if the API returns multiple literature titles, split them too.
 const literatureTitles = computed(() => {
-  if (!props.literatureTitle) return []
-  return props.literatureTitle.includes(',')
-    ? props.literatureTitle.split(',').map((item) => item.trim())
-    : [props.literatureTitle]
+  return Array.isArray(props.literatureTitle)
+    ? props.literatureTitle
+    : props.literatureTitle
+      ? [props.literatureTitle]
+      : []
 })
 
 // Reactive variables

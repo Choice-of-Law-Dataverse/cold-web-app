@@ -207,7 +207,7 @@ async function fetchLiteratureTitle(ids: string) {
         return data.Title || 'Unknown Title'
       })
     )
-    literatureTitle.value = titles.join(', ')
+    literatureTitle.value = titles
   } catch (error) {
     console.error('Error fetching literature title:', error)
     literatureTitle.value = 'Error'
