@@ -27,22 +27,16 @@
           </section>
 
           <template #literature>
-            <NuxtLink
-              v-if="literatureTitle && jurisdictionData?.Literature"
-              :to="`/literature/${jurisdictionData.Literature}`"
-              class="no-underline pb-4 block pt-2"
-            >
-              <UButton class="link-button" variant="link">
-                <span class="break-words text-left">
-                  {{ literatureTitle }}
-                </span>
-              </UButton>
-            </NuxtLink>
-
-            <p v-else-if="literatureTitle === null" class="result-value-small">
+            <RelatedLiterature
+              v-if="jurisdictionData?.Literature"
+              :literature-id="jurisdictionData.Literature"
+              :literature-title="literatureTitle"
+              :valueClassMap="valueClassMap['Related Literature']"
+              use-id
+            />
+            <p v-else class="result-value-small">
               No related literature available
             </p>
-            <p v-else>Loading literature details...</p>
           </template>
 
           <template #search-links>

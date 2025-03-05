@@ -2,55 +2,76 @@
   <div>
     <span class="label">Related Literature</span>
 
-    <ul v-if="loading">
-      <li class="text-gray-500">Loading...</li>
-    </ul>
+    <!-- If we're using literature ID mode -->
+    <template v-if="useId">
+      <ul>
+        <li v-for="(id, index) in literatureIds" :key="id">
+          <NuxtLink
+            :to="`/literature/${literatureId}`"
+            class="no-underline pb-4 block pt-2"
+          >
+            <UButton class="link-button" variant="link">
+              <span class="break-words text-left">
+                {{ literatureTitle }}
+              </span>
+            </UButton>
+          </NuxtLink>
+        </li>
+      </ul>
+    </template>
 
-    <ul v-else-if="literatureList.length">
-      <li
-        v-for="(item, index) in displayedLiterature"
-        :key="index"
-        :class="valueClassMap"
-      >
-        <NuxtLink :to="`/literature/${item.id}`">
-          {{ item.title }}
-        </NuxtLink>
-      </li>
+    <!-- Else, use the normal themes-based display -->
+    <template v-else>
+      <ul v-if="loading">
+        <li class="text-gray-500">Loading...</li>
+      </ul>
 
-      <!-- Show more link replaces the fourth bullet point -->
-      <li
-        v-if="literatureList.length > 5 && !showAll"
-        class="list-none mt-[-2px]"
-      >
+      <ul v-else-if="literatureList.length">
+        <li
+          v-for="(item, index) in displayedLiterature"
+          :key="index"
+          :class="valueClassMap"
+        >
+          <NuxtLink :to="`/literature/${item.id}`">
+            {{ item.title }}
+          </NuxtLink>
+        </li>
+
+        <!-- Show more link replaces the fourth bullet point -->
+        <li
+          v-if="literatureList.length > 5 && !showAll"
+          class="list-none mt-[-2px]"
+        >
+          <NuxtLink
+            @click.prevent="showAll = true"
+            class="link-button cursor-pointer"
+          >
+            <Icon
+              name="material-symbols:add"
+              class="text-base translate-y-[3px]"
+            />
+            Show more related literature
+          </NuxtLink>
+        </li>
+
+        <!-- Show less button when expanded -->
         <NuxtLink
-          @click.prevent="showAll = true"
-          class="link-button cursor-pointer"
+          v-if="literatureList.length > 5 && showAll"
+          class="link-button list-none mt-[-2px] cursor-pointer"
+          @click="showAll = false"
         >
           <Icon
-            name="material-symbols:add"
+            name="material-symbols:remove"
             class="text-base translate-y-[3px]"
           />
-          Show more related literature
+          Show less related literature
         </NuxtLink>
-      </li>
+      </ul>
 
-      <!-- Show less button when expanded -->
-      <NuxtLink
-        v-if="literatureList.length > 5 && showAll"
-        class="link-button list-none mt-[-2px] cursor-pointer"
-        @click="showAll = false"
-      >
-        <Icon
-          name="material-symbols:remove"
-          class="text-base translate-y-[3px]"
-        />
-        Show less related literature
-      </NuxtLink>
-    </ul>
-
-    <p v-if="!literatureList.length && !loading" :class="valueClassMap">
-      No related literature available
-    </p>
+      <p v-if="!literatureList.length && !loading" :class="valueClassMap">
+        No related literature available
+      </p>
+    </template>
   </div>
 </template>
 
@@ -69,6 +90,23 @@ const props = defineProps({
     type: String,
     default: 'result-value-small',
   },
+  literatureId: { type: String, default: '' },
+  literatureTitle: { type: String, default: '' },
+  useId: { type: Boolean, default: false },
+})
+
+// Split the literatureId string into an array
+const literatureIds = computed(() => {
+  return props.literatureId
+    ? props.literatureId.split(',').map((item) => item.trim())
+    : []
+})
+
+// Similarly, if the API returns multiple literature titles, split them too.
+const literatureTitles = computed(() => {
+  return props.literatureTitle
+    ? props.literatureTitle.split(',').map((item) => item.trim())
+    : []
 })
 
 // Reactive variables
