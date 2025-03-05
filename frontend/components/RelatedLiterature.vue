@@ -7,12 +7,12 @@
       <ul>
         <li v-for="(id, index) in literatureIds" :key="id">
           <NuxtLink
-            :to="`/literature/${literatureId}`"
+            :to="`/literature/${id}`"
             class="no-underline pb-4 block pt-2"
           >
             <UButton class="link-button" variant="link">
               <span class="break-words text-left">
-                {{ literatureTitle }}
+                {{ literatureTitles[index] }}
               </span>
             </UButton>
           </NuxtLink>
@@ -104,9 +104,10 @@ const literatureIds = computed(() => {
 
 // Similarly, if the API returns multiple literature titles, split them too.
 const literatureTitles = computed(() => {
-  return props.literatureTitle
+  if (!props.literatureTitle) return []
+  return props.literatureTitle.includes(',')
     ? props.literatureTitle.split(',').map((item) => item.trim())
-    : []
+    : [props.literatureTitle]
 })
 
 // Reactive variables
