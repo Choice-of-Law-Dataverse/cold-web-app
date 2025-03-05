@@ -250,7 +250,9 @@ async function fetchInternationalInstrument(name: string) {
       }
 
       specialists.value = data[0]?.Specialists
-        ? [{ Specialist: data[0].Specialists }]
+        ? data[0].Specialists.split(',').map((spec) => ({
+            Specialist: spec.trim(),
+          }))
         : []
     } else {
       jurisdictionData.value = null // or set an error message
