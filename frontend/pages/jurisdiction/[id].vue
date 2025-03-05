@@ -175,26 +175,39 @@ async function fetchJurisdiction(iso2: string) {
   }
 }
 
-async function fetchLiteratureTitle(id: string) {
-  const jsonPayload = {
-    table: 'Literature',
-    id: id,
+async function fetchLiteratureTitle(ids: string) {
+  if (!ids) {
+    literatureTitle.value = ''
+    return
   }
 
+  // Split IDs if multiple are provided
+  const idList = ids.split(',').map((id) => id.trim())
+
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonPayload),
-    })
-
-    if (!response.ok) throw new Error('Failed to fetch literature details')
-
-    const data = await response.json()
-    literatureTitle.value = data.Title || 'Unknown Title' // Fallback title
+    const titles = await Promise.all(
+      idList.map(async (id) => {
+        const jsonPayload = {
+          table: 'Literature',
+          id: id,
+        }
+        const response = await fetch(
+          `${config.public.apiBaseUrl}/search/details`,
+          {
+            method: 'POST',
+            headers: {
+              authorization: `Bearer ${config.public.FASTAPI}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(jsonPayload),
+          }
+        )
+        if (!response.ok) throw new Error('Failed to fetch literature details')
+        const data = await response.json()
+        return data.Title || 'Unknown Title'
+      })
+    )
+    literatureTitle.value = titles.join(', ')
   } catch (error) {
     console.error('Error fetching literature title:', error)
     literatureTitle.value = 'Error'
