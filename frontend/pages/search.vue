@@ -161,9 +161,19 @@ async function fetchSearchResults(query, filters) {
     const userHost = window.location.hostname
 
     // Fetch user's IP address
-    const ipResponse = await fetch('https://api.ipify.org?format=json')
-    const ipData = await ipResponse.json()
-    const userIp = ipData.ip
+    let userIp = 'Unknown'
+    try {
+      const ipResponse = await fetch('https://api.ipify.org?format=json')
+      const ipData = await ipResponse.json()
+      if (ipData.ip) {
+        userIp = ipData.ip
+      }
+    } catch (error) {
+      console.warn('Could not fetch IP address:', error)
+    }
+
+    // Add IP to request body safely
+    requestBody.ip_address = userIp
 
     // Fetch detailed user info (browser, platform, etc.)
     const userInfo = await fetchUserInfo()
