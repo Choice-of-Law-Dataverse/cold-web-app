@@ -280,9 +280,9 @@ async function fetchJurisdictions() {
       .filter(Boolean)
 
     // Manually add "HCCH Principles" if not already in the list
-    if (!jurisdictionNames.includes('HCCH Principles')) {
-      jurisdictionNames.push('HCCH Principles')
-    }
+    // if (!jurisdictionNames.includes('HCCH Principles')) {
+    //   jurisdictionNames.push('HCCH Principles')
+    // }
 
     // Sort and format the list
     jurisdictionOptions.value = jurisdictionNames

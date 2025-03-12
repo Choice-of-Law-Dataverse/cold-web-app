@@ -134,7 +134,7 @@ const loadJurisdictions = async () => {
 
     const jsonPayloads = [
       { table: 'Jurisdictions', filters: [] },
-      { table: 'International Instruments', filters: [] },
+      //{ table: 'International Instruments', filters: [] },
     ]
 
     // Fetch both tables concurrently
@@ -167,13 +167,13 @@ const loadJurisdictions = async () => {
     const jurisdictionNames = relevantJurisdictions
       .map((entry) => entry.Name)
       .filter(Boolean)
-    const instrumentNames = instrumentsData
-      .map((entry) => entry.Name)
-      .filter(Boolean)
+    // const instrumentNames = instrumentsData
+    //   .map((entry) => entry.Name)
+    //   .filter(Boolean)
 
     // Merge both lists, remove duplicates, and sort alphabetically
     const sortedJurisdictions = [
-      ...new Set([...jurisdictionNames, ...instrumentNames]),
+      ...new Set([...jurisdictionNames]), // ...instrumentNames]),
     ].sort((a, b) => a.localeCompare(b))
 
     // Prepend "All Jurisdictions" to the list
