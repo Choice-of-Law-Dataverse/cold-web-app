@@ -77,27 +77,30 @@ async function fetchLegalInstrument(id: string) {
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = computed(() =>
   [
-    { key: 'Abbreviation', label: 'Name' },
-    { key: 'Title (in English)', label: 'Official Title' },
+    { key: 'Title (in English)', label: 'Name' },
+    { key: 'Official Title', label: 'Official Title' },
+    { key: 'Abbreviation', label: 'Abbreviation' },
     legalInstrument.value?.['Compatible With the HCCH Principles?']
       ? {
           key: 'Compatible With the HCCH Principles?',
           label: 'Compatible With the HCCH Principles?',
         }
       : null,
-    { key: 'Publication Date', label: 'Publication Date' },
-    { key: 'Entry Into Force', label: 'Entry Into Force' },
+    //{ key: 'Publication Date', label: 'Publication Date' },
+    //{ key: 'Entry Into Force', label: 'Entry Into Force' },
+    { key: 'Date ', label: 'Date' },
     { key: 'Source (URL)', label: 'Official Source' },
     { key: 'Domestic Legal Provisions', label: '' },
   ].filter(Boolean)
 )
 
 const valueClassMap = {
-  Abbreviation: 'result-value-medium',
-  'Title (in English)': 'result-value-small',
+  Abbreviation: 'result-value-small',
+  'Title (in English)': 'result-value-medium',
   'Compatible With the HCCH Principles?': 'result-value-medium',
   'Publication Date': 'result-value-small',
   'Entry Into Force': 'result-value-small',
+  Date: 'result-value-small',
   'Source (URL)': 'result-value-small',
 }
 
