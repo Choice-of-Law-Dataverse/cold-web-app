@@ -61,6 +61,7 @@ async function fetchCourtDecision(id: string) {
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
   { key: 'Case Title', label: 'Case Title' },
+  { key: 'Date (GPT-o3-mini)', label: 'Date' },
   { key: 'Abstract', label: 'Abstract' },
   {
     key: 'Relevant Facts',
@@ -76,6 +77,7 @@ const keyLabelPairs = [
     key: 'Text of the Relevant Legal Provisions',
     label: 'Text of the Relevant Legal Provisions',
   },
+  { key: 'Case Citation', label: 'Case Citation' },
   { key: 'Related Literature', label: '' },
 ]
 
