@@ -14,13 +14,20 @@
             <QuestionSourceList
               :sources="
                 [
-                  ...(value || processedAnswerData?.['Legislation-ID']
-                    ? [value || processedAnswerData?.['Legislation-ID']]
+                  ...(value ||
+                  processedAnswerData?.['Legislation-ID'] ||
+                  processedAnswerData?.['OUP Book Quotation']
+                    ? [
+                        value ||
+                          processedAnswerData?.['Legislation-ID'] ||
+                          processedAnswerData?.['OUP Book Quotation'],
+                      ]
                     : []),
                 ].filter(Boolean)
               "
               :fallbackData="processedAnswerData"
               :valueClassMap="valueClassMap"
+              :noLinkList="[processedAnswerData?.['OUP Book Quotation']]"
               :fetchOupChapter="true"
               :fetchPrimarySource="true"
             />
