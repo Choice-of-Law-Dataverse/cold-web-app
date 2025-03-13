@@ -1,41 +1,16 @@
 [
-  { "label": "Preamble", "value": "Preamble" },
-  { "label": "Arbitration", "value": "Arbitration" },
-  { "label": "Absence of choice", "value": "Absence of choice" },
+  { "label": "Codification", "value": "Codification" },
+  { "label": "HCCH Principles", "value": "HCCH Principles" },
   { "label": "Party autonomy", "value": "Party autonomy" },
   { "label": "Freedom of choice", "value": "Freedom of choice" },
-  { "label": "Partial choice", "value": "Partial choice" },
   { "label": "Dépeçage", "value": "Dépeçage" },
+  { "label": "Partial choice", "value": "Partial choice" },
   { "label": "Rules of law", "value": "Rules of law" },
-  { "label": "Express and tacit choice", "value": "Express and tacit choice" },
-  { "label": "Mandatory rules", "value": "Mandatory rules" },
+  { "label": "Tacit choice", "value": "Tacit choice" },
+  { "label": "Overriding mandatory rules", "value": "Overriding mandatory rules" },
   { "label": "Public policy", "value": "Public policy" },
-  { "label": "Scope of the Principles", "value": "Scope of the Principles" },
-  { "label": "Universal application", "value": "Universal application" },
-  {
-    "label": "Role of international instruments",
-    "value": "Role of international instruments"
-  },
-  {
-    "label":
-      "Consent and material validity; choice of law in the battle of forms",
-    "value":
-      "Consent and material validity; choice of law in the battle of forms"
-  },
-  { "label": "Formal validity", "value": "Formal validity" },
-  { "label": "Renvoi", "value": "Renvoi" },
-  {
-    "label": "Scope of the law applicable to the contract",
-    "value": "Scope of the law applicable to the contract"
-  },
-  { "label": "Set-off", "value": "Set-off" },
-  { "label": "Habitual residence", "value": "Habitual residence" },
-  {
-    "label": "Interpretation and uniformity of application",
-    "value": "Interpretation and uniformity of application"
-  },
-  {
-    "label": "Entry into force and application in time",
-    "value": "Entry into force and application in time"
-  }
+  { "label": "Absence of choice", "value": "Absence of choice" },
+  { "label": "Arbitration", "value": "Arbitration" },
+  { "label": "Employment contracts", "value": "Employment contracts" },
+  { "label": "Consumer contracts", "value": "Consumer contracts" }
 ]
