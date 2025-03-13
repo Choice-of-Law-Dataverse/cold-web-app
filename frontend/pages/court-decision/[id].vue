@@ -4,8 +4,8 @@
       <div class="col-span-12">
         <DetailDisplay
           :loading="loading"
-          :resultData="courtDecision"
-          :keyLabelPairs="keyLabelPairs"
+          :resultData="modifiedCourtDecision"
+          :keyLabelPairs="computedKeyLabelPairs"
           :valueClassMap="valueClassMap"
           formattedSourceTable="Court Decisions"
         >
@@ -80,6 +80,38 @@ const keyLabelPairs = [
   { key: 'Case Citation', label: 'Case Citation' },
   { key: 'Related Literature', label: '' },
 ]
+
+const computedKeyLabelPairs = computed(() => {
+  // Explicitly tell TypeScript that data is a Record of string keys to any value
+  const data: Record<string, any> = courtDecision.value || {}
+
+  return keyLabelPairs.map((pair) => {
+    if (pair.key === 'Case Title') {
+      return {
+        ...pair,
+        value:
+          data['Case Title'] === 'Not found'
+            ? data['Case Citation']
+            : data['Case Title'],
+      }
+    }
+    return {
+      ...pair,
+      value: data[pair.key],
+    }
+  })
+})
+
+const modifiedCourtDecision = computed(() => {
+  const data: Record<string, any> = courtDecision.value || {}
+  return {
+    ...data,
+    'Case Title':
+      data['Case Title'] === 'Not found'
+        ? data['Case Citation']
+        : data['Case Title'],
+  }
+})
 
 const valueClassMap = {
   'Case Title': 'result-value-medium',
