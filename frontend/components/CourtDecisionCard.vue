@@ -5,7 +5,7 @@
       <div class="md:col-span-4">
         <div class="label-key">{{ keyMap['Case Title'] }}</div>
         <div :class="valueClassMap['Case Title'] || 'result-value'">
-          {{ resultData['Case Title'] || '[Missing Information]' }}
+          {{ caseTitle }}
         </div>
       </div>
 
@@ -21,12 +21,24 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 // Props
 const props = defineProps({
   resultData: {
     type: Object,
     required: true,
   },
+})
+
+// Compute a fallback for "Case Title"
+const caseTitle = computed(() => {
+  if (!props.resultData) return '[Missing Information]'
+  const title = props.resultData['Case Title'] || ''
+  // If the title is "Not found", use "Case Citation"
+  return title.trim() === 'Not found'
+    ? props.resultData['Case Citation'] || '[Missing Information]'
+    : title || '[Missing Information]'
 })
 
 // Define the keys and mappings specific to court decisions
