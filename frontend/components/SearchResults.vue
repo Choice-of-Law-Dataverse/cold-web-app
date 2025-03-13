@@ -202,8 +202,6 @@ const themeOptions = [
   'Public policy',
   'Absence of choice',
   'Arbitration',
-  'Employment contracts',
-  'Consumer contracts',
 ]
 
 const typeOptions = [
