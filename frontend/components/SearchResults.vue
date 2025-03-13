@@ -190,25 +190,20 @@ onMounted(() => {
 
 const themeOptions = [
   'All Themes',
-  'Absence of choice',
-  'Preamble',
+  'Codification',
+  'HCCH Principles',
   'Party autonomy',
   'Freedom of choice',
-  'Partial choice',
   'Dépeçage',
+  'Partial choice',
   'Rules of law',
   'Tacit choice',
-  'Mandatory rules',
+  'Overriding mandatory rules',
   'Public policy',
+  'Absence of choice',
   'Arbitration',
-  'Scope of the Principles',
-  'Formal validity of the choice of law',
-  'Agreement on the choice of law and battle of forms',
-  'Severability',
-  'Exclusion of renvoi',
-  'Scope of the chosen law',
-  'Assignment',
-  'Establishment',
+  'Employment contracts',
+  'Consumer contracts',
 ]
 
 const typeOptions = [
