@@ -763,7 +763,7 @@ class SearchService:
         """
         return query
 
-    def full_text_search(self, search_string, filters=[], page=1, page_size=10):
+    def full_text_search(self, search_string, filters=[], page=1, page_size=50):
         """
         Perform a full-text search with optional filters, returning one 'page' of results.
         page_size is how many rows per page, page is which page number (1-based).
