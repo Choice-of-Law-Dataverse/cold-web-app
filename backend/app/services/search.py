@@ -229,7 +229,7 @@ class SearchService:
 
             UNION ALL
 
-            -- International Legal Provisions
+            /*-- International Legal Provisions
             SELECT 
                 'International Legal Provisions' AS source_table,
                 "ID" AS id,
@@ -250,7 +250,7 @@ class SearchService:
                     --)
                 )
 
-            UNION ALL
+            UNION ALL*/
 
             -- Literature
             SELECT 
@@ -410,7 +410,7 @@ class SearchService:
 
             UNION ALL
 
-            -- Search in "International Legal Provisions" table
+            /*-- Search in "International Legal Provisions" table
             SELECT 
                 'International Legal Provisions' AS source_table,
                 "ID" AS id,
@@ -436,7 +436,7 @@ class SearchService:
                     OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
 
-            UNION ALL
+            UNION ALL*/
 
             -- Search in "Literature" table
             SELECT 
