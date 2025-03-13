@@ -46,7 +46,12 @@ async function fetchCaseTitle() {
     }
 
     const data = await response.json()
-    title.value = data['Case Title'] || 'Unknown Title' // Fallback if the title is missing
+    const fetchedTitle = (data['Case Title'] || '').trim()
+    // If the title is exactly "Not found", use the Case Citation instead
+    title.value =
+      fetchedTitle === 'Not found'
+        ? (data['Case Citation'] || 'Unknown Title').trim()
+        : fetchedTitle
   } catch (error) {
     console.error(`Error fetching case title for ID: ${props.caseId}`, error)
     title.value = 'Error'

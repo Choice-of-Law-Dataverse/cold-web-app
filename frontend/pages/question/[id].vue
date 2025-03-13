@@ -16,18 +16,18 @@
                 [
                   ...(value ||
                   processedAnswerData?.['Legislation-ID'] ||
-                  processedAnswerData?.['More Information']
+                  processedAnswerData?.['OUP Book Quotation']
                     ? [
                         value ||
                           processedAnswerData?.['Legislation-ID'] ||
-                          processedAnswerData?.['More Information'],
+                          processedAnswerData?.['OUP Book Quotation'],
                       ]
                     : []),
                 ].filter(Boolean)
               "
               :fallbackData="processedAnswerData"
               :valueClassMap="valueClassMap"
-              :noLinkList="[processedAnswerData?.['More Information']]"
+              :noLinkList="[processedAnswerData?.['OUP Book Quotation']]"
               :fetchOupChapter="true"
               :fetchPrimarySource="true"
             />
@@ -35,8 +35,8 @@
 
           <!-- Custom rendering for Case ID -->
           <template #case-id="{ value }">
-            <div>
-              <ul v-if="Array.isArray(value) && value.length">
+            <div v-if="Array.isArray(value) && value.length">
+              <ul>
                 <li
                   v-for="(caseId, index) in value"
                   :key="index"
@@ -45,12 +45,6 @@
                   <CourtCaseLink :caseId="caseId" />
                 </li>
               </ul>
-
-              <div v-else>
-                <span :class="valueClassMap['Case ID'] || 'result-value-small'">
-                  N/A
-                </span>
-              </div>
             </div>
           </template>
 
@@ -109,6 +103,7 @@ async function fetchAnswer(id: string) {
 const keyLabelPairs = [
   { key: 'Question', label: 'Question' },
   { key: 'Answer', label: 'Answer' },
+  { key: 'More Information', label: 'More Information' },
   {
     key: 'Legal Provision Articles',
     label: 'Source',
@@ -138,12 +133,17 @@ const processedAnswerData = computed(() => {
 })
 
 const filteredKeyLabelPairs = computed(() => {
-  if (processedAnswerData.value?.Answer === 'No data') {
-    return keyLabelPairs.filter(
-      (pair) => pair.key !== 'Legal provision articles'
-    )
-  }
-  return keyLabelPairs
+  if (!processedAnswerData.value) return keyLabelPairs
+
+  const caseIds = processedAnswerData.value['Case ID']
+  const hasRelatedCases = Array.isArray(caseIds) && caseIds.length > 0
+
+  return keyLabelPairs.filter((pair) => {
+    if (pair.key === 'Case ID') {
+      return hasRelatedCases
+    }
+    return true
+  })
 })
 
 onMounted(() => {

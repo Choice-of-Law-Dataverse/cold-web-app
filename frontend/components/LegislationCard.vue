@@ -3,14 +3,6 @@
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
       <!-- Abbreviation in the 1st column -->
       <div class="md:col-span-5">
-        <div class="label-key">{{ keyMap.Abbreviation }}</div>
-        <div :class="valueClassMap.Abbreviation || 'result-value'">
-          {{ processedResultData.Abbreviation || '[Missing Information]' }}
-        </div>
-      </div>
-
-      <!-- Title in the 6th column -->
-      <div class="md:col-start-6 md:col-span-7">
         <div class="label-key">{{ keyMap['Title (in English)'] }}</div>
         <div :class="valueClassMap['Title (in English)'] || 'result-value'">
           {{
@@ -18,6 +10,16 @@
           }}
         </div>
       </div>
+
+      <!-- Title in the 6th column -->
+      <!-- <div class="md:col-start-6 md:col-span-7">
+        <div class="label-key">{{ keyMap['Title (in English)'] }}</div>
+        <div :class="valueClassMap['Title (in English)'] || 'result-value'">
+          {{
+            processedResultData['Title (in English)'] || '[Missing Information]'
+          }}
+        </div>
+      </div> -->
     </div>
   </ResultCard>
 </template>
@@ -49,7 +51,7 @@ const keyMap = {
 
 // Map different CSS styles to different typographic components
 const valueClassMap = {
-  'Title (in English)': 'result-value-small',
+  'Title (in English)': 'result-value-medium',
   Abbreviation: 'result-value-medium',
 }
 </script>

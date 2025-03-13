@@ -134,7 +134,7 @@ const loadJurisdictions = async () => {
 
     const jsonPayloads = [
       { table: 'Jurisdictions', filters: [] },
-      { table: 'International Instruments', filters: [] },
+      //{ table: 'International Instruments', filters: [] },
     ]
 
     // Fetch both tables concurrently
@@ -167,13 +167,13 @@ const loadJurisdictions = async () => {
     const jurisdictionNames = relevantJurisdictions
       .map((entry) => entry.Name)
       .filter(Boolean)
-    const instrumentNames = instrumentsData
-      .map((entry) => entry.Name)
-      .filter(Boolean)
+    // const instrumentNames = instrumentsData
+    //   .map((entry) => entry.Name)
+    //   .filter(Boolean)
 
     // Merge both lists, remove duplicates, and sort alphabetically
     const sortedJurisdictions = [
-      ...new Set([...jurisdictionNames, ...instrumentNames]),
+      ...new Set([...jurisdictionNames]), // ...instrumentNames]),
     ].sort((a, b) => a.localeCompare(b))
 
     // Prepend "All Jurisdictions" to the list
@@ -190,25 +190,20 @@ onMounted(() => {
 
 const themeOptions = [
   'All Themes',
-  'Absence of choice',
-  'Preamble',
+  'Codification',
+  'HCCH Principles',
   'Party autonomy',
   'Freedom of choice',
-  'Partial choice',
   'Dépeçage',
+  'Partial choice',
   'Rules of law',
   'Tacit choice',
-  'Mandatory rules',
+  'Overriding mandatory rules',
   'Public policy',
+  'Absence of choice',
   'Arbitration',
-  'Scope of the Principles',
-  'Formal validity of the choice of law',
-  'Agreement on the choice of law and battle of forms',
-  'Severability',
-  'Exclusion of renvoi',
-  'Scope of the chosen law',
-  'Assignment',
-  'Establishment',
+  'Employment contracts',
+  'Consumer contracts',
 ]
 
 const typeOptions = [

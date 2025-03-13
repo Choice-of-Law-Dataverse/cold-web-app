@@ -150,11 +150,11 @@ const resetFilters = () => {
 }
 
 // Dropdown options for themes
-import themeOptionsData from './assets/themeOptions.json'
+import themeOptionsData from '../assets/themeOptions.json'
 const themeOptions = ref(themeOptionsData)
 
 // Desired order for the questions
-import questionOrderData from './assets/questionOrder.json'
+import questionOrderData from '../assets/questionOrder.json'
 const questionOrder = questionOrderData
 
 // function updateFilteredRows(newRows) {
@@ -280,9 +280,9 @@ async function fetchJurisdictions() {
       .filter(Boolean)
 
     // Manually add "HCCH Principles" if not already in the list
-    if (!jurisdictionNames.includes('HCCH Principles')) {
-      jurisdictionNames.push('HCCH Principles')
-    }
+    // if (!jurisdictionNames.includes('HCCH Principles')) {
+    //   jurisdictionNames.push('HCCH Principles')
+    // }
 
     // Sort and format the list
     jurisdictionOptions.value = jurisdictionNames
