@@ -31,10 +31,10 @@ We apply clear policies to manage intellectual property rights and use of conten
 **Please Note:**  
 The data displayed on the Choice of Law Dataverse is provided solely for preliminary review and informational purposes. This dataset is currently undergoing quality assurance processes and may, therefore, contain errors, omissions, inaccuracies, or incomplete information.
 
-**Legal Reform Disclaimer:**  
+**Liability Limitation:**  
 The Choice of Law Dataverse explicitly disclaims any responsibility or liability for damages, losses, or consequences resulting directly or indirectly from the use, interpretation, or reliance upon the information provided on this platform. By accessing or using the data provided on this platform, you acknowledge and agree that the Choice of Law Dataverse shall not be held accountable for any inaccuracies or issues arising from this content.
 
-## 5. Legislation Disclaimer
+## 5. Legal Reform Disclaimer
 
 The information provided on our website regarding legislation is intended solely for informational purposes. While we strive to maintain accurate and current data derived from official governmental sources, we cannot guarantee that all recent changes or amendments to the laws are immediately reflected in our texts. Users should verify the current legal status directly with relevant governmental authorities. We assume no responsibility or liability for errors, omissions, inaccuracies, or delays in updates caused by official sources.
 
