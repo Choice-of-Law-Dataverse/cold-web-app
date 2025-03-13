@@ -103,6 +103,7 @@ async function fetchAnswer(id: string) {
 const keyLabelPairs = [
   { key: 'Question', label: 'Question' },
   { key: 'Answer', label: 'Answer' },
+  { key: 'More Information', label: 'More Information' },
   {
     key: 'Legal Provision Articles',
     label: 'Source',
