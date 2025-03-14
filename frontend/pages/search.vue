@@ -32,34 +32,34 @@ const filter = ref({
 })
 
 // Function to handle a new search
-const onSearchInput = (newQuery) => {
-  searchQuery.value = newQuery // Update the searchQuery state
+// const onSearchInput = (newQuery) => {
+//   searchQuery.value = newQuery // Update the searchQuery state
 
-  // Update the URL query string with the new search term
-  router.push({
-    query: {
-      q: newQuery || undefined, // Only include 'q' if it's not empty
-      jurisdiction:
-        filter.value.jurisdiction !== 'All Jurisdictions'
-          ? filter.value.jurisdiction
-          : undefined,
-      theme:
-        filter.value.theme !== 'All Themes' ? filter.value.theme : undefined,
-      type: filter.value.type !== 'All Types' ? filter.value.type : undefined,
-    },
-  })
+//   // Update the URL query string with the new search term
+//   router.push({
+//     query: {
+//       q: newQuery || undefined, // Only include 'q' if it's not empty
+//       jurisdiction:
+//         filter.value.jurisdiction !== 'All Jurisdictions'
+//           ? filter.value.jurisdiction
+//           : undefined,
+//       theme:
+//         filter.value.theme !== 'All Themes' ? filter.value.theme : undefined,
+//       type: filter.value.type !== 'All Types' ? filter.value.type : undefined,
+//     },
+//   })
 
-  // Fetch new results with the updated search query and current filters
-  fetchSearchResults(newQuery || '', filter.value) // Allow empty search term
-}
+//   // Fetch new results with the updated search query and current filters
+//   fetchSearchResults(newQuery || '', filter.value) // Allow empty search term
+// }
 
-const hasActiveFilters = computed(() => {
-  return (
-    filter.value.jurisdiction !== 'All Jurisdictions' ||
-    filter.value.theme !== 'All Themes' ||
-    filter.value.type !== 'All Types'
-  )
-})
+// const hasActiveFilters = computed(() => {
+//   return (
+//     filter.value.jurisdiction !== 'All Jurisdictions' ||
+//     filter.value.theme !== 'All Themes' ||
+//     filter.value.type !== 'All Types'
+//   )
+// })
 
 const searchText = ref(route.query.q || '') // Initialize searchText from query
 
@@ -143,8 +143,9 @@ async function fetchSearchResults(query, filters) {
   // Set up mapping: Filter options have different wording to table names
   const typeFilterMapping = {
     Questions: 'Answers',
-    'Court Decisions': 'Court decisions',
-    'Legal Instruments': 'Legislation',
+    'Court Decisions': 'Court Decisions',
+    'Legal Instruments': 'Domestic Instruments',
+    //'Legal Instruments': 'International Legal Provisions',
     Literature: 'Literature',
   }
 
@@ -161,9 +162,19 @@ async function fetchSearchResults(query, filters) {
     const userHost = window.location.hostname
 
     // Fetch user's IP address
-    const ipResponse = await fetch('https://api.ipify.org?format=json')
-    const ipData = await ipResponse.json()
-    const userIp = ipData.ip
+    let userIp = 'Unknown'
+    try {
+      const ipResponse = await fetch('https://api.ipify.org?format=json')
+      const ipData = await ipResponse.json()
+      if (ipData.ip) {
+        userIp = ipData.ip
+      }
+    } catch (error) {
+      console.warn('Could not fetch IP address:', error)
+    }
+
+    // Add IP to request body safely
+    requestBody.ip_address = userIp
 
     // Fetch detailed user info (browser, platform, etc.)
     const userInfo = await fetchUserInfo()
@@ -176,11 +187,14 @@ async function fetchSearchResults(query, filters) {
     requestBody.hostname = userHost
 
     const response = await fetch(
-      `${config.public.apiBaseUrl}/full_text_search`,
-      //'http://localhost:5000/full_text_search',
+      `${config.public.apiBaseUrl}/search/`,
+      //'http://localhost:5000/search/',
       {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(requestBody),
       }
     )

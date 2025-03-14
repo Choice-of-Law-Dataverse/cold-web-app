@@ -131,13 +131,17 @@ export default {
 
     async fetchData(term, table) {
       try {
-        const response = await fetch(`${config.public.apiBaseUrl}/full_table`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ table }),
-        })
+        const response = await fetch(
+          `${config.public.apiBaseUrl}/search/full_table`,
+          {
+            method: 'POST',
+            headers: {
+              authorization: `Bearer ${config.public.FASTAPI}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ table }),
+          }
+        )
 
         const data = await response.json()
 

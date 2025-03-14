@@ -108,6 +108,14 @@ const props = defineProps({
     type: String,
     default: null,
   },
+  isInternational: {
+    type: Boolean,
+    default: false,
+  },
+  cardType: {
+    type: String,
+    default: '', // use an empty string or a proper default value
+  },
 })
 
 const router = useRouter() // Access the router to update the query parameters
@@ -119,7 +127,7 @@ const selectedTheme = ref(null) // Selected theme for filtering
 const showInfo = ref(false) // Reactive state to toggle the JurisdictionComparisonInfo component
 const columns = ref([
   { key: 'Themes', label: 'Theme', class: 'label' },
-  { key: 'Questions', label: 'Question', class: 'label' },
+  { key: 'Question', label: 'Question', class: 'label' },
   { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
 ])
 
@@ -142,11 +150,11 @@ const resetFilters = () => {
 }
 
 // Dropdown options for themes
-import themeOptionsData from './assets/themeOptions.json'
+import themeOptionsData from '../assets/themeOptions.json'
 const themeOptions = ref(themeOptionsData)
 
 // Desired order for the questions
-import questionOrderData from './assets/questionOrder.json'
+import questionOrderData from '../assets/questionOrder.json'
 const questionOrder = questionOrderData
 
 // function updateFilteredRows(newRows) {
@@ -174,18 +182,40 @@ async function fetchData(url, payload) {
 }
 
 async function fetchFilteredTableData(filters) {
+  const tableName = props.isInternational ? 'HCCH Comparison' : 'Answers'
+
   const payload = {
-    table: 'Answers',
+    table: tableName,
     filters: filters,
   }
 
   try {
-    const data = await fetchData(
-      `${config.public.apiBaseUrl}/full_table`,
-      payload
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
     )
 
-    return data.map((item) => ({
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`)
+    }
+
+    const data = await response.json()
+    const transformedData = props.isInternational
+      ? data.map((item) => ({
+          ...item,
+          Question: item['Adapted Question'],
+          Answer: item.Position,
+        }))
+      : data.map((item) => ({ ...item }))
+
+    return transformedData.map((item) => ({
       ...item,
       ID: item.ID,
     }))
@@ -198,13 +228,15 @@ async function fetchFilteredTableData(filters) {
 async function fetchTableData(jurisdiction) {
   loading.value = true
   try {
-    const data = await fetchFilteredTableData([
-      { column: 'Name (from Jurisdiction)', value: jurisdiction },
-    ])
+    const filters = props.isInternational
+      ? [] // no filter for international instruments
+      : [{ column: 'Name (from Jurisdiction)', value: jurisdiction }]
+
+    const data = await fetchFilteredTableData(filters)
 
     rows.value = data.sort(
       (a, b) =>
-        questionOrder.indexOf(a.Questions) - questionOrder.indexOf(b.Questions)
+        questionOrder.indexOf(a.Question) - questionOrder.indexOf(b.Question)
     )
   } finally {
     loading.value = false
@@ -214,15 +246,48 @@ async function fetchTableData(jurisdiction) {
 // Fetch jurisdictions from the text file
 async function fetchJurisdictions() {
   try {
-    const response = await fetch('/temp_jurisdictions.txt')
+    const config = useRuntimeConfig() // Ensure config is accessible
+
+    const jsonPayload = {
+      table: 'Jurisdictions',
+      filters: [],
+    }
+
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
+
     if (!response.ok) throw new Error('Failed to load jurisdictions')
 
-    const text = await response.text()
-    jurisdictionOptions.value = text
-      .split('\n')
-      .map((country) => country.trim())
+    const data = await response.json()
+
+    // Filter out jurisdictions where "Irrelevant?" is explicitly true
+    const relevantJurisdictions = data.filter(
+      (entry) => entry['Irrelevant?'] === null
+    )
+
+    // Extract and format jurisdiction names
+    let jurisdictionNames = relevantJurisdictions
+      .map((entry) => entry.Name)
       .filter(Boolean)
-      .map((country) => ({ label: country, value: country }))
+
+    // Manually add "HCCH Principles" if not already in the list
+    // if (!jurisdictionNames.includes('HCCH Principles')) {
+    //   jurisdictionNames.push('HCCH Principles')
+    // }
+
+    // Sort and format the list
+    jurisdictionOptions.value = jurisdictionNames
+      .sort((a, b) => a.localeCompare(b))
+      .map((name) => ({ label: name, value: name })) // Ensure correct structure
   } catch (error) {
     console.error('Error fetching jurisdictions:', error)
     jurisdictionOptions.value = [] // Fallback to an empty list
@@ -268,7 +333,7 @@ function updateColumns(jurisdiction) {
   const secondColumnKey = `Answer_${jurisdiction.value}`
   columns.value = [
     { key: 'Themes', label: 'Theme', class: 'label' },
-    { key: 'Questions', label: 'Question', class: 'label' },
+    { key: 'Question', label: 'Question', class: 'label' },
     { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
     { key: secondColumnKey, label: jurisdiction.label, class: 'label' },
     { key: 'Match', label: '', class: 'match-column' },
@@ -279,7 +344,7 @@ function updateRows(jurisdictionData, jurisdiction) {
   const secondColumnKey = `Answer_${jurisdiction.value}`
   rows.value = rows.value.map((row) => {
     const match = jurisdictionData.find(
-      (item) => item.Questions === row.Questions
+      (item) => item.Question === row.Question
     )
     return {
       ...row,

@@ -1,5 +1,8 @@
 <template>
-  <div class="header-container flex items-center justify-between">
+  <div
+    class="header-container flex items-center justify-between"
+    :key="formattedJurisdiction + formattedTheme"
+  >
     <!-- Left side of the header: Tags -->
     <div
       class="tags-container flex items-center overflow-x-auto scrollbar-hidden"
@@ -33,19 +36,40 @@
       class="fade-out"
       :class="{
         'open-link-true': showOpenLink,
+        'suggest-edit-true': showSuggestEdit,
         'open-link-false': !showOpenLink,
+        'suggest-edit-false': !showSuggestEdit,
       }"
     ></div>
 
-    <!-- Right side of the header: "Open" link -->
-    <div v-if="showOpenLink" class="open-link ml-4">
-      <NuxtLink :to="getLink()"> Open </NuxtLink>
+    <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
+    <div class="open-link ml-4">
+      <NuxtLink
+        v-if="showSuggestEdit"
+        :to="suggestEditLink"
+        class="flex items-center space-x-2"
+        target="_blank"
+      >
+        <span>Suggest Edit</span>
+        <UIcon name="i-material-symbols:edit-outline" />
+      </NuxtLink>
+
+      <NuxtLink v-else :to="getLink()"> Open </NuxtLink>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+
+const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
+
+// Computed property to generate the prefilled form URL with hidden field
+const suggestEditLink = computed(() => {
+  if (import.meta.server) return '#' // Prevent issues on SSR
+  const currentPageURL = encodeURIComponent(window.location.href)
+  return `https://airtable.com/${airtableFormID}?prefill_URL=${currentPageURL}&hide_URL=true`
+})
 
 // Props
 const props = defineProps({
@@ -57,18 +81,38 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  showSuggestEdit: {
+    type: Boolean,
+    default: true,
+  },
   showOpenLink: {
     type: Boolean,
     default: true,
+  },
+  formattedJurisdiction: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
+  formattedTheme: {
+    type: Array,
+    required: false,
+    default: () => [],
   },
 })
 
 // Computed property for "jurisdiction" to handle multiple field options and duplicates
 const formattedJurisdiction = computed(() => {
+  if (props.formattedJurisdiction.length > 0) {
+    return props.formattedJurisdiction
+  }
   const jurisdictionString =
     props.resultData['Jurisdiction name'] ||
     props.resultData['Jurisdiction Names'] ||
     props.resultData['Name (from Jurisdiction)'] ||
+    props.resultData['Jurisdiction'] ||
+    props.resultData['Jurisdictions'] ||
+    props.resultData['Instrument'] ||
     ''
 
   if (!jurisdictionString) {
@@ -88,11 +132,12 @@ const formattedSourceTable = computed(() => {
 const adjustedSourceTable = computed(() => {
   // Use the result from `formattedSourceTable` and apply label adjustments
   switch (formattedSourceTable.value) {
-    case 'Court decisions':
-      return 'Court decision'
+    case 'Court Decisions':
+      return 'Court Decision'
     case 'Answers':
       return 'Question'
-    case 'Legislation':
+    case 'Legal Instrument':
+    case 'International Legal Provisions':
       return 'Legal Instrument'
     case 'Literature':
       return 'Literature'
@@ -104,12 +149,13 @@ const adjustedSourceTable = computed(() => {
 
 const labelColorClass = computed(() => {
   switch (formattedSourceTable.value) {
-    case 'Court decisions':
+    case 'Court Decisions':
       return 'label-court-decision'
     case 'Answers':
     case 'Question':
       return 'label-question'
-    case 'Legislation':
+    case 'Legal Instrument':
+    case 'International Legal Provisions':
       return 'label-legal-instrument'
     case 'Literature':
       return 'label-literature'
@@ -119,14 +165,24 @@ const labelColorClass = computed(() => {
 })
 
 const formattedTheme = computed(() => {
-  const themes = props.resultData.Themes
+  const themes =
+    props.resultData['Title of the Provision'] ?? // New, renamed column
+    props.resultData.Themes ?? // Old column
+    props.resultData['International Legal Provisions'] // Fallback
 
   if (!themes || themes === 'None') {
     return [] // Return an empty array to avoid rendering issues
   }
-  // Split the string into an array, trim each item, and filter out duplicates using Set
   return [...new Set(themes.split(',').map((theme) => theme.trim()))]
 })
+
+const slugify = (text) =>
+  text
+    .normalize('NFD') // Normalize to decomposed form (e.g., "é" -> "é")
+    .replace(/[\u0300-\u036f]/g, '') // Remove diacritical marks
+    .toLowerCase()
+    .replace(/\s+/g, '-') // Replace spaces with "-"
+    .replace(/[^a-z0-9\-]/g, '') // Remove non-alphanumeric characters except "-"
 
 // Methods
 function getLink() {
@@ -134,16 +190,25 @@ function getLink() {
   switch (props.cardType) {
     case 'Answers':
       return `/question/${props.resultData.id}`
-    case 'Court decisions':
+    case 'Court Decisions':
       return `/court-decision/${props.resultData.id}`
-    case 'Legislation':
+    case 'Legal Instrument':
       return `/legal-instrument/${props.resultData.id}`
     case 'Literature':
       return `/literature/${props.resultData.id}`
+    case 'International Legal Provisions':
+      return `/international-legal-instrument/${slugify(props.resultData.Instrument)}/${slugify(props.resultData['Title of the Provision'])}`
     default:
       return '#'
   }
 }
+// watchEffect(() => {
+//   console.log(
+//     'UCardHeader - formattedJurisdiction:',
+//     props.formattedJurisdiction
+//   )
+//   console.log('UCardHeader - formattedTheme:', props.formattedTheme)
+// })
 </script>
 
 <style scoped>
@@ -173,19 +238,25 @@ function getLink() {
 .fade-out {
   position: absolute;
   top: 0;
-  /*right: 50px; /* Place the fade-out just before the "Open" link */
-  width: 60px; /* Width of the gradient */
+  right: 50px; /* Default: Positioned just before the right-aligned link */
+  width: 60px;
   height: 100%;
-  background: linear-gradient(to left, white, transparent); /* White fade */
-  pointer-events: none; /* Ensure it doesn’t block interactions */
+  background: linear-gradient(to left, white, transparent);
+  pointer-events: none;
+  z-index: 10; /* Ensure it’s above the scrolling tags */
 }
 
-/* Adjust the fade-out position based on whether the "Open" link is shown */
+/* Adjust position when only one of the links is shown */
 .fade-out.open-link-true {
-  right: 50px; /* Positioned just before the "Open" link */
+  right: 50px; /* Positioned before "Open" */
 }
 
-.fade-out.open-link-false {
+.fade-out.suggest-edit-true {
+  right: 130px; /* Positioned before "Suggest Edit" */
+}
+
+/* Ensures the fade-out is always correctly positioned */
+.fade-out.open-link-false.suggest-edit-false {
   right: 0; /* Positioned at the edge of the container */
 }
 

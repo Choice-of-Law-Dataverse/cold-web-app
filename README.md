@@ -1,5 +1,6 @@
 # cold-web-app
-repository for building and deploying the cold web app.
+repository for building and deploying the cold web app.  
+[API Documentation](https://cold-container-test.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/docs)
 
 ## Versioning and Deployment Policy
 We continuously deploy the backend and frontend independently of each other. Each component evolves at its own pace, with versioning applied as changes are introduced.

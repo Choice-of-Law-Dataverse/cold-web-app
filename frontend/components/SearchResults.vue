@@ -39,7 +39,7 @@
           <p v-if="loading">Loading…</p>
 
           <!-- No Results -->
-          <p v-else-if="!allResults.length">No results found.</p>
+          <NoSearchResults v-else-if="!allResults.length" />
 
           <!-- Results Grid -->
           <div v-else class="results-grid">
@@ -53,6 +53,15 @@
                 :resultData="resultData"
               />
             </div>
+          </div>
+          <div v-if="!loading" class="result-value-small text-center pt-4">
+            <UButton
+              to="/learn?tab=methodology#how-the-search-works"
+              variant="link"
+              icon="i-material-symbols:arrow-forward"
+              trailing
+              >Learn how the search works</UButton
+            >
           </div>
         </div>
       </div>
@@ -68,18 +77,21 @@ import LegislationCard from '@/components/LegislationCard.vue'
 import LiteratureCard from '@/components/LiteratureCard.vue'
 import CourtDecisionCard from '@/components/CourtDecisionCard.vue'
 import AnswerCard from '@/components/AnswerCard.vue'
+import IntLegislationCard from '@/components/IntLegislationCard.vue'
 import SearchFilters from './SearchFilters.vue'
 
 const getResultComponent = (source_table) => {
   switch (source_table) {
-    case 'Legislation':
+    case 'Domestic Instruments':
       return LegislationCard
-    case 'Court decisions':
+    case 'Court Decisions':
       return CourtDecisionCard
     case 'Answers':
       return AnswerCard
     case 'Literature':
       return LiteratureCard
+    case 'International Legal Provisions':
+      return IntLegislationCard
     default:
       return ResultCard
   }
@@ -118,17 +130,54 @@ const jurisdictionOptions = ref(['All Jurisdictions'])
 // Fetch jurisdictions from file
 const loadJurisdictions = async () => {
   try {
-    const response = await fetch('/temp_jurisdictions.txt') // File path in public/
-    if (!response.ok) throw new Error('Failed to load jurisdictions')
+    const config = useRuntimeConfig() // Ensure config is accessible
 
-    const text = await response.text()
-    const jurisdictions = text
-      .split('\n') // Split text into lines
-      .map((line) => line.trim()) // Trim spaces
-      .filter((line) => line) // Remove empty lines
+    const jsonPayloads = [
+      { table: 'Jurisdictions', filters: [] },
+      //{ table: 'International Instruments', filters: [] },
+    ]
+
+    // Fetch both tables concurrently
+    const responses = await Promise.all(
+      jsonPayloads.map((payload) =>
+        fetch(`${config.public.apiBaseUrl}/search/full_table`, {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${config.public.FASTAPI}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        })
+      )
+    )
+
+    // Process both responses
+    const [jurisdictionsData, instrumentsData] = await Promise.all(
+      responses.map((res) =>
+        res.ok ? res.json() : Promise.reject('Failed to load data')
+      )
+    )
+
+    // Filter out "Irrelevant?" only for "Jurisdictions"
+    const relevantJurisdictions = jurisdictionsData.filter(
+      (entry) => entry['Irrelevant?'] === null
+    )
+
+    // Extract "Name" fields
+    const jurisdictionNames = relevantJurisdictions
+      .map((entry) => entry.Name)
+      .filter(Boolean)
+    // const instrumentNames = instrumentsData
+    //   .map((entry) => entry.Name)
+    //   .filter(Boolean)
+
+    // Merge both lists, remove duplicates, and sort alphabetically
+    const sortedJurisdictions = [
+      ...new Set([...jurisdictionNames]), // ...instrumentNames]),
+    ].sort((a, b) => a.localeCompare(b))
 
     // Prepend "All Jurisdictions" to the list
-    jurisdictionOptions.value = ['All Jurisdictions', ...jurisdictions]
+    jurisdictionOptions.value = ['All Jurisdictions', ...sortedJurisdictions]
   } catch (error) {
     console.error('Error loading jurisdictions:', error)
   }
@@ -141,25 +190,18 @@ onMounted(() => {
 
 const themeOptions = [
   'All Themes',
-  'Absence of choice',
-  'Preamble',
+  'Codification',
+  'HCCH Principles',
   'Party autonomy',
   'Freedom of choice',
-  'Partial choice',
   'Dépeçage',
+  'Partial choice',
   'Rules of law',
-  'Express and tacit choice',
-  'Mandatory rules',
+  'Tacit choice',
+  'Overriding mandatory rules',
   'Public policy',
+  'Absence of choice',
   'Arbitration',
-  'Scope of the Principles',
-  'Formal validity of the choice of law',
-  'Agreement on the choice of law and battle of forms',
-  'Severability',
-  'Exclusion of renvoi',
-  'Scope of the chosen law',
-  'Assignment',
-  'Establishment',
 ]
 
 const typeOptions = [

@@ -3,32 +3,54 @@
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
       <!-- Question in the 1st column -->
       <div class="md:col-span-4">
-        <div class="label-key">{{ keyMap.Questions }}</div>
-        <div :class="valueClassMap.Questions || 'result-value'">
-          {{ resultData.Questions }}
+        <div class="label-key">{{ keyMap.Question }}</div>
+        <div :class="valueClassMap.Question || 'result-value'">
+          {{ resultData.Question }}
         </div>
       </div>
 
       <!-- Answer in the 6th column -->
       <div class="md:col-start-6 md:col-span-2">
         <div class="label-key">{{ keyMap.Answer }}</div>
-        <div :class="valueClassMap.Answer || 'result-value'">
+        <div :class="getAnswerClass(resultData.Answer)">
           {{ resultData.Answer }}
         </div>
       </div>
 
       <!-- Source in the 8th column -->
-      <div class="md:col-start-8 md:col-span-4">
+      <div
+        v-if="resultData.Answer !== 'No data'"
+        class="md:col-start-8 md:col-span-4"
+      >
         <div class="label-key">{{ keyMap['Legal provision articles'] }}</div>
-        <div
-          :class="valueClassMap['Legal provision articles'] || 'result-value'"
-        >
-          <LegalProvisionRenderer
-            :value="resultData['Legal provision articles']"
-            :fallbackData="resultData"
-            :valueClassMap="valueClassMap"
-          />
-        </div>
+        <ul class="result-value-small">
+          <template v-if="resultData['Literature Title']">
+            <li>{{ resultData['Literature Title'] }}</li>
+          </template>
+          <template v-if="resultData['Legal Provision Articles']">
+            <li>{{ resultData['Legal Provision Articles'] }}</li>
+          </template>
+          <template v-else-if="resultData['Legislation-ID']">
+            <li>{{ resultData['Legislation-ID'] }}</li>
+          </template>
+          <template v-else-if="resultData['More Information']">
+            <li>{{ resultData['More Information'] }}</li>
+          </template>
+        </ul>
+
+        <!-- <QuestionSourceList
+          :sources="
+            [
+              resultData['Legal provision articles'] ||
+                resultData['Legislation-ID'], // ||
+            ].filter(Boolean)
+          "
+          :fallbackData="resultData"
+          :valueClassMap="valueClassMap"
+          :noLinkList="[resultData['More Information']]"
+          :fetchPrimarySource="true"
+          :fetchOupChapter="true"
+        /> -->
       </div>
     </div>
   </ResultCard>
@@ -44,19 +66,24 @@ const props = defineProps({
 })
 
 // Define the keys and mappings specific to answer results
-const answerKeys = ['Questions', 'Answer', 'Legal provision articles']
+const answerKeys = ['Question', 'Answer', 'Legal provision articles']
 
 const keyMap = {
   Answer: 'Answer',
-  Questions: 'Question',
+  Question: 'Question',
   'Legal provision articles': 'Source',
 }
 
 // Map different CSS styles to different typographic components
 const valueClassMap = {
-  Answer: 'result-value-large',
-  Questions: 'result-value-medium',
-  'Legal provision articles': 'result-value-medium',
+  //Answer: 'result-value-large',
+  Question: 'result-value-medium',
+  'Legal provision articles': 'result-value-small',
+}
+const getAnswerClass = (answer) => {
+  return answer === 'Yes' || answer === 'No'
+    ? 'result-value-large'
+    : 'result-value-medium'
 }
 </script>
 
@@ -77,5 +104,10 @@ const valueClassMap = {
   @extend .label;
   padding: 0;
   margin-top: 12px;
+}
+
+.result-value-small li {
+  list-style-type: disc; /* Forces bullet points */
+  margin-left: 20px; /* Ensures proper indentation */
 }
 </style>

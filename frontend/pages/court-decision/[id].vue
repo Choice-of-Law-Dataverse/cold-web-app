@@ -4,11 +4,18 @@
       <div class="col-span-12">
         <DetailDisplay
           :loading="loading"
-          :resultData="courtDecision"
-          :keyLabelPairs="keyLabelPairs"
+          :resultData="modifiedCourtDecision"
+          :keyLabelPairs="computedKeyLabelPairs"
           :valueClassMap="valueClassMap"
-          formattedSourceTable="Court decisions"
-        />
+          formattedSourceTable="Court Decisions"
+        >
+          <template #related-literature>
+            <RelatedLiterature
+              :themes="courtDecision?.Themes || ''"
+              :valueClassMap="valueClassMap['Related Literature']"
+            />
+          </template>
+        </DetailDisplay>
       </div>
     </div>
   </main>
@@ -27,19 +34,19 @@ const config = useRuntimeConfig()
 
 async function fetchCourtDecision(id: string) {
   const jsonPayload = {
-    table: 'Court decisions',
+    table: 'Court Decisions',
     id: id,
   }
 
   try {
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/curated_search/details`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(jsonPayload),
-      }
-    )
+    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${config.public.FASTAPI}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonPayload),
+    })
 
     if (!response.ok) throw new Error('Failed to fetch court decision')
 
@@ -53,32 +60,67 @@ async function fetchCourtDecision(id: string) {
 
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
-  { key: 'Case', label: 'Case Title' },
+  { key: 'Case Title', label: 'Case Title' },
+  { key: 'Date (GPT-o3-mini)', label: 'Date' },
   { key: 'Abstract', label: 'Abstract' },
   {
-    key: 'Relevant facts / Summary of the case',
-    label: 'Relevant Facts / Summary of the Case',
+    key: 'Relevant Facts',
+    label: 'Relevant Facts',
   },
+  // {
+  //   key: 'Relevant rules of law involved',
+  //   label: 'Relevant Rules of Law Involved',
+  // },
+  { key: 'Choice of Law Issue', label: 'Choice of Law Issue' },
+  { key: "Court's Position", label: "Court's Position" },
   {
-    key: 'Relevant rules of law involved',
-    label: 'Relevant Rules of Law Involved',
-  },
-  { key: 'Choice of law issue', label: 'Choice of Law Issue' },
-  { key: "Court's position", label: "Court's Position" },
-  {
-    key: 'Text of the relevant legal provisions',
+    key: 'Text of the Relevant Legal Provisions',
     label: 'Text of the Relevant Legal Provisions',
   },
+  { key: 'Case Citation', label: 'Case Citation' },
+  { key: 'Related Literature', label: '' },
 ]
 
+const computedKeyLabelPairs = computed(() => {
+  // Explicitly tell TypeScript that data is a Record of string keys to any value
+  const data: Record<string, any> = courtDecision.value || {}
+
+  return keyLabelPairs.map((pair) => {
+    if (pair.key === 'Case Title') {
+      return {
+        ...pair,
+        value:
+          data['Case Title'] === 'Not found'
+            ? data['Case Citation']
+            : data['Case Title'],
+      }
+    }
+    return {
+      ...pair,
+      value: data[pair.key],
+    }
+  })
+})
+
+const modifiedCourtDecision = computed(() => {
+  const data: Record<string, any> = courtDecision.value || {}
+  return {
+    ...data,
+    'Case Title':
+      data['Case Title'] === 'Not found'
+        ? data['Case Citation']
+        : data['Case Title'],
+  }
+})
+
 const valueClassMap = {
-  Case: 'result-value-medium',
+  'Case Title': 'result-value-medium',
   Abstract: 'result-value-small',
-  'Relevant facts / Summary of the case': 'result-value-small',
-  'Relevant rules of law involved': 'result-value-small',
-  'Choice of law issue': 'result-value-small',
-  "Court's position": 'result-value-small',
-  'Text of the relevant legal provisions': 'result-value-small',
+  'Relevant Facts': 'result-value-small',
+  //'Relevant rules of law involved': 'result-value-small',
+  'Choice of Law Issue': 'result-value-small',
+  "Court's Position": 'result-value-small',
+  'Text of the Relevant Legal Provisions': 'result-value-small',
 }
 
 onMounted(() => {

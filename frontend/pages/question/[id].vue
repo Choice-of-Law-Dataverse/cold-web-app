@@ -5,36 +5,55 @@
         <DetailDisplay
           :loading="loading"
           :resultData="processedAnswerData"
-          :keyLabelPairs="keyLabelPairs"
+          :keyLabelPairs="filteredKeyLabelPairs"
           :valueClassMap="valueClassMap"
           formattedSourceTable="Question"
         >
           <!-- Custom rendering for Legal provision articles -->
           <template #legal-provision-articles="{ value }">
-            <LegalProvisionRenderer
-              :value="value"
+            <QuestionSourceList
+              :sources="
+                [
+                  ...(value ||
+                  processedAnswerData?.['Legislation-ID'] ||
+                  processedAnswerData?.['OUP Book Quotation']
+                    ? [
+                        value ||
+                          processedAnswerData?.['Legislation-ID'] ||
+                          processedAnswerData?.['OUP Book Quotation'],
+                      ]
+                    : []),
+                ].filter(Boolean)
+              "
               :fallbackData="processedAnswerData"
               :valueClassMap="valueClassMap"
+              :noLinkList="[processedAnswerData?.['OUP Book Quotation']]"
+              :fetchOupChapter="true"
+              :fetchPrimarySource="true"
             />
           </template>
 
           <!-- Custom rendering for Case ID -->
           <template #case-id="{ value }">
-            <div>
-              <div v-if="value && value.trim()">
-                <!-- Render links if value exists -->
-                <CourtCaseLink
-                  v-for="(caseId, index) in value.split(',')"
+            <div v-if="Array.isArray(value) && value.length">
+              <ul>
+                <li
+                  v-for="(caseId, index) in value"
                   :key="index"
-                  :caseId="caseId.trim()"
-                  :class="valueClassMap['Case ID'] || 'result-value'"
-                />
-              </div>
-              <div v-else>
-                <!-- Render N/A if no case IDs are available -->
-                <span>N/A</span>
-              </div>
+                  :class="valueClassMap['Case ID'] || 'result-value-small'"
+                >
+                  <CourtCaseLink :caseId="caseId" />
+                </li>
+              </ul>
             </div>
+          </template>
+
+          <!-- Related Literature -->
+          <template #related-literature>
+            <RelatedLiterature
+              :themes="processedAnswerData?.Themes || ''"
+              :valueClassMap="valueClassMap['Related Literature']"
+            />
           </template>
         </DetailDisplay>
       </div>
@@ -61,14 +80,14 @@ async function fetchAnswer(id: string) {
   }
 
   try {
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/curated_search/details`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(jsonPayload),
-      }
-    )
+    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${config.public.FASTAPI}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonPayload),
+    })
 
     if (!response.ok) throw new Error('Failed to fetch answer')
 
@@ -82,36 +101,56 @@ async function fetchAnswer(id: string) {
 
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
-  { key: 'Questions', label: 'Question' },
+  { key: 'Question', label: 'Question' },
   { key: 'Answer', label: 'Answer' },
+  { key: 'More Information', label: 'More Information' },
   {
-    key: 'Legal provision articles',
+    key: 'Legal Provision Articles',
     label: 'Source',
   },
   { key: 'Case ID', label: 'related cases' },
+  { key: 'Related Literature', label: '' },
 ]
 
 const valueClassMap = {
-  Questions: 'result-value-medium',
+  Question: 'result-value-medium',
   Answer: 'result-value-large',
-  'Legal provision articles': 'result-value-medium',
+  'Legal provision articles': 'result-value-small',
   'Case ID': 'result-value-small',
 }
 
 // Preprocess data to handle custom rendering cases
 const processedAnswerData = computed(() => {
   if (!answerData.value) return null
-
   return {
     ...answerData.value,
     'Legal provision articles':
       answerData.value['Legal provision articles'] || '',
-    'Case ID': answerData.value['Case ID'] || '',
+    'Case ID': answerData.value['Case ID']
+      ? answerData.value['Case ID'].split(',').map((caseId) => caseId.trim())
+      : [],
   }
 })
 
+const filteredKeyLabelPairs = computed(() => {
+  if (!processedAnswerData.value) return keyLabelPairs
+
+  const caseIds = processedAnswerData.value['Case ID']
+  const hasRelatedCases = Array.isArray(caseIds) && caseIds.length > 0
+
+  return keyLabelPairs.filter((pair) => {
+    if (pair.key === 'Case ID') {
+      return hasRelatedCases
+    }
+    return true
+  })
+})
+
 onMounted(() => {
-  const id = route.params.id as string // Get ID from the route
-  fetchAnswer(id)
+  const id = route.params.id as string
+  fetchAnswer(id).then(() => {
+    if (answerData.value?.Themes) {
+    }
+  })
 })
 </script>

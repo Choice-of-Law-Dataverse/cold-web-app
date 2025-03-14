@@ -1,0 +1,1 @@
+Note on data availability: 63 jurisdictions were included in the research project’s original design. These are available as national reports in [Choice of Law in International Commercial Contracts](/literature/37). Data visualization is currently available for selected countries only.

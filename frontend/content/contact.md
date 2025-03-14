@@ -5,7 +5,7 @@ Just send us an email: mail@cold.global
 
 ## Stay Updated
 
-Follow CoLD on [LinkedIn](https://www.linkedin.com/company/choice-of-law-dataverse) and subscribe to the newsletter on [Substack](https://choiceoflawdataverse.substack.com/subscribe).
+Follow CoLD on <a href="https://www.linkedin.com/company/choice-of-law-dataverse" target="_blank">LinkedIn</a> and subscribe to the newsletter on <a href="https://choiceoflawdataverse.substack.com/subscribe" target="_blank">Substack</a>.
 
 ## Visit Us
 

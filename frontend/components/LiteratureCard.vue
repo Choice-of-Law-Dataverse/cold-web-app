@@ -61,7 +61,7 @@ const processedResultData = computed(() => {
 
   return {
     ...props.resultData,
-    Themes: props.resultData['Themes name'], // Map "Themes name" to "Themes"
+    Themes: props.resultData['International Legal Provisions'], // Map "Themes name" to "Themes"
   }
 })
 
