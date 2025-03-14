@@ -69,7 +69,7 @@
             title="Access New Features"
             buttonText="Become a Beta Test User"
             :buttonLink="links.beta"
-            iconName="i-material-symbols:cruelty-free"
+            iconName="i-hugeicons:test-tube-01"
           />
         </div>
       </div>
