@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: simonweigold/cold-nuxt-frontend:dev
+          image: simonweigold/cold-nuxt-frontend:prod-20250314
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
