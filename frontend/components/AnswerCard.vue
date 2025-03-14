@@ -23,7 +23,22 @@
         class="md:col-start-8 md:col-span-4"
       >
         <div class="label-key">{{ keyMap['Legal provision articles'] }}</div>
-        <QuestionSourceList
+        <ul class="result-value-small">
+          <template v-if="resultData['Literature Title']">
+            <li>{{ resultData['Literature Title'] }}</li>
+          </template>
+          <template v-if="resultData['Legal Provision Articles']">
+            <li>{{ resultData['Legal Provision Articles'] }}</li>
+          </template>
+          <template v-else-if="resultData['Legislation-ID']">
+            <li>{{ resultData['Legislation-ID'] }}</li>
+          </template>
+          <template v-else-if="resultData['More Information']">
+            <li>{{ resultData['More Information'] }}</li>
+          </template>
+        </ul>
+
+        <!-- <QuestionSourceList
           :sources="
             [
               resultData['Legal provision articles'] ||
@@ -35,7 +50,7 @@
           :noLinkList="[resultData['More Information']]"
           :fetchPrimarySource="true"
           :fetchOupChapter="true"
-        />
+        /> -->
       </div>
     </div>
   </ResultCard>
@@ -89,5 +104,10 @@ const getAnswerClass = (answer) => {
   @extend .label;
   padding: 0;
   margin-top: 12px;
+}
+
+.result-value-small li {
+  list-style-type: disc; /* Forces bullet points */
+  margin-left: 20px; /* Ensures proper indentation */
 }
 </style>

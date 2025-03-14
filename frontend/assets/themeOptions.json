@@ -10,7 +10,5 @@
   { "label": "Overriding mandatory rules", "value": "Overriding mandatory rules" },
   { "label": "Public policy", "value": "Public policy" },
   { "label": "Absence of choice", "value": "Absence of choice" },
-  { "label": "Arbitration", "value": "Arbitration" },
-  { "label": "Employment contracts", "value": "Employment contracts" },
-  { "label": "Consumer contracts", "value": "Consumer contracts" }
+  { "label": "Arbitration", "value": "Arbitration" }
 ]
