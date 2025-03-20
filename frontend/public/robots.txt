@@ -1,8 +1,0 @@
-# Allow all crawlers
-User-agent: *
-Allow: /
-Disallow: /search
-
-# Optionally point to your sitemap
-Sitemap: https://mysite.com/sitemap.xml
-
