@@ -15,6 +15,11 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchResults from '../components/SearchResults.vue' // Adjust path if needed
 
+// Prevent robots from crawling search.vue
+useHead({
+  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
+})
+
 const route = useRoute()
 const router = useRouter()
 const searchQuery = ref(route.query.q || '') // Holds the search query from the URL
