@@ -33,14 +33,16 @@
             />
           </template>
 
-          <!-- Custom rendering for Case ID -->
-          <template #case-id="{ value }">
+          <!-- Custom rendering for Court Decisions ID -->
+          <template #court-decisions-id="{ value }">
             <div v-if="Array.isArray(value) && value.length">
               <ul>
                 <li
                   v-for="(caseId, index) in value"
                   :key="index"
-                  :class="valueClassMap['Case ID'] || 'result-value-small'"
+                  :class="
+                    valueClassMap['Court Decisions ID'] || 'result-value-small'
+                  "
                 >
                   <CourtCaseLink :caseId="caseId" />
                 </li>
@@ -108,7 +110,7 @@ const keyLabelPairs = [
     key: 'Legal Provision Articles',
     label: 'Source',
   },
-  { key: 'Case ID', label: 'related cases' },
+  { key: 'Court Decisions ID', label: 'related cases' },
   { key: 'Related Literature', label: '' },
 ]
 
@@ -116,7 +118,7 @@ const valueClassMap = {
   Question: 'result-value-medium',
   Answer: 'result-value-large',
   'Legal provision articles': 'result-value-small',
-  'Case ID': 'result-value-small',
+  'Court Decisions ID': 'result-value-small',
 }
 
 // Preprocess data to handle custom rendering cases
@@ -126,8 +128,10 @@ const processedAnswerData = computed(() => {
     ...answerData.value,
     'Legal provision articles':
       answerData.value['Legal provision articles'] || '',
-    'Case ID': answerData.value['Case ID']
-      ? answerData.value['Case ID'].split(',').map((caseId) => caseId.trim())
+    'Court Decisions ID': answerData.value['Court Decisions ID']
+      ? answerData.value['Court Decisions ID']
+          .split(',')
+          .map((caseId) => caseId.trim())
       : [],
   }
 })
@@ -135,11 +139,11 @@ const processedAnswerData = computed(() => {
 const filteredKeyLabelPairs = computed(() => {
   if (!processedAnswerData.value) return keyLabelPairs
 
-  const caseIds = processedAnswerData.value['Case ID']
+  const caseIds = processedAnswerData.value['Court Decisions ID']
   const hasRelatedCases = Array.isArray(caseIds) && caseIds.length > 0
 
   return keyLabelPairs.filter((pair) => {
-    if (pair.key === 'Case ID') {
+    if (pair.key === 'Court Decisions ID') {
       return hasRelatedCases
     }
     return true
