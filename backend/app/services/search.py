@@ -143,7 +143,7 @@ class SearchService:
                 (array_length(params.tables, 1) IS NULL OR 'Answers' = ANY(params.tables))
                 AND (
                     array_length(params.jurisdictions, 1) IS NULL 
-                    OR ans."Name (from Jurisdiction)" = ANY(params.jurisdictions)
+                    OR ans."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
@@ -305,7 +305,7 @@ class SearchService:
                 (array_length(params.tables, 1) IS NULL OR 'Answers' = ANY(params.tables))
                 AND (
                     array_length(params.jurisdictions, 1) IS NULL 
-                    OR ans."Name (from Jurisdiction)" = ANY(params.jurisdictions)
+                    OR ans."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
