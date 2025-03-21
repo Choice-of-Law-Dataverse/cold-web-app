@@ -55,14 +55,14 @@ const oupChapterSource = ref(null) // Store the fetched OUP chapter source
 
 // Function to fetch the primary source from API
 async function fetchPrimarySource() {
-  if (!props.fallbackData?.['Name (from Jurisdiction)']) return
+  if (!props.fallbackData?.['Name']) return
 
   const jsonPayload = {
     table: 'Literature',
     filters: [
       {
         column: 'Jurisdiction',
-        value: props.fallbackData['Name (from Jurisdiction)'],
+        value: props.fallbackData['Name'],
       },
     ],
   }
@@ -102,18 +102,14 @@ async function fetchPrimarySource() {
 
 // Fetch OUP JD Chapter only if the prop is true
 async function fetchOupChapterSource() {
-  if (
-    !props.fetchOupChapter ||
-    !props.fallbackData?.['Name (from Jurisdiction)']
-  )
-    return
+  if (!props.fetchOupChapter || !props.fallbackData?.['Name']) return
 
   const jsonPayload = {
     table: 'Literature',
     filters: [
       {
         column: 'Jurisdiction',
-        value: props.fallbackData['Name (from Jurisdiction)'],
+        value: props.fallbackData['Name'],
       },
       {
         column: 'OUP JD Chapter',
