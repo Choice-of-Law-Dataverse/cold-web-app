@@ -16,6 +16,7 @@
     "@nuxt/icon": "^1.10.3",
     "@nuxt/ui": "^2.18.4",
     "@nuxtjs/leaflet": "^1.2.4",
+    "@nuxtjs/robots": "^5.2.8",
     "axios": "^1.7.4",
     "leaflet": "^1.9.4",
     "marked": "^15.0.3",

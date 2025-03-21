@@ -12,12 +12,25 @@ export default defineNuxtConfig({
     '@nuxt/content',
     'nuxt-purgecss',
     'nuxt-plotly',
+    '@nuxtjs/robots',
   ],
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.API_BASE_URL,
       FASTAPI: process.env.FASTAPI_API_TOKEN
     }
+  },
+  robots: {
+    robotsTxt: true,
+    sitemap: [
+      '/sitemap.txt',
+    ],
+    groups: [
+      {
+        allow: ['/'],
+        disallow: ['/search'],
+      },
+    ]
   },
   purgecss: {
     enabled: false, // Disable for the time being
