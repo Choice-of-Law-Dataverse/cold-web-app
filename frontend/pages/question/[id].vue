@@ -10,24 +10,26 @@
           formattedSourceTable="Question"
         >
           <!-- Custom rendering for Legal provision articles -->
-          <template #legal-provision-articles="{ value }">
+          <template #domestic-legal-provisions="{ value }">
             <QuestionSourceList
               :sources="
                 [
                   ...(value ||
-                  processedAnswerData?.['Legislation-ID'] ||
-                  processedAnswerData?.['OUP Book Quotation']
+                  processedAnswerData?.['Domestic Legal Provisions'] ||
+                  processedAnswerData?.['Jurisdictions Literature ID']
                     ? [
                         value ||
-                          processedAnswerData?.['Legislation-ID'] ||
-                          processedAnswerData?.['OUP Book Quotation'],
+                          processedAnswerData?.['Domestic Legal Provisions'] ||
+                          processedAnswerData?.['Jurisdictions Literature ID'],
                       ]
                     : []),
                 ].filter(Boolean)
               "
               :fallbackData="processedAnswerData"
               :valueClassMap="valueClassMap"
-              :noLinkList="[processedAnswerData?.['OUP Book Quotation']]"
+              :noLinkList="[
+                processedAnswerData?.['Jurisdictions Literature ID'],
+              ]"
               :fetchOupChapter="true"
               :fetchPrimarySource="true"
             />
@@ -107,7 +109,7 @@ const keyLabelPairs = [
   { key: 'Answer', label: 'Answer' },
   { key: 'More Information', label: 'More Information' },
   {
-    key: 'Legal Provision Articles',
+    key: 'Domestic Legal Provisions',
     label: 'Source',
   },
   { key: 'Court Decisions ID', label: 'related cases' },
@@ -117,8 +119,9 @@ const keyLabelPairs = [
 const valueClassMap = {
   Question: 'result-value-medium',
   Answer: 'result-value-large',
-  'Legal provision articles': 'result-value-small',
+  'Domestic Legal Provisions': 'result-value-small',
   'Court Decisions ID': 'result-value-small',
+
 }
 
 // Preprocess data to handle custom rendering cases
@@ -126,8 +129,8 @@ const processedAnswerData = computed(() => {
   if (!answerData.value) return null
   return {
     ...answerData.value,
-    'Legal provision articles':
-      answerData.value['Legal provision articles'] || '',
+    'Domestic Legal Provisions':
+      answerData.value['Domestic Legal Provisions'] || '',
     'Court Decisions ID': answerData.value['Court Decisions ID']
       ? answerData.value['Court Decisions ID']
           .split(',')
