@@ -3,7 +3,7 @@
     <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
       <div class="col-span-12">
         <DetailDisplay
-          :loading="loading"
+          v-if="courtDecision"
           :resultData="modifiedCourtDecision"
           :keyLabelPairs="computedKeyLabelPairs"
           :valueClassMap="valueClassMap"
@@ -22,55 +22,45 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
 
 const route = useRoute() // Access the route to get the ID param
-const courtDecision = ref(null) // Store fetched court decision data
-const loading = ref(true) // Track loading state
-
 const config = useRuntimeConfig()
 
-async function fetchCourtDecision(id: string) {
+const id = route.params.id as string
+
+// Fetch court decision using useAsyncData (SSR-compatible)
+const {
+  data: courtDecision,
+  pending: loading,
+  error,
+} = useAsyncData(`court-decision-${id}`, async () => {
   const jsonPayload = {
     table: 'Court Decisions',
     id: id,
   }
 
-  try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonPayload),
-    })
+  const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
+    method: 'POST',
+    headers: {
+      authorization: `Bearer ${config.public.FASTAPI}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(jsonPayload),
+  })
 
-    if (!response.ok) throw new Error('Failed to fetch court decision')
+  if (!response.ok) throw new Error('Failed to fetch court decision')
 
-    courtDecision.value = await response.json()
-  } catch (error) {
-    console.error('Error fetching court decision:', error)
-  } finally {
-    loading.value = false
-  }
-}
+  return await response.json()
+})
 
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
   { key: 'Case Title', label: 'Case Title' },
   { key: 'Date (GPT-o3-mini)', label: 'Date' },
   { key: 'Abstract', label: 'Abstract' },
-  {
-    key: 'Relevant Facts',
-    label: 'Relevant Facts',
-  },
-  // {
-  //   key: 'Relevant rules of law involved',
-  //   label: 'Relevant Rules of Law Involved',
-  // },
+  { key: 'Relevant Facts', label: 'Relevant Facts' },
   { key: 'Choice of Law Issue', label: 'Choice of Law Issue' },
   { key: "Court's Position", label: "Court's Position" },
   {
@@ -82,24 +72,15 @@ const keyLabelPairs = [
 ]
 
 const computedKeyLabelPairs = computed(() => {
-  // Explicitly tell TypeScript that data is a Record of string keys to any value
   const data: Record<string, any> = courtDecision.value || {}
 
-  return keyLabelPairs.map((pair) => {
-    if (pair.key === 'Case Title') {
-      return {
-        ...pair,
-        value:
-          data['Case Title'] === 'Not found'
-            ? data['Case Citation']
-            : data['Case Title'],
-      }
-    }
-    return {
-      ...pair,
-      value: data[pair.key],
-    }
-  })
+  return keyLabelPairs.map((pair) => ({
+    ...pair,
+    value:
+      pair.key === 'Case Title' && data['Case Title'] === 'Not found'
+        ? data['Case Citation']
+        : data[pair.key],
+  }))
 })
 
 const modifiedCourtDecision = computed(() => {
@@ -117,14 +98,8 @@ const valueClassMap = {
   'Case Title': 'result-value-medium',
   Abstract: 'result-value-small',
   'Relevant Facts': 'result-value-small',
-  //'Relevant rules of law involved': 'result-value-small',
   'Choice of Law Issue': 'result-value-small',
   "Court's Position": 'result-value-small',
   'Text of the Relevant Legal Provisions': 'result-value-small',
 }
-
-onMounted(() => {
-  const id = route.params.id as string // Get ID from the route
-  fetchCourtDecision(id)
-})
 </script>

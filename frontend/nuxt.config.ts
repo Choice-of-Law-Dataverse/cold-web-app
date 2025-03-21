@@ -22,6 +22,9 @@ export default defineNuxtConfig({
   },
   robots: {
     robotsTxt: true,
+    sitemap: [
+      '/sitemap.txt',
+    ],
     groups: [
       {
         allow: ['/'],
