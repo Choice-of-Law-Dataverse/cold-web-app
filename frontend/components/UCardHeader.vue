@@ -46,6 +46,16 @@
     <div class="open-link ml-4">
       <NuxtLink
         v-if="showSuggestEdit"
+        :to="downloadPDFLink"
+        class="flex items-center space-x-2"
+        target="_blank"
+      >
+        <span>Download PDF</span>
+        <UIcon name="i-material-symbols:download" />
+      </NuxtLink>
+
+      <NuxtLink
+        v-if="showSuggestEdit"
         :to="suggestEditLink"
         class="flex items-center space-x-2"
         target="_blank"
@@ -62,12 +72,26 @@
 <script setup>
 import { computed } from 'vue'
 
+const currentPageURL = encodeURIComponent(window.location.href)
+const route = useRoute()
+
+const downloadPDFLink = computed(() => {
+  if (import.meta.server) return '#' // Avoid SSR issues
+
+  const id = route.params.id || '' // CD-ARE-1128
+  const prefix = route.path.includes('/court-decision/')
+    ? 'court-decisions'
+    : 'unknown'
+
+  return `https://choiceoflawdataverse.blob.core.windows.net/${prefix}/${id}.pdf`
+})
+
 const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
 
 // Computed property to generate the prefilled form URL with hidden field
 const suggestEditLink = computed(() => {
   if (import.meta.server) return '#' // Prevent issues on SSR
-  const currentPageURL = encodeURIComponent(window.location.href)
+
   return `https://airtable.com/${airtableFormID}?prefill_URL=${currentPageURL}&hide_URL=true`
 })
 
