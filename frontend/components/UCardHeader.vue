@@ -72,20 +72,14 @@
 <script setup>
 import { computed } from 'vue'
 
-const currentPageURL = encodeURIComponent(window.location.href)
 const route = useRoute()
 
 const downloadPDFLink = computed(() => {
-  if (import.meta.server) return '#'
-
   const segments = route.path.split('/').filter(Boolean) // removes empty parts from path like ['', 'court-decision', 'CD-ARE-1128']
-
   const contentType = segments[0] || 'unknown' // e.g., 'court-decision'
   const id = segments[1] || '' // e.g., 'CD-ARE-1128'
-
   // If your Azure folders always follow the plural of the content type
   const folder = `${contentType}s`
-
   return `https://choiceoflawdataverse.blob.core.windows.net/${folder}/${id}.pdf`
 })
 
@@ -93,8 +87,7 @@ const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
 
 // Computed property to generate the prefilled form URL with hidden field
 const suggestEditLink = computed(() => {
-  if (import.meta.server) return '#' // Prevent issues on SSR
-
+  const currentPageURL = encodeURIComponent(window.location.href)
   return `https://airtable.com/${airtableFormID}?prefill_URL=${currentPageURL}&hide_URL=true`
 })
 
