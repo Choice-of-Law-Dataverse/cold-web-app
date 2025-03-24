@@ -76,14 +76,17 @@ const currentPageURL = encodeURIComponent(window.location.href)
 const route = useRoute()
 
 const downloadPDFLink = computed(() => {
-  if (import.meta.server) return '#' // Avoid SSR issues
+  if (import.meta.server) return '#'
 
-  const id = route.params.id || '' // CD-ARE-1128
-  const prefix = route.path.includes('/court-decision/')
-    ? 'court-decisions'
-    : 'unknown'
+  const segments = route.path.split('/').filter(Boolean) // removes empty parts from path like ['', 'court-decision', 'CD-ARE-1128']
 
-  return `https://choiceoflawdataverse.blob.core.windows.net/${prefix}/${id}.pdf`
+  const contentType = segments[0] || 'unknown' // e.g., 'court-decision'
+  const id = segments[1] || '' // e.g., 'CD-ARE-1128'
+
+  // If your Azure folders always follow the plural of the content type
+  const folder = `${contentType}s`
+
+  return `https://choiceoflawdataverse.blob.core.windows.net/${folder}/${id}.pdf`
 })
 
 const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
