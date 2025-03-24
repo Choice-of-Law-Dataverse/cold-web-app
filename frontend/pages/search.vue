@@ -127,6 +127,7 @@ async function fetchSearchResults(query, filters) {
   const requestBody = {
     search_string: query,
     filters: [],
+    page_size: 10, // Hard code number of search results per page
   }
 
   // Add "Jurisdictions" filter if not "All"
@@ -192,7 +193,8 @@ async function fetchSearchResults(query, filters) {
     requestBody.hostname = userHost
 
     const response = await fetch(
-      `${config.public.apiBaseUrl}/search/`,
+      //`${config.public.apiBaseUrl}/search/`,
+      `${config.public.apiBaseUrlPagination}/search/`,
       //'http://localhost:5000/search/',
       {
         method: 'POST',
