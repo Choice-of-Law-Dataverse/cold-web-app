@@ -45,7 +45,7 @@
     <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
     <div class="open-link ml-4 flex items-center space-x-4">
       <NuxtLink
-        v-if="showSuggestEdit"
+        v-if="showSuggestEdit && pdfExists"
         :to="downloadPDFLink"
         class="flex items-center space-x-1"
         target="_blank"
@@ -70,9 +70,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { onMounted, ref, computed } from 'vue'
+import { useRoute } from 'vue-router'
 
 const route = useRoute()
+const pdfExists = ref(false)
 
 const downloadPDFLink = computed(() => {
   const segments = route.path.split('/').filter(Boolean) // removes empty parts from path like ['', 'court-decision', 'CD-ARE-1128']
@@ -227,13 +229,13 @@ function getLink() {
       return '#'
   }
 }
-// watchEffect(() => {
-//   console.log(
-//     'UCardHeader - formattedJurisdiction:',
-//     props.formattedJurisdiction
-//   )
-//   console.log('UCardHeader - formattedTheme:', props.formattedTheme)
-// })
+
+onMounted(async () => {
+  const res = await $fetch('/api/check-pdf-exists', {
+    query: { url: downloadPDFLink.value },
+  })
+  pdfExists.value = res.exists
+})
 </script>
 
 <style scoped>
