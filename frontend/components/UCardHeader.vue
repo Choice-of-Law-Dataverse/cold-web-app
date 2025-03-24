@@ -43,11 +43,11 @@
     ></div>
 
     <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
-    <div class="open-link ml-4">
+    <div class="open-link ml-4 flex items-center space-x-4">
       <NuxtLink
         v-if="showSuggestEdit"
         :to="downloadPDFLink"
-        class="flex items-center space-x-2"
+        class="flex items-center space-x-1"
         target="_blank"
       >
         <span>Download PDF</span>
@@ -87,7 +87,12 @@ const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
 
 // Computed property to generate the prefilled form URL with hidden field
 const suggestEditLink = computed(() => {
-  const currentPageURL = encodeURIComponent(window.location.href)
+  const currentPageURL = computed(() => {
+    if (import.meta.client) {
+      return encodeURIComponent(window.location.href)
+    }
+    return ''
+  })
   return `https://airtable.com/${airtableFormID}?prefill_URL=${currentPageURL}&hide_URL=true`
 })
 
