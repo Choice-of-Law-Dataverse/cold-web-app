@@ -54,15 +54,6 @@
               />
             </div>
           </div>
-          <div v-if="!loading" class="result-value-small text-center pt-4">
-            <UButton
-              to="/learn?tab=methodology#how-the-search-works"
-              variant="link"
-              icon="i-material-symbols:arrow-forward"
-              trailing
-              >Learn how the search works</UButton
-            >
-          </div>
         </div>
       </div>
     </div>
