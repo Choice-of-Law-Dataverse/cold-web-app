@@ -119,7 +119,7 @@ async function fetchSearchResults(query, filters, append = false) {
   const requestBody = {
     search_string: query,
     page: currentPage.value,
-    page_size: 10, // Hard code number of search results per page
+    page_size: 1, // Hard code number of search results per page
     filters: [],
   }
 
