@@ -7,6 +7,15 @@
       :loading="loading"
       v-model:filters="filter"
     />
+    <div v-if="searchResults.length < totalMatches" class="mt-4 text-center">
+      <button
+        @click="loadMoreResults"
+        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+        :disabled="loading"
+      >
+        {{ loading ? 'Loading...' : 'Load more results' }}
+      </button>
+    </div>
   </div>
 </template>
 
@@ -26,8 +35,8 @@ const searchQuery = ref(route.query.q || '') // Holds the search query from the 
 const searchResults = ref([]) // Stores search results to be displayed
 const loading = ref(false) // Tracks the loading state for the API call
 const totalMatches = ref(0) // Save number of total matches to display at top of search results
-
 const config = useRuntimeConfig()
+const currentPage = ref(1)
 
 // Persistent filter state
 const filter = ref({
@@ -35,36 +44,6 @@ const filter = ref({
   theme: route.query.theme || 'All Themes',
   type: route.query.type || 'All Types',
 })
-
-// Function to handle a new search
-// const onSearchInput = (newQuery) => {
-//   searchQuery.value = newQuery // Update the searchQuery state
-
-//   // Update the URL query string with the new search term
-//   router.push({
-//     query: {
-//       q: newQuery || undefined, // Only include 'q' if it's not empty
-//       jurisdiction:
-//         filter.value.jurisdiction !== 'All Jurisdictions'
-//           ? filter.value.jurisdiction
-//           : undefined,
-//       theme:
-//         filter.value.theme !== 'All Themes' ? filter.value.theme : undefined,
-//       type: filter.value.type !== 'All Types' ? filter.value.type : undefined,
-//     },
-//   })
-
-//   // Fetch new results with the updated search query and current filters
-//   fetchSearchResults(newQuery || '', filter.value) // Allow empty search term
-// }
-
-// const hasActiveFilters = computed(() => {
-//   return (
-//     filter.value.jurisdiction !== 'All Jurisdictions' ||
-//     filter.value.theme !== 'All Themes' ||
-//     filter.value.type !== 'All Types'
-//   )
-// })
 
 const searchText = ref(route.query.q || '') // Initialize searchText from query
 
@@ -120,14 +99,19 @@ watch(
 )
 
 // Function to fetch search results from the API
-async function fetchSearchResults(query, filters) {
+async function fetchSearchResults(query, filters, append = false) {
+  if (!append) {
+    currentPage.value = 1
+    searchResults.value = []
+  }
+
   loading.value = true
-  searchResults.value = []
 
   const requestBody = {
     search_string: query,
-    filters: [],
+    page: currentPage.value,
     page_size: 10, // Hard code number of search results per page
+    filters: [],
   }
 
   // Add "Jurisdictions" filter if not "All"
@@ -211,12 +195,27 @@ async function fetchSearchResults(query, filters) {
     const data = await response.json()
 
     totalMatches.value = data.total_matches || 0
-    searchResults.value = Object.values(data.results)
+
+    if (append) {
+      searchResults.value = [
+        ...searchResults.value,
+        ...Object.values(data.results),
+      ]
+    } else {
+      searchResults.value = Object.values(data.results)
+    }
+
+    //searchResults.value = Object.values(data.results)
   } catch (error) {
     console.error('Error fetching search results:', error)
   } finally {
     loading.value = false
   }
+}
+
+function loadMoreResults() {
+  currentPage.value += 1
+  fetchSearchResults(searchQuery.value, filter.value, true)
 }
 
 onMounted(() => {
