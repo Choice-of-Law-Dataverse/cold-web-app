@@ -1,5 +1,5 @@
-# www.cold.global
-Repository for building and deploying the CoLD web app.
+# CoLD Web App
+Repository for building and deploying the CoLD web app on [www.cold.global](https://www.cold.global/).
 
 ## API Documentation
 Fast API documentation can be found [here](https://cold-container-test.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/docs).
