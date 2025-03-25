@@ -85,14 +85,6 @@ const downloadPDFLink = computed(() => {
   return `https://choiceoflawdataverse.blob.core.windows.net/${folder}/${id}.pdf`
 })
 
-const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
-
-// Computed property to generate the prefilled form URL with hidden field
-const suggestEditLink = computed(() => {
-  const currentPageURL = route.path
-  return `https://airtable.com/${airtableFormID}?prefill_URL=${currentPageURL}&hide_URL=true`
-})
-
 // Props
 const props = defineProps({
   resultData: {
@@ -230,6 +222,14 @@ onMounted(async () => {
     query: { url: downloadPDFLink.value },
   })
   pdfExists.value = res.exists
+})
+
+const suggestEditLink = ref('')
+const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
+
+onMounted(() => {
+  const currentURL = window.location.href
+  suggestEditLink.value = `https://airtable.com/${airtableFormID}?prefill_URL=${encodeURIComponent(currentURL)}&hide_URL=true`
 })
 </script>
 
