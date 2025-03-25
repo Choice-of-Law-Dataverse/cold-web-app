@@ -89,12 +89,7 @@ const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
 
 // Computed property to generate the prefilled form URL with hidden field
 const suggestEditLink = computed(() => {
-  const currentPageURL = computed(() => {
-    if (import.meta.client) {
-      return encodeURIComponent(window.location.href)
-    }
-    return ''
-  })
+  const currentPageURL = route.path
   return `https://airtable.com/${airtableFormID}?prefill_URL=${currentPageURL}&hide_URL=true`
 })
 
