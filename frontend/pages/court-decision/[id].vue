@@ -58,7 +58,8 @@ const {
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
   { key: 'Case Title', label: 'Case Title' },
-  { key: 'Date (GPT-o3-mini)', label: 'Date' },
+  { key: 'Date', label: 'Date' },
+  { key: 'Instance', label: 'Instance' },
   { key: 'Abstract', label: 'Abstract' },
   { key: 'Relevant Facts', label: 'Relevant Facts' },
   { key: 'Choice of Law Issue', label: 'Choice of Law Issue' },
