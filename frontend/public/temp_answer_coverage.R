@@ -25,7 +25,7 @@ jurisdictions <- jurisdictions %>%
   select(Alpha.3.code, Alpha.2.code) %>%
   rename(iso2 = Alpha.2.code,
          iso3 = Alpha.3.code) %>% 
-  distinct(iso2, .keep_all = T)
+  distinct(iso3, .keep_all = T)
 
 answers <- answers %>% 
   select(ID, Answer, Alpha.3.code..from.Jurisdiction.) %>% 
@@ -37,7 +37,7 @@ answers <- answers %>%
 
 # Process Data ----------------------------
 
-distinct_jurisdictions <- answers %>% distinct(iso2)
+distinct_jurisdictions <- answers %>% distinct(iso3)
 
 
 # Export ----------------------------

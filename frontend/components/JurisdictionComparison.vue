@@ -358,7 +358,7 @@ function updateRows(jurisdictionData, jurisdiction) {
 // Watch when the user changes the selected jurisdiction
 watch(selectedJurisdiction, (newJurisdiction) => {
   if (newJurisdiction) {
-    updateRouterQuery(newJurisdiction.value) // Fetch ISO2 and update query
+    updateRouterQuery(newJurisdiction.value) // Fetch ISO3 and update query
     updateComparison(newJurisdiction) // Fetch new comparison data
   }
 })
@@ -384,30 +384,30 @@ watch(
 async function updateRouterQuery(jurisdiction) {
   try {
     const response = await fetch(
-      `https://restcountries.com/v3.1/name/${jurisdiction}?fields=cca2`
+      `https://restcountries.com/v3.1/name/${jurisdiction}?fields=cca3`
     )
     const data = await response.json()
 
-    if (data && data[0] && data[0].cca2) {
-      const isoCode = data[0].cca2.toLowerCase() // Convert ISO2 code to lowercase
+    if (data && data[0] && data[0].cca3) {
+      const isoCode = data[0].cca3.toLowerCase() // Convert ISO3 code to lowercase
       router.replace({
         query: {
           ...router.currentRoute.value.query,
-          c: isoCode, // Update query with ISO2 code
+          c: isoCode, // Update query with ISO3 code
         },
       })
     } else {
-      console.error(`ISO2 code not found for jurisdiction: ${jurisdiction}`)
+      console.error(`ISO3 code not found for jurisdiction: ${jurisdiction}`)
     }
   } catch (error) {
-    console.error('Error fetching ISO2 code:', error)
+    console.error('Error fetching ISO3 code:', error)
   }
 }
 
 async function syncCompareJurisdiction(compare) {
-  const isoCode = compare.toUpperCase() // Ensure ISO2 code is uppercase
+  const isoCode = compare.toUpperCase() // Ensure ISO3 code is uppercase
   try {
-    // Fetch full name using ISO2 code
+    // Fetch full name using ISO3 code
     const response = await fetch(
       `https://restcountries.com/v3.1/alpha/${isoCode}?fields=name`
     )
@@ -424,7 +424,7 @@ async function syncCompareJurisdiction(compare) {
         console.warn(`Jurisdiction not found in dropdown for: ${fullName}`)
       }
     } else {
-      console.error(`Full name not found for ISO2 code: ${compare}`)
+      console.error(`Full name not found for ISO3 code: ${compare}`)
     }
   } catch (error) {
     console.error('Error syncing compare jurisdiction:', error)
