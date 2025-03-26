@@ -55,6 +55,7 @@ async function fetchLiterature(id: string) {
 const keyLabelPairs = [
   { key: 'Title', label: 'Title' },
   { key: 'Author', label: 'Author' },
+  { key: 'Editor', label: 'Editor' },
   { key: 'Publication Year', label: 'Year' },
   { key: 'Publication Title', label: 'Publication' },
 ]
