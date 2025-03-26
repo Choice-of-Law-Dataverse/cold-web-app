@@ -63,7 +63,7 @@
               <p
                 :class="[
                   props.valueClassMap[item.key] || 'text-gray-800',
-                  'text-sm leading-relaxed',
+                  'text-sm leading-relaxed whitespace-pre-line',
                 ]"
               >
                 {{ resultData?.[item.key] || 'N/A' }}

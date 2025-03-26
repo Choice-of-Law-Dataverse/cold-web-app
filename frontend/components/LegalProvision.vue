@@ -42,7 +42,7 @@
           </div>
         </div>
 
-        <p class="result-value-small">{{ content }}</p>
+        <p class="result-value-small whitespace-pre-line">{{ content }}</p>
       </div>
     </div>
   </div>
