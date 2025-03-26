@@ -144,6 +144,8 @@ const filteredRows = computed(() => {
   )
 })
 
+console.log('rows:', rows.value)
+
 // Reset filter button action
 const resetFilters = () => {
   selectedTheme.value = null
@@ -182,10 +184,8 @@ async function fetchData(url, payload) {
 }
 
 async function fetchFilteredTableData(filters) {
-  const tableName = props.isInternational ? 'HCCH Comparison' : 'Answers'
-
   const payload = {
-    table: tableName,
+    table: 'Answers',
     filters: filters,
   }
 
@@ -201,21 +201,15 @@ async function fetchFilteredTableData(filters) {
         body: JSON.stringify(payload),
       }
     )
+    console.log('response', response)
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`)
     }
 
     const data = await response.json()
-    const transformedData = props.isInternational
-      ? data.map((item) => ({
-          ...item,
-          Question: item['Adapted Question'],
-          Answer: item.Position,
-        }))
-      : data.map((item) => ({ ...item }))
 
-    return transformedData.map((item) => ({
+    return data.map((item) => ({
       ...item,
       ID: item.ID,
     }))
@@ -228,15 +222,13 @@ async function fetchFilteredTableData(filters) {
 async function fetchTableData(jurisdiction) {
   loading.value = true
   try {
-    const filters = props.isInternational
-      ? [] // no filter for international instruments
-      : [{ column: 'Name (from Jurisdiction)', value: jurisdiction }]
-
-    const data = await fetchFilteredTableData(filters)
+    const data = await fetchFilteredTableData([
+      { column: 'Jurisdictions', value: jurisdiction },
+    ])
 
     rows.value = data.sort(
       (a, b) =>
-        questionOrder.indexOf(a.Question) - questionOrder.indexOf(b.Question)
+        questionOrder.indexOf(a.Questions) - questionOrder.indexOf(b.Questions)
     )
   } finally {
     loading.value = false
@@ -319,7 +311,7 @@ async function updateComparison(jurisdiction) {
   loading.value = true
   try {
     const jurisdictionData = await fetchFilteredTableData([
-      { column: 'Name (from Jurisdiction)', value: jurisdiction.value },
+      { column: 'Jurisdictions', value: jurisdiction.value },
     ])
 
     updateColumns(jurisdiction)
