@@ -141,7 +141,6 @@ watch(legalInstrument, (newValue) => {
     formattedJurisdiction.value = [newValue['Instrument']]
     formattedTheme.value = [newValue['Title of the Provision']]
   }
-  console.log('newValue: ', newValue)
 })
 
 const slugify = (str) => {
@@ -269,7 +268,6 @@ async function fetchSecondaryInstrument(instrumentParam: string) {
     if (!response.ok) throw new Error('Failed to fetch second instrument')
 
     const result = await response.json()
-    console.log('Secondary fetch result:', result)
 
     if (Array.isArray(result) && result.length > 0) {
       secondaryInstrument.value = result[0] // Store the second instrument data

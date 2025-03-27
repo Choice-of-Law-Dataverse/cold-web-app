@@ -144,8 +144,6 @@ const filteredRows = computed(() => {
   )
 })
 
-console.log('rows:', rows.value)
-
 // Reset filter button action
 const resetFilters = () => {
   selectedTheme.value = null
@@ -158,10 +156,6 @@ const themeOptions = ref(themeOptionsData)
 // Desired order for the questions
 import questionOrderData from '../assets/questionOrder.json'
 const questionOrder = questionOrderData
-
-// function updateFilteredRows(newRows) {
-//   rows.value = newRows // Update rows in the parent
-// }
 
 // Function to toggle the state
 function toggleInfo() {
@@ -201,7 +195,6 @@ async function fetchFilteredTableData(filters) {
         body: JSON.stringify(payload),
       }
     )
-    console.log('response', response)
 
     if (!response.ok) {
       throw new Error(`HTTP error! Status: ${response.status}`)
@@ -270,11 +263,6 @@ async function fetchJurisdictions() {
     let jurisdictionNames = relevantJurisdictions
       .map((entry) => entry.Name)
       .filter(Boolean)
-
-    // Manually add "HCCH Principles" if not already in the list
-    // if (!jurisdictionNames.includes('HCCH Principles')) {
-    //   jurisdictionNames.push('HCCH Principles')
-    // }
 
     // Sort and format the list
     jurisdictionOptions.value = jurisdictionNames

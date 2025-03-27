@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <label class="block text-gray-700 text-sm mb-2">{{ label }}</label> -->
     <USelectMenu
       class="lg:w-60 cold-uselectmenu"
       placeholder="All"

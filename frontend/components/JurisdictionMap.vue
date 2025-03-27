@@ -126,14 +126,4 @@ const isDisclaimerVisible = ref(false)
 .select-menu-container .u-select-menu-dropdown {
   z-index: 1100; /* Higher than the container for the dropdown */
 }
-
-/* Hide inactive maps */
-/* .map-wrapper:not([v-show]) {
-  display: none;
-} */
-/* .select-menu-container { */
-/* position: relative; Ensure it's positioned relative to control stacking */
-/* z-index: 1000; High enough to appear above the map */
-/* margin-bottom: -40px; Adjust spacing between the menu and map */
-/* } */
 </style>

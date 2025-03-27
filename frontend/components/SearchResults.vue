@@ -167,9 +167,6 @@ const loadJurisdictions = async () => {
     const jurisdictionNames = relevantJurisdictions
       .map((entry) => entry.Name)
       .filter(Boolean)
-    // const instrumentNames = instrumentsData
-    //   .map((entry) => entry.Name)
-    //   .filter(Boolean)
 
     // Merge both lists, remove duplicates, and sort alphabetically
     const sortedJurisdictions = [

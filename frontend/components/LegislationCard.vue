@@ -10,16 +10,6 @@
           }}
         </div>
       </div>
-
-      <!-- Title in the 6th column -->
-      <!-- <div class="md:col-start-6 md:col-span-7">
-        <div class="label-key">{{ keyMap['Title (in English)'] }}</div>
-        <div :class="valueClassMap['Title (in English)'] || 'result-value'">
-          {{
-            processedResultData['Title (in English)'] || '[Missing Information]'
-          }}
-        </div>
-      </div> -->
     </div>
   </ResultCard>
 </template>

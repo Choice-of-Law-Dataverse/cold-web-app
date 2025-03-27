@@ -45,8 +45,6 @@ onMounted(async () => {
 ::v-deep(ol ol),
 ::v-deep(ol ol ol),
 ::v-deep(ol ol ol ol) {
-  /* margin-top: 24px !important; */
-  /* margin-bottom: 24px !important; */
 }
 
 /* Reset the counter for the top-level list */

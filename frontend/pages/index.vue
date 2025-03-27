@@ -87,13 +87,3 @@ import ConnectCard from '~/components/LandingPage/ConnectCard.vue'
 import { externalLinks } from '~/utils/externalLinks'
 const links = externalLinks
 </script>
-
-<style scoped>
-/* h1 {
-  margin-bottom: 12px;
-}
-
-h2 {
-  margin-bottom: 42px;
-} */
-</style>

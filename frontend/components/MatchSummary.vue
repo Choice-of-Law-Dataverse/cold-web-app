@@ -6,7 +6,6 @@
       class="flex items-center space-x-2"
     >
       <!-- Tooltip Wrapper -->
-      <!-- :text="`Count for status ${status}: ${count}`"  -->
       <UTooltip
         :text="getTooltipText(status, count)"
         :popper="{ arrow: true, placement: 'top' }"

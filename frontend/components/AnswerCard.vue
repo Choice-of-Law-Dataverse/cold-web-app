@@ -37,20 +37,6 @@
             <li>{{ resultData['More Information'] }}</li>
           </template>
         </ul>
-
-        <!-- <QuestionSourceList
-          :sources="
-            [
-              resultData['Legal provision articles'] ||
-                resultData['Legislation-ID'], // ||
-            ].filter(Boolean)
-          "
-          :fallbackData="resultData"
-          :valueClassMap="valueClassMap"
-          :noLinkList="[resultData['More Information']]"
-          :fetchPrimarySource="true"
-          :fetchOupChapter="true"
-        /> -->
       </div>
     </div>
   </ResultCard>
