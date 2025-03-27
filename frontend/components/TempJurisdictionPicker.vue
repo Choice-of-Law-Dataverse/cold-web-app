@@ -29,10 +29,7 @@ const config = useRuntimeConfig()
 // Fetch jurisdictions from the text file
 async function fetchJurisdictions() {
   try {
-    const jsonPayloads = [
-      { table: 'Jurisdictions', filters: [] },
-      //{ table: 'International Instruments', filters: [] },
-    ]
+    const jsonPayloads = [{ table: 'Jurisdictions', filters: [] }]
 
     // Fetch both tables concurrently
     const responses = await Promise.all(
@@ -76,33 +73,23 @@ async function fetchJurisdictions() {
 }
 
 // Navigate to country route
-const navigateToCountry = async (jurisdiction) => {
-  if (!jurisdiction) return
+const navigateToCountry = async (country) => {
+  if (country) {
+    try {
+      const response = await fetch(
+        `https://restcountries.com/v3.1/name/${country}?fields=cca3`
+      )
+      const data = await response.json()
 
-  try {
-    // Attempt to fetch country ISO code
-    const response = await fetch(
-      `https://restcountries.com/v3.1/name/${jurisdiction}?fields=cca2`
-    )
-    const data = await response.json()
-
-    if (Array.isArray(data) && data.length > 0 && data[0].cca2) {
-      // It's a country jurisdiction -> Use ISO2 code (lowercased)
-      const isoCode = data[0].cca2.toLowerCase()
-      router.push(`/jurisdiction/${isoCode}`)
-    } else {
-      // It's an International Instrument -> Format name (lowercased, spaces to hyphens)
-      const formattedInstrument = jurisdiction
-        .toLowerCase()
-        .replace(/\s+/g, '-')
-      router.push(`/jurisdiction/${formattedInstrument}`)
+      if (data && data[0] && data[0].cca3) {
+        const isoCode = data[0].cca3.toLowerCase() // Convert to lowercase
+        router.push(`/jurisdiction/${isoCode}`)
+      } else {
+        console.error(`ISO3 code not found for country: ${country}`)
+      }
+    } catch (error) {
+      console.error('Error fetching ISO3 code:', error)
     }
-  } catch (error) {
-    console.error(`Error processing jurisdiction: ${jurisdiction}`, error)
-
-    // Assume it's an International Instrument if the country API fails
-    const formattedInstrument = jurisdiction.toLowerCase().replace(/\s+/g, '-')
-    router.push(`/jurisdiction/${formattedInstrument}`)
   }
 }
 

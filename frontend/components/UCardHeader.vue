@@ -137,7 +137,6 @@ const adjustedSourceTable = computed(() => {
     case 'Answers':
       return 'Question'
     case 'Legal Instrument':
-    case 'International Legal Provisions':
       return 'Legal Instrument'
     case 'Literature':
       return 'Literature'
@@ -155,7 +154,6 @@ const labelColorClass = computed(() => {
     case 'Question':
       return 'label-question'
     case 'Legal Instrument':
-    case 'International Legal Provisions':
       return 'label-legal-instrument'
     case 'Literature':
       return 'label-literature'
@@ -166,23 +164,14 @@ const labelColorClass = computed(() => {
 
 const formattedTheme = computed(() => {
   const themes =
-    props.resultData['Title of the Provision'] ?? // New, renamed column
-    props.resultData.Themes ?? // Old column
-    props.resultData['International Legal Provisions'] // Fallback
+    props.resultData['Title of the Provision'] ?? props.resultData.Themes
 
   if (!themes || themes === 'None') {
-    return [] // Return an empty array to avoid rendering issues
+    return []
   }
+
   return [...new Set(themes.split(',').map((theme) => theme.trim()))]
 })
-
-const slugify = (text) =>
-  text
-    .normalize('NFD') // Normalize to decomposed form (e.g., "é" -> "é")
-    .replace(/[\u0300-\u036f]/g, '') // Remove diacritical marks
-    .toLowerCase()
-    .replace(/\s+/g, '-') // Replace spaces with "-"
-    .replace(/[^a-z0-9\-]/g, '') // Remove non-alphanumeric characters except "-"
 
 // Methods
 function getLink() {
@@ -196,8 +185,6 @@ function getLink() {
       return `/legal-instrument/${props.resultData.id}`
     case 'Literature':
       return `/literature/${props.resultData.id}`
-    case 'International Legal Provisions':
-      return `/international-legal-instrument/${slugify(props.resultData.Instrument)}/${slugify(props.resultData['Title of the Provision'])}`
     default:
       return '#'
   }

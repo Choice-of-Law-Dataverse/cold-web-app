@@ -77,7 +77,7 @@ import LegislationCard from '@/components/LegislationCard.vue'
 import LiteratureCard from '@/components/LiteratureCard.vue'
 import CourtDecisionCard from '@/components/CourtDecisionCard.vue'
 import AnswerCard from '@/components/AnswerCard.vue'
-import IntLegislationCard from '@/components/IntLegislationCard.vue'
+
 import SearchFilters from './SearchFilters.vue'
 
 const getResultComponent = (source_table) => {
@@ -90,8 +90,6 @@ const getResultComponent = (source_table) => {
       return AnswerCard
     case 'Literature':
       return LiteratureCard
-    case 'International Legal Provisions':
-      return IntLegislationCard
     default:
       return ResultCard
   }
@@ -132,10 +130,7 @@ const loadJurisdictions = async () => {
   try {
     const config = useRuntimeConfig() // Ensure config is accessible
 
-    const jsonPayloads = [
-      { table: 'Jurisdictions', filters: [] },
-      //{ table: 'International Instruments', filters: [] },
-    ]
+    const jsonPayloads = [{ table: 'Jurisdictions', filters: [] }]
 
     // Fetch both tables concurrently
     const responses = await Promise.all(

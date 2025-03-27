@@ -41,9 +41,7 @@
 
           <template #search-links>
             <span class="label">related data</span>
-            <!-- Hide Court Cases button on International Instruments pages -->
             <NuxtLink
-              v-if="jurisdictionData?.['Jurisdictional Differentiator']"
               :to="{
                 name: 'search',
                 query: {
@@ -215,61 +213,28 @@ async function fetchJurisdictionData(identifier: string) {
 const fetchSpecialists = async (jurisdictionName) => {
   if (!jurisdictionName) return
 
-  // If there's no "Jurisdictional Differentiator", assume it's an International Instrument.
-  if (!jurisdictionData.value?.['Jurisdictional Differentiator']) {
-    try {
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/full_table`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            table: 'International Instruments',
-            filters: [{ column: 'Name', value: jurisdictionName }],
-          }),
-        }
-      )
-      if (!response.ok)
-        throw new Error('Failed to fetch international instrument specialists')
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          table: 'Specialists',
+          filters: [{ column: 'Jurisdiction', value: jurisdictionName }],
+        }),
+      }
+    )
 
-      const data = await response.json()
-      // Convert the Specialists string into an array of one object with key "Specialist"
-      specialists.value = data[0]?.Specialists
-        ? [{ Specialist: data[0].Specialists }]
-        : []
-    } catch (error) {
-      console.error(
-        'Error fetching international instrument specialists:',
-        error
-      )
-      specialists.value = []
-    }
-  } else {
-    // Otherwise, fetch from the Specialists table as before.
-    try {
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/full_table`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            table: 'Specialists',
-            filters: [{ column: 'Jurisdiction', value: jurisdictionName }],
-          }),
-        }
-      )
-      if (!response.ok) throw new Error('Failed to fetch specialists')
-      specialists.value = await response.json()
-    } catch (error) {
-      console.error('Error fetching specialists:', error)
-      specialists.value = []
-    }
+    if (!response.ok) throw new Error('Failed to fetch specialists')
+
+    specialists.value = await response.json()
+  } catch (error) {
+    console.error('Error fetching specialists:', error)
+    specialists.value = []
   }
 }
 
@@ -277,14 +242,7 @@ const fetchSpecialists = async (jurisdictionName) => {
 watch(
   () => jurisdictionData.value?.Name,
   (newName) => {
-    // Only fetch specialists if the name is valid and we're not dealing with an international instrument.
-    if (
-      newName &&
-      newName !== 'N/A' &&
-      !jurisdictionData.value?.isInternational
-    ) {
-      fetchSpecialists(newName)
-    }
+    if (newName) fetchSpecialists(newName)
   }
 )
 

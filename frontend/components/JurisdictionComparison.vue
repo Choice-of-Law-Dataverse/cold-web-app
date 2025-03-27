@@ -108,10 +108,6 @@ const props = defineProps({
     type: String,
     default: null,
   },
-  isInternational: {
-    type: Boolean,
-    default: false,
-  },
   cardType: {
     type: String,
     default: '', // use an empty string or a proper default value
