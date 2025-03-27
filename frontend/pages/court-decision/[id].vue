@@ -9,6 +9,11 @@
           :valueClassMap="valueClassMap"
           formattedSourceTable="Court Decisions"
         >
+          <template #publication-date-iso="{ value }">
+            <p class="result-value-small">
+              {{ formatDate(value) || 'N/A' }}
+            </p>
+          </template>
           <template #related-literature>
             <RelatedLiterature
               :themes="courtDecision?.Themes || ''"
@@ -58,7 +63,7 @@ const {
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
   { key: 'Case Title', label: 'Case Title' },
-  { key: 'Date', label: 'Date' },
+  { key: 'Publication Date ISO', label: 'Date' },
   { key: 'Instance', label: 'Instance' },
   { key: 'Abstract', label: 'Abstract' },
   { key: 'Relevant Facts', label: 'Relevant Facts' },
