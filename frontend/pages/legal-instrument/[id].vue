@@ -76,14 +76,24 @@ async function fetchLegalInstrument(id: string) {
 
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = computed(() => {
-  const apiData = legalInstrument.value || {} // Ensure we have an object to check keys against
+  const apiData = legalInstrument.value || {}
+
+  const hasPublicationDate = apiData['Publication Date'] !== undefined
+  const hasEntryIntoForce = apiData['Entry Into Force'] !== undefined
 
   return [
     { key: 'Title (in English)', label: 'Name' },
     { key: 'Official Title', label: 'Official Title' },
-    { key: 'Date', label: 'Date' },
-    { key: 'Publication Date', label: 'Publication Date' },
-    { key: 'Entry Into Force', label: 'Entry Into Force' },
+    // Only include 'Date' if neither of the others exist
+    !hasPublicationDate && !hasEntryIntoForce
+      ? { key: 'Date', label: 'Date' }
+      : null,
+    hasPublicationDate
+      ? { key: 'Publication Date', label: 'Publication Date' }
+      : null,
+    hasEntryIntoForce
+      ? { key: 'Entry Into Force', label: 'Entry Into Force' }
+      : null,
     { key: 'Abbreviation', label: 'Abbreviation' },
     apiData['Compatible With the HCCH Principles?']
       ? {
@@ -93,7 +103,7 @@ const keyLabelPairs = computed(() => {
       : null,
     { key: 'Source (URL)', label: 'Official Source' },
     { key: 'Domestic Legal Provisions', label: '' },
-  ].filter((item) => item && apiData[item.key] !== undefined) // Filter out missing keys
+  ].filter((item) => item && apiData[item.key] !== undefined)
 })
 
 const valueClassMap = {
