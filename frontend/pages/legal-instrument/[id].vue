@@ -28,6 +28,17 @@
               </div>
             </div>
           </template>
+          <template #entry-into-force="{ value }">
+            <p class="result-value-small">
+              {{ formatDate(value) || 'N/A' }}
+            </p>
+          </template>
+
+          <template #publication-date="{ value }">
+            <p class="result-value-small">
+              {{ formatDate(value) || 'N/A' }}
+            </p>
+          </template>
         </DetailDisplay>
       </div>
     </div>
