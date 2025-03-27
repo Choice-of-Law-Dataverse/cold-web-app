@@ -91,7 +91,6 @@ const keyLabelPairs = computed(() => {
           label: 'Compatible With the HCCH Principles?',
         }
       : null,
-    { key: 'Date ', label: 'Date' },
     { key: 'Source (URL)', label: 'Official Source' },
     { key: 'Domestic Legal Provisions', label: '' },
   ].filter((item) => item && apiData[item.key] !== undefined) // Filter out missing keys
@@ -104,7 +103,6 @@ const valueClassMap = {
   Date: 'result-value-small',
   'Publication Date': 'result-value-small',
   'Entry Into Force': 'result-value-small',
-  Date: 'result-value-small',
   'Source (URL)': 'result-value-small',
 }
 
