@@ -15,7 +15,6 @@
 </template>
 
 <script setup>
-// Imports
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import JurisdictionSelectMenu from './JurisdictionSelectMenu.vue'

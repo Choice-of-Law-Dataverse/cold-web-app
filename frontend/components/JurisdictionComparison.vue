@@ -475,7 +475,6 @@ function computeMatchStatus(answer1, answer2) {
 }
 
 .filter-wrapper {
-  /* margin-left: 32px; */
   margin-bottom: 6px;
   display: flex; /* Group the dropdown and reset button */
   align-items: center;

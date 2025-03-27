@@ -124,7 +124,6 @@ const formattedJurisdiction = computed(() => {
 })
 
 // Display `cardType` if available, or use `resultData.source_table`
-// this works!
 const formattedSourceTable = computed(() => {
   return props.cardType || props.resultData?.source_table || ''
 })

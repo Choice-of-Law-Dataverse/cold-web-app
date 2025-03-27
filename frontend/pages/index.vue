@@ -83,7 +83,6 @@ import JurisdictionMap from '~/components/JurisdictionMap.vue'
 import CountrySelectMenu from '~/components/TempJurisdictionPicker.vue'
 import PlotCourtDecisionsJurisdiction from '~/components/PlotCourtDecisionsJurisdiction.vue'
 import ConnectCard from '~/components/LandingPage/ConnectCard.vue'
-
 import { externalLinks } from '~/utils/externalLinks'
 const links = externalLinks
 </script>
