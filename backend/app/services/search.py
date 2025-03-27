@@ -156,17 +156,17 @@ class SearchService:
 
             UNION ALL
 
-            -- HCCH Comparison
+            -- HCCH Answers
             SELECT 
-                'HCCH Comparison' AS source_table,
+                'HCCH Answers' AS source_table,
                 "ID"::text AS id,
                 1.0 AS rank
-            FROM "HCCH Comparison" AS hc, params
+            FROM "HCCH Answers" AS hc, params
             WHERE 
-                (array_length(params.tables, 1) IS NULL OR 'HCCH Comparison' = ANY(params.tables))
+                (array_length(params.tables, 1) IS NULL OR 'HCCH Answers' = ANY(params.tables))
                 AND (
                     array_length(params.jurisdictions, 1) IS NULL 
-                    --OR "Name (from Jurisdiction)" = ANY(params.jurisdictions)
+                    OR "International Instruments" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
@@ -219,38 +219,33 @@ class SearchService:
                     OR di."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
-                    array_length(params.themes, 1) IS NULL 
-                    OR EXISTS (
-                        SELECT 1
-                        FROM unnest(params.themes) AS theme_filter
-                        WHERE di."Themes Name" ILIKE '%' || theme_filter || '%'
-                    )
+                    array_length(params.themes, 1) IS NULL
                 )
 
             UNION ALL
 
             -- International Legal Provisions
-            SELECT 
-                'International Legal Provisions' AS source_table,
-                "ID" AS id,
-                1.0 AS rank
-            FROM "International Legal Provisions" AS ilp, params
-            WHERE 
-                (array_length(params.tables, 1) IS NULL OR 'International Legal Provisions' = ANY(params.tables))
-                AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
-                    OR ilp."Instrument" = ANY(params.jurisdictions)
-                )
-                AND (
-                    array_length(params.themes, 1) IS NULL 
+            --SELECT 
+                --'International Legal Provisions' AS source_table,
+                --"ID" AS id,
+                --1.0 AS rank
+            --FROM "International Legal Provisions" AS ilp, params
+            --WHERE 
+                --(array_length(params.tables, 1) IS NULL OR 'International Legal Provisions' = ANY(params.tables))
+                --AND (
+                    --array_length(params.jurisdictions, 1) IS NULL 
+                    --OR ilp."Instrument" = ANY(params.jurisdictions)
+                --)
+                --AND (
+                    --array_length(params.themes, 1) IS NULL 
                     --OR EXISTS (
                         --SELECT 1
                         --FROM unnest(params.themes) AS theme_filter
                         --WHERE "Themes Name" ILIKE '%' || theme_filter || '%'
                     --)
-                )
+                --)
 
-            UNION ALL
+            --UNION ALL
 
             -- Literature
             SELECT 
@@ -322,18 +317,18 @@ class SearchService:
 
             UNION ALL
 
-            -- Search in "HCCH Comparison" table
+            -- Search in "HCCH Answers" table
             SELECT 
-                'HCCH Comparison' AS source_table,
+                'HCCH Answers' AS source_table,
                 "ID"::text AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
                 ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
-            FROM "HCCH Comparison" AS hc, params
+            FROM "HCCH Answers" AS hc, params
             WHERE 
-                (array_length(params.tables, 1) IS NULL OR 'HCCH Comparison' = ANY(params.tables))
+                (array_length(params.tables, 1) IS NULL OR 'HCCH Answers' = ANY(params.tables))
                 AND (
                     array_length(params.jurisdictions, 1) IS NULL 
-                    --OR "Name (from Jurisdiction)" = ANY(params.jurisdictions)
+                    OR "International Instruments" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
@@ -396,12 +391,7 @@ class SearchService:
                     OR di."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
-                    array_length(params.themes, 1) IS NULL 
-                    OR EXISTS (
-                        SELECT 1
-                        FROM unnest(params.themes) AS theme_filter
-                        WHERE di."Themes Name" ILIKE '%' || theme_filter || '%'
-                    )
+                    array_length(params.themes, 1) IS NULL
                 )
                 AND (
                     search @@ websearch_to_tsquery('english', '{search_string}')
@@ -411,32 +401,32 @@ class SearchService:
             UNION ALL
 
             -- Search in "International Legal Provisions" table
-            SELECT 
-                'International Legal Provisions' AS source_table,
-                "ID" AS id,
-                ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
-            FROM "International Legal Provisions" AS ilp, params
-            WHERE 
-                (array_length(params.tables, 1) IS NULL OR 'International Legal Provisions' = ANY(params.tables))
-                AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
-                    OR ilp."Instrument" = ANY(params.jurisdictions)
-                )
-                AND (
-                    array_length(params.themes, 1) IS NULL 
+            --SELECT 
+                --'International Legal Provisions' AS source_table,
+                --"ID" AS id,
+                --ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+                --ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+            --FROM "International Legal Provisions" AS ilp, params
+            --WHERE 
+                --(array_length(params.tables, 1) IS NULL OR 'International Legal Provisions' = ANY(params.tables))
+                --AND (
+                    --array_length(params.jurisdictions, 1) IS NULL 
+                    --OR ilp."Instrument" = ANY(params.jurisdictions)
+                --)
+                --AND (
+                    --array_length(params.themes, 1) IS NULL 
                     --OR EXISTS (
                         --SELECT 1
                         --FROM unnest(params.themes) AS theme_filter
                         --WHERE "Themes Name" ILIKE '%' || theme_filter || '%'
                     --)
-                )
-                AND (
-                    search @@ websearch_to_tsquery('english', '{search_string}')
-                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
-                )
+                --)
+                --AND (
+                    --search @@ websearch_to_tsquery('english', '{search_string}')
+                    --OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                --)
 
-            UNION ALL
+            --UNION ALL
 
             -- Search in "Literature" table
             SELECT 
