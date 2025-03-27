@@ -147,7 +147,6 @@ async function fetchJurisdiction(iso3: string) {
       'Jurisdictional Differentiator':
         data?.['Jurisdictional Differentiator'] || 'N/A',
     }
-    console.log(data)
 
     // If "Literature" exists, fetch its title; otherwise, set a default value
     if (data?.Literature) {

@@ -147,14 +147,6 @@ watchEffect(() => {
       jurisdictionCode.value
     )
   }
-  // console.log('Page:', route.path)
-  // console.log('jurisdictionCode:', jurisdictionCode.value)
-  // console.log('covered:', coveredJurisdictions.value)
-  // console.log('shouldShowBanner?', shouldShowBanner.value)
-  console.log('resultData', props.resultData)
-  // console.log('jurisdictionCode.value', jurisdictionCode.value)
-  console.log('jurisdictionCode:', jurisdictionCode.value)
-  console.log('shouldShowBanner:', shouldShowBanner.value)
 })
 </script>
 
