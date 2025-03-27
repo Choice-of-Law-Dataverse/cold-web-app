@@ -46,7 +46,7 @@
                     valueClassMap['Court Decisions ID'] || 'result-value-small'
                   "
                 >
-                  <CourtCaseLink :caseId="caseId" />
+                  <CourtDecisionLink :caseId="caseId" />
                 </li>
               </ul>
             </div>
@@ -69,7 +69,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
-import CourtCaseLink from '~/components/CourtCaseLink.vue'
+import CourtDecisionLink from '~/components/CourtDecisionLink.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const answerData = ref(null) // Store fetched court decision data

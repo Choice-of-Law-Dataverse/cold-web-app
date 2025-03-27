@@ -82,7 +82,7 @@
       <hr style="margin-top: 8px" />
 
       <!-- Table Always Visible -->
-      <ComparisonTable
+      <JurisdictionComparisonTable
         :rows="filteredRows"
         :columns="columns"
         :computeMatchStatus="computeMatchStatus"
@@ -96,7 +96,7 @@
 import { ref, watch, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import MatchSummary from './MatchSummary.vue'
-import ComparisonTable from './ComparisonTable.vue'
+import JurisdictionComparisonTable from './JurisdictionComparisonTable.vue'
 import JurisdictionSelectMenu from './JurisdictionSelectMenu.vue'
 
 const props = defineProps({
