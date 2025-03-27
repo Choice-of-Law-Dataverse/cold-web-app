@@ -99,23 +99,23 @@
   </main>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute() // Access the route to get the ID param
 const jurisdictionData = ref(null) // Store fetched jurisdiction data
 const loading = ref(true) // Track loading state
-const literatureTitle = ref<string | null>(null)
+const literatureTitle = ref(null)
 const specialists = ref([])
 
 // Extract `c` query parameter
-const compareJurisdiction = ref((route.query.c as string) || null)
+const compareJurisdiction = ref(route.query.c || null)
 
 const config = useRuntimeConfig()
 
 // Fetch the jurisdiction details
-async function fetchJurisdiction(iso3: string) {
+async function fetchJurisdiction(iso3) {
   const jsonPayload = {
     table: 'Jurisdictions',
     //filters: [{ column: 'Alpha-3 Code', value: iso3 }],
@@ -165,7 +165,7 @@ async function fetchJurisdiction(iso3: string) {
   }
 }
 
-async function fetchLiteratureTitle(ids: string) {
+async function fetchLiteratureTitle(ids) {
   if (!ids) {
     literatureTitle.value = ''
     return
@@ -204,7 +204,7 @@ async function fetchLiteratureTitle(ids: string) {
   }
 }
 
-async function fetchJurisdictionData(identifier: string) {
+async function fetchJurisdictionData(identifier) {
   // Attempt to fetch as a domestic jurisdiction first
   await fetchJurisdiction(identifier)
 }
@@ -270,9 +270,7 @@ const valueClassMap = {
 
 // Fetch jurisdiction data on component mount
 onMounted(() => {
-  const identifier = (route.params.id as string)
-    .toLowerCase()
-    .replace(/-/g, ' ')
+  const identifier = route.params.id.toLowerCase().replace(/-/g, ' ')
   fetchJurisdictionData(identifier)
 })
 
@@ -280,7 +278,7 @@ onMounted(() => {
 watch(
   () => route.query.c,
   (newCompare) => {
-    compareJurisdiction.value = (newCompare as string) || null
+    compareJurisdiction.value = newCompare || null
   }
 )
 </script>

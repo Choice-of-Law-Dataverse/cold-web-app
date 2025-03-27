@@ -48,7 +48,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted, computed, nextTick } from 'vue'
 
 // Props
@@ -68,17 +68,17 @@ const props = defineProps({
 })
 
 // Reactive state for title and content
-const title = ref<string | null>(null)
-const content = ref<string | null>(null)
+const title = ref(null)
+const content = ref(null)
 const loading = ref(true)
-const error = ref<string | null>(null)
+const error = ref(null)
 
 const config = useRuntimeConfig()
 
 const hasEnglishTranslation = ref(false)
 const emit = defineEmits(['update:hasEnglishTranslation'])
 const showEnglish = ref(true)
-const provisionData = ref<Record<string, string> | null>(null) // Store provision details
+const provisionData = ref(null) // Store provision details
 
 // Compute the final class
 const customClass = computed(() => props.class)

@@ -99,7 +99,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed, watchEffect } from 'vue'
 
 const config = useRuntimeConfig()
@@ -136,7 +136,7 @@ const literatureTitles = computed(() => {
 })
 
 // Reactive variables
-const literatureList = ref<{ id: string; title: string }[]>([])
+const literatureList = ref([])
 const totalMatches = ref(0)
 const loading = ref(true)
 const showAll = ref(false)
@@ -175,7 +175,7 @@ const isLoading = computed(() => {
 })
 
 // Function to fetch related literature
-async function fetchRelatedLiterature(themes: string) {
+async function fetchRelatedLiterature(themes) {
   if (!themes) return
 
   const jsonPayload = {
@@ -198,7 +198,7 @@ async function fetchRelatedLiterature(themes: string) {
     if (!response.ok) throw new Error('Failed to fetch related literature')
 
     const data = await response.json()
-    literatureList.value = Object.values(data.results).map((item: any) => ({
+    literatureList.value = Object.values(data.results).map((item) => ({
       title: item.Title,
       id: item.id,
     }))

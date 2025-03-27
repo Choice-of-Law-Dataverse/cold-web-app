@@ -65,7 +65,7 @@
   </main>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
@@ -77,7 +77,7 @@ const loading = ref(true) // Track loading state
 
 const config = useRuntimeConfig()
 
-async function fetchAnswer(id: string) {
+async function fetchAnswer(id) {
   const jsonPayload = {
     table: 'Answers',
     id: id,
@@ -121,7 +121,6 @@ const valueClassMap = {
   Answer: 'result-value-large',
   'Domestic Legal Provisions': 'result-value-small',
   'Court Decisions ID': 'result-value-small',
-
 }
 
 // Preprocess data to handle custom rendering cases
@@ -154,7 +153,7 @@ const filteredKeyLabelPairs = computed(() => {
 })
 
 onMounted(() => {
-  const id = route.params.id as string
+  const id = route.params.id
   fetchAnswer(id).then(() => {
     if (answerData.value?.Themes) {
     }

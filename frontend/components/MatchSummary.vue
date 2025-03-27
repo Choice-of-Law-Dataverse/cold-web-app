@@ -68,7 +68,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 defineProps({
   counts: {
     type: Object,
@@ -77,7 +77,7 @@ defineProps({
 })
 
 // Function to return tooltip text based on status and count
-function getTooltipText(status: string, count: number): string {
+function getTooltipText(status, count) {
   switch (status) {
     case 'green':
       return `Positive Match`

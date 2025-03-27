@@ -21,14 +21,14 @@
   </main>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const config = useRuntimeConfig()
 
-const id = route.params.id as string
+const id = route.params.id
 
 // Fetch court decision using useAsyncData (SSR-compatible)
 const {
@@ -73,8 +73,7 @@ const keyLabelPairs = [
 ]
 
 const computedKeyLabelPairs = computed(() => {
-  const data: Record<string, any> = courtDecision.value || {}
-
+  const data = courtDecision.value || {}
   return keyLabelPairs.map((pair) => ({
     ...pair,
     value:
@@ -85,7 +84,7 @@ const computedKeyLabelPairs = computed(() => {
 })
 
 const modifiedCourtDecision = computed(() => {
-  const data: Record<string, any> = courtDecision.value || {}
+  const data = courtDecision.value || {}
   return {
     ...data,
     'Case Title':
