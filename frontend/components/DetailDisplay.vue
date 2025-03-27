@@ -1,13 +1,14 @@
 <template>
   <BackButton />
-  <!-- Do not display NotificationBanner on International Instrument pages by checking if the page contains a Jurisdictional Differentiator, which International Instruments do not. -->
+
   <NotificationBanner
     v-if="
       shouldShowBanner &&
-      resultData?.Name &&
-      resultData?.['Jurisdictional Differentiator']
+      (props.resultData?.Name || props.resultData?.['Jurisdictions'])
     "
-    :jurisdictionName="resultData.Name"
+    :jurisdictionName="
+      props.resultData?.Name || props.resultData?.['Jurisdictions']
+    "
   />
 
   <UCard class="cold-ucard">
@@ -63,7 +64,7 @@
               <p
                 :class="[
                   props.valueClassMap[item.key] || 'text-gray-800',
-                  'text-sm leading-relaxed',
+                  'text-sm leading-relaxed whitespace-pre-line',
                 ]"
               >
                 {{ resultData?.[item.key] || 'N/A' }}
@@ -100,27 +101,51 @@ const props = defineProps({
 
 const route = useRoute()
 const isJurisdictionPage = route.path.startsWith('/jurisdiction/')
-const jurisdictionCode = route.params.id?.toLowerCase() // Extract ISO2 code
+const isQuestionPage = route.path.startsWith('/question/')
+const jurisdictionCode = ref(null)
 const coveredJurisdictions = ref([])
 const shouldShowBanner = ref(false)
+
+watch(
+  () => props.resultData,
+  (newData) => {
+    if (!newData) return
+
+    const rawJurisdiction = isJurisdictionPage
+      ? route.params.id
+      : isQuestionPage
+        ? newData['Jurisdictions Alpha-3 code'] || newData.JurisdictionCode
+        : null
+
+    jurisdictionCode.value =
+      typeof rawJurisdiction === 'string' ? rawJurisdiction.toLowerCase() : null
+  },
+  { immediate: true }
+)
 
 onMounted(async () => {
   try {
     const response = await fetch('/temp_answer_coverage.txt')
     const text = await response.text()
 
-    // Convert the text file into an array of ISO2 codes
     coveredJurisdictions.value = text
       .split('\n')
       .map((code) => code.trim().toLowerCase())
-
-    // Show banner only if jurisdictionCode is NOT in the covered list
-    shouldShowBanner.value =
-      isJurisdictionPage &&
-      jurisdictionCode &&
-      !coveredJurisdictions.value.includes(jurisdictionCode)
   } catch (error) {
     console.error('Failed to fetch covered jurisdictions:', error)
+  }
+})
+
+// Reactively update banner display once everything is ready
+watchEffect(() => {
+  if (
+    (isJurisdictionPage || isQuestionPage) &&
+    jurisdictionCode.value &&
+    coveredJurisdictions.value.length > 0
+  ) {
+    shouldShowBanner.value = !coveredJurisdictions.value.includes(
+      jurisdictionCode.value
+    )
   }
 })
 </script>
