@@ -81,6 +81,7 @@ const keyLabelPairs = computed(() => {
   return [
     { key: 'Title (in English)', label: 'Name' },
     { key: 'Official Title', label: 'Official Title' },
+    { key: 'Date', label: 'Date' },
     { key: 'Abbreviation', label: 'Abbreviation' },
     apiData['Compatible With the HCCH Principles?']
       ? {
