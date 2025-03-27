@@ -85,13 +85,13 @@ const navigateToCountry = async (jurisdiction) => {
   try {
     // Attempt to fetch country ISO code
     const response = await fetch(
-      `https://restcountries.com/v3.1/name/${jurisdiction}?fields=cca2`
+      `https://restcountries.com/v3.1/name/${jurisdiction}?fields=cca3`
     )
     const data = await response.json()
 
-    if (Array.isArray(data) && data.length > 0 && data[0].cca2) {
+    if (Array.isArray(data) && data.length > 0 && data[0].cca3) {
       // It's a country jurisdiction -> Use ISO2 code (lowercased)
-      const isoCode = data[0].cca2.toLowerCase()
+      const isoCode = data[0].cca3.toLowerCase()
       router.push(`/jurisdiction/${isoCode}`)
     } else {
       // It's an International Instrument -> Format name (lowercased, spaces to hyphens)
