@@ -63,9 +63,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
-//import { defineProps } from 'vue'
-
+<script setup>
 defineProps({
   value: {
     type: String,

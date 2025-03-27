@@ -14,7 +14,7 @@
   </main>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
@@ -25,7 +25,7 @@ const loading = ref(true) // Track loading state
 
 const config = useRuntimeConfig()
 
-async function fetchLiterature(id: string) {
+async function fetchLiterature(id) {
   const jsonPayload = {
     table: 'Literature',
     id: id,
@@ -68,7 +68,7 @@ const valueClassMap = {
 }
 
 onMounted(() => {
-  const id = route.params.id as string // Get ID from the route
+  const id = route.params.id // Get ID from the route
   fetchLiterature(id)
 })
 </script>

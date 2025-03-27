@@ -45,7 +45,7 @@
   </main>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/DetailDisplay.vue'
@@ -59,7 +59,7 @@ const hasEnglishTranslation = ref(false)
 
 const config = useRuntimeConfig()
 
-async function fetchLegalInstrument(id: string) {
+async function fetchLegalInstrument(id) {
   const jsonPayload = {
     table: 'Domestic Instruments',
     id: id,
@@ -144,7 +144,7 @@ const processedLegalInstrument = computed(() => {
 })
 
 onMounted(async () => {
-  const id = route.params.id as string // Get ID from the route
+  const id = route.params.id // Get ID from the route
   await fetchLegalInstrument(id) // Wait for the legal instrument data to load
 
   await nextTick() // Ensure the DOM updates with the rendered content

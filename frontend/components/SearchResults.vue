@@ -69,7 +69,7 @@
   </main>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed, ref, watch } from 'vue'
 
 import ResultCard from '@/components/ResultCard.vue'

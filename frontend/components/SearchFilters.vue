@@ -12,10 +12,10 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 defineProps({
   options: {
-    type: Array as () => string[],
+    type: Array,
     required: true,
   },
   modelValue: {
