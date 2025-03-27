@@ -82,6 +82,8 @@ const keyLabelPairs = computed(() => {
     { key: 'Title (in English)', label: 'Name' },
     { key: 'Official Title', label: 'Official Title' },
     { key: 'Date', label: 'Date' },
+    { key: 'Publication Date', label: 'Publication Date' },
+    { key: 'Entry Into Force', label: 'Entry Into Force' },
     { key: 'Abbreviation', label: 'Abbreviation' },
     apiData['Compatible With the HCCH Principles?']
       ? {
@@ -99,6 +101,7 @@ const valueClassMap = {
   Abbreviation: 'result-value-small',
   'Title (in English)': 'result-value-medium',
   'Compatible With the HCCH Principles?': 'result-value-medium',
+  Date: 'result-value-small',
   'Publication Date': 'result-value-small',
   'Entry Into Force': 'result-value-small',
   Date: 'result-value-small',
