@@ -81,8 +81,9 @@
 <script setup>
 import { useRoute } from 'vue-router'
 
-import BackButton from '~/components/BackButton.vue'
-import UCardHeader from '~/components/UCardHeader.vue'
+import BackButton from '~/components/ui/BackButton.vue'
+import UCardHeader from '~/components/ui/BaseCardHeader.vue'
+import NotificationBanner from '~/components/ui/NotificationBanner.vue'
 
 // Props for reusability across pages
 const props = defineProps({

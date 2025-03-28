@@ -17,7 +17,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import DetailDisplay from '~/components/DetailDisplay.vue'
+import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const literature = ref(null) // Store fetched data

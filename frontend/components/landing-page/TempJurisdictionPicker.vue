@@ -17,7 +17,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
-import JurisdictionSelectMenu from '../JurisdictionSelectMenu.vue'
+import JurisdictionSelectMenu from '../jurisdiction-comparison/JurisdictionSelectMenu.vue'
 import { useRuntimeConfig } from '#app' // Import Nuxt's runtime config
 
 // Reactive states

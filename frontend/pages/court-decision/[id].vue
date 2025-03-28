@@ -23,7 +23,7 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
-import DetailDisplay from '~/components/DetailDisplay.vue'
+import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const config = useRuntimeConfig()
