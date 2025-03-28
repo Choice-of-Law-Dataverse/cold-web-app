@@ -9,16 +9,13 @@
         class="mx-auto min-h-[50vh] flex flex-col justify-center items-center text-center"
         style="max-width: var(--container-width); width: 100%"
       >
-        <h2 class="text-3xl font-bold mb-4">{{ error.statusCode }} Error</h2>
-        <p class="text-lg text-gray-600">{{ error.message }}</p>
+        <h2>{{ error.statusCode }} Error</h2>
+        <p>{{ error.message }}</p>
 
-        <NuxtLink to="/" class="mt-6 text-blue-500 hover:underline">
-          Back to home
-        </NuxtLink>
+        <NuxtLink to="/" class="mt-6"> Back to Home </NuxtLink>
       </div>
     </main>
 
-    <!-- Footer -->
     <Footer />
   </div>
 </template>
