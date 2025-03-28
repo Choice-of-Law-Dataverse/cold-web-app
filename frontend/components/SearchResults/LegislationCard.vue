@@ -15,7 +15,8 @@
 </template>
 
 <script setup>
-// Props
+import ResultCard from './ResultCard.vue'
+
 const props = defineProps({
   resultData: {
     type: Object,

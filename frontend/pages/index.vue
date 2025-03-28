@@ -78,7 +78,7 @@
 </template>
 
 <script setup>
-import PopularSearches from '~/components/PopularSearches.vue'
+import PopularSearches from '~/components/LandingPage/PopularSearches.vue'
 import JurisdictionMap from '~/components/LandingPage/JurisdictionMap.vue'
 import CountrySelectMenu from '~/components/LandingPage/TempJurisdictionPicker.vue'
 import PlotCourtDecisionsJurisdiction from '~/components/LandingPage/PlotCourtDecisionsJurisdiction.vue'

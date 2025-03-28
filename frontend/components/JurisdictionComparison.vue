@@ -74,7 +74,7 @@
             v-if="selectedJurisdiction"
             class="match-summary flex justify-center sm:justify-start w-full sm:w-auto"
           >
-            <MatchSummary :counts="matchCounts" />
+            <JurisdictionComparisonMatchSummary :counts="matchCounts" />
           </div>
         </div>
       </div>
@@ -95,7 +95,7 @@
 <script setup>
 import { ref, watch, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import MatchSummary from './MatchSummary.vue'
+import JurisdictionComparisonMatchSummary from './JurisdictionComparisonMatchSummary.vue'
 import JurisdictionComparisonTable from './JurisdictionComparisonTable.vue'
 import JurisdictionSelectMenu from './JurisdictionSelectMenu.vue'
 

@@ -13,7 +13,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import SearchResults from '../components/SearchResults.vue' // Adjust path if needed
+import SearchResults from './components/SearchResults/SearchResults.vue'
 
 // Block a page from being indexed (https://nuxtseo.com/learn/controlling-crawlers#quick-implementation-guide)
 useSeoMeta({

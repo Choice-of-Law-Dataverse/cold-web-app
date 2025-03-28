@@ -72,13 +72,13 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 
-import ResultCard from '@/components/ResultCard.vue'
-import LegislationCard from '@/components/LegislationCard.vue'
-import LiteratureCard from '@/components/LiteratureCard.vue'
-import CourtDecisionCard from '@/components/CourtDecisionCard.vue'
-import AnswerCard from '@/components/AnswerCard.vue'
-
-import SearchFilters from './SearchFilters.vue'
+import ResultCard from './components/SearchResults/ResultCard.vue'
+import LegislationCard from './components/SearchResults/LegislationCard.vue'
+import LiteratureCard from './components/SearchResults/LiteratureCard.vue'
+import CourtDecisionCard from './components/SearchResults/CourtDecisionCard.vue'
+import AnswerCard from './components/SearchResults/AnswerCard.vue'
+import SearchFilters from './components/SearchResults/SearchFilters.vue'
+import NoSearchResults from './components/SearchResults/NoSearchResults.vue'
 
 const getResultComponent = (source_table) => {
   switch (source_table) {

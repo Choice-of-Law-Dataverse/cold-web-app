@@ -21,7 +21,7 @@ const props = defineProps({
 })
 
 // Reactive state for the case title
-const title = (ref < string) | (null > null)
+const title = ref(null)
 
 // Fetch the court case title on mount
 async function fetchCaseTitle() {

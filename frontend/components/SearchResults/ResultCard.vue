@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import UCardHeader from './UCardHeader.vue'
+import UCardHeader from '../UCardHeader.vue'
 
 // Define props
 const props = defineProps({

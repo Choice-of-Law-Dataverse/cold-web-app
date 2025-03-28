@@ -22,6 +22,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import ResultCard from './ResultCard.vue'
 
 // Props
 const props = defineProps({
