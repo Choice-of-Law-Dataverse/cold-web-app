@@ -24,33 +24,31 @@
   </UCard>
 </template>
 
-<script>
+<script setup>
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 import eventBus from '@/eventBus'
 
-export default {
-  data() {
-    return {
-      searchSuggestions: [
-        'Tacit Choice in Argentina',
-        'Party Autonomy in Switzerland',
-      ],
-    }
-  },
-  methods: {
-    formatQuery(query) {
-      return query.replace(/ /g, '+')
-    },
-    handleSuggestionClick(suggestion) {
-      // Emit an event to update the search input
-      eventBus.emit('update-search', suggestion)
+const router = useRouter()
 
-      // Pass the query directly with spaces
-      this.$router.push({
-        name: 'search',
-        query: { q: suggestion }, // Pass suggestion directly without replacing spaces
-      })
-    },
-  },
+const searchSuggestions = ref([
+  'Tacit Choice in Argentina',
+  'Party Autonomy in Switzerland',
+])
+
+function formatQuery(query) {
+  return query.replace(/ /g, '+')
+}
+
+function handleSuggestionClick(suggestion) {
+  // Emit an event to update the search input
+  eventBus.emit('update-search', suggestion)
+
+  // Pass the query directly with spaces
+  router.push({
+    name: 'search',
+    query: { q: suggestion },
+  })
 }
 </script>
 
