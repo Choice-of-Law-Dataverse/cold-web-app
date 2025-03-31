@@ -69,7 +69,9 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
-import CourtDecisionLink from '~/components/CourtDecisionLink.vue'
+import CourtDecisionLink from '~/components/legal/CourtDecisionLink.vue'
+import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
+import QuestionSourceList from '~/components/sources/QuestionSourceList.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const answerData = ref(null) // Store fetched court decision data

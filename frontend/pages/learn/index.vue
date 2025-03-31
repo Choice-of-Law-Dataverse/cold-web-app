@@ -52,8 +52,8 @@
   </main>
 </template>
 
-<script setup lang="ts">
-import { ref, watch } from 'vue'
+<script setup>
+import { ref, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import OpenEducationalResources from './OpenEducationalResources.vue'
 import FAQ from './FAQ.vue'

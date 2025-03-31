@@ -104,6 +104,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
 import JurisdictionComparison from '~/components/jurisdiction-comparison/JurisdictionComparison.vue'
+import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const jurisdictionData = ref(null) // Store fetched jurisdiction data

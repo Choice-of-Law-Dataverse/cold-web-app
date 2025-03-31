@@ -49,7 +49,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
-import LegalProvision from '~/components/LegalProvision.vue'
+import LegalProvision from '~/components/legal/LegalProvision.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const legalInstrument = ref(null) // Store fetched court decision data

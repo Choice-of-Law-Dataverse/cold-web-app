@@ -24,6 +24,7 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
+import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 
 const route = useRoute() // Access the route to get the ID param
 const config = useRuntimeConfig()

@@ -7,9 +7,7 @@
         :key="itemIndex"
         :class="valueClassMap['Legal provision articles'] || 'result-value'"
       >
-        <NuxtLink
-          :to="`/legal-instrument/${item.trim().split(' ')[0]}#${item.trim().split(' ').slice(1).join('')}`"
-        >
+        <NuxtLink :to="generateLegalProvisionLink(item)">
           {{ item.trim() }}
         </NuxtLink>
       </div>
@@ -26,9 +24,7 @@
         :key="itemIndex"
         :class="valueClassMap['Legal provision articles'] || 'result-value'"
       >
-        <NuxtLink
-          :to="`/legal-instrument/${item.trim().split(' ')[0]}${item.trim().split(' ').slice(1).join('')}`"
-        >
+        <NuxtLink :to="generateLegalProvisionLink(item)">
           {{ item.trim() }}
         </NuxtLink>
       </div>
@@ -43,9 +39,10 @@
     >
       <div
         :class="
-          fallbackData['More information'].length > 45
-            ? 'result-value-small'
-            : valueClassMap['Legal provision articles'] || 'result-value'
+          getProvisionClass(
+            fallbackData['More information'],
+            valueClassMap['Legal provision articles'] || 'result-value'
+          )
         "
       >
         {{
@@ -64,18 +61,20 @@
 </template>
 
 <script setup>
+import { generateLegalProvisionLink, getProvisionClass } from '~/utils/legal'
+
 defineProps({
   value: {
     type: String,
-    default: '',
+    default: ''
   },
   fallbackData: {
     type: Object,
-    required: true,
+    required: true
   },
   valueClassMap: {
     type: Object,
-    default: () => ({}),
-  },
+    default: () => ({})
+  }
 })
-</script>
+</script> 
