@@ -150,6 +150,9 @@ watchEffect(() => {
 // Add these new functions
 const shouldDisplayValue = (item, value) => {
   if (!item.emptyValueBehavior) return true
+  if (item.emptyValueBehavior.shouldHide && item.emptyValueBehavior.shouldHide(props.resultData)) {
+    return false
+  }
   if (item.emptyValueBehavior.action === 'hide' && (!value || value === 'NA' || value === 'N/A')) {
     return false
   }
