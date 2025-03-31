@@ -161,13 +161,58 @@ export const questionConfig = {
 
 export const legalInstrumentConfig = {
     keyLabelPairs: [
-        { key: 'Title (in English)', label: 'Name' },
-        { key: 'Official Title', label: 'Official Title' },
-        { key: 'Date', label: 'Date' },
-        { key: 'Abbreviation', label: 'Abbreviation' },
-        { key: 'Entry Into Force', label: 'Entry Into Force' },
-        { key: 'Publication Date', label: 'Publication Date' },
-        { key: 'Domestic Legal Provisions', label: 'Selected Provisions' }
+        {
+            key: 'Title (in English)',
+            label: 'Name',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No title available'
+            }
+        },
+        {
+            key: 'Official Title',
+            label: 'Official Title',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
+            key: 'Date',
+            label: 'Date',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'N/A'
+            }
+        },
+        {
+            key: 'Abbreviation',
+            label: 'Abbreviation',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
+            key: 'Entry Into Force',
+            label: 'Entry Into Force',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
+            key: 'Publication Date',
+            label: 'Publication Date',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
+            key: 'Domestic Legal Provisions',
+            label: 'Selected Provisions',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No provisions available'
+            }
+        }
     ],
     valueClassMap: {
         'Title (in English)': 'result-value-medium',

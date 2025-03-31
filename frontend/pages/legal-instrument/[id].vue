@@ -8,21 +8,24 @@
   >
     <!-- Slot for Legal provisions -->
     <template #domestic-legal-provisions="{ value }">
-      <div>
-        <div v-if="value && value.trim()">
-          <LegalProvision
-            v-for="(provisionId, index) in value.split(',')"
-            :key="index"
-            :provisionId="provisionId.trim()"
-            :class="index === 0 ? 'no-margin' : ''"
-            :textType="textType"
-            @update:hasEnglishTranslation="hasEnglishTranslation = $event"
-          />
+      <section>
+        <span class="label">Selected Provisions</span>
+        <div>
+          <div v-if="value && value.trim()">
+            <LegalProvision
+              v-for="(provisionId, index) in value.split(',')"
+              :key="index"
+              :provisionId="provisionId.trim()"
+              :class="index === 0 ? 'no-margin' : ''"
+              :textType="textType"
+              @update:hasEnglishTranslation="hasEnglishTranslation = $event"
+            />
+          </div>
+          <div v-else>
+            <span>N/A</span>
+          </div>
         </div>
-        <div v-else>
-          <span>N/A</span>
-        </div>
-      </div>
+      </section>
     </template>
     <template #Entry-Into-Force="{ value }">
       <p class="result-value-small">
