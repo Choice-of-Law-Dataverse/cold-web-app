@@ -22,13 +22,6 @@
             </ul>
           </section>
 
-          <section v-else-if="!loading">
-            <span class="label">Specialists</span>
-            <p class="result-value-small">
-              No specialists found for this jurisdiction.
-            </p>
-          </section>
-
           <template #literature>
             <RelatedLiterature
               v-if="jurisdictionData?.Literature"

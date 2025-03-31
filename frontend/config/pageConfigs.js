@@ -62,10 +62,37 @@ export const literatureConfig = {
 
 export const jurisdictionConfig = {
     keyLabelPairs: [
-        { key: 'Name', label: 'Jurisdiction' },
-        { key: 'Jurisdictional Differentiator', label: 'Jurisdictional Differentiator' },
-        { key: 'Specialist', label: 'Specialists' },
-        { key: 'Literature', label: 'Related Literature' }
+        {
+            key: 'Name',
+            label: 'Jurisdiction',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No jurisdiction name available'
+            }
+        },
+        {
+            key: 'Jurisdictional Differentiator',
+            label: 'Jurisdictional Differentiator',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
+            key: 'Specialist',
+            label: 'Specialists',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No specialists available'
+            }
+        },
+        {
+            key: 'Literature',
+            label: 'Related Literature',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No related literature available'
+            }
+        }
     ],
     valueClassMap: {
         Name: 'result-value-medium',
