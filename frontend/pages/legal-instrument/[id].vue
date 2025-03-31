@@ -67,9 +67,8 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(legalInstrumen
 
 // Debug the legal instrument data
 watch(legalInstrument, (newValue) => {
-  console.log('Legal Instrument Data:', newValue)
   if (newValue) {
-    console.log('Domestic Legal Provisions:', newValue['Domestic Legal Provisions'])
+    // No console logs needed
   }
 })
 

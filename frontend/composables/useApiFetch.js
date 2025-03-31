@@ -13,9 +13,6 @@ export function useApiFetch() {
         const jsonPayload = { table, id }
 
         try {
-            console.log('Making API request to:', `${config.public.apiBaseUrl}/search/details`)
-            console.log('With payload:', jsonPayload)
-
             const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
                 method: 'POST',
                 headers: {
@@ -28,11 +25,9 @@ export function useApiFetch() {
             if (!response.ok) throw new Error(`Failed to fetch ${table}`)
 
             data.value = await response.json()
-            console.log('API response:', data.value)
             return data.value
         } catch (err) {
             error.value = err instanceof Error ? err.message : 'An error occurred'
-            console.error(`Error fetching ${table}:`, err)
             throw err
         } finally {
             loading.value = false

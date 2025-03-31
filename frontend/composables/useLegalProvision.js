@@ -23,20 +23,14 @@ export function useLegalProvision({
     const { fetchData } = useApiFetch()
 
     async function fetchProvisionDetails() {
-        console.log('Fetching provision details for ID:', provisionId)
         loading.value = true
         error.value = null
 
         try {
-            console.log('Making API request with:', {
-                table: 'Domestic Legal Provisions',
-                id: provisionId
-            })
             const data = await fetchData({
                 table: 'Domestic Legal Provisions',
                 id: provisionId,
             })
-            console.log('API response:', data)
 
             if (!data) {
                 throw new Error('No data received')
@@ -58,7 +52,6 @@ export function useLegalProvision({
                 onHasEnglishTranslationUpdate(hasEnglishTranslation.value)
             }
         } catch (err) {
-            console.error('Error fetching provision details:', err)
             error.value = err instanceof Error ? err.message : 'Failed to fetch provision details'
         } finally {
             loading.value = false
