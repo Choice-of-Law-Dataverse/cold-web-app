@@ -44,10 +44,6 @@
           <template v-else>
             <!-- Check for slot first -->
             <template v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]">
-              <!-- Show label only if there's actual content -->
-              <p v-if="resultData?.[item.key]" class="label-key -mb-1">
-                {{ item.label }}
-              </p>
               <slot
                 :name="item.key.replace(/ /g, '-').toLowerCase()"
                 :value="resultData?.[item.key]"

@@ -28,15 +28,17 @@
           </section>
 
           <template #literature>
-            <RelatedLiterature
-              v-if="jurisdictionData?.Literature"
-              :literature-id="jurisdictionData.Literature"
-              :literature-title="literatureTitle"
-              :valueClassMap="valueClassMap['Related Literature']"
-              :showLabel="false"
-              :emptyValueBehavior="keyLabelPairs.find(pair => pair.key === 'Literature')?.emptyValueBehavior"
-              use-id
-            />
+            <section>
+              <span class="label">Related Literature</span>
+              <RelatedLiterature
+                :literature-id="jurisdictionData?.Literature"
+                :literature-title="literatureTitle"
+                :valueClassMap="valueClassMap['Related Literature']"
+                :showLabel="false"
+                :emptyValueBehavior="keyLabelPairs.find(pair => pair.key === 'Literature')?.emptyValueBehavior"
+                use-id
+              />
+            </section>
           </template>
 
           <template #search-links>
