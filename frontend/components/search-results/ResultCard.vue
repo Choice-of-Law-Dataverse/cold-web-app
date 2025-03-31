@@ -2,9 +2,13 @@
   <div class="col-span-12">
     <UCard class="cold-ucard">
       <template #header>
-        <UCardHeader
+        <BaseCardHeader
+          v-if="resultData"
           :resultData="resultData"
           :cardType="cardType"
+          :showOpenLink="true"
+          :formattedJurisdiction="formattedJurisdiction"
+          :formattedTheme="formattedTheme"
           :showSuggestEdit="false"
         />
       </template>
@@ -18,7 +22,8 @@
 </template>
 
 <script setup>
-import UCardHeader from '../ui/BaseCardHeader.vue'
+import { UCard } from '#components'
+import BaseCardHeader from '../ui/BaseCardHeader.vue'
 
 // Define props
 const props = defineProps({

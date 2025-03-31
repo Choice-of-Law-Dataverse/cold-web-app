@@ -14,7 +14,7 @@
   <UCard class="cold-ucard">
     <!-- Header section -->
     <template #header v-if="showHeader">
-      <UCardHeader
+      <BaseCardHeader
         v-if="resultData"
         :resultData="resultData"
         :cardType="formattedSourceTable"
@@ -79,7 +79,7 @@
 import { useRoute } from 'vue-router'
 
 import BackButton from '~/components/ui/BackButton.vue'
-import UCardHeader from '~/components/ui/BaseCardHeader.vue'
+import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
 import NotificationBanner from '~/components/ui/NotificationBanner.vue'
 
 // Props for reusability across pages

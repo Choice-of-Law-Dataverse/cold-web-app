@@ -1,55 +1,23 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <div class="col-span-12">
-        <DetailDisplay
-          :loading="loading"
-          :resultData="literature"
-          :keyLabelPairs="keyLabelPairs"
-          :valueClassMap="valueClassMap"
-          formattedSourceTable="Literature"
-        />
-      </div>
-    </div>
-  </main>
+  <BaseDetailLayout
+    :loading="loading"
+    :resultData="literature"
+    :keyLabelPairs="computedKeyLabelPairs"
+    :valueClassMap="valueClassMap"
+    sourceTable="Literature"
+  />
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
+import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
+import { useApiFetch } from '~/composables/useApiFetch'
+import { useDetailDisplay } from '~/composables/useDetailDisplay'
 
-const route = useRoute() // Access the route to get the ID param
-const literature = ref(null) // Store fetched data
-const loading = ref(true) // Track loading state
+const route = useRoute()
 
-const config = useRuntimeConfig()
-
-async function fetchLiterature(id) {
-  const jsonPayload = {
-    table: 'Literature',
-    id: id,
-  }
-
-  try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonPayload),
-    })
-
-    if (!response.ok) throw new Error('Failed to fetch literature')
-
-    literature.value = await response.json()
-  } catch (error) {
-    console.error('Error fetching literature:', error)
-  } finally {
-    loading.value = false
-  }
-}
+const { loading, error, data: literature, fetchData } = useApiFetch()
 
 // Define the keys and labels for dynamic rendering
 const keyLabelPairs = [
@@ -60,15 +28,12 @@ const keyLabelPairs = [
   { key: 'Publication Title', label: 'Publication' },
 ]
 
-const valueClassMap = {
-  Title: 'result-value-medium',
-  Author: 'result-value-small',
-  'Publication Year': 'result-value-small',
-  'Publication Title': 'result-value-small',
-}
+const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(literature, keyLabelPairs)
 
 onMounted(() => {
-  const id = route.params.id // Get ID from the route
-  fetchLiterature(id)
+  fetchData({
+    table: 'Literature',
+    id: route.params.id,
+  })
 })
 </script>
