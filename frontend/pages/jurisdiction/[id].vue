@@ -29,11 +29,9 @@
               :literature-title="literatureTitle"
               :valueClassMap="valueClassMap['Related Literature']"
               :showLabel="false"
+              :emptyValueBehavior="keyLabelPairs.find(pair => pair.key === 'Literature')?.emptyValueBehavior"
               use-id
             />
-            <p v-else class="result-value-small">
-              No related literature available
-            </p>
           </template>
 
           <template #search-links>

@@ -4,7 +4,7 @@
 
     <!-- If we're using literature ID mode -->
     <template v-if="useId">
-      <ul>
+      <ul v-if="displayedLiteratureIds.length">
         <li
           v-for="(id, index) in displayedLiteratureIds"
           :key="id"
@@ -20,6 +20,9 @@
           label="related literature"
         />
       </ul>
+      <p v-else-if="emptyValueBehavior.action === 'display'" :class="valueClassMap">
+        {{ emptyValueBehavior.fallback }}
+      </p>
     </template>
 
     <!-- Else, use the normal themes-based display -->
@@ -45,8 +48,8 @@
         />
       </ul>
 
-      <p v-if="!literatureList.length && !loading" :class="valueClassMap">
-        No related literature available
+      <p v-else-if="emptyValueBehavior.action === 'display'" :class="valueClassMap">
+        {{ emptyValueBehavior.fallback }}
       </p>
     </template>
   </div>
@@ -80,6 +83,13 @@ const props = defineProps({
   showLabel: {
     type: Boolean,
     default: true
+  },
+  emptyValueBehavior: {
+    type: Object,
+    default: () => ({
+      action: 'display',
+      fallback: 'No related literature available'
+    })
   }
 })
 

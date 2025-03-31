@@ -42,24 +42,25 @@
             <slot></slot>
           </template>
           <template v-else>
-            <!-- Conditionally render the label and value container -->
-            <div v-if="shouldDisplayValue(item, resultData?.[item.key])">
-              <!-- Conditionally render the label -->
-              <p
-                class="label-key -mb-1"
-              >
+            <!-- Check for slot first -->
+            <template v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]">
+              <!-- Show label only if there's actual content -->
+              <p v-if="resultData?.[item.key]" class="label-key -mb-1">
                 {{ item.label }}
               </p>
-              <!-- Dynamic slot with kebab-case conversion -->
-              <template
-                v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
-              >
-                <slot
-                  :name="item.key.replace(/ /g, '-').toLowerCase()"
-                  :value="resultData?.[item.key]"
-                />
-              </template>
-              <template v-else>
+              <slot
+                :name="item.key.replace(/ /g, '-').toLowerCase()"
+                :value="resultData?.[item.key]"
+              />
+            </template>
+            <!-- If no slot, use default display -->
+            <template v-else>
+              <!-- Conditionally render the label and value container -->
+              <div v-if="shouldDisplayValue(item, resultData?.[item.key])">
+                <!-- Conditionally render the label -->
+                <p class="label-key -mb-1">
+                  {{ item.label }}
+                </p>
                 <p
                   :class="[
                     props.valueClassMap[item.key] || 'text-gray-800',
@@ -68,8 +69,8 @@
                 >
                   {{ getDisplayValue(item, resultData?.[item.key]) }}
                 </p>
-              </template>
-            </div>
+              </div>
+            </template>
           </template>
         </div>
         <slot name="search-links"></slot>
