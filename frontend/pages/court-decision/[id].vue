@@ -23,28 +23,12 @@ import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
+import { courtDecisionConfig } from '~/config/pageConfigs'
 
 const route = useRoute()
 const { loading, error, data: courtDecision, fetchData } = useApiFetch()
 
-// Define the keys and labels for dynamic rendering
-const keyLabelPairs = [
-  { key: 'Case Title', label: 'Case Title' },
-  { key: 'Date', label: 'Date' },
-  { key: 'Instance', label: 'Instance' },
-  { key: 'Abstract', label: 'Abstract' },
-  { key: 'Relevant Facts', label: 'Relevant Facts' },
-  { key: 'Choice of Law Issue', label: 'Choice of Law Issue' },
-  { key: "Court's Position", label: "Court's Position" },
-  {
-    key: 'Text of the Relevant Legal Provisions',
-    label: 'Text of the Relevant Legal Provisions',
-  },
-  { key: 'Case Citation', label: 'Case Citation' },
-  { key: 'Related Literature', label: '' },
-]
-
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(courtDecision, keyLabelPairs)
+const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(courtDecision, courtDecisionConfig)
 
 // Debug the court decision data
 watch(courtDecision, (newValue) => {

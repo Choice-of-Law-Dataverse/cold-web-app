@@ -4,13 +4,12 @@
     :resultData="processedLegalInstrument"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
-    sourceTable="Legal Instrument"
+    sourceTable="Domestic Instruments"
   >
     <!-- Slot for Legal provisions -->
     <template #domestic-legal-provisions="{ value }">
       <div>
         <div v-if="value && value.trim()">
-          <div class="label-key pb-4 pt-4">Selected Provisions</div>
           <LegalProvision
             v-for="(provisionId, index) in value.split(',')"
             :key="index"
@@ -46,6 +45,7 @@ import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import LegalProvision from '~/components/legal/LegalProvision.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
+import { legalInstrumentConfig } from '~/config/pageConfigs'
 
 const route = useRoute()
 const textType = ref('Full Text of the Provision (English Translation)')
@@ -53,27 +53,21 @@ const hasEnglishTranslation = ref(false)
 
 const { loading, error, data: legalInstrument, fetchData } = useApiFetch()
 
-// Define the keys and labels for dynamic rendering
-const keyLabelPairs = [
-  { key: 'Title (in English)', label: 'Name' },
-  { key: 'Official Title', label: 'Official Title' },
-  { key: 'Date', label: 'Date' },
-  { key: 'Entry Into Force', label: 'Entry Into Force' },
-  { key: 'Publication Date', label: 'Publication Date' },
-  { key: 'Domestic Legal Provisions', label: '' },
-]
-
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(legalInstrument, keyLabelPairs)
+const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(legalInstrument, legalInstrumentConfig)
 
 // Debug the legal instrument data
 watch(legalInstrument, (newValue) => {
   if (newValue) {
-    // No console logs needed
+    console.log('Legal Instrument Data:', newValue)
   }
 })
 
 const processedLegalInstrument = computed(() => {
-  if (!legalInstrument.value) return null
+  if (!legalInstrument.value) {
+    console.log('No legal instrument data available')
+    return null
+  }
+  console.log('Processing legal instrument:', legalInstrument.value)
   return {
     ...legalInstrument.value,
     'Title (in English)': legalInstrument.value['Title (in English)'] || legalInstrument.value['Official Title']
@@ -81,9 +75,12 @@ const processedLegalInstrument = computed(() => {
 })
 
 onMounted(() => {
+  console.log('Fetching legal instrument with ID:', route.params.id)
   fetchData({
     table: 'Domestic Instruments',
     id: route.params.id,
+  }).catch(err => {
+    console.error('Error fetching legal instrument:', err)
   })
 })
 </script>

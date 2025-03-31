@@ -1,4 +1,5 @@
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
+import { questionConfig } from '~/config/pageConfigs'
 
 export function useQuestion() {
     const answerData = ref(null)
@@ -7,25 +8,10 @@ export function useQuestion() {
 
     const config = useRuntimeConfig()
 
-    const keyLabelPairs = [
-        { key: 'Question', label: 'Question' },
-        { key: 'Answer', label: 'Answer' },
-        { key: 'More Information', label: 'More Information' },
-        {
-            key: 'Domestic Legal Provisions',
-            label: 'Source',
-        },
-        { key: 'Court Decisions ID', label: 'related cases' },
-        { key: 'Related Literature', label: '' },
-    ]
+    const keyLabelPairs = questionConfig.keyLabelPairs
+    const valueClassMap = questionConfig.valueClassMap
 
-    const valueClassMap = {
-        Question: 'result-value-medium',
-        Answer: 'result-value-large',
-        'Domestic Legal Provisions': 'result-value-small',
-        'Court Decisions ID': 'result-value-small',
-    }
-
+    // Preprocess data to handle custom rendering cases
     const processedAnswerData = computed(() => {
         if (!answerData.value) return null
         return {

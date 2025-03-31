@@ -1,4 +1,5 @@
 import { ref, computed, watch } from 'vue'
+import { jurisdictionConfig } from '~/config/pageConfigs'
 
 export function useJurisdiction() {
     const jurisdictionData = ref(null)
@@ -10,19 +11,8 @@ export function useJurisdiction() {
 
     const config = useRuntimeConfig()
 
-    const keyLabelPairs = [
-        { key: 'Name', label: 'Name' },
-        { key: 'Jurisdictional Differentiator', label: 'Jurisdictional Differentiator' },
-        { key: 'Specialist', label: 'Specialists' },
-        { key: 'Literature', label: 'Related Literature' }
-    ]
-
-    const valueClassMap = {
-        Name: 'result-value-medium',
-        'Jurisdictional Differentiator': 'result-value-small',
-        Literature: 'result-value-small',
-        'search-links': 'result-value-small',
-    }
+    const keyLabelPairs = jurisdictionConfig.keyLabelPairs
+    const valueClassMap = jurisdictionConfig.valueClassMap
 
     async function fetchLiteratureTitle(ids) {
         if (!ids) {
