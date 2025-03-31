@@ -42,31 +42,34 @@
             <slot></slot>
           </template>
           <template v-else>
-            <!-- Conditionally render the label -->
-            <p
-              class="label-key -mb-1"
-            >
-              {{ item.label }}
-            </p>
-            <!-- Dynamic slot with kebab-case conversion -->
-            <template
-              v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
-            >
-              <slot
-                :name="item.key.replace(/ /g, '-').toLowerCase()"
-                :value="resultData?.[item.key]"
-              />
-            </template>
-            <template v-else>
+            <!-- Conditionally render the label and value container -->
+            <div v-if="shouldDisplayValue(item, resultData?.[item.key])">
+              <!-- Conditionally render the label -->
               <p
-                :class="[
-                  props.valueClassMap[item.key] || 'text-gray-800',
-                  'text-sm leading-relaxed whitespace-pre-line',
-                ]"
+                class="label-key -mb-1"
               >
-                {{ resultData?.[item.key] || 'N/A' }}
+                {{ item.label }}
               </p>
-            </template>
+              <!-- Dynamic slot with kebab-case conversion -->
+              <template
+                v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
+              >
+                <slot
+                  :name="item.key.replace(/ /g, '-').toLowerCase()"
+                  :value="resultData?.[item.key]"
+                />
+              </template>
+              <template v-else>
+                <p
+                  :class="[
+                    props.valueClassMap[item.key] || 'text-gray-800',
+                    'text-sm leading-relaxed whitespace-pre-line',
+                  ]"
+                >
+                  {{ getDisplayValue(item, resultData?.[item.key]) }}
+                </p>
+              </template>
+            </div>
           </template>
         </div>
         <slot name="search-links"></slot>
@@ -146,6 +149,23 @@ watchEffect(() => {
     )
   }
 })
+
+// Add these new functions
+const shouldDisplayValue = (item, value) => {
+  if (!item.emptyValueBehavior) return true
+  if (item.emptyValueBehavior.action === 'hide' && (!value || value === 'NA')) {
+    return false
+  }
+  return true
+}
+
+const getDisplayValue = (item, value) => {
+  if (!item.emptyValueBehavior) return value || 'N/A'
+  if ((!value || value === 'NA') && item.emptyValueBehavior.action === 'display') {
+    return item.emptyValueBehavior.fallback || 'N/A'
+  }
+  return value
+}
 </script>
 
 <style scoped>

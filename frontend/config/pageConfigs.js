@@ -7,11 +7,45 @@
 
 export const literatureConfig = {
     keyLabelPairs: [
-        { key: 'Title', label: 'Title' },
-        { key: 'Author', label: 'Author' },
-        { key: 'Editor', label: 'Editor' },
-        { key: 'Publication Year', label: 'Year' },
-        { key: 'Publication Title', label: 'Publication' }
+        {
+            key: 'Title',
+            label: 'Title',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No title available'
+            }
+        },
+        {
+            key: 'Author',
+            label: 'Author',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No author available'
+            }
+        },
+        {
+            key: 'Editor',
+            label: 'Editor',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
+            key: 'Publication Year',
+            label: 'Year',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No year available'
+            }
+        },
+        {
+            key: 'Publication Title',
+            label: 'Publication',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No publication available'
+            }
+        }
     ],
     valueClassMap: {
         Title: 'result-value-medium',
