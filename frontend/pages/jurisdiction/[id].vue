@@ -9,17 +9,22 @@
           :valueClassMap="valueClassMap"
         >
           <!-- Specialists Section -->
-          <section v-if="specialists.length">
+          <section>
             <span class="label">Specialists</span>
-            <ul>
-              <li
-                v-for="specialist in specialists"
-                :key="specialist.Specialist"
-                class="result-value-small"
-              >
-                {{ specialist.Specialist }}
-              </li>
-            </ul>
+            <template v-if="specialists.length">
+              <ul>
+                <li
+                  v-for="specialist in specialists"
+                  :key="specialist.Specialist"
+                  class="result-value-small"
+                >
+                  {{ specialist.Specialist }}
+                </li>
+              </ul>
+            </template>
+            <p v-else class="result-value-small">
+              {{ keyLabelPairs.find(pair => pair.key === 'Specialist')?.emptyValueBehavior?.fallback || 'No specialists available' }}
+            </p>
           </section>
 
           <template #literature>
