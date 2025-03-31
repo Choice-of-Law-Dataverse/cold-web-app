@@ -37,19 +37,10 @@
 
           <!-- Custom rendering for Court Decisions ID -->
           <template #court-decisions-id="{ value }">
-            <div v-if="Array.isArray(value) && value.length">
-              <ul>
-                <li
-                  v-for="(caseId, index) in value"
-                  :key="index"
-                  :class="
-                    valueClassMap['Court Decisions ID'] || 'result-value-small'
-                  "
-                >
-                  <CourtDecisionLink :caseId="caseId" />
-                </li>
-              </ul>
-            </div>
+            <CourtDecisionRenderer
+              :value="value"
+              :valueClassMap="valueClassMap['Court Decisions ID']"
+            />
           </template>
 
           <!-- Related Literature -->
@@ -69,7 +60,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
-import CourtDecisionLink from '~/components/legal/CourtDecisionLink.vue'
+import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import QuestionSourceList from '~/components/sources/QuestionSourceList.vue'
 

@@ -1,56 +1,51 @@
 <template>
-  <div>
-    <div v-if="loading">Loading...</div>
-    <div v-else-if="error">{{ error }}</div>
-    <div v-else>
-      <div :id="anchorId" :class="['legal-provision', customClass]">
-        <div class="flex justify-between items-baseline">
-          <a
-            :href="`#${anchorId}`"
-            class="label-key-provision-article anchor flex-1 min-w-0"
-          >
-            {{ title }}
-          </a>
-          <div class="flex items-center gap-1" v-if="hasEnglishTranslation">
-            <!-- Original label (fades when English is active) -->
-            <span
-              class="label-key-provision-toggle mr-[-0px]"
-              :class="{
-                'opacity-25': showEnglish,
-                'opacity-100': !showEnglish,
-              }"
-            >
-              Original
-            </span>
+  <BaseLegalContent
+    :title="displayTitle"
+    :anchorId="anchorId"
+    :class="class"
+    :loading="loading"
+    :error="error"
+  >
+    <template #header-actions>
+      <div v-if="hasEnglishTranslation" class="flex items-center gap-1">
+        <!-- Original label (fades when English is active) -->
+        <span
+          class="label-key-provision-toggle mr-[-0px]"
+          :class="{
+            'opacity-25': showEnglish,
+            'opacity-100': !showEnglish,
+          }"
+        >
+          Original
+        </span>
 
-            <UToggle
-              v-model="showEnglish"
-              size="2xs"
-              class="bg-[var(--color-cold-gray)]"
-            />
+        <UToggle
+          v-model="showEnglish"
+          size="2xs"
+          class="bg-[var(--color-cold-gray)]"
+        />
 
-            <!-- English label (fades when Original is active) -->
-            <span
-              class="label-key-provision-toggle"
-              :class="{
-                'opacity-25': !showEnglish,
-                'opacity-100': showEnglish,
-              }"
-            >
-              English
-            </span>
-          </div>
-        </div>
-
-        <p class="result-value-small whitespace-pre-line">{{ content }}</p>
+        <!-- English label (fades when Original is active) -->
+        <span
+          class="label-key-provision-toggle"
+          :class="{
+            'opacity-25': !showEnglish,
+            'opacity-100': showEnglish,
+          }"
+        >
+          English
+        </span>
       </div>
-    </div>
-  </div>
+    </template>
+
+    {{ content }}
+  </BaseLegalContent>
 </template>
 
 <script setup>
-import { onMounted, watch, nextTick, computed } from 'vue'
+import { computed, watch, onMounted } from 'vue'
 import { useLegalProvision } from '~/composables/useLegalProvision'
+import BaseLegalContent from './BaseLegalContent.vue'
 
 const props = defineProps({
   provisionId: {
@@ -85,20 +80,15 @@ const {
   onHasEnglishTranslationUpdate: (value) => emit('update:hasEnglishTranslation', value),
 })
 
-const customClass = computed(() => props.class || '')
+const displayTitle = computed(() => {
+  if (loading.value) return 'Loading...'
+  if (error.value) return 'Error'
+  return title.value || props.provisionId
+})
 
-const scrollToAnchor = async () => {
-  if (window.location.hash === `#${anchorId.value}`) {
-    await nextTick()
-    const anchorElement = document.getElementById(anchorId.value)
-    if (anchorElement) {
-      anchorElement.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-}
-
+// Fetch provision details when component is mounted
 onMounted(() => {
-  fetchProvisionDetails().then(scrollToAnchor)
+  fetchProvisionDetails()
 })
 
 watch(
@@ -112,22 +102,7 @@ watch(showEnglish, updateContent)
 </script>
 
 <style scoped>
-.label-key {
-  margin-top: 50px;
-}
-
-.no-margin .label-key {
-  margin-top: 0;
-}
-
-.anchor {
-  text-decoration: none;
-  color: var(--color-cold-night) !important;
-  display: block;
-  margin-top: 50px;
-}
-
-.no-margin .anchor {
-  margin-top: 0;
+.label-key-provision-toggle {
+  @apply text-sm text-gray-600;
 }
 </style> 

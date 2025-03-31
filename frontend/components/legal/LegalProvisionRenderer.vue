@@ -1,69 +1,23 @@
 <template>
-  <div>
-    <!-- Legal provision articles -->
-    <div v-if="value && value.trim()">
-      <div
-        v-for="(item, itemIndex) in value.split(',')"
-        :key="itemIndex"
-        :class="valueClassMap['Legal provision articles'] || 'result-value'"
-      >
-        <NuxtLink :to="generateLegalProvisionLink(item)">
-          {{ item.trim() }}
-        </NuxtLink>
-      </div>
-    </div>
-
-    <!-- Fallback to Legislation-ID -->
-    <div
-      v-else-if="
-        fallbackData['Legislation-ID'] && fallbackData['Legislation-ID'].trim()
-      "
-    >
-      <div
-        v-for="(item, itemIndex) in fallbackData['Legislation-ID'].split(',')"
-        :key="itemIndex"
-        :class="valueClassMap['Legal provision articles'] || 'result-value'"
-      >
-        <NuxtLink :to="generateLegalProvisionLink(item)">
-          {{ item.trim() }}
-        </NuxtLink>
-      </div>
-    </div>
-
-    <!-- Fallback to More information -->
-    <div
-      v-else-if="
-        fallbackData['More information'] &&
-        fallbackData['More information'].trim()
-      "
-    >
-      <div
-        :class="
-          getProvisionClass(
-            fallbackData['More information'],
-            valueClassMap['Legal provision articles'] || 'result-value'
-          )
-        "
-      >
-        {{
-          fallbackData['More information']
-            .replace(/\n/g, ' ') // Remove line breaks
-            .trim()
-        }}
-      </div>
-    </div>
-
-    <!-- Render N/A -->
-    <div v-else>
-      <span>N/A</span>
-    </div>
-  </div>
+  <BaseLegalRenderer
+    :items="provisionItems"
+    :valueClassMap="valueClassMap['Legal provision articles']"
+    defaultClass="result-value"
+  >
+    <template #default="{ item }">
+      <NuxtLink :to="generateLegalProvisionLink(item)">
+        {{ item.trim() }}
+      </NuxtLink>
+    </template>
+  </BaseLegalRenderer>
 </template>
 
 <script setup>
-import { generateLegalProvisionLink, getProvisionClass } from '~/utils/legal'
+import { computed } from 'vue'
+import { generateLegalProvisionLink } from '~/utils/legal'
+import BaseLegalRenderer from './BaseLegalRenderer.vue'
 
-defineProps({
+const props = defineProps({
   value: {
     type: String,
     default: ''
@@ -76,5 +30,18 @@ defineProps({
     type: Object,
     default: () => ({})
   }
+})
+
+const provisionItems = computed(() => {
+  if (props.value && props.value.trim()) {
+    return props.value.split(',')
+  }
+  if (props.fallbackData['Legislation-ID'] && props.fallbackData['Legislation-ID'].trim()) {
+    return props.fallbackData['Legislation-ID'].split(',')
+  }
+  if (props.fallbackData['More information'] && props.fallbackData['More information'].trim()) {
+    return [props.fallbackData['More information'].replace(/\n/g, ' ').trim()]
+  }
+  return []
 })
 </script> 

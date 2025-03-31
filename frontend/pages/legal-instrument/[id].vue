@@ -150,9 +150,12 @@ onMounted(async () => {
   await nextTick() // Ensure the DOM updates with the rendered content
 
   // Check if the URL contains a hash and scroll to the corresponding element
-  const anchor = document.querySelector(window.location.hash)
-  if (anchor) {
-    anchor.scrollIntoView({ behavior: 'smooth' }) // Smoothly scroll to the element
+  const hash = window.location.hash.slice(1) // Remove the # symbol
+  if (hash) {
+    const anchor = document.getElementById(hash)
+    if (anchor) {
+      anchor.scrollIntoView({ behavior: 'smooth' }) // Smoothly scroll to the element
+    }
   }
 })
 </script>

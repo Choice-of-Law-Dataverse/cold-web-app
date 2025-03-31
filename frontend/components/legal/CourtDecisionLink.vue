@@ -1,25 +1,20 @@
 <template>
-  <div>
-    <NuxtLink
-      :to="`/court-decision/${caseId}`"
-      :class="[
-        'result-value-small',
-        customClass,
-        {
-          'text-gray-500': loading,
-          'text-red-500': error
-        }
-      ]"
-    >
-      <span v-if="loading">Loading...</span>
-      <span v-else-if="error">{{ error }}</span>
-      <span v-else>{{ caseId }}</span>
-    </NuxtLink>
-  </div>
+  <BaseLegalLink
+    :to="`/court-decision/${caseId}`"
+    :class="class"
+    :loading="loading"
+    :error="error"
+  >
+    {{ caseId }}
+  </BaseLegalLink>
 </template>
 
 <script setup>
-const props = defineProps({
+import { ref } from 'vue'
+import BaseLegalLink from './BaseLegalLink.vue'
+import { useLegalState } from '~/composables/useLegalState.js'
+
+defineProps({
   caseId: {
     type: String,
     required: true
@@ -30,7 +25,5 @@ const props = defineProps({
   }
 })
 
-const loading = ref(false)
-const error = ref(null)
-const customClass = computed(() => props.class || '')
+const { loading, error } = useLegalState()
 </script>
