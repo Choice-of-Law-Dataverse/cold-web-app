@@ -53,7 +53,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watchEffect } from 'vue'
+import { ref, computed, watchEffect, watch, onMounted } from 'vue'
 import ShowMoreLess from '../ui/ShowMoreLess.vue'
 
 const props = defineProps({
@@ -128,14 +128,21 @@ const displayedLiteratureTitles = computed(() => {
 
 // Function to fetch related literature
 async function fetchRelatedLiterature(themes) {
-  if (!themes) return
+  if (!themes) {
+    console.log('No themes provided')
+    return
+  }
 
+  console.log('Fetching related literature for themes:', themes)
+  
   const jsonPayload = {
     filters: [
       { column: 'tables', values: ['Literature'] },
       { column: 'themes', values: themes.split(',').map(t => t.trim()) }
     ]
   }
+
+  console.log('API request payload:', jsonPayload)
 
   try {
     const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
@@ -147,23 +154,53 @@ async function fetchRelatedLiterature(themes) {
       body: JSON.stringify(jsonPayload)
     })
 
-    if (!response.ok) throw new Error('Failed to fetch related literature')
+    if (!response.ok) {
+      console.error('API response not OK:', response.status, response.statusText)
+      throw new Error('Failed to fetch related literature')
+    }
 
     const data = await response.json()
-    literatureList.value = Object.values(data.results).map(item => ({
-      title: item.Title,
-      id: item.id
-    }))
+    console.log('API response:', data)
+    
+    // Check if we have results and they're in the expected format
+    if (!data.results || typeof data.results !== 'object') {
+      console.log('No results found or unexpected response format')
+      literatureList.value = []
+      return
+    }
+
+    // Map the results to the expected format
+    literatureList.value = Object.entries(data.results).map(([key, item]) => {
+      console.log('Processing item:', { key, item })
+      return {
+        title: item.Title || item.title || 'Untitled',
+        id: item.id || key // Use the item's id if available, otherwise use the key
+      }
+    })
+    
+    console.log('Processed literature list:', literatureList.value)
   } catch (error) {
     console.error('Error fetching related literature:', error)
+    literatureList.value = []
   } finally {
     loading.value = false
   }
 }
 
-// Fetch data when themes change
-watchEffect(() => {
+// Debug the themes prop
+watch(() => props.themes, (newThemes) => {
+  console.log('Themes prop changed:', newThemes)
   if (!props.useId) {
+    console.log('Fetching related literature due to themes change')
+    fetchRelatedLiterature(newThemes)
+  }
+}, { immediate: true })
+
+// Initial fetch
+onMounted(() => {
+  console.log('Component mounted, themes:', props.themes)
+  if (!props.useId) {
+    console.log('Fetching related literature on mount')
     fetchRelatedLiterature(props.themes)
   }
 })

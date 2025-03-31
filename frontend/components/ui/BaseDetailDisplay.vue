@@ -44,7 +44,6 @@
           <template v-else>
             <!-- Conditionally render the label -->
             <p
-              v-if="item.key !== 'Legal provisions IDs'"
               class="label-key -mb-1"
             >
               {{ item.label }}
@@ -52,14 +51,12 @@
             <!-- Dynamic slot with kebab-case conversion -->
             <template
               v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
-              :slot="item.key.replace(/ /g, '-').toLowerCase()"
             >
               <slot
                 :name="item.key.replace(/ /g, '-').toLowerCase()"
                 :value="resultData?.[item.key]"
               />
             </template>
-
             <template v-else>
               <p
                 :class="[

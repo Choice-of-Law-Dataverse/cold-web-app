@@ -1,16 +1,18 @@
 import { ref, computed } from 'vue'
+import { useApiFetch } from './useApiFetch'
 
-export function useLegalProvision({ provisionId, textType, onHasEnglishTranslationUpdate }) {
-    const title = ref(null)
-    const content = ref(null)
+export function useLegalProvision({
+    provisionId,
+    textType,
+    onHasEnglishTranslationUpdate
+}) {
+    const title = ref('')
+    const content = ref('')
     const loading = ref(true)
     const error = ref(null)
     const hasEnglishTranslation = ref(false)
     const showEnglish = ref(true)
     const provisionData = ref(null)
-
-    const config = useRuntimeConfig()
-
     const anchorId = computed(() => {
         const articleNumber = title.value
             ? title.value.replace(/\s+/g, '')
@@ -18,57 +20,59 @@ export function useLegalProvision({ provisionId, textType, onHasEnglishTranslati
         return articleNumber
     })
 
+    const { fetchData } = useApiFetch()
+
     async function fetchProvisionDetails() {
-        const payload = {
-            table: 'Domestic Legal Provisions',
-            id: provisionId,
-        }
+        console.log('Fetching provision details for ID:', provisionId)
+        loading.value = true
+        error.value = null
 
         try {
-            const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-                method: 'POST',
-                headers: {
-                    authorization: `Bearer ${config.public.FASTAPI}`,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(payload),
+            console.log('Making API request with:', {
+                table: 'Domestic Legal Provisions',
+                id: provisionId
             })
+            const data = await fetchData({
+                table: 'Domestic Legal Provisions',
+                id: provisionId,
+            })
+            console.log('API response:', data)
 
-            if (!response.ok) {
-                throw new Error(`Failed to fetch provision: ${provisionId}`)
+            if (!data) {
+                throw new Error('No data received')
             }
-            const data = await response.json()
 
             title.value = data.Article || 'Unknown Article'
-            hasEnglishTranslation.value =
-                'Full Text of the Provision (English Translation)' in data
-            if (onHasEnglishTranslationUpdate) {
-                onHasEnglishTranslationUpdate(hasEnglishTranslation.value)
-            }
-
+            hasEnglishTranslation.value = 'Full Text of the Provision (English Translation)' in data
             provisionData.value = data
 
+            // Set initial content to English first, then fallback to Original Language
             content.value = showEnglish.value
                 ? data['Full Text of the Provision (English Translation)'] ||
                 data['Full Text of the Provision (Original Language)'] ||
                 'No content available'
                 : data['Full Text of the Provision (Original Language)'] ||
                 'No content available'
+
+            if (onHasEnglishTranslationUpdate) {
+                onHasEnglishTranslationUpdate(hasEnglishTranslation.value)
+            }
         } catch (err) {
-            error.value = err instanceof Error ? err.message : 'An error occurred'
+            console.error('Error fetching provision details:', err)
+            error.value = err instanceof Error ? err.message : 'Failed to fetch provision details'
         } finally {
             loading.value = false
         }
     }
 
     function updateContent() {
-        if (provisionData.value) {
-            content.value = showEnglish.value
-                ? provisionData.value['Full Text of the Provision (English Translation)'] ||
-                'No English translation available'
-                : provisionData.value['Full Text of the Provision (Original Language)'] ||
-                'No content available'
-        }
+        if (!provisionData.value) return
+
+        content.value = showEnglish.value
+            ? provisionData.value['Full Text of the Provision (English Translation)'] ||
+            'No English translation available'
+            : provisionData.value['Full Text of the Provision (Original Language)'] ||
+            'No content available'
     }
 
     return {
@@ -80,6 +84,6 @@ export function useLegalProvision({ provisionId, textType, onHasEnglishTranslati
         showEnglish,
         anchorId,
         fetchProvisionDetails,
-        updateContent,
+        updateContent
     }
 } 

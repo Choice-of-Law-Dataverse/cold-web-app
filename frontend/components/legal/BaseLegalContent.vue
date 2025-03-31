@@ -86,10 +86,6 @@ onMounted(scrollToAnchor)
   margin-top: 0;
 }
 
-.title-container {
-  margin-bottom: 16px;
-}
-
 .content-body {
   font-size: 14px !important;
   font-weight: 400 !important;
