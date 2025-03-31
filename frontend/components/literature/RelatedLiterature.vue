@@ -1,6 +1,6 @@
 <template>
   <div>
-    <span class="label">Related Literature</span>
+    <span v-if="showLabel" class="label">Related Literature</span>
 
     <!-- If we're using literature ID mode -->
     <template v-if="useId">
@@ -76,6 +76,10 @@ const props = defineProps({
   useId: {
     type: Boolean,
     default: false
+  },
+  showLabel: {
+    type: Boolean,
+    default: true
   }
 })
 
