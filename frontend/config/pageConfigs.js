@@ -232,16 +232,86 @@ export const legalInstrumentConfig = {
 
 export const courtDecisionConfig = {
     keyLabelPairs: [
-        { key: 'Case Title', label: 'Case Title' },
-        { key: 'Date', label: 'Date' },
-        { key: 'Instance', label: 'Instance' },
-        { key: 'Abstract', label: 'Abstract' },
-        { key: 'Relevant Facts', label: 'Relevant Facts' },
-        { key: 'Choice of Law Issue', label: 'Choice of Law Issue' },
-        { key: "Court's Position", label: "Court's Position" },
-        { key: 'Text of the Relevant Legal Provisions', label: 'Text of the Relevant Legal Provisions' },
-        { key: 'Case Citation', label: 'Case Citation' },
-        { key: 'Related Literature', label: '' }
+        {
+            key: 'Case Title',
+            label: 'Case Title',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No case title available'
+            }
+        },
+        {
+            key: 'Date',
+            label: 'Date',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'N/A'
+            }
+        },
+        {
+            key: 'Instance',
+            label: 'Instance',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No instance information available'
+            }
+        },
+        {
+            key: 'Abstract',
+            label: 'Abstract',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No abstract available'
+            }
+        },
+        {
+            key: 'Relevant Facts',
+            label: 'Relevant Facts',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No relevant facts available'
+            }
+        },
+        {
+            key: 'Choice of Law Issue',
+            label: 'Choice of Law Issue',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No choice of law issue available'
+            }
+        },
+        {
+            key: "Court's Position",
+            label: "Court's Position",
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: "No court's position available"
+            }
+        },
+        {
+            key: 'Text of the Relevant Legal Provisions',
+            label: 'Text of the Relevant Legal Provisions',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No relevant legal provisions available'
+            }
+        },
+        {
+            key: 'Case Citation',
+            label: 'Case Citation',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No case citation available'
+            }
+        },
+        {
+            key: 'Related Literature',
+            label: '',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No related literature available'
+            }
+        }
     ],
     valueClassMap: {
         'Case Title': 'result-value-medium',
