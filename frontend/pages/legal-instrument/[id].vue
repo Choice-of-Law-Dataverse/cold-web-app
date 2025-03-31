@@ -24,13 +24,13 @@
         </div>
       </div>
     </template>
-    <template #entry-into-force="{ value }">
+    <template #Entry-Into-Force="{ value }">
       <p class="result-value-small">
         {{ formatDate(value) || 'N/A' }}
       </p>
     </template>
 
-    <template #publication-date="{ value }">
+    <template #Publication-Date="{ value }">
       <p class="result-value-small">
         {{ formatDate(value) || 'N/A' }}
       </p>
