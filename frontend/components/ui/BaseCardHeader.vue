@@ -162,6 +162,16 @@ const labelColorClass = computed(() => {
 })
 
 const formattedTheme = computed(() => {
+  if (props.formattedTheme.length > 0) {
+    return props.formattedTheme
+  }
+  
+  // Handle literature's Manual Tags
+  if (props.cardType === 'Literature' && props.resultData['Manual Tags']) {
+    return props.resultData['Manual Tags'].split(';').map(theme => theme.trim())
+  }
+  
+  // Handle other types
   const themes =
     props.resultData['Title of the Provision'] ?? props.resultData.Themes
 
@@ -222,7 +232,7 @@ function getLink() {
   height: 100%;
   background: linear-gradient(to left, white, transparent);
   pointer-events: none;
-  z-index: 10; /* Ensure it’s above the scrolling tags */
+  z-index: 10; /* Ensure it's above the scrolling tags */
 }
 
 /* Adjust position when only one of the links is shown */

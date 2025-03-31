@@ -5,7 +5,15 @@
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
     sourceTable="Literature"
-  />
+  >
+    <BaseCardHeader
+      v-if="literature"
+      :resultData="literature"
+      :cardType="'Literature'"
+      :showOpenLink="false"
+      :showSuggestEdit="true"
+    />
+  </BaseDetailLayout>
 </template>
 
 <script setup>
@@ -14,6 +22,7 @@ import { useRoute } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
+import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
 
 const route = useRoute()
 
