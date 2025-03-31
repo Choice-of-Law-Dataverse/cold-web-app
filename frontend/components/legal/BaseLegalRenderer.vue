@@ -14,8 +14,8 @@
         <slot :item="items[0]" />
       </div>
     </div>
-    <div v-else>
-      <span>N/A</span>
+    <div v-else-if="displayValue" :class="valueClassMap || defaultClass">
+      {{ displayValue }}
     </div>
   </div>
 </template>
@@ -39,6 +39,13 @@ const props = defineProps({
   isList: {
     type: Boolean,
     default: true
+  },
+  emptyValueBehavior: {
+    type: Object,
+    default: () => ({
+      action: 'display',
+      fallback: 'N/A'
+    })
   }
 })
 
@@ -47,5 +54,11 @@ const hasContent = computed(() => {
     return props.items.length > 0
   }
   return props.items && props.items.trim()
+})
+
+const displayValue = computed(() => {
+  if (hasContent.value) return null
+  if (props.emptyValueBehavior.action === 'hide') return null
+  return props.emptyValueBehavior.fallback
 })
 </script> 

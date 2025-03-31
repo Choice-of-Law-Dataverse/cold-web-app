@@ -2,6 +2,7 @@
   <BaseLegalRenderer
     :items="value"
     :valueClassMap="valueClassMap"
+    :emptyValueBehavior="emptyValueBehavior"
     defaultClass="result-value-small"
   >
     <template #default="{ item }">
@@ -22,6 +23,13 @@ defineProps({
   valueClassMap: {
     type: String,
     default: ''
+  },
+  emptyValueBehavior: {
+    type: Object,
+    default: () => ({
+      action: 'display',
+      fallback: 'No court decisions available'
+    })
   }
 })
 </script> 

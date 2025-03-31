@@ -28,16 +28,7 @@ export function useQuestion() {
 
     const filteredKeyLabelPairs = computed(() => {
         if (!processedAnswerData.value) return keyLabelPairs
-
-        const caseIds = processedAnswerData.value['Court Decisions ID']
-        const hasRelatedCases = Array.isArray(caseIds) && caseIds.length > 0
-
-        return keyLabelPairs.filter((pair) => {
-            if (pair.key === 'Court Decisions ID') {
-                return hasRelatedCases
-            }
-            return true
-        })
+        return keyLabelPairs
     })
 
     async function fetchAnswer(id) {

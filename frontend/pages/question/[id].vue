@@ -11,36 +11,43 @@
         >
           <!-- Custom rendering for Legal provision articles -->
           <template #domestic-legal-provisions="{ value }">
-            <QuestionSourceList
-              :sources="
-                [
-                  ...(value ||
-                  processedAnswerData?.['Domestic Legal Provisions'] ||
-                  processedAnswerData?.['Jurisdictions Literature ID']
-                    ? [
-                        value ||
-                          processedAnswerData?.['Domestic Legal Provisions'] ||
-                          processedAnswerData?.['Jurisdictions Literature ID'],
-                      ]
-                    : []),
-                ].filter(Boolean)
-              "
-              :fallbackData="processedAnswerData"
-              :valueClassMap="valueClassMap"
-              :noLinkList="[
-                processedAnswerData?.['Jurisdictions Literature ID'],
-              ]"
-              :fetchOupChapter="true"
-              :fetchPrimarySource="true"
-            />
+            <section>
+              <span class="label">Source</span>
+              <QuestionSourceList
+                :sources="
+                  [
+                    ...(value ||
+                    processedAnswerData?.['Domestic Legal Provisions'] ||
+                    processedAnswerData?.['Jurisdictions Literature ID']
+                      ? [
+                          value ||
+                            processedAnswerData?.['Domestic Legal Provisions'] ||
+                            processedAnswerData?.['Jurisdictions Literature ID'],
+                        ]
+                      : []),
+                  ].filter(Boolean)
+                "
+                :fallbackData="processedAnswerData"
+                :valueClassMap="valueClassMap"
+                :noLinkList="[
+                  processedAnswerData?.['Jurisdictions Literature ID'],
+                ]"
+                :fetchOupChapter="true"
+                :fetchPrimarySource="true"
+              />
+            </section>
           </template>
 
           <!-- Custom rendering for Court Decisions ID -->
           <template #court-decisions-id="{ value }">
-            <CourtDecisionRenderer
-              :value="value"
-              :valueClassMap="valueClassMap['Court Decisions ID']"
-            />
+            <section>
+              <span class="label">related cases</span>
+              <CourtDecisionRenderer
+                :value="value"
+                :valueClassMap="valueClassMap['Court Decisions ID']"
+                :emptyValueBehavior="filteredKeyLabelPairs.find(pair => pair.key === 'Court Decisions ID')?.emptyValueBehavior"
+              />
+            </section>
           </template>
 
           <!-- Related Literature -->

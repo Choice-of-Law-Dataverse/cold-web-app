@@ -103,12 +103,53 @@ export const jurisdictionConfig = {
 
 export const questionConfig = {
     keyLabelPairs: [
-        { key: 'Question', label: 'Question' },
-        { key: 'Answer', label: 'Answer' },
-        { key: 'More Information', label: 'More Information' },
-        { key: 'Domestic Legal Provisions', label: 'Source' },
-        { key: 'Court Decisions ID', label: 'related cases' },
-        { key: 'Related Literature', label: '' }
+        {
+            key: 'Question',
+            label: 'Question',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No question available'
+            }
+        },
+        {
+            key: 'Answer',
+            label: 'Answer',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No answer available'
+            }
+        },
+        {
+            key: 'More Information',
+            label: 'More Information',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
+            key: 'Domestic Legal Provisions',
+            label: 'Source',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No source available'
+            }
+        },
+        {
+            key: 'Court Decisions ID',
+            label: 'related cases',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No related cases'
+            }
+        },
+        {
+            key: 'Related Literature',
+            label: '',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No related literature available'
+            }
+        }
     ],
     valueClassMap: {
         Question: 'result-value-medium',
