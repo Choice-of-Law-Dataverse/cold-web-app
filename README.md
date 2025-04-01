@@ -10,3 +10,9 @@ We continuously deploy the backend and frontend independently of each other. Eac
 When creating a new "official" release of the repository, we align the version numbers of the backend and frontend to the highest version number between the two, ensuring consistency. This may involve incrementing the version of the component that is "lagging behind" to match the other.
 
 This approach allows for flexibility in development while maintaining coherence in official releases.
+
+## Language Style Guide
+For website and data input
+- Language: `en-US` – English as used in the United States
+- Apply "Bluebook" title case style for titles, convert titles [here](https://titlecaseconverter.com/)
+- When in doubt, look to [George](https://en.wikipedia.org/wiki/Politics_and_the_English_Language#Remedy_of_Six_Rules)
