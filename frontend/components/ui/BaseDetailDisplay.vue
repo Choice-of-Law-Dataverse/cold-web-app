@@ -61,6 +61,7 @@
                   :class="[
                     props.valueClassMap[item.key] || 'text-gray-800',
                     'text-sm leading-relaxed whitespace-pre-line',
+                    (!resultData?.[item.key] || resultData?.[item.key] === 'NA') && item.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
                   ]"
                 >
                   {{ getDisplayValue(item, resultData?.[item.key]) }}
