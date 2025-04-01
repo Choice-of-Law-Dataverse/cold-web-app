@@ -3,7 +3,6 @@
     <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
       <div class="col-span-12">
         <DetailDisplay
-          v-if="!loading"
           :loading="loading"
           :resultData="resultData"
           :keyLabelPairs="keyLabelPairs"

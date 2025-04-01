@@ -8,11 +8,16 @@ export function useApiFetch() {
     const fetchData = async ({ table, id }) => {
         loading.value = true
         error.value = null
+        data.value = null
 
         const config = useRuntimeConfig()
         const jsonPayload = { table, id }
 
         try {
+            // Create an AbortController for timeout
+            const controller = new AbortController()
+            const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
+
             const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
                 method: 'POST',
                 headers: {
@@ -20,14 +25,30 @@ export function useApiFetch() {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify(jsonPayload),
+                signal: controller.signal
             })
 
-            if (!response.ok) throw new Error(`Failed to fetch ${table}`)
+            clearTimeout(timeoutId)
 
-            data.value = await response.json()
+            if (!response.ok) {
+                throw new Error(`Failed to fetch ${table}: ${response.status} ${response.statusText}`)
+            }
+
+            const responseData = await response.json()
+
+            if (!responseData) {
+                throw new Error(`No data received for ${table}`)
+            }
+
+            data.value = responseData
             return data.value
         } catch (err) {
-            error.value = err instanceof Error ? err.message : 'An error occurred'
+            if (err.name === 'AbortError') {
+                error.value = 'Request timed out. Please try again.'
+            } else {
+                error.value = err instanceof Error ? err.message : 'An error occurred while fetching data'
+            }
+            console.error('API Fetch Error:', error.value)
             throw err
         } finally {
             loading.value = false

@@ -14,6 +14,16 @@
       />
     </template>
   </BaseDetailLayout>
+
+  <!-- Error Alert -->
+  <UAlert
+    v-if="error"
+    type="error"
+    class="mx-auto mt-4"
+    style="max-width: var(--container-width);"
+  >
+    {{ error }}
+  </UAlert>
 </template>
 
 <script setup>
@@ -57,10 +67,25 @@ const modifiedCourtDecision = computed(() => {
   }
 })
 
+const fetchCourtDecision = async () => {
+  try {
+    await fetchData({
+      table: 'Court Decisions',
+      id: route.params.id,
+    })
+  } catch (err) {
+    console.error('Failed to fetch court decision:', err)
+  }
+}
+
 onMounted(() => {
-  fetchData({
-    table: 'Court Decisions',
-    id: route.params.id,
-  })
+  fetchCourtDecision()
+})
+
+// Refetch if the route ID changes
+watch(() => route.params.id, (newId) => {
+  if (newId) {
+    fetchCourtDecision()
+  }
 })
 </script>
