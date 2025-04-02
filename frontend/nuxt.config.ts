@@ -77,6 +77,7 @@ export default defineNuxtConfig({
     },
   },
   imports: {
-    dirs: ['utils'], // auto-import all exports from utils/
+    dirs: ['utils'],
+    presets: ['vue']
   },
 });

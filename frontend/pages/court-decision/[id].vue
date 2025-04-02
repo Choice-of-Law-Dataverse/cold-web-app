@@ -7,6 +7,7 @@
     sourceTable="Court Decisions"
   >
     <template #publication-date-iso="{ value }">
+      <p class="label-key -mb-1">Date</p>
       <p class="result-value-small">
         {{ formatDate(value) || 'N/A' }}
       </p>
@@ -48,18 +49,16 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   courtDecisionConfig
 )
 
-// Debug the court decision data
+// Debug the court decision data and configuration
 watch(courtDecision, (newValue) => {
-  console.log('Court Decision Data:', newValue)
   if (newValue) {
-    console.log('Themes:', newValue['Themes'])
+    // No console.log needed
   }
 })
 
 const themes = computed(() => {
   if (!courtDecision.value) return ''
   const themesData = courtDecision.value['Themes']
-  console.log('Processing themes for RelatedLiterature:', themesData)
   return themesData || ''
 })
 

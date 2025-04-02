@@ -21,8 +21,8 @@
 </template>
 
 <script setup>
-import Nav from '~/components/Nav.vue'
-import Footer from '~/components/Footer.vue'
+import Nav from '~/components/layout/Nav.vue'
+import Footer from '~/components/layout/Footer.vue'
 
 defineProps(['error'])
 </script>
