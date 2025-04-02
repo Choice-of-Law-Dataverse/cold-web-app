@@ -6,6 +6,11 @@
     :valueClassMap="valueClassMap"
     sourceTable="Court Decisions"
   >
+    <template #publication-date-iso="{ value }">
+      <p class="result-value-small">
+        {{ formatDate(value) || 'N/A' }}
+      </p>
+    </template>
     <template #related-literature="{ value }">
       <RelatedLiterature
         :themes="themes"
@@ -20,7 +25,7 @@
     v-if="error"
     type="error"
     class="mx-auto mt-4"
-    style="max-width: var(--container-width);"
+    style="max-width: var(--container-width)"
   >
     {{ error }}
   </UAlert>
@@ -38,7 +43,10 @@ import { courtDecisionConfig } from '~/config/pageConfigs'
 const route = useRoute()
 const { loading, error, data: courtDecision, fetchData } = useApiFetch()
 
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(courtDecision, courtDecisionConfig)
+const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
+  courtDecision,
+  courtDecisionConfig
+)
 
 // Debug the court decision data
 watch(courtDecision, (newValue) => {
@@ -63,7 +71,7 @@ const modifiedCourtDecision = computed(() => {
       courtDecision.value['Case Title'] === 'Not found'
         ? courtDecision.value['Case Citation']
         : courtDecision.value['Case Title'],
-    'Related Literature': themes.value
+    'Related Literature': themes.value,
   }
 })
 
@@ -83,9 +91,12 @@ onMounted(() => {
 })
 
 // Refetch if the route ID changes
-watch(() => route.params.id, (newId) => {
-  if (newId) {
-    fetchCourtDecision()
+watch(
+  () => route.params.id,
+  (newId) => {
+    if (newId) {
+      fetchCourtDecision()
+    }
   }
-})
+)
 </script>
