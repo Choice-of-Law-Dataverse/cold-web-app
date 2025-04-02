@@ -28,17 +28,21 @@
       </section>
     </template>
     <template #entry-into-force="{ value }">
-      <p class="label-key -mb-1">Entry Into Force</p>
-      <p class="result-value-small">
-        {{ formatDate(value) || 'N/A' }}
-      </p>
+      <div v-if="value">
+        <p class="label-key -mb-1">Entry Into Force</p>
+        <p class="result-value-small">
+          {{ formatDate(value) }}
+        </p>
+      </div>
     </template>
 
     <template #publication-date="{ value }">
-      <p class="label-key -mb-1">Publication Date</p>
-      <p class="result-value-small">
-        {{ formatDate(value) || 'N/A' }}
-      </p>
+      <div v-if="value">
+        <p class="label-key -mb-1">Publication Date</p>
+        <p class="result-value-small">
+          {{ formatDate(value) }}
+        </p>
+      </div>
     </template>
   </BaseDetailLayout>
 </template>
