@@ -45,6 +45,13 @@ export const literatureConfig = {
                 action: 'display',
                 fallback: 'No publication available'
             }
+        },
+        {
+            key: 'Url',
+            label: 'Link',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
         }
     ],
     valueClassMap: {

@@ -13,6 +13,16 @@
       :showOpenLink="false"
       :showSuggestEdit="true"
     />
+    <template #url="{ value }">
+      <div v-if="value">
+        <p class="label-key -mb-1">Link</p>
+        <p class="result-value-small">
+          <a :href="value" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 hover:underline">
+            {{ value }}
+          </a>
+        </p>
+      </div>
+    </template>
   </BaseDetailLayout>
 </template>
 
