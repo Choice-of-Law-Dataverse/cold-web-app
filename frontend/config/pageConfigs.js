@@ -241,7 +241,7 @@ export const courtDecisionConfig = {
             }
         },
         {
-            key: 'Date',
+            key: 'Publication Date ISO',
             label: 'Date',
             emptyValueBehavior: {
                 action: 'display',
@@ -315,7 +315,7 @@ export const courtDecisionConfig = {
     ],
     valueClassMap: {
         'Case Title': 'result-value-medium',
-        Date: 'result-value-small',
+        'Publication Date ISO': 'result-value-small',
         Instance: 'result-value-small',
         Abstract: 'result-value-small',
         'Relevant Facts': 'result-value-small',
