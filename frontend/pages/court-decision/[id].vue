@@ -9,7 +9,6 @@
     <template #publication-date-iso="{ value }">
       <p class="label-key -mb-1">Date</p>
       <p class="result-value-small">
-        {{ console.log('Publication Date ISO value:', value) }}
         {{ formatDate(value) || 'N/A' }}
       </p>
     </template>
@@ -52,17 +51,14 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
 
 // Debug the court decision data and configuration
 watch(courtDecision, (newValue) => {
-  console.log('Court Decision Data:', newValue)
   if (newValue) {
-    console.log('Publication Date ISO:', newValue['Publication Date ISO'])
-    console.log('Key Label Pairs:', computedKeyLabelPairs.value)
+    // No console.log needed
   }
 })
 
 const themes = computed(() => {
   if (!courtDecision.value) return ''
   const themesData = courtDecision.value['Themes']
-  console.log('Processing themes for RelatedLiterature:', themesData)
   return themesData || ''
 })
 
