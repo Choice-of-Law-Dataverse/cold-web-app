@@ -43,7 +43,31 @@ export const literatureConfig = {
             label: 'Publication',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No publication available'
+                fallback: 'No publication available',
+                shouldDisplay: (data) => data['Item Type'] !== 'book'
+            }
+        },
+        {
+            key: 'Publisher',
+            label: 'Publisher',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No publisher available',
+                shouldDisplay: (data) => data['Item Type'] === 'book'
+            }
+        },
+        {
+            key: 'Url',
+            label: 'Link',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
+            key: 'Abstract Note',
+            label: 'Abtract',
+            emptyValueBehavior: {
+                action: 'hide'
             }
         }
     ],
@@ -53,10 +77,12 @@ export const literatureConfig = {
         Editor: 'result-value-small',
         'Publication Year': 'result-value-small',
         'Publication Title': 'result-value-small',
+        Publisher: 'result-value-small',
         Themes: 'result-value-small',
         'Manual Tags': 'result-value-small',
         Jurisdictions: 'result-value-small',
-        'Related Literature': 'result-value-small'
+        'Related Literature': 'result-value-small',
+        'Abstract Note': 'result-value-small'
     }
 }
 

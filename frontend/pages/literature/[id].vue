@@ -13,6 +13,32 @@
       :showOpenLink="false"
       :showSuggestEdit="true"
     />
+    <template #publication-title="{ value }">
+      <div v-if="value && literature['Item Type'] !== 'book'">
+        <p class="label-key -mb-1">Publication</p>
+        <p class="result-value-small">
+          {{ value }}
+        </p>
+      </div>
+    </template>
+    <template #publisher="{ value }">
+      <div v-if="value && literature['Item Type'] === 'book'">
+        <p class="label-key -mb-1">Publisher</p>
+        <p class="result-value-small">
+          {{ value }}
+        </p>
+      </div>
+    </template>
+    <template #url="{ value }">
+      <div v-if="value">
+        <p class="label-key -mb-1">Link</p>
+        <p class="result-value-small">
+          <a :href="value" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:text-blue-800 hover:underline">
+            {{ value }}
+          </a>
+        </p>
+      </div>
+    </template>
   </BaseDetailLayout>
 </template>
 
