@@ -56,7 +56,7 @@
   </main>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import AboutCoLD from './AboutCoLD.vue'
@@ -139,8 +139,6 @@ li {
 }
 
 li.active {
-  /*border-bottom: 1px solid var(--color-cold-purple) !important; /* Active item underline */
-  /*margin-bottom: -1px !important; /* Offset to align with the gray line */
   z-index: 2 !important; /* Bring the active item above the gray line */
 }
 

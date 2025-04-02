@@ -13,7 +13,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import SearchResults from '../components/SearchResults.vue' // Adjust path if needed
+import SearchResults from './components/search-results/SearchResults.vue'
 
 // Block a page from being indexed (https://nuxtseo.com/learn/controlling-crawlers#quick-implementation-guide)
 useSeoMeta({
@@ -35,36 +35,6 @@ const filter = ref({
   theme: route.query.theme || 'All Themes',
   type: route.query.type || 'All Types',
 })
-
-// Function to handle a new search
-// const onSearchInput = (newQuery) => {
-//   searchQuery.value = newQuery // Update the searchQuery state
-
-//   // Update the URL query string with the new search term
-//   router.push({
-//     query: {
-//       q: newQuery || undefined, // Only include 'q' if it's not empty
-//       jurisdiction:
-//         filter.value.jurisdiction !== 'All Jurisdictions'
-//           ? filter.value.jurisdiction
-//           : undefined,
-//       theme:
-//         filter.value.theme !== 'All Themes' ? filter.value.theme : undefined,
-//       type: filter.value.type !== 'All Types' ? filter.value.type : undefined,
-//     },
-//   })
-
-//   // Fetch new results with the updated search query and current filters
-//   fetchSearchResults(newQuery || '', filter.value) // Allow empty search term
-// }
-
-// const hasActiveFilters = computed(() => {
-//   return (
-//     filter.value.jurisdiction !== 'All Jurisdictions' ||
-//     filter.value.theme !== 'All Themes' ||
-//     filter.value.type !== 'All Types'
-//   )
-// })
 
 const searchText = ref(route.query.q || '') // Initialize searchText from query
 
@@ -150,7 +120,6 @@ async function fetchSearchResults(query, filters) {
     Questions: 'Answers',
     'Court Decisions': 'Court Decisions',
     'Legal Instruments': 'Domestic Instruments',
-    //'Legal Instruments': 'International Legal Provisions',
     Literature: 'Literature',
   }
 

@@ -78,22 +78,11 @@
 </template>
 
 <script setup>
-import PopularSearches from '~/components/PopularSearches.vue'
-import JurisdictionMap from '~/components/JurisdictionMap.vue'
-import CountrySelectMenu from '~/components/TempJurisdictionPicker.vue'
-import PlotCourtDecisionsJurisdiction from '~/components/PlotCourtDecisionsJurisdiction.vue'
-import ConnectCard from '~/components/LandingPage/ConnectCard.vue'
-
+import PopularSearches from '~/components/landing-page/PopularSearches.vue'
+import JurisdictionMap from '~/components/landing-page/JurisdictionMap.vue'
+import CountrySelectMenu from '~/components/landing-page/TempJurisdictionPicker.vue'
+import PlotCourtDecisionsJurisdiction from '~/components/landing-page/PlotCourtDecisionsJurisdiction.vue'
+import ConnectCard from '~/components/landing-page/ConnectCard.vue'
 import { externalLinks } from '~/utils/externalLinks'
 const links = externalLinks
 </script>
-
-<style scoped>
-/* h1 {
-  margin-bottom: 12px;
-}
-
-h2 {
-  margin-bottom: 42px;
-} */
-</style>

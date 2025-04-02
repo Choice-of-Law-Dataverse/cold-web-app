@@ -1,111 +1,102 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <div class="col-span-12">
-        <DetailDisplay
-          v-if="courtDecision"
-          :resultData="modifiedCourtDecision"
-          :keyLabelPairs="computedKeyLabelPairs"
-          :valueClassMap="valueClassMap"
-          formattedSourceTable="Court Decisions"
-        >
-          <template #publication-date-iso="{ value }">
-            <p class="result-value-small">
-              {{ formatDate(value) || 'N/A' }}
-            </p>
-          </template>
-          <template #related-literature>
-            <RelatedLiterature
-              :themes="courtDecision?.Themes || ''"
-              :valueClassMap="valueClassMap['Related Literature']"
-            />
-          </template>
-        </DetailDisplay>
-      </div>
-    </div>
-  </main>
+  <BaseDetailLayout
+    :loading="loading"
+    :resultData="modifiedCourtDecision"
+    :keyLabelPairs="computedKeyLabelPairs"
+    :valueClassMap="valueClassMap"
+    sourceTable="Court Decisions"
+  >
+    <template #publication-date-iso="{ value }">
+      <p class="result-value-small">
+        {{ formatDate(value) || 'N/A' }}
+      </p>
+    </template>
+    <template #related-literature="{ value }">
+      <RelatedLiterature
+        :themes="themes"
+        :valueClassMap="valueClassMap['Related Literature']"
+        :useId="false"
+      />
+    </template>
+  </BaseDetailLayout>
+
+  <!-- Error Alert -->
+  <UAlert
+    v-if="error"
+    type="error"
+    class="mx-auto mt-4"
+    style="max-width: var(--container-width)"
+  >
+    {{ error }}
+  </UAlert>
 </template>
 
-<script setup lang="ts">
+<script setup>
+import { computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import DetailDisplay from '~/components/DetailDisplay.vue'
+import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
+import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
+import { useApiFetch } from '~/composables/useApiFetch'
+import { useDetailDisplay } from '~/composables/useDetailDisplay'
+import { courtDecisionConfig } from '~/config/pageConfigs'
 
-const route = useRoute() // Access the route to get the ID param
-const config = useRuntimeConfig()
+const route = useRoute()
+const { loading, error, data: courtDecision, fetchData } = useApiFetch()
 
-const id = route.params.id as string
+const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
+  courtDecision,
+  courtDecisionConfig
+)
 
-// Fetch court decision using useAsyncData (SSR-compatible)
-const {
-  data: courtDecision,
-  pending: loading,
-  error,
-} = useAsyncData(`court-decision-${id}`, async () => {
-  const jsonPayload = {
-    table: 'Court Decisions',
-    id: id,
+// Debug the court decision data
+watch(courtDecision, (newValue) => {
+  console.log('Court Decision Data:', newValue)
+  if (newValue) {
+    console.log('Themes:', newValue['Themes'])
   }
-
-  const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${config.public.FASTAPI}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(jsonPayload),
-  })
-
-  if (!response.ok) throw new Error('Failed to fetch court decision')
-
-  return await response.json()
 })
 
-// Define the keys and labels for dynamic rendering
-const keyLabelPairs = [
-  { key: 'Case Title', label: 'Case Title' },
-  { key: 'Publication Date ISO', label: 'Date' },
-  { key: 'Instance', label: 'Instance' },
-  { key: 'Abstract', label: 'Abstract' },
-  { key: 'Relevant Facts', label: 'Relevant Facts' },
-  { key: 'Choice of Law Issue', label: 'Choice of Law Issue' },
-  { key: "Court's Position", label: "Court's Position" },
-  {
-    key: 'Text of the Relevant Legal Provisions',
-    label: 'Text of the Relevant Legal Provisions',
-  },
-  { key: 'Case Citation', label: 'Case Citation' },
-  { key: 'Related Literature', label: '' },
-]
-
-const computedKeyLabelPairs = computed(() => {
-  const data: Record<string, any> = courtDecision.value || {}
-
-  return keyLabelPairs.map((pair) => ({
-    ...pair,
-    value:
-      pair.key === 'Case Title' && data['Case Title'] === 'Not found'
-        ? data['Case Citation']
-        : data[pair.key],
-  }))
+const themes = computed(() => {
+  if (!courtDecision.value) return ''
+  const themesData = courtDecision.value['Themes']
+  console.log('Processing themes for RelatedLiterature:', themesData)
+  return themesData || ''
 })
 
 const modifiedCourtDecision = computed(() => {
-  const data: Record<string, any> = courtDecision.value || {}
+  if (!courtDecision.value) return null
   return {
-    ...data,
+    ...courtDecision.value,
     'Case Title':
-      data['Case Title'] === 'Not found'
-        ? data['Case Citation']
-        : data['Case Title'],
+      courtDecision.value['Case Title'] === 'Not found'
+        ? courtDecision.value['Case Citation']
+        : courtDecision.value['Case Title'],
+    'Related Literature': themes.value,
   }
 })
 
-const valueClassMap = {
-  'Case Title': 'result-value-medium',
-  Abstract: 'result-value-small',
-  'Relevant Facts': 'result-value-small',
-  'Choice of Law Issue': 'result-value-small',
-  "Court's Position": 'result-value-small',
-  'Text of the Relevant Legal Provisions': 'result-value-small',
+const fetchCourtDecision = async () => {
+  try {
+    await fetchData({
+      table: 'Court Decisions',
+      id: route.params.id,
+    })
+  } catch (err) {
+    console.error('Failed to fetch court decision:', err)
+  }
 }
+
+onMounted(() => {
+  fetchCourtDecision()
+})
+
+// Refetch if the route ID changes
+watch(
+  () => route.params.id,
+  (newId) => {
+    if (newId) {
+      fetchCourtDecision()
+    }
+  }
+)
 </script>

@@ -52,8 +52,8 @@
   </main>
 </template>
 
-<script setup lang="ts">
-import { ref, watch } from 'vue'
+<script setup>
+import { ref, watch, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import OpenEducationalResources from './OpenEducationalResources.vue'
 import FAQ from './FAQ.vue'
@@ -135,8 +135,6 @@ li {
 }
 
 li.active {
-  /*border-bottom: 1px solid var(--color-cold-purple) !important; /* Active item underline */
-  /*margin-bottom: -1px !important; /* Offset to align with the gray line */
   z-index: 2 !important; /* Bring the active item above the gray line */
 }
 
