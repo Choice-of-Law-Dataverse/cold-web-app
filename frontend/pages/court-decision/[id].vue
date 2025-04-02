@@ -34,7 +34,7 @@
 
 <script setup>
 import { computed, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
@@ -42,6 +42,7 @@ import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { courtDecisionConfig } from '~/config/pageConfigs'
 
 const route = useRoute()
+const router = useRouter()
 const { loading, error, data: courtDecision, fetchData } = useApiFetch()
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
@@ -76,10 +77,18 @@ const modifiedCourtDecision = computed(() => {
 
 const fetchCourtDecision = async () => {
   try {
-    await fetchData({
+    const result = await fetchData({
       table: 'Court Decisions',
       id: route.params.id,
     })
+    
+    // Check if the API returned an error response
+    if (result.error === 'no entry found with the specified id') {
+      router.push({
+        path: '/error',
+        query: { message: 'Court decision not found' }
+      })
+    }
   } catch (err) {
     console.error('Failed to fetch court decision:', err)
   }
