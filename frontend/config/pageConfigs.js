@@ -47,6 +47,13 @@ export const literatureConfig = {
             }
         },
         {
+            key: 'Publisher',
+            label: 'Publisher',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
             key: 'Url',
             label: 'Link',
             emptyValueBehavior: {
@@ -67,6 +74,7 @@ export const literatureConfig = {
         Editor: 'result-value-small',
         'Publication Year': 'result-value-small',
         'Publication Title': 'result-value-small',
+        Publisher: 'result-value-small',
         Themes: 'result-value-small',
         'Manual Tags': 'result-value-small',
         Jurisdictions: 'result-value-small',
