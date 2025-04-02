@@ -58,19 +58,10 @@ const { loading, error, data: legalInstrument, fetchData } = useApiFetch()
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(legalInstrument, legalInstrumentConfig)
 
-// Debug the legal instrument data
-watch(legalInstrument, (newValue) => {
-  if (newValue) {
-    console.log('Legal Instrument Data:', newValue)
-  }
-})
-
 const processedLegalInstrument = computed(() => {
   if (!legalInstrument.value) {
-    console.log('No legal instrument data available')
     return null
   }
-  console.log('Processing legal instrument:', legalInstrument.value)
   return {
     ...legalInstrument.value,
     'Title (in English)': legalInstrument.value['Title (in English)'] || legalInstrument.value['Official Title']
@@ -78,7 +69,6 @@ const processedLegalInstrument = computed(() => {
 })
 
 onMounted(() => {
-  console.log('Fetching legal instrument with ID:', route.params.id)
   fetchData({
     table: 'Domestic Instruments',
     id: route.params.id,
