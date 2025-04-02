@@ -52,6 +52,13 @@ export const literatureConfig = {
             emptyValueBehavior: {
                 action: 'hide'
             }
+        },
+        {
+            key: 'Abstract Note',
+            label: 'Abtract',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
         }
     ],
     valueClassMap: {
@@ -63,7 +70,8 @@ export const literatureConfig = {
         Themes: 'result-value-small',
         'Manual Tags': 'result-value-small',
         Jurisdictions: 'result-value-small',
-        'Related Literature': 'result-value-small'
+        'Related Literature': 'result-value-small',
+        'Abstract Note': 'result-value-small'
     }
 }
 
