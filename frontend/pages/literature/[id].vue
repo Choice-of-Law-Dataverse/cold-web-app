@@ -14,7 +14,7 @@
       :showSuggestEdit="true"
     />
     <template #publication-title="{ value }">
-      <div v-if="value">
+      <div v-if="value && literature['Item Type'] !== 'book'">
         <p class="label-key -mb-1">Publication</p>
         <p class="result-value-small">
           {{ value }}
@@ -22,7 +22,7 @@
       </div>
     </template>
     <template #publisher="{ value }">
-      <div v-if="value">
+      <div v-if="value && literature['Item Type'] === 'book'">
         <p class="label-key -mb-1">Publisher</p>
         <p class="result-value-small">
           {{ value }}
@@ -43,7 +43,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue'
+import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
@@ -55,20 +55,7 @@ const route = useRoute()
 
 const { loading, error, data: literature, fetchData } = useApiFetch()
 
-// Modify the literature data to handle the conditional display
-const modifiedLiterature = computed(() => {
-  if (!literature.value) return null
-  
-  const isBook = literature.value['Item Type'] === 'book'
-  
-  return {
-    ...literature.value,
-    'Publication Title': isBook ? null : literature.value['Publication Title'],
-    'Publisher': isBook ? literature.value['Publisher'] : null
-  }
-})
-
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(modifiedLiterature, literatureConfig)
+const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(literature, literatureConfig)
 
 onMounted(() => {
   fetchData({

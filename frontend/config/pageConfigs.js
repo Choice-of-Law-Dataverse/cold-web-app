@@ -43,14 +43,17 @@ export const literatureConfig = {
             label: 'Publication',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No publication available'
+                fallback: 'No publication available',
+                shouldDisplay: (data) => data['Item Type'] !== 'book'
             }
         },
         {
             key: 'Publisher',
             label: 'Publisher',
             emptyValueBehavior: {
-                action: 'hide'
+                action: 'display',
+                fallback: 'No publisher available',
+                shouldDisplay: (data) => data['Item Type'] === 'book'
             }
         },
         {
