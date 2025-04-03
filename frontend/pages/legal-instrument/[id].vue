@@ -49,7 +49,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import LegalProvision from '~/components/legal/LegalProvision.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
@@ -57,6 +57,7 @@ import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { legalInstrumentConfig } from '~/config/pageConfigs'
 
 const route = useRoute()
+const router = useRouter()
 const textType = ref('Full Text of the Provision (English Translation)')
 const hasEnglishTranslation = ref(false)
 
@@ -74,12 +75,21 @@ const processedLegalInstrument = computed(() => {
   }
 })
 
-onMounted(() => {
-  fetchData({
-    table: 'Domestic Instruments',
-    id: route.params.id,
-  }).catch(err => {
-    console.error('Error fetching legal instrument:', err)
-  })
+onMounted(async () => {
+  try {
+    await fetchData({
+      table: 'Domestic Instruments',
+      id: route.params.id,
+    })
+  } catch (err) {
+    if (err.isNotFound) {
+      router.push({
+        path: '/error',
+        query: { message: `${err.table} not found` }
+      })
+    } else {
+      console.error('Error fetching legal instrument:', err)
+    }
+  }
 })
 </script>

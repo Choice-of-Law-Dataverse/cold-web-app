@@ -1,7 +1,13 @@
 <template>
   <div>
+    <!-- Show error message if there's an API error -->
+    <div v-if="apiError" class="error-message">
+      <p>We're sorry, but we encountered an error while processing your search. Please try again later.</p>
+      <p class="error-details">{{ apiError }}</p>
+    </div>
     <!-- Pass searchResults, totalMatches, and loading state -->
     <SearchResults
+      v-else
       :data="{ tables: searchResults }"
       :total-matches="totalMatches"
       :loading="loading"
@@ -26,6 +32,7 @@ const searchQuery = ref(route.query.q || '') // Holds the search query from the 
 const searchResults = ref([]) // Stores search results to be displayed
 const loading = ref(false) // Tracks the loading state for the API call
 const totalMatches = ref(0) // Save number of total matches to display at top of search results
+const apiError = ref(null) // Track API errors
 
 const config = useRuntimeConfig()
 
@@ -93,6 +100,7 @@ watch(
 async function fetchSearchResults(query, filters) {
   loading.value = true
   searchResults.value = []
+  apiError.value = null // Reset any previous errors
 
   const requestBody = {
     search_string: query,
@@ -162,7 +170,6 @@ async function fetchSearchResults(query, filters) {
 
     const response = await fetch(
       `${config.public.apiBaseUrl}/search/`,
-      //'http://localhost:5000/search/',
       {
         method: 'POST',
         headers: {
@@ -173,7 +180,14 @@ async function fetchSearchResults(query, filters) {
       }
     )
 
-    if (!response.ok) throw new Error('Failed to fetch results')
+    if (!response.ok) {
+      // Handle 5xx errors
+      if (response.status >= 500) {
+        throw new Error(`Server error (${response.status}): ${response.statusText}`)
+      }
+      // Handle other errors
+      throw new Error(`API error (${response.status}): ${response.statusText}`)
+    }
 
     const data = await response.json()
 
@@ -181,6 +195,9 @@ async function fetchSearchResults(query, filters) {
     searchResults.value = Object.values(data.results)
   } catch (error) {
     console.error('Error fetching search results:', error)
+    apiError.value = error.message
+    searchResults.value = []
+    totalMatches.value = 0
   } finally {
     loading.value = false
   }
@@ -226,6 +243,10 @@ const fetchUserInfo = async () => {
       method: 'GET',
     })
 
+    if (!response.ok) {
+      throw new Error(`Failed to fetch user info: ${response.statusText}`)
+    }
+
     const data = await response.json()
     return data // Return the user info data
   } catch (error) {
@@ -234,3 +255,20 @@ const fetchUserInfo = async () => {
   }
 }
 </script>
+
+<style scoped>
+.error-message {
+  padding: 2rem;
+  margin: 2rem;
+  background-color: var(--color-cold-red-light);
+  border: 1px solid var(--color-cold-red);
+  border-radius: 0.5rem;
+  color: var(--color-cold-red);
+}
+
+.error-details {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+  opacity: 0.8;
+}
+</style>

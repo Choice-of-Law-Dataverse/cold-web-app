@@ -9,8 +9,7 @@
         class="mx-auto min-h-[50vh] flex flex-col justify-center items-center text-center"
         style="max-width: var(--container-width); width: 100%"
       >
-        <h2>{{ error.statusCode }} Error</h2>
-        <p>{{ error.message }}</p>
+        <h2>{{ errorMessage }}</h2>
 
         <NuxtLink to="/" class="mt-6"> Back to Home </NuxtLink>
       </div>
@@ -23,6 +22,8 @@
 <script setup>
 import Nav from '~/components/layout/Nav.vue'
 import Footer from '~/components/layout/Footer.vue'
+import { useRoute } from 'vue-router'
 
-defineProps(['error'])
+const route = useRoute()
+const errorMessage = route.query.message || 'An error occurred'
 </script>

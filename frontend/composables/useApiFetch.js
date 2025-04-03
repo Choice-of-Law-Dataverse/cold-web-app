@@ -36,6 +36,14 @@ export function useApiFetch() {
 
             const responseData = await response.json()
 
+            // Check if the API returned a "not found" error
+            if (responseData.error === 'no entry found with the specified id') {
+                const error = new Error('no entry found with the specified id')
+                error.isNotFound = true
+                error.table = table
+                throw error
+            }
+
             if (!responseData) {
                 throw new Error(`No data received for ${table}`)
             }

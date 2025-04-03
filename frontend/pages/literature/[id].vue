@@ -44,7 +44,7 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
@@ -52,15 +52,27 @@ import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
 import { literatureConfig } from '~/config/pageConfigs'
 
 const route = useRoute()
+const router = useRouter()
 
 const { loading, error, data: literature, fetchData } = useApiFetch()
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(literature, literatureConfig)
 
-onMounted(() => {
-  fetchData({
-    table: 'Literature',
-    id: route.params.id,
-  })
+onMounted(async () => {
+  try {
+    await fetchData({
+      table: 'Literature',
+      id: route.params.id,
+    })
+  } catch (err) {
+    if (err.isNotFound) {
+      router.push({
+        path: '/error',
+        query: { message: `${err.table} not found` }
+      })
+    } else {
+      console.error('Error fetching literature:', err)
+    }
+  }
 })
 </script>

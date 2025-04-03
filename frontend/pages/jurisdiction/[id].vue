@@ -108,13 +108,14 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
 import JurisdictionComparison from '~/components/jurisdiction-comparison/JurisdictionComparison.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import { useJurisdiction } from '~/composables/useJurisdiction'
 
 const route = useRoute()
+const router = useRouter()
 const {
   loading,
   error,
@@ -130,8 +131,19 @@ const {
 // Set compare jurisdiction from query parameter
 compareJurisdiction.value = route.query.c || null
 
-onMounted(() => {
-  const id = route.params.id
-  fetchJurisdiction(id)
+onMounted(async () => {
+  try {
+    const id = route.params.id
+    await fetchJurisdiction(id)
+  } catch (err) {
+    if (err.message === 'no entry found with the specified id') {
+      router.push({
+        path: '/error',
+        query: { message: 'Jurisdiction not found' }
+      })
+    } else {
+      console.error('Error fetching jurisdiction:', err)
+    }
+  }
 })
 </script>
