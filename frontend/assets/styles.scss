@@ -223,6 +223,11 @@ li {
   background-color: white !important;
 }
 
+.cold-uselectmenu.non-all-selected button {
+  //border-color: red !important;
+  border-color: var(--color-cold-purple) !important;
+}
+
 // CoLD Card
 .cold-ucard {
   margin-bottom: 24px;

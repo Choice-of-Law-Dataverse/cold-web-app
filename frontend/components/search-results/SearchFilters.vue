@@ -2,6 +2,7 @@
   <div>
     <USelectMenu
       class="lg:w-60 cold-uselectmenu"
+      :class="{ 'non-all-selected': modelValue && !modelValue.startsWith('All') }"
       placeholder="All"
       size="lg"
       :options="options"
