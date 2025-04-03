@@ -228,7 +228,7 @@ li {
   color: var(--color-cold-purple) !important;
 }
 
-// Popper Stlye
+// Popper Style
 ul[role="listbox"][data-headlessui-state] {
   border-radius: 0 !important;
   box-shadow: none !important;
@@ -245,9 +245,8 @@ ul[role="listbox"] li {
 // Popper Selected Icon
 ul[role="listbox"] li[aria-selected="true"] .iconify {
   color: var(--color-cold-purple) !important; 
-  width: 1rem !important;       /* Override the inline width */
+  width: 1rem !important;
 }
-
 
 // Popper Input Size
 ul[role="listbox"] input {
