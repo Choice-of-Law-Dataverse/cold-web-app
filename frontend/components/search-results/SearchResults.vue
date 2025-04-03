@@ -24,9 +24,10 @@
               class="w-full sm:w-auto"
             />
             <UButton
+              v-if="hasActiveFilters"
               variant="link"
               @click="resetFilters"
-              class="w-full sm:w-auto"
+              class="w-full sm:w-auto link-button"
             >
               Reset
             </UButton>
@@ -217,6 +218,15 @@ const currentJurisdictionFilter = ref(
 )
 const currentThemeFilter = ref(props.filters.theme || 'All Themes')
 const currentTypeFilter = ref(props.filters.type || 'All Types')
+
+// Computed property to check if any filter is active
+const hasActiveFilters = computed(() => {
+  return (
+    currentJurisdictionFilter.value !== 'All Jurisdictions' ||
+    currentThemeFilter.value !== 'All Themes' ||
+    currentTypeFilter.value !== 'All Types'
+  )
+})
 
 // Function to reset all filters to their default states
 const resetFilters = () => {
