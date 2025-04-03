@@ -112,6 +112,12 @@ export function useJurisdiction() {
             }
 
             const data = await response.json()
+
+            // Check if the API returned an error response
+            if (data.error === 'no entry found with the specified id') {
+                throw new Error('no entry found with the specified id')
+            }
+
             // Extract the required values
             jurisdictionData.value = {
                 Name: data?.Name || 'N/A',
@@ -130,6 +136,7 @@ export function useJurisdiction() {
         } catch (err) {
             error.value = err.message
             console.error('Error fetching jurisdiction:', err)
+            throw err // Re-throw the error so the page can handle it
         } finally {
             loading.value = false
         }
