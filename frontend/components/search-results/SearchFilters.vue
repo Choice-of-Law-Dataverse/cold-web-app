@@ -2,7 +2,7 @@
   <div>
     <USelectMenu
       class="lg:w-60 cold-uselectmenu"
-      :class="{ 'non-all-selected': modelValue && !modelValue.startsWith('All') }"
+      :class="{ 'non-all-selected': modelValue && !modelValue.includes('All') }"
       placeholder="All"
       size="lg"
       :options="options"
@@ -10,6 +10,7 @@
       @update:modelValue="emit('update:modelValue', $event)"
       searchable
       selected-icon="i-material-symbols:circle"
+      multiple
     />
   </div>
 </template>
@@ -21,8 +22,8 @@ defineProps({
     required: true,
   },
   modelValue: {
-    type: String,
-    default: 'All',
+    type: Array,
+    default: () => ['All'],
   },
 })
 

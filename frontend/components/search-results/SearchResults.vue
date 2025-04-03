@@ -214,49 +214,71 @@ const typeOptions = [
 
 // Reactive states initialized from props
 const currentJurisdictionFilter = ref(
-  props.filters.theme || 'All Jurisdictions'
+  props.filters.jurisdiction ? [props.filters.jurisdiction] : ['All Jurisdictions']
 )
-const currentThemeFilter = ref(props.filters.theme || 'All Themes')
-const currentTypeFilter = ref(props.filters.type || 'All Types')
+const currentThemeFilter = ref(props.filters.theme ? [props.filters.theme] : ['All Themes'])
+const currentTypeFilter = ref(props.filters.type ? [props.filters.type] : ['All Types'])
 
 // Computed property to check if any filter is active
 const hasActiveFilters = computed(() => {
   return (
-    currentJurisdictionFilter.value !== 'All Jurisdictions' ||
-    currentThemeFilter.value !== 'All Themes' ||
-    currentTypeFilter.value !== 'All Types'
+    !currentJurisdictionFilter.value.includes('All Jurisdictions') ||
+    !currentThemeFilter.value.includes('All Themes') ||
+    !currentTypeFilter.value.includes('All Types')
   )
 })
 
 // Function to reset all filters to their default states
 const resetFilters = () => {
-  currentJurisdictionFilter.value = 'All Jurisdictions'
-  currentThemeFilter.value = 'All Themes'
-  currentTypeFilter.value = 'All Types'
+  currentJurisdictionFilter.value = ['All Jurisdictions']
+  currentThemeFilter.value = ['All Themes']
+  currentTypeFilter.value = ['All Types']
 }
 
 // Watch for changes in either filter and emit them up
 watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
   ([newJurisdiction, newTheme, newType]) => {
-    emit('update:filters', {
-      jurisdiction: newJurisdiction,
-      theme: newTheme,
-      type: newType,
-    })
-  }
+    const filters = {
+      jurisdiction: newJurisdiction.includes('All Jurisdictions') ? 'All Jurisdictions' : newJurisdiction.join(','),
+      theme: newTheme.includes('All Themes') ? 'All Themes' : newTheme.join(','),
+      type: newType.includes('All Types') ? 'All Types' : newType.join(','),
+    }
+    
+    // Only emit if the filters have actually changed
+    if (JSON.stringify(filters) !== JSON.stringify(props.filters)) {
+      emit('update:filters', filters)
+    }
+  },
+  { deep: true }
 )
 
 // Watch for prop changes to re-sync dropdowns when parent updates
 watch(
   () => props.filters,
   (newFilters) => {
-    currentJurisdictionFilter.value =
-      newFilters.jurisdiction || 'All Jurisdictions'
-    currentThemeFilter.value = newFilters.theme || 'All Themes'
-    currentTypeFilter.value = newFilters.type || 'All Types'
+    const newJurisdiction = newFilters.jurisdiction === 'All Jurisdictions' 
+      ? ['All Jurisdictions'] 
+      : newFilters.jurisdiction.split(',').filter(Boolean)
+    const newTheme = newFilters.theme === 'All Themes' 
+      ? ['All Themes'] 
+      : newFilters.theme.split(',').filter(Boolean)
+    const newType = newFilters.type === 'All Types' 
+      ? ['All Types'] 
+      : newFilters.type.split(',').filter(Boolean)
+
+    // Only update if the values have actually changed
+    if (JSON.stringify(newJurisdiction) !== JSON.stringify(currentJurisdictionFilter.value)) {
+      currentJurisdictionFilter.value = newJurisdiction
+    }
+    if (JSON.stringify(newTheme) !== JSON.stringify(currentThemeFilter.value)) {
+      currentThemeFilter.value = newTheme
+    }
+    if (JSON.stringify(newType) !== JSON.stringify(currentTypeFilter.value)) {
+      currentTypeFilter.value = newType
+    }
   },
-  { deep: true, immediate: true }
+  { deep: true }
 )
 </script>
 

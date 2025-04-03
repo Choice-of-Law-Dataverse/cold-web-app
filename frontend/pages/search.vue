@@ -71,14 +71,19 @@ watch(
       delete query.q
     }
 
+    // Update URL and trigger search
     router.replace({
       name: 'search',
       query,
+    }).then(() => {
+      // Trigger a new search with the updated query and filters
+      fetchSearchResults(searchText.value.trim(), newFilters)
     })
   },
   { deep: true }
 )
 
+// Watch for URL query updates to sync the dropdowns
 watch(
   () => route.query, // Watch the entire query object
   (newQuery) => {
@@ -91,7 +96,7 @@ watch(
     }
 
     // Trigger a new search with the updated query and filters
-    fetchSearchResults(searchQuery.value, filter.value)
+    fetchSearchResults(newQuery.q || '', filter.value)
   },
   { deep: true } // Deep watch to catch changes within the query object
 )
@@ -111,7 +116,7 @@ async function fetchSearchResults(query, filters) {
   if (filters.jurisdiction && filters.jurisdiction !== 'All Jurisdictions') {
     requestBody.filters.push({
       column: 'jurisdictions',
-      values: [filters.jurisdiction],
+      values: filters.jurisdiction.split(','),
     })
   }
 
@@ -119,7 +124,7 @@ async function fetchSearchResults(query, filters) {
   if (filters.theme && filters.theme !== 'All Themes') {
     requestBody.filters.push({
       column: 'themes',
-      values: [filters.theme],
+      values: filters.theme.split(','),
     })
   }
 
@@ -135,7 +140,7 @@ async function fetchSearchResults(query, filters) {
   if (filters.type && filters.type !== 'All Types') {
     requestBody.filters.push({
       column: 'tables',
-      values: [typeFilterMapping[filters.type]],
+      values: filters.type.split(',').map(type => typeFilterMapping[type]),
     })
   }
 
