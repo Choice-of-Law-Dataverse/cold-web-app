@@ -199,7 +199,7 @@ const themeOptions = [
 const typeOptions = [
   'All Types',
   'Court Decisions',
-  'Legal Instruments',
+  'Domestic Instruments',
   'Literature',
   'Questions',
 ]
