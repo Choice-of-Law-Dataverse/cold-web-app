@@ -242,6 +242,29 @@ ul[role="listbox"] input {
   border-color: var(--color-cold-gray) !important;
 }
 
+ul[role="listbox"] li:hover {
+  // background-color: var(--color-cold-purple-alpha) !important; /* Replace with your desired color */
+  background-color: red !important; /* Replace with your desired color */
+}
+
+ul[role="listbox"] li[data-headlessui-state="selected"] {
+  background-color: red !important; /* Use your desired color */
+}
+
+ul[role="listbox"] li[aria-selected="true"],
+ul[role="listbox"] li[data-headlessui-state="active"],
+ul[role="listbox"] li[data-headlessui-state="active"]:hover,
+ul[role="listbox"] li[data-headlessui-state="selected"],
+ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
+  background-color: red !important;
+}
+
+
+
+
+
+
+
 
 
 
