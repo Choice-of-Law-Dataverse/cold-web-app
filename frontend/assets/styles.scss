@@ -236,6 +236,11 @@ ul[role="listbox"][data-headlessui-state] {
   padding: 0 !important;
 }
 
+ul[role="listbox"] input[role="combobox"][data-headlessui-state="open"] {
+  margin-bottom: 0 !important;
+}
+
+
 ul[role="listbox"] li {
   margin: 0 !important;
   padding-top: 0.75rem !important;
