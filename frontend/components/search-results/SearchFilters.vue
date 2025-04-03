@@ -9,6 +9,7 @@
       :model-value="modelValue"
       @update:modelValue="emit('update:modelValue', $event)"
       searchable
+      selected-icon="i-material-symbols:circle"
     />
   </div>
 </template>
