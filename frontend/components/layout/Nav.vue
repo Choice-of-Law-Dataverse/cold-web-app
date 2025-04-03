@@ -98,7 +98,7 @@ const searchInput = ref(null)
 
 const links = [
   { label: 'About', to: '/about' },
-  { label: 'Learn', to: '/learn' },
+  { label: 'Learn', to: '/learn/open-educational-resources' },
   { label: 'Contact', to: '/contact' },
 ]
 
