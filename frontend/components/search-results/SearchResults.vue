@@ -23,6 +23,13 @@
               v-model="currentTypeFilter"
               class="w-full sm:w-auto"
             />
+            <UButton
+              variant="link"
+              @click="resetFilters"
+              class="w-full sm:w-auto"
+            >
+              Reset
+            </UButton>
           </div>
 
           <!-- Right-aligned Results Heading -->
@@ -210,6 +217,13 @@ const currentJurisdictionFilter = ref(
 )
 const currentThemeFilter = ref(props.filters.theme || 'All Themes')
 const currentTypeFilter = ref(props.filters.type || 'All Types')
+
+// Function to reset all filters to their default states
+const resetFilters = () => {
+  currentJurisdictionFilter.value = 'All Jurisdictions'
+  currentThemeFilter.value = 'All Themes'
+  currentTypeFilter.value = 'All Types'
+}
 
 // Watch for changes in either filter and emit them up
 watch(
