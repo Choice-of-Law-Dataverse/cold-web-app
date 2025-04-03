@@ -77,20 +77,19 @@ const modifiedCourtDecision = computed(() => {
 
 const fetchCourtDecision = async () => {
   try {
-    const result = await fetchData({
+    await fetchData({
       table: 'Court Decisions',
       id: route.params.id,
     })
-    
-    // Check if the API returned an error response
-    if (result.error === 'no entry found with the specified id') {
+  } catch (err) {
+    if (err.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: 'Court decision not found' }
+        query: { message: `${err.table} not found` }
       })
+    } else {
+      console.error('Failed to fetch court decision:', err)
     }
-  } catch (err) {
-    console.error('Failed to fetch court decision:', err)
   }
 }
 

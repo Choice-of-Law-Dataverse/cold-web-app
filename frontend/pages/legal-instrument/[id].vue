@@ -77,20 +77,19 @@ const processedLegalInstrument = computed(() => {
 
 onMounted(async () => {
   try {
-    const result = await fetchData({
+    await fetchData({
       table: 'Domestic Instruments',
       id: route.params.id,
     })
-    
-    // Check if the API returned an error response
-    if (result.error === 'no entry found with the specified id') {
+  } catch (err) {
+    if (err.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: 'Legal instrument not found' }
+        query: { message: `${err.table} not found` }
       })
+    } else {
+      console.error('Error fetching legal instrument:', err)
     }
-  } catch (err) {
-    console.error('Error fetching legal instrument:', err)
   }
 })
 </script>

@@ -60,21 +60,19 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(literature, li
 
 onMounted(async () => {
   try {
-    const result = await fetchData({
+    await fetchData({
       table: 'Literature',
       id: route.params.id,
     })
-    
-    // Check if the API returned an error response
-    if (result.error === 'no entry found with the specified id') {
+  } catch (err) {
+    if (err.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: 'Literature not found' }
+        query: { message: `${err.table} not found` }
       })
+    } else {
+      console.error('Error fetching literature:', err)
     }
-  } catch (err) {
-    // Let the API fetch error handling take care of other errors
-    console.error('Error fetching literature:', err)
   }
 })
 </script>

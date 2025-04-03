@@ -58,7 +58,10 @@ export function useQuestion() {
 
             // Check if the API returned an error response
             if (data.error === 'no entry found with the specified id') {
-                throw new Error('no entry found with the specified id')
+                const error = new Error('no entry found with the specified id')
+                error.isNotFound = true
+                error.table = 'Question'
+                throw error
             }
 
             answerData.value = data

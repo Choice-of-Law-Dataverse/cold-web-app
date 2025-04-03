@@ -93,10 +93,10 @@ onMounted(async () => {
     const id = route.params.id
     await fetchAnswer(id)
   } catch (err) {
-    if (err.message === 'no entry found with the specified id') {
+    if (err.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: 'Question not found' }
+        query: { message: `${err.table} not found` }
       })
     } else {
       console.error('Error fetching question:', err)
