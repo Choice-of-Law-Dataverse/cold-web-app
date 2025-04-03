@@ -54,10 +54,18 @@ export function useQuestion() {
                 throw new Error(`Failed to fetch answer: ${response.statusText}`)
             }
 
-            answerData.value = await response.json()
+            const data = await response.json()
+
+            // Check if the API returned an error response
+            if (data.error === 'no entry found with the specified id') {
+                throw new Error('no entry found with the specified id')
+            }
+
+            answerData.value = data
         } catch (err) {
             error.value = err.message
             console.error('Error fetching answer:', err)
+            throw err // Re-throw the error so the page can handle it
         } finally {
             loading.value = false
         }

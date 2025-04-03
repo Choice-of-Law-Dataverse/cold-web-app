@@ -70,7 +70,7 @@
 
 <script setup>
 import { onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
 import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
@@ -78,6 +78,7 @@ import QuestionSourceList from '~/components/sources/QuestionSourceList.vue'
 import { useQuestion } from '~/composables/useQuestion'
 
 const route = useRoute()
+const router = useRouter()
 const {
   loading,
   error,
@@ -87,8 +88,19 @@ const {
   fetchAnswer,
 } = useQuestion()
 
-onMounted(() => {
-  const id = route.params.id
-  fetchAnswer(id)
+onMounted(async () => {
+  try {
+    const id = route.params.id
+    await fetchAnswer(id)
+  } catch (err) {
+    if (err.message === 'no entry found with the specified id') {
+      router.push({
+        path: '/error',
+        query: { message: 'Question not found' }
+      })
+    } else {
+      console.error('Error fetching question:', err)
+    }
+  }
 })
 </script>
