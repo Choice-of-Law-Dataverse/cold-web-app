@@ -1,5 +1,5 @@
 <template>
-  <ResultCard :resultData="processedResultData" cardType="Legal Instrument">
+  <ResultCard :resultData="processedResultData" cardType="Domestic Instrument">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
       <!-- Abbreviation in the 1st column -->
       <div class="md:col-span-5">

@@ -4,7 +4,7 @@
     :resultData="processedLegalInstrument"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
-    sourceTable="Legal Instrument"
+    sourceTable="Domestic Instrument"
   >
     <!-- Slot for Legal provisions -->
     <template #domestic-legal-provisions="{ value }">
