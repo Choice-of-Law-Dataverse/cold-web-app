@@ -28,7 +28,7 @@
 
         <!-- Main Content -->
         <div class="main-content prose -space-y-10 flex flex-col gap-12 w-full">
-          <NuxtPage />
+          <ContentDoc path="/about_cold" />
         </div>
       </UCard>
     </div>
@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 // Initialize router and route
@@ -59,15 +59,6 @@ const activeTab = ref('about-cold')
 const setActiveTab = (key) => {
   router.push(`/about/${key}`)
 }
-
-// Set initial active tab based on route
-onMounted(() => {
-  const path = route.path
-  if (path.includes('/about/')) {
-    const key = path.split('/about/')[1]
-    activeTab.value = key
-  }
-})
 </script>
 
 <style scoped>
@@ -145,4 +136,4 @@ li.active::after {
   list-style-type: disc !important;
   padding-left: 12px !important;
 }
-</style>
+</style> 
