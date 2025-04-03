@@ -7,7 +7,7 @@
           class="filters-header mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4"
         >
           <!-- Left-aligned group of filters -->
-          <div class="flex flex-col sm:flex-row gap-4 w-full">
+          <div class="flex flex-col sm:flex-row gap-5 w-full">
             <SearchFilters
               :options="jurisdictionOptions"
               v-model="currentJurisdictionFilter"
