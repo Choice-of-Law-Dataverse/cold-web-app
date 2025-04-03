@@ -27,7 +27,7 @@
         </nav>
 
         <!-- Main Content -->
-        <div class="main-conten prose -space-y-10 flex flex-col gap-12 px-6 w-full">
+        <div class="main-content prose -space-y-10 flex flex-col gap-12 w-full">
           <ContentDoc path="/faq" />
         </div>
       </UCard>
@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 
 // Initialize router and route
@@ -135,11 +135,5 @@ li.active::after {
 ::v-deep(ul) {
   list-style-type: disc !important;
   padding-left: 12px !important;
-}
-
-.main-conten {
-  max-width: var(--container-width);
-  margin: 0 auto;
-  width: 100%;
 }
 </style> 
