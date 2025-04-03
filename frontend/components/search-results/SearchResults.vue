@@ -213,26 +213,24 @@ const typeOptions = [
 ]
 
 // Reactive states initialized from props
-const currentJurisdictionFilter = ref(
-  props.filters.jurisdiction ? [props.filters.jurisdiction] : ['All Jurisdictions']
-)
-const currentThemeFilter = ref(props.filters.theme ? [props.filters.theme] : ['All Themes'])
-const currentTypeFilter = ref(props.filters.type ? [props.filters.type] : ['All Types'])
+const currentJurisdictionFilter = ref([])
+const currentThemeFilter = ref([])
+const currentTypeFilter = ref([])
 
 // Computed property to check if any filter is active
 const hasActiveFilters = computed(() => {
   return (
-    !currentJurisdictionFilter.value.includes('All Jurisdictions') ||
-    !currentThemeFilter.value.includes('All Themes') ||
-    !currentTypeFilter.value.includes('All Types')
+    currentJurisdictionFilter.value.length > 0 ||
+    currentThemeFilter.value.length > 0 ||
+    currentTypeFilter.value.length > 0
   )
 })
 
 // Function to reset all filters to their default states
 const resetFilters = () => {
-  currentJurisdictionFilter.value = ['All Jurisdictions']
-  currentThemeFilter.value = ['All Themes']
-  currentTypeFilter.value = ['All Types']
+  currentJurisdictionFilter.value = []
+  currentThemeFilter.value = []
+  currentTypeFilter.value = []
 }
 
 // Watch for changes in either filter and emit them up
@@ -240,9 +238,9 @@ watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
   ([newJurisdiction, newTheme, newType]) => {
     const filters = {
-      jurisdiction: newJurisdiction.includes('All Jurisdictions') ? 'All Jurisdictions' : newJurisdiction.join(','),
-      theme: newTheme.includes('All Themes') ? 'All Themes' : newTheme.join(','),
-      type: newType.includes('All Types') ? 'All Types' : newType.join(','),
+      jurisdiction: newJurisdiction.length > 0 ? newJurisdiction.join(',') : undefined,
+      theme: newTheme.length > 0 ? newTheme.join(',') : undefined,
+      type: newType.length > 0 ? newType.join(',') : undefined,
     }
     
     // Only emit if the filters have actually changed
@@ -257,15 +255,9 @@ watch(
 watch(
   () => props.filters,
   (newFilters) => {
-    const newJurisdiction = newFilters.jurisdiction === 'All Jurisdictions' 
-      ? ['All Jurisdictions'] 
-      : newFilters.jurisdiction.split(',').filter(Boolean)
-    const newTheme = newFilters.theme === 'All Themes' 
-      ? ['All Themes'] 
-      : newFilters.theme.split(',').filter(Boolean)
-    const newType = newFilters.type === 'All Types' 
-      ? ['All Types'] 
-      : newFilters.type.split(',').filter(Boolean)
+    const newJurisdiction = newFilters.jurisdiction ? newFilters.jurisdiction.split(',').filter(Boolean) : []
+    const newTheme = newFilters.theme ? newFilters.theme.split(',').filter(Boolean) : []
+    const newType = newFilters.type ? newFilters.type.split(',').filter(Boolean) : []
 
     // Only update if the values have actually changed
     if (JSON.stringify(newJurisdiction) !== JSON.stringify(currentJurisdictionFilter.value)) {

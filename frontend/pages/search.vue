@@ -38,9 +38,9 @@ const config = useRuntimeConfig()
 
 // Persistent filter state
 const filter = ref({
-  jurisdiction: route.query.jurisdiction || 'All Jurisdictions',
-  theme: route.query.theme || 'All Themes',
-  type: route.query.type || 'All Types',
+  jurisdiction: route.query.jurisdiction,
+  theme: route.query.theme,
+  type: route.query.type,
 })
 
 const searchText = ref(route.query.q || '') // Initialize searchText from query
@@ -58,18 +58,22 @@ watch(
 
     const query = {
       ...route.query, // Retain existing query parameters
-      jurisdiction:
-        newFilters.jurisdiction !== 'All Jurisdictions'
-          ? newFilters.jurisdiction
-          : undefined,
-      theme: newFilters.theme !== 'All Themes' ? newFilters.theme : undefined,
-      type: newFilters.type !== 'All Types' ? newFilters.type : undefined,
+      jurisdiction: newFilters.jurisdiction,
+      theme: newFilters.theme,
+      type: newFilters.type,
     }
 
     // Remove `q` if searchText is empty
     if (!searchText.value.trim()) {
       delete query.q
     }
+
+    // Remove undefined values from query
+    Object.keys(query).forEach(key => {
+      if (query[key] === undefined) {
+        delete query[key]
+      }
+    })
 
     // Update URL and trigger search
     router.replace({
@@ -90,9 +94,9 @@ watch(
     // Update searchQuery and filters based on the URL
     searchQuery.value = newQuery.q || ''
     filter.value = {
-      jurisdiction: newQuery.jurisdiction || 'All Jurisdictions',
-      theme: newQuery.theme || 'All Themes',
-      type: newQuery.type || 'All Types',
+      jurisdiction: newQuery.jurisdiction,
+      theme: newQuery.theme,
+      type: newQuery.type,
     }
 
     // Trigger a new search with the updated query and filters
@@ -112,16 +116,16 @@ async function fetchSearchResults(query, filters) {
     filters: [],
   }
 
-  // Add "Jurisdictions" filter if not "All"
-  if (filters.jurisdiction && filters.jurisdiction !== 'All Jurisdictions') {
+  // Add "Jurisdictions" filter if defined
+  if (filters.jurisdiction) {
     requestBody.filters.push({
       column: 'jurisdictions',
       values: filters.jurisdiction.split(','),
     })
   }
 
-  // Add "Themes" filter if not "All"
-  if (filters.theme && filters.theme !== 'All Themes') {
+  // Add "Themes" filter if defined
+  if (filters.theme) {
     requestBody.filters.push({
       column: 'themes',
       values: filters.theme.split(','),
@@ -136,8 +140,8 @@ async function fetchSearchResults(query, filters) {
     Literature: 'Literature',
   }
 
-  // Add "Type" filter if not "All"
-  if (filters.type && filters.type !== 'All Types') {
+  // Add "Type" filter if defined
+  if (filters.type) {
     requestBody.filters.push({
       column: 'tables',
       values: filters.type.split(',').map(type => typeFilterMapping[type]),
