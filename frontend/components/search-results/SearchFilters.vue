@@ -2,7 +2,7 @@
   <div>
     <USelectMenu
       class="lg:w-60 cold-uselectmenu"
-      :class="{ 'non-all-selected': modelValue && !modelValue.includes('All') }"
+      :class="{ 'non-all-selected': modelValue.length > 0 }"
       :placeholder="options[0]"
       size="lg"
       :options="options"
