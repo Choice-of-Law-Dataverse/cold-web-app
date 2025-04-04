@@ -4,10 +4,10 @@
     :class="{ 'bg-purple-active': isExpanded }"
   >
     <div
-      class="mx-auto py-4"
+      class="mx-auto py-6"
       style="max-width: var(--container-width); width: 100%"
     >
-      <div class="flex justify-between items-start space-x-4 sm:space-x-8">
+      <div class="flex justify-between items-center space-x-4 sm:space-x-8">
         <!-- Search Input -->
         <div class="search-container" :class="{ expanded: isExpanded }">
           <div class="search-input-row">
@@ -23,7 +23,11 @@
               :placeholder="searchPlaceholder"
               icon="i-material-symbols:search"
               autocomplete="off"
-              :ui="{ icon: { trailing: { pointer: '' } } }"
+              :ui="{
+                icon: { trailing: { pointer: '' } },
+                wrapper: { base: 'h-12' },
+                input: { base: 'h-12' }
+              }"
               :style="{
                 width: '100%',
                 borderRadius: '0',
@@ -74,7 +78,7 @@
             <img
               src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_beta_logo.svg"
               alt="CoLD Logo"
-              class="h-12 w-auto"
+              class="h-12 w-auto mb-4"
             />
           </a>
         </div>
@@ -323,6 +327,8 @@ onUnmounted(() => {
 /* When expanded, span across available space */
 .search-container.expanded {
   width: 100%; /* Expand to full width */
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
 }
 
 .search-input-row {
