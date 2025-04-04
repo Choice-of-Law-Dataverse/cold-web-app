@@ -263,7 +263,13 @@ export const courtDecisionConfig = {
             label: 'Case Title',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No case title available'
+                fallback: 'No case title available',
+                getFallback: (data) => {
+                    const title = data['Case Title'] || ''
+                    return title.trim() === 'NA'
+                        ? data['Case Citation'] || 'No case citation available'
+                        : title || 'No case title available'
+                }
             }
         },
         {
