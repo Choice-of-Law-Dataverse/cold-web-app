@@ -42,7 +42,7 @@
 
         <!-- Publication section -->
         <div class="mt-4">
-          <template v-if="shouldDisplay('Publication Title')">
+          <template v-if="shouldDisplay('Publication Title') && processedResultData['Publication Title']">
             <div class="label-key">{{ getLabel('Publication Title') }}</div>
             <div :class="[
               config.valueClassMap['Publication Title'],
@@ -52,7 +52,7 @@
               {{ getValue('Publication Title') }}
             </div>
           </template>
-          <template v-else-if="shouldDisplay('Publisher')">
+          <template v-else-if="shouldDisplay('Publisher') && processedResultData['Publisher']">
             <div class="label-key">{{ getLabel('Publisher') }}</div>
             <div :class="[
               config.valueClassMap['Publisher'],
