@@ -1,61 +1,61 @@
 <template>
   <nav
-    class="bg-white border-b border-cold-gray w-full px-6 h-[110px]"
+    class="bg-white border-b border-cold-gray w-full px-6"
     :class="{ 'bg-purple-active': isExpanded }"
   >
     <div
-      class="mx-auto h-full"
+      class="mx-auto py-4"
       style="max-width: var(--container-width); width: 100%"
     >
-      <div
-        class="flex items-center justify-between h-full space-x-4 sm:space-x-8"
-      >
+      <div class="flex justify-between items-start space-x-4 sm:space-x-8">
         <!-- Search Input -->
         <div class="search-container" :class="{ expanded: isExpanded }">
-          <UInput
-            size="xl"
-            ref="searchInput"
-            v-model="searchText"
-            @keyup.enter="emitSearch"
-            @keydown.esc="clearSearch"
-            @focus="expandSearch"
-            @blur="collapseSearch"
-            class="input-custom-purple placeholder-purple font-semibold"
-            :placeholder="searchPlaceholder"
-            icon="i-material-symbols:search"
-            autocomplete="off"
-            :ui="{ icon: { trailing: { pointer: '' } } }"
-            :style="{
-              width: '100%',
-              borderRadius: '0',
-              boxShadow: 'none',
-              border: 'none',
-              backgroundColor: isExpanded
-                ? 'transparent'
-                : 'var(--color-cold-purple-alpha)',
-            }"
-          >
-            <template #trailing>
-              <UButton
-                v-show="isExpanded"
-                style="opacity: 1; color: var(--color-cold-night) !important"
-                variant="link"
-                icon="i-heroicons-x-mark-20-solid"
-                :padded="false"
-                @mousedown.prevent
-                @click="clearSearch"
-              />
-            </template>
-          </UInput>
-          <button @click="emitSearch" class="icon-button">
-            <span
-              class="iconify i-material-symbols:search"
-              aria-hidden="true"
-            ></span>
-          </button>
+          <div class="search-input-row">
+            <UInput
+              size="xl"
+              ref="searchInput"
+              v-model="searchText"
+              @keyup.enter="emitSearch"
+              @keydown.esc="clearSearch"
+              @focus="expandSearch"
+              @blur="collapseSearch"
+              class="input-custom-purple placeholder-purple font-semibold"
+              :placeholder="searchPlaceholder"
+              icon="i-material-symbols:search"
+              autocomplete="off"
+              :ui="{ icon: { trailing: { pointer: '' } } }"
+              :style="{
+                width: '100%',
+                borderRadius: '0',
+                boxShadow: 'none',
+                border: 'none',
+                backgroundColor: isExpanded
+                  ? 'transparent'
+                  : 'var(--color-cold-purple-alpha)',
+              }"
+            >
+              <template #trailing>
+                <UButton
+                  v-show="isExpanded"
+                  style="opacity: 1; color: var(--color-cold-night) !important"
+                  variant="link"
+                  icon="i-heroicons-x-mark-20-solid"
+                  :padded="false"
+                  @mousedown.prevent
+                  @click="clearSearch"
+                />
+              </template>
+            </UInput>
+            <button @click="emitSearch" class="icon-button">
+              <span
+                class="iconify i-material-symbols:search"
+                aria-hidden="true"
+              ></span>
+            </button>
+          </div>
 
-          <!-- Suggestions Dropdown -->
-          <div v-if="showSuggestions" class="suggestions-dropdown">
+          <!-- Suggestions -->
+          <div v-if="showSuggestions" class="suggestions">
             <div
               v-for="suggestion in suggestions"
               :key="suggestion"
@@ -74,7 +74,7 @@
             <img
               src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_beta_logo.svg"
               alt="CoLD Logo"
-              class="h-12 w-auto mb-4"
+              class="h-12 w-auto"
             />
           </a>
         </div>
@@ -204,7 +204,7 @@ function collapseSearch() {
   isExpanded.value = false
   // Add a small delay before hiding suggestions to allow clicking
   setTimeout(() => {
-    if (!document.activeElement?.closest('.suggestions-dropdown')) {
+    if (!document.activeElement?.closest('.suggestions-list')) {
       showSuggestions.value = false
     }
   }, 200)
@@ -316,15 +316,19 @@ onUnmounted(() => {
 }
 
 .search-container {
-  position: relative; /* Allow absolute positioning for icon */
   width: calc(var(--column-width) * 3 + var(--gutter-width) * 2);
-  /* transition: width 0.8s ease-in-out; */
   transition: none !important;
 }
 
 /* When expanded, span across available space */
 .search-container.expanded {
   width: 100%; /* Expand to full width */
+}
+
+.search-input-row {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .input-custom-purple {
@@ -371,18 +375,8 @@ a {
   background-color: var(--color-cold-purple-alpha) !important;
 }
 
-.suggestions-dropdown {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  right: 0;
-  background: white;
-  border: 1px solid var(--color-cold-gray);
-  border-top: none;
-  z-index: 50;
-  max-height: 300px;
-  overflow-y: auto;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+.suggestions {
+  width: 100%;
 }
 
 .suggestion-item {
@@ -395,7 +389,7 @@ a {
 }
 
 .suggestion-item:hover {
-  background-color: var(--color-cold-purple-alpha);
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .suggestion-text {
