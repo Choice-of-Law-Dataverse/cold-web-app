@@ -4,10 +4,10 @@
       <div class="col-span-12">
         <!-- Flexbox/Grid Container: Filters and Results Heading -->
         <div
-          class="filters-header mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4"
+          class="filters-header mb-6 ml-[-1px] flex flex-col md:flex-row md:justify-between md:items-center gap-4"
         >
           <!-- Left-aligned group of filters -->
-          <div class="flex flex-col sm:flex-row gap-4 w-full">
+          <div class="flex flex-col sm:flex-row gap-5 w-full">
             <SearchFilters
               :options="jurisdictionOptions"
               v-model="currentJurisdictionFilter"
@@ -23,6 +23,14 @@
               v-model="currentTypeFilter"
               class="w-full sm:w-auto"
             />
+            <UButton
+              v-if="hasActiveFilters"
+              variant="link"
+              @click="resetFilters"
+              class="w-full sm:w-auto link-button"
+            >
+              Reset
+            </UButton>
           </div>
 
           <!-- Right-aligned Results Heading -->
@@ -205,34 +213,65 @@ const typeOptions = [
 ]
 
 // Reactive states initialized from props
-const currentJurisdictionFilter = ref(
-  props.filters.theme || 'All Jurisdictions'
-)
-const currentThemeFilter = ref(props.filters.theme || 'All Themes')
-const currentTypeFilter = ref(props.filters.type || 'All Types')
+const currentJurisdictionFilter = ref([])
+const currentThemeFilter = ref([])
+const currentTypeFilter = ref([])
+
+// Computed property to check if any filter is active
+const hasActiveFilters = computed(() => {
+  return (
+    currentJurisdictionFilter.value.length > 0 ||
+    currentThemeFilter.value.length > 0 ||
+    currentTypeFilter.value.length > 0
+  )
+})
+
+// Function to reset all filters to their default states
+const resetFilters = () => {
+  currentJurisdictionFilter.value = []
+  currentThemeFilter.value = []
+  currentTypeFilter.value = []
+}
 
 // Watch for changes in either filter and emit them up
 watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
   ([newJurisdiction, newTheme, newType]) => {
-    emit('update:filters', {
-      jurisdiction: newJurisdiction,
-      theme: newTheme,
-      type: newType,
-    })
-  }
+    const filters = {
+      jurisdiction: newJurisdiction.length > 0 ? newJurisdiction.join(',') : undefined,
+      theme: newTheme.length > 0 ? newTheme.join(',') : undefined,
+      type: newType.length > 0 ? newType.join(',') : undefined,
+    }
+    
+    // Only emit if the filters have actually changed
+    if (JSON.stringify(filters) !== JSON.stringify(props.filters)) {
+      emit('update:filters', filters)
+    }
+  },
+  { deep: true }
 )
 
 // Watch for prop changes to re-sync dropdowns when parent updates
 watch(
   () => props.filters,
   (newFilters) => {
-    currentJurisdictionFilter.value =
-      newFilters.jurisdiction || 'All Jurisdictions'
-    currentThemeFilter.value = newFilters.theme || 'All Themes'
-    currentTypeFilter.value = newFilters.type || 'All Types'
+    // Convert filter strings to arrays, handling both single and multiple selections
+    const newJurisdiction = newFilters.jurisdiction ? newFilters.jurisdiction.split(',').filter(Boolean) : []
+    const newTheme = newFilters.theme ? newFilters.theme.split(',').filter(Boolean) : []
+    const newType = newFilters.type ? newFilters.type.split(',').filter(Boolean) : []
+
+    // Only update if the values have actually changed
+    if (JSON.stringify(newJurisdiction) !== JSON.stringify(currentJurisdictionFilter.value)) {
+      currentJurisdictionFilter.value = newJurisdiction
+    }
+    if (JSON.stringify(newTheme) !== JSON.stringify(currentThemeFilter.value)) {
+      currentThemeFilter.value = newTheme
+    }
+    if (JSON.stringify(newType) !== JSON.stringify(currentTypeFilter.value)) {
+      currentTypeFilter.value = newType
+    }
   },
-  { deep: true, immediate: true }
+  { deep: true, immediate: true } // Add immediate to handle initial props
 )
 </script>
 
