@@ -7,7 +7,9 @@
         <div :class="[
           config.valueClassMap['Case Title'],
           'text-sm leading-relaxed whitespace-pre-line',
-          (!resultData['Case Title'] || resultData['Case Title'] === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Case Title')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
+          (!resultData['Case Title'] || resultData['Case Title'] === 'NA') && 
+          config.keyLabelPairs.find(pair => pair.key === 'Case Title')?.emptyValueBehavior?.action === 'display' && 
+          !config.keyLabelPairs.find(pair => pair.key === 'Case Title')?.emptyValueBehavior?.getFallback ? 'text-gray-300' : ''
         ]">
           {{ getValue('Case Title') }}
         </div>
@@ -51,11 +53,11 @@ const getValue = (key) => {
   const pair = config.keyLabelPairs.find(pair => pair.key === key)
   const value = props.resultData[key]
   
-  if (!value && pair?.emptyValueBehavior) {
-    if (pair.emptyValueBehavior.getFallback) {
-      return pair.emptyValueBehavior.getFallback(props.resultData)
-    }
+  if ((!value || value === 'NA') && pair?.emptyValueBehavior) {
     if (pair.emptyValueBehavior.action === 'display') {
+      if (pair.emptyValueBehavior.getFallback) {
+        return pair.emptyValueBehavior.getFallback(props.resultData)
+      }
       return pair.emptyValueBehavior.fallback
     }
     return ''

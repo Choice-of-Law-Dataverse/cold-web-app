@@ -70,10 +70,9 @@ export const courtDecisionCardConfig = {
             emptyValueBehavior: {
                 action: 'display',
                 fallback: 'No case title available',
-                fallbackClass: 'text-gray-500',
                 getFallback: (data) => {
                     const title = data['Case Title'] || ''
-                    return title.trim() === 'Not found'
+                    return title.trim() === 'NA'
                         ? data['Case Citation'] || 'No case citation available'
                         : title || 'No case title available'
                 }
@@ -84,8 +83,7 @@ export const courtDecisionCardConfig = {
             label: 'Choice of Law Issue',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No choice of law issue available',
-                fallbackClass: 'text-gray-500'
+                fallback: 'No choice of law issue available'
             }
         }
     ],
@@ -100,7 +98,7 @@ export const courtDecisionCardConfig = {
         },
         choiceOfLaw: {
             columnSpan: 4,
-            startColumn: 5
+            startColumn: 4
         }
     }
 }
