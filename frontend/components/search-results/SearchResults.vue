@@ -64,7 +64,7 @@
           </div>
           <div v-if="!loading" class="result-value-small text-center pt-4">
             <UButton
-              to="/learn?tab=methodology#how-the-search-works"
+              to="/learn/methodology#How-the-Search-Works"
               variant="link"
               icon="i-material-symbols:arrow-forward"
               trailing
