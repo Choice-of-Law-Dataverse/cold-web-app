@@ -174,7 +174,17 @@ export const literatureCardConfig = {
             label: 'Publication',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No publication available'
+                fallback: 'No publication available',
+                shouldDisplay: (data) => data['Item Type'] !== 'book'
+            }
+        },
+        {
+            key: 'Publisher',
+            label: 'Publisher',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No publisher available',
+                shouldDisplay: (data) => data['Item Type'] === 'book'
             }
         }
     ],
@@ -182,7 +192,8 @@ export const literatureCardConfig = {
         Title: 'result-value-medium',
         Author: 'result-value-small',
         'Publication Year': 'result-value-small',
-        'Publication Title': 'result-value-small'
+        'Publication Title': 'result-value-small',
+        'Publisher': 'result-value-small'
     },
     gridConfig: {
         title: {

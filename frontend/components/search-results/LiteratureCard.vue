@@ -42,14 +42,26 @@
 
         <!-- Publication section -->
         <div class="mt-4">
-          <div class="label-key">{{ getLabel('Publication Title') }}</div>
-          <div :class="[
-            config.valueClassMap['Publication Title'],
-            'text-sm leading-relaxed whitespace-pre-line',
-            (!processedResultData['Publication Title'] || processedResultData['Publication Title'] === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Publication Title')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
-          ]">
-            {{ getValue('Publication Title') }}
-          </div>
+          <template v-if="shouldDisplay('Publication Title')">
+            <div class="label-key">{{ getLabel('Publication Title') }}</div>
+            <div :class="[
+              config.valueClassMap['Publication Title'],
+              'text-sm leading-relaxed whitespace-pre-line',
+              (!processedResultData['Publication Title'] || processedResultData['Publication Title'] === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Publication Title')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
+            ]">
+              {{ getValue('Publication Title') }}
+            </div>
+          </template>
+          <template v-else-if="shouldDisplay('Publisher')">
+            <div class="label-key">{{ getLabel('Publisher') }}</div>
+            <div :class="[
+              config.valueClassMap['Publisher'],
+              'text-sm leading-relaxed whitespace-pre-line',
+              (!processedResultData['Publisher'] || processedResultData['Publisher'] === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Publisher')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
+            ]">
+              {{ getValue('Publisher') }}
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -79,6 +91,12 @@ const processedResultData = computed(() => {
 const getLabel = (key) => {
   const pair = config.keyLabelPairs.find(pair => pair.key === key)
   return pair?.label || key
+}
+
+const shouldDisplay = (key) => {
+  const pair = config.keyLabelPairs.find(pair => pair.key === key)
+  if (!pair?.emptyValueBehavior?.shouldDisplay) return true
+  return pair.emptyValueBehavior.shouldDisplay(processedResultData.value)
 }
 
 const getValue = (key) => {
