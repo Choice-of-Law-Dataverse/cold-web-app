@@ -95,12 +95,12 @@ export const courtDecisionCardConfig = {
     },
     gridConfig: {
         caseTitle: {
-            columnSpan: 5,
+            columnSpan: 4,
             startColumn: 1
         },
         choiceOfLaw: {
-            columnSpan: 5,
-            startColumn: 4
+            columnSpan: 4,
+            startColumn: 5
         }
     }
 }
