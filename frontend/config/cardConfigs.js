@@ -103,4 +103,42 @@ export const courtDecisionCardConfig = {
             startColumn: 4
         }
     }
+}
+
+export const legislationCardConfig = {
+    keyLabelPairs: [
+        {
+            key: 'Title (in English)',
+            label: 'Title',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: '[Missing Information]'
+            }
+        },
+        {
+            key: 'Abbreviation',
+            label: 'Abbreviation',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No abbreviation available'
+            }
+        }
+    ],
+    valueClassMap: {
+        'Title (in English)': 'result-value-medium',
+        'Abbreviation': 'result-value-medium'
+    },
+    gridConfig: {
+        title: {
+            columnSpan: 4,
+            startColumn: 1
+        }
+    },
+    processData: (data) => {
+        if (!data) return null
+        return {
+            ...data,
+            Themes: data['Domestic Legal Provisions Themes'] // Map "Themes name" to "Themes"
+        }
+    }
 } 
