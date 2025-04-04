@@ -4,7 +4,11 @@
       <!-- Question section -->
       <div :class="`md:col-span-${config.gridConfig.question.columnSpan} md:col-start-${config.gridConfig.question.startColumn}`">
         <div class="label-key">{{ getLabel('Question') }}</div>
-        <div :class="config.valueClassMap.Question">
+        <div :class="[
+          config.valueClassMap.Question,
+          'text-sm leading-relaxed whitespace-pre-line',
+          (!resultData.Question || resultData.Question === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Question')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
+        ]">
           {{ getValue('Question') }}
         </div>
       </div>
@@ -12,7 +16,11 @@
       <!-- Answer section -->
       <div :class="`md:col-span-${config.gridConfig.answer.columnSpan} md:col-start-${config.gridConfig.answer.startColumn}`">
         <div class="label-key">{{ getLabel('Answer') }}</div>
-        <div :class="config.getAnswerClass(resultData.Answer)">
+        <div :class="[
+          config.getAnswerClass(resultData.Answer),
+          'text-sm leading-relaxed whitespace-pre-line',
+          (!resultData.Answer || resultData.Answer === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Answer')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
+        ]">
           {{ getValue('Answer') }}
         </div>
       </div>
@@ -73,6 +81,17 @@ const getValue = (key) => {
   }
   
   return value
+}
+
+const getFallbackClass = (key) => {
+  const pair = config.keyLabelPairs.find(pair => pair.key === key)
+  const value = props.resultData[key]
+  
+  if (!value && pair?.emptyValueBehavior?.fallbackClass) {
+    return pair.emptyValueBehavior.fallbackClass
+  }
+  
+  return ''
 }
 </script>
 

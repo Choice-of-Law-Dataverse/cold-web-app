@@ -13,7 +13,8 @@ export const answerCardConfig = {
             label: 'Question',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No question available'
+                fallback: 'No question available',
+                fallbackClass: 'text-gray-500'
             }
         },
         {
@@ -21,7 +22,8 @@ export const answerCardConfig = {
             label: 'Answer',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No answer available'
+                fallback: 'No answer available',
+                fallbackClass: 'text-gray-500'
             }
         },
         {
@@ -29,7 +31,8 @@ export const answerCardConfig = {
             label: 'Source',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No source available'
+                fallback: 'No source available',
+                fallbackClass: 'text-gray-500'
             }
         }
     ],
@@ -56,5 +59,48 @@ export const answerCardConfig = {
         return answer === 'Yes' || answer === 'No'
             ? 'result-value-large'
             : 'result-value-medium'
+    }
+}
+
+export const courtDecisionCardConfig = {
+    keyLabelPairs: [
+        {
+            key: 'Case Title',
+            label: 'Case Title',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: '[Missing Information]',
+                fallbackClass: 'text-gray-500',
+                getFallback: (data) => {
+                    const title = data['Case Title'] || ''
+                    return title.trim() === 'Not found'
+                        ? data['Case Citation'] || '[Missing Information]'
+                        : title || '[Missing Information]'
+                }
+            }
+        },
+        {
+            key: 'Choice of Law Issue',
+            label: 'Choice of Law Issue',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No choice of law issue available',
+                fallbackClass: 'text-gray-500'
+            }
+        }
+    ],
+    valueClassMap: {
+        'Case Title': 'result-value-medium',
+        'Choice of Law Issue': 'result-value-small'
+    },
+    gridConfig: {
+        caseTitle: {
+            columnSpan: 5,
+            startColumn: 1
+        },
+        choiceOfLaw: {
+            columnSpan: 5,
+            startColumn: 4
+        }
     }
 } 
