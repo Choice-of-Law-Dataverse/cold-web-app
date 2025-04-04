@@ -53,7 +53,21 @@
               aria-hidden="true"
             ></span>
           </button>
+
+          <!-- Suggestions Dropdown -->
+          <div v-if="showSuggestions" class="suggestions-dropdown">
+            <div
+              v-for="suggestion in suggestions"
+              :key="suggestion"
+              class="suggestion-item"
+              @click="handleSuggestionClick(suggestion)"
+            >
+              <span class="suggestion-text">{{ suggestion }}</span>
+              <span class="suggestion-hint">Filter by jurisdiction</span>
+            </div>
+          </div>
         </div>
+
         <!-- Logo (Hidden when search is expanded) -->
         <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
           <a href="/">
@@ -82,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import eventBus from '@/eventBus'
 
@@ -90,17 +104,63 @@ import eventBus from '@/eventBus'
 const searchText = ref('')
 const isExpanded = ref(false) // Track if the input is expanded
 const isSmallScreen = ref(false)
+const suggestions = ref([]) // Add suggestions state
+const showSuggestions = ref(false) // Add visibility state for suggestions
 
 const router = useRouter()
 const route = useRoute()
 
 const searchInput = ref(null)
 
+// Hardcoded list of example jurisdictions
+const jurisdictions = [
+  'United States',
+  'United Kingdom',
+  'Germany',
+  'France',
+  'Italy',
+  'Spain',
+  'Netherlands',
+  'Switzerland',
+  'Japan',
+  'China'
+]
+
 const links = [
   { label: 'About', to: '/about' },
   { label: 'Learn', to: '/learn/open-educational-resources' },
   { label: 'Contact', to: '/contact' },
 ]
+
+// Add function to update suggestions
+function updateSuggestions() {
+  if (!searchText.value) {
+    suggestions.value = []
+    showSuggestions.value = false
+    return
+  }
+
+  const searchTerm = searchText.value.toLowerCase()
+  suggestions.value = jurisdictions
+    .filter(jurisdiction => 
+      jurisdiction.toLowerCase().includes(searchTerm)
+    )
+    .slice(0, 5) // Limit to 5 suggestions
+
+  showSuggestions.value = suggestions.value.length > 0
+}
+
+// Add function to handle suggestion click
+function handleSuggestionClick(jurisdiction) {
+  searchText.value = jurisdiction
+  showSuggestions.value = false
+  emitSearch()
+}
+
+// Watch search text for suggestions
+watch(searchText, () => {
+  updateSuggestions()
+})
 
 function emitSearch() {
   const query = { ...route.query } // Retain existing query parameters (filters)
@@ -133,6 +193,12 @@ function expandSearch() {
 
 function collapseSearch() {
   isExpanded.value = false
+  // Add a small delay before hiding suggestions to allow clicking
+  setTimeout(() => {
+    if (!document.activeElement?.closest('.suggestions-dropdown')) {
+      showSuggestions.value = false
+    }
+  }, 200)
 }
 
 const clearSearch = async () => {
@@ -294,5 +360,43 @@ a {
 
 .bg-purple-active {
   background-color: var(--color-cold-purple-alpha) !important;
+}
+
+.suggestions-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid var(--color-cold-gray);
+  border-top: none;
+  z-index: 50;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-item {
+  padding: 12px 16px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: background-color 0.2s;
+}
+
+.suggestion-item:hover {
+  background-color: var(--color-cold-purple-alpha);
+}
+
+.suggestion-text {
+  font-weight: 500;
+  color: var(--color-cold-night);
+}
+
+.suggestion-hint {
+  font-size: 0.875rem;
+  color: var(--color-cold-gray);
+  font-style: italic;
 }
 </style>
