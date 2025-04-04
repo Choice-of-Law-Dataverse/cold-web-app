@@ -152,9 +152,18 @@ function updateSuggestions() {
 
 // Add function to handle suggestion click
 function handleSuggestionClick(jurisdiction) {
-  searchText.value = jurisdiction
+  searchText.value = '' // Clear the search text
   showSuggestions.value = false
-  emitSearch()
+  
+  // Set jurisdiction as a filter instead of a search term
+  const query = { ...route.query }
+  query.jurisdiction = jurisdiction
+  delete query.q // Remove any existing search term
+  
+  router.push({
+    name: 'search',
+    query
+  })
 }
 
 // Watch search text for suggestions
