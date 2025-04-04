@@ -30,10 +30,12 @@
         <div class="main-content prose -space-y-10 flex flex-col gap-12 w-full">
           <ContentDoc path="/methodology_intro" />
           <hr />
-          <ContentDoc path="/methodology_search" />
+          <div id="How-the-Search-Works">
+            <ContentDoc path="/methodology_search" />
+          </div>
           <hr />
           <!-- Hack -->
-          <span id="questionnaire"></span>
+          <span id="Questionnaire"></span>
           <div v-html="htmlContent"></div>
         </div>
       </UCard>
@@ -76,6 +78,14 @@ onMounted(async () => {
     if (response.ok) {
       content.value = await response.text() // Store raw Markdown
       htmlContent.value = marked(content.value) // Convert Markdown to HTML
+      
+      // Check if there's a hash in the URL and scroll to it
+      if (window.location.hash) {
+        const element = document.getElementById(window.location.hash.substring(1))
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' })
+        }
+      }
     } else {
       console.error('Failed to load text:', response.statusText)
     }

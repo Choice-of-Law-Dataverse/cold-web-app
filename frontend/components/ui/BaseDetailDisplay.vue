@@ -61,7 +61,9 @@
                   :class="[
                     props.valueClassMap[item.key] || 'text-gray-800',
                     'text-sm leading-relaxed whitespace-pre-line',
-                    (!resultData?.[item.key] || resultData?.[item.key] === 'NA') && item.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
+                    (!resultData?.[item.key] || resultData?.[item.key] === 'NA') && 
+                    item.emptyValueBehavior?.action === 'display' && 
+                    !item.emptyValueBehavior?.getFallback ? 'text-gray-300' : ''
                   ]"
                 >
                   {{ getDisplayValue(item, resultData?.[item.key]) }}
@@ -163,6 +165,9 @@ const shouldDisplayValue = (item, value) => {
 const getDisplayValue = (item, value) => {
   if (!item.emptyValueBehavior) return value || 'N/A'
   if ((!value || value === 'NA') && item.emptyValueBehavior.action === 'display') {
+    if (item.emptyValueBehavior.getFallback) {
+      return item.emptyValueBehavior.getFallback(props.resultData)
+    }
     return item.emptyValueBehavior.fallback || 'N/A'
   }
   return value
