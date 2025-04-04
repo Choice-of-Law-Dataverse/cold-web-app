@@ -255,6 +255,7 @@ watch(
 watch(
   () => props.filters,
   (newFilters) => {
+    // Convert filter strings to arrays, handling both single and multiple selections
     const newJurisdiction = newFilters.jurisdiction ? newFilters.jurisdiction.split(',').filter(Boolean) : []
     const newTheme = newFilters.theme ? newFilters.theme.split(',').filter(Boolean) : []
     const newType = newFilters.type ? newFilters.type.split(',').filter(Boolean) : []
@@ -270,7 +271,7 @@ watch(
       currentTypeFilter.value = newType
     }
   },
-  { deep: true }
+  { deep: true, immediate: true } // Add immediate to handle initial props
 )
 </script>
 

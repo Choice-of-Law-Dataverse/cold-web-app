@@ -93,16 +93,22 @@ watch(
   (newQuery) => {
     // Update searchQuery and filters based on the URL
     searchQuery.value = newQuery.q || ''
-    filter.value = {
-      jurisdiction: newQuery.jurisdiction,
-      theme: newQuery.theme,
-      type: newQuery.type,
+    
+    // Only update filters if they exist in the URL
+    const newFilters = {}
+    if (newQuery.jurisdiction) newFilters.jurisdiction = newQuery.jurisdiction
+    if (newQuery.theme) newFilters.theme = newQuery.theme
+    if (newQuery.type) newFilters.type = newQuery.type
+    
+    // Only update if the filters have actually changed
+    if (JSON.stringify(newFilters) !== JSON.stringify(filter.value)) {
+      filter.value = newFilters
     }
 
     // Trigger a new search with the updated query and filters
-    fetchSearchResults(newQuery.q || '', filter.value)
+    fetchSearchResults(newQuery.q || '', newFilters)
   },
-  { deep: true } // Deep watch to catch changes within the query object
+  { deep: true, immediate: true } // Add immediate to handle initial URL
 )
 
 // Function to fetch search results from the API
