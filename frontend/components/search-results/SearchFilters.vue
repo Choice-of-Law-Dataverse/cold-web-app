@@ -3,7 +3,7 @@
     <USelectMenu
       class="lg:w-60 cold-uselectmenu"
       :class="{ 'non-all-selected': modelValue && !modelValue.includes('All') }"
-      placeholder="All"
+      :placeholder="options[0]"
       size="lg"
       :options="options"
       :model-value="modelValue"
@@ -23,7 +23,7 @@ defineProps({
   },
   modelValue: {
     type: Array,
-    default: () => ['All'],
+    default: () => [],
   },
 })
 
