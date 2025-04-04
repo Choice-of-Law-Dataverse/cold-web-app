@@ -69,13 +69,13 @@ export const courtDecisionCardConfig = {
             label: 'Case Title',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: '[Missing Information]',
+                fallback: 'No case title available',
                 fallbackClass: 'text-gray-500',
                 getFallback: (data) => {
                     const title = data['Case Title'] || ''
                     return title.trim() === 'Not found'
-                        ? data['Case Citation'] || '[Missing Information]'
-                        : title || '[Missing Information]'
+                        ? data['Case Citation'] || 'No case citation available'
+                        : title || 'No case title available'
                 }
             }
         },
