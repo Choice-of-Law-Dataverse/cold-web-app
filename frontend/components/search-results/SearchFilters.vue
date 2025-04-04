@@ -7,7 +7,7 @@
       size="lg"
       :options="options"
       :model-value="modelValue"
-      @update:modelValue="emit('update:modelValue', $event)"
+      @update:modelValue="handleUpdate"
       searchable
       selected-icon="i-material-symbols:circle"
       multiple
@@ -21,7 +21,9 @@
 </template>
 
 <script setup>
-defineProps({
+import { ref } from 'vue'
+
+const props = defineProps({
   options: {
     type: Array,
     required: true,
@@ -33,4 +35,13 @@ defineProps({
 })
 
 const emit = defineEmits(['update:modelValue'])
+
+const handleUpdate = (newValue) => {
+  // If the default option is selected, reset to empty array
+  if (newValue.includes(props.options[0])) {
+    emit('update:modelValue', [])
+  } else {
+    emit('update:modelValue', newValue)
+  }
+}
 </script>
