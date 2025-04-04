@@ -265,10 +265,10 @@ export const courtDecisionConfig = {
                 action: 'display',
                 fallback: 'No case title available',
                 getFallback: (data) => {
-                    const title = data['Case Title'] || ''
-                    return title.trim() === 'NA'
+                    const title = data['Case Title']
+                    return !title || title.trim() === 'NA'
                         ? data['Case Citation'] || 'No case citation available'
-                        : title || 'No case title available'
+                        : title
                 }
             }
         },
