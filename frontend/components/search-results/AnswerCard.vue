@@ -1,28 +1,28 @@
 <template>
   <ResultCard :resultData="resultData" cardType="Answers">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <!-- Question in the 1st column -->
-      <div class="md:col-span-4">
-        <div class="label-key">{{ keyMap.Question }}</div>
-        <div :class="valueClassMap.Question || 'result-value'">
-          {{ resultData.Question }}
+      <!-- Question section -->
+      <div :class="`md:col-span-${config.gridConfig.question.columnSpan} md:col-start-${config.gridConfig.question.startColumn}`">
+        <div class="label-key">{{ getLabel('Question') }}</div>
+        <div :class="config.valueClassMap.Question">
+          {{ getValue('Question') }}
         </div>
       </div>
 
-      <!-- Answer in the 6th column -->
-      <div class="md:col-start-6 md:col-span-2">
-        <div class="label-key">{{ keyMap.Answer }}</div>
-        <div :class="getAnswerClass(resultData.Answer)">
-          {{ resultData.Answer }}
+      <!-- Answer section -->
+      <div :class="`md:col-span-${config.gridConfig.answer.columnSpan} md:col-start-${config.gridConfig.answer.startColumn}`">
+        <div class="label-key">{{ getLabel('Answer') }}</div>
+        <div :class="config.getAnswerClass(resultData.Answer)">
+          {{ getValue('Answer') }}
         </div>
       </div>
 
-      <!-- Source in the 8th column -->
+      <!-- Source section -->
       <div
         v-if="resultData.Answer !== 'No data'"
-        class="md:col-start-8 md:col-span-4"
+        :class="`md:col-span-${config.gridConfig.source.columnSpan} md:col-start-${config.gridConfig.source.startColumn}`"
       >
-        <div class="label-key">{{ keyMap['Legal provision articles'] }}</div>
+        <div class="label-key">{{ getLabel('Legal provision articles') }}</div>
         <ul class="result-value-small">
           <template v-if="resultData['Literature Title']">
             <li>{{ resultData['Literature Title'] }}</li>
@@ -44,6 +44,7 @@
 
 <script setup>
 import ResultCard from './ResultCard.vue'
+import { answerCardConfig } from '../../config/cardConfigs'
 
 const props = defineProps({
   resultData: {
@@ -52,25 +53,26 @@ const props = defineProps({
   },
 })
 
-// Define the keys and mappings specific to answer results
-const answerKeys = ['Question', 'Answer', 'Legal provision articles']
+const config = answerCardConfig
 
-const keyMap = {
-  Answer: 'Answer',
-  Question: 'Question',
-  'Legal provision articles': 'Source',
+// Helper functions to get labels and values with fallbacks
+const getLabel = (key) => {
+  const pair = config.keyLabelPairs.find(pair => pair.key === key)
+  return pair?.label || key
 }
 
-// Map different CSS styles to different typographic components
-const valueClassMap = {
-  //Answer: 'result-value-large',
-  Question: 'result-value-medium',
-  'Legal provision articles': 'result-value-small',
-}
-const getAnswerClass = (answer) => {
-  return answer === 'Yes' || answer === 'No'
-    ? 'result-value-large'
-    : 'result-value-medium'
+const getValue = (key) => {
+  const pair = config.keyLabelPairs.find(pair => pair.key === key)
+  const value = props.resultData[key]
+  
+  if (!value && pair?.emptyValueBehavior) {
+    if (pair.emptyValueBehavior.action === 'display') {
+      return pair.emptyValueBehavior.fallback
+    }
+    return ''
+  }
+  
+  return value
 }
 </script>
 
