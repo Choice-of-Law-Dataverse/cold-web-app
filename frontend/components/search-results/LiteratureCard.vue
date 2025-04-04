@@ -1,44 +1,54 @@
 <template>
   <ResultCard :resultData="processedResultData" cardType="Literature">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <!-- Title spans 4 columns -->
-      <div class="md:col-span-4">
-        <div class="label-key">{{ keyMap.Title }}</div>
-        <div :class="valueClassMap.Title || 'result-value'">
-          {{ processedResultData.Title || '[Missing Information]' }}
+      <!-- Title section -->
+      <div :class="`md:col-span-${config.gridConfig.title.columnSpan} md:col-start-${config.gridConfig.title.startColumn}`">
+        <div class="label-key">{{ getLabel('Title') }}</div>
+        <div :class="[
+          config.valueClassMap.Title,
+          'text-sm leading-relaxed whitespace-pre-line',
+          (!processedResultData.Title || processedResultData.Title === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Title')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
+        ]">
+          {{ getValue('Title') }}
         </div>
       </div>
 
-      <!-- Author and Year on the same row -->
-      <div class="md:col-span-4 md:col-start-6">
+      <!-- Author and Year section -->
+      <div :class="`md:col-span-${config.gridConfig.authorYear.columnSpan} md:col-start-${config.gridConfig.authorYear.startColumn}`">
         <div class="grid grid-cols-2 gap-4">
           <!-- Author -->
           <div>
-            <div class="label-key">{{ keyMap.Author }}</div>
-            <div :class="valueClassMap.Author || 'result-value'">
-              {{ processedResultData.Author || '[Missing Information]' }}
+            <div class="label-key">{{ getLabel('Author') }}</div>
+            <div :class="[
+              config.valueClassMap.Author,
+              'text-sm leading-relaxed whitespace-pre-line',
+              (!processedResultData.Author || processedResultData.Author === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Author')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
+            ]">
+              {{ getValue('Author') }}
             </div>
           </div>
           <!-- Year -->
           <div>
-            <div class="label-key">{{ keyMap['Publication Year'] }}</div>
-            <div :class="valueClassMap['Publication Year'] || 'result-value'">
-              {{
-                processedResultData['Publication Year'] ||
-                '[Missing Information]'
-              }}
+            <div class="label-key">{{ getLabel('Publication Year') }}</div>
+            <div :class="[
+              config.valueClassMap['Publication Year'],
+              'text-sm leading-relaxed whitespace-pre-line',
+              (!processedResultData['Publication Year'] || processedResultData['Publication Year'] === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Publication Year')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
+            ]">
+              {{ getValue('Publication Year') }}
             </div>
           </div>
         </div>
 
-        <!-- Publication below Author and Year -->
+        <!-- Publication section -->
         <div class="mt-4">
-          <div class="label-key">{{ keyMap['Publication Title'] }}</div>
-          <div :class="valueClassMap['Publication Title'] || 'result-value'">
-            {{
-              processedResultData['Publication Title'] ||
-              '[Missing Information]'
-            }}
+          <div class="label-key">{{ getLabel('Publication Title') }}</div>
+          <div :class="[
+            config.valueClassMap['Publication Title'],
+            'text-sm leading-relaxed whitespace-pre-line',
+            (!processedResultData['Publication Title'] || processedResultData['Publication Title'] === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Publication Title')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
+          ]">
+            {{ getValue('Publication Title') }}
           </div>
         </div>
       </div>
@@ -47,7 +57,9 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import ResultCard from './ResultCard.vue'
+import { literatureCardConfig } from '../../config/cardConfigs'
 
 const props = defineProps({
   resultData: {
@@ -56,35 +68,36 @@ const props = defineProps({
   },
 })
 
-// Computed property to process the result data
-const processedResultData = computed(() => {
-  if (!props.resultData) return null
+const config = literatureCardConfig
 
-  return {
-    ...props.resultData,
-    Themes: props.resultData['Themes'], // Map "Themes name" to "Themes"
-  }
+// Process the result data using the config's processData function
+const processedResultData = computed(() => {
+  return config.processData(props.resultData)
 })
 
-// Map key labels
-const keyMap = {
-  Title: 'Title',
-  Author: 'Author',
-  'Publication Year': 'Year',
-  'Publication Title': 'Publication',
+// Helper functions to get labels and values with fallbacks
+const getLabel = (key) => {
+  const pair = config.keyLabelPairs.find(pair => pair.key === key)
+  return pair?.label || key
 }
 
-// Map different CSS styles to different typographic components
-const valueClassMap = {
-  Title: 'result-value-medium',
-  Author: 'result-value-small',
-  'Publication Year': 'result-value-small',
-  'Publication Title': 'result-value-small',
+const getValue = (key) => {
+  const pair = config.keyLabelPairs.find(pair => pair.key === key)
+  const value = processedResultData.value?.[key]
+  
+  if (!value && pair?.emptyValueBehavior) {
+    if (pair.emptyValueBehavior.action === 'display') {
+      return pair.emptyValueBehavior.fallback
+    }
+    return ''
+  }
+  
+  return value
 }
 </script>
 
 <style scoped>
-.legislation-card-grid {
+.literature-card-grid {
   display: grid;
   grid-template-columns: repeat(12, var(--column-width));
   column-gap: var(--gutter-width);

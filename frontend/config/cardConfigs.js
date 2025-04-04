@@ -112,7 +112,7 @@ export const legislationCardConfig = {
             label: 'Title',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: '[Missing Information]'
+                fallback: 'No title available'
             }
         },
         {
@@ -139,6 +139,66 @@ export const legislationCardConfig = {
         return {
             ...data,
             Themes: data['Domestic Legal Provisions Themes'] // Map "Themes name" to "Themes"
+        }
+    }
+}
+
+export const literatureCardConfig = {
+    keyLabelPairs: [
+        {
+            key: 'Title',
+            label: 'Title',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No title available'
+            }
+        },
+        {
+            key: 'Author',
+            label: 'Author',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No author available'
+            }
+        },
+        {
+            key: 'Publication Year',
+            label: 'Year',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No year available'
+            }
+        },
+        {
+            key: 'Publication Title',
+            label: 'Publication',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No publication available'
+            }
+        }
+    ],
+    valueClassMap: {
+        Title: 'result-value-medium',
+        Author: 'result-value-small',
+        'Publication Year': 'result-value-small',
+        'Publication Title': 'result-value-small'
+    },
+    gridConfig: {
+        title: {
+            columnSpan: 4,
+            startColumn: 1
+        },
+        authorYear: {
+            columnSpan: 4,
+            startColumn: 6
+        }
+    },
+    processData: (data) => {
+        if (!data) return null
+        return {
+            ...data,
+            Themes: data['Themes'] // Map "Themes name" to "Themes"
         }
     }
 } 
