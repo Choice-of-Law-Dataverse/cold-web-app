@@ -4,7 +4,7 @@
       <div class="col-span-12">
         <!-- Flexbox/Grid Container: Filters and Results Heading -->
         <div
-          class="filters-header mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4"
+          class="filters-header mb-6 ml-[-1px] flex flex-col md:flex-row md:justify-between md:items-center gap-4"
         >
           <!-- Left-aligned group of filters -->
           <div class="flex flex-col sm:flex-row gap-5 w-full">
