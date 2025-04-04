@@ -59,7 +59,11 @@
           </div>
 
           <!-- Suggestions -->
-          <div v-if="showSuggestions" class="suggestions">
+          <div
+            v-if="showSuggestions"
+            class="suggestions"
+            :class="{ 'bg-purple-active': isExpanded, 'bg-white': !isExpanded }"
+          >
             <div
               v-for="suggestion in suggestions"
               :key="suggestion"
@@ -320,6 +324,7 @@ onUnmounted(() => {
 }
 
 .search-container {
+  position: relative !important; /* New addition */
   width: calc(var(--column-width) * 3 + var(--gutter-width) * 2);
   transition: none !important;
 }
@@ -382,8 +387,17 @@ a {
 }
 
 .suggestions {
-  width: 100%;
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;         /* Full viewport width */
+  padding: 0 90px;      /* Adjust the padding as needed */
+  box-sizing: border-box; /* Ensure padding doesn't increase the width */
+  z-index: 1000;
+  background-color: inherit; /* or use the same background as your nav */
 }
+
 
 .suggestion-item {
   padding: 12px 16px;
