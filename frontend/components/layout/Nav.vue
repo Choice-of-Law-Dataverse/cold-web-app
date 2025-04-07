@@ -107,6 +107,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import eventBus from '@/eventBus'
+import jurisdictions from '@/assets/jurisdictions.json' // New import for jurisdictions
 
 // Reactive state
 const searchText = ref('')
@@ -121,18 +122,7 @@ const route = useRoute()
 const searchInput = ref(null)
 
 // Hardcoded list of example jurisdictions
-const jurisdictions = [
-  'United States',
-  'United Kingdom',
-  'Germany',
-  'France',
-  'Italy',
-  'Spain',
-  'Netherlands',
-  'Switzerland',
-  'Japan',
-  'China',
-]
+// const jurisdictions = ['Netherlands', 'Switzerland', 'Japan', 'China']
 
 const links = [
   { label: 'About', to: '/about' },
