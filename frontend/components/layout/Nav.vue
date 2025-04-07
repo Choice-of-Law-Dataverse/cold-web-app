@@ -59,21 +59,18 @@
           </div>
 
           <!-- Suggestions -->
-          <div
-            v-if="showSuggestions"
-            class="suggestions"
-            :class="{ 'bg-purple-active': isExpanded, 'bg-white': !isExpanded }"
-          >
-            <div
+          <div v-if="showSuggestions" class="suggestions">
+            <div class="suggestions-inner">
+              <div
               v-for="suggestion in suggestions"
               :key="suggestion"
               class="suggestion-item"
-              @click="handleSuggestionClick(suggestion)"
-            >
+              @click="handleSuggestionClick(suggestion)">
               <span class="suggestion-text">{{ suggestion }}</span>
               <span class="suggestion-hint">Filter by jurisdiction</span>
             </div>
           </div>
+        </div>
         </div>
 
         <!-- Logo (Hidden when search is expanded) -->
@@ -386,16 +383,23 @@ a {
   background-color: var(--color-cold-purple-alpha) !important;
 }
 
+/* Outer container spans the full viewport */
 .suggestions {
   position: absolute;
   top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;         /* Full viewport width */
-  padding: 0 90px;      /* Adjust the padding as needed */
-  box-sizing: border-box; /* Ensure padding doesn't increase the width */
+  left: 0;
+  width: 100vw;       /* Full viewport width */
   z-index: 1000;
-  background-color: inherit; /* or use the same background as your nav */
+  background-color: red; /* Use same background as nav */
+}
+
+/* Inner container aligns with navigation */
+.suggestions-inner {
+  /* margin-left: 32px; */
+  width: 100%;
+  max-width: var(--container-width); /* Same max-width as nav content */
+  padding: 0 1.5rem;  /* Adjust based on your navigation's horizontal padding (e.g., Tailwind's px-6) */
+  box-sizing: border-box;
 }
 
 
