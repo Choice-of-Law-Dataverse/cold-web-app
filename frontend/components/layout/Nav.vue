@@ -142,7 +142,8 @@ const links = [
 
 // Add function to update suggestions
 function updateSuggestions() {
-  if (!searchText.value) {
+  if (!searchText.value || searchText.value.trim().length < 3) {
+    // Modified: require at least 3 characters
     suggestions.value = []
     showSuggestions.value = false
     return
