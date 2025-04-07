@@ -121,9 +121,6 @@ const route = useRoute()
 
 const searchInput = ref(null)
 
-// Hardcoded list of example jurisdictions
-// const jurisdictions = ['Netherlands', 'Switzerland', 'Japan', 'China']
-
 const links = [
   { label: 'About', to: '/about' },
   { label: 'Learn', to: '/learn/open-educational-resources' },
