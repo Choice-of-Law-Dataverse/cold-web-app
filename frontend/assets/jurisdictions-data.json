@@ -1,6 +1,6 @@
 [
-  { "name": "Netherlands", "adjective": ["dutch"] },
-  { "name": "Switzerland", "adjective": ["swiss"] },
-  { "name": "Germany", "adjective": ["german"] },
-  { "name": "United States of America", "adjective": ["usa", "american"] }
+  { "name": "Netherlands", "alternative": ["dutch"] },
+  { "name": "Switzerland", "alternative": ["swiss"] },
+  { "name": "Germany", "alternative": ["german"] },
+  { "name": "United States of America", "alternative": ["usa", "american"] }
 ]

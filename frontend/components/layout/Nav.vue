@@ -140,7 +140,7 @@ function updateSuggestions() {
       words.some(
         (word) =>
           item.name.toLowerCase().includes(word) ||
-          item.adjective.some((adj) => adj.toLowerCase().includes(word))
+          item.alternative.some((adj) => adj.toLowerCase().includes(word))
       )
     )
     .map((item) => item.name)
