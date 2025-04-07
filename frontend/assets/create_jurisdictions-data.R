@@ -29,7 +29,7 @@ prompt_df <- all_jurisdictions_process %>%
   mutate(prompt_content_var = paste0("Please tell me the demonym(s) for '", name, "'. Only return the demonym(s), nothing else."))
 
 # Create sample for testing
-prompt_df <- prompt_df %>% slice_sample(n = 5)
+# prompt_df <- prompt_df %>% slice_sample(n = 5)
 
 
 ## Query ChatGPT -----------------------------------
@@ -55,8 +55,8 @@ chatgpt_output <- rgpt(
 timestamp <- Sys.time()
 formatted_timestamp <- format(timestamp, "%Y%m%d_%H%M%S")
 file_name <- paste0("chatgpt_output_df_", formatted_timestamp, ".rds")
-saveRDS(chatgpt_output, file = here("frontend", "assets", file_name))
-chatgpt_output <- readRDS(here("frontend", "assets", "chatgpt_output_df_20250407_164025.rds"))
+# saveRDS(chatgpt_output, file = here("frontend", "assets", file_name))
+chatgpt_output <- readRDS(here("frontend", "assets", "chatgpt_output_df_20250407_164848.rds"))
 
 # Clean ChatGPT output
 chatgpt_output <- chatgpt_output[[1]]
@@ -64,3 +64,6 @@ chatgpt_output <- chatgpt_output %>%
   select(id, gpt_content) %>% 
   rename(iso3 = id,
          denonym = gpt_content)
+
+# Manually fix Botswana
+chatgpt_output$denonym[chatgpt_output$iso3 == "BWA"] <- "Batswana, Motswana"
