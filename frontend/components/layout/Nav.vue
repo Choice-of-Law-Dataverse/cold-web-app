@@ -107,7 +107,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import eventBus from '@/eventBus'
-import jurisdictionsData from '@/assets/jurisdictions-data.json' // Import combined data
+import jurisdictionsData from '@/assets/jurisdictions-data.json' // Import simplified array
 
 // Reactive state
 const searchText = ref('')
@@ -130,28 +130,18 @@ const links = [
 // Add function to update suggestions
 function updateSuggestions() {
   if (!searchText.value || searchText.value.trim().length < 3) {
-    // Modified: require at least 3 characters
     suggestions.value = []
     showSuggestions.value = false
     return
   }
-
   const searchTerm = searchText.value.toLowerCase()
-
-  // Use combined jurisdictions array:
-  let filtered = jurisdictionsData.jurisdictions.filter((jurisdiction) =>
-    jurisdiction.toLowerCase().includes(searchTerm)
-  )
-
-  // Use combined adjectivesMapping:
-  Object.keys(jurisdictionsData.adjectivesMapping).forEach((adj) => {
-    if (
-      adj.includes(searchTerm) &&
-      !filtered.includes(jurisdictionsData.adjectivesMapping[adj])
-    ) {
-      filtered.push(jurisdictionsData.adjectivesMapping[adj])
-    }
-  })
+  let filtered = jurisdictionsData
+    .filter(
+      (item) =>
+        item.name.toLowerCase().includes(searchTerm) ||
+        item.adjective.some((adj) => adj.toLowerCase().includes(searchTerm))
+    )
+    .map((item) => item.name)
 
   suggestions.value = filtered.slice(0, 5)
   showSuggestions.value = suggestions.value.length > 0
