@@ -129,17 +129,19 @@ const links = [
 
 // Add function to update suggestions
 function updateSuggestions() {
-  if (!searchText.value || searchText.value.trim().length < 3) {
+  if (!searchText.value || searchText.value.trim().length < 1) {
     suggestions.value = []
     showSuggestions.value = false
     return
   }
-  const searchTerm = searchText.value.toLowerCase()
+  const words = searchText.value.toLowerCase().split(/\s+/).filter(Boolean)
   let filtered = jurisdictionsData
-    .filter(
-      (item) =>
-        item.name.toLowerCase().includes(searchTerm) ||
-        item.adjective.some((adj) => adj.toLowerCase().includes(searchTerm))
+    .filter((item) =>
+      words.some(
+        (word) =>
+          item.name.toLowerCase().includes(word) ||
+          item.adjective.some((adj) => adj.toLowerCase().includes(word))
+      )
     )
     .map((item) => item.name)
 
