@@ -59,7 +59,10 @@
           </div>
 
           <!-- Suggestions -->
-          <div v-if="showSuggestions" class="suggestions w-full">
+          <div
+            v-if="showSuggestions"
+            class="suggestions w-full border-b border-cold-gray"
+          >
             <div class="suggestions-inner">
               <div
                 v-for="suggestion in suggestions"
