@@ -389,7 +389,7 @@ a {
   transform: translateX(-50%);
   width: 100vw;
   z-index: 1000;
-  background-color: red;
+  background-color: var(--color-cold-purple-fake-alpha);
 }
 
 /* Inner container now uses full width */
