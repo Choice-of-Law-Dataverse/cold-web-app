@@ -150,15 +150,36 @@ function updateSuggestions() {
 }
 
 // Add function to handle suggestion click
-function handleSuggestionClick(jurisdiction) {
-  searchText.value = '' // Clear the search text
+function handleSuggestionClick(selected) {
+  const record = jurisdictionsData.find((item) => item.name === selected)
+  const keywords = record
+    ? [
+        record.name.toLowerCase().trim(),
+        ...record.alternative.map((a) => a.toLowerCase().trim()),
+      ]
+    : [selected.toLowerCase().trim()]
+
+  // Remove words that partially match any keyword (after trimming each word)
+  const remainingWords = searchText.value
+    .split(/\s+/)
+    .map((word) => word.trim())
+    .filter(
+      (word) =>
+        !keywords.some((keyword) => keyword.includes(word.toLowerCase()))
+    )
+
+  const newSearchText = remainingWords.join(' ')
+  searchText.value = newSearchText
   showSuggestions.value = false
 
-  // Set jurisdiction as a filter instead of a search term
+  // Update the query: keep remaining words (if any) in q and add jurisdiction filter
   const query = { ...route.query }
-  query.jurisdiction = jurisdiction
-  delete query.q // Remove any existing search term
-
+  if (newSearchText.trim()) {
+    query.q = newSearchText.trim()
+  } else {
+    delete query.q
+  }
+  query.jurisdiction = selected
   router.push({
     name: 'search',
     query,
