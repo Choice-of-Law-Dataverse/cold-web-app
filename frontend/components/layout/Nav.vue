@@ -139,11 +139,11 @@ function updateSuggestions() {
     .filter((item) =>
       words.some(
         (word) =>
-          item.name.toLowerCase().includes(word) ||
+          item.name[0].toLowerCase().includes(word) ||
           item.alternative.some((adj) => adj.toLowerCase().includes(word))
       )
     )
-    .map((item) => item.name)
+    .map((item) => item.name[0])
 
   suggestions.value = filtered.slice(0, 5)
   showSuggestions.value = suggestions.value.length > 0
@@ -151,10 +151,10 @@ function updateSuggestions() {
 
 // Add function to handle suggestion click
 function handleSuggestionClick(selected) {
-  const record = jurisdictionsData.find((item) => item.name === selected)
+  const record = jurisdictionsData.find((item) => item.name[0] === selected)
   const keywords = record
     ? [
-        record.name.toLowerCase().trim(),
+        record.name[0].toLowerCase().trim(),
         ...record.alternative.map((a) => a.toLowerCase().trim()),
       ]
     : [selected.toLowerCase().trim()]

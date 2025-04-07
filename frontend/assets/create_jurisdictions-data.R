@@ -7,6 +7,7 @@ library(dplyr)
 library(here)
 library(rairtable)
 library(rgpt3)
+library(jsonlite)
 
 
 ## Import and process relevant jurisdictions --------
@@ -67,3 +68,24 @@ chatgpt_output <- chatgpt_output %>%
 
 # Manually fix Botswana
 chatgpt_output$denonym[chatgpt_output$iso3 == "BWA"] <- "Batswana, Motswana"
+
+
+## Merge and Export as JSON -----------------------------------
+
+jurisdictions_data <- chatgpt_output %>% 
+  left_join(all_jurisdictions_process, by = "iso3")
+
+
+# Create a list of lists with the desired structure
+json_list <- lapply(seq_len(nrow(jurisdictions_data)), function(i) {
+  list(
+    name = jurisdictions_data$name[i],
+    alternative = c(jurisdictions_data$iso3[i], jurisdictions_data$denonym[i])
+  )
+})
+
+# Convert the list to JSON with pretty printing
+json_output <- toJSON(json_list, pretty = TRUE)
+
+# Export to file
+write(json_output, here("frontend", "assets", "jurisdictions-data.json"))
