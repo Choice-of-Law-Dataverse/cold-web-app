@@ -107,7 +107,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import eventBus from '@/eventBus'
-import jurisdictions from '@/assets/jurisdictions.json' // New import for jurisdictions
+import jurisdictionsData from '@/assets/jurisdictions-data.json' // Import combined data
 
 // Reactive state
 const searchText = ref('')
@@ -140,10 +140,23 @@ function updateSuggestions() {
   }
 
   const searchTerm = searchText.value.toLowerCase()
-  suggestions.value = jurisdictions
-    .filter((jurisdiction) => jurisdiction.toLowerCase().includes(searchTerm))
-    .slice(0, 5) // Limit to 5 suggestions
 
+  // Use combined jurisdictions array:
+  let filtered = jurisdictionsData.jurisdictions.filter((jurisdiction) =>
+    jurisdiction.toLowerCase().includes(searchTerm)
+  )
+
+  // Use combined adjectivesMapping:
+  Object.keys(jurisdictionsData.adjectivesMapping).forEach((adj) => {
+    if (
+      adj.includes(searchTerm) &&
+      !filtered.includes(jurisdictionsData.adjectivesMapping[adj])
+    ) {
+      filtered.push(jurisdictionsData.adjectivesMapping[adj])
+    }
+  })
+
+  suggestions.value = filtered.slice(0, 5)
   showSuggestions.value = suggestions.value.length > 0
 }
 

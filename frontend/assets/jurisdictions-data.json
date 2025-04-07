@@ -1,0 +1,14 @@
+{
+  "jurisdictions": [
+    "Netherlands",
+    "Switzerland",
+    "Japan",
+    "China",
+    "Germany"
+  ],
+  "adjectivesMapping": {
+    "swiss": "Switzerland",
+    "german": "Germany",
+    "dutch": "Netherlands"
+  }
+}
