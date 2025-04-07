@@ -26,7 +26,7 @@
               :ui="{
                 icon: { trailing: { pointer: '' } },
                 wrapper: { base: 'h-12' },
-                input: { base: 'h-12' }
+                input: { base: 'h-12' },
               }"
               :style="{
                 width: '100%',
@@ -59,18 +59,18 @@
           </div>
 
           <!-- Suggestions -->
-          <div v-if="showSuggestions" class="suggestions">
+          <div v-if="showSuggestions" class="suggestions w-full">
             <div class="suggestions-inner">
               <div
-              v-for="suggestion in suggestions"
-              :key="suggestion"
-              class="suggestion-item"
-              @click="handleSuggestionClick(suggestion)">
-              <span class="suggestion-text">{{ suggestion }}</span>
-              <span class="suggestion-hint">Filter by jurisdiction</span>
+                v-for="suggestion in suggestions"
+                :key="suggestion"
+                class="suggestion-item"
+                @click="handleSuggestionClick(suggestion)"
+              >
+                <span class="suggestion-text">Filter by: {{ suggestion }}</span>
+              </div>
             </div>
           </div>
-        </div>
         </div>
 
         <!-- Logo (Hidden when search is expanded) -->
@@ -128,7 +128,7 @@ const jurisdictions = [
   'Netherlands',
   'Switzerland',
   'Japan',
-  'China'
+  'China',
 ]
 
 const links = [
@@ -147,9 +147,7 @@ function updateSuggestions() {
 
   const searchTerm = searchText.value.toLowerCase()
   suggestions.value = jurisdictions
-    .filter(jurisdiction => 
-      jurisdiction.toLowerCase().includes(searchTerm)
-    )
+    .filter((jurisdiction) => jurisdiction.toLowerCase().includes(searchTerm))
     .slice(0, 5) // Limit to 5 suggestions
 
   showSuggestions.value = suggestions.value.length > 0
@@ -159,15 +157,15 @@ function updateSuggestions() {
 function handleSuggestionClick(jurisdiction) {
   searchText.value = '' // Clear the search text
   showSuggestions.value = false
-  
+
   // Set jurisdiction as a filter instead of a search term
   const query = { ...route.query }
   query.jurisdiction = jurisdiction
   delete query.q // Remove any existing search term
-  
+
   router.push({
     name: 'search',
-    query
+    query,
   })
 }
 
@@ -383,25 +381,23 @@ a {
   background-color: var(--color-cold-purple-alpha) !important;
 }
 
-/* Outer container spans the full viewport */
+/* Outer container now spans the full browser width */
 .suggestions {
   position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100vw;       /* Full viewport width */
+  top: 100%; /* Adjust vertical offset as needed */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
   z-index: 1000;
-  background-color: red; /* Use same background as nav */
+  background-color: red;
 }
 
-/* Inner container aligns with navigation */
+/* Inner container now uses full width */
 .suggestions-inner {
-  /* margin-left: 32px; */
   width: 100%;
-  max-width: var(--container-width); /* Same max-width as nav content */
-  padding: 0 1.5rem;  /* Adjust based on your navigation's horizontal padding (e.g., Tailwind's px-6) */
+  padding: 0 1.5rem; /* Optional padding */
   box-sizing: border-box;
 }
-
 
 .suggestion-item {
   padding: 12px 16px;
@@ -421,9 +417,9 @@ a {
   color: var(--color-cold-night);
 }
 
-.suggestion-hint {
+/* .suggestion-hint {
   font-size: 0.875rem;
   color: var(--color-cold-gray);
   font-style: italic;
-}
+} */
 </style>
