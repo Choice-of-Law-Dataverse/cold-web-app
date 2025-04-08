@@ -5,7 +5,9 @@
         Recent Domestic Instruments
       </h2>
     </div>
-    <ul>
+    <!-- Added loading state -->
+    <p v-if="isLoading">Loading...</p>
+    <ul v-else>
       <li v-for="(instrument, index) in domesticInstruments" :key="index">
         <RouterLink :to="`/legal-instrument/${instrument.ID}`">
           <UButton
@@ -41,6 +43,7 @@ import { RouterLink } from 'vue-router'
 import { formatDate } from '../../utils/format.js'
 
 const domesticInstruments = ref([])
+const isLoading = ref(true) // Added loading state
 const config = useRuntimeConfig()
 
 async function fetchDomesticInstruments() {
@@ -65,6 +68,8 @@ async function fetchDomesticInstruments() {
   } catch (error) {
     console.error(error)
     domesticInstruments.value = []
+  } finally {
+    isLoading.value = false // Set loading to false once finished
   }
 }
 
