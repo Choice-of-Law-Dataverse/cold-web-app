@@ -15,7 +15,11 @@
             trailing
           >
             <span class="break-words text-left">
-              {{ instrument['Date'] }}:
+              {{
+                instrument['Entry Into Force']
+                  ? formatDate(instrument['Entry Into Force'])
+                  : instrument['Date']
+              }}:
               {{ instrument['Title (in English)'] }}
             </span>
           </UButton>
@@ -29,6 +33,7 @@
 import { ref, onMounted } from 'vue'
 import { useRuntimeConfig } from '#app'
 import { RouterLink } from 'vue-router'
+import { formatDate } from '../../utils/format.js'
 
 const domesticInstruments = ref([])
 const config = useRuntimeConfig()
