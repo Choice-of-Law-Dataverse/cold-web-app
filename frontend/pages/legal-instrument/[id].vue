@@ -20,7 +20,8 @@
               :textType="textType"
               :instrumentTitle="
                 processedLegalInstrument
-                  ? processedLegalInstrument['Title (in English)']
+                  ? processedLegalInstrument['Abbreviation'] ||
+                    processedLegalInstrument['Title (in English)']
                   : ''
               "
               @update:hasEnglishTranslation="hasEnglishTranslation = $event"
