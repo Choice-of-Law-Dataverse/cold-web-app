@@ -21,8 +21,12 @@
                     processedAnswerData?.['Jurisdictions Literature ID']
                       ? [
                           value ||
-                            processedAnswerData?.['Domestic Legal Provisions'] ||
-                            processedAnswerData?.['Jurisdictions Literature ID'],
+                            processedAnswerData?.[
+                              'Domestic Legal Provisions'
+                            ] ||
+                            processedAnswerData?.[
+                              'Jurisdictions Literature ID'
+                            ],
                         ]
                       : []),
                   ].filter(Boolean)
@@ -45,7 +49,11 @@
               <CourtDecisionRenderer
                 :value="value"
                 :valueClassMap="valueClassMap['Court Decisions ID']"
-                :emptyValueBehavior="filteredKeyLabelPairs.find(pair => pair.key === 'Court Decisions ID')?.emptyValueBehavior"
+                :emptyValueBehavior="
+                  filteredKeyLabelPairs.find(
+                    (pair) => pair.key === 'Court Decisions ID'
+                  )?.emptyValueBehavior
+                "
               />
             </section>
           </template>
@@ -96,7 +104,7 @@ onMounted(async () => {
     if (err.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: `${err.table} not found` }
+        query: { message: `${err.table} not found` },
       })
     } else {
       console.error('Error fetching question:', err)
