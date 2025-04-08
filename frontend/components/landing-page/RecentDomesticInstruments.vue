@@ -14,6 +14,11 @@
             icon="i-material-symbols:arrow-forward"
             trailing
           >
+            <img
+              src="https://choiceoflawdataverse.blob.core.windows.net/assets/flags/deu.svg"
+              style="height: 20px"
+              class="mr-3"
+            />
             <span class="break-words text-left">
               {{
                 instrument['Entry Into Force']
