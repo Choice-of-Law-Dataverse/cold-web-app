@@ -43,7 +43,6 @@
 
         <!-- Results Grid or Messages -->
         <div class="results-content mt-4">
-          <!-- Loading State -->
           <p v-if="loading">
             <LoadingCard />
           </p>
