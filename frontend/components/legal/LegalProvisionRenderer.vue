@@ -79,8 +79,9 @@ async function fetchInstrumentTitle(instrumentId) {
     })
     if (!response.ok) throw new Error('Failed to fetch instrument title')
     const data = await response.json()
-    instrumentTitles.value[instrumentId] =
-      data['Title (in English)'] || instrumentId
+    const title =
+      data['Abbreviation'] || data['Title (in English)'] || instrumentId
+    instrumentTitles.value[instrumentId] = title
   } catch (err) {
     console.error('Error fetching instrument title:', err)
     instrumentTitles.value[instrumentId] = instrumentId
