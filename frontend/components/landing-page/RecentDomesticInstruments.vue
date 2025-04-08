@@ -7,14 +7,7 @@
     </div>
     <ul>
       <li v-if="isLoading">
-        <UButton
-          class="suggestion-button mt-8"
-          variant="link"
-          icon="i-material-symbols:arrow-forward"
-          trailing
-        >
-          Loading...
-        </UButton>
+        <LoadingLandingPageCard />
       </li>
       <template v-else>
         <li v-for="(instrument, index) in domesticInstruments" :key="index">
@@ -51,6 +44,7 @@ import { ref, onMounted } from 'vue'
 import { useRuntimeConfig } from '#app'
 import { RouterLink } from 'vue-router'
 import { formatDate } from '../../utils/format.js'
+import LoadingLandingPageCard from '../layout/LoadingLandingPageCard.vue'
 
 const domesticInstruments = ref([])
 const isLoading = ref(true) // Added loading state

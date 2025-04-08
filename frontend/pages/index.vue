@@ -86,5 +86,6 @@ import PlotCourtDecisionsJurisdiction from '~/components/landing-page/PlotCourtD
 import ConnectCard from '~/components/landing-page/ConnectCard.vue'
 import { externalLinks } from '~/utils/externalLinks'
 import RecentDomesticInstruments from '~/components/landing-page/RecentDomesticInstruments.vue'
+import LoadingLandingPageCard from '~/components/layout/LoadingLandingPageCard.vue'
 const links = externalLinks
 </script>
