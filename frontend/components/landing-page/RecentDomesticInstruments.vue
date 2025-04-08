@@ -1,0 +1,74 @@
+<template>
+  <UCard class="cold-ucard">
+    <div class="popular-searches-container flex flex-col md:flex-row gap-8">
+      <h2 class="popular-title text-left md:whitespace-nowrap">
+        Recent Domestic Instruments
+      </h2>
+    </div>
+    <ul>
+      <li v-for="(instrument, index) in domesticInstruments" :key="index">
+        <RouterLink :to="`/legal-instrument/${instrument.ID}`">
+          <UButton
+            class="suggestion-button mt-8"
+            variant="link"
+            icon="i-material-symbols:arrow-forward"
+            trailing
+          >
+            <img
+              :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
+              style="height: 20px; border: 1px solid var(--color-cold-gray)"
+              class="mr-3"
+            />
+            <span class="break-words text-left">
+              {{
+                instrument['Entry Into Force']
+                  ? formatDate(instrument['Entry Into Force'])
+                  : instrument['Date']
+              }}:
+              {{ instrument['Title (in English)'] }}
+            </span>
+          </UButton>
+        </RouterLink>
+      </li>
+    </ul>
+  </UCard>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRuntimeConfig } from '#app'
+import { RouterLink } from 'vue-router'
+import { formatDate } from '../../utils/format.js'
+
+const domesticInstruments = ref([])
+const config = useRuntimeConfig()
+
+async function fetchDomesticInstruments() {
+  try {
+    const payload = { table: 'Domestic Instruments', filters: [] }
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+    )
+    if (!response.ok) throw new Error('Failed to load data')
+    const instrumentsData = await response.json()
+    // Convert Date to number, sort descending and take the n most recent
+    instrumentsData.sort((a, b) => Number(b.Date) - Number(a.Date))
+    domesticInstruments.value = instrumentsData.slice(0, 5)
+  } catch (error) {
+    console.error(error)
+    domesticInstruments.value = []
+  }
+}
+
+onMounted(fetchDomesticInstruments)
+</script>
+
+<style scoped></style>
