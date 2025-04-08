@@ -12,6 +12,7 @@ export default {
       colors: {
         'cold-purple': '#6F4DFA',
         'cold-purple-alpha': '#6F4DFA0D', // 5% alpha
+        'cold-purple-fake-alpha': '#f3f2fa', // 100% alpha but same color as cold-purple-alpha
         'cold-green': '#4DFAB2',
         'cold-green-alpha': '#4DFAB280',
         'cold-cream': '#FFF0D9',
@@ -48,6 +49,7 @@ export default {
         ':root': {
           '--color-cold-purple': theme('colors.cold-purple'),
           '--color-cold-purple-alpha': theme('colors.cold-purple-alpha'),
+          '--color-cold-purple-fake-alpha': theme('colors.cold-purple-fake-alpha'),
           '--color-cold-green': theme('colors.cold-green'),
           '--color-cold-green-alpha': theme('colors.cold-green-alpha'),
           '--color-cold-cream': theme('colors.cold-cream'),
