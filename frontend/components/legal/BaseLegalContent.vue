@@ -1,7 +1,7 @@
 <template>
   <div>
-    <div v-if="loading">Loading...</div>
-    <div v-else-if="error">{{ error }}</div>
+    <!-- Removed individual loading indicator; show a global loader in the parent instead -->
+    <div v-if="error">{{ error }}</div>
     <div v-else>
       <div :id="anchorId" :class="['legal-content', customClass]">
         <div class="flex justify-between items-baseline mb-4">
@@ -50,7 +50,7 @@ const props = defineProps({
 })
 
 const customClass = computed(() => props.class || '')
-const displayTitle = computed(() => props.title || 'Loading...')
+const displayTitle = computed(() => (props.loading ? '' : props.title || ''))
 
 const scrollToAnchor = async () => {
   const hash = window.location.hash.slice(1) // Remove the # symbol

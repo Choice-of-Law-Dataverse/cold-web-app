@@ -1,51 +1,59 @@
 <template>
-  <BaseLegalContent
-    :title="displayTitle"
-    :anchorId="anchorId"
-    :class="class"
-    :loading="loading"
-    :error="error"
-  >
-    <template #header-actions>
-      <div v-if="hasEnglishTranslation" class="flex items-center gap-1">
-        <!-- Original label (fades when English is active) -->
-        <span
-          class="label-key-provision-toggle mr-[-0px]"
-          :class="{
-            'opacity-25': showEnglish,
-            'opacity-100': !showEnglish,
-          }"
-        >
-          Original
-        </span>
+  <div>
+    <div v-if="loading">
+      <LoadingBar />
+    </div>
+    <div v-else>
+      <BaseLegalContent
+        :title="displayTitle"
+        :anchorId="anchorId"
+        :class="class"
+        :loading="loading"
+        :error="error"
+      >
+        <template #header-actions>
+          <div v-if="hasEnglishTranslation" class="flex items-center gap-1">
+            <!-- Original label (fades when English is active) -->
+            <span
+              class="label-key-provision-toggle mr-[-0px]"
+              :class="{
+                'opacity-25': showEnglish,
+                'opacity-100': !showEnglish,
+              }"
+            >
+              Original
+            </span>
 
-        <UToggle
-          v-model="showEnglish"
-          size="2xs"
-          class="bg-[var(--color-cold-gray)]"
-        />
+            <UToggle
+              v-model="showEnglish"
+              size="2xs"
+              class="bg-[var(--color-cold-gray)]"
+            />
 
-        <!-- English label (fades when Original is active) -->
-        <span
-          class="label-key-provision-toggle"
-          :class="{
-            'opacity-25': !showEnglish,
-            'opacity-100': showEnglish,
-          }"
-        >
-          English
-        </span>
-      </div>
-    </template>
+            <!-- English label (fades when Original is active) -->
+            <span
+              class="label-key-provision-toggle"
+              :class="{
+                'opacity-25': !showEnglish,
+                'opacity-100': showEnglish,
+              }"
+            >
+              English
+            </span>
+          </div>
+        </template>
 
-    {{ content }}
-  </BaseLegalContent>
+        {{ content }}
+      </BaseLegalContent>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { computed, watch, onMounted, ref } from 'vue'
 import { useLegalProvision } from '~/composables/useLegalProvision'
 import BaseLegalContent from './BaseLegalContent.vue'
+import LoadingBar from './components/layout/LoadingBar.vue'
 
 const props = defineProps({
   provisionId: {
