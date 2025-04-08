@@ -44,7 +44,9 @@
         <!-- Results Grid or Messages -->
         <div class="results-content mt-4">
           <!-- Loading State -->
-          <p v-if="loading">Loading…</p>
+          <p v-if="loading">
+            <LoadingCard />
+          </p>
 
           <!-- No Results -->
           <NoSearchResults v-else-if="!allResults.length" />
@@ -87,6 +89,7 @@ import CourtDecisionCard from './components/search-results/CourtDecisionCard.vue
 import AnswerCard from './components/search-results/AnswerCard.vue'
 import SearchFilters from './components/search-results/SearchFilters.vue'
 import NoSearchResults from './components/search-results/NoSearchResults.vue'
+import LoadingCard from './components/layout/LoadingCard.vue'
 
 const getResultComponent = (source_table) => {
   switch (source_table) {
@@ -238,11 +241,12 @@ watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
   ([newJurisdiction, newTheme, newType]) => {
     const filters = {
-      jurisdiction: newJurisdiction.length > 0 ? newJurisdiction.join(',') : undefined,
+      jurisdiction:
+        newJurisdiction.length > 0 ? newJurisdiction.join(',') : undefined,
       theme: newTheme.length > 0 ? newTheme.join(',') : undefined,
       type: newType.length > 0 ? newType.join(',') : undefined,
     }
-    
+
     // Only emit if the filters have actually changed
     if (JSON.stringify(filters) !== JSON.stringify(props.filters)) {
       emit('update:filters', filters)
@@ -256,12 +260,21 @@ watch(
   () => props.filters,
   (newFilters) => {
     // Convert filter strings to arrays, handling both single and multiple selections
-    const newJurisdiction = newFilters.jurisdiction ? newFilters.jurisdiction.split(',').filter(Boolean) : []
-    const newTheme = newFilters.theme ? newFilters.theme.split(',').filter(Boolean) : []
-    const newType = newFilters.type ? newFilters.type.split(',').filter(Boolean) : []
+    const newJurisdiction = newFilters.jurisdiction
+      ? newFilters.jurisdiction.split(',').filter(Boolean)
+      : []
+    const newTheme = newFilters.theme
+      ? newFilters.theme.split(',').filter(Boolean)
+      : []
+    const newType = newFilters.type
+      ? newFilters.type.split(',').filter(Boolean)
+      : []
 
     // Only update if the values have actually changed
-    if (JSON.stringify(newJurisdiction) !== JSON.stringify(currentJurisdictionFilter.value)) {
+    if (
+      JSON.stringify(newJurisdiction) !==
+      JSON.stringify(currentJurisdictionFilter.value)
+    ) {
       currentJurisdictionFilter.value = newJurisdiction
     }
     if (JSON.stringify(newTheme) !== JSON.stringify(currentThemeFilter.value)) {
