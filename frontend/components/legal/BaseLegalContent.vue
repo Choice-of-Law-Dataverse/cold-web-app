@@ -29,24 +29,24 @@ const props = defineProps({
   title: {
     type: String,
     required: true,
-    default: 'Loading...'
+    default: 'Loading...',
   },
   anchorId: {
     type: String,
-    required: true
+    required: true,
   },
   class: {
     type: String,
-    default: ''
+    default: '',
   },
   loading: {
     type: Boolean,
-    default: false
+    default: false,
   },
   error: {
     type: String,
-    default: null
-  }
+    default: null,
+  },
 })
 
 const customClass = computed(() => props.class || '')
@@ -94,4 +94,4 @@ onMounted(scrollToAnchor)
   word-wrap: break-word;
   word-break: break-word;
 }
-</style> 
+</style>

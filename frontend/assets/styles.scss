@@ -104,7 +104,7 @@ li {
 
 .label-key-provision-article {
   @extend .label-key;
-  font-weight: 500 !important;
+  text-transform: none;
 }
 
 .label-key-provision-toggle {
@@ -229,63 +229,53 @@ li {
 }
 
 // Popper Style
-ul[role="listbox"][data-headlessui-state] {
+ul[role='listbox'][data-headlessui-state] {
   border-radius: 0 !important;
   box-shadow: none !important;
   border: 1px solid var(--color-cold-gray) !important;
   padding: 0 !important;
 }
 
-ul[role="listbox"] input[role="combobox"][data-headlessui-state="open"] {
+ul[role='listbox'] input[role='combobox'][data-headlessui-state='open'] {
   margin-bottom: 0 !important;
 }
 
-
-ul[role="listbox"] li {
+ul[role='listbox'] li {
   margin: 0 !important;
   padding-top: 0.75rem !important;
   padding-bottom: 0.75rem !important;
 }
 
 // Popper Selected Icon
-ul[role="listbox"] li[aria-selected="true"] .iconify {
-  color: var(--color-cold-purple) !important; 
+ul[role='listbox'] li[aria-selected='true'] .iconify {
+  color: var(--color-cold-purple) !important;
   width: 1rem !important;
 }
 
 // Popper Input Size
-ul[role="listbox"] input {
+ul[role='listbox'] input {
   padding-top: 1rem !important;
   padding-bottom: 1rem !important;
   border-color: var(--color-cold-gray) !important;
 }
 
 // Popper Hover
-ul[role="listbox"] li:hover {
-  background-color: var(--color-cold-purple-alpha) !important; 
+ul[role='listbox'] li:hover {
+  background-color: var(--color-cold-purple-alpha) !important;
 }
 
-ul[role="listbox"] li[data-headlessui-state="selected"] {
-  background-color: var(--color-cold-purple-alpha) !important; 
+ul[role='listbox'] li[data-headlessui-state='selected'] {
+  background-color: var(--color-cold-purple-alpha) !important;
 }
 
-ul[role="listbox"] li[aria-selected="true"],
-ul[role="listbox"] li[data-headlessui-state="active"],
-ul[role="listbox"] li[data-headlessui-state="active"]:hover,
-ul[role="listbox"] li[data-headlessui-state="selected"],
-ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
+ul[role='listbox'] li[aria-selected='true'],
+ul[role='listbox'] li[data-headlessui-state='active'],
+ul[role='listbox'] li[data-headlessui-state='active']:hover,
+ul[role='listbox'] li[data-headlessui-state='selected'],
+ul[role='listbox'] li[data-headlessui-state='selected']:hover {
   background-color: var(--color-cold-purple-alpha) !important;
   border-radius: 0 !important;
 }
-
-
-
-
-
-
-
-
-
 
 // CoLD Card
 .cold-ucard {
