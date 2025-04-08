@@ -107,7 +107,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import eventBus from '@/eventBus'
-import jurisdictionsData from '@/assets/jurisdictions-data.json' // Import simplified array
+import jurisdictionsData from '@/assets/jurisdictions-data.json'
 
 // Reactive state
 const searchText = ref('')
@@ -129,12 +129,17 @@ const links = [
 
 // Add function to update suggestions
 function updateSuggestions() {
-  if (!searchText.value || searchText.value.trim().length < 1) {
+  if (!searchText.value || searchText.value.trim().length < 3) {
     suggestions.value = []
     showSuggestions.value = false
     return
   }
-  const words = searchText.value.toLowerCase().split(/\s+/).filter(Boolean)
+  // Only keep words with length >= 3
+  const words = searchText.value
+    .toLowerCase()
+    .split(/\s+/)
+    .filter((word) => word.length >= 3)
+
   let filtered = jurisdictionsData
     .filter((item) =>
       words.some(
