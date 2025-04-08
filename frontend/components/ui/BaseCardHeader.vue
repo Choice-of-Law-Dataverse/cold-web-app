@@ -3,59 +3,62 @@
     class="header-container flex items-center justify-between"
     :key="formattedJurisdiction + formattedTheme"
   >
-    <!-- Left side of the header: Tags -->
-    <div
-      class="tags-container flex items-center overflow-x-auto scrollbar-hidden"
-    >
-      <!-- Display 'Name (from Jurisdiction)' or alternatives -->
-      <span
-        v-for="(jurisdictionString, index) in formattedJurisdiction"
-        :key="`jurisdiction-${index}`"
-        class="label-jurisdiction"
+    <template v-if="cardType === 'Loading'"> </template>
+    <template v-else>
+      <!-- Left side of the header: Tags -->
+      <div
+        class="tags-container flex items-center overflow-x-auto scrollbar-hidden"
       >
-        {{ jurisdictionString }}
-      </span>
+        <!-- Display 'Name (from Jurisdiction)' or alternatives -->
+        <span
+          v-for="(jurisdictionString, index) in formattedJurisdiction"
+          :key="`jurisdiction-${index}`"
+          class="label-jurisdiction"
+        >
+          {{ jurisdictionString }}
+        </span>
 
-      <!-- Display 'source_table' -->
-      <span v-if="adjustedSourceTable" :class="['label', labelColorClass]">
-        {{ adjustedSourceTable }}
-      </span>
+        <!-- Display 'source_table' -->
+        <span v-if="adjustedSourceTable" :class="['label', labelColorClass]">
+          {{ adjustedSourceTable }}
+        </span>
 
-      <!-- Display 'Themes' -->
-      <span
-        v-for="(theme, index) in formattedTheme"
-        :key="`theme-${index}`"
-        class="label-theme"
-      >
-        {{ theme }}
-      </span>
-    </div>
+        <!-- Display 'Themes' -->
+        <span
+          v-for="(theme, index) in formattedTheme"
+          :key="`theme-${index}`"
+          class="label-theme"
+        >
+          {{ theme }}
+        </span>
+      </div>
 
-    <!-- Fade-out effect -->
-    <div
-      class="fade-out"
-      :class="{
-        'open-link-true': showOpenLink,
-        'suggest-edit-true': showSuggestEdit,
-        'open-link-false': !showOpenLink,
-        'suggest-edit-false': !showSuggestEdit,
-      }"
-    ></div>
+      <!-- Fade-out effect -->
+      <div
+        class="fade-out"
+        :class="{
+          'open-link-true': showOpenLink,
+          'suggest-edit-true': showSuggestEdit,
+          'open-link-false': !showOpenLink,
+          'suggest-edit-false': !showSuggestEdit,
+        }"
+      ></div>
 
-    <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
-    <div class="open-link ml-4">
-      <NuxtLink
-        v-if="showSuggestEdit"
-        :to="suggestEditLink"
-        class="flex items-center space-x-2"
-        target="_blank"
-      >
-        <span>Suggest Edit</span>
-        <UIcon name="i-material-symbols:edit-outline" />
-      </NuxtLink>
+      <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
+      <div class="open-link ml-4">
+        <NuxtLink
+          v-if="showSuggestEdit"
+          :to="suggestEditLink"
+          class="flex items-center space-x-2"
+          target="_blank"
+        >
+          <span>Suggest Edit</span>
+          <UIcon name="i-material-symbols:edit-outline" />
+        </NuxtLink>
 
-      <NuxtLink v-else :to="getLink()"> Open </NuxtLink>
-    </div>
+        <NuxtLink v-else :to="getLink()"> Open </NuxtLink>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -165,12 +168,14 @@ const formattedTheme = computed(() => {
   if (props.formattedTheme.length > 0) {
     return props.formattedTheme
   }
-  
+
   // Handle literature's Manual Tags
   if (props.cardType === 'Literature' && props.resultData['Manual Tags']) {
-    return props.resultData['Manual Tags'].split(';').map(theme => theme.trim())
+    return props.resultData['Manual Tags']
+      .split(';')
+      .map((theme) => theme.trim())
   }
-  
+
   // Handle other types
   const themes =
     props.resultData['Title of the Provision'] ?? props.resultData.Themes

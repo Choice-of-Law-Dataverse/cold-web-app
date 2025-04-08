@@ -2,15 +2,23 @@
   <div class="col-span-12">
     <UCard class="cold-ucard">
       <template #header>
-        <BaseCardHeader
-          v-if="resultData"
-          :resultData="resultData"
-          :cardType="cardType"
-          :showOpenLink="true"
-          :formattedJurisdiction="formattedJurisdiction"
-          :formattedTheme="formattedTheme"
-          :showSuggestEdit="false"
-        />
+        <template v-if="cardType === 'Loading'">
+          <USkeleton
+            class="h-5 mt-0.5 mb-0.5 w-[100px] rounded-none"
+            style="background-color: var(--color-cold-gray-alpha)"
+          />
+        </template>
+        <template v-else>
+          <BaseCardHeader
+            v-if="resultData"
+            :resultData="resultData"
+            :cardType="cardType"
+            :showOpenLink="true"
+            :formattedJurisdiction="formattedJurisdiction"
+            :formattedTheme="formattedTheme"
+            :showSuggestEdit="false"
+          />
+        </template>
       </template>
 
       <!-- Card content -->
