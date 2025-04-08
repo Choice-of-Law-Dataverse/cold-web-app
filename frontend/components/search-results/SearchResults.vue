@@ -53,7 +53,6 @@
 
           <!-- Results Grid -->
           <div v-else class="results-grid">
-            <LoadingCard />
             <div
               v-for="(resultData, key) in allResults"
               :key="key"
