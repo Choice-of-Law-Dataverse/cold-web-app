@@ -6,40 +6,55 @@
       </h2>
     </div>
     <ul>
-      <li>
+      <li v-for="(instrument, index) in domesticInstruments" :key="index">
         <UButton
           class="suggestion-button"
           variant="link"
           icon="i-material-symbols:arrow-forward"
           trailing
         >
-          <span class="break-words text-left">Domestic Instrument 1</span>
-        </UButton>
-      </li>
-      <li>
-        <UButton
-          class="suggestion-button"
-          variant="link"
-          icon="i-material-symbols:arrow-forward"
-          trailing
-        >
-          <span class="break-words text-left">Domestic Instrument 2</span>
-        </UButton>
-      </li>
-      <li>
-        <UButton
-          class="suggestion-button"
-          variant="link"
-          icon="i-material-symbols:arrow-forward"
-          trailing
-        >
-          <span class="break-words text-left">Domestic Instrument 3</span>
+          <span class="break-words text-left">
+            {{ instrument['Title (in English)'] }}
+          </span>
         </UButton>
       </li>
     </ul>
   </UCard>
 </template>
 
-<script setup></script>
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRuntimeConfig } from '#app'
+
+const domesticInstruments = ref([])
+const config = useRuntimeConfig()
+
+async function fetchDomesticInstruments() {
+  try {
+    const payload = { table: 'Domestic Instruments', filters: [] }
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      }
+    )
+    if (!response.ok) throw new Error('Failed to load data')
+    const instrumentsData = await response.json()
+    // Convert Date to number, sort descending and take the 3 most recent
+    instrumentsData.sort((a, b) => Number(b.Date) - Number(a.Date))
+    domesticInstruments.value = instrumentsData.slice(0, 3)
+  } catch (error) {
+    console.error(error)
+    domesticInstruments.value = []
+  }
+}
+
+onMounted(fetchDomesticInstruments)
+</script>
 
 <style scoped></style>
