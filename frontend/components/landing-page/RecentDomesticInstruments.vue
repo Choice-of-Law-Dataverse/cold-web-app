@@ -16,7 +16,7 @@
           >
             <img
               src="https://choiceoflawdataverse.blob.core.windows.net/assets/flags/deu.svg"
-              style="height: 20px"
+              style="height: 20px; border: 1px solid var(--color-cold-gray)"
               class="mr-3"
             />
             <span class="break-words text-left">
