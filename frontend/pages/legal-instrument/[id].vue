@@ -18,6 +18,11 @@
               :provisionId="provisionId.trim()"
               :class="index === 0 ? 'no-margin' : ''"
               :textType="textType"
+              :instrumentTitle="
+                processedLegalInstrument
+                  ? processedLegalInstrument['Title (in English)']
+                  : ''
+              "
               @update:hasEnglishTranslation="hasEnglishTranslation = $event"
             />
           </div>
@@ -63,7 +68,10 @@ const hasEnglishTranslation = ref(false)
 
 const { loading, error, data: legalInstrument, fetchData } = useApiFetch()
 
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(legalInstrument, legalInstrumentConfig)
+const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
+  legalInstrument,
+  legalInstrumentConfig
+)
 
 const processedLegalInstrument = computed(() => {
   if (!legalInstrument.value) {
@@ -71,7 +79,9 @@ const processedLegalInstrument = computed(() => {
   }
   return {
     ...legalInstrument.value,
-    'Title (in English)': legalInstrument.value['Title (in English)'] || legalInstrument.value['Official Title']
+    'Title (in English)':
+      legalInstrument.value['Title (in English)'] ||
+      legalInstrument.value['Official Title'],
   }
 })
 
@@ -85,7 +95,7 @@ onMounted(async () => {
     if (err.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: `${err.table} not found` }
+        query: { message: `${err.table} not found` },
       })
     } else {
       console.error('Error fetching legal instrument:', err)

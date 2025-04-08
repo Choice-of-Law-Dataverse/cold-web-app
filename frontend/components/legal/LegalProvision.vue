@@ -43,23 +43,27 @@
 </template>
 
 <script setup>
-import { computed, watch, onMounted } from 'vue'
+import { computed, watch, onMounted, ref } from 'vue'
 import { useLegalProvision } from '~/composables/useLegalProvision'
 import BaseLegalContent from './BaseLegalContent.vue'
 
 const props = defineProps({
   provisionId: {
     type: String,
-    required: true
+    required: true,
   },
   class: {
     type: String,
-    default: ''
+    default: '',
   },
   textType: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
+  instrumentTitle: {
+    type: String,
+    default: '',
+  },
 })
 
 const emit = defineEmits(['update:hasEnglishTranslation'])
@@ -77,13 +81,36 @@ const {
 } = useLegalProvision({
   provisionId: props.provisionId,
   textType: props.textType,
-  onHasEnglishTranslationUpdate: (value) => emit('update:hasEnglishTranslation', value),
+  onHasEnglishTranslationUpdate: (value) =>
+    emit('update:hasEnglishTranslation', value),
 })
 
+// New reactive property for the English title
+const englishTitle = ref('')
+
+// Watch the content and update englishTitle if the key exists
+watch(
+  content,
+  (newVal) => {
+    if (newVal && typeof newVal === 'object' && newVal['Title (in English)']) {
+      englishTitle.value = newVal['Title (in English)']
+    }
+  },
+  { immediate: true }
+)
+
+// Update displayTitle to include englishTitle and instrumentTitle if available
 const displayTitle = computed(() => {
   if (loading.value) return 'Loading...'
   if (error.value) return 'Error'
-  return title.value || props.provisionId
+  const baseTitle = title.value || props.provisionId
+  let fullTitle = englishTitle.value
+    ? `${baseTitle} - ${englishTitle.value}`
+    : baseTitle
+  if (props.instrumentTitle) {
+    fullTitle += `, ${props.instrumentTitle}`
+  }
+  return fullTitle
 })
 
 // Fetch provision details when component is mounted
@@ -105,4 +132,4 @@ watch(showEnglish, updateContent)
 .label-key-provision-toggle {
   @apply text-sm text-gray-600;
 }
-</style> 
+</style>
