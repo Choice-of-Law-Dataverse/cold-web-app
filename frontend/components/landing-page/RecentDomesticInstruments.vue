@@ -9,12 +9,13 @@
       <li v-for="(instrument, index) in domesticInstruments" :key="index">
         <RouterLink :to="`/legal-instrument/${instrument.ID}`">
           <UButton
-            class="suggestion-button"
+            class="suggestion-button mt-8"
             variant="link"
             icon="i-material-symbols:arrow-forward"
             trailing
           >
             <span class="break-words text-left">
+              {{ instrument['Date'] }}:
               {{ instrument['Title (in English)'] }}
             </span>
           </UButton>
@@ -48,9 +49,9 @@ async function fetchDomesticInstruments() {
     )
     if (!response.ok) throw new Error('Failed to load data')
     const instrumentsData = await response.json()
-    // Convert Date to number, sort descending and take the 3 most recent
+    // Convert Date to number, sort descending and take the n most recent
     instrumentsData.sort((a, b) => Number(b.Date) - Number(a.Date))
-    domesticInstruments.value = instrumentsData.slice(0, 3)
+    domesticInstruments.value = instrumentsData.slice(0, 5)
   } catch (error) {
     console.error(error)
     domesticInstruments.value = []
