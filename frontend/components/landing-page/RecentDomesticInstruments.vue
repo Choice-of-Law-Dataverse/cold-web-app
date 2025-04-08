@@ -5,6 +5,38 @@
         Recent Domestic Instruments
       </h2>
     </div>
+    <ul>
+      <li>
+        <UButton
+          class="suggestion-button"
+          variant="link"
+          icon="i-material-symbols:arrow-forward"
+          trailing
+        >
+          <span class="break-words text-left">Domestic Instrument 1</span>
+        </UButton>
+      </li>
+      <li>
+        <UButton
+          class="suggestion-button"
+          variant="link"
+          icon="i-material-symbols:arrow-forward"
+          trailing
+        >
+          <span class="break-words text-left">Domestic Instrument 2</span>
+        </UButton>
+      </li>
+      <li>
+        <UButton
+          class="suggestion-button"
+          variant="link"
+          icon="i-material-symbols:arrow-forward"
+          trailing
+        >
+          <span class="break-words text-left">Domestic Instrument 3</span>
+        </UButton>
+      </li>
+    </ul>
   </UCard>
 </template>
 
