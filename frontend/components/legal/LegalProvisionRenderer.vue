@@ -3,8 +3,8 @@
     <!-- Render legal provisions inline with fetched title -->
     <template v-for="(prov, index) in processedProvisions" :key="index">
       <NuxtLink :to="generateLegalProvisionLink(prov.raw)">
-        {{ instrumentTitles[prov.instrumentId] || prov.instrumentId }}
-        {{ prov.articleId }}
+        {{ formatArticle(prov.articleId) }}{{ prov.articleId ? ', ' : ''
+        }}{{ instrumentTitles[prov.instrumentId] || prov.instrumentId }}
       </NuxtLink>
       <span v-if="index !== processedProvisions.length - 1">, </span>
     </template>
@@ -87,6 +87,9 @@ async function fetchInstrumentTitle(instrumentId) {
     instrumentTitles.value[instrumentId] = instrumentId
   }
 }
+
+const formatArticle = (article) =>
+  article ? article.replace(/(Art\.)(\d+)/, '$1 $2') : ''
 
 // Watch processed provisions and fetch missing instrument titles
 watch(
