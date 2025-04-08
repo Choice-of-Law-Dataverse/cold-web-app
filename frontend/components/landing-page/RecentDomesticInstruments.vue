@@ -7,16 +7,18 @@
     </div>
     <ul>
       <li v-for="(instrument, index) in domesticInstruments" :key="index">
-        <UButton
-          class="suggestion-button"
-          variant="link"
-          icon="i-material-symbols:arrow-forward"
-          trailing
-        >
-          <span class="break-words text-left">
-            {{ instrument['Title (in English)'] }}
-          </span>
-        </UButton>
+        <RouterLink :to="`/legal-instrument/${instrument.ID}`">
+          <UButton
+            class="suggestion-button"
+            variant="link"
+            icon="i-material-symbols:arrow-forward"
+            trailing
+          >
+            <span class="break-words text-left">
+              {{ instrument['Title (in English)'] }}
+            </span>
+          </UButton>
+        </RouterLink>
       </li>
     </ul>
   </UCard>
@@ -25,6 +27,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRuntimeConfig } from '#app'
+import { RouterLink } from 'vue-router'
 
 const domesticInstruments = ref([])
 const config = useRuntimeConfig()
