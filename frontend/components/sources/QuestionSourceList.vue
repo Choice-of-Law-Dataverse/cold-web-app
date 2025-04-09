@@ -1,7 +1,24 @@
 <template>
   <div>
     <ul>
-      <li>Domestic Legal Provision</li>
+      <!-- Domestic Legal Provision bullet point -->
+      <template v-if="fallbackData['Domestic Legal Provisions']">
+        <li>
+          <LegalProvisionRenderer
+            :value="fallbackData['Domestic Legal Provisions']"
+            :fallbackData="fallbackData"
+          />
+        </li>
+      </template>
+      <template v-else-if="fallbackData['Domestic Instruments ID']">
+        <li>
+          <LegalProvisionRenderer
+            skipArticle
+            :value="fallbackData['Domestic Instruments ID']"
+            :fallbackData="fallbackData"
+          />
+        </li>
+      </template>
       <li>OUP Chapter</li>
       <li>Primary Literature</li>
     </ul>
