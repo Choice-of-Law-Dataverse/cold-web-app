@@ -73,7 +73,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
+import { useRuntimeConfig } from '#imports' // new import
 import ResultCard from './ResultCard.vue'
 import { answerCardConfig } from '../../config/cardConfigs'
 
@@ -86,6 +87,57 @@ const props = defineProps({
 
 const config = answerCardConfig
 
+const runtimeConfig = useRuntimeConfig() // new
+const literatureTitle = ref(null) // initialize as null to indicate "not yet loaded"
+
+// Updated function to fetch literature title using table "Literature"
+async function fetchLiteratureTitle(id) {
+  try {
+    const response = await fetch(
+      `${runtimeConfig.public.apiBaseUrl}/search/details`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${runtimeConfig.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table: 'Literature', id }),
+      }
+    )
+    if (!response.ok) throw new Error('Failed to fetch literature title')
+    const data = await response.json()
+    // Use the key 'Title' from the API response
+    const title = data['Title']
+    literatureTitle.value = title && title !== 'NA' ? title : id
+  } catch (err) {
+    console.error('Error fetching literature title:', err)
+    literatureTitle.value = id
+  }
+}
+
+// Use a watcher that triggers immediately
+watch(
+  () => props.resultData['Jurisdictions Literature ID'],
+  (newId) => {
+    if (newId) fetchLiteratureTitle(newId)
+  },
+  { immediate: true }
+)
+
+// Updated computed property for fallback between keys
+const domesticValue = computed(() => {
+  if (props.resultData['Domestic Legal Provisions'] != null) {
+    return getValue('Domestic Legal Provisions')
+  } else if (props.resultData['Domestic Instruments ID'] != null) {
+    return getValue('Domestic Instruments ID')
+  } else if (props.resultData['Jurisdictions Literature ID'] != null) {
+    // If literatureTitle is still null, show a loading message; otherwise use the value
+    return literatureTitle.value === null ? 'Loading...' : literatureTitle.value
+  } else {
+    return ''
+  }
+})
+
 // Computed property to display the number of related cases
 const relatedCasesCount = computed(() => {
   const links = props.resultData['Court Decisions Link']
@@ -97,15 +149,6 @@ const relatedCasesCount = computed(() => {
 const relatedDecisionsLink = computed(() => {
   const id = props.resultData['id']
   return `question/${id}#related-court-decisions`
-})
-
-// Updated computed property for fallback between keys
-const domesticValue = computed(() => {
-  return props.resultData['Domestic Legal Provisions'] != null
-    ? getValue('Domestic Legal Provisions')
-    : props.resultData['Domestic Instruments ID'] != null
-      ? getValue('Domestic Instruments ID')
-      : getValue('Jurisdictions Literature ID')
 })
 
 // New computed property to conditionally show domesticValue bullet
