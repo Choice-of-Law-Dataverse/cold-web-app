@@ -55,8 +55,11 @@ async function fetchCaseTitle(caseId) {
     })
     if (!response.ok) throw new Error('Failed to fetch case title')
     const data = await response.json()
-    const title = data['Case Title'] || caseId
-    caseTitles.value[caseId] = title
+    // If 'Case Title' is not available or equals "NA", use 'Case Citation'
+    const title = data['Case Title']
+    const finalTitle =
+      title && title !== 'NA' ? title : data['Case Citation'] || caseId
+    caseTitles.value[caseId] = finalTitle
   } catch (err) {
     console.error('Error fetching case title:', err)
     caseTitles.value[caseId] = caseId
