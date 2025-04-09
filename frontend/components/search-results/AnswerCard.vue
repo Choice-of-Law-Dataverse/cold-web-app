@@ -56,7 +56,7 @@
             <template v-else>
               <template v-if="Array.isArray(domesticValue)">
                 <li v-for="(item, index) in domesticValue" :key="index">
-                  {{ item }}
+                  <a :href="`/literature/${item.id}`">{{ item.title }}</a>
                 </li>
               </template>
               <li v-else>
@@ -93,14 +93,15 @@ const props = defineProps({
 const config = answerCardConfig
 const runtimeConfig = useRuntimeConfig()
 
-// Replace literatureTitle with literatureTitles (an array of titles)
+// Replace literatureTitles with an array of objects: { id, title }
 const literatureTitles = ref([])
 
-// New function to fetch literature titles for a comma‑separated list of IDs
+// Updated function to fetch literature titles for a comma‑separated list of IDs,
+// returns objects with id and title.
 async function fetchLiteratureTitles(idStr) {
   const ids = idStr.split(',').map((id) => id.trim())
   const promises = ids.map(async (id) => {
-    if (literatureCache[id]) return literatureCache[id]
+    if (literatureCache[id]) return { id, title: literatureCache[id] }
     try {
       const response = await fetch(
         `${runtimeConfig.public.apiBaseUrl}/search/details`,
@@ -118,10 +119,10 @@ async function fetchLiteratureTitles(idStr) {
       const title = data['Title']
       const finalTitle = title && title !== 'NA' ? title : id
       literatureCache[id] = finalTitle
-      return finalTitle
+      return { id, title: finalTitle }
     } catch (err) {
       console.error('Error fetching literature title:', err)
-      return id
+      return { id, title: id }
     }
   })
   literatureTitles.value = await Promise.all(promises)
