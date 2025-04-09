@@ -2,7 +2,10 @@
   <div>
     <!-- Show error message if there's an API error -->
     <div v-if="apiError" class="error-message">
-      <p>We're sorry, but we encountered an error while processing your search. Please try again later.</p>
+      <p>
+        We're sorry, but we encountered an error while processing your search.
+        Please try again later.
+      </p>
       <p class="error-details">{{ apiError }}</p>
     </div>
     <!-- Pass searchResults, totalMatches, and loading state -->
@@ -69,20 +72,22 @@ watch(
     }
 
     // Remove undefined values from query
-    Object.keys(query).forEach(key => {
+    Object.keys(query).forEach((key) => {
       if (query[key] === undefined) {
         delete query[key]
       }
     })
 
     // Update URL and trigger search
-    router.replace({
-      name: 'search',
-      query,
-    }).then(() => {
-      // Trigger a new search with the updated query and filters
-      fetchSearchResults(searchText.value.trim(), newFilters)
-    })
+    router
+      .replace({
+        name: 'search',
+        query,
+      })
+      .then(() => {
+        // Trigger a new search with the updated query and filters
+        fetchSearchResults(searchText.value.trim(), newFilters)
+      })
   },
   { deep: true }
 )
@@ -93,13 +98,13 @@ watch(
   (newQuery) => {
     // Update searchQuery and filters based on the URL
     searchQuery.value = newQuery.q || ''
-    
+
     // Only update filters if they exist in the URL
     const newFilters = {}
     if (newQuery.jurisdiction) newFilters.jurisdiction = newQuery.jurisdiction
     if (newQuery.theme) newFilters.theme = newQuery.theme
     if (newQuery.type) newFilters.type = newQuery.type
-    
+
     // Only update if the filters have actually changed
     if (JSON.stringify(newFilters) !== JSON.stringify(filter.value)) {
       filter.value = newFilters
@@ -150,13 +155,14 @@ async function fetchSearchResults(query, filters) {
   if (filters.type) {
     requestBody.filters.push({
       column: 'tables',
-      values: filters.type.split(',').map(type => typeFilterMapping[type]),
+      values: filters.type.split(',').map((type) => typeFilterMapping[type]),
     })
   }
 
   try {
-    // Retrieve hostname
-    const userHost = window.location.hostname
+    // Retrieve hostname safely (client only)
+    const userHost =
+      typeof window !== 'undefined' ? window.location.hostname : 'unknown'
 
     // Fetch user's IP address
     let userIp = 'Unknown'
@@ -183,22 +189,21 @@ async function fetchSearchResults(query, filters) {
     requestBody.browser_info_hint = userInfo || {}
     requestBody.hostname = userHost
 
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      }
-    )
+    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${config.public.FASTAPI}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    })
 
     if (!response.ok) {
       // Handle 5xx errors
       if (response.status >= 500) {
-        throw new Error(`Server error (${response.status}): ${response.statusText}`)
+        throw new Error(
+          `Server error (${response.status}): ${response.statusText}`
+        )
       }
       // Handle other errors
       throw new Error(`API error (${response.status}): ${response.statusText}`)
@@ -230,6 +235,7 @@ onMounted(() => {
 
 // Browser Info
 const getBrowserInfo = () => {
+  if (typeof window === 'undefined') return {}
   const userAgent = navigator.userAgent // User agent string with browser and OS info
   const platform = navigator.platform // Operating system platform
   const language = navigator.language // Browser's language setting

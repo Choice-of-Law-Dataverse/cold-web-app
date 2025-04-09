@@ -6,30 +6,35 @@
       </h2>
     </div>
     <ul>
-      <li v-for="(instrument, index) in domesticInstruments" :key="index">
-        <RouterLink :to="`/legal-instrument/${instrument.ID}`">
-          <UButton
-            class="suggestion-button mt-8"
-            variant="link"
-            icon="i-material-symbols:arrow-forward"
-            trailing
-          >
-            <img
-              :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
-              style="height: 20px; border: 1px solid var(--color-cold-gray)"
-              class="mr-3"
-            />
-            <span class="break-words text-left">
-              {{
-                instrument['Entry Into Force']
-                  ? formatDate(instrument['Entry Into Force'])
-                  : instrument['Date']
-              }}:
-              {{ instrument['Title (in English)'] }}
-            </span>
-          </UButton>
-        </RouterLink>
+      <li v-if="isLoading">
+        <LoadingLandingPageCard />
       </li>
+      <template v-else>
+        <li v-for="(instrument, index) in domesticInstruments" :key="index">
+          <RouterLink :to="`/legal-instrument/${instrument.ID}`">
+            <UButton
+              class="suggestion-button mt-8"
+              variant="link"
+              icon="i-material-symbols:arrow-forward"
+              trailing
+            >
+              <img
+                :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
+                style="height: 20px; border: 1px solid var(--color-cold-gray)"
+                class="mr-3"
+              />
+              <span class="break-words text-left">
+                {{
+                  instrument['Entry Into Force']
+                    ? formatDate(instrument['Entry Into Force'])
+                    : instrument['Date']
+                }}:
+                {{ instrument['Title (in English)'] }}
+              </span>
+            </UButton>
+          </RouterLink>
+        </li>
+      </template>
     </ul>
   </UCard>
 </template>
@@ -39,8 +44,10 @@ import { ref, onMounted } from 'vue'
 import { useRuntimeConfig } from '#app'
 import { RouterLink } from 'vue-router'
 import { formatDate } from '../../utils/format.js'
+import LoadingLandingPageCard from '../layout/LoadingLandingPageCard.vue'
 
 const domesticInstruments = ref([])
+const isLoading = ref(true) // Added loading state
 const config = useRuntimeConfig()
 
 async function fetchDomesticInstruments() {
@@ -65,6 +72,8 @@ async function fetchDomesticInstruments() {
   } catch (error) {
     console.error(error)
     domesticInstruments.value = []
+  } finally {
+    isLoading.value = false // Set loading to false once finished
   }
 }
 
