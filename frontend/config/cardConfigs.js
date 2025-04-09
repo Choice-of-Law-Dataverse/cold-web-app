@@ -31,7 +31,16 @@ export const answerCardConfig = {
             label: 'More Information',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'NANANA',
+                fallback: 'More Information not available',
+                fallbackClass: 'text-gray-500'
+            }
+        },
+        {
+            key: 'Domestic Legal Provisions',
+            label: 'Domestic Legal Provisions',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'Domestic Legal Provision not available',
                 fallbackClass: 'text-gray-500'
             }
         }

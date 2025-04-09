@@ -57,6 +57,8 @@
         <div class="label-key">{{ getLabel('More Information') }}</div>
         <ul class="result-value-small">
           <li>{{ getValue('More Information') }}</li>
+          <li>{{ getValue('Domestic Legal Provisions') }}</li>
+          <li>{{ relatedCasesCount }} related court decisions</li>
         </ul>
       </div>
     </div>
@@ -64,6 +66,7 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import ResultCard from './ResultCard.vue'
 import { answerCardConfig } from '../../config/cardConfigs'
 
@@ -75,6 +78,13 @@ const props = defineProps({
 })
 
 const config = answerCardConfig
+
+// New computed property to display the number of related cases
+const relatedCasesCount = computed(() => {
+  const links = props.resultData['Court Decisions Link']
+  if (!links) return 0
+  return links.split(',').filter((link) => link.trim() !== '').length
+})
 
 // Helper functions to get labels and values with fallbacks
 const getLabel = (key) => {
