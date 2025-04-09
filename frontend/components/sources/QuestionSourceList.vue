@@ -3,18 +3,28 @@
     <ul class="result-value-small">
       <!-- Domestic Legal Provision bullet point -->
       <template v-if="fallbackData['Domestic Legal Provisions']">
-        <li>
+        <li
+          v-for="(provision, index) in fallbackData[
+            'Domestic Legal Provisions'
+          ].split(',')"
+          :key="'domestic-legal-' + index"
+        >
           <LegalProvisionRenderer
-            :value="fallbackData['Domestic Legal Provisions']"
+            :value="provision"
             :fallbackData="fallbackData"
           />
         </li>
       </template>
       <template v-else-if="fallbackData['Domestic Instruments ID']">
-        <li>
+        <li
+          v-for="(instrument, index) in fallbackData[
+            'Domestic Instruments ID'
+          ].split(',')"
+          :key="'domestic-instrument-' + index"
+        >
           <LegalProvisionRenderer
             skipArticle
-            :value="fallbackData['Domestic Instruments ID']"
+            :value="instrument"
             :fallbackData="fallbackData"
           />
         </li>
