@@ -62,7 +62,9 @@
           </li>
           <li v-if="hasDomesticValue">{{ domesticValue }}</li>
           <li v-if="relatedCasesCount">
-            {{ relatedCasesCount }} related court decisions
+            <a :href="relatedDecisionsLink"
+              >{{ relatedCasesCount }} related court decisions</a
+            >
           </li>
         </ul>
       </div>
@@ -89,6 +91,12 @@ const relatedCasesCount = computed(() => {
   const links = props.resultData['Court Decisions Link']
   if (!links) return 0
   return links.split(',').filter((link) => link.trim() !== '').length
+})
+
+// Updated computed property for the related court decisions link
+const relatedDecisionsLink = computed(() => {
+  const id = props.resultData['id']
+  return `question/${id}#related-court-decisions`
 })
 
 // Updated computed property for fallback between keys
