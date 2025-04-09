@@ -5,17 +5,21 @@
       Click bars to see a jurisdiction's decisions
     </p>
     <div ref="plotlyContainer"></div>
+    <div v-if="isLoading" class="loading-state"><LoadingLandingPageCard /></div>
   </UCard>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import LoadingLandingPageCard from '../layout/LoadingLandingPageCard.vue'
 
 const chartData = ref(null)
 const chartLayout = ref(null)
 const chartConfig = ref(null)
 
 const plotlyContainer = ref(null)
+
+const isLoading = ref(true)
 
 onMounted(async () => {
   // Dynamically import Plotly only on the client
@@ -145,6 +149,9 @@ onMounted(async () => {
         window.location.href = clickedUrl
       }
     })
+
+    // Update loading state
+    isLoading.value = false
   } else {
     console.error('Plotly container is not ready')
   }
