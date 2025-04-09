@@ -49,6 +49,7 @@
 
       <!-- More Information section -->
       <div
+        v-if="hasMoreInformation"
         :class="[
           config.gridConfig.source.columnSpan,
           config.gridConfig.source.startColumn,
@@ -105,6 +106,14 @@ const hasDomesticValue = computed(() => {
     props.resultData['Domestic Legal Provisions'] ||
     props.resultData['Domestic Instruments ID'] ||
     props.resultData['Jurisdictions Literature ID']
+  )
+})
+
+const hasMoreInformation = computed(() => {
+  return (
+    props.resultData['More Information'] ||
+    hasDomesticValue.value ||
+    relatedCasesCount.value > 0
   )
 })
 
