@@ -128,8 +128,8 @@ export const legislationCardConfig = {
     },
     gridConfig: {
         title: {
-            columnSpan: 4,
-            startColumn: 1
+            columnSpan: 'md:col-span-6',
+            startColumn: 'md:col-start-1'
         }
     },
     processData: (data) => {
