@@ -49,14 +49,25 @@
           <li v-if="resultData['More Information']">
             {{ getValue('More Information') }}
           </li>
-          <li v-if="hasDomesticValue">
-            <LoadingBar class="pt-[9px]" v-if="isLoadingLiterature" />
-            <span v-else>{{ domesticValue }}</span>
-          </li>
+          <template v-if="hasDomesticValue">
+            <li v-if="isLoadingLiterature">
+              <LoadingBar class="pt-[9px]" />
+            </li>
+            <template v-else>
+              <template v-if="Array.isArray(domesticValue)">
+                <li v-for="(item, index) in domesticValue" :key="index">
+                  {{ item }}
+                </li>
+              </template>
+              <li v-else>
+                {{ domesticValue }}
+              </li>
+            </template>
+          </template>
           <li v-if="relatedCasesCount">
-            <a :href="relatedDecisionsLink"
-              >{{ relatedCasesCount }} related court decisions</a
-            >
+            <a :href="relatedDecisionsLink">
+              {{ relatedCasesCount }} related court decisions
+            </a>
           </li>
         </ul>
       </div>
@@ -81,73 +92,67 @@ const props = defineProps({
 
 const config = answerCardConfig
 const runtimeConfig = useRuntimeConfig()
-const literatureTitle = ref(null)
 
-// Updated function to fetch literature title using a shared cache
-async function fetchLiteratureTitle(id) {
-  if (literatureCache[id]) {
-    literatureTitle.value = literatureCache[id]
-    return
-  }
-  try {
-    const response = await fetch(
-      `${runtimeConfig.public.apiBaseUrl}/search/details`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${runtimeConfig.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ table: 'Literature', id }),
-      }
-    )
-    if (!response.ok) throw new Error('Failed to fetch literature title')
-    const data = await response.json()
-    const title = data['Title']
-    literatureTitle.value = title && title !== 'NA' ? title : id
-    literatureCache[id] = literatureTitle.value
-  } catch (err) {
-    console.error('Error fetching literature title:', err)
-    literatureTitle.value = id
-  }
+// Replace literatureTitle with literatureTitles (an array of titles)
+const literatureTitles = ref([])
+
+// New function to fetch literature titles for a comma‑separated list of IDs
+async function fetchLiteratureTitles(idStr) {
+  const ids = idStr.split(',').map((id) => id.trim())
+  const promises = ids.map(async (id) => {
+    if (literatureCache[id]) return literatureCache[id]
+    try {
+      const response = await fetch(
+        `${runtimeConfig.public.apiBaseUrl}/search/details`,
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${runtimeConfig.public.FASTAPI}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ table: 'Literature', id }),
+        }
+      )
+      if (!response.ok) throw new Error('Failed to fetch literature title')
+      const data = await response.json()
+      const title = data['Title']
+      const finalTitle = title && title !== 'NA' ? title : id
+      literatureCache[id] = finalTitle
+      return finalTitle
+    } catch (err) {
+      console.error('Error fetching literature title:', err)
+      return id
+    }
+  })
+  literatureTitles.value = await Promise.all(promises)
 }
 
 watch(
   () => props.resultData['Jurisdictions Literature ID'],
   (newId) => {
-    if (newId) fetchLiteratureTitle(newId)
+    if (newId) fetchLiteratureTitles(newId)
   },
   { immediate: true }
 )
 
-// Use a watcher that triggers immediately
-watch(
-  () => props.resultData['Jurisdictions Literature ID'],
-  (newId) => {
-    if (newId) fetchLiteratureTitle(newId)
-  },
-  { immediate: true }
-)
-
-// Updated computed property for fallback between keys
 const domesticValue = computed(() => {
   if (props.resultData['Domestic Legal Provisions'] != null) {
     return getValue('Domestic Legal Provisions')
   } else if (props.resultData['Domestic Instruments ID'] != null) {
     return getValue('Domestic Instruments ID')
   } else if (props.resultData['Jurisdictions Literature ID'] != null) {
-    // Show null so that the template renders LoadingBar when literatureTitle is not loaded
-    return literatureTitle.value
+    return literatureTitles.value
   } else {
     return ''
   }
 })
 
-// New computed to determine if literatureTitle is still loading
 const isLoadingLiterature = computed(() => {
   return (
     props.resultData['Jurisdictions Literature ID'] != null &&
-    literatureTitle.value === null
+    (!literatureTitles.value ||
+      literatureTitles.value.length === 0 ||
+      literatureTitles.value.includes(null))
   )
 })
 
