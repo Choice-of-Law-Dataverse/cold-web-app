@@ -50,18 +50,28 @@
             {{ getValue('More Information') }}
           </li>
           <template v-if="hasDomesticValue">
-            <li v-if="isLoadingLiterature">
-              <LoadingBar class="pt-[9px]" />
-            </li>
+            <template v-if="resultData['Domestic Legal Provisions']">
+              <li>
+                <LegalProvisionRenderer
+                  :value="getValue('Domestic Legal Provisions')"
+                  :fallbackData="resultData"
+                />
+              </li>
+            </template>
             <template v-else>
-              <template v-if="Array.isArray(domesticValue)">
-                <li v-for="(item, index) in domesticValue" :key="index">
-                  <a :href="`/literature/${item.id}`">{{ item.title }}</a>
+              <li v-if="isLoadingLiterature">
+                <LoadingBar class="pt-[9px]" />
+              </li>
+              <template v-else>
+                <template v-if="Array.isArray(domesticValue)">
+                  <li v-for="(item, index) in domesticValue" :key="index">
+                    <a :href="`/literature/${item.id}`">{{ item.title }}</a>
+                  </li>
+                </template>
+                <li v-else>
+                  {{ domesticValue }}
                 </li>
               </template>
-              <li v-else>
-                {{ domesticValue }}
-              </li>
             </template>
           </template>
           <li v-if="relatedCasesCount">
@@ -81,7 +91,8 @@ import { useRuntimeConfig } from '#imports'
 import ResultCard from './ResultCard.vue'
 import { answerCardConfig } from '../../config/cardConfigs'
 import { literatureCache } from '../../utils/literatureCache'
-import LoadingBar from '../layout/LoadingBar.vue' // new import
+import LoadingBar from '../layout/LoadingBar.vue'
+import LegalProvisionRenderer from '../legal/LegalProvisionRenderer.vue' // new import
 
 const props = defineProps({
   resultData: {
