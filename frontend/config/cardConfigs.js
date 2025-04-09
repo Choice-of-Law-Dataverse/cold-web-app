@@ -43,6 +43,15 @@ export const answerCardConfig = {
                 fallback: 'Domestic Legal Provision not available',
                 fallbackClass: 'text-gray-500'
             }
+        },
+        {
+            key: 'Domestic Instruments ID',
+            label: 'Domestic Instruments ID',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'Domestic Instruments ID not available',
+                fallbackClass: 'text-gray-500'
+            }
         }
     ],
     valueClassMap: {

@@ -57,7 +57,7 @@
         <div class="label-key">{{ getLabel('More Information') }}</div>
         <ul class="result-value-small">
           <li>{{ getValue('More Information') }}</li>
-          <li>{{ getValue('Domestic Legal Provisions') }}</li>
+          <li>{{ domesticValue }}</li>
           <li>{{ relatedCasesCount }} related court decisions</li>
         </ul>
       </div>
@@ -84,6 +84,13 @@ const relatedCasesCount = computed(() => {
   const links = props.resultData['Court Decisions Link']
   if (!links) return 0
   return links.split(',').filter((link) => link.trim() !== '').length
+})
+
+// New computed property for fallback between 'Domestic Legal Provisions' and 'Domestic Instruments ID'
+const domesticValue = computed(() => {
+  return props.resultData['Domestic Legal Provisions'] != null
+    ? getValue('Domestic Legal Provisions')
+    : getValue('Domestic Instruments ID')
 })
 
 // Helper functions to get labels and values with fallbacks
