@@ -19,7 +19,25 @@
           />
         </li>
       </template>
-      <li>OUP Chapter</li>
+      <!-- Updated OUP Chapter bullet point -->
+      <template v-if="fallbackData['Jurisdictions Literature ID']">
+        <template v-if="literatureTitles.length">
+          <li v-for="(item, index) in literatureTitles" :key="index">
+            <a :href="`/literature/${item.id}`">{{ item.title }}</a>
+          </li>
+        </template>
+        <li v-else>Loading...</li>
+      </template>
+      <template v-else>
+        <li>
+          <template v-if="oupChapterSource">
+            <a :href="`/literature/${oupChapterSource.id}`">{{
+              oupChapterSource.title
+            }}</a>
+          </template>
+          <template v-else> OUP Chapter </template>
+        </li>
+      </template>
       <li>Primary Literature</li>
     </ul>
   </div>
@@ -173,4 +191,35 @@ onMounted(() => {
   if (props.fetchOupChapter) fetchOupChapterSource()
   if (props.fetchPrimarySource) fetchPrimarySource()
 })
+
+// NEW: Fetch literature titles logic for 'Jurisdictions Literature ID'
+const literatureTitles = ref([])
+async function fetchLiteratureTitles(idStr) {
+  const ids = idStr.split(',').map((id) => id.trim())
+  const promises = ids.map(async (id) => {
+    try {
+      const response = await fetch(
+        `${config.public.apiBaseUrl}/search/details`,
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${config.public.FASTAPI}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ table: 'Literature', id }),
+        }
+      )
+      if (!response.ok) throw new Error('Failed to fetch literature title')
+      const data = await response.json()
+      return { id, title: data['Title'] }
+    } catch (err) {
+      console.error('Error fetching literature title:', err)
+      return { id, title: id }
+    }
+  })
+  literatureTitles.value = await Promise.all(promises)
+}
+if (props.fallbackData && props.fallbackData['Jurisdictions Literature ID']) {
+  fetchLiteratureTitles(props.fallbackData['Jurisdictions Literature ID'])
+}
 </script>
