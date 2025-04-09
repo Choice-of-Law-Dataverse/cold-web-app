@@ -4,8 +4,10 @@
     <template v-for="(prov, index) in processedProvisions" :key="index">
       <NuxtLink :to="generateLegalProvisionLink(prov.raw)">
         <template v-if="instrumentTitles[prov.instrumentId]">
-          {{ formatArticle(prov.articleId) }}{{ prov.articleId ? ', ' : ''
-          }}{{ instrumentTitles[prov.instrumentId] }}
+          <template v-if="!skipArticle">
+            {{ formatArticle(prov.articleId) }}{{ prov.articleId ? ', ' : '' }}
+          </template>
+          {{ instrumentTitles[prov.instrumentId] }}
         </template>
         <template v-else>
           <LoadingBar class="pt-[9px]" />
@@ -37,6 +39,11 @@ const props = defineProps({
   valueClassMap: {
     type: Object,
     default: () => ({}),
+  },
+  // New prop to control article display
+  skipArticle: {
+    type: Boolean,
+    default: false,
   },
 })
 
