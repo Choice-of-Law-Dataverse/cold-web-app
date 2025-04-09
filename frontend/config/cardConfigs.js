@@ -43,16 +43,16 @@ export const answerCardConfig = {
     },
     gridConfig: {
         question: {
-            columnSpan: 4,
-            startColumn: 1
+            columnSpan: 'md:col-span-4',
+            startColumn: 'md:col-start-1'
         },
         answer: {
-            columnSpan: 2,
-            startColumn: 6
+            columnSpan: 'md:col-span-2',
+            startColumn: 'md:col-start-6'
         },
         source: {
-            columnSpan: 4,
-            startColumn: 8
+            columnSpan: 'md:col-span-4',
+            startColumn: 'md:col-start-8'
         }
     },
     getAnswerClass: (answer) => {
