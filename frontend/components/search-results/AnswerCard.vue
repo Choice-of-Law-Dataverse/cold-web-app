@@ -58,6 +58,15 @@
                 />
               </li>
             </template>
+            <template v-else-if="resultData['Domestic Instruments ID']">
+              <li>
+                <LegalProvisionRenderer
+                  skipArticle
+                  :value="getValue('Domestic Instruments ID')"
+                  :fallbackData="resultData"
+                />
+              </li>
+            </template>
             <template v-else>
               <li v-if="isLoadingLiterature">
                 <LoadingBar class="pt-[9px]" />
