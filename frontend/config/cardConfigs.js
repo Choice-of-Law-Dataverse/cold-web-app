@@ -27,11 +27,11 @@ export const answerCardConfig = {
             }
         },
         {
-            key: 'Legal provision articles',
+            key: 'More Information',
             label: 'More Information',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No source available',
+                fallback: 'NANANA',
                 fallbackClass: 'text-gray-500'
             }
         }
@@ -39,7 +39,7 @@ export const answerCardConfig = {
     valueClassMap: {
         Question: 'result-value-medium',
         Answer: 'result-value-large', // This will be overridden by getAnswerClass for Yes/No answers
-        'Legal provision articles': 'result-value-small'
+        'More Information': 'result-value-small'
     },
     gridConfig: {
         question: {

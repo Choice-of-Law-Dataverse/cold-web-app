@@ -47,28 +47,16 @@
         </div>
       </div>
 
-      <!-- Source section -->
+      <!-- More Information section -->
       <div
-        v-if="resultData.Answer !== 'No data'"
         :class="[
           config.gridConfig.source.columnSpan,
           config.gridConfig.source.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Legal provision articles') }}</div>
+        <div class="label-key">{{ getLabel('More Information') }}</div>
         <ul class="result-value-small">
-          <template v-if="resultData['Literature Title']">
-            <li>{{ resultData['Literature Title'] }}</li>
-          </template>
-          <template v-if="resultData['Legal Provision Articles']">
-            <li>{{ resultData['Legal Provision Articles'] }}</li>
-          </template>
-          <template v-else-if="resultData['Legislation-ID']">
-            <li>{{ resultData['Legislation-ID'] }}</li>
-          </template>
-          <template v-else-if="resultData['More Information']">
-            <li>{{ resultData['More Information'] }}</li>
-          </template>
+          <li>{{ getValue('More Information') }}</li>
         </ul>
       </div>
     </div>
