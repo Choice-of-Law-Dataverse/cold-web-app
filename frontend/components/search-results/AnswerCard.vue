@@ -49,7 +49,10 @@
           <li v-if="resultData['More Information']">
             {{ getValue('More Information') }}
           </li>
-          <li v-if="hasDomesticValue">{{ domesticValue }}</li>
+          <li v-if="hasDomesticValue">
+            <LoadingBar class="pt-[9px]" v-if="isLoadingLiterature" />
+            <span v-else>{{ domesticValue }}</span>
+          </li>
           <li v-if="relatedCasesCount">
             <a :href="relatedDecisionsLink"
               >{{ relatedCasesCount }} related court decisions</a
@@ -67,6 +70,7 @@ import { useRuntimeConfig } from '#imports'
 import ResultCard from './ResultCard.vue'
 import { answerCardConfig } from '../../config/cardConfigs'
 import { literatureCache } from '../../utils/literatureCache'
+import LoadingBar from '../layout/LoadingBar.vue' // new import
 
 const props = defineProps({
   resultData: {
@@ -132,11 +136,19 @@ const domesticValue = computed(() => {
   } else if (props.resultData['Domestic Instruments ID'] != null) {
     return getValue('Domestic Instruments ID')
   } else if (props.resultData['Jurisdictions Literature ID'] != null) {
-    // If literatureTitle is still null, show a loading message; otherwise use the value
-    return literatureTitle.value === null ? 'Loading...' : literatureTitle.value
+    // Show null so that the template renders LoadingBar when literatureTitle is not loaded
+    return literatureTitle.value
   } else {
     return ''
   }
+})
+
+// New computed to determine if literatureTitle is still loading
+const isLoadingLiterature = computed(() => {
+  return (
+    props.resultData['Jurisdictions Literature ID'] != null &&
+    literatureTitle.value === null
+  )
 })
 
 // Computed property to display the number of related cases
