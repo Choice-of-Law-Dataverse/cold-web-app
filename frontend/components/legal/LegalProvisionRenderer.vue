@@ -3,8 +3,13 @@
     <!-- Render legal provisions inline with fetched title -->
     <template v-for="(prov, index) in processedProvisions" :key="index">
       <NuxtLink :to="generateLegalProvisionLink(prov.raw)">
-        {{ formatArticle(prov.articleId) }}{{ prov.articleId ? ', ' : ''
-        }}{{ instrumentTitles[prov.instrumentId] || prov.instrumentId }}
+        <template v-if="instrumentTitles[prov.instrumentId]">
+          {{ formatArticle(prov.articleId) }}{{ prov.articleId ? ', ' : ''
+          }}{{ instrumentTitles[prov.instrumentId] }}
+        </template>
+        <template v-else>
+          <LoadingBar class="pt-[9px]" />
+        </template>
       </NuxtLink>
       <span v-if="index !== processedProvisions.length - 1">, </span>
     </template>
@@ -18,6 +23,7 @@ import {
   parseLegalProvisionLink,
 } from '~/utils/legal'
 import { useRuntimeConfig } from '#imports'
+import LoadingBar from '~/components/layout/LoadingBar.vue'
 
 const props = defineProps({
   value: {
