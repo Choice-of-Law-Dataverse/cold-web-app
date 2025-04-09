@@ -60,7 +60,9 @@
             {{ getValue('More Information') }}
           </li>
           <li v-if="hasDomesticValue">{{ domesticValue }}</li>
-          <li>{{ relatedCasesCount }} related court decisions</li>
+          <li v-if="relatedCasesCount">
+            {{ relatedCasesCount }} related court decisions
+          </li>
         </ul>
       </div>
     </div>
