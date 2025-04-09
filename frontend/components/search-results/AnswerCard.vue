@@ -10,15 +10,7 @@
       >
         <div class="label-key">{{ getLabel('Question') }}</div>
         <div
-          :class="[
-            config.valueClassMap.Question,
-            'text-sm leading-relaxed whitespace-pre-line',
-            (!resultData.Question || resultData.Question === 'NA') &&
-            config.keyLabelPairs.find((pair) => pair.key === 'Question')
-              ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-300'
-              : '',
-          ]"
+          :class="computeTextClasses('Question', config.valueClassMap.Question)"
         >
           {{ getValue('Question') }}
         </div>
@@ -33,15 +25,12 @@
       >
         <div class="label-key">{{ getLabel('Answer') }}</div>
         <div
-          :class="[
-            config.getAnswerClass(resultData.Answer),
-            'text-sm leading-relaxed whitespace-pre-line',
-            (!resultData.Answer || resultData.Answer === 'NA') &&
-            config.keyLabelPairs.find((pair) => pair.key === 'Answer')
-              ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-300'
-              : '',
-          ]"
+          :class="
+            computeTextClasses(
+              'Answer',
+              config.getAnswerClass(resultData.Answer)
+            )
+          "
         >
           {{ getValue('Answer') }}
         </div>
@@ -73,10 +62,11 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, onMounted } from 'vue'
-import { useRuntimeConfig } from '#imports' // new import
+import { computed, ref, watch } from 'vue'
+import { useRuntimeConfig } from '#imports'
 import ResultCard from './ResultCard.vue'
 import { answerCardConfig } from '../../config/cardConfigs'
+import { literatureCache } from '../../utils/literatureCache'
 
 const props = defineProps({
   resultData: {
@@ -86,12 +76,15 @@ const props = defineProps({
 })
 
 const config = answerCardConfig
+const runtimeConfig = useRuntimeConfig()
+const literatureTitle = ref(null)
 
-const runtimeConfig = useRuntimeConfig() // new
-const literatureTitle = ref(null) // initialize as null to indicate "not yet loaded"
-
-// Updated function to fetch literature title using table "Literature"
+// Updated function to fetch literature title using a shared cache
 async function fetchLiteratureTitle(id) {
+  if (literatureCache[id]) {
+    literatureTitle.value = literatureCache[id]
+    return
+  }
   try {
     const response = await fetch(
       `${runtimeConfig.public.apiBaseUrl}/search/details`,
@@ -106,14 +99,22 @@ async function fetchLiteratureTitle(id) {
     )
     if (!response.ok) throw new Error('Failed to fetch literature title')
     const data = await response.json()
-    // Use the key 'Title' from the API response
     const title = data['Title']
     literatureTitle.value = title && title !== 'NA' ? title : id
+    literatureCache[id] = literatureTitle.value
   } catch (err) {
     console.error('Error fetching literature title:', err)
     literatureTitle.value = id
   }
 }
+
+watch(
+  () => props.resultData['Jurisdictions Literature ID'],
+  (newId) => {
+    if (newId) fetchLiteratureTitle(newId)
+  },
+  { immediate: true }
+)
 
 // Use a watcher that triggers immediately
 watch(
@@ -186,6 +187,17 @@ const getValue = (key) => {
   }
 
   return value
+}
+
+// New helper to compute text classes for a field
+const computeTextClasses = (key, baseClass) => {
+  const pair = config.keyLabelPairs.find((p) => p.key === key)
+  const isEmpty = !props.resultData[key] || props.resultData[key] === 'NA'
+  const emptyClass =
+    isEmpty && pair?.emptyValueBehavior?.action === 'display'
+      ? 'text-gray-300'
+      : ''
+  return [baseClass, 'text-sm leading-relaxed whitespace-pre-line', emptyClass]
 }
 </script>
 
