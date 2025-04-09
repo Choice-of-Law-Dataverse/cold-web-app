@@ -7,7 +7,12 @@
   >
     <template #default="{ item }">
       <NuxtLink :to="generateCourtDecisionLink(item)">
-        {{ caseTitles[item] || item }}
+        <template v-if="caseTitles[item] !== undefined">
+          {{ caseTitles[item] }}
+        </template>
+        <template v-else>
+          <LoadingBar />
+        </template>
       </NuxtLink>
     </template>
   </BaseLegalRenderer>
@@ -18,6 +23,7 @@ import { ref, watch } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import BaseLegalRenderer from './BaseLegalRenderer.vue'
 import { NuxtLink } from '#components'
+import LoadingBar from '../layout/LoadingBar.vue'
 
 const props = defineProps({
   value: {
