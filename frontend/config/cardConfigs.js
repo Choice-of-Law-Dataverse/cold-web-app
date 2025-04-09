@@ -195,12 +195,12 @@ export const literatureCardConfig = {
     },
     gridConfig: {
         title: {
-            columnSpan: 4,
-            startColumn: 1
+            columnSpan: 'md:col-span-4',
+            startColumn: 'md:col-start-1'
         },
         authorYear: {
-            columnSpan: 4,
-            startColumn: 6
+            columnSpan: 'md:col-span-8',
+            startColumn: 'md:col-start-5'
         }
     },
     processData: (data) => {

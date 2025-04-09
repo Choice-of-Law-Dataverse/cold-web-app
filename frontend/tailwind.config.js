@@ -14,6 +14,8 @@ export default {
     'md:col-span-4',
     'md:col-span-5',
     'md:col-span-6',
+    'md:col-span-7',
+    'md:col-span-8',
     'md:col-start-1',
     'md:col-start-2',
     'md:col-start-3',
