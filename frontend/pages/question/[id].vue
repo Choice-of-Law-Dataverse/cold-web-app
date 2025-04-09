@@ -17,25 +17,16 @@
                 :sources="
                   [
                     ...(value ||
-                    processedAnswerData?.['Domestic Legal Provisions'] ||
-                    processedAnswerData?.['Jurisdictions Literature ID']
+                    processedAnswerData?.['Domestic Legal Provisions']
                       ? [
                           value ||
-                            processedAnswerData?.[
-                              'Domestic Legal Provisions'
-                            ] ||
-                            processedAnswerData?.[
-                              'Jurisdictions Literature ID'
-                            ],
+                            processedAnswerData?.['Domestic Legal Provisions'],
                         ]
                       : []),
                   ].filter(Boolean)
                 "
                 :fallbackData="processedAnswerData"
                 :valueClassMap="valueClassMap"
-                :noLinkList="[
-                  processedAnswerData?.['Jurisdictions Literature ID'],
-                ]"
                 :fetchOupChapter="true"
                 :fetchPrimarySource="true"
               />

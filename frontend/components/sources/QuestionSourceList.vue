@@ -1,29 +1,9 @@
 <template>
   <div>
-    <div v-if="loading" class="text-gray-500">Loading sources...</div>
-    <div v-else-if="error" class="text-red-500">{{ error }}</div>
-    <ul v-else>
-      <li
-        v-for="(source, index) in computedSources"
-        :key="index"
-        :class="valueClass"
-      >
-        <template v-if="noLinkList.includes(source)">
-          <span>{{ source }}</span>
-        </template>
-        <template v-else-if="typeof source === 'object' && source.id">
-          <NuxtLink :to="`/literature/${source.id}`">
-            {{ source.title }}
-          </NuxtLink>
-        </template>
-        <template v-else>
-          <LegalProvisionRenderer
-            :value="source"
-            :fallbackData="fallbackData"
-            :valueClassMap="valueClassMap"
-          />
-        </template>
-      </li>
+    <ul>
+      <li>Domestic Legal Provision</li>
+      <li>OUP Chapter</li>
+      <li>Primary Literature</li>
     </ul>
   </div>
 </template>
@@ -35,32 +15,32 @@ import LegalProvisionRenderer from '../legal/LegalProvisionRenderer.vue'
 const props = defineProps({
   sources: {
     type: Array,
-    required: true
+    required: true,
   },
   fallbackData: {
     type: Object,
-    required: true
+    required: true,
   },
   valueClassMap: {
     type: Object,
-    required: true
+    required: true,
   },
   valueClass: {
     type: String,
-    default: 'result-value-small'
+    default: 'result-value-small',
   },
   noLinkList: {
     type: Array,
-    default: () => []
+    default: () => [],
   },
   fetchOupChapter: {
     type: Boolean,
-    default: false
+    default: false,
   },
   fetchPrimarySource: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 
 const config = useRuntimeConfig()
@@ -78,32 +58,37 @@ async function fetchPrimarySource() {
     filters: [
       {
         column: 'Jurisdiction',
-        value: props.fallbackData['Name']
-      }
-    ]
+        value: props.fallbackData['Name'],
+      },
+    ],
   }
 
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/full_table`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(jsonPayload)
-    })
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
     if (!response.ok) throw new Error('Failed to fetch primary source')
 
     const data = await response.json()
 
     // Filter out entries where "OUP JD Chapter" is explicitly true
-    const nonOupEntries = data.filter(entry => entry['OUP JD Chapter'] === null)
+    const nonOupEntries = data.filter(
+      (entry) => entry['OUP JD Chapter'] === null
+    )
 
     // Select the first valid non-OUP entry as the primary source
     if (nonOupEntries.length > 0) {
-      primarySource.value = nonOupEntries.map(entry => ({
+      primarySource.value = nonOupEntries.map((entry) => ({
         title: entry.Title,
-        id: entry.ID
+        id: entry.ID,
       }))
     }
   } catch (err) {
@@ -121,24 +106,27 @@ async function fetchOupChapterSource() {
     filters: [
       {
         column: 'Jurisdiction',
-        value: props.fallbackData['Name']
+        value: props.fallbackData['Name'],
       },
       {
         column: 'OUP JD Chapter',
-        value: true
-      }
-    ]
+        value: true,
+      },
+    ],
   }
 
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/full_table`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(jsonPayload)
-    })
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      }
+    )
 
     if (!response.ok) throw new Error('Failed to fetch OUP JD Chapter source')
 
@@ -159,7 +147,7 @@ const computedSources = computed(() => {
     props.fetchOupChapter ? oupChapterSource.value : null,
     ...(props.fetchPrimarySource && Array.isArray(primarySource.value)
       ? primarySource.value
-      : [])
+      : []),
   ].filter(Boolean)
 })
 
@@ -168,4 +156,4 @@ onMounted(() => {
   if (props.fetchOupChapter) fetchOupChapterSource()
   if (props.fetchPrimarySource) fetchPrimarySource()
 })
-</script> 
+</script>
