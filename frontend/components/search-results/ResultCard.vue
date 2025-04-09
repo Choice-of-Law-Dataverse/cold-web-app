@@ -37,7 +37,8 @@ import BaseCardHeader from '../ui/BaseCardHeader.vue'
 const props = defineProps({
   resultData: {
     type: Object,
-    required: true,
+    required: false, // Changed: no longer required
+    default: () => ({}),
   },
   cardType: {
     type: String,
