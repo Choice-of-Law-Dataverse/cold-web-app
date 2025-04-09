@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ul>
+    <ul class="result-value-small">
       <!-- Domestic Legal Provision bullet point -->
       <template v-if="fallbackData['Domestic Legal Provisions']">
         <li>
@@ -26,7 +26,7 @@
             <a :href="`/literature/${item.id}`">{{ item.title }}</a>
           </li>
         </template>
-        <li v-else>Loading...</li>
+        <li v-else><LoadingBar class="pt-[9px]" /></li>
       </template>
       <template v-else>
         <li>
@@ -46,6 +46,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import LegalProvisionRenderer from '../legal/LegalProvisionRenderer.vue'
+import LoadingBar from '../layout/LoadingBar.vue'
 
 const props = defineProps({
   sources: {
