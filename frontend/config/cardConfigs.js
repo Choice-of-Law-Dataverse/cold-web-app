@@ -30,9 +30,7 @@ export const answerCardConfig = {
             key: 'More Information',
             label: 'More Information',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'More Information not available',
-                fallbackClass: 'text-gray-500'
+                action: 'hide',
             }
         },
         {
@@ -57,9 +55,7 @@ export const answerCardConfig = {
             key: 'Jurisdictions Literature ID',
             label: 'Jurisdictions Literature ID',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'Jurisdictions Literature ID not available',
-                fallbackClass: 'text-gray-500'
+                action: 'hide'
             }
         }
     ],

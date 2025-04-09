@@ -56,8 +56,10 @@
       >
         <div class="label-key">{{ getLabel('More Information') }}</div>
         <ul class="result-value-small">
-          <li>{{ getValue('More Information') }}</li>
-          <li>{{ domesticValue }}</li>
+          <li v-if="resultData['More Information']">
+            {{ getValue('More Information') }}
+          </li>
+          <li v-if="hasDomesticValue">{{ domesticValue }}</li>
           <li>{{ relatedCasesCount }} related court decisions</li>
         </ul>
       </div>
@@ -93,6 +95,15 @@ const domesticValue = computed(() => {
     : props.resultData['Domestic Instruments ID'] != null
       ? getValue('Domestic Instruments ID')
       : getValue('Jurisdictions Literature ID')
+})
+
+// New computed property to conditionally show domesticValue bullet
+const hasDomesticValue = computed(() => {
+  return (
+    props.resultData['Domestic Legal Provisions'] ||
+    props.resultData['Domestic Instruments ID'] ||
+    props.resultData['Jurisdictions Literature ID']
+  )
 })
 
 // Helper functions to get labels and values with fallbacks
