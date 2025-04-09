@@ -28,7 +28,7 @@ export const answerCardConfig = {
         },
         {
             key: 'Legal provision articles',
-            label: 'Source',
+            label: 'More Information',
             emptyValueBehavior: {
                 action: 'display',
                 fallback: 'No source available',
