@@ -45,7 +45,7 @@
           <!-- Custom rendering for Court Decisions ID -->
           <template #court-decisions-id="{ value }">
             <section>
-              <span class="label">related cases</span>
+              <span class="label">Related Court Decisions</span>
               <CourtDecisionRenderer
                 :value="value"
                 :valueClassMap="valueClassMap['Court Decisions ID']"
