@@ -6,30 +6,78 @@
     defaultClass="result-value-small"
   >
     <template #default="{ item }">
-      <CourtDecisionLink :caseId="item" />
+      <NuxtLink :to="generateCourtDecisionLink(item)">
+        {{ caseTitles[item] || item }}
+      </NuxtLink>
     </template>
   </BaseLegalRenderer>
 </template>
 
 <script setup>
-import CourtDecisionLink from './CourtDecisionLink.vue'
+import { ref, watch } from 'vue'
+import { useRuntimeConfig } from '#imports'
 import BaseLegalRenderer from './BaseLegalRenderer.vue'
+import { NuxtLink } from '#components'
 
-defineProps({
+const props = defineProps({
   value: {
     type: [Array, String],
-    default: () => []
+    default: () => [],
   },
   valueClassMap: {
     type: String,
-    default: ''
+    default: '',
   },
   emptyValueBehavior: {
     type: Object,
     default: () => ({
       action: 'display',
-      fallback: 'No court decisions available'
-    })
-  }
+      fallback: 'No court decisions available',
+    }),
+  },
 })
-</script> 
+
+const config = useRuntimeConfig()
+const caseTitles = ref({})
+
+// Fetch the title of a court decision given its ID.
+async function fetchCaseTitle(caseId) {
+  if (!caseId || caseTitles.value[caseId]) return
+  const jsonPayload = { table: 'Court Decisions', id: caseId }
+  try {
+    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${config.public.FASTAPI}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(jsonPayload),
+    })
+    if (!response.ok) throw new Error('Failed to fetch case title')
+    const data = await response.json()
+    const title = data['Case Title'] || caseId
+    caseTitles.value[caseId] = title
+  } catch (err) {
+    console.error('Error fetching case title:', err)
+    caseTitles.value[caseId] = caseId
+  }
+}
+
+// Watch the items and fetch titles for each case ID.
+watch(
+  () => props.value,
+  (newValue) => {
+    const items = Array.isArray(newValue) ? newValue : [newValue]
+    const uniqueIds = new Set(items)
+    uniqueIds.forEach((id) => {
+      fetchCaseTitle(id)
+    })
+  },
+  { immediate: true }
+)
+
+// Helper to generate the link URL for a court decision.
+function generateCourtDecisionLink(caseId) {
+  return `/court-decision/${caseId}`
+}
+</script>
