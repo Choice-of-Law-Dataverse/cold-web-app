@@ -44,7 +44,7 @@
 
           <!-- Custom rendering for Court Decisions ID -->
           <template #court-decisions-id="{ value }">
-            <section>
+            <section id="related-court-decisions">
               <span class="label">Related Court Decisions</span>
               <CourtDecisionRenderer
                 :value="value"
@@ -77,7 +77,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
 import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
@@ -100,6 +100,14 @@ onMounted(async () => {
   try {
     const id = route.params.id
     await fetchAnswer(id)
+    // Wait for the DOM to update then scroll if the hash is present
+    await nextTick()
+    if (window.location.hash === '#related-court-decisions') {
+      const target = document.getElementById('related-court-decisions')
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' })
+      }
+    }
   } catch (err) {
     if (err.isNotFound) {
       router.push({
