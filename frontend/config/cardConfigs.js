@@ -52,6 +52,15 @@ export const answerCardConfig = {
                 fallback: 'Domestic Instruments ID not available',
                 fallbackClass: 'text-gray-500'
             }
+        },
+        {
+            key: 'Jurisdictions Literature ID',
+            label: 'Jurisdictions Literature ID',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'Jurisdictions Literature ID not available',
+                fallbackClass: 'text-gray-500'
+            }
         }
     ],
     valueClassMap: {
