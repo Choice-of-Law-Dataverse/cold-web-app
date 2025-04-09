@@ -93,12 +93,12 @@ export const courtDecisionCardConfig = {
     },
     gridConfig: {
         caseTitle: {
-            columnSpan: 4,
-            startColumn: 1
+          columnSpan: 'md:col-span-4',
+          startColumn: 'md:col-start-1'
         },
         choiceOfLaw: {
-            columnSpan: 4,
-            startColumn: 4
+          columnSpan: 'md:col-span-6',
+          startColumn: 'md:col-start-6'
         }
     }
 }
