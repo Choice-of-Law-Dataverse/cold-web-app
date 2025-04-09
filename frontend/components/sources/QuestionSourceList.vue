@@ -38,7 +38,7 @@
           <template v-else> OUP Chapter </template>
         </li>
       </template>
-      <li>Primary Literature</li>
+      <!-- <li>Primary Literature</li> -->
     </ul>
   </div>
 </template>
