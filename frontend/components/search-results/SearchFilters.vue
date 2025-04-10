@@ -12,10 +12,32 @@
       selected-icon="i-material-symbols:circle"
       multiple
     >
+      <template #option="{ option }">
+        <div class="flex items-center">
+          <UAvatar
+            :src="option.avatar || 'https://placehold.co/20x20'"
+            size="2xs"
+            class="mr-2"
+          />
+          <span>{{ option.label || option }}</span>
+        </div>
+      </template>
       <template #label>
-        <span v-if="modelValue.length" class="truncate">{{
-          modelValue.join(', ')
-        }}</span>
+        <div
+          v-if="modelValue.length"
+          class="flex items-center overflow-hidden whitespace-nowrap"
+        >
+          <template v-for="(selected, index) in modelValue" :key="index">
+            <UAvatar
+              :src="selected.avatar || 'https://placehold.co/20x20'"
+              size="2xs"
+              class="mr-1 inline-block"
+            />
+            <span class="mr-2 inline-block">{{
+              selected.label || selected
+            }}</span>
+          </template>
+        </div>
         <span v-else>{{ options[0] }}</span>
       </template>
     </USelectMenu>
