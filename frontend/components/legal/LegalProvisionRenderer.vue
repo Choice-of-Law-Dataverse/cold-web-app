@@ -1,7 +1,24 @@
 <template>
-  <!-- Render each legal provision as a separate bullet point -->
   <template v-for="(prov, index) in processedProvisions" :key="index">
-    <li>
+    <template v-if="renderAsLi">
+      <li>
+        <NuxtLink :to="generateLegalProvisionLink(prov.raw)">
+          <template v-if="instrumentTitles[prov.instrumentId]">
+            <template v-if="!skipArticle">
+              {{ formatArticle(prov.articleId) }},
+              {{ instrumentTitles[prov.instrumentId] }}
+            </template>
+            <template v-else>
+              {{ instrumentTitles[prov.instrumentId] }}
+            </template>
+          </template>
+          <template v-else>
+            <LoadingBar class="pt-[9px]" />
+          </template>
+        </NuxtLink>
+      </li>
+    </template>
+    <template v-else>
       <NuxtLink :to="generateLegalProvisionLink(prov.raw)">
         <template v-if="instrumentTitles[prov.instrumentId]">
           <template v-if="!skipArticle">
@@ -16,7 +33,7 @@
           <LoadingBar class="pt-[9px]" />
         </template>
       </NuxtLink>
-    </li>
+    </template>
   </template>
 </template>
 
@@ -44,6 +61,11 @@ const props = defineProps({
   },
   // New prop to control article display
   skipArticle: {
+    type: Boolean,
+    default: false,
+  },
+  // New prop to control whether to render with <li> wrapper
+  renderAsLi: {
     type: Boolean,
     default: false,
   },
@@ -122,7 +144,7 @@ watch(
 </script>
 
 <style scoped>
-/* Ensure bullet points display for each <li> */
+/* Only apply bullet styling when renderAsLi is true */
 li {
   list-style-type: disc; /* Forces bullet points */
   margin-left: 20px; /* Ensures proper indentation */
