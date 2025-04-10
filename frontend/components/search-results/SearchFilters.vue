@@ -20,6 +20,7 @@
               :src="option.avatar || 'https://placehold.co/20x20'"
               size="2xs"
               class="mr-2"
+              :style="{ borderRadius: '0' }"
             />
           </template>
           <span>{{ option.label || option }}</span>
@@ -35,6 +36,7 @@
               :src="selected.avatar || 'https://placehold.co/20x20'"
               size="2xs"
               class="mr-1 inline-block"
+              :style="{ borderRadius: '0' }"
             />
             <span class="mr-2 inline-block">{{
               selected.label || selected
