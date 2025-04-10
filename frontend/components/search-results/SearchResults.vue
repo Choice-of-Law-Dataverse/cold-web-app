@@ -174,11 +174,8 @@ const loadJurisdictions = async () => {
     mappedJurisdictions = mappedJurisdictions.sort((a, b) =>
       a.label.localeCompare(b.label)
     )
-    // Prepend the default option without an avatar
-    jurisdictionOptions.value = [
-      { label: 'All Jurisdictions', value: 'All Jurisdictions' },
-      ...mappedJurisdictions,
-    ]
+    // Prepend the default option as a primitive string instead of an object
+    jurisdictionOptions.value = ['All Jurisdictions', ...mappedJurisdictions]
   } catch (error) {
     console.error('Error loading jurisdictions:', error)
   }
