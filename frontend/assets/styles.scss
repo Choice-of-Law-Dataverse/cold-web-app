@@ -120,6 +120,7 @@ li {
   padding: 3px 7px;
   display: inline-flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .label-question {
