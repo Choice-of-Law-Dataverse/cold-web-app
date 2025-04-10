@@ -32,7 +32,7 @@
                 height: 'auto',
               }"
               size="2xs"
-              class="mr-2"
+              class="mr-2 self-center"
               @error="() => handleImageError(erroredAvatars, option.label)"
             />
           </template>
@@ -58,7 +58,7 @@
                     height: 'auto',
                   }"
                   size="2xs"
-                  class="pt-0.5 mr-1.5 inline-block"
+                  class="mr-1.5 self-center"
                   @error="
                     () => handleImageError(erroredAvatars, selected.label)
                   "
