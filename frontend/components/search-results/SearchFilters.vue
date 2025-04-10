@@ -14,17 +14,20 @@
     >
       <template #option="{ option }">
         <div class="flex items-center">
-          <UAvatar
-            :src="option.avatar || 'https://placehold.co/20x20'"
-            size="2xs"
-            class="mr-2"
-          />
+          <!-- Render avatar only if showAvatars is true -->
+          <template v-if="showAvatars">
+            <UAvatar
+              :src="option.avatar || 'https://placehold.co/20x20'"
+              size="2xs"
+              class="mr-2"
+            />
+          </template>
           <span>{{ option.label || option }}</span>
         </div>
       </template>
       <template #label>
         <div
-          v-if="modelValue.length"
+          v-if="modelValue.length && showAvatars"
           class="flex items-center overflow-hidden whitespace-nowrap"
         >
           <template v-for="(selected, index) in modelValue" :key="index">
@@ -38,6 +41,9 @@
             }}</span>
           </template>
         </div>
+        <div v-else-if="modelValue.length">
+          <span>{{ modelValue.join(', ') }}</span>
+        </div>
         <span v-else>{{ options[0] }}</span>
       </template>
     </USelectMenu>
@@ -45,8 +51,6 @@
 </template>
 
 <script setup>
-//import { ref } from 'vue'
-
 const props = defineProps({
   options: {
     type: Array,
@@ -55,6 +59,10 @@ const props = defineProps({
   modelValue: {
     type: Array,
     default: () => [],
+  },
+  showAvatars: {
+    type: Boolean,
+    default: false,
   },
 })
 
