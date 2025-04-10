@@ -173,7 +173,7 @@ const loadJurisdictions = async () => {
       label: entry.Name,
       avatar: entry['Alpha-3 Code']
         ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
-        : 'https://placehold.co/20x20',
+        : undefined,
     }))
 
     // Sort alphabetically by label
@@ -183,7 +183,7 @@ const loadJurisdictions = async () => {
 
     // Prepend "All Jurisdictions" to the list
     jurisdictionOptions.value = [
-      { label: 'All Jurisdictions', avatar: 'https://placehold.co/20x20' },
+      { label: 'All Jurisdictions' },
       ...sortedJurisdictions,
     ]
   } catch (error) {

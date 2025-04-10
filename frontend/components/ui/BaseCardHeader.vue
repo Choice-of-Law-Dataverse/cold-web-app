@@ -20,7 +20,7 @@
             :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
             style="height: 9px"
             class="mr-1.5 mb-0.5"
-            @error="handleImageError(jurisdictionString)"
+            @error="handleImageError(erroredImages, jurisdictionString)"
           />
           {{ jurisdictionString }}
         </span>
@@ -72,6 +72,7 @@
 <script setup>
 import { computed, reactive } from 'vue'
 import jurisdictionsData from '../../assets/jurisdictions-data.json' // added import
+import { handleImageError } from '../../utils/handleImageError'
 
 const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
 
@@ -196,10 +197,6 @@ const formattedTheme = computed(() => {
 })
 
 const erroredImages = reactive({}) // new reactive object
-
-function handleImageError(jurisdiction) {
-  erroredImages[jurisdiction] = true
-}
 
 // Methods
 function getLink() {

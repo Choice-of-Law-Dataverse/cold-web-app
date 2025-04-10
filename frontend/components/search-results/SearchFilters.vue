@@ -14,9 +14,16 @@
     >
       <template #option="{ option }">
         <div class="flex items-center">
-          <template v-if="showAvatars && isObjectOptions">
+          <template
+            v-if="
+              showAvatars &&
+              isObjectOptions &&
+              option.avatar &&
+              !erroredAvatars[option.label]
+            "
+          >
             <UAvatar
-              :src="option.avatar || 'https://placehold.co/20x20'"
+              :src="option.avatar"
               :style="{
                 borderRadius: '0',
                 border: '1px solid var(--color-cold-gray)',
@@ -26,6 +33,7 @@
               }"
               size="2xs"
               class="mr-2"
+              @error="() => handleImageError(erroredAvatars, option.label)"
             />
           </template>
           <span>{{ isObjectOptions ? option.label : option }}</span>
@@ -40,7 +48,8 @@
             >
               <template v-for="(selected, index) in internalValue" :key="index">
                 <UAvatar
-                  :src="selected.avatar || 'https://placehold.co/20x20'"
+                  v-if="selected.avatar && !erroredAvatars[selected.label]"
+                  :src="selected.avatar"
                   :style="{
                     borderRadius: '0',
                     border: '1px solid var(--color-cold-gray)',
@@ -50,6 +59,9 @@
                   }"
                   size="2xs"
                   class="pt-0.5 mr-1.5 inline-block"
+                  @error="
+                    () => handleImageError(erroredAvatars, selected.label)
+                  "
                 />
                 <span class="mr-2 inline-block truncate">{{
                   selected.label
@@ -90,7 +102,11 @@ const props = defineProps({
 
 const emit = defineEmits(['update:modelValue'])
 
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
+import { handleImageError } from '../../utils/handleImageError' // new import
+
+// Reactive object for errored avatars
+const erroredAvatars = reactive({})
 
 const isObjectOptions = computed(() => typeof props.options[0] === 'object')
 
