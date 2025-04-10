@@ -41,7 +41,10 @@
             }}</span>
           </template>
         </div>
-        <div v-else-if="modelValue.length">
+        <div
+          v-else-if="modelValue.length"
+          class="overflow-hidden whitespace-nowrap"
+        >
           <span>{{ modelValue.join(', ') }}</span>
         </div>
         <span v-else>{{ options[0] }}</span>
