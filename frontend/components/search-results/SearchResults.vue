@@ -140,7 +140,6 @@ const jurisdictionOptions = ref(['All Jurisdictions'])
 const loadJurisdictions = async () => {
   try {
     const config = useRuntimeConfig() // Ensure config is accessible
-
     const jsonPayloads = [{ table: 'Jurisdictions', filters: [] }]
 
     // Fetch both tables concurrently
@@ -164,23 +163,29 @@ const loadJurisdictions = async () => {
       )
     )
 
-    // Filter out "Irrelevant?" only for "Jurisdictions"
+    // Filter out "Irrelevant?" for "Jurisdictions"
     const relevantJurisdictions = jurisdictionsData.filter(
       (entry) => entry['Irrelevant?'] === null
     )
 
-    // Extract "Name" fields
-    const jurisdictionNames = relevantJurisdictions
-      .map((entry) => entry.Name)
-      .filter(Boolean)
+    // Map each entry to an object with label and avatar
+    const mappedJurisdictions = relevantJurisdictions.map((entry) => ({
+      label: entry.Name,
+      avatar: entry['Alpha-3 Code']
+        ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+        : 'https://placehold.co/20x20',
+    }))
 
-    // Merge both lists, remove duplicates, and sort alphabetically
-    const sortedJurisdictions = [
-      ...new Set([...jurisdictionNames]), // ...instrumentNames]),
-    ].sort((a, b) => a.localeCompare(b))
+    // Sort alphabetically by label
+    const sortedJurisdictions = mappedJurisdictions.sort((a, b) =>
+      a.label.localeCompare(b.label)
+    )
 
     // Prepend "All Jurisdictions" to the list
-    jurisdictionOptions.value = ['All Jurisdictions', ...sortedJurisdictions]
+    jurisdictionOptions.value = [
+      { label: 'All Jurisdictions', avatar: 'https://placehold.co/20x20' },
+      ...sortedJurisdictions,
+    ]
   } catch (error) {
     console.error('Error loading jurisdictions:', error)
   }
