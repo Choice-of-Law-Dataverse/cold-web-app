@@ -138,11 +138,8 @@ const jurisdictionOptions = ref(['All Jurisdictions'])
 // Fetch jurisdictions from file
 const loadJurisdictions = async () => {
   try {
-    const config = useRuntimeConfig() // Ensure config is accessible
-
+    const config = useRuntimeConfig()
     const jsonPayloads = [{ table: 'Jurisdictions', filters: [] }]
-
-    // Fetch both tables concurrently
     const responses = await Promise.all(
       jsonPayloads.map((payload) =>
         fetch(`${config.public.apiBaseUrl}/search/full_table`, {
@@ -155,31 +152,32 @@ const loadJurisdictions = async () => {
         })
       )
     )
-
-    // Process both responses
-    const [jurisdictionsData, instrumentsData] = await Promise.all(
+    const [jurisdictionsData] = await Promise.all(
       responses.map((res) =>
         res.ok ? res.json() : Promise.reject('Failed to load data')
       )
     )
-
-    // Filter out "Irrelevant?" only for "Jurisdictions"
     const relevantJurisdictions = jurisdictionsData.filter(
       (entry) => entry['Irrelevant?'] === null
     )
-
-    // Extract "Name" fields
-    const jurisdictionNames = relevantJurisdictions
-      .map((entry) => entry.Name)
-      .filter(Boolean)
-
-    // Merge both lists, remove duplicates, and sort alphabetically
-    const sortedJurisdictions = [
-      ...new Set([...jurisdictionNames]), // ...instrumentNames]),
-    ].sort((a, b) => a.localeCompare(b))
-
-    // Prepend "All Jurisdictions" to the list
-    jurisdictionOptions.value = ['All Jurisdictions', ...sortedJurisdictions]
+    // Map each jurisdiction to an object with a label and an avatar (using its ISO3 code)
+    let mappedJurisdictions = relevantJurisdictions
+      .filter((entry) => entry.Name && entry['Alpha-3 Code'])
+      .map((entry) => ({
+        label: entry.Name,
+        avatar: {
+          src: `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`,
+        },
+      }))
+    // Sort alphabetically by label
+    mappedJurisdictions = mappedJurisdictions.sort((a, b) =>
+      a.label.localeCompare(b.label)
+    )
+    // Prepend the default option without an avatar
+    jurisdictionOptions.value = [
+      { label: 'All Jurisdictions' },
+      ...mappedJurisdictions,
+    ]
   } catch (error) {
     console.error('Error loading jurisdictions:', error)
   }
