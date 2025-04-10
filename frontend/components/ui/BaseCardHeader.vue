@@ -16,7 +16,7 @@
           class="label-jurisdiction"
         >
           <img
-            :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/can.svg`"
+            :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
             style="height: 9px"
             class="mr-1.5 mb-0.5"
           />
@@ -69,6 +69,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import jurisdictionsData from '../../assets/jurisdictions-data.json' // added import
 
 const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
 
@@ -207,6 +208,11 @@ function getLink() {
     default:
       return '#'
   }
+}
+
+function getJurisdictionISO(name) {
+  const entry = jurisdictionsData.find((item) => item.name.includes(name))
+  return entry ? entry.alternative[0].toLowerCase() : 'default'
 }
 </script>
 
