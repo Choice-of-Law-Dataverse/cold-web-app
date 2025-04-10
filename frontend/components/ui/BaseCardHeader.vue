@@ -56,10 +56,13 @@
         <NuxtLink
           v-if="showSuggestEdit"
           :to="suggestEditLink"
-          class="flex items-center space-x-2"
+          class="flex items-center space-x-4"
+          style="font-size: 18px"
           target="_blank"
         >
-          <span>Suggest Edit</span>
+          <UIcon name="i-material-symbols:download-sharp" />
+          <UIcon name="i-material-symbols:language" />
+          <UIcon name="i-material-symbols:format-quote" />
           <UIcon name="i-material-symbols:edit-outline" />
         </NuxtLink>
 
