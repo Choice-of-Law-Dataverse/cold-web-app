@@ -5,9 +5,12 @@
       <NuxtLink :to="generateLegalProvisionLink(prov.raw)">
         <template v-if="instrumentTitles[prov.instrumentId]">
           <template v-if="!skipArticle">
-            {{ formatArticle(prov.articleId) }}
+            {{ formatArticle(prov.articleId) }},
+            {{ instrumentTitles[prov.instrumentId] }}
           </template>
-          {{ instrumentTitles[prov.instrumentId] }}
+          <template v-else>
+            {{ instrumentTitles[prov.instrumentId] }}
+          </template>
         </template>
         <template v-else>
           <LoadingBar class="pt-[9px]" />
