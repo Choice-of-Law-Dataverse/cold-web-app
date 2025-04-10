@@ -15,6 +15,11 @@
           :key="`jurisdiction-${index}`"
           class="label-jurisdiction"
         >
+          <img
+            :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/can.svg`"
+            style="height: 9px"
+            class="mr-1.5 mb-0.5"
+          />
           {{ jurisdictionString }}
         </span>
 
