@@ -247,12 +247,16 @@ watch(
   ([newJurisdiction, newTheme, newType]) => {
     const filters = {
       jurisdiction:
-        newJurisdiction.length > 0 ? newJurisdiction.join(',') : undefined,
+        newJurisdiction.length > 0
+          ? newJurisdiction
+              .map((item) => (typeof item === 'object' ? item.label : item))
+              .join(',')
+          : undefined,
       theme: newTheme.length > 0 ? newTheme.join(',') : undefined,
       type: newType.length > 0 ? newType.join(',') : undefined,
     }
 
-    // Only emit if the filters have actually changed
+    // Only emit if filters have changed
     if (JSON.stringify(filters) !== JSON.stringify(props.filters)) {
       emit('update:filters', filters)
     }

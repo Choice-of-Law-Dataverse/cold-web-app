@@ -3,7 +3,9 @@
     <USelectMenu
       class="lg:w-60 cold-uselectmenu"
       :class="{ 'non-all-selected': modelValue.length > 0 }"
-      :placeholder="options[0]"
+      :placeholder="
+        typeof options[0] === 'object' ? options[0].label : options[0]
+      "
       size="lg"
       :options="options"
       :model-value="modelValue"
@@ -47,9 +49,15 @@
           v-else-if="modelValue.length"
           class="overflow-hidden whitespace-nowrap"
         >
-          <span>{{ modelValue.join(', ') }}</span>
+          <span>{{
+            modelValue
+              .map((item) => (typeof item === 'object' ? item.label : item))
+              .join(', ')
+          }}</span>
         </div>
-        <span v-else>{{ options[0] }}</span>
+        <span v-else>{{
+          typeof options[0] === 'object' ? options[0].label : options[0]
+        }}</span>
       </template>
     </USelectMenu>
   </div>
@@ -78,7 +86,13 @@ const handleUpdate = (newValue) => {
   if (newValue.includes(props.options[0])) {
     emit('update:modelValue', [])
   } else {
-    emit('update:modelValue', newValue)
+    const processed = newValue.map((val) => {
+      if (typeof val === 'object') return val
+      // For strings, try to find the matching option object by label
+      const match = props.options.find((option) => option.label === val)
+      return match ? match : val
+    })
+    emit('update:modelValue', processed)
   }
 }
 </script>
