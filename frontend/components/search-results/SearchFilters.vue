@@ -13,7 +13,9 @@
       multiple
     >
       <template #label>
-        <span v-if="modelValue.length" class="truncate">{{ modelValue.join(', ') }}</span>
+        <span v-if="modelValue.length" class="truncate">{{
+          modelValue.join(', ')
+        }}</span>
         <span v-else>{{ options[0] }}</span>
       </template>
     </USelectMenu>
