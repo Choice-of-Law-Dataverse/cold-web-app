@@ -51,21 +51,17 @@
           </li>
           <template v-if="hasDomesticValue">
             <template v-if="resultData['Domestic Legal Provisions']">
-              <li>
-                <LegalProvisionRenderer
-                  :value="getValue('Domestic Legal Provisions')"
-                  :fallbackData="resultData"
-                />
-              </li>
+              <LegalProvisionRenderer
+                :value="getValue('Domestic Legal Provisions')"
+                :fallbackData="resultData"
+              />
             </template>
             <template v-else-if="resultData['Domestic Instruments ID']">
-              <li>
-                <LegalProvisionRenderer
-                  skipArticle
-                  :value="getValue('Domestic Instruments ID')"
-                  :fallbackData="resultData"
-                />
-              </li>
+              <LegalProvisionRenderer
+                skipArticle
+                :value="getValue('Domestic Instruments ID')"
+                :fallbackData="resultData"
+              />
             </template>
             <template v-else>
               <li v-if="isLoadingLiterature">

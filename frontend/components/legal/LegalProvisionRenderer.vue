@@ -1,11 +1,11 @@
 <template>
-  <div>
-    <!-- Render legal provisions inline with fetched title -->
-    <template v-for="(prov, index) in processedProvisions" :key="index">
+  <!-- Render each legal provision as a separate bullet point -->
+  <template v-for="(prov, index) in processedProvisions" :key="index">
+    <li>
       <NuxtLink :to="generateLegalProvisionLink(prov.raw)">
         <template v-if="instrumentTitles[prov.instrumentId]">
           <template v-if="!skipArticle">
-            {{ formatArticle(prov.articleId) }}{{ prov.articleId ? ', ' : '' }}
+            {{ formatArticle(prov.articleId) }}
           </template>
           {{ instrumentTitles[prov.instrumentId] }}
         </template>
@@ -13,9 +13,8 @@
           <LoadingBar class="pt-[9px]" />
         </template>
       </NuxtLink>
-      <span v-if="index !== processedProvisions.length - 1">, </span>
-    </template>
-  </div>
+    </li>
+  </template>
 </template>
 
 <script setup>
@@ -118,3 +117,11 @@ watch(
   { immediate: true }
 )
 </script>
+
+<style scoped>
+/* Ensure bullet points display for each <li> */
+li {
+  list-style-type: disc; /* Forces bullet points */
+  margin-left: 20px; /* Ensures proper indentation */
+}
+</style>
