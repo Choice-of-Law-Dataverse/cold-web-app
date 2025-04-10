@@ -96,6 +96,16 @@ const internalValue = computed({
     })
   },
   set(newValue) {
+    // If "All…" option is selected, reset the filter by setting newValue to an empty array.
+    const allOption = props.options[0]
+    const isAllSelected = newValue.some((val) =>
+      typeof val === 'object'
+        ? val.label === allOption.label
+        : val === allOption
+    )
+    if (isAllSelected) {
+      newValue = []
+    }
     if (!isObjectOptions.value) {
       emit('update:modelValue', newValue)
     } else {
