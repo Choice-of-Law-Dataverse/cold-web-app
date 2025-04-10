@@ -15,6 +15,13 @@
           :key="`jurisdiction-${index}`"
           class="label-jurisdiction"
         >
+          <img
+            v-if="!erroredImages[jurisdictionString]"
+            :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
+            style="height: 9px"
+            class="mr-1.5 mb-0.5"
+            @error="handleImageError(erroredImages, jurisdictionString)"
+          />
           {{ jurisdictionString }}
         </span>
 
@@ -63,7 +70,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
+import jurisdictionsData from '../../assets/jurisdictions-data.json' // added import
+import { handleImageError } from '../../utils/handleImageError'
 
 const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
 
@@ -187,6 +196,8 @@ const formattedTheme = computed(() => {
   return [...new Set(themes.split(',').map((theme) => theme.trim()))]
 })
 
+const erroredImages = reactive({}) // new reactive object
+
 // Methods
 function getLink() {
   // Determine the correct link based on the card type and resultData
@@ -202,6 +213,11 @@ function getLink() {
     default:
       return '#'
   }
+}
+
+function getJurisdictionISO(name) {
+  const entry = jurisdictionsData.find((item) => item.name.includes(name))
+  return entry ? entry.alternative[0].toLowerCase() : 'default'
 }
 </script>
 

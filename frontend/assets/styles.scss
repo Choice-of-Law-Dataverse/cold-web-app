@@ -118,6 +118,9 @@ li {
   @extend .label;
   background-color: var(--color-cold-gray-alpha);
   padding: 3px 7px;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .label-question {
