@@ -165,7 +165,6 @@ const loadJurisdictions = async () => {
       .filter((entry) => entry.Name && entry['Alpha-3 Code'])
       .map((entry) => ({
         label: entry.Name,
-        value: entry.Name, // added property to use in filter
         avatar: {
           src: `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`,
         },
@@ -176,7 +175,7 @@ const loadJurisdictions = async () => {
     )
     // Prepend the default option without an avatar
     jurisdictionOptions.value = [
-      { label: 'All Jurisdictions', value: 'All Jurisdictions' },
+      { label: 'All Jurisdictions' },
       ...mappedJurisdictions,
     ]
   } catch (error) {
@@ -238,17 +237,13 @@ const resetFilters = () => {
 watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
   ([newJurisdiction, newTheme, newType]) => {
-    const jurisdictionValue =
-      newJurisdiction.length > 0
-        ? newJurisdiction
-            .map((item) => (typeof item === 'object' ? item.value : item))
-            .join(',')
-        : undefined
     const filters = {
-      jurisdiction: jurisdictionValue,
+      jurisdiction:
+        newJurisdiction.length > 0 ? newJurisdiction.join(',') : undefined,
       theme: newTheme.length > 0 ? newTheme.join(',') : undefined,
       type: newType.length > 0 ? newType.join(',') : undefined,
     }
+
     // Only emit if the filters have actually changed
     if (JSON.stringify(filters) !== JSON.stringify(props.filters)) {
       emit('update:filters', filters)
