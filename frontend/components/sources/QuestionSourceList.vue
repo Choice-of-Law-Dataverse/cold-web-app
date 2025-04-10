@@ -45,7 +45,7 @@
               oupChapterSource.title
             }}</a>
           </template>
-          <template v-else> OUP Chapter </template>
+          <template v-else>No source available</template>
         </li>
       </template>
       <!-- <li>Primary Literature</li> -->
