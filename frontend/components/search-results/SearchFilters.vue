@@ -17,9 +17,15 @@
           <template v-if="showAvatars && isObjectOptions">
             <UAvatar
               :src="option.avatar || 'https://placehold.co/20x20'"
+              :style="{
+                borderRadius: '0',
+                border: '1px solid var(--color-cold-gray)',
+                boxSizing: 'border-box',
+                width: 'auto',
+                height: 'auto',
+              }"
               size="2xs"
               class="mr-2"
-              :style="{ borderRadius: '0' }"
             />
           </template>
           <span>{{ isObjectOptions ? option.label : option }}</span>
@@ -35,9 +41,15 @@
               <template v-for="(selected, index) in internalValue" :key="index">
                 <UAvatar
                   :src="selected.avatar || 'https://placehold.co/20x20'"
+                  :style="{
+                    borderRadius: '0',
+                    border: '1px solid var(--color-cold-gray)',
+                    boxSizing: 'border-box',
+                    width: 'auto',
+                    height: 'auto',
+                  }"
                   size="2xs"
-                  class="mr-1 inline-block"
-                  :style="{ borderRadius: '0' }"
+                  class="pt-0.5 mr-1.5 inline-block"
                 />
                 <span class="mr-2 inline-block truncate">{{
                   selected.label
