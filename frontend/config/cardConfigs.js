@@ -27,32 +27,55 @@ export const answerCardConfig = {
             }
         },
         {
-            key: 'Legal provision articles',
-            label: 'Source',
+            key: 'More Information',
+            label: 'More Information',
+            emptyValueBehavior: {
+                action: 'hide',
+            }
+        },
+        {
+            key: 'Domestic Legal Provisions',
+            label: 'Domestic Legal Provisions',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No source available',
+                fallback: 'Domestic Legal Provision not available',
                 fallbackClass: 'text-gray-500'
+            }
+        },
+        {
+            key: 'Domestic Instruments ID',
+            label: 'Domestic Instruments ID',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'Domestic Instruments ID not available',
+                fallbackClass: 'text-gray-500'
+            }
+        },
+        {
+            key: 'Jurisdictions Literature ID',
+            label: 'Jurisdictions Literature ID',
+            emptyValueBehavior: {
+                action: 'hide'
             }
         }
     ],
     valueClassMap: {
         Question: 'result-value-medium',
         Answer: 'result-value-large', // This will be overridden by getAnswerClass for Yes/No answers
-        'Legal provision articles': 'result-value-small'
+        'More Information': 'result-value-small'
     },
     gridConfig: {
         question: {
-            columnSpan: 4,
-            startColumn: 1
+            columnSpan: 'md:col-span-4',
+            startColumn: 'md:col-start-1'
         },
         answer: {
-            columnSpan: 2,
-            startColumn: 6
+            columnSpan: 'md:col-span-2',
+            startColumn: 'md:col-start-6'
         },
         source: {
-            columnSpan: 4,
-            startColumn: 8
+            columnSpan: 'md:col-span-4',
+            startColumn: 'md:col-start-8'
         }
     },
     getAnswerClass: (answer) => {
@@ -93,12 +116,12 @@ export const courtDecisionCardConfig = {
     },
     gridConfig: {
         caseTitle: {
-            columnSpan: 4,
-            startColumn: 1
+          columnSpan: 'md:col-span-4',
+          startColumn: 'md:col-start-1'
         },
         choiceOfLaw: {
-            columnSpan: 4,
-            startColumn: 4
+          columnSpan: 'md:col-span-6',
+          startColumn: 'md:col-start-6'
         }
     }
 }
@@ -128,8 +151,8 @@ export const legislationCardConfig = {
     },
     gridConfig: {
         title: {
-            columnSpan: 4,
-            startColumn: 1
+            columnSpan: 'md:col-span-6',
+            startColumn: 'md:col-start-1'
         }
     },
     processData: (data) => {
@@ -195,12 +218,12 @@ export const literatureCardConfig = {
     },
     gridConfig: {
         title: {
-            columnSpan: 4,
-            startColumn: 1
+            columnSpan: 'md:col-span-4',
+            startColumn: 'md:col-start-1'
         },
         authorYear: {
-            columnSpan: 4,
-            startColumn: 6
+            columnSpan: 'md:col-span-8',
+            startColumn: 'md:col-start-5'
         }
     },
     processData: (data) => {

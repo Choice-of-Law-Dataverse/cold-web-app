@@ -1,14 +1,40 @@
 <template>
-  <div>
-    <!-- Render legal provisions inline with fetched title -->
-    <template v-for="(prov, index) in processedProvisions" :key="index">
-      <NuxtLink :to="generateLegalProvisionLink(prov.raw)">
-        {{ formatArticle(prov.articleId) }}{{ prov.articleId ? ', ' : ''
-        }}{{ instrumentTitles[prov.instrumentId] || prov.instrumentId }}
-      </NuxtLink>
-      <span v-if="index !== processedProvisions.length - 1">, </span>
+  <template v-for="(prov, index) in processedProvisions" :key="index">
+    <template v-if="renderAsLi">
+      <li>
+        <NuxtLink :to="generateLegalProvisionLink(prov.raw)">
+          <template v-if="instrumentTitles[prov.instrumentId]">
+            <template v-if="!skipArticle">
+              {{ formatArticle(prov.articleId) }},
+              {{ instrumentTitles[prov.instrumentId] }}
+            </template>
+            <template v-else>
+              {{ instrumentTitles[prov.instrumentId] }}
+            </template>
+          </template>
+          <template v-else>
+            <LoadingBar class="pt-[9px]" />
+          </template>
+        </NuxtLink>
+      </li>
     </template>
-  </div>
+    <template v-else>
+      <NuxtLink :to="generateLegalProvisionLink(prov.raw)">
+        <template v-if="instrumentTitles[prov.instrumentId]">
+          <template v-if="!skipArticle">
+            {{ formatArticle(prov.articleId) }},
+            {{ instrumentTitles[prov.instrumentId] }}
+          </template>
+          <template v-else>
+            {{ instrumentTitles[prov.instrumentId] }}
+          </template>
+        </template>
+        <template v-else>
+          <LoadingBar class="pt-[9px]" />
+        </template>
+      </NuxtLink>
+    </template>
+  </template>
 </template>
 
 <script setup>
@@ -18,6 +44,7 @@ import {
   parseLegalProvisionLink,
 } from '~/utils/legal'
 import { useRuntimeConfig } from '#imports'
+import LoadingBar from '~/components/layout/LoadingBar.vue'
 
 const props = defineProps({
   value: {
@@ -31,6 +58,16 @@ const props = defineProps({
   valueClassMap: {
     type: Object,
     default: () => ({}),
+  },
+  // New prop to control article display
+  skipArticle: {
+    type: Boolean,
+    default: false,
+  },
+  // New prop to control whether to render with <li> wrapper
+  renderAsLi: {
+    type: Boolean,
+    default: false,
   },
 })
 
@@ -105,3 +142,11 @@ watch(
   { immediate: true }
 )
 </script>
+
+<style scoped>
+/* Only apply bullet styling when renderAsLi is true */
+li {
+  list-style-type: disc; /* Forces bullet points */
+  margin-left: 20px; /* Ensures proper indentation */
+}
+</style>

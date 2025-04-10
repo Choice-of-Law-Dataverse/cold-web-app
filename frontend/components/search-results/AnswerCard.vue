@@ -2,48 +2,90 @@
   <ResultCard :resultData="resultData" cardType="Answers">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
       <!-- Question section -->
-      <div :class="`md:col-span-${config.gridConfig.question.columnSpan} md:col-start-${config.gridConfig.question.startColumn}`">
+      <div
+        :class="[
+          config.gridConfig.question.columnSpan,
+          config.gridConfig.question.startColumn,
+        ]"
+      >
         <div class="label-key">{{ getLabel('Question') }}</div>
-        <div :class="[
-          config.valueClassMap.Question,
-          'text-sm leading-relaxed whitespace-pre-line',
-          (!resultData.Question || resultData.Question === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Question')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
-        ]">
+        <div
+          :class="computeTextClasses('Question', config.valueClassMap.Question)"
+        >
           {{ getValue('Question') }}
         </div>
       </div>
 
       <!-- Answer section -->
-      <div :class="`md:col-span-${config.gridConfig.answer.columnSpan} md:col-start-${config.gridConfig.answer.startColumn}`">
+      <div
+        :class="[
+          config.gridConfig.answer.columnSpan,
+          config.gridConfig.answer.startColumn,
+        ]"
+      >
         <div class="label-key">{{ getLabel('Answer') }}</div>
-        <div :class="[
-          config.getAnswerClass(resultData.Answer),
-          'text-sm leading-relaxed whitespace-pre-line',
-          (!resultData.Answer || resultData.Answer === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Answer')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
-        ]">
+        <div
+          :class="
+            computeTextClasses(
+              'Answer',
+              config.getAnswerClass(resultData.Answer)
+            )
+          "
+        >
           {{ getValue('Answer') }}
         </div>
       </div>
 
-      <!-- Source section -->
+      <!-- More Information section -->
       <div
-        v-if="resultData.Answer !== 'No data'"
-        :class="`md:col-span-${config.gridConfig.source.columnSpan} md:col-start-${config.gridConfig.source.startColumn}`"
+        v-if="hasMoreInformation"
+        :class="[
+          config.gridConfig.source.columnSpan,
+          config.gridConfig.source.startColumn,
+        ]"
       >
-        <div class="label-key">{{ getLabel('Legal provision articles') }}</div>
+        <div class="label-key">{{ getLabel('More Information') }}</div>
         <ul class="result-value-small">
-          <template v-if="resultData['Literature Title']">
-            <li>{{ resultData['Literature Title'] }}</li>
+          <li v-if="resultData['More Information']">
+            {{ getValue('More Information') }}
+          </li>
+          <template v-if="hasDomesticValue">
+            <template v-if="resultData['Domestic Legal Provisions']">
+              <LegalProvisionRenderer
+                renderAsLi
+                :value="getValue('Domestic Legal Provisions')"
+                :fallbackData="resultData"
+              />
+            </template>
+            <template v-else-if="resultData['Domestic Instruments ID']">
+              <LegalProvisionRenderer
+                renderAsLi
+                skipArticle
+                :value="getValue('Domestic Instruments ID')"
+                :fallbackData="resultData"
+              />
+            </template>
+            <template v-else>
+              <li v-if="isLoadingLiterature">
+                <LoadingBar class="pt-[9px]" />
+              </li>
+              <template v-else>
+                <template v-if="Array.isArray(domesticValue)">
+                  <li v-for="(item, index) in domesticValue" :key="index">
+                    <a :href="`/literature/${item.id}`">{{ item.title }}</a>
+                  </li>
+                </template>
+                <li v-else>
+                  {{ domesticValue }}
+                </li>
+              </template>
+            </template>
           </template>
-          <template v-if="resultData['Legal Provision Articles']">
-            <li>{{ resultData['Legal Provision Articles'] }}</li>
-          </template>
-          <template v-else-if="resultData['Legislation-ID']">
-            <li>{{ resultData['Legislation-ID'] }}</li>
-          </template>
-          <template v-else-if="resultData['More Information']">
-            <li>{{ resultData['More Information'] }}</li>
-          </template>
+          <li v-if="relatedCasesCount">
+            <a :href="relatedDecisionsLink">
+              {{ relatedCasesCount }} related court decisions
+            </a>
+          </li>
         </ul>
       </div>
     </div>
@@ -51,8 +93,13 @@
 </template>
 
 <script setup>
+import { computed, ref, watch } from 'vue'
+import { useRuntimeConfig } from '#imports'
 import ResultCard from './ResultCard.vue'
 import { answerCardConfig } from '../../config/cardConfigs'
+import { literatureCache } from '../../utils/literatureCache'
+import LoadingBar from '../layout/LoadingBar.vue'
+import LegalProvisionRenderer from '../legal/LegalProvisionRenderer.vue' // new import
 
 const props = defineProps({
   resultData: {
@@ -62,36 +109,131 @@ const props = defineProps({
 })
 
 const config = answerCardConfig
+const runtimeConfig = useRuntimeConfig()
+
+// Replace literatureTitles with an array of objects: { id, title }
+const literatureTitles = ref([])
+
+// Updated function to fetch literature titles for a comma‑separated list of IDs,
+// returns objects with id and title.
+async function fetchLiteratureTitles(idStr) {
+  const ids = idStr.split(',').map((id) => id.trim())
+  const promises = ids.map(async (id) => {
+    if (literatureCache[id]) return { id, title: literatureCache[id] }
+    try {
+      const response = await fetch(
+        `${runtimeConfig.public.apiBaseUrl}/search/details`,
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${runtimeConfig.public.FASTAPI}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ table: 'Literature', id }),
+        }
+      )
+      if (!response.ok) throw new Error('Failed to fetch literature title')
+      const data = await response.json()
+      const title = data['Title']
+      const finalTitle = title && title !== 'NA' ? title : id
+      literatureCache[id] = finalTitle
+      return { id, title: finalTitle }
+    } catch (err) {
+      console.error('Error fetching literature title:', err)
+      return { id, title: id }
+    }
+  })
+  literatureTitles.value = await Promise.all(promises)
+}
+
+watch(
+  () => props.resultData['Jurisdictions Literature ID'],
+  (newId) => {
+    if (newId) fetchLiteratureTitles(newId)
+  },
+  { immediate: true }
+)
+
+const domesticValue = computed(() => {
+  if (props.resultData['Domestic Legal Provisions'] != null) {
+    return getValue('Domestic Legal Provisions')
+  } else if (props.resultData['Domestic Instruments ID'] != null) {
+    return getValue('Domestic Instruments ID')
+  } else if (props.resultData['Jurisdictions Literature ID'] != null) {
+    return literatureTitles.value
+  } else {
+    return ''
+  }
+})
+
+const isLoadingLiterature = computed(() => {
+  return (
+    props.resultData['Jurisdictions Literature ID'] != null &&
+    (!literatureTitles.value ||
+      literatureTitles.value.length === 0 ||
+      literatureTitles.value.includes(null))
+  )
+})
+
+// Computed property to display the number of related cases
+const relatedCasesCount = computed(() => {
+  const links = props.resultData['Court Decisions Link']
+  if (!links) return 0
+  return links.split(',').filter((link) => link.trim() !== '').length
+})
+
+// Updated computed property for the related court decisions link
+const relatedDecisionsLink = computed(() => {
+  const id = props.resultData['id']
+  return `question/${id}#related-court-decisions`
+})
+
+// New computed property to conditionally show domesticValue bullet
+const hasDomesticValue = computed(() => {
+  return (
+    props.resultData['Domestic Legal Provisions'] ||
+    props.resultData['Domestic Instruments ID'] ||
+    props.resultData['Jurisdictions Literature ID']
+  )
+})
+
+const hasMoreInformation = computed(() => {
+  return (
+    props.resultData['More Information'] ||
+    hasDomesticValue.value ||
+    relatedCasesCount.value > 0
+  )
+})
 
 // Helper functions to get labels and values with fallbacks
 const getLabel = (key) => {
-  const pair = config.keyLabelPairs.find(pair => pair.key === key)
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
   return pair?.label || key
 }
 
 const getValue = (key) => {
-  const pair = config.keyLabelPairs.find(pair => pair.key === key)
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
   const value = props.resultData[key]
-  
+
   if (!value && pair?.emptyValueBehavior) {
     if (pair.emptyValueBehavior.action === 'display') {
       return pair.emptyValueBehavior.fallback
     }
     return ''
   }
-  
+
   return value
 }
 
-const getFallbackClass = (key) => {
-  const pair = config.keyLabelPairs.find(pair => pair.key === key)
-  const value = props.resultData[key]
-  
-  if (!value && pair?.emptyValueBehavior?.fallbackClass) {
-    return pair.emptyValueBehavior.fallbackClass
-  }
-  
-  return ''
+// New helper to compute text classes for a field
+const computeTextClasses = (key, baseClass) => {
+  const pair = config.keyLabelPairs.find((p) => p.key === key)
+  const isEmpty = !props.resultData[key] || props.resultData[key] === 'NA'
+  const emptyClass =
+    isEmpty && pair?.emptyValueBehavior?.action === 'display'
+      ? 'text-gray-300'
+      : ''
+  return [baseClass, 'text-sm leading-relaxed whitespace-pre-line', emptyClass]
 }
 </script>
 

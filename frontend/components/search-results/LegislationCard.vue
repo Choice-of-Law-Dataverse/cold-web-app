@@ -2,13 +2,26 @@
   <ResultCard :resultData="processedResultData" cardType="Legal Instrument">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
       <!-- Title section -->
-      <div :class="`md:col-span-${config.gridConfig.title.columnSpan} md:col-start-${config.gridConfig.title.startColumn}`">
+      <div
+        :class="[
+          config.gridConfig.title.columnSpan,
+          config.gridConfig.title.startColumn,
+        ]"
+      >
         <div class="label-key">{{ getLabel('Title (in English)') }}</div>
-        <div :class="[
-          config.valueClassMap['Title (in English)'],
-          'text-sm leading-relaxed whitespace-pre-line',
-          (!processedResultData['Title (in English)'] || processedResultData['Title (in English)'] === 'NA') && config.keyLabelPairs.find(pair => pair.key === 'Title (in English)')?.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
-        ]">
+        <div
+          :class="[
+            config.valueClassMap['Title (in English)'],
+            'text-sm leading-relaxed whitespace-pre-line',
+            (!processedResultData['Title (in English)'] ||
+              processedResultData['Title (in English)'] === 'NA') &&
+            config.keyLabelPairs.find(
+              (pair) => pair.key === 'Title (in English)'
+            )?.emptyValueBehavior?.action === 'display'
+              ? 'text-gray-300'
+              : '',
+          ]"
+        >
           {{ getValue('Title (in English)') }}
         </div>
       </div>
@@ -37,21 +50,21 @@ const processedResultData = computed(() => {
 
 // Helper functions to get labels and values with fallbacks
 const getLabel = (key) => {
-  const pair = config.keyLabelPairs.find(pair => pair.key === key)
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
   return pair?.label || key
 }
 
 const getValue = (key) => {
-  const pair = config.keyLabelPairs.find(pair => pair.key === key)
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
   const value = processedResultData.value?.[key]
-  
+
   if (!value && pair?.emptyValueBehavior) {
     if (pair.emptyValueBehavior.action === 'display') {
       return pair.emptyValueBehavior.fallback
     }
     return ''
   }
-  
+
   return value
 }
 </script>

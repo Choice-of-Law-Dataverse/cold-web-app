@@ -7,6 +7,26 @@ export default {
     './plugins/**/*.{js,ts}',
     './nuxt.config.{js,ts}',
   ],
+  safelist: [
+    'md:col-span-1',
+    'md:col-span-2',
+    'md:col-span-3',
+    'md:col-span-4',
+    'md:col-span-5',
+    'md:col-span-6',
+    'md:col-span-7',
+    'md:col-span-8',
+    'md:col-start-1',
+    'md:col-start-2',
+    'md:col-start-3',
+    'md:col-start-4',
+    'md:col-start-5',
+    'md:col-start-6',
+    'md:col-start-7',
+    'md:col-start-8',
+    'md:col-start-8',
+    'md:col-start-10',
+  ],
   theme: {
     extend: {
       colors: {

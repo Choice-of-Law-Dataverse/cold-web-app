@@ -17,25 +17,16 @@
                 :sources="
                   [
                     ...(value ||
-                    processedAnswerData?.['Domestic Legal Provisions'] ||
-                    processedAnswerData?.['Jurisdictions Literature ID']
+                    processedAnswerData?.['Domestic Legal Provisions']
                       ? [
                           value ||
-                            processedAnswerData?.[
-                              'Domestic Legal Provisions'
-                            ] ||
-                            processedAnswerData?.[
-                              'Jurisdictions Literature ID'
-                            ],
+                            processedAnswerData?.['Domestic Legal Provisions'],
                         ]
                       : []),
                   ].filter(Boolean)
                 "
                 :fallbackData="processedAnswerData"
                 :valueClassMap="valueClassMap"
-                :noLinkList="[
-                  processedAnswerData?.['Jurisdictions Literature ID'],
-                ]"
                 :fetchOupChapter="true"
                 :fetchPrimarySource="true"
               />
@@ -44,8 +35,8 @@
 
           <!-- Custom rendering for Court Decisions ID -->
           <template #court-decisions-id="{ value }">
-            <section>
-              <span class="label">related cases</span>
+            <section id="related-court-decisions">
+              <span class="label">Related Court Decisions</span>
               <CourtDecisionRenderer
                 :value="value"
                 :valueClassMap="valueClassMap['Court Decisions ID']"
@@ -77,7 +68,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
 import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
@@ -100,6 +91,14 @@ onMounted(async () => {
   try {
     const id = route.params.id
     await fetchAnswer(id)
+    // Wait for the DOM to update then scroll if the hash is present
+    await nextTick()
+    if (window.location.hash === '#related-court-decisions') {
+      const target = document.getElementById('related-court-decisions')
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' })
+      }
+    }
   } catch (err) {
     if (err.isNotFound) {
       router.push({

@@ -162,7 +162,7 @@ export const questionConfig = {
         },
         {
             key: 'Court Decisions ID',
-            label: 'related cases',
+            label: 'Related Court Decisions',
             emptyValueBehavior: {
                 action: 'display',
                 fallback: 'No related cases'
