@@ -175,7 +175,7 @@ const loadJurisdictions = async () => {
     )
     // Prepend the default option without an avatar
     jurisdictionOptions.value = [
-      { label: 'All Jurisdictions' },
+      { label: 'All Jurisdictions', value: 'All Jurisdictions' },
       ...mappedJurisdictions,
     ]
   } catch (error) {
