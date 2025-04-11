@@ -58,13 +58,13 @@
                 <!-- Conditionally render the label and value container -->
                 <div v-if="shouldDisplayValue(item, resultData?.[item.key])">
                   <!-- Conditionally render the label -->
-                  <p class="label-key -mb-1">
+                  <p class="label-key">
                     {{ item.label }}
                   </p>
                   <p
                     :class="[
-                      props.valueClassMap[item.key] || 'text-gray-800',
-                      'text-sm leading-relaxed whitespace-pre-line',
+                      props.valueClassMap[item.key] ||
+                        'leading-relaxed whitespace-pre-line',
                       (!resultData?.[item.key] ||
                         resultData?.[item.key] === 'NA') &&
                       item.emptyValueBehavior?.action === 'display' &&

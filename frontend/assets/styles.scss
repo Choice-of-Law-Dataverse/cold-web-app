@@ -166,6 +166,7 @@ li {
 // Results
 .result-value {
   font-weight: 700 !important; // Bold
+  color: var(--color-cold-night);
   word-wrap: break-word; // Allows breaking within words if necessary
   word-break: break-word; // Breaks words that are too long
   white-space: pre-wrap; // Preserves whitespace and line breaks, but also allows wrapping
@@ -174,23 +175,21 @@ li {
 .result-value-large {
   @extend .result-value;
   font-size: 28px !important;
-  margin-bottom: 6px !important;
-  // margin-top: -5px !important;
+  line-height: 28px !important;
+  margin-top: 6px !important;
+  margin-bottom: 24px !important;
 }
 
 .result-value-medium {
-  @extend .result-value;
+  @extend .result-value-large;
   font-size: 20px !important;
-  line-height: 28px !important;
-  // margin-bottom: 16px !important;
 }
 
 .result-value-small {
-  @extend .result-value;
+  @extend .result-value-large;
   font-size: 14px !important;
   font-weight: 400 !important; // Regular
-  line-height: 26px !important;
-  // margin-bottom: 10px !important;
+  margin: 0px !important;
   white-space: normal;
 }
 
