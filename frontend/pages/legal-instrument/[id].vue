@@ -10,7 +10,7 @@
     <template #domestic-legal-provisions="{ value }">
       <section>
         <span class="label">Selected Provisions</span>
-        <div>
+        <div :class="valueClassMap['Domestic Legal Provisions']">
           <div v-if="value && value.trim()">
             <LegalProvision
               v-for="(provisionId, index) in value.split(',')"
