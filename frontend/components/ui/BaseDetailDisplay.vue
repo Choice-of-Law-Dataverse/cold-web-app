@@ -56,11 +56,12 @@
               <!-- If no slot, use default display -->
               <template v-else>
                 <!-- Conditionally render the label and value container -->
-                <div v-if="shouldDisplayValue(item, resultData?.[item.key])">
+                <div
+                  v-if="shouldDisplayValue(item, resultData?.[item.key])"
+                  class="mb-6"
+                >
                   <!-- Conditionally render the label -->
-                  <p class="label-key">
-                    {{ item.label }}
-                  </p>
+                  <p class="label-key mb-2.5">{{ item.label }}</p>
                   <p
                     :class="[
                       props.valueClassMap[item.key] ||

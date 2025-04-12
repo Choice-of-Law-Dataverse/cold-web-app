@@ -181,6 +181,7 @@ export const questionConfig = {
         Question: 'result-value-medium',
         Answer: 'result-value-large',
         'Domestic Legal Provisions': 'result-value-small',
+        'More Information': 'result-value-small',
         'Court Decisions ID': 'result-value-small'
     }
 }

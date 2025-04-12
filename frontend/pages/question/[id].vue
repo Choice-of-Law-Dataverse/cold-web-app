@@ -111,3 +111,19 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style>
+/* Harmonized spacing for all .label elements */
+/* .label {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+} */
+
+/* Adjust section spacing to match label spacing */
+/* #related-court-decisions {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+} */
+</style>
