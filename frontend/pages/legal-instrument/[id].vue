@@ -35,8 +35,8 @@
     </template>
     <template #entry-into-force="{ value }">
       <div v-if="value">
-        <p class="label-key -mb-1">Entry Into Force</p>
-        <p class="result-value-small">
+        <p class="label-key">Entry Into Force</p>
+        <p :class="valueClassMap['Entry Into Force']">
           {{ formatDate(value) }}
         </p>
       </div>
@@ -44,8 +44,8 @@
 
     <template #publication-date="{ value }">
       <div v-if="value">
-        <p class="label-key -mb-1">Publication Date</p>
-        <p class="result-value-small">
+        <p class="label-key">Publication Date</p>
+        <p :class="valueClassMap['Publication Date']">
           {{ formatDate(value) }}
         </p>
       </div>
