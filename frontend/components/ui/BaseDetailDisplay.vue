@@ -31,7 +31,7 @@
       <!-- Main content -->
       <div class="flex">
         <div
-          class="main-content prose -space-y-10 flex flex-col gap-12 py-8 px-6 w-full"
+          class="main-content prose -space-y-10 flex flex-col gap-8 py-8 px-6 w-full"
         >
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
           <div

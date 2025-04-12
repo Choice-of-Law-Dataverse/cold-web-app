@@ -8,7 +8,7 @@
   >
     <template #entry-into-force="{ value }">
       <div v-if="value">
-        <p class="label-key">Entry Into Force</p>
+        <p class="label-key mt-8 mb-2">Entry Into Force</p>
         <p :class="valueClassMap['Entry Into Force']">
           {{ formatDate(value) }}
         </p>
@@ -16,8 +16,8 @@
     </template>
     <template #publication-date="{ value }">
       <div v-if="value">
-        <p class="label-key">Publication Date</p>
-        <p :class="valueClassMap['Publication Date']">
+        <p class="label-key mt-10 mb-2">Publication Date</p>
+        <p :class="[valueClassMap['Publication Date'], '!mb-2.5']">
           {{ formatDate(value) }}
         </p>
       </div>
@@ -25,7 +25,7 @@
     <!-- Slot for Legal provisions -->
     <template #domestic-legal-provisions="{ value }">
       <!-- Margin Top Hack -->
-      <section class="mt-2.5">
+      <section class="mt-8">
         <span class="label">Selected Provisions</span>
         <div :class="valueClassMap['Domestic Legal Provisions']">
           <div v-if="value && value.trim()">

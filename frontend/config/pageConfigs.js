@@ -252,6 +252,7 @@ export const legalInstrumentConfig = {
         'Title (in English)': 'result-value-medium',
         'Official Title': 'result-value-small',
         Date: 'result-value-small',
+        Abbreviation: 'result-value-small',
         'Entry Into Force': 'result-value-small',
         'Publication Date': 'result-value-small',
         'Domestic Legal Provisions': 'result-value-small',
