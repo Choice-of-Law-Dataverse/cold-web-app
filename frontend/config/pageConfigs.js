@@ -5,6 +5,7 @@
  * - valueClassMap: Object mapping API keys to CSS classes for styling
  */
 
+// Literature Page
 export const literatureConfig = {
     keyLabelPairs: [
         {
@@ -86,6 +87,7 @@ export const literatureConfig = {
     }
 }
 
+// Jurisdiction Page
 export const jurisdictionConfig = {
     keyLabelPairs: [
         {
@@ -127,6 +129,7 @@ export const jurisdictionConfig = {
     }
 }
 
+// Question Page
 export const questionConfig = {
     keyLabelPairs: [
         {
@@ -186,6 +189,7 @@ export const questionConfig = {
     }
 }
 
+// Legal Instrument (Domestic Instrument) Page
 export const legalInstrumentConfig = {
     keyLabelPairs: [
         {
@@ -257,6 +261,7 @@ export const legalInstrumentConfig = {
     }
 }
 
+// Court Decision Page
 export const courtDecisionConfig = {
     keyLabelPairs: [
         {
