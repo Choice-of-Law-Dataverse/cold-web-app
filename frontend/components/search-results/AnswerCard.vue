@@ -76,7 +76,7 @@
             </template>
             <template v-else>
               <li v-if="isLoadingLiterature">
-                <LoadingBar class="pt-[9px]" />
+                <LoadingBar class="pt-[11px]" />
               </li>
               <template v-else>
                 <template v-if="Array.isArray(domesticValue)">
