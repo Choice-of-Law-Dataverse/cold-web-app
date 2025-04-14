@@ -83,7 +83,7 @@ export const literatureConfig = {
         'Manual Tags': 'result-value-small',
         Jurisdictions: 'result-value-small',
         'Related Literature': 'result-value-small',
-        'Abstract Note': 'result-value-small'
+        'Abstract Note': 'result-value-small whitespace-pre-line'
     }
 }
 
@@ -360,11 +360,11 @@ export const courtDecisionConfig = {
         'Case Title': 'result-value-medium',
         'Publication Date ISO': 'result-value-small',
         Instance: 'result-value-small',
-        Abstract: 'result-value-small',
-        'Relevant Facts': 'result-value-small',
-        'Choice of Law Issue': 'result-value-small',
-        "Court's Position": 'result-value-small',
-        'Text of the Relevant Legal Provisions': 'result-value-small',
+        Abstract: 'result-value-small whitespace-pre-line',
+        'Relevant Facts': 'result-value-small whitespace-pre-line',
+        'Choice of Law Issue': 'result-value-small whitespace-pre-line',
+        "Court's Position": 'result-value-small whitespace-pre-line',
+        'Text of the Relevant Legal Provisions': 'result-value-small whitespace-pre-line',
         'Case Citation': 'result-value-small-citation',
         'Related Literature': 'result-value-small'
     }
