@@ -84,7 +84,7 @@ const fetchCourtDecision = async () => {
     if (err.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: `${err.table} not found` },
+        query: { message: `Court decision not found` },
       })
     } else {
       console.error('Failed to fetch court decision:', err)

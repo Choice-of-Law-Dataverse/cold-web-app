@@ -96,7 +96,7 @@ onMounted(async () => {
     if (err.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: `${err.table} not found` },
+        query: { message: `Domestic instrument not found` },
       })
     } else {
       console.error('Error fetching legal instrument:', err)

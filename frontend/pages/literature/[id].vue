@@ -69,10 +69,14 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
 
 onMounted(async () => {
   try {
-    await fetchData({
+    const result = await fetchData({
       table: 'Literature',
       id: route.params.id,
     })
+    // Check if result is null or an empty object
+    if (!result || Object.keys(result).length === 0) {
+      throw { isNotFound: true, table: 'Literature' }
+    }
   } catch (err) {
     if (err.isNotFound) {
       router.push({

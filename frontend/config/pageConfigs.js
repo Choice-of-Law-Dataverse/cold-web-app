@@ -215,7 +215,7 @@ export const legalInstrumentConfig = {
                 action: 'display',
                 fallback: 'N/A',
                 shouldHide: (data) => {
-                    return data['Entry Into Force'] || data['Publication Date']
+                    return data && (data['Entry Into Force'] || data['Publication Date'])
                 }
             }
         },
@@ -273,10 +273,13 @@ export const courtDecisionConfig = {
                 action: 'display',
                 fallback: 'No case title available',
                 getFallback: (data) => {
-                    const title = data['Case Title']
+                    if (!data) {
+                        return 'No case citation available';
+                    }
+                    const title = data['Case Title'];
                     return !title || title.trim() === 'NA'
                         ? data['Case Citation'] || 'No case citation available'
-                        : title
+                        : title;
                 }
             }
         },
@@ -365,4 +368,4 @@ export const courtDecisionConfig = {
         'Case Citation': 'result-value-small-citation',
         'Related Literature': 'result-value-small'
     }
-} 
+}
