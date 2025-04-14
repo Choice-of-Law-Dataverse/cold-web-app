@@ -11,6 +11,7 @@
         :themes="themes"
         :valueClassMap="valueClassMap['Related Literature']"
         :useId="false"
+        class="!mt-2"
       />
     </template>
   </BaseDetailLayout>
