@@ -24,8 +24,11 @@
     </template>
     <!-- Slot for Legal provisions -->
     <template #domestic-legal-provisions="{ value }">
-      <!-- Margin Top Hack -->
-      <section class="mt-8">
+      <!-- Only render if value exists and is not "N/A" -->
+      <section
+        v-if="value && value.trim() && value.trim() !== 'N/A'"
+        class="mt-[26px]"
+      >
         <span class="label">Selected Provisions</span>
         <div :class="valueClassMap['Domestic Legal Provisions']">
           <div v-if="value && value.trim()">
@@ -43,9 +46,6 @@
               "
               @update:hasEnglishTranslation="hasEnglishTranslation = $event"
             />
-          </div>
-          <div v-else>
-            <span>N/A</span>
           </div>
         </div>
       </section>
