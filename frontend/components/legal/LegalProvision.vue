@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="loading">
-      <LoadingBar />
+      <LoadingBar class="!mb-4 !mt-5" />
     </div>
     <div v-else>
       <BaseLegalContent

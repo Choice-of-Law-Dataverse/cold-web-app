@@ -2,7 +2,9 @@
   <div>
     <ul class="result-value-small">
       <!-- Domestic Legal Provision bullet point -->
-      <template v-if="fallbackData['Domestic Legal Provisions']">
+      <template
+        v-if="fallbackData && fallbackData['Domestic Legal Provisions']"
+      >
         <li
           v-for="(provision, index) in fallbackData[
             'Domestic Legal Provisions'
@@ -15,7 +17,9 @@
           />
         </li>
       </template>
-      <template v-else-if="fallbackData['Domestic Instruments ID']">
+      <template
+        v-else-if="fallbackData && fallbackData['Domestic Instruments ID']"
+      >
         <li
           v-for="(instrument, index) in fallbackData[
             'Domestic Instruments ID'
@@ -30,7 +34,9 @@
         </li>
       </template>
       <!-- Updated OUP Chapter bullet point -->
-      <template v-if="fallbackData['Jurisdictions Literature ID']">
+      <template
+        v-if="fallbackData && fallbackData['Jurisdictions Literature ID']"
+      >
         <template v-if="literatureTitles.length">
           <li v-for="(item, index) in literatureTitles" :key="index">
             <a :href="`/literature/${item.id}`">{{ item.title }}</a>

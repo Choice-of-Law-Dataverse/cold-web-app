@@ -5,6 +5,7 @@
  * - valueClassMap: Object mapping API keys to CSS classes for styling
  */
 
+// Literature Page
 export const literatureConfig = {
     keyLabelPairs: [
         {
@@ -82,20 +83,13 @@ export const literatureConfig = {
         'Manual Tags': 'result-value-small',
         Jurisdictions: 'result-value-small',
         'Related Literature': 'result-value-small',
-        'Abstract Note': 'result-value-small'
+        'Abstract Note': 'result-value-small whitespace-pre-line'
     }
 }
 
+// Jurisdiction Page
 export const jurisdictionConfig = {
     keyLabelPairs: [
-        {
-            key: 'Name',
-            label: 'Jurisdiction',
-            emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No jurisdiction name available'
-            }
-        },
         {
             key: 'Jurisdictional Differentiator',
             label: 'Jurisdictional Differentiator',
@@ -121,12 +115,12 @@ export const jurisdictionConfig = {
         }
     ],
     valueClassMap: {
-        Name: 'result-value-medium',
         'Jurisdictional Differentiator': 'result-value-small',
         Literature: 'result-value-small'
     }
 }
 
+// Question Page
 export const questionConfig = {
     keyLabelPairs: [
         {
@@ -181,10 +175,12 @@ export const questionConfig = {
         Question: 'result-value-medium',
         Answer: 'result-value-large',
         'Domestic Legal Provisions': 'result-value-small',
+        'More Information': 'result-value-small whitespace-pre-line',
         'Court Decisions ID': 'result-value-small'
     }
 }
 
+// Legal Instrument (Domestic Instrument) Page
 export const legalInstrumentConfig = {
     keyLabelPairs: [
         {
@@ -199,7 +195,8 @@ export const legalInstrumentConfig = {
             key: 'Official Title',
             label: 'Official Title',
             emptyValueBehavior: {
-                action: 'hide'
+                action: 'display',
+                fallback: 'No official title available'
             }
         },
         {
@@ -209,7 +206,7 @@ export const legalInstrumentConfig = {
                 action: 'display',
                 fallback: 'N/A',
                 shouldHide: (data) => {
-                    return data['Entry Into Force'] || data['Publication Date']
+                    return data && (data['Entry Into Force'] || data['Publication Date'])
                 }
             }
         },
@@ -247,6 +244,7 @@ export const legalInstrumentConfig = {
         'Title (in English)': 'result-value-medium',
         'Official Title': 'result-value-small',
         Date: 'result-value-small',
+        Abbreviation: 'result-value-small',
         'Entry Into Force': 'result-value-small',
         'Publication Date': 'result-value-small',
         'Domestic Legal Provisions': 'result-value-small',
@@ -256,6 +254,7 @@ export const legalInstrumentConfig = {
     }
 }
 
+// Court Decision Page
 export const courtDecisionConfig = {
     keyLabelPairs: [
         {
@@ -265,10 +264,13 @@ export const courtDecisionConfig = {
                 action: 'display',
                 fallback: 'No case title available',
                 getFallback: (data) => {
-                    const title = data['Case Title']
+                    if (!data) {
+                        return 'No case citation available';
+                    }
+                    const title = data['Case Title'];
                     return !title || title.trim() === 'NA'
                         ? data['Case Citation'] || 'No case citation available'
-                        : title
+                        : title;
                 }
             }
         },
@@ -277,7 +279,7 @@ export const courtDecisionConfig = {
             label: 'Date',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'N/A'
+                fallback: 'No date available'
             }
         },
         {
@@ -349,12 +351,12 @@ export const courtDecisionConfig = {
         'Case Title': 'result-value-medium',
         'Publication Date ISO': 'result-value-small',
         Instance: 'result-value-small',
-        Abstract: 'result-value-small',
-        'Relevant Facts': 'result-value-small',
-        'Choice of Law Issue': 'result-value-small',
-        "Court's Position": 'result-value-small',
-        'Text of the Relevant Legal Provisions': 'result-value-small',
-        'Case Citation': 'result-value-small',
+        Abstract: 'result-value-small whitespace-pre-line',
+        'Relevant Facts': 'result-value-small whitespace-pre-line',
+        'Choice of Law Issue': 'result-value-small whitespace-pre-line',
+        "Court's Position": 'result-value-small whitespace-pre-line',
+        'Text of the Relevant Legal Provisions': 'result-value-small whitespace-pre-line',
+        'Case Citation': 'result-value-small-citation',
         'Related Literature': 'result-value-small'
     }
-} 
+}

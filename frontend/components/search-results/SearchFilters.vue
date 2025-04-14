@@ -29,9 +29,8 @@
                 border: '1px solid var(--color-cold-gray)',
                 boxSizing: 'border-box',
                 width: 'auto',
-                height: 'auto',
+                height: '16px',
               }"
-              size="2xs"
               class="mr-2 self-center"
               @error="() => handleImageError(erroredAvatars, option.label)"
             />
@@ -55,9 +54,8 @@
                     border: '1px solid var(--color-cold-gray)',
                     boxSizing: 'border-box',
                     width: 'auto',
-                    height: 'auto',
+                    height: '16px',
                   }"
-                  size="2xs"
                   class="mr-1.5 self-center"
                   @error="
                     () => handleImageError(erroredAvatars, selected.label)

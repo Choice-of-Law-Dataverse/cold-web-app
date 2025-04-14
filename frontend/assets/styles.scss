@@ -60,6 +60,7 @@ h3 {
 a {
   color: var(--color-cold-purple) !important;
   text-decoration: none !important;
+  font-weight: 400 !important; // Regular
 }
 
 .title-container {
@@ -80,12 +81,16 @@ ol {
 
 ul {
   list-style-type: disc;
-  margin: 0;
-  padding: 0 0 0 1.5rem;
+  margin: 0 !important;
+  padding: 0.5rem 0 1.5rem 1.5rem !important;
 }
 
 li {
-  margin: 0.5rem 0;
+  margin: 0 !important;
+}
+
+li::marker {
+  color: var(--color-cold-night) !important;
 }
 
 // Labels
@@ -166,6 +171,7 @@ li {
 // Results
 .result-value {
   font-weight: 700 !important; // Bold
+  color: var(--color-cold-night);
   word-wrap: break-word; // Allows breaking within words if necessary
   word-break: break-word; // Breaks words that are too long
   white-space: pre-wrap; // Preserves whitespace and line breaks, but also allows wrapping
@@ -174,24 +180,31 @@ li {
 .result-value-large {
   @extend .result-value;
   font-size: 28px !important;
-  margin-bottom: 6px !important;
-  // margin-top: -5px !important;
+  line-height: 28px !important;
+  margin-top: 6px !important;
+  margin-bottom: 24px !important;
 }
 
 .result-value-medium {
-  @extend .result-value;
+  @extend .result-value-large;
   font-size: 20px !important;
-  line-height: 28px !important;
-  // margin-bottom: 16px !important;
 }
 
 .result-value-small {
-  @extend .result-value;
+  @extend .result-value-large;
   font-size: 14px !important;
   font-weight: 400 !important; // Regular
-  line-height: 26px !important;
-  // margin-bottom: 10px !important;
+  margin: 0 !important;
   white-space: normal;
+}
+
+.result-value-small-citation {
+  @extend .result-value-small;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px !important;
+  background-color: var(--color-cold-gray-alpha);
+  padding: 0.8em 1em 0.8em 1em;
+  line-height: 1.8em !important;
 }
 
 // UI Elements -----------------------------------------------
@@ -206,6 +219,7 @@ li {
 .link-button {
   @extend .suggestion-button;
   font-size: 14px !important;
+  font-weight: 400 !important; // Regular
 }
 
 // Info Box in Jurisdiction Map
@@ -213,7 +227,7 @@ li {
   position: absolute;
   z-index: 1000;
   background: white;
-  font-family: 'Inter', Arial, sans-serif; // Replace with your global font
+  font-family: 'Inter', Arial, sans-serif;
   padding-right: 12px;
   padding-bottom: 6px;
 }
@@ -224,6 +238,7 @@ li {
   border: 1px solid var(--color-cold-gray) !important;
   border-radius: 0 !important;
   background-color: white !important;
+  height: 42px;
 }
 
 .cold-uselectmenu.non-all-selected button {

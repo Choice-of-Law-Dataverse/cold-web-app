@@ -6,17 +6,37 @@
     :valueClassMap="valueClassMap"
     sourceTable="Legal Instrument"
   >
+    <template #entry-into-force="{ value }">
+      <div v-if="value">
+        <p class="label-key mt-8 mb-2">Entry Into Force</p>
+        <p :class="valueClassMap['Entry Into Force']">
+          {{ formatDate(value) }}
+        </p>
+      </div>
+    </template>
+    <template #publication-date="{ value }">
+      <div v-if="value">
+        <p class="label-key mt-10 mb-2">Publication Date</p>
+        <p :class="[valueClassMap['Publication Date'], '!mb-2.5']">
+          {{ formatDate(value) }}
+        </p>
+      </div>
+    </template>
     <!-- Slot for Legal provisions -->
     <template #domestic-legal-provisions="{ value }">
-      <section>
+      <!-- Only render if value exists and is not "N/A" -->
+      <section
+        v-if="value && value.trim() && value.trim() !== 'N/A'"
+        class="mt-[26px]"
+      >
         <span class="label">Selected Provisions</span>
-        <div>
+        <div :class="valueClassMap['Domestic Legal Provisions']">
           <div v-if="value && value.trim()">
             <LegalProvision
               v-for="(provisionId, index) in value.split(',')"
               :key="index"
               :provisionId="provisionId.trim()"
-              :class="index === 0 ? 'no-margin' : ''"
+              :class="index === 0 ? '-mt-8' : ''"
               :textType="textType"
               :instrumentTitle="
                 processedLegalInstrument
@@ -27,28 +47,8 @@
               @update:hasEnglishTranslation="hasEnglishTranslation = $event"
             />
           </div>
-          <div v-else>
-            <span>N/A</span>
-          </div>
         </div>
       </section>
-    </template>
-    <template #entry-into-force="{ value }">
-      <div v-if="value">
-        <p class="label-key -mb-1">Entry Into Force</p>
-        <p class="result-value-small">
-          {{ formatDate(value) }}
-        </p>
-      </div>
-    </template>
-
-    <template #publication-date="{ value }">
-      <div v-if="value">
-        <p class="label-key -mb-1">Publication Date</p>
-        <p class="result-value-small">
-          {{ formatDate(value) }}
-        </p>
-      </div>
     </template>
   </BaseDetailLayout>
 </template>
@@ -96,7 +96,7 @@ onMounted(async () => {
     if (err.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: `${err.table} not found` },
+        query: { message: `Domestic instrument not found` },
       })
     } else {
       console.error('Error fetching legal instrument:', err)

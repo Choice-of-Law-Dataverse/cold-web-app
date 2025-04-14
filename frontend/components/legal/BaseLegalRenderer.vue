@@ -26,27 +26,27 @@ import { computed } from 'vue'
 const props = defineProps({
   items: {
     type: [Array, String],
-    default: () => []
+    default: () => [],
   },
   valueClassMap: {
     type: String,
-    default: ''
+    default: '',
   },
   defaultClass: {
     type: String,
-    default: 'result-value'
+    default: 'result-value',
   },
   isList: {
     type: Boolean,
-    default: true
+    default: true,
   },
   emptyValueBehavior: {
     type: Object,
     default: () => ({
       action: 'display',
-      fallback: 'N/A'
-    })
-  }
+      fallback: 'N/A',
+    }),
+  },
 })
 
 const hasContent = computed(() => {
@@ -61,4 +61,4 @@ const displayValue = computed(() => {
   if (props.emptyValueBehavior.action === 'hide') return null
   return props.emptyValueBehavior.fallback
 })
-</script> 
+</script>

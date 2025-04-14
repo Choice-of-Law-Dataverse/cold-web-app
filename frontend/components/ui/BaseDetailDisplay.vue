@@ -31,7 +31,7 @@
       <!-- Main content -->
       <div class="flex">
         <div
-          class="main-content prose -space-y-10 flex flex-col gap-12 py-8 px-6 w-full"
+          class="main-content prose -space-y-10 flex flex-col gap-8 py-8 px-6 w-full"
         >
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
           <div
@@ -56,25 +56,53 @@
               <!-- If no slot, use default display -->
               <template v-else>
                 <!-- Conditionally render the label and value container -->
-                <div v-if="shouldDisplayValue(item, resultData?.[item.key])">
+                <div
+                  v-if="shouldDisplayValue(item, resultData?.[item.key])"
+                  class="mb-6"
+                >
                   <!-- Conditionally render the label -->
-                  <p class="label-key -mb-1">
-                    {{ item.label }}
-                  </p>
-                  <p
-                    :class="[
-                      props.valueClassMap[item.key] || 'text-gray-800',
-                      'text-sm leading-relaxed whitespace-pre-line',
-                      (!resultData?.[item.key] ||
-                        resultData?.[item.key] === 'NA') &&
-                      item.emptyValueBehavior?.action === 'display' &&
-                      !item.emptyValueBehavior?.getFallback
-                        ? 'text-gray-300'
-                        : '',
-                    ]"
+                  <p class="label-key mb-2.5">{{ item.label }}</p>
+                  <!-- Conditionally render bullet list if Answer is an array -->
+                  <template
+                    v-if="
+                      item.key === 'Answer' &&
+                      Array.isArray(
+                        getDisplayValue(item, resultData?.[item.key])
+                      )
+                    "
                   >
-                    {{ getDisplayValue(item, resultData?.[item.key]) }}
-                  </p>
+                    <ul>
+                      <li
+                        v-for="(line, i) in getDisplayValue(
+                          item,
+                          resultData?.[item.key]
+                        )"
+                        :key="i"
+                        :class="
+                          props.valueClassMap[item.key] ||
+                          'leading-relaxed whitespace-pre-line'
+                        "
+                      >
+                        {{ line }}
+                      </li>
+                    </ul>
+                  </template>
+                  <template v-else>
+                    <p
+                      :class="[
+                        props.valueClassMap[item.key] ||
+                          'leading-relaxed whitespace-pre-line',
+                        (!resultData?.[item.key] ||
+                          resultData?.[item.key] === 'NA') &&
+                        item.emptyValueBehavior?.action === 'display' &&
+                        !item.emptyValueBehavior?.getFallback
+                          ? 'text-gray-300'
+                          : '',
+                      ]"
+                    >
+                      {{ getDisplayValue(item, resultData?.[item.key]) }}
+                    </p>
+                  </template>
                 </div>
               </template>
             </template>
@@ -178,6 +206,14 @@ const shouldDisplayValue = (item, value) => {
 }
 
 const getDisplayValue = (item, value) => {
+  // New logic for the "Answer" field: if the value contains commas, split it.
+  if (
+    item.key === 'Answer' &&
+    typeof value === 'string' &&
+    value.includes(',')
+  ) {
+    return value.split(',').map((part) => part.trim())
+  }
   if (!item.emptyValueBehavior) return value || 'N/A'
   if (
     (!value || value === 'NA') &&

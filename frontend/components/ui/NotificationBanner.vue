@@ -23,7 +23,7 @@ defineProps({
 <style scoped>
 .notification-banner {
   @apply bg-[--color-cold-cream] p-4 outline outline-1 outline-[--color-cold-cream];
-  margin-bottom: 24px;
+  margin-bottom: 24px !important;
 }
 
 .icon-adjust {

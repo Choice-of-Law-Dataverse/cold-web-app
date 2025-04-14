@@ -7,6 +7,7 @@
           :resultData="jurisdictionData"
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
+          :formattedJurisdiction="[jurisdictionData?.Name]"
         >
           <!-- Specialists Section -->
           <section>
@@ -23,7 +24,10 @@
               </ul>
             </template>
             <p v-else class="result-value-small">
-              {{ keyLabelPairs.find(pair => pair.key === 'Specialist')?.emptyValueBehavior?.fallback || 'No specialists available' }}
+              {{
+                keyLabelPairs.find((pair) => pair.key === 'Specialist')
+                  ?.emptyValueBehavior?.fallback || 'No specialists available'
+              }}
             </p>
           </section>
 
@@ -35,14 +39,17 @@
                 :literature-title="literatureTitle"
                 :valueClassMap="valueClassMap['Related Literature']"
                 :showLabel="false"
-                :emptyValueBehavior="keyLabelPairs.find(pair => pair.key === 'Literature')?.emptyValueBehavior"
+                :emptyValueBehavior="
+                  keyLabelPairs.find((pair) => pair.key === 'Literature')
+                    ?.emptyValueBehavior
+                "
                 use-id
               />
             </section>
           </template>
 
           <template #search-links>
-            <span class="label">related data</span>
+            <span class="label !mt-[-36px] !mb-5">Related Data</span>
             <NuxtLink
               :to="{
                 name: 'search',
@@ -51,7 +58,7 @@
                   jurisdiction: jurisdictionData?.Name || '',
                 },
               }"
-              class="no-underline"
+              class="no-underline !mb-2"
             >
               <UButton
                 class="link-button"
@@ -139,7 +146,7 @@ onMounted(async () => {
     if (err.message === 'no entry found with the specified id') {
       router.push({
         path: '/error',
-        query: { message: 'Jurisdiction not found' }
+        query: { message: 'Jurisdiction not found' },
       })
     } else {
       console.error('Error fetching jurisdiction:', err)

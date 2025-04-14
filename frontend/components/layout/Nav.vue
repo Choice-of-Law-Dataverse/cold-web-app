@@ -389,7 +389,7 @@ a {
   color: var(--color-cold-night) !important; /* Apply custom color */
   text-decoration: none !important; /* Remove underline */
   /*margin-left: 48px;*/
-  font-weight: 600;
+  font-weight: 600 !important;
 }
 
 :deep(.custom-nav-links.active) {

@@ -32,7 +32,16 @@
             )
           "
         >
-          {{ getValue('Answer') }}
+          <template v-if="Array.isArray(getValue('Answer'))">
+            <ul class="list-disc pl-5">
+              <li v-for="(line, i) in getValue('Answer')" :key="i">
+                {{ line }}
+              </li>
+            </ul>
+          </template>
+          <template v-else>
+            {{ getValue('Answer') }}
+          </template>
         </div>
       </div>
 
@@ -67,7 +76,7 @@
             </template>
             <template v-else>
               <li v-if="isLoadingLiterature">
-                <LoadingBar class="pt-[9px]" />
+                <LoadingBar class="pt-[11px]" />
               </li>
               <template v-else>
                 <template v-if="Array.isArray(domesticValue)">
@@ -213,7 +222,12 @@ const getLabel = (key) => {
 
 const getValue = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key)
-  const value = props.resultData[key]
+  let value = props.resultData[key]
+
+  // For key "Answer", split by comma if a string contains commas.
+  if (key === 'Answer' && typeof value === 'string' && value.includes(',')) {
+    return value.split(',').map((part) => part.trim())
+  }
 
   if (!value && pair?.emptyValueBehavior) {
     if (pair.emptyValueBehavior.action === 'display') {

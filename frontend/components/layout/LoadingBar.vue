@@ -1,5 +1,5 @@
 <template>
-  <div class="space-y-2 mt-4 mb-3">
+  <div class="space-y-2 mb-2.5">
     <USkeleton
       class="h-2 rounded-none"
       :style="{
