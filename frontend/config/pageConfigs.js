@@ -285,7 +285,7 @@ export const courtDecisionConfig = {
             label: 'Date',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'N/A'
+                fallback: 'No date available'
             }
         },
         {

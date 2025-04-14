@@ -6,12 +6,6 @@
     :valueClassMap="valueClassMap"
     sourceTable="Court Decisions"
   >
-    <template #publication-date-iso="{ value }">
-      <p class="label-key -mb-1">Date</p>
-      <p class="result-value-small">
-        {{ formatDate(value) || 'N/A' }}
-      </p>
-    </template>
     <template #related-literature="{ value }">
       <RelatedLiterature
         :themes="themes"
@@ -40,6 +34,7 @@ import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { courtDecisionConfig } from '~/config/pageConfigs'
+import { formatDate } from '~/utils/format.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -72,6 +67,9 @@ const modifiedCourtDecision = computed(() => {
         ? courtDecision.value['Case Citation']
         : courtDecision.value['Case Title'],
     'Related Literature': themes.value,
+    'Publication Date ISO': formatDate(
+      courtDecision.value['Publication Date ISO']
+    ),
   }
 })
 
@@ -85,7 +83,7 @@ const fetchCourtDecision = async () => {
     if (err.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: `${err.table} not found` }
+        query: { message: `${err.table} not found` },
       })
     } else {
       console.error('Failed to fetch court decision:', err)
