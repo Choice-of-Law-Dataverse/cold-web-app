@@ -1,6 +1,6 @@
 <template>
   <div
-    class="header-container flex items-center justify-between"
+    class="header-container flex items-center justify-between mt-0.5"
     :key="formattedJurisdiction + formattedTheme"
   >
     <template v-if="cardType === 'Loading'"> </template>
@@ -53,19 +53,36 @@
 
       <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
       <div class="open-link ml-4">
-        <NuxtLink
-          v-if="showSuggestEdit"
-          :to="suggestEditLink"
-          class="flex items-center space-x-4"
-          style="font-size: 18px"
-          target="_blank"
-        >
-          <UIcon name="i-material-symbols:download-sharp" />
-          <UIcon name="i-material-symbols:language" />
-          <UIcon name="i-material-symbols:format-quote" />
-          <UIcon name="i-material-symbols:edit-outline" />
-        </NuxtLink>
-
+        <div v-if="showSuggestEdit" class="flex items-center space-x-5 label">
+          <NuxtLink class="flex items-center">
+            Link
+            <UIcon
+              name="i-material-symbols:open-in-new"
+              class="inline-block ml-1"
+            />
+          </NuxtLink>
+          <NuxtLink class="flex items-center space-x-1">
+            Cite
+            <UIcon
+              name="i-material-symbols:format-quote"
+              class="inline-block ml-1"
+            />
+          </NuxtLink>
+          <NuxtLink class="flex items-center space-x-1">
+            PDF
+            <UIcon
+              name="i-material-symbols:download-2"
+              class="inline-block ml-1"
+            />
+          </NuxtLink>
+          <NuxtLink class="flex items-center space-x-1" :to="suggestEditLink">
+            Edit
+            <UIcon
+              name="i-material-symbols:edit-square"
+              class="inline-block ml-1"
+            />
+          </NuxtLink>
+        </div>
         <NuxtLink v-else :to="getLink()"> Open </NuxtLink>
       </div>
     </template>
