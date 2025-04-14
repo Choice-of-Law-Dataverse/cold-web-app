@@ -48,7 +48,6 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
 // Debug the court decision data and configuration
 watch(courtDecision, (newValue) => {
   if (newValue) {
-    // No console.log needed
   }
 })
 
@@ -67,6 +66,7 @@ const modifiedCourtDecision = computed(() => {
         ? courtDecision.value['Case Citation']
         : courtDecision.value['Case Title'],
     'Related Literature': themes.value,
+    'Case Citation': courtDecision.value['Case Citation'],
     'Publication Date ISO': formatDate(
       courtDecision.value['Publication Date ISO']
     ),

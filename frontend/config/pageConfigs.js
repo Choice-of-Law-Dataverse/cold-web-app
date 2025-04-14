@@ -362,7 +362,7 @@ export const courtDecisionConfig = {
         'Choice of Law Issue': 'result-value-small',
         "Court's Position": 'result-value-small',
         'Text of the Relevant Legal Provisions': 'result-value-small',
-        'Case Citation': 'result-value-small',
+        'Case Citation': 'result-value-small-citation',
         'Related Literature': 'result-value-small'
     }
 } 

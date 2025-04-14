@@ -197,6 +197,12 @@ li::marker {
   white-space: normal;
 }
 
+.result-value-small-citation {
+  @extend .result-value-small;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px !important;
+}
+
 // UI Elements -----------------------------------------------
 
 .suggestion-button {
@@ -216,7 +222,7 @@ li::marker {
   position: absolute;
   z-index: 1000;
   background: white;
-  font-family: 'Inter', Arial, sans-serif; // Replace with your global font
+  font-family: 'Inter', Arial, sans-serif;
   padding-right: 12px;
   padding-bottom: 6px;
 }
