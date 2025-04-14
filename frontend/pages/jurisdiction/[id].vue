@@ -7,6 +7,7 @@
           :resultData="jurisdictionData"
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
+          :formattedJurisdiction="[jurisdictionData?.Name]"
         >
           <!-- Specialists Section -->
           <section>
