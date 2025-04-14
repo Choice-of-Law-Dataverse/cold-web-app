@@ -31,7 +31,7 @@
     <!-- Else, use the normal themes-based display -->
     <template v-else>
       <ul v-if="loading">
-        <li><LoadingBar class="pt-[9px]" /></li>
+        <li><LoadingBar class="pt-[11px]" /></li>
       </ul>
 
       <ul v-else-if="literatureList.length">
