@@ -201,6 +201,9 @@ li::marker {
   @extend .result-value-small;
   font-family: 'IBM Plex Mono', monospace;
   font-size: 13px !important;
+  background-color: var(--color-cold-gray-alpha);
+  padding: 0.8em 1em 0.8em 1em;
+  line-height: 1.8em !important;
 }
 
 // UI Elements -----------------------------------------------
