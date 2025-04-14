@@ -41,49 +41,26 @@
       </div>
 
       <!-- Fade-out effect -->
-      <div
-        class="fade-out"
-        :class="{
-          'open-link-true': showOpenLink,
-          'suggest-edit-true': showSuggestEdit,
-          'open-link-false': !showOpenLink,
-          'suggest-edit-false': !showSuggestEdit,
-        }"
-      ></div>
+      <div class="fade-out" :class="fadeOutClasses"></div>
 
       <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
       <div class="open-link ml-4">
-        <div v-if="showSuggestEdit" class="flex items-center space-x-5 label">
-          <NuxtLink class="flex items-center">
-            Link
-            <UIcon
-              name="i-material-symbols:open-in-new"
-              class="inline-block ml-1"
-            />
-          </NuxtLink>
-          <NuxtLink class="flex items-center space-x-1">
-            Cite
-            <UIcon
-              name="i-material-symbols:format-quote"
-              class="inline-block ml-1"
-            />
-          </NuxtLink>
-          <NuxtLink class="flex items-center space-x-1">
-            PDF
-            <UIcon
-              name="i-material-symbols:download-2"
-              class="inline-block ml-1"
-            />
-          </NuxtLink>
-          <NuxtLink class="flex items-center space-x-1" :to="suggestEditLink">
-            Edit
-            <UIcon
-              name="i-material-symbols:edit-square"
-              class="inline-block ml-1"
-            />
-          </NuxtLink>
-        </div>
-        <NuxtLink v-else :to="getLink()"> Open </NuxtLink>
+        <template v-if="showSuggestEdit">
+          <div class="flex items-center space-x-5 label">
+            <NuxtLink
+              v-for="(action, index) in suggestEditActions"
+              :key="index"
+              class="flex items-center"
+              v-bind="action.to ? { to: action.to } : {}"
+            >
+              {{ action.label }}
+              <UIcon :name="action.icon" class="inline-block ml-1" />
+            </NuxtLink>
+          </div>
+        </template>
+        <template v-else>
+          <NuxtLink :to="getLink()"> Open </NuxtLink>
+        </template>
       </div>
     </template>
   </div>
@@ -217,6 +194,26 @@ const formattedTheme = computed(() => {
 })
 
 const erroredImages = reactive({}) // new reactive object
+
+// New computed property for fade-out classes
+const fadeOutClasses = computed(() => ({
+  'open-link-true': props.showOpenLink,
+  'suggest-edit-true': props.showSuggestEdit,
+  'open-link-false': !props.showOpenLink,
+  'suggest-edit-false': !props.showSuggestEdit,
+}))
+
+// New computed property for action items in "Suggest Edit" area
+const suggestEditActions = computed(() => [
+  { label: 'Link', icon: 'i-material-symbols:open-in-new' },
+  { label: 'Cite', icon: 'i-material-symbols:format-quote' },
+  { label: 'PDF', icon: 'i-material-symbols:download-2' },
+  {
+    label: 'Edit',
+    icon: 'i-material-symbols:edit-square',
+    to: suggestEditLink.value,
+  },
+])
 
 // Methods
 function getLink() {
