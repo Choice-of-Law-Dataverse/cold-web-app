@@ -5,12 +5,12 @@
         Recent Domestic Instruments
       </h2>
     </div>
-    <ul>
-      <li v-if="isLoading">
+    <div>
+      <div v-if="isLoading">
         <LoadingLandingPageCard />
-      </li>
+      </div>
       <template v-else>
-        <li v-for="(instrument, index) in domesticInstruments" :key="index">
+        <div v-for="(instrument, index) in domesticInstruments" :key="index">
           <RouterLink :to="`/legal-instrument/${instrument.ID}`">
             <UButton
               class="suggestion-button mt-8"
@@ -33,9 +33,9 @@
               </span>
             </UButton>
           </RouterLink>
-        </li>
+        </div>
       </template>
-    </ul>
+    </div>
   </UCard>
 </template>
 
