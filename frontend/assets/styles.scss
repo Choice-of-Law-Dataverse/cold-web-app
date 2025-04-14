@@ -60,6 +60,7 @@ h3 {
 a {
   color: var(--color-cold-purple) !important;
   text-decoration: none !important;
+  font-weight: 400 !important; // Regular
 }
 
 .title-container {
@@ -218,6 +219,7 @@ li::marker {
 .link-button {
   @extend .suggestion-button;
   font-size: 14px !important;
+  font-weight: 400 !important; // Regular
 }
 
 // Info Box in Jurisdiction Map
