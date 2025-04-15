@@ -53,6 +53,8 @@
               class="flex items-center"
               :class="action.class"
               v-bind="action.to ? { to: action.to } : {}"
+              target="_blank"
+              rel="noopener noreferrer"
             >
               {{ action.label }}
               <UIcon
@@ -209,13 +211,21 @@ const fadeOutClasses = computed(() => ({
 
 // New computed property for action items in "Suggest Edit" area
 const suggestEditActions = computed(() => [
-  { label: 'Link', icon: 'i-material-symbols:language' },
+  {
+    label: 'Link',
+    icon: 'i-material-symbols:language',
+    to: 'https://example.net/',
+  },
   {
     label: 'Cite',
     icon: 'i-material-symbols:verified-outline',
     class: 'gray-link',
   },
-  { label: 'PDF', icon: 'i-material-symbols:arrow-circle-down-outline' },
+  {
+    label: 'PDF',
+    icon: 'i-material-symbols:arrow-circle-down-outline',
+    to: 'https://choiceoflawdataverse.blob.core.windows.net/assets/dummy.pdf',
+  },
   {
     label: 'Edit',
     icon: 'i-material-symbols:edit-square-outline',
