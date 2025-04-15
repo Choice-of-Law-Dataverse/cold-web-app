@@ -1,6 +1,6 @@
 <template>
   <div
-    class="header-container flex items-center justify-between"
+    class="header-container flex items-center justify-between mt-0.5"
     :key="formattedJurisdiction + formattedTheme"
   >
     <template v-if="cardType === 'Loading'"> </template>
@@ -41,29 +41,32 @@
       </div>
 
       <!-- Fade-out effect -->
-      <div
-        class="fade-out"
-        :class="{
-          'open-link-true': showOpenLink,
-          'suggest-edit-true': showSuggestEdit,
-          'open-link-false': !showOpenLink,
-          'suggest-edit-false': !showSuggestEdit,
-        }"
-      ></div>
+      <div class="fade-out" :class="fadeOutClasses"></div>
 
       <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
       <div class="open-link ml-4">
-        <NuxtLink
-          v-if="showSuggestEdit"
-          :to="suggestEditLink"
-          class="flex items-center space-x-2"
-          target="_blank"
-        >
-          <span>Suggest Edit</span>
-          <UIcon name="i-material-symbols:edit-outline" />
-        </NuxtLink>
-
-        <NuxtLink v-else :to="getLink()"> Open </NuxtLink>
+        <template v-if="showSuggestEdit">
+          <div class="flex items-center space-x-5 label">
+            <NuxtLink
+              v-for="(action, index) in suggestEditActions"
+              :key="index"
+              class="flex items-center"
+              :class="action.class"
+              v-bind="action.to ? { to: action.to } : {}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ action.label }}
+              <UIcon
+                :name="action.icon"
+                class="inline-block ml-1 text-[1.2em] mb-0.5"
+              />
+            </NuxtLink>
+          </div>
+        </template>
+        <template v-else>
+          <NuxtLink :to="getLink()"> Open </NuxtLink>
+        </template>
       </div>
     </template>
   </div>
@@ -198,6 +201,38 @@ const formattedTheme = computed(() => {
 
 const erroredImages = reactive({}) // new reactive object
 
+// New computed property for fade-out classes
+const fadeOutClasses = computed(() => ({
+  'open-link-true': props.showOpenLink,
+  'suggest-edit-true': props.showSuggestEdit,
+  'open-link-false': !props.showOpenLink,
+  'suggest-edit-false': !props.showSuggestEdit,
+}))
+
+// New computed property for action items in "Suggest Edit" area
+const suggestEditActions = computed(() => [
+  {
+    label: 'Link',
+    icon: 'i-material-symbols:language',
+    to: 'https://example.net/',
+  },
+  {
+    label: 'Cite',
+    icon: 'i-material-symbols:verified-outline',
+    class: 'gray-link',
+  },
+  {
+    label: 'PDF',
+    icon: 'i-material-symbols:arrow-circle-down-outline',
+    to: 'https://choiceoflawdataverse.blob.core.windows.net/assets/dummy.pdf',
+  },
+  {
+    label: 'Edit',
+    icon: 'i-material-symbols:edit-square-outline',
+    to: suggestEditLink.value,
+  },
+])
+
 // Methods
 function getLink() {
   // Determine the correct link based on the card type and resultData
@@ -262,7 +297,7 @@ function getJurisdictionISO(name) {
 }
 
 .fade-out.suggest-edit-true {
-  right: 130px; /* Positioned before "Suggest Edit" */
+  right: 268px; /* Positioned before icons */
 }
 
 /* Ensures the fade-out is always correctly positioned */
@@ -284,5 +319,9 @@ function getJurisdictionISO(name) {
 .scrollbar-hidden {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+.gray-link {
+  color: var(--color-cold-night-alpha-25) !important;
 }
 </style>
