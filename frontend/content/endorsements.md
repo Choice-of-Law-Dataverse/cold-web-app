@@ -12,7 +12,7 @@ We count with the support of the Hague Conference on Private International Law (
 
 <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/universite-de-montreal-logo-bw.svg" width="150"/>
 
-**UdEM**  
+**UdeM**  
 Prof Geneviève Saumier is the dean of Faculty of Law of the Université de Montréal and also serves as a Project Partner for the Dataverse. She has worked closely with the HCCH and has developed numerous studies on private international law.
 
 <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/cedep-logo-bw.svg" width="120"/>
