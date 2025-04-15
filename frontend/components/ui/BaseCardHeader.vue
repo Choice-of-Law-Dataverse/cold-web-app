@@ -297,7 +297,7 @@ function getJurisdictionISO(name) {
 }
 
 .fade-out.suggest-edit-true {
-  right: 130px; /* Positioned before "Suggest Edit" */
+  right: 268px; /* Positioned before icons */
 }
 
 /* Ensures the fade-out is always correctly positioned */
