@@ -66,12 +66,12 @@
                     <!-- Add tooltip for specific labels -->
                     <template v-if="item.label === 'Question'">
                       <UTooltip
-                        :text="`This is additional information about ${item.label}`"
+                        :text="`Hello World`"
                         :popper="{ arrow: true, placement: 'top' }"
                         :ui="{
                           background: 'bg-cold-night',
                           color: 'text-white',
-                          base: 'pt-3 pr-3 pb-7 pl-3',
+                          base: 'pt-3 pr-3 pb-7 pl-3 normal-case',
                           rounded: 'rounded-none',
                           ring: '',
                           arrow: {
@@ -82,10 +82,7 @@
                         }"
                       >
                         <span class="ml-1 cursor-pointer">
-                          <Icon
-                            class="text-sm"
-                            name="i-material-symbols:info-outline"
-                          />
+                          <Icon name="i-material-symbols:info-outline" />
                         </span>
                       </UTooltip>
                     </template>
