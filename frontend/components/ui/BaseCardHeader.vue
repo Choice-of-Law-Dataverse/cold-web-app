@@ -54,7 +54,10 @@
               v-bind="action.to ? { to: action.to } : {}"
             >
               {{ action.label }}
-              <UIcon :name="action.icon" class="inline-block ml-1" />
+              <UIcon
+                :name="action.icon"
+                class="inline-block ml-1 text-[1.2em] mb-0.5"
+              />
             </NuxtLink>
           </div>
         </template>
@@ -205,12 +208,12 @@ const fadeOutClasses = computed(() => ({
 
 // New computed property for action items in "Suggest Edit" area
 const suggestEditActions = computed(() => [
-  { label: 'Link', icon: 'i-material-symbols:open-in-new' },
-  { label: 'Cite', icon: 'i-material-symbols:format-quote' },
-  { label: 'PDF', icon: 'i-material-symbols:download-2' },
+  { label: 'Link', icon: 'i-material-symbols:language' },
+  { label: 'Cite', icon: 'i-material-symbols:verified-outline' },
+  { label: 'PDF', icon: 'i-material-symbols:arrow-circle-down-outline' },
   {
     label: 'Edit',
-    icon: 'i-material-symbols:edit-square',
+    icon: 'i-material-symbols:edit-square-outline',
     to: suggestEditLink.value,
   },
 ])
