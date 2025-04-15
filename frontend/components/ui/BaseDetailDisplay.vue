@@ -61,7 +61,21 @@
                   class="mb-6"
                 >
                   <!-- Conditionally render the label -->
-                  <p class="label-key mb-2.5">{{ item.label }}</p>
+                  <p class="label-key mb-2.5 flex items-center">
+                    {{ item.label }}
+                    <!-- Add info icon for specific labels -->
+                    <template v-if="item.label === 'Question'">
+                      <span
+                        class="ml-1 cursor-pointer"
+                        @click="showInfoTooltip(item.label)"
+                      >
+                        <Icon
+                          class="text-sm"
+                          name="i-material-symbols:info-outline"
+                        />
+                      </span>
+                    </template>
+                  </p>
                   <!-- Conditionally render bullet list if Answer is an array -->
                   <template
                     v-if="
@@ -247,5 +261,13 @@ const getDisplayValue = (item, value) => {
 .label-key {
   @extend .label;
   padding: 0;
+}
+
+.label-key span {
+  display: inline-flex;
+  align-items: center;
+  margin-top: -1px;
+  color: var(--color-cold-purple);
+  font-size: 1.1em;
 }
 </style>
