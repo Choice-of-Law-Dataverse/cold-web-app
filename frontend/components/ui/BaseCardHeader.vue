@@ -51,6 +51,7 @@
               v-for="(action, index) in suggestEditActions"
               :key="index"
               class="flex items-center"
+              :class="action.class"
               v-bind="action.to ? { to: action.to } : {}"
             >
               {{ action.label }}
@@ -209,7 +210,11 @@ const fadeOutClasses = computed(() => ({
 // New computed property for action items in "Suggest Edit" area
 const suggestEditActions = computed(() => [
   { label: 'Link', icon: 'i-material-symbols:language' },
-  { label: 'Cite', icon: 'i-material-symbols:verified-outline' },
+  {
+    label: 'Cite',
+    icon: 'i-material-symbols:verified-outline',
+    class: 'gray-link',
+  },
   { label: 'PDF', icon: 'i-material-symbols:arrow-circle-down-outline' },
   {
     label: 'Edit',
@@ -304,5 +309,9 @@ function getJurisdictionISO(name) {
 .scrollbar-hidden {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+.gray-link {
+  color: var(--color-cold-night-alpha-25) !important;
 }
 </style>
