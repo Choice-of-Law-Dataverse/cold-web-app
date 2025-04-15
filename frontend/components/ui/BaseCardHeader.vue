@@ -297,7 +297,7 @@ function getJurisdictionISO(name) {
 }
 
 .fade-out.suggest-edit-true {
-  right: 268px; /* Positioned before icons */
+  right: 266px; /* Positioned before icons */
 }
 
 /* Ensures the fade-out is always correctly positioned */
@@ -323,5 +323,9 @@ function getJurisdictionISO(name) {
 
 .gray-link {
   color: var(--color-cold-night-alpha-25) !important;
+}
+
+a {
+  font-weight: 600 !important;
 }
 </style>
