@@ -28,6 +28,7 @@ If you are a law student at undergraduate or master's level and are interested i
 This is a valuable opportunity to engage with cross-border legal issues, build academic networks, and contribute meaningfully to a global project.
 
 ## Open to All: Literature and Case Law Suggestions
+
 Anyone is welcome to suggest new literature or case law entries for inclusion in the Dataverse. 
 
 ## How to Be Recognized as a Country Report Specialist
