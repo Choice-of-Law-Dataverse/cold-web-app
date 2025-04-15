@@ -66,19 +66,14 @@
                     <!-- Add tooltip for specific labels -->
                     <template v-if="item.label === 'Question'">
                       <UTooltip
-                        :text="`Hello World`"
-                        :popper="{ arrow: true, placement: 'top' }"
+                        :text="tooltipQuestion"
+                        :popper="{ placement: 'top' }"
                         :ui="{
                           background: 'bg-cold-night',
                           color: 'text-white',
                           base: 'pt-3 pr-3 pb-7 pl-3 normal-case',
                           rounded: 'rounded-none',
                           ring: '',
-                          arrow: {
-                            base: 'before:visible before:block before:rotate-45 before:z-[-1] before:w-2 before:h-2',
-                            background: 'before:bg-cold-night',
-                            ring: '',
-                          },
                         }"
                       >
                         <span class="ml-1 cursor-pointer">
@@ -146,6 +141,8 @@ import BackButton from '~/components/ui/BackButton.vue'
 import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
 import NotificationBanner from '~/components/ui/NotificationBanner.vue'
 import LoadingCard from './components/layout/LoadingCard.vue'
+
+import tooltipQuestion from '@/content/info_box_question.md?raw'
 
 // Props for reusability across pages
 const props = defineProps({
