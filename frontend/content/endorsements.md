@@ -8,12 +8,12 @@ Led by Prof Jan L Neels and Prof Eesa A Fredericks (Project Partners), the Resea
 <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch-logo-bw.svg" width="80"/>
 
 **The Hague Conference on Private International Law**  
-We count with the support of the Hague Conference on Private International Law (HCCH) and its wide network of specialists. This project will also follow the future work of the HCCH on the law applicable to international commercial contracts.
+We count on the support of the Hague Conference on Private International Law (HCCH) and its wide network of specialists. This project will also follow the future work of the HCCH on the law applicable to international commercial contracts.
 
 <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/universite-de-montreal-logo-bw.svg" width="150"/>
 
 **UdeM**  
-Prof Geneviève Saumier is the dean of Faculty of Law of the Université de Montréal and also serves as a Project Partner for the Dataverse. She has worked closely with the HCCH and has developed numerous studies on private international law.
+Prof Geneviève Saumier is the dean of the Faculty of Law of the Université de Montréal and also serves as a Project Partner for the Dataverse. She has worked closely with the HCCH and has developed numerous studies on private international law.
 
 <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/cedep-logo-bw.svg" width="120"/>
 
