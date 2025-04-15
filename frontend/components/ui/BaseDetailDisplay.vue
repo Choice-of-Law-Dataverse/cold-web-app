@@ -63,17 +63,31 @@
                   <!-- Conditionally render the label -->
                   <p class="label-key mb-2.5 flex items-center">
                     {{ item.label }}
-                    <!-- Add info icon for specific labels -->
+                    <!-- Add tooltip for specific labels -->
                     <template v-if="item.label === 'Question'">
-                      <span
-                        class="ml-1 cursor-pointer"
-                        @click="showInfoTooltip(item.label)"
+                      <UTooltip
+                        :text="`This is additional information about ${item.label}`"
+                        :popper="{ arrow: true, placement: 'top' }"
+                        :ui="{
+                          background: 'bg-cold-night',
+                          color: 'text-white',
+                          base: 'pt-3 pr-3 pb-7 pl-3',
+                          rounded: 'rounded-none',
+                          ring: '',
+                          arrow: {
+                            base: 'before:visible before:block before:rotate-45 before:z-[-1] before:w-2 before:h-2',
+                            background: 'before:bg-cold-night',
+                            ring: '',
+                          },
+                        }"
                       >
-                        <Icon
-                          class="text-sm"
-                          name="i-material-symbols:info-outline"
-                        />
-                      </span>
+                        <span class="ml-1 cursor-pointer">
+                          <Icon
+                            class="text-sm"
+                            name="i-material-symbols:info-outline"
+                          />
+                        </span>
+                      </UTooltip>
                     </template>
                   </p>
                   <!-- Conditionally render bullet list if Answer is an array -->
