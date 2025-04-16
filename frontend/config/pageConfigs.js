@@ -271,10 +271,17 @@ export const courtDecisionConfig = {
         },
         {
             key: 'Publication Date ISO',
-            label: 'Date',
+            label: 'Publication Date',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No date available'
+                fallback: 'No publication date available'
+            }
+        },
+        {
+            key: 'Date of Judgment',
+            label: 'Judgment Date',
+            emptyValueBehavior: {
+                action: 'hide'
             }
         },
         {
@@ -289,40 +296,49 @@ export const courtDecisionConfig = {
             key: 'Abstract',
             label: 'Abstract',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No abstract available'
+                action: 'hide'
             }
         },
         {
             key: 'Relevant Facts',
             label: 'Relevant Facts',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No relevant facts available'
+                action: 'hide'
             }
         },
         {
-            key: 'Choice of Law Issue',
-            label: 'Choice of Law Issue',
+            key: 'PIL Provisions',
+            label: 'PIL Provisions',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No choice of law issue available'
-            }
-        },
-        {
-            key: "Court's Position",
-            label: "Court's Position",
-            emptyValueBehavior: {
-                action: 'display',
-                fallback: "No court's position available"
+                action: 'hide'
             }
         },
         {
             key: 'Text of the Relevant Legal Provisions',
             label: 'Text of the Relevant Legal Provisions',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No relevant legal provisions available'
+                action: 'hide'
+            }
+        },
+        {
+            key: 'Choice of Law Issue',
+            label: 'Choice of Law Issue',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
+            key: "Court's Position",
+            label: "Court's Position",
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
+            key: 'Quote',
+            label: 'Quote',
+            emptyValueBehavior: {
+                action: 'hide'
             }
         },
         {
@@ -334,24 +350,42 @@ export const courtDecisionConfig = {
             }
         },
         {
+            key: 'Original Text',
+            label: 'Full Text',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
+            key: 'English Translation',
+            label: 'Full Text of the Decision in English',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
             key: 'Related Literature',
             label: '',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No related literature available'
+                action: 'hide'
             }
         }
     ],
     valueClassMap: {
         'Case Title': 'result-value-medium',
         'Publication Date ISO': 'result-value-small',
+        'Date of Judgment': 'result-value-small',
         Instance: 'result-value-small',
         Abstract: 'result-value-small whitespace-pre-line',
         'Relevant Facts': 'result-value-small whitespace-pre-line',
+        'PIL Provisions': 'result-value-small whitespace-pre-line',
         'Choice of Law Issue': 'result-value-small whitespace-pre-line',
         "Court's Position": 'result-value-small whitespace-pre-line',
         'Text of the Relevant Legal Provisions': 'result-value-small whitespace-pre-line',
+        'Quote': 'result-value-small whitespace-pre-line',
         'Case Citation': 'result-value-small-citation',
+        'Original Text': 'result-value-small whitespace-pre-line',
+        'English Translation': 'result-value-small whitespace-pre-line',
         'Related Literature': 'result-value-small'
     }
 }

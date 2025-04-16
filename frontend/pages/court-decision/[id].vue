@@ -71,6 +71,7 @@ const modifiedCourtDecision = computed(() => {
     'Publication Date ISO': formatDate(
       courtDecision.value['Publication Date ISO']
     ),
+    'Date of Judgment': formatDate(courtDecision.value['Date of Judgment']),
   }
 })
 
