@@ -27,7 +27,9 @@
         </nav>
 
         <!-- Main Content -->
-        <div class="main-content prose -space-y-10 flex flex-col gap-12 w-full">
+        <div
+          class="main-content prose -space-y-10 flex flex-col gap-12 px-6 w-full"
+        >
           <ContentDoc path="/data_sets" />
         </div>
       </UCard>
@@ -136,4 +138,4 @@ li.active::after {
   list-style-type: disc !important;
   padding-left: 12px !important;
 }
-</style> 
+</style>

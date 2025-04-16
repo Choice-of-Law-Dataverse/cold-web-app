@@ -27,7 +27,9 @@
         </nav>
 
         <!-- Main Content -->
-        <div class="main-content prose -space-y-10 flex flex-col gap-12 w-full">
+        <div
+          class="main-content prose -space-y-10 flex flex-col gap-12 px-6 w-full"
+        >
           <ContentDoc path="/methodology_intro" />
           <hr />
           <div id="How-the-Search-Works">
@@ -78,10 +80,12 @@ onMounted(async () => {
     if (response.ok) {
       content.value = await response.text() // Store raw Markdown
       htmlContent.value = marked(content.value) // Convert Markdown to HTML
-      
+
       // Check if there's a hash in the URL and scroll to it
       if (window.location.hash) {
-        const element = document.getElementById(window.location.hash.substring(1))
+        const element = document.getElementById(
+          window.location.hash.substring(1)
+        )
         if (element) {
           element.scrollIntoView({ behavior: 'smooth' })
         }
@@ -248,4 +252,4 @@ li.active::after {
     counter(sub-sub-list-counter) '.' counter(sub-sub-sub-list-counter) '. '; /* Display hierarchical numbering */
   font-weight: bold;
 }
-</style> 
+</style>
