@@ -193,8 +193,7 @@ export const legalInstrumentConfig = {
             key: 'Official Title',
             label: 'Official Title',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No official title available'
+                action: 'hide'
             }
         },
         {
@@ -233,8 +232,7 @@ export const legalInstrumentConfig = {
             key: 'Domestic Legal Provisions',
             label: 'Selected Provisions',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No provisions available'
+                action: 'hide'
             }
         }
     ],
