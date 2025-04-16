@@ -71,7 +71,7 @@
                         :ui="{
                           background: 'bg-cold-night',
                           color: 'text-white',
-                          base: 'pt-3 pr-3 pb-7 pl-3 normal-case',
+                          base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
                           rounded: 'rounded-none',
                           ring: '',
                         }"
