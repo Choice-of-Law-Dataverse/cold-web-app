@@ -200,8 +200,7 @@ export const legalInstrumentConfig = {
             key: 'Date',
             label: 'Date',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'N/A',
+                action: 'hide',
                 shouldHide: (data) => {
                     return data && (data['Entry Into Force'] || data['Publication Date'])
                 }
