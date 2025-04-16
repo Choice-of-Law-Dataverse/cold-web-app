@@ -82,6 +82,7 @@ export const answerCardConfig = {
     }
 }
 
+// Court Decision Card
 export const courtDecisionCardConfig = {
     keyLabelPairs: [
         {
@@ -99,26 +100,51 @@ export const courtDecisionCardConfig = {
             }
         },
         {
+            key: 'Publication Date ISO',
+            label: 'Date',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No date available'
+            }
+        },
+        {
+            key: 'Instance',
+            label: 'Instance',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No instance available'
+            }
+        },
+        {
             key: 'Choice of Law Issue',
             label: 'Choice of Law Issue',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No choice of law issue available'
+                action: 'hide'
             }
         }
     ],
     valueClassMap: {
         'Case Title': 'result-value-medium',
+        'Publication Date ISO': 'result-value-small',
+        'Instance': 'result-value-small',
         'Choice of Law Issue': 'result-value-small'
     },
     gridConfig: {
         caseTitle: {
-          columnSpan: 'md:col-span-4',
+          columnSpan: 'md:col-span-3',
           startColumn: 'md:col-start-1'
         },
+        date: {
+            columnSpan: 'md:col-span-2',
+            startColumn: 'md:col-start-4'
+          },
+          instance: {
+            columnSpan: 'md:col-span-2',
+            startColumn: 'md:col-start-6'
+          },
         choiceOfLaw: {
-          columnSpan: 'md:col-span-6',
-          startColumn: 'md:col-start-6'
+          columnSpan: 'md:col-span-4',
+          startColumn: 'md:col-start-8'
         }
     }
 }
