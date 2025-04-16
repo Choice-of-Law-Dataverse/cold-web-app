@@ -33,7 +33,7 @@ export const literatureConfig = {
         },
         {
             key: 'Publication Year',
-            label: 'Year',
+            label: 'Date',
             emptyValueBehavior: {
                 action: 'display',
                 fallback: 'No year available'

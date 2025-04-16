@@ -164,6 +164,7 @@ export const legislationCardConfig = {
     }
 }
 
+// Literature Card
 export const literatureCardConfig = {
     keyLabelPairs: [
         {
@@ -184,7 +185,7 @@ export const literatureCardConfig = {
         },
         {
             key: 'Publication Year',
-            label: 'Year',
+            label: 'Date',
             emptyValueBehavior: {
                 action: 'display',
                 fallback: 'No year available'
