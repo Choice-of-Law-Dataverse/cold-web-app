@@ -6,6 +6,7 @@
  * - gridConfig: Object defining the grid layout for the card
  */
 
+// Question Card
 export const answerCardConfig = {
     keyLabelPairs: [
         {
@@ -37,18 +38,14 @@ export const answerCardConfig = {
             key: 'Domestic Legal Provisions',
             label: 'Domestic Legal Provisions',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'Domestic Legal Provision not available',
-                fallbackClass: 'text-gray-500'
+                action: 'hide',
             }
         },
         {
             key: 'Domestic Instruments ID',
             label: 'Domestic Instruments ID',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'Domestic Instruments ID not available',
-                fallbackClass: 'text-gray-500'
+                action: 'hide',
             }
         },
         {
