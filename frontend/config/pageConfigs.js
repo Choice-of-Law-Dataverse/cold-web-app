@@ -149,8 +149,7 @@ export const questionConfig = {
             key: 'Domestic Legal Provisions',
             label: 'Source',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No source available'
+                action: 'hide'
             }
         },
         {
@@ -158,7 +157,7 @@ export const questionConfig = {
             label: 'Related Court Decisions',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No related cases'
+                fallback: 'No related court decisions'
             }
         },
         {
@@ -166,7 +165,7 @@ export const questionConfig = {
             label: '',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No related literature available'
+                fallback: 'No related literature'
             }
         }
     ],
