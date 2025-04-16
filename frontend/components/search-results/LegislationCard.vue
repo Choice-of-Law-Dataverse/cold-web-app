@@ -25,6 +25,52 @@
           {{ getValue('Title (in English)') }}
         </div>
       </div>
+
+      <!-- Date section -->
+      <div
+        v-if="
+          processedResultData &&
+          processedResultData['Date'] &&
+          processedResultData['Date'] !== 'NA'
+        "
+        :class="[
+          config.gridConfig.date.columnSpan,
+          config.gridConfig.date.startColumn,
+        ]"
+      >
+        <div class="label-key">{{ getLabel('Date') }}</div>
+        <div
+          :class="[
+            config.valueClassMap['Date'],
+            'text-sm leading-relaxed whitespace-pre-line',
+          ]"
+        >
+          {{ getValue('Date') }}
+        </div>
+      </div>
+
+      <!-- Abbreviation section -->
+      <div
+        v-if="
+          processedResultData &&
+          processedResultData['Abbreviation'] &&
+          processedResultData['Abbreviation'] !== 'NA'
+        "
+        :class="[
+          config.gridConfig.abbreviation.columnSpan,
+          config.gridConfig.abbreviation.startColumn,
+        ]"
+      >
+        <div class="label-key">{{ getLabel('Abbreviation') }}</div>
+        <div
+          :class="[
+            config.valueClassMap['Abbreviation'],
+            'text-sm leading-relaxed whitespace-pre-line',
+          ]"
+        >
+          {{ getValue('Abbreviation') }}
+        </div>
+      </div>
     </div>
   </ResultCard>
 </template>

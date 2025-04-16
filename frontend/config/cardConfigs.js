@@ -123,11 +123,12 @@ export const courtDecisionCardConfig = {
     }
 }
 
+// Legal Instrument (Domestic Instrument) Card
 export const legislationCardConfig = {
     keyLabelPairs: [
         {
             key: 'Title (in English)',
-            label: 'Title',
+            label: 'Name',
             emptyValueBehavior: {
                 action: 'display',
                 fallback: 'No title available'
@@ -137,20 +138,36 @@ export const legislationCardConfig = {
             key: 'Abbreviation',
             label: 'Abbreviation',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No abbreviation available'
+                action: 'hide'
+            }
+        },
+        {
+            key: 'Date',
+            label: 'Date',
+            emptyValueBehavior: {
+                action: 'hide'
             }
         }
     ],
     valueClassMap: {
         'Title (in English)': 'result-value-medium',
-        'Abbreviation': 'result-value-medium'
+        'Abbreviation': 'result-value-small',
+        'Date': 'result-value-small'
     },
     gridConfig: {
         title: {
-            columnSpan: 'md:col-span-6',
+            columnSpan: 'md:col-span-4',
             startColumn: 'md:col-start-1'
+        },
+        date: {
+            columnSpan: 'md:col-span-1',
+            startColumn: 'md:col-start-6'
+        },
+        abbreviation: {
+            columnSpan: 'md:col-span-2',
+            startColumn: 'md:col-start-8'
         }
+        
     },
     processData: (data) => {
         if (!data) return null
