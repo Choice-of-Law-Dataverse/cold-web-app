@@ -102,15 +102,14 @@ export const jurisdictionConfig = {
             label: 'Specialists',
             emptyValueBehavior: {
                 action: 'display',
-                fallback: 'No specialists available'
+                fallback: 'No registered specialists — Contact us to become a specialist'
             }
         },
         {
             key: 'Literature',
             label: 'Related Literature',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No related literature available'
+                action: 'hide',
             }
         }
     ],
