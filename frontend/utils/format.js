@@ -16,4 +16,11 @@ export function formatDate(dateString) {
         month: 'long',
         day: 'numeric'
     })
-} 
+}
+
+export function extractYear(dateString) {
+    if (!dateString) return null;
+
+    const date = new Date(dateString);
+    return date.getFullYear().toString();
+}
