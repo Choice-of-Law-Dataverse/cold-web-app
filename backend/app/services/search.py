@@ -211,12 +211,7 @@ class SearchService:
                     OR di."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
-                    array_length(params.themes, 1) IS NULL 
-                    OR EXISTS (
-                        SELECT 1
-                        FROM unnest(params.themes) AS theme_filter
-                        WHERE di."Themes Name" ILIKE '%' || theme_filter || '%'
-                    )
+                    array_length(params.themes, 1) IS NULL
                 )
 
             UNION ALL
@@ -360,12 +355,7 @@ class SearchService:
                     OR di."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
-                    array_length(params.themes, 1) IS NULL 
-                    OR EXISTS (
-                        SELECT 1
-                        FROM unnest(params.themes) AS theme_filter
-                        WHERE di."Themes Name" ILIKE '%' || theme_filter || '%'
-                    )
+                    array_length(params.themes, 1) IS NULL
                 )
 
             UNION ALL
@@ -523,12 +513,7 @@ class SearchService:
                     OR di."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
-                    array_length(params.themes, 1) IS NULL 
-                    OR EXISTS (
-                        SELECT 1
-                        FROM unnest(params.themes) AS theme_filter
-                        WHERE di."Themes Name" ILIKE '%' || theme_filter || '%'
-                    )
+                    array_length(params.themes, 1) IS NULL
                 )
                 AND (
                     search @@ websearch_to_tsquery('english', '{search_string}')
@@ -693,12 +678,7 @@ class SearchService:
                     OR di."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
-                    array_length(params.themes, 1) IS NULL 
-                    OR EXISTS (
-                        SELECT 1
-                        FROM unnest(params.themes) AS theme_filter
-                        WHERE di."Themes Name" ILIKE '%' || theme_filter || '%'
-                    )
+                    array_length(params.themes, 1) IS NULL
                 )
                 AND (
                     search @@ websearch_to_tsquery('english', '{search_string}')
