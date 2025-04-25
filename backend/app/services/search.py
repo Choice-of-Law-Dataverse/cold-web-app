@@ -20,6 +20,10 @@ class SearchService:
             "Court Decisions",
             "Jurisdictions",
             "Literature",
+            "Regional Instruments",
+            "Regional Legal Provisions",
+            "International Instruments",
+            "International Legal Provisions",
         ]:
             final_results = self.db.get_entry_by_id(table, id)
             return filter_na(parse_results(final_results))
