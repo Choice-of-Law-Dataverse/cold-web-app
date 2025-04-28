@@ -1,9 +1,9 @@
 <template>
   <nav>
-    <div class="nav-wrapper relative">
-      <ul
-        class="flex items-center space-x-4 border-b border-gray-200 dark:border-gray-800 list-none overflow-x-auto scrollbar-hidden relative z-0"
-      >
+    <!-- 1) scroll on the wrapper now -->
+    <div class="nav-wrapper relative overflow-x-auto scrollbar-hidden">
+      <!-- 2) make the UL shrink‑wrap -->
+      <ul class="inline-flex items-center space-x-4 list-none relative z-0">
         <li
           v-for="link in links"
           :key="link.key"
@@ -54,15 +54,23 @@ const setActiveTab = (path) => {
 .nav-wrapper {
   position: relative !important;
   z-index: 0 !important;
+  /* scrolling lives here now */
+  overflow-x: auto;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.nav-wrapper::-webkit-scrollbar {
+  display: none;
 }
 
 ul {
-  overflow-x: auto;
+  /* shrink‑wrap when content is big, stretch to full width when content is small */
+  display: inline-flex;
+  width: max-content;
+  min-width: 100%; /* ← add this */
   white-space: nowrap;
   position: relative;
-  border-bottom: 0px solid var(--color-cold-gray);
-  -ms-overflow-style: none;
-  scrollbar-width: none;
+  border-bottom: 0 solid var(--color-cold-gray);
 }
 
 ul::before {
