@@ -13,7 +13,7 @@
               ? 'active font-bold text-cold-purple'
               : 'text-cold-night',
           ]"
-          @click="setActiveTab(link.key)"
+          @click="setActiveTab(link.path)"
         >
           {{ link.label }}
         </li>
@@ -23,27 +23,30 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import { aboutNavLinks } from '~/config/pageConfigs.js'
 
+// Accept custom links or use default aboutNavLinks
+const props = defineProps({
+  links: {
+    type: Array,
+    default: () => aboutNavLinks,
+  },
+})
+
+const links = props.links
 const router = useRouter()
 const route = useRoute()
 
-const links = [
-  { label: 'About CoLD', key: 'about-cold' },
-  { label: 'Team', key: 'team' },
-  { label: 'Supporters', key: 'supporters' },
-  { label: 'Endorsements', key: 'endorsements' },
-  { label: 'Press', key: 'press' },
-]
-
 const activeTab = computed(() => {
   const segment = route.path.split('/').pop()
-  return segment || 'about-cold'
+  return segment || links[0].key
 })
 
-const setActiveTab = (key) => {
-  router.push(`/about/${key}`)
+// Navigate to the selected link's path
+const setActiveTab = (path) => {
+  router.push(path)
 }
 </script>
 
