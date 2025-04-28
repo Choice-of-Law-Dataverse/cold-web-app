@@ -10,9 +10,7 @@
           <ContentDoc path="/methodology_intro" />
           <ContentDoc path="/methodology_search" />
           <ContentDoc path="/methodology_questionnaire_intro" />
-          <div class="questionnaire-wrapper">
-            <ContentDoc path="/methodology_questionnaire" />
-          </div>
+          <ContentDoc path="/methodology_questionnaire" />
         </div>
       </UCard>
     </div>
@@ -30,191 +28,81 @@ import { learnNavLinks } from '~/config/pageConfigs.js'
   padding-left: 12px !important;
 }
 
-/* override Tailwind‑Typography’s default decimals */
-::v-deep(.prose ol),
-::v-deep(.prose ol ol) {
-  list-style: none !important;
+/* Add consistent spacing between list items */
+::v-deep(ol > li),
+::v-deep(ol ol > li),
+::v-deep(ol ol ol > li),
+::v-deep(ol ol ol ol > li) {
+  margin-bottom: 24px !important; /* Adjust as needed for consistent spacing*/
 }
 
-/* base <ol> numbering */
-::v-deep(.prose ol) {
-  counter-reset: item;
-  padding-inline-start: 1rem !important;
-}
-::v-deep(.prose ol > li) {
-  counter-increment: item;
-  position: relative;
-  padding-inline-start: 1rem !important;
-}
-::v-deep(.prose ol > li)::before {
-  content: counter(item) '. ';
-  position: absolute;
-  left: 0;
+/* Ensure sub-lists are indented without extra spacing */
+::v-deep(ol ol),
+::v-deep(ol ol ol),
+::v-deep(ol ol ol ol) {
 }
 
-/* nested <ol> numbering – e.g. “2.1. …” */
-::v-deep(.prose ol ol) {
-  counter-reset: subitem;
-  padding-inline-start: 1rem !important;
-}
-::v-deep(.prose ol ol > li) {
-  counter-increment: subitem;
-  position: relative;
-  padding-inline-start: 1.6rem !important;
-}
-::v-deep(.prose ol ol > li)::before {
-  content: counter(item) '.' counter(subitem) '. ';
-  position: absolute;
-  left: 0;
-}
-
-/* third‐level nested <ol> – e.g. “1.1.1. …” */
-::v-deep(.prose ol ol ol) {
-  counter-reset: subsubitem;
-  padding-inline-start: 1rem !important;
-}
-::v-deep(.prose ol ol ol > li) {
-  counter-increment: subsubitem;
-  position: relative;
-  padding-inline-start: 2.6rem !important;
-}
-::v-deep(.prose ol ol ol > li)::before {
-  content: counter(item) '.' counter(subitem) '.' counter(subsubitem) '. ';
-  position: absolute;
-  left: 0;
-}
-
-/* only apply continuous numbering inside our wrapper */
-::v-deep(.questionnaire-wrapper .prose) {
-  counter-reset: globalItem;
-}
-
-/* strip default bullets/numbers */
-::v-deep(.questionnaire-wrapper .prose ul),
-::v-deep(.questionnaire-wrapper .prose ol) {
-  list-style: none !important;
-  margin: 0;
+/* Reset the counter for the top-level list */
+::v-deep(ol) {
+  counter-reset: list-counter; /* Initialize the counter */
+  list-style: none !important; /* Remove the default numbering */
+  margin-left: 0;
   padding-left: 0;
 }
 
-/* top‑level items bump the global counter */
-::v-deep(.questionnaire-wrapper .prose ol > li) {
-  counter-increment: globalItem;
-  position: relative;
-  padding-inline-start: 1.5rem !important;
-}
-::v-deep(.questionnaire-wrapper .prose ol > li)::before {
-  content: counter(globalItem) '. ';
-  position: absolute;
-  left: 0;
+::v-deep(ol > li) {
+  counter-increment: list-counter; /* Increment the counter for each list item */
 }
 
-/* second‑level inside each top item */
-::v-deep(.questionnaire-wrapper .prose ol > li > ol) {
-  counter-reset: subitem;
-  padding-inline-start: 1.5rem !important;
-}
-::v-deep(.questionnaire-wrapper .prose ol > li > ol > li) {
-  counter-increment: subitem;
-  position: relative;
-  padding-inline-start: 1.5rem;
-}
-::v-deep(.questionnaire-wrapper .prose ol > li > ol > li)::before {
-  content: counter(globalItem) '.' counter(subitem) '. ';
-  position: absolute;
-  left: 0;
+::v-deep(ol > li::before) {
+  content: counter(list-counter) '. '; /* Display the counter number */
+  font-weight: bold;
 }
 
-/* third‑level nesting */
-::v-deep(.questionnaire-wrapper .prose ol > li > ol > li > ol) {
-  counter-reset: subsubitem;
-  padding-inline-start: 1.5rem !important;
-}
-::v-deep(.questionnaire-wrapper .prose ol > li > ol > li > ol > li) {
-  counter-increment: subsubitem;
-  position: relative;
-  padding-inline-start: 1.5rem;
-}
-::v-deep(.questionnaire-wrapper .prose ol > li > ol > li > ol > li)::before {
-  content: counter(globalItem) '.' counter(subitem) '.' counter(subsubitem) '. ';
-  position: absolute;
-  left: 0;
+::v-deep(ol ol) {
+  counter-reset: sub-list-counter; /* Reset the sub-list counter */
+  list-style: none !important; /* Remove the default numbering */
+  margin-left: 24px; /* Indent for sub-lists */
 }
 
-/* Prevent any <ol> inside the wrapper from doing its own counter-reset */
-::v-deep(.questionnaire-wrapper .prose ol),
-::v-deep(.questionnaire-wrapper .prose ol ol),
-::v-deep(.questionnaire-wrapper .prose ol ol ol) {
-  counter-reset: none !important;
+::v-deep(ol ol > li) {
+  counter-increment: sub-list-counter; /* Increment the sub-list counter */
 }
 
-/* Now do exactly one reset for the whole doc */
-::v-deep(.questionnaire-wrapper .prose) {
-  counter-reset: globalItem;
+::v-deep(ol ol > li::before) {
+  content: counter(list-counter) '.' counter(sub-list-counter) '. '; /* Display hierarchical numbering */
+  font-weight: bold;
 }
 
-/* strip default bullets/numbers */
-::v-deep(.questionnaire-wrapper .prose ul),
-::v-deep(.questionnaire-wrapper .prose ol) {
-  list-style: none !important;
-  margin: 0;
-  padding-left: 0;
+::v-deep(ol ol ol) {
+  counter-reset: sub-sub-list-counter; /* Reset the sub-sub-list counter */
+  list-style: none !important; /* Remove the default numbering */
+  margin-left: 24px; /* Indent for sub-sub-lists */
 }
 
-/* top‑level items bump the global counter */
-::v-deep(.questionnaire-wrapper .prose ol > li) {
-  counter-increment: globalItem;
-  position: relative;
-  padding-inline-start: 1.5rem !important;
-}
-::v-deep(.questionnaire-wrapper .prose ol > li)::before {
-  content: counter(globalItem) '. ';
-  position: absolute;
-  left: 0;
+::v-deep(ol ol ol > li) {
+  counter-increment: sub-sub-list-counter; /* Increment the sub-sub-list counter */
 }
 
-/* second‑level inside each top item */
-::v-deep(.questionnaire-wrapper .prose ol > li > ol) {
-  counter-reset: subitem;
-  padding-inline-start: 1.5rem !important;
-}
-::v-deep(.questionnaire-wrapper .prose ol > li > ol > li) {
-  counter-increment: subitem;
-  position: relative;
-  padding-inline-start: 1.5rem;
-}
-::v-deep(.questionnaire-wrapper .prose ol > li > ol > li)::before {
-  content: counter(globalItem) '.' counter(subitem) '. ';
-  position: absolute;
-  left: 0;
+::v-deep(ol ol ol > li::before) {
+  content: counter(list-counter) '.' counter(sub-list-counter) '.'
+    counter(sub-sub-list-counter) '. '; /* Display hierarchical numbering */
+  font-weight: bold;
 }
 
-/* third‑level nesting */
-::v-deep(.questionnaire-wrapper .prose ol > li > ol > li > ol) {
-  counter-reset: subsubitem;
-  padding-inline-start: 1.5rem !important;
-}
-::v-deep(.questionnaire-wrapper .prose ol > li > ol > li > ol > li) {
-  counter-increment: subsubitem;
-  position: relative;
-  padding-inline-start: 1.5rem;
-}
-::v-deep(.questionnaire-wrapper .prose ol > li > ol > li > ol > li)::before {
-  content: counter(globalItem) '.' counter(subitem) '.' counter(subsubitem) '. ';
-  position: absolute;
-  left: 0;
+::v-deep(ol ol ol ol) {
+  counter-reset: sub-sub-sub-list-counter; /* Reset the fourth-level counter */
+  list-style: none !important; /* Remove the default numbering */
+  margin-left: 24px; /* Indent for sub-sub-sub-lists */
 }
 
-/* force all headings in the questionnaire back to flush left */
-::v-deep(
-  .questionnaire-wrapper .prose h1,
-  .questionnaire-wrapper .prose h2,
-  .questionnaire-wrapper .prose h3,
-  .questionnaire-wrapper .prose h4,
-  .questionnaire-wrapper .prose h5,
-  .questionnaire-wrapper .prose h6
-) {
-  margin-left: -1.6rem !important;
-  padding-left: 0 !important;
+::v-deep(ol ol ol ol > li) {
+  counter-increment: sub-sub-sub-list-counter; /* Increment the fourth-level counter */
+}
+
+::v-deep(ol ol ol ol > li::before) {
+  content: counter(list-counter) '.' counter(sub-list-counter) '.'
+    counter(sub-sub-list-counter) '.' counter(sub-sub-sub-list-counter) '. '; /* Display hierarchical numbering */
+  font-weight: bold;
 }
 </style>
