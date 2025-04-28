@@ -44,14 +44,15 @@
 
         <!-- Results Grid or Messages -->
         <div class="results-content mt-4">
-          <p v-if="loading">
+          <!-- Show loading skeleton only if loading and no results yet -->
+          <div v-if="loading && !allResults.length">
             <LoadingCard />
-          </p>
+          </div>
 
           <!-- No Results -->
-          <NoSearchResults v-else-if="!allResults.length" />
+          <NoSearchResults v-else-if="!loading && !allResults.length" />
 
-          <!-- Results Grid -->
+          <!-- Results Grid: always show if there are results -->
           <div v-else class="results-grid">
             <div
               v-for="(resultData, key) in allResults"
@@ -63,7 +64,12 @@
                 :resultData="resultData"
               />
             </div>
+            <!-- Show a loading spinner/card at the bottom if loading more -->
+            <div v-if="loading && allResults.length" class="text-center py-4">
+              <LoadingCard />
+            </div>
           </div>
+
           <div v-if="!loading" class="result-value-small text-center pt-4">
             <UButton
               to="/learn/methodology#How-the-Search-Works"
@@ -73,14 +79,14 @@
               >Learn how the search works</UButton
             >
           </div>
-          <div v-if="props.canLoadMore" class="mt-4 text-center">
+          <div v-if="props.canLoadMore && !loading" class="mt-4 text-center">
             <UButton
               native-type="button"
               @click.prevent="emit('load-more')"
               class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
               :disabled="props.loading"
             >
-              {{ props.loading ? 'Loading...' : 'Load more results' }}
+              Load more results
             </UButton>
           </div>
         </div>
