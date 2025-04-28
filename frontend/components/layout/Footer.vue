@@ -34,4 +34,8 @@
 a {
   font-weight: 600 !important;
 }
+
+h2 {
+  color: white !important;
+}
 </style>

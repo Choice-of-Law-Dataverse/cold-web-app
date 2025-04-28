@@ -65,7 +65,12 @@
           </div>
         </template>
         <template v-else>
-          <NuxtLink :to="getLink()"> Open </NuxtLink>
+          <NuxtLink :to="getLink()" class="label">
+            Open
+            <UIcon
+              name="i-material-symbols:play-arrow"
+              class="inline-block -mb-[1px]"
+          /></NuxtLink>
         </template>
       </div>
     </template>

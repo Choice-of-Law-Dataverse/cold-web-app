@@ -1,5 +1,5 @@
 <template>
-  <div ></div>
+  <div></div>
 </template>
 
 <script setup>
@@ -19,7 +19,7 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.main-conten {
+.main-content {
   max-width: var(--container-width);
   margin: 0 auto;
   width: 100%;
