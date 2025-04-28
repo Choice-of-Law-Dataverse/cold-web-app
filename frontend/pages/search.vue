@@ -15,16 +15,9 @@
       :total-matches="totalMatches"
       :loading="loading"
       v-model:filters="filter"
+      :canLoadMore="searchResults.length < totalMatches"
+      @load-more="loadMoreResults"
     />
-    <div v-if="searchResults.length < totalMatches" class="mt-4 text-center">
-      <button
-        @click="loadMoreResults"
-        class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
-        :disabled="loading"
-      >
-        {{ loading ? 'Loading...' : 'Load more results' }}
-      </button>
-    </div>
   </div>
 </template>
 
@@ -140,7 +133,7 @@ async function fetchSearchResults(query, filters, append = false) {
   const requestBody = {
     search_string: query,
     page: currentPage.value,
-    page_size: 2, // Hard code number of search results per page
+    page_size: 1, // Hard code number of search results per page
     filters: [],
   }
 

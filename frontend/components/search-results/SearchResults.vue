@@ -73,6 +73,16 @@
               >Learn how the search works</UButton
             >
           </div>
+          <div v-if="props.canLoadMore" class="mt-4 text-center">
+            <UButton
+              native-type="button"
+              @click.prevent="emit('load-more')"
+              class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              :disabled="props.loading"
+            >
+              {{ props.loading ? 'Loading...' : 'Load more results' }}
+            </UButton>
+          </div>
         </div>
       </div>
     </div>
@@ -80,7 +90,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 
 import ResultCard from './components/search-results/ResultCard.vue'
 import LegislationCard from './components/search-results/LegislationCard.vue'
@@ -124,14 +134,18 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  canLoadMore: {
+    type: Boolean,
+    default: false,
+  },
 })
+
+const emit = defineEmits(['update:filters', 'load-more'])
 
 // Gather all results
 const allResults = computed(() => {
   return Object.values(props.data?.tables || {}) // Fallback to an empty object
 })
-
-const emit = defineEmits(['update:filters'])
 
 // Jurisdiction options state
 const jurisdictionOptions = ref(['All Jurisdictions'])
