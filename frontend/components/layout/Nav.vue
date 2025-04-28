@@ -90,10 +90,13 @@
         <!-- Navigation Links (Always visible) -->
         <div v-if="!isExpanded" class="space-x-3 sm:space-x-6">
           <ULink
-            v-for="(link, index) in links"
-            :key="index"
+            v-for="(link, i) in links"
+            :key="i"
             :to="link.to"
-            :class="['custom-nav-links', { active: route.path === link.to }]"
+            :class="[
+              'custom-nav-links',
+              { active: route.path.startsWith(link.to) },
+            ]"
           >
             <span>{{ link.label }}</span>
           </ULink>
@@ -108,6 +111,21 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import eventBus from '@/eventBus'
 import jurisdictionsData from '@/assets/jurisdictions-data.json'
+// import your section‐nav configs:
+import { aboutNavLinks, learnNavLinks } from '~/config/pageConfigs.js'
+
+const router = useRouter()
+const route = useRoute()
+
+// helper to pull off “/about” or “/learn”
+// from the first child‐link’s path
+const basePath = (arr) => `/${arr[0].path.split('/')[1]}`
+
+const links = [
+  { label: 'About', to: basePath(aboutNavLinks) },
+  { label: 'Learn', to: basePath(learnNavLinks) },
+  { label: 'Contact', to: '/contact' },
+]
 
 // Reactive state
 const searchText = ref('')
@@ -116,16 +134,7 @@ const isSmallScreen = ref(false)
 const suggestions = ref([]) // Add suggestions state
 const showSuggestions = ref(false) // Add visibility state for suggestions
 
-const router = useRouter()
-const route = useRoute()
-
 const searchInput = ref(null)
-
-const links = [
-  { label: 'About', to: '/about' },
-  { label: 'Learn', to: '/learn/open-educational-resources' },
-  { label: 'Contact', to: '/contact' },
-]
 
 // Add function to update suggestions
 function updateSuggestions() {
@@ -388,7 +397,6 @@ a {
 :deep(.custom-nav-links) {
   color: var(--color-cold-night) !important; /* Apply custom color */
   text-decoration: none !important; /* Remove underline */
-  /*margin-left: 48px;*/
   font-weight: 600 !important;
 }
 
