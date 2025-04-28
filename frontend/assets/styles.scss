@@ -50,7 +50,7 @@ h1 {
 
 h2 {
   font-size: 20px !important;
-  font-weight: 500 !important; // Medium
+  font-weight: 600 !important; // Medium
   color: var(--color-cold-night) !important;
 }
 
@@ -107,6 +107,12 @@ li::marker {
   color: var(--color-cold-night) !important;
 }
 
+.prose strong,
+.prose b {
+  color: inherit; /* Inherit the color from the parent element */
+  font-weight: 600 !important; // Medium
+}
+
 // Labels
 .label {
   font-size: 12px !important;
@@ -128,7 +134,7 @@ li::marker {
 
 .label-key-provision-toggle {
   @extend .label-key;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   text-transform: capitalize;
   font-size: 10px !important;
 }
