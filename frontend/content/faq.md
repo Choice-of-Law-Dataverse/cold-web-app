@@ -54,4 +54,4 @@ Overriding mandatory rules can be defined as mandatory rules that are crucial fo
 
 Public policy, in the context of private international law, typically refers to a nation's core legal principles that protect fundamental values and interests, which can override the application of foreign laws or judgments that contravene these principles.
 
-<a href="/learn?tab=methodology#questionnaire" target="_blank">Learn more about our grid of analysis</a>
+<a href="/learn/methodology#questionnaire" target="_blank">Learn more about our grid of analysis</a>

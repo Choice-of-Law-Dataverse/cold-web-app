@@ -97,7 +97,7 @@ class Database:
 
         id_columns = {
             "Answers": "ID",
-            "HCCH Comparison": "ID",
+            "HCCH Answers": "ID",
             "Domestic Instruments": "ID",
             "Domestic Legal Provisions": "Name",
             "International Legal Provisions": "ID",

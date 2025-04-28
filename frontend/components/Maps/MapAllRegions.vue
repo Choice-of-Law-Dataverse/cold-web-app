@@ -63,7 +63,7 @@ defineProps({
 
 // Example function for handling GeoJSON features
 const onEachFeature = (feature, layer) => {
-  const isoCode = feature.properties.iso_a2_eh // Get the ISO2 code
+  const isoCode = feature.properties.iso_a3_eh // Get the ISO3 code
   const countryName = feature.properties.name // Get the country's name
   const isCovered = coveredCountries.value.includes(isoCode)
 
