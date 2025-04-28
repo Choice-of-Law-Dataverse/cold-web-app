@@ -102,7 +102,7 @@ class Database:
             "Domestic Legal Provisions": "Name",
             "Regional Instruments": "ID",
             "Regional Legal Provisions": "ID",
-            "International Instruments": "Name",
+            "International Instruments": "ID",
             "International Legal Provisions": "ID",
             "Court Decisions": "ID",
             "Jurisdictions": "Alpha-3 Code",
