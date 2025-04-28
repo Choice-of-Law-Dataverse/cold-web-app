@@ -127,7 +127,6 @@ async function fetchSearchResults(query, filters, append = false) {
   }
 
   loading.value = true
-  searchResults.value = []
   apiError.value = null // Reset any previous errors
 
   const requestBody = {
