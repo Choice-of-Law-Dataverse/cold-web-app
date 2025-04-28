@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import AboutNav from '~/components/layout/AboutNav.vue'
+import AboutNav from '~/components/layout/SectionNav.vue'
 </script>
 
 <style scoped>
