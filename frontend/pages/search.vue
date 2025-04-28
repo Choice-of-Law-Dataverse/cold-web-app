@@ -25,15 +25,6 @@
         {{ loading ? 'Loading...' : 'Load more results' }}
       </button>
     </div>
-    <div v-if="!loading" class="result-value-small text-center pt-4">
-      <UButton
-        to="/learn?tab=methodology#how-the-search-works"
-        variant="link"
-        icon="i-material-symbols:arrow-forward"
-        trailing
-        >Learn how the search works</UButton
-      >
-    </div>
   </div>
 </template>
 
@@ -149,7 +140,7 @@ async function fetchSearchResults(query, filters, append = false) {
   const requestBody = {
     search_string: query,
     page: currentPage.value,
-    page_size: 1, // Hard code number of search results per page
+    page_size: 2, // Hard code number of search results per page
     filters: [],
   }
 
@@ -215,14 +206,17 @@ async function fetchSearchResults(query, filters, append = false) {
     requestBody.browser_info_hint = userInfo || {}
     requestBody.hostname = userHost
 
-    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(requestBody),
-    })
+    const response = await fetch(
+      `${config.public.apiBaseUrlPagination}/search/`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      }
+    )
 
     if (!response.ok) {
       // Handle 5xx errors
