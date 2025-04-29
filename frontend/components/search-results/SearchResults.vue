@@ -44,14 +44,15 @@
 
         <!-- Results Grid or Messages -->
         <div class="results-content mt-4">
-          <p v-if="loading">
+          <!-- Show loading skeleton only if loading and no results yet -->
+          <div v-if="loading && !allResults.length">
             <LoadingCard />
-          </p>
+          </div>
 
           <!-- No Results -->
-          <NoSearchResults v-else-if="!allResults.length" />
+          <NoSearchResults v-else-if="!loading && !allResults.length" />
 
-          <!-- Results Grid -->
+          <!-- Results Grid: always show if there are results -->
           <div v-else class="results-grid">
             <div
               v-for="(resultData, key) in allResults"
@@ -63,15 +64,41 @@
                 :resultData="resultData"
               />
             </div>
+            <!-- Show a loading spinner/card at the bottom if loading more -->
+            <div v-if="loading && allResults.length" class="text-center py-4">
+              <LoadingCard />
+            </div>
           </div>
-          <div v-if="!loading" class="result-value-small text-center pt-4">
+
+          <div
+            v-if="props.canLoadMore && !loading"
+            class="mt-16 mb-4 text-center"
+          >
             <UButton
-              to="/learn/methodology#How-the-Search-Works"
+              native-type="button"
+              @click.prevent="emit('load-more')"
+              class="suggestion-button"
               variant="link"
-              icon="i-material-symbols:arrow-forward"
-              trailing
-              >Learn how the search works</UButton
+              icon="i-material-symbols:arrow-cool-down"
+              :disabled="props.loading"
             >
+              Load More Results
+            </UButton>
+          </div>
+
+          <div v-if="!loading" class="result-value-small text-center pt-4">
+            <UButton to="/learn/methodology#How-the-Search-Works" variant="link"
+              >Learn How the Search Works</UButton
+            >
+            <UIcon
+              name="i-material-symbols:play-arrow"
+              class="inline-block ml-[-6px]"
+              style="
+                color: var(--color-cold-purple);
+                position: relative;
+                top: 2px;
+              "
+            />
           </div>
         </div>
       </div>
@@ -80,7 +107,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 
 import ResultCard from './components/search-results/ResultCard.vue'
 import LegislationCard from './components/search-results/LegislationCard.vue'
@@ -124,14 +151,18 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  canLoadMore: {
+    type: Boolean,
+    default: false,
+  },
 })
+
+const emit = defineEmits(['update:filters', 'load-more'])
 
 // Gather all results
 const allResults = computed(() => {
   return Object.values(props.data?.tables || {}) // Fallback to an empty object
 })
-
-const emit = defineEmits(['update:filters'])
 
 // Jurisdiction options state
 const jurisdictionOptions = ref(['All Jurisdictions'])
