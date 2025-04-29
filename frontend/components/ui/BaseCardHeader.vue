@@ -186,11 +186,9 @@ const formattedTheme = computed(() => {
     return props.formattedTheme
   }
 
-  // Handle literature's Manual Tags
-  if (props.cardType === 'Literature' && props.resultData['Manual Tags']) {
-    return props.resultData['Manual Tags']
-      .split(';')
-      .map((theme) => theme.trim())
+  // Handle literature's Themes
+  if (props.cardType === 'Literature' && props.resultData['Themes']) {
+    return props.resultData['Themes'].split(',').map((theme) => theme.trim())
   }
 
   // Handle other types
