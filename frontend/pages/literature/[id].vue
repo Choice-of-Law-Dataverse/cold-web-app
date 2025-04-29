@@ -45,6 +45,16 @@
         </p>
       </div>
     </template>
+    <template #open-access-url="{ value }">
+      <div v-if="value" class="field-container url-field">
+        <p class="label field-label">Open Access URL</p>
+        <p class="result-value-small field-value">
+          <a :href="value" target="_blank" rel="noopener noreferrer">
+            {{ value }}
+          </a>
+        </p>
+      </div>
+    </template>
   </BaseDetailLayout>
 </template>
 

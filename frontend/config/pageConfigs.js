@@ -65,6 +65,13 @@ export const literatureConfig = {
             }
         },
         {
+            key: 'Open Access URL',
+            label: 'Open Access URL',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
             key: 'Abstract Note',
             label: 'Abtract',
             emptyValueBehavior: {
