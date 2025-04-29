@@ -98,6 +98,13 @@ export const literatureConfig = {
 export const jurisdictionConfig = {
     keyLabelPairs: [
         {
+            key: 'Jurisdiction Summary',
+            label: 'Summary',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
             key: 'Jurisdictional Differentiator',
             label: 'Jurisdictional Differentiator',
             emptyValueBehavior: {
@@ -129,6 +136,7 @@ export const jurisdictionConfig = {
         }
     ],
     valueClassMap: {
+        'Jurisdiction Summary': 'result-value-small',
         'Jurisdictional Differentiator': 'result-value-small',
         'Legal Family': 'result-value-small',
         Literature: 'result-value-small'
