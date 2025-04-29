@@ -123,6 +123,7 @@ export function useJurisdiction() {
                 Name: data?.Name || 'N/A',
                 'Jurisdictional Differentiator':
                     data?.['Jurisdictional Differentiator'] || 'N/A',
+                'Legal Family': data?.['Legal Family'] || 'N/A',
                 Specialists: specialists.value // Include specialists in the data
             }
 

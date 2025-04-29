@@ -105,6 +105,13 @@ export const jurisdictionConfig = {
             }
         },
         {
+            key: 'Legal Family',
+            label: 'Legal Family',
+            emptyValueBehavior: {
+                action: 'hide'
+            }
+        },
+        {
             key: 'Specialist',
             label: 'Specialists',
             emptyValueBehavior: {
@@ -123,6 +130,7 @@ export const jurisdictionConfig = {
     ],
     valueClassMap: {
         'Jurisdictional Differentiator': 'result-value-small',
+        'Legal Family': 'result-value-small',
         Literature: 'result-value-small'
     }
 }
