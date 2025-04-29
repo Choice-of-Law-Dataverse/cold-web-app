@@ -70,24 +70,35 @@
             </div>
           </div>
 
-          <div v-if="!loading" class="result-value-small text-center pt-4">
-            <UButton
-              to="/learn/methodology#How-the-Search-Works"
-              variant="link"
-              icon="i-material-symbols:arrow-forward"
-              trailing
-              >Learn how the search works</UButton
-            >
-          </div>
-          <div v-if="props.canLoadMore && !loading" class="mt-4 text-center">
+          <div
+            v-if="props.canLoadMore && !loading"
+            class="mt-16 mb-4 text-center"
+          >
             <UButton
               native-type="button"
               @click.prevent="emit('load-more')"
-              class="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+              class="suggestion-button"
+              variant="link"
+              icon="i-material-symbols:arrow-cool-down"
               :disabled="props.loading"
             >
-              Load more results
+              Load More Results
             </UButton>
+          </div>
+
+          <div v-if="!loading" class="result-value-small text-center pt-4">
+            <UButton to="/learn/methodology#How-the-Search-Works" variant="link"
+              >Learn How the Search Works</UButton
+            >
+            <UIcon
+              name="i-material-symbols:play-arrow"
+              class="inline-block ml-[-6px]"
+              style="
+                color: var(--color-cold-purple);
+                position: relative;
+                top: 2px;
+              "
+            />
           </div>
         </div>
       </div>
