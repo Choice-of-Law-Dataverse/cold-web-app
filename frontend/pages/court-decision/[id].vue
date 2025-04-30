@@ -1,96 +1,108 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <div class="col-span-12">
-        <DetailDisplay
-          :loading="loading"
-          :resultData="courtDecision"
-          :keyLabelPairs="keyLabelPairs"
-          :valueClassMap="valueClassMap"
-          formattedSourceTable="Court Decisions"
-        >
-          <template #related-literature>
-            <RelatedLiterature
-              :themes="courtDecision?.Themes || ''"
-              :valueClassMap="valueClassMap['Related Literature']"
-            />
-          </template>
-        </DetailDisplay>
-      </div>
-    </div>
-  </main>
+  <BaseDetailLayout
+    :loading="loading"
+    :resultData="modifiedCourtDecision"
+    :keyLabelPairs="computedKeyLabelPairs"
+    :valueClassMap="valueClassMap"
+    sourceTable="Court Decisions"
+  >
+    <template #related-literature="{ value }">
+      <RelatedLiterature
+        :themes="themes"
+        :valueClassMap="valueClassMap['Related Literature']"
+        :useId="false"
+        class="!mt-2"
+      />
+    </template>
+  </BaseDetailLayout>
+
+  <!-- Error Alert -->
+  <UAlert
+    v-if="error"
+    type="error"
+    class="mx-auto mt-4"
+    style="max-width: var(--container-width)"
+  >
+    {{ error }}
+  </UAlert>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import DetailDisplay from '~/components/DetailDisplay.vue'
+<script setup>
+import { computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
+import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
+import { useApiFetch } from '~/composables/useApiFetch'
+import { useDetailDisplay } from '~/composables/useDetailDisplay'
+import { courtDecisionConfig } from '~/config/pageConfigs'
+import { formatDate } from '~/utils/format.js'
 
-const route = useRoute() // Access the route to get the ID param
-const courtDecision = ref(null) // Store fetched court decision data
-const loading = ref(true) // Track loading state
+const route = useRoute()
+const router = useRouter()
+const { loading, error, data: courtDecision, fetchData } = useApiFetch()
 
-const config = useRuntimeConfig()
+const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
+  courtDecision,
+  courtDecisionConfig
+)
 
-async function fetchCourtDecision(id: string) {
-  const jsonPayload = {
-    table: 'Court Decisions',
-    id: id,
+// Debug the court decision data and configuration
+watch(courtDecision, (newValue) => {
+  if (newValue) {
   }
+})
 
+const themes = computed(() => {
+  if (!courtDecision.value) return ''
+  const themesData = courtDecision.value['Themes']
+  return themesData || ''
+})
+
+const modifiedCourtDecision = computed(() => {
+  if (!courtDecision.value) return null
+  return {
+    ...courtDecision.value,
+    'Case Title':
+      courtDecision.value['Case Title'] === 'Not found'
+        ? courtDecision.value['Case Citation']
+        : courtDecision.value['Case Title'],
+    'Related Literature': themes.value,
+    'Case Citation': courtDecision.value['Case Citation'],
+    'Publication Date ISO': formatDate(
+      courtDecision.value['Publication Date ISO']
+    ),
+  }
+})
+
+const fetchCourtDecision = async () => {
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonPayload),
+    await fetchData({
+      table: 'Court Decisions',
+      id: route.params.id,
     })
-
-    if (!response.ok) throw new Error('Failed to fetch court decision')
-
-    courtDecision.value = await response.json()
-  } catch (error) {
-    console.error('Error fetching court decision:', error)
-  } finally {
-    loading.value = false
+  } catch (err) {
+    if (err.isNotFound) {
+      router.push({
+        path: '/error',
+        query: { message: `Court decision not found` },
+      })
+    } else {
+      console.error('Failed to fetch court decision:', err)
+    }
   }
-}
-
-// Define the keys and labels for dynamic rendering
-const keyLabelPairs = [
-  { key: 'Case Title', label: 'Case Title' },
-  { key: 'Abstract', label: 'Abstract' },
-  {
-    key: 'Relevant Facts',
-    label: 'Relevant Facts',
-  },
-  // {
-  //   key: 'Relevant rules of law involved',
-  //   label: 'Relevant Rules of Law Involved',
-  // },
-  { key: 'Choice of Law Issue', label: 'Choice of Law Issue' },
-  { key: "Court's Position", label: "Court's Position" },
-  {
-    key: 'Text of the Relevant Legal Provisions',
-    label: 'Text of the Relevant Legal Provisions',
-  },
-  { key: 'Related Literature', label: '' },
-]
-
-const valueClassMap = {
-  'Case Title': 'result-value-medium',
-  Abstract: 'result-value-small',
-  'Relevant Facts': 'result-value-small',
-  //'Relevant rules of law involved': 'result-value-small',
-  'Choice of Law Issue': 'result-value-small',
-  "Court's Position": 'result-value-small',
-  'Text of the Relevant Legal Provisions': 'result-value-small',
 }
 
 onMounted(() => {
-  const id = route.params.id as string // Get ID from the route
-  fetchCourtDecision(id)
+  fetchCourtDecision()
 })
+
+// Refetch if the route ID changes
+watch(
+  () => route.params.id,
+  (newId) => {
+    if (newId) {
+      fetchCourtDecision()
+    }
+  }
+)
 </script>

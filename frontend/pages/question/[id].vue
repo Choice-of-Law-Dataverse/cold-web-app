@@ -10,48 +10,43 @@
           formattedSourceTable="Question"
         >
           <!-- Custom rendering for Legal provision articles -->
-          <template #legal-provision-articles="{ value }">
-            <QuestionSourceList
-              :sources="
-                [
-                  ...(value ||
-                  processedAnswerData?.['Legislation-ID'] ||
-                  processedAnswerData?.['More Information']
-                    ? [
-                        value ||
-                          processedAnswerData?.['Legislation-ID'] ||
-                          processedAnswerData?.['More Information'],
-                      ]
-                    : []),
-                ].filter(Boolean)
-              "
-              :fallbackData="processedAnswerData"
-              :valueClassMap="valueClassMap"
-              :noLinkList="[processedAnswerData?.['More Information']]"
-              :fetchOupChapter="true"
-              :fetchPrimarySource="true"
-            />
+          <template #domestic-legal-provisions="{ value }">
+            <section>
+              <span class="label">Source</span>
+              <QuestionSourceList
+                :sources="
+                  [
+                    ...(value ||
+                    processedAnswerData?.['Domestic Legal Provisions']
+                      ? [
+                          value ||
+                            processedAnswerData?.['Domestic Legal Provisions'],
+                        ]
+                      : []),
+                  ].filter(Boolean)
+                "
+                :fallbackData="processedAnswerData"
+                :valueClassMap="valueClassMap"
+                :fetchOupChapter="true"
+                :fetchPrimarySource="true"
+              />
+            </section>
           </template>
 
-          <!-- Custom rendering for Case ID -->
-          <template #case-id="{ value }">
-            <div>
-              <ul v-if="Array.isArray(value) && value.length">
-                <li
-                  v-for="(caseId, index) in value"
-                  :key="index"
-                  :class="valueClassMap['Case ID'] || 'result-value-small'"
-                >
-                  <CourtCaseLink :caseId="caseId" />
-                </li>
-              </ul>
-
-              <div v-else>
-                <span :class="valueClassMap['Case ID'] || 'result-value-small'">
-                  N/A
-                </span>
-              </div>
-            </div>
+          <!-- Custom rendering for Court Decisions ID -->
+          <template #court-decisions-id="{ value }">
+            <section id="related-court-decisions">
+              <span class="label">Related Court Decisions</span>
+              <CourtDecisionRenderer
+                :value="value"
+                :valueClassMap="valueClassMap['Court Decisions ID']"
+                :emptyValueBehavior="
+                  filteredKeyLabelPairs.find(
+                    (pair) => pair.key === 'Court Decisions ID'
+                  )?.emptyValueBehavior
+                "
+              />
+            </section>
           </template>
 
           <!-- Related Literature -->
@@ -62,95 +57,73 @@
             />
           </template>
         </DetailDisplay>
+
+        <!-- Error State -->
+        <div v-if="error" class="text-red-500 mt-4">
+          {{ error }}
+        </div>
       </div>
     </div>
   </main>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import DetailDisplay from '~/components/DetailDisplay.vue'
-import CourtCaseLink from '~/components/CourtCaseLink.vue'
+<script setup>
+import { onMounted, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
+import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
+import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
+import QuestionSourceList from '~/components/sources/QuestionSourceList.vue'
+import { useQuestion } from '~/composables/useQuestion'
 
-const route = useRoute() // Access the route to get the ID param
-const answerData = ref(null) // Store fetched court decision data
-const loading = ref(true) // Track loading state
+const route = useRoute()
+const router = useRouter()
+const {
+  loading,
+  error,
+  processedAnswerData,
+  filteredKeyLabelPairs,
+  valueClassMap,
+  fetchAnswer,
+} = useQuestion()
 
-const config = useRuntimeConfig()
-
-async function fetchAnswer(id: string) {
-  const jsonPayload = {
-    table: 'Answers',
-    id: id,
-  }
-
+onMounted(async () => {
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonPayload),
-    })
-
-    if (!response.ok) throw new Error('Failed to fetch answer')
-
-    answerData.value = await response.json()
-  } catch (error) {
-    console.error('Error fetching answer:', error)
-  } finally {
-    loading.value = false
-  }
-}
-
-// Define the keys and labels for dynamic rendering
-const keyLabelPairs = [
-  { key: 'Question', label: 'Question' },
-  { key: 'Answer', label: 'Answer' },
-  {
-    key: 'Legal Provision Articles',
-    label: 'Source',
-  },
-  { key: 'Case ID', label: 'related cases' },
-  { key: 'Related Literature', label: '' },
-]
-
-const valueClassMap = {
-  Question: 'result-value-medium',
-  Answer: 'result-value-large',
-  'Legal provision articles': 'result-value-small',
-  'Case ID': 'result-value-small',
-}
-
-// Preprocess data to handle custom rendering cases
-const processedAnswerData = computed(() => {
-  if (!answerData.value) return null
-  return {
-    ...answerData.value,
-    'Legal provision articles':
-      answerData.value['Legal provision articles'] || '',
-    'Case ID': answerData.value['Case ID']
-      ? answerData.value['Case ID'].split(',').map((caseId) => caseId.trim())
-      : [],
-  }
-})
-
-const filteredKeyLabelPairs = computed(() => {
-  if (processedAnswerData.value?.Answer === 'No data') {
-    return keyLabelPairs.filter(
-      (pair) => pair.key !== 'Legal provision articles'
-    )
-  }
-  return keyLabelPairs
-})
-
-onMounted(() => {
-  const id = route.params.id as string
-  fetchAnswer(id).then(() => {
-    if (answerData.value?.Themes) {
+    const id = route.params.id
+    await fetchAnswer(id)
+    // Wait for the DOM to update then scroll if the hash is present
+    await nextTick()
+    if (window.location.hash === '#related-court-decisions') {
+      const target = document.getElementById('related-court-decisions')
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' })
+      }
     }
-  })
+  } catch (err) {
+    if (err.isNotFound) {
+      router.push({
+        path: '/error',
+        query: { message: `${err.table} not found` },
+      })
+    } else {
+      console.error('Error fetching question:', err)
+    }
+  }
 })
 </script>
+
+<style>
+/* Harmonized spacing for all .label elements */
+/* .label {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+} */
+
+/* Adjust section spacing to match label spacing */
+/* #related-court-decisions {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+} */
+</style>

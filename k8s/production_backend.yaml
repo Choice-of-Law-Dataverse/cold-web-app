@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: simonweigold/cold-fastapi-backend:dev
+          image: simonweigold/cold-fastapi-backend:prod-20250314
           imagePullPolicy: Always
           ports:
             - containerPort: 8000

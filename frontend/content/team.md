@@ -32,7 +32,7 @@ Under the supervision of Prof. Daniel Girsberger and Agatha Brandão, <a href="h
 
 ## Partners
 
-Prof. Geneviève Saumier, McGill / Université de Montréal  
+Prof. Geneviève Saumier, Université de Montréal  
 Prof. Jan L Neels, University of Johannesburg  
 Prof. Eesa A Fredericks, University of Johannesburg
 

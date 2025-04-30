@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: staging-frontend
-          image: simonweigold/cold-nuxt-frontend:alpha-20250227
+          image: simonweigold/cold-nuxt-frontend:alpha-20250314
           imagePullPolicy: Always
           ports:
             - containerPort: 3000

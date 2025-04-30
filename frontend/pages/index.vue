@@ -22,7 +22,6 @@
           </h2>
         </div>
 
-        <!-- Popular Searches -->
         <div class="col-span-12">
           <PopularSearches />
         </div>
@@ -32,7 +31,9 @@
         <div class="col-span-12">
           <CountrySelectMenu />
         </div>
-
+        <div class="col-span-12">
+          <RecentDomesticInstruments />
+        </div>
         <div class="col-span-12 md:col-span-8">
           <PlotCourtDecisionsJurisdiction />
         </div>
@@ -69,7 +70,7 @@
             title="Access New Features"
             buttonText="Become a Beta Test User"
             :buttonLink="links.beta"
-            iconName="i-material-symbols:cruelty-free"
+            iconName="i-hugeicons:test-tube-01"
           />
         </div>
       </div>
@@ -78,22 +79,13 @@
 </template>
 
 <script setup>
-import PopularSearches from '~/components/PopularSearches.vue'
-import JurisdictionMap from '~/components/JurisdictionMap.vue'
-import CountrySelectMenu from '~/components/TempJurisdictionPicker.vue'
-import PlotCourtDecisionsJurisdiction from '~/components/PlotCourtDecisionsJurisdiction.vue'
-import ConnectCard from '~/components/LandingPage/ConnectCard.vue'
-
+import PopularSearches from '~/components/landing-page/PopularSearches.vue'
+import JurisdictionMap from '~/components/landing-page/JurisdictionMap.vue'
+import CountrySelectMenu from '~/components/landing-page/TempJurisdictionPicker.vue'
+import PlotCourtDecisionsJurisdiction from '~/components/landing-page/PlotCourtDecisionsJurisdiction.vue'
+import ConnectCard from '~/components/landing-page/ConnectCard.vue'
 import { externalLinks } from '~/utils/externalLinks'
+import RecentDomesticInstruments from '~/components/landing-page/RecentDomesticInstruments.vue'
+import LoadingLandingPageCard from '~/components/layout/LoadingLandingPageCard.vue'
 const links = externalLinks
 </script>
-
-<style scoped>
-/* h1 {
-  margin-bottom: 12px;
-}
-
-h2 {
-  margin-bottom: 42px;
-} */
-</style>
