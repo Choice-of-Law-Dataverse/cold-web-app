@@ -17,7 +17,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBaseUrl: process.env.API_BASE_URL,
-      apiBaseUrlPagination: process.env.API_BASE_URL_PAGINATION,
+      apiBaseUrlPagination: process.env.API_BASE_URL,
       FASTAPI: process.env.FASTAPI_API_TOKEN
     }
   },
