@@ -198,17 +198,14 @@ async function fetchSearchResults(query, filters, append = false) {
     requestBody.browser_info_hint = userInfo || {}
     requestBody.hostname = userHost
 
-    const response = await fetch(
-      `${config.public.apiBaseUrlPagination}/search/`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(requestBody),
-      }
-    )
+    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${config.public.FASTAPI}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(requestBody),
+    })
 
     if (!response.ok) {
       // Handle 5xx errors
