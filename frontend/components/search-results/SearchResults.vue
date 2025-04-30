@@ -61,11 +61,7 @@
             >
               <component
                 :is="getResultComponent(resultData.source_table)"
-                :key="key"
                 :resultData="resultData"
-                :formattedTheme="
-                  (resultData.Themes || '').split(',').map((t) => t.trim())
-                "
               />
             </div>
             <!-- Show a loading spinner/card at the bottom if loading more -->

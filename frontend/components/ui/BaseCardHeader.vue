@@ -187,16 +187,8 @@ const formattedTheme = computed(() => {
   }
 
   // Handle literature's Themes
-  // if (props.cardType === 'Literature' && props.resultData['Themes']) {
-  //   return props.resultData['Themes'].split(',').map((theme) => theme.trim())
-  // }
-
-  if (props.cardType === 'Literature') {
-    const raw = props.resultData['Themes'] ?? props.resultData['Themes'] ?? ''
-    return raw
-      .split(',')
-      .map((t) => t.trim())
-      .filter(Boolean)
+  if (props.cardType === 'Literature' && props.resultData['Themes']) {
+    return props.resultData['Themes'].split(',').map((theme) => theme.trim())
   }
 
   // Handle other types

@@ -134,7 +134,6 @@ const props = defineProps({
     type: Object,
     required: true,
   },
-  formattedTheme: { type: Array, default: () => [] },
 })
 
 const config = literatureCardConfig
