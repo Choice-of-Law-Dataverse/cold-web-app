@@ -8,10 +8,19 @@
   >
     <template #date="{ value }">
       <div v-if="value">
-        <p class="label-key mt-8 mb-2">Date</p>
+        <p class="label-key mb-2">Date</p>
         <p :class="valueClassMap['Date']">
           {{ formatDate(value) }}
         </p>
+      </div>
+    </template>
+
+    <template #url="{ value }">
+      <div v-if="value">
+        <p class="label-key mb-2">Link</p>
+        <a :href="value" target="_blank" rel="noopener noreferrer">
+          {{ value }}
+        </a>
       </div>
     </template>
   </BaseDetailLayout>
