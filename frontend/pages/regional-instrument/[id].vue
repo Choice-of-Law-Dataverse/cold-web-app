@@ -23,6 +23,19 @@
         </a>
       </div>
     </template>
+
+    <template #related-literature>
+      <section class="mt-8">
+        <span class="label">Related Literature</span>
+        <p class="text-gray-300 mt-2">Coming soon</p>
+      </section>
+    </template>
+    <template #selected-provisions>
+      <section class="mt-8">
+        <span class="label">Selected Provisions</span>
+        <p class="text-gray-300 mt-2">Coming soon</p>
+      </section>
+    </template>
   </BaseDetailLayout>
 </template>
 
