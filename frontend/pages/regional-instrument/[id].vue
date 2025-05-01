@@ -14,32 +14,7 @@ import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
-
-// Minimal config for regional instruments
-const regionalInstrumentConfig = {
-  keyLabelPairs: [
-    {
-      key: 'Name',
-      label: 'Name',
-      emptyValueBehavior: { action: 'display', fallback: 'No name available' },
-    },
-    {
-      key: 'Date',
-      label: 'Date',
-      emptyValueBehavior: { action: 'display', fallback: 'No date available' },
-    },
-    {
-      key: 'URL',
-      label: 'URL',
-      emptyValueBehavior: { action: 'display', fallback: 'No URL available' },
-    },
-  ],
-  valueClassMap: {
-    Name: 'result-value-medium',
-    Date: 'result-value-small',
-    URL: 'result-value-small',
-  },
-}
+import { regionalInstrumentConfig } from '~/config/pageConfigs'
 
 const route = useRoute()
 const router = useRouter()
@@ -53,9 +28,9 @@ const processedRegionalInstrument = computed(() => {
   if (!regionalInstrument.value) return null
   return {
     ...regionalInstrument.value,
-    Name:
-      regionalInstrument.value['Name'] ||
-      regionalInstrument.value['Title (in English)'],
+    'Title (in English)':
+      regionalInstrument.value['Title (in English)'] ||
+      regionalInstrument.value['Name'],
     Date: regionalInstrument.value['Date'],
     URL: regionalInstrument.value['URL'] || regionalInstrument.value['Link'],
   }

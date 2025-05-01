@@ -277,6 +277,49 @@ export const legalInstrumentConfig = {
     }
 }
 
+// Regional Instrument Page
+export const regionalInstrumentConfig = {
+    keyLabelPairs: [
+        {
+            key: 'Name',
+            label: 'Name',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No title available'
+            }
+        },
+        {
+            key: 'Date',
+            label: 'Date',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'N/A'
+            }
+        },
+        {
+            key: 'Specialists',
+            label: 'Specialists',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No specialists available'
+            }
+        },
+        {
+            key: 'URL',
+            label: 'URL',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No URL available'
+            }
+        }
+    ],
+    valueClassMap: {
+        'Name': 'result-value-medium',
+        Date: 'result-value-small',
+        URL: 'result-value-small'
+    }
+}
+
 // Court Decision Page
 export const courtDecisionConfig = {
     keyLabelPairs: [
