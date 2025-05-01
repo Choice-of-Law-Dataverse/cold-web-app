@@ -111,6 +111,8 @@ import { computed, ref, watch, onMounted } from 'vue'
 
 import ResultCard from './components/search-results/ResultCard.vue'
 import LegislationCard from './components/search-results/LegislationCard.vue'
+import RegionalInstrumentCard from './components/search-results/RegionalInstrumentCard.vue'
+// import InternationalInstrumentCard from './components/search-results/InternationalInstrumentCard.vue'
 import LiteratureCard from './components/search-results/LiteratureCard.vue'
 import CourtDecisionCard from './components/search-results/CourtDecisionCard.vue'
 import AnswerCard from './components/search-results/AnswerCard.vue'
@@ -122,6 +124,10 @@ const getResultComponent = (source_table) => {
   switch (source_table) {
     case 'Domestic Instruments':
       return LegislationCard
+    case 'Regional Instruments':
+      return RegionalInstrumentCard
+    case 'International Instruments':
+      return InternationalInstrumentCard
     case 'Court Decisions':
       return CourtDecisionCard
     case 'Answers':
@@ -247,6 +253,8 @@ const typeOptions = [
   'All Types',
   'Court Decisions',
   'Domestic Instruments',
+  'Regional Instruments',
+  'International Instruments',
   'Literature',
   'Questions',
 ]
