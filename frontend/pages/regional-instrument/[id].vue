@@ -5,7 +5,16 @@
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
     sourceTable="Regional Instrument"
-  />
+  >
+    <template #date="{ value }">
+      <div v-if="value">
+        <p class="label-key mt-8 mb-2">Date</p>
+        <p :class="valueClassMap['Date']">
+          {{ formatDate(value) }}
+        </p>
+      </div>
+    </template>
+  </BaseDetailLayout>
 </template>
 
 <script setup>
