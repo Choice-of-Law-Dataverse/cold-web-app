@@ -296,6 +296,25 @@ export const regionalInstrumentConfig = {
     }
 }
 
+// International Instrument Page
+export const internationalInstrumentConfig = {
+    keyLabelPairs: [
+        { key: 'Name', label: 'Name', emptyValueBehavior: { action: 'display', fallback: 'No title available' } },
+        { key: 'Date', label: 'Date', emptyValueBehavior: { action: 'display', fallback: 'N/A' } },
+        { key: 'Specialists', label: 'Specialists', emptyValueBehavior: { action: 'display', fallback: 'No specialists available' } },
+        { key: 'URL', label: 'URL', emptyValueBehavior: { action: 'display', fallback: 'No URL available' } },
+        { key: 'Related Literature', label: 'Related Literature', emptyValueBehavior: { action: 'display', fallback: '' } },
+        { key: 'Selected Provisions', label: 'Selected Provisions', emptyValueBehavior: { action: 'display', fallback: '' } }
+    ],
+    valueClassMap: {
+        Name: 'result-value-medium',
+        Date: 'result-value-small',
+        URL: 'result-value-small',
+        'Related Literature': 'result-value-small',
+        'Selected Provisions': 'result-value-small'
+    }
+}
+
 // Court Decision Page
 export const courtDecisionConfig = {
     keyLabelPairs: [
