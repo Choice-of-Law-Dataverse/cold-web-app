@@ -173,6 +173,8 @@ const labelColorClass = computed(() => {
     case 'Question':
       return 'label-question'
     case 'Domestic Instrument':
+    case 'Regional Instrument':
+    case 'International Instrument':
       return 'label-domestic-instrument'
     case 'Literature':
       return 'label-literature'
