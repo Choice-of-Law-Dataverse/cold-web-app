@@ -20,7 +20,10 @@
           label="related literature"
         />
       </ul>
-      <p v-else-if="emptyValueBehavior.action === 'display'" :class="valueClassMap">
+      <p
+        v-else-if="emptyValueBehavior.action === 'display'"
+        :class="valueClassMap"
+      >
         {{ emptyValueBehavior.fallback }}
       </p>
     </template>
@@ -28,7 +31,7 @@
     <!-- Else, use the normal themes-based display -->
     <template v-else>
       <ul v-if="loading">
-        <li class="text-gray-500">Loading...</li>
+        <li><LoadingBar class="pt-[11px]" /></li>
       </ul>
 
       <ul v-else-if="literatureList.length">
@@ -48,7 +51,10 @@
         />
       </ul>
 
-      <p v-else-if="emptyValueBehavior.action === 'display'" :class="valueClassMap">
+      <p
+        v-else-if="emptyValueBehavior.action === 'display'"
+        :class="valueClassMap"
+      >
         {{ emptyValueBehavior.fallback }}
       </p>
     </template>
@@ -58,39 +64,40 @@
 <script setup>
 import { ref, computed, watchEffect, watch, onMounted } from 'vue'
 import ShowMoreLess from '../ui/ShowMoreLess.vue'
+import LoadingBar from '../layout/LoadingBar.vue'
 
 const props = defineProps({
   themes: {
     type: String,
-    required: true
+    required: true,
   },
   valueClassMap: {
     type: String,
-    default: 'result-value-small'
+    default: 'result-value-small',
   },
   literatureId: {
     type: String,
-    default: ''
+    default: '',
   },
   literatureTitle: {
     type: [Array, String],
-    default: ''
+    default: '',
   },
   useId: {
     type: Boolean,
-    default: false
+    default: false,
   },
   showLabel: {
     type: Boolean,
-    default: true
+    default: true,
   },
   emptyValueBehavior: {
     type: Object,
     default: () => ({
       action: 'display',
-      fallback: 'No related literature available'
-    })
-  }
+      fallback: 'No related literature available',
+    }),
+  },
 })
 
 const config = useRuntimeConfig()
@@ -98,7 +105,7 @@ const config = useRuntimeConfig()
 // Split the literatureId string into an array
 const literatureIds = computed(() => {
   return props.literatureId
-    ? props.literatureId.split(',').map(item => item.trim())
+    ? props.literatureId.split(',').map((item) => item.trim())
     : []
 })
 
@@ -148,12 +155,12 @@ async function fetchRelatedLiterature(themes) {
   }
 
   console.log('Fetching related literature for themes:', themes)
-  
+
   const jsonPayload = {
     filters: [
       { column: 'tables', values: ['Literature'] },
-      { column: 'themes', values: themes.split(',').map(t => t.trim()) }
-    ]
+      { column: 'themes', values: themes.split(',').map((t) => t.trim()) },
+    ],
   }
 
   console.log('API request payload:', jsonPayload)
@@ -163,19 +170,23 @@ async function fetchRelatedLiterature(themes) {
       method: 'POST',
       headers: {
         authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(jsonPayload)
+      body: JSON.stringify(jsonPayload),
     })
 
     if (!response.ok) {
-      console.error('API response not OK:', response.status, response.statusText)
+      console.error(
+        'API response not OK:',
+        response.status,
+        response.statusText
+      )
       throw new Error('Failed to fetch related literature')
     }
 
     const data = await response.json()
     console.log('API response:', data)
-    
+
     // Check if we have results and they're in the expected format
     if (!data.results || typeof data.results !== 'object') {
       console.log('No results found or unexpected response format')
@@ -188,10 +199,10 @@ async function fetchRelatedLiterature(themes) {
       console.log('Processing item:', { key, item })
       return {
         title: item.Title || item.title || 'Untitled',
-        id: item.id || key // Use the item's id if available, otherwise use the key
+        id: item.id || key, // Use the item's id if available, otherwise use the key
       }
     })
-    
+
     console.log('Processed literature list:', literatureList.value)
   } catch (error) {
     console.error('Error fetching related literature:', error)
@@ -202,13 +213,17 @@ async function fetchRelatedLiterature(themes) {
 }
 
 // Debug the themes prop
-watch(() => props.themes, (newThemes) => {
-  console.log('Themes prop changed:', newThemes)
-  if (!props.useId) {
-    console.log('Fetching related literature due to themes change')
-    fetchRelatedLiterature(newThemes)
-  }
-}, { immediate: true })
+watch(
+  () => props.themes,
+  (newThemes) => {
+    console.log('Themes prop changed:', newThemes)
+    if (!props.useId) {
+      console.log('Fetching related literature due to themes change')
+      fetchRelatedLiterature(newThemes)
+    }
+  },
+  { immediate: true }
+)
 
 // Initial fetch
 onMounted(() => {
@@ -218,4 +233,4 @@ onMounted(() => {
     fetchRelatedLiterature(props.themes)
   }
 })
-</script> 
+</script>

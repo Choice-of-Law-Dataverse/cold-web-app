@@ -39,27 +39,31 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  color: var(--color-cold-night);
+  color: var(--color-cold-night) !important;
 }
 
 h1 {
   font-size: 32px !important;
   font-weight: 700 !important; // Bold
+  color: var(--color-cold-night) !important;
 }
 
 h2 {
   font-size: 20px !important;
-  font-weight: 500 !important; // Medium
+  font-weight: 600 !important; // Medium
+  color: var(--color-cold-night) !important;
 }
 
 h3 {
   font-size: 20px !important;
   font-weight: 400 !important; // Regular
+  color: var(--color-cold-night) !important;
 }
 
 a {
   color: var(--color-cold-purple) !important;
   text-decoration: none !important;
+  font-weight: 400 !important; // Regular
 }
 
 .title-container {
@@ -80,12 +84,33 @@ ol {
 
 ul {
   list-style-type: disc;
-  margin: 0;
-  padding: 0 0 0 1.5rem;
+  margin: 0 !important;
+  padding: 0.5rem 0 1.5rem 1.5rem !important;
 }
 
 li {
-  margin: 0.5rem 0;
+  margin: 0 !important;
+}
+
+li::marker {
+  color: var(--color-cold-night) !important;
+}
+
+.prose {
+  font-size: 14px !important;
+  line-height: 28px !important;
+  color: var(--color-cold-night) !important;
+}
+
+.prose li {
+  margin-bottom: 12px !important;
+  color: var(--color-cold-night) !important;
+}
+
+.prose strong,
+.prose b {
+  color: inherit; /* Inherit the color from the parent element */
+  font-weight: 600 !important; // Medium
 }
 
 // Labels
@@ -104,12 +129,12 @@ li {
 
 .label-key-provision-article {
   @extend .label-key;
-  font-weight: 500 !important;
+  text-transform: none;
 }
 
 .label-key-provision-toggle {
   @extend .label-key;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   text-transform: capitalize;
   font-size: 10px !important;
 }
@@ -118,6 +143,9 @@ li {
   @extend .label;
   background-color: var(--color-cold-gray-alpha);
   padding: 3px 7px;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .label-question {
@@ -163,6 +191,7 @@ li {
 // Results
 .result-value {
   font-weight: 700 !important; // Bold
+  color: var(--color-cold-night);
   word-wrap: break-word; // Allows breaking within words if necessary
   word-break: break-word; // Breaks words that are too long
   white-space: pre-wrap; // Preserves whitespace and line breaks, but also allows wrapping
@@ -171,24 +200,31 @@ li {
 .result-value-large {
   @extend .result-value;
   font-size: 28px !important;
-  margin-bottom: 6px !important;
-  // margin-top: -5px !important;
+  line-height: 28px !important;
+  margin-top: 6px !important;
+  margin-bottom: 24px !important;
 }
 
 .result-value-medium {
-  @extend .result-value;
+  @extend .result-value-large;
   font-size: 20px !important;
-  line-height: 28px !important;
-  // margin-bottom: 16px !important;
 }
 
 .result-value-small {
-  @extend .result-value;
+  @extend .result-value-large;
   font-size: 14px !important;
   font-weight: 400 !important; // Regular
-  line-height: 26px !important;
-  // margin-bottom: 10px !important;
+  margin: 0 !important;
   white-space: normal;
+}
+
+.result-value-small-citation {
+  @extend .result-value-small;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px !important;
+  background-color: var(--color-cold-gray-alpha);
+  padding: 0.8em 1em 0.8em 1em;
+  line-height: 1.8em !important;
 }
 
 // UI Elements -----------------------------------------------
@@ -203,6 +239,7 @@ li {
 .link-button {
   @extend .suggestion-button;
   font-size: 14px !important;
+  font-weight: 400 !important; // Regular
 }
 
 // Info Box in Jurisdiction Map
@@ -210,7 +247,7 @@ li {
   position: absolute;
   z-index: 1000;
   background: white;
-  font-family: 'Inter', Arial, sans-serif; // Replace with your global font
+  font-family: 'Inter', Arial, sans-serif;
   padding-right: 12px;
   padding-bottom: 6px;
 }
@@ -221,6 +258,61 @@ li {
   border: 1px solid var(--color-cold-gray) !important;
   border-radius: 0 !important;
   background-color: white !important;
+  height: 42px;
+}
+
+.cold-uselectmenu.non-all-selected button {
+  border-color: var(--color-cold-purple) !important;
+  color: var(--color-cold-purple) !important;
+}
+
+// Popper Style
+ul[role='listbox'][data-headlessui-state] {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  border: 1px solid var(--color-cold-gray) !important;
+  padding: 0 !important;
+}
+
+ul[role='listbox'] input[role='combobox'][data-headlessui-state='open'] {
+  margin-bottom: 0 !important;
+}
+
+ul[role='listbox'] li {
+  margin: 0 !important;
+  padding-top: 0.75rem !important;
+  padding-bottom: 0.75rem !important;
+}
+
+// Popper Selected Icon
+ul[role='listbox'] li[aria-selected='true'] .iconify {
+  color: var(--color-cold-purple) !important;
+  width: 1rem !important;
+}
+
+// Popper Input Size
+ul[role='listbox'] input {
+  padding-top: 1rem !important;
+  padding-bottom: 1rem !important;
+  border-color: var(--color-cold-gray) !important;
+}
+
+// Popper Hover
+ul[role='listbox'] li:hover {
+  background-color: var(--color-cold-purple-alpha) !important;
+}
+
+ul[role='listbox'] li[data-headlessui-state='selected'] {
+  background-color: var(--color-cold-purple-alpha) !important;
+}
+
+ul[role='listbox'] li[aria-selected='true'],
+ul[role='listbox'] li[data-headlessui-state='active'],
+ul[role='listbox'] li[data-headlessui-state='active']:hover,
+ul[role='listbox'] li[data-headlessui-state='selected'],
+ul[role='listbox'] li[data-headlessui-state='selected']:hover {
+  background-color: var(--color-cold-purple-alpha) !important;
+  border-radius: 0 !important;
 }
 
 // CoLD Card

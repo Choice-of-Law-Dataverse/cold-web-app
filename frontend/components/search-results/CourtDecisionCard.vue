@@ -1,19 +1,53 @@
 <template>
   <ResultCard :resultData="resultData" cardType="Court Decisions">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <!-- Case Title in the 1st column -->
-      <div class="md:col-span-4">
-        <div class="label-key">{{ keyMap['Case Title'] }}</div>
-        <div :class="valueClassMap['Case Title'] || 'result-value'">
-          {{ caseTitle }}
+      <!-- Case Title section -->
+      <div
+        :class="[
+          config.gridConfig.caseTitle.columnSpan,
+          config.gridConfig.caseTitle.startColumn,
+        ]"
+      >
+        <div class="label-key">{{ getLabel('Case Title') }}</div>
+        <div
+          :class="[
+            config.valueClassMap['Case Title'],
+            'text-sm leading-relaxed whitespace-pre-line',
+            (!resultData['Case Title'] || resultData['Case Title'] === 'NA') &&
+            config.keyLabelPairs.find((pair) => pair.key === 'Case Title')
+              ?.emptyValueBehavior?.action === 'display' &&
+            !config.keyLabelPairs.find((pair) => pair.key === 'Case Title')
+              ?.emptyValueBehavior?.getFallback
+              ? 'text-gray-300'
+              : '',
+          ]"
+        >
+          {{ getValue('Case Title') }}
         </div>
       </div>
 
-      <!-- Choice of Law Issue in the 6th column -->
-      <div class="md:col-start-6 md:col-span-6">
-        <div class="label-key">{{ keyMap['Choice of Law Issue'] }}</div>
-        <div :class="valueClassMap['Choice of Law Issue'] || 'result-value'">
-          {{ resultData['Choice of Law Issue'] || '[Missing Information]' }}
+      <!-- Choice of Law Issue section -->
+      <div
+        :class="[
+          config.gridConfig.choiceOfLaw.columnSpan,
+          config.gridConfig.choiceOfLaw.startColumn,
+        ]"
+      >
+        <div class="label-key">{{ getLabel('Choice of Law Issue') }}</div>
+        <div
+          :class="[
+            config.valueClassMap['Choice of Law Issue'],
+            'text-sm leading-relaxed whitespace-pre-line',
+            (!resultData['Choice of Law Issue'] ||
+              resultData['Choice of Law Issue'] === 'NA') &&
+            config.keyLabelPairs.find(
+              (pair) => pair.key === 'Choice of Law Issue'
+            )?.emptyValueBehavior?.action === 'display'
+              ? 'text-gray-300'
+              : '',
+          ]"
+        >
+          {{ getValue('Choice of Law Issue') }}
         </div>
       </div>
     </div>
@@ -21,10 +55,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
 import ResultCard from './ResultCard.vue'
+import { courtDecisionCardConfig } from '../../config/cardConfigs'
 
-// Props
 const props = defineProps({
   resultData: {
     type: Object,
@@ -32,27 +65,40 @@ const props = defineProps({
   },
 })
 
-// Compute a fallback for "Case Title"
-const caseTitle = computed(() => {
-  if (!props.resultData) return '[Missing Information]'
-  const title = props.resultData['Case Title'] || ''
-  // If the title is "Not found", use "Case Citation"
-  return title.trim() === 'Not found'
-    ? props.resultData['Case Citation'] || '[Missing Information]'
-    : title || '[Missing Information]'
-})
+const config = courtDecisionCardConfig
 
-// Define the keys and mappings specific to court decisions
-const courtDecisionKeys = ['Case Title', 'Choice of Law Issue']
-const keyMap = {
-  'Case Title': 'Case Title',
-  'Choice of Law Issue': 'Choice of Law Issue',
+// Helper functions to get labels and values with fallbacks
+const getLabel = (key) => {
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
+  return pair?.label || key
 }
 
-// Map different CSS styles to different typographic components
-const valueClassMap = {
-  'Case Title': 'result-value-medium',
-  'Choice of Law Issue': 'result-value-small',
+const getValue = (key) => {
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
+  const value = props.resultData[key]
+
+  if ((!value || value === 'NA') && pair?.emptyValueBehavior) {
+    if (pair.emptyValueBehavior.action === 'display') {
+      if (pair.emptyValueBehavior.getFallback) {
+        return pair.emptyValueBehavior.getFallback(props.resultData)
+      }
+      return pair.emptyValueBehavior.fallback
+    }
+    return ''
+  }
+
+  return value
+}
+
+const getFallbackClass = (key) => {
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
+  const value = props.resultData[key]
+
+  if (!value && pair?.emptyValueBehavior?.fallbackClass) {
+    return pair.emptyValueBehavior.fallbackClass
+  }
+
+  return ''
 }
 </script>
 

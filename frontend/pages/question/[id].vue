@@ -17,21 +17,16 @@
                 :sources="
                   [
                     ...(value ||
-                    processedAnswerData?.['Domestic Legal Provisions'] ||
-                    processedAnswerData?.['Jurisdictions Literature ID']
+                    processedAnswerData?.['Domestic Legal Provisions']
                       ? [
                           value ||
-                            processedAnswerData?.['Domestic Legal Provisions'] ||
-                            processedAnswerData?.['Jurisdictions Literature ID'],
+                            processedAnswerData?.['Domestic Legal Provisions'],
                         ]
                       : []),
                   ].filter(Boolean)
                 "
                 :fallbackData="processedAnswerData"
                 :valueClassMap="valueClassMap"
-                :noLinkList="[
-                  processedAnswerData?.['Jurisdictions Literature ID'],
-                ]"
                 :fetchOupChapter="true"
                 :fetchPrimarySource="true"
               />
@@ -40,12 +35,16 @@
 
           <!-- Custom rendering for Court Decisions ID -->
           <template #court-decisions-id="{ value }">
-            <section>
-              <span class="label">related cases</span>
+            <section id="related-court-decisions">
+              <span class="label">Related Court Decisions</span>
               <CourtDecisionRenderer
                 :value="value"
                 :valueClassMap="valueClassMap['Court Decisions ID']"
-                :emptyValueBehavior="filteredKeyLabelPairs.find(pair => pair.key === 'Court Decisions ID')?.emptyValueBehavior"
+                :emptyValueBehavior="
+                  filteredKeyLabelPairs.find(
+                    (pair) => pair.key === 'Court Decisions ID'
+                  )?.emptyValueBehavior
+                "
               />
             </section>
           </template>
@@ -69,7 +68,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
 import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
@@ -92,11 +91,19 @@ onMounted(async () => {
   try {
     const id = route.params.id
     await fetchAnswer(id)
+    // Wait for the DOM to update then scroll if the hash is present
+    await nextTick()
+    if (window.location.hash === '#related-court-decisions') {
+      const target = document.getElementById('related-court-decisions')
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' })
+      }
+    }
   } catch (err) {
     if (err.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: `${err.table} not found` }
+        query: { message: `${err.table} not found` },
       })
     } else {
       console.error('Error fetching question:', err)
@@ -104,3 +111,19 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style>
+/* Harmonized spacing for all .label elements */
+/* .label {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+} */
+
+/* Adjust section spacing to match label spacing */
+/* #related-court-decisions {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+} */
+</style>

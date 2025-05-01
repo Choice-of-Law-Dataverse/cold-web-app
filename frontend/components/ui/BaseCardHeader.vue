@@ -1,66 +1,86 @@
 <template>
   <div
-    class="header-container flex items-center justify-between"
+    class="header-container flex items-center justify-between mt-0.5"
     :key="formattedJurisdiction + formattedTheme"
   >
-    <!-- Left side of the header: Tags -->
-    <div
-      class="tags-container flex items-center overflow-x-auto scrollbar-hidden"
-    >
-      <!-- Display 'Name (from Jurisdiction)' or alternatives -->
-      <span
-        v-for="(jurisdictionString, index) in formattedJurisdiction"
-        :key="`jurisdiction-${index}`"
-        class="label-jurisdiction"
+    <template v-if="cardType === 'Loading'"> </template>
+    <template v-else>
+      <!-- Left side of the header: Tags -->
+      <div
+        class="tags-container flex items-center overflow-x-auto scrollbar-hidden"
       >
-        {{ jurisdictionString }}
-      </span>
+        <!-- Display 'Name (from Jurisdiction)' or alternatives -->
+        <span
+          v-for="(jurisdictionString, index) in formattedJurisdiction"
+          :key="`jurisdiction-${index}`"
+          class="label-jurisdiction"
+        >
+          <img
+            v-if="!erroredImages[jurisdictionString]"
+            :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
+            style="height: 9px"
+            class="mr-1.5 mb-0.5"
+            @error="handleImageError(erroredImages, jurisdictionString)"
+          />
+          {{ jurisdictionString }}
+        </span>
 
-      <!-- Display 'source_table' -->
-      <span v-if="adjustedSourceTable" :class="['label', labelColorClass]">
-        {{ adjustedSourceTable }}
-      </span>
+        <!-- Display 'source_table' -->
+        <span v-if="adjustedSourceTable" :class="['label', labelColorClass]">
+          {{ adjustedSourceTable }}
+        </span>
 
-      <!-- Display 'Themes' -->
-      <span
-        v-for="(theme, index) in formattedTheme"
-        :key="`theme-${index}`"
-        class="label-theme"
-      >
-        {{ theme }}
-      </span>
-    </div>
+        <!-- Display 'Themes' -->
+        <span
+          v-for="(theme, index) in formattedTheme"
+          :key="`theme-${index}`"
+          class="label-theme"
+        >
+          {{ theme }}
+        </span>
+      </div>
 
-    <!-- Fade-out effect -->
-    <div
-      class="fade-out"
-      :class="{
-        'open-link-true': showOpenLink,
-        'suggest-edit-true': showSuggestEdit,
-        'open-link-false': !showOpenLink,
-        'suggest-edit-false': !showSuggestEdit,
-      }"
-    ></div>
+      <!-- Fade-out effect -->
+      <div class="fade-out" :class="fadeOutClasses"></div>
 
-    <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
-    <div class="open-link ml-4">
-      <NuxtLink
-        v-if="showSuggestEdit"
-        :to="suggestEditLink"
-        class="flex items-center space-x-2"
-        target="_blank"
-      >
-        <span>Suggest Edit</span>
-        <UIcon name="i-material-symbols:edit-outline" />
-      </NuxtLink>
-
-      <NuxtLink v-else :to="getLink()"> Open </NuxtLink>
-    </div>
+      <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
+      <div class="open-link ml-4">
+        <template v-if="showSuggestEdit">
+          <div class="flex items-center space-x-5 label">
+            <NuxtLink
+              v-for="(action, index) in suggestEditActions"
+              :key="index"
+              class="flex items-center"
+              :class="action.class"
+              v-bind="action.to ? { to: action.to } : {}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {{ action.label }}
+              <UIcon
+                :name="action.icon"
+                class="inline-block ml-1 text-[1.2em] mb-0.5"
+              />
+            </NuxtLink>
+          </div>
+        </template>
+        <template v-else>
+          <NuxtLink :to="getLink()" class="label">
+            Open
+            <UIcon
+              name="i-material-symbols:play-arrow"
+              class="inline-block -mb-[1px]"
+          /></NuxtLink>
+        </template>
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
+import jurisdictionsData from '../../assets/jurisdictions-data.json' // added import
+import { handleImageError } from '../../utils/handleImageError'
 
 const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
 
@@ -165,12 +185,12 @@ const formattedTheme = computed(() => {
   if (props.formattedTheme.length > 0) {
     return props.formattedTheme
   }
-  
-  // Handle literature's Manual Tags
-  if (props.cardType === 'Literature' && props.resultData['Manual Tags']) {
-    return props.resultData['Manual Tags'].split(';').map(theme => theme.trim())
+
+  // Handle literature's Themes
+  if (props.cardType === 'Literature' && props.resultData['Themes']) {
+    return props.resultData['Themes'].split(',').map((theme) => theme.trim())
   }
-  
+
   // Handle other types
   const themes =
     props.resultData['Title of the Provision'] ?? props.resultData.Themes
@@ -181,6 +201,40 @@ const formattedTheme = computed(() => {
 
   return [...new Set(themes.split(',').map((theme) => theme.trim()))]
 })
+
+const erroredImages = reactive({}) // new reactive object
+
+// New computed property for fade-out classes
+const fadeOutClasses = computed(() => ({
+  'open-link-true': props.showOpenLink,
+  'suggest-edit-true': props.showSuggestEdit,
+  'open-link-false': !props.showOpenLink,
+  'suggest-edit-false': !props.showSuggestEdit,
+}))
+
+// New computed property for action items in "Suggest Edit" area
+const suggestEditActions = computed(() => [
+  {
+    label: 'Link',
+    icon: 'i-material-symbols:language',
+    to: 'https://example.net/',
+  },
+  {
+    label: 'Cite',
+    icon: 'i-material-symbols:verified-outline',
+    class: 'gray-link',
+  },
+  {
+    label: 'PDF',
+    icon: 'i-material-symbols:arrow-circle-down-outline',
+    to: 'https://choiceoflawdataverse.blob.core.windows.net/assets/dummy.pdf',
+  },
+  {
+    label: 'Edit',
+    icon: 'i-material-symbols:edit-square-outline',
+    to: suggestEditLink.value,
+  },
+])
 
 // Methods
 function getLink() {
@@ -197,6 +251,11 @@ function getLink() {
     default:
       return '#'
   }
+}
+
+function getJurisdictionISO(name) {
+  const entry = jurisdictionsData.find((item) => item.name.includes(name))
+  return entry ? entry.alternative[0].toLowerCase() : 'default'
 }
 </script>
 
@@ -241,7 +300,7 @@ function getLink() {
 }
 
 .fade-out.suggest-edit-true {
-  right: 130px; /* Positioned before "Suggest Edit" */
+  right: 266px; /* Positioned before icons */
 }
 
 /* Ensures the fade-out is always correctly positioned */
@@ -263,5 +322,13 @@ function getLink() {
 .scrollbar-hidden {
   -ms-overflow-style: none; /* IE and Edge */
   scrollbar-width: none; /* Firefox */
+}
+
+.gray-link {
+  color: var(--color-cold-night-alpha-25) !important;
+}
+
+a {
+  font-weight: 600 !important;
 }
 </style>

@@ -4,14 +4,15 @@
       <div class="col-span-12">
         <!-- Flexbox/Grid Container: Filters and Results Heading -->
         <div
-          class="filters-header mb-6 flex flex-col md:flex-row md:justify-between md:items-center gap-4"
+          class="filters-header mb-6 ml-[-1px] flex flex-col md:flex-row md:justify-between md:items-center gap-4"
         >
           <!-- Left-aligned group of filters -->
-          <div class="flex flex-col sm:flex-row gap-4 w-full">
+          <div class="flex flex-col sm:flex-row gap-5 w-full">
             <SearchFilters
               :options="jurisdictionOptions"
               v-model="currentJurisdictionFilter"
               class="w-full sm:w-auto"
+              showAvatars="true"
             />
             <SearchFilters
               :options="themeOptions"
@@ -23,6 +24,14 @@
               v-model="currentTypeFilter"
               class="w-full sm:w-auto"
             />
+            <UButton
+              v-if="hasActiveFilters"
+              variant="link"
+              @click="resetFilters"
+              class="w-full sm:w-auto link-button"
+            >
+              Reset
+            </UButton>
           </div>
 
           <!-- Right-aligned Results Heading -->
@@ -35,13 +44,15 @@
 
         <!-- Results Grid or Messages -->
         <div class="results-content mt-4">
-          <!-- Loading State -->
-          <p v-if="loading">Loading…</p>
+          <!-- Show loading skeleton only if loading and no results yet -->
+          <div v-if="loading && !allResults.length">
+            <LoadingCard />
+          </div>
 
           <!-- No Results -->
-          <NoSearchResults v-else-if="!allResults.length" />
+          <NoSearchResults v-else-if="!loading && !allResults.length" />
 
-          <!-- Results Grid -->
+          <!-- Results Grid: always show if there are results -->
           <div v-else class="results-grid">
             <div
               v-for="(resultData, key) in allResults"
@@ -53,15 +64,41 @@
                 :resultData="resultData"
               />
             </div>
+            <!-- Show a loading spinner/card at the bottom if loading more -->
+            <div v-if="loading && allResults.length" class="text-center py-4">
+              <LoadingCard />
+            </div>
           </div>
-          <div v-if="!loading" class="result-value-small text-center pt-4">
+
+          <div
+            v-if="props.canLoadMore && !loading"
+            class="mt-16 mb-4 text-center"
+          >
             <UButton
-              to="/learn?tab=methodology#how-the-search-works"
+              native-type="button"
+              @click.prevent="emit('load-more')"
+              class="suggestion-button"
               variant="link"
-              icon="i-material-symbols:arrow-forward"
-              trailing
-              >Learn how the search works</UButton
+              icon="i-material-symbols:arrow-cool-down"
+              :disabled="props.loading"
             >
+              Load More Results
+            </UButton>
+          </div>
+
+          <div v-if="!loading" class="result-value-small text-center pt-4">
+            <UButton to="/learn/methodology#How-the-Search-Works" variant="link"
+              >Learn How the Search Works</UButton
+            >
+            <UIcon
+              name="i-material-symbols:play-arrow"
+              class="inline-block ml-[-6px]"
+              style="
+                color: var(--color-cold-purple);
+                position: relative;
+                top: 2px;
+              "
+            />
           </div>
         </div>
       </div>
@@ -70,7 +107,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 
 import ResultCard from './components/search-results/ResultCard.vue'
 import LegislationCard from './components/search-results/LegislationCard.vue'
@@ -79,6 +116,7 @@ import CourtDecisionCard from './components/search-results/CourtDecisionCard.vue
 import AnswerCard from './components/search-results/AnswerCard.vue'
 import SearchFilters from './components/search-results/SearchFilters.vue'
 import NoSearchResults from './components/search-results/NoSearchResults.vue'
+import LoadingCard from './components/layout/LoadingCard.vue'
 
 const getResultComponent = (source_table) => {
   switch (source_table) {
@@ -113,14 +151,18 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  canLoadMore: {
+    type: Boolean,
+    default: false,
+  },
 })
+
+const emit = defineEmits(['update:filters', 'load-more'])
 
 // Gather all results
 const allResults = computed(() => {
   return Object.values(props.data?.tables || {}) // Fallback to an empty object
 })
-
-const emit = defineEmits(['update:filters'])
 
 // Jurisdiction options state
 const jurisdictionOptions = ref(['All Jurisdictions'])
@@ -129,7 +171,6 @@ const jurisdictionOptions = ref(['All Jurisdictions'])
 const loadJurisdictions = async () => {
   try {
     const config = useRuntimeConfig() // Ensure config is accessible
-
     const jsonPayloads = [{ table: 'Jurisdictions', filters: [] }]
 
     // Fetch both tables concurrently
@@ -153,23 +194,29 @@ const loadJurisdictions = async () => {
       )
     )
 
-    // Filter out "Irrelevant?" only for "Jurisdictions"
+    // Filter out "Irrelevant?" for "Jurisdictions"
     const relevantJurisdictions = jurisdictionsData.filter(
       (entry) => entry['Irrelevant?'] === null
     )
 
-    // Extract "Name" fields
-    const jurisdictionNames = relevantJurisdictions
-      .map((entry) => entry.Name)
-      .filter(Boolean)
+    // Map each entry to an object with label and avatar
+    const mappedJurisdictions = relevantJurisdictions.map((entry) => ({
+      label: entry.Name,
+      avatar: entry['Alpha-3 Code']
+        ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+        : undefined,
+    }))
 
-    // Merge both lists, remove duplicates, and sort alphabetically
-    const sortedJurisdictions = [
-      ...new Set([...jurisdictionNames]), // ...instrumentNames]),
-    ].sort((a, b) => a.localeCompare(b))
+    // Sort alphabetically by label
+    const sortedJurisdictions = mappedJurisdictions.sort((a, b) =>
+      a.label.localeCompare(b.label)
+    )
 
     // Prepend "All Jurisdictions" to the list
-    jurisdictionOptions.value = ['All Jurisdictions', ...sortedJurisdictions]
+    jurisdictionOptions.value = [
+      { label: 'All Jurisdictions' },
+      ...sortedJurisdictions,
+    ]
   } catch (error) {
     console.error('Error loading jurisdictions:', error)
   }
@@ -205,34 +252,79 @@ const typeOptions = [
 ]
 
 // Reactive states initialized from props
-const currentJurisdictionFilter = ref(
-  props.filters.theme || 'All Jurisdictions'
-)
-const currentThemeFilter = ref(props.filters.theme || 'All Themes')
-const currentTypeFilter = ref(props.filters.type || 'All Types')
+const currentJurisdictionFilter = ref([])
+const currentThemeFilter = ref([])
+const currentTypeFilter = ref([])
+
+// Computed property to check if any filter is active
+const hasActiveFilters = computed(() => {
+  return (
+    currentJurisdictionFilter.value.length > 0 ||
+    currentThemeFilter.value.length > 0 ||
+    currentTypeFilter.value.length > 0
+  )
+})
+
+// Function to reset all filters to their default states
+const resetFilters = () => {
+  currentJurisdictionFilter.value = []
+  currentThemeFilter.value = []
+  currentTypeFilter.value = []
+}
 
 // Watch for changes in either filter and emit them up
 watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
   ([newJurisdiction, newTheme, newType]) => {
-    emit('update:filters', {
-      jurisdiction: newJurisdiction,
-      theme: newTheme,
-      type: newType,
-    })
-  }
+    const filters = {
+      jurisdiction:
+        newJurisdiction.length > 0
+          ? newJurisdiction
+              .map((item) => (typeof item === 'object' ? item.label : item))
+              .join(',')
+          : undefined,
+      theme: newTheme.length > 0 ? newTheme.join(',') : undefined,
+      type: newType.length > 0 ? newType.join(',') : undefined,
+    }
+
+    // Only emit if filters have changed
+    if (JSON.stringify(filters) !== JSON.stringify(props.filters)) {
+      emit('update:filters', filters)
+    }
+  },
+  { deep: true }
 )
 
 // Watch for prop changes to re-sync dropdowns when parent updates
 watch(
   () => props.filters,
   (newFilters) => {
-    currentJurisdictionFilter.value =
-      newFilters.jurisdiction || 'All Jurisdictions'
-    currentThemeFilter.value = newFilters.theme || 'All Themes'
-    currentTypeFilter.value = newFilters.type || 'All Types'
+    // Convert filter strings to arrays, handling both single and multiple selections
+    const newJurisdiction = newFilters.jurisdiction
+      ? newFilters.jurisdiction.split(',').filter(Boolean)
+      : []
+    const newTheme = newFilters.theme
+      ? newFilters.theme.split(',').filter(Boolean)
+      : []
+    const newType = newFilters.type
+      ? newFilters.type.split(',').filter(Boolean)
+      : []
+
+    // Only update if the values have actually changed
+    if (
+      JSON.stringify(newJurisdiction) !==
+      JSON.stringify(currentJurisdictionFilter.value)
+    ) {
+      currentJurisdictionFilter.value = newJurisdiction
+    }
+    if (JSON.stringify(newTheme) !== JSON.stringify(currentThemeFilter.value)) {
+      currentThemeFilter.value = newTheme
+    }
+    if (JSON.stringify(newType) !== JSON.stringify(currentTypeFilter.value)) {
+      currentTypeFilter.value = newType
+    }
   },
-  { deep: true, immediate: true }
+  { deep: true, immediate: true } // Add immediate to handle initial props
 )
 </script>
 

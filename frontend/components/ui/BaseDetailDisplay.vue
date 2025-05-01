@@ -11,69 +11,127 @@
     "
   />
 
-  <UCard class="cold-ucard">
-    <!-- Header section -->
-    <template #header v-if="showHeader">
-      <BaseCardHeader
-        v-if="resultData"
-        :resultData="resultData"
-        :cardType="formattedSourceTable"
-        :showOpenLink="false"
-        :formattedJurisdiction="formattedJurisdiction"
-        :formattedTheme="formattedTheme"
-      />
-    </template>
+  <template v-if="loading">
+    <LoadingCard />
+  </template>
+  <template v-else>
+    <UCard class="cold-ucard">
+      <!-- Header section -->
+      <template #header v-if="showHeader">
+        <BaseCardHeader
+          v-if="resultData"
+          :resultData="resultData"
+          :cardType="formattedSourceTable"
+          :showOpenLink="false"
+          :formattedJurisdiction="formattedJurisdiction"
+          :formattedTheme="formattedTheme"
+        />
+      </template>
 
-    <!-- Main content -->
-    <div class="flex">
-      <div v-if="loading" class="py-8 px-6">Loading...</div>
-      <div
-        v-else
-        class="main-content prose -space-y-10 flex flex-col gap-12 py-8 px-6 w-full"
-      >
-        <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
+      <!-- Main content -->
+      <div class="flex">
         <div
-          v-for="(item, index) in keyLabelPairs"
-          :key="index"
-          class="flex flex-col"
+          class="main-content prose -space-y-10 flex flex-col gap-8 py-8 px-6 w-full"
         >
-          <!-- Check if it's the special 'Specialist' key -->
-          <template v-if="item.key === 'Specialist'">
-            <slot></slot>
-          </template>
-          <template v-else>
-            <!-- Check for slot first -->
-            <template v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]">
-              <slot
-                :name="item.key.replace(/ /g, '-').toLowerCase()"
-                :value="resultData?.[item.key]"
-              />
+          <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
+          <div
+            v-for="(item, index) in keyLabelPairs"
+            :key="index"
+            class="flex flex-col"
+          >
+            <!-- Check if it's the special 'Specialist' key -->
+            <template v-if="item.key === 'Specialist'">
+              <slot></slot>
             </template>
-            <!-- If no slot, use default display -->
             <template v-else>
-              <!-- Conditionally render the label and value container -->
-              <div v-if="shouldDisplayValue(item, resultData?.[item.key])">
-                <!-- Conditionally render the label -->
-                <p class="label-key -mb-1">
-                  {{ item.label }}
-                </p>
-                <p
-                  :class="[
-                    props.valueClassMap[item.key] || 'text-gray-800',
-                    'text-sm leading-relaxed whitespace-pre-line',
-                    (!resultData?.[item.key] || resultData?.[item.key] === 'NA') && item.emptyValueBehavior?.action === 'display' ? 'text-gray-300' : ''
-                  ]"
+              <!-- Check for slot first -->
+              <template
+                v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
+              >
+                <slot
+                  :name="item.key.replace(/ /g, '-').toLowerCase()"
+                  :value="resultData?.[item.key]"
+                />
+              </template>
+              <!-- If no slot, use default display -->
+              <template v-else>
+                <!-- Conditionally render the label and value container -->
+                <div
+                  v-if="shouldDisplayValue(item, resultData?.[item.key])"
+                  class="mb-6"
                 >
-                  {{ getDisplayValue(item, resultData?.[item.key]) }}
-                </p>
-              </div>
+                  <!-- Conditionally render the label -->
+                  <p class="label-key mb-2.5 flex items-center">
+                    {{ item.label }}
+                    <!-- Add tooltip for specific labels -->
+                    <template v-if="item.label === 'Question'">
+                      <UTooltip
+                        :text="tooltipQuestion"
+                        :popper="{ placement: 'top' }"
+                        :ui="{
+                          background: 'bg-cold-night',
+                          color: 'text-white',
+                          base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
+                          rounded: 'rounded-none',
+                          ring: '',
+                        }"
+                      >
+                        <span class="ml-1 cursor-pointer">
+                          <Icon name="i-material-symbols:info-outline" />
+                        </span>
+                      </UTooltip>
+                    </template>
+                  </p>
+                  <!-- Conditionally render bullet list if Answer is an array -->
+                  <template
+                    v-if="
+                      item.key === 'Answer' &&
+                      Array.isArray(
+                        getDisplayValue(item, resultData?.[item.key])
+                      )
+                    "
+                  >
+                    <ul>
+                      <li
+                        v-for="(line, i) in getDisplayValue(
+                          item,
+                          resultData?.[item.key]
+                        )"
+                        :key="i"
+                        :class="
+                          props.valueClassMap[item.key] ||
+                          'leading-relaxed whitespace-pre-line'
+                        "
+                      >
+                        {{ line }}
+                      </li>
+                    </ul>
+                  </template>
+                  <template v-else>
+                    <p
+                      :class="[
+                        props.valueClassMap[item.key] ||
+                          'leading-relaxed whitespace-pre-line',
+                        (!resultData?.[item.key] ||
+                          resultData?.[item.key] === 'NA') &&
+                        item.emptyValueBehavior?.action === 'display' &&
+                        !item.emptyValueBehavior?.getFallback
+                          ? 'text-gray-300'
+                          : '',
+                      ]"
+                    >
+                      {{ getDisplayValue(item, resultData?.[item.key]) }}
+                    </p>
+                  </template>
+                </div>
+              </template>
             </template>
-          </template>
+          </div>
+          <slot name="search-links"></slot>
         </div>
-        <slot name="search-links"></slot>
       </div>
-    </div>
-  </UCard>
+    </UCard>
+  </template>
 </template>
 
 <script setup>
@@ -82,6 +140,9 @@ import { useRoute } from 'vue-router'
 import BackButton from '~/components/ui/BackButton.vue'
 import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
 import NotificationBanner from '~/components/ui/NotificationBanner.vue'
+import LoadingCard from './components/layout/LoadingCard.vue'
+
+import tooltipQuestion from '@/content/info_box_question.md?raw'
 
 // Props for reusability across pages
 const props = defineProps({
@@ -151,18 +212,38 @@ watchEffect(() => {
 // Add these new functions
 const shouldDisplayValue = (item, value) => {
   if (!item.emptyValueBehavior) return true
-  if (item.emptyValueBehavior.shouldHide && item.emptyValueBehavior.shouldHide(props.resultData)) {
+  if (
+    item.emptyValueBehavior.shouldHide &&
+    item.emptyValueBehavior.shouldHide(props.resultData)
+  ) {
     return false
   }
-  if (item.emptyValueBehavior.action === 'hide' && (!value || value === 'NA' || value === 'N/A')) {
+  if (
+    item.emptyValueBehavior.action === 'hide' &&
+    (!value || value === 'NA' || value === 'N/A')
+  ) {
     return false
   }
   return true
 }
 
 const getDisplayValue = (item, value) => {
+  // New logic for the "Answer" field: if the value contains commas, split it.
+  if (
+    item.key === 'Answer' &&
+    typeof value === 'string' &&
+    value.includes(',')
+  ) {
+    return value.split(',').map((part) => part.trim())
+  }
   if (!item.emptyValueBehavior) return value || 'N/A'
-  if ((!value || value === 'NA') && item.emptyValueBehavior.action === 'display') {
+  if (
+    (!value || value === 'NA') &&
+    item.emptyValueBehavior.action === 'display'
+  ) {
+    if (item.emptyValueBehavior.getFallback) {
+      return item.emptyValueBehavior.getFallback(props.resultData)
+    }
     return item.emptyValueBehavior.fallback || 'N/A'
   }
   return value
@@ -188,5 +269,13 @@ const getDisplayValue = (item, value) => {
 .label-key {
   @extend .label;
   padding: 0;
+}
+
+.label-key span {
+  display: inline-flex;
+  align-items: center;
+  margin-top: -1px;
+  color: var(--color-cold-purple);
+  font-size: 1.1em;
 }
 </style>

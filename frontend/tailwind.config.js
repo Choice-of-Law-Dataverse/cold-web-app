@@ -7,11 +7,32 @@ export default {
     './plugins/**/*.{js,ts}',
     './nuxt.config.{js,ts}',
   ],
+  safelist: [
+    'md:col-span-1',
+    'md:col-span-2',
+    'md:col-span-3',
+    'md:col-span-4',
+    'md:col-span-5',
+    'md:col-span-6',
+    'md:col-span-7',
+    'md:col-span-8',
+    'md:col-start-1',
+    'md:col-start-2',
+    'md:col-start-3',
+    'md:col-start-4',
+    'md:col-start-5',
+    'md:col-start-6',
+    'md:col-start-7',
+    'md:col-start-8',
+    'md:col-start-8',
+    'md:col-start-10',
+  ],
   theme: {
     extend: {
       colors: {
         'cold-purple': '#6F4DFA',
         'cold-purple-alpha': '#6F4DFA0D', // 5% alpha
+        'cold-purple-fake-alpha': '#f3f2fa', // 100% alpha but same color as cold-purple-alpha
         'cold-green': '#4DFAB2',
         'cold-green-alpha': '#4DFAB280',
         'cold-cream': '#FFF0D9',
@@ -48,6 +69,7 @@ export default {
         ':root': {
           '--color-cold-purple': theme('colors.cold-purple'),
           '--color-cold-purple-alpha': theme('colors.cold-purple-alpha'),
+          '--color-cold-purple-fake-alpha': theme('colors.cold-purple-fake-alpha'),
           '--color-cold-green': theme('colors.cold-green'),
           '--color-cold-green-alpha': theme('colors.cold-green-alpha'),
           '--color-cold-cream': theme('colors.cold-cream'),

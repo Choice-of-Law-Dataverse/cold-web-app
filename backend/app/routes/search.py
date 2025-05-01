@@ -18,8 +18,10 @@ router = APIRouter(
 def handle_full_text_search(request: Request, body: FullTextSearchRequest):
     search_string = body.search_string
     filters = body.filters or []
+    page = body.page
+    page_size = body.page_size
 
-    results = search_service.full_text_search(search_string, filters)
+    results = search_service.full_text_search(search_string, filters, page, page_size)
     return results
 
 

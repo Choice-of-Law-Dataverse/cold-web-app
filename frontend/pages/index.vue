@@ -22,7 +22,6 @@
           </h2>
         </div>
 
-        <!-- Popular Searches -->
         <div class="col-span-12">
           <PopularSearches />
         </div>
@@ -32,7 +31,9 @@
         <div class="col-span-12">
           <CountrySelectMenu />
         </div>
-
+        <div class="col-span-12">
+          <RecentDomesticInstruments />
+        </div>
         <div class="col-span-12 md:col-span-8">
           <PlotCourtDecisionsJurisdiction />
         </div>
@@ -84,5 +85,7 @@ import CountrySelectMenu from '~/components/landing-page/TempJurisdictionPicker.
 import PlotCourtDecisionsJurisdiction from '~/components/landing-page/PlotCourtDecisionsJurisdiction.vue'
 import ConnectCard from '~/components/landing-page/ConnectCard.vue'
 import { externalLinks } from '~/utils/externalLinks'
+import RecentDomesticInstruments from '~/components/landing-page/RecentDomesticInstruments.vue'
+import LoadingLandingPageCard from '~/components/layout/LoadingLandingPageCard.vue'
 const links = externalLinks
 </script>
