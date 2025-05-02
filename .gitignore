@@ -177,3 +177,8 @@ frontend/components/TestComponent.vue
 # Secrets
 k8s/secrets.yaml
 k8s/nocodb.yaml
+frontend/assets/access_key.txt
+
+# R
+*.rds
+*.Rhistory

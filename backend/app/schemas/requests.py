@@ -1,5 +1,5 @@
 from typing import List, Optional, Union
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class FTSFilterOption(BaseModel):
@@ -10,6 +10,8 @@ class FTSFilterOption(BaseModel):
 class FullTextSearchRequest(BaseModel):
     search_string: Optional[str] = None
     filters: Optional[List[FTSFilterOption]] = None
+    page: int = Field(1, ge=1, description="Page number, must be >= 1")
+    page_size: int = Field(10, ge=1, le=100, description="Number of results per page")
 
 
 class CuratedDetailsRequest(BaseModel):

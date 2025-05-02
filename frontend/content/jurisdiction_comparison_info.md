@@ -1,4 +1,4 @@
-This analysis is derived from a [data collection survey](/learn?tab=methodology#questionnaire). These answers are simplified summaries of assessments provided by various specialists worldwide, who are listed on a jurisdiction‘s page.
+This analysis is derived from a [data collection survey](/learn/methodology#questionnaire). These answers are simplified summaries of assessments provided by various specialists worldwide, who are listed on a jurisdiction‘s page.
 
 The answers are classified into four categories.
 

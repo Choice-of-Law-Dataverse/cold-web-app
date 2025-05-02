@@ -97,9 +97,12 @@ class Database:
 
         id_columns = {
             "Answers": "ID",
-            "HCCH Comparison": "ID",
+            "HCCH Answers": "ID",
             "Domestic Instruments": "ID",
             "Domestic Legal Provisions": "Name",
+            "Regional Instruments": "ID",
+            "Regional Legal Provisions": "ID",
+            "International Instruments": "ID",
             "International Legal Provisions": "ID",
             "Court Decisions": "ID",
             "Jurisdictions": "Alpha-3 Code",

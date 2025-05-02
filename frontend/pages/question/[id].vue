@@ -11,45 +11,42 @@
         >
           <!-- Custom rendering for Legal provision articles -->
           <template #domestic-legal-provisions="{ value }">
-            <QuestionSourceList
-              :sources="
-                [
-                  ...(value ||
-                  processedAnswerData?.['Domestic Legal Provisions'] ||
-                  processedAnswerData?.['Jurisdictions Literature ID']
-                    ? [
-                        value ||
-                          processedAnswerData?.['Domestic Legal Provisions'] ||
-                          processedAnswerData?.['Jurisdictions Literature ID'],
-                      ]
-                    : []),
-                ].filter(Boolean)
-              "
-              :fallbackData="processedAnswerData"
-              :valueClassMap="valueClassMap"
-              :noLinkList="[
-                processedAnswerData?.['Jurisdictions Literature ID'],
-              ]"
-              :fetchOupChapter="true"
-              :fetchPrimarySource="true"
-            />
+            <section>
+              <span class="label">Source</span>
+              <QuestionSourceList
+                :sources="
+                  [
+                    ...(value ||
+                    processedAnswerData?.['Domestic Legal Provisions']
+                      ? [
+                          value ||
+                            processedAnswerData?.['Domestic Legal Provisions'],
+                        ]
+                      : []),
+                  ].filter(Boolean)
+                "
+                :fallbackData="processedAnswerData"
+                :valueClassMap="valueClassMap"
+                :fetchOupChapter="true"
+                :fetchPrimarySource="true"
+              />
+            </section>
           </template>
 
           <!-- Custom rendering for Court Decisions ID -->
           <template #court-decisions-id="{ value }">
-            <div v-if="Array.isArray(value) && value.length">
-              <ul>
-                <li
-                  v-for="(caseId, index) in value"
-                  :key="index"
-                  :class="
-                    valueClassMap['Court Decisions ID'] || 'result-value-small'
-                  "
-                >
-                  <CourtCaseLink :caseId="caseId" />
-                </li>
-              </ul>
-            </div>
+            <section id="related-court-decisions">
+              <span class="label">Related Court Decisions</span>
+              <CourtDecisionRenderer
+                :value="value"
+                :valueClassMap="valueClassMap['Court Decisions ID']"
+                :emptyValueBehavior="
+                  filteredKeyLabelPairs.find(
+                    (pair) => pair.key === 'Court Decisions ID'
+                  )?.emptyValueBehavior
+                "
+              />
+            </section>
           </template>
 
           <!-- Related Literature -->
@@ -60,104 +57,73 @@
             />
           </template>
         </DetailDisplay>
+
+        <!-- Error State -->
+        <div v-if="error" class="text-red-500 mt-4">
+          {{ error }}
+        </div>
       </div>
     </div>
   </main>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
-import { useRoute } from 'vue-router'
-import DetailDisplay from '~/components/DetailDisplay.vue'
-import CourtCaseLink from '~/components/CourtCaseLink.vue'
+<script setup>
+import { onMounted, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
+import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
+import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
+import QuestionSourceList from '~/components/sources/QuestionSourceList.vue'
+import { useQuestion } from '~/composables/useQuestion'
 
-const route = useRoute() // Access the route to get the ID param
-const answerData = ref(null) // Store fetched court decision data
-const loading = ref(true) // Track loading state
+const route = useRoute()
+const router = useRouter()
+const {
+  loading,
+  error,
+  processedAnswerData,
+  filteredKeyLabelPairs,
+  valueClassMap,
+  fetchAnswer,
+} = useQuestion()
 
-const config = useRuntimeConfig()
-
-async function fetchAnswer(id: string) {
-  const jsonPayload = {
-    table: 'Answers',
-    id: id,
-  }
-
+onMounted(async () => {
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonPayload),
-    })
-
-    if (!response.ok) throw new Error('Failed to fetch answer')
-
-    answerData.value = await response.json()
-  } catch (error) {
-    console.error('Error fetching answer:', error)
-  } finally {
-    loading.value = false
-  }
-}
-
-// Define the keys and labels for dynamic rendering
-const keyLabelPairs = [
-  { key: 'Question', label: 'Question' },
-  { key: 'Answer', label: 'Answer' },
-  { key: 'More Information', label: 'More Information' },
-  {
-    key: 'Domestic Legal Provisions',
-    label: 'Source',
-  },
-  { key: 'Court Decisions ID', label: 'related cases' },
-  { key: 'Related Literature', label: '' },
-]
-
-const valueClassMap = {
-  Question: 'result-value-medium',
-  Answer: 'result-value-large',
-  'Domestic Legal Provisions': 'result-value-small',
-  'Court Decisions ID': 'result-value-small',
-
-}
-
-// Preprocess data to handle custom rendering cases
-const processedAnswerData = computed(() => {
-  if (!answerData.value) return null
-  return {
-    ...answerData.value,
-    'Domestic Legal Provisions':
-      answerData.value['Domestic Legal Provisions'] || '',
-    'Court Decisions ID': answerData.value['Court Decisions ID']
-      ? answerData.value['Court Decisions ID']
-          .split(',')
-          .map((caseId) => caseId.trim())
-      : [],
-  }
-})
-
-const filteredKeyLabelPairs = computed(() => {
-  if (!processedAnswerData.value) return keyLabelPairs
-
-  const caseIds = processedAnswerData.value['Court Decisions ID']
-  const hasRelatedCases = Array.isArray(caseIds) && caseIds.length > 0
-
-  return keyLabelPairs.filter((pair) => {
-    if (pair.key === 'Court Decisions ID') {
-      return hasRelatedCases
+    const id = route.params.id
+    await fetchAnswer(id)
+    // Wait for the DOM to update then scroll if the hash is present
+    await nextTick()
+    if (window.location.hash === '#related-court-decisions') {
+      const target = document.getElementById('related-court-decisions')
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth' })
+      }
     }
-    return true
-  })
-})
-
-onMounted(() => {
-  const id = route.params.id as string
-  fetchAnswer(id).then(() => {
-    if (answerData.value?.Themes) {
+  } catch (err) {
+    if (err.isNotFound) {
+      router.push({
+        path: '/error',
+        query: { message: `${err.table} not found` },
+      })
+    } else {
+      console.error('Error fetching question:', err)
     }
-  })
+  }
 })
 </script>
+
+<style>
+/* Harmonized spacing for all .label elements */
+/* .label {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+} */
+
+/* Adjust section spacing to match label spacing */
+/* #related-court-decisions {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding-top: 0;
+  padding-bottom: 0;
+} */
+</style>

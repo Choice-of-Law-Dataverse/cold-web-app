@@ -12,7 +12,7 @@
 
 <img src="https://www.unilu.ch/fileadmin/_processed_/b/a/csm_Weigold_Simon_Q_7a3afcd4c3.jpg" width="150"/>
 
-**Simon Weigold** Data Architect  
+**Simon Weigold** Data Engineer  
 <a href="https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/simon-weigold-ma/" target="_blank">Simon</a> translates the project requirements into a data infrastructure. He implements data management procedures and facilitates systems used to input, store, review, and process data.
 
 <img src="https://www.unilu.ch/fileadmin/_processed_/b/7/csm_Aiolfi_Fabian_Q_b751def4d4.jpg" width="150"/>
@@ -32,7 +32,7 @@ Under the supervision of Prof. Daniel Girsberger and Agatha Brandão, <a href="h
 
 ## Partners
 
-Prof. Geneviève Saumier, McGill / Université de Montréal  
+Prof. Geneviève Saumier, Université de Montréal  
 Prof. Jan L Neels, University of Johannesburg  
 Prof. Eesa A Fredericks, University of Johannesburg
 

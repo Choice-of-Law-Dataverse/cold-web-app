@@ -1,73 +1,125 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <div class="col-span-12">
-        <DetailDisplay
-          :loading="loading"
-          :resultData="literature"
-          :keyLabelPairs="keyLabelPairs"
-          :valueClassMap="valueClassMap"
-          formattedSourceTable="Literature"
-        />
+  <BaseDetailLayout
+    :loading="loading"
+    :resultData="literature"
+    :keyLabelPairs="computedKeyLabelPairs"
+    :valueClassMap="valueClassMap"
+    sourceTable="Literature"
+  >
+    <BaseCardHeader
+      v-if="literature"
+      :resultData="literature"
+      :cardType="'Literature'"
+      :showOpenLink="false"
+      :showSuggestEdit="true"
+    />
+    <template #publication-title="{ value }">
+      <div
+        v-if="value && literature['Item Type'] !== 'book'"
+        class="field-container publication-field"
+      >
+        <p class="label field-label">Publication</p>
+        <p class="result-value-small field-value">
+          {{ value }}
+        </p>
       </div>
-    </div>
-  </main>
+    </template>
+    <template #publisher="{ value }">
+      <div
+        v-if="value && literature['Item Type'] === 'book'"
+        class="field-container publisher-field"
+      >
+        <p class="label field-label">Publisher</p>
+        <p class="result-value-small field-value">
+          {{ value }}
+        </p>
+      </div>
+    </template>
+    <template #url="{ value }">
+      <div v-if="value" class="field-container url-field">
+        <p class="label field-label">Link</p>
+        <p class="result-value-small field-value">
+          <a :href="value" target="_blank" rel="noopener noreferrer">
+            {{ value }}
+          </a>
+        </p>
+      </div>
+    </template>
+    <template #open-access-url="{ value }">
+      <div v-if="value" class="field-container url-field">
+        <p class="label field-label">Open Access URL</p>
+        <p class="result-value-small field-value">
+          <a :href="value" target="_blank" rel="noopener noreferrer">
+            {{ value }}
+          </a>
+        </p>
+      </div>
+    </template>
+  </BaseDetailLayout>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import { useRoute } from 'vue-router'
-import DetailDisplay from '~/components/DetailDisplay.vue'
+<script setup>
+import { onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
+import { useApiFetch } from '~/composables/useApiFetch'
+import { useDetailDisplay } from '~/composables/useDetailDisplay'
+import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
+import { literatureConfig } from '~/config/pageConfigs'
 
-const route = useRoute() // Access the route to get the ID param
-const literature = ref(null) // Store fetched data
-const loading = ref(true) // Track loading state
+const route = useRoute()
+const router = useRouter()
 
-const config = useRuntimeConfig()
+const { loading, error, data: literature, fetchData } = useApiFetch()
 
-async function fetchLiterature(id: string) {
-  const jsonPayload = {
-    table: 'Literature',
-    id: id,
-  }
+const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
+  literature,
+  literatureConfig
+)
 
+onMounted(async () => {
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonPayload),
+    const result = await fetchData({
+      table: 'Literature',
+      id: route.params.id,
     })
-
-    if (!response.ok) throw new Error('Failed to fetch literature')
-
-    literature.value = await response.json()
-  } catch (error) {
-    console.error('Error fetching literature:', error)
-  } finally {
-    loading.value = false
+    // Check if result is null or an empty object
+    if (!result || Object.keys(result).length === 0) {
+      throw { isNotFound: true, table: 'Literature' }
+    }
+  } catch (err) {
+    if (err.isNotFound) {
+      router.push({
+        path: '/error',
+        query: { message: `${err.table} not found` },
+      })
+    } else {
+      console.error('Error fetching literature:', err)
+    }
   }
-}
-
-// Define the keys and labels for dynamic rendering
-const keyLabelPairs = [
-  { key: 'Title', label: 'Title' },
-  { key: 'Author', label: 'Author' },
-  { key: 'Publication Year', label: 'Year' },
-  { key: 'Publication Title', label: 'Publication' },
-]
-
-const valueClassMap = {
-  Title: 'result-value-medium',
-  Author: 'result-value-small',
-  'Publication Year': 'result-value-small',
-  'Publication Title': 'result-value-small',
-}
-
-onMounted(() => {
-  const id = route.params.id as string // Get ID from the route
-  fetchLiterature(id)
 })
 </script>
+
+<style scoped>
+/* Adjust these values to change spacing consistently */
+.field-container {
+  /* default container style for fields */
+}
+.publication-field {
+  /* margin-top: -0.5rem; equivalent to -mt-2 */
+  margin-bottom: 1rem;
+}
+.publisher-field {
+  margin-bottom: 1.5rem;
+}
+.url-field {
+  padding-top: 1rem; /* equivalent to !pt-2 */
+  margin-bottom: 1.5rem;
+}
+.field-label {
+  margin-bottom: 1rem;
+}
+.field-value {
+  margin-bottom: 1rem;
+}
+</style>
