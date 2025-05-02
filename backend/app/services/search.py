@@ -222,20 +222,38 @@ class SearchService:
 
             UNION ALL
 
-            -- International Legal Provisions
-            --SELECT 
-                --'International Legal Provisions' AS source_table,
-                --"ID" AS id,
-                --1.0 AS rank
-            --FROM "International Legal Provisions" AS ilp, params
-            --WHERE 
-                --(array_length(params.tables, 1) IS NULL OR 'International Legal Provisions' = ANY(params.tables))
-                --AND (
-                    --array_length(params.jurisdictions, 1) IS NULL 
-                    --OR ilp."Instrument" = ANY(params.jurisdictions)
-                --)
+            SELECT 
+                'Regional Instruments' AS source_table,
+                "ID" AS id,
+                1.0 AS rank
+            FROM "Regional Instruments" AS ri, params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Regional Instruments' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL
+                )
 
-            --UNION ALL
+            UNION ALL
+
+            SELECT 
+                'International Instruments' AS source_table,
+                "ID" AS id,
+                1.0 AS rank
+            FROM "International Instruments" AS ii, params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'International Instruments' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL
+                )
+
+            UNION ALL
+
 
             SELECT 
                 'Literature' AS source_table,
@@ -367,16 +385,31 @@ class SearchService:
 
             UNION ALL
 
-            --SELECT 1
-            --FROM "International Legal Provisions" AS ilp, params
-            --WHERE 
-                --(array_length(params.tables, 1) IS NULL OR 'International Legal Provisions' = ANY(params.tables))
-                --AND (
-                    --array_length(params.jurisdictions, 1) IS NULL 
-                    --OR ilp."Instrument" = ANY(params.jurisdictions)
-                --)
+            SELECT 1
+            FROM "Regional Instruments" AS ri, params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Regional Instruments' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL
+                )
+            
+            UNION ALL
 
-            --UNION ALL
+            SELECT 1
+            FROM "International Instruments" AS ii, params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'International Instruments' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL
+                )
+
+            UNION ALL
 
             SELECT 1
             FROM "Literature" AS lit, params
@@ -529,28 +562,50 @@ class SearchService:
                     search @@ websearch_to_tsquery('english', '{search_string}')
                     OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
-
+            
             UNION ALL
 
-            -- Search in "International Legal Provisions" table
-            --SELECT 
-                --'International Legal Provisions' AS source_table,
-                --"ID" AS id,
-                --ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-                --ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
-            --FROM "International Legal Provisions" AS ilp, params
-            --WHERE 
-                --(array_length(params.tables, 1) IS NULL OR 'International Legal Provisions' = ANY(params.tables))
-                --AND (
-                    --array_length(params.jurisdictions, 1) IS NULL 
-                    --OR ilp."Instrument" = ANY(params.jurisdictions)
-                --)
-                --AND (
-                    --search @@ websearch_to_tsquery('english', '{search_string}')
-                    --OR search @@ websearch_to_tsquery('simple', '{search_string}')
-                --)
+            SELECT 
+                'Regional Instruments' AS source_table,
+                "ID" AS id,
+                ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+            FROM "Regional Instruments" AS ri, params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Regional Instruments' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL
+                )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
+            
+            UNION ALL
 
-            --UNION ALL
+            SELECT 
+                'International Instruments' AS source_table,
+                "ID" AS id,
+                ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+            FROM "International Instruments" AS ii, params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'International Instruments' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL
+                )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
+
+            UNION ALL
 
             SELECT 
                 'Literature' AS source_table,
@@ -698,20 +753,39 @@ class SearchService:
 
             UNION ALL
 
-            --SELECT 1
-            --FROM "International Legal Provisions" AS ilp, params
-            --WHERE 
-                --(array_length(params.tables, 1) IS NULL OR 'International Legal Provisions' = ANY(params.tables))
-                --AND (
-                    --array_length(params.jurisdictions, 1) IS NULL 
-                    --OR ilp."Instrument" = ANY(params.jurisdictions)
-                --)
-                --AND (
-                    --search @@ websearch_to_tsquery('english', '{search_string}')
-                    --OR search @@ websearch_to_tsquery('simple', '{search_string}')
-                --)
+            SELECT 1
+            FROM "Regional Instruments" AS ri, params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'Regional Instruments' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL
+                )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
 
-            --UNION ALL
+            UNION ALL
+
+            SELECT 1
+            FROM "International Instruments" AS ii, params
+            WHERE 
+                (array_length(params.tables, 1) IS NULL OR 'International Instruments' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL
+                )
+                AND (
+                    array_length(params.themes, 1) IS NULL
+                )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
+
+            UNION ALL
 
             SELECT 1
             FROM "Literature" AS lit, params
