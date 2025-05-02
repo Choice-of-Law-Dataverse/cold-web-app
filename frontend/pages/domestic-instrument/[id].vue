@@ -4,7 +4,7 @@
     :resultData="processedLegalInstrument"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
-    sourceTable="Legal Instrument"
+    sourceTable="Domestic Instrument"
   >
     <template #entry-into-force="{ value }">
       <div v-if="value">

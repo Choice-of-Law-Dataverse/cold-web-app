@@ -164,12 +164,12 @@ li::marker {
   border: 1px solid var(--color-label-court-decision);
 }
 
-.label-legal-instrument {
+.label-domestic-instrument {
   @extend .label;
-  color: var(--color-label-legal-instrument);
+  color: var(--color-label-domestic-instrument);
   padding: 2px 6px;
-  background-color: var(--color-label-legal-instrument-alpha);
-  border: 1px solid var(--color-label-legal-instrument);
+  background-color: var(--color-label-domestic-instrument-alpha);
+  border: 1px solid var(--color-label-domestic-instrument);
 }
 
 .label-literature {

@@ -164,6 +164,50 @@ export const legislationCardConfig = {
     }
 }
 
+export const regionalInstrumentCardConfig = {
+    keyLabelPairs: [
+        {
+            key: 'Name',
+            label: 'Name',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No title available'
+            }
+        },
+    ],
+    valueClassMap: {
+        'Name': 'result-value-medium',
+    },
+    gridConfig: {
+        name: {
+            columnSpan: 'md:col-span-6',
+            startColumn: 'md:col-start-1'
+        }
+    },
+}
+
+export const internationalInstrumentCardConfig = {
+    keyLabelPairs: [
+        {
+            key: 'Name',
+            label: 'Name',
+            emptyValueBehavior: {
+                action: 'display',
+                fallback: 'No title available'
+            }
+        },
+    ],
+    valueClassMap: {
+        'Name': 'result-value-medium',
+    },
+    gridConfig: {
+        name: {
+            columnSpan: 'md:col-span-6',
+            startColumn: 'md:col-start-1'
+        }
+    },
+}
+
 export const literatureCardConfig = {
     keyLabelPairs: [
         {
