@@ -248,6 +248,10 @@ function getLink() {
       return `/court-decision/${props.resultData.id}`
     case 'Domestic Instrument':
       return `/domestic-instrument/${props.resultData.id}`
+    case 'Regional Instrument':
+      return `/regional-instrument/${props.resultData.id}`
+    case 'International Instrument':
+      return `/international-instrument/${props.resultData.id}`
     case 'Literature':
       return `/literature/${props.resultData.id}`
     default:
