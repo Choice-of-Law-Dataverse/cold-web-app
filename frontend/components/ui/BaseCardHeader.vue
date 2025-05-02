@@ -78,17 +78,21 @@
 </template>
 
 <script setup>
-import { computed, reactive } from 'vue'
+import { onMounted, ref, computed, reactive } from 'vue'
+import { useRoute } from 'vue-router'
 import jurisdictionsData from '../../assets/jurisdictions-data.json' // added import
 import { handleImageError } from '../../utils/handleImageError'
 
-const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
+const route = useRoute()
+const pdfExists = ref(false)
 
-// Computed property to generate the prefilled form URL with hidden field
-const suggestEditLink = computed(() => {
-  if (import.meta.server) return '#' // Prevent issues on SSR
-  const currentPageURL = encodeURIComponent(window.location.href)
-  return `https://airtable.com/${airtableFormID}?prefill_URL=${currentPageURL}&hide_URL=true`
+const downloadPDFLink = computed(() => {
+  const segments = route.path.split('/').filter(Boolean) // removes empty parts from path like ['', 'court-decision', 'CD-ARE-1128']
+  const contentType = segments[0] || 'unknown' // e.g., 'court-decision'
+  const id = segments[1] || '' // e.g., 'CD-ARE-1128'
+  // If your Azure folders always follow the plural of the content type
+  const folder = `${contentType}s`
+  return `https://choiceoflawdataverse.blob.core.windows.net/${folder}/${id}.pdf`
 })
 
 // Props
@@ -215,28 +219,33 @@ const fadeOutClasses = computed(() => ({
 }))
 
 // New computed property for action items in "Suggest Edit" area
-const suggestEditActions = computed(() => [
-  {
-    label: 'Link',
-    icon: 'i-material-symbols:language',
-    to: 'https://example.net/',
-  },
-  {
-    label: 'Cite',
-    icon: 'i-material-symbols:verified-outline',
-    class: 'gray-link',
-  },
-  {
-    label: 'PDF',
-    icon: 'i-material-symbols:arrow-circle-down-outline',
-    to: 'https://choiceoflawdataverse.blob.core.windows.net/assets/dummy.pdf',
-  },
-  {
+const suggestEditActions = computed(() => {
+  const actions = [
+    {
+      label: 'Link',
+      icon: 'i-material-symbols:language',
+      to: 'https://example.net/',
+    },
+    {
+      label: 'Cite',
+      icon: 'i-material-symbols:verified-outline',
+      class: 'gray-link',
+    },
+  ]
+  if (pdfExists.value) {
+    actions.push({
+      label: 'PDF',
+      icon: 'i-material-symbols:arrow-circle-down-outline',
+      to: downloadPDFLink.value,
+    })
+  }
+  actions.push({
     label: 'Edit',
     icon: 'i-material-symbols:edit-square-outline',
     to: suggestEditLink.value,
-  },
-])
+  })
+  return actions
+})
 
 // Methods
 function getLink() {
@@ -259,6 +268,20 @@ function getLink() {
   }
 }
 
+onMounted(async () => {
+  const res = await $fetch('/api/check-pdf-exists', {
+    query: { url: downloadPDFLink.value },
+  })
+  pdfExists.value = res.exists
+})
+
+const suggestEditLink = ref('')
+const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
+
+onMounted(() => {
+  const currentURL = window.location.href
+  suggestEditLink.value = `https://airtable.com/${airtableFormID}?prefill_URL=${encodeURIComponent(currentURL)}&hide_URL=true`
+})
 function getJurisdictionISO(name) {
   const entry = jurisdictionsData.find((item) => item.name.includes(name))
   return entry ? entry.alternative[0].toLowerCase() : 'default'
