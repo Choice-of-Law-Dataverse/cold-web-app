@@ -219,28 +219,33 @@ const fadeOutClasses = computed(() => ({
 }))
 
 // New computed property for action items in "Suggest Edit" area
-const suggestEditActions = computed(() => [
-  {
-    label: 'Link',
-    icon: 'i-material-symbols:language',
-    to: 'https://example.net/',
-  },
-  {
-    label: 'Cite',
-    icon: 'i-material-symbols:verified-outline',
-    class: 'gray-link',
-  },
-  {
-    label: 'PDF',
-    icon: 'i-material-symbols:arrow-circle-down-outline',
-    to: downloadPDFLink.value, // Use the dynamic PDF link
-  },
-  {
+const suggestEditActions = computed(() => {
+  const actions = [
+    {
+      label: 'Link',
+      icon: 'i-material-symbols:language',
+      to: 'https://example.net/',
+    },
+    {
+      label: 'Cite',
+      icon: 'i-material-symbols:verified-outline',
+      class: 'gray-link',
+    },
+  ]
+  if (pdfExists.value) {
+    actions.push({
+      label: 'PDF',
+      icon: 'i-material-symbols:arrow-circle-down-outline',
+      to: downloadPDFLink.value,
+    })
+  }
+  actions.push({
     label: 'Edit',
     icon: 'i-material-symbols:edit-square-outline',
     to: suggestEditLink.value,
-  },
-])
+  })
+  return actions
+})
 
 // Methods
 function getLink() {
