@@ -8,21 +8,20 @@
           config.gridConfig.title.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Title (in English)') }}</div>
+        <div class="label-key">{{ getLabel('Name') }}</div>
         <div
           :class="[
-            config.valueClassMap['Title (in English)'],
+            config.valueClassMap['Name'],
             'text-sm leading-relaxed whitespace-pre-line',
-            (!processedResultData['Title (in English)'] ||
-              processedResultData['Title (in English)'] === 'NA') &&
-            config.keyLabelPairs.find(
-              (pair) => pair.key === 'Title (in English)'
-            )?.emptyValueBehavior?.action === 'display'
+            (!processedResultData['Name'] ||
+              processedResultData['Name'] === 'NA') &&
+            config.keyLabelPairs.find((pair) => pair.key === 'Name')
+              ?.emptyValueBehavior?.action === 'display'
               ? 'text-gray-300'
               : '',
           ]"
         >
-          {{ getValue('Title (in English)') }}
+          {{ getValue('Name') }}
         </div>
       </div>
     </div>
@@ -32,7 +31,7 @@
 <script setup>
 import { computed } from 'vue'
 import ResultCard from './ResultCard.vue'
-import { regionalInstrumentConfig } from '../../config/pageConfigs'
+import { regionalInstrumentCardConfig } from '../../config/cardConfigs'
 
 const props = defineProps({
   resultData: {
@@ -42,7 +41,7 @@ const props = defineProps({
 })
 
 const config = {
-  ...regionalInstrumentConfig,
+  ...regionalInstrumentCardConfig,
   gridConfig: {
     title: {
       columnSpan: 'md:col-span-12',
