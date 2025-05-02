@@ -209,7 +209,7 @@ const loadJurisdictions = async () => {
 
     // Sort alphabetically by label
     const sortedJurisdictions = mappedJurisdictions.sort((a, b) =>
-      a.label.localeCompare(b.label)
+      (a.label || '').localeCompare(b.label || '')
     )
 
     // Prepend "All Jurisdictions" to the list
