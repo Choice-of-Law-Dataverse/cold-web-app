@@ -233,7 +233,7 @@ const suggestEditActions = computed(() => [
   {
     label: 'PDF',
     icon: 'i-material-symbols:arrow-circle-down-outline',
-    to: 'https://choiceoflawdataverse.blob.core.windows.net/assets/dummy.pdf',
+    to: downloadPDFLink.value, // Use the dynamic PDF link
   },
   {
     label: 'Edit',
