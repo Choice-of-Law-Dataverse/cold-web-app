@@ -156,6 +156,12 @@ class SearchService:
                         WHERE ans."Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
+                AND NOT (
+                    "ID"::text LIKE '%32-AoC' OR 
+                    "ID"::text LIKE '%33-FC' OR 
+                    "ID"::text LIKE '%35-FV' OR 
+                    "ID"::text LIKE '%36-FV'
+                )
 
             UNION ALL
 
@@ -330,6 +336,12 @@ class SearchService:
                         WHERE ans."Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
+                AND NOT (
+                    "ID"::text LIKE '%32-AoC' OR 
+                    "ID"::text LIKE '%33-FC' OR 
+                    "ID"::text LIKE '%35-FV' OR 
+                    "ID"::text LIKE '%36-FV'
+                )
 
             UNION ALL
 
@@ -482,6 +494,12 @@ class SearchService:
                 AND (
                     search @@ websearch_to_tsquery('english', '{search_string}')
                     OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
+                AND NOT (
+                    "ID"::text LIKE '%32-AoC' OR 
+                    "ID"::text LIKE '%33-FC' OR 
+                    "ID"::text LIKE '%35-FV' OR 
+                    "ID"::text LIKE '%36-FV'
                 )
 
             UNION ALL
@@ -685,6 +703,12 @@ class SearchService:
                 AND (
                     search @@ websearch_to_tsquery('english', '{search_string}')
                     OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
+                AND NOT (
+                    "ID"::text LIKE '%32-AoC' OR 
+                    "ID"::text LIKE '%33-FC' OR 
+                    "ID"::text LIKE '%35-FV' OR 
+                    "ID"::text LIKE '%36-FV'
                 )
 
             UNION ALL
