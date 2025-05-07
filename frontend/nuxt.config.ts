@@ -13,6 +13,7 @@ export default defineNuxtConfig({
     'nuxt-purgecss',
     'nuxt-plotly',
     '@nuxtjs/robots',
+    'nuxt-gtag',
   ],
   runtimeConfig: {
     public: {
@@ -80,4 +81,7 @@ export default defineNuxtConfig({
     dirs: ['utils'],
     presets: ['vue']
   },
+  gtag: {
+    id: 'G-ZSYHMWVVRH'
+  }
 });
