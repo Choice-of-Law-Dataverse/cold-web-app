@@ -20,11 +20,6 @@ Prof Geneviève Saumier is the dean of the Faculty of Law of the Université de 
 **CEDEP**  
 CEDEP is a research institute with global outreach that promotes courses and events closely related to the studies developed by this project.
 
-<img src="https://choiceoflawdataverse.blob.core.windows.net/assets/schweizerische-eidgenossenschaft-logo-bw.svg" width="200"/>
-
-**Federal Office of Justice**  
-The Swiss Federal Office of Justice has shown interest in using the Dataverse as a valuable source of information for undertaking its international analyses.
-
 <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/universitaet-luzern-logo-bw.svg" width="170"/>
 
 **The Lucerne Master in Computational Social Sciences**  
