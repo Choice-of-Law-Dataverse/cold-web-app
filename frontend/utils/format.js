@@ -16,4 +16,10 @@ export function formatDate(dateString) {
         month: 'long',
         day: 'numeric'
     })
-} 
+}
+
+export function formatYear(dateString) {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    return isNaN(date) ? '' : date.getFullYear()
+}

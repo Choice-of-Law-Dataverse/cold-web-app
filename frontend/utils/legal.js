@@ -8,7 +8,7 @@ export function parseLegalProvisionLink(provision) {
 
 export function generateLegalProvisionLink(provision) {
     const { instrumentId, articleId } = parseLegalProvisionLink(provision)
-    return `/legal-instrument/${instrumentId}#${articleId}`
+    return `/domestic-instrument/${instrumentId}#${articleId}`
 }
 
 export function getProvisionClass(content, defaultClass) {

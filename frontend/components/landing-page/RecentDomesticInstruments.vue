@@ -11,7 +11,7 @@
       </div>
       <template v-else>
         <div v-for="(instrument, index) in domesticInstruments" :key="index">
-          <RouterLink :to="`/legal-instrument/${instrument.ID}`">
+          <RouterLink :to="`/domestic-instrument/${instrument.ID}`">
             <UButton
               class="suggestion-button mt-8"
               variant="link"
@@ -26,7 +26,7 @@
               <span class="break-words text-left">
                 {{
                   instrument['Entry Into Force']
-                    ? formatDate(instrument['Entry Into Force'])
+                    ? formatYear(instrument['Entry Into Force'])
                     : instrument['Date']
                 }}:
                 {{ instrument['Title (in English)'] }}
