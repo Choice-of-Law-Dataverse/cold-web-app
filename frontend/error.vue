@@ -11,7 +11,7 @@
       >
         <h2>{{ errorMessage }}</h2>
 
-        <NuxtLink to="/" class="mt-6"> Back to Home </NuxtLink>
+        <NuxtLink to="/" class="mt-6"> Take me back to Home </NuxtLink>
       </div>
     </main>
 
@@ -25,5 +25,6 @@ import Footer from '~/components/layout/Footer.vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
-const errorMessage = route.query.message || 'An error occurred'
+const errorMessage =
+  route.query.message || 'Sorry, we can’t find the page you’re looking for.'
 </script>
