@@ -70,7 +70,9 @@
                 class="suggestion-item"
                 @click="handleSuggestionClick(suggestion)"
               >
-                <span class="suggestion-text">Filter by: {{ suggestion }}</span>
+                <span class="suggestion-text"
+                  >Only show results from {{ suggestion }}</span
+                >
               </div>
             </div>
           </div>
