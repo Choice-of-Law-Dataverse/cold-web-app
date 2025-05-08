@@ -60,7 +60,7 @@
 
           <!-- Suggestions -->
           <div
-            v-if="showSuggestions"
+            v-if="isSearchFocused && showSuggestions"
             class="suggestions w-full border-b border-cold-gray"
           >
             <div class="suggestions-inner">
@@ -135,6 +135,7 @@ const isExpanded = ref(false) // Track if the input is expanded
 const isSmallScreen = ref(false)
 const suggestions = ref([]) // Add suggestions state
 const showSuggestions = ref(false) // Add visibility state for suggestions
+const isSearchFocused = ref(false)
 
 const searchInput = ref(null)
 
@@ -234,10 +235,12 @@ function emitSearch() {
 
 function expandSearch() {
   isExpanded.value = true
+  isSearchFocused.value = true
 }
 
 function collapseSearch() {
   isExpanded.value = false
+  isSearchFocused.value = false
   // Add a small delay before hiding suggestions to allow clicking
   setTimeout(() => {
     if (!document.activeElement?.closest('.suggestions-list')) {
