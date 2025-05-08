@@ -8,7 +8,6 @@
           class="main-content prose -space-y-10 flex flex-col gap-12 px-6 w-full"
         >
           <ContentDoc path="/methodology_intro" />
-          <ContentDoc path="/methodology_search" />
           <ContentDoc path="/methodology_questionnaire_intro" />
           <ContentDoc path="/methodology_questionnaire" />
         </div>
