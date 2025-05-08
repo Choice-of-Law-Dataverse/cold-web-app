@@ -58,17 +58,27 @@ export const literatureConfig = {
             }
         },
         {
-            key: 'Url',
-            label: 'Link',
+            key: 'Open Access URL',
+            label: 'Open Access URL',
             emptyValueBehavior: {
                 action: 'hide'
             }
         },
         {
-            key: 'Open Access URL',
-            label: 'Open Access URL',
+            key: 'Url',
+            label: 'Link',
             emptyValueBehavior: {
-                action: 'hide'
+                action: 'hide',
+                shouldDisplay: (data) => {
+                    const openAccessUrl = data['Open Access URL'];
+                    const url = data['Url'];
+                    // If Open Access URL is present and not empty, hide Url
+                    if (openAccessUrl && openAccessUrl.trim() !== '') return false;
+                    // If Url is present and not empty, show Url
+                    if (url && url.trim() !== '') return true;
+                    // If both are empty, hide section
+                    return false;
+                }
             }
         },
         {
