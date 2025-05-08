@@ -28,7 +28,12 @@
 <img src="https://www.unilu.ch/fileadmin/_processed_/6/6/csm_Shpakova_Olga_Q_451e7ba545.jpg" width="150"/>
 
 **Olga Shpakova** Data Scientist  
-Under the supervision of Prof. Daniel Girsberger and Agatha Brandão, <a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/olga-shpakova-bsc/" target="_blank">Olga</a> researches the application of large language models in the legal field. She has been employed as a research assistant in the project since March 2024.
+Under the supervision of Prof. Daniel Girsberger and Agatha Brandão, Olga researches the application of large language models in the legal field. She joined the team in March 2024 and worked as a research assistant for a year.
+
+<img src="https://www.unilu.ch/fileadmin/_processed_/e/f/csm_Tovar_Rorick_Q_34c41b210f.jpg" width="150"/>
+
+**Rorick Daniel Tovar Galván** Senior Researcher  
+<a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/dr-rorick-daniel-tovar-galvan-llm/" target="_blank">Rorick</a> holds a Ph.D. from the University of Bern, Switzerland. He oversees data input from Latin American countries into the Dataverse.
 
 ## Partners
 
