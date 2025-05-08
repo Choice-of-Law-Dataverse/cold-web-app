@@ -55,8 +55,8 @@ h2 {
 }
 
 h3 {
-  font-size: 20px !important;
-  font-weight: 400 !important; // Regular
+  font-size: 16px !important;
+  font-weight: 600 !important; // Medium
   color: var(--color-cold-night) !important;
 }
 
@@ -77,13 +77,34 @@ a {
   margin-bottom: 24px !important;
 }
 
+.markdown-body h2 > a,
+.markdown-body h3 > a,
+.prose h2 > a,
+.prose h3 > a,
+.content h2 > a,
+.content h3 > a {
+  color: inherit !important;
+  text-decoration: none;
+}
+
+h1 > a,
+h2 > a,
+h3 > a,
+h4 > a,
+h5 > a,
+h6 > a {
+  font-weight: inherit !important;
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
 // Lists
 ol {
   list-style: decimal !important; // Ensure numbers appear
 }
 
 ul {
-  list-style-type: disc;
+  list-style-type: disc !important;
   margin: 0 !important;
   padding: 0.5rem 0 1.5rem 1.5rem !important;
 }
@@ -232,6 +253,7 @@ li::marker {
 .suggestion-button {
   color: var(--color-cold-purple) !important;
   font-size: 20px !important;
+  font-weight: 500 !important;
   text-decoration: none !important;
   padding: 0 !important;
 }

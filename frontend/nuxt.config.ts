@@ -46,7 +46,7 @@ export default defineNuxtConfig({
   content: {
     documentDriven: false,
     markdown: {
-      anchorLinks: false,
+      anchorLinks: true,
     }
   },
   colorMode: {

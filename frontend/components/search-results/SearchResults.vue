@@ -87,7 +87,10 @@
           </div>
 
           <div v-if="!loading" class="result-value-small text-center pt-4">
-            <UButton to="/learn/methodology#How-the-Search-Works" variant="link"
+            <UButton
+              to="https://choice-of-law-dataverse.github.io/docs/postgres-fts.html"
+              variant="link"
+              target="_blank"
               >Learn How the Search Works</UButton
             >
             <UIcon

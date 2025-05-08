@@ -20,10 +20,7 @@
   >
     <!-- Custom Column Templates -->
     <template #Answer-data="{ row }">
-      <NuxtLink
-        :to="`/question/${row.ID}`"
-        class="text-blue-500 hover:underline"
-      >
+      <NuxtLink :to="`/question/${row.ID}`">
         {{ row.Answer }}
       </NuxtLink>
     </template>
@@ -59,9 +56,21 @@
       <NuxtLink
         v-if="column.key.startsWith('Answer')"
         :to="`/question/${row[column.key + '_ID'] || row.ID}`"
-        class="text-blue-500 hover:underline"
       >
-        {{ row[column.key] }}
+        <template
+          v-if="
+            typeof row[column.key] === 'string' && row[column.key].includes(',')
+          "
+        >
+          <ul>
+            <li v-for="(item, idx) in row[column.key].split(',')" :key="idx">
+              {{ item.trim() }}
+            </li>
+          </ul>
+        </template>
+        <template v-else>
+          {{ row[column.key] }}
+        </template>
       </NuxtLink>
 
       <!-- Handle 'Match' column -->
