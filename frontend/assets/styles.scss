@@ -77,6 +77,13 @@ a {
   margin-bottom: 24px !important;
 }
 
+.markdown-body h2 > a,
+.prose h2 > a,
+.content h2 > a {
+  color: inherit !important;
+  text-decoration: none;
+}
+
 // Lists
 ol {
   list-style: decimal !important; // Ensure numbers appear
