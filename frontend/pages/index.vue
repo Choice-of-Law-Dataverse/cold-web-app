@@ -33,12 +33,19 @@
         </div>
         <div class="col-span-12 sm:col-span-4">
           <NumberCard
-            title="Number of Court Decisions"
+            title="Available Court Decisions"
             buttonText="See all"
             buttonLink="/search?type=Court+Decisions"
           />
         </div>
-        <div class="col-span-12">
+        <div class="col-span-12 sm:col-span-4">
+          <NumberCard
+            title="Available Domestic Instruments"
+            buttonText="See all"
+            buttonLink="/search?type=Domestic+Instruments"
+          />
+        </div>
+        <div class="col-span-8">
           <RecentDomesticInstruments />
         </div>
         <div class="col-span-12 md:col-span-8">
