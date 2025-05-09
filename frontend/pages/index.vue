@@ -53,6 +53,16 @@
           <PlotCourtDecisionsJurisdiction />
         </div>
 
+        <div class="col-span-12 sm:col-span-4">
+          <ConnectCard
+            title="Transnational Standard"
+            buttonText="HCCH Principles"
+            buttonLink="/international-instrument/II-HCC-1"
+            imageSrc="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch-logo.svg"
+            :newTab="false"
+          />
+        </div>
+
         <div class="col-span-12">
           <SuccessfulLegalTransplantations />
         </div>

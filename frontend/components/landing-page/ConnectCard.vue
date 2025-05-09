@@ -7,11 +7,16 @@
         :target="newTab ? '_blank' : '_self'"
         :rel="newTab ? 'noopener noreferrer' : ''"
       >
-        <Icon
-          :name="iconName"
-          size="72"
-          :style="{ color: 'var(--color-cold-green)' }"
-        />
+        <template v-if="imageSrc">
+          <img :src="imageSrc" alt="" style="height: 72px; max-width: 100%" />
+        </template>
+        <template v-else>
+          <Icon
+            :name="iconName"
+            size="72"
+            :style="{ color: 'var(--color-cold-green)' }"
+          />
+        </template>
       </a>
     </div>
     <div class="link-container">
@@ -49,7 +54,13 @@ const props = defineProps({
   },
   iconName: {
     type: String,
-    required: true,
+    required: false,
+    default: '',
+  },
+  imageSrc: {
+    type: String,
+    required: false,
+    default: '',
   },
   newTab: {
     type: Boolean,
