@@ -1,6 +1,6 @@
 <template>
   <UCard class="cold-ucard">
-    <h2 class="popular-title">Top 10 Jurisdictions by Court Decisions</h2>
+    <h2 class="popular-title">Court Decisions by Jurisdiction</h2>
     <p class="result-value-small">
       Click bars to see a jurisdiction's decisions
     </p>
