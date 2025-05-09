@@ -16,6 +16,8 @@ For website and data input
 - Language: `en-US` – English as used in the United States
 - Apply "Bluebook" title case style for titles, convert titles [here](https://titlecaseconverter.com/)
 - When in doubt, look to [George](https://en.wikipedia.org/wiki/Politics_and_the_English_Language#Remedy_of_Six_Rules)
+Legal Terminology
+- non-State law
 
 ## Running the web app on your local machine
 - Open Terminal
