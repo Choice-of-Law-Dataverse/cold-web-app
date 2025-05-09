@@ -27,9 +27,7 @@ const props = defineProps({
   title: { type: String, required: true },
   buttonText: { type: String, required: true },
   buttonLink: { type: String, required: true },
-  tableName: { type: String, required: true }, // NEW: Table name for API filter
-  iconName: { type: String, required: false },
-  newTab: { type: Boolean, default: true },
+  tableName: { type: String, required: true },
 })
 
 const number = ref(null)
