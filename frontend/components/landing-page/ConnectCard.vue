@@ -8,7 +8,7 @@
         :rel="newTab ? 'noopener noreferrer' : ''"
       >
         <template v-if="imageSrc">
-          <img :src="imageSrc" alt="" style="height: 72px; max-width: 100%" />
+          <img :src="imageSrc" alt="" style="height: 100px; max-width: 100%" />
         </template>
         <template v-else>
           <Icon

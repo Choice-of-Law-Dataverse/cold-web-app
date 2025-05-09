@@ -58,7 +58,7 @@
             title="Transnational Standard"
             buttonText="HCCH Principles"
             buttonLink="/international-instrument/II-HCC-1"
-            imageSrc="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch-logo.svg"
+            imageSrc="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch-logo-circle.svg"
             :newTab="false"
           />
         </div>
