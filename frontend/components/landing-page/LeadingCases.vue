@@ -25,8 +25,8 @@
               />
               <span class="break-words text-left">
                 {{
-                  decision['Entry Into Force']
-                    ? formatYear(decision['Entry Into Force'])
+                  decision['Publication Date ISO']
+                    ? formatYear(decision['Publication Date ISO'])
                     : decision['Date']
                 }}:
                 {{ decision['Case Title'] }}
@@ -74,8 +74,12 @@ async function fetchCourtDecisions() {
     if (!response.ok) throw new Error('Failed to load data')
     const decisionsData = await response.json()
     // Convert Date to number, sort descending and take the n most recent
-    decisionsData.sort((a, b) => Number(b.Date) - Number(a.Date))
-    courtDecisions.value = decisionsData.slice(0, 7)
+    decisionsData.sort(
+      (a, b) =>
+        formatYear(b['Publication Date ISO']) -
+        formatYear(a['Publication Date ISO'])
+    )
+    courtDecisions.value = decisionsData.slice(0, 5)
   } catch (error) {
     console.error(error)
     courtDecisions.value = []
