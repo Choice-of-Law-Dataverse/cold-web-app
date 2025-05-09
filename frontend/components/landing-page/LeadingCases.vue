@@ -10,8 +10,8 @@
         <LoadingLandingPageCard />
       </div>
       <template v-else>
-        <div v-for="(instrument, index) in domesticInstruments" :key="index">
-          <RouterLink :to="`/court-decision/${instrument.ID}`">
+        <div v-for="(decision, index) in courtDecisions" :key="index">
+          <RouterLink :to="`/court-decision/${decision.ID}`">
             <UButton
               class="suggestion-button mt-8"
               variant="link"
@@ -19,17 +19,17 @@
               trailing
             >
               <img
-                :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
+                :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${decision['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
                 style="height: 20px; border: 1px solid var(--color-cold-gray)"
                 class="mr-3"
               />
               <span class="break-words text-left">
                 {{
-                  instrument['Entry Into Force']
-                    ? formatYear(instrument['Entry Into Force'])
-                    : instrument['Date']
+                  decision['Entry Into Force']
+                    ? formatYear(decision['Entry Into Force'])
+                    : decision['Date']
                 }}:
-                {{ instrument['Case Title'] }}
+                {{ decision['Case Title'] }}
               </span>
             </UButton>
           </RouterLink>
@@ -45,11 +45,11 @@ import { useRuntimeConfig } from '#app'
 import { RouterLink } from 'vue-router'
 import LoadingLandingPageCard from '../layout/LoadingLandingPageCard.vue'
 
-const domesticInstruments = ref([])
+const courtDecisions = ref([])
 const isLoading = ref(true) // Added loading state
 const config = useRuntimeConfig()
 
-async function fetchDomesticInstruments() {
+async function fetchCourtDecisions() {
   try {
     const payload = {
       table: 'Court Decisions',
@@ -72,19 +72,19 @@ async function fetchDomesticInstruments() {
       }
     )
     if (!response.ok) throw new Error('Failed to load data')
-    const instrumentsData = await response.json()
+    const decisionsData = await response.json()
     // Convert Date to number, sort descending and take the n most recent
-    instrumentsData.sort((a, b) => Number(b.Date) - Number(a.Date))
-    domesticInstruments.value = instrumentsData.slice(0, 7)
+    decisionsData.sort((a, b) => Number(b.Date) - Number(a.Date))
+    courtDecisions.value = decisionsData.slice(0, 7)
   } catch (error) {
     console.error(error)
-    domesticInstruments.value = []
+    courtDecisions.value = []
   } finally {
     isLoading.value = false // Set loading to false once finished
   }
 }
 
-onMounted(fetchDomesticInstruments)
+onMounted(fetchCourtDecisions)
 </script>
 
 <style scoped></style>
