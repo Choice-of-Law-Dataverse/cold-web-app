@@ -9,7 +9,7 @@
       >
         <Icon
           :name="iconName"
-          size="96"
+          size="72"
           :style="{ color: 'var(--color-cold-green)' }"
         />
       </a>
