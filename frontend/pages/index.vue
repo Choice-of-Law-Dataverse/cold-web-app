@@ -36,6 +36,7 @@
             title="Available Court Decisions"
             buttonText="See all"
             buttonLink="/search?type=Court+Decisions"
+            tableName="Court Decisions"
           />
         </div>
         <div class="col-span-12 sm:col-span-4">
@@ -43,6 +44,7 @@
             title="Available Domestic Instruments"
             buttonText="See all"
             buttonLink="/search?type=Domestic+Instruments"
+            tableName="Domestic Instruments"
           />
         </div>
         <div class="col-span-8">
