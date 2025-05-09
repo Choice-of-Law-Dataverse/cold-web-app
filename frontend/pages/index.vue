@@ -31,6 +31,13 @@
         <div class="col-span-12">
           <CountrySelectMenu />
         </div>
+        <div class="col-span-12 sm:col-span-4">
+          <NumberCard
+            title="Number of Court Decisions"
+            buttonText="See all"
+            buttonLink="/search?type=Court+Decisions"
+          />
+        </div>
         <div class="col-span-12">
           <RecentDomesticInstruments />
         </div>
@@ -84,8 +91,9 @@ import JurisdictionMap from '~/components/landing-page/JurisdictionMap.vue'
 import CountrySelectMenu from '~/components/landing-page/TempJurisdictionPicker.vue'
 import PlotCourtDecisionsJurisdiction from '~/components/landing-page/PlotCourtDecisionsJurisdiction.vue'
 import ConnectCard from '~/components/landing-page/ConnectCard.vue'
+import NumberCard from '~/components/landing-page/NumberCard.vue'
 import { externalLinks } from '~/utils/externalLinks'
 import RecentDomesticInstruments from '~/components/landing-page/RecentDomesticInstruments.vue'
-import LoadingLandingPageCard from '~/components/layout/LoadingLandingPageCard.vue'
+// import LoadingLandingPageCard from '~/components/layout/LoadingLandingPageCard.vue'
 const links = externalLinks
 </script>
