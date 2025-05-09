@@ -53,6 +53,10 @@
           <PlotCourtDecisionsJurisdiction />
         </div>
 
+        <div class="col-span-12">
+          <SuccessfulLegalTransplantations />
+        </div>
+
         <div class="col-span-12 sm:col-span-4">
           <ConnectCard
             title="CoLD Newsletter"
@@ -102,6 +106,6 @@ import ConnectCard from '~/components/landing-page/ConnectCard.vue'
 import NumberCard from '~/components/landing-page/NumberCard.vue'
 import { externalLinks } from '~/utils/externalLinks'
 import RecentDomesticInstruments from '~/components/landing-page/RecentDomesticInstruments.vue'
-// import LoadingLandingPageCard from '~/components/layout/LoadingLandingPageCard.vue'
+import SuccessfulLegalTransplantations from '~/components/landing-page/SuccessfulLegalTransplantations.vue'
 const links = externalLinks
 </script>
