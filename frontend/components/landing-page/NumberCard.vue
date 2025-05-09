@@ -3,7 +3,7 @@
     <h2 class="popular-title">{{ title }}</h2>
     <div class="number-container">
       <span v-if="!loading && !error">{{ number }}</span>
-      <span v-else-if="loading">...</span>
+      <span v-else-if="loading"><LoadingNumber /></span>
       <span v-else>Error</span>
     </div>
     <div class="link-container">
@@ -23,6 +23,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
+import LoadingNumber from '../layout/LoadingNumber.vue'
 const props = defineProps({
   title: { type: String, required: true },
   buttonText: { type: String, required: true },
