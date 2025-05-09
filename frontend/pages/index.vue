@@ -57,16 +57,16 @@
           <SuccessfulLegalTransplantations />
         </div>
 
-        <div class="col-span-12 sm:col-span-4">
+        <div class="col-span-12 sm:col-span-3">
           <ConnectCard
             title="CoLD Newsletter"
-            buttonText="Subscribe on Substack"
+            buttonText="Subscribe"
             :buttonLink="links.substack"
             iconName="i-bi:substack"
           />
         </div>
 
-        <div class="col-span-12 sm:col-span-4">
+        <div class="col-span-12 sm:col-span-3">
           <ConnectCard
             title="CoLD on LinkedIn"
             buttonText="Follow Us"
@@ -75,19 +75,19 @@
           />
         </div>
 
-        <div class="col-span-12 sm:col-span-4">
+        <div class="col-span-12 sm:col-span-3">
           <ConnectCard
-            title="Questions? Feedback?"
+            title="Questions, Feedback?"
             buttonText="Contact Us"
             buttonLink="/contact"
             :newTab="false"
             iconName="i-material-symbols:alternate-email"
           />
         </div>
-        <div class="col-span-12 sm:col-span-4">
+        <div class="col-span-12 sm:col-span-3">
           <ConnectCard
             title="Access New Features"
-            buttonText="Become a Beta Test User"
+            buttonText="Beta User Sign Up"
             :buttonLink="links.beta"
             iconName="i-hugeicons:test-tube-01"
           />
