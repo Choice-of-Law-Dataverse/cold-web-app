@@ -175,6 +175,9 @@ class SearchService:
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'HCCH Answers' = ANY(params.tables))
                 AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                )
+                AND (
                     array_length(params.themes, 1) IS NULL 
                     OR EXISTS (
                         SELECT 1
@@ -350,6 +353,9 @@ class SearchService:
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'HCCH Answers' = ANY(params.tables))
                 AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                )
+                AND (
                     array_length(params.themes, 1) IS NULL 
                     OR EXISTS (
                         SELECT 1
@@ -515,6 +521,9 @@ class SearchService:
             FROM "HCCH Answers" AS hc, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'HCCH Answers' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                )
                 AND (
                     array_length(params.themes, 1) IS NULL 
                     OR EXISTS (
@@ -717,6 +726,9 @@ class SearchService:
             FROM "HCCH Answers" AS hc, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'HCCH Answers' = ANY(params.tables))
+                AND (
+                    array_length(params.jurisdictions, 1) IS NULL 
+                )
                 AND (
                     array_length(params.themes, 1) IS NULL 
                     OR EXISTS (
