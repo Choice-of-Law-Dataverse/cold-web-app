@@ -221,15 +221,27 @@ export const internationalInstrumentCardConfig = {
                 fallback: 'No title available'
             }
         },
+                {
+            key: 'Date',
+            label: 'Date',
+            emptyValueBehavior: {
+                action: 'hide',
+            }
+        },
     ],
     valueClassMap: {
         'Name': 'result-value-medium',
+        'Date': 'result-value-small',
     },
     gridConfig: {
         name: {
-            columnSpan: 'md:col-span-6',
+            columnSpan: 'md:col-span-3',
             startColumn: 'md:col-start-1'
-        }
+        },
+         date: {
+            columnSpan: 'md:col-span-2',
+            startColumn: 'md:col-start-4'
+        },
     },
 }
 
