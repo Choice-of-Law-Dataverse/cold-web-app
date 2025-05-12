@@ -23,12 +23,10 @@
         </div>
 
         <div class="col-span-12">
-          <PopularSearches />
-        </div>
-        <div class="col-span-12">
           <JurisdictionMap />
         </div>
         <div class="col-span-12 md:col-span-8">
+          <PopularSearches />
           <CountrySelectMenu />
         </div>
         <div class="col-span-12 sm:col-span-4">
