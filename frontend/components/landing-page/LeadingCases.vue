@@ -56,7 +56,7 @@ async function fetchCourtDecisions() {
       filters: [
         {
           column: 'Case Rank',
-          value: '10',
+          value: 10,
         },
       ],
     }
@@ -79,7 +79,7 @@ async function fetchCourtDecisions() {
         formatYear(b['Publication Date ISO']) -
         formatYear(a['Publication Date ISO'])
     )
-    courtDecisions.value = decisionsData.slice(0, 5)
+    courtDecisions.value = decisionsData.slice(0, 3)
   } catch (error) {
     console.error(error)
     courtDecisions.value = []
