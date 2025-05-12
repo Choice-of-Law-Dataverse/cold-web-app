@@ -67,7 +67,7 @@ async function fetchDomesticInstruments() {
     const instrumentsData = await response.json()
     // Convert Date to number, sort descending and take the n most recent
     instrumentsData.sort((a, b) => Number(b.Date) - Number(a.Date))
-    domesticInstruments.value = instrumentsData.slice(0, 7)
+    domesticInstruments.value = instrumentsData.slice(0, 3)
   } catch (error) {
     console.error(error)
     domesticInstruments.value = []
