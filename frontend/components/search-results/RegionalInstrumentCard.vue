@@ -8,20 +8,50 @@
           config.gridConfig.title.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Name') }}</div>
+        <div class="label-key">{{ getLabel('Abbreviation') }}</div>
         <div
           :class="[
-            config.valueClassMap['Name'],
+            config.valueClassMap['Abbreviation'],
             'text-sm leading-relaxed whitespace-pre-line',
-            (!processedResultData['Name'] ||
-              processedResultData['Name'] === 'NA') &&
-            config.keyLabelPairs.find((pair) => pair.key === 'Name')
+            (!processedResultData['Abbreviation'] ||
+              processedResultData['Abbreviation'] === 'NA') &&
+            config.keyLabelPairs.find((pair) => pair.key === 'Abbreviation')
               ?.emptyValueBehavior?.action === 'display'
               ? 'text-gray-300'
               : '',
           ]"
         >
-          {{ getValue('Name') }}
+          {{ getValue('Abbreviation') }}
+        </div>
+        <div class="label-key">{{ getLabel('Date') }}</div>
+        <div
+          :class="[
+            config.valueClassMap['Date'],
+            'text-sm leading-relaxed whitespace-pre-line',
+            (!processedResultData['Date'] ||
+              processedResultData['Date'] === 'NA') &&
+            config.keyLabelPairs.find((pair) => pair.key === 'Date')
+              ?.emptyValueBehavior?.action === 'display'
+              ? 'text-gray-300'
+              : '',
+          ]"
+        >
+          {{ getValue('Date') }}
+        </div>
+        <div class="label-key">{{ getLabel('Title') }}</div>
+        <div
+          :class="[
+            config.valueClassMap['Title'],
+            'text-sm leading-relaxed whitespace-pre-line',
+            (!processedResultData['Title'] ||
+              processedResultData['Title'] === 'NA') &&
+            config.keyLabelPairs.find((pair) => pair.key === 'Title')
+              ?.emptyValueBehavior?.action === 'display'
+              ? 'text-gray-300'
+              : '',
+          ]"
+        >
+          {{ getValue('Title') }}
         </div>
       </div>
     </div>
