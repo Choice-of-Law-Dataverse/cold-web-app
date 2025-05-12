@@ -2,7 +2,7 @@
   <UCard class="cold-ucard">
     <div class="popular-searches-container flex flex-col md:flex-row gap-8">
       <h2 class="popular-title text-left md:whitespace-nowrap">
-        Recent Domestic Instruments
+        Successful Legal Transplantations
       </h2>
     </div>
     <div>
@@ -51,7 +51,15 @@ const config = useRuntimeConfig()
 
 async function fetchDomesticInstruments() {
   try {
-    const payload = { table: 'Domestic Instruments', filters: [] }
+    const payload = {
+      table: 'Domestic Instruments',
+      filters: [
+        {
+          column: 'Compatible With the HCCH Principles?',
+          value: true,
+        },
+      ],
+    }
     const response = await fetch(
       `${config.public.apiBaseUrl}/search/full_table`,
       {
@@ -67,7 +75,7 @@ async function fetchDomesticInstruments() {
     const instrumentsData = await response.json()
     // Convert Date to number, sort descending and take the n most recent
     instrumentsData.sort((a, b) => Number(b.Date) - Number(a.Date))
-    domesticInstruments.value = instrumentsData.slice(0, 3)
+    domesticInstruments.value = instrumentsData.slice(0, 7)
   } catch (error) {
     console.error(error)
     domesticInstruments.value = []

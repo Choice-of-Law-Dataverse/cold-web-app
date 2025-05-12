@@ -1,10 +1,12 @@
 <template>
   <UCard class="cold-ucard">
-    <div class="popular-searches-container flex flex-col md:flex-row gap-8">
+    <div class="popular-searches-container flex flex-col gap-8">
       <!-- Title Section -->
-      <h2 class="popular-title text-left md:whitespace-nowrap">
-        Popular Searches
-      </h2>
+      <div>
+        <h2 class="popular-title text-left md:whitespace-nowrap">
+          Popular Searches
+        </h2>
+      </div>
 
       <!-- Suggestions Section -->
       <div class="suggestions flex flex-wrap gap-6">

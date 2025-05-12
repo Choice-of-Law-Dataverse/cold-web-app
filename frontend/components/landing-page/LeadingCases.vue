@@ -2,7 +2,7 @@
   <UCard class="cold-ucard">
     <div class="popular-searches-container flex flex-col md:flex-row gap-8">
       <h2 class="popular-title text-left md:whitespace-nowrap">
-        Recent Domestic Instruments
+        Leading Cases
       </h2>
     </div>
     <div>
@@ -10,8 +10,8 @@
         <LoadingLandingPageCard />
       </div>
       <template v-else>
-        <div v-for="(instrument, index) in domesticInstruments" :key="index">
-          <RouterLink :to="`/domestic-instrument/${instrument.ID}`">
+        <div v-for="(decision, index) in courtDecisions" :key="index">
+          <RouterLink :to="`/court-decision/${decision.ID}`">
             <UButton
               class="suggestion-button mt-8"
               variant="link"
@@ -19,17 +19,17 @@
               trailing
             >
               <img
-                :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
+                :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${decision['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
                 style="height: 20px; border: 1px solid var(--color-cold-gray)"
                 class="mr-3"
               />
               <span class="break-words text-left">
                 {{
-                  instrument['Entry Into Force']
-                    ? formatYear(instrument['Entry Into Force'])
-                    : instrument['Date']
+                  decision['Publication Date ISO']
+                    ? formatYear(decision['Publication Date ISO'])
+                    : decision['Date']
                 }}:
-                {{ instrument['Title (in English)'] }}
+                {{ decision['Case Title'] }}
               </span>
             </UButton>
           </RouterLink>
@@ -45,13 +45,21 @@ import { useRuntimeConfig } from '#app'
 import { RouterLink } from 'vue-router'
 import LoadingLandingPageCard from '../layout/LoadingLandingPageCard.vue'
 
-const domesticInstruments = ref([])
+const courtDecisions = ref([])
 const isLoading = ref(true) // Added loading state
 const config = useRuntimeConfig()
 
-async function fetchDomesticInstruments() {
+async function fetchCourtDecisions() {
   try {
-    const payload = { table: 'Domestic Instruments', filters: [] }
+    const payload = {
+      table: 'Court Decisions',
+      filters: [
+        {
+          column: 'Case Rank',
+          value: 10,
+        },
+      ],
+    }
     const response = await fetch(
       `${config.public.apiBaseUrl}/search/full_table`,
       {
@@ -64,19 +72,23 @@ async function fetchDomesticInstruments() {
       }
     )
     if (!response.ok) throw new Error('Failed to load data')
-    const instrumentsData = await response.json()
+    const decisionsData = await response.json()
     // Convert Date to number, sort descending and take the n most recent
-    instrumentsData.sort((a, b) => Number(b.Date) - Number(a.Date))
-    domesticInstruments.value = instrumentsData.slice(0, 3)
+    decisionsData.sort(
+      (a, b) =>
+        formatYear(b['Publication Date ISO']) -
+        formatYear(a['Publication Date ISO'])
+    )
+    courtDecisions.value = decisionsData.slice(0, 3)
   } catch (error) {
     console.error(error)
-    domesticInstruments.value = []
+    courtDecisions.value = []
   } finally {
     isLoading.value = false // Set loading to false once finished
   }
 }
 
-onMounted(fetchDomesticInstruments)
+onMounted(fetchCourtDecisions)
 </script>
 
 <style scoped></style>
