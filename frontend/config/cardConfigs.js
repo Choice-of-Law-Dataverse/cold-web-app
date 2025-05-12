@@ -52,8 +52,8 @@ export const answerCardConfig = {
             }
         },
         {
-            key: 'Jurisdictions Literature ID',
-            label: 'Jurisdictions Literature ID',
+            key: 'Literature',
+            label: 'Literature',
             emptyValueBehavior: {
                 action: 'hide'
             }

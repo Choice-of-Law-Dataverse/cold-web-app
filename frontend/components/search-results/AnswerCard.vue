@@ -156,7 +156,7 @@ async function fetchLiteratureTitles(idStr) {
 }
 
 watch(
-  () => props.resultData['Jurisdictions Literature ID'],
+  () => props.resultData['Literature'],
   (newId) => {
     if (newId) fetchLiteratureTitles(newId)
   },
@@ -168,7 +168,7 @@ const domesticValue = computed(() => {
     return getValue('Domestic Legal Provisions')
   } else if (props.resultData['Domestic Instruments ID'] != null) {
     return getValue('Domestic Instruments ID')
-  } else if (props.resultData['Jurisdictions Literature ID'] != null) {
+  } else if (props.resultData['Literature'] != null) {
     return literatureTitles.value
   } else {
     return ''
@@ -177,7 +177,7 @@ const domesticValue = computed(() => {
 
 const isLoadingLiterature = computed(() => {
   return (
-    props.resultData['Jurisdictions Literature ID'] != null &&
+    props.resultData['Literature'] != null &&
     (!literatureTitles.value ||
       literatureTitles.value.length === 0 ||
       literatureTitles.value.includes(null))
@@ -202,7 +202,7 @@ const hasDomesticValue = computed(() => {
   return (
     props.resultData['Domestic Legal Provisions'] ||
     props.resultData['Domestic Instruments ID'] ||
-    props.resultData['Jurisdictions Literature ID']
+    props.resultData['Literature']
   )
 })
 
