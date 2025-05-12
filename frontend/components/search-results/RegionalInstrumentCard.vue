@@ -1,7 +1,7 @@
 <template>
   <ResultCard :resultData="processedResultData" cardType="Regional Instrument">
     <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
-      <!-- Title section -->
+      <!-- Abbreviation section -->
       <div
         :class="[
           config.gridConfig.title.columnSpan,
@@ -23,36 +23,33 @@
         >
           {{ getValue('Abbreviation') }}
         </div>
-        <div class="label-key">{{ getLabel('Date') }}</div>
-        <div
-          :class="[
-            config.valueClassMap['Date'],
-            'text-sm leading-relaxed whitespace-pre-line',
-            (!processedResultData['Date'] ||
-              processedResultData['Date'] === 'NA') &&
-            config.keyLabelPairs.find((pair) => pair.key === 'Date')
-              ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-300'
-              : '',
-          ]"
-        >
-          {{ getValue('Date') }}
-        </div>
-        <div class="label-key">{{ getLabel('Title') }}</div>
-        <div
-          :class="[
-            config.valueClassMap['Title'],
-            'text-sm leading-relaxed whitespace-pre-line',
-            (!processedResultData['Title'] ||
-              processedResultData['Title'] === 'NA') &&
-            config.keyLabelPairs.find((pair) => pair.key === 'Title')
-              ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-300'
-              : '',
-          ]"
-        >
-          {{ getValue('Title') }}
-        </div>
+
+        <!-- Date section -->
+        <template v-if="shouldDisplay('Date')">
+          <div class="label-key">{{ getLabel('Date') }}</div>
+          <div :class="[config.valueClassMap['Date']]">
+            {{ format.formatDate(getValue('Date')) }}
+          </div>
+        </template>
+
+        <!-- Title section -->
+        <template v-if="shouldDisplay('Title')">
+          <div class="label-key">{{ getLabel('Title') }}</div>
+          <div
+            :class="[
+              config.valueClassMap['Title'],
+              'text-sm leading-relaxed whitespace-pre-line',
+              (!processedResultData['Title'] ||
+                processedResultData['Title'] === 'NA') &&
+              config.keyLabelPairs.find((pair) => pair.key === 'Title')
+                ?.emptyValueBehavior?.action === 'display'
+                ? 'text-gray-300'
+                : '',
+            ]"
+          >
+            {{ getValue('Title') }}
+          </div>
+        </template>
       </div>
     </div>
   </ResultCard>
@@ -62,6 +59,7 @@
 import { computed } from 'vue'
 import ResultCard from './ResultCard.vue'
 import { regionalInstrumentCardConfig } from '../../config/cardConfigs'
+import * as format from '../../utils/format'
 
 const props = defineProps({
   resultData: {
@@ -100,6 +98,14 @@ const getValue = (key) => {
     return ''
   }
   return value
+}
+
+const shouldDisplay = (key) => {
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
+  return (
+    pair?.emptyValueBehavior?.action === 'display' ||
+    processedResultData.value?.[key]
+  )
 }
 </script>
 

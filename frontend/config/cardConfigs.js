@@ -196,12 +196,12 @@ export const regionalInstrumentCardConfig = {
     },
     gridConfig: {
         abbreviation: {
-            columnSpan: 'md:col-span-4',
+            columnSpan: 'md:col-span-3',
             startColumn: 'md:col-start-1'
         },
         date: {
             columnSpan: 'md:col-span-2',
-            startColumn: 'md:col-start-5'
+            startColumn: 'md:col-start-4'
         },
         title: {
             columnSpan: 'md:col-span-2',
