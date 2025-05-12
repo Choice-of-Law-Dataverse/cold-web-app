@@ -28,31 +28,9 @@
         <div class="col-span-12">
           <JurisdictionMap />
         </div>
-        <div class="col-span-12">
+        <div class="col-span-12 md:col-span-8">
           <CountrySelectMenu />
         </div>
-        <div class="col-span-8">
-          <RecentDomesticInstruments />
-        </div>
-        <div class="col-span-12 sm:col-span-4 flex flex-col gap-x-6">
-          <NumberCard
-            title="Available Court Decisions"
-            buttonText="See all"
-            buttonLink="/search?type=Court+Decisions"
-            tableName="Court Decisions"
-          />
-          <NumberCard
-            title="Available Domestic Instruments"
-            buttonText="See all"
-            buttonLink="/search?type=Domestic+Instruments"
-            tableName="Domestic Instruments"
-          />
-        </div>
-
-        <div class="col-span-12 md:col-span-8">
-          <PlotCourtDecisionsJurisdiction />
-        </div>
-
         <div class="col-span-12 sm:col-span-4">
           <ConnectCard
             title="Transnational Standard"
@@ -62,9 +40,31 @@
             :newTab="false"
           />
         </div>
-
+        <div class="col-span-12 sm:col-span-4">
+          <NumberCard
+            title="Available Domestic Instruments"
+            buttonText="See all"
+            buttonLink="/search?type=Domestic+Instruments"
+            tableName="Domestic Instruments"
+          />
+        </div>
+        <div class="col-span-12 md:col-span-8">
+          <RecentDomesticInstruments />
+        </div>
         <div class="col-span-12">
           <SuccessfulLegalTransplantations />
+        </div>
+
+        <div class="col-span-12 md:col-span-8">
+          <PlotCourtDecisionsJurisdiction />
+        </div>
+        <div class="col-span-12 sm:col-span-4">
+          <NumberCard
+            title="Available Court Decisions"
+            buttonText="See all"
+            buttonLink="/search?type=Court+Decisions"
+            tableName="Court Decisions"
+          />
         </div>
 
         <div class="col-span-12">
