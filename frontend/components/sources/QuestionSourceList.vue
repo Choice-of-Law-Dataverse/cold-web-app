@@ -34,9 +34,7 @@
         </li>
       </template>
       <!-- Updated OUP Chapter bullet point -->
-      <template
-        v-if="fallbackData && fallbackData['Jurisdictions Literature ID']"
-      >
+      <template v-if="fallbackData && fallbackData['Literature']">
         <template v-if="literatureTitles.length">
           <li v-for="(item, index) in literatureTitles" :key="index">
             <a :href="`/literature/${item.id}`">{{ item.title }}</a>
@@ -209,7 +207,7 @@ onMounted(() => {
   if (props.fetchPrimarySource) fetchPrimarySource()
 })
 
-// NEW: Fetch literature titles logic for 'Jurisdictions Literature ID'
+// NEW: Fetch literature titles logic for 'Literature'
 const literatureTitles = ref([])
 async function fetchLiteratureTitles(idStr) {
   const ids = idStr.split(',').map((id) => id.trim())
@@ -236,7 +234,7 @@ async function fetchLiteratureTitles(idStr) {
   })
   literatureTitles.value = await Promise.all(promises)
 }
-if (props.fallbackData && props.fallbackData['Jurisdictions Literature ID']) {
-  fetchLiteratureTitles(props.fallbackData['Jurisdictions Literature ID'])
+if (props.fallbackData && props.fallbackData['Literature']) {
+  fetchLiteratureTitles(props.fallbackData['Literature'])
 }
 </script>

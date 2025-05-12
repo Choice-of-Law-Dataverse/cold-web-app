@@ -52,8 +52,8 @@ export const answerCardConfig = {
             }
         },
         {
-            key: 'Jurisdictions Literature ID',
-            label: 'Jurisdictions Literature ID',
+            key: 'Literature',
+            label: 'Literature',
             emptyValueBehavior: {
                 action: 'hide'
             }
@@ -167,22 +167,47 @@ export const legislationCardConfig = {
 export const regionalInstrumentCardConfig = {
     keyLabelPairs: [
         {
-            key: 'Name',
-            label: 'Name',
+            key: 'Abbreviation',
+            label: 'Abbreviation',
             emptyValueBehavior: {
                 action: 'display',
                 fallback: 'No title available'
             }
         },
+        {
+            key: 'Date',
+            label: 'Date',
+            emptyValueBehavior: {
+                action: 'hide',
+            }
+        },
+        {
+            key: 'Title',
+            label: 'Title',
+            emptyValueBehavior: {
+                action: 'hide',
+            }
+        },
     ],
     valueClassMap: {
-        'Name': 'result-value-medium',
+        'Abbreviation': 'result-value-medium',
+        'Date': 'result-value-small',
+        'Title': 'result-value-small',
     },
     gridConfig: {
-        name: {
-            columnSpan: 'md:col-span-6',
+        abbreviation: {
+            columnSpan: 'md:col-span-3',
             startColumn: 'md:col-start-1'
-        }
+        },
+        title: {
+            columnSpan: 'md:col-span-4',
+            startColumn: 'md:col-start-4'
+        },
+        date: {
+            columnSpan: 'md:col-span-2',
+            startColumn: 'md:col-start-4'
+        },
+        
     },
 }
 
@@ -196,15 +221,27 @@ export const internationalInstrumentCardConfig = {
                 fallback: 'No title available'
             }
         },
+                {
+            key: 'Date',
+            label: 'Date',
+            emptyValueBehavior: {
+                action: 'hide',
+            }
+        },
     ],
     valueClassMap: {
         'Name': 'result-value-medium',
+        'Date': 'result-value-small',
     },
     gridConfig: {
         name: {
-            columnSpan: 'md:col-span-6',
+            columnSpan: 'md:col-span-3',
             startColumn: 'md:col-start-1'
-        }
+        },
+         date: {
+            columnSpan: 'md:col-span-2',
+            startColumn: 'md:col-start-4'
+        },
     },
 }
 

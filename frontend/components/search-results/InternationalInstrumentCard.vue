@@ -7,8 +7,8 @@
       <!-- Title section -->
       <div
         :class="[
-          config.gridConfig.title.columnSpan,
-          config.gridConfig.title.startColumn,
+          config.gridConfig.name.columnSpan,
+          config.gridConfig.name.startColumn,
         ]"
       >
         <div class="label-key">{{ getLabel('Name') }}</div>
@@ -27,6 +27,21 @@
           {{ getValue('Name') }}
         </div>
       </div>
+
+      <!-- Date section -->
+      <template v-if="shouldDisplay('Date')">
+        <div
+          :class="[
+            config.gridConfig.date.columnSpan,
+            config.gridConfig.date.startColumn,
+          ]"
+        >
+          <div class="label-key">{{ getLabel('Date') }}</div>
+          <div :class="[config.valueClassMap['Date']]">
+            {{ format.formatDate(getValue('Date')) }}
+          </div>
+        </div>
+      </template>
     </div>
   </ResultCard>
 </template>
@@ -35,6 +50,7 @@
 import { computed } from 'vue'
 import ResultCard from './ResultCard.vue'
 import { internationalInstrumentCardConfig } from '../../config/cardConfigs'
+import * as format from '../../utils/format'
 
 const props = defineProps({
   resultData: {
@@ -43,15 +59,7 @@ const props = defineProps({
   },
 })
 
-const config = {
-  ...internationalInstrumentCardConfig,
-  gridConfig: {
-    title: {
-      columnSpan: 'md:col-span-12',
-      startColumn: 'md:col-start-1',
-    },
-  },
-}
+const config = internationalInstrumentCardConfig
 
 const processedResultData = computed(() => {
   // If you have a processData function for international instruments, use it here
@@ -73,6 +81,14 @@ const getValue = (key) => {
     return ''
   }
   return value
+}
+
+const shouldDisplay = (key) => {
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
+  return (
+    pair?.emptyValueBehavior?.action === 'display' ||
+    processedResultData.value?.[key]
+  )
 }
 </script>
 
