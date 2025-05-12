@@ -199,14 +199,15 @@ export const regionalInstrumentCardConfig = {
             columnSpan: 'md:col-span-3',
             startColumn: 'md:col-start-1'
         },
+        title: {
+            columnSpan: 'md:col-span-4',
+            startColumn: 'md:col-start-4'
+        },
         date: {
             columnSpan: 'md:col-span-2',
             startColumn: 'md:col-start-4'
         },
-        title: {
-            columnSpan: 'md:col-span-2',
-            startColumn: 'md:col-start-7'
-        },
+        
     },
 }
 

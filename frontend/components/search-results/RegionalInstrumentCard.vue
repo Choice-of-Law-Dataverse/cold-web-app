@@ -4,8 +4,8 @@
       <!-- Abbreviation section -->
       <div
         :class="[
-          config.gridConfig.title.columnSpan,
-          config.gridConfig.title.startColumn,
+          config.gridConfig.abbreviation.columnSpan,
+          config.gridConfig.abbreviation.startColumn,
         ]"
       >
         <div class="label-key">{{ getLabel('Abbreviation') }}</div>
@@ -23,17 +23,31 @@
         >
           {{ getValue('Abbreviation') }}
         </div>
+      </div>
 
-        <!-- Date section -->
-        <template v-if="shouldDisplay('Date')">
+      <!-- Date section -->
+      <template v-if="shouldDisplay('Date')">
+        <div
+          :class="[
+            config.gridConfig.date.columnSpan,
+            config.gridConfig.date.startColumn,
+          ]"
+        >
           <div class="label-key">{{ getLabel('Date') }}</div>
           <div :class="[config.valueClassMap['Date']]">
             {{ format.formatDate(getValue('Date')) }}
           </div>
-        </template>
+        </div>
+      </template>
 
-        <!-- Title section -->
-        <template v-if="shouldDisplay('Title')">
+      <!-- Title section -->
+      <template v-if="shouldDisplay('Title')">
+        <div
+          :class="[
+            config.gridConfig.title.columnSpan,
+            config.gridConfig.title.startColumn,
+          ]"
+        >
           <div class="label-key">{{ getLabel('Title') }}</div>
           <div
             :class="[
@@ -49,8 +63,8 @@
           >
             {{ getValue('Title') }}
           </div>
-        </template>
-      </div>
+        </div>
+      </template>
     </div>
   </ResultCard>
 </template>
@@ -68,15 +82,25 @@ const props = defineProps({
   },
 })
 
-const config = {
-  ...regionalInstrumentCardConfig,
-  gridConfig: {
-    title: {
-      columnSpan: 'md:col-span-12',
-      startColumn: 'md:col-start-1',
-    },
-  },
-}
+const config = regionalInstrumentCardConfig
+
+// const config = {
+// ...regionalInstrumentCardConfig,
+// gridConfig: {
+//   title: {
+//     columnSpan: 'md:col-span-12',
+//     startColumn: 'md:col-start-1',
+//   },
+//   abbreviation: {
+//     columnSpan: 'md:col-span-12',
+//     startColumn: 'md:col-start-1',
+//   },
+//   date: {
+//     columnSpan: 'md:col-span-12',
+//     startColumn: 'md:col-start-1',
+//   },
+// },
+// }
 
 const processedResultData = computed(() => {
   // If you have a processData function for regional instruments, use it here
