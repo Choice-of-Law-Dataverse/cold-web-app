@@ -33,12 +33,10 @@
 
           <template #literature>
             <section>
-              <span class="label">Related Literature</span>
               <RelatedLiterature
                 :literature-id="jurisdictionData?.Literature"
-                :literature-title="literatureTitle"
                 :valueClassMap="valueClassMap['Related Literature']"
-                :showLabel="false"
+                :showLabel="true"
                 :emptyValueBehavior="
                   keyLabelPairs.find((pair) => pair.key === 'Literature')
                     ?.emptyValueBehavior
