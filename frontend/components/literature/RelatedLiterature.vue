@@ -3,7 +3,10 @@
     <span v-if="showLabel" class="label">Related Literature</span>
 
     <template v-if="useId">
-      <ul v-if="displayedLiteratureIds.length">
+      <ul v-if="loadingTitles">
+        <li><LoadingBar class="pt-[11px]" /></li>
+      </ul>
+      <ul v-else-if="displayedLiteratureIds.length">
         <li
           v-for="(id, index) in displayedLiteratureIds"
           :key="id"
@@ -113,13 +116,17 @@ const fetchLiteratureTitlesById = async (ids) => {
 }
 
 const literatureTitles = ref([])
+const loadingTitles = ref(false)
 
 watch(
   () => props.literatureId,
   async (newIds) => {
     if (props.useId) {
       const ids = splitAndTrim(newIds)
+      loadingTitles.value = true
+      literatureTitles.value = []
       literatureTitles.value = await fetchLiteratureTitlesById(ids)
+      loadingTitles.value = false
     }
   },
   { immediate: true }
