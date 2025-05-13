@@ -33,10 +33,6 @@
 
           <template #literature>
             <section>
-              <pre>{{ displayedLiteratureTitles }}</pre>
-              <pre>{{ displayedLiteratureIds }}</pre>
-              <pre>{{ jurisdictionData?.Literature }}</pre>
-
               <RelatedLiterature
                 :literature-id="jurisdictionData?.Literature"
                 :valueClassMap="valueClassMap['Related Literature']"
@@ -99,11 +95,6 @@
           </template>
         </DetailDisplay>
 
-        <!-- Error State -->
-        <div v-if="error" class="text-red-500 mt-4">
-          {{ error }}
-        </div>
-
         <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
         <JurisdictionComparison
           v-if="!loading && jurisdictionData?.Name"
@@ -129,7 +120,6 @@ const {
   loading,
   error,
   jurisdictionData,
-  literatureTitle,
   specialists,
   compareJurisdiction,
   keyLabelPairs,

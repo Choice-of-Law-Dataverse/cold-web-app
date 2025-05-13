@@ -140,8 +140,7 @@ export const jurisdictionConfig = {
             key: 'Literature',
             label: 'Related Literature',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No related literature available'
+                action: 'hide'
             }
         }
     ],

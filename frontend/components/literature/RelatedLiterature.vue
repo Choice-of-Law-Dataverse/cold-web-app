@@ -1,6 +1,4 @@
 <template>
-  <pre>{{ literatureIds }}</pre>
-  <pre>{{ literatureTitles }}</pre>
   <div>
     <span v-if="showLabel" class="label">Related Literature</span>
 
@@ -8,35 +6,6 @@
       <ul v-if="loadingTitles">
         <li><LoadingBar class="pt-[11px]" /></li>
       </ul>
-
-      <ul
-        v-else-if="
-          displayedLiteratureTitles.length &&
-          displayedLiteratureTitles.some((t) => t)
-        "
-      >
-        <li
-          v-for="(title, index) in displayedLiteratureTitles"
-          :key="displayedLiteratureIds[index]"
-          :class="valueClassMap"
-          v-if="title"
-        >
-          <NuxtLink :to="`/literature/${displayedLiteratureIds[index]}`">
-            {{ title }}
-          </NuxtLink>
-        </li>
-        <ShowMoreLess
-          v-if="literatureIds.length > 5"
-          v-model:isExpanded="showAll"
-          label="related literature"
-        />
-      </ul>
-      <p
-        v-else-if="!loadingTitles && emptyValueBehavior.action === 'display'"
-        :class="valueClassMap"
-      >
-        {{ emptyValueBehavior.fallback }}
-      </p>
     </template>
 
     <template v-else>
@@ -74,6 +43,11 @@
         <NuxtLink :to="`/literature/${literatureIds[index]}`">
           {{ title }}
         </NuxtLink>
+        <ShowMoreLess
+          v-if="literatureIds.length > 5"
+          v-model:isExpanded="showAll"
+          label="related literature"
+        />
       </li>
     </ul>
   </div>
@@ -209,34 +183,5 @@ async function fetchRelatedLiterature(themes) {
 
 onMounted(() => {
   if (!props.useId && props.themes) fetchRelatedLiterature(props.themes)
-})
-
-onMounted(() => {
-  console.log('RelatedLiterature props:', { ...props })
-  console.log('Initial literatureIds:', literatureIds.value)
-  if (!props.useId && props.themes) fetchRelatedLiterature(props.themes)
-})
-
-watch(
-  () => props.literatureId,
-  async (newIds) => {
-    console.log('Watcher triggered, useId:', props.useId, 'newIds:', newIds)
-
-    if (props.useId) {
-      const ids = splitAndTrim(newIds)
-      console.log('Fetching titles for IDs:', ids)
-      loadingTitles.value = true
-      literatureTitles.value = []
-      literatureTitles.value = await fetchLiteratureTitlesById(ids)
-      console.log('Fetched titles:', literatureTitles.value)
-      loadingTitles.value = false
-    }
-  },
-  { immediate: true }
-)
-
-onMounted(() => {
-  console.log('RelatedLiterature props:', { ...props })
-  console.log('Initial literatureIds:', literatureIds.value)
 })
 </script>
