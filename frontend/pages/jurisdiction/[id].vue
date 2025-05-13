@@ -33,6 +33,10 @@
 
           <template #literature>
             <section>
+              <pre>{{ displayedLiteratureTitles }}</pre>
+              <pre>{{ displayedLiteratureIds }}</pre>
+              <pre>{{ jurisdictionData?.Literature }}</pre>
+
               <RelatedLiterature
                 :literature-id="jurisdictionData?.Literature"
                 :valueClassMap="valueClassMap['Related Literature']"

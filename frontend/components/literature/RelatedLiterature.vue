@@ -1,4 +1,6 @@
 <template>
+  <pre>{{ literatureIds }}</pre>
+  <pre>{{ literatureTitles }}</pre>
   <div>
     <span v-if="showLabel" class="label">Related Literature</span>
 
@@ -6,14 +8,21 @@
       <ul v-if="loadingTitles">
         <li><LoadingBar class="pt-[11px]" /></li>
       </ul>
-      <ul v-else-if="displayedLiteratureIds.length">
+
+      <ul
+        v-else-if="
+          displayedLiteratureTitles.length &&
+          displayedLiteratureTitles.some((t) => t)
+        "
+      >
         <li
-          v-for="(id, index) in displayedLiteratureIds"
-          :key="id"
+          v-for="(title, index) in displayedLiteratureTitles"
+          :key="displayedLiteratureIds[index]"
           :class="valueClassMap"
+          v-if="title"
         >
-          <NuxtLink :to="`/literature/${id}`">
-            {{ displayedLiteratureTitles[index] }}
+          <NuxtLink :to="`/literature/${displayedLiteratureIds[index]}`">
+            {{ title }}
           </NuxtLink>
         </li>
         <ShowMoreLess
@@ -23,7 +32,7 @@
         />
       </ul>
       <p
-        v-else-if="emptyValueBehavior.action === 'display'"
+        v-else-if="!loadingTitles && emptyValueBehavior.action === 'display'"
         :class="valueClassMap"
       >
         {{ emptyValueBehavior.fallback }}
@@ -57,6 +66,16 @@
         {{ emptyValueBehavior.fallback }}
       </p>
     </template>
+    <ul>
+      <li
+        v-for="(title, index) in literatureTitles"
+        :key="literatureIds[index]"
+      >
+        <NuxtLink :to="`/literature/${literatureIds[index]}`">
+          {{ title }}
+        </NuxtLink>
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -66,7 +85,7 @@ import ShowMoreLess from '../ui/ShowMoreLess.vue'
 import LoadingBar from '../layout/LoadingBar.vue'
 
 const props = defineProps({
-  themes: { type: String, required: false }, // Now optional
+  themes: { type: String, required: false },
   valueClassMap: { type: String, default: 'result-value-small' },
   literatureId: { type: String, default: '' },
   literatureTitle: { type: [Array, String], default: '' },
@@ -94,25 +113,36 @@ const literatureIds = computed(() => splitAndTrim(props.literatureId))
 
 const fetchLiteratureTitlesById = async (ids) => {
   if (!ids.length) return []
-  try {
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/details/`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ ids }),
+  const titles = []
+  for (const id of ids) {
+    try {
+      const response = await fetch(
+        `${config.public.apiBaseUrl}/search/details`,
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${config.public.FASTAPI}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ table: 'Literature', id }), // <-- FIXED HERE
+        }
+      )
+      if (!response.ok) {
+        const errorText = await response.text()
+        console.error('Error response from /search/details:', errorText)
+        titles.push('')
+        continue
       }
-    )
-    if (!response.ok) throw new Error('Failed to fetch literature details')
-    const data = await response.json()
-    // data should be an object with keys as IDs and values as objects with Title
-    return ids.map((id) => data[id]?.Title || 'Untitled')
-  } catch {
-    return ids.map(() => 'Untitled')
+      const data = await response.json()
+      const title = data?.Title ? data.Title : data[id]?.Title || ''
+      titles.push(
+        title && typeof title === 'string' && title.trim() ? title : ''
+      )
+    } catch (e) {
+      titles.push('')
+    }
   }
+  return titles
 }
 
 const literatureTitles = ref([])
@@ -179,5 +209,34 @@ async function fetchRelatedLiterature(themes) {
 
 onMounted(() => {
   if (!props.useId && props.themes) fetchRelatedLiterature(props.themes)
+})
+
+onMounted(() => {
+  console.log('RelatedLiterature props:', { ...props })
+  console.log('Initial literatureIds:', literatureIds.value)
+  if (!props.useId && props.themes) fetchRelatedLiterature(props.themes)
+})
+
+watch(
+  () => props.literatureId,
+  async (newIds) => {
+    console.log('Watcher triggered, useId:', props.useId, 'newIds:', newIds)
+
+    if (props.useId) {
+      const ids = splitAndTrim(newIds)
+      console.log('Fetching titles for IDs:', ids)
+      loadingTitles.value = true
+      literatureTitles.value = []
+      literatureTitles.value = await fetchLiteratureTitlesById(ids)
+      console.log('Fetched titles:', literatureTitles.value)
+      loadingTitles.value = false
+    }
+  },
+  { immediate: true }
+)
+
+onMounted(() => {
+  console.log('RelatedLiterature props:', { ...props })
+  console.log('Initial literatureIds:', literatureIds.value)
 })
 </script>
