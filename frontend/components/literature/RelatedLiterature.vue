@@ -63,7 +63,7 @@ import ShowMoreLess from '../ui/ShowMoreLess.vue'
 import LoadingBar from '../layout/LoadingBar.vue'
 
 const props = defineProps({
-  themes: { type: String, required: true },
+  themes: { type: String, required: false }, // Now optional
   valueClassMap: { type: String, default: 'result-value-small' },
   literatureId: { type: String, default: '' },
   literatureTitle: { type: [Array, String], default: '' },
@@ -88,12 +88,41 @@ const splitAndTrim = (val) =>
       : []
 
 const literatureIds = computed(() => splitAndTrim(props.literatureId))
-const literatureTitles = computed(() =>
-  Array.isArray(props.literatureTitle)
-    ? props.literatureTitle
-    : props.literatureTitle
-      ? [props.literatureTitle]
-      : []
+
+const fetchLiteratureTitlesById = async (ids) => {
+  if (!ids.length) return []
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/details/`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ids }),
+      }
+    )
+    if (!response.ok) throw new Error('Failed to fetch literature details')
+    const data = await response.json()
+    // data should be an object with keys as IDs and values as objects with Title
+    return ids.map((id) => data[id]?.Title || 'Untitled')
+  } catch {
+    return ids.map(() => 'Untitled')
+  }
+}
+
+const literatureTitles = ref([])
+
+watch(
+  () => props.literatureId,
+  async (newIds) => {
+    if (props.useId) {
+      const ids = splitAndTrim(newIds)
+      literatureTitles.value = await fetchLiteratureTitlesById(ids)
+    }
+  },
+  { immediate: true }
 )
 
 const literatureList = ref([])
@@ -141,15 +170,7 @@ async function fetchRelatedLiterature(themes) {
   }
 }
 
-watch(
-  () => props.themes,
-  (newThemes) => {
-    if (!props.useId) fetchRelatedLiterature(newThemes)
-  },
-  { immediate: true }
-)
-
 onMounted(() => {
-  if (!props.useId) fetchRelatedLiterature(props.themes)
+  if (!props.useId && props.themes) fetchRelatedLiterature(props.themes)
 })
 </script>
