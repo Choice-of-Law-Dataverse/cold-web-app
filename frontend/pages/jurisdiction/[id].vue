@@ -35,11 +35,12 @@
             <section>
               <RelatedLiterature
                 :literature-id="jurisdictionData?.Literature"
-                :valueClassMap="valueClassMap['Related Literature']"
-                :showLabel="true"
+                :valueClassMap="valueClassMap['Literature']"
+                :showLabel="false"
                 :emptyValueBehavior="
-                  keyLabelPairs.find((pair) => pair.key === 'Literature')
-                    ?.emptyValueBehavior
+                  jurisdictionConfig.keyLabelPairs.find(
+                    (pair) => pair.key === 'Literature'
+                  )?.emptyValueBehavior
                 "
                 use-id
               />
@@ -113,6 +114,7 @@ import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
 import JurisdictionComparison from '~/components/jurisdiction-comparison/JurisdictionComparison.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import { useJurisdiction } from '~/composables/useJurisdiction'
+import { jurisdictionConfig } from '~/config/pageConfigs'
 
 const route = useRoute()
 const router = useRouter()

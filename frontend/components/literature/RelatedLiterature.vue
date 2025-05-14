@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <span v-if="showLabel" class="label">Related Literature</span>
+  <div v-if="hasRelatedLiterature">
+    <span class="label">Related Literature</span>
 
     <template v-if="useId">
       <ul v-if="loadingTitles">
@@ -39,6 +39,7 @@
       <li
         v-for="(title, index) in literatureTitles"
         :key="literatureIds[index]"
+        :class="valueClassMap"
       >
         <NuxtLink :to="`/literature/${literatureIds[index]}`">
           {{ title }}
@@ -64,7 +65,7 @@ const props = defineProps({
   literatureId: { type: String, default: '' },
   literatureTitle: { type: [Array, String], default: '' },
   useId: { type: Boolean, default: false },
-  showLabel: { type: Boolean, default: true },
+  // showLabel: { type: Boolean, default: true },
   emptyValueBehavior: {
     type: Object,
     default: () => ({
@@ -121,6 +122,11 @@ const fetchLiteratureTitlesById = async (ids) => {
 
 const literatureTitles = ref([])
 const loadingTitles = ref(false)
+
+// Only show the section if there are any non-empty titles
+const hasRelatedLiterature = computed(() =>
+  literatureTitles.value.some((title) => title && title.trim())
+)
 
 watch(
   () => props.literatureId,
