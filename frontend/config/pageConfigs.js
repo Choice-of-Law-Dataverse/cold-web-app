@@ -294,7 +294,7 @@ export const regionalInstrumentConfig = {
         { key: 'Date', label: 'Date', emptyValueBehavior: { action: 'display', fallback: 'N/A' } },
         { key: 'Specialists', label: 'Specialists', emptyValueBehavior: { action: 'display', fallback: 'No specialists available' } },
         { key: 'URL', label: 'URL', emptyValueBehavior: { action: 'display', fallback: 'No URL available' } },
-        { key: 'Related Literature', label: 'Related Literature', emptyValueBehavior: { action: 'display', fallback: '' } },
+        { key: 'Literature', label: 'Related Literature', emptyValueBehavior: { action: 'hide'} },
         { key: 'Selected Provisions', label: 'Selected Provisions', emptyValueBehavior: { action: 'display', fallback: '' } }
     ],
     valueClassMap: {
