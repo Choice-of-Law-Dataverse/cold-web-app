@@ -19,7 +19,7 @@
           </NuxtLink>
         </li>
         <ShowMoreLess
-          v-if="literatureIds.length > 5"
+          v-if="literatureIds.length > 5 && loadingTitles == false"
           v-model:isExpanded="showAll"
           label="related literature"
         />
