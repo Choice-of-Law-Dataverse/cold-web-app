@@ -1,5 +1,5 @@
 <template>
-  <div v-if="hasRelatedLiterature">
+  <div v-if="loadingTitles || hasRelatedLiterature">
     <span class="label">Related Literature</span>
 
     <template v-if="useId">
