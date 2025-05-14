@@ -24,12 +24,22 @@
       </div>
     </template>
 
-    <template #related-literature>
-      <section class="mt-8">
-        <span class="label">Related Literature</span>
-        <p class="text-gray-300 mt-2">Coming soon</p>
+    <template #literature>
+      <section>
+        <RelatedLiterature
+          :literature-id="processedInternationalInstrument?.Literature"
+          :valueClassMap="valueClassMap['Literature']"
+          :showLabel="false"
+          :emptyValueBehavior="
+            internationalInstrumentConfig.keyLabelPairs.find(
+              (pair) => pair.key === 'Literature'
+            )?.emptyValueBehavior
+          "
+          use-id
+        />
       </section>
     </template>
+
     <template #selected-provisions>
       <section class="mt-8">
         <span class="label">Selected Provisions</span>
@@ -46,6 +56,7 @@ import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { internationalInstrumentConfig } from '~/config/pageConfigs'
+import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 
 const route = useRoute()
 const router = useRouter()
