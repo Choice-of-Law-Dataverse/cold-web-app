@@ -6,6 +6,22 @@
       <ul v-if="loadingTitles">
         <li><LoadingBar class="pt-[11px]" /></li>
       </ul>
+      <ul>
+        <li
+          v-for="(title, index) in literatureTitles"
+          :key="literatureIds[index]"
+          :class="valueClassMap"
+        >
+          <NuxtLink :to="`/literature/${literatureIds[index]}`">
+            {{ title }}
+          </NuxtLink>
+          <ShowMoreLess
+            v-if="literatureIds.length > 5"
+            v-model:isExpanded="showAll"
+            label="related literature"
+          />
+        </li>
+      </ul>
     </template>
 
     <template v-else>
@@ -35,22 +51,6 @@
         {{ emptyValueBehavior.fallback }}
       </p>
     </template>
-    <ul>
-      <li
-        v-for="(title, index) in literatureTitles"
-        :key="literatureIds[index]"
-        :class="valueClassMap"
-      >
-        <NuxtLink :to="`/literature/${literatureIds[index]}`">
-          {{ title }}
-        </NuxtLink>
-        <ShowMoreLess
-          v-if="literatureIds.length > 5"
-          v-model:isExpanded="showAll"
-          label="related literature"
-        />
-      </li>
-    </ul>
   </div>
 </template>
 
@@ -65,7 +65,6 @@ const props = defineProps({
   literatureId: { type: String, default: '' },
   literatureTitle: { type: [Array, String], default: '' },
   useId: { type: Boolean, default: false },
-  // showLabel: { type: Boolean, default: true },
   emptyValueBehavior: {
     type: Object,
     default: () => ({
@@ -86,6 +85,13 @@ const splitAndTrim = (val) =>
 
 const literatureIds = computed(() => splitAndTrim(props.literatureId))
 
+const literatureTitles = ref([])
+const loadingTitles = ref(false)
+
+const hasRelatedLiterature = computed(() =>
+  literatureTitles.value.some((title) => title && title.trim())
+)
+
 const fetchLiteratureTitlesById = async (ids) => {
   if (!ids.length) return []
   const titles = []
@@ -99,7 +105,7 @@ const fetchLiteratureTitlesById = async (ids) => {
             authorization: `Bearer ${config.public.FASTAPI}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ table: 'Literature', id }), // <-- FIXED HERE
+          body: JSON.stringify({ table: 'Literature', id }),
         }
       )
       if (!response.ok) {
@@ -119,14 +125,6 @@ const fetchLiteratureTitlesById = async (ids) => {
   }
   return titles
 }
-
-const literatureTitles = ref([])
-const loadingTitles = ref(false)
-
-// Only show the section if there are any non-empty titles
-const hasRelatedLiterature = computed(() =>
-  literatureTitles.value.some((title) => title && title.trim())
-)
 
 watch(
   () => props.literatureId,
@@ -149,10 +147,6 @@ const showAll = ref(false)
 const getDisplayed = (arr) =>
   !showAll.value && arr.length > 5 ? arr.slice(0, 3) : arr
 const displayedLiterature = computed(() => getDisplayed(literatureList.value))
-const displayedLiteratureIds = computed(() => getDisplayed(literatureIds.value))
-const displayedLiteratureTitles = computed(() =>
-  getDisplayed(literatureTitles.value)
-)
 
 async function fetchRelatedLiterature(themes) {
   if (!themes) return
