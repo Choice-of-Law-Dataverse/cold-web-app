@@ -8,19 +8,21 @@
       </ul>
       <ul>
         <li
-          v-for="(title, index) in literatureTitles"
+          v-for="(title, index) in !showAll && literatureTitles.length > 5
+            ? literatureTitles.slice(0, 3)
+            : literatureTitles"
           :key="literatureIds[index]"
           :class="valueClassMap"
         >
           <NuxtLink :to="`/literature/${literatureIds[index]}`">
             {{ title }}
           </NuxtLink>
-          <ShowMoreLess
-            v-if="literatureIds.length > 5"
-            v-model:isExpanded="showAll"
-            label="related literature"
-          />
         </li>
+        <ShowMoreLess
+          v-if="literatureIds.length > 5"
+          v-model:isExpanded="showAll"
+          label="related literature"
+        />
       </ul>
     </template>
 
