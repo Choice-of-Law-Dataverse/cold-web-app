@@ -195,11 +195,10 @@ export const questionConfig = {
             }
         },
         {
-            key: 'Related Literature',
-            label: '',
+            key: 'Literature',
+            label: 'Related Literature',
             emptyValueBehavior: {
-                action: 'display',
-                fallback: 'No related literature available'
+                action: 'hide'
             }
         }
     ],
@@ -208,7 +207,8 @@ export const questionConfig = {
         Answer: 'result-value-large',
         'Domestic Legal Provisions': 'result-value-small',
         'More Information': 'result-value-small whitespace-pre-line',
-        'Court Decisions ID': 'result-value-small'
+        'Court Decisions ID': 'result-value-small',
+        'Related Literature': 'result-value-small',
     }
 }
 
