@@ -1,6 +1,11 @@
 <template>
-  <div v-if="loadingTitles || hasRelatedLiterature">
-    <span class="label">Related Literature</span>
+  <div
+    v-if="
+      loadingTitles || hasRelatedLiterature || (!useId && literatureList.length)
+    "
+  >
+    <!-- Section title -->
+    <span class="label">{{ label }}</span>
 
     <template v-if="useId">
       <ul v-if="loadingTitles">
@@ -62,6 +67,7 @@ import ShowMoreLess from '../ui/ShowMoreLess.vue'
 import LoadingBar from '../layout/LoadingBar.vue'
 
 const props = defineProps({
+  label: { type: String, default: 'Related Literature default title' },
   themes: { type: String, required: false },
   valueClassMap: { type: String, default: 'result-value-small' },
   literatureId: { type: String, default: '' },
@@ -151,6 +157,7 @@ const getDisplayed = (arr) =>
 const displayedLiterature = computed(() => getDisplayed(literatureList.value))
 
 async function fetchRelatedLiterature(themes) {
+  console.log('fetchRelatedLiterature called with themes:', themes)
   if (!themes) return
   const jsonPayload = {
     filters: [
@@ -169,18 +176,19 @@ async function fetchRelatedLiterature(themes) {
     })
     if (!response.ok) throw new Error('Failed to fetch related literature')
     const data = await response.json()
-    literatureList.value =
-      data.results && typeof data.results === 'object'
-        ? Object.entries(data.results).map(([key, item]) => ({
-            title: item.Title || item.title || 'Untitled',
-            id: item.id || key,
-          }))
-        : []
+    console.log('RelatedLiterature API response:', data)
+    literatureList.value = Array.isArray(data.results)
+      ? data.results.map((item) => ({
+          title: item.Title || item.title || 'Untitled',
+          id: item.id,
+        }))
+      : []
   } catch {
     literatureList.value = []
   } finally {
     loading.value = false
   }
+  console.log('literatureList.value:', literatureList.value)
 }
 
 onMounted(() => {

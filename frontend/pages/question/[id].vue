@@ -41,22 +41,27 @@
         />
       </section>
     </template>
-    <!-- Related Literature -->
-    <template #related-literature="{ value }">
-      <RelatedLiterature
-        id="test-related-literature"
-        :themes="processedAnswerData?.Themes"
-        :valueClassMap="valueClassMap['Related Literature']"
-        :useId="false"
-        class="!mt-2"
-      />
+
+    <template #related-literature>
+      <section>
+        <RelatedLiterature
+          :themes="processedAnswerData?.Themes"
+          :valueClassMap="valueClassMap['Related Literature']"
+          :useId="false"
+          :label="
+            filteredKeyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature'
+            )?.label || 'Related Literature'
+          "
+          class="!mt-2"
+        />
+      </section>
     </template>
   </BaseDetailLayout>
 </template>
 
 <script setup>
-console.log('Parent mounted')
-import { onMounted, nextTick } from 'vue'
+import { onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 // import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
@@ -100,6 +105,13 @@ onMounted(async () => {
   }
 })
 
-console.log('processedAnswerData: ', processedAnswerData)
-console.log('filteredKeyLabelPairs: ', filteredKeyLabelPairs)
+// console.log('processedAnswerData?.Themes: ', processedAnswerData?.Themes)
+// console.log('filteredKeyLabelPairs: ', filteredKeyLabelPairs)
+
+watch(
+  () => processedAnswerData.value?.Themes,
+  (newThemes) => {
+    console.log('processedAnswerData?.Themes (watch):', newThemes)
+  }
+)
 </script>

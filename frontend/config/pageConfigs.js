@@ -195,10 +195,11 @@ export const questionConfig = {
             }
         },
         {
-            key: 'Literature',
+            key: 'Related Literature',
             label: 'Related Literature',
             emptyValueBehavior: {
-                action: 'hide'
+                action: 'display',
+                fallback: 'No related literature'
             }
         }
     ],
