@@ -53,6 +53,11 @@
               (pair) => pair.key === 'Related Literature'
             )?.label || 'Related Literature'
           "
+          :emptyValueBehavior="
+            questionConfig.keyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature'
+            )?.emptyValueBehavior
+          "
           class="!mt-2"
         />
       </section>
@@ -63,18 +68,17 @@
 <script setup>
 import { onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-// import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import QuestionSourceList from '~/components/sources/QuestionSourceList.vue'
 import { useQuestion } from '~/composables/useQuestion'
+import { questionConfig } from '~/config/pageConfigs'
 
 const route = useRoute()
 const router = useRouter()
 const {
   loading,
-  error,
   processedAnswerData,
   filteredKeyLabelPairs,
   valueClassMap,
@@ -104,14 +108,4 @@ onMounted(async () => {
     }
   }
 })
-
-// console.log('processedAnswerData?.Themes: ', processedAnswerData?.Themes)
-// console.log('filteredKeyLabelPairs: ', filteredKeyLabelPairs)
-
-watch(
-  () => processedAnswerData.value?.Themes,
-  (newThemes) => {
-    console.log('processedAnswerData?.Themes (watch):', newThemes)
-  }
-)
 </script>

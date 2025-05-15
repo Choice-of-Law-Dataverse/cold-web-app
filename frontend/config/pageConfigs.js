@@ -137,7 +137,7 @@ export const jurisdictionConfig = {
             }
         },
         {
-            key: 'Literature',
+            key: 'Related Literature',
             label: 'Related Literature',
             emptyValueBehavior: {
                 action: 'hide'
@@ -148,7 +148,7 @@ export const jurisdictionConfig = {
         'Jurisdiction Summary': 'result-value-small',
         'Jurisdictional Differentiator': 'result-value-small',
         'Legal Family': 'result-value-small',
-        Literature: 'result-value-small'
+        'Related Literature': 'result-value-small'
     }
 }
 

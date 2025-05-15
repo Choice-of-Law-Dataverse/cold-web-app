@@ -157,7 +157,6 @@ const getDisplayed = (arr) =>
 const displayedLiterature = computed(() => getDisplayed(literatureList.value))
 
 async function fetchRelatedLiterature(themes) {
-  console.log('fetchRelatedLiterature called with themes:', themes)
   if (!themes) return
   const jsonPayload = {
     filters: [
@@ -176,7 +175,6 @@ async function fetchRelatedLiterature(themes) {
     })
     if (!response.ok) throw new Error('Failed to fetch related literature')
     const data = await response.json()
-    console.log('RelatedLiterature API response:', data)
     literatureList.value = Array.isArray(data.results)
       ? data.results.map((item) => ({
           title: item.Title || item.title || 'Untitled',
@@ -188,7 +186,6 @@ async function fetchRelatedLiterature(themes) {
   } finally {
     loading.value = false
   }
-  console.log('literatureList.value:', literatureList.value)
 }
 
 onMounted(() => {
