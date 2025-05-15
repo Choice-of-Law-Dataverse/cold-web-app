@@ -95,7 +95,9 @@ const shouldShowSection = computed(
   () =>
     loadingTitles.value ||
     hasRelatedLiterature.value ||
-    (!props.useId && (loading.value || literatureList.value.length))
+    (!props.useId && (loading.value || literatureList.value.length)) ||
+    (!hasRelatedLiterature.value &&
+      props.emptyValueBehavior.action === 'display')
 )
 
 const hasRelatedLiterature = computed(() =>
