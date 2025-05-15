@@ -1,23 +1,14 @@
 <template>
-  <div
-    v-if="
-      loadingTitles ||
-      hasRelatedLiterature ||
-      (!useId && (loading || literatureList.length))
-    "
-  >
-    <!-- Section title -->
-    <span class="label">{{ label }}</span>
+  <div v-if="shouldShowSection">
+    <span v-if="showLabel" class="label">{{ label }}</span>
 
     <template v-if="useId">
       <ul v-if="loadingTitles">
         <li><LoadingBar class="pt-[11px]" /></li>
       </ul>
-      <ul>
+      <ul v-else>
         <li
-          v-for="(title, index) in !showAll && literatureTitles.length > 5
-            ? literatureTitles.slice(0, 3)
-            : literatureTitles"
+          v-for="(title, index) in displayedTitles"
           :key="literatureIds[index]"
           :class="valueClassMap"
         >
@@ -26,7 +17,7 @@
           </NuxtLink>
         </li>
         <ShowMoreLess
-          v-if="literatureIds.length > 5 && loadingTitles == false"
+          v-if="literatureIds.length > 5 && !loadingTitles"
           v-model:isExpanded="showAll"
           label="related literature"
         />
@@ -69,12 +60,12 @@ import ShowMoreLess from '../ui/ShowMoreLess.vue'
 import LoadingBar from '../layout/LoadingBar.vue'
 
 const props = defineProps({
-  label: { type: String, default: 'Related Literature default title' },
-  themes: { type: String, required: false },
+  label: { type: String, default: 'Related Literature' },
+  themes: String,
   valueClassMap: { type: String, default: 'result-value-small' },
   literatureId: { type: String, default: '' },
-  literatureTitle: { type: [Array, String], default: '' },
   useId: { type: Boolean, default: false },
+  showLabel: { type: Boolean, default: true },
   emptyValueBehavior: {
     type: Object,
     default: () => ({
@@ -85,6 +76,11 @@ const props = defineProps({
 })
 
 const config = useRuntimeConfig()
+const showAll = ref(false)
+const loadingTitles = ref(false)
+const loading = ref(false)
+const literatureTitles = ref([])
+const literatureList = ref([])
 
 const splitAndTrim = (val) =>
   Array.isArray(val)
@@ -95,77 +91,69 @@ const splitAndTrim = (val) =>
 
 const literatureIds = computed(() => splitAndTrim(props.literatureId))
 
-const literatureTitles = ref([])
-const loadingTitles = ref(false)
-
-const hasRelatedLiterature = computed(() =>
-  literatureTitles.value.some((title) => title && title.trim())
+const shouldShowSection = computed(
+  () =>
+    loadingTitles.value ||
+    hasRelatedLiterature.value ||
+    (!props.useId && (loading.value || literatureList.value.length))
 )
 
-const fetchLiteratureTitlesById = async (ids) => {
+const hasRelatedLiterature = computed(() =>
+  props.useId
+    ? literatureTitles.value.some((title) => title && title.trim())
+    : literatureList.value.length > 0
+)
+
+const displayedTitles = computed(() => {
+  const arr = literatureTitles.value
+  return !showAll.value && arr.length > 5 ? arr.slice(0, 3) : arr
+})
+
+const displayedLiterature = computed(() => {
+  const arr = literatureList.value
+  return !showAll.value && arr.length > 5 ? arr.slice(0, 3) : arr
+})
+
+async function fetchLiteratureTitlesById(ids) {
   if (!ids.length) return []
-  const titles = []
-  for (const id of ids) {
-    try {
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/details`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ table: 'Literature', id }),
-        }
-      )
-      if (!response.ok) {
-        const errorText = await response.text()
-        console.error('Error response from /search/details:', errorText)
-        titles.push('')
-        continue
+  loadingTitles.value = true
+  const titles = await Promise.all(
+    ids.map(async (id) => {
+      try {
+        const response = await fetch(
+          `${config.public.apiBaseUrl}/search/details`,
+          {
+            method: 'POST',
+            headers: {
+              authorization: `Bearer ${config.public.FASTAPI}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ table: 'Literature', id }),
+          }
+        )
+        if (!response.ok) throw new Error('Error fetching title')
+        const data = await response.json()
+        return data?.Title ? data.Title : data[id]?.Title || ''
+      } catch {
+        return ''
       }
-      const data = await response.json()
-      const title = data?.Title ? data.Title : data[id]?.Title || ''
-      titles.push(
-        title && typeof title === 'string' && title.trim() ? title : ''
-      )
-    } catch (e) {
-      titles.push('')
-    }
-  }
-  return titles
+    })
+  )
+  literatureTitles.value = titles
+  loadingTitles.value = false
 }
 
 watch(
   () => props.literatureId,
-  async (newIds) => {
-    if (props.useId) {
-      const ids = splitAndTrim(newIds)
-      loadingTitles.value = true
-      literatureTitles.value = []
-      literatureTitles.value = await fetchLiteratureTitlesById(ids)
-      loadingTitles.value = false
-    }
+  (newIds) => {
+    if (props.useId) fetchLiteratureTitlesById(splitAndTrim(newIds))
   },
   { immediate: true }
 )
 
-const literatureList = ref([])
-const loading = ref(true)
-const showAll = ref(false)
-
-const getDisplayed = (arr) =>
-  !showAll.value && arr.length > 5 ? arr.slice(0, 3) : arr
-const displayedLiterature = computed(() => getDisplayed(literatureList.value))
-
 async function fetchRelatedLiterature(themes) {
   if (!themes) return
-  const jsonPayload = {
-    filters: [
-      { column: 'tables', values: ['Literature'] },
-      { column: 'themes', values: themes.split(',').map((t) => t.trim()) },
-    ],
-  }
+  loading.value = true
   try {
     const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
       method: 'POST',
@@ -173,7 +161,12 @@ async function fetchRelatedLiterature(themes) {
         authorization: `Bearer ${config.public.FASTAPI}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(jsonPayload),
+      body: JSON.stringify({
+        filters: [
+          { column: 'tables', values: ['Literature'] },
+          { column: 'themes', values: themes.split(',').map((t) => t.trim()) },
+        ],
+      }),
     })
     if (!response.ok) throw new Error('Failed to fetch related literature')
     const data = await response.json()
@@ -189,6 +182,14 @@ async function fetchRelatedLiterature(themes) {
     loading.value = false
   }
 }
+
+watch(
+  () => props.themes,
+  (themes) => {
+    if (!props.useId && themes) fetchRelatedLiterature(themes)
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   if (!props.useId && props.themes) fetchRelatedLiterature(props.themes)
