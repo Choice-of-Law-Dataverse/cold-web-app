@@ -1,7 +1,9 @@
 <template>
   <div
     v-if="
-      loadingTitles || hasRelatedLiterature || (!useId && literatureList.length)
+      loadingTitles ||
+      hasRelatedLiterature ||
+      (!useId && (loading || literatureList.length))
     "
   >
     <!-- Section title -->
