@@ -4,7 +4,7 @@
     :resultData="processedAnswerData"
     :keyLabelPairs="filteredKeyLabelPairs"
     :valueClassMap="valueClassMap"
-    formattedSourceTable="Question"
+    :sourceTable="'Question'"
   >
     <!-- Custom rendering for Legal provision articles -->
     <template #domestic-legal-provisions="{ value }">
