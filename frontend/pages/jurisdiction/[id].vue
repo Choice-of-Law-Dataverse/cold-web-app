@@ -66,7 +66,15 @@
           trailing
         >
           <span class="break-words text-left">
-            All court decisions from {{ jurisdictionData?.Name || 'N/A' }}
+            <template v-if="courtDecisionCount !== null">
+              See {{ courtDecisionCount }} court decision{{
+                courtDecisionCount === 1 ? '' : 's'
+              }}
+              from {{ jurisdictionData?.Name || 'N/A' }}
+            </template>
+            <template v-else>
+              All court decisions from {{ jurisdictionData?.Name || 'N/A' }}
+            </template>
           </span>
         </UButton>
       </NuxtLink>
@@ -88,8 +96,15 @@
           trailing
         >
           <span class="break-words text-left">
-            All legal instruments from
-            {{ jurisdictionData?.Name || 'N/A' }}
+            <template v-if="legalInstrumentCount !== null">
+              See {{ legalInstrumentCount }} legal instrument{{
+                legalInstrumentCount === 1 ? '' : 's'
+              }}
+              from {{ jurisdictionData?.Name || 'N/A' }}
+            </template>
+            <template v-else>
+              All legal instruments from {{ jurisdictionData?.Name || 'N/A' }}
+            </template>
           </span>
         </UButton>
       </NuxtLink>
@@ -105,16 +120,18 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import JurisdictionComparison from '~/components/jurisdiction-comparison/JurisdictionComparison.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import { useJurisdiction } from '~/composables/useJurisdiction'
 import { jurisdictionConfig } from '~/config/pageConfigs'
+import { useRuntimeConfig } from '#app'
 
 const route = useRoute()
 const router = useRouter()
+const config = useRuntimeConfig()
 const {
   loading,
   jurisdictionData,
@@ -132,6 +149,60 @@ const keyLabelPairsWithoutLegalFamily = computed(() =>
 
 // Set compare jurisdiction from query parameter
 compareJurisdiction.value = route.query.c || null
+
+// --- New: State for result counts ---
+const courtDecisionCount = ref(null)
+const legalInstrumentCount = ref(null)
+
+async function fetchResultCount(jurisdiction, table) {
+  if (!jurisdiction) return null
+  const payload = {
+    search_string: '',
+    filters: [
+      { column: 'jurisdictions', values: [jurisdiction] },
+      { column: 'tables', values: [table] },
+    ],
+    page: 1,
+    page_size: 1,
+  }
+  try {
+    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${config.public.FASTAPI}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+    if (!response.ok) throw new Error('Failed to fetch count')
+    const data = await response.json()
+    return data.total_matches || 0
+  } catch (e) {
+    console.error('Error fetching result count:', e)
+    return null
+  }
+}
+
+// Fetch counts when jurisdiction changes
+watch(
+  () => jurisdictionData?.value?.Name,
+  async (newName) => {
+    if (newName) {
+      courtDecisionCount.value = await fetchResultCount(
+        newName,
+        'Court Decisions'
+      )
+      legalInstrumentCount.value = await fetchResultCount(
+        newName,
+        'Domestic Instruments'
+      )
+    } else {
+      courtDecisionCount.value = null
+      legalInstrumentCount.value = null
+    }
+  },
+  { immediate: true }
+)
 
 onMounted(async () => {
   try {
