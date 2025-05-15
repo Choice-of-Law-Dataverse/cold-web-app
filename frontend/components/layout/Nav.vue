@@ -82,7 +82,7 @@
         <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
           <a href="/">
             <img
-              src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_beta_logo.svg"
+              src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_alpha_logo.svg"
               alt="CoLD Logo"
               class="h-12 w-auto mb-4"
             />
