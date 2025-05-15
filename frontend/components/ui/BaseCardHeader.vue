@@ -25,10 +25,7 @@
           {{ jurisdictionString }}
         </span>
         <!-- Legal Family next to jurisdiction name -->
-        <span
-          v-if="legalFamily && legalFamily !== 'N/A'"
-          class="label-theme ml-2"
-        >
+        <span v-if="legalFamily && legalFamily !== 'N/A'" class="label-theme">
           {{ legalFamily }}
         </span>
         <!-- Display 'source_table' -->
