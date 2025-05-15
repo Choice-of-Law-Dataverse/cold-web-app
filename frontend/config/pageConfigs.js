@@ -121,13 +121,7 @@ export const jurisdictionConfig = {
                 action: 'hide'
             }
         },
-        {
-            key: 'Legal Family',
-            label: 'Legal Family',
-            emptyValueBehavior: {
-                action: 'hide'
-            }
-        },
+        // Removed Legal Family from here, now only in card header
         {
             key: 'Specialist',
             label: 'Specialists',
@@ -147,7 +141,7 @@ export const jurisdictionConfig = {
     valueClassMap: {
         'Jurisdiction Summary': 'result-value-small',
         'Jurisdictional Differentiator': 'result-value-small',
-        'Legal Family': 'result-value-small',
+        // 'Legal Family': 'result-value-small', // not needed in detail section
         'Related Literature': 'result-value-small'
     }
 }

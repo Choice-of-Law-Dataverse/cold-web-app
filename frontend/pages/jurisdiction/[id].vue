@@ -2,7 +2,7 @@
   <BaseDetailLayout
     :loading="loading"
     :resultData="jurisdictionData"
-    :keyLabelPairs="keyLabelPairs"
+    :keyLabelPairs="keyLabelPairsWithoutLegalFamily"
     :valueClassMap="valueClassMap"
     :formattedJurisdiction="[jurisdictionData?.Name]"
   >
@@ -105,7 +105,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import JurisdictionComparison from '~/components/jurisdiction-comparison/JurisdictionComparison.vue'
@@ -124,6 +124,11 @@ const {
   valueClassMap,
   fetchJurisdiction,
 } = useJurisdiction()
+
+// Remove Legal Family from keyLabelPairs for detail display
+const keyLabelPairsWithoutLegalFamily = computed(() =>
+  keyLabelPairs.filter((pair) => pair.key !== 'Legal Family')
+)
 
 // Set compare jurisdiction from query parameter
 compareJurisdiction.value = route.query.c || null
