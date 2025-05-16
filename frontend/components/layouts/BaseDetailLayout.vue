@@ -8,6 +8,7 @@
           :keyLabelPairs="keyLabelPairs"
           :valueClassMap="valueClassMap"
           :formattedSourceTable="sourceTable"
+          :formattedJurisdiction="formattedJurisdiction"
         >
           <slot />
           <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
@@ -28,5 +29,6 @@ defineProps<{
   keyLabelPairs: any[]
   valueClassMap: Record<string, string>
   sourceTable: string
+  formattedJurisdiction?: any[] //
 }>()
-</script> 
+</script>

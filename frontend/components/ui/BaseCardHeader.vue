@@ -1,7 +1,7 @@
 <template>
   <div
     class="header-container flex items-center justify-between mt-0.5"
-    :key="formattedJurisdiction + formattedTheme"
+    :key="formattedJurisdiction + formattedTheme + legalFamily"
   >
     <template v-if="cardType === 'Loading'"> </template>
     <template v-else>
@@ -24,7 +24,10 @@
           />
           {{ jurisdictionString }}
         </span>
-
+        <!-- Legal Family next to jurisdiction name -->
+        <span v-if="legalFamily && legalFamily !== 'N/A'" class="label-theme">
+          {{ legalFamily }}
+        </span>
         <!-- Display 'source_table' -->
         <span v-if="adjustedSourceTable" :class="['label', labelColorClass]">
           {{ adjustedSourceTable }}
@@ -286,6 +289,18 @@ function getJurisdictionISO(name) {
   const entry = jurisdictionsData.find((item) => item.name.includes(name))
   return entry ? entry.alternative[0].toLowerCase() : 'default'
 }
+
+// Add computed for legalFamily
+const legalFamily = computed(() => {
+  // Only show for jurisdiction-type cards
+  if (
+    props.resultData &&
+    (props.cardType === 'Jurisdiction' || props.resultData['Legal Family'])
+  ) {
+    return props.resultData['Legal Family'] || ''
+  }
+  return ''
+})
 </script>
 
 <style scoped>

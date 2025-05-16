@@ -1,133 +1,159 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <div class="col-span-12">
-        <DetailDisplay
-          :loading="loading"
-          :resultData="jurisdictionData"
-          :keyLabelPairs="keyLabelPairs"
-          :valueClassMap="valueClassMap"
-          :formattedJurisdiction="[jurisdictionData?.Name]"
-        >
-          <!-- Specialists Section -->
-          <section>
-            <span class="label">Specialists</span>
-            <template v-if="specialists.length">
-              <ul>
-                <li
-                  v-for="specialist in specialists"
-                  :key="specialist.Specialist"
-                  class="result-value-small"
-                >
-                  {{ specialist.Specialist }}
-                </li>
-              </ul>
-            </template>
-            <p v-else class="result-value-small">
-              {{
-                keyLabelPairs.find((pair) => pair.key === 'Specialist')
-                  ?.emptyValueBehavior?.fallback || 'No specialists available'
-              }}
-            </p>
-          </section>
+  <BaseDetailLayout
+    :loading="loading"
+    :resultData="jurisdictionData"
+    :keyLabelPairs="keyLabelPairsWithoutLegalFamily"
+    :valueClassMap="valueClassMap"
+    :formattedJurisdiction="[jurisdictionData?.Name]"
+  >
+    <!-- Specialists Section -->
+    <section>
+      <span class="label">Specialists</span>
+      <template v-if="specialists.length">
+        <ul>
+          <li
+            v-for="specialist in specialists"
+            :key="specialist.Specialist"
+            class="result-value-small"
+          >
+            {{ specialist.Specialist }}
+          </li>
+        </ul>
+      </template>
+      <p v-else class="result-value-small">
+        {{
+          keyLabelPairs.find((pair) => pair.key === 'Specialist')
+            ?.emptyValueBehavior?.fallback || 'No specialists available'
+        }}
+      </p>
+    </section>
 
-          <template #literature>
-            <section>
-              <span class="label">Related Literature</span>
-              <RelatedLiterature
-                :literature-id="jurisdictionData?.Literature"
-                :literature-title="literatureTitle"
-                :valueClassMap="valueClassMap['Related Literature']"
-                :showLabel="false"
-                :emptyValueBehavior="
-                  keyLabelPairs.find((pair) => pair.key === 'Literature')
-                    ?.emptyValueBehavior
-                "
-                use-id
-              />
-            </section>
-          </template>
-
-          <template #search-links>
-            <span class="label !mt-[-36px] !mb-5">Related Data</span>
-            <NuxtLink
-              :to="{
-                name: 'search',
-                query: {
-                  type: 'Court Decisions',
-                  jurisdiction: jurisdictionData?.Name || '',
-                },
-              }"
-              class="no-underline !mb-2"
-            >
-              <UButton
-                class="link-button"
-                variant="link"
-                icon="i-material-symbols:arrow-forward"
-                trailing
-              >
-                <span class="break-words text-left">
-                  All court decisions from {{ jurisdictionData?.Name || 'N/A' }}
-                </span>
-              </UButton>
-            </NuxtLink>
-
-            <NuxtLink
-              :to="{
-                name: 'search',
-                query: {
-                  type: 'Legal Instruments',
-                  jurisdiction: jurisdictionData?.Name || '',
-                },
-              }"
-              class="no-underline"
-            >
-              <UButton
-                class="link-button"
-                variant="link"
-                icon="i-material-symbols:arrow-forward"
-                trailing
-              >
-                <span class="break-words text-left">
-                  All legal instruments from
-                  {{ jurisdictionData?.Name || 'N/A' }}
-                </span>
-              </UButton>
-            </NuxtLink>
-          </template>
-        </DetailDisplay>
-
-        <!-- Error State -->
-        <div v-if="error" class="text-red-500 mt-4">
-          {{ error }}
-        </div>
-
-        <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
-        <JurisdictionComparison
-          v-if="!loading && jurisdictionData?.Name"
-          :jurisdiction="jurisdictionData.Name"
-          :compareJurisdiction="compareJurisdiction"
+    <template #related-literature>
+      <section>
+        <RelatedLiterature
+          :literature-id="jurisdictionData?.Literature"
+          :valueClassMap="valueClassMap['Related Literature']"
+          :useId="true"
+          :label="
+            keyLabelPairs.find((pair) => pair.key === 'Related Literature')
+              ?.label || 'Related Literature'
+          "
+          :emptyValueBehavior="
+            jurisdictionConfig.keyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature'
+            )?.emptyValueBehavior
+          "
         />
-      </div>
-    </div>
-  </main>
+      </section>
+    </template>
+
+    <template #search-links>
+      <template
+        v-if="
+          countsLoading ||
+          (courtDecisionCount !== 0 && courtDecisionCount !== null) ||
+          (domesticInstrumentCount !== 0 && domesticInstrumentCount !== null)
+        "
+      >
+        <span class="label !mt-[-36px] !mb-5">Related Data</span>
+        <template v-if="countsLoading">
+          <LoadingBar />
+        </template>
+        <template v-else>
+          <NuxtLink
+            v-if="courtDecisionCount !== 0 && courtDecisionCount !== null"
+            :to="{
+              name: 'search',
+              query: {
+                type: 'Court Decisions',
+                jurisdiction: jurisdictionData?.Name || '',
+              },
+            }"
+            class="no-underline !mb-2"
+          >
+            <UButton
+              class="link-button"
+              variant="link"
+              icon="i-material-symbols:arrow-forward"
+              trailing
+            >
+              <span class="break-words text-left">
+                <template v-if="courtDecisionCount !== null">
+                  See {{ courtDecisionCount }} court decision{{
+                    courtDecisionCount === 1 ? '' : 's'
+                  }}
+                  from {{ jurisdictionData?.Name || 'N/A' }}
+                </template>
+                <template v-else>
+                  All court decisions from {{ jurisdictionData?.Name || 'N/A' }}
+                </template>
+              </span>
+            </UButton>
+          </NuxtLink>
+
+          <NuxtLink
+            v-if="
+              domesticInstrumentCount !== 0 && domesticInstrumentCount !== null
+            "
+            :to="{
+              name: 'search',
+              query: {
+                type: 'Domestic Instruments',
+                jurisdiction: jurisdictionData?.Name || '',
+              },
+            }"
+            class="no-underline"
+          >
+            <UButton
+              class="link-button"
+              variant="link"
+              icon="i-material-symbols:arrow-forward"
+              trailing
+            >
+              <span class="break-words text-left">
+                <template v-if="domesticInstrumentCount !== null">
+                  See {{ domesticInstrumentCount }} domestic instrument{{
+                    domesticInstrumentCount === 1 ? '' : 's'
+                  }}
+                  from {{ jurisdictionData?.Name || 'N/A' }}
+                </template>
+                <template v-else>
+                  All domestic instruments from
+                  {{ jurisdictionData?.Name || 'N/A' }}
+                </template>
+              </span>
+            </UButton>
+          </NuxtLink>
+        </template>
+      </template>
+    </template>
+  </BaseDetailLayout>
+
+  <!-- Only render JurisdictionComparison if jurisdictionData is loaded -->
+  <JurisdictionComparison
+    v-if="!loading && jurisdictionData?.Name"
+    :jurisdiction="jurisdictionData.Name"
+    :compareJurisdiction="compareJurisdiction"
+  />
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
+import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import JurisdictionComparison from '~/components/jurisdiction-comparison/JurisdictionComparison.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
+import LoadingBar from '~/components/layout/LoadingBar.vue'
 import { useJurisdiction } from '~/composables/useJurisdiction'
+import { jurisdictionConfig } from '~/config/pageConfigs'
+import { useRuntimeConfig } from '#app'
 
 const route = useRoute()
 const router = useRouter()
+const config = useRuntimeConfig()
 const {
   loading,
-  error,
   jurisdictionData,
-  literatureTitle,
   specialists,
   compareJurisdiction,
   keyLabelPairs,
@@ -135,8 +161,69 @@ const {
   fetchJurisdiction,
 } = useJurisdiction()
 
+// Remove Legal Family from keyLabelPairs for detail display
+const keyLabelPairsWithoutLegalFamily = computed(() =>
+  keyLabelPairs.filter((pair) => pair.key !== 'Legal Family')
+)
+
 // Set compare jurisdiction from query parameter
 compareJurisdiction.value = route.query.c || null
+
+// --- New: State for result counts ---
+const courtDecisionCount = ref(null)
+const domesticInstrumentCount = ref(null)
+const countsLoading = ref(true)
+
+async function fetchResultCount(jurisdiction, table) {
+  if (!jurisdiction) return null
+  const payload = {
+    search_string: '',
+    filters: [
+      { column: 'jurisdictions', values: [jurisdiction] },
+      { column: 'tables', values: [table] },
+    ],
+    page: 1,
+    page_size: 1,
+  }
+  try {
+    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
+      method: 'POST',
+      headers: {
+        authorization: `Bearer ${config.public.FASTAPI}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+    })
+    if (!response.ok) throw new Error('Failed to fetch count')
+    const data = await response.json()
+    return data.total_matches || 0
+  } catch (e) {
+    console.error('Error fetching result count:', e)
+    return null
+  }
+}
+
+// Fetch counts when jurisdiction changes
+watch(
+  () => jurisdictionData?.value?.Name,
+  async (newName) => {
+    if (newName) {
+      countsLoading.value = true
+      const [courtCount, legalCount] = await Promise.all([
+        fetchResultCount(newName, 'Court Decisions'),
+        fetchResultCount(newName, 'Domestic Instruments'),
+      ])
+      courtDecisionCount.value = courtCount
+      domesticInstrumentCount.value = legalCount
+      countsLoading.value = false
+    } else {
+      courtDecisionCount.value = null
+      domesticInstrumentCount.value = null
+      countsLoading.value = false
+    }
+  },
+  { immediate: true }
+)
 
 onMounted(async () => {
   try {

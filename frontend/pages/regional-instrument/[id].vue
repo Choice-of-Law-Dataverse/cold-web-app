@@ -24,12 +24,22 @@
       </div>
     </template>
 
-    <template #related-literature>
-      <section class="mt-8">
-        <span class="label">Related Literature</span>
-        <p class="text-gray-300 mt-2">Coming soon</p>
+    <template #literature>
+      <section>
+        <RelatedLiterature
+          :literature-id="processedRegionalInstrument?.Literature"
+          :valueClassMap="valueClassMap['Literature']"
+          :showLabel="false"
+          :emptyValueBehavior="
+            regionalInstrumentConfig.keyLabelPairs.find(
+              (pair) => pair.key === 'Literature'
+            )?.emptyValueBehavior
+          "
+          use-id
+        />
       </section>
     </template>
+
     <template #selected-provisions>
       <section class="mt-8">
         <span class="label">Selected Provisions</span>
@@ -40,12 +50,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { regionalInstrumentConfig } from '~/config/pageConfigs'
+import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 
 const route = useRoute()
 const router = useRouter()

@@ -1,86 +1,85 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <div class="col-span-12">
-        <DetailDisplay
-          :loading="loading"
-          :resultData="processedAnswerData"
-          :keyLabelPairs="filteredKeyLabelPairs"
+  <BaseDetailLayout
+    :loading="loading"
+    :resultData="processedAnswerData"
+    :keyLabelPairs="filteredKeyLabelPairs"
+    :valueClassMap="valueClassMap"
+    :sourceTable="'Question'"
+  >
+    <!-- Custom rendering for Legal provision articles -->
+    <template #domestic-legal-provisions="{ value }">
+      <section>
+        <span class="label">Source</span>
+        <QuestionSourceList
+          :sources="
+            [
+              ...(value || processedAnswerData?.['Domestic Legal Provisions']
+                ? [value || processedAnswerData?.['Domestic Legal Provisions']]
+                : []),
+            ].filter(Boolean)
+          "
+          :fallbackData="processedAnswerData"
           :valueClassMap="valueClassMap"
-          formattedSourceTable="Question"
-        >
-          <!-- Custom rendering for Legal provision articles -->
-          <template #domestic-legal-provisions="{ value }">
-            <section>
-              <span class="label">Source</span>
-              <QuestionSourceList
-                :sources="
-                  [
-                    ...(value ||
-                    processedAnswerData?.['Domestic Legal Provisions']
-                      ? [
-                          value ||
-                            processedAnswerData?.['Domestic Legal Provisions'],
-                        ]
-                      : []),
-                  ].filter(Boolean)
-                "
-                :fallbackData="processedAnswerData"
-                :valueClassMap="valueClassMap"
-                :fetchOupChapter="true"
-                :fetchPrimarySource="true"
-              />
-            </section>
-          </template>
+          :fetchOupChapter="true"
+          :fetchPrimarySource="true"
+        />
+      </section>
+    </template>
 
-          <!-- Custom rendering for Court Decisions ID -->
-          <template #court-decisions-id="{ value }">
-            <section id="related-court-decisions">
-              <span class="label">Related Court Decisions</span>
-              <CourtDecisionRenderer
-                :value="value"
-                :valueClassMap="valueClassMap['Court Decisions ID']"
-                :emptyValueBehavior="
-                  filteredKeyLabelPairs.find(
-                    (pair) => pair.key === 'Court Decisions ID'
-                  )?.emptyValueBehavior
-                "
-              />
-            </section>
-          </template>
+    <!-- Custom rendering for Court Decisions ID -->
+    <template #court-decisions-id="{ value }">
+      <section id="related-court-decisions">
+        <span class="label">Related Court Decisions</span>
+        <CourtDecisionRenderer
+          :value="value"
+          :valueClassMap="valueClassMap['Court Decisions ID']"
+          :emptyValueBehavior="
+            filteredKeyLabelPairs.find(
+              (pair) => pair.key === 'Court Decisions ID'
+            )?.emptyValueBehavior
+          "
+        />
+      </section>
+    </template>
 
-          <!-- Related Literature -->
-          <template #related-literature>
-            <RelatedLiterature
-              :themes="processedAnswerData?.Themes || ''"
-              :valueClassMap="valueClassMap['Related Literature']"
-            />
-          </template>
-        </DetailDisplay>
-
-        <!-- Error State -->
-        <div v-if="error" class="text-red-500 mt-4">
-          {{ error }}
-        </div>
-      </div>
-    </div>
-  </main>
+    <template #related-literature>
+      <section>
+        <RelatedLiterature
+          :themes="processedAnswerData?.Themes"
+          :literatureId="processedAnswerData?.['Jurisdictions Literature ID']"
+          :mode="'both'"
+          :valueClassMap="valueClassMap['Related Literature']"
+          :label="
+            filteredKeyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature'
+            )?.label || 'Related Literature'
+          "
+          :emptyValueBehavior="
+            questionConfig.keyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature'
+            )?.emptyValueBehavior
+          "
+          class="!mt-2"
+        />
+      </section>
+    </template>
+  </BaseDetailLayout>
 </template>
 
 <script setup>
-import { onMounted, nextTick } from 'vue'
+import { onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
+import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import QuestionSourceList from '~/components/sources/QuestionSourceList.vue'
 import { useQuestion } from '~/composables/useQuestion'
+import { questionConfig } from '~/config/pageConfigs'
 
 const route = useRoute()
 const router = useRouter()
 const {
   loading,
-  error,
   processedAnswerData,
   filteredKeyLabelPairs,
   valueClassMap,
@@ -111,19 +110,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style>
-/* Harmonized spacing for all .label elements */
-/* .label {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-} */
-
-/* Adjust section spacing to match label spacing */
-/* #related-court-decisions {
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-  padding-top: 0;
-  padding-bottom: 0;
-} */
-</style>
