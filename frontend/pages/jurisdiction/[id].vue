@@ -52,7 +52,7 @@
         v-if="
           countsLoading ||
           (courtDecisionCount !== 0 && courtDecisionCount !== null) ||
-          (legalInstrumentCount !== 0 && legalInstrumentCount !== null)
+          (domesticInstrumentCount !== 0 && domesticInstrumentCount !== null)
         "
       >
         <span class="label !mt-[-36px] !mb-5">Related Data</span>
@@ -92,11 +92,13 @@
           </NuxtLink>
 
           <NuxtLink
-            v-if="legalInstrumentCount !== 0 && legalInstrumentCount !== null"
+            v-if="
+              domesticInstrumentCount !== 0 && domesticInstrumentCount !== null
+            "
             :to="{
               name: 'search',
               query: {
-                type: 'Legal Instruments',
+                type: 'Domestic Instruments',
                 jurisdiction: jurisdictionData?.Name || '',
               },
             }"
@@ -109,14 +111,14 @@
               trailing
             >
               <span class="break-words text-left">
-                <template v-if="legalInstrumentCount !== null">
-                  See {{ legalInstrumentCount }} legal instrument{{
-                    legalInstrumentCount === 1 ? '' : 's'
+                <template v-if="domesticInstrumentCount !== null">
+                  See {{ domesticInstrumentCount }} domestic instrument{{
+                    domesticInstrumentCount === 1 ? '' : 's'
                   }}
                   from {{ jurisdictionData?.Name || 'N/A' }}
                 </template>
                 <template v-else>
-                  All legal instruments from
+                  All domestic instruments from
                   {{ jurisdictionData?.Name || 'N/A' }}
                 </template>
               </span>
@@ -169,7 +171,7 @@ compareJurisdiction.value = route.query.c || null
 
 // --- New: State for result counts ---
 const courtDecisionCount = ref(null)
-const legalInstrumentCount = ref(null)
+const domesticInstrumentCount = ref(null)
 const countsLoading = ref(true)
 
 async function fetchResultCount(jurisdiction, table) {
@@ -212,11 +214,11 @@ watch(
         fetchResultCount(newName, 'Domestic Instruments'),
       ])
       courtDecisionCount.value = courtCount
-      legalInstrumentCount.value = legalCount
+      domesticInstrumentCount.value = legalCount
       countsLoading.value = false
     } else {
       courtDecisionCount.value = null
-      legalInstrumentCount.value = null
+      domesticInstrumentCount.value = null
       countsLoading.value = false
     }
   },
