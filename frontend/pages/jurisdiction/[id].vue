@@ -48,68 +48,75 @@
     </template>
 
     <template #search-links>
-      <span class="label !mt-[-36px] !mb-5">Related Data</span>
-      <NuxtLink
-        v-if="courtDecisionCount !== 0 && courtDecisionCount !== null"
-        :to="{
-          name: 'search',
-          query: {
-            type: 'Court Decisions',
-            jurisdiction: jurisdictionData?.Name || '',
-          },
-        }"
-        class="no-underline !mb-2"
+      <template
+        v-if="
+          (courtDecisionCount !== 0 && courtDecisionCount !== null) ||
+          (legalInstrumentCount !== 0 && legalInstrumentCount !== null)
+        "
       >
-        <UButton
-          class="link-button"
-          variant="link"
-          icon="i-material-symbols:arrow-forward"
-          trailing
+        <span class="label !mt-[-36px] !mb-5">Related Data</span>
+        <NuxtLink
+          v-if="courtDecisionCount !== 0 && courtDecisionCount !== null"
+          :to="{
+            name: 'search',
+            query: {
+              type: 'Court Decisions',
+              jurisdiction: jurisdictionData?.Name || '',
+            },
+          }"
+          class="no-underline !mb-2"
         >
-          <span class="break-words text-left">
-            <template v-if="courtDecisionCount !== null">
-              See {{ courtDecisionCount }} court decision{{
-                courtDecisionCount === 1 ? '' : 's'
-              }}
-              from {{ jurisdictionData?.Name || 'N/A' }}
-            </template>
-            <template v-else>
-              All court decisions from {{ jurisdictionData?.Name || 'N/A' }}
-            </template>
-          </span>
-        </UButton>
-      </NuxtLink>
+          <UButton
+            class="link-button"
+            variant="link"
+            icon="i-material-symbols:arrow-forward"
+            trailing
+          >
+            <span class="break-words text-left">
+              <template v-if="courtDecisionCount !== null">
+                See {{ courtDecisionCount }} court decision{{
+                  courtDecisionCount === 1 ? '' : 's'
+                }}
+                from {{ jurisdictionData?.Name || 'N/A' }}
+              </template>
+              <template v-else>
+                All court decisions from {{ jurisdictionData?.Name || 'N/A' }}
+              </template>
+            </span>
+          </UButton>
+        </NuxtLink>
 
-      <NuxtLink
-        v-if="legalInstrumentCount !== 0 && legalInstrumentCount !== null"
-        :to="{
-          name: 'search',
-          query: {
-            type: 'Legal Instruments',
-            jurisdiction: jurisdictionData?.Name || '',
-          },
-        }"
-        class="no-underline"
-      >
-        <UButton
-          class="link-button"
-          variant="link"
-          icon="i-material-symbols:arrow-forward"
-          trailing
+        <NuxtLink
+          v-if="legalInstrumentCount !== 0 && legalInstrumentCount !== null"
+          :to="{
+            name: 'search',
+            query: {
+              type: 'Legal Instruments',
+              jurisdiction: jurisdictionData?.Name || '',
+            },
+          }"
+          class="no-underline"
         >
-          <span class="break-words text-left">
-            <template v-if="legalInstrumentCount !== null">
-              See {{ legalInstrumentCount }} legal instrument{{
-                legalInstrumentCount === 1 ? '' : 's'
-              }}
-              from {{ jurisdictionData?.Name || 'N/A' }}
-            </template>
-            <template v-else>
-              All legal instruments from {{ jurisdictionData?.Name || 'N/A' }}
-            </template>
-          </span>
-        </UButton>
-      </NuxtLink>
+          <UButton
+            class="link-button"
+            variant="link"
+            icon="i-material-symbols:arrow-forward"
+            trailing
+          >
+            <span class="break-words text-left">
+              <template v-if="legalInstrumentCount !== null">
+                See {{ legalInstrumentCount }} legal instrument{{
+                  legalInstrumentCount === 1 ? '' : 's'
+                }}
+                from {{ jurisdictionData?.Name || 'N/A' }}
+              </template>
+              <template v-else>
+                All legal instruments from {{ jurisdictionData?.Name || 'N/A' }}
+              </template>
+            </span>
+          </UButton>
+        </NuxtLink>
+      </template>
     </template>
   </BaseDetailLayout>
 
