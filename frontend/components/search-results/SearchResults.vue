@@ -88,7 +88,7 @@
 
           <div v-if="!loading" class="result-value-small text-center pt-4">
             <UButton
-              to="https://choice-of-law-dataverse.github.io/docs/postgres-fts.html"
+              to="https://choice-of-law-dataverse.github.io/search-algorithm"
               variant="link"
               target="_blank"
               >Learn How the Search Works</UButton
