@@ -46,8 +46,9 @@
       <section>
         <RelatedLiterature
           :themes="processedAnswerData?.Themes"
+          :literatureId="processedAnswerData?.['Jurisdictions Literature ID']"
+          :mode="'both'"
           :valueClassMap="valueClassMap['Related Literature']"
-          :useId="false"
           :label="
             filteredKeyLabelPairs.find(
               (pair) => pair.key === 'Related Literature'
