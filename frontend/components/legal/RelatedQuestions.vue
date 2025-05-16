@@ -3,8 +3,8 @@
     <span v-if="label" class="label">{{ label }}</span>
     <ul v-if="questionList.length">
       <li v-for="(q, idx) in questionList" :key="idx">
-        <NuxtLink :to="`/question/${jurisdictionCode}_${q.trim()}`">
-          {{ jurisdictionCode }}_{{ q.trim() }}
+        <NuxtLink :to="`/question/${jurisdictionCode}_${q}`">
+          {{ questionLabels[idx] || jurisdictionCode + '_' + q }}
         </NuxtLink>
       </li>
     </ul>
@@ -13,7 +13,8 @@
 </template>
 
 <script setup>
-import { computed, toRefs } from 'vue'
+import { computed, toRefs, ref, watchEffect } from 'vue'
+import { useRuntimeConfig } from '#imports'
 
 const props = defineProps({
   label: { type: String, default: 'Related Questions' },
@@ -22,6 +23,7 @@ const props = defineProps({
 })
 
 const { jurisdictionCode, questions } = toRefs(props)
+const config = useRuntimeConfig()
 
 const questionList = computed(() =>
   questions.value
@@ -31,4 +33,40 @@ const questionList = computed(() =>
         .filter((q) => q)
     : []
 )
+
+const questionLabels = ref([])
+
+watchEffect(async () => {
+  // Only fetch if there are questions and a jurisdiction code
+  if (!jurisdictionCode.value || !questionList.value.length) {
+    questionLabels.value = []
+    return
+  }
+  // Fetch all question labels in parallel
+  const results = await Promise.all(
+    questionList.value.map(async (q) => {
+      try {
+        const response = await fetch(
+          `${config.public.apiBaseUrl}/search/details`,
+          {
+            method: 'POST',
+            headers: {
+              authorization: `Bearer ${config.public.FASTAPI}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              table: 'Answers',
+              id: `${jurisdictionCode.value}_${q}`,
+            }),
+          }
+        )
+        const data = await response.json()
+        return data.Question || `${jurisdictionCode.value}_${q}`
+      } catch (e) {
+        return `${jurisdictionCode.value}_${q}`
+      }
+    })
+  )
+  questionLabels.value = results
+})
 </script>
