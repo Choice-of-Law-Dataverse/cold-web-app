@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="shouldDisplay">
     <span v-if="label" class="label">{{ label }}</span>
     <ul v-if="questionList.length">
       <li v-for="(q, idx) in questionList" :key="idx">
@@ -20,9 +20,10 @@ const props = defineProps({
   label: { type: String, default: 'Related Questions' },
   jurisdictionCode: { type: String, default: '' },
   questions: { type: String, default: '' },
+  emptyValueBehavior: { type: Object, default: () => ({ action: 'hide' }) },
 })
 
-const { jurisdictionCode, questions } = toRefs(props)
+const { jurisdictionCode, questions, emptyValueBehavior } = toRefs(props)
 const config = useRuntimeConfig()
 
 const questionList = computed(() =>
@@ -33,6 +34,16 @@ const questionList = computed(() =>
         .filter((q) => q)
     : []
 )
+
+const shouldDisplay = computed(() => {
+  if (
+    emptyValueBehavior.value?.action === 'hide' &&
+    questionList.value.length === 0
+  ) {
+    return false
+  }
+  return true
+})
 
 const questionLabels = ref([])
 

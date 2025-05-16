@@ -463,8 +463,7 @@ export const courtDecisionConfig = {
       key: 'Related Questions',
       label: 'Related Questions',
       emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No related questions',
+        action: 'hide',
       },
     },
     {
