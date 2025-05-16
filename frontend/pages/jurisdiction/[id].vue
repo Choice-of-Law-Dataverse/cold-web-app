@@ -48,8 +48,11 @@
     </template>
 
     <template #search-links>
+      <template v-if="countsLoading">
+        <LoadingBar />
+      </template>
       <template
-        v-if="
+        v-else-if="
           (courtDecisionCount !== 0 && courtDecisionCount !== null) ||
           (legalInstrumentCount !== 0 && legalInstrumentCount !== null)
         "
@@ -134,6 +137,7 @@ import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import JurisdictionComparison from '~/components/jurisdiction-comparison/JurisdictionComparison.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
+import LoadingBar from '~/components/layout/LoadingBar.vue'
 import { useJurisdiction } from '~/composables/useJurisdiction'
 import { jurisdictionConfig } from '~/config/pageConfigs'
 import { useRuntimeConfig } from '#app'
@@ -162,6 +166,7 @@ compareJurisdiction.value = route.query.c || null
 // --- New: State for result counts ---
 const courtDecisionCount = ref(null)
 const legalInstrumentCount = ref(null)
+const countsLoading = ref(true)
 
 async function fetchResultCount(jurisdiction, table) {
   if (!jurisdiction) return null
@@ -197,17 +202,18 @@ watch(
   () => jurisdictionData?.value?.Name,
   async (newName) => {
     if (newName) {
-      courtDecisionCount.value = await fetchResultCount(
-        newName,
-        'Court Decisions'
-      )
-      legalInstrumentCount.value = await fetchResultCount(
-        newName,
-        'Domestic Instruments'
-      )
+      countsLoading.value = true
+      const [courtCount, legalCount] = await Promise.all([
+        fetchResultCount(newName, 'Court Decisions'),
+        fetchResultCount(newName, 'Domestic Instruments'),
+      ])
+      courtDecisionCount.value = courtCount
+      legalInstrumentCount.value = legalCount
+      countsLoading.value = false
     } else {
       courtDecisionCount.value = null
       legalInstrumentCount.value = null
+      countsLoading.value = false
     }
   },
   { immediate: true }
