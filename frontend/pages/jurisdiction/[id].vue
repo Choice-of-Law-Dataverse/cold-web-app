@@ -43,6 +43,7 @@
               (pair) => pair.key === 'Related Literature'
             )?.emptyValueBehavior
           "
+          mode="id"
         />
       </section>
     </template>

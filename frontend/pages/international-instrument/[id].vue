@@ -29,13 +29,13 @@
         <RelatedLiterature
           :literature-id="processedInternationalInstrument?.Literature"
           :valueClassMap="valueClassMap['Literature']"
-          :showLabel="false"
+          :showLabel="true"
           :emptyValueBehavior="
             internationalInstrumentConfig.keyLabelPairs.find(
               (pair) => pair.key === 'Literature'
             )?.emptyValueBehavior
           "
-          use-id
+          mode="id"
         />
       </section>
     </template>
