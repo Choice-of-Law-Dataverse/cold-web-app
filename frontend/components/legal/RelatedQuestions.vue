@@ -3,7 +3,9 @@
     <span v-if="label" class="label">{{ label }}</span>
     <ul v-if="questionList.length">
       <li v-for="(q, idx) in questionList" :key="idx">
-        {{ jurisdictionCode }}_{{ q.trim() }}
+        <NuxtLink :to="`/question/${jurisdictionCode}_${q.trim()}`">
+          {{ jurisdictionCode }}_{{ q.trim() }}
+        </NuxtLink>
       </li>
     </ul>
     <span v-else>No related questions.</span>
