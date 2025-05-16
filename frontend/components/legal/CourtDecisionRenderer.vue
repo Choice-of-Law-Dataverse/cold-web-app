@@ -34,13 +34,6 @@ const props = defineProps({
     type: String,
     default: '',
   },
-  emptyValueBehavior: {
-    type: Object,
-    default: () => ({
-      action: 'display',
-      fallback: 'No court decisions available',
-    }),
-  },
 })
 
 const config = useRuntimeConfig()
