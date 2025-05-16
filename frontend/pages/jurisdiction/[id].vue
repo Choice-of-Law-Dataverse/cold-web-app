@@ -48,6 +48,7 @@
     </template>
 
     <template #search-links>
+      <span class="label !mt-[-36px] !mb-5">Related Data</span>
       <template v-if="countsLoading">
         <LoadingBar />
       </template>
@@ -57,7 +58,6 @@
           (legalInstrumentCount !== 0 && legalInstrumentCount !== null)
         "
       >
-        <span class="label !mt-[-36px] !mb-5">Related Data</span>
         <NuxtLink
           v-if="courtDecisionCount !== 0 && courtDecisionCount !== null"
           :to="{
