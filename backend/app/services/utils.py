@@ -12,25 +12,37 @@ def list_to_dict(lst):
     return {i: item for i, item in enumerate(lst)}
 
 
-def parse_results(nested_dict):
-    transformed_dict = {}
-    for key, value in nested_dict.items():
-        if isinstance(value, list):
-            value = list_to_dict(value)
-        if isinstance(value, dict):
-            value = parse_results(value)
-        transformed_dict[key] = value
-    return transformed_dict
+def parse_results(obj):
+    if isinstance(obj, dict):
+        transformed = {}
+        for key, value in obj.items():
+            transformed[key] = parse_results(value)
+        return transformed
+    elif isinstance(obj, list):
+        return [parse_results(item) for item in obj]
+    else:
+        # not a dict or list, just return as-is
+        return obj
 
 
-def filter_na(nested_dict):
-    filtered_dict = {}
-    for key, value in nested_dict.items():
-        if isinstance(value, dict):
-            value = filter_na(value)
-        if value not in (None, "", [], {}):
-            filtered_dict[key] = value
-    return filtered_dict
+def filter_na(obj):
+    if isinstance(obj, dict):
+        filtered = {}
+        for key, value in obj.items():
+            val_filtered = filter_na(value)  # recurse
+            if val_filtered not in (None, "", [], {}):
+                filtered[key] = val_filtered
+        return filtered
+    elif isinstance(obj, list):
+        new_list = []
+        for item in obj:
+            val_filtered = filter_na(item)
+            # Only keep non-empty items
+            if val_filtered not in (None, "", [], {}):
+                new_list.append(val_filtered)
+        return new_list
+    else:
+        return obj
 
 
 def flatten_and_transform_data(data):

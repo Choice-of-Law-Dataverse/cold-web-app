@@ -60,7 +60,7 @@
 
           <!-- Suggestions -->
           <div
-            v-if="showSuggestions"
+            v-if="isSearchFocused && showSuggestions"
             class="suggestions w-full border-b border-cold-gray"
           >
             <div class="suggestions-inner">
@@ -70,7 +70,9 @@
                 class="suggestion-item"
                 @click="handleSuggestionClick(suggestion)"
               >
-                <span class="suggestion-text">Filter by: {{ suggestion }}</span>
+                <span class="suggestion-text"
+                  >Only show results from {{ suggestion }}</span
+                >
               </div>
             </div>
           </div>
@@ -80,7 +82,7 @@
         <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
           <a href="/">
             <img
-              src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_beta_logo.svg"
+              src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_alpha_logo.svg"
               alt="CoLD Logo"
               class="h-12 w-auto mb-4"
             />
@@ -90,10 +92,13 @@
         <!-- Navigation Links (Always visible) -->
         <div v-if="!isExpanded" class="space-x-3 sm:space-x-6">
           <ULink
-            v-for="(link, index) in links"
-            :key="index"
+            v-for="(link, i) in links"
+            :key="i"
             :to="link.to"
-            :class="['custom-nav-links', { active: route.path === link.to }]"
+            :class="[
+              'custom-nav-links',
+              { active: route.path.startsWith(link.to) },
+            ]"
           >
             <span>{{ link.label }}</span>
           </ULink>
@@ -108,6 +113,21 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import eventBus from '@/eventBus'
 import jurisdictionsData from '@/assets/jurisdictions-data.json'
+// import your section‐nav configs:
+import { aboutNavLinks, learnNavLinks } from '~/config/pageConfigs.js'
+
+const router = useRouter()
+const route = useRoute()
+
+// helper to pull off “/about” or “/learn”
+// from the first child‐link’s path
+const basePath = (arr) => `/${arr[0].path.split('/')[1]}`
+
+const links = [
+  { label: 'About', to: basePath(aboutNavLinks) },
+  { label: 'Learn', to: basePath(learnNavLinks) },
+  { label: 'Contact', to: '/contact' },
+]
 
 // Reactive state
 const searchText = ref('')
@@ -115,17 +135,9 @@ const isExpanded = ref(false) // Track if the input is expanded
 const isSmallScreen = ref(false)
 const suggestions = ref([]) // Add suggestions state
 const showSuggestions = ref(false) // Add visibility state for suggestions
-
-const router = useRouter()
-const route = useRoute()
+const isSearchFocused = ref(false)
 
 const searchInput = ref(null)
-
-const links = [
-  { label: 'About', to: '/about' },
-  { label: 'Learn', to: '/learn/open-educational-resources' },
-  { label: 'Contact', to: '/contact' },
-]
 
 // Add function to update suggestions
 function updateSuggestions() {
@@ -164,7 +176,6 @@ function handleSuggestionClick(selected) {
       ]
     : [selected.toLowerCase().trim()]
 
-  // Remove words that partially match any keyword (after trimming each word)
   const remainingWords = searchText.value
     .split(/\s+/)
     .map((word) => word.trim())
@@ -175,9 +186,12 @@ function handleSuggestionClick(selected) {
 
   const newSearchText = remainingWords.join(' ')
   searchText.value = newSearchText
-  showSuggestions.value = false
 
-  // Update the query: keep remaining words (if any) in q and add jurisdiction filter
+  // Explicitly manage search state after suggestion click
+  isExpanded.value = false
+  isSearchFocused.value = false // Add this to correctly update focus state
+  showSuggestions.value = false // This was already here
+
   const query = { ...route.query }
   if (newSearchText.trim()) {
     query.q = newSearchText.trim()
@@ -188,6 +202,14 @@ function handleSuggestionClick(selected) {
   router.push({
     name: 'search',
     query,
+  })
+
+  // Blur the input after navigation and state changes
+  nextTick().then(() => {
+    const inputEl = searchInput.value?.$el.querySelector('input')
+    if (inputEl) {
+      inputEl.blur() // This blur will call collapseSearch, but relevant states are already set.
+    }
   })
 }
 
@@ -223,16 +245,30 @@ function emitSearch() {
 
 function expandSearch() {
   isExpanded.value = true
+  isSearchFocused.value = true
+  // Suggestions will be updated by the watcher on searchText or if updateSuggestions is called
 }
 
 function collapseSearch() {
-  isExpanded.value = false
-  // Add a small delay before hiding suggestions to allow clicking
+  isExpanded.value = false // Visual shrink can be immediate
+
+  // Delay setting isSearchFocused to false to allow click event on suggestions
+  // to be processed by handleSuggestionClick.
   setTimeout(() => {
-    if (!document.activeElement?.closest('.suggestions-list')) {
+    // If isSearchFocused is still true at this point, it means that
+    // handleSuggestionClick was not called (or did not set isSearchFocused to false).
+    // This implies the blur was to an element outside the suggestions.
+    if (isSearchFocused.value) {
+      isSearchFocused.value = false
+      showSuggestions.value = false // Ensure suggestions are hidden
+    }
+    // If isSearchFocused was already set to false (e.g., by handleSuggestionClick),
+    // this 'if' block is skipped.
+    // As a safeguard, ensure showSuggestions is false if isSearchFocused is false.
+    else if (!isSearchFocused.value && showSuggestions.value) {
       showSuggestions.value = false
     }
-  }, 200)
+  }, 200) // Original delay
 }
 
 const clearSearch = async () => {
@@ -388,7 +424,6 @@ a {
 :deep(.custom-nav-links) {
   color: var(--color-cold-night) !important; /* Apply custom color */
   text-decoration: none !important; /* Remove underline */
-  /*margin-left: 48px;*/
   font-weight: 600 !important;
 }
 

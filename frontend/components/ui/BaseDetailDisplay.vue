@@ -82,10 +82,10 @@
                       </UTooltip>
                     </template>
                   </p>
-                  <!-- Conditionally render bullet list if Answer is an array -->
+                  <!-- Conditionally render bullet list if Answer or Specialists is an array -->
                   <template
                     v-if="
-                      item.key === 'Answer' &&
+                      (item.key === 'Answer' || item.key === 'Specialists') &&
                       Array.isArray(
                         getDisplayValue(item, resultData?.[item.key])
                       )
@@ -228,9 +228,9 @@ const shouldDisplayValue = (item, value) => {
 }
 
 const getDisplayValue = (item, value) => {
-  // New logic for the "Answer" field: if the value contains commas, split it.
+  // For "Answer" and "Specialists", split by comma if a string contains commas.
   if (
-    item.key === 'Answer' &&
+    (item.key === 'Answer' || item.key === 'Specialists') &&
     typeof value === 'string' &&
     value.includes(',')
   ) {

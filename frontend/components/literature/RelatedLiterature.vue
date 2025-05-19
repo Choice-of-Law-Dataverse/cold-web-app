@@ -1,96 +1,47 @@
 <template>
-  <div>
-    <span v-if="showLabel" class="label">Related Literature</span>
-
-    <!-- If we're using literature ID mode -->
-    <template v-if="useId">
-      <ul v-if="displayedLiteratureIds.length">
-        <li
-          v-for="(id, index) in displayedLiteratureIds"
-          :key="id"
-          :class="valueClassMap"
-        >
-          <NuxtLink :to="`/literature/${id}`">
-            {{ displayedLiteratureTitles[index] }}
-          </NuxtLink>
-        </li>
-        <ShowMoreLess
-          v-if="literatureIds.length > 5"
-          v-model:isExpanded="showAll"
-          label="related literature"
-        />
-      </ul>
-      <p
-        v-else-if="emptyValueBehavior.action === 'display'"
+  <div v-if="shouldShowSection">
+    <span v-if="showLabel" class="label">{{ label }}</span>
+    <ul v-if="loadingTitles || loading">
+      <li><LoadingBar class="pt-[11px]" /></li>
+    </ul>
+    <ul v-else-if="displayedLiterature.length">
+      <li
+        v-for="item in displayedLiterature"
+        :key="item.id"
         :class="valueClassMap"
       >
-        {{ emptyValueBehavior.fallback }}
-      </p>
-    </template>
-
-    <!-- Else, use the normal themes-based display -->
-    <template v-else>
-      <ul v-if="loading">
-        <li><LoadingBar class="pt-[11px]" /></li>
-      </ul>
-
-      <ul v-else-if="literatureList.length">
-        <li
-          v-for="item in displayedLiterature"
-          :key="item.id"
-          :class="valueClassMap"
-        >
-          <NuxtLink :to="`/literature/${item.id}`">
-            {{ item.title }}
-          </NuxtLink>
-        </li>
-        <ShowMoreLess
-          v-if="literatureList.length > 5"
-          v-model:isExpanded="showAll"
-          label="related literature"
-        />
-      </ul>
-
-      <p
-        v-else-if="emptyValueBehavior.action === 'display'"
-        :class="valueClassMap"
-      >
-        {{ emptyValueBehavior.fallback }}
-      </p>
-    </template>
+        <NuxtLink :to="`/literature/${item.id}`">
+          {{ item.title }}
+        </NuxtLink>
+      </li>
+      <ShowMoreLess
+        v-if="fullLiteratureList.length > 5"
+        v-model:isExpanded="showAll"
+        label="related literature"
+      />
+    </ul>
+    <p
+      v-else-if="emptyValueBehavior.action === 'display'"
+      :class="valueClassMap"
+    >
+      {{ emptyValueBehavior.fallback }}
+    </p>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, watchEffect, watch, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import ShowMoreLess from '../ui/ShowMoreLess.vue'
 import LoadingBar from '../layout/LoadingBar.vue'
 
 const props = defineProps({
-  themes: {
-    type: String,
-    required: true,
-  },
-  valueClassMap: {
-    type: String,
-    default: 'result-value-small',
-  },
-  literatureId: {
-    type: String,
-    default: '',
-  },
-  literatureTitle: {
-    type: [Array, String],
-    default: '',
-  },
-  useId: {
-    type: Boolean,
-    default: false,
-  },
-  showLabel: {
-    type: Boolean,
-    default: true,
-  },
+  label: { type: String, default: 'Related Literature' },
+  themes: String,
+  valueClassMap: { type: String, default: 'result-value-small' },
+  literatureId: { type: String, default: '' },
+  useId: { type: Boolean, default: false }, // deprecated, kept for backward compatibility
+  mode: { type: String, default: 'themes' }, // 'id' | 'themes' | 'both'
+  showLabel: { type: Boolean, default: true },
   emptyValueBehavior: {
     type: Object,
     default: () => ({
@@ -101,70 +52,104 @@ const props = defineProps({
 })
 
 const config = useRuntimeConfig()
-
-// Split the literatureId string into an array
-const literatureIds = computed(() => {
-  return props.literatureId
-    ? props.literatureId.split(',').map((item) => item.trim())
-    : []
-})
-
-// Similarly, if the API returns multiple literature titles, split them too.
-const literatureTitles = computed(() => {
-  return Array.isArray(props.literatureTitle)
-    ? props.literatureTitle
-    : props.literatureTitle
-      ? [props.literatureTitle]
-      : []
-})
-
-// Reactive variables
-const literatureList = ref([])
-const loading = ref(true)
 const showAll = ref(false)
+const loadingTitles = ref(false)
+const loading = ref(false)
+const literatureTitles = ref([])
+const literatureList = ref([])
+const mergedLiterature = ref([])
 
-// Computed property: Show nothing initially if the list is longer than 5
+const splitAndTrim = (val) =>
+  Array.isArray(val)
+    ? val
+    : val
+      ? val.split(',').map((item) => item.trim())
+      : []
+
+const literatureIds = computed(() => splitAndTrim(props.literatureId))
+
+const shouldShowSection = computed(
+  () =>
+    loadingTitles.value ||
+    loading.value ||
+    hasRelatedLiterature.value ||
+    (!hasRelatedLiterature.value &&
+      props.emptyValueBehavior.action === 'display')
+)
+
+const hasRelatedLiterature = computed(() => {
+  if (props.mode === 'id') {
+    return literatureTitles.value.some((title) => title && title.trim())
+  } else if (props.mode === 'themes') {
+    return literatureList.value.length > 0
+  } else if (props.mode === 'both') {
+    return mergedLiterature.value.length > 0
+  }
+  return false
+})
+
+const displayedTitles = computed(() => {
+  const arr = literatureTitles.value
+  return !showAll.value && arr.length > 5 ? arr.slice(0, 3) : arr
+})
+
+const fullLiteratureList = computed(() => {
+  if (props.mode === 'id') {
+    return literatureTitles.value.map((title, i) => ({
+      id: literatureIds.value[i],
+      title,
+    }))
+  } else if (props.mode === 'themes') {
+    return literatureList.value
+  } else if (props.mode === 'both') {
+    return mergedLiterature.value
+  }
+  return []
+})
+
 const displayedLiterature = computed(() => {
-  if (!showAll.value) {
-    return literatureList.value.length > 5
-      ? literatureList.value.slice(0, 3)
-      : literatureList.value
-  }
-  return literatureList.value
+  const arr = fullLiteratureList.value
+  return !showAll.value && arr.length > 5 ? arr.slice(0, 3) : arr
 })
 
-const displayedLiteratureIds = computed(() => {
-  if (!showAll.value && literatureIds.value.length > 5) {
-    return literatureIds.value.slice(0, 3)
-  }
-  return literatureIds.value
-})
+async function fetchLiteratureTitlesById(ids, useJurisdictionsColumn = false) {
+  if (!ids.length) return []
+  loadingTitles.value = true
+  const titles = await Promise.all(
+    ids.map(async (id) => {
+      try {
+        const response = await fetch(
+          `${config.public.apiBaseUrl}/search/details`,
+          {
+            method: 'POST',
+            headers: {
+              authorization: `Bearer ${config.public.FASTAPI}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              table: 'Literature',
+              id,
+              column: useJurisdictionsColumn
+                ? 'Jurisdictions Literature ID'
+                : undefined,
+            }),
+          }
+        )
+        if (!response.ok) throw new Error('Error fetching title')
+        const data = await response.json()
+        return data?.Title ? data.Title : data[id]?.Title || ''
+      } catch {
+        return ''
+      }
+    })
+  )
+  literatureTitles.value = titles
+  loadingTitles.value = false
+}
 
-const displayedLiteratureTitles = computed(() => {
-  if (!showAll.value && literatureTitles.value.length > 5) {
-    return literatureTitles.value.slice(0, 3)
-  }
-  return literatureTitles.value
-})
-
-// Function to fetch related literature
 async function fetchRelatedLiterature(themes) {
-  if (!themes) {
-    console.log('No themes provided')
-    return
-  }
-
-  console.log('Fetching related literature for themes:', themes)
-
-  const jsonPayload = {
-    filters: [
-      { column: 'tables', values: ['Literature'] },
-      { column: 'themes', values: themes.split(',').map((t) => t.trim()) },
-    ],
-  }
-
-  console.log('API request payload:', jsonPayload)
-
+  if (!themes) return
+  loading.value = true
   try {
     const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
       method: 'POST',
@@ -172,65 +157,76 @@ async function fetchRelatedLiterature(themes) {
         authorization: `Bearer ${config.public.FASTAPI}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(jsonPayload),
+      body: JSON.stringify({
+        filters: [
+          { column: 'tables', values: ['Literature'] },
+          { column: 'themes', values: themes.split(',').map((t) => t.trim()) },
+        ],
+        page_size: 100,
+      }),
     })
-
-    if (!response.ok) {
-      console.error(
-        'API response not OK:',
-        response.status,
-        response.statusText
-      )
-      throw new Error('Failed to fetch related literature')
-    }
-
+    if (!response.ok) throw new Error('Failed to fetch related literature')
     const data = await response.json()
-    console.log('API response:', data)
-
-    // Check if we have results and they're in the expected format
-    if (!data.results || typeof data.results !== 'object') {
-      console.log('No results found or unexpected response format')
-      literatureList.value = []
-      return
-    }
-
-    // Map the results to the expected format
-    literatureList.value = Object.entries(data.results).map(([key, item]) => {
-      console.log('Processing item:', { key, item })
-      return {
-        title: item.Title || item.title || 'Untitled',
-        id: item.id || key, // Use the item's id if available, otherwise use the key
-      }
-    })
-
-    console.log('Processed literature list:', literatureList.value)
-  } catch (error) {
-    console.error('Error fetching related literature:', error)
+    literatureList.value = Array.isArray(data.results)
+      ? data.results.map((item) => ({
+          title: item.Title || item.title || 'Untitled',
+          id: item.id,
+        }))
+      : []
+  } catch {
     literatureList.value = []
   } finally {
     loading.value = false
   }
 }
 
-// Debug the themes prop
+async function fetchBoth() {
+  // Fetch by ID (using Jurisdictions Literature ID column)
+  const ids = literatureIds.value
+  await fetchLiteratureTitlesById(ids, true)
+  // Fetch by themes
+  await fetchRelatedLiterature(props.themes)
+  // Merge and deduplicate by id
+  const idSet = new Set()
+  const merged = []
+  // Add ID-based first
+  ids.forEach((id, i) => {
+    if (id && literatureTitles.value[i] && !idSet.has(id)) {
+      merged.push({ id, title: literatureTitles.value[i] })
+      idSet.add(id)
+    }
+  })
+  // Add theme-based, skipping duplicates
+  literatureList.value.forEach((item) => {
+    if (item.id && !idSet.has(item.id)) {
+      merged.push(item)
+      idSet.add(item.id)
+    }
+  })
+  mergedLiterature.value = merged
+}
+
 watch(
-  () => props.themes,
-  (newThemes) => {
-    console.log('Themes prop changed:', newThemes)
-    if (!props.useId) {
-      console.log('Fetching related literature due to themes change')
-      fetchRelatedLiterature(newThemes)
+  () => [props.literatureId, props.themes, props.mode],
+  async ([newIds, newThemes, newMode]) => {
+    if (newMode === 'id') {
+      await fetchLiteratureTitlesById(splitAndTrim(newIds))
+    } else if (newMode === 'themes') {
+      if (newThemes) await fetchRelatedLiterature(newThemes)
+    } else if (newMode === 'both') {
+      await fetchBoth()
     }
   },
   { immediate: true }
 )
 
-// Initial fetch
 onMounted(() => {
-  console.log('Component mounted, themes:', props.themes)
-  if (!props.useId) {
-    console.log('Fetching related literature on mount')
-    fetchRelatedLiterature(props.themes)
+  if (props.mode === 'id') {
+    fetchLiteratureTitlesById(literatureIds.value)
+  } else if (props.mode === 'themes') {
+    if (props.themes) fetchRelatedLiterature(props.themes)
+  } else if (props.mode === 'both') {
+    fetchBoth()
   }
 })
 </script>

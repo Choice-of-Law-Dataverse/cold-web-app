@@ -39,22 +39,25 @@
 
 body {
   font-family: 'Inter', sans-serif;
-  color: var(--color-cold-night);
+  color: var(--color-cold-night) !important;
 }
 
 h1 {
   font-size: 32px !important;
   font-weight: 700 !important; // Bold
+  color: var(--color-cold-night) !important;
 }
 
 h2 {
   font-size: 20px !important;
-  font-weight: 500 !important; // Medium
+  font-weight: 600 !important; // Medium
+  color: var(--color-cold-night) !important;
 }
 
 h3 {
-  font-size: 20px !important;
-  font-weight: 400 !important; // Regular
+  font-size: 16px !important;
+  font-weight: 600 !important; // Medium
+  color: var(--color-cold-night) !important;
 }
 
 a {
@@ -74,13 +77,34 @@ a {
   margin-bottom: 24px !important;
 }
 
+.markdown-body h2 > a,
+.markdown-body h3 > a,
+.prose h2 > a,
+.prose h3 > a,
+.content h2 > a,
+.content h3 > a {
+  color: inherit !important;
+  text-decoration: none;
+}
+
+h1 > a,
+h2 > a,
+h3 > a,
+h4 > a,
+h5 > a,
+h6 > a {
+  font-weight: inherit !important;
+  color: inherit !important;
+  text-decoration: none !important;
+}
+
 // Lists
 ol {
   list-style: decimal !important; // Ensure numbers appear
 }
 
 ul {
-  list-style-type: disc;
+  list-style-type: disc !important;
   margin: 0 !important;
   padding: 0.5rem 0 1.5rem 1.5rem !important;
 }
@@ -91,6 +115,23 @@ li {
 
 li::marker {
   color: var(--color-cold-night) !important;
+}
+
+.prose {
+  font-size: 14px !important;
+  line-height: 28px !important;
+  color: var(--color-cold-night) !important;
+}
+
+.prose li {
+  margin-bottom: 12px !important;
+  color: var(--color-cold-night) !important;
+}
+
+.prose strong,
+.prose b {
+  color: inherit; /* Inherit the color from the parent element */
+  font-weight: 600 !important; // Medium
 }
 
 // Labels
@@ -114,7 +155,7 @@ li::marker {
 
 .label-key-provision-toggle {
   @extend .label-key;
-  font-weight: 500 !important;
+  font-weight: 600 !important;
   text-transform: capitalize;
   font-size: 10px !important;
 }
@@ -144,12 +185,12 @@ li::marker {
   border: 1px solid var(--color-label-court-decision);
 }
 
-.label-legal-instrument {
+.label-domestic-instrument {
   @extend .label;
-  color: var(--color-label-legal-instrument);
+  color: var(--color-label-domestic-instrument);
   padding: 2px 6px;
-  background-color: var(--color-label-legal-instrument-alpha);
-  border: 1px solid var(--color-label-legal-instrument);
+  background-color: var(--color-label-domestic-instrument-alpha);
+  border: 1px solid var(--color-label-domestic-instrument);
 }
 
 .label-literature {
@@ -213,6 +254,7 @@ li::marker {
 .suggestion-button {
   color: var(--color-cold-purple) !important;
   font-size: 20px !important;
+  font-weight: 500 !important;
   text-decoration: none !important;
   padding: 0 !important;
 }

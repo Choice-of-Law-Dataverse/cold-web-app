@@ -23,31 +23,62 @@
         </div>
 
         <div class="col-span-12">
-          <PopularSearches />
-        </div>
-        <div class="col-span-12">
           <JurisdictionMap />
         </div>
-        <div class="col-span-12">
+        <div class="col-span-12 md:col-span-8">
+          <PopularSearches />
           <CountrySelectMenu />
         </div>
-        <div class="col-span-12">
+        <div class="col-span-12 sm:col-span-4">
+          <ConnectCard
+            title="Transnational Standard"
+            buttonText="HCCH Principles"
+            buttonLink="/international-instrument/II-HCC-1"
+            imageSrc="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch-logo-circle.svg"
+            :newTab="false"
+          />
+        </div>
+        <div class="col-span-12 sm:col-span-4">
+          <NumberCard
+            title="Available Domestic Instruments"
+            buttonText="See all"
+            buttonLink="/search?type=Domestic+Instruments"
+            tableName="Domestic Instruments"
+          />
+        </div>
+        <div class="col-span-12 md:col-span-8">
           <RecentDomesticInstruments />
         </div>
+        <div class="col-span-12">
+          <SuccessfulLegalTransplantations />
+        </div>
+
         <div class="col-span-12 md:col-span-8">
           <PlotCourtDecisionsJurisdiction />
         </div>
-
         <div class="col-span-12 sm:col-span-4">
+          <NumberCard
+            title="Available Court Decisions"
+            buttonText="See all"
+            buttonLink="/search?type=Court+Decisions"
+            tableName="Court Decisions"
+          />
+        </div>
+
+        <div class="col-span-12">
+          <LeadingCases />
+        </div>
+
+        <div class="col-span-12 sm:col-span-3">
           <ConnectCard
             title="CoLD Newsletter"
-            buttonText="Subscribe on Substack"
+            buttonText="Subscribe"
             :buttonLink="links.substack"
             iconName="i-bi:substack"
           />
         </div>
 
-        <div class="col-span-12 sm:col-span-4">
+        <div class="col-span-12 sm:col-span-3">
           <ConnectCard
             title="CoLD on LinkedIn"
             buttonText="Follow Us"
@@ -56,19 +87,19 @@
           />
         </div>
 
-        <div class="col-span-12 sm:col-span-4">
+        <div class="col-span-12 sm:col-span-3">
           <ConnectCard
-            title="Questions? Feedback?"
+            title="Questions, Feedback?"
             buttonText="Contact Us"
             buttonLink="/contact"
             :newTab="false"
             iconName="i-material-symbols:alternate-email"
           />
         </div>
-        <div class="col-span-12 sm:col-span-4">
+        <div class="col-span-12 sm:col-span-3">
           <ConnectCard
             title="Access New Features"
-            buttonText="Become a Beta Test User"
+            buttonText="Beta User Sign Up"
             :buttonLink="links.beta"
             iconName="i-hugeicons:test-tube-01"
           />
@@ -84,8 +115,10 @@ import JurisdictionMap from '~/components/landing-page/JurisdictionMap.vue'
 import CountrySelectMenu from '~/components/landing-page/TempJurisdictionPicker.vue'
 import PlotCourtDecisionsJurisdiction from '~/components/landing-page/PlotCourtDecisionsJurisdiction.vue'
 import ConnectCard from '~/components/landing-page/ConnectCard.vue'
+import NumberCard from '~/components/landing-page/NumberCard.vue'
 import { externalLinks } from '~/utils/externalLinks'
 import RecentDomesticInstruments from '~/components/landing-page/RecentDomesticInstruments.vue'
-import LoadingLandingPageCard from '~/components/layout/LoadingLandingPageCard.vue'
+import SuccessfulLegalTransplantations from '~/components/landing-page/SuccessfulLegalTransplantations.vue'
+import LeadingCases from '~/components/landing-page/LeadingCases.vue'
 const links = externalLinks
 </script>

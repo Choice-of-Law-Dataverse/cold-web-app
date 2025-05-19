@@ -1,95 +1,99 @@
 <template>
-  <div class="col-span-12">
-    <UCard class="cold-ucard relative">
-      <!-- Help/Cancel Icon -->
-      <div class="absolute top-5 right-5">
-        <Icon
-          v-if="!showInfo"
-          name="i-material-symbols:help-outline"
-          size="24"
-          style="color: var(--color-cold-purple)"
-          class="cursor-pointer"
-          @click="toggleInfo"
-        />
-        <Icon
-          v-else
-          name="i-material-symbols:cancel-outline"
-          size="24"
-          style="color: var(--color-cold-purple)"
-          class="cursor-pointer"
-          @click="toggleInfo"
-        />
-      </div>
-
-      <!-- Conditional Rendering -->
-      <div v-if="showInfo">
-        <!-- JurisdictionComparisonInfo Component -->
-        <JurisdictionComparisonInfo />
-      </div>
-      <div v-else>
-        <!-- Centered Jurisdiction Name and Compare Dropdown -->
-        <div
-          class="comparison-title flex flex-col md:flex-row items-center justify-center gap-4 px-6 mb-4 text-center md:text-left"
-        >
-          <div class="result-value-medium">
-            Questions for {{ props.jurisdiction }} and
-          </div>
-          <JurisdictionSelectMenu
-            v-model="selectedJurisdiction"
-            :countries="jurisdictionOptions"
-            @countrySelected="updateComparison"
-            class="w-full md:w-72 cold-uselectmenu"
-          />
-        </div>
-
-        <!-- Filter and MatchSummary -->
-        <div
-          class="main-content-grid flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 !px-4 !sm:px-8"
-        >
-          <!-- Left-aligned USelectMenu -->
-          <div
-            class="filter-wrapper flex flex-col items-center sm:flex-row sm:items-center justify-center w-full sm:w-auto"
-          >
-            <USelectMenu
-              searchable
-              v-model="selectedTheme"
-              :options="themeOptions"
-              placeholder="Filter by Theme"
-              class="cold-uselectmenu w-full max-w-full sm:w-auto text-center"
-              size="sm"
+  <main class="px-6">
+    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
+      <div class="col-span-12">
+        <UCard class="cold-ucard relative">
+          <!-- Help/Cancel Icon -->
+          <div class="absolute top-5 right-5">
+            <Icon
+              v-if="!showInfo"
+              name="i-material-symbols:help-outline"
+              size="24"
+              style="color: var(--color-cold-purple)"
+              class="cursor-pointer"
+              @click="toggleInfo"
             />
-            <UButton
-              v-if="selectedTheme"
-              @click="resetFilters"
-              size="sm"
-              variant="link"
-              class="suggestion-button"
+            <Icon
+              v-else
+              name="i-material-symbols:cancel-outline"
+              size="24"
+              style="color: var(--color-cold-purple)"
+              class="cursor-pointer"
+              @click="toggleInfo"
+            />
+          </div>
+
+          <!-- Conditional Rendering -->
+          <div v-if="showInfo">
+            <!-- JurisdictionComparisonInfo Component -->
+            <JurisdictionComparisonInfo />
+          </div>
+          <div v-else>
+            <!-- Centered Jurisdiction Name and Compare Dropdown -->
+            <div
+              class="comparison-title flex flex-col md:flex-row items-center justify-center gap-4 px-6 mb-4 text-center md:text-left"
             >
-              Reset
-            </UButton>
+              <div class="result-value-medium">
+                Questions for {{ props.jurisdiction }} and
+              </div>
+              <JurisdictionSelectMenu
+                v-model="selectedJurisdiction"
+                :countries="jurisdictionOptions"
+                @countrySelected="updateComparison"
+                class="w-full md:w-72 cold-uselectmenu"
+              />
+            </div>
+
+            <!-- Filter and MatchSummary -->
+            <div
+              class="main-content-grid flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 !px-4 !sm:px-8"
+            >
+              <!-- Left-aligned USelectMenu -->
+              <div
+                class="filter-wrapper flex flex-col items-center sm:flex-row sm:items-center justify-center w-full sm:w-auto"
+              >
+                <USelectMenu
+                  searchable
+                  v-model="selectedTheme"
+                  :options="themeOptions"
+                  placeholder="Filter by Theme"
+                  class="cold-uselectmenu w-full max-w-full sm:w-auto text-center"
+                  size="sm"
+                />
+                <UButton
+                  v-if="selectedTheme"
+                  @click="resetFilters"
+                  size="sm"
+                  variant="link"
+                  class="suggestion-button"
+                >
+                  Reset
+                </UButton>
+              </div>
+
+              <!-- Right-aligned MatchSummary -->
+              <div
+                v-if="selectedJurisdiction"
+                class="match-summary flex justify-center sm:justify-start w-full sm:w-auto"
+              >
+                <JurisdictionComparisonMatchSummary :counts="matchCounts" />
+              </div>
+            </div>
           </div>
 
-          <!-- Right-aligned MatchSummary -->
-          <div
-            v-if="selectedJurisdiction"
-            class="match-summary flex justify-center sm:justify-start w-full sm:w-auto"
-          >
-            <JurisdictionComparisonMatchSummary :counts="matchCounts" />
-          </div>
-        </div>
+          <hr style="margin-top: 8px" />
+
+          <!-- Table Always Visible -->
+          <JurisdictionComparisonTable
+            :rows="filteredRows"
+            :columns="columns"
+            :computeMatchStatus="computeMatchStatus"
+            :loading="loading"
+          />
+        </UCard>
       </div>
-
-      <hr style="margin-top: 8px" />
-
-      <!-- Table Always Visible -->
-      <JurisdictionComparisonTable
-        :rows="filteredRows"
-        :columns="columns"
-        :computeMatchStatus="computeMatchStatus"
-        :loading="loading"
-      />
-    </UCard>
-  </div>
+    </div>
+  </main>
 </template>
 
 <script setup>

@@ -16,3 +16,12 @@ For website and data input
 - Language: `en-US` – English as used in the United States
 - Apply "Bluebook" title case style for titles, convert titles [here](https://titlecaseconverter.com/)
 - When in doubt, look to [George](https://en.wikipedia.org/wiki/Politics_and_the_English_Language#Remedy_of_Six_Rules)
+
+Legal Terminology
+- non-State law
+
+## Running the web app on your local machine
+- Open Terminal
+- Navigate to `cold-web-app/frontend`: Type in `cd` and drag-and-drop the `frontend` folder into terminal, then hit `Enter`
+- Run `npm run dev`
+- Open http://localhost:3000/ in a browser

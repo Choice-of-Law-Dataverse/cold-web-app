@@ -1,7 +1,7 @@
 <template>
   <div
     class="header-container flex items-center justify-between mt-0.5"
-    :key="formattedJurisdiction + formattedTheme"
+    :key="formattedJurisdiction + formattedTheme + legalFamily"
   >
     <template v-if="cardType === 'Loading'"> </template>
     <template v-else>
@@ -24,7 +24,10 @@
           />
           {{ jurisdictionString }}
         </span>
-
+        <!-- Legal Family next to jurisdiction name -->
+        <span v-if="legalFamily && legalFamily !== 'N/A'" class="label-theme">
+          {{ legalFamily }}
+        </span>
         <!-- Display 'source_table' -->
         <span v-if="adjustedSourceTable" :class="['label', labelColorClass]">
           {{ adjustedSourceTable }}
@@ -56,16 +59,44 @@
               target="_blank"
               rel="noopener noreferrer"
             >
-              {{ action.label }}
-              <UIcon
-                :name="action.icon"
-                class="inline-block ml-1 text-[1.2em] mb-0.5"
-              />
+              <template v-if="action.label === 'Cite'">
+                <UTooltip
+                  :text="availableSoon"
+                  :popper="{ placement: 'top' }"
+                  :ui="{
+                    background: 'bg-cold-night',
+                    color: 'text-white',
+                    base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
+                    rounded: 'rounded-none',
+                    ring: '',
+                  }"
+                >
+                  <span class="flex items-center">
+                    {{ action.label }}
+                    <UIcon
+                      :name="action.icon"
+                      class="inline-block ml-1 text-[1.2em] mb-0.5"
+                    />
+                  </span>
+                </UTooltip>
+              </template>
+              <template v-else>
+                {{ action.label }}
+                <UIcon
+                  :name="action.icon"
+                  class="inline-block ml-1 text-[1.2em] mb-0.5"
+                />
+              </template>
             </NuxtLink>
           </div>
         </template>
         <template v-else>
-          <NuxtLink :to="getLink()"> Open </NuxtLink>
+          <NuxtLink :to="getLink()" class="label">
+            Open
+            <UIcon
+              name="i-material-symbols:play-arrow"
+              class="inline-block -mb-[1px]"
+          /></NuxtLink>
         </template>
       </div>
     </template>
@@ -73,17 +104,23 @@
 </template>
 
 <script setup>
-import { computed, reactive } from 'vue'
-import jurisdictionsData from '../../assets/jurisdictions-data.json' // added import
+import { onMounted, ref, computed, reactive } from 'vue'
+import { useRoute } from 'vue-router'
+import jurisdictionsData from '../../assets/jurisdictions-data.json'
 import { handleImageError } from '../../utils/handleImageError'
 
-const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
+import availableSoon from '@/content/available_soon.md?raw'
 
-// Computed property to generate the prefilled form URL with hidden field
-const suggestEditLink = computed(() => {
-  if (import.meta.server) return '#' // Prevent issues on SSR
-  const currentPageURL = encodeURIComponent(window.location.href)
-  return `https://airtable.com/${airtableFormID}?prefill_URL=${currentPageURL}&hide_URL=true`
+const route = useRoute()
+const pdfExists = ref(false)
+
+const downloadPDFLink = computed(() => {
+  const segments = route.path.split('/').filter(Boolean) // removes empty parts from path like ['', 'court-decision', 'CD-ARE-1128']
+  const contentType = segments[0] || 'unknown' // e.g., 'court-decision'
+  const id = segments[1] || '' // e.g., 'CD-ARE-1128'
+  // If your Azure folders always follow the plural of the content type
+  const folder = `${contentType}s`
+  return `https://choiceoflawdataverse.blob.core.windows.net/${folder}/${id}.pdf`
 })
 
 // Props
@@ -150,8 +187,8 @@ const adjustedSourceTable = computed(() => {
       return 'Court Decision'
     case 'Answers':
       return 'Question'
-    case 'Legal Instrument':
-      return 'Legal Instrument'
+    case 'Domestic Instrument':
+      return 'Domestic Instrument'
     case 'Literature':
       return 'Literature'
     // Add more adjustments as needed
@@ -167,8 +204,10 @@ const labelColorClass = computed(() => {
     case 'Answers':
     case 'Question':
       return 'label-question'
-    case 'Legal Instrument':
-      return 'label-legal-instrument'
+    case 'Domestic Instrument':
+    case 'Regional Instrument':
+    case 'International Instrument':
+      return 'label-domestic-instrument'
     case 'Literature':
       return 'label-literature'
     default:
@@ -181,11 +220,9 @@ const formattedTheme = computed(() => {
     return props.formattedTheme
   }
 
-  // Handle literature's Manual Tags
-  if (props.cardType === 'Literature' && props.resultData['Manual Tags']) {
-    return props.resultData['Manual Tags']
-      .split(';')
-      .map((theme) => theme.trim())
+  // Handle literature's Themes
+  if (props.cardType === 'Literature' && props.resultData['Themes']) {
+    return props.resultData['Themes'].split(',').map((theme) => theme.trim())
   }
 
   // Handle other types
@@ -209,29 +246,48 @@ const fadeOutClasses = computed(() => ({
   'suggest-edit-false': !props.showSuggestEdit,
 }))
 
-// New computed property for action items in "Suggest Edit" area
-const suggestEditActions = computed(() => [
-  {
-    label: 'Link',
-    icon: 'i-material-symbols:language',
-    to: 'https://example.net/',
-  },
-  {
+// Action items in "Suggest Edit" area
+const suggestEditActions = computed(() => {
+  let linkUrl = ''
+  if (props.cardType === 'Literature') {
+    linkUrl =
+      props.resultData['Open Access URL'] || props.resultData['Url'] || ''
+  } else if (props.cardType === 'Court Decisions') {
+    linkUrl = props.resultData['Official Source (URL)'] || ''
+  } else if (props.cardType === 'Domestic Instrument') {
+    linkUrl = props.resultData['Source (URL)'] || ''
+  } else if (props.cardType === 'Regional Instrument') {
+    linkUrl = props.resultData['URL'] || ''
+  } else if (props.cardType === 'International Instrument') {
+    linkUrl = props.resultData['URL'] || ''
+  }
+  const actions = []
+  if (linkUrl) {
+    actions.push({
+      label: 'Link',
+      icon: 'i-material-symbols:language',
+      to: linkUrl,
+    })
+  }
+  actions.push({
     label: 'Cite',
     icon: 'i-material-symbols:verified-outline',
     class: 'gray-link',
-  },
-  {
-    label: 'PDF',
-    icon: 'i-material-symbols:arrow-circle-down-outline',
-    to: 'https://choiceoflawdataverse.blob.core.windows.net/assets/dummy.pdf',
-  },
-  {
+  })
+  if (pdfExists.value) {
+    actions.push({
+      label: 'PDF',
+      icon: 'i-material-symbols:arrow-circle-down-outline',
+      to: downloadPDFLink.value,
+    })
+  }
+  actions.push({
     label: 'Edit',
     icon: 'i-material-symbols:edit-square-outline',
     to: suggestEditLink.value,
-  },
-])
+  })
+  return actions
+})
 
 // Methods
 function getLink() {
@@ -241,8 +297,12 @@ function getLink() {
       return `/question/${props.resultData.id}`
     case 'Court Decisions':
       return `/court-decision/${props.resultData.id}`
-    case 'Legal Instrument':
-      return `/legal-instrument/${props.resultData.id}`
+    case 'Domestic Instrument':
+      return `/domestic-instrument/${props.resultData.id}`
+    case 'Regional Instrument':
+      return `/regional-instrument/${props.resultData.id}`
+    case 'International Instrument':
+      return `/international-instrument/${props.resultData.id}`
     case 'Literature':
       return `/literature/${props.resultData.id}`
     default:
@@ -250,10 +310,36 @@ function getLink() {
   }
 }
 
+onMounted(async () => {
+  const res = await $fetch('/api/check-pdf-exists', {
+    query: { url: downloadPDFLink.value },
+  })
+  pdfExists.value = res.exists
+})
+
+const suggestEditLink = ref('')
+const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
+
+onMounted(() => {
+  const currentURL = window.location.href
+  suggestEditLink.value = `https://airtable.com/${airtableFormID}?prefill_URL=${encodeURIComponent(currentURL)}&hide_URL=true`
+})
 function getJurisdictionISO(name) {
   const entry = jurisdictionsData.find((item) => item.name.includes(name))
   return entry ? entry.alternative[0].toLowerCase() : 'default'
 }
+
+// Add computed for legalFamily
+const legalFamily = computed(() => {
+  // Only show for jurisdiction-type cards
+  if (
+    props.resultData &&
+    (props.cardType === 'Jurisdiction' || props.resultData['Legal Family'])
+  ) {
+    return props.resultData['Legal Family'] || ''
+  }
+  return ''
+})
 </script>
 
 <style scoped>

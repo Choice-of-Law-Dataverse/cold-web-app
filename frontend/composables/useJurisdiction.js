@@ -121,8 +121,10 @@ export function useJurisdiction() {
             // Extract the required values
             jurisdictionData.value = {
                 Name: data?.Name || 'N/A',
+                'Jurisdiction Summary': data?.['Jurisdiction Summary'] || 'N/A',
                 'Jurisdictional Differentiator':
                     data?.['Jurisdictional Differentiator'] || 'N/A',
+                'Legal Family': data?.['Legal Family'] || 'N/A',
                 Specialists: specialists.value // Include specialists in the data
             }
 

@@ -1,6 +1,6 @@
 <template>
   <UCard class="cold-ucard">
-    <h2 class="popular-title">Top 10 Jurisdictions by Court Decisions</h2>
+    <h2 class="popular-title">Court Decisions by Jurisdiction</h2>
     <p class="result-value-small">
       Click bars to see a jurisdiction's decisions
     </p>
@@ -72,10 +72,10 @@ onMounted(async () => {
   // Define the layout for the chart
   chartLayout.value = {
     dragmode: false, // Disable drag to zoom
-    bargap: 0.5, // Adjust spacing between bars (smaller value = thicker bars)
-    height: chartData.value[0].y.length * 35, // Dynamically adjust chart height for y-axis labels
+    bargap: 0.45, // Adjust spacing between bars (smaller value = thicker bars)
+    height: chartData.value[0].y.length * 45, // Dynamically adjust chart height for y-axis labels
     margin: {
-      l: 200, // Increase left margin to accommodate long country names
+      l: 150, // Increase left margin to accommodate long country names
       r: 20, // Right margin
       t: 30, // Top margin
       b: 20, // Bottom margin

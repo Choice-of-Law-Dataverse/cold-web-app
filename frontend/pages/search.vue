@@ -15,6 +15,8 @@
       :total-matches="totalMatches"
       :loading="loading"
       v-model:filters="filter"
+      :canLoadMore="searchResults.length < totalMatches"
+      @load-more="loadMoreResults"
     />
   </div>
 </template>
@@ -38,6 +40,7 @@ const totalMatches = ref(0) // Save number of total matches to display at top of
 const apiError = ref(null) // Track API errors
 
 const config = useRuntimeConfig()
+const currentPage = ref(1)
 
 // Persistent filter state
 const filter = ref({
@@ -117,13 +120,19 @@ watch(
 )
 
 // Function to fetch search results from the API
-async function fetchSearchResults(query, filters) {
+async function fetchSearchResults(query, filters, append = false) {
+  if (!append) {
+    currentPage.value = 1
+    searchResults.value = []
+  }
+
   loading.value = true
-  searchResults.value = []
   apiError.value = null // Reset any previous errors
 
   const requestBody = {
     search_string: query,
+    page: currentPage.value,
+    page_size: 10, // Hard code number of search results per page
     filters: [],
   }
 
@@ -148,6 +157,9 @@ async function fetchSearchResults(query, filters) {
     Questions: 'Answers',
     'Court Decisions': 'Court Decisions',
     'Legal Instruments': 'Domestic Instruments',
+    'Domestic Instruments': 'Domestic Instruments',
+    'Regional Instruments': 'Regional Instruments',
+    'International Instruments': 'International Instruments',
     Literature: 'Literature',
   }
 
@@ -212,7 +224,17 @@ async function fetchSearchResults(query, filters) {
     const data = await response.json()
 
     totalMatches.value = data.total_matches || 0
-    searchResults.value = Object.values(data.results)
+
+    if (append) {
+      searchResults.value = [
+        ...searchResults.value,
+        ...Object.values(data.results),
+      ]
+    } else {
+      searchResults.value = Object.values(data.results)
+    }
+
+    //searchResults.value = Object.values(data.results)
   } catch (error) {
     console.error('Error fetching search results:', error)
     apiError.value = error.message
@@ -221,6 +243,11 @@ async function fetchSearchResults(query, filters) {
   } finally {
     loading.value = false
   }
+}
+
+function loadMoreResults() {
+  currentPage.value += 1
+  fetchSearchResults(searchQuery.value, filter.value, true)
 }
 
 onMounted(() => {

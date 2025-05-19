@@ -6,7 +6,16 @@
     :valueClassMap="valueClassMap"
     sourceTable="Court Decisions"
   >
-    <template #related-literature="{ value }">
+    <template #related-questions>
+      <RelatedQuestions
+        :jurisdictionCode="
+          modifiedCourtDecision['Jurisdictions Alpha-3 Code'] || ''
+        "
+        :questions="modifiedCourtDecision['Questions'] || ''"
+        class="!mt-2"
+      />
+    </template>
+    <template #related-literature>
       <RelatedLiterature
         :themes="themes"
         :valueClassMap="valueClassMap['Related Literature']"
@@ -32,6 +41,7 @@ import { computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
+import RelatedQuestions from '~/components/legal/RelatedQuestions.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { courtDecisionConfig } from '~/config/pageConfigs'
@@ -68,6 +78,9 @@ const modifiedCourtDecision = computed(() => {
         : courtDecision.value['Case Title'],
     'Related Literature': themes.value,
     'Case Citation': courtDecision.value['Case Citation'],
+    Questions: courtDecision.value['Questions'],
+    'Jurisdictions Alpha-3 Code':
+      courtDecision.value['Jurisdictions Alpha-3 Code'],
     'Publication Date ISO': formatDate(
       courtDecision.value['Publication Date ISO']
     ),
