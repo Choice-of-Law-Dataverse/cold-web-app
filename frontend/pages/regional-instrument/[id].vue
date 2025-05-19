@@ -31,10 +31,32 @@
       </section>
     </template>
 
-    <template #selected-provisions>
-      <section class="mt-8">
+    <!-- Slot for Legal provisions -->
+    <template #regional-legal-provisions="{ value }">
+      <!-- Only render if value exists and is not "N/A" -->
+      <section
+        v-if="value && value.trim() && value.trim() !== 'N/A'"
+        class="mt-[26px]"
+      >
         <span class="label">Selected Provisions</span>
-        <p class="text-gray-300 mt-2">Coming soon</p>
+        <div :class="valueClassMap['Regional Legal Provisions']">
+          <div v-if="value && value.trim()">
+            <LegalProvision
+              v-for="(provisionId, index) in value.split(',')"
+              :key="index"
+              :provisionId="provisionId.trim()"
+              :class="index === 0 ? '-mt-8' : ''"
+              :textType="textType"
+              :instrumentTitle="
+                processedRegionalInstrument
+                  ? processedRegionalInstrument['Abbreviation'] ||
+                    processedRegionalInstrument['Title']
+                  : ''
+              "
+              @update:hasEnglishTranslation="hasEnglishTranslation = $event"
+            />
+          </div>
+        </div>
       </section>
     </template>
   </BaseDetailLayout>
@@ -48,6 +70,7 @@ import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { regionalInstrumentConfig } from '~/config/pageConfigs'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
+import LegalProvision from '~/components/legal/LegalProvision.vue'
 
 const route = useRoute()
 const router = useRouter()
