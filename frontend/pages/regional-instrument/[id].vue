@@ -15,15 +15,6 @@
       </div>
     </template>
 
-    <template #url="{ value }">
-      <div v-if="value">
-        <p class="label-key mb-2">Link</p>
-        <a :href="value" target="_blank" rel="noopener noreferrer">
-          {{ value }}
-        </a>
-      </div>
-    </template>
-
     <template #literature>
       <section>
         <RelatedLiterature

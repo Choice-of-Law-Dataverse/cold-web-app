@@ -58,30 +58,6 @@ export const literatureConfig = {
       },
     },
     {
-      key: 'Open Access URL',
-      label: 'Open Access URL',
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-    },
-    {
-      key: 'Url',
-      label: 'Link',
-      emptyValueBehavior: {
-        action: 'hide',
-        shouldDisplay: (data) => {
-          const openAccessUrl = data['Open Access URL']
-          const url = data['Url']
-          // If Open Access URL is present and not empty, hide Url
-          if (openAccessUrl && openAccessUrl.trim() !== '') return false
-          // If Url is present and not empty, show Url
-          if (url && url.trim() !== '') return true
-          // If both are empty, hide section
-          return false
-        },
-      },
-    },
-    {
       key: 'Abstract Note',
       label: 'Abtract',
       emptyValueBehavior: {
@@ -97,7 +73,6 @@ export const literatureConfig = {
     'Publication Title': 'result-value-small',
     Publisher: 'result-value-small',
     Themes: 'result-value-small',
-    // 'Manual Tags': 'result-value-small',
     Jurisdictions: 'result-value-small',
     'Related Literature': 'result-value-small',
     'Abstract Note': 'result-value-small whitespace-pre-line',
@@ -304,11 +279,6 @@ export const regionalInstrumentConfig = {
       },
     },
     {
-      key: 'URL',
-      label: 'URL',
-      emptyValueBehavior: { action: 'display', fallback: 'No URL available' },
-    },
-    {
       key: 'Literature',
       label: 'Related Literature',
       emptyValueBehavior: { action: 'hide' },
@@ -323,7 +293,6 @@ export const regionalInstrumentConfig = {
     Abbreviation: 'result-value-medium',
     Title: 'result-value-small',
     Date: 'result-value-small',
-    URL: 'result-value-small',
     'Related Literature': 'result-value-small',
     'Selected Provisions': 'result-value-small',
   },
@@ -351,11 +320,6 @@ export const internationalInstrumentConfig = {
       },
     },
     {
-      key: 'URL',
-      label: 'URL',
-      emptyValueBehavior: { action: 'display', fallback: 'No URL available' },
-    },
-    {
       key: 'Literature',
       label: 'Related Literature',
       emptyValueBehavior: { action: 'hide' },
@@ -369,7 +333,6 @@ export const internationalInstrumentConfig = {
   valueClassMap: {
     Name: 'result-value-medium',
     Date: 'result-value-small',
-    URL: 'result-value-small',
     'Related Literature': 'result-value-small',
     'Selected Provisions': 'result-value-small',
   },

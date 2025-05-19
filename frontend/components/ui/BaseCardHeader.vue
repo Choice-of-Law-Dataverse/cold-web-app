@@ -59,11 +59,34 @@
               target="_blank"
               rel="noopener noreferrer"
             >
-              {{ action.label }}
-              <UIcon
-                :name="action.icon"
-                class="inline-block ml-1 text-[1.2em] mb-0.5"
-              />
+              <template v-if="action.label === 'Cite'">
+                <UTooltip
+                  :text="availableSoon"
+                  :popper="{ placement: 'top' }"
+                  :ui="{
+                    background: 'bg-cold-night',
+                    color: 'text-white',
+                    base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
+                    rounded: 'rounded-none',
+                    ring: '',
+                  }"
+                >
+                  <span class="flex items-center">
+                    {{ action.label }}
+                    <UIcon
+                      :name="action.icon"
+                      class="inline-block ml-1 text-[1.2em] mb-0.5"
+                    />
+                  </span>
+                </UTooltip>
+              </template>
+              <template v-else>
+                {{ action.label }}
+                <UIcon
+                  :name="action.icon"
+                  class="inline-block ml-1 text-[1.2em] mb-0.5"
+                />
+              </template>
             </NuxtLink>
           </div>
         </template>
@@ -83,8 +106,10 @@
 <script setup>
 import { onMounted, ref, computed, reactive } from 'vue'
 import { useRoute } from 'vue-router'
-import jurisdictionsData from '../../assets/jurisdictions-data.json' // added import
+import jurisdictionsData from '../../assets/jurisdictions-data.json'
 import { handleImageError } from '../../utils/handleImageError'
+
+import availableSoon from '@/content/available_soon.md?raw'
 
 const route = useRoute()
 const pdfExists = ref(false)
@@ -221,20 +246,34 @@ const fadeOutClasses = computed(() => ({
   'suggest-edit-false': !props.showSuggestEdit,
 }))
 
-// New computed property for action items in "Suggest Edit" area
+// Action items in "Suggest Edit" area
 const suggestEditActions = computed(() => {
-  const actions = [
-    {
+  let linkUrl = ''
+  if (props.cardType === 'Literature') {
+    linkUrl =
+      props.resultData['Open Access URL'] || props.resultData['Url'] || ''
+  } else if (props.cardType === 'Court Decisions') {
+    linkUrl = props.resultData['Official Source (URL)'] || ''
+  } else if (props.cardType === 'Domestic Instrument') {
+    linkUrl = props.resultData['Source (URL)'] || ''
+  } else if (props.cardType === 'Regional Instrument') {
+    linkUrl = props.resultData['URL'] || ''
+  } else if (props.cardType === 'International Instrument') {
+    linkUrl = props.resultData['URL'] || ''
+  }
+  const actions = []
+  if (linkUrl) {
+    actions.push({
       label: 'Link',
       icon: 'i-material-symbols:language',
-      to: 'https://example.net/',
-    },
-    {
-      label: 'Cite',
-      icon: 'i-material-symbols:verified-outline',
-      class: 'gray-link',
-    },
-  ]
+      to: linkUrl,
+    })
+  }
+  actions.push({
+    label: 'Cite',
+    icon: 'i-material-symbols:verified-outline',
+    class: 'gray-link',
+  })
   if (pdfExists.value) {
     actions.push({
       label: 'PDF',
