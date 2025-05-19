@@ -32,9 +32,29 @@
     </template>
 
     <template #selected-provisions>
-      <section class="mt-8">
+      <section>
         <span class="label">Selected Provisions</span>
-        <p class="text-gray-300 mt-2">Coming soon</p>
+        <div :class="valueClassMap['Selected Provisions']">
+          <div v-if="provisionsLoading">Loading provisions...</div>
+          <div v-else-if="provisionsError">{{ provisionsError }}</div>
+          <div v-else-if="provisions.length">
+            <LegalProvision
+              v-for="(provision, index) in provisions"
+              :key="provision.id || provision.provisionId || index"
+              :provisionId="provision.id || provision.provisionId"
+              :class="index === 0 ? '-mt-8' : ''"
+              :textType="'Full Text'"
+              :instrumentTitle="
+                processedInternationalInstrument
+                  ? processedInternationalInstrument['Abbreviation'] ||
+                    processedInternationalInstrument['Title (in English)']
+                  : ''
+              "
+              @update:hasEnglishTranslation="hasEnglishTranslation = $event"
+            />
+          </div>
+          <div v-else>No provisions found.</div>
+        </div>
       </section>
     </template>
   </BaseDetailLayout>
@@ -48,6 +68,12 @@ import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { internationalInstrumentConfig } from '~/config/pageConfigs'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
+import LegalProvision from '~/components/legal/LegalProvision.vue'
+
+function logProvisionId(id) {
+  console.log('provisionId:', id)
+  return id
+}
 
 const route = useRoute()
 const router = useRouter()
@@ -64,6 +90,7 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
 
 const processedInternationalInstrument = computed(() => {
   if (!internationalInstrument.value) return null
+  console.log('API data:', internationalInstrument.value)
   return {
     ...internationalInstrument.value,
     'Title (in English)':
@@ -76,12 +103,39 @@ const processedInternationalInstrument = computed(() => {
   }
 })
 
+// New: Fetch all provisions for this instrument
+const provisions = ref([])
+const provisionsLoading = ref(false)
+const provisionsError = ref(null)
+
+async function fetchProvisions() {
+  provisionsLoading.value = true
+  provisionsError.value = null
+  try {
+    // Adjust this API call as needed for your backend
+    // Example: /api/international-legal-provisions?instrumentId=...
+    const instrumentId = route.params.id
+    const response = await fetch(
+      `/api/international-legal-provisions?instrumentId=${instrumentId}`
+    )
+    if (!response.ok) throw new Error('Failed to fetch provisions')
+    const data = await response.json()
+    provisions.value = data
+  } catch (err) {
+    provisionsError.value = err.message || 'Error fetching provisions'
+    provisions.value = []
+  } finally {
+    provisionsLoading.value = false
+  }
+}
+
 onMounted(async () => {
   try {
     await fetchData({
       table: 'International Instruments',
       id: route.params.id,
     })
+    await fetchProvisions()
   } catch (err) {
     if (err.isNotFound) {
       router.push({
