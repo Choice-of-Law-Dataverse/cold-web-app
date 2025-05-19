@@ -126,7 +126,19 @@ async function fetchProvisions() {
       }
     )
     if (!response.ok) throw new Error('Failed to fetch provisions')
-    const data = await response.json()
+    let data = await response.json()
+    // Sort by Interface Order (ascending, starts with 0)
+    data = data.slice().sort((a, b) => {
+      const aOrder =
+        typeof a['Interface Order'] === 'number'
+          ? a['Interface Order']
+          : Number(a['Interface Order']) || 0
+      const bOrder =
+        typeof b['Interface Order'] === 'number'
+          ? b['Interface Order']
+          : Number(b['Interface Order']) || 0
+      return aOrder - bOrder
+    })
     provisions.value = data
   } catch (err) {
     provisionsError.value = err.message || 'Error fetching provisions'
