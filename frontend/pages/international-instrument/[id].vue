@@ -49,7 +49,7 @@
                       processedInternationalInstrument['Title (in English)'])
                   : '')
               "
-              :anchorId="`provision-${index}`"
+              :anchorId="provision['Title of the Provision']"
             >
               <template #default>
                 {{ provision['Full Text'] }}
