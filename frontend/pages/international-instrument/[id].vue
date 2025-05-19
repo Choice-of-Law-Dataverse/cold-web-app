@@ -49,7 +49,7 @@
                       processedInternationalInstrument['Title (in English)'])
                   : '')
               "
-              :anchorId="provision['Title of the Provision']"
+              :anchorId="normalizeAnchorId(provision['Title of the Provision'])"
             >
               <template #default>
                 {{ provision['Full Text'] }}
@@ -131,6 +131,17 @@ async function fetchProvisions() {
   } finally {
     provisionsLoading.value = false
   }
+}
+
+function normalizeAnchorId(str) {
+  if (!str) return ''
+  // Remove accents/circumflexes, replace whitespace with dash, lowercase
+  return str
+    .normalize('NFD')
+    .replace(/\p{Diacritic}/gu, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-zA-Z0-9\-_]/g, '')
+    .toLowerCase()
 }
 
 onMounted(async () => {
