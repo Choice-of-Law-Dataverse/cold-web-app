@@ -59,11 +59,34 @@
               target="_blank"
               rel="noopener noreferrer"
             >
-              {{ action.label }}
-              <UIcon
-                :name="action.icon"
-                class="inline-block ml-1 text-[1.2em] mb-0.5"
-              />
+              <template v-if="action.label === 'Cite'">
+                <UTooltip
+                  text="Citations will be available soon"
+                  :popper="{ placement: 'top' }"
+                  :ui="{
+                    background: 'bg-cold-night',
+                    color: 'text-white',
+                    base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
+                    rounded: 'rounded-none',
+                    ring: '',
+                  }"
+                >
+                  <span class="flex items-center">
+                    {{ action.label }}
+                    <UIcon
+                      :name="action.icon"
+                      class="inline-block ml-1 text-[1.2em] mb-0.5"
+                    />
+                  </span>
+                </UTooltip>
+              </template>
+              <template v-else>
+                {{ action.label }}
+                <UIcon
+                  :name="action.icon"
+                  class="inline-block ml-1 text-[1.2em] mb-0.5"
+                />
+              </template>
             </NuxtLink>
           </div>
         </template>
