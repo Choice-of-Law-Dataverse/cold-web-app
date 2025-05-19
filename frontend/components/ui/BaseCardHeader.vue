@@ -61,7 +61,7 @@
             >
               <template v-if="action.label === 'Cite'">
                 <UTooltip
-                  text="Citations will be available soon"
+                  :text="availableSoon"
                   :popper="{ placement: 'top' }"
                   :ui="{
                     background: 'bg-cold-night',
@@ -106,8 +106,10 @@
 <script setup>
 import { onMounted, ref, computed, reactive } from 'vue'
 import { useRoute } from 'vue-router'
-import jurisdictionsData from '../../assets/jurisdictions-data.json' // added import
+import jurisdictionsData from '../../assets/jurisdictions-data.json'
 import { handleImageError } from '../../utils/handleImageError'
+
+import availableSoon from '@/content/available_soon.md?raw'
 
 const route = useRoute()
 const pdfExists = ref(false)
