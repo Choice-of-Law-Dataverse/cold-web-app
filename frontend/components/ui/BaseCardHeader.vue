@@ -254,6 +254,8 @@ const suggestEditActions = computed(() => {
       props.resultData['Open Access URL'] || props.resultData['Url'] || ''
   } else if (props.cardType === 'Court Decisions') {
     linkUrl = props.resultData['Official Source (URL)'] || ''
+  } else if (props.cardType === 'Domestic Instrument') {
+    linkUrl = props.resultData['Source (URL)'] || ''
   }
   const actions = []
   if (linkUrl) {
