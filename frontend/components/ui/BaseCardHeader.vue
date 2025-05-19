@@ -252,8 +252,6 @@ const suggestEditActions = computed(() => {
   if (props.cardType === 'Literature') {
     linkUrl =
       props.resultData['Open Access URL'] || props.resultData['Url'] || ''
-  } else {
-    linkUrl = 'https://example.net/'
   }
   const actions = []
   if (linkUrl) {
