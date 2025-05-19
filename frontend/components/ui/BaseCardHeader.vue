@@ -246,12 +246,14 @@ const fadeOutClasses = computed(() => ({
   'suggest-edit-false': !props.showSuggestEdit,
 }))
 
-// New computed property for action items in "Suggest Edit" area
+// Action items in "Suggest Edit" area
 const suggestEditActions = computed(() => {
   let linkUrl = ''
   if (props.cardType === 'Literature') {
     linkUrl =
       props.resultData['Open Access URL'] || props.resultData['Url'] || ''
+  } else if (props.cardType === 'Court Decisions') {
+    linkUrl = props.resultData['Official Source (URL)'] || ''
   }
   const actions = []
   if (linkUrl) {
