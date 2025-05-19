@@ -38,26 +38,16 @@
           <div v-if="provisionsLoading">Loading provisions...</div>
           <div v-else-if="provisionsError">{{ provisionsError }}</div>
           <div v-else-if="provisions.length">
-            <div
+            <BaseLegalContent
               v-for="(provision, index) in provisions"
               :key="index"
-              class="mb-8"
+              :title="provision['Title of the Provision']"
+              :anchorId="`provision-${index}`"
             >
-              <div :id="'provision-' + index" class="legal-content">
-                <div class="flex justify-between items-baseline mb-4">
-                  <a
-                    :href="`#provision-${index}`"
-                    class="label-key-provision-article anchor flex-1 min-w-0"
-                  >
-                    {{ provision['Title of the Provision'] }}
-                  </a>
-                  <!-- No header-actions slot needed here -->
-                </div>
-                <div class="content-body">
-                  {{ provision['Full Text'] }}
-                </div>
-              </div>
-            </div>
+              <template #default>
+                {{ provision['Full Text'] }}
+              </template>
+            </BaseLegalContent>
           </div>
           <div v-else>No provisions found.</div>
         </div>
@@ -70,6 +60,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
+import BaseLegalContent from '~/components/legal/BaseLegalContent.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { internationalInstrumentConfig } from '~/config/pageConfigs'
