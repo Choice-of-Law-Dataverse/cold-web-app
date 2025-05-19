@@ -38,20 +38,18 @@
           <div v-if="provisionsLoading">Loading provisions...</div>
           <div v-else-if="provisionsError">{{ provisionsError }}</div>
           <div v-else-if="provisions.length">
-            <LegalProvision
+            <div
               v-for="(provision, index) in provisions"
-              :key="provision.id || provision.provisionId || index"
-              :provisionId="provision.id || provision.provisionId"
-              :class="index === 0 ? '-mt-8' : ''"
-              :textType="'Full Text'"
-              :instrumentTitle="
-                processedInternationalInstrument
-                  ? processedInternationalInstrument['Abbreviation'] ||
-                    processedInternationalInstrument['Title (in English)']
-                  : ''
-              "
-              @update:hasEnglishTranslation="hasEnglishTranslation = $event"
-            />
+              :key="index"
+              class="mb-8"
+            >
+              <div class="result-value-medium font-semibold mb-2">
+                {{ provision['Title of the Provision'] }}
+              </div>
+              <div class="result-value-small whitespace-pre-line">
+                {{ provision['Full Text'] }}
+              </div>
+            </div>
           </div>
           <div v-else>No provisions found.</div>
         </div>
@@ -68,15 +66,11 @@ import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { internationalInstrumentConfig } from '~/config/pageConfigs'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
-import LegalProvision from '~/components/legal/LegalProvision.vue'
 
-function logProvisionId(id) {
-  console.log('provisionId:', id)
-  return id
-}
-
+const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
+
 const {
   loading,
   error,
@@ -90,7 +84,6 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
 
 const processedInternationalInstrument = computed(() => {
   if (!internationalInstrument.value) return null
-  console.log('API data:', internationalInstrument.value)
   return {
     ...internationalInstrument.value,
     'Title (in English)':
@@ -103,7 +96,7 @@ const processedInternationalInstrument = computed(() => {
   }
 })
 
-// New: Fetch all provisions for this instrument
+// Fetch all provisions from International Legal Provisions table
 const provisions = ref([])
 const provisionsLoading = ref(false)
 const provisionsError = ref(null)
@@ -112,11 +105,16 @@ async function fetchProvisions() {
   provisionsLoading.value = true
   provisionsError.value = null
   try {
-    // Adjust this API call as needed for your backend
-    // Example: /api/international-legal-provisions?instrumentId=...
-    const instrumentId = route.params.id
     const response = await fetch(
-      `/api/international-legal-provisions?instrumentId=${instrumentId}`
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table: 'International Legal Provisions' }),
+      }
     )
     if (!response.ok) throw new Error('Failed to fetch provisions')
     const data = await response.json()
