@@ -43,11 +43,19 @@
               :key="index"
               class="mb-8"
             >
-              <div class="result-value-medium font-semibold mb-2">
-                {{ provision['Title of the Provision'] }}
-              </div>
-              <div class="result-value-small whitespace-pre-line">
-                {{ provision['Full Text'] }}
+              <div :id="'provision-' + index" class="legal-content">
+                <div class="flex justify-between items-baseline mb-4">
+                  <a
+                    :href="`#provision-${index}`"
+                    class="label-key-provision-article anchor flex-1 min-w-0"
+                  >
+                    {{ provision['Title of the Provision'] }}
+                  </a>
+                  <!-- No header-actions slot needed here -->
+                </div>
+                <div class="content-body">
+                  {{ provision['Full Text'] }}
+                </div>
               </div>
             </div>
           </div>
