@@ -182,7 +182,7 @@ export const questionConfig = {
   },
 }
 
-// Legal Instrument (Domestic Instrument) Page
+// Domestic Instrument (formerly Legal Instrument) Page
 export const legalInstrumentConfig = {
   keyLabelPairs: [
     {
@@ -197,8 +197,7 @@ export const legalInstrumentConfig = {
       key: 'Official Title',
       label: 'Official Title',
       emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No official title available',
+        action: 'hide',
       },
     },
     {
