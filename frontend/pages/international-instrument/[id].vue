@@ -41,7 +41,14 @@
             <BaseLegalContent
               v-for="(provision, index) in provisions"
               :key="index"
-              :title="provision['Title of the Provision']"
+              :title="
+                provision['Title of the Provision'] +
+                (processedInternationalInstrument
+                  ? ', ' +
+                    (processedInternationalInstrument['Abbreviation'] ||
+                      processedInternationalInstrument['Title (in English)'])
+                  : '')
+              "
               :anchorId="`provision-${index}`"
             >
               <template #default>
