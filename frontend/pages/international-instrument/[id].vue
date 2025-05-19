@@ -35,7 +35,9 @@
       <section>
         <span class="label">Selected Provisions</span>
         <div :class="valueClassMap['Selected Provisions']">
-          <div v-if="provisionsLoading">Loading provisions...</div>
+          <div v-if="provisionsLoading">
+            <LoadingBar class="pt-[11px]" />
+          </div>
           <div v-else-if="provisionsError">{{ provisionsError }}</div>
           <div v-else-if="provisions.length">
             <BaseLegalContent
@@ -72,6 +74,7 @@ import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { internationalInstrumentConfig } from '~/config/pageConfigs'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
+import LoadingBar from '~/components/layout/LoadingBar.vue'
 
 const config = useRuntimeConfig()
 const route = useRoute()
