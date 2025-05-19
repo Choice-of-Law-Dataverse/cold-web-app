@@ -248,22 +248,25 @@ const fadeOutClasses = computed(() => ({
 
 // New computed property for action items in "Suggest Edit" area
 const suggestEditActions = computed(() => {
-  let linkUrl = 'https://example.net/'
+  let linkUrl = ''
   if (props.cardType === 'Literature' && props.resultData['Open Access URL']) {
     linkUrl = props.resultData['Open Access URL']
+  } else if (!(props.cardType === 'Literature')) {
+    linkUrl = 'https://example.net/'
   }
-  const actions = [
-    {
+  const actions = []
+  if (linkUrl) {
+    actions.push({
       label: 'Link',
       icon: 'i-material-symbols:language',
       to: linkUrl,
-    },
-    {
-      label: 'Cite',
-      icon: 'i-material-symbols:verified-outline',
-      class: 'gray-link',
-    },
-  ]
+    })
+  }
+  actions.push({
+    label: 'Cite',
+    icon: 'i-material-symbols:verified-outline',
+    class: 'gray-link',
+  })
   if (pdfExists.value) {
     actions.push({
       label: 'PDF',
