@@ -256,6 +256,10 @@ const suggestEditActions = computed(() => {
     linkUrl = props.resultData['Official Source (URL)'] || ''
   } else if (props.cardType === 'Domestic Instrument') {
     linkUrl = props.resultData['Source (URL)'] || ''
+  } else if (props.cardType === 'Regional Instrument') {
+    linkUrl = props.resultData['URL'] || ''
+  } else if (props.cardType === 'International Instrument') {
+    linkUrl = props.resultData['URL'] || ''
   }
   const actions = []
   if (linkUrl) {

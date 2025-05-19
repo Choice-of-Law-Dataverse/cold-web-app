@@ -279,11 +279,6 @@ export const regionalInstrumentConfig = {
       },
     },
     {
-      key: 'URL',
-      label: 'URL',
-      emptyValueBehavior: { action: 'display', fallback: 'No URL available' },
-    },
-    {
       key: 'Literature',
       label: 'Related Literature',
       emptyValueBehavior: { action: 'hide' },
@@ -298,7 +293,6 @@ export const regionalInstrumentConfig = {
     Abbreviation: 'result-value-medium',
     Title: 'result-value-small',
     Date: 'result-value-small',
-    URL: 'result-value-small',
     'Related Literature': 'result-value-small',
     'Selected Provisions': 'result-value-small',
   },
@@ -326,11 +320,6 @@ export const internationalInstrumentConfig = {
       },
     },
     {
-      key: 'URL',
-      label: 'URL',
-      emptyValueBehavior: { action: 'display', fallback: 'No URL available' },
-    },
-    {
       key: 'Literature',
       label: 'Related Literature',
       emptyValueBehavior: { action: 'hide' },
@@ -344,7 +333,6 @@ export const internationalInstrumentConfig = {
   valueClassMap: {
     Name: 'result-value-medium',
     Date: 'result-value-small',
-    URL: 'result-value-small',
     'Related Literature': 'result-value-small',
     'Selected Provisions': 'result-value-small',
   },
