@@ -248,11 +248,15 @@ const fadeOutClasses = computed(() => ({
 
 // New computed property for action items in "Suggest Edit" area
 const suggestEditActions = computed(() => {
+  let linkUrl = 'https://example.net/'
+  if (props.cardType === 'Literature' && props.resultData['Open Access URL']) {
+    linkUrl = props.resultData['Open Access URL']
+  }
   const actions = [
     {
       label: 'Link',
       icon: 'i-material-symbols:language',
-      to: 'https://example.net/',
+      to: linkUrl,
     },
     {
       label: 'Cite',
