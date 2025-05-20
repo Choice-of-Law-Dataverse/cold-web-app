@@ -44,7 +44,9 @@ export function useLegalProvision({
 
       // Set initial content to English first, then fallback to Original Language
       content.value = showEnglish.value
-        ? data['Full Text of the Provision (English Translation)'] ||
+        ? (table === 'Regional Legal Provisions'
+            ? data['Full Text']
+            : data['Full Text of the Provision (English Translation)']) ||
           data['Full Text of the Provision (Original Language)'] ||
           'No content available'
         : data['Full Text of the Provision (Original Language)'] ||
@@ -65,9 +67,11 @@ export function useLegalProvision({
     if (!provisionData.value) return
 
     content.value = showEnglish.value
-      ? provisionData.value[
-          'Full Text of the Provision (English Translation)'
-        ] || 'No English translation available'
+      ? (table === 'Regional Legal Provisions'
+          ? provisionData.value['Full Text']
+          : provisionData.value[
+              'Full Text of the Provision (English Translation)'
+            ]) || 'No English translation available'
       : provisionData.value['Full Text of the Provision (Original Language)'] ||
         'No content available'
   }
