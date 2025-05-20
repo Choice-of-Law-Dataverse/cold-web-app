@@ -89,7 +89,6 @@ onMounted(scrollToAnchor)
 .content-body {
   font-size: 14px !important;
   font-weight: 400 !important;
-  line-height: 26px !important;
   white-space: pre-line;
   word-wrap: break-word;
   word-break: break-word;
