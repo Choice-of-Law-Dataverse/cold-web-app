@@ -228,6 +228,10 @@ const shouldDisplayValue = (item, value) => {
 }
 
 const getDisplayValue = (item, value) => {
+  // Use valueTransform if present
+  if (item.valueTransform) {
+    return item.valueTransform(value)
+  }
   // For "Answer" and "Specialists", split by comma if a string contains commas.
   if (
     (item.key === 'Answer' || item.key === 'Specialists') &&

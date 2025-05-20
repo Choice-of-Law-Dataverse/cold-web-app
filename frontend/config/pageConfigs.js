@@ -239,6 +239,7 @@ export const legalInstrumentConfig = {
       emptyValueBehavior: {
         action: 'hide',
       },
+      valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
     },
     {
       key: 'Compatible With the UNCITRAL Model Law?',
@@ -246,6 +247,7 @@ export const legalInstrumentConfig = {
       emptyValueBehavior: {
         action: 'hide',
       },
+      valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
     },
     {
       key: 'Domestic Legal Provisions',
