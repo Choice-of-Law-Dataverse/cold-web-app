@@ -461,13 +461,6 @@ export const courtDecisionConfig = {
       },
     },
     {
-      key: 'Quote',
-      label: 'Quote',
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-    },
-    {
       key: 'Case Citation',
       label: 'Case Citation',
       emptyValueBehavior: {

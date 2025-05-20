@@ -16,35 +16,38 @@
             modifiedCourtDecision['Translated Excerpt'])
         "
       >
-        <div
-          v-if="hasEnglishQuoteTranslation"
-          class="flex items-center gap-1 mb-1"
-        >
-          <span
-            class="label-key-provision-toggle mr-[-0px]"
-            :class="{
-              'opacity-25': showEnglishQuote,
-              'opacity-100': !showEnglishQuote,
-            }"
+        <div class="flex items-center justify-between mb-1">
+          <span class="label">Quote</span>
+          <div
+            v-if="hasEnglishQuoteTranslation"
+            class="flex items-center gap-1"
           >
-            Original
-          </span>
-          <UToggle
-            v-model="showEnglishQuote"
-            size="2xs"
-            class="bg-[var(--color-cold-gray)]"
-          />
-          <span
-            class="label-key-provision-toggle"
-            :class="{
-              'opacity-25': !showEnglishQuote,
-              'opacity-100': showEnglishQuote,
-            }"
-          >
-            English
-          </span>
+            <span
+              class="label-key-provision-toggle mr-[-0px]"
+              :class="{
+                'opacity-25': showEnglishQuote,
+                'opacity-100': !showEnglishQuote,
+              }"
+            >
+              Original
+            </span>
+            <UToggle
+              v-model="showEnglishQuote"
+              size="2xs"
+              class="bg-[var(--color-cold-gray)]"
+            />
+            <span
+              class="label-key-provision-toggle"
+              :class="{
+                'opacity-25': !showEnglishQuote,
+                'opacity-100': showEnglishQuote,
+              }"
+            >
+              English
+            </span>
+          </div>
         </div>
-        <div class="text-base mt-1">
+        <div>
           {{
             showEnglishQuote && hasEnglishQuoteTranslation
               ? modifiedCourtDecision['Translated Excerpt']
