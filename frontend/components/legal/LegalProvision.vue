@@ -125,9 +125,3 @@ watch(
 
 watch(showEnglish, updateContent)
 </script>
-
-<style scoped>
-.label-key-provision-toggle {
-  @apply text-sm text-gray-600;
-}
-</style>
