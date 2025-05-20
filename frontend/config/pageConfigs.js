@@ -197,8 +197,7 @@ export const legalInstrumentConfig = {
       key: 'Official Title',
       label: 'Official Title',
       emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No official title available',
+        action: 'hide',
       },
     },
     {

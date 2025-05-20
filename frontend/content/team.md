@@ -46,7 +46,9 @@ The partners oversee specialized task forces for case law review, refinement of 
 ## External Researchers
 
 Prince Obiri-Korang, Assistant to Prof. Jan Neels (African Task Force)  
-Solomon Okorley, Assistant to Prof. Eesa Fredericks (African Task Force)
+Solomon Okorley, Assistant to Prof. Eesa Fredericks (African Task Force)  
+Ying Wang (North American Task Force)  
+Isha Suraj Puthenpurakal (Asian Task Force)
 
 ## International Network
 
@@ -62,7 +64,7 @@ Prof. Eesa A Fredericks
 Prof. Béligh Elbalti, Osaka University  
 Prof. Lauro Gama, Pontifical Catholic University of Rio de Janeiro  
 Prof. Thomas Kadner Graziano, University of Geneva  
-Prof. Brooke Marshall, University of New South Wales  
+Prof. Brooke Marshall, University of Oxford  
 Prof. José Moreno Rodríguez, National University of Asuncion  
 Prof. Yuko Nishitani, Kyoto University  
 Prof. Marta Pertegás, Maastricht University
