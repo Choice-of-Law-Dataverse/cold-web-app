@@ -63,6 +63,11 @@
                   <!-- Conditionally render the label -->
                   <p class="label-key mb-2.5 flex items-center">
                     {{ item.label }}
+                    <!-- Add this line to support header-actions slot for each section -->
+                    <slot
+                      :name="item.key + '-header-actions'"
+                      :value="resultData?.[item.key]"
+                    />
                     <!-- Add tooltip for specific labels -->
                     <template v-if="item.label === 'Question'">
                       <UTooltip

@@ -6,6 +6,43 @@
     :valueClassMap="valueClassMap"
     sourceTable="Court Decisions"
   >
+    <!-- Quote section with language toggle -->
+    <template #Quote-header-actions>
+      <div v-if="hasEnglishQuoteTranslation" class="flex items-center gap-1">
+        <span
+          class="label-key-provision-toggle mr-[-0px]"
+          :class="{
+            'opacity-25': showEnglishQuote,
+            'opacity-100': !showEnglishQuote,
+          }"
+        >
+          Original
+        </span>
+        <UToggle
+          v-model="showEnglishQuote"
+          size="2xs"
+          class="bg-[var(--color-cold-gray)]"
+        />
+        <span
+          class="label-key-provision-toggle"
+          :class="{
+            'opacity-25': !showEnglishQuote,
+            'opacity-100': showEnglishQuote,
+          }"
+        >
+          English
+        </span>
+      </div>
+    </template>
+    <template #Quote="{ value }">
+      <span>
+        {{
+          showEnglishQuote && hasEnglishQuoteTranslation
+            ? modifiedCourtDecision['Translated Excerpt']
+            : value
+        }}
+      </span>
+    </template>
     <template #related-questions>
       <RelatedQuestions
         :jurisdictionCode="
@@ -46,6 +83,8 @@ import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { courtDecisionConfig } from '~/config/pageConfigs'
 import { formatDate } from '~/utils/format.js'
+// import UToggle from '~/components/ui/UToggle.vue'
+import { ref } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -88,6 +127,15 @@ const modifiedCourtDecision = computed(() => {
   }
 })
 
+const showEnglishQuote = ref(false)
+const hasEnglishQuoteTranslation = computed(() => {
+  return !!(
+    modifiedCourtDecision.value &&
+    modifiedCourtDecision.value['Translated Excerpt'] &&
+    modifiedCourtDecision.value['Translated Excerpt'].trim() !== ''
+  )
+})
+
 const fetchCourtDecision = async () => {
   try {
     await fetchData({
@@ -120,3 +168,9 @@ watch(
   }
 )
 </script>
+
+<style scoped>
+.label-key-provision-toggle {
+  @apply text-sm text-gray-600;
+}
+</style>
