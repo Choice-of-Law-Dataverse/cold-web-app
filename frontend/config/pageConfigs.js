@@ -257,6 +257,34 @@ export const legalInstrumentConfig = {
         fallback: 'No provisions available',
       },
     },
+    {
+      key: 'Amended by',
+      label: 'Amended by',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Amends',
+      label: 'Amends',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Replaces',
+      label: 'Replaces',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Replaced by',
+      label: 'Replaced by',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
   ],
   valueClassMap: {
     'Title (in English)': 'result-value-medium',
