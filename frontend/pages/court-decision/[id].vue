@@ -52,15 +52,17 @@
           </div>
         </div>
         <div>
-          {{
-            showEnglishQuote &&
-            hasEnglishQuoteTranslation &&
-            modifiedCourtDecision['Quote'] &&
-            modifiedCourtDecision['Quote'].trim() !== ''
-              ? modifiedCourtDecision['Translated Excerpt']
-              : modifiedCourtDecision['Quote'] ||
-                modifiedCourtDecision['Translated Excerpt']
-          }}
+          <span style="white-space: pre-line">
+            {{
+              showEnglishQuote &&
+              hasEnglishQuoteTranslation &&
+              modifiedCourtDecision['Quote'] &&
+              modifiedCourtDecision['Quote'].trim() !== ''
+                ? modifiedCourtDecision['Translated Excerpt']
+                : modifiedCourtDecision['Quote'] ||
+                  modifiedCourtDecision['Translated Excerpt']
+            }}
+          </span>
         </div>
       </div>
       <RelatedQuestions
