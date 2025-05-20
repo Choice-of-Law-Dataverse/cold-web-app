@@ -37,7 +37,10 @@ export function useLegalProvision({
         throw new Error('No data received')
       }
 
-      title.value = data.Article || 'Unknown Article'
+      title.value =
+        table === 'Regional Legal Provisions'
+          ? data['Title of the Provision'] || 'Unknown Article'
+          : data.Article || 'Unknown Article'
       hasEnglishTranslation.value =
         'Full Text of the Provision (English Translation)' in data
       provisionData.value = data
