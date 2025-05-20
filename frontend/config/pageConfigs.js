@@ -182,7 +182,7 @@ export const questionConfig = {
   },
 }
 
-// Legal Instrument (Domestic Instrument) Page
+// Domestic Instrument (formerly Legal Instrument) Page
 export const legalInstrumentConfig = {
   keyLabelPairs: [
     {
@@ -234,6 +234,20 @@ export const legalInstrumentConfig = {
       },
     },
     {
+      key: 'Compatible With the HCCH Principles?',
+      label: 'Compatible With the HCCH Principles?',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Compatible With the UNCITRAL Model Law?',
+      label: 'Compatible With the UNCITRAL Model Law?',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
       key: 'Domestic Legal Provisions',
       label: 'Selected Provisions',
       emptyValueBehavior: {
@@ -250,6 +264,8 @@ export const legalInstrumentConfig = {
     'Entry Into Force': 'result-value-small',
     'Publication Date': 'result-value-small',
     'Domestic Legal Provisions': 'result-value-small',
+    'Compatible With the HCCH Principles?': 'result-value-small',
+    'Compatible With the UNCITRAL Model Law?': 'result-value-small',
     Themes: 'result-value-small',
     'Manual Tags': 'result-value-small',
     'Related Literature': 'result-value-small',
