@@ -17,7 +17,6 @@ export function useApiFetch() {
       // Create an AbortController for timeout
       const controller = new AbortController()
       const timeoutId = setTimeout(() => controller.abort(), 30000) // 30 second timeout
-      console.log(jsonPayload)
 
       const response = await fetch(
         `${config.public.apiBaseUrl}/search/details`,

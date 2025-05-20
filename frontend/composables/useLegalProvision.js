@@ -5,7 +5,7 @@ export function useLegalProvision({
   provisionId,
   textType,
   onHasEnglishTranslationUpdate,
-  table = 'Domestic Legal Provisions', // default to Domestic
+  table = 'Domestic Legal Provisions', // default table
 }) {
   const title = ref('')
   const content = ref('')
