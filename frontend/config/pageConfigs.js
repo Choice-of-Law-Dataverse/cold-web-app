@@ -284,8 +284,8 @@ export const regionalInstrumentConfig = {
       emptyValueBehavior: { action: 'hide' },
     },
     {
-      key: 'Selected Provisions',
-      label: 'Selected Provisions',
+      key: 'Regional Legal Provisions',
+      label: 'Regional Legal Provisions',
       emptyValueBehavior: { action: 'display', fallback: '' },
     },
   ],
@@ -294,7 +294,7 @@ export const regionalInstrumentConfig = {
     Title: 'result-value-small',
     Date: 'result-value-small',
     'Related Literature': 'result-value-small',
-    'Selected Provisions': 'result-value-small',
+    'Regional Legal Provisions': 'result-value-small',
   },
 }
 

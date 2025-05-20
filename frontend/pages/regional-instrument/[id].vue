@@ -33,6 +33,9 @@
 
     <!-- Slot for Legal provisions -->
     <template #regional-legal-provisions="{ value }">
+      <pre>{{ value }}</pre>
+      <!-- Debug: See what value is -->
+
       <!-- Only render if value exists and is not "N/A" -->
       <section
         v-if="value && value.trim() && value.trim() !== 'N/A'"
@@ -53,6 +56,7 @@
                     processedRegionalInstrument['Title']
                   : ''
               "
+              table="Regional Legal Provisions"
               @update:hasEnglishTranslation="hasEnglishTranslation = $event"
             />
           </div>

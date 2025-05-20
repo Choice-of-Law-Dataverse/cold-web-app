@@ -56,22 +56,11 @@ import BaseLegalContent from './BaseLegalContent.vue'
 import LoadingBar from './components/layout/LoadingBar.vue'
 
 const props = defineProps({
-  provisionId: {
-    type: String,
-    required: true,
-  },
-  class: {
-    type: String,
-    default: '',
-  },
-  textType: {
-    type: String,
-    required: true,
-  },
-  instrumentTitle: {
-    type: String,
-    default: '',
-  },
+  provisionId: { type: String, required: true },
+  class: { type: String, default: '' },
+  textType: { type: String, required: true },
+  instrumentTitle: { type: String, default: '' },
+  table: { type: String, default: 'Domestic Legal Provisions' }, // add this line
 })
 
 const emit = defineEmits(['update:hasEnglishTranslation'])
@@ -91,6 +80,7 @@ const {
   textType: props.textType,
   onHasEnglishTranslationUpdate: (value) =>
     emit('update:hasEnglishTranslation', value),
+  table: props.table, // pass the table prop
 })
 
 // New reactive property for the English title
