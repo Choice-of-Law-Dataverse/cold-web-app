@@ -54,6 +54,7 @@ const setActiveTab = (path) => {
 .nav-wrapper {
   position: relative !important;
   z-index: 0 !important;
+  margin-bottom: -1.5em;
   /* scrolling lives here now */
   overflow-x: auto;
   -ms-overflow-style: none;
@@ -76,7 +77,7 @@ ul {
 ul::before {
   content: '';
   position: absolute;
-  bottom: 15px;
+  bottom: 39px;
   left: 0;
   width: 100%;
   height: 1px;

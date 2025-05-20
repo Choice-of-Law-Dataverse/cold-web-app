@@ -6,7 +6,65 @@
     :valueClassMap="valueClassMap"
     sourceTable="Court Decisions"
   >
+    <!-- Quote section with language toggle and conditional rendering, now inside the related-questions slot and above the questions -->
     <template #related-questions>
+      <div
+        class="mb-4"
+        v-if="
+          modifiedCourtDecision &&
+          (modifiedCourtDecision['Quote'] ||
+            modifiedCourtDecision['Translated Excerpt'])
+        "
+      >
+        <div class="flex items-center justify-between mb-1">
+          <span class="label">Quote</span>
+          <div
+            v-if="
+              hasEnglishQuoteTranslation &&
+              modifiedCourtDecision['Quote'] &&
+              modifiedCourtDecision['Quote'].trim() !== ''
+            "
+            class="flex items-center gap-1"
+          >
+            <span
+              class="label-key-provision-toggle mr-[-0px]"
+              :class="{
+                'opacity-25': showEnglishQuote,
+                'opacity-100': !showEnglishQuote,
+              }"
+            >
+              Original
+            </span>
+            <UToggle
+              v-model="showEnglishQuote"
+              size="2xs"
+              class="bg-[var(--color-cold-gray)]"
+            />
+            <span
+              class="label-key-provision-toggle"
+              :class="{
+                'opacity-25': !showEnglishQuote,
+                'opacity-100': showEnglishQuote,
+              }"
+            >
+              English
+            </span>
+          </div>
+        </div>
+        <div>
+          <span style="white-space: pre-line">
+            {{
+              showEnglishQuote &&
+              hasEnglishQuoteTranslation &&
+              modifiedCourtDecision['Quote'] &&
+              modifiedCourtDecision['Quote'].trim() !== ''
+                ? modifiedCourtDecision['Translated Excerpt']
+                : modifiedCourtDecision['Quote'] ||
+                  modifiedCourtDecision['Translated Excerpt']
+            }}
+          </span>
+        </div>
+      </div>
       <RelatedQuestions
         :jurisdictionCode="
           modifiedCourtDecision['Jurisdictions Alpha-3 Code'] || ''
@@ -46,6 +104,7 @@ import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { courtDecisionConfig } from '~/config/pageConfigs'
 import { formatDate } from '~/utils/format.js'
+import { ref } from 'vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -84,7 +143,17 @@ const modifiedCourtDecision = computed(() => {
     'Publication Date ISO': formatDate(
       courtDecision.value['Publication Date ISO']
     ),
+    'Date of Judgment': formatDate(courtDecision.value['Date of Judgment']),
   }
+})
+
+const showEnglishQuote = ref(true)
+const hasEnglishQuoteTranslation = computed(() => {
+  return !!(
+    modifiedCourtDecision.value &&
+    modifiedCourtDecision.value['Translated Excerpt'] &&
+    modifiedCourtDecision.value['Translated Excerpt'].trim() !== ''
+  )
 })
 
 const fetchCourtDecision = async () => {

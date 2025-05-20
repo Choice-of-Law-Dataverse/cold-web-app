@@ -2,7 +2,7 @@
   <div v-if="shouldShowSection">
     <span v-if="showLabel" class="label">{{ label }}</span>
     <ul v-if="loadingTitles || loading">
-      <li><LoadingBar class="pt-[11px]" /></li>
+      <LoadingBar class="pt-[11px] ml-[-22px]" />
     </ul>
     <ul v-else-if="displayedLiterature.length">
       <li

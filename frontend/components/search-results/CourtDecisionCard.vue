@@ -26,8 +26,53 @@
         </div>
       </div>
 
+      <!-- Date section -->
+      <div
+        v-if="
+          resultData['Publication Date ISO'] &&
+          resultData['Publication Date ISO'] !== 'NA'
+        "
+        :class="[
+          config.gridConfig.date.columnSpan,
+          config.gridConfig.date.startColumn,
+        ]"
+      >
+        <div class="label-key">{{ getLabel('Publication Date ISO') }}</div>
+        <div
+          :class="[
+            config.valueClassMap['Publication Date ISO'],
+            'text-sm leading-relaxed whitespace-pre-line',
+          ]"
+        >
+          {{ getValue('Publication Date ISO') }}
+        </div>
+      </div>
+
+      <!-- Instance section -->
+      <div
+        v-if="resultData['Instance'] && resultData['Instance'] !== 'NA'"
+        :class="[
+          config.gridConfig.instance.columnSpan,
+          config.gridConfig.instance.startColumn,
+        ]"
+      >
+        <div class="label-key">{{ getLabel('Instance') }}</div>
+        <div
+          :class="[
+            config.valueClassMap['Instance'],
+            'text-sm leading-relaxed whitespace-pre-line',
+          ]"
+        >
+          {{ getValue('Instance') }}
+        </div>
+      </div>
+
       <!-- Choice of Law Issue section -->
       <div
+        v-if="
+          resultData['Choice of Law Issue'] &&
+          resultData['Choice of Law Issue'] !== 'NA'
+        "
         :class="[
           config.gridConfig.choiceOfLaw.columnSpan,
           config.gridConfig.choiceOfLaw.startColumn,
@@ -38,13 +83,6 @@
           :class="[
             config.valueClassMap['Choice of Law Issue'],
             'text-sm leading-relaxed whitespace-pre-line',
-            (!resultData['Choice of Law Issue'] ||
-              resultData['Choice of Law Issue'] === 'NA') &&
-            config.keyLabelPairs.find(
-              (pair) => pair.key === 'Choice of Law Issue'
-            )?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-300'
-              : '',
           ]"
         >
           {{ getValue('Choice of Law Issue') }}
@@ -67,7 +105,6 @@ const props = defineProps({
 
 const config = courtDecisionCardConfig
 
-// Helper functions to get labels and values with fallbacks
 const getLabel = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key)
   return pair?.label || key
@@ -75,7 +112,12 @@ const getLabel = (key) => {
 
 const getValue = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key)
-  const value = props.resultData[key]
+  let value = props.resultData[key]
+
+  // Apply extractYear to 'Publication Date ISO' if a valid value exists
+  if (key === 'Publication Date ISO' && value && value !== 'NA') {
+    value = extractYear(value)
+  }
 
   if ((!value || value === 'NA') && pair?.emptyValueBehavior) {
     if (pair.emptyValueBehavior.action === 'display') {

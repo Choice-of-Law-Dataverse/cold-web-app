@@ -182,7 +182,7 @@ export const questionConfig = {
   },
 }
 
-// Legal Instrument (Domestic Instrument) Page
+// Domestic Instrument (formerly Legal Instrument) Page
 export const legalInstrumentConfig = {
   keyLabelPairs: [
     {
@@ -197,8 +197,7 @@ export const legalInstrumentConfig = {
       key: 'Official Title',
       label: 'Official Title',
       emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No official title available',
+        action: 'hide',
       },
     },
     {
@@ -234,11 +233,55 @@ export const legalInstrumentConfig = {
       },
     },
     {
+      key: 'Compatible With the HCCH Principles?',
+      label: 'Compatible With the HCCH Principles?',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+      valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
+    },
+    {
+      key: 'Compatible With the UNCITRAL Model Law?',
+      label: 'Compatible With the UNCITRAL Model Law?',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+      valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
+    },
+    {
       key: 'Domestic Legal Provisions',
       label: 'Selected Provisions',
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No provisions available',
+      },
+    },
+    {
+      key: 'Amended by',
+      label: 'Amended by',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Amends',
+      label: 'Amends',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Replaces',
+      label: 'Replaces',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Replaced by',
+      label: 'Replaced by',
+      emptyValueBehavior: {
+        action: 'hide',
       },
     },
   ],
@@ -250,6 +293,8 @@ export const legalInstrumentConfig = {
     'Entry Into Force': 'result-value-small',
     'Publication Date': 'result-value-small',
     'Domestic Legal Provisions': 'result-value-small',
+    'Compatible With the HCCH Principles?': 'result-value-small',
+    'Compatible With the UNCITRAL Model Law?': 'result-value-small',
     Themes: 'result-value-small',
     'Manual Tags': 'result-value-small',
     'Related Literature': 'result-value-small',
@@ -284,8 +329,8 @@ export const regionalInstrumentConfig = {
       emptyValueBehavior: { action: 'hide' },
     },
     {
-      key: 'Selected Provisions',
-      label: 'Selected Provisions',
+      key: 'Regional Legal Provisions',
+      label: 'Regional Legal Provisions',
       emptyValueBehavior: { action: 'display', fallback: '' },
     },
   ],
@@ -294,7 +339,7 @@ export const regionalInstrumentConfig = {
     Title: 'result-value-small',
     Date: 'result-value-small',
     'Related Literature': 'result-value-small',
-    'Selected Provisions': 'result-value-small',
+    'Regional Legal Provisions': 'result-value-small',
   },
 }
 
@@ -448,6 +493,7 @@ export const courtDecisionConfig = {
     "Court's Position": 'result-value-small whitespace-pre-line',
     'Text of the Relevant Legal Provisions':
       'result-value-small whitespace-pre-line',
+    Quote: 'result-value-small',
     'Case Citation': 'result-value-small-citation',
     'Related Literature': 'result-value-small',
     'Related Questions': 'result-value-small',
