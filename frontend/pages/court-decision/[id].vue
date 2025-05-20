@@ -6,44 +6,52 @@
     :valueClassMap="valueClassMap"
     sourceTable="Court Decisions"
   >
-    <!-- Quote section with language toggle -->
-    <template #Quote-header-actions>
-      <div v-if="hasEnglishQuoteTranslation" class="flex items-center gap-1">
-        <span
-          class="label-key-provision-toggle mr-[-0px]"
-          :class="{
-            'opacity-25': showEnglishQuote,
-            'opacity-100': !showEnglishQuote,
-          }"
-        >
-          Original
-        </span>
-        <UToggle
-          v-model="showEnglishQuote"
-          size="2xs"
-          class="bg-[var(--color-cold-gray)]"
-        />
-        <span
-          class="label-key-provision-toggle"
-          :class="{
-            'opacity-25': !showEnglishQuote,
-            'opacity-100': showEnglishQuote,
-          }"
-        >
-          English
-        </span>
-      </div>
-    </template>
-    <template #Quote="{ value }">
-      <span>
-        {{
-          showEnglishQuote && hasEnglishQuoteTranslation
-            ? modifiedCourtDecision['Translated Excerpt']
-            : value
-        }}
-      </span>
-    </template>
+    <!-- Quote section with language toggle and conditional rendering, now inside the related-questions slot and above the questions -->
     <template #related-questions>
+      <div
+        class="mb-4"
+        v-if="
+          modifiedCourtDecision &&
+          (modifiedCourtDecision['Quote'] ||
+            modifiedCourtDecision['Translated Excerpt'])
+        "
+      >
+        <div
+          v-if="hasEnglishQuoteTranslation"
+          class="flex items-center gap-1 mb-1"
+        >
+          <span
+            class="label-key-provision-toggle mr-[-0px]"
+            :class="{
+              'opacity-25': showEnglishQuote,
+              'opacity-100': !showEnglishQuote,
+            }"
+          >
+            Original
+          </span>
+          <UToggle
+            v-model="showEnglishQuote"
+            size="2xs"
+            class="bg-[var(--color-cold-gray)]"
+          />
+          <span
+            class="label-key-provision-toggle"
+            :class="{
+              'opacity-25': !showEnglishQuote,
+              'opacity-100': showEnglishQuote,
+            }"
+          >
+            English
+          </span>
+        </div>
+        <div class="text-base mt-1">
+          {{
+            showEnglishQuote && hasEnglishQuoteTranslation
+              ? modifiedCourtDecision['Translated Excerpt']
+              : modifiedCourtDecision['Quote']
+          }}
+        </div>
+      </div>
       <RelatedQuestions
         :jurisdictionCode="
           modifiedCourtDecision['Jurisdictions Alpha-3 Code'] || ''
