@@ -138,7 +138,7 @@ const modifiedCourtDecision = computed(() => {
   }
 })
 
-const showEnglishQuote = ref(false)
+const showEnglishQuote = ref(true)
 const hasEnglishQuoteTranslation = computed(() => {
   return !!(
     modifiedCourtDecision.value &&
