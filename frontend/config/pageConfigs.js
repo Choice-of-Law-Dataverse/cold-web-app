@@ -461,6 +461,13 @@ export const courtDecisionConfig = {
       },
     },
     {
+      key: 'Quote',
+      label: 'Quote',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
       key: 'Case Citation',
       label: 'Case Citation',
       emptyValueBehavior: {
@@ -494,6 +501,7 @@ export const courtDecisionConfig = {
     "Court's Position": 'result-value-small whitespace-pre-line',
     'Text of the Relevant Legal Provisions':
       'result-value-small whitespace-pre-line',
+    Quote: 'result-value-small',
     'Case Citation': 'result-value-small-citation',
     'Related Literature': 'result-value-small',
     'Related Questions': 'result-value-small',
