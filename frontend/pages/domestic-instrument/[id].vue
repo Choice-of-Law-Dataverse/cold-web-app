@@ -35,7 +35,7 @@
             <LegalProvision
               v-for="(provisionId, index) in value.split(',')"
               :key="index"
-              :provisionId="provisionId.trim()"
+              :provisionId="provisionId"
               :class="index === 0 ? '-mt-8' : ''"
               :textType="textType"
               :instrumentTitle="
