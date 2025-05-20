@@ -19,7 +19,11 @@
         <div class="flex items-center justify-between mb-1">
           <span class="label">Quote</span>
           <div
-            v-if="hasEnglishQuoteTranslation"
+            v-if="
+              hasEnglishQuoteTranslation &&
+              modifiedCourtDecision['Quote'] &&
+              modifiedCourtDecision['Quote'].trim() !== ''
+            "
             class="flex items-center gap-1"
           >
             <span
@@ -49,9 +53,13 @@
         </div>
         <div>
           {{
-            showEnglishQuote && hasEnglishQuoteTranslation
+            showEnglishQuote &&
+            hasEnglishQuoteTranslation &&
+            modifiedCourtDecision['Quote'] &&
+            modifiedCourtDecision['Quote'].trim() !== ''
               ? modifiedCourtDecision['Translated Excerpt']
-              : modifiedCourtDecision['Quote']
+              : modifiedCourtDecision['Quote'] ||
+                modifiedCourtDecision['Translated Excerpt']
           }}
         </div>
       </div>
@@ -94,7 +102,6 @@ import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { courtDecisionConfig } from '~/config/pageConfigs'
 import { formatDate } from '~/utils/format.js'
-// import UToggle from '~/components/ui/UToggle.vue'
 import { ref } from 'vue'
 
 const route = useRoute()
