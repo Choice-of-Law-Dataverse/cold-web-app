@@ -14,6 +14,7 @@ export default defineNuxtConfig({
     'nuxt-plotly',
     '@nuxtjs/robots',
     'nuxt-gtag',
+    '@nuxtjs/sitemap'
   ],
   runtimeConfig: {
     public: {
