@@ -31,6 +31,11 @@
             </UButton>
           </RouterLink>
         </div>
+        <div v-if="!showAll && allDecisions.length > 3" class="mt-4 flex justify-center">
+          <UButton @click="showMore" variant="solid" color="primary">
+            Show More
+          </UButton>
+        </div>
       </template>
     </div>
   </UCard>
@@ -43,7 +48,9 @@ import { RouterLink } from 'vue-router'
 import LoadingLandingPageCard from '../layout/LoadingLandingPageCard.vue'
 
 const courtDecisions = ref([])
+const allDecisions = ref([]) // Store all decisions
 const isLoading = ref(true) // Added loading state
+const showAll = ref(false) // Track if all should be shown
 const config = useRuntimeConfig()
 
 async function fetchCourtDecisions() {
@@ -76,13 +83,20 @@ async function fetchCourtDecisions() {
         formatYear(b['Publication Date ISO']) -
         formatYear(a['Publication Date ISO'])
     )
+    allDecisions.value = decisionsData // Store all
     courtDecisions.value = decisionsData.slice(0, 3)
   } catch (error) {
     console.error(error)
     courtDecisions.value = []
+    allDecisions.value = []
   } finally {
     isLoading.value = false // Set loading to false once finished
   }
+}
+
+function showMore() {
+  showAll.value = true
+  courtDecisions.value = allDecisions.value
 }
 
 onMounted(fetchCourtDecisions)
