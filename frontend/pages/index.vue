@@ -32,6 +32,7 @@
         <div class="col-span-12 sm:col-span-4">
           <ConnectCard
             title="Transnational Standard"
+            subtitle="Authoritative Instrument on Choice of Law"
             buttonText="HCCH Principles"
             buttonLink="/international-instrument/II-HCC-1"
             imageSrc="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch-logo-circle.svg"
