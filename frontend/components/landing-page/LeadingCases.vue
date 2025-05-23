@@ -31,7 +31,10 @@
             </UButton>
           </RouterLink>
         </div>
-        <div v-if="!showAll && allDecisions.length > 3" class="mt-4 flex justify-center">
+        <div
+          v-if="!showAll && allDecisions.length > 3"
+          class="mt-4 flex justify-center"
+        >
           <UButton @click="showMore" variant="solid" color="primary">
             Show More
           </UButton>
