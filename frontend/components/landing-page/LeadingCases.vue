@@ -36,7 +36,7 @@
           :isExpanded="showAll"
           label="leading cases"
           @update:isExpanded="showAll = $event"
-          class="mt-4"
+          buttonClass="suggestion-button"
         />
       </template>
     </div>
