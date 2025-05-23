@@ -1,7 +1,9 @@
 <template>
   <UCard class="cold-ucard">
     <h2 class="popular-title">{{ title }}</h2>
-    <p v-if="subtitle" class="result-value-small" style="text-align: center;">{{ subtitle }}</p>
+    <p v-if="subtitle" class="result-value-small" style="text-align: center">
+      {{ subtitle }}
+    </p>
     <div class="icon-container">
       <a
         :href="buttonLink"
@@ -90,5 +92,10 @@ h2 {
 .link-container {
   display: flex;
   justify-content: center;
+}
+
+.result-value-small {
+  line-height: 36px !important;
+  margin-bottom: 0px !important;
 }
 </style>

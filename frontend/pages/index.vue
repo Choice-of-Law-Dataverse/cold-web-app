@@ -26,8 +26,7 @@
           <JurisdictionMap />
         </div>
         <div class="col-span-12 md:col-span-8">
-          <PopularSearches />
-          <CountrySelectMenu />
+          <SuccessfulLegalTransplantations />
         </div>
         <div class="col-span-12 sm:col-span-4">
           <ConnectCard
@@ -38,6 +37,12 @@
             imageSrc="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch-logo-circle.svg"
             :newTab="false"
           />
+        </div>
+        <div class="col-span-12 sm:col-span-6">
+          <PopularSearches />
+        </div>
+        <div class="col-span-12 md:col-span-6">
+          <CountrySelectMenu />
         </div>
         <div class="col-span-12 sm:col-span-4">
           <NumberCard
@@ -50,10 +55,6 @@
         <div class="col-span-12 md:col-span-8">
           <RecentDomesticInstruments />
         </div>
-        <div class="col-span-12">
-          <SuccessfulLegalTransplantations />
-        </div>
-
         <div class="col-span-12 md:col-span-8">
           <PlotCourtDecisionsJurisdiction />
         </div>
