@@ -1,10 +1,7 @@
 <template>
   <UCard class="cold-ucard">
-    <div class="popular-searches-container flex flex-col md:flex-row gap-8">
-      <h2 class="popular-title text-left md:whitespace-nowrap">
-        Leading Cases
-      </h2>
-    </div>
+    <h2 class="popular-title">Leading Cases</h2>
+    <p class="result-value-small">Court decisions ranked highly in CoLD</p>
     <div>
       <div v-if="isLoading">
         <LoadingLandingPageCard />
@@ -91,4 +88,9 @@ async function fetchCourtDecisions() {
 onMounted(fetchCourtDecisions)
 </script>
 
-<style scoped></style>
+<style scoped>
+.result-value-small {
+  line-height: 36px !important;
+  margin-bottom: 0px !important;
+}
+</style>
