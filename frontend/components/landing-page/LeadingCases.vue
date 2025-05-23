@@ -34,9 +34,9 @@
         <ShowMoreLess
           v-if="allDecisions.length > 3"
           :isExpanded="showAll"
-          label="cases"
+          label="leading cases"
           @update:isExpanded="showAll = $event"
-          class="mt-4 flex"
+          class="mt-4"
         />
       </template>
     </div>
