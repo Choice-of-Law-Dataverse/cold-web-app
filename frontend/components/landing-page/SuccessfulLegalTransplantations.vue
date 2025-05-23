@@ -12,7 +12,7 @@
         <div v-for="(instrument, index) in domesticInstruments" :key="index">
           <RouterLink :to="`/domestic-instrument/${instrument.ID}`">
             <UButton
-              class="suggestion-button mt-8"
+              class="suggestion-button mt-6"
               variant="link"
               icon="i-material-symbols:arrow-forward"
               trailing
