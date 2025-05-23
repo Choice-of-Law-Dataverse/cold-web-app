@@ -31,29 +31,29 @@
             </UButton>
           </RouterLink>
         </div>
-        <div
-          v-if="!showAll && allDecisions.length > 3"
-          class="mt-4 flex justify-center"
-        >
-          <UButton @click="showMore" variant="solid" color="primary">
-            Show More
-          </UButton>
-        </div>
+        <ShowMoreLess
+          v-if="allDecisions.length > 3"
+          :isExpanded="showAll"
+          label="cases"
+          @update:isExpanded="showAll = $event"
+          class="mt-4 flex"
+        />
       </template>
     </div>
   </UCard>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRuntimeConfig } from '#app'
 import { RouterLink } from 'vue-router'
 import LoadingLandingPageCard from '../layout/LoadingLandingPageCard.vue'
+import ShowMoreLess from '../ui/ShowMoreLess.vue'
 
 const courtDecisions = ref([])
-const allDecisions = ref([]) // Store all decisions
-const isLoading = ref(true) // Added loading state
-const showAll = ref(false) // Track if all should be shown
+const allDecisions = ref([])
+const isLoading = ref(true)
+const showAll = ref(false)
 const config = useRuntimeConfig()
 
 async function fetchCourtDecisions() {
@@ -80,27 +80,27 @@ async function fetchCourtDecisions() {
     )
     if (!response.ok) throw new Error('Failed to load data')
     const decisionsData = await response.json()
-    // Convert Date to number, sort descending and take the n most recent
     decisionsData.sort(
       (a, b) =>
         formatYear(b['Publication Date ISO']) -
         formatYear(a['Publication Date ISO'])
     )
-    allDecisions.value = decisionsData // Store all
+    allDecisions.value = decisionsData
     courtDecisions.value = decisionsData.slice(0, 3)
   } catch (error) {
     console.error(error)
     courtDecisions.value = []
     allDecisions.value = []
   } finally {
-    isLoading.value = false // Set loading to false once finished
+    isLoading.value = false
   }
 }
 
-function showMore() {
-  showAll.value = true
-  courtDecisions.value = allDecisions.value
-}
+watch(showAll, (val) => {
+  courtDecisions.value = val
+    ? allDecisions.value
+    : allDecisions.value.slice(0, 3)
+})
 
 onMounted(fetchCourtDecisions)
 </script>
