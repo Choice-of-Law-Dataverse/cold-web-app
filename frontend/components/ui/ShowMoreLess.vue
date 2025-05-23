@@ -5,7 +5,7 @@
       @click.prevent="$emit('update:isExpanded', true)"
       :class="[buttonClass, 'cursor-pointer']"
     >
-      <Icon name="material-symbols:add" class="text-base translate-y-[3px]" />
+      <Icon name="material-symbols:add" :class="iconClass" />
       Show more {{ label }}
     </NuxtLink>
     <NuxtLink
@@ -13,10 +13,7 @@
       @click="$emit('update:isExpanded', false)"
       :class="[buttonClass, 'cursor-pointer']"
     >
-      <Icon
-        name="material-symbols:remove"
-        class="text-base translate-y-[3px]"
-      />
+      <Icon name="material-symbols:remove" :class="iconClass" />
       Show less {{ label }}
     </NuxtLink>
   </div>
@@ -35,6 +32,10 @@ defineProps({
   buttonClass: {
     type: String,
     default: 'link-button',
+  },
+  iconClass: {
+    type: String,
+    default: 'text-base translate-y-[3px]',
   },
 })
 

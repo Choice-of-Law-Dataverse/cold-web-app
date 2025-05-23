@@ -31,13 +31,16 @@
             </UButton>
           </RouterLink>
         </div>
-        <ShowMoreLess
-          v-if="allDecisions.length > 3"
-          :isExpanded="showAll"
-          label="leading cases"
-          @update:isExpanded="showAll = $event"
-          buttonClass="suggestion-button"
-        />
+        <div class="mt-8">
+          <ShowMoreLess
+            v-if="allDecisions.length > 3"
+            :isExpanded="showAll"
+            label="leading cases"
+            @update:isExpanded="showAll = $event"
+            buttonClass="suggestion-button"
+            iconClass="showmoreless-icon-large"
+          />
+        </div>
       </template>
     </div>
   </UCard>

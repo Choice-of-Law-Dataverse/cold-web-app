@@ -267,6 +267,11 @@ li::marker {
   font-weight: 400 !important; // Regular
 }
 
+.showmoreless-icon-large {
+  font-size: 1.4rem !important;
+  transform: translateY(4px) !important;
+}
+
 // Info Box in Jurisdiction Map
 .info {
   position: absolute;
