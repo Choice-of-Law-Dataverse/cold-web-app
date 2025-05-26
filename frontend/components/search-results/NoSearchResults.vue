@@ -38,7 +38,10 @@ const route = useRoute()
 const router = useRouter()
 
 const jurisdictionFilter = computed(() => {
-  return route.query.jurisdiction || null
+  // Add a space after each comma for display
+  return route.query.jurisdiction
+    ? String(route.query.jurisdiction).replace(/,/g, ', ')
+    : null
 })
 
 const queryContainsJurisdiction = computed(() => {
