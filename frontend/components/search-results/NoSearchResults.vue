@@ -1,16 +1,24 @@
 <template>
-  <div class="no-results result-value-small">
-    Sorry, there are no results for your search.<br />
-    Do you think this is an error? Please contact us at
-    <a href="mailto:mail@cold.global">mail@cold.global</a>.
-    <div v-if="jurisdictionFilter && queryContainsJurisdiction">
-      <div class="mt-4">
-        Maybe you want to remove the jurisdiction from the filter?
-      </div>
-      <UButton class="mt-2" variant="link" @click="removeJurisdictionFilter">
-        Remove Jurisdiction Filter
-      </UButton>
+  <div class="no-results mt-12">
+    <h2>Sorry, there are no results for your search.</h2>
+  </div>
+
+  <div v-if="jurisdictionFilter && queryContainsJurisdiction">
+    <div class="no-results mt-4">
+      <h2>
+        Maybe try
+        <NuxtLink variant="link" @click="removeJurisdictionFilter"
+          >removing the jurisdiction</NuxtLink
+        >
+        from the filter?
+      </h2>
     </div>
+  </div>
+
+  <div class="no-results mt-4">
+    <h2>
+      If you think something is wrong, please <a href="/contact">contact us</a>.
+    </h2>
   </div>
 </template>
 
