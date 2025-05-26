@@ -147,7 +147,7 @@ import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
 import NotificationBanner from '~/components/ui/NotificationBanner.vue'
 import LoadingCard from './components/layout/LoadingCard.vue'
 
-import tooltipQuestion from '@/content/info_box_question.md?raw'
+import tooltipQuestion from '@/content/info_boxes/question/question.md?raw'
 
 // Props for reusability across pages
 const props = defineProps({

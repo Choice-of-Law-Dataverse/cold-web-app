@@ -1,0 +1,1 @@
+The date that the legal instrument became effective in that jurisdiction 
