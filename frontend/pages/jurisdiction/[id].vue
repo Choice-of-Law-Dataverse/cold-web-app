@@ -7,10 +7,10 @@
     :formattedJurisdiction="[jurisdictionData?.Name]"
   >
     <!-- Specialists Section -->
-    <section>
+    <section class="section-gap p-0 m-0">
       <span class="label">Specialists</span>
       <template v-if="specialists.length">
-        <ul>
+        <ul class="section-gap p-0 m-0">
           <li
             v-for="specialist in specialists"
             :key="specialist.Specialist"
@@ -29,7 +29,7 @@
     </section>
 
     <template #related-literature>
-      <section>
+      <section class="section-gap p-0 m-0">
         <RelatedLiterature
           :literature-id="jurisdictionData?.Literature"
           :valueClassMap="valueClassMap['Related Literature']"
@@ -56,7 +56,7 @@
           (domesticInstrumentCount !== 0 && domesticInstrumentCount !== null)
         "
       >
-        <span class="label !mt-[-36px] !mb-5">Related Data</span>
+        <span class="label !mb-4 !mt-0.5">Related Data</span>
         <template v-if="countsLoading">
           <LoadingBar />
         </template>

@@ -1,5 +1,5 @@
 <template>
-  <div v-if="shouldDisplay">
+  <div v-if="shouldDisplay" class="mt-12">
     <span v-if="label" class="label">{{ label }}</span>
     <ul v-if="questionList.length">
       <li v-for="(q, idx) in questionList" :key="idx">

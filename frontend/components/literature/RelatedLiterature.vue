@@ -1,5 +1,5 @@
 <template>
-  <div v-if="shouldShowSection">
+  <div v-if="shouldShowSection" class="mt-12">
     <span v-if="showLabel" class="label">{{ label }}</span>
     <ul v-if="loadingTitles || loading">
       <LoadingBar class="pt-[11px] ml-[-22px]" />

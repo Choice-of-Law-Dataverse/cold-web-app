@@ -16,7 +16,7 @@
     </template>
 
     <template #literature>
-      <section>
+      <section class="section-gap p-0 m-0">
         <RelatedLiterature
           :literature-id="processedRegionalInstrument?.Literature"
           :valueClassMap="valueClassMap['Literature']"
@@ -36,16 +36,15 @@
       <!-- Only render if value exists and is not "N/A" -->
       <section
         v-if="value && value.trim() && value.trim() !== 'N/A'"
-        class="mt-[26px]"
+        class="section-gap p-0 m-0"
       >
-        <span class="label">Selected Provisions</span>
+        <p class="label mt-12 mb-[-24px]">Selected Provisions</p>
         <div :class="valueClassMap['Regional Legal Provisions']">
           <div v-if="value && value.trim()">
             <LegalProvision
               v-for="(provisionId, index) in value.split(',')"
               :key="index"
               :provisionId="provisionId"
-              :class="index === 0 ? '-mt-8' : ''"
               :textType="textType"
               :instrumentTitle="
                 processedRegionalInstrument

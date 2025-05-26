@@ -360,3 +360,8 @@ ul[role='listbox'] li[data-headlessui-state='selected']:hover {
 .js-plotly-plot .nsewdrag {
   cursor: default; /* Set default arrow cursor for non-interactive elements */
 }
+
+// Consistent vertical gap between page sections
+.section-gap {
+  margin-bottom: 1.5rem; // 24px, adjust as needed for your design
+}

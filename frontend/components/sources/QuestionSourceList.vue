@@ -1,60 +1,64 @@
 <template>
-  <div>
-    <ul class="result-value-small">
-      <!-- Domestic Legal Provision bullet point -->
-      <template
-        v-if="fallbackData && fallbackData['Domestic Legal Provisions']"
+  <ul class="result-value-small section-gap list-none p-0 m-0">
+    <!-- Domestic Legal Provision bullet point -->
+    <template v-if="fallbackData && fallbackData['Domestic Legal Provisions']">
+      <li
+        v-for="(provision, index) in fallbackData[
+          'Domestic Legal Provisions'
+        ].split(',')"
+        :key="'domestic-legal-' + index"
+        class="section-gap p-0 m-0"
       >
+        <LegalProvisionRenderer
+          :value="provision"
+          :fallbackData="fallbackData"
+        />
+      </li>
+    </template>
+    <template
+      v-else-if="fallbackData && fallbackData['Domestic Instruments ID']"
+    >
+      <li
+        v-for="(instrument, index) in fallbackData[
+          'Domestic Instruments ID'
+        ].split(',')"
+        :key="'domestic-instrument-' + index"
+        class="section-gap p-0 m-0"
+      >
+        <LegalProvisionRenderer
+          skipArticle
+          :value="instrument"
+          :fallbackData="fallbackData"
+        />
+      </li>
+    </template>
+    <!-- Updated OUP Chapter bullet point -->
+    <template v-if="fallbackData && fallbackData['Literature']">
+      <template v-if="literatureTitles.length">
         <li
-          v-for="(provision, index) in fallbackData[
-            'Domestic Legal Provisions'
-          ].split(',')"
-          :key="'domestic-legal-' + index"
+          v-for="(item, index) in literatureTitles"
+          :key="index"
+          class="section-gap p-0 m-0"
         >
-          <LegalProvisionRenderer
-            :value="provision"
-            :fallbackData="fallbackData"
-          />
+          <a :href="`/literature/${item.id}`">{{ item.title }}</a>
         </li>
       </template>
-      <template
-        v-else-if="fallbackData && fallbackData['Domestic Instruments ID']"
-      >
-        <li
-          v-for="(instrument, index) in fallbackData[
-            'Domestic Instruments ID'
-          ].split(',')"
-          :key="'domestic-instrument-' + index"
-        >
-          <LegalProvisionRenderer
-            skipArticle
-            :value="instrument"
-            :fallbackData="fallbackData"
-          />
-        </li>
-      </template>
-      <!-- Updated OUP Chapter bullet point -->
-      <template v-if="fallbackData && fallbackData['Literature']">
-        <template v-if="literatureTitles.length">
-          <li v-for="(item, index) in literatureTitles" :key="index">
-            <a :href="`/literature/${item.id}`">{{ item.title }}</a>
-          </li>
+      <li v-else class="section-gap p-0 m-0">
+        <LoadingBar class="pt-[9px]" />
+      </li>
+    </template>
+    <template v-else>
+      <li class="section-gap p-0 m-0">
+        <template v-if="oupChapterSource">
+          <a :href="`/literature/${oupChapterSource.id}`">{{
+            oupChapterSource.title
+          }}</a>
         </template>
-        <li v-else><LoadingBar class="pt-[9px]" /></li>
-      </template>
-      <template v-else>
-        <li>
-          <template v-if="oupChapterSource">
-            <a :href="`/literature/${oupChapterSource.id}`">{{
-              oupChapterSource.title
-            }}</a>
-          </template>
-          <template v-else>No source available</template>
-        </li>
-      </template>
-      <!-- <li>Primary Literature</li> -->
-    </ul>
-  </div>
+        <template v-else>No source available</template>
+      </li>
+    </template>
+    <!-- <li>Primary Literature</li> -->
+  </ul>
 </template>
 
 <script setup>
