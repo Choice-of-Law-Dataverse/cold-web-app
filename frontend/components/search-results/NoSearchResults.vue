@@ -7,9 +7,13 @@
     <div class="no-results mt-4">
       <h2>
         Maybe try
-        <NuxtLink variant="link" @click="removeJurisdictionFilter"
-          >removing the jurisdiction</NuxtLink
+        <UButton
+          class="suggestion-button"
+          variant="link"
+          @click="removeJurisdictionFilter"
         >
+          <span>removing the jurisdiction</span>
+        </UButton>
         from the filter?
       </h2>
     </div>
@@ -17,7 +21,10 @@
 
   <div class="no-results mt-4">
     <h2>
-      If you think something is wrong, please <a href="/contact">contact us</a>.
+      If you think something is wrong, please
+      <UButton class="suggestion-button" variant="link" to="/contact">
+        <span>contact us</span> </UButton
+      >.
     </h2>
   </div>
 </template>
@@ -56,5 +63,10 @@ function removeJurisdictionFilter() {
 <style scoped>
 .no-results {
   text-align: center;
+  font-weight: 600 !important;
+}
+
+.suggestion-button {
+  font-weight: 600 !important;
 }
 </style>
