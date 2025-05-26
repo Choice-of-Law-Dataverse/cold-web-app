@@ -8,7 +8,7 @@
   >
     <!-- Custom rendering for Legal provision articles -->
     <template #domestic-legal-provisions="{ value }">
-      <section>
+      <section class="section-gap">
         <span class="label">Source</span>
         <QuestionSourceList
           :sources="
@@ -28,7 +28,7 @@
 
     <!-- Custom rendering for Court Decisions ID -->
     <template #court-decisions-id="{ value }">
-      <section id="related-court-decisions">
+      <section id="related-court-decisions" class="section-gap">
         <span class="label">Related Court Decisions</span>
         <CourtDecisionRenderer
           :value="value"
@@ -43,7 +43,7 @@
     </template>
 
     <template #related-literature>
-      <section>
+      <section class="section-gap">
         <RelatedLiterature
           :themes="processedAnswerData?.Themes"
           :literatureId="processedAnswerData?.['Jurisdictions Literature ID']"
@@ -59,7 +59,6 @@
               (pair) => pair.key === 'Related Literature'
             )?.emptyValueBehavior
           "
-          class="!mt-2"
         />
       </section>
     </template>

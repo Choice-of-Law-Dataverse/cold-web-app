@@ -8,78 +8,79 @@
   >
     <!-- Quote section with language toggle and conditional rendering, now inside the related-questions slot and above the questions -->
     <template #related-questions>
-      <div
-        class="mb-4"
-        v-if="
-          modifiedCourtDecision &&
-          (modifiedCourtDecision['Quote'] ||
-            modifiedCourtDecision['Translated Excerpt'])
-        "
-      >
-        <div class="flex items-center justify-between mb-1">
-          <span class="label">Quote</span>
-          <div
-            v-if="
-              hasEnglishQuoteTranslation &&
-              modifiedCourtDecision['Quote'] &&
-              modifiedCourtDecision['Quote'].trim() !== ''
-            "
-            class="flex items-center gap-1"
-          >
-            <span
-              class="label-key-provision-toggle mr-[-0px]"
-              :class="{
-                'opacity-25': showEnglishQuote,
-                'opacity-100': !showEnglishQuote,
-              }"
+      <section class="section-gap p-0 m-0">
+        <div
+          v-if="
+            modifiedCourtDecision &&
+            (modifiedCourtDecision['Quote'] ||
+              modifiedCourtDecision['Translated Excerpt'])
+          "
+        >
+          <div class="flex items-center justify-between">
+            <span class="label">Quote</span>
+            <div
+              v-if="
+                hasEnglishQuoteTranslation &&
+                modifiedCourtDecision['Quote'] &&
+                modifiedCourtDecision['Quote'].trim() !== ''
+              "
+              class="flex items-center gap-1"
             >
-              Original
-            </span>
-            <UToggle
-              v-model="showEnglishQuote"
-              size="2xs"
-              class="bg-[var(--color-cold-gray)]"
-            />
-            <span
-              class="label-key-provision-toggle"
-              :class="{
-                'opacity-25': !showEnglishQuote,
-                'opacity-100': showEnglishQuote,
-              }"
-            >
-              English
+              <span
+                class="label-key-provision-toggle mr-[-0px]"
+                :class="{
+                  'opacity-25': showEnglishQuote,
+                  'opacity-100': !showEnglishQuote,
+                }"
+              >
+                Original
+              </span>
+              <UToggle
+                v-model="showEnglishQuote"
+                size="2xs"
+                class="bg-[var(--color-cold-gray)]"
+              />
+              <span
+                class="label-key-provision-toggle"
+                :class="{
+                  'opacity-25': !showEnglishQuote,
+                  'opacity-100': showEnglishQuote,
+                }"
+              >
+                English
+              </span>
+            </div>
+          </div>
+          <div>
+            <span style="white-space: pre-line">
+              {{
+                showEnglishQuote &&
+                hasEnglishQuoteTranslation &&
+                modifiedCourtDecision['Quote'] &&
+                modifiedCourtDecision['Quote'].trim() !== ''
+                  ? modifiedCourtDecision['Translated Excerpt']
+                  : modifiedCourtDecision['Quote'] ||
+                    modifiedCourtDecision['Translated Excerpt']
+              }}
             </span>
           </div>
         </div>
-        <div>
-          <span style="white-space: pre-line">
-            {{
-              showEnglishQuote &&
-              hasEnglishQuoteTranslation &&
-              modifiedCourtDecision['Quote'] &&
-              modifiedCourtDecision['Quote'].trim() !== ''
-                ? modifiedCourtDecision['Translated Excerpt']
-                : modifiedCourtDecision['Quote'] ||
-                  modifiedCourtDecision['Translated Excerpt']
-            }}
-          </span>
-        </div>
-      </div>
-      <RelatedQuestions
-        :jurisdictionCode="
-          modifiedCourtDecision['Jurisdictions Alpha-3 Code'] || ''
-        "
-        :questions="modifiedCourtDecision['Questions'] || ''"
-        class="!mt-2"
-      />
+        <RelatedQuestions
+          :jurisdictionCode="
+            modifiedCourtDecision['Jurisdictions Alpha-3 Code'] || ''
+          "
+          :questions="modifiedCourtDecision['Questions'] || ''"
+        />
+      </section>
     </template>
     <template #related-literature>
-      <RelatedLiterature
-        :themes="themes"
-        :valueClassMap="valueClassMap['Related Literature']"
-        :useId="false"
-        class="!mt-2"
-      />
+      <section class="section-gap p-0 m-0">
+        <RelatedLiterature
+          :themes="themes"
+          :valueClassMap="valueClassMap['Related Literature']"
+          :useId="false"
+        />
+      </section>
     </template>
   </BaseDetailLayout>
 

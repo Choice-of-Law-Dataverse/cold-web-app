@@ -249,9 +249,14 @@ const fadeOutClasses = computed(() => ({
 // Action items in "Suggest Edit" area
 const suggestEditActions = computed(() => {
   let linkUrl = ''
+  let linkLabel = 'Link'
   if (props.cardType === 'Literature') {
-    linkUrl =
-      props.resultData['Open Access URL'] || props.resultData['Url'] || ''
+    if (props.resultData['Open Access URL']) {
+      linkUrl = props.resultData['Open Access URL']
+      linkLabel = 'Open Access Link'
+    } else {
+      linkUrl = props.resultData['Url'] || ''
+    }
   } else if (props.cardType === 'Court Decisions') {
     linkUrl = props.resultData['Official Source (URL)'] || ''
   } else if (props.cardType === 'Domestic Instrument') {
@@ -264,7 +269,7 @@ const suggestEditActions = computed(() => {
   const actions = []
   if (linkUrl) {
     actions.push({
-      label: 'Link',
+      label: linkLabel,
       icon: 'i-material-symbols:language',
       to: linkUrl,
     })

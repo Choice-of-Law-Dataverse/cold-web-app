@@ -8,16 +8,16 @@
   >
     <template #entry-into-force="{ value }">
       <div v-if="value">
-        <p class="label-key mt-8 mb-2">Entry Into Force</p>
+        <p class="label-key mb-2">Entry Into Force</p>
         <p :class="valueClassMap['Entry Into Force']">
           {{ formatDate(value) }}
         </p>
       </div>
     </template>
     <template #publication-date="{ value }">
-      <div v-if="value">
-        <p class="label-key mt-10 mb-2">Publication Date</p>
-        <p :class="[valueClassMap['Publication Date'], '!mb-2.5']">
+      <div v-if="value" class="!mb-8">
+        <p class="label-key mb-2">Publication Date</p>
+        <p :class="valueClassMap['Publication Date']">
           {{ formatDate(value) }}
         </p>
       </div>
@@ -27,16 +27,15 @@
       <!-- Only render if value exists and is not "N/A" -->
       <section
         v-if="value && value.trim() && value.trim() !== 'N/A'"
-        class="mt-[26px]"
+        class="section-gap p-0 m-0"
       >
-        <span class="label">Selected Provisions</span>
+        <p class="label mt-12 mb-[-24px]">Selected Provisions</p>
         <div :class="valueClassMap['Domestic Legal Provisions']">
           <div v-if="value && value.trim()">
             <LegalProvision
               v-for="(provisionId, index) in value.split(',')"
               :key="index"
               :provisionId="provisionId"
-              :class="index === 0 ? '-mt-8' : ''"
               :textType="textType"
               :instrumentTitle="
                 processedLegalInstrument

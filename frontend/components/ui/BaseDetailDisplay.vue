@@ -34,10 +34,10 @@
           class="main-content prose -space-y-10 flex flex-col gap-8 py-8 px-6 w-full"
         >
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
-          <div
+          <section
             v-for="(item, index) in keyLabelPairs"
             :key="index"
-            class="flex flex-col"
+            class="section-gap p-0 m-0 flex flex-col"
           >
             <!-- Check if it's the special 'Specialist' key -->
             <template v-if="item.key === 'Specialist'">
@@ -131,7 +131,7 @@
                 </div>
               </template>
             </template>
-          </div>
+          </section>
           <slot name="search-links"></slot>
         </div>
       </div>

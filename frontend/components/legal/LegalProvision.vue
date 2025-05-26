@@ -1,51 +1,49 @@
 <template>
-  <div>
-    <div v-if="loading">
-      <LoadingBar class="!mb-4 !mt-5" />
-    </div>
-    <div v-else>
-      <BaseLegalContent
-        :title="displayTitle"
-        :anchorId="anchorId"
-        :class="class"
-        :loading="loading"
-        :error="error"
-      >
-        <template #header-actions>
-          <div v-if="hasEnglishTranslation" class="flex items-center gap-1">
-            <!-- Original label (fades when English is active) -->
-            <span
-              class="label-key-provision-toggle mr-[-0px]"
-              :class="{
-                'opacity-25': showEnglish,
-                'opacity-100': !showEnglish,
-              }"
-            >
-              Original
-            </span>
+  <div v-if="loading">
+    <LoadingBar class="!mt-8" />
+  </div>
+  <div v-else>
+    <BaseLegalContent
+      :title="displayTitle"
+      :anchorId="anchorId"
+      :class="class"
+      :loading="loading"
+      :error="error"
+    >
+      <template #header-actions>
+        <div v-if="hasEnglishTranslation" class="flex items-center gap-1">
+          <!-- Original label (fades when English is active) -->
+          <span
+            class="label-key-provision-toggle mr-[-0px]"
+            :class="{
+              'opacity-25': showEnglish,
+              'opacity-100': !showEnglish,
+            }"
+          >
+            Original
+          </span>
 
-            <UToggle
-              v-model="showEnglish"
-              size="2xs"
-              class="bg-[var(--color-cold-gray)]"
-            />
+          <UToggle
+            v-model="showEnglish"
+            size="2xs"
+            class="bg-[var(--color-cold-gray)]"
+          />
 
-            <!-- English label (fades when Original is active) -->
-            <span
-              class="label-key-provision-toggle"
-              :class="{
-                'opacity-25': !showEnglish,
-                'opacity-100': showEnglish,
-              }"
-            >
-              English
-            </span>
-          </div>
-        </template>
+          <!-- English label (fades when Original is active) -->
+          <span
+            class="label-key-provision-toggle"
+            :class="{
+              'opacity-25': !showEnglish,
+              'opacity-100': showEnglish,
+            }"
+          >
+            English
+          </span>
+        </div>
+      </template>
 
-        {{ content }}
-      </BaseLegalContent>
-    </div>
+      {{ content }}
+    </BaseLegalContent>
   </div>
 </template>
 

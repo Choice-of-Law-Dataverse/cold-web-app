@@ -16,7 +16,7 @@
     </template>
 
     <template #literature>
-      <section>
+      <section class="section-gap p-0 m-0">
         <RelatedLiterature
           :literature-id="processedInternationalInstrument?.Literature"
           :valueClassMap="valueClassMap['Literature']"
@@ -32,11 +32,11 @@
     </template>
 
     <template #selected-provisions>
-      <section>
-        <span class="label">Selected Provisions</span>
+      <section class="section-gap p-0 m-0">
+        <p class="label mt-12 mb-[-24px]">Selected Provisions</p>
         <div :class="valueClassMap['Selected Provisions']">
           <div v-if="provisionsLoading">
-            <LoadingBar class="pt-[11px]" />
+            <LoadingBar class="!mt-8" />
           </div>
           <div v-else-if="provisionsError">{{ provisionsError }}</div>
           <div v-else-if="provisions.length">

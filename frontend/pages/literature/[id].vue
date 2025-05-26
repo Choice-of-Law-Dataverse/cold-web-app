@@ -14,26 +14,24 @@
       :showSuggestEdit="true"
     />
     <template #publication-title="{ value }">
-      <div
-        v-if="value && literature['Item Type'] !== 'book'"
-        class="field-container publication-field"
-      >
-        <p class="label field-label">Publication</p>
-        <p class="result-value-small field-value">
-          {{ value }}
-        </p>
-      </div>
+      <section v-if="value" class="section-gap">
+        <div>
+          <span class="label" style="display: block; margin-bottom: 0.5rem"
+            >Publication</span
+          >
+          <span class="result-value-small">{{ value }}</span>
+        </div>
+      </section>
     </template>
     <template #publisher="{ value }">
-      <div
-        v-if="value && literature['Item Type'] === 'book'"
-        class="field-container publisher-field"
-      >
-        <p class="label field-label">Publisher</p>
-        <p class="result-value-small field-value">
-          {{ value }}
-        </p>
-      </div>
+      <section v-if="value" class="section-gap">
+        <div>
+          <span class="label" style="display: block; margin-bottom: 0.5rem"
+            >Publisher</span
+          >
+          <span class="result-value-small">{{ value }}</span>
+        </div>
+      </section>
     </template>
   </BaseDetailLayout>
 </template>
@@ -63,7 +61,6 @@ onMounted(async () => {
       table: 'Literature',
       id: route.params.id,
     })
-    // Check if result is null or an empty object
     if (!result || Object.keys(result).length === 0) {
       throw { isNotFound: true, table: 'Literature' }
     }
@@ -79,27 +76,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style scoped>
-/* Adjust these values to change spacing consistently */
-.field-container {
-  /* default container style for fields */
-}
-.publication-field {
-  /* margin-top: -0.5rem; equivalent to -mt-2 */
-  margin-bottom: 1rem;
-}
-.publisher-field {
-  margin-bottom: 1.5rem;
-}
-.url-field {
-  padding-top: 1rem; /* equivalent to !pt-2 */
-  margin-bottom: 1.5rem;
-}
-.field-label {
-  margin-bottom: 1rem;
-}
-.field-value {
-  margin-bottom: 1rem;
-}
-</style>

@@ -3,23 +3,17 @@
     <NuxtLink
       v-if="!isExpanded"
       @click.prevent="$emit('update:isExpanded', true)"
-      class="link-button cursor-pointer"
+      :class="[buttonClass, 'cursor-pointer']"
     >
-      <Icon
-        name="material-symbols:add"
-        class="text-base translate-y-[3px]"
-      />
+      <Icon name="material-symbols:add" :class="iconClass" />
       Show more {{ label }}
     </NuxtLink>
     <NuxtLink
       v-else
-      class="link-button cursor-pointer"
       @click="$emit('update:isExpanded', false)"
+      :class="[buttonClass, 'cursor-pointer']"
     >
-      <Icon
-        name="material-symbols:remove"
-        class="text-base translate-y-[3px]"
-      />
+      <Icon name="material-symbols:remove" :class="iconClass" />
       Show less {{ label }}
     </NuxtLink>
   </div>
@@ -29,13 +23,21 @@
 defineProps({
   isExpanded: {
     type: Boolean,
-    required: true
+    required: true,
   },
   label: {
     type: String,
-    default: ''
-  }
+    default: '',
+  },
+  buttonClass: {
+    type: String,
+    default: 'link-button',
+  },
+  iconClass: {
+    type: String,
+    default: 'text-base translate-y-[3px]',
+  },
 })
 
 defineEmits(['update:isExpanded'])
-</script> 
+</script>
