@@ -12,7 +12,7 @@
           variant="link"
           @click="removeJurisdictionFilter"
         >
-          <span>removing the jurisdiction</span>
+          <span>removing {{ jurisdictionFilter }}</span>
         </UButton>
         from the filter?
       </h2>
