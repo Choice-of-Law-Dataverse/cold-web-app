@@ -70,21 +70,7 @@
                     />
                     <!-- Add tooltip for specific labels -->
                     <template v-if="item.label === 'Question'">
-                      <UTooltip
-                        :text="tooltipQuestion"
-                        :popper="{ placement: 'top' }"
-                        :ui="{
-                          background: 'bg-cold-night',
-                          color: 'text-white',
-                          base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
-                          rounded: 'rounded-none',
-                          ring: '',
-                        }"
-                      >
-                        <span class="ml-1 cursor-pointer">
-                          <Icon name="i-material-symbols:info-outline" />
-                        </span>
-                      </UTooltip>
+                      <InfoTooltip :text="tooltipQuestion" />
                     </template>
                   </p>
                   <!-- Conditionally render bullet list if Answer or Specialists is an array -->
@@ -146,6 +132,7 @@ import BackButton from '~/components/ui/BackButton.vue'
 import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
 import NotificationBanner from '~/components/ui/NotificationBanner.vue'
 import LoadingCard from './components/layout/LoadingCard.vue'
+import InfoTooltip from './InfoTooltip.vue'
 
 import tooltipQuestion from '@/content/info_boxes/question/question.md?raw'
 
