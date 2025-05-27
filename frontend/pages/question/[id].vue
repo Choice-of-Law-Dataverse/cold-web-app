@@ -9,7 +9,13 @@
     <!-- Custom rendering for Legal provision articles -->
     <template #domestic-legal-provisions="{ value }">
       <section class="section-gap">
-        <span class="label">Source</span>
+        <span class="label">
+          {{
+            filteredKeyLabelPairs.find(
+              (pair) => pair.key === 'Domestic Legal Provisions'
+            )?.label || 'Source fallback'
+          }}
+        </span>
         <QuestionSourceList
           :sources="
             [
@@ -29,7 +35,13 @@
     <!-- Custom rendering for Court Decisions ID -->
     <template #court-decisions-id="{ value }">
       <section id="related-court-decisions" class="section-gap">
-        <span class="label">Related Court Decisions</span>
+        <span class="label">
+          {{
+            filteredKeyLabelPairs.find(
+              (pair) => pair.key === 'Court Decisions ID'
+            )?.label || 'Related Court Decisions'
+          }}
+        </span>
         <CourtDecisionRenderer
           :value="value"
           :valueClassMap="valueClassMap['Court Decisions ID']"
