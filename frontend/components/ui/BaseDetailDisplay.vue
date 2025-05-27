@@ -68,12 +68,9 @@
                       :name="item.key + '-header-actions'"
                       :value="resultData?.[item.key]"
                     />
-                    <!-- Add tooltip for specific labels -->
-                    <template v-if="item.label === 'Question'">
-                      <InfoTooltip :text="tooltipQuestion" />
-                    </template>
-                    <template v-else-if="item.label === 'Answer'">
-                      <InfoTooltip :text="tooltipAnswer" />
+                    <!-- Render InfoTooltip if tooltip is defined in config -->
+                    <template v-if="item.tooltip">
+                      <InfoTooltip :text="item.tooltip" />
                     </template>
                   </p>
                   <!-- Conditionally render bullet list if Answer or Specialists is an array -->

@@ -71,6 +71,11 @@
               (pair) => pair.key === 'Related Literature'
             )?.emptyValueBehavior
           "
+          :tooltip="
+            filteredKeyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature'
+            )?.tooltip
+          "
         />
       </section>
     </template>

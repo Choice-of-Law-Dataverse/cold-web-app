@@ -122,11 +122,17 @@ export const jurisdictionConfig = {
 }
 
 // Question Page
+// Tooltips for Question Page
+import tooltipQuestion from '@/content/info_boxes/question/question.md?raw'
+import tooltipAnswer from '@/content/info_boxes/question/answer.md?raw'
+import tooltipRelatedLiterature from '@/content/info_boxes/question/related_literature.md?raw'
+
 export const questionConfig = {
   keyLabelPairs: [
     {
       key: 'Question',
       label: 'Question',
+      tooltip: tooltipQuestion,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No question available',
@@ -135,6 +141,7 @@ export const questionConfig = {
     {
       key: 'Answer',
       label: 'Answer',
+      tooltip: tooltipAnswer,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No answer available',
@@ -143,6 +150,7 @@ export const questionConfig = {
     {
       key: 'More Information',
       label: 'More Information',
+      // tooltip: tooltipMoreInformation, // Add if available
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -150,6 +158,7 @@ export const questionConfig = {
     {
       key: 'Domestic Legal Provisions',
       label: 'Source',
+      // tooltip: tooltipSource, // Add if available
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No source available',
@@ -158,6 +167,7 @@ export const questionConfig = {
     {
       key: 'Court Decisions ID',
       label: 'Related Court Decisions',
+      // tooltip: tooltipCourtDecisions, // Add if available
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No related court decisions',
@@ -166,6 +176,7 @@ export const questionConfig = {
     {
       key: 'Related Literature',
       label: 'Related Literature',
+      tooltip: tooltipRelatedLiterature,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No related literature',
