@@ -1,1 +1,1 @@
-TBD
+A short summary of the facts of the case (who are the parties, what happened, what is the dispute about, the different stages of court proceedings, etc.). This field prioritizes information on choice of law.
