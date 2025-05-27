@@ -1,1 +1,1 @@
-TBD
+The opinion of the court in regard to the statements made in the "Choice of law issue" column.
