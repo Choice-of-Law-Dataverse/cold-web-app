@@ -72,6 +72,9 @@
                     <template v-if="item.label === 'Question'">
                       <InfoTooltip :text="tooltipQuestion" />
                     </template>
+                    <template v-else-if="item.label === 'Answer'">
+                      <InfoTooltip :text="tooltipAnswer" />
+                    </template>
                   </p>
                   <!-- Conditionally render bullet list if Answer or Specialists is an array -->
                   <template
@@ -134,7 +137,9 @@ import NotificationBanner from '~/components/ui/NotificationBanner.vue'
 import LoadingCard from './components/layout/LoadingCard.vue'
 import InfoTooltip from './InfoTooltip.vue'
 
+// Tooltips for Question Page
 import tooltipQuestion from '@/content/info_boxes/question/question.md?raw'
+import tooltipAnswer from '@/content/info_boxes/question/answer.md?raw'
 
 // Props for reusability across pages
 const props = defineProps({
