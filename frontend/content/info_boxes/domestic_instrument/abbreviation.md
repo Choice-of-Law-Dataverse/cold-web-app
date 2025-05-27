@@ -1,1 +1,1 @@
-The official abbreviation used for the legal instrument, preferrably the English version 
+The official abbreviation used for the legal instrument, preferrably the English version

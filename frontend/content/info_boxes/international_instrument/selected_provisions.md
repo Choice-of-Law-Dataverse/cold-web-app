@@ -1,1 +1,1 @@
-Selected Provisions
+Legal provisions connected to the international instrument
