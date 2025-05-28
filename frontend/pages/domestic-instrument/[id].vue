@@ -6,22 +6,6 @@
     :valueClassMap="valueClassMap"
     sourceTable="Domestic Instrument"
   >
-    <template #entry-into-force="{ value }">
-      <div v-if="value">
-        <p class="label-key mb-2">Entry Into Force</p>
-        <p :class="valueClassMap['Entry Into Force']">
-          {{ formatDate(value) }}
-        </p>
-      </div>
-    </template>
-    <template #publication-date="{ value }">
-      <div v-if="value" class="!mb-8">
-        <p class="label-key mb-2">Publication Date</p>
-        <p :class="valueClassMap['Publication Date']">
-          {{ formatDate(value) }}
-        </p>
-      </div>
-    </template>
     <!-- Slot for Legal provisions -->
     <template #domestic-legal-provisions="{ value }">
       <!-- Only render if value exists and is not "N/A" -->

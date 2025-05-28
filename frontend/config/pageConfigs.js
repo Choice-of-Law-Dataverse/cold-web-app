@@ -225,7 +225,7 @@ export const legalInstrumentConfig = {
     {
       key: 'Title (in English)',
       label: 'Name',
-      tooltip: tooltipAbbreviation,
+      tooltip: tooltipDomesticInstrumentTitle,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No title available',
@@ -234,7 +234,7 @@ export const legalInstrumentConfig = {
     {
       key: 'Amended by',
       label: 'Amended by',
-      tooltip: tooltipAbbreviation,
+      tooltip: tooltipAmendedBy,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -242,7 +242,7 @@ export const legalInstrumentConfig = {
     {
       key: 'Amends',
       label: 'Amends',
-      tooltip: tooltipAbbreviation,
+      tooltip: tooltipAmends,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -266,7 +266,7 @@ export const legalInstrumentConfig = {
     {
       key: 'Official Title',
       label: 'Official Title',
-      tooltip: tooltipAbbreviation,
+      tooltip: tooltipOfficialTitle,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -282,7 +282,7 @@ export const legalInstrumentConfig = {
     {
       key: 'Compatible With the HCCH Principles?',
       label: 'Compatible With the HCCH Principles?',
-      tooltip: tooltipAbbreviation,
+      tooltip: tooltipCompatibleHCCH,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -291,7 +291,7 @@ export const legalInstrumentConfig = {
     {
       key: 'Compatible With the UNCITRAL Model Law?',
       label: 'Compatible With the UNCITRAL Model Law?',
-      tooltip: tooltipAbbreviation,
+      tooltip: tooltipCompatibleUncitral,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -300,7 +300,7 @@ export const legalInstrumentConfig = {
     {
       key: 'Date',
       label: 'Date',
-      tooltip: tooltipAbbreviation,
+      tooltip: tooltipDomesticInstrumentDate,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'N/A',
@@ -312,24 +312,28 @@ export const legalInstrumentConfig = {
     {
       key: 'Entry Into Force',
       label: 'Entry Into Force',
-      tooltip: tooltipAbbreviation,
+      tooltip: tooltipEntryIntoForce,
       emptyValueBehavior: {
         action: 'hide',
       },
+      valueTransform: (val) =>
+        typeof formatDate === 'function' ? formatDate(val) : val,
     },
     {
       key: 'Publication Date',
       label: 'Publication Date',
-      tooltip: tooltipAbbreviation,
+      tooltip: tooltipDomesticInstrumentPublicationDate,
       emptyValueBehavior: {
         action: 'hide',
       },
+      valueTransform: (val) =>
+        typeof formatDate === 'function' ? formatDate(val) : val,
     },
 
     {
       key: 'Domestic Legal Provisions',
       label: 'Selected Provisions',
-      tooltip: tooltipAbbreviation,
+      tooltip: tooltipDomesticInstrumentSelectedProvisions,
       emptyValueBehavior: {
         action: 'hide',
       },
