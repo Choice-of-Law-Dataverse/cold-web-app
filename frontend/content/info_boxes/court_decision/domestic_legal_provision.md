@@ -1,1 +1,1 @@
-TBD
+Domestic legal provision

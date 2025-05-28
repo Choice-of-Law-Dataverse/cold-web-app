@@ -125,7 +125,7 @@ export const jurisdictionConfig = {
 // Tooltips for Question Page
 import tooltipQuestion from '@/content/info_boxes/question/question.md?raw'
 import tooltipAnswer from '@/content/info_boxes/question/answer.md?raw'
-import tooltipRelatedLiterature from '@/content/info_boxes/question/related_literature.md?raw'
+import tooltipQuestionRelatedLiterature from '@/content/info_boxes/question/related_literature.md?raw'
 import tooltipMoreInformation from '@/content/info_boxes/question/more_information.md?raw'
 import tooltipSource from '@/content/info_boxes/question/source.md?raw'
 import tooltipOUPBookQuote from '@/content/info_boxes/question/oup_book_quote.md?raw'
@@ -188,7 +188,7 @@ export const questionConfig = {
     {
       key: 'Related Literature',
       label: 'Related Literature',
-      tooltip: tooltipRelatedLiterature,
+      tooltip: tooltipQuestionRelatedLiterature,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No related literature',
@@ -412,11 +412,30 @@ export const internationalInstrumentConfig = {
 }
 
 // Court Decision Page
+// Tooltips for Court Decision Page
+import tooltipAbstract from '@/content/info_boxes/court_decision/abstract.md?raw'
+import tooltipCaseCitation from '@/content/info_boxes/court_decision/case_citation.md?raw'
+import tooltipCaseTitle from '@/content/info_boxes/court_decision/case_title.md?raw'
+import tooltipChoiceOfLawIssue from '@/content/info_boxes/court_decision/choice_of_law_issue.md?raw'
+import tooltipCourtsPosition from '@/content/info_boxes/court_decision/courts_position.md?raw'
+import tooltipDomesticLegalProvision from '@/content/info_boxes/court_decision/domestic_legal_provision.md?raw'
+import tooltipFullText from '@/content/info_boxes/court_decision/full_text.md?raw'
+import tooltipInstance from '@/content/info_boxes/court_decision/instance.md?raw'
+import tooltipJudgmentDate from '@/content/info_boxes/court_decision/judgment_date.md?raw'
+import tooltipPILProvisions from '@/content/info_boxes/court_decision/pil_provisions.md?raw'
+import tooltipPublicationDate from '@/content/info_boxes/court_decision/publication_date.md?raw'
+import tooltipQuote from '@/content/info_boxes/court_decision/quote.md?raw'
+import tooltipCourtDecisionRelatedLiterature from '@/content/info_boxes/court_decision/related_literature.md?raw'
+import tooltipRelatedQuestions from '@/content/info_boxes/court_decision/related_questions.md?raw'
+import tooltipRelevantFacts from '@/content/info_boxes/court_decision/relevant_facts.md?raw'
+import tooltipTextRelevantLegalProvision from '@/content/info_boxes/court_decision/text_relevant_legal_provision.md?raw'
+
 export const courtDecisionConfig = {
   keyLabelPairs: [
     {
       key: 'Case Title',
       label: 'Case Title',
+      tooltip: tooltipCaseTitle,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No case title available',
@@ -433,15 +452,25 @@ export const courtDecisionConfig = {
     },
     {
       key: 'Publication Date ISO',
-      label: 'Date',
+      label: 'Publication Date',
+      tooltip: tooltipPublicationDate,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No date available',
       },
     },
     {
+      key: 'Date of Judgment',
+      label: 'Judgment Date',
+      tooltip: tooltipJudgmentDate,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
       key: 'Instance',
       label: 'Instance',
+      tooltip: tooltipInstance,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No instance information available',
@@ -450,6 +479,7 @@ export const courtDecisionConfig = {
     {
       key: 'Abstract',
       label: 'Abstract',
+      tooltip: tooltipAbstract,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No abstract available',
@@ -458,6 +488,7 @@ export const courtDecisionConfig = {
     {
       key: 'Relevant Facts',
       label: 'Relevant Facts',
+      tooltip: tooltipRelevantFacts,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No relevant facts available',
@@ -466,6 +497,7 @@ export const courtDecisionConfig = {
     {
       key: 'Choice of Law Issue',
       label: 'Choice of Law Issue',
+      tooltip: tooltipChoiceOfLawIssue,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No choice of law issue available',
@@ -474,6 +506,7 @@ export const courtDecisionConfig = {
     {
       key: "Court's Position",
       label: "Court's Position",
+      tooltip: tooltipCourtsPosition,
       emptyValueBehavior: {
         action: 'display',
         fallback: "No court's position available",
@@ -482,6 +515,7 @@ export const courtDecisionConfig = {
     {
       key: 'Text of the Relevant Legal Provisions',
       label: 'Text of the Relevant Legal Provisions',
+      tooltip: tooltipDomesticLegalProvision,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No relevant legal provisions available',
@@ -490,21 +524,56 @@ export const courtDecisionConfig = {
     {
       key: 'Case Citation',
       label: 'Case Citation',
+      tooltip: tooltipCaseCitation,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No case citation available',
       },
     },
     {
+      key: 'PIL Provisions',
+      label: 'PIL Provisions',
+      tooltip: tooltipPILProvisions,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Original Text',
+      label: 'Full Text',
+      tooltip: tooltipFullText,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Quote',
+      label: 'Quote',
+      tooltip: tooltipQuote,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Text of the Relevant Legal Provisions ',
+      label: 'Text of the Relevant Legal Provisions',
+      tooltip: tooltipTextRelevantLegalProvision,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
       key: 'Related Questions',
       label: 'Related Questions',
+      tooltip: tooltipRelatedQuestions,
       emptyValueBehavior: {
         action: 'hide',
       },
     },
     {
       key: 'Related Literature',
-      label: '',
+      label: 'Related Literature',
+      tooltip: tooltipCourtDecisionRelatedLiterature,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No related literature available',
@@ -514,6 +583,7 @@ export const courtDecisionConfig = {
   valueClassMap: {
     'Case Title': 'result-value-medium section-gap',
     'Publication Date ISO': 'result-value-small section-gap',
+    'Date of Judgment': 'result-value-small section-gap',
     Instance: 'result-value-small section-gap',
     Abstract: 'result-value-small whitespace-pre-line section-gap',
     'Relevant Facts': 'result-value-small whitespace-pre-line section-gap',
@@ -525,6 +595,7 @@ export const courtDecisionConfig = {
     'Case Citation': 'result-value-small-citation section-gap',
     'Related Literature': 'result-value-small section-gap',
     'Related Questions': 'result-value-small section-gap',
+    'Original Text': 'result-value-small section-gap',
   },
 }
 
