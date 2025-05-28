@@ -126,6 +126,8 @@ export const jurisdictionConfig = {
 import tooltipQuestion from '@/content/info_boxes/question/question.md?raw'
 import tooltipAnswer from '@/content/info_boxes/question/answer.md?raw'
 import tooltipRelatedLiterature from '@/content/info_boxes/question/related_literature.md?raw'
+import tooltipMoreInformation from '@/content/info_boxes/question/more_information.md?raw'
+import tooltipSource from '@/content/info_boxes/question/source.md?raw'
 
 export const questionConfig = {
   keyLabelPairs: [
@@ -150,7 +152,7 @@ export const questionConfig = {
     {
       key: 'More Information',
       label: 'More Information',
-      // tooltip: tooltipMoreInformation, // Add if available
+      tooltip: tooltipMoreInformation,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -158,7 +160,7 @@ export const questionConfig = {
     {
       key: 'Domestic Legal Provisions',
       label: 'Source',
-      // tooltip: tooltipSource, // Add if available
+      tooltip: tooltipSource,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No source available',
