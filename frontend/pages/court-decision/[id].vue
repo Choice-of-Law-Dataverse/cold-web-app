@@ -88,6 +88,11 @@
             modifiedCourtDecision['Jurisdictions Alpha-3 Code'] || ''
           "
           :questions="modifiedCourtDecision['Questions'] || ''"
+          :tooltip="
+            computedKeyLabelPairs.find(
+              (pair) => pair.key === 'Related Questions'
+            )?.tooltip
+          "
         />
       </section>
     </template>
