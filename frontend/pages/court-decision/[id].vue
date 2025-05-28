@@ -102,6 +102,11 @@
           :themes="themes"
           :valueClassMap="valueClassMap['Related Literature']"
           :useId="false"
+          :tooltip="
+            computedKeyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature'
+            )?.tooltip
+          "
         />
       </section>
     </template>
