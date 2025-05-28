@@ -207,26 +207,100 @@ export const questionConfig = {
 }
 
 // Domestic Instrument (formerly Legal Instrument) Page
+// Tooltips for Domestic Instrument Page
+import tooltipAbbreviation from '@/content/info_boxes/domestic_instrument/abbreviation.md?raw'
+import tooltipAmendedBy from '@/content/info_boxes/domestic_instrument/amended_by.md?raw'
+import tooltipAmends from '@/content/info_boxes/domestic_instrument/amends.md?raw'
+import tooltipCompatibleHCCH from '@/content/info_boxes/domestic_instrument/compatible_hcch.md?raw'
+import tooltipCompatibleUncitral from '@/content/info_boxes/domestic_instrument/compatible_uncitral.md?raw'
+import tooltipDomesticInstrumentDate from '@/content/info_boxes/domestic_instrument/date.md?raw'
+import tooltipEntryIntoForce from '@/content/info_boxes/domestic_instrument/entry_into_force.md?raw'
+import tooltipOfficialTitle from '@/content/info_boxes/domestic_instrument/official_title.md?raw'
+import tooltipDomesticInstrumentPublicationDate from '@/content/info_boxes/domestic_instrument/publication_date.md?raw'
+import tooltipDomesticInstrumentSelectedProvisions from '@/content/info_boxes/domestic_instrument/selected_provisions.md?raw'
+import tooltipDomesticInstrumentTitle from '@/content/info_boxes/domestic_instrument/title.md?raw'
+
 export const legalInstrumentConfig = {
   keyLabelPairs: [
     {
       key: 'Title (in English)',
       label: 'Name',
+      tooltip: tooltipAbbreviation,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No title available',
       },
     },
     {
-      key: 'Official Title',
-      label: 'Official Title',
+      key: 'Amended by',
+      label: 'Amended by',
+      tooltip: tooltipAbbreviation,
       emptyValueBehavior: {
         action: 'hide',
       },
     },
     {
+      key: 'Amends',
+      label: 'Amends',
+      tooltip: tooltipAbbreviation,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Replaces',
+      label: 'Replaces',
+      tooltip: tooltipAbbreviation,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Replaced by',
+      label: 'Replaced by',
+      tooltip: tooltipAbbreviation,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Official Title',
+      label: 'Official Title',
+      tooltip: tooltipAbbreviation,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Abbreviation',
+      label: 'Abbreviation',
+      tooltip: tooltipAbbreviation,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Compatible With the HCCH Principles?',
+      label: 'Compatible With the HCCH Principles?',
+      tooltip: tooltipAbbreviation,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+      valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
+    },
+    {
+      key: 'Compatible With the UNCITRAL Model Law?',
+      label: 'Compatible With the UNCITRAL Model Law?',
+      tooltip: tooltipAbbreviation,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+      valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
+    },
+    {
       key: 'Date',
       label: 'Date',
+      tooltip: tooltipAbbreviation,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'N/A',
@@ -236,15 +310,9 @@ export const legalInstrumentConfig = {
       },
     },
     {
-      key: 'Abbreviation',
-      label: 'Abbreviation',
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-    },
-    {
       key: 'Entry Into Force',
       label: 'Entry Into Force',
+      tooltip: tooltipAbbreviation,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -252,58 +320,16 @@ export const legalInstrumentConfig = {
     {
       key: 'Publication Date',
       label: 'Publication Date',
+      tooltip: tooltipAbbreviation,
       emptyValueBehavior: {
         action: 'hide',
       },
     },
-    {
-      key: 'Compatible With the HCCH Principles?',
-      label: 'Compatible With the HCCH Principles?',
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-      valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
-    },
-    {
-      key: 'Compatible With the UNCITRAL Model Law?',
-      label: 'Compatible With the UNCITRAL Model Law?',
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-      valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
-    },
+
     {
       key: 'Domestic Legal Provisions',
       label: 'Selected Provisions',
-      emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No provisions available',
-      },
-    },
-    {
-      key: 'Amended by',
-      label: 'Amended by',
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-    },
-    {
-      key: 'Amends',
-      label: 'Amends',
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-    },
-    {
-      key: 'Replaces',
-      label: 'Replaces',
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-    },
-    {
-      key: 'Replaced by',
-      label: 'Replaced by',
+      tooltip: tooltipAbbreviation,
       emptyValueBehavior: {
         action: 'hide',
       },
