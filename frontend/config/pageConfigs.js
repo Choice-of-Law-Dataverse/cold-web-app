@@ -128,6 +128,8 @@ import tooltipAnswer from '@/content/info_boxes/question/answer.md?raw'
 import tooltipRelatedLiterature from '@/content/info_boxes/question/related_literature.md?raw'
 import tooltipMoreInformation from '@/content/info_boxes/question/more_information.md?raw'
 import tooltipSource from '@/content/info_boxes/question/source.md?raw'
+import tooltipOUPBookQuote from '@/content/info_boxes/question/oup_book_quote.md?raw'
+import tooltipRelatedCourtDecisions from '@/content/info_boxes/question/related_court_decisions.md?raw'
 
 export const questionConfig = {
   keyLabelPairs: [
@@ -169,7 +171,7 @@ export const questionConfig = {
     {
       key: 'OUP Book Quote',
       label: 'OUP Book Quote',
-      // tooltip: tooltipCourtDecisions, // Add if available
+      tooltip: tooltipOUPBookQuote,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -177,7 +179,7 @@ export const questionConfig = {
     {
       key: 'Court Decisions ID',
       label: 'Related Court Decisions',
-      // tooltip: tooltipCourtDecisions, // Add if available
+      tooltip: tooltipRelatedCourtDecisions,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No related court decisions',

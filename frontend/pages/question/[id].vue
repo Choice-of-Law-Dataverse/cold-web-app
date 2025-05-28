@@ -15,6 +15,18 @@
               (pair) => pair.key === 'Domestic Legal Provisions'
             )?.label || 'Source fallback'
           }}
+          <InfoTooltip
+            v-if="
+              filteredKeyLabelPairs.find(
+                (pair) => pair.key === 'Domestic Legal Provisions'
+              )?.tooltip
+            "
+            :text="
+              filteredKeyLabelPairs.find(
+                (pair) => pair.key === 'Domestic Legal Provisions'
+              )?.tooltip
+            "
+          />
         </span>
         <QuestionSourceList
           :sources="
@@ -41,6 +53,18 @@
               (pair) => pair.key === 'Court Decisions ID'
             )?.label || 'Related Court Decisions'
           }}
+          <InfoTooltip
+            v-if="
+              filteredKeyLabelPairs.find(
+                (pair) => pair.key === 'Court Decisions ID'
+              )?.tooltip
+            "
+            :text="
+              filteredKeyLabelPairs.find(
+                (pair) => pair.key === 'Court Decisions ID'
+              )?.tooltip
+            "
+          />
         </span>
         <CourtDecisionRenderer
           :value="value"
@@ -89,6 +113,7 @@ import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import QuestionSourceList from '~/components/sources/QuestionSourceList.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useQuestion } from '~/composables/useQuestion'
 import { questionConfig } from '~/config/pageConfigs'
 
