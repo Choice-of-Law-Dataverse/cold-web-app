@@ -165,6 +165,14 @@ export const questionConfig = {
       },
     },
     {
+      key: 'OUP Book Quote',
+      label: 'OUP Book Quote',
+      // tooltip: tooltipCourtDecisions, // Add if available
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
       key: 'Court Decisions ID',
       label: 'Related Court Decisions',
       // tooltip: tooltipCourtDecisions, // Add if available
@@ -188,6 +196,7 @@ export const questionConfig = {
     Answer: 'result-value-large section-gap',
     'Domestic Legal Provisions': 'result-value-small section-gap',
     'More Information': 'result-value-small whitespace-pre-line section-gap',
+    'OUP Book Quote': 'result-value-small section-gap',
     'Court Decisions ID': 'result-value-small section-gap',
     'Related Literature': 'result-value-small section-gap',
   },
