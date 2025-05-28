@@ -418,7 +418,7 @@ import tooltipCaseCitation from '@/content/info_boxes/court_decision/case_citati
 import tooltipCaseTitle from '@/content/info_boxes/court_decision/case_title.md?raw'
 import tooltipChoiceOfLawIssue from '@/content/info_boxes/court_decision/choice_of_law_issue.md?raw'
 import tooltipCourtsPosition from '@/content/info_boxes/court_decision/courts_position.md?raw'
-import tooltipDomesticLegalProvision from '@/content/info_boxes/court_decision/domestic_legal_provision.md?raw'
+//import tooltipDomesticLegalProvision from '@/content/info_boxes/court_decision/domestic_legal_provision.md?raw'
 import tooltipFullText from '@/content/info_boxes/court_decision/full_text.md?raw'
 import tooltipInstance from '@/content/info_boxes/court_decision/instance.md?raw'
 import tooltipJudgmentDate from '@/content/info_boxes/court_decision/judgment_date.md?raw'
@@ -481,8 +481,7 @@ export const courtDecisionConfig = {
       label: 'Abstract',
       tooltip: tooltipAbstract,
       emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No abstract available',
+        action: 'hide',
       },
     },
     {
@@ -490,44 +489,7 @@ export const courtDecisionConfig = {
       label: 'Relevant Facts',
       tooltip: tooltipRelevantFacts,
       emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No relevant facts available',
-      },
-    },
-    {
-      key: 'Choice of Law Issue',
-      label: 'Choice of Law Issue',
-      tooltip: tooltipChoiceOfLawIssue,
-      emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No choice of law issue available',
-      },
-    },
-    {
-      key: "Court's Position",
-      label: "Court's Position",
-      tooltip: tooltipCourtsPosition,
-      emptyValueBehavior: {
-        action: 'display',
-        fallback: "No court's position available",
-      },
-    },
-    {
-      key: 'Text of the Relevant Legal Provisions',
-      label: 'Text of the Relevant Legal Provisions',
-      tooltip: tooltipDomesticLegalProvision,
-      emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No relevant legal provisions available',
-      },
-    },
-    {
-      key: 'Case Citation',
-      label: 'Case Citation',
-      tooltip: tooltipCaseCitation,
-      emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No case citation available',
+        action: 'hide',
       },
     },
     {
@@ -539,9 +501,25 @@ export const courtDecisionConfig = {
       },
     },
     {
-      key: 'Original Text',
-      label: 'Full Text',
-      tooltip: tooltipFullText,
+      key: 'Text of the Relevant Legal Provisions',
+      label: 'Text of the Relevant Legal Provisions',
+      tooltip: tooltipTextRelevantLegalProvision,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Choice of Law Issue',
+      label: 'Choice of Law Issue',
+      tooltip: tooltipChoiceOfLawIssue,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: "Court's Position",
+      label: "Court's Position",
+      tooltip: tooltipCourtsPosition,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -555,9 +533,26 @@ export const courtDecisionConfig = {
       },
     },
     {
-      key: 'Text of the Relevant Legal Provisions ',
-      label: 'Text of the Relevant Legal Provisions',
-      tooltip: tooltipTextRelevantLegalProvision,
+      key: 'Case Citation',
+      label: 'Case Citation',
+      tooltip: tooltipCaseCitation,
+      emptyValueBehavior: {
+        action: 'display',
+        fallback: 'No case citation available',
+      },
+    },
+    {
+      key: 'Original Text',
+      label: 'Full Text',
+      tooltip: tooltipFullText,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Related Literature',
+      label: 'Related Literature',
+      tooltip: tooltipCourtDecisionRelatedLiterature,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -570,15 +565,6 @@ export const courtDecisionConfig = {
         action: 'hide',
       },
     },
-    {
-      key: 'Related Literature',
-      label: 'Related Literature',
-      tooltip: tooltipCourtDecisionRelatedLiterature,
-      emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No related literature available',
-      },
-    },
   ],
   valueClassMap: {
     'Case Title': 'result-value-medium section-gap',
@@ -587,15 +573,16 @@ export const courtDecisionConfig = {
     Instance: 'result-value-small section-gap',
     Abstract: 'result-value-small whitespace-pre-line section-gap',
     'Relevant Facts': 'result-value-small whitespace-pre-line section-gap',
-    'Choice of Law Issue': 'result-value-small whitespace-pre-line section-gap',
-    "Court's Position": 'result-value-small whitespace-pre-line section-gap',
+    'PIL Provisions': 'result-value-small section-gap',
     'Text of the Relevant Legal Provisions':
       'result-value-small whitespace-pre-line section-gap',
+    'Choice of Law Issue': 'result-value-small whitespace-pre-line section-gap',
+    "Court's Position": 'result-value-small whitespace-pre-line section-gap',
     Quote: 'result-value-small section-gap',
     'Case Citation': 'result-value-small-citation section-gap',
+    'Original Text': 'result-value-small section-gap',
     'Related Literature': 'result-value-small section-gap',
     'Related Questions': 'result-value-small section-gap',
-    'Original Text': 'result-value-small section-gap',
   },
 }
 
