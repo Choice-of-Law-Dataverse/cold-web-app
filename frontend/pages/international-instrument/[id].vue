@@ -33,7 +33,13 @@
 
     <template #selected-provisions>
       <section class="section-gap p-0 m-0">
-        <p class="label mt-12 mb-[-24px]">Selected Provisions</p>
+        <p class="label mt-12 mb-[-24px]">
+          {{
+            computedKeyLabelPairs.find(
+              (pair) => pair.key === 'Selected Provisions'
+            )?.label || 'Selected Provisions'
+          }}
+        </p>
         <div :class="valueClassMap['Selected Provisions']">
           <div v-if="provisionsLoading">
             <LoadingBar class="!mt-8" />
