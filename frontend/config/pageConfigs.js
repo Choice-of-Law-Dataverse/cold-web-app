@@ -402,21 +402,31 @@ export const regionalInstrumentConfig = {
 }
 
 // International Instrument Page
+// Tooltips for International Instrument Page
+import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
+import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
+import tooltipInternationalInstrumentRelatedLiterature from '@/content/info_boxes/international_instrument/related_literature.md?raw'
+import tooltipInternationalInstrumentSelectedProvisions from '@/content/info_boxes/international_instrument/selected_provisions.md?raw'
+import tooltipInternationalInstrumentSpecialists from '@/content/info_boxes/international_instrument/specialists.md?raw'
+
 export const internationalInstrumentConfig = {
   keyLabelPairs: [
     {
       key: 'Name',
       label: 'Name',
+      tooltip: tooltipInternationalInstrumentName,
       emptyValueBehavior: { action: 'display', fallback: 'No title available' },
     },
     {
       key: 'Date',
       label: 'Date',
+      tooltip: tooltipInternationalInstrumentDate,
       emptyValueBehavior: { action: 'display', fallback: 'N/A' },
     },
     {
       key: 'Specialists',
       label: 'Specialists',
+      tooltip: tooltipInternationalInstrumentSpecialists,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No specialists available',
@@ -425,11 +435,13 @@ export const internationalInstrumentConfig = {
     {
       key: 'Literature',
       label: 'Related Literature',
+      tooltip: tooltipInternationalInstrumentRelatedLiterature,
       emptyValueBehavior: { action: 'hide' },
     },
     {
       key: 'Selected Provisions',
       label: 'Selected Provisions',
+      tooltip: tooltipInternationalInstrumentSelectedProvisions,
       emptyValueBehavior: { action: 'display', fallback: '' },
     },
   ],

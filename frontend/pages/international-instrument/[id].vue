@@ -39,6 +39,18 @@
               (pair) => pair.key === 'Selected Provisions'
             )?.label || 'Selected Provisions'
           }}
+          <InfoTooltip
+            v-if="
+              computedKeyLabelPairs.find(
+                (pair) => pair.key === 'Selected Provisions'
+              )?.tooltip
+            "
+            :text="
+              computedKeyLabelPairs.find(
+                (pair) => pair.key === 'Selected Provisions'
+              )?.tooltip
+            "
+          />
         </p>
         <div :class="valueClassMap['Selected Provisions']">
           <div v-if="provisionsLoading">
@@ -76,6 +88,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import BaseLegalContent from '~/components/legal/BaseLegalContent.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { internationalInstrumentConfig } from '~/config/pageConfigs'
