@@ -1,6 +1,9 @@
 <template>
   <div v-if="shouldShowSection" class="mt-12">
-    <span v-if="showLabel" class="label">{{ label }}</span>
+    <span v-if="showLabel" class="label">
+      {{ label }}
+      <InfoTooltip v-if="tooltip" :text="tooltip" />
+    </span>
     <ul v-if="loadingTitles || loading">
       <LoadingBar class="pt-[11px] ml-[-22px]" />
     </ul>
@@ -33,9 +36,11 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import ShowMoreLess from '../ui/ShowMoreLess.vue'
 import LoadingBar from '../layout/LoadingBar.vue'
+import InfoTooltip from '../ui/InfoTooltip.vue'
 
 const props = defineProps({
   label: { type: String, default: 'Related Literature' },
+  tooltip: { type: String, default: '' },
   themes: String,
   valueClassMap: { type: String, default: 'result-value-small' },
   literatureId: { type: String, default: '' },

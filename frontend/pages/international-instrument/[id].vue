@@ -6,15 +6,6 @@
     :valueClassMap="valueClassMap"
     sourceTable="International Instrument"
   >
-    <template #date="{ value }">
-      <div v-if="value">
-        <p class="label-key mb-2">Date</p>
-        <p :class="valueClassMap['Date']">
-          {{ formatDate(value) }}
-        </p>
-      </div>
-    </template>
-
     <template #literature>
       <section class="section-gap p-0 m-0">
         <RelatedLiterature
@@ -26,6 +17,10 @@
               (pair) => pair.key === 'Literature'
             )?.emptyValueBehavior
           "
+          :tooltip="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Literature')
+              ?.tooltip
+          "
           mode="id"
         />
       </section>
@@ -33,7 +28,25 @@
 
     <template #selected-provisions>
       <section class="section-gap p-0 m-0">
-        <p class="label mt-12 mb-[-24px]">Selected Provisions</p>
+        <p class="label mt-12 mb-[-24px]">
+          {{
+            computedKeyLabelPairs.find(
+              (pair) => pair.key === 'Selected Provisions'
+            )?.label || 'Selected Provisions'
+          }}
+          <InfoTooltip
+            v-if="
+              computedKeyLabelPairs.find(
+                (pair) => pair.key === 'Selected Provisions'
+              )?.tooltip
+            "
+            :text="
+              computedKeyLabelPairs.find(
+                (pair) => pair.key === 'Selected Provisions'
+              )?.tooltip
+            "
+          />
+        </p>
         <div :class="valueClassMap['Selected Provisions']">
           <div v-if="provisionsLoading">
             <LoadingBar class="!mt-8" />
@@ -70,6 +83,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import BaseLegalContent from '~/components/legal/BaseLegalContent.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { internationalInstrumentConfig } from '~/config/pageConfigs'

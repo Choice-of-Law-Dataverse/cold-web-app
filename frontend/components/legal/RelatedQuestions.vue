@@ -1,6 +1,7 @@
 <template>
   <div v-if="shouldDisplay" class="mt-12">
     <span v-if="label" class="label">{{ label }}</span>
+    <InfoTooltip v-if="tooltip" :text="tooltip" />
     <ul v-if="questionList.length">
       <li v-for="(q, idx) in questionList" :key="idx">
         <NuxtLink :to="`/question/${jurisdictionCode}_${q}`">
@@ -15,12 +16,14 @@
 <script setup>
 import { computed, toRefs, ref, watchEffect } from 'vue'
 import { useRuntimeConfig } from '#imports'
+import InfoTooltip from '../ui/InfoTooltip.vue'
 
 const props = defineProps({
   label: { type: String, default: 'Related Questions' },
   jurisdictionCode: { type: String, default: '' },
   questions: { type: String, default: '' },
   emptyValueBehavior: { type: Object, default: () => ({ action: 'hide' }) },
+  tooltip: { type: String, default: '' },
 })
 
 const { jurisdictionCode, questions, emptyValueBehavior } = toRefs(props)

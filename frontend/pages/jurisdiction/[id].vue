@@ -8,7 +8,21 @@
   >
     <!-- Specialists Section -->
     <section class="section-gap p-0 m-0">
-      <span class="label">Specialists</span>
+      <span class="label">
+        {{
+          keyLabelPairs.find((pair) => pair.key === 'Specialist')?.label ||
+          'Specialists'
+        }}
+        <InfoTooltip
+          v-if="
+            keyLabelPairs.find((pair) => pair.key === 'Specialist')?.tooltip
+          "
+          :text="
+            keyLabelPairs.find((pair) => pair.key === 'Specialist')?.tooltip
+          "
+          class="ml-1 align-middle"
+        />
+      </span>
       <template v-if="specialists.length">
         <ul class="section-gap p-0 m-0">
           <li
@@ -43,6 +57,11 @@
               (pair) => pair.key === 'Related Literature'
             )?.emptyValueBehavior
           "
+          :tooltip="
+            jurisdictionConfig.keyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature'
+            )?.tooltip
+          "
           mode="id"
         />
       </section>
@@ -56,7 +75,10 @@
           (domesticInstrumentCount !== 0 && domesticInstrumentCount !== null)
         "
       >
-        <span class="label !mb-4 !mt-0.5">Related Data</span>
+        <span class="label !mb-4 !mt-0.5"
+          >Related Data <InfoTooltip :text="tooltip"
+        /></span>
+
         <template v-if="countsLoading">
           <LoadingBar />
         </template>
@@ -145,9 +167,14 @@ import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import JurisdictionComparison from '~/components/jurisdiction-comparison/JurisdictionComparison.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import LoadingBar from '~/components/layout/LoadingBar.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useJurisdiction } from '~/composables/useJurisdiction'
 import { jurisdictionConfig } from '~/config/pageConfigs'
 import { useRuntimeConfig } from '#app'
+
+const tooltip = jurisdictionConfig.keyLabelPairs.find(
+  (pair) => pair.key === 'Related Data'
+)?.tooltip
 
 const route = useRoute()
 const router = useRouter()

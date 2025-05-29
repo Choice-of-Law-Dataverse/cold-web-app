@@ -1,0 +1,1 @@
+Legal provisions connected to the international instrument

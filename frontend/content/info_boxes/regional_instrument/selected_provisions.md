@@ -1,0 +1,1 @@
+Legal provisions connected to the regional instrument

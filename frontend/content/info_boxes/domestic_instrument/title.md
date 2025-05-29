@@ -1,0 +1,1 @@
+Legal instruments in English starting with the adjective (Demonym) related to the jurisdiction

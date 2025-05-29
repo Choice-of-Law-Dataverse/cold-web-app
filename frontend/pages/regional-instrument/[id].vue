@@ -6,15 +6,6 @@
     :valueClassMap="valueClassMap"
     sourceTable="Regional Instrument"
   >
-    <template #date="{ value }">
-      <div v-if="value">
-        <p class="label-key mb-2">Date</p>
-        <p :class="valueClassMap['Date']">
-          {{ formatDate(value) }}
-        </p>
-      </div>
-    </template>
-
     <template #literature>
       <section class="section-gap p-0 m-0">
         <RelatedLiterature
@@ -25,6 +16,10 @@
             regionalInstrumentConfig.keyLabelPairs.find(
               (pair) => pair.key === 'Literature'
             )?.emptyValueBehavior
+          "
+          :tooltip="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Literature')
+              ?.tooltip
           "
           mode="id"
         />
@@ -38,7 +33,25 @@
         v-if="value && value.trim() && value.trim() !== 'N/A'"
         class="section-gap p-0 m-0"
       >
-        <p class="label mt-12 mb-[-24px]">Selected Provisions</p>
+        <p class="label mt-12 mb-[-24px]">
+          {{
+            computedKeyLabelPairs.find(
+              (pair) => pair.key === 'Regional Legal Provisions'
+            )?.label || 'Selected Provisions'
+          }}
+          <InfoTooltip
+            v-if="
+              computedKeyLabelPairs.find(
+                (pair) => pair.key === 'Regional Legal Provisions'
+              )?.tooltip
+            "
+            :text="
+              computedKeyLabelPairs.find(
+                (pair) => pair.key === 'Regional Legal Provisions'
+              )?.tooltip
+            "
+          />
+        </p>
         <div :class="valueClassMap['Regional Legal Provisions']">
           <div v-if="value && value.trim()">
             <LegalProvision
@@ -71,6 +84,7 @@ import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { regionalInstrumentConfig } from '~/config/pageConfigs'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import LegalProvision from '~/components/legal/LegalProvision.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 
 const route = useRoute()
 const router = useRouter()

@@ -6,22 +6,6 @@
     :valueClassMap="valueClassMap"
     sourceTable="Domestic Instrument"
   >
-    <template #entry-into-force="{ value }">
-      <div v-if="value">
-        <p class="label-key mb-2">Entry Into Force</p>
-        <p :class="valueClassMap['Entry Into Force']">
-          {{ formatDate(value) }}
-        </p>
-      </div>
-    </template>
-    <template #publication-date="{ value }">
-      <div v-if="value" class="!mb-8">
-        <p class="label-key mb-2">Publication Date</p>
-        <p :class="valueClassMap['Publication Date']">
-          {{ formatDate(value) }}
-        </p>
-      </div>
-    </template>
     <!-- Slot for Legal provisions -->
     <template #domestic-legal-provisions="{ value }">
       <!-- Only render if value exists and is not "N/A" -->
@@ -29,7 +13,25 @@
         v-if="value && value.trim() && value.trim() !== 'N/A'"
         class="section-gap p-0 m-0"
       >
-        <p class="label mt-12 mb-[-24px]">Selected Provisions</p>
+        <p class="label mt-12 mb-[-24px]">
+          {{
+            computedKeyLabelPairs.find(
+              (pair) => pair.key === 'Domestic Legal Provisions'
+            )?.label || 'Selected Provisions'
+          }}
+          <InfoTooltip
+            v-if="
+              computedKeyLabelPairs.find(
+                (pair) => pair.key === 'Domestic Legal Provisions'
+              )?.tooltip
+            "
+            :text="
+              computedKeyLabelPairs.find(
+                (pair) => pair.key === 'Domestic Legal Provisions'
+              )?.tooltip
+            "
+          />
+        </p>
         <div :class="valueClassMap['Domestic Legal Provisions']">
           <div v-if="value && value.trim()">
             <LegalProvision
@@ -57,6 +59,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import LegalProvision from '~/components/legal/LegalProvision.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { legalInstrumentConfig } from '~/config/pageConfigs'

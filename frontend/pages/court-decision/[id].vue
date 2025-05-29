@@ -6,8 +6,8 @@
     :valueClassMap="valueClassMap"
     sourceTable="Court Decisions"
   >
-    <!-- Quote section with language toggle and conditional rendering, now inside the related-questions slot and above the questions -->
-    <template #related-questions>
+    <!-- Custom rendering for Quote section -->
+    <template #quote>
       <section class="section-gap p-0 m-0">
         <div
           v-if="
@@ -17,7 +17,20 @@
           "
         >
           <div class="flex items-center justify-between">
-            <span class="label">Quote</span>
+            <div class="flex items-center">
+              <span class="label">Quote</span>
+              <InfoTooltip
+                v-if="
+                  computedKeyLabelPairs.find((pair) => pair.key === 'Quote')
+                    ?.tooltip
+                "
+                :text="
+                  computedKeyLabelPairs.find((pair) => pair.key === 'Quote')
+                    ?.tooltip
+                "
+                class="ml-[-8px]"
+              />
+            </div>
             <div
               v-if="
                 hasEnglishQuoteTranslation &&
@@ -65,11 +78,21 @@
             </span>
           </div>
         </div>
+      </section>
+    </template>
+    <!-- Custom rendering for Related Questions section -->
+    <template #related-questions>
+      <section class="section-gap p-0 m-0">
         <RelatedQuestions
           :jurisdictionCode="
             modifiedCourtDecision['Jurisdictions Alpha-3 Code'] || ''
           "
           :questions="modifiedCourtDecision['Questions'] || ''"
+          :tooltip="
+            computedKeyLabelPairs.find(
+              (pair) => pair.key === 'Related Questions'
+            )?.tooltip
+          "
         />
       </section>
     </template>
@@ -79,6 +102,11 @@
           :themes="themes"
           :valueClassMap="valueClassMap['Related Literature']"
           :useId="false"
+          :tooltip="
+            computedKeyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature'
+            )?.tooltip
+          "
         />
       </section>
     </template>
@@ -101,6 +129,7 @@ import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import RelatedQuestions from '~/components/legal/RelatedQuestions.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { courtDecisionConfig } from '~/config/pageConfigs'
