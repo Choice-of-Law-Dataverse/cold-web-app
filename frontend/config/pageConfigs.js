@@ -393,22 +393,39 @@ export const legalInstrumentConfig = {
 }
 
 // Regional Instrument Page
+
+// Tooltips for Regional Instrument Page
+import tooltipRegionalInstrumentAbbreviation from '@/content/info_boxes/regional_instrument/abbreviation.md?raw'
+import tooltipRegionalInstrumentDate from '@/content/info_boxes/regional_instrument/date.md?raw'
+import tooltipRegionalInstrumentRelatedLiterature from '@/content/info_boxes/regional_instrument/related_literature.md?raw'
+import tooltipRegionalInstrumentSelectedProvisions from '@/content/info_boxes/regional_instrument/selected_provisions.md?raw'
+import tooltipRegionalInstrumentSpecialists from '@/content/info_boxes/regional_instrument/specialists.md?raw'
+import tooltipRegionalInstrumentTitle from '@/content/info_boxes/regional_instrument/title.md?raw'
+
 export const regionalInstrumentConfig = {
   keyLabelPairs: [
     {
       key: 'Abbreviation',
       label: 'Abbreviation',
+      tooltip: tooltipRegionalInstrumentAbbreviation,
       emptyValueBehavior: { action: 'display', fallback: 'No title available' },
     },
-    { key: 'Title', label: 'Title', emptyValueBehavior: { action: 'hide' } },
+    {
+      key: 'Title',
+      label: 'Title',
+      tooltip: tooltipRegionalInstrumentTitle,
+      emptyValueBehavior: { action: 'hide' },
+    },
     {
       key: 'Date',
       label: 'Date',
+      tooltip: tooltipRegionalInstrumentDate,
       emptyValueBehavior: { action: 'display', fallback: 'N/A' },
     },
     {
       key: 'Specialists',
       label: 'Specialists',
+      tooltip: tooltipRegionalInstrumentSpecialists,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No specialists available',
@@ -417,11 +434,13 @@ export const regionalInstrumentConfig = {
     {
       key: 'Literature',
       label: 'Related Literature',
+      tooltip: tooltipRegionalInstrumentRelatedLiterature,
       emptyValueBehavior: { action: 'hide' },
     },
     {
       key: 'Regional Legal Provisions',
-      label: 'Regional Legal Provisions',
+      label: 'Selected Provisions',
+      tooltip: tooltipRegionalInstrumentSelectedProvisions,
       emptyValueBehavior: { action: 'display', fallback: '' },
     },
   ],
