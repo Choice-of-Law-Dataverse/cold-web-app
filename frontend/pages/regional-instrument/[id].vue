@@ -17,6 +17,10 @@
               (pair) => pair.key === 'Literature'
             )?.emptyValueBehavior
           "
+          :tooltip="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Literature')
+              ?.tooltip
+          "
           mode="id"
         />
       </section>
