@@ -85,6 +85,7 @@ import tooltipJurisdictionJurisdictionalDifferentiator from '@/content/info_boxe
 import tooltipJurisdictionRelatedLiterature from '@/content/info_boxes/jurisdiction/related_literature.md?raw'
 import tooltipJurisdictionSpecialists from '@/content/info_boxes/jurisdiction/specialists.md?raw'
 import tooltipJurisdictionSummary from '@/content/info_boxes/jurisdiction/summary.md?raw'
+import tooltipJurisdictionRelatedData from '@/content/info_boxes/jurisdiction/related_data.md?raw'
 
 export const jurisdictionConfig = {
   keyLabelPairs: [
@@ -120,6 +121,12 @@ export const jurisdictionConfig = {
       emptyValueBehavior: {
         action: 'hide',
       },
+    },
+    {
+      key: 'Related Data',
+      label: 'Related Data',
+      tooltip: tooltipJurisdictionRelatedData,
+      emptyValueBehavior: { action: 'hide' },
     },
   ],
   valueClassMap: {

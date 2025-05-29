@@ -75,7 +75,10 @@
           (domesticInstrumentCount !== 0 && domesticInstrumentCount !== null)
         "
       >
-        <span class="label !mb-4 !mt-0.5">Related Data</span>
+        <span class="label !mb-4 !mt-0.5"
+          >Related Data <InfoTooltip :text="tooltip"
+        /></span>
+
         <template v-if="countsLoading">
           <LoadingBar />
         </template>
@@ -168,6 +171,10 @@ import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useJurisdiction } from '~/composables/useJurisdiction'
 import { jurisdictionConfig } from '~/config/pageConfigs'
 import { useRuntimeConfig } from '#app'
+
+const tooltip = jurisdictionConfig.keyLabelPairs.find(
+  (pair) => pair.key === 'Related Data'
+)?.tooltip
 
 const route = useRoute()
 const router = useRouter()
