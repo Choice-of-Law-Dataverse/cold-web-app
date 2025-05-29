@@ -17,7 +17,7 @@
           v-if="
             keyLabelPairs.find((pair) => pair.key === 'Specialist')?.tooltip
           "
-          :content="
+          :text="
             keyLabelPairs.find((pair) => pair.key === 'Specialist')?.tooltip
           "
           class="ml-1 align-middle"
@@ -159,6 +159,7 @@ import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import JurisdictionComparison from '~/components/jurisdiction-comparison/JurisdictionComparison.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import LoadingBar from '~/components/layout/LoadingBar.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useJurisdiction } from '~/composables/useJurisdiction'
 import { jurisdictionConfig } from '~/config/pageConfigs'
 import { useRuntimeConfig } from '#app'
