@@ -55,7 +55,7 @@ export const literatureConfig = {
     },
     {
       key: 'Publication Title',
-      label: 'Publication pageconfig',
+      label: 'Publication',
       tooltip: tooltipLiteraturePublication,
       emptyValueBehavior: {
         action: 'display',
@@ -65,7 +65,7 @@ export const literatureConfig = {
     },
     {
       key: 'Publisher',
-      label: 'Publisher pageconfig',
+      label: 'Publisher',
       tooltip: tooltipLiteraturePublisher,
       emptyValueBehavior: {
         action: 'display',

@@ -18,8 +18,22 @@
         <div>
           <span class="label" style="display: block; margin-bottom: 0.5rem">
             {{
-              computedKeyLabelPairs.find((pair) => pair.key === 'Publication Title')?.label || 'Publication'
+              computedKeyLabelPairs.find(
+                (pair) => pair.key === 'Publication Title'
+              )?.label || 'Publication'
             }}
+            <InfoTooltip
+              v-if="
+                computedKeyLabelPairs.find(
+                  (pair) => pair.key === 'Publication Title'
+                )?.tooltip
+              "
+              :text="
+                computedKeyLabelPairs.find(
+                  (pair) => pair.key === 'Publication Title'
+                )?.tooltip
+              "
+            />
           </span>
           <span class="result-value-small">{{ value }}</span>
         </div>
@@ -30,8 +44,19 @@
         <div>
           <span class="label" style="display: block; margin-bottom: 0.5rem">
             {{
-              computedKeyLabelPairs.find((pair) => pair.key === 'Publisher')?.label || 'Publisher'
+              computedKeyLabelPairs.find((pair) => pair.key === 'Publisher')
+                ?.label || 'Publisher'
             }}
+            <InfoTooltip
+              v-if="
+                computedKeyLabelPairs.find((pair) => pair.key === 'Publisher')
+                  ?.tooltip
+              "
+              :text="
+                computedKeyLabelPairs.find((pair) => pair.key === 'Publisher')
+                  ?.tooltip
+              "
+            />
           </span>
           <span class="result-value-small">{{ value }}</span>
         </div>
@@ -47,6 +72,7 @@ import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { literatureConfig } from '~/config/pageConfigs'
 
 const route = useRoute()
