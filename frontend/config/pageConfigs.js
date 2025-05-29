@@ -106,7 +106,7 @@ export const jurisdictionConfig = {
     },
     {
       key: 'Specialist',
-      label: 'Specialists pageconfigs',
+      label: 'Specialists',
       tooltip: tooltipJurisdictionSpecialists,
       emptyValueBehavior: {
         action: 'display',

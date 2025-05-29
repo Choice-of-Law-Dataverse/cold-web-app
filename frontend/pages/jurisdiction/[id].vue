@@ -8,7 +8,21 @@
   >
     <!-- Specialists Section -->
     <section class="section-gap p-0 m-0">
-      <span class="label">Specialists</span>
+      <span class="label">
+        {{
+          keyLabelPairs.find((pair) => pair.key === 'Specialist')?.label ||
+          'Specialists'
+        }}
+        <InfoTooltip
+          v-if="
+            keyLabelPairs.find((pair) => pair.key === 'Specialist')?.tooltip
+          "
+          :content="
+            keyLabelPairs.find((pair) => pair.key === 'Specialist')?.tooltip
+          "
+          class="ml-1 align-middle"
+        />
+      </span>
       <template v-if="specialists.length">
         <ul class="section-gap p-0 m-0">
           <li
