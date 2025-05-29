@@ -80,11 +80,18 @@ export const literatureConfig = {
 }
 
 // Jurisdiction Page
+// Tooltips for Jurisdiction Page
+import tooltipJurisdictionJurisdictionalDifferentiator from '@/content/info_boxes/jurisdiction/jurisdictional_differentiator.md?raw'
+import tooltipJurisdictionRelatedLiterature from '@/content/info_boxes/jurisdiction/related_literature.md?raw'
+import tooltipJurisdictionSpecialists from '@/content/info_boxes/jurisdiction/specialists.md?raw'
+import tooltipJurisdictionSummary from '@/content/info_boxes/jurisdiction/summary.md?raw'
+
 export const jurisdictionConfig = {
   keyLabelPairs: [
     {
       key: 'Jurisdiction Summary',
       label: 'Summary',
+      tooltip: tooltipJurisdictionSummary,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -92,14 +99,15 @@ export const jurisdictionConfig = {
     {
       key: 'Jurisdictional Differentiator',
       label: 'Jurisdictional Differentiator',
+      tooltip: tooltipJurisdictionJurisdictionalDifferentiator,
       emptyValueBehavior: {
         action: 'hide',
       },
     },
-    // Removed Legal Family from here, now only in card header
     {
       key: 'Specialist',
-      label: 'Specialists',
+      label: 'Specialists pageconfigs',
+      tooltip: tooltipJurisdictionSpecialists,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No specialists available',
@@ -108,6 +116,7 @@ export const jurisdictionConfig = {
     {
       key: 'Related Literature',
       label: 'Related Literature',
+      tooltip: tooltipJurisdictionRelatedLiterature,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -116,7 +125,7 @@ export const jurisdictionConfig = {
   valueClassMap: {
     'Jurisdiction Summary': 'result-value-small section-gap',
     'Jurisdictional Differentiator': 'result-value-small section-gap',
-    // 'Legal Family': 'result-value-small', // not needed in detail section
+    Specialists: 'result-value-small section-gap',
     'Related Literature': 'result-value-small section-gap',
   },
 }
