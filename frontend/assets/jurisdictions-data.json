@@ -229,7 +229,14 @@
   },
   {
     "name": ["United Kingdom"],
-    "alternative": ["GBR", "British"]
+    "alternative": [
+      "GBR",
+      "British",
+      "English",
+      "Welsh",
+      "Scottish",
+      "Northern Irish"
+    ]
   },
   {
     "name": ["Georgia"],
