@@ -44,6 +44,18 @@
               (pair) => pair.key === 'Regional Legal Provisions'
             )?.label || 'Selected Provisions'
           }}
+          <InfoTooltip
+            v-if="
+              computedKeyLabelPairs.find(
+                (pair) => pair.key === 'Regional Legal Provisions'
+              )?.tooltip
+            "
+            :text="
+              computedKeyLabelPairs.find(
+                (pair) => pair.key === 'Regional Legal Provisions'
+              )?.tooltip
+            "
+          />
         </p>
         <div :class="valueClassMap['Regional Legal Provisions']">
           <div v-if="value && value.trim()">
@@ -77,6 +89,7 @@ import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { regionalInstrumentConfig } from '~/config/pageConfigs'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import LegalProvision from '~/components/legal/LegalProvision.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 
 const route = useRoute()
 const router = useRouter()
