@@ -25,8 +25,12 @@
           {{ jurisdictionString }}
         </span>
         <!-- Legal Family next to jurisdiction name -->
-        <span v-if="legalFamily && legalFamily !== 'N/A'" class="label-theme">
-          {{ legalFamily }}
+        <span
+          v-for="(family, index) in legalFamily"
+          :key="`legal-family-${index}`"
+          class="label-theme"
+        >
+          {{ family }}
         </span>
         <!-- Display 'source_table' -->
         <span v-if="adjustedSourceTable" :class="['label', labelColorClass]">
@@ -336,14 +340,18 @@ function getJurisdictionISO(name) {
 
 // Add computed for legalFamily
 const legalFamily = computed(() => {
-  // Only show for jurisdiction-type cards
   if (
     props.resultData &&
     (props.cardType === 'Jurisdiction' || props.resultData['Legal Family'])
   ) {
-    return props.resultData['Legal Family'] || ''
+    const value = props.resultData['Legal Family'] || ''
+    if (!value || value === 'N/A') return []
+    return value
+      .split(',')
+      .map((f) => f.trim())
+      .filter((f) => f)
   }
-  return ''
+  return []
 })
 </script>
 
