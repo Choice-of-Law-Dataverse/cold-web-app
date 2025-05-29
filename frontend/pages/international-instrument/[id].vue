@@ -6,15 +6,6 @@
     :valueClassMap="valueClassMap"
     sourceTable="International Instrument"
   >
-    <template #date="{ value }">
-      <div v-if="value">
-        <p class="label-key mb-2">Date</p>
-        <p :class="valueClassMap['Date']">
-          {{ formatDate(value) }}
-        </p>
-      </div>
-    </template>
-
     <template #literature>
       <section class="section-gap p-0 m-0">
         <RelatedLiterature

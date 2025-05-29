@@ -422,6 +422,8 @@ export const internationalInstrumentConfig = {
       label: 'Date',
       tooltip: tooltipInternationalInstrumentDate,
       emptyValueBehavior: { action: 'display', fallback: 'N/A' },
+      valueTransform: (val) =>
+        typeof formatDate === 'function' ? formatDate(val) : val,
     },
     {
       key: 'Specialists',
@@ -448,6 +450,7 @@ export const internationalInstrumentConfig = {
   valueClassMap: {
     Name: 'result-value-medium section-gap',
     Date: 'result-value-small section-gap',
+    Specialists: 'result-value-small section-gap',
     'Related Literature': 'result-value-small section-gap',
     'Selected Provisions': 'result-value-small section-gap',
   },
