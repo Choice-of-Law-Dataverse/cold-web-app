@@ -57,6 +57,11 @@
               (pair) => pair.key === 'Related Literature'
             )?.emptyValueBehavior
           "
+          :tooltip="
+            jurisdictionConfig.keyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature'
+            )?.tooltip
+          "
           mode="id"
         />
       </section>
