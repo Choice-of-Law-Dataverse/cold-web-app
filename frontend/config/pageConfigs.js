@@ -393,7 +393,6 @@ export const legalInstrumentConfig = {
 }
 
 // Regional Instrument Page
-
 // Tooltips for Regional Instrument Page
 import tooltipRegionalInstrumentAbbreviation from '@/content/info_boxes/regional_instrument/abbreviation.md?raw'
 import tooltipRegionalInstrumentDate from '@/content/info_boxes/regional_instrument/date.md?raw'
@@ -421,6 +420,8 @@ export const regionalInstrumentConfig = {
       label: 'Date',
       tooltip: tooltipRegionalInstrumentDate,
       emptyValueBehavior: { action: 'display', fallback: 'N/A' },
+      valueTransform: (val) =>
+        typeof formatDate === 'function' ? formatDate(val) : val,
     },
     {
       key: 'Specialists',
