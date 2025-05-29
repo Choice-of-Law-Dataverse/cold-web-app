@@ -16,9 +16,11 @@
     <template #publication-title="{ value }">
       <section v-if="value" class="section-gap">
         <div>
-          <span class="label" style="display: block; margin-bottom: 0.5rem"
-            >Publication</span
-          >
+          <span class="label" style="display: block; margin-bottom: 0.5rem">
+            {{
+              computedKeyLabelPairs.find((pair) => pair.key === 'Publication Title')?.label || 'Publication'
+            }}
+          </span>
           <span class="result-value-small">{{ value }}</span>
         </div>
       </section>
@@ -26,9 +28,11 @@
     <template #publisher="{ value }">
       <section v-if="value" class="section-gap">
         <div>
-          <span class="label" style="display: block; margin-bottom: 0.5rem"
-            >Publisher</span
-          >
+          <span class="label" style="display: block; margin-bottom: 0.5rem">
+            {{
+              computedKeyLabelPairs.find((pair) => pair.key === 'Publisher')?.label || 'Publisher'
+            }}
+          </span>
           <span class="result-value-small">{{ value }}</span>
         </div>
       </section>
