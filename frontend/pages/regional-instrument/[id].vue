@@ -38,7 +38,13 @@
         v-if="value && value.trim() && value.trim() !== 'N/A'"
         class="section-gap p-0 m-0"
       >
-        <p class="label mt-12 mb-[-24px]">Selected Provisions</p>
+        <p class="label mt-12 mb-[-24px]">
+          {{
+            computedKeyLabelPairs.find(
+              (pair) => pair.key === 'Regional Legal Provisions'
+            )?.label || 'Selected Provisions'
+          }}
+        </p>
         <div :class="valueClassMap['Regional Legal Provisions']">
           <div v-if="value && value.trim()">
             <LegalProvision
