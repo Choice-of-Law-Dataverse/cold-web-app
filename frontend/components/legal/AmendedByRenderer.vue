@@ -1,18 +1,26 @@
 <template>
-  <span v-if="title !== null">
-    <NuxtLink v-if="title && id" :to="generateInstrumentLink(id)">{{
-      title
-    }}</NuxtLink>
-    <span v-else>{{ id }}</span>
-  </span>
-  <LoadingBar v-else />
+  <div>
+    <p class="label mb-1">
+      {{ sectionLabel }}
+      <InfoTooltip v-if="sectionTooltip" :text="sectionTooltip" />
+    </p>
+    <span v-if="title !== null">
+      <NuxtLink v-if="title && id" :to="generateInstrumentLink(id)">{{
+        title
+      }}</NuxtLink>
+      <span v-else>{{ id }}</span>
+    </span>
+    <LoadingBar v-else />
+  </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import { NuxtLink } from '#components'
 import LoadingBar from '../layout/LoadingBar.vue'
+import InfoTooltip from '../ui/InfoTooltip.vue'
+import { legalInstrumentConfig } from '~/config/pageConfigs'
 
 const props = defineProps({
   id: {
@@ -23,6 +31,13 @@ const props = defineProps({
 
 const config = useRuntimeConfig()
 const title = ref(null)
+
+// Get label and tooltip from pageConfigs
+const sectionConfig = legalInstrumentConfig.keyLabelPairs.find(
+  (pair) => pair.key === 'Amended by'
+)
+const sectionLabel = computed(() => sectionConfig?.label || 'Amended by')
+const sectionTooltip = computed(() => sectionConfig?.tooltip)
 
 async function fetchTitle(instrumentId) {
   if (!instrumentId) return
