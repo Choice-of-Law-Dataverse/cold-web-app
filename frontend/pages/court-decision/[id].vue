@@ -23,6 +23,7 @@
               (pair) => pair.key === 'Domestic Legal Provisions'
             )?.tooltip
           "
+          table="Domestic Instruments"
           class="mb-8"
         />
       </div>

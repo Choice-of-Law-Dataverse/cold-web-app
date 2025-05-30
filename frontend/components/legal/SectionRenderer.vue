@@ -38,6 +38,10 @@ const props = defineProps({
     type: String,
     default: '',
   },
+  table: {
+    type: String,
+    default: 'Domestic Instruments',
+  },
 })
 
 const config = useRuntimeConfig()
@@ -52,7 +56,7 @@ async function fetchTitle(instrumentId) {
         authorization: `Bearer ${config.public.FASTAPI}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ table: 'Domestic Instruments', id: instrumentId }),
+      body: JSON.stringify({ table: props.table, id: instrumentId }),
     })
     if (!response.ok) throw new Error('Failed to fetch instrument title')
     const data = await response.json()
@@ -73,6 +77,10 @@ watch(
 )
 
 function generateInstrumentLink(instrumentId) {
-  return `/domestic-instrument/${instrumentId}`
+  let base = props.table.toLowerCase().replace(/\s+/g, '-')
+  if (base.endsWith('s')) {
+    base = base.slice(0, -1)
+  }
+  return `/${base}/${instrumentId}`
 }
 </script>

@@ -9,7 +9,7 @@
     <!-- Slot for Amended by -->
     <template #amended-by="{ value }">
       <div :class="valueClassMap['Amended by']">
-        <AmendRenderer
+        <SectionRenderer
           v-if="value"
           :id="value"
           section="Amended by"
@@ -21,6 +21,7 @@
             computedKeyLabelPairs.find((pair) => pair.key === 'Amended by')
               ?.tooltip
           "
+          table="Domestic Instruments"
           class="mb-8"
         />
       </div>
@@ -28,7 +29,7 @@
     <!-- Slot for Amends -->
     <template #amends="{ value }">
       <div :class="valueClassMap['Amends']">
-        <AmendRenderer
+        <SectionRenderer
           v-if="value"
           :id="value"
           section="Amends"
@@ -38,6 +39,7 @@
           :sectionTooltip="
             computedKeyLabelPairs.find((pair) => pair.key === 'Amends')?.tooltip
           "
+          table="Domestic Instruments"
           class="mb-8"
         />
       </div>
@@ -45,7 +47,7 @@
     <!-- Slot for Replaced by -->
     <template #replaced-by="{ value }">
       <div :class="valueClassMap['Replaced by']">
-        <AmendRenderer
+        <SectionRenderer
           v-if="value"
           :id="value"
           section="Replaced by"
@@ -57,6 +59,7 @@
             computedKeyLabelPairs.find((pair) => pair.key === 'Replaced by')
               ?.tooltip
           "
+          table="Domestic Instruments"
           class="mb-8"
         />
       </div>
@@ -64,7 +67,7 @@
     <!-- Slot for Replaces -->
     <template #replaces="{ value }">
       <div :class="valueClassMap['Replaces']">
-        <AmendRenderer
+        <SectionRenderer
           v-if="value"
           :id="value"
           section="Replaces"
@@ -75,6 +78,7 @@
             computedKeyLabelPairs.find((pair) => pair.key === 'Replaces')
               ?.tooltip
           "
+          table="Domestic Instruments"
           class="mb-8"
         />
       </div>
@@ -136,7 +140,7 @@ import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { legalInstrumentConfig } from '~/config/pageConfigs'
-import AmendRenderer from '~/components/legal/SectionRenderer.vue'
+import SectionRenderer from '~/components/legal/SectionRenderer.vue'
 
 const route = useRoute()
 const router = useRouter()
