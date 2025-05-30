@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Removed individual loading indicator; show a global loader in the parent instead -->
     <div v-if="error">{{ error }}</div>
     <div v-else>
       <div :id="anchorId" :class="['legal-content', customClass]">

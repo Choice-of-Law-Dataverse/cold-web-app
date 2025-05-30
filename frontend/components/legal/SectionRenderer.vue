@@ -4,9 +4,9 @@
       {{ sectionLabel }}
       <InfoTooltip v-if="sectionTooltip" :text="sectionTooltip" />
     </p>
-    <span v-if="title !== null">
-      <NuxtLink v-if="title && id" :to="generateInstrumentLink(id)">{{
-        title
+    <span v-if="instrumentTitle !== null">
+      <NuxtLink v-if="displayTitle && id" :to="generateInstrumentLink(id)">{{
+        displayTitle
       }}</NuxtLink>
       <span v-else>{{ id }}</span>
     </span>
@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import { NuxtLink } from '#components'
 import LoadingBar from '../layout/LoadingBar.vue'
@@ -46,6 +46,18 @@ const props = defineProps({
 
 const config = useRuntimeConfig()
 const title = ref(null)
+const instrumentTitle = ref(null)
+const articlePart = ref('')
+
+function parseIdParts(id) {
+  // Split at first whitespace
+  const match = String(id).match(/^(\S+)\s+(.+)$/)
+  if (match) {
+    return { instrumentId: match[1], article: match[2] }
+  } else {
+    return { instrumentId: id, article: '' }
+  }
+}
 
 async function fetchTitle(instrumentId) {
   if (!instrumentId) return
@@ -60,18 +72,39 @@ async function fetchTitle(instrumentId) {
     })
     if (!response.ok) throw new Error('Failed to fetch instrument title')
     const data = await response.json()
-    title.value = data['Title (in English)'] || instrumentId
+    instrumentTitle.value =
+      data['Abbreviation'] || data['Title (in English)'] || instrumentId
   } catch (err) {
     console.error('Error fetching instrument title:', err)
-    title.value = instrumentId
+    instrumentTitle.value = instrumentId
   }
 }
+
+const displayTitle = computed(() => {
+  // If loading instrumentTitle, show nothing (handled by LoadingBar)
+  if (instrumentTitle.value === null) return ''
+  // Compose display: article part (if any), then instrument title (if any)
+  let result = ''
+  if (articlePart.value) {
+    result += articlePart.value
+  }
+  if (instrumentTitle.value) {
+    if (result) result += ', '
+    result += instrumentTitle.value
+  }
+  // Fallback: if nothing, show id
+  return result || props.id
+})
 
 watch(
   () => props.id,
   (newId) => {
     title.value = null
-    fetchTitle(newId)
+    instrumentTitle.value = null
+    articlePart.value = ''
+    const { instrumentId, article } = parseIdParts(newId)
+    articlePart.value = article
+    fetchTitle(instrumentId)
   },
   { immediate: true }
 )
