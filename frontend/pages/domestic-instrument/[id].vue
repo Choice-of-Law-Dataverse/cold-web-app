@@ -9,7 +9,7 @@
     <!-- Slot for Amended by -->
     <template #amended-by="{ value }">
       <div :class="valueClassMap['Amended by']">
-        <AmendedByRenderer v-if="value" :id="value" />
+        <AmendedByRenderer v-if="value" :id="value" class="mb-8" />
       </div>
     </template>
     <!-- Slot for Legal provisions -->
