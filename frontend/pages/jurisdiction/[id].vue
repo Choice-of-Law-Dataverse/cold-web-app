@@ -259,7 +259,8 @@ watch(
   (newVal) => {
     if (!newVal) return
     const name = newVal.Name
-    const pageTitle = name && name.trim() ? `${name} — CoLD` : 'Jurisdiction — CoLD'
+    const pageTitle =
+      name && name.trim() ? `${name} — CoLD` : 'Jurisdiction — CoLD'
     useHead({ title: pageTitle })
   },
   { immediate: true }
