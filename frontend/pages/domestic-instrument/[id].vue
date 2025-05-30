@@ -6,6 +6,12 @@
     :valueClassMap="valueClassMap"
     sourceTable="Domestic Instrument"
   >
+    <!-- Slot for Amended by -->
+    <template #amended-by="{ value }">
+      <div :class="valueClassMap['Amended by']">
+        <AmendedByRenderer v-if="value" :id="value" />
+      </div>
+    </template>
     <!-- Slot for Legal provisions -->
     <template #domestic-legal-provisions="{ value }">
       <!-- Only render if value exists and is not "N/A" -->
@@ -63,6 +69,7 @@ import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { legalInstrumentConfig } from '~/config/pageConfigs'
+import AmendedByRenderer from '~/components/legal/AmendedByRenderer.vue'
 
 const route = useRoute()
 const router = useRouter()
