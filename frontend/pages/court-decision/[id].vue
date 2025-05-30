@@ -135,6 +135,7 @@ import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { courtDecisionConfig } from '~/config/pageConfigs'
 import { formatDate } from '~/utils/format.js'
 import { ref } from 'vue'
+import { useHead } from '#imports'
 
 const route = useRoute()
 const router = useRouter()
@@ -216,5 +217,23 @@ watch(
       fetchCourtDecision()
     }
   }
+)
+
+// Set dynamic page title based on Case Title or Citation
+watch(
+  modifiedCourtDecision,
+  (newVal) => {
+    if (!newVal) return
+    const caseTitle = newVal['Case Title']
+    const citation = newVal['Case Citation']
+    const title =
+      caseTitle && caseTitle.trim() && caseTitle !== 'Not found'
+        ? `${caseTitle} — CoLD`
+        : citation && citation.trim()
+          ? `${citation} — CoLD`
+          : 'Court Decision — CoLD'
+    useHead({ title })
+  },
+  { immediate: true }
 )
 </script>
