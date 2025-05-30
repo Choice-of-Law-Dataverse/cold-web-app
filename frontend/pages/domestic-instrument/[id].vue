@@ -136,7 +136,7 @@ import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { legalInstrumentConfig } from '~/config/pageConfigs'
-import AmendRenderer from '~/components/legal/AmendRenderer.vue'
+import AmendRenderer from '~/components/legal/SectionRenderer.vue'
 
 const route = useRoute()
 const router = useRouter()

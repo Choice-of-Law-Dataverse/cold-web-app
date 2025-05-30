@@ -6,10 +6,10 @@
     :valueClassMap="valueClassMap"
     sourceTable="Court Decisions"
   >
-    <!-- Slot for Amended by -->
+    <!-- Slot for Domestic Legal Provisions -->
     <template #domestic-legal-provisions="{ value }">
       <div :class="valueClassMap['Domestic Legal Provisions']">
-        <AmendRenderer
+        <ProvisionRenderer
           v-if="value"
           :id="value"
           section="Domestic Legal Provisions"
@@ -156,7 +156,7 @@ import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { courtDecisionConfig } from '~/config/pageConfigs'
 import { formatDate } from '~/utils/format.js'
 import { ref } from 'vue'
-import AmendRenderer from '~/components/legal/AmendRenderer.vue'
+import ProvisionRenderer from '~/components/legal/SectionRenderer.vue'
 
 const route = useRoute()
 const router = useRouter()
