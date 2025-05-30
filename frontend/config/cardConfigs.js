@@ -149,7 +149,7 @@ export const courtDecisionCardConfig = {
   },
 }
 
-// Legal Instrument (Domestic Instrument) Card
+// Domestic Instrument Card (formerly Legal Instrument Card)
 export const legislationCardConfig = {
   keyLabelPairs: [
     {
