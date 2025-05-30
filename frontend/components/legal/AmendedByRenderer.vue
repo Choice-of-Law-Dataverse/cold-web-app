@@ -27,17 +27,21 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  section: {
+    type: String,
+    default: 'Amended by',
+  },
 })
 
 const config = useRuntimeConfig()
 const title = ref(null)
 
-// Get label and tooltip from pageConfigs
-const sectionConfig = legalInstrumentConfig.keyLabelPairs.find(
-  (pair) => pair.key === 'Amended by'
+// Get label and tooltip from pageConfigs based on section prop
+const sectionConfig = computed(() =>
+  legalInstrumentConfig.keyLabelPairs.find((pair) => pair.key === props.section)
 )
-const sectionLabel = computed(() => sectionConfig?.label || 'Amended by')
-const sectionTooltip = computed(() => sectionConfig?.tooltip)
+const sectionLabel = computed(() => sectionConfig.value?.label || props.section)
+const sectionTooltip = computed(() => sectionConfig.value?.tooltip)
 
 async function fetchTitle(instrumentId) {
   if (!instrumentId) return
