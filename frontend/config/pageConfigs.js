@@ -691,6 +691,7 @@ export const courtDecisionConfig = {
     'Original Text': 'result-value-small section-gap',
     'Related Literature': 'result-value-small section-gap',
     'Related Questions': 'result-value-small section-gap',
+    'Domestic Legal Provisions': 'result-value-small section-gap',
   },
 }
 
