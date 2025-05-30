@@ -9,7 +9,7 @@
     <!-- Slot for Amended by -->
     <template #amended-by="{ value }">
       <div :class="valueClassMap['Amended by']">
-        <AmendedByRenderer
+        <AmendRenderer
           v-if="value"
           :id="value"
           section="Amended by"
@@ -20,12 +20,7 @@
     <!-- Slot for Amends -->
     <template #amends="{ value }">
       <div :class="valueClassMap['Amends']">
-        <AmendedByRenderer
-          v-if="value"
-          :id="value"
-          section="Amends"
-          class="mb-8"
-        />
+        <AmendRenderer v-if="value" :id="value" section="Amends" class="mb-8" />
       </div>
     </template>
     <!-- Slot for Legal provisions -->
@@ -85,7 +80,7 @@ import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { legalInstrumentConfig } from '~/config/pageConfigs'
-import AmendedByRenderer from '~/components/legal/AmendedByRenderer.vue'
+import AmendRenderer from '~/components/legal/AmendRenderer.vue'
 
 const route = useRoute()
 const router = useRouter()
