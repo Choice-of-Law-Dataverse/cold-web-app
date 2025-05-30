@@ -8,8 +8,26 @@
   >
     <!-- Custom rendering for Legal provision articles -->
     <template #domestic-legal-provisions="{ value }">
-      <section>
-        <span class="label">Source</span>
+      <section class="section-gap">
+        <span class="label">
+          {{
+            filteredKeyLabelPairs.find(
+              (pair) => pair.key === 'Domestic Legal Provisions'
+            )?.label || 'Source fallback'
+          }}
+          <InfoTooltip
+            v-if="
+              filteredKeyLabelPairs.find(
+                (pair) => pair.key === 'Domestic Legal Provisions'
+              )?.tooltip
+            "
+            :text="
+              filteredKeyLabelPairs.find(
+                (pair) => pair.key === 'Domestic Legal Provisions'
+              )?.tooltip
+            "
+          />
+        </span>
         <QuestionSourceList
           :sources="
             [
@@ -28,8 +46,26 @@
 
     <!-- Custom rendering for Court Decisions ID -->
     <template #court-decisions-id="{ value }">
-      <section id="related-court-decisions">
-        <span class="label">Related Court Decisions</span>
+      <section id="related-court-decisions" class="section-gap">
+        <span class="label">
+          {{
+            filteredKeyLabelPairs.find(
+              (pair) => pair.key === 'Court Decisions ID'
+            )?.label || 'Related Court Decisions'
+          }}
+          <InfoTooltip
+            v-if="
+              filteredKeyLabelPairs.find(
+                (pair) => pair.key === 'Court Decisions ID'
+              )?.tooltip
+            "
+            :text="
+              filteredKeyLabelPairs.find(
+                (pair) => pair.key === 'Court Decisions ID'
+              )?.tooltip
+            "
+          />
+        </span>
         <CourtDecisionRenderer
           :value="value"
           :valueClassMap="valueClassMap['Court Decisions ID']"
@@ -43,7 +79,7 @@
     </template>
 
     <template #related-literature>
-      <section>
+      <section class="section-gap">
         <RelatedLiterature
           :themes="processedAnswerData?.Themes"
           :literatureId="processedAnswerData?.['Jurisdictions Literature ID']"
@@ -59,7 +95,11 @@
               (pair) => pair.key === 'Related Literature'
             )?.emptyValueBehavior
           "
-          class="!mt-2"
+          :tooltip="
+            filteredKeyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature'
+            )?.tooltip
+          "
         />
       </section>
     </template>
@@ -73,6 +113,7 @@ import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import QuestionSourceList from '~/components/sources/QuestionSourceList.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useQuestion } from '~/composables/useQuestion'
 import { questionConfig } from '~/config/pageConfigs'
 

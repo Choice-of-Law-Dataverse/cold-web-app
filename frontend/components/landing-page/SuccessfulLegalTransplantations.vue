@@ -1,10 +1,9 @@
 <template>
   <UCard class="cold-ucard">
-    <div class="popular-searches-container flex flex-col md:flex-row gap-8">
-      <h2 class="popular-title text-left md:whitespace-nowrap">
-        Successful Legal Transplantations
-      </h2>
-    </div>
+    <h2 class="popular-title">Successful Legal Transplantations</h2>
+    <p class="result-value-small">
+      Domestic Instruments compatible with the HCCH Principles
+    </p>
     <div>
       <div v-if="isLoading">
         <LoadingLandingPageCard />
@@ -13,7 +12,7 @@
         <div v-for="(instrument, index) in domesticInstruments" :key="index">
           <RouterLink :to="`/domestic-instrument/${instrument.ID}`">
             <UButton
-              class="suggestion-button mt-8"
+              class="suggestion-button mt-6"
               variant="link"
               icon="i-material-symbols:arrow-forward"
               trailing
@@ -87,4 +86,9 @@ async function fetchDomesticInstruments() {
 onMounted(fetchDomesticInstruments)
 </script>
 
-<style scoped></style>
+<style scoped>
+.result-value-small {
+  line-height: 36px !important;
+  margin-bottom: 0px !important;
+}
+</style>

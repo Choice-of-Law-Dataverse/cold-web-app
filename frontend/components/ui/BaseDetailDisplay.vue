@@ -34,10 +34,10 @@
           class="main-content prose -space-y-10 flex flex-col gap-8 py-8 px-6 w-full"
         >
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
-          <div
+          <section
             v-for="(item, index) in keyLabelPairs"
             :key="index"
-            class="flex flex-col"
+            class="section-gap p-0 m-0 flex flex-col"
           >
             <!-- Check if it's the special 'Specialist' key -->
             <template v-if="item.key === 'Specialist'">
@@ -68,23 +68,9 @@
                       :name="item.key + '-header-actions'"
                       :value="resultData?.[item.key]"
                     />
-                    <!-- Add tooltip for specific labels -->
-                    <template v-if="item.label === 'Question'">
-                      <UTooltip
-                        :text="tooltipQuestion"
-                        :popper="{ placement: 'top' }"
-                        :ui="{
-                          background: 'bg-cold-night',
-                          color: 'text-white',
-                          base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
-                          rounded: 'rounded-none',
-                          ring: '',
-                        }"
-                      >
-                        <span class="ml-1 cursor-pointer">
-                          <Icon name="i-material-symbols:info-outline" />
-                        </span>
-                      </UTooltip>
+                    <!-- Render InfoTooltip if tooltip is defined in config -->
+                    <template v-if="item.tooltip">
+                      <InfoTooltip :text="item.tooltip" />
                     </template>
                   </p>
                   <!-- Conditionally render bullet list if Answer or Specialists is an array -->
@@ -131,7 +117,7 @@
                 </div>
               </template>
             </template>
-          </div>
+          </section>
           <slot name="search-links"></slot>
         </div>
       </div>
@@ -146,8 +132,11 @@ import BackButton from '~/components/ui/BackButton.vue'
 import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
 import NotificationBanner from '~/components/ui/NotificationBanner.vue'
 import LoadingCard from './components/layout/LoadingCard.vue'
+import InfoTooltip from './InfoTooltip.vue'
 
-import tooltipQuestion from '@/content/info_box_question.md?raw'
+// Tooltips for Question Page
+import tooltipQuestion from '@/content/info_boxes/question/question.md?raw'
+import tooltipAnswer from '@/content/info_boxes/question/answer.md?raw'
 
 // Props for reusability across pages
 const props = defineProps({

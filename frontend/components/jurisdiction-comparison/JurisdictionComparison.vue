@@ -221,7 +221,7 @@ async function fetchTableData(jurisdiction) {
 
     rows.value = data.sort(
       (a, b) =>
-        questionOrder.indexOf(a.Questions) - questionOrder.indexOf(b.Questions)
+        questionOrder.indexOf(a.Question) - questionOrder.indexOf(b.Question)
     )
   } finally {
     loading.value = false

@@ -256,6 +256,7 @@ li::marker {
   color: var(--color-cold-purple) !important;
   font-size: 20px !important;
   font-weight: 500 !important;
+  line-height: 1.6em !important;
   text-decoration: none !important;
   padding: 0 !important;
 }
@@ -264,6 +265,11 @@ li::marker {
   @extend .suggestion-button;
   font-size: 14px !important;
   font-weight: 400 !important; // Regular
+}
+
+.showmoreless-icon-large {
+  font-size: 1.4rem !important;
+  transform: translateY(4px) !important;
 }
 
 // Info Box in Jurisdiction Map
@@ -353,4 +359,9 @@ ul[role='listbox'] li[data-headlessui-state='selected']:hover {
 // Curser on plot
 .js-plotly-plot .nsewdrag {
   cursor: default; /* Set default arrow cursor for non-interactive elements */
+}
+
+// Consistent vertical gap between page sections
+.section-gap {
+  margin-bottom: 1.5rem; // 24px, adjust as needed for your design
 }

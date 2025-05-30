@@ -6,80 +6,109 @@
     :valueClassMap="valueClassMap"
     sourceTable="Court Decisions"
   >
-    <!-- Quote section with language toggle and conditional rendering, now inside the related-questions slot and above the questions -->
-    <template #related-questions>
-      <div
-        class="mb-4"
-        v-if="
-          modifiedCourtDecision &&
-          (modifiedCourtDecision['Quote'] ||
-            modifiedCourtDecision['Translated Excerpt'])
-        "
-      >
-        <div class="flex items-center justify-between mb-1">
-          <span class="label">Quote</span>
-          <div
-            v-if="
-              hasEnglishQuoteTranslation &&
-              modifiedCourtDecision['Quote'] &&
-              modifiedCourtDecision['Quote'].trim() !== ''
-            "
-            class="flex items-center gap-1"
-          >
-            <span
-              class="label-key-provision-toggle mr-[-0px]"
-              :class="{
-                'opacity-25': showEnglishQuote,
-                'opacity-100': !showEnglishQuote,
-              }"
+    <!-- Custom rendering for Quote section -->
+    <template #quote>
+      <section class="section-gap p-0 m-0">
+        <div
+          v-if="
+            modifiedCourtDecision &&
+            (modifiedCourtDecision['Quote'] ||
+              modifiedCourtDecision['Translated Excerpt'])
+          "
+        >
+          <div class="flex items-center justify-between">
+            <div class="flex items-center">
+              <span class="label">Quote</span>
+              <InfoTooltip
+                v-if="
+                  computedKeyLabelPairs.find((pair) => pair.key === 'Quote')
+                    ?.tooltip
+                "
+                :text="
+                  computedKeyLabelPairs.find((pair) => pair.key === 'Quote')
+                    ?.tooltip
+                "
+                class="ml-[-8px]"
+              />
+            </div>
+            <div
+              v-if="
+                hasEnglishQuoteTranslation &&
+                modifiedCourtDecision['Quote'] &&
+                modifiedCourtDecision['Quote'].trim() !== ''
+              "
+              class="flex items-center gap-1"
             >
-              Original
-            </span>
-            <UToggle
-              v-model="showEnglishQuote"
-              size="2xs"
-              class="bg-[var(--color-cold-gray)]"
-            />
-            <span
-              class="label-key-provision-toggle"
-              :class="{
-                'opacity-25': !showEnglishQuote,
-                'opacity-100': showEnglishQuote,
-              }"
-            >
-              English
+              <span
+                class="label-key-provision-toggle mr-[-0px]"
+                :class="{
+                  'opacity-25': showEnglishQuote,
+                  'opacity-100': !showEnglishQuote,
+                }"
+              >
+                Original
+              </span>
+              <UToggle
+                v-model="showEnglishQuote"
+                size="2xs"
+                class="bg-[var(--color-cold-gray)]"
+              />
+              <span
+                class="label-key-provision-toggle"
+                :class="{
+                  'opacity-25': !showEnglishQuote,
+                  'opacity-100': showEnglishQuote,
+                }"
+              >
+                English
+              </span>
+            </div>
+          </div>
+          <div>
+            <span style="white-space: pre-line">
+              {{
+                showEnglishQuote &&
+                hasEnglishQuoteTranslation &&
+                modifiedCourtDecision['Quote'] &&
+                modifiedCourtDecision['Quote'].trim() !== ''
+                  ? modifiedCourtDecision['Translated Excerpt']
+                  : modifiedCourtDecision['Quote'] ||
+                    modifiedCourtDecision['Translated Excerpt']
+              }}
             </span>
           </div>
         </div>
-        <div>
-          <span style="white-space: pre-line">
-            {{
-              showEnglishQuote &&
-              hasEnglishQuoteTranslation &&
-              modifiedCourtDecision['Quote'] &&
-              modifiedCourtDecision['Quote'].trim() !== ''
-                ? modifiedCourtDecision['Translated Excerpt']
-                : modifiedCourtDecision['Quote'] ||
-                  modifiedCourtDecision['Translated Excerpt']
-            }}
-          </span>
-        </div>
-      </div>
-      <RelatedQuestions
-        :jurisdictionCode="
-          modifiedCourtDecision['Jurisdictions Alpha-3 Code'] || ''
-        "
-        :questions="modifiedCourtDecision['Questions'] || ''"
-        class="!mt-2"
-      />
+      </section>
+    </template>
+    <!-- Custom rendering for Related Questions section -->
+    <template #related-questions>
+      <section class="section-gap p-0 m-0">
+        <RelatedQuestions
+          :jurisdictionCode="
+            modifiedCourtDecision['Jurisdictions Alpha-3 Code'] || ''
+          "
+          :questions="modifiedCourtDecision['Questions'] || ''"
+          :tooltip="
+            computedKeyLabelPairs.find(
+              (pair) => pair.key === 'Related Questions'
+            )?.tooltip
+          "
+        />
+      </section>
     </template>
     <template #related-literature>
-      <RelatedLiterature
-        :themes="themes"
-        :valueClassMap="valueClassMap['Related Literature']"
-        :useId="false"
-        class="!mt-2"
-      />
+      <section class="section-gap p-0 m-0">
+        <RelatedLiterature
+          :themes="themes"
+          :valueClassMap="valueClassMap['Related Literature']"
+          :useId="false"
+          :tooltip="
+            computedKeyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature'
+            )?.tooltip
+          "
+        />
+      </section>
     </template>
   </BaseDetailLayout>
 
@@ -100,6 +129,7 @@ import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import RelatedQuestions from '~/components/legal/RelatedQuestions.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { courtDecisionConfig } from '~/config/pageConfigs'

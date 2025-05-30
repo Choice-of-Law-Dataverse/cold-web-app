@@ -1,10 +1,7 @@
 <template>
   <UCard class="cold-ucard">
-    <div class="popular-searches-container flex flex-col md:flex-row gap-8">
-      <h2 class="popular-title text-left md:whitespace-nowrap">
-        Leading Cases
-      </h2>
-    </div>
+    <h2 class="popular-title">Leading Cases</h2>
+    <p class="result-value-small">Court decisions ranked highly in CoLD</p>
     <div>
       <div v-if="isLoading">
         <LoadingLandingPageCard />
@@ -34,19 +31,32 @@
             </UButton>
           </RouterLink>
         </div>
+        <div class="mt-8">
+          <ShowMoreLess
+            v-if="allDecisions.length > 3"
+            :isExpanded="showAll"
+            label="leading cases"
+            @update:isExpanded="showAll = $event"
+            buttonClass="suggestion-button"
+            iconClass="showmoreless-icon-large"
+          />
+        </div>
       </template>
     </div>
   </UCard>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRuntimeConfig } from '#app'
 import { RouterLink } from 'vue-router'
 import LoadingLandingPageCard from '../layout/LoadingLandingPageCard.vue'
+import ShowMoreLess from '../ui/ShowMoreLess.vue'
 
 const courtDecisions = ref([])
-const isLoading = ref(true) // Added loading state
+const allDecisions = ref([])
+const isLoading = ref(true)
+const showAll = ref(false)
 const config = useRuntimeConfig()
 
 async function fetchCourtDecisions() {
@@ -73,22 +83,34 @@ async function fetchCourtDecisions() {
     )
     if (!response.ok) throw new Error('Failed to load data')
     const decisionsData = await response.json()
-    // Convert Date to number, sort descending and take the n most recent
     decisionsData.sort(
       (a, b) =>
         formatYear(b['Publication Date ISO']) -
         formatYear(a['Publication Date ISO'])
     )
+    allDecisions.value = decisionsData
     courtDecisions.value = decisionsData.slice(0, 3)
   } catch (error) {
     console.error(error)
     courtDecisions.value = []
+    allDecisions.value = []
   } finally {
-    isLoading.value = false // Set loading to false once finished
+    isLoading.value = false
   }
 }
+
+watch(showAll, (val) => {
+  courtDecisions.value = val
+    ? allDecisions.value
+    : allDecisions.value.slice(0, 3)
+})
 
 onMounted(fetchCourtDecisions)
 </script>
 
-<style scoped></style>
+<style scoped>
+.result-value-small {
+  line-height: 36px !important;
+  margin-bottom: 0px !important;
+}
+</style>

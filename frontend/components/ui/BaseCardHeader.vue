@@ -25,8 +25,12 @@
           {{ jurisdictionString }}
         </span>
         <!-- Legal Family next to jurisdiction name -->
-        <span v-if="legalFamily && legalFamily !== 'N/A'" class="label-theme">
-          {{ legalFamily }}
+        <span
+          v-for="(family, index) in legalFamily"
+          :key="`legal-family-${index}`"
+          class="label-theme"
+        >
+          {{ family }}
         </span>
         <!-- Display 'source_table' -->
         <span v-if="adjustedSourceTable" :class="['label', labelColorClass]">
@@ -249,9 +253,14 @@ const fadeOutClasses = computed(() => ({
 // Action items in "Suggest Edit" area
 const suggestEditActions = computed(() => {
   let linkUrl = ''
+  let linkLabel = 'Link'
   if (props.cardType === 'Literature') {
-    linkUrl =
-      props.resultData['Open Access URL'] || props.resultData['Url'] || ''
+    if (props.resultData['Open Access URL']) {
+      linkUrl = props.resultData['Open Access URL']
+      linkLabel = 'Open Access Link'
+    } else {
+      linkUrl = props.resultData['Url'] || ''
+    }
   } else if (props.cardType === 'Court Decisions') {
     linkUrl = props.resultData['Official Source (URL)'] || ''
   } else if (props.cardType === 'Domestic Instrument') {
@@ -264,7 +273,7 @@ const suggestEditActions = computed(() => {
   const actions = []
   if (linkUrl) {
     actions.push({
-      label: 'Link',
+      label: linkLabel,
       icon: 'i-material-symbols:language',
       to: linkUrl,
     })
@@ -331,14 +340,18 @@ function getJurisdictionISO(name) {
 
 // Add computed for legalFamily
 const legalFamily = computed(() => {
-  // Only show for jurisdiction-type cards
   if (
     props.resultData &&
     (props.cardType === 'Jurisdiction' || props.resultData['Legal Family'])
   ) {
-    return props.resultData['Legal Family'] || ''
+    const value = props.resultData['Legal Family'] || ''
+    if (!value || value === 'N/A') return []
+    return value
+      .split(',')
+      .map((f) => f.trim())
+      .filter((f) => f)
   }
-  return ''
+  return []
 })
 </script>
 
