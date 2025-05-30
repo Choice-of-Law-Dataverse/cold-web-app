@@ -250,6 +250,8 @@ import tooltipDomesticInstrumentDate from '@/content/info_boxes/domestic_instrum
 import tooltipEntryIntoForce from '@/content/info_boxes/domestic_instrument/entry_into_force.md?raw'
 import tooltipOfficialTitle from '@/content/info_boxes/domestic_instrument/official_title.md?raw'
 import tooltipDomesticInstrumentPublicationDate from '@/content/info_boxes/domestic_instrument/publication_date.md?raw'
+import tooltipDomesticInstrumentReplacedBy from '@/content/info_boxes/domestic_instrument/replaced_by.md?raw'
+import tooltipDomesticInstrumentReplaces from '@/content/info_boxes/domestic_instrument/replaces.md?raw'
 import tooltipDomesticInstrumentSelectedProvisions from '@/content/info_boxes/domestic_instrument/selected_provisions.md?raw'
 import tooltipDomesticInstrumentTitle from '@/content/info_boxes/domestic_instrument/title.md?raw'
 
@@ -283,7 +285,7 @@ export const legalInstrumentConfig = {
     {
       key: 'Replaces',
       label: 'Replaces',
-      tooltip: tooltipAbbreviation,
+      tooltip: tooltipDomesticInstrumentReplaces,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -291,7 +293,7 @@ export const legalInstrumentConfig = {
     {
       key: 'Replaced by',
       label: 'Replaced by',
-      tooltip: tooltipAbbreviation,
+      tooltip: tooltipDomesticInstrumentReplacedBy,
       emptyValueBehavior: {
         action: 'hide',
       },

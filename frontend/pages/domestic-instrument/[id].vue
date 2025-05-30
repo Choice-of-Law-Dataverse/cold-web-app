@@ -23,6 +23,28 @@
         <AmendRenderer v-if="value" :id="value" section="Amends" class="mb-8" />
       </div>
     </template>
+    <!-- Slot for Replaced by -->
+    <template #replaced-by="{ value }">
+      <div :class="valueClassMap['Replaced by']">
+        <AmendRenderer
+          v-if="value"
+          :id="value"
+          section="Replaced by"
+          class="mb-8"
+        />
+      </div>
+    </template>
+    <!-- Slot for Amends -->
+    <template #replaces="{ value }">
+      <div :class="valueClassMap['Replaces']">
+        <AmendRenderer
+          v-if="value"
+          :id="value"
+          section="Replaces"
+          class="mb-8"
+        />
+      </div>
+    </template>
     <!-- Slot for Legal provisions -->
     <template #domestic-legal-provisions="{ value }">
       <!-- Only render if value exists and is not "N/A" -->
