@@ -13,6 +13,14 @@
           v-if="value"
           :id="value"
           section="Amended by"
+          :sectionLabel="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Amended by')
+              ?.label
+          "
+          :sectionTooltip="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Amended by')
+              ?.tooltip
+          "
           class="mb-8"
         />
       </div>
@@ -20,7 +28,18 @@
     <!-- Slot for Amends -->
     <template #amends="{ value }">
       <div :class="valueClassMap['Amends']">
-        <AmendRenderer v-if="value" :id="value" section="Amends" class="mb-8" />
+        <AmendRenderer
+          v-if="value"
+          :id="value"
+          section="Amends"
+          :sectionLabel="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Amends')?.label
+          "
+          :sectionTooltip="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Amends')?.tooltip
+          "
+          class="mb-8"
+        />
       </div>
     </template>
     <!-- Slot for Replaced by -->
@@ -30,17 +49,32 @@
           v-if="value"
           :id="value"
           section="Replaced by"
+          :sectionLabel="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Replaced by')
+              ?.label
+          "
+          :sectionTooltip="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Replaced by')
+              ?.tooltip
+          "
           class="mb-8"
         />
       </div>
     </template>
-    <!-- Slot for Amends -->
+    <!-- Slot for Replaces -->
     <template #replaces="{ value }">
       <div :class="valueClassMap['Replaces']">
         <AmendRenderer
           v-if="value"
           :id="value"
           section="Replaces"
+          :sectionLabel="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Replaces')?.label
+          "
+          :sectionTooltip="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Replaces')
+              ?.tooltip
+          "
           class="mb-8"
         />
       </div>

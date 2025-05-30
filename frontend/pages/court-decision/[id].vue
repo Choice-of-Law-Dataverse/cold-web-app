@@ -6,6 +6,27 @@
     :valueClassMap="valueClassMap"
     sourceTable="Court Decisions"
   >
+    <!-- Slot for Amended by -->
+    <template #domestic-legal-provisions="{ value }">
+      <div :class="valueClassMap['Domestic Legal Provisions']">
+        <AmendRenderer
+          v-if="value"
+          :id="value"
+          section="Domestic Legal Provisions"
+          :sectionLabel="
+            courtDecisionConfig.keyLabelPairs.find(
+              (pair) => pair.key === 'Domestic Legal Provisions'
+            )?.label
+          "
+          :sectionTooltip="
+            courtDecisionConfig.keyLabelPairs.find(
+              (pair) => pair.key === 'Domestic Legal Provisions'
+            )?.tooltip
+          "
+          class="mb-8"
+        />
+      </div>
+    </template>
     <!-- Custom rendering for Quote section -->
     <template #quote>
       <section class="section-gap p-0 m-0">
@@ -135,6 +156,7 @@ import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { courtDecisionConfig } from '~/config/pageConfigs'
 import { formatDate } from '~/utils/format.js'
 import { ref } from 'vue'
+import AmendRenderer from '~/components/legal/AmendRenderer.vue'
 
 const route = useRoute()
 const router = useRouter()

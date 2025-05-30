@@ -15,12 +15,11 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import { NuxtLink } from '#components'
 import LoadingBar from '../layout/LoadingBar.vue'
 import InfoTooltip from '../ui/InfoTooltip.vue'
-import { legalInstrumentConfig } from '~/config/pageConfigs'
 
 const props = defineProps({
   id: {
@@ -31,17 +30,18 @@ const props = defineProps({
     type: String,
     default: 'Amended by',
   },
+  sectionLabel: {
+    type: String,
+    required: true,
+  },
+  sectionTooltip: {
+    type: String,
+    default: '',
+  },
 })
 
 const config = useRuntimeConfig()
 const title = ref(null)
-
-// Get label and tooltip from pageConfigs based on section prop
-const sectionConfig = computed(() =>
-  legalInstrumentConfig.keyLabelPairs.find((pair) => pair.key === props.section)
-)
-const sectionLabel = computed(() => sectionConfig.value?.label || props.section)
-const sectionTooltip = computed(() => sectionConfig.value?.tooltip)
 
 async function fetchTitle(instrumentId) {
   if (!instrumentId) return

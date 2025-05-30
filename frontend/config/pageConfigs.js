@@ -518,7 +518,7 @@ import tooltipCaseCitation from '@/content/info_boxes/court_decision/case_citati
 import tooltipCaseTitle from '@/content/info_boxes/court_decision/case_title.md?raw'
 import tooltipChoiceOfLawIssue from '@/content/info_boxes/court_decision/choice_of_law_issue.md?raw'
 import tooltipCourtsPosition from '@/content/info_boxes/court_decision/courts_position.md?raw'
-//import tooltipDomesticLegalProvision from '@/content/info_boxes/court_decision/domestic_legal_provision.md?raw'
+import tooltipDomesticLegalProvision from '@/content/info_boxes/court_decision/domestic_legal_provision.md?raw'
 import tooltipFullText from '@/content/info_boxes/court_decision/full_text.md?raw'
 import tooltipInstance from '@/content/info_boxes/court_decision/instance.md?raw'
 import tooltipJudgmentDate from '@/content/info_boxes/court_decision/judgment_date.md?raw'
@@ -596,6 +596,14 @@ export const courtDecisionConfig = {
       key: 'PIL Provisions',
       label: 'PIL Provisions',
       tooltip: tooltipPILProvisions,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Domestic Legal Provisions',
+      label: 'Domestic Legal Provisions',
+      tooltip: tooltipDomesticLegalProvision,
       emptyValueBehavior: {
         action: 'hide',
       },
