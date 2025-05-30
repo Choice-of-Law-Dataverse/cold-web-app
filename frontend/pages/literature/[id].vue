@@ -66,7 +66,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
@@ -74,6 +74,7 @@ import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
 import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { literatureConfig } from '~/config/pageConfigs'
+import { useHead } from '#imports'
 
 const route = useRoute()
 const router = useRouter()
@@ -83,6 +84,19 @@ const { loading, error, data: literature, fetchData } = useApiFetch()
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   literature,
   literatureConfig
+)
+
+// Set dynamic page title based on 'Title'
+watch(
+  literature,
+  (newVal) => {
+    if (!newVal) return
+    const title = newVal['Title']
+    const pageTitle =
+      title && title.trim() ? `${title} — CoLD` : 'Literature — CoLD'
+    useHead({ title: pageTitle })
+  },
+  { immediate: true }
 )
 
 onMounted(async () => {
