@@ -81,6 +81,17 @@ function generateInstrumentLink(instrumentId) {
   if (base.endsWith('s')) {
     base = base.slice(0, -1)
   }
-  return `/${base}/${instrumentId}`
+  // Handle whitespace after the ID: replace first whitespace after ID with #, remove all further whitespaces
+  let idStr = String(instrumentId)
+  // Replace the first whitespace after the ID with #
+  idStr = idStr.replace(/\s+/, '#')
+  // Remove all further whitespaces after the first #
+  const hashIndex = idStr.indexOf('#')
+  if (hashIndex !== -1) {
+    const before = idStr.slice(0, hashIndex + 1)
+    const after = idStr.slice(hashIndex + 1).replace(/\s+/g, '')
+    idStr = before + after
+  }
+  return `/${base}/${idStr}`
 }
 </script>
