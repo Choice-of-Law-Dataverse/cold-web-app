@@ -83,6 +83,7 @@ export default defineNuxtConfig({
     presets: ['vue']
   },
   gtag: {
-    id: 'G-ZSYHMWVVRH'
+    id: 'G-ZSYHMWVVRH' // Alpha
+    // id: 'G-C61ZX1L3NH' // Beta & Live
   }
 });
