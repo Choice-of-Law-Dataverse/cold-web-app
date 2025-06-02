@@ -23,3 +23,7 @@ The discipline in which this research project is inserted is private internation
 
 Follow the development of this website on GitHub:  
 <a href="https://github.com/Choice-of-Law-Dataverse/cold-web-app" target="_blank">github.com/Choice-of-Law-Dataverse/cold-web-app</a>
+
+## CoLD Tech Wiki
+
+For more information on the technologies used and developed to build CoLD, see <a href="https://choice-of-law-dataverse.github.io/" target="_blank">choice-of-law-dataverse.github.io</a>.
