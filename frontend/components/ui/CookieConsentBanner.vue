@@ -43,14 +43,14 @@ function declineCookies() {
   right: 0;
   bottom: 0;
   z-index: 10000;
-  background: var(--color-cold-cream, #fff0d9);
-  color: var(--color-cold-night, #0f0035);
+  background: var(--color-cold-cream);
+  color: var(--color-cold-night);
   padding: 18px 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 18px;
-  box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.07);
+  box-shadow: 0 -1px 1px var(--color-cold-gray);
   font-size: 1rem;
 }
 .cookie-link {
