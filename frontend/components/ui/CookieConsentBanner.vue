@@ -4,33 +4,35 @@
       CoLD is cookie-free by default. Allowing them helps us improve the
       website.
     </span>
-    <UButton
-      class="link-button"
-      variant="link"
-      icon="i-material-symbols:cookie-outline"
-      @click="acceptCookies"
-    >
-      <span>Allow cookies</span>
-    </UButton>
+    <div class="button-group">
+      <UButton
+        class="link-button"
+        variant="link"
+        icon="i-material-symbols:cookie-outline"
+        @click="acceptCookies"
+      >
+        <span>Allow cookies</span>
+      </UButton>
 
-    <UButton
-      class="link-button"
-      variant="link"
-      icon="i-material-symbols:cookie-off-outline"
-      @click="declineCookies"
-    >
-      <span>Continue cookie-free</span>
-    </UButton>
+      <UButton
+        class="link-button"
+        variant="link"
+        icon="i-material-symbols:cookie-off-outline"
+        @click="declineCookies"
+      >
+        <span>Continue cookie-free</span>
+      </UButton>
 
-    <UButton
-      class="link-button"
-      to="/disclaimer"
-      variant="link"
-      icon="i-material-symbols:arrow-forward"
-      trailing
-    >
-      <span>Learn more</span>
-    </UButton>
+      <UButton
+        class="link-button"
+        to="/disclaimer"
+        variant="link"
+        icon="i-material-symbols:arrow-forward"
+        trailing
+      >
+        <span>Learn more</span>
+      </UButton>
+    </div>
   </div>
 </template>
 
@@ -99,5 +101,28 @@ function declineCookies() {
   justify-content: center;
   gap: 18px;
   border-top: 1px solid var(--color-cold-gray);
+  flex-wrap: wrap;
+}
+.button-group {
+  display: flex;
+  gap: 18px;
+}
+@media (max-width: 600px) {
+  .cookie-banner {
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 8px;
+  }
+  .button-group {
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    gap: 10px;
+  }
+  .link-button {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>
