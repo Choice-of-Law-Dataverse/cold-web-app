@@ -13,7 +13,6 @@ export default defineNuxtConfig({
     'nuxt-purgecss',
     'nuxt-plotly',
     '@nuxtjs/robots',
-    'nuxt-gtag',
     '@nuxtjs/sitemap'
   ],
   runtimeConfig: {
@@ -81,9 +80,5 @@ export default defineNuxtConfig({
   imports: {
     dirs: ['utils'],
     presets: ['vue']
-  },
-  gtag: {
-    id: 'G-ZSYHMWVVRH' // Alpha
-    // id: 'G-C61ZX1L3NH' // Beta & Live
   }
 });
