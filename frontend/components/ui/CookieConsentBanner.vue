@@ -98,6 +98,6 @@ function declineCookies() {
   align-items: center;
   justify-content: center;
   gap: 18px;
-  box-shadow: 0 -1px 1px var(--color-cold-gray);
+  border-top: 1px solid var(--color-cold-gray);
 }
 </style>
