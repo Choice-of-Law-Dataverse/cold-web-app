@@ -1,39 +1,37 @@
 <template>
-  <transition name="fade">
-    <div v-if="showBanner" class="cookie-banner">
-      <span class="prose">
-        CoLD is cookie-free by default. Allowing them helps us improve the
-        website.
-      </span>
-      <UButton
-        class="link-button"
-        variant="link"
-        icon="i-material-symbols:cookie-outline"
-        @click="acceptCookies"
-      >
-        <span>Allow cookies</span>
-      </UButton>
+  <div v-if="showBanner" class="cookie-banner">
+    <span class="prose">
+      CoLD is cookie-free by default. Allowing them helps us improve the
+      website.
+    </span>
+    <UButton
+      class="link-button"
+      variant="link"
+      icon="i-material-symbols:cookie-outline"
+      @click="acceptCookies"
+    >
+      <span>Allow cookies</span>
+    </UButton>
 
-      <UButton
-        class="link-button"
-        variant="link"
-        icon="i-material-symbols:cookie-off-outline"
-        @click="declineCookies"
-      >
-        <span>Continue cookie-free</span>
-      </UButton>
+    <UButton
+      class="link-button"
+      variant="link"
+      icon="i-material-symbols:cookie-off-outline"
+      @click="declineCookies"
+    >
+      <span>Continue cookie-free</span>
+    </UButton>
 
-      <UButton
-        class="link-button"
-        to="/disclaimer"
-        variant="link"
-        icon="i-material-symbols:arrow-forward"
-        trailing
-      >
-        <span>Learn more</span>
-      </UButton>
-    </div>
-  </transition>
+    <UButton
+      class="link-button"
+      to="/disclaimer"
+      variant="link"
+      icon="i-material-symbols:arrow-forward"
+      trailing
+    >
+      <span>Learn more</span>
+    </UButton>
+  </div>
 </template>
 
 <script setup>
@@ -95,48 +93,11 @@ function declineCookies() {
   bottom: 0;
   z-index: 10000;
   background: var(--color-cold-cream);
-  /* color: var(--color-cold-night); */
   padding: 18px 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 18px;
   box-shadow: 0 -1px 1px var(--color-cold-gray);
-  /* font-size: 1rem; */
-}
-.cookie-link {
-  color: var(--color-cold-purple, #6f4dfa);
-  text-decoration: underline;
-  margin-left: 6px;
-}
-.cookie-btn {
-  background: var(--color-cold-purple, #6f4dfa);
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  padding: 8px 18px;
-  font-size: 1rem;
-  cursor: pointer;
-  margin-left: 18px;
-  transition: background 0.2s;
-}
-.cookie-btn:hover {
-  background: #5439c7;
-}
-.cookie-btn-secondary {
-  background: #e0e0e0;
-  color: var(--color-cold-night, #0f0035);
-  margin-left: 0;
-}
-.cookie-btn-secondary:hover {
-  background: #cccccc;
-}
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.4s;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>
