@@ -21,8 +21,13 @@ const showBanner = ref(false)
 
 onMounted(() => {
   if (typeof window !== 'undefined') {
+    // Ensure cookieConsent always exists on page load
+    if (localStorage.getItem('cookieConsent') === null) {
+      localStorage.setItem('cookieConsent', 'false')
+    }
     const consent = localStorage.getItem('cookieConsent')
     const consentDate = localStorage.getItem('cookieConsentDate')
+    const consentSet = localStorage.getItem('cookieConsentSet')
     let expired = false
     if (consentDate) {
       const now = new Date()
@@ -33,14 +38,14 @@ onMounted(() => {
         expired = true
         localStorage.removeItem('cookieConsent')
         localStorage.removeItem('cookieConsentDate')
+        localStorage.removeItem('cookieConsentSet')
       }
     }
-    if (consent === null || expired) {
-      localStorage.setItem('cookieConsent', 'false')
-      localStorage.setItem('cookieConsentDate', new Date().toISOString())
+    // Show banner if user has never made a choice or consent expired
+    if (!consentSet || expired) {
       showBanner.value = true
     } else {
-      showBanner.value = consent !== 'true'
+      showBanner.value = false
     }
   }
 })
@@ -48,12 +53,14 @@ onMounted(() => {
 function acceptCookies() {
   localStorage.setItem('cookieConsent', 'true')
   localStorage.setItem('cookieConsentDate', new Date().toISOString())
+  localStorage.setItem('cookieConsentSet', 'true')
   showBanner.value = false
 }
 
 function declineCookies() {
   localStorage.setItem('cookieConsent', 'false')
   localStorage.setItem('cookieConsentDate', new Date().toISOString())
+  localStorage.setItem('cookieConsentSet', 'true')
   showBanner.value = false
 }
 </script>
