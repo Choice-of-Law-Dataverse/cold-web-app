@@ -22,8 +22,22 @@ const showBanner = ref(false)
 onMounted(() => {
   if (typeof window !== 'undefined') {
     const consent = localStorage.getItem('cookieConsent')
-    if (consent === null) {
+    const consentDate = localStorage.getItem('cookieConsentDate')
+    let expired = false
+    if (consentDate) {
+      const now = new Date()
+      const setDate = new Date(consentDate)
+      // 1 year = 365 days
+      const diffDays = (now - setDate) / (1000 * 60 * 60 * 24)
+      if (diffDays >= 365) {
+        expired = true
+        localStorage.removeItem('cookieConsent')
+        localStorage.removeItem('cookieConsentDate')
+      }
+    }
+    if (consent === null || expired) {
       localStorage.setItem('cookieConsent', 'false')
+      localStorage.setItem('cookieConsentDate', new Date().toISOString())
       showBanner.value = true
     } else {
       showBanner.value = consent !== 'true'
@@ -33,11 +47,13 @@ onMounted(() => {
 
 function acceptCookies() {
   localStorage.setItem('cookieConsent', 'true')
+  localStorage.setItem('cookieConsentDate', new Date().toISOString())
   showBanner.value = false
 }
 
 function declineCookies() {
   localStorage.setItem('cookieConsent', 'false')
+  localStorage.setItem('cookieConsentDate', new Date().toISOString())
   showBanner.value = false
 }
 </script>
