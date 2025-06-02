@@ -1,3 +1,7 @@
+---
+title: Endorsements — CoLD
+---
+
 <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/university-of-johannesburg-logo.svg" width="100"/>
 
 <a href="https://www.uj.ac.za/faculties/law/research-centre-for-private-international-law-in-emerging-countries/" target="_blank">**The Research Centre for Private International Law in Emerging Countries**</a>  

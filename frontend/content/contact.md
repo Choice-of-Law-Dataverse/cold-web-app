@@ -1,3 +1,7 @@
+---
+title: Contact — CoLD
+---
+
 ## Contact Us
 
 We'd love to receive your questions, inquiries and feedback.

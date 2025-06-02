@@ -1,3 +1,7 @@
+---
+title: Disclaimer — CoLD
+---
+
 ## 1. Copyright and Licensing Disclaimer
 
 **Copyright:**  

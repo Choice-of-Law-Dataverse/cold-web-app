@@ -1,3 +1,7 @@
+---
+title: About CoLD — CoLD
+---
+
 ## Why Do You Need CoLD?
 
 **CoLD is a Repository**  
