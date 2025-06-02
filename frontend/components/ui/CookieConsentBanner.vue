@@ -21,7 +21,13 @@ const showBanner = ref(false)
 
 onMounted(() => {
   if (typeof window !== 'undefined') {
-    showBanner.value = !localStorage.getItem('cookieConsent')
+    const consent = localStorage.getItem('cookieConsent')
+    if (consent === null) {
+      localStorage.setItem('cookieConsent', 'false')
+      showBanner.value = true
+    } else {
+      showBanner.value = consent !== 'true'
+    }
   }
 })
 
