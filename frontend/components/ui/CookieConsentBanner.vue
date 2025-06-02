@@ -6,7 +6,10 @@
         <a href="/disclaimer" target="_blank" class="cookie-link">Learn more</a
         >.
       </span>
-      <button class="cookie-btn" @click="acceptCookies">Accept</button>
+      <button class="cookie-btn" @click="acceptCookies">Allow Cookies</button>
+      <button class="cookie-btn cookie-btn-secondary" @click="declineCookies">
+        Do not allow Cookies
+      </button>
     </div>
   </transition>
 </template>
@@ -24,6 +27,11 @@ onMounted(() => {
 
 function acceptCookies() {
   localStorage.setItem('cookieConsent', 'true')
+  showBanner.value = false
+}
+
+function declineCookies() {
+  localStorage.setItem('cookieConsent', 'false')
   showBanner.value = false
 }
 </script>
@@ -63,6 +71,14 @@ function acceptCookies() {
 }
 .cookie-btn:hover {
   background: #5439c7;
+}
+.cookie-btn-secondary {
+  background: #e0e0e0;
+  color: var(--color-cold-night, #0f0035);
+  margin-left: 0;
+}
+.cookie-btn-secondary:hover {
+  background: #cccccc;
 }
 .fade-enter-active,
 .fade-leave-active {
