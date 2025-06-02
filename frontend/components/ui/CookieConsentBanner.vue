@@ -102,6 +102,12 @@ function declineCookies() {
   gap: 18px;
   border-top: 1px solid var(--color-cold-gray);
   flex-wrap: wrap;
+  text-align: center;
+}
+.prose {
+  display: block;
+  width: 100%;
+  text-align: center;
 }
 .button-group {
   display: flex;
@@ -113,6 +119,11 @@ function declineCookies() {
     align-items: center;
     gap: 12px;
     padding: 16px 8px;
+    text-align: center;
+  }
+  .prose {
+    width: 100%;
+    text-align: center;
   }
   .button-group {
     flex-direction: column;
