@@ -1,15 +1,37 @@
 <template>
   <transition name="fade">
     <div v-if="showBanner" class="cookie-banner">
-      <span>
-        This website uses cookies to ensure you get the best experience.
-        <a href="/disclaimer" target="_blank" class="cookie-link">Learn more</a
-        >.
+      <span class="prose">
+        CoLD is cookie-free by default. Allowing them helps us improve the
+        website.
       </span>
-      <button class="cookie-btn" @click="acceptCookies">Allow Cookies</button>
-      <button class="cookie-btn cookie-btn-secondary" @click="declineCookies">
-        Do not allow Cookies
-      </button>
+      <UButton
+        class="link-button"
+        variant="link"
+        icon="i-material-symbols:cookie-outline"
+        @click="acceptCookies"
+      >
+        <span>Allow cookies</span>
+      </UButton>
+
+      <UButton
+        class="link-button"
+        variant="link"
+        icon="i-material-symbols:cookie-off-outline"
+        @click="declineCookies"
+      >
+        <span>Continue cookie-free</span>
+      </UButton>
+
+      <UButton
+        class="link-button"
+        to="/disclaimer"
+        variant="link"
+        icon="i-material-symbols:arrow-forward"
+        trailing
+      >
+        <span>Learn more</span>
+      </UButton>
     </div>
   </transition>
 </template>
@@ -73,14 +95,14 @@ function declineCookies() {
   bottom: 0;
   z-index: 10000;
   background: var(--color-cold-cream);
-  color: var(--color-cold-night);
+  /* color: var(--color-cold-night); */
   padding: 18px 24px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 18px;
   box-shadow: 0 -1px 1px var(--color-cold-gray);
-  font-size: 1rem;
+  /* font-size: 1rem; */
 }
 .cookie-link {
   color: var(--color-cold-purple, #6f4dfa);
