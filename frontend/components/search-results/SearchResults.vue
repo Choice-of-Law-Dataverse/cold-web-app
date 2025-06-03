@@ -36,14 +36,16 @@
 
           <!-- Right-aligned Results Heading -->
           <span
-            class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small"
+            class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-2"
           >
-            {{ props.totalMatches }} results sorted by
+            <span>{{ props.totalMatches }} results sorted by</span>
             <USelect
               color="primary"
               variant="none"
               :options="['relevance', 'date']"
               model-value="relevance"
+              class="min-w-[120px] flex-shrink-0 truncate"
+              style="color: var(--color-cold-purple);"
             />
           </span>
         </div>
