@@ -104,14 +104,20 @@ const error = ref(null)
 
 // Function to fetch the primary source from API
 async function fetchPrimarySource() {
-  if (!props.fallbackData?.['Name']) return
+  if (!props.fallbackData?.['Jurisdictions']) return
+
+  // Log the value being used for Jurisdiction
+  console.log(
+    'fetchPrimarySource Jurisdiction value:',
+    props.fallbackData['Jurisdictions']
+  )
 
   const jsonPayload = {
     table: 'Literature',
     filters: [
       {
         column: 'Jurisdiction',
-        value: props.fallbackData['Name'],
+        value: props.fallbackData['Jurisdictions'],
       },
     ],
   }
@@ -152,14 +158,20 @@ async function fetchPrimarySource() {
 
 // Fetch OUP JD Chapter only if the prop is true
 async function fetchOupChapterSource() {
-  if (!props.fetchOupChapter || !props.fallbackData?.['Name']) return
+  if (!props.fetchOupChapter || !props.fallbackData?.['Jurisdictions']) return
+
+  // Log the value being used for Jurisdiction
+  console.log(
+    'fetchOupChapterSource Jurisdiction value:',
+    props.fallbackData['Jurisdictions']
+  )
 
   const jsonPayload = {
     table: 'Literature',
     filters: [
       {
         column: 'Jurisdiction',
-        value: props.fallbackData['Name'],
+        value: props.fallbackData['Jurisdictions'],
       },
       {
         column: 'OUP JD Chapter',
@@ -206,6 +218,7 @@ const computedSources = computed(() => {
 
 // Fetch both sources when the component mounts
 onMounted(() => {
+  console.log('QuestionSourceList mounted, fallbackData:', props.fallbackData)
   if (props.fetchOupChapter) fetchOupChapterSource()
   if (props.fetchPrimarySource) fetchPrimarySource()
 })
