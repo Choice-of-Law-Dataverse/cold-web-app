@@ -79,7 +79,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import BaseLegalContent from '~/components/legal/BaseLegalContent.vue'
@@ -89,6 +89,7 @@ import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { internationalInstrumentConfig } from '~/config/pageConfigs'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import LoadingBar from '~/components/layout/LoadingBar.vue'
+import { useHead } from '#imports'
 
 const config = useRuntimeConfig()
 const route = useRoute()
@@ -172,6 +173,19 @@ function normalizeAnchorId(str) {
     .replace(/[^a-zA-Z0-9\-_]/g, '')
     .toLowerCase()
 }
+
+// Set dynamic page title based on 'Name'
+watch(
+  internationalInstrument,
+  (newVal) => {
+    if (!newVal) return
+    const name = newVal['Name']
+    const pageTitle =
+      name && name.trim() ? `${name} — CoLD` : 'International Instrument — CoLD'
+    useHead({ title: pageTitle })
+  },
+  { immediate: true }
+)
 
 onMounted(async () => {
   try {

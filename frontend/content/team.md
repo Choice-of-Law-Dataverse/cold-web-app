@@ -1,3 +1,7 @@
+---
+title: Team — CoLD
+---
+
 ## Core Team
 
 <img src="https://www.unilu.ch/fileadmin/_processed_/a/b/csm_Girsberger_Daniel_Q_d862e28b53.jpg" width="150"/>

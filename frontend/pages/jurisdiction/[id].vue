@@ -170,7 +170,7 @@ import LoadingBar from '~/components/layout/LoadingBar.vue'
 import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useJurisdiction } from '~/composables/useJurisdiction'
 import { jurisdictionConfig } from '~/config/pageConfigs'
-import { useRuntimeConfig } from '#app'
+import { useRuntimeConfig, useHead } from '#app'
 
 const tooltip = jurisdictionConfig.keyLabelPairs.find(
   (pair) => pair.key === 'Related Data'
@@ -249,6 +249,19 @@ watch(
       domesticInstrumentCount.value = null
       countsLoading.value = false
     }
+  },
+  { immediate: true }
+)
+
+// Set dynamic page title based on 'Name'
+watch(
+  jurisdictionData,
+  (newVal) => {
+    if (!newVal) return
+    const name = newVal.Name
+    const pageTitle =
+      name && name.trim() ? `${name} — CoLD` : 'Jurisdiction — CoLD'
+    useHead({ title: pageTitle })
   },
   { immediate: true }
 )

@@ -1,3 +1,7 @@
+---
+title: Data Sets — CoLD
+---
+
 ## Download Indexes
 
 - All court decisions ([CSV](https://choiceoflawdataverse.blob.core.windows.net/full-tables/court-decisions.csv) | [XLSX](https://choiceoflawdataverse.blob.core.windows.net/full-tables/court-decisions.xlsx))

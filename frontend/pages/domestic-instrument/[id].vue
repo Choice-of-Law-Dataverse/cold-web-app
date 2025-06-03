@@ -141,6 +141,7 @@ import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { legalInstrumentConfig } from '~/config/pageConfigs'
 import SectionRenderer from '~/components/legal/SectionRenderer.vue'
+import { useHead } from '#imports'
 
 const route = useRoute()
 const router = useRouter()
@@ -165,6 +166,21 @@ const processedLegalInstrument = computed(() => {
       legalInstrument.value['Official Title'],
   }
 })
+
+// Set dynamic page title based on 'Title (in English)'
+watch(
+  processedLegalInstrument,
+  (newVal) => {
+    if (!newVal) return
+    const titleEn = newVal['Title (in English)']
+    const pageTitle =
+      titleEn && titleEn.trim()
+        ? `${titleEn} — CoLD`
+        : 'Domestic Instrument — CoLD'
+    useHead({ title: pageTitle })
+  },
+  { immediate: true }
+)
 
 onMounted(async () => {
   try {

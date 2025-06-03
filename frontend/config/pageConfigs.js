@@ -239,7 +239,7 @@ export const questionConfig = {
   },
 }
 
-// Domestic Instrument (formerly Legal Instrument) Page
+// Domestic Instrument Page (formerly Legal Instrument Page)
 // Tooltips for Domestic Instrument Page
 import tooltipAbbreviation from '@/content/info_boxes/domestic_instrument/abbreviation.md?raw'
 import tooltipAmendedBy from '@/content/info_boxes/domestic_instrument/amended_by.md?raw'

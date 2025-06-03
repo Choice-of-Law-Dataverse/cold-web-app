@@ -85,6 +85,7 @@ import { regionalInstrumentConfig } from '~/config/pageConfigs'
 import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
 import LegalProvision from '~/components/legal/LegalProvision.vue'
 import InfoTooltip from '~/components/ui/InfoTooltip.vue'
+import { useHead } from '#imports'
 
 const route = useRoute()
 const router = useRouter()
@@ -105,6 +106,19 @@ const processedRegionalInstrument = computed(() => {
     URL: regionalInstrument.value['URL'] || regionalInstrument.value['Link'],
   }
 })
+
+// Set dynamic page title based on 'Abbreviation'
+watch(
+  processedRegionalInstrument,
+  (newVal) => {
+    if (!newVal) return
+    const abbr = newVal['Abbreviation']
+    const pageTitle =
+      abbr && abbr.trim() ? `${abbr} — CoLD` : 'Regional Instrument — CoLD'
+    useHead({ title: pageTitle })
+  },
+  { immediate: true }
+)
 
 onMounted(async () => {
   try {

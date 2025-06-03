@@ -1,10 +1,13 @@
 <template>
   <NuxtLayout>
     <NuxtPage />
+    <CookieConsentBanner />
   </NuxtLayout>
 </template>
 
 <script setup>
+import CookieConsentBanner from '@/components/ui/CookieConsentBanner.vue'
+
 useSeoMeta({
   description: 'Choice of Law Dataverse',
   ogTitle: 'Choice of Law Dataverse',

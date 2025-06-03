@@ -1,3 +1,7 @@
+---
+title: Methodology — CoLD
+---
+
 &nbsp;
 
 ### Preamble
