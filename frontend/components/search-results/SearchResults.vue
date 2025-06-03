@@ -45,7 +45,7 @@
               :options="['relevance', 'date']"
               model-value="relevance"
               class="min-w-[120px] flex-shrink-0 truncate"
-              style="color: var(--color-cold-purple);"
+              style="color: var(--color-cold-purple)"
             />
           </span>
         </div>
