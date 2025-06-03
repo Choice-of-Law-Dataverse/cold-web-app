@@ -25,7 +25,7 @@
 
       <UButton
         class="link-button"
-        to="/disclaimer"
+        to="/disclaimer#_6-data-protection-and-privacy-notice"
         variant="link"
         icon="i-material-symbols:arrow-forward"
         trailing
