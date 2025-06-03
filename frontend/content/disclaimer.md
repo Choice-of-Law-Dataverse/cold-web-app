@@ -1,3 +1,7 @@
+---
+title: Disclaimer — CoLD
+---
+
 ## 1. Copyright and Licensing Disclaimer
 
 **Copyright:**  
@@ -44,7 +48,7 @@ This data protection statement clearly and comprehensively informs you about the
 
 ### 6.1 Collection of Personal Data When Visiting www.cold.global
 
-Our website can generally be accessed without providing personal data identifying you directly. However, certain technical data (e.g., IP address, browser type, device information, and usage statistics) are automatically collected by our web analytics software and processed anonymously to analyze usage patterns and enhance website performance.
+Our website can generally be accessed without providing personal data identifying you directly. Google Analytics is only used with your consent. Certain technical data (e.g., IP address, browser type, device information, and usage statistics) are collected by our web analytics software when performing a search. These data are processed anonymously to analyze usage patterns and enhance website performance.
 
 ### 6.2 SSL Encryption
 

@@ -1,3 +1,7 @@
+---
+title: Supporters — CoLD
+---
+
 ## Who Supports CoLD?
 
 - <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/snf-logo.svg" width="250"/>

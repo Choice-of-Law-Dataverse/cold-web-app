@@ -116,6 +116,7 @@ import QuestionSourceList from '~/components/sources/QuestionSourceList.vue'
 import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useQuestion } from '~/composables/useQuestion'
 import { questionConfig } from '~/config/pageConfigs'
+import { useHead } from '#imports'
 
 const route = useRoute()
 const router = useRouter()
@@ -150,4 +151,26 @@ onMounted(async () => {
     }
   }
 })
+
+// Set dynamic page title: 'Question — Jurisdictions — CoLD'
+watch(
+  processedAnswerData,
+  (newVal) => {
+    if (!newVal) return
+    const question = newVal['Question'] || ''
+    const jurisdictions = newVal['Jurisdictions'] || ''
+    let pageTitle = 'CoLD'
+    if (question && jurisdictions) {
+      pageTitle = `${question} — ${jurisdictions} — CoLD`
+    } else if (question) {
+      pageTitle = `${question} — CoLD`
+    } else if (jurisdictions) {
+      pageTitle = `${jurisdictions} — CoLD`
+    }
+    useHead({ title: pageTitle })
+  },
+  { immediate: true }
+)
+
+console.log('processedAnswerData', processedAnswerData)
 </script>

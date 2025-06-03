@@ -1,3 +1,7 @@
+---
+title: Open Educational Resources — CoLD
+---
+
 ## ‌Choice of Law in International Commercial Contracts
 
 This <a href="https://global.oup.com/academic/product/choice-of-law-in-international-commercial-contracts-9780198840107?cc=ch&lang=en" target="_blank">book</a> is the main output of the previous research project, “Hague Principles and Beyond”. It contains over sixty reports dealing with the regulation of choice of law in a significant number of jurisdictions around the world and a general report. The book has been applauded by the academic community, and it is regarded as a definitive reference guide to the key choice of law principles on international contracts.

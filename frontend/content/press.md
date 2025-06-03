@@ -1,3 +1,7 @@
+---
+title: Press — CoLD
+---
+
 ## Open Sciences in Private International Law
 
 November 23, 2023
