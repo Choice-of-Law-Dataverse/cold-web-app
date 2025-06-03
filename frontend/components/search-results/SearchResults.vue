@@ -36,9 +36,15 @@
 
           <!-- Right-aligned Results Heading -->
           <h2
-            class="text-right md:text-left w-full md:w-auto whitespace-nowrap"
+            class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small"
           >
-            {{ props.totalMatches }} Results
+            {{ props.totalMatches }} results sorted by
+            <USelect
+              color="primary"
+              variant="none"
+              :options="['relevance', 'date']"
+              model-value="relevance"
+            />
           </h2>
         </div>
 
@@ -350,5 +356,9 @@ watch(
 .filters-header h2 {
   margin: 0; /* Remove default margin for better alignment */
   padding-bottom: 0; /* Override inline padding if needed */
+}
+
+.result-value-small {
+  font-weight: 600 !important;
 }
 </style>
