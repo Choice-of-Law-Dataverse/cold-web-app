@@ -57,7 +57,6 @@
         <template v-else>No source available</template>
       </li>
     </template>
-    <!-- <li>Primary Literature</li> -->
   </ul>
 </template>
 
