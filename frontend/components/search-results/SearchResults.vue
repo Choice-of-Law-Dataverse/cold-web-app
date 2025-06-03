@@ -34,19 +34,26 @@
             </UButton>
           </div>
 
-          <!-- Right-aligned Results Heading -->
+          <!-- Right-aligned Results -->
           <span
             class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-2"
           >
             <span>{{ props.totalMatches }} results sorted by</span>
             <USelect
-              color="primary"
               variant="none"
               :options="['relevance', 'date']"
               model-value="relevance"
               class="min-w-[120px] flex-shrink-0 truncate"
               style="color: var(--color-cold-purple)"
-            />
+            >
+              <template #trailing>
+                <UIcon
+                  name="i-material-symbols:keyboard-arrow-down"
+                  class="w-5 h-5"
+                  style="color: var(--color-cold-purple)"
+                />
+              </template>
+            </USelect>
           </span>
         </div>
 
@@ -362,5 +369,15 @@ watch(
 
 .result-value-small {
   font-weight: 600 !important;
+}
+
+::v-deep(
+  .u-select .u-select__icon,
+  .u-select .u-select__caret,
+  .u-select .n-base-suffix .n-base-suffix__arrow,
+  .u-select .n-base-suffix__arrow
+) {
+  color: var(--color-cold-purple) !important;
+  fill: var(--color-cold-purple) !important;
 }
 </style>
