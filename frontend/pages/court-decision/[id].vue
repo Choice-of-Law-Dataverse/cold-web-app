@@ -6,6 +6,28 @@
     :valueClassMap="valueClassMap"
     sourceTable="Court Decisions"
   >
+    <!-- Slot for Domestic Legal Provisions -->
+    <template #domestic-legal-provisions="{ value }">
+      <div :class="valueClassMap['Domestic Legal Provisions']">
+        <ProvisionRenderer
+          v-if="value"
+          :id="value"
+          section="Domestic Legal Provisions"
+          :sectionLabel="
+            courtDecisionConfig.keyLabelPairs.find(
+              (pair) => pair.key === 'Domestic Legal Provisions'
+            )?.label
+          "
+          :sectionTooltip="
+            courtDecisionConfig.keyLabelPairs.find(
+              (pair) => pair.key === 'Domestic Legal Provisions'
+            )?.tooltip
+          "
+          table="Domestic Instruments"
+          class="mb-8"
+        />
+      </div>
+    </template>
     <!-- Custom rendering for Quote section -->
     <template #quote>
       <section class="section-gap p-0 m-0">
@@ -135,6 +157,7 @@ import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { courtDecisionConfig } from '~/config/pageConfigs'
 import { formatDate } from '~/utils/format.js'
 import { ref } from 'vue'
+import ProvisionRenderer from '~/components/legal/SectionRenderer.vue'
 import { useHead } from '#imports'
 
 const route = useRoute()

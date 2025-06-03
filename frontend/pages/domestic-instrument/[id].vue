@@ -6,6 +6,83 @@
     :valueClassMap="valueClassMap"
     sourceTable="Domestic Instrument"
   >
+    <!-- Slot for Amended by -->
+    <template #amended-by="{ value }">
+      <div :class="valueClassMap['Amended by']">
+        <SectionRenderer
+          v-if="value"
+          :id="value"
+          section="Amended by"
+          :sectionLabel="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Amended by')
+              ?.label
+          "
+          :sectionTooltip="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Amended by')
+              ?.tooltip
+          "
+          table="Domestic Instruments"
+          class="mb-8"
+        />
+      </div>
+    </template>
+    <!-- Slot for Amends -->
+    <template #amends="{ value }">
+      <div :class="valueClassMap['Amends']">
+        <SectionRenderer
+          v-if="value"
+          :id="value"
+          section="Amends"
+          :sectionLabel="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Amends')?.label
+          "
+          :sectionTooltip="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Amends')?.tooltip
+          "
+          table="Domestic Instruments"
+          class="mb-8"
+        />
+      </div>
+    </template>
+    <!-- Slot for Replaced by -->
+    <template #replaced-by="{ value }">
+      <div :class="valueClassMap['Replaced by']">
+        <SectionRenderer
+          v-if="value"
+          :id="value"
+          section="Replaced by"
+          :sectionLabel="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Replaced by')
+              ?.label
+          "
+          :sectionTooltip="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Replaced by')
+              ?.tooltip
+          "
+          table="Domestic Instruments"
+          class="mb-8"
+        />
+      </div>
+    </template>
+    <!-- Slot for Replaces -->
+    <template #replaces="{ value }">
+      <div :class="valueClassMap['Replaces']">
+        <SectionRenderer
+          v-if="value"
+          :id="value"
+          section="Replaces"
+          :sectionLabel="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Replaces')?.label
+          "
+          :sectionTooltip="
+            computedKeyLabelPairs.find((pair) => pair.key === 'Replaces')
+              ?.tooltip
+          "
+          table="Domestic Instruments"
+          class="mb-8"
+        />
+      </div>
+    </template>
     <!-- Slot for Legal provisions -->
     <template #domestic-legal-provisions="{ value }">
       <!-- Only render if value exists and is not "N/A" -->
@@ -63,6 +140,7 @@ import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import { useApiFetch } from '~/composables/useApiFetch'
 import { useDetailDisplay } from '~/composables/useDetailDisplay'
 import { legalInstrumentConfig } from '~/config/pageConfigs'
+import SectionRenderer from '~/components/legal/SectionRenderer.vue'
 import { useHead } from '#imports'
 
 const route = useRoute()

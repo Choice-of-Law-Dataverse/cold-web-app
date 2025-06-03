@@ -48,16 +48,16 @@
       </li>
     </template>
     <template v-else>
-      <li class="section-gap p-0 m-0">
-        <template v-if="oupChapterSource">
-          <a :href="`/literature/${oupChapterSource.id}`">{{
-            oupChapterSource.title
-          }}</a>
-        </template>
-        <template v-else>No source available</template>
+      <li v-if="oupChapterLoading" class="section-gap p-0 m-0">
+        <LoadingBar class="pt-[9px]" />
       </li>
+      <li v-else-if="oupChapterSource" class="section-gap p-0 m-0">
+        <a :href="`/literature/${oupChapterSource.id}`">{{
+          oupChapterSource.title
+        }}</a>
+      </li>
+      <!-- If not loading and no OUP chapter, hide section (render nothing) -->
     </template>
-    <!-- <li>Primary Literature</li> -->
   </ul>
 </template>
 
@@ -102,17 +102,18 @@ const primarySource = ref(null)
 const oupChapterSource = ref(null)
 const loading = ref(false)
 const error = ref(null)
+const oupChapterLoading = ref(false)
 
 // Function to fetch the primary source from API
 async function fetchPrimarySource() {
-  if (!props.fallbackData?.['Name']) return
+  if (!props.fallbackData?.['Jurisdictions']) return
 
   const jsonPayload = {
     table: 'Literature',
     filters: [
       {
         column: 'Jurisdiction',
-        value: props.fallbackData['Name'],
+        value: props.fallbackData['Jurisdictions'],
       },
     ],
   }
@@ -153,14 +154,15 @@ async function fetchPrimarySource() {
 
 // Fetch OUP JD Chapter only if the prop is true
 async function fetchOupChapterSource() {
-  if (!props.fetchOupChapter || !props.fallbackData?.['Name']) return
+  if (!props.fetchOupChapter || !props.fallbackData?.['Jurisdictions']) return
 
+  oupChapterLoading.value = true
   const jsonPayload = {
     table: 'Literature',
     filters: [
       {
         column: 'Jurisdiction',
-        value: props.fallbackData['Name'],
+        value: props.fallbackData['Jurisdictions'],
       },
       {
         column: 'OUP JD Chapter',
@@ -187,10 +189,15 @@ async function fetchOupChapterSource() {
     const data = await response.json()
     if (data.length > 0) {
       oupChapterSource.value = { title: data[0].Title, id: data[0].ID }
+    } else {
+      oupChapterSource.value = null
     }
   } catch (err) {
     console.error('Error fetching OUP JD Chapter source:', err)
     error.value = err.message
+    oupChapterSource.value = null
+  } finally {
+    oupChapterLoading.value = false
   }
 }
 
