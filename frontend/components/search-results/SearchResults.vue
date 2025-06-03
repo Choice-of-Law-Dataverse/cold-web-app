@@ -36,9 +36,12 @@
 
           <!-- Right-aligned Results -->
           <span
-            class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-2"
+            class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-0"
+            style="column-gap: 0px"
           >
-            <span>{{ props.totalMatches }} results sorted by</span>
+            <span style="margin-right: 0; padding-right: 0"
+              >{{ props.totalMatches }} results sorted by</span
+            >
             <!-- Hidden span for measuring select value width -->
             <span
               ref="measureRef"
@@ -58,8 +61,16 @@
               variant="none"
               :options="['relevance', 'date']"
               :model-value="selectValue"
-              :style="{ color: 'var(--color-cold-purple)', width: selectWidth }"
-              class="flex-shrink-0 truncate"
+              :style="{
+                color: 'var(--color-cold-purple)',
+                width: selectWidth,
+                textAlign: 'right',
+                minWidth: 'unset',
+                maxWidth: 'none',
+                marginLeft: '0',
+                paddingLeft: '0',
+              }"
+              class="flex-shrink-0 text-right"
               @update:model-value="onSelectUpdate"
             >
               <template #trailing>
