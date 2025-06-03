@@ -39,12 +39,28 @@
             class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-2"
           >
             <span>{{ props.totalMatches }} results sorted by</span>
+            <!-- Hidden span for measuring select value width -->
+            <span
+              ref="measureRef"
+              class="absolute opacity-0 pointer-events-none select-none font-inherit text-base"
+              style="
+                position: absolute;
+                left: -9999px;
+                top: 0;
+                white-space: pre;
+              "
+              aria-hidden="true"
+            >
+              {{ selectValue }}
+            </span>
             <USelect
+              ref="selectRef"
               variant="none"
               :options="['relevance', 'date']"
-              model-value="relevance"
-              class="min-w-[120px] flex-shrink-0 truncate"
-              style="color: var(--color-cold-purple)"
+              :model-value="selectValue"
+              :style="{ color: 'var(--color-cold-purple)', width: selectWidth }"
+              class="flex-shrink-0 truncate"
+              @update:model-value="onSelectUpdate"
             >
               <template #trailing>
                 <UIcon
@@ -125,7 +141,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, onMounted } from 'vue'
+import { computed, ref, watch, onMounted, nextTick } from 'vue'
 
 import ResultCard from './components/search-results/ResultCard.vue'
 import LegislationCard from './components/search-results/LegislationCard.vue'
@@ -281,6 +297,42 @@ const typeOptions = [
 const currentJurisdictionFilter = ref([])
 const currentThemeFilter = ref([])
 const currentTypeFilter = ref([])
+
+// --- Dynamic USelect width logic ---
+const selectValue = ref(props.filters.sortBy || 'relevance')
+const selectWidth = ref('auto')
+const selectRef = ref(null)
+const measureRef = ref(null)
+
+const updateSelectWidth = () => {
+  nextTick(() => {
+    if (measureRef.value) {
+      selectWidth.value = measureRef.value.offsetWidth + 36 + 'px'
+    }
+  })
+}
+
+// Update width when prop changes
+watch(
+  () => props.filters.sortBy,
+  (val) => {
+    selectValue.value = val || 'relevance'
+    updateSelectWidth()
+  },
+  { immediate: true }
+)
+
+// Update width when user selects a new option
+const onSelectUpdate = (val) => {
+  selectValue.value = val
+  updateSelectWidth()
+  // Optionally emit filter update if needed:
+  emit('update:filters', { ...props.filters, sortBy: val })
+}
+
+onMounted(() => {
+  updateSelectWidth()
+})
 
 // Computed property to check if any filter is active
 const hasActiveFilters = computed(() => {
