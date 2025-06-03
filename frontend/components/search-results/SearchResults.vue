@@ -35,7 +35,7 @@
           </div>
 
           <!-- Right-aligned Results Heading -->
-          <h2
+          <span
             class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small"
           >
             {{ props.totalMatches }} results sorted by
@@ -45,7 +45,7 @@
               :options="['relevance', 'date']"
               model-value="relevance"
             />
-          </h2>
+          </span>
         </div>
 
         <!-- Results Grid or Messages -->
