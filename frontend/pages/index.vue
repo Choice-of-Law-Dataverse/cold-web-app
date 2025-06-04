@@ -8,7 +8,14 @@
             Choice of Law<br />
             Dataverse
           </div>
-          <h2 class="text-xl font-medium mb-6 md:text-left pt-4 pb-4">
+        </div>
+
+        <div
+          class="col-span-12 md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-4"
+        >
+          <h2
+            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4"
+          >
             Navigate private international law issues with precision.
             <UButton
               class="suggestion-button"
@@ -17,7 +24,21 @@
               icon="i-material-symbols:arrow-forward"
               trailing
             >
-              <span>Learn more</span>
+              <span>More</span>
+            </UButton>
+          </h2>
+          <h2
+            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4"
+          >
+            Approved by the Hague Conference on Private International Law.
+            <UButton
+              class="suggestion-button"
+              to="/about"
+              variant="link"
+              icon="i-material-symbols:arrow-forward"
+              trailing
+            >
+              <span>More</span>
             </UButton>
           </h2>
         </div>
