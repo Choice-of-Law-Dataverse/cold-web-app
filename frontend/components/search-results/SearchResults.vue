@@ -4,7 +4,7 @@
       <div class="col-span-12">
         <!-- Flexbox/Grid Container: Filters and Results Heading -->
         <div
-          class="filters-header mb-6 ml-[-1px] flex flex-col md:flex-row md:justify-between md:items-center gap-4"
+          class="filters-header mt-[-24px] !mb-2 ml-[-1px] flex flex-col md:flex-row md:justify-between md:items-center gap-4"
         >
           <!-- Left-aligned group of filters -->
           <div class="flex flex-col sm:flex-row gap-5 w-full">
@@ -36,7 +36,7 @@
 
           <!-- Right-aligned Results -->
           <span
-            class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-0"
+            class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-0 results-margin-fix"
             style="column-gap: 0px"
           >
             <span style="margin-right: 0; padding-right: 0"
@@ -432,6 +432,10 @@ watch(
 
 .result-value-small {
   font-weight: 600 !important;
+}
+
+.results-margin-fix {
+  margin-top: 1.5rem !important;
 }
 
 ::v-deep(
