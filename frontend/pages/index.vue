@@ -159,3 +159,9 @@ import SuccessfulLegalTransplantations from '~/components/landing-page/Successfu
 import LeadingCases from '~/components/landing-page/LeadingCases.vue'
 const links = externalLinks
 </script>
+
+<style scoped>
+h2 {
+  font-weight: 500 !important;
+}
+</style>
