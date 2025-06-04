@@ -36,6 +36,7 @@
 
           <!-- Right-aligned Results -->
           <span
+            v-if="props.totalMatches > 1"
             class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-0 results-margin-fix"
             style="column-gap: 0px"
           >
@@ -81,6 +82,15 @@
                 />
               </template>
             </USelect>
+          </span>
+          <span
+            v-else
+            class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-0 results-margin-fix"
+            style="column-gap: 0px"
+          >
+            <span style="margin-right: 0; padding-right: 0"
+              >{{ formattedTotalMatches }} {{ resultLabel }}</span
+            >
           </span>
         </div>
 
@@ -419,6 +429,11 @@ watch(
 // Format totalMatches with ’ as thousands separator
 const formattedTotalMatches = computed(() => {
   return props.totalMatches.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '’')
+})
+
+// Computed property for singular/plural result label
+const resultLabel = computed(() => {
+  return props.totalMatches === 1 ? 'result' : 'results'
 })
 </script>
 
