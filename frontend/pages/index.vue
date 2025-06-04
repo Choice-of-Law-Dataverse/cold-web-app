@@ -11,10 +11,10 @@
         </div>
 
         <div
-          class="col-span-12 md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-4"
+          class="col-span-12 md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch"
         >
           <h2
-            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4"
+            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-5 flex flex-col justify-center"
           >
             Navigate private international law issues with precision.
             <UButton
@@ -27,8 +27,18 @@
               <span>More</span>
             </UButton>
           </h2>
+          <div
+            class="hidden md:flex col-span-1 md:col-span-1 items-center justify-center"
+          >
+            <img
+              src="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch_approved.svg"
+              alt="HCCH Approved"
+              class="h-full object-contain max-h-[50px] w-auto mr-[-24px]"
+              style="align-items: flex-start; margin-top: -4em"
+            />
+          </div>
           <h2
-            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4"
+            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-5 flex flex-col justify-center"
           >
             Approved by the Hague Conference on Private International Law.
             <UButton
