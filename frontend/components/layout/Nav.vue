@@ -80,7 +80,7 @@
 
         <!-- Logo (Hidden when search is expanded) -->
         <!-- alpha Logo -->
-        <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
+        <!-- <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
           <a href="/">
             <img
               src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_alpha_logo.svg"
@@ -88,9 +88,9 @@
               class="h-12 w-auto mb-4"
             />
           </a>
-        </div>
+        </div> -->
         <!-- beta Logo -->
-        <!-- <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
+        <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
           <a href="/">
             <img
               src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_beta_logo.svg"
@@ -98,7 +98,7 @@
               class="h-12 w-auto mb-4"
             />
           </a>
-        </div> -->
+        </div>
 
         <!-- Navigation Links (Always visible) -->
         <div v-if="!isExpanded" class="space-x-3 sm:space-x-6">
