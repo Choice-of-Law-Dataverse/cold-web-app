@@ -40,7 +40,7 @@
             style="column-gap: 0px"
           >
             <span style="margin-right: 0; padding-right: 0"
-              >{{ props.totalMatches }} results sorted by</span
+              >{{ formattedTotalMatches }} results sorted by</span
             >
             <!-- Hidden span for measuring select value width -->
             <span
@@ -415,6 +415,11 @@ watch(
   },
   { deep: true, immediate: true } // Add immediate to handle initial props
 )
+
+// Format totalMatches with ’ as thousands separator
+const formattedTotalMatches = computed(() => {
+  return props.totalMatches.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '’')
+})
 </script>
 
 <style scoped>
