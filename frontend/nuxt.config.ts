@@ -29,7 +29,7 @@ export default defineNuxtConfig({
     groups: [
       {
         // Alpha: Allow nothing, disallow everything
-        allow: [''],
+        allow: [],
         disallow: ['/'],
         
         // Beta and Live: Disallow search, allow everything else
