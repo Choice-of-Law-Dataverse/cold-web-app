@@ -46,7 +46,7 @@
               >Approved by the Hague Conference on Private International Law.
               <UButton
                 class="suggestion-button"
-                to="/about"
+                to="/about/about-cold#hcch-approval"
                 variant="link"
                 icon="i-material-symbols:arrow-forward"
                 trailing
