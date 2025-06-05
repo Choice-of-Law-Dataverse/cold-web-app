@@ -13,8 +13,18 @@
         <div
           class="col-span-12 md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch"
         >
+          <div
+            class="hidden md:flex col-span-1 md:col-span-1 items-center justify-start"
+          >
+            <img
+              src="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch_approved.svg"
+              alt="HCCH Approved"
+              class="h-full object-contain max-h-[50px] w-auto"
+              style="align-items: flex-start; margin-top: -2em"
+            />
+          </div>
           <h2
-            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4 flex flex-row items-center gap-2 justify-between"
+            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4 flex flex-row items-center gap-1 ml-[-24px]"
           >
             <span
               >Navigate private international law issues with precision.
@@ -30,17 +40,17 @@
             >
           </h2>
           <div
-            class="hidden md:flex col-span-1 md:col-span-1 items-center justify-center"
+            class="hidden md:flex col-span-1 md:col-span-1 items-center justify-start"
           >
             <img
               src="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch_approved.svg"
               alt="HCCH Approved"
-              class="h-full object-contain max-h-[50px] w-auto mr-[-24px]"
+              class="h-full object-contain max-h-[50px] w-auto"
               style="align-items: flex-start; margin-top: -2em"
             />
           </div>
           <h2
-            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4 flex flex-row items-center gap-2 justify-between"
+            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4 flex flex-row items-center gap-1 ml-[-24px]"
           >
             <span
               >Approved by the Hague Conference on Private International Law.
