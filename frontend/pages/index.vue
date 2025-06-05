@@ -17,14 +17,14 @@
             class="hidden md:flex col-span-1 md:col-span-1 items-center justify-start"
           >
             <img
-              src="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch_approved.svg"
+              src="https://choiceoflawdataverse.blob.core.windows.net/assets/navigate_pil.svg"
               alt="HCCH Approved"
               class="h-full object-contain max-h-[50px] w-auto"
-              style="align-items: flex-start; margin-top: -2em"
+              style="align-items: flex-start; margin-top: -1.8em"
             />
           </div>
           <h2
-            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4 flex flex-row items-center gap-1 ml-[-24px]"
+            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4 flex flex-row items-center gap-1 ml-[-28px]"
           >
             <span
               >Navigate private international law issues with precision.
@@ -46,11 +46,11 @@
               src="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch_approved.svg"
               alt="HCCH Approved"
               class="h-full object-contain max-h-[50px] w-auto"
-              style="align-items: flex-start; margin-top: -2em"
+              style="align-items: flex-start; margin-top: -1.8em"
             />
           </div>
           <h2
-            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4 flex flex-row items-center gap-1 ml-[-24px]"
+            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4 flex flex-row items-center gap-1 ml-[-28px]"
           >
             <span
               >Approved by the Hague Conference on Private International Law.
