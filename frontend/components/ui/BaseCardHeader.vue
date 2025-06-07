@@ -116,8 +116,8 @@
         </template>
       </div>
     </template>
-    <UModal v-model="isOpen">
-      <slot name="cancel-modal">
+    <UModal v-model="isOpen" prevent-close>
+      <slot name="cancel-modal" :close="closeModal">
         <div class="p-4">
           <Placeholder class="h-48" />
         </div>
@@ -377,6 +377,10 @@ const legalFamily = computed(() => {
   }
   return []
 })
+
+function closeModal() {
+  isOpen.value = false
+}
 </script>
 
 <style scoped>
