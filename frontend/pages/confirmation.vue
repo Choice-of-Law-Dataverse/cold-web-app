@@ -1,20 +1,18 @@
 <template>
-  <div class="bg-cold-bg min-h-screen flex flex-col">
-    <main class="flex-1 mt-12 px-6">
-      <div
-        class="mx-auto min-h-[50vh] flex flex-col justify-center items-center text-center"
-        style="max-width: var(--container-width); width: 100%"
-      >
-        <h2>{{ confirmationMessage }}</h2>
+  <main class="flex-1 mt-12 px-6">
+    <div
+      class="mx-auto min-h-[50vh] flex flex-col justify-center items-center text-center"
+      style="max-width: var(--container-width); width: 100%"
+    >
+      <h2>{{ confirmationMessage }}</h2>
 
-        <div class="mt-6 flex flex-col gap-2">
-          <NuxtLink v-for="link in links" :key="link.to" :to="link.to">
-            {{ link.text }}
-          </NuxtLink>
-        </div>
+      <div class="mt-6 flex flex-col gap-2">
+        <NuxtLink v-for="link in links" :key="link.to" :to="link.to">
+          {{ link.text }}
+        </NuxtLink>
       </div>
-    </main>
-  </div>
+    </div>
+  </main>
 </template>
 
 <script setup>
