@@ -1,12 +1,13 @@
 <template>
   <BaseDetailLayout
     :loading="false"
-    :resultData="null"
+    :resultData="{}"
     :keyLabelPairs="[]"
     :valueClassMap="{}"
     sourceTable="International Instrument"
+    :hideBackButton="true"
   >
-    <!-- No slots for now -->
+    <!-- Blank layout for new international instrument -->
   </BaseDetailLayout>
 </template>
 

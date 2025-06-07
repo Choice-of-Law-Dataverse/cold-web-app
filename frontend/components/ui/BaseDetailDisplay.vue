@@ -1,5 +1,5 @@
 <template>
-  <BackButton />
+  <BackButton v-if="!hideBackButton" />
 
   <NotificationBanner
     v-if="
@@ -151,6 +151,10 @@ const props = defineProps({
   },
   formattedJurisdiction: { type: Array, required: false, default: () => [] },
   formattedTheme: { type: Array, required: false, default: () => [] },
+  hideBackButton: {
+    type: Boolean,
+    default: false,
+  },
 })
 
 const route = useRoute()

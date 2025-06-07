@@ -9,6 +9,7 @@
           :valueClassMap="valueClassMap"
           :formattedSourceTable="sourceTable"
           :formattedJurisdiction="formattedJurisdiction"
+          :hideBackButton="hideBackButton"
         >
           <slot />
           <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
@@ -30,5 +31,6 @@ defineProps<{
   valueClassMap: Record<string, string>
   sourceTable: string
   formattedJurisdiction?: any[] //
+  hideBackButton?: boolean
 }>()
 </script>
