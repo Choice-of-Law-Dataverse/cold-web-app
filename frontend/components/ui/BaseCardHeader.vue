@@ -60,7 +60,16 @@
             @click="isOpen = true"
             >Cancel</UButton
           >
-          <UButton color="primary" @click="$emit('save')">Save</UButton>
+          <UButton
+            color="primary"
+            @click="
+              () => {
+                isSaveOpen = true
+                $emit('open-save-modal')
+              }
+            "
+            >Save</UButton
+          >
         </template>
         <template v-else>
           <template v-if="showSuggestEdit">
@@ -123,6 +132,16 @@
         </div>
       </slot>
     </UModal>
+    <UModal v-model="isSaveOpen" prevent-close>
+      <slot
+        name="save-modal"
+        :close="
+          () => {
+            isSaveOpen = false
+          }
+        "
+      />
+    </UModal>
   </div>
 </template>
 
@@ -137,6 +156,7 @@ import availableSoon from '@/content/available_soon.md?raw'
 const route = useRoute()
 const pdfExists = ref(false)
 const isOpen = ref(false)
+const isSaveOpen = ref(false)
 
 const downloadPDFLink = computed(() => {
   const segments = route.path.split('/').filter(Boolean) // removes empty parts from path like ['', 'court-decision', 'CD-ARE-1128']

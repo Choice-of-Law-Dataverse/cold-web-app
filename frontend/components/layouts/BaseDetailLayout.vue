@@ -14,6 +14,7 @@
           :hideBackButton="hideBackButton"
           :headerMode="headerMode"
           @save="$emit('save')"
+          @open-save-modal="$emit('open-save-modal')"
         >
           <slot />
           <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
@@ -41,5 +42,5 @@ defineProps<{
   headerMode?: string
 }>()
 
-defineEmits(['save'])
+defineEmits(['save', 'open-save-modal'])
 </script>

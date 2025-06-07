@@ -19,7 +19,6 @@
       <!-- Header section: always render, but pass headerMode -->
       <template #header>
         <BaseCardHeader
-          v-if="resultData"
           :resultData="resultData"
           :cardType="formattedSourceTable"
           :showSuggestEdit="showSuggestEdit"
@@ -28,6 +27,7 @@
           :formattedTheme="formattedTheme"
           :headerMode="headerMode"
           @save="$emit('save')"
+          @open-save-modal="$emit('open-save-modal')"
         >
           <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
             <slot :name="name" v-bind="slotData" />
@@ -169,6 +169,8 @@ const props = defineProps({
     default: 'default',
   },
 })
+
+const emit = defineEmits(['save', 'open-save-modal'])
 
 const route = useRoute()
 const isJurisdictionPage = route.path.startsWith('/jurisdiction/')
