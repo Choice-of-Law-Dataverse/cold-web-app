@@ -5,9 +5,12 @@
       size="18"
       class="icon-adjust"
     />
-    We don’t have data for {{ jurisdictionName }}.
-    <a href="/contact" class="contact-link">Contact us</a> if you want to
-    contribute.
+    <span v-if="message" v-html="message"></span>
+    <template v-else>
+      We don’t have data for {{ jurisdictionName }}.
+      <a href="/contact" class="contact-link">Contact us</a> if you want to
+      contribute.
+    </template>
   </div>
 </template>
 
@@ -15,19 +18,25 @@
 defineProps({
   jurisdictionName: {
     type: String,
-    required: true,
+    required: false,
+  },
+  message: {
+    type: String,
+    required: false,
   },
 })
 </script>
 
 <style scoped>
 .notification-banner {
-  @apply bg-[--color-cold-cream] p-4 outline outline-1 outline-[--color-cold-cream];
+  background: var(--color-cold-cream);
+  padding: 1rem;
+  outline: 1px solid var(--color-cold-cream);
   margin-bottom: 24px !important;
 }
 
 .icon-adjust {
-  @apply translate-y-[3px];
+  transform: translateY(3px);
   margin-right: 4px;
 }
 </style>

@@ -10,6 +10,8 @@
     :showSaveModal="showSaveModal"
     @open-save-modal="openSaveModal"
     @close-save-modal="showSaveModal = false"
+    :showNotificationBanner="true"
+    notificationBannerMessage="You are creating a new International Instrument. Please fill in the details below. If you have questions, <a href='/contact' class='contact-link'>contact us</a>."
   >
     <!-- Always render this section, even if keyLabelPairs is empty -->
     <div class="section-gap p-0 m-0">
@@ -61,6 +63,7 @@
 import { ref } from 'vue'
 import { useHead, useRouter } from '#imports'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
+import NotificationBanner from '~/components/ui/NotificationBanner.vue'
 const name = ref('')
 const router = useRouter()
 const emit = defineEmits(['close-cancel-modal', 'close-save-modal'])

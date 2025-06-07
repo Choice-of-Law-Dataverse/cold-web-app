@@ -13,6 +13,8 @@
           :formattedTheme="formattedTheme"
           :hideBackButton="hideBackButton"
           :headerMode="headerMode"
+          :showNotificationBanner="showNotificationBanner"
+          :notificationBannerMessage="notificationBannerMessage"
           @save="$emit('save')"
           @open-save-modal="$emit('open-save-modal')"
         >
@@ -40,6 +42,8 @@ defineProps<{
   showHeader?: boolean
   formattedTheme?: any[]
   headerMode?: string
+  showNotificationBanner?: boolean
+  notificationBannerMessage?: string
 }>()
 
 defineEmits(['save', 'open-save-modal'])

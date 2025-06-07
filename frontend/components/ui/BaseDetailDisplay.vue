@@ -2,7 +2,12 @@
   <BackButton v-if="!hideBackButton" />
 
   <NotificationBanner
-    v-if="
+    v-if="showNotificationBanner"
+    :message="notificationBannerMessage"
+  />
+
+  <NotificationBanner
+    v-else-if="
       shouldShowBanner &&
       (props.resultData?.Name || props.resultData?.['Jurisdictions'])
     "
@@ -168,6 +173,8 @@ const props = defineProps({
     type: String,
     default: 'default',
   },
+  showNotificationBanner: Boolean,
+  notificationBannerMessage: String,
 })
 
 const emit = defineEmits(['save', 'open-save-modal'])
