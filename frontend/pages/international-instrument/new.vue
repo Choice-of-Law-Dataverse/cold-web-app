@@ -19,8 +19,11 @@
 
 <script setup>
 import { ref } from 'vue'
+import { useHead } from '#imports'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 const name = ref('')
+
+useHead({ title: 'New International Instrument — CoLD' })
 
 function onSave() {
   const payload = {
