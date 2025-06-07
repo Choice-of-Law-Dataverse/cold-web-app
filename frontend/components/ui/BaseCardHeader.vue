@@ -117,9 +117,11 @@
       </div>
     </template>
     <UModal v-model="isOpen">
-      <div class="p-4">
-        <Placeholder class="h-48" />
-      </div>
+      <slot name="cancel-modal">
+        <div class="p-4">
+          <Placeholder class="h-48" />
+        </div>
+      </slot>
     </UModal>
   </div>
 </template>

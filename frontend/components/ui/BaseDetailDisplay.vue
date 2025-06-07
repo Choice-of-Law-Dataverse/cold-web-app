@@ -28,7 +28,11 @@
           :formattedTheme="formattedTheme"
           :headerMode="headerMode"
           @save="$emit('save')"
-        />
+        >
+          <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
+            <slot :name="name" v-bind="slotData" />
+          </template>
+        </BaseCardHeader>
       </template>
 
       <!-- Main content -->
