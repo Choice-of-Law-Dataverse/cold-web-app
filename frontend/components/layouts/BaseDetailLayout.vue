@@ -9,8 +9,11 @@
           :valueClassMap="valueClassMap"
           :formattedSourceTable="sourceTable"
           :formattedJurisdiction="formattedJurisdiction"
+          :showHeader="showHeader"
+          :formattedTheme="formattedTheme"
           :hideBackButton="hideBackButton"
           :headerMode="headerMode"
+          @save="$emit('save')"
         >
           <slot />
           <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
@@ -33,6 +36,10 @@ defineProps<{
   sourceTable: string
   formattedJurisdiction?: any[] //
   hideBackButton?: boolean
+  showHeader?: boolean
+  formattedTheme?: any[]
   headerMode?: string
 }>()
+
+defineEmits(['save'])
 </script>

@@ -54,7 +54,7 @@
       <div class="open-link ml-4">
         <template v-if="headerMode === 'new'">
           <UButton class="mr-2" color="gray" variant="outline">Cancel</UButton>
-          <UButton color="primary">Save</UButton>
+          <UButton color="primary" @click="$emit('save')">Save</UButton>
         </template>
         <template v-else>
           <template v-if="showSuggestEdit">

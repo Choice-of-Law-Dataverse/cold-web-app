@@ -7,14 +7,12 @@
     sourceTable="International Instrument"
     :hideBackButton="true"
     headerMode="new"
+    @save="onSave"
   >
     <!-- Always render this section, even if keyLabelPairs is empty -->
     <div class="section-gap p-0 m-0">
       <p class="label mb-2">Name</p>
       <UInput v-model="name" placeholder="Enter name..." />
-      <div class="mt-6 flex gap-4">
-        <UButton @click="onSave" color="primary">Save</UButton>
-      </div>
     </div>
   </BaseDetailLayout>
 </template>

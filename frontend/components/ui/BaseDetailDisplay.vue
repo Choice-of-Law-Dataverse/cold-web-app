@@ -16,16 +16,18 @@
   </template>
   <template v-else>
     <UCard class="cold-ucard">
-      <!-- Header section -->
-      <template #header v-if="showHeader">
+      <!-- Header section: always render, but pass headerMode -->
+      <template #header>
         <BaseCardHeader
           v-if="resultData"
           :resultData="resultData"
           :cardType="formattedSourceTable"
-          :showOpenLink="false"
+          :showSuggestEdit="showSuggestEdit"
+          :showOpenLink="showOpenLink"
           :formattedJurisdiction="formattedJurisdiction"
           :formattedTheme="formattedTheme"
           :headerMode="headerMode"
+          @save="$emit('save')"
         />
       </template>
 
@@ -160,7 +162,7 @@ const props = defineProps({
   },
   headerMode: {
     type: String,
-    default: 'default', // 'default' or 'new'
+    default: 'default',
   },
 })
 
