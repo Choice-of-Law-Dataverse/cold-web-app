@@ -25,6 +25,7 @@
           :showOpenLink="false"
           :formattedJurisdiction="formattedJurisdiction"
           :formattedTheme="formattedTheme"
+          :headerMode="headerMode"
         />
       </template>
 
@@ -154,6 +155,10 @@ const props = defineProps({
   hideBackButton: {
     type: Boolean,
     default: false,
+  },
+  headerMode: {
+    type: String,
+    default: 'default', // 'default' or 'new'
   },
 })
 

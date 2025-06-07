@@ -10,6 +10,7 @@
           :formattedSourceTable="sourceTable"
           :formattedJurisdiction="formattedJurisdiction"
           :hideBackButton="hideBackButton"
+          :headerMode="headerMode"
         >
           <slot />
           <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
@@ -32,5 +33,6 @@ defineProps<{
   sourceTable: string
   formattedJurisdiction?: any[] //
   hideBackButton?: boolean
+  headerMode?: string
 }>()
 </script>

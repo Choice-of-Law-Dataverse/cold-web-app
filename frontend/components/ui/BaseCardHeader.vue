@@ -50,57 +50,63 @@
       <!-- Fade-out effect -->
       <div class="fade-out" :class="fadeOutClasses"></div>
 
-      <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
+      <!-- Right side of the header: Show either "Suggest Edit"/"Open" or custom for 'new' mode -->
       <div class="open-link ml-4">
-        <template v-if="showSuggestEdit">
-          <div class="flex items-center space-x-5 label">
-            <NuxtLink
-              v-for="(action, index) in suggestEditActions"
-              :key="index"
-              class="flex items-center"
-              :class="action.class"
-              v-bind="action.to ? { to: action.to } : {}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <template v-if="action.label === 'Cite'">
-                <UTooltip
-                  :text="availableSoon"
-                  :popper="{ placement: 'top' }"
-                  :ui="{
-                    background: 'bg-cold-night',
-                    color: 'text-white',
-                    base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
-                    rounded: 'rounded-none',
-                    ring: '',
-                  }"
-                >
-                  <span class="flex items-center">
-                    {{ action.label }}
-                    <UIcon
-                      :name="action.icon"
-                      class="inline-block ml-1 text-[1.2em] mb-0.5"
-                    />
-                  </span>
-                </UTooltip>
-              </template>
-              <template v-else>
-                {{ action.label }}
-                <UIcon
-                  :name="action.icon"
-                  class="inline-block ml-1 text-[1.2em] mb-0.5"
-                />
-              </template>
-            </NuxtLink>
-          </div>
+        <template v-if="headerMode === 'new'">
+          <UButton class="mr-2" color="gray" variant="outline">Cancel</UButton>
+          <UButton color="primary">Save</UButton>
         </template>
         <template v-else>
-          <NuxtLink :to="getLink()" class="label">
-            Open
-            <UIcon
-              name="i-material-symbols:play-arrow"
-              class="inline-block -mb-[1px]"
-          /></NuxtLink>
+          <template v-if="showSuggestEdit">
+            <div class="flex items-center space-x-5 label">
+              <NuxtLink
+                v-for="(action, index) in suggestEditActions"
+                :key="index"
+                class="flex items-center"
+                :class="action.class"
+                v-bind="action.to ? { to: action.to } : {}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <template v-if="action.label === 'Cite'">
+                  <UTooltip
+                    :text="availableSoon"
+                    :popper="{ placement: 'top' }"
+                    :ui="{
+                      background: 'bg-cold-night',
+                      color: 'text-white',
+                      base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
+                      rounded: 'rounded-none',
+                      ring: '',
+                    }"
+                  >
+                    <span class="flex items-center">
+                      {{ action.label }}
+                      <UIcon
+                        :name="action.icon"
+                        class="inline-block ml-1 text-[1.2em] mb-0.5"
+                      />
+                    </span>
+                  </UTooltip>
+                </template>
+                <template v-else>
+                  {{ action.label }}
+                  <UIcon
+                    :name="action.icon"
+                    class="inline-block ml-1 text-[1.2em] mb-0.5"
+                  />
+                </template>
+              </NuxtLink>
+            </div>
+          </template>
+          <template v-else>
+            <NuxtLink :to="getLink()" class="label">
+              Open
+              <UIcon
+                name="i-material-symbols:play-arrow"
+                class="inline-block -mb-[1px]"
+            /></NuxtLink>
+          </template>
         </template>
       </div>
     </template>
@@ -154,6 +160,10 @@ const props = defineProps({
     type: Array,
     required: false,
     default: () => [],
+  },
+  headerMode: {
+    type: String,
+    default: 'default',
   },
 })
 

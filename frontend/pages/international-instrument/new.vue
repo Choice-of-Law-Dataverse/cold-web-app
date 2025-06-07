@@ -6,6 +6,7 @@
     :valueClassMap="{}"
     sourceTable="International Instrument"
     :hideBackButton="true"
+    headerMode="new"
   >
     <!-- Blank layout for new international instrument -->
   </BaseDetailLayout>
