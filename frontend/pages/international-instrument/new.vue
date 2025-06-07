@@ -8,13 +8,18 @@
     :hideBackButton="true"
     headerMode="new"
   >
-    <!-- Blank layout for new international instrument -->
+    <!-- Always render this section, even if keyLabelPairs is empty -->
+    <div class="section-gap p-0 m-0">
+      <p class="label mb-2">Name</p>
+      <UInput v-model="name" placeholder="Enter name..." />
+    </div>
   </BaseDetailLayout>
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
-// No logic for now
+const name = ref('')
 </script>
 
 <style scoped>

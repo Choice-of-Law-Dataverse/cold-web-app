@@ -34,6 +34,8 @@
         <div
           class="main-content prose -space-y-10 flex flex-col gap-8 py-8 px-6 w-full"
         >
+          <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
+          <slot />
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
           <section
             v-for="(item, index) in keyLabelPairs"
