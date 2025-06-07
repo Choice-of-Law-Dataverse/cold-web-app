@@ -11,7 +11,7 @@
     @open-save-modal="openSaveModal"
     @close-save-modal="showSaveModal = false"
     :showNotificationBanner="true"
-    notificationBannerMessage="You are creating a new International Instrument. Please fill in the details below. If you have questions, <a href='/contact' class='contact-link'>contact us</a>."
+    :notificationBannerMessage="notificationBannerMessage"
   >
     <!-- Always render this section, even if keyLabelPairs is empty -->
     <div class="section-gap p-0 m-0">
@@ -68,6 +68,8 @@ const name = ref('')
 const router = useRouter()
 const emit = defineEmits(['close-cancel-modal', 'close-save-modal'])
 const showSaveModal = ref(false)
+const notificationBannerMessage =
+  "You are creating a new International Instrument. Please fill in the details below. If you have questions, <a href='/contact' class='contact-link'>contact us</a>."
 
 useHead({ title: 'New International Instrument — CoLD' })
 

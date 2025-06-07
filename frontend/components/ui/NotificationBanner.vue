@@ -5,12 +5,16 @@
       size="18"
       class="icon-adjust"
     />
-    <span v-if="message" v-html="message"></span>
-    <template v-else>
+    <span
+      v-if="notificationBannerMessage && notificationBannerMessage.length"
+      v-html="notificationBannerMessage"
+    ></span>
+    <span v-else-if="jurisdictionName">
       We don’t have data for {{ jurisdictionName }}.
       <a href="/contact" class="contact-link">Contact us</a> if you want to
       contribute.
-    </template>
+    </span>
+    <span v-else></span>
   </div>
 </template>
 
@@ -20,9 +24,10 @@ defineProps({
     type: String,
     required: false,
   },
-  message: {
+  notificationBannerMessage: {
     type: String,
     required: false,
+    default: '',
   },
 })
 </script>
