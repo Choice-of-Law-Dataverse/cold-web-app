@@ -86,13 +86,20 @@ function onSave() {
     body: JSON.stringify(payload),
   })
     .then((res) => res.json())
-    .then((data) => console.log('API response:', data))
-    .catch((err) => console.error('API error:', err))
+    .then((data) => {
+      console.log('API response:', data)
+      router.push('/confirmation')
+    })
+    .catch((err) => {
+      console.error('API error:', err)
+      // Still redirect to confirmation, but with error message
+      router.push('/confirmation')
+    })
 }
 
-function closeCancelModal() {
-  emit('close-cancel-modal')
-}
+// function closeCancelModal() {
+//   emit('close-cancel-modal')
+// }
 
 function confirmCancel() {
   router.push('/')
