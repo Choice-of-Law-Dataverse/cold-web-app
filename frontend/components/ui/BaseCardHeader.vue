@@ -53,7 +53,13 @@
       <!-- Right side of the header: Show either "Suggest Edit"/"Open" or custom for 'new' mode -->
       <div class="open-link ml-4">
         <template v-if="headerMode === 'new'">
-          <UButton class="mr-2" color="gray" variant="outline">Cancel</UButton>
+          <UButton
+            class="mr-2"
+            color="gray"
+            variant="outline"
+            @click="isOpen = true"
+            >Cancel</UButton
+          >
           <UButton color="primary" @click="$emit('save')">Save</UButton>
         </template>
         <template v-else>
@@ -110,6 +116,11 @@
         </template>
       </div>
     </template>
+    <UModal v-model="isOpen">
+      <div class="p-4">
+        <Placeholder class="h-48" />
+      </div>
+    </UModal>
   </div>
 </template>
 
@@ -123,6 +134,7 @@ import availableSoon from '@/content/available_soon.md?raw'
 
 const route = useRoute()
 const pdfExists = ref(false)
+const isOpen = ref(false)
 
 const downloadPDFLink = computed(() => {
   const segments = route.path.split('/').filter(Boolean) // removes empty parts from path like ['', 'court-decision', 'CD-ARE-1128']
