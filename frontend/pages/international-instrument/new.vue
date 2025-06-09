@@ -12,7 +12,6 @@
     @close-save-modal="showSaveModal = false"
     :showNotificationBanner="true"
     :notificationBannerMessage="notificationBannerMessage"
-    :fallbackMessage="fallbackBannerMessage"
   >
     <!-- Always render this section, even if keyLabelPairs is empty -->
     <div class="section-gap p-0 m-0">
@@ -70,9 +69,6 @@ const emit = defineEmits(['close-cancel-modal', 'close-save-modal'])
 const showSaveModal = ref(false)
 const notificationBannerMessage =
   "You are creating a new International Instrument. Please fill in the details below. If you have questions, <a href='/contact' class='contact-link'>contact us</a>."
-const fallbackBannerMessage = ref(
-  'You are creating a new International Instrument. Please fill in the details below.'
-)
 
 useHead({ title: 'New International Instrument — CoLD' })
 
