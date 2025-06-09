@@ -25,7 +25,8 @@
     "nuxt": "^3.12.4",
     "nuxt-gtag": "^3.0.2",
     "nuxt-plotly": "^1.0.14",
-    "vue": "latest"
+    "vue": "latest",
+    "zod": "^3.25.56"
   },
   "devDependencies": {
     "@iconify-json/material-symbols": "^1.2.0",

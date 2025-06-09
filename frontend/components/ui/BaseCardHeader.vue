@@ -60,14 +60,7 @@
             @click="isOpen = true"
             >Cancel</UButton
           >
-          <UButton
-            color="primary"
-            @click="
-              () => {
-                isSaveOpen = true
-                $emit('open-save-modal')
-              }
-            "
+          <UButton color="primary" @click="$emit('open-save-modal')"
             >Save</UButton
           >
         </template>
@@ -131,16 +124,6 @@
           <Placeholder class="h-48" />
         </div>
       </slot>
-    </UModal>
-    <UModal v-model="isSaveOpen" prevent-close>
-      <slot
-        name="save-modal"
-        :close="
-          () => {
-            isSaveOpen = false
-          }
-        "
-      />
     </UModal>
   </div>
 </template>
