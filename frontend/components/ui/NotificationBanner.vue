@@ -1,7 +1,7 @@
 <template>
   <div class="notification-banner result-value-small">
     <UIcon
-      name="i-material-symbols:flag-outline"
+      :name="icon"
       size="18"
       class="icon-adjust"
     />
@@ -33,6 +33,11 @@ defineProps({
     type: String,
     required: false,
     default: 'We don’t have data for {jurisdiction}.',
+  },
+  icon: {
+    type: String,
+    required: false,
+    default: 'i-material-symbols:flag-outline',
   },
 })
 </script>

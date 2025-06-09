@@ -5,6 +5,7 @@
     v-if="showNotificationBanner"
     :notificationBannerMessage="notificationBannerMessage"
     :fallbackMessage="fallbackMessage"
+    :icon="icon"
   />
 
   <NotificationBanner
@@ -16,6 +17,7 @@
       props.resultData?.Name || props.resultData?.['Jurisdictions']
     "
     :fallbackMessage="fallbackMessage"
+    :icon="icon"
   />
 
   <template v-if="loading">
@@ -178,6 +180,7 @@ const props = defineProps({
   showNotificationBanner: Boolean,
   notificationBannerMessage: String,
   fallbackMessage: String,
+  icon: String,
 })
 
 const emit = defineEmits(['save', 'open-save-modal'])

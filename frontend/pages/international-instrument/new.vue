@@ -12,6 +12,7 @@
     @close-save-modal="showSaveModal = false"
     :showNotificationBanner="true"
     :notificationBannerMessage="notificationBannerMessage"
+    :icon="'i-material-symbols:warning-outline'"
   >
     <!-- Always render this section, even if keyLabelPairs is empty -->
     <div class="section-gap p-0 m-0">
@@ -68,7 +69,7 @@ const router = useRouter()
 const emit = defineEmits(['close-cancel-modal', 'close-save-modal'])
 const showSaveModal = ref(false)
 const notificationBannerMessage =
-  "You are creating a new International Instrument. Please fill in the details below. If you have questions, <a href='/contact' class='contact-link'>contact us</a>."
+  'Please back up your data when working here. Data is only saved after you submit.'
 
 useHead({ title: 'New International Instrument — CoLD' })
 
