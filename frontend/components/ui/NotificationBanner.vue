@@ -1,10 +1,6 @@
 <template>
   <div class="notification-banner result-value-small">
-    <UIcon
-      :name="icon"
-      size="18"
-      class="icon-adjust"
-    />
+    <UIcon :name="icon" size="18" class="icon-adjust" />
     <span
       v-if="notificationBannerMessage && notificationBannerMessage.length"
       v-html="notificationBannerMessage"

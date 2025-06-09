@@ -16,8 +16,15 @@
   >
     <!-- Always render this section, even if keyLabelPairs is empty -->
     <div class="section-gap p-0 m-0">
-      <p class="label mb-2">Name</p>
-      <UInput v-model="name" placeholder="Enter name..." />
+      <UFormGroup size="lg" hint="Required">
+        <template #label>
+          <span class="label">Name</span>
+        </template>
+        <UInput
+          class="mt-2"
+          placeholder="Name of the International Instrument"
+        />
+      </UFormGroup>
     </div>
     <template #cancel-modal="{ close }">
       <div class="p-6 text-center">
