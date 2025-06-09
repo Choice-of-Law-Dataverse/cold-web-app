@@ -17,6 +17,7 @@
       <UFormGroup size="lg" hint="Required" :error="errors.name">
         <template #label>
           <span class="label">Name</span>
+          <InfoTooltip :text="tooltipInternationalInstrumentName" />
         </template>
         <UInput
           v-model="name"
@@ -98,6 +99,8 @@ import { ref } from 'vue'
 import { useHead, useRouter } from '#imports'
 import { z } from 'zod'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
+import InfoTooltip from '~/components/ui/InfoTooltip.vue'
+import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
 
 // Form data
 const name = ref('')
