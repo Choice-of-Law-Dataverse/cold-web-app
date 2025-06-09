@@ -15,6 +15,7 @@
           :headerMode="headerMode"
           :showNotificationBanner="showNotificationBanner"
           :notificationBannerMessage="notificationBannerMessage"
+          :fallbackMessage="fallbackMessage"
           @save="$emit('save')"
           @open-save-modal="$emit('open-save-modal')"
         >
@@ -44,6 +45,7 @@ defineProps<{
   headerMode?: string
   showNotificationBanner?: boolean
   notificationBannerMessage?: string
+  fallbackMessage?: string
 }>()
 
 defineEmits(['save', 'open-save-modal'])

@@ -10,11 +10,11 @@
       v-html="notificationBannerMessage"
     ></span>
     <span v-else-if="jurisdictionName">
-      We don’t have data for {{ jurisdictionName }}.
+      {{ fallbackMessage.replace('{jurisdiction}', jurisdictionName) }}
       <a href="/contact" class="contact-link">Contact us</a> if you want to
       contribute.
     </span>
-    <span v-else></span>
+    <span v-else>{{ fallbackMessage }}</span>
   </div>
 </template>
 
@@ -28,6 +28,11 @@ defineProps({
     type: String,
     required: false,
     default: '',
+  },
+  fallbackMessage: {
+    type: String,
+    required: false,
+    default: 'We don’t have data for {jurisdiction}.',
   },
 })
 </script>
