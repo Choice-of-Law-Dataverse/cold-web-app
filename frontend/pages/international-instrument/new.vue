@@ -77,6 +77,23 @@
           @change="onPdfChange"
         />
       </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8">
+        <template #label>
+          <span class="label">Date</span>
+        </template>
+        <UPopover :popper="{ placement: 'bottom-start' }">
+          <UButton
+            icon="i-heroicons-calendar-days-20-solid"
+            :label="format(date, 'dd MMMM yyyy')"
+            class="mt-2"
+          />
+
+          <template #panel="{ close }">
+            <DatePicker v-model="date" is-required @close="close" />
+          </template>
+        </UPopover>
+      </UFormGroup>
     </div>
     <template #cancel-modal="{ close }">
       <div class="p-6 text-center">
@@ -130,6 +147,10 @@ import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
 import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/international_instrument/specialists.md?raw'
+import DatePicker from '@/components/ui/DatePicker.vue'
+
+import { format } from 'date-fns'
+const date = ref(new Date())
 
 // Form data
 const name = ref('')
@@ -212,6 +233,7 @@ function onSave() {
     data_content: {
       name: name.value,
       specialists: mergedSpecialists,
+      date: format(date.value, 'yyyy-MM-dd'),
       pdf: pdfFile.value && pdfFile.value.name ? pdfFile.value.name : null,
     },
   }
