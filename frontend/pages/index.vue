@@ -151,6 +151,15 @@
             iconName="i-hugeicons:test-tube-01"
           />
         </div>
+        <div class="col-span-12 sm:col-span-4">
+          <ConnectCard
+            title="Create a new International Instrument"
+            buttonText="Submit your data"
+            buttonLink="/international-instrument/new"
+            iconName="i-material-symbols:add-notes"
+            :newTab="false"
+          />
+        </div>
       </div>
     </div>
   </main>
