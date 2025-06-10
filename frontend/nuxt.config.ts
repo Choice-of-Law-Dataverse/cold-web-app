@@ -19,6 +19,7 @@ export default defineNuxtConfig({
   ],
   turnstile: {
     siteKey: process.env.NUXT_TURNSTILE_SITE_KEY,
+    addValidateEndpoint: true  // adds server-side validate endpoint
   },
   runtimeConfig: {
     turnstile: {

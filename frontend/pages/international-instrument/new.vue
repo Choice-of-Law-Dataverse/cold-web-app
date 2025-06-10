@@ -153,8 +153,8 @@
 
       <div>
         <form @submit.prevent="onSubmit">
-          <NuxtTurnstile v-model="token" />
-          <input type="submit" />
+          <NuxtTurnstile ref="turnstile" v-model="token" />
+          <button type="submit">Click to Submit</button>
         </form>
       </div>
 
@@ -199,6 +199,8 @@ const specialists = ref([''])
 const pdfFile = ref(null)
 const email = ref('')
 const comments = ref('')
+
+const turnstile = ref()
 
 // Validation schema
 const formSchema = z.object({
@@ -344,6 +346,20 @@ function addSpecialist() {
 }
 function removeSpecialist(idx) {
   specialists.value.splice(idx, 1)
+}
+
+async function onSubmit() {
+  const res = await $fetch('/api/submit', {
+    method: 'POST',
+    body: { token /* form fields */ },
+  })
+
+  if (res.success) {
+    // handle success
+  } else {
+    // handle error
+  }
+  turnstile.value?.reset()
 }
 </script>
 
