@@ -23,7 +23,17 @@
           v-model="name"
           class="mt-2"
           placeholder="Name of the International Instrument"
-          :color="errors.name ? 'red' : 'primary'"
+        />
+      </UFormGroup>
+      <UFormGroup size="lg" class="mt-8">
+        <template #label>
+          <span class="label">Specialists</span>
+          <InfoTooltip :text="tooltipInternationalInstrumentSpecialist" />
+        </template>
+        <UInput
+          v-model="specialists"
+          class="mt-2"
+          placeholder="Specialist's name"
         />
       </UFormGroup>
     </div>
@@ -78,9 +88,11 @@ import { z } from 'zod'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import InfoTooltip from '~/components/ui/InfoTooltip.vue'
 import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
+import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/international_instrument/specialists.md?raw'
 
 // Form data
 const name = ref('')
+const specialists = ref('')
 
 // Validation schema
 const formSchema = z.object({
@@ -88,6 +100,7 @@ const formSchema = z.object({
     .string()
     .min(1, { message: 'Name is required' })
     .min(3, { message: 'Name must be at least 3 characters long' }),
+  specialists: z.string().optional(),
 })
 
 // Form validation state
@@ -105,6 +118,7 @@ function validateForm() {
   try {
     const formData = {
       name: name.value,
+      specialists: specialists.value,
     }
 
     formSchema.parse(formData)
@@ -134,6 +148,7 @@ function onSave() {
     data_type: 'international instrument',
     data_content: {
       name: name.value,
+      specialists: specialists.value,
     },
   }
   // Print payload as a single, clear console log (matches alert)
