@@ -161,6 +161,7 @@
       <div class="flex justify-center gap-4">
         <UButton
           color="primary"
+          :disabled="!token"
           @click="
             () => {
               onSave()
@@ -180,7 +181,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import { useHead, useRouter } from '#imports'
 import { z } from 'zod'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
@@ -201,6 +202,12 @@ const email = ref('')
 const comments = ref('')
 
 const turnstile = ref()
+const token = ref('')
+
+// Ensure Submit button reactivity when token changes
+watch(token, () => {
+  // This will trigger reactivity for the Submit button
+})
 
 // Validation schema
 const formSchema = z.object({
