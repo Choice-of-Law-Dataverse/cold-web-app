@@ -110,24 +110,56 @@
         </div>
       </div>
     </template>
-    <!-- Removed duplicate save modal template - using standalone UModal below -->
   </BaseDetailLayout>
 
   <!-- Save Modal -->
   <UModal v-model="showSaveModal" prevent-close>
-    <div class="p-6 text-center">
-      <h2 class="text-lg font-bold mb-4">Ready to submit?</h2>
-      <p class="mb-6">
-        This is a placeholder for the save/submit modal. Click Submit to send
-        your data.
+    <div class="p-6">
+      <h2 class="text-lg font-bold mb-4 text-center">Ready to submit?</h2>
+      <p class="mb-6 text-center">
+        Please provide your contact information to complete the submission.
       </p>
+
+      <!-- Email Field -->
+      <UFormGroup
+        size="lg"
+        :error="saveModalErrors.email"
+        class="mb-4"
+        hint="Required"
+      >
+        <template #label>
+          <span class="label">Email</span>
+        </template>
+        <UInput
+          v-model="email"
+          type="email"
+          placeholder="Your email address"
+          class="mt-2"
+        />
+      </UFormGroup>
+
+      <!-- Comments Field -->
+      <UFormGroup size="lg" class="mb-6">
+        <template #label>
+          <span class="label">Comments</span>
+        </template>
+        <UTextarea
+          v-model="comments"
+          placeholder="Optional comments about your submission"
+          class="mt-2"
+          :rows="3"
+        />
+      </UFormGroup>
+
       <div class="flex justify-center gap-4">
         <UButton
           color="primary"
           @click="
             () => {
               onSave()
-              showSaveModal = false
+              if (Object.keys(saveModalErrors).length === 0) {
+                showSaveModal = false
+              }
             }
           "
           >Submit</UButton
@@ -158,6 +190,8 @@ const date = ref(new Date())
 const name = ref('')
 const specialists = ref([''])
 const pdfFile = ref(null)
+const email = ref('')
+const comments = ref('')
 
 // Validation schema
 const formSchema = z.object({
@@ -168,8 +202,18 @@ const formSchema = z.object({
   specialists: z.array(z.string()).optional(),
 })
 
+// Save modal validation schema
+const saveModalSchema = z.object({
+  email: z
+    .string()
+    .min(1, { message: 'Email is required' })
+    .email({ message: 'Please enter a valid email address' }),
+  comments: z.string().optional(),
+})
+
 // Form validation state
 const errors = ref({})
+const saveModalErrors = ref({})
 
 const router = useRouter()
 const emit = defineEmits(['close-cancel-modal', 'close-save-modal'])
@@ -194,6 +238,27 @@ function validateForm() {
       errors.value = {}
       error.errors.forEach((err) => {
         errors.value[err.path[0]] = err.message
+      })
+    }
+    return false
+  }
+}
+
+function validateSaveModal() {
+  try {
+    const modalData = {
+      email: email.value,
+      comments: comments.value,
+    }
+
+    saveModalSchema.parse(modalData)
+    saveModalErrors.value = {}
+    return true
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      saveModalErrors.value = {}
+      error.errors.forEach((err) => {
+        saveModalErrors.value[err.path[0]] = err.message
       })
     }
     return false
@@ -227,6 +292,13 @@ function onPdfChange(event) {
 }
 
 function onSave() {
+  // Validate modal fields before proceeding
+  const isModalValid = validateSaveModal()
+
+  if (!isModalValid) {
+    return // Don't proceed if modal validation fails
+  }
+
   const mergedSpecialists = specialists.value
     .filter((s) => s && s.trim())
     .join(', ')
@@ -237,11 +309,17 @@ function onSave() {
       specialists: mergedSpecialists,
       date: format(date.value, 'yyyy-MM-dd'),
       pdf: pdfFile.value && pdfFile.value.name ? pdfFile.value.name : null,
+      email: email.value,
+      comments: comments.value || null,
     },
   }
   // Remove pdf if not set
   if (!payload.data_content.pdf) {
     delete payload.data_content.pdf
+  }
+  // Remove comments if empty
+  if (!payload.data_content.comments) {
+    delete payload.data_content.comments
   }
   // Print payload as a single, clear console log (matches alert)
   console.log('Submitting: ' + JSON.stringify(payload, null, 2))
