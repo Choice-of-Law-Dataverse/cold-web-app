@@ -30,40 +30,41 @@
           <span class="label">Specialists</span>
           <InfoTooltip :text="tooltipInternationalInstrumentSpecialist" />
         </template>
-        <UInput
-          v-model="specialists[0]"
-          class="mt-2"
-          placeholder="Specialist's name"
-        />
-        <template v-if="specialists[0]">
-          <UButton
-            class="mt-2"
-            color="primary"
-            variant="soft"
-            icon="i-heroicons-plus"
-            @click="addSpecialist"
-            >Add another specialist</UButton
-          >
-        </template>
         <div
-          v-for="(specialist, idx) in specialists.slice(1)"
-          :key="idx + 1"
+          v-for="(specialist, idx) in specialists"
+          :key="idx"
           class="flex items-center mt-2"
         >
           <UInput
-            v-model="specialists[idx + 1]"
+            v-model="specialists[idx]"
             placeholder="Specialist's name"
             class="flex-1"
           />
           <UButton
+            v-if="idx > 0"
             icon="i-heroicons-x-mark"
             color="red"
             variant="ghost"
             class="ml-2"
-            @click="removeSpecialist(idx + 1)"
+            @click="removeSpecialist(idx)"
             aria-label="Remove specialist"
           />
         </div>
+        <template v-for="(specialist, idx) in specialists">
+          <div
+            v-if="specialists[idx] && idx === specialists.length - 1"
+            :key="'add-btn-' + idx"
+          >
+            <UButton
+              class="mt-2"
+              color="primary"
+              variant="soft"
+              icon="i-heroicons-plus"
+              @click="addSpecialist"
+              >Add another specialist</UButton
+            >
+          </div>
+        </template>
       </UFormGroup>
     </div>
     <template #cancel-modal="{ close }">
