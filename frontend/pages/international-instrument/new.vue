@@ -71,7 +71,11 @@
           <span class="label">PDF</span>
           <InfoTooltip :text="tooltipInternationalInstrumentSpecialist" />
         </template>
-        <UInput type="file" icon="i-material-symbols:upload-file" />
+        <UInput
+          type="file"
+          icon="i-material-symbols:upload-file"
+          @change="onPdfChange"
+        />
       </UFormGroup>
     </div>
     <template #cancel-modal="{ close }">
@@ -130,6 +134,7 @@ import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/inter
 // Form data
 const name = ref('')
 const specialists = ref([''])
+const pdfFile = ref(null)
 
 // Validation schema
 const formSchema = z.object({
@@ -180,6 +185,24 @@ function openSaveModal() {
   }
 }
 
+function onPdfChange(event) {
+  // Handle different event types - UInput might pass FileList directly or as event.target.files
+  let file = null
+
+  if (event instanceof FileList) {
+    // UInput passes FileList directly
+    file = event[0] || null
+  } else if (event && event.target && event.target.files) {
+    // Standard file input event
+    file = event.target.files[0] || null
+  } else if (event && event.files) {
+    // Alternative event structure
+    file = event.files[0] || null
+  }
+
+  pdfFile.value = file
+}
+
 function onSave() {
   const mergedSpecialists = specialists.value
     .filter((s) => s && s.trim())
@@ -189,7 +212,12 @@ function onSave() {
     data_content: {
       name: name.value,
       specialists: mergedSpecialists,
+      pdf: pdfFile.value && pdfFile.value.name ? pdfFile.value.name : null,
     },
+  }
+  // Remove pdf if not set
+  if (!payload.data_content.pdf) {
+    delete payload.data_content.pdf
   }
   // Print payload as a single, clear console log (matches alert)
   console.log('Submitting: ' + JSON.stringify(payload, null, 2))
