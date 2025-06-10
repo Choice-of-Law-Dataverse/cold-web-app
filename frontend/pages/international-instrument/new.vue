@@ -154,7 +154,6 @@
       <div>
         <form @submit.prevent="onSubmit">
           <NuxtTurnstile ref="turnstile" v-model="token" />
-          <button type="submit">Click to Submit</button>
         </form>
       </div>
 
