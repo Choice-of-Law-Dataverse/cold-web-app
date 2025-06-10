@@ -136,24 +136,10 @@ function onSave() {
       name: name.value,
     },
   }
-  console.log('Submitting:', payload)
+  // Print payload as a single, clear console log (matches alert)
+  console.log('Submitting: ' + JSON.stringify(payload, null, 2))
   router.push('/confirmation')
 }
-
-// function onSave() {
-//   const payload = {
-//     data_type: 'international instrument',
-//     data_content: {
-//       name: name.value,
-//     },
-//   }
-
-//   console.log('Payload:', JSON.stringify(payload, null, 2))
-// }
-
-// function closeCancelModal() {
-//   emit('close-cancel-modal')
-// }
 
 function confirmCancel() {
   router.push('/')
