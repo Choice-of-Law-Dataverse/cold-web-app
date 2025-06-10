@@ -309,6 +309,8 @@ function onSave() {
       specialists: mergedSpecialists,
       date: format(date.value, 'yyyy-MM-dd'),
       pdf: pdfFile.value && pdfFile.value.name ? pdfFile.value.name : null,
+    },
+    user: {
       email: email.value,
       comments: comments.value || null,
     },
@@ -318,8 +320,8 @@ function onSave() {
     delete payload.data_content.pdf
   }
   // Remove comments if empty
-  if (!payload.data_content.comments) {
-    delete payload.data_content.comments
+  if (!payload.user.comments) {
+    delete payload.user.comments
   }
   // Print payload as a single, clear console log (matches alert)
   console.log('Submitting: ' + JSON.stringify(payload, null, 2))
