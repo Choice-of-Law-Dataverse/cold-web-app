@@ -81,6 +81,7 @@
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Date</span>
+          <InfoTooltip :text="tooltipInternationalInstrumentDate" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
@@ -145,9 +146,10 @@ import { useHead, useRouter } from '#imports'
 import { z } from 'zod'
 import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
 import InfoTooltip from '~/components/ui/InfoTooltip.vue'
+import DatePicker from '@/components/ui/DatePicker.vue'
 import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
 import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/international_instrument/specialists.md?raw'
-import DatePicker from '@/components/ui/DatePicker.vue'
+import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
 
 import { format } from 'date-fns'
 const date = ref(new Date())
