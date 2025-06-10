@@ -13,9 +13,17 @@ export default defineNuxtConfig({
     'nuxt-purgecss',
     'nuxt-plotly',
     '@nuxtjs/robots',
-    '@nuxtjs/sitemap'
+    '@nuxtjs/sitemap',
+    '@nuxt/scripts',
+    '@nuxtjs/turnstile'
   ],
+  turnstile: {
+    siteKey: process.env.NUXT_TURNSTILE_SITE_KEY,
+  },
   runtimeConfig: {
+    turnstile: {
+      secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
+    },
     public: {
       apiBaseUrl: process.env.API_BASE_URL,
       FASTAPI: process.env.FASTAPI_API_TOKEN

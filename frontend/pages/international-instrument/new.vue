@@ -151,6 +151,13 @@
         />
       </UFormGroup>
 
+      <div>
+        <form @submit.prevent="onSubmit">
+          <NuxtTurnstile v-model="token" />
+          <input type="submit" />
+        </form>
+      </div>
+
       <div class="flex justify-center gap-4">
         <UButton
           color="primary"
