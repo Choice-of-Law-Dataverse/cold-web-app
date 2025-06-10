@@ -6,42 +6,6 @@
     :valueClassMap="valueClassMap"
     :formattedJurisdiction="[jurisdictionData?.Name]"
   >
-    <!-- Specialists Section -->
-    <section class="section-gap p-0 m-0">
-      <span class="label">
-        {{
-          keyLabelPairs.find((pair) => pair.key === 'Specialist')?.label ||
-          'Specialists'
-        }}
-        <InfoTooltip
-          v-if="
-            keyLabelPairs.find((pair) => pair.key === 'Specialist')?.tooltip
-          "
-          :text="
-            keyLabelPairs.find((pair) => pair.key === 'Specialist')?.tooltip
-          "
-          class="ml-1 align-middle"
-        />
-      </span>
-      <template v-if="specialists.length">
-        <ul class="section-gap p-0 m-0">
-          <li
-            v-for="specialist in specialists"
-            :key="specialist.Specialist"
-            class="result-value-small"
-          >
-            {{ specialist.Specialist }}
-          </li>
-        </ul>
-      </template>
-      <p v-else class="result-value-small">
-        {{
-          keyLabelPairs.find((pair) => pair.key === 'Specialist')
-            ?.emptyValueBehavior?.fallback || 'No specialists available'
-        }}
-      </p>
-    </section>
-
     <template #related-literature>
       <section class="section-gap p-0 m-0">
         <RelatedLiterature
@@ -182,7 +146,7 @@ const config = useRuntimeConfig()
 const {
   loading,
   jurisdictionData,
-  specialists,
+  // specialists,
   compareJurisdiction,
   keyLabelPairs,
   valueClassMap,
