@@ -31,10 +31,39 @@
           <InfoTooltip :text="tooltipInternationalInstrumentSpecialist" />
         </template>
         <UInput
-          v-model="specialists"
+          v-model="specialists[0]"
           class="mt-2"
           placeholder="Specialist's name"
         />
+        <template v-if="specialists[0]">
+          <UButton
+            class="mt-2"
+            color="primary"
+            variant="soft"
+            icon="i-heroicons-plus"
+            @click="addSpecialist"
+            >Add another specialist</UButton
+          >
+        </template>
+        <div
+          v-for="(specialist, idx) in specialists.slice(1)"
+          :key="idx + 1"
+          class="flex items-center mt-2"
+        >
+          <UInput
+            v-model="specialists[idx + 1]"
+            placeholder="Specialist's name"
+            class="flex-1"
+          />
+          <UButton
+            icon="i-heroicons-x-mark"
+            color="red"
+            variant="ghost"
+            class="ml-2"
+            @click="removeSpecialist(idx + 1)"
+            aria-label="Remove specialist"
+          />
+        </div>
       </UFormGroup>
     </div>
     <template #cancel-modal="{ close }">
@@ -92,7 +121,7 @@ import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/inter
 
 // Form data
 const name = ref('')
-const specialists = ref('')
+const specialists = ref([''])
 
 // Validation schema
 const formSchema = z.object({
@@ -100,7 +129,7 @@ const formSchema = z.object({
     .string()
     .min(1, { message: 'Name is required' })
     .min(3, { message: 'Name must be at least 3 characters long' }),
-  specialists: z.string().optional(),
+  specialists: z.array(z.string()).optional(),
 })
 
 // Form validation state
@@ -144,11 +173,14 @@ function openSaveModal() {
 }
 
 function onSave() {
+  const mergedSpecialists = specialists.value
+    .filter((s) => s && s.trim())
+    .join(', ')
   const payload = {
     data_type: 'international instrument',
     data_content: {
       name: name.value,
-      specialists: specialists.value,
+      specialists: mergedSpecialists,
     },
   }
   // Print payload as a single, clear console log (matches alert)
@@ -158,6 +190,13 @@ function onSave() {
 
 function confirmCancel() {
   router.push('/')
+}
+
+function addSpecialist() {
+  specialists.value.push('')
+}
+function removeSpecialist(idx) {
+  specialists.value.splice(idx, 1)
 }
 </script>
 
