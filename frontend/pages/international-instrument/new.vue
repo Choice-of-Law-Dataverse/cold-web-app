@@ -41,30 +41,7 @@
         </div>
       </div>
     </template>
-    <template #save-modal="{ close }">
-      <div class="p-6 text-center">
-        <h2 class="text-lg font-bold mb-4">Ready to submit?</h2>
-        <p class="mb-6">
-          This is a placeholder for the save/submit modal. Click Submit to send
-          your data.
-        </p>
-        <div class="flex justify-center gap-4">
-          <UButton
-            color="primary"
-            @click="
-              () => {
-                onSave()
-                close()
-              }
-            "
-            >Submit</UButton
-          >
-          <UButton color="gray" variant="outline" @click="close"
-            >Cancel</UButton
-          >
-        </div>
-      </div>
-    </template>
+    <!-- Removed duplicate save modal template - using standalone UModal below -->
   </BaseDetailLayout>
 
   <!-- Save Modal -->
@@ -120,7 +97,7 @@ const router = useRouter()
 const emit = defineEmits(['close-cancel-modal', 'close-save-modal'])
 const showSaveModal = ref(false)
 const notificationBannerMessage =
-  'Please back up your data when working here. Data is only saved after you submit.'
+  'Please back up your data when working here. Closing or reloading this window will delete everything. Data is only saved after you submit.'
 
 useHead({ title: 'New International Instrument — CoLD' })
 
@@ -145,7 +122,9 @@ function validateForm() {
 }
 
 function openSaveModal() {
-  if (validateForm()) {
+  const isValid = validateForm()
+
+  if (isValid) {
     showSaveModal.value = true
   }
 }
@@ -158,22 +137,19 @@ function onSave() {
     },
   }
   console.log('Submitting:', payload)
-  fetch('https://example.com/api/international-instrument', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      console.log('API response:', data)
-      router.push('/confirmation')
-    })
-    .catch((err) => {
-      console.error('API error:', err)
-      // Still redirect to confirmation, but with error message
-      router.push('/confirmation')
-    })
+  router.push('/confirmation')
 }
+
+// function onSave() {
+//   const payload = {
+//     data_type: 'international instrument',
+//     data_content: {
+//       name: name.value,
+//     },
+//   }
+
+//   console.log('Payload:', JSON.stringify(payload, null, 2))
+// }
 
 // function closeCancelModal() {
 //   emit('close-cancel-modal')
