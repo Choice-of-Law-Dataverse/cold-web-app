@@ -37,7 +37,7 @@
         >
           <UInput
             v-model="specialists[idx]"
-            placeholder="Specialist's name"
+            placeholder="Specialist’s name"
             class="flex-1"
           />
           <UButton
@@ -65,6 +65,13 @@
             >
           </div>
         </template>
+      </UFormGroup>
+      <UFormGroup size="lg" class="mt-8">
+        <template #label>
+          <span class="label">PDF</span>
+          <InfoTooltip :text="tooltipInternationalInstrumentSpecialist" />
+        </template>
+        <UInput type="file" icon="i-material-symbols:upload-file" />
       </UFormGroup>
     </div>
     <template #cancel-modal="{ close }">
