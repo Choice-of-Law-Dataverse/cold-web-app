@@ -34,9 +34,9 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import ShowMoreLess from '../ui/ShowMoreLess.vue'
-import LoadingBar from '../layout/LoadingBar.vue'
-import InfoTooltip from '../ui/InfoTooltip.vue'
+import ShowMoreLess from '@/components/ui/ShowMoreLess.vue'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
 const props = defineProps({
   label: { type: String, default: 'Related Literature' },

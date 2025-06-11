@@ -144,7 +144,7 @@ import BackButton from '~/components/ui/BackButton.vue'
 import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
 import NotificationBanner from '~/components/ui/NotificationBanner.vue'
 import LoadingCard from '@/components/layout/LoadingCard.vue'
-import InfoTooltip from './InfoTooltip.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
 // Tooltips for Question Page
 import tooltipQuestion from '@/content/info_boxes/question/question.md?raw'
