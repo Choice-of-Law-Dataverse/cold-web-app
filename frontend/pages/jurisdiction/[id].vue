@@ -225,7 +225,21 @@ watch(
     const name = newVal.Name
     const pageTitle =
       name && name.trim() ? `${name} — CoLD` : 'Jurisdiction — CoLD'
-    useHead({ title: pageTitle })
+    useHead({
+      title: pageTitle,
+      link: [
+        {
+          rel: 'canonical',
+          href: `https://cold.global${route.fullPath}`,
+        },
+      ],
+      meta: [
+        {
+          name: 'description',
+          content: pageTitle,
+        },
+      ],
+    })
   },
   { immediate: true }
 )
