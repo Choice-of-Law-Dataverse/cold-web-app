@@ -255,7 +255,21 @@ watch(
         : citation && citation.trim()
           ? `${citation} — CoLD`
           : 'Court Decision — CoLD'
-    useHead({ title })
+    useHead({
+      title: pageTitle,
+      link: [
+        {
+          rel: 'canonical',
+          href: `https://cold.global${route.fullPath}`,
+        },
+      ],
+      meta: [
+        {
+          name: 'description',
+          content: pageTitle,
+        },
+      ],
+    })
   },
   { immediate: true }
 )
