@@ -176,7 +176,25 @@ import { externalLinks } from '~/utils/externalLinks'
 import RecentDomesticInstruments from '~/components/landing-page/RecentDomesticInstruments.vue'
 import SuccessfulLegalTransplantations from '~/components/landing-page/SuccessfulLegalTransplantations.vue'
 import LeadingCases from '~/components/landing-page/LeadingCases.vue'
+import { useHead } from '#imports'
 const links = externalLinks
+
+useHead({
+  title: 'Choice of Law Dataverse — CoLD',
+  link: [
+    {
+      rel: 'canonical',
+      href: 'https://cold.global/',
+    },
+  ],
+  meta: [
+    {
+      name: 'description',
+      content:
+        'Choice of Law Dataverse — Navigate private international law issues with precision.',
+    },
+  ],
+})
 </script>
 
 <style scoped>
