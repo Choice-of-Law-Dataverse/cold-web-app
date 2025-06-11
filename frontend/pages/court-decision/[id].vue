@@ -249,7 +249,7 @@ watch(
     if (!newVal) return
     const caseTitle = newVal['Case Title']
     const citation = newVal['Case Citation']
-    const title =
+    const pageTitle =
       caseTitle && caseTitle.trim() && caseTitle !== 'Not found'
         ? `${caseTitle} — CoLD`
         : citation && citation.trim()
