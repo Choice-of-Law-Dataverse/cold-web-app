@@ -126,7 +126,7 @@ class SearchService:
             return f"ARRAY[{', '.join(repr(v) for v in values)}]::text[]"
         return None
 
-    def _build_empty_search_query(self, tables, jurisdictions, themes):
+    def _build_empty_search_query(self, tables, jurisdictions, themes, sort_by_date=False):
         """
         Return all rows (union across all relevant tables) using the same filter logic,
         but no search conditions. We'll keep 'rank' = 1.0 as a dummy field.
@@ -136,17 +136,17 @@ class SearchService:
         jurisdictions_sql = self._to_sql_array(jurisdictions) or "NULL"
         themes_sql = self._to_sql_array(themes) or "NULL"
 
-        union_part = f"""
+        union_part = """
             SELECT 
                 'Answers' AS source_table,
                 "ID" AS id,
-                1.0 AS rank
+                1.0 AS rank,
+                sort_date::date AS sort_date
             FROM "Answers" AS ans, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Answers' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
-                    OR ans."Jurisdictions" = ANY(params.jurisdictions)
+                    array_length(params.jurisdictions, 1) IS NULL OR ans."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
@@ -164,13 +164,11 @@ class SearchService:
                 )
 
             UNION ALL
-
-            -- HCCH Answers
-
             SELECT 
                 'HCCH Answers' AS source_table,
                 "ID"::text AS id,
-                1.0 AS rank
+                1.0 AS rank,
+                sort_date::date AS sort_date
             FROM "HCCH Answers" AS hc, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'HCCH Answers' = ANY(params.tables))
@@ -185,13 +183,12 @@ class SearchService:
                         WHERE hc."Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
-
             UNION ALL
-
             SELECT 
                 'Court Decisions' AS source_table,
                 "ID" AS id,
-                1.0 AS rank
+                1.0 AS rank,
+                sort_date::date AS sort_date
             FROM "Court Decisions" AS cd, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Court Decisions' = ANY(params.tables))
@@ -211,30 +208,27 @@ class SearchService:
                         WHERE cd."Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
-
             UNION ALL
-
             SELECT 
                 'Domestic Instruments' AS source_table,
                 "ID" AS id,
-                1.0 AS rank
+                1.0 AS rank,
+                sort_date::date AS sort_date
             FROM "Domestic Instruments" AS di, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Domestic Instruments' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
-                    OR di."Jurisdictions" = ANY(params.jurisdictions)
+                    array_length(params.jurisdictions, 1) IS NULL OR di."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL
                 )
-
             UNION ALL
-
             SELECT 
                 'Regional Instruments' AS source_table,
                 "ID" AS id,
-                1.0 AS rank
+                1.0 AS rank,
+                sort_date::date AS sort_date
             FROM "Regional Instruments" AS ri, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Regional Instruments' = ANY(params.tables))
@@ -244,13 +238,12 @@ class SearchService:
                 AND (
                     array_length(params.themes, 1) IS NULL
                 )
-
             UNION ALL
-
             SELECT 
                 'International Instruments' AS source_table,
                 "ID" AS id,
-                1.0 AS rank
+                1.0 AS rank,
+                sort_date::date AS sort_date
             FROM "International Instruments" AS ii, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'International Instruments' = ANY(params.tables))
@@ -260,14 +253,12 @@ class SearchService:
                 AND (
                     array_length(params.themes, 1) IS NULL
                 )
-
             UNION ALL
-
-
             SELECT 
                 'Literature' AS source_table,
                 "ID"::text AS id,
-                1.0 AS rank
+                1.0 AS rank,
+                sort_date::date AS sort_date
             FROM "Literature" AS lit, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Literature' = ANY(params.tables))
@@ -287,10 +278,10 @@ class SearchService:
                         WHERE lit."Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
-
-            ORDER BY rank DESC
         """
-
+        order_clause = "ORDER BY rank DESC"
+        if sort_by_date:
+            order_clause = "ORDER BY sort_date DESC NULLS LAST, rank DESC"
         query = f"""
         WITH params AS (
             SELECT
@@ -303,6 +294,7 @@ class SearchService:
         )
         SELECT *
         FROM full_results
+        {order_clause}
         OFFSET :offset
         LIMIT :limit;
         """
@@ -467,7 +459,7 @@ class SearchService:
 
         return query
 
-    def _build_fulltext_query(self, search_string, tables, jurisdictions, themes):
+    def _build_fulltext_query(self, search_string, tables, jurisdictions, themes, sort_by_date=False):
         """
         Union of all tables with search conditions,
         plus an ORDER BY rank, but no LIMIT. We'll do offset/limit at the end.
@@ -475,19 +467,18 @@ class SearchService:
         tables_sql = self._to_sql_array(tables) or "NULL"
         jurisdictions_sql = self._to_sql_array(jurisdictions) or "NULL"
         themes_sql = self._to_sql_array(themes) or "NULL"
-
-        union_part = f"""
+        union_part = """
             SELECT 
                 'Answers' AS source_table,
                 "ID" AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank,
+                sort_date::date AS sort_date
             FROM "Answers" AS ans, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Answers' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
-                    OR ans."Jurisdictions" = ANY(params.jurisdictions)
+                    array_length(params.jurisdictions, 1) IS NULL OR ans."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL 
@@ -507,17 +498,13 @@ class SearchService:
                     "ID"::text LIKE '%35-FV' OR 
                     "ID"::text LIKE '%36-FV'
                 )
-
             UNION ALL
-
-
-            -- Search in "HCCH Answers" table
-
             SELECT 
                 'HCCH Answers' AS source_table,
                 "ID"::text AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank,
+                sort_date::date AS sort_date
             FROM "HCCH Answers" AS hc, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'HCCH Answers' = ANY(params.tables))
@@ -536,14 +523,13 @@ class SearchService:
                     search @@ websearch_to_tsquery('english', '{search_string}')
                     OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
-
             UNION ALL
-
             SELECT 
                 'Court Decisions' AS source_table,
                 "ID" AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank,
+                sort_date::date AS sort_date
             FROM "Court Decisions" AS cd, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Court Decisions' = ANY(params.tables))
@@ -567,20 +553,18 @@ class SearchService:
                     search @@ websearch_to_tsquery('english', '{search_string}')
                     OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
-
             UNION ALL
-
             SELECT 
                 'Domestic Instruments' AS source_table,
                 "ID" AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank,
+                sort_date::date AS sort_date
             FROM "Domestic Instruments" AS di, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Domestic Instruments' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
-                    OR di."Jurisdictions" = ANY(params.jurisdictions)
+                    array_length(params.jurisdictions, 1) IS NULL OR di."Jurisdictions" = ANY(params.jurisdictions)
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL
@@ -589,19 +573,18 @@ class SearchService:
                     search @@ websearch_to_tsquery('english', '{search_string}')
                     OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
-            
             UNION ALL
-
             SELECT 
                 'Regional Instruments' AS source_table,
                 "ID" AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank,
+                sort_date::date AS sort_date
             FROM "Regional Instruments" AS ri, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Regional Instruments' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
+                    array_length(params.jurisdictions, 1) IS NULL
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL
@@ -610,19 +593,18 @@ class SearchService:
                     search @@ websearch_to_tsquery('english', '{search_string}')
                     OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
-            
             UNION ALL
-
             SELECT 
                 'International Instruments' AS source_table,
                 "ID" AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank,
+                sort_date::date AS sort_date
             FROM "International Instruments" AS ii, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'International Instruments' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL 
+                    array_length(params.jurisdictions, 1) IS NULL
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL
@@ -631,14 +613,13 @@ class SearchService:
                     search @@ websearch_to_tsquery('english', '{search_string}')
                     OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
-
             UNION ALL
-
             SELECT 
                 'Literature' AS source_table,
                 "ID"::text AS id,
                 ts_rank(search, websearch_to_tsquery('english', '{search_string}')) +
-                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank
+                ts_rank(search, websearch_to_tsquery('simple', '{search_string}')) AS rank,
+                sort_date::date AS sort_date
             FROM "Literature" AS lit, params
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Literature' = ANY(params.tables))
@@ -658,15 +639,10 @@ class SearchService:
                         WHERE lit."Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
-                AND (
-                    search @@ websearch_to_tsquery('english', '{search_string}')
-                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
-                )
-
-            ORDER BY rank DESC
         """
-
-        # Wrap in a CTE, then OFFSET/LIMIT at the end:
+        order_clause = "ORDER BY rank DESC"
+        if sort_by_date:
+            order_clause = "ORDER BY sort_date DESC NULLS LAST, rank DESC"
         query = f"""
         WITH params AS (
             SELECT
@@ -679,10 +655,11 @@ class SearchService:
         )
         SELECT *
         FROM full_results
+        {order_clause}
         OFFSET :offset
         LIMIT :limit;
         """
-        return query
+        return query.replace('{search_string}', search_string)
 
     def _build_fulltext_count_query(self, search_string, tables, jurisdictions, themes):
         """
@@ -749,7 +726,7 @@ class SearchService:
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Court Decisions' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) is null
+                    array_length(params.jurisdictions, 1) IS NULL
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.jurisdictions) AS jurisdiction_filter
@@ -763,10 +740,6 @@ class SearchService:
                         FROM unnest(params.themes) AS theme_filter
                         WHERE cd."Themes" ILIKE '%' || theme_filter || '%'
                     )
-                )
-                AND (
-                    search @@ websearch_to_tsquery('english', '{search_string}')
-                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
 
             UNION ALL
@@ -782,10 +755,6 @@ class SearchService:
                 AND (
                     array_length(params.themes, 1) IS NULL
                 )
-                AND (
-                    search @@ websearch_to_tsquery('english', '{search_string}')
-                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
-                )
 
             UNION ALL
 
@@ -794,16 +763,12 @@ class SearchService:
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Regional Instruments' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL
+                    array_length(params.jurisdictions, 1) IS NULL 
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL
                 )
-                AND (
-                    search @@ websearch_to_tsquery('english', '{search_string}')
-                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
-                )
-
+            
             UNION ALL
 
             SELECT 1
@@ -811,14 +776,10 @@ class SearchService:
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'International Instruments' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) IS NULL
+                    array_length(params.jurisdictions, 1) IS NULL 
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL
-                )
-                AND (
-                    search @@ websearch_to_tsquery('english', '{search_string}')
-                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
 
             UNION ALL
@@ -828,7 +789,7 @@ class SearchService:
             WHERE 
                 (array_length(params.tables, 1) IS NULL OR 'Literature' = ANY(params.tables))
                 AND (
-                    array_length(params.jurisdictions, 1) is null
+                    array_length(params.jurisdictions, 1) IS NULL
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.jurisdictions) AS jurisdiction_filter
@@ -836,16 +797,12 @@ class SearchService:
                     )
                 )
                 AND (
-                    array_length(params.themes, 1) is null
+                    array_length(params.themes, 1) IS NULL
                     OR EXISTS (
                         SELECT 1
                         FROM unnest(params.themes) AS theme_filter
                         WHERE lit."Themes" ILIKE '%' || theme_filter || '%'
                     )
-                )
-                AND (
-                    search @@ websearch_to_tsquery('english', '{search_string}')
-                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
         """
 
@@ -864,21 +821,20 @@ class SearchService:
         """
         return query
 
-    def full_text_search(self, search_string, filters=[], page=1, page_size=50):
+    def full_text_search(self, search_string, filters=[], page=1, page_size=50, sort_by_date=False):
         """
         Perform a full-text search with optional filters, returning one 'page' of results.
         page_size is how many rows per page, page is which page number (1-based).
         """
 
-        # Extract filter-specific lists
         tables, jurisdictions, themes = self._extract_filters(filters)
 
         # If there's no search term, we do the "empty" version (just the filter).
         if not search_string or not search_string.strip():
-            base_query = self._build_empty_search_query(tables, jurisdictions, themes)
+            base_query = self._build_empty_search_query(tables, jurisdictions, themes, sort_by_date)
             count_query = self._build_empty_search_count_query(tables, jurisdictions, themes)
         else:
-            base_query = self._build_fulltext_query(search_string, tables, jurisdictions, themes)
+            base_query = self._build_fulltext_query(search_string, tables, jurisdictions, themes, sort_by_date)
             count_query = self._build_fulltext_count_query(search_string, tables, jurisdictions, themes)
 
         offset_val = max(page - 1, 0) * page_size  # convert page to 0-based offset
