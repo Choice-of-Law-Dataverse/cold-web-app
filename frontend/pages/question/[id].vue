@@ -175,6 +175,12 @@ watch(
           href: `https://cold.global${route.fullPath}`,
         },
       ],
+      meta: [
+        {
+          name: 'description',
+          content: pageTitle,
+        },
+      ],
     })
   },
   { immediate: true }
