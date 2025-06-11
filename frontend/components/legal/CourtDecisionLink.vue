@@ -10,7 +10,6 @@
 </template>
 
 <script setup>
-// import { ref } from 'vue'
 import BaseLegalLink from '@/components/legal/BaseLegalLink.vue'
 import { useLegalState } from '@/composables/useLegalState.js'
 
