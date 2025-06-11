@@ -6,13 +6,6 @@
     :valueClassMap="valueClassMap"
     sourceTable="Literature"
   >
-    <BaseCardHeader
-      v-if="literature"
-      :resultData="literature"
-      :cardType="'Literature'"
-      :showOpenLink="false"
-      :showSuggestEdit="true"
-    />
     <template #publication-title="{ value }">
       <section v-if="value" class="section-gap">
         <div>
