@@ -20,8 +20,8 @@
 </template>
 
 <script setup>
-import Nav from '~/components/layout/Nav.vue'
-import Footer from '~/components/layout/Footer.vue'
+import Nav from '@/components/layout/Nav.vue'
+import Footer from '@/components/layout/Footer.vue'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()

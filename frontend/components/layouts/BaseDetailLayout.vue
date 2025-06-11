@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
+import DetailDisplay from '@/components/ui/BaseDetailDisplay.vue'
 
 defineProps<{
   loading: boolean
