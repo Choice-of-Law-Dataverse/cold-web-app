@@ -115,7 +115,21 @@ watch(
     const abbr = newVal['Abbreviation']
     const pageTitle =
       abbr && abbr.trim() ? `${abbr} — CoLD` : 'Regional Instrument — CoLD'
-    useHead({ title: pageTitle })
+    useHead({
+      title: pageTitle,
+      link: [
+        {
+          rel: 'canonical',
+          href: `https://cold.global${route.fullPath}`,
+        },
+      ],
+      meta: [
+        {
+          name: 'description',
+          content: pageTitle,
+        },
+      ],
+    })
   },
   { immediate: true }
 )

@@ -6,13 +6,6 @@
     :valueClassMap="valueClassMap"
     sourceTable="Literature"
   >
-    <BaseCardHeader
-      v-if="literature"
-      :resultData="literature"
-      :cardType="'Literature'"
-      :showOpenLink="false"
-      :showSuggestEdit="true"
-    />
     <template #publication-title="{ value }">
       <section v-if="value" class="section-gap">
         <div>
@@ -94,7 +87,21 @@ watch(
     const title = newVal['Title']
     const pageTitle =
       title && title.trim() ? `${title} — CoLD` : 'Literature — CoLD'
-    useHead({ title: pageTitle })
+    useHead({
+      title: pageTitle,
+      link: [
+        {
+          rel: 'canonical',
+          href: `https://cold.global${route.fullPath}`,
+        },
+      ],
+      meta: [
+        {
+          name: 'description',
+          content: pageTitle,
+        },
+      ],
+    })
   },
   { immediate: true }
 )

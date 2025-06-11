@@ -177,7 +177,21 @@ watch(
       titleEn && titleEn.trim()
         ? `${titleEn} — CoLD`
         : 'Domestic Instrument — CoLD'
-    useHead({ title: pageTitle })
+    useHead({
+      title: pageTitle,
+      link: [
+        {
+          rel: 'canonical',
+          href: `https://cold.global${route.fullPath}`,
+        },
+      ],
+      meta: [
+        {
+          name: 'description',
+          content: pageTitle,
+        },
+      ],
+    })
   },
   { immediate: true }
 )
