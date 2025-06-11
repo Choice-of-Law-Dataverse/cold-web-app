@@ -152,7 +152,7 @@ onMounted(async () => {
   }
 })
 
-// Set dynamic page title: 'Question — Jurisdictions — CoLD'
+// Set dynamic page title: 'Jurisdictions: Question — CoLD'
 watch(
   processedAnswerData,
   (newVal) => {
@@ -161,16 +161,22 @@ watch(
     const jurisdictions = newVal['Jurisdictions'] || ''
     let pageTitle = 'CoLD'
     if (question && jurisdictions) {
-      pageTitle = `${question} — ${jurisdictions} — CoLD`
+      pageTitle = `${jurisdictions}: ${question} — CoLD`
     } else if (question) {
       pageTitle = `${question} — CoLD`
     } else if (jurisdictions) {
       pageTitle = `${jurisdictions} — CoLD`
     }
-    useHead({ title: pageTitle })
+    useHead({
+      title: pageTitle,
+      link: [
+        {
+          rel: 'canonical',
+          href: `https://cold.global${route.fullPath}`,
+        },
+      ],
+    })
   },
   { immediate: true }
 )
-
-console.log('processedAnswerData', processedAnswerData)
 </script>
