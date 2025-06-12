@@ -39,7 +39,7 @@
               </UButton></span
             >
           </h2>
-          <div
+          <!-- <div
             class="hidden md:flex col-span-1 md:col-span-1 items-center justify-start"
           >
             <img
@@ -48,8 +48,8 @@
               class="h-full object-contain max-h-[50px] w-auto"
               style="align-items: flex-start; margin-top: -1.8em"
             />
-          </div>
-          <h2
+          </div> -->
+          <!-- <h2
             class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4 flex flex-row items-center gap-1 ml-[-28px]"
           >
             <span
@@ -64,7 +64,7 @@
                 <span>More</span>
               </UButton></span
             >
-          </h2>
+          </h2> -->
         </div>
 
         <div class="col-span-12">
@@ -151,7 +151,7 @@
             iconName="i-hugeicons:test-tube-01"
           />
         </div>
-        <div class="col-span-12 sm:col-span-4">
+        <!-- <div class="col-span-12 sm:col-span-4">
           <ConnectCard
             title="Create a new International Instrument"
             buttonText="Submit your data"
@@ -159,7 +159,7 @@
             iconName="i-material-symbols:add-notes"
             :newTab="false"
           />
-        </div>
+        </div> -->
       </div>
     </div>
   </main>

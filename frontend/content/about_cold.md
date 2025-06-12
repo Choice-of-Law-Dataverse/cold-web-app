@@ -19,9 +19,9 @@ Undertaking research in this area across fragmented databases is very burdensome
 
 The discipline in which this research project is inserted is private international law, also known as conflict of laws. It refers to a set of rules of law (of domestic, regional, international or supranational nature) that can determine (i) which court has jurisdiction and (ii) which law governs a given legal transaction or dispute. Our research is concerned solely with the second aspect, i.e., [the determination of the applicable law](/learn/faq).
 
-## HCCH Approval
+<!-- ## HCCH Approval
 
-<a href="https://www.hcch.net/en/home" target="_blank">The Hague Conference on Private International Law (HCCH)</a> approves and endorses the Choice of Law Dataverse.
+<a href="https://www.hcch.net/en/home" target="_blank">The Hague Conference on Private International Law (HCCH)</a> approves and endorses the Choice of Law Dataverse. -->
 
 ## CoLD on Github
 
