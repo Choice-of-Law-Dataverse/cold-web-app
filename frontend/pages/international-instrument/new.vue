@@ -100,72 +100,22 @@
   </BaseDetailLayout>
 
   <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
-
-  <!-- Save Modal -->
-  <UModal v-model="showSaveModal" prevent-close>
-    <div class="p-6">
-      <h2 class="text-lg font-bold mb-4 text-center">Ready to submit?</h2>
-      <p class="mb-6 text-center">
-        Please provide your contact information to complete the submission.
-      </p>
-
-      <!-- Email Field -->
-      <UFormGroup
-        size="lg"
-        :error="saveModalErrors.email"
-        class="mb-4"
-        hint="Required"
-      >
-        <template #label>
-          <span class="label">Email</span>
-        </template>
-        <UInput
-          v-model="email"
-          type="email"
-          placeholder="Your email address"
-          class="mt-2"
-        />
-      </UFormGroup>
-
-      <!-- Comments Field -->
-      <UFormGroup size="lg" class="mb-6">
-        <template #label>
-          <span class="label">Comments</span>
-        </template>
-        <UTextarea
-          v-model="comments"
-          placeholder="Optional comments about your submission"
-          class="mt-2"
-          :rows="3"
-        />
-      </UFormGroup>
-
-      <div>
-        <form @submit.prevent="onSubmit">
-          <NuxtTurnstile ref="turnstile" v-model="token" />
-        </form>
-      </div>
-
-      <div class="flex justify-center gap-4">
-        <UButton
-          color="primary"
-          :disabled="!token"
-          @click="
-            () => {
-              onSave()
-              if (Object.keys(saveModalErrors).length === 0) {
-                showSaveModal = false
-              }
-            }
-          "
-          >Submit</UButton
-        >
-        <UButton color="gray" variant="outline" @click="showSaveModal = false"
-          >Cancel</UButton
-        >
-      </div>
-    </div>
-  </UModal>
+  <SaveModal
+    v-model="showSaveModal"
+    :email="email"
+    :comments="comments"
+    :token="token"
+    :saveModalErrors="saveModalErrors"
+    @update:email="(val) => (email = val)"
+    @update:comments="(val) => (comments = val)"
+    @update:token="(val) => (token = val)"
+    @submit="
+      () => {
+        onSave()
+        if (Object.keys(saveModalErrors).length === 0) showSaveModal = false
+      }
+    "
+  />
 </template>
 
 <script setup>
@@ -176,6 +126,7 @@ import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import DatePicker from '@/components/ui/DatePicker.vue'
 import CancelModal from '@/components/ui/CancelModal.vue'
+import SaveModal from '@/components/ui/SaveModal.vue'
 import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
 import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/international_instrument/specialists.md?raw'
 import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
