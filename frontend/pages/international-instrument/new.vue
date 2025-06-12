@@ -112,6 +112,23 @@
     </template>
   </BaseDetailLayout>
 
+  <CancelModal v-model="showCancelModal">
+    <template #cancel-modal="{ close }">
+      <div class="p-6 text-center">
+        <h2 class="text-lg font-bold mb-4">Discard changes?</h2>
+        <p class="mb-6">
+          Are you sure you want to cancel? All unsaved changes will be lost.
+        </p>
+        <div class="flex justify-center gap-4">
+          <UButton color="gray" variant="outline" @click="close"
+            >Go Back</UButton
+          >
+          <UButton color="red" @click="confirmCancel">Discard</UButton>
+        </div>
+      </div>
+    </template>
+  </CancelModal>
+
   <!-- Save Modal -->
   <UModal v-model="showSaveModal" prevent-close>
     <div class="p-6">
@@ -186,6 +203,7 @@ import { z } from 'zod'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import DatePicker from '@/components/ui/DatePicker.vue'
+import CancelModal from '@/components/ui/CancelModal.vue'
 import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
 import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/international_instrument/specialists.md?raw'
 import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
@@ -233,6 +251,7 @@ const saveModalErrors = ref({})
 const router = useRouter()
 const emit = defineEmits(['close-cancel-modal', 'close-save-modal'])
 const showSaveModal = ref(false)
+const showCancelModal = ref(false)
 const notificationBannerMessage =
   'Please back up your data when working here. Closing or reloading this window will delete everything. Data is only saved after you submit.'
 
