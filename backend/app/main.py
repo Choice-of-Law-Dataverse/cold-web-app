@@ -2,7 +2,7 @@ from fastapi import FastAPI, APIRouter, Depends
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth import verify_jwt_token
-from app.routes import ai, search, submarine, user
+from app.routes import ai, search, submarine, user, sitemap
 from app.services.query_logging import log_query
 
 app = FastAPI(
@@ -30,6 +30,7 @@ api_router.include_router(search.router)
 # api_router.include_router(user.router)
 api_router.include_router(ai.router)
 api_router.include_router(submarine.router)
+api_router.include_router(sitemap.router)
 
 app.include_router(api_router)
 
