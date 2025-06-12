@@ -15,7 +15,7 @@
 </template>
 
 <script setup>
-import SectionNav from '~/components/layout/SectionNav.vue'
+import SectionNav from '@/components/layout/SectionNav.vue'
 </script>
 
 <style scoped>
