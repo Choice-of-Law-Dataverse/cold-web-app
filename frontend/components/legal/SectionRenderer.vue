@@ -18,8 +18,8 @@
 import { ref, watch, computed } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import { NuxtLink } from '#components'
-import LoadingBar from '~/components/layout/LoadingBar.vue'
-import InfoTooltip from '~/components/ui/InfoTooltip.vue'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
 const props = defineProps({
   id: {

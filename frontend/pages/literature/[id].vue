@@ -61,12 +61,11 @@
 <script setup>
 import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
-import { useApiFetch } from '~/composables/useApiFetch'
-import { useDetailDisplay } from '~/composables/useDetailDisplay'
-import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
-import InfoTooltip from '~/components/ui/InfoTooltip.vue'
-import { literatureConfig } from '~/config/pageConfigs'
+import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import { useApiFetch } from '@/composables/useApiFetch'
+import { useDetailDisplay } from '@/composables/useDetailDisplay'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import { literatureConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
 
 const route = useRoute()

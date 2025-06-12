@@ -24,7 +24,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import SearchResults from '~/components/search-results/SearchResults.vue'
+import SearchResults from '@/components/search-results/SearchResults.vue'
 import { useHead } from '#imports'
 
 // Block a page from being indexed (https://nuxtseo.com/learn/controlling-crawlers#quick-implementation-guide)

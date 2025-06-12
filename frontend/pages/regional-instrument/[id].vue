@@ -78,13 +78,13 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
-import { useApiFetch } from '~/composables/useApiFetch'
-import { useDetailDisplay } from '~/composables/useDetailDisplay'
-import { regionalInstrumentConfig } from '~/config/pageConfigs'
-import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
-import LegalProvision from '~/components/legal/LegalProvision.vue'
-import InfoTooltip from '~/components/ui/InfoTooltip.vue'
+import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import { useApiFetch } from '@/composables/useApiFetch'
+import { useDetailDisplay } from '@/composables/useDetailDisplay'
+import { regionalInstrumentConfig } from '@/config/pageConfigs'
+import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
+import LegalProvision from '@/components/legal/LegalProvision.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import { useHead } from '#imports'
 
 const route = useRoute()

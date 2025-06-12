@@ -109,13 +109,13 @@
 <script setup>
 import { onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
-import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
-import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
-import QuestionSourceList from '~/components/sources/QuestionSourceList.vue'
-import InfoTooltip from '~/components/ui/InfoTooltip.vue'
-import { useQuestion } from '~/composables/useQuestion'
-import { questionConfig } from '~/config/pageConfigs'
+import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import CourtDecisionRenderer from '@/components/legal/CourtDecisionRenderer.vue'
+import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
+import QuestionSourceList from '@/components/sources/QuestionSourceList.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import { useQuestion } from '@/composables/useQuestion'
+import { questionConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
 
 const route = useRoute()

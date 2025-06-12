@@ -131,8 +131,8 @@
 <script setup>
 import { onMounted, ref, computed, reactive } from 'vue'
 import { useRoute } from 'vue-router'
-import jurisdictionsData from '../../assets/jurisdictions-data.json'
-import { handleImageError } from '../../utils/handleImageError'
+import jurisdictionsData from '@/assets/jurisdictions-data.json'
+import { handleImageError } from '@/utils/handleImageError'
 
 import availableSoon from '@/content/available_soon.md?raw'
 

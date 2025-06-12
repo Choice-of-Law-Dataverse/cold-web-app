@@ -48,9 +48,9 @@
 
 <script setup>
 import { computed } from 'vue'
-import ResultCard from './ResultCard.vue'
-import { internationalInstrumentCardConfig } from '../../config/cardConfigs'
-import * as format from '../../utils/format'
+import ResultCard from '@/components/search-results/ResultCard.vue'
+import { internationalInstrumentCardConfig } from '@/config/cardConfigs'
+import * as format from '@/utils/format.js'
 
 const props = defineProps({
   resultData: {

@@ -11,7 +11,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import LoadingLandingPageCard from '../layout/LoadingLandingPageCard.vue'
+import LoadingLandingPageCard from '@/components/layout/LoadingLandingPageCard.vue'
 
 const chartData = ref(null)
 const chartLayout = ref(null)

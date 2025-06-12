@@ -43,7 +43,7 @@
 import { ref, onMounted } from 'vue'
 import { useRuntimeConfig } from '#app'
 import { RouterLink } from 'vue-router'
-import LoadingLandingPageCard from '../layout/LoadingLandingPageCard.vue'
+import LoadingLandingPageCard from '@/components/layout/LoadingLandingPageCard.vue'
 
 const domesticInstruments = ref([])
 const isLoading = ref(true) // Added loading state

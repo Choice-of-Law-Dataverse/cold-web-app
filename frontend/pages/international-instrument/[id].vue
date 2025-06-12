@@ -81,14 +81,14 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
-import BaseLegalContent from '~/components/legal/BaseLegalContent.vue'
-import InfoTooltip from '~/components/ui/InfoTooltip.vue'
-import { useApiFetch } from '~/composables/useApiFetch'
-import { useDetailDisplay } from '~/composables/useDetailDisplay'
-import { internationalInstrumentConfig } from '~/config/pageConfigs'
-import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
-import LoadingBar from '~/components/layout/LoadingBar.vue'
+import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import BaseLegalContent from '@/components/legal/BaseLegalContent.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import { useApiFetch } from '@/composables/useApiFetch'
+import { useDetailDisplay } from '@/composables/useDetailDisplay'
+import { internationalInstrumentConfig } from '@/config/pageConfigs'
+import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
 import { useHead } from '#imports'
 
 const config = useRuntimeConfig()
