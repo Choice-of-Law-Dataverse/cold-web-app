@@ -127,13 +127,13 @@
 <script setup>
 import { onMounted, computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
-import JurisdictionComparison from '~/components/jurisdiction-comparison/JurisdictionComparison.vue'
-import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
-import LoadingBar from '~/components/layout/LoadingBar.vue'
-import InfoTooltip from '~/components/ui/InfoTooltip.vue'
-import { useJurisdiction } from '~/composables/useJurisdiction'
-import { jurisdictionConfig } from '~/config/pageConfigs'
+import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import JurisdictionComparison from '@/components/jurisdiction-comparison/JurisdictionComparison.vue'
+import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import { useJurisdiction } from '@/composables/useJurisdiction'
+import { jurisdictionConfig } from '@/config/pageConfigs'
 import { useRuntimeConfig, useHead } from '#app'
 
 const tooltip = jurisdictionConfig.keyLabelPairs.find(
