@@ -134,13 +134,13 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
-import LegalProvision from '~/components/legal/LegalProvision.vue'
-import InfoTooltip from '~/components/ui/InfoTooltip.vue'
-import { useApiFetch } from '~/composables/useApiFetch'
-import { useDetailDisplay } from '~/composables/useDetailDisplay'
-import { legalInstrumentConfig } from '~/config/pageConfigs'
-import SectionRenderer from '~/components/legal/SectionRenderer.vue'
+import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import LegalProvision from '@/components/legal/LegalProvision.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import { useApiFetch } from '@/composables/useApiFetch'
+import { useDetailDisplay } from '@/composables/useDetailDisplay'
+import { legalInstrumentConfig } from '@/config/pageConfigs'
+import SectionRenderer from '@/components/legal/SectionRenderer.vue'
 import { useHead } from '#imports'
 
 const route = useRoute()
