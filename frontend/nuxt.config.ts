@@ -41,9 +41,9 @@ export default defineNuxtConfig({
         allow: [],
         disallow: ['/'],
         
-        // Beta and Live: Disallow search, allow everything else
+        // Beta and Live: Disallow search, new and edit. Allow everything else
         // allow: ['/'],
-        // disallow: ['/search'],
+        // disallow: ['/search', '*/new', '*/edit'],
       },
     ]
   },
