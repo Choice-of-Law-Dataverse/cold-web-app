@@ -99,7 +99,7 @@
     </div>
   </BaseDetailLayout>
 
-  <CancelModal v-model="showCancelModal" />
+  <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
 
   <!-- Save Modal -->
   <UModal v-model="showSaveModal" prevent-close>

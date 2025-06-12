@@ -4,13 +4,13 @@
       <div class="p-6 text-center">
         <h2 class="text-lg font-bold mb-4">Discard changes?</h2>
         <p class="mb-6">
-          33Are you sure you want to cancel? All unsaved changes will be lost.
+          Are you sure you want to cancel? All unsaved changes will be lost.
         </p>
         <div class="flex justify-center gap-4">
           <UButton color="gray" variant="outline" @click="closeModal"
             >Go Back</UButton
           >
-          <UButton color="red" @click="closeModal">Discard</UButton>
+          <UButton color="red" @click="onDiscard">Discard</UButton>
         </div>
       </div>
     </slot>
@@ -26,7 +26,7 @@ const props = defineProps({
     required: true,
   },
 })
-const emit = defineEmits(['update:modelValue'])
+const emit = defineEmits(['update:modelValue', 'confirm-cancel'])
 
 const modelValueProxy = ref(props.modelValue)
 
@@ -43,5 +43,10 @@ watch(modelValueProxy, (val) => {
 
 function closeModal() {
   modelValueProxy.value = false
+}
+
+function onDiscard() {
+  emit('confirm-cancel')
+  closeModal()
 }
 </script>
