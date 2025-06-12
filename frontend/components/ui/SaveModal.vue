@@ -9,7 +9,7 @@
       <!-- Email Field -->
       <UFormGroup
         size="lg"
-        :error="saveModalErrors.email"
+        :error="saveModalErrorsProxy.email"
         class="mb-4"
         hint="Required"
       >
@@ -17,7 +17,7 @@
           <span class="label">Email</span>
         </template>
         <UInput
-          v-model="email"
+          v-model="emailProxy"
           type="email"
           placeholder="Your email address"
           class="mt-2"
@@ -30,7 +30,7 @@
           <span class="label">Comments</span>
         </template>
         <UTextarea
-          v-model="comments"
+          v-model="commentsProxy"
           placeholder="Optional comments about your submission"
           class="mt-2"
           :rows="3"
@@ -39,12 +39,12 @@
 
       <div>
         <form @submit.prevent="onSubmit">
-          <NuxtTurnstile ref="turnstile" v-model="token" />
+          <NuxtTurnstile ref="turnstile" v-model="tokenProxy" />
         </form>
       </div>
 
       <div class="flex justify-center gap-4">
-        <UButton color="primary" :disabled="!token" @click="handleSubmit"
+        <UButton color="primary" :disabled="!tokenProxy" @click="handleSubmit"
           >Submit</UButton
         >
         <UButton color="gray" variant="outline" @click="closeModal"
@@ -57,6 +57,9 @@
 
 <script setup>
 import { ref, watch, toRefs } from 'vue'
+import { z } from 'zod'
+import { useRouter } from '#imports'
+import { format } from 'date-fns'
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
@@ -64,17 +67,25 @@ const props = defineProps({
   comments: { type: String, required: true },
   token: { type: String, required: true },
   saveModalErrors: { type: Object, required: true },
+  name: { type: String, required: true },
+  specialists: { type: Array, required: true },
+  date: { type: [String, Date], required: true },
+  pdfFile: { type: [Object, null], required: false },
 })
 const emit = defineEmits([
   'update:modelValue',
   'update:email',
   'update:comments',
   'update:token',
-  'submit',
+  'update:saveModalErrors',
 ])
 
-const { email, comments, token, saveModalErrors } = toRefs(props)
 const modelValueProxy = ref(props.modelValue)
+const emailProxy = ref(props.email)
+const commentsProxy = ref(props.comments)
+const tokenProxy = ref(props.token)
+const saveModalErrorsProxy = ref({ ...props.saveModalErrors })
+const router = useRouter()
 
 watch(
   () => props.modelValue,
@@ -86,10 +97,150 @@ watch(modelValueProxy, (val) => {
   emit('update:modelValue', val)
 })
 
+watch(
+  () => props.email,
+  (val) => {
+    emailProxy.value = val
+  }
+)
+watch(emailProxy, (val) => {
+  emit('update:email', val)
+})
+
+watch(
+  () => props.comments,
+  (val) => {
+    commentsProxy.value = val
+  }
+)
+watch(commentsProxy, (val) => {
+  emit('update:comments', val)
+})
+
+watch(
+  () => props.token,
+  (val) => {
+    tokenProxy.value = val
+  }
+)
+watch(tokenProxy, (val) => {
+  emit('update:token', val)
+})
+
+watch(
+  () => props.saveModalErrors,
+  (val) => {
+    saveModalErrorsProxy.value = { ...val }
+  }
+)
+watch(saveModalErrorsProxy, (val) => {
+  emit('update:saveModalErrors', val)
+})
+
+// Validation schema for SaveModal
+const saveModalSchema = z.object({
+  email: z
+    .string()
+    .min(1, { message: 'Email is required' })
+    .email({ message: 'Please enter a valid email address' }),
+  comments: z.string().optional(),
+})
+
+function validateSaveModal() {
+  try {
+    const modalData = {
+      email: emailProxy.value,
+      comments: commentsProxy.value,
+    }
+    saveModalSchema.parse(modalData)
+    saveModalErrorsProxy.value = {}
+    return true
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const errors = {}
+      error.errors.forEach((err) => {
+        errors[err.path[0]] = err.message
+      })
+      saveModalErrorsProxy.value = errors
+    }
+    return false
+  }
+}
+
+function onSave() {
+  const mergedSpecialists = (specialists.value || [])
+    .filter((s) => s && s.trim())
+    .join(', ')
+  const payload = {
+    data_type: 'international instrument',
+    data_content: {
+      name: name.value,
+      specialists: mergedSpecialists,
+      date: format(new Date(date.value), 'yyyy-MM-dd'),
+      pdf: pdfFile.value && pdfFile.value.name ? pdfFile.value.name : null,
+    },
+    user: {
+      email: email.value,
+      comments: comments.value || null,
+    },
+  }
+  if (!payload.data_content.pdf) {
+    delete payload.data_content.pdf
+  }
+  if (!payload.user.comments) {
+    delete payload.user.comments
+  }
+  console.log('Submitting: ' + JSON.stringify(payload, null, 2))
+  router.push('/confirmation')
+}
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    modelValueProxy.value = val
+  }
+)
+watch(modelValueProxy, (val) => {
+  emit('update:modelValue', val)
+})
+
+watch(
+  () => props.email,
+  (val) => {
+    emailProxy.value = val
+  }
+)
+watch(emailProxy, (val) => {
+  emit('update:email', val)
+})
+
+watch(
+  () => props.comments,
+  (val) => {
+    commentsProxy.value = val
+  }
+)
+watch(commentsProxy, (val) => {
+  emit('update:comments', val)
+})
+
+watch(
+  () => props.token,
+  (val) => {
+    tokenProxy.value = val
+  }
+)
+watch(tokenProxy, (val) => {
+  emit('update:token', val)
+})
+
 function closeModal() {
   modelValueProxy.value = false
 }
 function handleSubmit() {
-  emit('submit')
+  if (validateSaveModal()) {
+    onSave()
+    closeModal()
+  }
 }
 </script>

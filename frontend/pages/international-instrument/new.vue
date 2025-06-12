@@ -106,15 +106,14 @@
     :comments="comments"
     :token="token"
     :saveModalErrors="saveModalErrors"
+    :name="name"
+    :specialists="specialists"
+    :date="date"
+    :pdfFile="pdfFile"
     @update:email="(val) => (email = val)"
     @update:comments="(val) => (comments = val)"
     @update:token="(val) => (token = val)"
-    @submit="
-      () => {
-        onSave()
-        if (Object.keys(saveModalErrors).length === 0) showSaveModal = false
-      }
-    "
+    @update:saveModalErrors="(val) => (saveModalErrors.value = val)"
   />
 </template>
 
@@ -158,15 +157,6 @@ const formSchema = z.object({
   specialists: z.array(z.string()).optional(),
 })
 
-// Save modal validation schema
-const saveModalSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: 'Email is required' })
-    .email({ message: 'Please enter a valid email address' }),
-  comments: z.string().optional(),
-})
-
 // Form validation state
 const errors = ref({})
 const saveModalErrors = ref({})
@@ -201,27 +191,6 @@ function validateForm() {
   }
 }
 
-function validateSaveModal() {
-  try {
-    const modalData = {
-      email: email.value,
-      comments: comments.value,
-    }
-
-    saveModalSchema.parse(modalData)
-    saveModalErrors.value = {}
-    return true
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      saveModalErrors.value = {}
-      error.errors.forEach((err) => {
-        saveModalErrors.value[err.path[0]] = err.message
-      })
-    }
-    return false
-  }
-}
-
 function openSaveModal() {
   const isValid = validateForm()
 
@@ -249,13 +218,6 @@ function onPdfChange(event) {
 }
 
 function onSave() {
-  // Validate modal fields before proceeding
-  const isModalValid = validateSaveModal()
-
-  if (!isModalValid) {
-    return // Don't proceed if modal validation fails
-  }
-
   const mergedSpecialists = specialists.value
     .filter((s) => s && s.trim())
     .join(', ')
