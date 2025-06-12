@@ -168,20 +168,20 @@ function validateSaveModal() {
 }
 
 function onSave() {
-  const mergedSpecialists = (specialists.value || [])
+  const mergedSpecialists = (props.specialists || [])
     .filter((s) => s && s.trim())
     .join(', ')
   const payload = {
     data_type: 'international instrument',
     data_content: {
-      name: name.value,
+      name: props.name,
       specialists: mergedSpecialists,
-      date: format(new Date(date.value), 'yyyy-MM-dd'),
-      pdf: pdfFile.value && pdfFile.value.name ? pdfFile.value.name : null,
+      date: format(new Date(props.date), 'yyyy-MM-dd'),
+      pdf: props.pdfFile && props.pdfFile.name ? props.pdfFile.name : null,
     },
     user: {
-      email: email.value,
-      comments: comments.value || null,
+      email: emailProxy.value,
+      comments: commentsProxy.value || null,
     },
   }
   if (!payload.data_content.pdf) {
