@@ -639,6 +639,10 @@ class SearchService:
                         WHERE lit."Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
         """
         order_clause = "ORDER BY rank DESC"
         if sort_by_date:
@@ -741,6 +745,10 @@ class SearchService:
                         WHERE cd."Themes" ILIKE '%' || theme_filter || '%'
                     )
                 )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
 
             UNION ALL
 
@@ -755,6 +763,10 @@ class SearchService:
                 AND (
                     array_length(params.themes, 1) IS NULL
                 )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
 
             UNION ALL
 
@@ -768,6 +780,10 @@ class SearchService:
                 AND (
                     array_length(params.themes, 1) IS NULL
                 )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
+                )
             
             UNION ALL
 
@@ -780,6 +796,10 @@ class SearchService:
                 )
                 AND (
                     array_length(params.themes, 1) IS NULL
+                )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
 
             UNION ALL
@@ -803,6 +823,10 @@ class SearchService:
                         FROM unnest(params.themes) AS theme_filter
                         WHERE lit."Themes" ILIKE '%' || theme_filter || '%'
                     )
+                )
+                AND (
+                    search @@ websearch_to_tsquery('english', '{search_string}')
+                    OR search @@ websearch_to_tsquery('simple', '{search_string}')
                 )
         """
 
