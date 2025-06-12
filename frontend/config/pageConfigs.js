@@ -421,7 +421,7 @@ export const regionalInstrumentConfig = {
       key: 'Date',
       label: 'Date',
       tooltip: tooltipRegionalInstrumentDate,
-      emptyValueBehavior: { action: 'display', fallback: 'N/A' },
+      emptyValueBehavior: { action: 'hide' },
       valueTransform: (val) =>
         typeof formatDate === 'function' ? formatDate(val) : val,
     },
