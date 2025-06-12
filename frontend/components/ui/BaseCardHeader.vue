@@ -57,7 +57,7 @@
             class="mr-2"
             color="gray"
             variant="outline"
-            @click="isOpen = true"
+            @click="$emit('open-cancel-modal')"
             >Cancel</UButton
           >
           <UButton color="primary" @click="$emit('open-save-modal')"
@@ -118,13 +118,6 @@
         </template>
       </div>
     </template>
-    <UModal v-model="isOpen" prevent-close>
-      <slot name="cancel-modal" :close="closeModal">
-        <div class="p-4">
-          <Placeholder class="h-48" />
-        </div>
-      </slot>
-    </UModal>
   </div>
 </template>
 
@@ -380,10 +373,6 @@ const legalFamily = computed(() => {
   }
   return []
 })
-
-function closeModal() {
-  isOpen.value = false
-}
 </script>
 
 <style scoped>

@@ -8,6 +8,7 @@
     :hideBackButton="true"
     headerMode="new"
     @open-save-modal="openSaveModal"
+    @open-cancel-modal="showCancelModal = true"
     :showNotificationBanner="true"
     :notificationBannerMessage="notificationBannerMessage"
     :icon="'i-material-symbols:warning-outline'"
@@ -96,38 +97,9 @@
         </UPopover>
       </UFormGroup>
     </div>
-    <template #cancel-modal="{ close }">
-      <div class="p-6 text-center">
-        <h2 class="text-lg font-bold mb-4">Discard changes?</h2>
-        <p class="mb-6">
-          Are you sure you want to cancel? All unsaved changes will be lost.
-        </p>
-        <div class="flex justify-center gap-4">
-          <UButton color="gray" variant="outline" @click="close"
-            >Go Back</UButton
-          >
-          <UButton color="red" @click="confirmCancel">Discard</UButton>
-        </div>
-      </div>
-    </template>
   </BaseDetailLayout>
 
-  <CancelModal v-model="showCancelModal">
-    <template #cancel-modal="{ close }">
-      <div class="p-6 text-center">
-        <h2 class="text-lg font-bold mb-4">Discard changes?</h2>
-        <p class="mb-6">
-          Are you sure you want to cancel? All unsaved changes will be lost.
-        </p>
-        <div class="flex justify-center gap-4">
-          <UButton color="gray" variant="outline" @click="close"
-            >Go Back</UButton
-          >
-          <UButton color="red" @click="confirmCancel">Discard</UButton>
-        </div>
-      </div>
-    </template>
-  </CancelModal>
+  <CancelModal v-model="showCancelModal" />
 
   <!-- Save Modal -->
   <UModal v-model="showSaveModal" prevent-close>
