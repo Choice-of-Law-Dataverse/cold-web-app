@@ -122,15 +122,15 @@ export const jurisdictionConfig = {
         action: 'hide',
       },
     },
-    {
-      key: 'Specialist',
-      label: 'Specialists',
-      tooltip: tooltipJurisdictionSpecialists,
-      emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No specialists available',
-      },
-    },
+    // {
+    //   key: 'Specialists',
+    //   label: 'Specialists',
+    //   tooltip: tooltipJurisdictionSpecialists,
+    //   emptyValueBehavior: {
+    //     action: 'display',
+    //     fallback: 'No specialists available',
+    //   },
+    // },
     {
       key: 'Related Literature',
       label: 'Related Literature',
@@ -421,7 +421,7 @@ export const regionalInstrumentConfig = {
       key: 'Date',
       label: 'Date',
       tooltip: tooltipRegionalInstrumentDate,
-      emptyValueBehavior: { action: 'display', fallback: 'N/A' },
+      emptyValueBehavior: { action: 'hide' },
       valueTransform: (val) =>
         typeof formatDate === 'function' ? formatDate(val) : val,
     },

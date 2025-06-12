@@ -50,8 +50,8 @@
 import { ref, onMounted, watch } from 'vue'
 import { useRuntimeConfig } from '#app'
 import { RouterLink } from 'vue-router'
-import LoadingLandingPageCard from '../layout/LoadingLandingPageCard.vue'
-import ShowMoreLess from '../ui/ShowMoreLess.vue'
+import LoadingLandingPageCard from '@/components/layout/LoadingLandingPageCard.vue'
+import ShowMoreLess from '@/components/ui/ShowMoreLess.vue'
 
 const courtDecisions = ref([])
 const allDecisions = ref([])

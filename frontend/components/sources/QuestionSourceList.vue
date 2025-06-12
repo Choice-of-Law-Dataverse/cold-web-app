@@ -63,8 +63,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import LegalProvisionRenderer from '../legal/LegalProvisionRenderer.vue'
-import LoadingBar from '../layout/LoadingBar.vue'
+import LegalProvisionRenderer from '@/components/legal/LegalProvisionRenderer.vue'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
 
 const props = defineProps({
   sources: {

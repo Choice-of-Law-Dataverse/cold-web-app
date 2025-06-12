@@ -126,8 +126,8 @@
 
 <script setup>
 import { computed } from 'vue'
-import ResultCard from './ResultCard.vue'
-import { literatureCardConfig } from '../../config/cardConfigs'
+import ResultCard from '@/components/search-results/ResultCard.vue'
+import { literatureCardConfig } from '@/config/cardConfigs'
 
 const props = defineProps({
   resultData: {

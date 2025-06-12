@@ -42,9 +42,9 @@ import { computed, ref, watch } from 'vue'
 import {
   generateLegalProvisionLink,
   parseLegalProvisionLink,
-} from '~/utils/legal'
+} from '@/utils/legal'
 import { useRuntimeConfig } from '#imports'
-import LoadingBar from '~/components/layout/LoadingBar.vue'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
 
 const props = defineProps({
   value: {

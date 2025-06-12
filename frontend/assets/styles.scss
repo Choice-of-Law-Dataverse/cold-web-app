@@ -25,13 +25,7 @@
 // Utility classes for column spans: Loop to generate col-span-1 to col-span-12
 @for $i from 1 through 12 {
   .col-span-#{$i} {
-    flex: 0
-      0
-      calc(var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1));
-    max-width: calc(
-      var(--column-width) * #{$i} + var(--gutter-width) * (#{$i} - 1)
-    );
-    width: 100%;
+    grid-column: span #{$i} / span #{$i};
   }
 }
 

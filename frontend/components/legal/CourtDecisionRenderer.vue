@@ -23,7 +23,7 @@ import { ref, watch } from 'vue'
 import { useRuntimeConfig } from '#imports'
 import BaseLegalRenderer from './BaseLegalRenderer.vue'
 import { NuxtLink } from '#components'
-import LoadingBar from '../layout/LoadingBar.vue'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
 
 const props = defineProps({
   value: {

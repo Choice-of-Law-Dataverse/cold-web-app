@@ -8,17 +8,62 @@
             Choice of Law<br />
             Dataverse
           </div>
-          <h2 class="text-xl font-medium mb-6 md:text-left pt-4 pb-4">
-            Navigate private international law issues with precision.
-            <UButton
-              class="suggestion-button"
-              to="/about"
-              variant="link"
-              icon="i-material-symbols:arrow-forward"
-              trailing
+        </div>
+
+        <div
+          class="col-span-12 md:col-span-12 grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch"
+        >
+          <div
+            class="hidden md:flex col-span-1 md:col-span-1 items-center justify-start"
+          >
+            <img
+              src="https://choiceoflawdataverse.blob.core.windows.net/assets/navigate_pil.svg"
+              alt="HCCH Approved"
+              class="h-full object-contain max-h-[50px] w-auto"
+              style="align-items: flex-start; margin-top: -1.8em"
+            />
+          </div>
+          <h2
+            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4 flex flex-row items-center gap-1 ml-[-28px]"
+          >
+            <span
+              >Navigate private international law issues with precision.
+              <UButton
+                class="suggestion-button"
+                to="/about"
+                variant="link"
+                icon="i-material-symbols:arrow-forward"
+                trailing
+              >
+                <span>More</span>
+              </UButton></span
             >
-              <span>Learn more</span>
-            </UButton>
+          </h2>
+          <div
+            class="hidden md:flex col-span-1 md:col-span-1 items-center justify-start"
+          >
+            <img
+              src="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch_approved.svg"
+              alt="HCCH Approved"
+              class="h-full object-contain max-h-[50px] w-auto"
+              style="align-items: flex-start; margin-top: -1.8em"
+            />
+          </div>
+          <h2
+            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 col-span-1 md:col-span-4 flex flex-row items-center gap-1 ml-[-28px]"
+          >
+            <span
+              >Approved by the Hague Conference on Private International Law.
+              <UButton
+                class="suggestion-button"
+                to="/about/about-cold#hcch-approval"
+                variant="link"
+                icon="i-material-symbols:arrow-forward"
+                trailing
+              >
+                <span>More</span>
+              </UButton></span
+            >
           </h2>
         </div>
 
@@ -106,21 +151,54 @@
             iconName="i-hugeicons:test-tube-01"
           />
         </div>
+        <div class="col-span-12 sm:col-span-4">
+          <ConnectCard
+            title="Create a new International Instrument"
+            buttonText="Submit your data"
+            buttonLink="/international-instrument/new"
+            iconName="i-material-symbols:add-notes"
+            :newTab="false"
+          />
+        </div>
       </div>
     </div>
   </main>
 </template>
 
 <script setup>
-import PopularSearches from '~/components/landing-page/PopularSearches.vue'
-import JurisdictionMap from '~/components/landing-page/JurisdictionMap.vue'
-import CountrySelectMenu from '~/components/landing-page/TempJurisdictionPicker.vue'
-import PlotCourtDecisionsJurisdiction from '~/components/landing-page/PlotCourtDecisionsJurisdiction.vue'
-import ConnectCard from '~/components/landing-page/ConnectCard.vue'
-import NumberCard from '~/components/landing-page/NumberCard.vue'
-import { externalLinks } from '~/utils/externalLinks'
-import RecentDomesticInstruments from '~/components/landing-page/RecentDomesticInstruments.vue'
-import SuccessfulLegalTransplantations from '~/components/landing-page/SuccessfulLegalTransplantations.vue'
-import LeadingCases from '~/components/landing-page/LeadingCases.vue'
+import PopularSearches from '@/components/landing-page/PopularSearches.vue'
+import JurisdictionMap from '@/components/landing-page/JurisdictionMap.vue'
+import CountrySelectMenu from '@/components/landing-page/TempJurisdictionPicker.vue'
+import PlotCourtDecisionsJurisdiction from '@/components/landing-page/PlotCourtDecisionsJurisdiction.vue'
+import ConnectCard from '@/components/landing-page/ConnectCard.vue'
+import NumberCard from '@/components/landing-page/NumberCard.vue'
+import { externalLinks } from '@/utils/externalLinks'
+import RecentDomesticInstruments from '@/components/landing-page/RecentDomesticInstruments.vue'
+import SuccessfulLegalTransplantations from '@/components/landing-page/SuccessfulLegalTransplantations.vue'
+import LeadingCases from '@/components/landing-page/LeadingCases.vue'
+import { useHead } from '#imports'
 const links = externalLinks
+
+useHead({
+  title: 'Choice of Law Dataverse — CoLD',
+  link: [
+    {
+      rel: 'canonical',
+      href: 'https://cold.global/',
+    },
+  ],
+  meta: [
+    {
+      name: 'description',
+      content:
+        'Choice of Law Dataverse — Navigate private international law issues with precision.',
+    },
+  ],
+})
 </script>
+
+<style scoped>
+h2 {
+  font-weight: 500 !important;
+}
+</style>

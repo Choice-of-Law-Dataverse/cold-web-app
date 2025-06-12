@@ -125,7 +125,7 @@ import { useRouter, useRoute } from 'vue-router'
 import eventBus from '@/eventBus'
 import jurisdictionsData from '@/assets/jurisdictions-data.json'
 // import your section‐nav configs:
-import { aboutNavLinks, learnNavLinks } from '~/config/pageConfigs.js'
+import { aboutNavLinks, learnNavLinks } from '@/config/pageConfigs.js'
 
 const router = useRouter()
 const route = useRoute()

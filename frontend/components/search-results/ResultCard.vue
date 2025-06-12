@@ -31,7 +31,7 @@
 
 <script setup>
 import { UCard } from '#components'
-import BaseCardHeader from '../ui/BaseCardHeader.vue'
+import BaseCardHeader from '@/components/ui/BaseCardHeader.vue'
 
 // Define props
 const props = defineProps({

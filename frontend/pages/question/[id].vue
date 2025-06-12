@@ -109,13 +109,13 @@
 <script setup>
 import { onMounted, nextTick, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
-import CourtDecisionRenderer from '~/components/legal/CourtDecisionRenderer.vue'
-import RelatedLiterature from '~/components/literature/RelatedLiterature.vue'
-import QuestionSourceList from '~/components/sources/QuestionSourceList.vue'
-import InfoTooltip from '~/components/ui/InfoTooltip.vue'
-import { useQuestion } from '~/composables/useQuestion'
-import { questionConfig } from '~/config/pageConfigs'
+import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import CourtDecisionRenderer from '@/components/legal/CourtDecisionRenderer.vue'
+import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
+import QuestionSourceList from '@/components/sources/QuestionSourceList.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import { useQuestion } from '@/composables/useQuestion'
+import { questionConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
 
 const route = useRoute()
@@ -152,7 +152,7 @@ onMounted(async () => {
   }
 })
 
-// Set dynamic page title: 'Question — Jurisdictions — CoLD'
+// Set dynamic page title: 'Jurisdictions: Question — CoLD'
 watch(
   processedAnswerData,
   (newVal) => {
@@ -161,16 +161,28 @@ watch(
     const jurisdictions = newVal['Jurisdictions'] || ''
     let pageTitle = 'CoLD'
     if (question && jurisdictions) {
-      pageTitle = `${question} — ${jurisdictions} — CoLD`
+      pageTitle = `${jurisdictions}: ${question} — CoLD`
     } else if (question) {
       pageTitle = `${question} — CoLD`
     } else if (jurisdictions) {
       pageTitle = `${jurisdictions} — CoLD`
     }
-    useHead({ title: pageTitle })
+    useHead({
+      title: pageTitle,
+      link: [
+        {
+          rel: 'canonical',
+          href: `https://cold.global${route.fullPath}`,
+        },
+      ],
+      meta: [
+        {
+          name: 'description',
+          content: pageTitle,
+        },
+      ],
+    })
   },
   { immediate: true }
 )
-
-console.log('processedAnswerData', processedAnswerData)
 </script>

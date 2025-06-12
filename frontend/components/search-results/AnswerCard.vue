@@ -104,11 +104,11 @@
 <script setup>
 import { computed, ref, watch } from 'vue'
 import { useRuntimeConfig } from '#imports'
-import ResultCard from './ResultCard.vue'
-import { answerCardConfig } from '../../config/cardConfigs'
-import { literatureCache } from '../../utils/literatureCache'
-import LoadingBar from '../layout/LoadingBar.vue'
-import LegalProvisionRenderer from '../legal/LegalProvisionRenderer.vue' // new import
+import ResultCard from '@/components/search-results/ResultCard.vue'
+import { answerCardConfig } from '@/config/cardConfigs'
+import { literatureCache } from '@/utils/literatureCache'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
+import LegalProvisionRenderer from '@/components/legal/LegalProvisionRenderer.vue'
 
 const props = defineProps({
   resultData: {

@@ -49,9 +49,9 @@
 
 <script setup>
 import { computed, watch, onMounted, ref } from 'vue'
-import { useLegalProvision } from '~/composables/useLegalProvision'
-import BaseLegalContent from './BaseLegalContent.vue'
-import LoadingBar from './components/layout/LoadingBar.vue'
+import { useLegalProvision } from '@/composables/useLegalProvision'
+import BaseLegalContent from '@/components/legal/BaseLegalContent.vue'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
 
 const props = defineProps({
   provisionId: { type: String, required: true },

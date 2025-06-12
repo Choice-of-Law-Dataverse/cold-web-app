@@ -93,8 +93,8 @@
 </template>
 
 <script setup>
-import ResultCard from './ResultCard.vue'
-import { courtDecisionCardConfig } from '../../config/cardConfigs'
+import ResultCard from '@/components/search-results/ResultCard.vue'
+import { courtDecisionCardConfig } from '@/config/cardConfigs'
 
 const props = defineProps({
   resultData: {

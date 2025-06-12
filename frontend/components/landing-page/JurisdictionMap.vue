@@ -74,14 +74,14 @@
 <script setup>
 import { ref } from 'vue'
 
-import MapAfrica from '../maps/MapAfrica.vue'
-import MapAllRegions from '../maps/MapAllRegions.vue'
-import MapArabStates from '../maps/MapArabStates.vue'
-import MapAsiaPacific from '../maps/MapAsiaPacific.vue'
-import MapEurope from '../maps/MapEurope.vue'
-import MapMiddleEast from '../maps/MapMiddleEast.vue'
-import MapNorthAmerica from '../maps/MapNorthAmerica.vue'
-import MapSouthLatinAmerica from '../maps/MapSouthLatinAmerica.vue'
+import MapAfrica from '@/components/maps/MapAfrica.vue'
+import MapAllRegions from '@/components/maps/MapAllRegions.vue'
+import MapArabStates from '@/components/maps/MapArabStates.vue'
+import MapAsiaPacific from '@/components/maps/MapAsiaPacific.vue'
+import MapEurope from '@/components/maps/MapEurope.vue'
+import MapMiddleEast from '@/components/maps/MapMiddleEast.vue'
+import MapNorthAmerica from '@/components/maps/MapNorthAmerica.vue'
+import MapSouthLatinAmerica from '@/components/maps/MapSouthLatinAmerica.vue'
 
 // Reactive property to track the selected region
 const selectedRegion = ref('All Regions')

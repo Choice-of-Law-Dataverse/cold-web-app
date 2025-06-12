@@ -23,7 +23,7 @@
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
-import LoadingNumber from '../layout/LoadingNumber.vue'
+import LoadingNumber from '@/components/layout/LoadingNumber.vue'
 const props = defineProps({
   title: { type: String, required: true },
   buttonText: { type: String, required: true },

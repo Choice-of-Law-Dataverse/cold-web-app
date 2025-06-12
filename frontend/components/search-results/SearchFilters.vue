@@ -101,7 +101,7 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue'])
 
 import { computed, reactive } from 'vue'
-import { handleImageError } from '../../utils/handleImageError' // new import
+import { handleImageError } from '@/utils/handleImageError'
 
 // Reactive object for errored avatars
 const erroredAvatars = reactive({})

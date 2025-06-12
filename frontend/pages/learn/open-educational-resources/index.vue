@@ -15,8 +15,8 @@
 </template>
 
 <script setup>
-import SectionNav from '~/components/layout/SectionNav.vue'
-import { learnNavLinks } from '~/config/pageConfigs.js'
+import SectionNav from '@/components/layout/SectionNav.vue'
+import { learnNavLinks } from '@/config/pageConfigs.js'
 </script>
 
 <style scoped>

@@ -16,7 +16,7 @@
 <script setup>
 import { computed, toRefs, ref, watchEffect } from 'vue'
 import { useRuntimeConfig } from '#imports'
-import InfoTooltip from '../ui/InfoTooltip.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
 const props = defineProps({
   label: { type: String, default: 'Related Questions' },
