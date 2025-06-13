@@ -17,6 +17,11 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
+import { useHead } from '#imports'
+
+useHead({
+  title: 'Confirmed — CoLD',
+})
 
 const route = useRoute()
 const confirmationMessage =
