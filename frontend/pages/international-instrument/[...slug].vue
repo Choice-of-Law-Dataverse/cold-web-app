@@ -81,7 +81,7 @@
             Current: {{ pdfFileName }}
           </div>
         </UFormGroup>
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg" class="mt-8" :error="errors.link">
           <template #label>
             <span class="label">Link</span>
             <InfoTooltip :text="tooltipInternationalInstrumentLink" />
@@ -186,7 +186,7 @@ const formSchema = z.object({
   specialists: z.array(z.string()).optional(),
   link: z
     .string()
-    .url({ message: 'Link must be a valid URL' })
+    .url({ message: 'Link must be a valid URL. It must start with "https://"' })
     .optional()
     .or(z.literal('')),
 })
