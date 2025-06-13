@@ -220,7 +220,11 @@ function removeSpecialist(idx) {
 }
 
 function confirmCancel() {
-  router.push('/')
+  if (isEditPage.value && instrumentId.value) {
+    router.push(`/international-instrument/${instrumentId.value}`)
+  } else {
+    router.push('/')
+  }
 }
 
 function handleEditSave() {
