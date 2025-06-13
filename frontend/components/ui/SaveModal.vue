@@ -75,6 +75,7 @@ const props = defineProps({
     type: [String, Number],
     default: null,
   },
+  link: { type: String, required: false, default: '' },
 })
 const emit = defineEmits([
   'update:modelValue',
@@ -90,6 +91,7 @@ const emailProxy = ref(props.email)
 const commentsProxy = ref(props.comments)
 const tokenProxy = ref(props.token)
 const saveModalErrorsProxy = ref({ ...props.saveModalErrors })
+const linkProxy = ref(props.link)
 const router = useRouter()
 
 watch(
@@ -142,6 +144,16 @@ watch(saveModalErrorsProxy, (val) => {
   emit('update:saveModalErrors', val)
 })
 
+watch(
+  () => props.link,
+  (val) => {
+    linkProxy.value = val
+  }
+)
+watch(linkProxy, (val) => {
+  emit('update:link', val)
+})
+
 // Validation schema for SaveModal
 const saveModalSchema = z.object({
   email: z
@@ -182,7 +194,7 @@ function onSave() {
     specialists: mergedSpecialists,
     date: format(new Date(props.date), 'yyyy-MM-dd'),
     pdf: props.pdfFile && props.pdfFile.name ? props.pdfFile.name : null,
-    link: typeof props.link === 'string' ? props.link : '',
+    link: typeof linkProxy.value === 'string' ? linkProxy.value : '',
   }
   if (!dataContent.pdf) {
     delete dataContent.pdf
