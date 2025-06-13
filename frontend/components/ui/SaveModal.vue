@@ -182,6 +182,7 @@ function onSave() {
     specialists: mergedSpecialists,
     date: format(new Date(props.date), 'yyyy-MM-dd'),
     pdf: props.pdfFile && props.pdfFile.name ? props.pdfFile.name : null,
+    link: typeof props.link === 'string' ? props.link : '',
   }
   if (!dataContent.pdf) {
     delete dataContent.pdf

@@ -86,11 +86,7 @@
             <span class="label">Link</span>
             <InfoTooltip :text="tooltipInternationalInstrumentLink" />
           </template>
-          <UInput
-            v-model="link"
-            class="mt-2"
-            placeholder="Name of the International Instrument"
-          />
+          <UInput v-model="link" class="mt-2" placeholder="Link" />
         </UFormGroup>
         <UFormGroup size="lg" class="mt-8">
           <template #label>
