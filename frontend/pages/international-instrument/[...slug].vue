@@ -143,6 +143,7 @@ import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/inter
 import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
 import tooltipInternationalInstrumentLink from '@/content/info_boxes/international_instrument/link.md?raw'
 import { format, parseISO } from 'date-fns'
+import { useHead } from '#imports'
 
 const route = useRoute()
 const router = useRouter()
@@ -303,6 +304,34 @@ watch(
   ([edit, id]) => {
     if (edit && id) {
       fetchInstrument()
+    }
+  },
+  { immediate: true }
+)
+
+watch(
+  [isEditPage, name],
+  ([edit, currentName]) => {
+    if (edit) {
+      const pageTitle =
+        currentName && currentName.trim()
+          ? `Edit ${currentName} — CoLD`
+          : 'Edit International Instrument — CoLD'
+      useHead({
+        title: pageTitle,
+        link: [
+          {
+            rel: 'canonical',
+            href: `https://cold.global${route.fullPath}`,
+          },
+        ],
+        meta: [
+          {
+            name: 'description',
+            content: pageTitle,
+          },
+        ],
+      })
     }
   },
   { immediate: true }
