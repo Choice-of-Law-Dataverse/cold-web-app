@@ -226,9 +226,7 @@ function handleEditSave() {
   router.replace({
     path: '/confirmation',
     query: {
-      message: encodeURIComponent(
-        'Thanks, we have received your edit suggestions.'
-      ),
+      message: 'Thanks, we have received your edit suggestions.',
     },
   })
 }
