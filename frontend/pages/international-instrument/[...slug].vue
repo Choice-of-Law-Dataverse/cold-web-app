@@ -83,6 +83,17 @@
         </UFormGroup>
         <UFormGroup size="lg" class="mt-8">
           <template #label>
+            <span class="label">Link</span>
+            <InfoTooltip :text="tooltipInternationalInstrumentLink" />
+          </template>
+          <UInput
+            v-model="link"
+            class="mt-2"
+            placeholder="Name of the International Instrument"
+          />
+        </UFormGroup>
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
             <span class="label">Date</span>
             <InfoTooltip :text="tooltipInternationalInstrumentDate" />
           </template>
@@ -110,6 +121,7 @@
       :specialists="specialists"
       :date="date"
       :pdfFile="pdfFile"
+      :link="link"
       :instrumentId="instrumentApiId"
       @update:email="(val) => (email = val)"
       @update:comments="(val) => (comments = val)"
@@ -133,6 +145,7 @@ import SaveModal from '@/components/ui/SaveModal.vue'
 import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
 import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/international_instrument/specialists.md?raw'
 import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
+import tooltipInternationalInstrumentLink from '@/content/info_boxes/international_instrument/link.md?raw'
 import { format, parseISO } from 'date-fns'
 
 const route = useRoute()
@@ -148,6 +161,7 @@ const instrumentId = computed(() => {
 
 const loading = ref(true)
 const name = ref('')
+const link = ref('')
 const specialists = ref([''])
 const pdfFile = ref(null)
 const pdfFileName = ref('')
@@ -170,6 +184,11 @@ const formSchema = z.object({
     .min(1, { message: 'Name is required' })
     .min(3, { message: 'Name must be at least 3 characters long' }),
   specialists: z.array(z.string()).optional(),
+  link: z
+    .string()
+    .url({ message: 'Link must be a valid URL' })
+    .optional()
+    .or(z.literal('')),
 })
 
 function validateForm() {
@@ -177,6 +196,7 @@ function validateForm() {
     const formData = {
       name: name.value,
       specialists: specialists.value,
+      link: link.value,
     }
     formSchema.parse(formData)
     errors.value = {}
@@ -272,6 +292,7 @@ async function fetchInstrument() {
       ? data['Specialists'].split(',').map((s) => s.trim())
       : ['']
     date.value = data['Date'] ? parseISO(data['Date']) : new Date()
+    link.value = data['URL'] || ''
     pdfFileName.value = data['PDF'] || ''
     instrumentApiId.value = data['ID'] || null
   } catch (err) {
