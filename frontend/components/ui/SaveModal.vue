@@ -71,6 +71,10 @@ const props = defineProps({
   specialists: { type: Array, required: true },
   date: { type: [String, Date], required: true },
   pdfFile: { type: [Object, null], required: false },
+  instrumentId: {
+    type: [String, Number],
+    default: null,
+  },
 })
 const emit = defineEmits([
   'update:modelValue',
@@ -190,6 +194,9 @@ function onSave() {
   }
   if (!payload.user.comments) {
     delete payload.user.comments
+  }
+  if (props.instrumentId) {
+    payload.ID = props.instrumentId
   }
   console.log('Submitting: ' + JSON.stringify(payload, null, 2))
   emit('save', payload)

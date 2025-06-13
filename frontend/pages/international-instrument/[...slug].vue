@@ -110,6 +110,7 @@
       :specialists="specialists"
       :date="date"
       :pdfFile="pdfFile"
+      :instrumentId="instrumentApiId"
       @update:email="(val) => (email = val)"
       @update:comments="(val) => (comments = val)"
       @update:token="(val) => (token = val)"
@@ -161,6 +162,7 @@ const showSaveModal = ref(false)
 const showCancelModal = ref(false)
 const notificationBannerMessage =
   'Please back up your data when working here. Closing or reloading this window will delete everything. Data is only saved after you submit.'
+const instrumentApiId = ref(null)
 
 const formSchema = z.object({
   name: z
@@ -267,6 +269,7 @@ async function fetchInstrument() {
       : ['']
     date.value = data['Date'] ? parseISO(data['Date']) : new Date()
     pdfFileName.value = data['PDF'] || ''
+    instrumentApiId.value = data['ID'] || null
   } catch (err) {
     // Optionally handle error
   } finally {
