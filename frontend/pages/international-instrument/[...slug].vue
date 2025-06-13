@@ -7,7 +7,7 @@
       :valueClassMap="{}"
       sourceTable="International Instrument"
       :hideBackButton="true"
-      headerMode="edit"
+      headerMode="new"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
       :showNotificationBanner="true"
