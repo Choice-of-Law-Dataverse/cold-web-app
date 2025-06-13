@@ -114,6 +114,7 @@
       @update:comments="(val) => (comments = val)"
       @update:token="(val) => (token = val)"
       @update:saveModalErrors="(val) => (saveModalErrors.value = val)"
+      @save="handleEditSave"
     />
   </div>
   <div v-else>Page not found</div>
@@ -218,6 +219,18 @@ function removeSpecialist(idx) {
 
 function confirmCancel() {
   router.push('/')
+}
+
+function handleEditSave() {
+  showSaveModal.value = false
+  router.replace({
+    path: '/confirmation',
+    query: {
+      message: encodeURIComponent(
+        'Your changes to the International Instrument have been saved.'
+      ),
+    },
+  })
 }
 
 // Fetch and prefill data

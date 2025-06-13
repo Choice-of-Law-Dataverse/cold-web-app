@@ -78,6 +78,7 @@ const emit = defineEmits([
   'update:comments',
   'update:token',
   'update:saveModalErrors',
+  'save',
 ])
 
 const modelValueProxy = ref(props.modelValue)
@@ -191,7 +192,7 @@ function onSave() {
     delete payload.user.comments
   }
   console.log('Submitting: ' + JSON.stringify(payload, null, 2))
-  router.push('/confirmation')
+  emit('save', payload)
 }
 
 watch(
