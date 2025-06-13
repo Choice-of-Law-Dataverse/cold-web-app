@@ -227,7 +227,7 @@ function handleEditSave() {
     path: '/confirmation',
     query: {
       message: encodeURIComponent(
-        'Your changes to the International Instrument have been saved.'
+        'Thanks, we have received your edit suggestions.'
       ),
     },
   })

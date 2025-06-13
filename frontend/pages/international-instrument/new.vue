@@ -114,6 +114,7 @@
     @update:comments="(val) => (comments = val)"
     @update:token="(val) => (token = val)"
     @update:saveModalErrors="(val) => (saveModalErrors.value = val)"
+    @save="handleNewSave"
   />
 </template>
 
@@ -256,6 +257,16 @@ function addSpecialist() {
 }
 function removeSpecialist(idx) {
   specialists.value.splice(idx, 1)
+}
+
+function handleNewSave() {
+  showSaveModal.value = false
+  router.push({
+    path: '/confirmation',
+    query: {
+      message: 'Thanks, we have received your submission.',
+    },
+  })
 }
 
 async function onSubmit() {
