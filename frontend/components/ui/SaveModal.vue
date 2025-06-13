@@ -176,27 +176,26 @@ function onSave() {
   const mergedSpecialists = (props.specialists || [])
     .filter((s) => s && s.trim())
     .join(', ')
+  const dataContent = {
+    ...(props.instrumentId ? { ID: props.instrumentId } : {}),
+    name: props.name,
+    specialists: mergedSpecialists,
+    date: format(new Date(props.date), 'yyyy-MM-dd'),
+    pdf: props.pdfFile && props.pdfFile.name ? props.pdfFile.name : null,
+  }
+  if (!dataContent.pdf) {
+    delete dataContent.pdf
+  }
   const payload = {
     data_type: 'international instrument',
-    data_content: {
-      name: props.name,
-      specialists: mergedSpecialists,
-      date: format(new Date(props.date), 'yyyy-MM-dd'),
-      pdf: props.pdfFile && props.pdfFile.name ? props.pdfFile.name : null,
-    },
+    data_content: dataContent,
     user: {
       email: emailProxy.value,
       comments: commentsProxy.value || null,
     },
   }
-  if (!payload.data_content.pdf) {
-    delete payload.data_content.pdf
-  }
   if (!payload.user.comments) {
     delete payload.user.comments
-  }
-  if (props.instrumentId) {
-    payload.ID = props.instrumentId
   }
   console.log('Submitting: ' + JSON.stringify(payload, null, 2))
   emit('save', payload)
