@@ -48,6 +48,7 @@ const filter = ref({
   jurisdiction: route.query.jurisdiction,
   theme: route.query.theme,
   type: route.query.type,
+  sortBy: route.query.sortBy || 'relevance', // Add sortBy to filter state
 })
 
 const searchText = ref(route.query.q || '') // Initialize searchText from query
@@ -147,6 +148,13 @@ async function fetchSearchResults(query, filters, append = false) {
     page: currentPage.value,
     page_size: 10, // Hard code number of search results per page
     filters: [],
+  }
+
+  // Add sort_by_date if needed
+  if (filters.sortBy === 'date') {
+    requestBody.sort_by_date = true
+  } else {
+    requestBody.sort_by_date = false
   }
 
   // Add "Jurisdictions" filter if defined
