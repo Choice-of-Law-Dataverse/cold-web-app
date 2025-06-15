@@ -78,7 +78,13 @@
           @change="onPdfChange"
         />
       </UFormGroup>
-
+      <UFormGroup size="lg" class="mt-8" :error="errors.link">
+        <template #label>
+          <span class="label">Link</span>
+          <InfoTooltip :text="tooltipInternationalInstrumentLink" />
+        </template>
+        <UInput v-model="link" class="mt-2" placeholder="Link" />
+      </UFormGroup>
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Date</span>
@@ -110,6 +116,7 @@
     :specialists="specialists"
     :date="date"
     :pdfFile="pdfFile"
+    :link="link"
     @update:email="(val) => (email = val)"
     @update:comments="(val) => (comments = val)"
     @update:token="(val) => (token = val)"
@@ -130,12 +137,14 @@ import SaveModal from '@/components/ui/SaveModal.vue'
 import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
 import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/international_instrument/specialists.md?raw'
 import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
+import tooltipInternationalInstrumentLink from '@/content/info_boxes/international_instrument/link.md?raw'
 
 import { format } from 'date-fns'
 const date = ref(new Date())
 
 // Form data
 const name = ref('')
+const link = ref('')
 const specialists = ref([''])
 const pdfFile = ref(null)
 const email = ref('')
@@ -156,6 +165,11 @@ const formSchema = z.object({
     .min(1, { message: 'Name is required' })
     .min(3, { message: 'Name must be at least 3 characters long' }),
   specialists: z.array(z.string()).optional(),
+  link: z
+    .string()
+    .url({ message: 'Link must be a valid URL. It must start with "https://"' })
+    .optional()
+    .or(z.literal('')),
 })
 
 // Form validation state
@@ -176,6 +190,7 @@ function validateForm() {
     const formData = {
       name: name.value,
       specialists: specialists.value,
+      link: link.value,
     }
 
     formSchema.parse(formData)
