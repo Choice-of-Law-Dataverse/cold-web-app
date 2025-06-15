@@ -19,6 +19,7 @@
           :icon="icon"
           @save="$emit('save')"
           @open-save-modal="$emit('open-save-modal')"
+          @open-cancel-modal="$emit('open-cancel-modal')"
         >
           <slot />
           <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
@@ -50,5 +51,5 @@ defineProps<{
   icon?: string
 }>()
 
-defineEmits(['save', 'open-save-modal'])
+defineEmits(['save', 'open-save-modal', 'open-cancel-modal'])
 </script>

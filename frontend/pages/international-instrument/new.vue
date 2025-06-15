@@ -8,6 +8,7 @@
     :hideBackButton="true"
     headerMode="new"
     @open-save-modal="openSaveModal"
+    @open-cancel-modal="showCancelModal = true"
     :showNotificationBanner="true"
     :notificationBannerMessage="notificationBannerMessage"
     :icon="'i-material-symbols:warning-outline'"
@@ -77,7 +78,13 @@
           @change="onPdfChange"
         />
       </UFormGroup>
-
+      <UFormGroup size="lg" class="mt-8" :error="errors.link">
+        <template #label>
+          <span class="label">Link</span>
+          <InfoTooltip :text="tooltipInternationalInstrumentLink" />
+        </template>
+        <UInput v-model="link" class="mt-2" placeholder="Link" />
+      </UFormGroup>
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Date</span>
@@ -96,87 +103,26 @@
         </UPopover>
       </UFormGroup>
     </div>
-    <template #cancel-modal="{ close }">
-      <div class="p-6 text-center">
-        <h2 class="text-lg font-bold mb-4">Discard changes?</h2>
-        <p class="mb-6">
-          Are you sure you want to cancel? All unsaved changes will be lost.
-        </p>
-        <div class="flex justify-center gap-4">
-          <UButton color="gray" variant="outline" @click="close"
-            >Go Back</UButton
-          >
-          <UButton color="red" @click="confirmCancel">Discard</UButton>
-        </div>
-      </div>
-    </template>
   </BaseDetailLayout>
 
-  <!-- Save Modal -->
-  <UModal v-model="showSaveModal" prevent-close>
-    <div class="p-6">
-      <h2 class="text-lg font-bold mb-4 text-center">Ready to submit?</h2>
-      <p class="mb-6 text-center">
-        Please provide your contact information to complete the submission.
-      </p>
-
-      <!-- Email Field -->
-      <UFormGroup
-        size="lg"
-        :error="saveModalErrors.email"
-        class="mb-4"
-        hint="Required"
-      >
-        <template #label>
-          <span class="label">Email</span>
-        </template>
-        <UInput
-          v-model="email"
-          type="email"
-          placeholder="Your email address"
-          class="mt-2"
-        />
-      </UFormGroup>
-
-      <!-- Comments Field -->
-      <UFormGroup size="lg" class="mb-6">
-        <template #label>
-          <span class="label">Comments</span>
-        </template>
-        <UTextarea
-          v-model="comments"
-          placeholder="Optional comments about your submission"
-          class="mt-2"
-          :rows="3"
-        />
-      </UFormGroup>
-
-      <div>
-        <form @submit.prevent="onSubmit">
-          <NuxtTurnstile ref="turnstile" v-model="token" />
-        </form>
-      </div>
-
-      <div class="flex justify-center gap-4">
-        <UButton
-          color="primary"
-          :disabled="!token"
-          @click="
-            () => {
-              onSave()
-              if (Object.keys(saveModalErrors).length === 0) {
-                showSaveModal = false
-              }
-            }
-          "
-          >Submit</UButton
-        >
-        <UButton color="gray" variant="outline" @click="showSaveModal = false"
-          >Cancel</UButton
-        >
-      </div>
-    </div>
-  </UModal>
+  <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
+  <SaveModal
+    v-model="showSaveModal"
+    :email="email"
+    :comments="comments"
+    :token="token"
+    :saveModalErrors="saveModalErrors"
+    :name="name"
+    :specialists="specialists"
+    :date="date"
+    :pdfFile="pdfFile"
+    :link="link"
+    @update:email="(val) => (email = val)"
+    @update:comments="(val) => (comments = val)"
+    @update:token="(val) => (token = val)"
+    @update:saveModalErrors="(val) => (saveModalErrors.value = val)"
+    @save="handleNewSave"
+  />
 </template>
 
 <script setup>
@@ -186,15 +132,19 @@ import { z } from 'zod'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import DatePicker from '@/components/ui/DatePicker.vue'
+import CancelModal from '@/components/ui/CancelModal.vue'
+import SaveModal from '@/components/ui/SaveModal.vue'
 import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
 import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/international_instrument/specialists.md?raw'
 import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
+import tooltipInternationalInstrumentLink from '@/content/info_boxes/international_instrument/link.md?raw'
 
 import { format } from 'date-fns'
 const date = ref(new Date())
 
 // Form data
 const name = ref('')
+const link = ref('')
 const specialists = ref([''])
 const pdfFile = ref(null)
 const email = ref('')
@@ -215,15 +165,11 @@ const formSchema = z.object({
     .min(1, { message: 'Name is required' })
     .min(3, { message: 'Name must be at least 3 characters long' }),
   specialists: z.array(z.string()).optional(),
-})
-
-// Save modal validation schema
-const saveModalSchema = z.object({
-  email: z
+  link: z
     .string()
-    .min(1, { message: 'Email is required' })
-    .email({ message: 'Please enter a valid email address' }),
-  comments: z.string().optional(),
+    .url({ message: 'Link must be a valid URL. It must start with "https://"' })
+    .optional()
+    .or(z.literal('')),
 })
 
 // Form validation state
@@ -233,6 +179,7 @@ const saveModalErrors = ref({})
 const router = useRouter()
 const emit = defineEmits(['close-cancel-modal', 'close-save-modal'])
 const showSaveModal = ref(false)
+const showCancelModal = ref(false)
 const notificationBannerMessage =
   'Please back up your data when working here. Closing or reloading this window will delete everything. Data is only saved after you submit.'
 
@@ -243,6 +190,7 @@ function validateForm() {
     const formData = {
       name: name.value,
       specialists: specialists.value,
+      link: link.value,
     }
 
     formSchema.parse(formData)
@@ -253,27 +201,6 @@ function validateForm() {
       errors.value = {}
       error.errors.forEach((err) => {
         errors.value[err.path[0]] = err.message
-      })
-    }
-    return false
-  }
-}
-
-function validateSaveModal() {
-  try {
-    const modalData = {
-      email: email.value,
-      comments: comments.value,
-    }
-
-    saveModalSchema.parse(modalData)
-    saveModalErrors.value = {}
-    return true
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      saveModalErrors.value = {}
-      error.errors.forEach((err) => {
-        saveModalErrors.value[err.path[0]] = err.message
       })
     }
     return false
@@ -307,13 +234,6 @@ function onPdfChange(event) {
 }
 
 function onSave() {
-  // Validate modal fields before proceeding
-  const isModalValid = validateSaveModal()
-
-  if (!isModalValid) {
-    return // Don't proceed if modal validation fails
-  }
-
   const mergedSpecialists = specialists.value
     .filter((s) => s && s.trim())
     .join(', ')
@@ -352,6 +272,16 @@ function addSpecialist() {
 }
 function removeSpecialist(idx) {
   specialists.value.splice(idx, 1)
+}
+
+function handleNewSave() {
+  showSaveModal.value = false
+  router.push({
+    path: '/confirmation',
+    query: {
+      message: 'Thanks, we have received your submission.',
+    },
+  })
 }
 
 async function onSubmit() {

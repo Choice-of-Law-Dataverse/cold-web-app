@@ -37,6 +37,7 @@
           :headerMode="headerMode"
           @save="$emit('save')"
           @open-save-modal="$emit('open-save-modal')"
+          @open-cancel-modal="$emit('open-cancel-modal')"
         >
           <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
             <slot :name="name" v-bind="slotData" />
@@ -177,7 +178,7 @@ const props = defineProps({
   icon: String,
 })
 
-const emit = defineEmits(['save', 'open-save-modal'])
+const emit = defineEmits(['save', 'open-save-modal', 'open-cancel-modal'])
 
 const route = useRoute()
 const isJurisdictionPage = route.path.startsWith('/jurisdiction/')

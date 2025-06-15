@@ -17,18 +17,17 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
+import { useHead } from '#imports'
+
+useHead({
+  title: 'Confirmed — CoLD',
+})
 
 const route = useRoute()
 const confirmationMessage =
   route.query.message || 'We have received your submission.'
 
-let links = [
-  { text: 'Take me back to Home', to: '/' },
-  {
-    text: 'Submit a new International Instrument',
-    to: '/international-instrument/new',
-  },
-]
+let links = [{ text: 'Take me back to Home', to: '/' }]
 if (route.query.links) {
   try {
     const parsed = JSON.parse(route.query.links)
