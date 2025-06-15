@@ -77,8 +77,8 @@
 
 <script setup>
 import { computed } from 'vue'
-import ResultCard from './ResultCard.vue'
-import { legislationCardConfig } from '../../config/cardConfigs'
+import ResultCard from '@/components/search-results/ResultCard.vue'
+import { legislationCardConfig } from '@/config/cardConfigs'
 
 const props = defineProps({
   resultData: {

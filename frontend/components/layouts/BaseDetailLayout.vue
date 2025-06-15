@@ -9,6 +9,17 @@
           :valueClassMap="valueClassMap"
           :formattedSourceTable="sourceTable"
           :formattedJurisdiction="formattedJurisdiction"
+          :showHeader="showHeader"
+          :formattedTheme="formattedTheme"
+          :hideBackButton="hideBackButton"
+          :headerMode="headerMode"
+          :showNotificationBanner="showNotificationBanner"
+          :notificationBannerMessage="notificationBannerMessage"
+          :fallbackMessage="fallbackMessage"
+          :icon="icon"
+          @save="$emit('save')"
+          @open-save-modal="$emit('open-save-modal')"
+          @open-cancel-modal="$emit('open-cancel-modal')"
         >
           <slot />
           <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
@@ -21,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import DetailDisplay from '~/components/ui/BaseDetailDisplay.vue'
+import DetailDisplay from '@/components/ui/BaseDetailDisplay.vue'
 
 defineProps<{
   loading: boolean
@@ -30,5 +41,15 @@ defineProps<{
   valueClassMap: Record<string, string>
   sourceTable: string
   formattedJurisdiction?: any[] //
+  hideBackButton?: boolean
+  showHeader?: boolean
+  formattedTheme?: any[]
+  headerMode?: string
+  showNotificationBanner?: boolean
+  notificationBannerMessage?: string
+  fallbackMessage?: string
+  icon?: string
 }>()
+
+defineEmits(['save', 'open-save-modal', 'open-cancel-modal'])
 </script>

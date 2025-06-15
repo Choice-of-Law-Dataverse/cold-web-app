@@ -50,57 +50,119 @@
       <!-- Fade-out effect -->
       <div class="fade-out" :class="fadeOutClasses"></div>
 
-      <!-- Right side of the header: Show either "Suggest Edit" or "Open" -->
+      <!-- Right side of the header: Show either "Suggest Edit"/"Open" or custom for 'new' mode -->
       <div class="open-link ml-4">
-        <template v-if="showSuggestEdit">
-          <div class="flex items-center space-x-5 label">
-            <NuxtLink
-              v-for="(action, index) in suggestEditActions"
-              :key="index"
-              class="flex items-center"
-              :class="action.class"
-              v-bind="action.to ? { to: action.to } : {}"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <template v-if="action.label === 'Cite'">
-                <UTooltip
-                  :text="availableSoon"
-                  :popper="{ placement: 'top' }"
-                  :ui="{
-                    background: 'bg-cold-night',
-                    color: 'text-white',
-                    base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
-                    rounded: 'rounded-none',
-                    ring: '',
-                  }"
-                >
-                  <span class="flex items-center">
-                    {{ action.label }}
-                    <UIcon
-                      :name="action.icon"
-                      class="inline-block ml-1 text-[1.2em] mb-0.5"
-                    />
-                  </span>
-                </UTooltip>
-              </template>
-              <template v-else>
-                {{ action.label }}
-                <UIcon
-                  :name="action.icon"
-                  class="inline-block ml-1 text-[1.2em] mb-0.5"
-                />
-              </template>
-            </NuxtLink>
-          </div>
+        <template v-if="headerMode === 'new'">
+          <UButton
+            class="mr-2"
+            color="gray"
+            variant="outline"
+            @click="$emit('open-cancel-modal')"
+            >Cancel</UButton
+          >
+          <UButton color="primary" @click="$emit('open-save-modal')"
+            >Save</UButton
+          >
         </template>
         <template v-else>
-          <NuxtLink :to="getLink()" class="label">
-            Open
-            <UIcon
-              name="i-material-symbols:play-arrow"
-              class="inline-block -mb-[1px]"
-          /></NuxtLink>
+          <template v-if="showSuggestEdit">
+            <div class="flex items-center space-x-5 label">
+              <!-- All actions except the International Instrument Edit link -->
+              <NuxtLink
+                v-for="(action, index) in suggestEditActions.filter(
+                  (a) =>
+                    !(
+                      props.cardType === 'International Instrument' &&
+                      a.label === 'Edit'
+                    )
+                )"
+                :key="index"
+                class="flex items-center"
+                :class="action.class"
+                v-bind="action.to ? { to: action.to } : {}"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <template v-if="action.label === 'Cite'">
+                  <UTooltip
+                    :text="availableSoon"
+                    :popper="{ placement: 'top' }"
+                    :ui="{
+                      background: 'bg-cold-night',
+                      color: 'text-white',
+                      base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
+                      rounded: 'rounded-none',
+                      ring: '',
+                    }"
+                  >
+                    <span class="flex items-center">
+                      {{ action.label }}
+                      <UIcon
+                        :name="action.icon"
+                        class="inline-block ml-1 text-[1.2em] mb-0.5"
+                      />
+                    </span>
+                  </UTooltip>
+                </template>
+                <template v-else>
+                  {{ action.label }}
+                  <UIcon
+                    :name="action.icon"
+                    class="inline-block ml-1 text-[1.2em] mb-0.5"
+                  />
+                </template>
+              </NuxtLink>
+              <!-- The Edit link for International Instrument only, no target/rel -->
+              <NuxtLink
+                v-for="(action, index) in suggestEditActions.filter(
+                  (a) =>
+                    props.cardType === 'International Instrument' &&
+                    a.label === 'Edit'
+                )"
+                :key="'edit-' + index"
+                class="flex items-center"
+                :class="action.class"
+                v-bind="action.to ? { to: action.to } : {}"
+              >
+                <template v-if="action.label === 'Cite'">
+                  <UTooltip
+                    :text="availableSoon"
+                    :popper="{ placement: 'top' }"
+                    :ui="{
+                      background: 'bg-cold-night',
+                      color: 'text-white',
+                      base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
+                      rounded: 'rounded-none',
+                      ring: '',
+                    }"
+                  >
+                    <span class="flex items-center">
+                      {{ action.label }}
+                      <UIcon
+                        :name="action.icon"
+                        class="inline-block ml-1 text-[1.2em] mb-0.5"
+                      />
+                    </span>
+                  </UTooltip>
+                </template>
+                <template v-else>
+                  {{ action.label }}
+                  <UIcon
+                    :name="action.icon"
+                    class="inline-block ml-1 text-[1.2em] mb-0.5"
+                  />
+                </template>
+              </NuxtLink>
+            </div>
+          </template>
+          <template v-else>
+            <NuxtLink :to="getLink()" class="label">
+              Open
+              <UIcon
+                name="i-material-symbols:play-arrow"
+                class="inline-block -mb-[1px]"
+            /></NuxtLink>
+          </template>
         </template>
       </div>
     </template>
@@ -110,13 +172,15 @@
 <script setup>
 import { onMounted, ref, computed, reactive } from 'vue'
 import { useRoute } from 'vue-router'
-import jurisdictionsData from '../../assets/jurisdictions-data.json'
-import { handleImageError } from '../../utils/handleImageError'
+import jurisdictionsData from '@/assets/jurisdictions-data.json'
+import { handleImageError } from '@/utils/handleImageError'
 
 import availableSoon from '@/content/available_soon.md?raw'
 
 const route = useRoute()
 const pdfExists = ref(false)
+const isOpen = ref(false)
+const isSaveOpen = ref(false)
 
 const downloadPDFLink = computed(() => {
   const segments = route.path.split('/').filter(Boolean) // removes empty parts from path like ['', 'court-decision', 'CD-ARE-1128']
@@ -154,6 +218,10 @@ const props = defineProps({
     type: Array,
     required: false,
     default: () => [],
+  },
+  headerMode: {
+    type: String,
+    default: 'default',
   },
 })
 
@@ -290,10 +358,15 @@ const suggestEditActions = computed(() => {
       to: downloadPDFLink.value,
     })
   }
+  // Adjust the Edit link for International Instrument page only
+  let editLink = suggestEditLink.value
+  if (props.cardType === 'International Instrument' && props.resultData?.ID) {
+    editLink = `/international-instrument/${props.resultData.ID}/edit`
+  }
   actions.push({
     label: 'Edit',
     icon: 'i-material-symbols:edit-square-outline',
-    to: suggestEditLink.value,
+    to: editLink,
   })
   return actions
 })

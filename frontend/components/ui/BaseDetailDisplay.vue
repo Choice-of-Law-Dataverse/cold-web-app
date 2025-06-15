@@ -1,14 +1,23 @@
 <template>
-  <BackButton />
+  <BackButton v-if="!hideBackButton" />
 
   <NotificationBanner
-    v-if="
+    v-if="showNotificationBanner"
+    :notificationBannerMessage="notificationBannerMessage"
+    :fallbackMessage="fallbackMessage"
+    :icon="icon"
+  />
+
+  <NotificationBanner
+    v-else-if="
       shouldShowBanner &&
       (props.resultData?.Name || props.resultData?.['Jurisdictions'])
     "
     :jurisdictionName="
       props.resultData?.Name || props.resultData?.['Jurisdictions']
     "
+    :fallbackMessage="fallbackMessage"
+    :icon="icon"
   />
 
   <template v-if="loading">
@@ -16,16 +25,24 @@
   </template>
   <template v-else>
     <UCard class="cold-ucard">
-      <!-- Header section -->
-      <template #header v-if="showHeader">
+      <!-- Header section: always render, but pass headerMode -->
+      <template #header>
         <BaseCardHeader
-          v-if="resultData"
           :resultData="resultData"
           :cardType="formattedSourceTable"
-          :showOpenLink="false"
+          :showSuggestEdit="showSuggestEdit"
+          :showOpenLink="showOpenLink"
           :formattedJurisdiction="formattedJurisdiction"
           :formattedTheme="formattedTheme"
-        />
+          :headerMode="headerMode"
+          @save="$emit('save')"
+          @open-save-modal="$emit('open-save-modal')"
+          @open-cancel-modal="$emit('open-cancel-modal')"
+        >
+          <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
+            <slot :name="name" v-bind="slotData" />
+          </template>
+        </BaseCardHeader>
       </template>
 
       <!-- Main content -->
@@ -33,6 +50,8 @@
         <div
           class="main-content prose -space-y-10 flex flex-col gap-8 py-8 px-6 w-full"
         >
+          <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
+          <slot />
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
           <section
             v-for="(item, index) in keyLabelPairs"
@@ -40,82 +59,76 @@
             class="section-gap p-0 m-0 flex flex-col"
           >
             <!-- Check if it's the special 'Specialist' key -->
-            <template v-if="item.key === 'Specialist'">
+            <template v-if="item.key === 'Region'">
               <slot></slot>
             </template>
+            <!-- Check for slot first -->
+            <template v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]">
+              <slot
+                :name="item.key.replace(/ /g, '-').toLowerCase()"
+                :value="resultData?.[item.key]"
+              />
+            </template>
+            <!-- If no slot, use default display -->
             <template v-else>
-              <!-- Check for slot first -->
-              <template
-                v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
+              <!-- Conditionally render the label and value container -->
+              <div
+                v-if="shouldDisplayValue(item, resultData?.[item.key])"
+                class="mb-6"
               >
-                <slot
-                  :name="item.key.replace(/ /g, '-').toLowerCase()"
-                  :value="resultData?.[item.key]"
-                />
-              </template>
-              <!-- If no slot, use default display -->
-              <template v-else>
-                <!-- Conditionally render the label and value container -->
-                <div
-                  v-if="shouldDisplayValue(item, resultData?.[item.key])"
-                  class="mb-6"
+                <!-- Conditionally render the label -->
+                <p class="label-key mb-2.5 flex items-center">
+                  {{ item.label }}
+                  <!-- Add this line to support header-actions slot for each section -->
+                  <slot
+                    :name="item.key + '-header-actions'"
+                    :value="resultData?.[item.key]"
+                  />
+                  <!-- Render InfoTooltip if tooltip is defined in config -->
+                  <template v-if="item.tooltip">
+                    <InfoTooltip :text="item.tooltip" />
+                  </template>
+                </p>
+                <!-- Conditionally render bullet list if Answer or Specialists is an array -->
+                <template
+                  v-if="
+                    (item.key === 'Answer' || item.key === 'Specialists') &&
+                    Array.isArray(getDisplayValue(item, resultData?.[item.key]))
+                  "
                 >
-                  <!-- Conditionally render the label -->
-                  <p class="label-key mb-2.5 flex items-center">
-                    {{ item.label }}
-                    <!-- Add this line to support header-actions slot for each section -->
-                    <slot
-                      :name="item.key + '-header-actions'"
-                      :value="resultData?.[item.key]"
-                    />
-                    <!-- Render InfoTooltip if tooltip is defined in config -->
-                    <template v-if="item.tooltip">
-                      <InfoTooltip :text="item.tooltip" />
-                    </template>
-                  </p>
-                  <!-- Conditionally render bullet list if Answer or Specialists is an array -->
-                  <template
-                    v-if="
-                      (item.key === 'Answer' || item.key === 'Specialists') &&
-                      Array.isArray(
-                        getDisplayValue(item, resultData?.[item.key])
-                      )
-                    "
-                  >
-                    <ul>
-                      <li
-                        v-for="(line, i) in getDisplayValue(
-                          item,
-                          resultData?.[item.key]
-                        )"
-                        :key="i"
-                        :class="
-                          props.valueClassMap[item.key] ||
-                          'leading-relaxed whitespace-pre-line'
-                        "
-                      >
-                        {{ line }}
-                      </li>
-                    </ul>
-                  </template>
-                  <template v-else>
-                    <p
-                      :class="[
+                  <ul>
+                    <li
+                      v-for="(line, i) in getDisplayValue(
+                        item,
+                        resultData?.[item.key]
+                      )"
+                      :key="i"
+                      :class="
                         props.valueClassMap[item.key] ||
-                          'leading-relaxed whitespace-pre-line',
-                        (!resultData?.[item.key] ||
-                          resultData?.[item.key] === 'NA') &&
-                        item.emptyValueBehavior?.action === 'display' &&
-                        !item.emptyValueBehavior?.getFallback
-                          ? 'text-gray-300'
-                          : '',
-                      ]"
+                        'leading-relaxed whitespace-pre-line'
+                      "
                     >
-                      {{ getDisplayValue(item, resultData?.[item.key]) }}
-                    </p>
-                  </template>
-                </div>
-              </template>
+                      {{ line }}
+                    </li>
+                  </ul>
+                </template>
+                <template v-else>
+                  <p
+                    :class="[
+                      props.valueClassMap[item.key] ||
+                        'leading-relaxed whitespace-pre-line',
+                      (!resultData?.[item.key] ||
+                        resultData?.[item.key] === 'NA') &&
+                      item.emptyValueBehavior?.action === 'display' &&
+                      !item.emptyValueBehavior?.getFallback
+                        ? 'text-gray-300'
+                        : '',
+                    ]"
+                  >
+                    {{ getDisplayValue(item, resultData?.[item.key]) }}
+                  </p>
+                </template>
+              </div>
             </template>
           </section>
           <slot name="search-links"></slot>
@@ -128,11 +141,11 @@
 <script setup>
 import { useRoute } from 'vue-router'
 
-import BackButton from '~/components/ui/BackButton.vue'
-import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
-import NotificationBanner from '~/components/ui/NotificationBanner.vue'
-import LoadingCard from './components/layout/LoadingCard.vue'
-import InfoTooltip from './InfoTooltip.vue'
+import BackButton from '@/components/ui/BackButton.vue'
+import BaseCardHeader from '@/components/ui/BaseCardHeader.vue'
+import NotificationBanner from '@/components/ui/NotificationBanner.vue'
+import LoadingCard from '@/components/layout/LoadingCard.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
 // Tooltips for Question Page
 import tooltipQuestion from '@/content/info_boxes/question/question.md?raw'
@@ -151,7 +164,21 @@ const props = defineProps({
   },
   formattedJurisdiction: { type: Array, required: false, default: () => [] },
   formattedTheme: { type: Array, required: false, default: () => [] },
+  hideBackButton: {
+    type: Boolean,
+    default: false,
+  },
+  headerMode: {
+    type: String,
+    default: 'default',
+  },
+  showNotificationBanner: Boolean,
+  notificationBannerMessage: String,
+  fallbackMessage: String,
+  icon: String,
 })
+
+const emit = defineEmits(['save', 'open-save-modal', 'open-cancel-modal'])
 
 const route = useRoute()
 const isJurisdictionPage = route.path.startsWith('/jurisdiction/')

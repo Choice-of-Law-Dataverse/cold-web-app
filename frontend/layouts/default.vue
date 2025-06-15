@@ -12,7 +12,7 @@
 </template>
 
 <script setup>
-import Nav from '~/components/layout/Nav.vue'
-import Footer from '~/components/layout/Footer.vue'
+import Nav from '@/components/layout/Nav.vue'
+import Footer from '@/components/layout/Footer.vue'
 import CookieConsentBanner from '@/components/ui/CookieConsentBanner.vue'
 </script>

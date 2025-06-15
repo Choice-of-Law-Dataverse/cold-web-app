@@ -20,8 +20,9 @@ def handle_full_text_search(request: Request, body: FullTextSearchRequest):
     filters = body.filters or []
     page = body.page
     page_size = body.page_size
+    sort_by_date = getattr(body, 'sort_by_date', False)
 
-    results = search_service.full_text_search(search_string, filters, page, page_size)
+    results = search_service.full_text_search(search_string, filters, page, page_size, sort_by_date)
     return results
 
 

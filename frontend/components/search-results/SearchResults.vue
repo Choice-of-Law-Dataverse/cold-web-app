@@ -164,16 +164,16 @@
 <script setup>
 import { computed, ref, watch, onMounted, nextTick } from 'vue'
 
-import ResultCard from './components/search-results/ResultCard.vue'
-import LegislationCard from './components/search-results/LegislationCard.vue'
-import RegionalInstrumentCard from './components/search-results/RegionalInstrumentCard.vue'
-import InternationalInstrumentCard from './components/search-results/InternationalInstrumentCard.vue'
-import LiteratureCard from './components/search-results/LiteratureCard.vue'
-import CourtDecisionCard from './components/search-results/CourtDecisionCard.vue'
-import AnswerCard from './components/search-results/AnswerCard.vue'
-import SearchFilters from './components/search-results/SearchFilters.vue'
-import NoSearchResults from './components/search-results/NoSearchResults.vue'
-import LoadingCard from './components/layout/LoadingCard.vue'
+import ResultCard from '@/components/search-results/ResultCard.vue'
+import LegislationCard from '@/components/search-results/LegislationCard.vue'
+import RegionalInstrumentCard from '@/components/search-results/RegionalInstrumentCard.vue'
+import InternationalInstrumentCard from '@/components/search-results/InternationalInstrumentCard.vue'
+import LiteratureCard from '@/components/search-results/LiteratureCard.vue'
+import CourtDecisionCard from '@/components/search-results/CourtDecisionCard.vue'
+import AnswerCard from '@/components/search-results/AnswerCard.vue'
+import SearchFilters from '@/components/search-results/SearchFilters.vue'
+import NoSearchResults from '@/components/search-results/NoSearchResults.vue'
+import LoadingCard from '@/components/layout/LoadingCard.vue'
 
 const getResultComponent = (source_table) => {
   switch (source_table) {

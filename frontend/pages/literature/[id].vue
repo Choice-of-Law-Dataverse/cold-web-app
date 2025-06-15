@@ -6,13 +6,6 @@
     :valueClassMap="valueClassMap"
     sourceTable="Literature"
   >
-    <BaseCardHeader
-      v-if="literature"
-      :resultData="literature"
-      :cardType="'Literature'"
-      :showOpenLink="false"
-      :showSuggestEdit="true"
-    />
     <template #publication-title="{ value }">
       <section v-if="value" class="section-gap">
         <div>
@@ -68,12 +61,11 @@
 <script setup>
 import { onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import BaseDetailLayout from '~/components/layouts/BaseDetailLayout.vue'
-import { useApiFetch } from '~/composables/useApiFetch'
-import { useDetailDisplay } from '~/composables/useDetailDisplay'
-import BaseCardHeader from '~/components/ui/BaseCardHeader.vue'
-import InfoTooltip from '~/components/ui/InfoTooltip.vue'
-import { literatureConfig } from '~/config/pageConfigs'
+import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import { useApiFetch } from '@/composables/useApiFetch'
+import { useDetailDisplay } from '@/composables/useDetailDisplay'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import { literatureConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
 
 const route = useRoute()
@@ -94,7 +86,21 @@ watch(
     const title = newVal['Title']
     const pageTitle =
       title && title.trim() ? `${title} — CoLD` : 'Literature — CoLD'
-    useHead({ title: pageTitle })
+    useHead({
+      title: pageTitle,
+      link: [
+        {
+          rel: 'canonical',
+          href: `https://cold.global${route.fullPath}`,
+        },
+      ],
+      meta: [
+        {
+          name: 'description',
+          content: pageTitle,
+        },
+      ],
+    })
   },
   { immediate: true }
 )
