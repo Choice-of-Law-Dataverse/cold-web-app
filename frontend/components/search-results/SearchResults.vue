@@ -36,11 +36,10 @@
 
           <!-- Results Count and Sort -->
           <span
-            class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-0 results-margin-fix"
-            style="column-gap: 0px"
+            class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-2 results-margin-fix"
           >
             <template v-if="props.totalMatches > 1">
-              <span style="margin-right: 0; padding-right: 0">
+              <span class="mr-[-2px]">
                 {{ formattedTotalMatches }} results sorted by
               </span>
               <!-- Hidden Measurement Element -->
@@ -254,7 +253,7 @@ const allResults = computed(() => {
 })
 
 const formattedTotalMatches = computed(() =>
-  props.totalMatches.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'")
+  props.totalMatches.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '’')
 )
 const resultLabel = computed(() =>
   props.totalMatches === 1 ? 'result' : 'results'
