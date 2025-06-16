@@ -163,7 +163,11 @@
 <script setup>
 import { computed, ref, watch, onMounted, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useSearchFilters } from '@/composables/useSearchFilters'
+import importedThemeOptions from '@/assets/themeOptions.json'
+import importedTypeOptions from '@/assets/typeOptions.json'
 
+// Component imports
 import ResultCard from '@/components/search-results/ResultCard.vue'
 import LegislationCard from '@/components/search-results/LegislationCard.vue'
 import RegionalInstrumentCard from '@/components/search-results/RegionalInstrumentCard.vue'
@@ -188,7 +192,7 @@ const resultComponentMap = {
 const getResultComponent = (source_table) =>
   resultComponentMap[source_table] || ResultCard
 
-// Props definition
+// Props and emits
 const props = defineProps({
   data: {
     type: Object,
@@ -218,47 +222,69 @@ const emit = defineEmits(['update:filters', 'load-more'])
 const route = useRoute()
 const router = useRouter()
 
-// Computed results
-const allResults = computed(() => Object.values(props.data?.tables || {}))
+// Initialize search filters
+const {
+  currentJurisdictionFilter,
+  currentThemeFilter,
+  currentTypeFilter,
+  selectValue,
+  hasActiveFilters,
+  buildFilterObject,
+  resetFilters: resetFilterValues,
+  syncFiltersFromQuery,
+} = useSearchFilters(route.query)
 
-// Filter options
-const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
-
-const themeOptions = [
-  'All Themes',
-  'Codification',
-  'HCCH Principles',
-  'Party autonomy',
-  'Freedom of choice',
-  'Dépeçage',
-  'Partial choice',
-  'Rules of law',
-  'Tacit choice',
-  'Overriding mandatory rules',
-  'Public policy',
-  'Absence of choice',
-  'Arbitration',
-]
-
-const typeOptions = [
-  'All Types',
-  'Court Decisions',
-  'Domestic Instruments',
-  'Regional Instruments',
-  'International Instruments',
-  'Literature',
-  'Questions',
-]
-
-// Filter state
-const currentJurisdictionFilter = ref([])
-const currentThemeFilter = ref([])
-const currentTypeFilter = ref([])
-const selectValue = ref(route.query.sortBy || 'relevance')
+// UI state
 const selectWidth = ref('auto')
 const measureRef = ref(null)
 
-// Fetch jurisdictions
+// Filter options
+const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
+const themeOptions = ref([
+  'All Themes',
+  ...importedThemeOptions.map((theme) => theme.label),
+])
+const typeOptions = importedTypeOptions
+
+// Computed values
+const allResults = computed(() => Object.values(props.data?.tables || {}))
+const formattedTotalMatches = computed(() =>
+  props.totalMatches.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'")
+)
+const resultLabel = computed(() =>
+  props.totalMatches === 1 ? 'result' : 'results'
+)
+
+// Methods
+const updateFilters = async (filters) => {
+  emit('update:filters', filters)
+  await router.push({
+    path: route.path,
+    query: { ...filters },
+  })
+}
+
+const handleSortChange = async (val) => {
+  const sortValue = val || 'relevance'
+  selectValue.value = sortValue
+  await updateFilters({ ...props.filters, sortBy: sortValue })
+  updateSelectWidth()
+}
+
+const resetFilters = async () => {
+  resetFilterValues()
+  await updateFilters({ sortBy: route.query.sortBy || 'relevance' })
+}
+
+const updateSelectWidth = () => {
+  nextTick(() => {
+    if (measureRef.value) {
+      selectWidth.value = measureRef.value.offsetWidth + 36 + 'px'
+    }
+  })
+}
+
+// Data fetching
 const loadJurisdictions = async () => {
   try {
     const config = useRuntimeConfig()
@@ -277,146 +303,51 @@ const loadJurisdictions = async () => {
     if (!response.ok) throw new Error('Failed to load jurisdictions')
 
     const jurisdictionsData = await response.json()
-    const mappedJurisdictions = jurisdictionsData
-      .filter((entry) => entry['Irrelevant?'] === null)
-      .map((entry) => ({
-        label: entry.Name,
-        avatar: entry['Alpha-3 Code']
-          ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
-          : undefined,
-      }))
-      .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
-
     jurisdictionOptions.value = [
       { label: 'All Jurisdictions' },
-      ...mappedJurisdictions,
+      ...jurisdictionsData
+        .filter((entry) => entry['Irrelevant?'] === null)
+        .map((entry) => ({
+          label: entry.Name,
+          avatar: entry['Alpha-3 Code']
+            ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+            : undefined,
+        }))
+        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
     ]
   } catch (error) {
     console.error('Error loading jurisdictions:', error)
   }
 }
 
-// Filter handling
-const updateFilters = async (filters) => {
-  emit('update:filters', filters)
-  await router.push({
-    path: route.path,
-    query: { ...filters },
-  })
-}
-
-const handleSortChange = async (val) => {
-  const sortValue = val || 'relevance'
-  selectValue.value = sortValue
-  await updateFilters({ ...props.filters, sortBy: sortValue })
-  updateSelectWidth()
-}
-
-const resetFilters = async () => {
-  currentJurisdictionFilter.value = []
-  currentThemeFilter.value = []
-  currentTypeFilter.value = []
-  await updateFilters({ sortBy: route.query.sortBy || 'relevance' })
-}
-
-const updateSelectWidth = () => {
-  nextTick(() => {
-    if (measureRef.value) {
-      selectWidth.value = measureRef.value.offsetWidth + 36 + 'px'
-    }
-  })
-}
-
-// Computed properties
-const hasActiveFilters = computed(
-  () =>
-    currentJurisdictionFilter.value.length > 0 ||
-    currentThemeFilter.value.length > 0 ||
-    currentTypeFilter.value.length > 0
-)
-
-const formattedTotalMatches = computed(() => {
-  return props.totalMatches.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'")
-})
-
-const resultLabel = computed(() => {
-  return props.totalMatches === 1 ? 'result' : 'results'
-})
-
 // Watchers
 watch(
-  () => route.query.sortBy,
-  (newVal) => {
-    if (newVal !== selectValue.value) {
-      selectValue.value = newVal || 'relevance'
-      updateSelectWidth()
-    }
+  [
+    currentJurisdictionFilter,
+    currentThemeFilter,
+    currentTypeFilter,
+    selectValue,
+  ],
+  async ([jurisdiction, theme, type, sort]) => {
+    if (!jurisdiction && !theme && !type && !sort) return
+    await updateFilters(buildFilterObject(jurisdiction, theme, type, sort))
+  },
+  { deep: true }
+)
+
+watch(
+  () => route.query,
+  () => {
+    syncFiltersFromQuery(route.query)
+    updateSelectWidth()
   },
   { immediate: true }
-)
-
-watch(
-  [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
-  ([newJurisdiction, newTheme, newType]) => {
-    const filters = {
-      jurisdiction:
-        newJurisdiction.length > 0
-          ? newJurisdiction
-              .filter(
-                (item) =>
-                  item !== 'All Jurisdictions' &&
-                  item.label !== 'All Jurisdictions'
-              )
-              .map((item) => item?.label || item)
-              .join(',')
-          : undefined,
-      theme: newTheme.length > 0 ? newTheme.join(',') : undefined,
-      type: newType.length > 0 ? newType.join(',') : undefined,
-      sortBy: route.query.sortBy || selectValue.value,
-    }
-    updateFilters(filters)
-  }
-)
-
-watch(
-  () => props.filters,
-  (newFilters, oldFilters) => {
-    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return
-
-    const parseFilterToArray = (filter) =>
-      filter ? filter.split(',').filter(Boolean) : []
-
-    const newJurisdiction = parseFilterToArray(newFilters.jurisdiction)
-    const newTheme = parseFilterToArray(newFilters.theme)
-    const newType = parseFilterToArray(newFilters.type)
-
-    const shouldUpdate =
-      JSON.stringify(newJurisdiction) !==
-        JSON.stringify(currentJurisdictionFilter.value) ||
-      JSON.stringify(newTheme) !== JSON.stringify(currentThemeFilter.value) ||
-      JSON.stringify(newType) !== JSON.stringify(currentTypeFilter.value)
-
-    if (shouldUpdate) {
-      currentJurisdictionFilter.value = newJurisdiction
-      currentThemeFilter.value = newTheme
-      currentTypeFilter.value = newType
-    }
-
-    if (newFilters.sortBy && newFilters.sortBy !== selectValue.value) {
-      selectValue.value = newFilters.sortBy
-      updateSelectWidth()
-    }
-  },
-  { deep: true, immediate: true }
 )
 
 // Initialization
 onMounted(async () => {
   await loadJurisdictions()
-  const currentSort = route.query.sortBy || 'relevance'
-  if (currentSort !== selectValue.value) {
-    await handleSortChange(currentSort)
-  }
+  syncFiltersFromQuery(route.query)
   updateSelectWidth()
 })
 </script>
