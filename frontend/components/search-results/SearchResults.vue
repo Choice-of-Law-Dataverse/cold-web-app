@@ -247,7 +247,11 @@ const themeOptions = ref([
 const typeOptions = importedTypeOptions
 
 // Computed values
-const allResults = computed(() => Object.values(props.data?.tables || {}))
+const allResults = computed(() => {
+  if (!props.data?.tables) return []
+  return Object.values(props.data.tables)
+})
+
 const formattedTotalMatches = computed(() =>
   props.totalMatches.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'")
 )
@@ -267,7 +271,8 @@ const updateFilters = async (filters) => {
 const handleSortChange = async (val) => {
   const sortValue = val || 'relevance'
   selectValue.value = sortValue
-  await updateFilters({ ...props.filters, sortBy: sortValue })
+  // Only update the sortBy parameter without triggering other filter updates
+  emit('update:filters', { ...props.filters, sortBy: sortValue })
   updateSelectWidth()
 }
 
@@ -322,15 +327,12 @@ const loadJurisdictions = async () => {
 
 // Watchers
 watch(
-  [
-    currentJurisdictionFilter,
-    currentThemeFilter,
-    currentTypeFilter,
-    selectValue,
-  ],
-  async ([jurisdiction, theme, type, sort]) => {
-    if (!jurisdiction && !theme && !type && !sort) return
-    await updateFilters(buildFilterObject(jurisdiction, theme, type, sort))
+  [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
+  async ([jurisdiction, theme, type]) => {
+    if (!jurisdiction && !theme && !type) return
+    await updateFilters(
+      buildFilterObject(jurisdiction, theme, type, selectValue.value)
+    )
   },
   { deep: true }
 )
