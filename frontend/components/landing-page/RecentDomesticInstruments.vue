@@ -34,6 +34,15 @@
             </UButton>
           </RouterLink>
         </div>
+        <UButton
+          to="/search?type=Domestic+Instruments&sortBy=date"
+          class="suggestion-button mt-8"
+          variant="link"
+          icon="i-material-symbols:arrow-forward"
+          trailing
+        >
+          See all
+        </UButton>
       </template>
     </div>
   </UCard>

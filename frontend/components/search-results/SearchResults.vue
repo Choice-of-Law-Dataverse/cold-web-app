@@ -2,11 +2,11 @@
   <main class="px-6">
     <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
       <div class="col-span-12">
-        <!-- Flexbox/Grid Container: Filters and Results Heading -->
+        <!-- Filters and Results Header -->
         <div
-          class="filters-header mb-6 ml-[-1px] flex flex-col md:flex-row md:justify-between md:items-center gap-4"
+          class="filters-header mt-[-24px] !mb-2 ml-[-1px] flex flex-col md:flex-row md:justify-between md:items-center gap-4"
         >
-          <!-- Left-aligned group of filters -->
+          <!-- Filter Controls -->
           <div class="flex flex-col sm:flex-row gap-5 w-full">
             <SearchFilters
               :options="jurisdictionOptions"
@@ -34,75 +34,126 @@
             </UButton>
           </div>
 
-          <!-- Right-aligned Results Heading -->
-          <h2
-            class="text-right md:text-left w-full md:w-auto whitespace-nowrap"
+          <!-- Results Count and Sort -->
+          <span
+            class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-2 results-margin-fix"
           >
-            {{ props.totalMatches }} Results
-          </h2>
+            <template v-if="props.totalMatches > 1">
+              <span class="mr-[-2px]">
+                {{ formattedTotalMatches }} results sorted by
+              </span>
+              <!-- Hidden Measurement Element -->
+              <span
+                ref="measureRef"
+                class="absolute opacity-0 pointer-events-none select-none font-inherit text-base"
+                style="
+                  position: absolute;
+                  left: -9999px;
+                  top: 0;
+                  white-space: pre;
+                "
+                aria-hidden="true"
+              >
+                {{ selectValue }}
+              </span>
+              <!-- Sort Selector -->
+              <USelect
+                ref="selectRef"
+                variant="none"
+                :options="['relevance', 'date']"
+                :model-value="selectValue"
+                :style="{
+                  color: 'var(--color-cold-purple)',
+                  width: selectWidth,
+                  textAlign: 'right',
+                  minWidth: 'unset',
+                  maxWidth: 'none',
+                  marginLeft: '0',
+                  paddingLeft: '0',
+                }"
+                class="flex-shrink-0 text-right"
+                @update:modelValue="handleSortChange"
+              >
+                <template #trailing>
+                  <UIcon
+                    name="i-material-symbols:keyboard-arrow-down"
+                    class="w-5 h-5"
+                    style="color: var(--color-cold-purple)"
+                  />
+                </template>
+              </USelect>
+            </template>
+            <span v-else style="margin-right: 0; padding-right: 0">
+              {{ formattedTotalMatches }} {{ resultLabel }}
+            </span>
+          </span>
         </div>
 
-        <!-- Results Grid or Messages -->
+        <!-- Results Content -->
         <div class="results-content mt-4">
-          <!-- Show loading skeleton only if loading and no results yet -->
-          <div v-if="loading && !allResults.length">
-            <LoadingCard />
-          </div>
+          <!-- Loading State -->
+          <LoadingCard v-if="loading && !allResults.length" />
 
-          <!-- No Results -->
+          <!-- No Results State -->
           <NoSearchResults v-else-if="!loading && !allResults.length" />
 
-          <!-- Results Grid: always show if there are results -->
-          <div v-else class="results-grid">
-            <div
-              v-for="(resultData, key) in allResults"
-              :key="key"
-              class="result-item"
-            >
-              <component
-                :is="getResultComponent(resultData.source_table)"
-                :resultData="resultData"
+          <!-- Results Grid -->
+          <template v-else>
+            <div class="results-grid">
+              <div
+                v-for="(resultData, key) in allResults"
+                :key="key"
+                class="result-item"
+              >
+                <component
+                  :is="getResultComponent(resultData.source_table)"
+                  :resultData="resultData"
+                />
+              </div>
+              <!-- Loading More Indicator -->
+              <LoadingCard
+                v-if="loading && allResults.length"
+                class="text-center py-4"
               />
             </div>
-            <!-- Show a loading spinner/card at the bottom if loading more -->
-            <div v-if="loading && allResults.length" class="text-center py-4">
-              <LoadingCard />
+
+            <!-- Load More Button -->
+            <div
+              v-if="props.canLoadMore && !loading"
+              class="mt-16 mb-4 text-center"
+            >
+              <UButton
+                native-type="button"
+                @click.prevent="emit('load-more')"
+                class="suggestion-button"
+                variant="link"
+                icon="i-material-symbols:arrow-cool-down"
+                :disabled="props.loading"
+              >
+                Load More Results
+              </UButton>
             </div>
-          </div>
 
-          <div
-            v-if="props.canLoadMore && !loading"
-            class="mt-16 mb-4 text-center"
-          >
-            <UButton
-              native-type="button"
-              @click.prevent="emit('load-more')"
-              class="suggestion-button"
-              variant="link"
-              icon="i-material-symbols:arrow-cool-down"
-              :disabled="props.loading"
-            >
-              Load More Results
-            </UButton>
-          </div>
-
-          <div v-if="!loading" class="result-value-small text-center pt-4">
-            <UButton
-              to="https://choice-of-law-dataverse.github.io/search-algorithm"
-              variant="link"
-              target="_blank"
-              >Learn How the Search Works</UButton
-            >
-            <UIcon
-              name="i-material-symbols:play-arrow"
-              class="inline-block ml-[-6px]"
-              style="
-                color: var(--color-cold-purple);
-                position: relative;
-                top: 2px;
-              "
-            />
-          </div>
+            <!-- Search Info Link -->
+            <div v-if="!loading" class="result-value-small text-center pt-4">
+              <UButton
+                to="https://choice-of-law-dataverse.github.io/search-algorithm"
+                variant="link"
+                target="_blank"
+              >
+                Learn How the Search Works
+              </UButton>
+              <UIcon
+                name="i-material-symbols:play-arrow"
+                class="inline-block ml-[-6px]"
+                style="
+                  color: var(--color-cold-purple);
+                  position: relative;
+                  top: 2px;
+                "
+              />
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -110,8 +161,13 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, onMounted } from 'vue'
+import { computed, ref, watch, onMounted, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useSearchFilters } from '@/composables/useSearchFilters'
+import importedThemeOptions from '@/assets/themeOptions.json'
+import importedTypeOptions from '@/assets/typeOptions.json'
 
+// Component imports
 import ResultCard from '@/components/search-results/ResultCard.vue'
 import LegislationCard from '@/components/search-results/LegislationCard.vue'
 import RegionalInstrumentCard from '@/components/search-results/RegionalInstrumentCard.vue'
@@ -123,30 +179,24 @@ import SearchFilters from '@/components/search-results/SearchFilters.vue'
 import NoSearchResults from '@/components/search-results/NoSearchResults.vue'
 import LoadingCard from '@/components/layout/LoadingCard.vue'
 
-const getResultComponent = (source_table) => {
-  switch (source_table) {
-    case 'Domestic Instruments':
-      return LegislationCard
-    case 'Regional Instruments':
-      return RegionalInstrumentCard
-    case 'International Instruments':
-      return InternationalInstrumentCard
-    case 'Court Decisions':
-      return CourtDecisionCard
-    case 'Answers':
-      return AnswerCard
-    case 'Literature':
-      return LiteratureCard
-    default:
-      return ResultCard
-  }
+// Component mapping for different result types
+const resultComponentMap = {
+  'Domestic Instruments': LegislationCard,
+  'Regional Instruments': RegionalInstrumentCard,
+  'International Instruments': InternationalInstrumentCard,
+  'Court Decisions': CourtDecisionCard,
+  Answers: AnswerCard,
+  Literature: LiteratureCard,
 }
 
-// Props to receive current filter values
+const getResultComponent = (source_table) =>
+  resultComponentMap[source_table] || ResultCard
+
+// Props and emits
 const props = defineProps({
   data: {
     type: Object,
-    default: () => ({ tables: {} }), // Default to an object with an empty tables field
+    default: () => ({ tables: {} }),
   },
   filters: {
     type: Object,
@@ -168,175 +218,140 @@ const props = defineProps({
 
 const emit = defineEmits(['update:filters', 'load-more'])
 
-// Gather all results
+// Router setup
+const route = useRoute()
+const router = useRouter()
+
+// Initialize search filters
+const {
+  currentJurisdictionFilter,
+  currentThemeFilter,
+  currentTypeFilter,
+  selectValue,
+  hasActiveFilters,
+  buildFilterObject,
+  resetFilters: resetFilterValues,
+  syncFiltersFromQuery,
+} = useSearchFilters(route.query)
+
+// UI state
+const selectWidth = ref('auto')
+const measureRef = ref(null)
+
+// Filter options
+const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
+const themeOptions = ref([
+  'All Themes',
+  ...importedThemeOptions.map((theme) => theme.label),
+])
+const typeOptions = importedTypeOptions
+
+// Computed values
 const allResults = computed(() => {
-  return Object.values(props.data?.tables || {}) // Fallback to an empty object
+  if (!props.data?.tables) return []
+  return Object.values(props.data.tables)
 })
 
-// Jurisdiction options state
-const jurisdictionOptions = ref(['All Jurisdictions'])
+const formattedTotalMatches = computed(() =>
+  props.totalMatches.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '’')
+)
+const resultLabel = computed(() =>
+  props.totalMatches === 1 ? 'result' : 'results'
+)
 
-// Fetch jurisdictions from file
+// Methods
+const updateFilters = async (filters) => {
+  emit('update:filters', filters)
+  await router.push({
+    path: route.path,
+    query: { ...filters },
+  })
+}
+
+const handleSortChange = async (val) => {
+  const sortValue = val || 'relevance'
+  selectValue.value = sortValue
+  // Only update the sortBy parameter without triggering other filter updates
+  emit('update:filters', { ...props.filters, sortBy: sortValue })
+  updateSelectWidth()
+}
+
+const resetFilters = async () => {
+  resetFilterValues()
+  await updateFilters({ sortBy: route.query.sortBy || 'relevance' })
+}
+
+const updateSelectWidth = () => {
+  nextTick(() => {
+    if (measureRef.value) {
+      selectWidth.value = measureRef.value.offsetWidth + 36 + 'px'
+    }
+  })
+}
+
+// Data fetching
 const loadJurisdictions = async () => {
   try {
-    const config = useRuntimeConfig() // Ensure config is accessible
-    const jsonPayloads = [{ table: 'Jurisdictions', filters: [] }]
-
-    // Fetch both tables concurrently
-    const responses = await Promise.all(
-      jsonPayloads.map((payload) =>
-        fetch(`${config.public.apiBaseUrl}/search/full_table`, {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        })
-      )
+    const config = useRuntimeConfig()
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
+      }
     )
 
-    // Process both responses
-    const [jurisdictionsData, instrumentsData] = await Promise.all(
-      responses.map((res) =>
-        res.ok ? res.json() : Promise.reject('Failed to load data')
-      )
-    )
+    if (!response.ok) throw new Error('Failed to load jurisdictions')
 
-    // Filter out "Irrelevant?" for "Jurisdictions"
-    const relevantJurisdictions = jurisdictionsData.filter(
-      (entry) => entry['Irrelevant?'] === null
-    )
-
-    // Map each entry to an object with label and avatar
-    const mappedJurisdictions = relevantJurisdictions.map((entry) => ({
-      label: entry.Name,
-      avatar: entry['Alpha-3 Code']
-        ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
-        : undefined,
-    }))
-
-    // Sort alphabetically by label
-    const sortedJurisdictions = mappedJurisdictions.sort((a, b) =>
-      (a.label || '').localeCompare(b.label || '')
-    )
-
-    // Prepend "All Jurisdictions" to the list
+    const jurisdictionsData = await response.json()
     jurisdictionOptions.value = [
       { label: 'All Jurisdictions' },
-      ...sortedJurisdictions,
+      ...jurisdictionsData
+        .filter((entry) => entry['Irrelevant?'] === null)
+        .map((entry) => ({
+          label: entry.Name,
+          avatar: entry['Alpha-3 Code']
+            ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+            : undefined,
+        }))
+        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
     ]
   } catch (error) {
     console.error('Error loading jurisdictions:', error)
   }
 }
 
-// Call the function on mount
-onMounted(() => {
-  loadJurisdictions()
-})
-
-const themeOptions = [
-  'All Themes',
-  'Codification',
-  'HCCH Principles',
-  'Party autonomy',
-  'Freedom of choice',
-  'Dépeçage',
-  'Partial choice',
-  'Rules of law',
-  'Tacit choice',
-  'Overriding mandatory rules',
-  'Public policy',
-  'Absence of choice',
-  'Arbitration',
-]
-
-const typeOptions = [
-  'All Types',
-  'Court Decisions',
-  'Domestic Instruments',
-  'Regional Instruments',
-  'International Instruments',
-  'Literature',
-  'Questions',
-]
-
-// Reactive states initialized from props
-const currentJurisdictionFilter = ref([])
-const currentThemeFilter = ref([])
-const currentTypeFilter = ref([])
-
-// Computed property to check if any filter is active
-const hasActiveFilters = computed(() => {
-  return (
-    currentJurisdictionFilter.value.length > 0 ||
-    currentThemeFilter.value.length > 0 ||
-    currentTypeFilter.value.length > 0
-  )
-})
-
-// Function to reset all filters to their default states
-const resetFilters = () => {
-  currentJurisdictionFilter.value = []
-  currentThemeFilter.value = []
-  currentTypeFilter.value = []
-}
-
-// Watch for changes in either filter and emit them up
+// Watchers
 watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
-  ([newJurisdiction, newTheme, newType]) => {
-    const filters = {
-      jurisdiction:
-        newJurisdiction.length > 0
-          ? newJurisdiction
-              .map((item) => (typeof item === 'object' ? item.label : item))
-              .join(',')
-          : undefined,
-      theme: newTheme.length > 0 ? newTheme.join(',') : undefined,
-      type: newType.length > 0 ? newType.join(',') : undefined,
-    }
-
-    // Only emit if filters have changed
-    if (JSON.stringify(filters) !== JSON.stringify(props.filters)) {
-      emit('update:filters', filters)
-    }
+  async ([jurisdiction, theme, type]) => {
+    if (!jurisdiction && !theme && !type) return
+    await updateFilters(
+      buildFilterObject(jurisdiction, theme, type, selectValue.value)
+    )
   },
   { deep: true }
 )
 
-// Watch for prop changes to re-sync dropdowns when parent updates
 watch(
-  () => props.filters,
-  (newFilters) => {
-    // Convert filter strings to arrays, handling both single and multiple selections
-    const newJurisdiction = newFilters.jurisdiction
-      ? newFilters.jurisdiction.split(',').filter(Boolean)
-      : []
-    const newTheme = newFilters.theme
-      ? newFilters.theme.split(',').filter(Boolean)
-      : []
-    const newType = newFilters.type
-      ? newFilters.type.split(',').filter(Boolean)
-      : []
-
-    // Only update if the values have actually changed
-    if (
-      JSON.stringify(newJurisdiction) !==
-      JSON.stringify(currentJurisdictionFilter.value)
-    ) {
-      currentJurisdictionFilter.value = newJurisdiction
-    }
-    if (JSON.stringify(newTheme) !== JSON.stringify(currentThemeFilter.value)) {
-      currentThemeFilter.value = newTheme
-    }
-    if (JSON.stringify(newType) !== JSON.stringify(currentTypeFilter.value)) {
-      currentTypeFilter.value = newType
-    }
+  () => route.query,
+  () => {
+    syncFiltersFromQuery(route.query)
+    updateSelectWidth()
   },
-  { deep: true, immediate: true } // Add immediate to handle initial props
+  { immediate: true }
 )
+
+// Initialization
+onMounted(async () => {
+  await loadJurisdictions()
+  syncFiltersFromQuery(route.query)
+  updateSelectWidth()
+})
 </script>
 
 <style scoped>
@@ -350,5 +365,23 @@ watch(
 .filters-header h2 {
   margin: 0; /* Remove default margin for better alignment */
   padding-bottom: 0; /* Override inline padding if needed */
+}
+
+.result-value-small {
+  font-weight: 600 !important;
+}
+
+.results-margin-fix {
+  margin-top: 1.5rem !important;
+}
+
+::v-deep(
+  .u-select .u-select__icon,
+  .u-select .u-select__caret,
+  .u-select .n-base-suffix .n-base-suffix__arrow,
+  .u-select .n-base-suffix__arrow
+) {
+  color: var(--color-cold-purple) !important;
+  fill: var(--color-cold-purple) !important;
 }
 </style>
