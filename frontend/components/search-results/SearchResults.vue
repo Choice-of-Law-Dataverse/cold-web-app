@@ -61,18 +61,17 @@
               ref="selectRef"
               variant="none"
               :options="['relevance', 'date']"
-              :model-value="selectValue"
-              :style="{
-                color: 'var(--color-cold-purple)',
-                width: selectWidth,
-                textAlign: 'right',
-                minWidth: 'unset',
-                maxWidth: 'none',
-                marginLeft: '0',
-                paddingLeft: '0',
+              v-model="selectValue"
+              @update:modelValue="handleSortChange"
+              :style="{ width: selectWidth }"
+              class="!rounded-none border-0 border-b !py-0"
+              :ui="{
+                container: '!py-0',
+                select: 'font-normal !py-0 !px-0 !pl-1',
+                base: '',
+                form: '',
+                input: '!px-0',
               }"
-              class="flex-shrink-0 text-right"
-              @update:model-value="onSelectUpdate"
             >
               <template #trailing>
                 <UIcon
@@ -163,6 +162,7 @@
 
 <script setup>
 import { computed, ref, watch, onMounted, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 
 import ResultCard from '@/components/search-results/ResultCard.vue'
 import LegislationCard from '@/components/search-results/LegislationCard.vue'
@@ -320,11 +320,15 @@ const currentThemeFilter = ref([])
 const currentTypeFilter = ref([])
 
 // --- Dynamic USelect width logic ---
-const selectValue = ref(props.filters.sortBy || 'relevance')
+const route = useRoute()
+const router = useRouter()
+
+// Initialize sort value from URL or default
+const selectValue = ref(route.query.sortBy || 'relevance')
 const selectWidth = ref('auto')
-const selectRef = ref(null)
 const measureRef = ref(null)
 
+// Update select width for visual consistency
 const updateSelectWidth = () => {
   nextTick(() => {
     if (measureRef.value) {
@@ -333,29 +337,44 @@ const updateSelectWidth = () => {
   })
 }
 
-// Update width when prop changes
+// Handle sort selection changes
+const handleSortChange = async (val) => {
+  const sortValue = val || 'relevance'
+  selectValue.value = sortValue
+
+  // Update URL and emit change
+  await router.push({
+    query: {
+      ...route.query,
+      sortBy: sortValue,
+    },
+  })
+
+  emit('update:filters', { ...props.filters, sortBy: sortValue })
+  updateSelectWidth()
+}
+
+// Watch for route changes to sync select value
 watch(
-  () => props.filters.sortBy,
-  (val) => {
-    selectValue.value = val || 'relevance'
-    updateSelectWidth()
+  () => route.query.sortBy,
+  (newVal) => {
+    if (newVal !== selectValue.value) {
+      selectValue.value = newVal || 'relevance'
+      updateSelectWidth()
+    }
   },
   { immediate: true }
 )
 
-// Update width when user selects a new option
-const onSelectUpdate = (val) => {
-  selectValue.value = val
-  updateSelectWidth()
-  // Optionally emit filter update if needed:
-  emit('update:filters', { ...props.filters, sortBy: val })
-}
-
-onMounted(() => {
+// Initialize on mount
+onMounted(async () => {
+  const currentSort = route.query.sortBy || 'relevance'
+  if (currentSort !== selectValue.value) {
+    await handleSortChange(currentSort)
+  }
   updateSelectWidth()
 })
 
-// Computed property to check if any filter is active
 const hasActiveFilters = computed(() => {
   return (
     currentJurisdictionFilter.value.length > 0 ||
@@ -388,7 +407,12 @@ watch(
 
     // Only emit if filters have changed
     if (JSON.stringify(filters) !== JSON.stringify(props.filters)) {
-      emit('update:filters', filters)
+      // Always keep sortBy in the URL and in the emitted filters
+      const sortBy = route.query.sortBy || selectValue.value || 'relevance'
+      router.replace({
+        query: { ...route.query, ...filters, sortBy },
+      })
+      emit('update:filters', { ...filters, sortBy })
     }
   },
   { deep: true }
