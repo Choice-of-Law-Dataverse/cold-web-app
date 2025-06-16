@@ -62,17 +62,18 @@
                 ref="selectRef"
                 variant="none"
                 :options="['relevance', 'date']"
-                v-model="selectValue"
-                @update:modelValue="handleSortChange"
-                :style="{ width: selectWidth }"
-                class="!rounded-none border-0 border-b !py-0"
-                :ui="{
-                  container: '!py-0',
-                  select: 'font-normal !py-0 !px-0 !pl-1',
-                  base: '',
-                  form: '',
-                  input: '!px-0',
+                :model-value="selectValue"
+                :style="{
+                  color: 'var(--color-cold-purple)',
+                  width: selectWidth,
+                  textAlign: 'right',
+                  minWidth: 'unset',
+                  maxWidth: 'none',
+                  marginLeft: '0',
+                  paddingLeft: '0',
                 }"
+                class="flex-shrink-0 text-right"
+                @update:modelValue="handleSortChange"
               >
                 <template #trailing>
                   <UIcon
