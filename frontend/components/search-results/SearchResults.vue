@@ -342,19 +342,28 @@ const handleSortChange = async (val) => {
   const sortValue = val || 'relevance'
   selectValue.value = sortValue
 
-  // Update URL and emit change
+  // Create complete filter state
+  const currentFilters = {
+    ...props.filters,
+    sortBy: sortValue,
+  }
+
+  // Emit update first to trigger API call
+  emit('update:filters', currentFilters)
+
+  // Then update URL, preserving other parameters
   await router.push({
+    path: route.path,
     query: {
       ...route.query,
       sortBy: sortValue,
     },
   })
 
-  emit('update:filters', { ...props.filters, sortBy: sortValue })
   updateSelectWidth()
 }
 
-// Watch for route changes to sync select value
+// Watch route changes for sort updates
 watch(
   () => route.query.sortBy,
   (newVal) => {
@@ -366,7 +375,58 @@ watch(
   { immediate: true }
 )
 
-// Initialize on mount
+// Watch for filter changes
+watch(
+  [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
+  ([newJurisdiction, newTheme, newType]) => {
+    const filters = {
+      jurisdiction:
+        newJurisdiction.length > 0
+          ? newJurisdiction
+              .filter(
+                (item) =>
+                  item !== 'All Jurisdictions' &&
+                  item.label !== 'All Jurisdictions'
+              )
+              .map((item) => item?.label || item)
+              .join(',')
+          : undefined,
+      theme: newTheme.length > 0 ? newTheme.join(',') : undefined,
+      type: newType.length > 0 ? newType.join(',') : undefined,
+      // Always preserve current sort
+      sortBy: route.query.sortBy || selectValue.value,
+    }
+
+    // Emit update first to trigger API call
+    emit('update:filters', filters)
+
+    // Then update URL, preserving current path
+    router.push({
+      path: route.path,
+      query: filters,
+    })
+  },
+  { deep: true }
+)
+
+// Function to reset all filters to their default states
+const resetFilters = async () => {
+  currentJurisdictionFilter.value = []
+  currentThemeFilter.value = []
+  currentTypeFilter.value = []
+
+  const currentSort = route.query.sortBy || 'relevance'
+
+  // Preserve current path while updating query
+  await router.push({
+    path: route.path,
+    query: { sortBy: currentSort },
+  })
+
+  emit('update:filters', { sortBy: currentSort })
+}
+
+// Initialize on mount with forced update
 onMounted(async () => {
   const currentSort = route.query.sortBy || 'relevance'
   if (currentSort !== selectValue.value) {
@@ -383,45 +443,15 @@ const hasActiveFilters = computed(() => {
   )
 })
 
-// Function to reset all filters to their default states
-const resetFilters = () => {
-  currentJurisdictionFilter.value = []
-  currentThemeFilter.value = []
-  currentTypeFilter.value = []
-}
-
-// Watch for changes in either filter and emit them up
-watch(
-  [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
-  ([newJurisdiction, newTheme, newType]) => {
-    const filters = {
-      jurisdiction:
-        newJurisdiction.length > 0
-          ? newJurisdiction
-              .map((item) => (typeof item === 'object' ? item.label : item))
-              .join(',')
-          : undefined,
-      theme: newTheme.length > 0 ? newTheme.join(',') : undefined,
-      type: newType.length > 0 ? newType.join(',') : undefined,
-    }
-
-    // Only emit if filters have changed
-    if (JSON.stringify(filters) !== JSON.stringify(props.filters)) {
-      // Always keep sortBy in the URL and in the emitted filters
-      const sortBy = route.query.sortBy || selectValue.value || 'relevance'
-      router.replace({
-        query: { ...route.query, ...filters, sortBy },
-      })
-      emit('update:filters', { ...filters, sortBy })
-    }
-  },
-  { deep: true }
-)
-
 // Watch for prop changes to re-sync dropdowns when parent updates
 watch(
   () => props.filters,
-  (newFilters) => {
+  (newFilters, oldFilters) => {
+    // Only proceed if there's an actual change
+    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) {
+      return
+    }
+
     // Convert filter strings to arrays, handling both single and multiple selections
     const newJurisdiction = newFilters.jurisdiction
       ? newFilters.jurisdiction.split(',').filter(Boolean)
@@ -433,21 +463,25 @@ watch(
       ? newFilters.type.split(',').filter(Boolean)
       : []
 
-    // Only update if the values have actually changed
+    // Update all values at once to minimize re-renders
     if (
       JSON.stringify(newJurisdiction) !==
-      JSON.stringify(currentJurisdictionFilter.value)
+        JSON.stringify(currentJurisdictionFilter.value) ||
+      JSON.stringify(newTheme) !== JSON.stringify(currentThemeFilter.value) ||
+      JSON.stringify(newType) !== JSON.stringify(currentTypeFilter.value)
     ) {
       currentJurisdictionFilter.value = newJurisdiction
-    }
-    if (JSON.stringify(newTheme) !== JSON.stringify(currentThemeFilter.value)) {
       currentThemeFilter.value = newTheme
-    }
-    if (JSON.stringify(newType) !== JSON.stringify(currentTypeFilter.value)) {
       currentTypeFilter.value = newType
     }
+
+    // Ensure sort value is synced
+    if (newFilters.sortBy && newFilters.sortBy !== selectValue.value) {
+      selectValue.value = newFilters.sortBy
+      updateSelectWidth()
+    }
   },
-  { deep: true, immediate: true } // Add immediate to handle initial props
+  { deep: true, immediate: true }
 )
 
 // Format totalMatches with ’ as thousands separator
