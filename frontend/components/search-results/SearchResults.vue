@@ -175,30 +175,24 @@ import SearchFilters from '@/components/search-results/SearchFilters.vue'
 import NoSearchResults from '@/components/search-results/NoSearchResults.vue'
 import LoadingCard from '@/components/layout/LoadingCard.vue'
 
-const getResultComponent = (source_table) => {
-  switch (source_table) {
-    case 'Domestic Instruments':
-      return LegislationCard
-    case 'Regional Instruments':
-      return RegionalInstrumentCard
-    case 'International Instruments':
-      return InternationalInstrumentCard
-    case 'Court Decisions':
-      return CourtDecisionCard
-    case 'Answers':
-      return AnswerCard
-    case 'Literature':
-      return LiteratureCard
-    default:
-      return ResultCard
-  }
+// Component mapping for different result types
+const resultComponentMap = {
+  'Domestic Instruments': LegislationCard,
+  'Regional Instruments': RegionalInstrumentCard,
+  'International Instruments': InternationalInstrumentCard,
+  'Court Decisions': CourtDecisionCard,
+  Answers: AnswerCard,
+  Literature: LiteratureCard,
 }
 
-// Props to receive current filter values
+const getResultComponent = (source_table) =>
+  resultComponentMap[source_table] || ResultCard
+
+// Props definition
 const props = defineProps({
   data: {
     type: Object,
-    default: () => ({ tables: {} }), // Default to an object with an empty tables field
+    default: () => ({ tables: {} }),
   },
   filters: {
     type: Object,
@@ -220,73 +214,15 @@ const props = defineProps({
 
 const emit = defineEmits(['update:filters', 'load-more'])
 
-// Gather all results
-const allResults = computed(() => {
-  return Object.values(props.data?.tables || {}) // Fallback to an empty object
-})
+// Router setup
+const route = useRoute()
+const router = useRouter()
 
-// Jurisdiction options state
-const jurisdictionOptions = ref(['All Jurisdictions'])
+// Computed results
+const allResults = computed(() => Object.values(props.data?.tables || {}))
 
-// Fetch jurisdictions from file
-const loadJurisdictions = async () => {
-  try {
-    const config = useRuntimeConfig() // Ensure config is accessible
-    const jsonPayloads = [{ table: 'Jurisdictions', filters: [] }]
-
-    // Fetch both tables concurrently
-    const responses = await Promise.all(
-      jsonPayloads.map((payload) =>
-        fetch(`${config.public.apiBaseUrl}/search/full_table`, {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        })
-      )
-    )
-
-    // Process both responses
-    const [jurisdictionsData, instrumentsData] = await Promise.all(
-      responses.map((res) =>
-        res.ok ? res.json() : Promise.reject('Failed to load data')
-      )
-    )
-
-    // Filter out "Irrelevant?" for "Jurisdictions"
-    const relevantJurisdictions = jurisdictionsData.filter(
-      (entry) => entry['Irrelevant?'] === null
-    )
-
-    // Map each entry to an object with label and avatar
-    const mappedJurisdictions = relevantJurisdictions.map((entry) => ({
-      label: entry.Name,
-      avatar: entry['Alpha-3 Code']
-        ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
-        : undefined,
-    }))
-
-    // Sort alphabetically by label
-    const sortedJurisdictions = mappedJurisdictions.sort((a, b) =>
-      (a.label || '').localeCompare(b.label || '')
-    )
-
-    // Prepend "All Jurisdictions" to the list
-    jurisdictionOptions.value = [
-      { label: 'All Jurisdictions' },
-      ...sortedJurisdictions,
-    ]
-  } catch (error) {
-    console.error('Error loading jurisdictions:', error)
-  }
-}
-
-// Call the function on mount
-onMounted(() => {
-  loadJurisdictions()
-})
+// Filter options
+const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
 
 const themeOptions = [
   'All Themes',
@@ -314,21 +250,75 @@ const typeOptions = [
   'Questions',
 ]
 
-// Reactive states initialized from props
+// Filter state
 const currentJurisdictionFilter = ref([])
 const currentThemeFilter = ref([])
 const currentTypeFilter = ref([])
-
-// --- Dynamic USelect width logic ---
-const route = useRoute()
-const router = useRouter()
-
-// Initialize sort value from URL or default
 const selectValue = ref(route.query.sortBy || 'relevance')
 const selectWidth = ref('auto')
 const measureRef = ref(null)
 
-// Update select width for visual consistency
+// Fetch jurisdictions
+const loadJurisdictions = async () => {
+  try {
+    const config = useRuntimeConfig()
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to load jurisdictions')
+
+    const jurisdictionsData = await response.json()
+    const mappedJurisdictions = jurisdictionsData
+      .filter((entry) => entry['Irrelevant?'] === null)
+      .map((entry) => ({
+        label: entry.Name,
+        avatar: entry['Alpha-3 Code']
+          ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+          : undefined,
+      }))
+      .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
+
+    jurisdictionOptions.value = [
+      { label: 'All Jurisdictions' },
+      ...mappedJurisdictions,
+    ]
+  } catch (error) {
+    console.error('Error loading jurisdictions:', error)
+  }
+}
+
+// Filter handling
+const updateFilters = async (filters) => {
+  emit('update:filters', filters)
+  await router.push({
+    path: route.path,
+    query: { ...filters },
+  })
+}
+
+const handleSortChange = async (val) => {
+  const sortValue = val || 'relevance'
+  selectValue.value = sortValue
+  await updateFilters({ ...props.filters, sortBy: sortValue })
+  updateSelectWidth()
+}
+
+const resetFilters = async () => {
+  currentJurisdictionFilter.value = []
+  currentThemeFilter.value = []
+  currentTypeFilter.value = []
+  await updateFilters({ sortBy: route.query.sortBy || 'relevance' })
+}
+
 const updateSelectWidth = () => {
   nextTick(() => {
     if (measureRef.value) {
@@ -337,33 +327,23 @@ const updateSelectWidth = () => {
   })
 }
 
-// Handle sort selection changes
-const handleSortChange = async (val) => {
-  const sortValue = val || 'relevance'
-  selectValue.value = sortValue
+// Computed properties
+const hasActiveFilters = computed(
+  () =>
+    currentJurisdictionFilter.value.length > 0 ||
+    currentThemeFilter.value.length > 0 ||
+    currentTypeFilter.value.length > 0
+)
 
-  // Create complete filter state
-  const currentFilters = {
-    ...props.filters,
-    sortBy: sortValue,
-  }
+const formattedTotalMatches = computed(() => {
+  return props.totalMatches.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "'")
+})
 
-  // Emit update first to trigger API call
-  emit('update:filters', currentFilters)
+const resultLabel = computed(() => {
+  return props.totalMatches === 1 ? 'result' : 'results'
+})
 
-  // Then update URL, preserving other parameters
-  await router.push({
-    path: route.path,
-    query: {
-      ...route.query,
-      sortBy: sortValue,
-    },
-  })
-
-  updateSelectWidth()
-}
-
-// Watch route changes for sort updates
+// Watchers
 watch(
   () => route.query.sortBy,
   (newVal) => {
@@ -375,7 +355,6 @@ watch(
   { immediate: true }
 )
 
-// Watch for filter changes
 watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
   ([newJurisdiction, newTheme, newType]) => {
@@ -393,89 +372,36 @@ watch(
           : undefined,
       theme: newTheme.length > 0 ? newTheme.join(',') : undefined,
       type: newType.length > 0 ? newType.join(',') : undefined,
-      // Always preserve current sort
       sortBy: route.query.sortBy || selectValue.value,
     }
-
-    // Emit update first to trigger API call
-    emit('update:filters', filters)
-
-    // Then update URL, preserving current path
-    router.push({
-      path: route.path,
-      query: filters,
-    })
-  },
-  { deep: true }
+    updateFilters(filters)
+  }
 )
 
-// Function to reset all filters to their default states
-const resetFilters = async () => {
-  currentJurisdictionFilter.value = []
-  currentThemeFilter.value = []
-  currentTypeFilter.value = []
-
-  const currentSort = route.query.sortBy || 'relevance'
-
-  // Preserve current path while updating query
-  await router.push({
-    path: route.path,
-    query: { sortBy: currentSort },
-  })
-
-  emit('update:filters', { sortBy: currentSort })
-}
-
-// Initialize on mount with forced update
-onMounted(async () => {
-  const currentSort = route.query.sortBy || 'relevance'
-  if (currentSort !== selectValue.value) {
-    await handleSortChange(currentSort)
-  }
-  updateSelectWidth()
-})
-
-const hasActiveFilters = computed(() => {
-  return (
-    currentJurisdictionFilter.value.length > 0 ||
-    currentThemeFilter.value.length > 0 ||
-    currentTypeFilter.value.length > 0
-  )
-})
-
-// Watch for prop changes to re-sync dropdowns when parent updates
 watch(
   () => props.filters,
   (newFilters, oldFilters) => {
-    // Only proceed if there's an actual change
-    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) {
-      return
-    }
+    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return
 
-    // Convert filter strings to arrays, handling both single and multiple selections
-    const newJurisdiction = newFilters.jurisdiction
-      ? newFilters.jurisdiction.split(',').filter(Boolean)
-      : []
-    const newTheme = newFilters.theme
-      ? newFilters.theme.split(',').filter(Boolean)
-      : []
-    const newType = newFilters.type
-      ? newFilters.type.split(',').filter(Boolean)
-      : []
+    const parseFilterToArray = (filter) =>
+      filter ? filter.split(',').filter(Boolean) : []
 
-    // Update all values at once to minimize re-renders
-    if (
+    const newJurisdiction = parseFilterToArray(newFilters.jurisdiction)
+    const newTheme = parseFilterToArray(newFilters.theme)
+    const newType = parseFilterToArray(newFilters.type)
+
+    const shouldUpdate =
       JSON.stringify(newJurisdiction) !==
         JSON.stringify(currentJurisdictionFilter.value) ||
       JSON.stringify(newTheme) !== JSON.stringify(currentThemeFilter.value) ||
       JSON.stringify(newType) !== JSON.stringify(currentTypeFilter.value)
-    ) {
+
+    if (shouldUpdate) {
       currentJurisdictionFilter.value = newJurisdiction
       currentThemeFilter.value = newTheme
       currentTypeFilter.value = newType
     }
 
-    // Ensure sort value is synced
     if (newFilters.sortBy && newFilters.sortBy !== selectValue.value) {
       selectValue.value = newFilters.sortBy
       updateSelectWidth()
@@ -484,14 +410,14 @@ watch(
   { deep: true, immediate: true }
 )
 
-// Format totalMatches with ’ as thousands separator
-const formattedTotalMatches = computed(() => {
-  return props.totalMatches.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '’')
-})
-
-// Computed property for singular/plural result label
-const resultLabel = computed(() => {
-  return props.totalMatches === 1 ? 'result' : 'results'
+// Initialization
+onMounted(async () => {
+  await loadJurisdictions()
+  const currentSort = route.query.sortBy || 'relevance'
+  if (currentSort !== selectValue.value) {
+    await handleSortChange(currentSort)
+  }
+  updateSelectWidth()
 })
 </script>
 
