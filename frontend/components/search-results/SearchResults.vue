@@ -2,11 +2,11 @@
   <main class="px-6">
     <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
       <div class="col-span-12">
-        <!-- Flexbox/Grid Container: Filters and Results Heading -->
+        <!-- Filters and Results Header -->
         <div
           class="filters-header mt-[-24px] !mb-2 ml-[-1px] flex flex-col md:flex-row md:justify-between md:items-center gap-4"
         >
-          <!-- Left-aligned group of filters -->
+          <!-- Filter Controls -->
           <div class="flex flex-col sm:flex-row gap-5 w-full">
             <SearchFilters
               :options="jurisdictionOptions"
@@ -34,126 +34,126 @@
             </UButton>
           </div>
 
-          <!-- Right-aligned Results -->
+          <!-- Results Count and Sort -->
           <span
-            v-if="props.totalMatches > 1"
             class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-0 results-margin-fix"
             style="column-gap: 0px"
           >
-            <span style="margin-right: 0; padding-right: 0"
-              >{{ formattedTotalMatches }} results sorted by</span
-            >
-            <!-- Hidden span for measuring select value width -->
-            <span
-              ref="measureRef"
-              class="absolute opacity-0 pointer-events-none select-none font-inherit text-base"
-              style="
-                position: absolute;
-                left: -9999px;
-                top: 0;
-                white-space: pre;
-              "
-              aria-hidden="true"
-            >
-              {{ selectValue }}
+            <template v-if="props.totalMatches > 1">
+              <span style="margin-right: 0; padding-right: 0">
+                {{ formattedTotalMatches }} results sorted by
+              </span>
+              <!-- Hidden Measurement Element -->
+              <span
+                ref="measureRef"
+                class="absolute opacity-0 pointer-events-none select-none font-inherit text-base"
+                style="
+                  position: absolute;
+                  left: -9999px;
+                  top: 0;
+                  white-space: pre;
+                "
+                aria-hidden="true"
+              >
+                {{ selectValue }}
+              </span>
+              <!-- Sort Selector -->
+              <USelect
+                ref="selectRef"
+                variant="none"
+                :options="['relevance', 'date']"
+                v-model="selectValue"
+                @update:modelValue="handleSortChange"
+                :style="{ width: selectWidth }"
+                class="!rounded-none border-0 border-b !py-0"
+                :ui="{
+                  container: '!py-0',
+                  select: 'font-normal !py-0 !px-0 !pl-1',
+                  base: '',
+                  form: '',
+                  input: '!px-0',
+                }"
+              >
+                <template #trailing>
+                  <UIcon
+                    name="i-material-symbols:keyboard-arrow-down"
+                    class="w-5 h-5"
+                    style="color: var(--color-cold-purple)"
+                  />
+                </template>
+              </USelect>
+            </template>
+            <span v-else style="margin-right: 0; padding-right: 0">
+              {{ formattedTotalMatches }} {{ resultLabel }}
             </span>
-            <USelect
-              ref="selectRef"
-              variant="none"
-              :options="['relevance', 'date']"
-              v-model="selectValue"
-              @update:modelValue="handleSortChange"
-              :style="{ width: selectWidth }"
-              class="!rounded-none border-0 border-b !py-0"
-              :ui="{
-                container: '!py-0',
-                select: 'font-normal !py-0 !px-0 !pl-1',
-                base: '',
-                form: '',
-                input: '!px-0',
-              }"
-            >
-              <template #trailing>
-                <UIcon
-                  name="i-material-symbols:keyboard-arrow-down"
-                  class="w-5 h-5"
-                  style="color: var(--color-cold-purple)"
-                />
-              </template>
-            </USelect>
-          </span>
-          <span
-            v-else
-            class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-0 results-margin-fix"
-            style="column-gap: 0px"
-          >
-            <span style="margin-right: 0; padding-right: 0"
-              >{{ formattedTotalMatches }} {{ resultLabel }}</span
-            >
           </span>
         </div>
 
-        <!-- Results Grid or Messages -->
+        <!-- Results Content -->
         <div class="results-content mt-4">
-          <!-- Show loading skeleton only if loading and no results yet -->
-          <div v-if="loading && !allResults.length">
-            <LoadingCard />
-          </div>
+          <!-- Loading State -->
+          <LoadingCard v-if="loading && !allResults.length" />
 
-          <!-- No Results -->
+          <!-- No Results State -->
           <NoSearchResults v-else-if="!loading && !allResults.length" />
 
-          <!-- Results Grid: always show if there are results -->
-          <div v-else class="results-grid">
-            <div
-              v-for="(resultData, key) in allResults"
-              :key="key"
-              class="result-item"
-            >
-              <component
-                :is="getResultComponent(resultData.source_table)"
-                :resultData="resultData"
+          <!-- Results Grid -->
+          <template v-else>
+            <div class="results-grid">
+              <div
+                v-for="(resultData, key) in allResults"
+                :key="key"
+                class="result-item"
+              >
+                <component
+                  :is="getResultComponent(resultData.source_table)"
+                  :resultData="resultData"
+                />
+              </div>
+              <!-- Loading More Indicator -->
+              <LoadingCard
+                v-if="loading && allResults.length"
+                class="text-center py-4"
               />
             </div>
-            <!-- Show a loading spinner/card at the bottom if loading more -->
-            <div v-if="loading && allResults.length" class="text-center py-4">
-              <LoadingCard />
+
+            <!-- Load More Button -->
+            <div
+              v-if="props.canLoadMore && !loading"
+              class="mt-16 mb-4 text-center"
+            >
+              <UButton
+                native-type="button"
+                @click.prevent="emit('load-more')"
+                class="suggestion-button"
+                variant="link"
+                icon="i-material-symbols:arrow-cool-down"
+                :disabled="props.loading"
+              >
+                Load More Results
+              </UButton>
             </div>
-          </div>
 
-          <div
-            v-if="props.canLoadMore && !loading"
-            class="mt-16 mb-4 text-center"
-          >
-            <UButton
-              native-type="button"
-              @click.prevent="emit('load-more')"
-              class="suggestion-button"
-              variant="link"
-              icon="i-material-symbols:arrow-cool-down"
-              :disabled="props.loading"
-            >
-              Load More Results
-            </UButton>
-          </div>
-
-          <div v-if="!loading" class="result-value-small text-center pt-4">
-            <UButton
-              to="https://choice-of-law-dataverse.github.io/search-algorithm"
-              variant="link"
-              target="_blank"
-              >Learn How the Search Works</UButton
-            >
-            <UIcon
-              name="i-material-symbols:play-arrow"
-              class="inline-block ml-[-6px]"
-              style="
-                color: var(--color-cold-purple);
-                position: relative;
-                top: 2px;
-              "
-            />
-          </div>
+            <!-- Search Info Link -->
+            <div v-if="!loading" class="result-value-small text-center pt-4">
+              <UButton
+                to="https://choice-of-law-dataverse.github.io/search-algorithm"
+                variant="link"
+                target="_blank"
+              >
+                Learn How the Search Works
+              </UButton>
+              <UIcon
+                name="i-material-symbols:play-arrow"
+                class="inline-block ml-[-6px]"
+                style="
+                  color: var(--color-cold-purple);
+                  position: relative;
+                  top: 2px;
+                "
+              />
+            </div>
+          </template>
         </div>
       </div>
     </div>
