@@ -35,7 +35,7 @@
           </RouterLink>
         </div>
         <UButton
-          to="/search?type=Domestic+Instruments"
+          to="/search?type=Domestic+Instruments&sortBy=date"
           class="suggestion-button mt-8"
           variant="link"
           icon="i-material-symbols:arrow-forward"
