@@ -30,10 +30,15 @@ export default defineNuxtConfig({
       FASTAPI: process.env.FASTAPI_API_TOKEN
     }
   },
+  sitemap: {
+    sources: [
+      'server/api/__sitemap__/urls', 
+      ]
+    },
   robots: {
     robotsTxt: true,
     sitemap: [
-      '/sitemap.txt',
+      '/sitemap.xml',
     ],
     groups: [
       {
