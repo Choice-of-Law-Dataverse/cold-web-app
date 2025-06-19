@@ -16,6 +16,20 @@
 
 <script setup>
 import SectionNav from '@/components/layout/SectionNav.vue'
+
+import { onMounted, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
+
+onMounted(async () => {
+  const route = useRoute()
+  if (route.hash) {
+    await nextTick()
+    const el = document.querySelector(route.hash)
+    if (el) {
+      el.scrollIntoView({ behavior: 'auto' })
+    }
+  }
+})
 </script>
 
 <style scoped>
