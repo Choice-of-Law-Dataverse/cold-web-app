@@ -58,6 +58,9 @@
           <li v-if="resultData['More Information']">
             {{ getValue('More Information') }}
           </li>
+          <li v-else-if="resultData['OUP Book Quote']">
+            {{ getValue('OUP Book Quote') }}
+          </li>
           <template v-if="hasDomesticValue">
             <template v-if="resultData['Domestic Legal Provisions']">
               <LegalProvisionRenderer
@@ -206,9 +209,13 @@ const hasDomesticValue = computed(() => {
   )
 })
 
+// Update hasMoreInformation to include OUP Book Quote fallback
 const hasMoreInformation = computed(() => {
   return (
-    props.resultData['More Information'] ||
+    (props.resultData['More Information'] &&
+      props.resultData['More Information'] !== '') ||
+    (props.resultData['OUP Book Quote'] &&
+      props.resultData['OUP Book Quote'] !== '') ||
     hasDomesticValue.value ||
     relatedCasesCount.value > 0
   )
