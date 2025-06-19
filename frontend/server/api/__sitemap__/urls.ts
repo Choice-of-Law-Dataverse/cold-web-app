@@ -8,23 +8,12 @@ export default defineSitemapEventHandler(async () => {
     }
   })
 
-  // Debug: log the raw API response
-//   console.log('Sitemap API response:', data)
+  // Only use the 'beta' environment URLs
+  const betaUrls: string[] = (data.beta && Array.isArray(data.beta.urls)) ? data.beta.urls : []
 
-  // Collect all URLs from all environments
-  const urls: string[] = []
-  for (const env of Object.values(data)) {
-    if (env && Array.isArray(env.urls)) {
-      urls.push(...env.urls)
-    }
-  }
-
-  // Debug: log the collected URLs
-//   console.log('Collected URLs:', urls)
-
-  // Map to sitemap format
-  const sitemapUrls = urls.map(url => ({
-    loc: url.replace(/^https?:\/\/[^/]+/, ''), // Convert absolute to relative path
+  // Map to sitemap format (relative paths)
+  const sitemapUrls = betaUrls.map(url => ({
+    loc: url.replace(/^https?:\/\/[^/]+/, ''),
   }))
 
   return sitemapUrls
