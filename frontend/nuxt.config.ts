@@ -32,9 +32,12 @@ export default defineNuxtConfig({
   },
   sitemap: {
     sources: [
-      'server/api/__sitemap__/urls', 
-      ]
-    },
+      [
+        `${process.env.API_BASE_URL}/sitemap/urls`,
+        { headers: { Authorization: `Bearer ${process.env.FASTAPI_API_TOKEN}` } }
+      ] 
+    ]
+  },
   robots: {
     robotsTxt: true,
     sitemap: [
