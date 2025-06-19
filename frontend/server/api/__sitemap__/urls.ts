@@ -9,7 +9,7 @@ export default defineSitemapEventHandler(async () => {
   })
 
   // Debug: log the raw API response
-  console.log('Sitemap API response:', data)
+//   console.log('Sitemap API response:', data)
 
   // Collect all URLs from all environments
   const urls: string[] = []
@@ -20,7 +20,7 @@ export default defineSitemapEventHandler(async () => {
   }
 
   // Debug: log the collected URLs
-  console.log('Collected URLs:', urls)
+//   console.log('Collected URLs:', urls)
 
   // Map to sitemap format
   const sitemapUrls = urls.map(url => ({
