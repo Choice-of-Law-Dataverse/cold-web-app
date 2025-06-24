@@ -1,1 +1,1 @@
-The relevant legal provisions that are related to choice of law from the choice of law issue(s)/agreement/clause/interpretation(s). This field might also include important precedents or other decisions that were used as a reference in the judgment.
+Relevant legal provisions related to the choice of law issue(s), referenced in the judgment. Might include precedents or other decisions also referenced
