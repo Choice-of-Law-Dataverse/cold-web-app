@@ -1,1 +1,1 @@
-Publication Date
+Publication date
