@@ -1,1 +1,1 @@
-Legal provisions connected to the international instrument
+Selection of important provisions from the international instrument.
