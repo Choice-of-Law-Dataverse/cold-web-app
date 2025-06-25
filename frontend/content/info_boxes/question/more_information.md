@@ -1,1 +1,1 @@
-Further elaboration on the predetermined Answers
+Elaboration on the predetermined answer.
