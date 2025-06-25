@@ -1,1 +1,1 @@
-Selection of important provisions from the regional instrument
+Selection of important provisions from the regional instrument.

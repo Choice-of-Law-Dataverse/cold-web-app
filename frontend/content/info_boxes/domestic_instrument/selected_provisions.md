@@ -1,1 +1,1 @@
-Selection of important provisions from the domestic instrument
+Selection of important provisions from the domestic instrument.

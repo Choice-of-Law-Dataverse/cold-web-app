@@ -1,1 +1,1 @@
-Literature related to the court decision
+Literature related to the court decision.
