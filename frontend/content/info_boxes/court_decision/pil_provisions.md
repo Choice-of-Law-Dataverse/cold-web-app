@@ -1,1 +1,1 @@
-Relevant legal provisions related to the choice of law issue(s), referenced in the judgment. Might include precedents or other decisions also referenced
+Relevant legal provisions related to the choice of law issue(s), referenced in the judgment.
