@@ -1,1 +1,1 @@
-The official abbreviation used for the legal instrument, preferrably the English version
+Official abbreviation used for the domestic instrument.
