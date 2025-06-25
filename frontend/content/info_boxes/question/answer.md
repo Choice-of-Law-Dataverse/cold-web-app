@@ -1,1 +1,1 @@
-Predetermined answer options to the Questions
+Predetermined response limited to 'Yes', 'No', 'Not applicable', or 'No data'. Not a detailed or explanatory answer.
