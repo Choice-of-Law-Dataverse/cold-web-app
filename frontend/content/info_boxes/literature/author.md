@@ -1,1 +1,1 @@
-Author
+Author(s)

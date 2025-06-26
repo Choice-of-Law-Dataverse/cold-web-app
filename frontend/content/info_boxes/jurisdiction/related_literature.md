@@ -1,1 +1,1 @@
-Literature related to the jurisdiction
+Literature related to the jurisdiction.

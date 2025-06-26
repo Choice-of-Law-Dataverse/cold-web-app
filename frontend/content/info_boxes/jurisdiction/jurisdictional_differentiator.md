@@ -1,2 +1,1 @@
-Jurisdictional peculiarities such as the judicial hierarchy and allows user to
-get disclaimers before consulting jurisdictional information.
+Jurisdictional peculiarities, such as the judicial hierarchy. To be read before consulting jurisdictional information.

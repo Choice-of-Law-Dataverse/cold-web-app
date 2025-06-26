@@ -1,1 +1,1 @@
-The date that the legal instrument was published
+The date that the legal instrument was published.

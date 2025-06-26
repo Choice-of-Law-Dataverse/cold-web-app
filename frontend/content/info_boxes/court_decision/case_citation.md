@@ -1,4 +1,1 @@
-This field contains information on the Issuing Court, the Claimant and
-Respondent's names, the Number ID of the case, and the date when the
-decision was issued. The way the case is cited varies according to the
-jurisdiction.
+Contains information on the issuing court, names of the claimant(s) and respondent(s), the number ID of the case, and the date of the decision. Case citations vary according to the jurisdiction.

@@ -1,1 +1,1 @@
-Entry into force as main reference date
+Entry into force as main reference date.

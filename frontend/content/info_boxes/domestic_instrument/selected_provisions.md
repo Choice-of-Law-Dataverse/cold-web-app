@@ -1,1 +1,1 @@
-Legal provisions connected to the domestic instrument
+Selection of important provisions from the domestic instrument.

@@ -1,1 +1,1 @@
-Domestic legal provision
+Domestic legal provision(s).

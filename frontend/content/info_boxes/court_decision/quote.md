@@ -1,1 +1,1 @@
-Excerpt of the decision where the court justifies its position (judgment). The quote is always in the original language of the case/in the words of the court.
+Excerpt of the decision where the court justifies its position. The quote is always in the original wording of the court.

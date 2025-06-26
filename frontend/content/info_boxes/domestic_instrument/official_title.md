@@ -1,1 +1,1 @@
-Title of the legal instrument in the respective language of the jurisdiction 
+Title of the legal instrument in the jurisdictional language.
