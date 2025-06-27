@@ -342,7 +342,7 @@ const suggestEditActions = computed(() => {
   if (linkUrl) {
     actions.push({
       label: linkLabel,
-      icon: 'i-material-symbols:language',
+      icon: 'i-material-symbols:open-in-new',
       to: linkUrl,
     })
   }
