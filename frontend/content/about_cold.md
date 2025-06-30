@@ -11,7 +11,7 @@ CoLD contains carefully curated private international law data, helping experts 
 Our main objective is to transform data points into knowledge through collaboration within a community.
 
 **CoLD is Open Research**  
-The Dataverse promotes sharing, preserving, citing, exploring and analyzing research data on choice of law. CoLD is licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank">CC BY 4.0</a>.
+The Dataverse promotes sharing, preserving, citing, exploring and analyzing research data on choice of law. CoLD is licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank">CC BY 4.0<img src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg" alt="external link" style="display:inline; width:1em; vertical-align:top; margin-left:0.2em; margin-top: 0.5em; margin-bottom: 0em;"/></a>.
 
 The core subject of CoLD is of significant importance to the resolution of real-world international commercial disputes. Rules of law chosen by the parties (or otherwise identified as applicable by judges or arbitrators) can significantly impact the outcome of a case before courts or an arbitral tribunal, and a framework on how to choose these rules is therefore necessary.
 
