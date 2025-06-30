@@ -1,1 +1,1 @@
-Full text of the relevant rules involved. Also found in the "Answers" tab with further elaboration of the legal provision.
+Full text of the relevant legal provisions.

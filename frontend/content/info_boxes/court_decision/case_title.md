@@ -1,1 +1,1 @@
-Main part of the citation, enough to identify the Case
+Extracted from the case citation; main information to identify the case.

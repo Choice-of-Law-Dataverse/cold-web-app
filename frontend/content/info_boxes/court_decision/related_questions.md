@@ -1,1 +1,1 @@
-Questions related to the court decision
+Questions related to the court decision.

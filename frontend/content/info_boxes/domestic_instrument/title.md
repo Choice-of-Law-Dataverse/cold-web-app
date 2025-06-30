@@ -1,1 +1,1 @@
-Legal instruments in English starting with the adjective (Demonym) related to the jurisdiction
+Demonym followed by the title of the domestic instrument in English.

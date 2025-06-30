@@ -1,1 +1,1 @@
-Case law providing information to the corresponding Questions
+Case law related to the question. 
