@@ -74,6 +74,9 @@ Consult the <a href="https://www.hcch.net/en/instruments/conventions/specialised
 
 - Michael Douglas and Nicholas Loadsmant, [‘The Impact of the Hague Principles on Choice of Law in International Commercial Contracts’ (2018)](/literature/81) 19 Melbourne Journal of International Law 1.
 
-[See all texts and references](/search?type=Literature)
+<a href="/search?type=Literature">See all texts and references<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/arrow_forward.svg"
+    class="external-link-icon"
+  /></a>
 
-[Contact us](/contact) if you want a reference to be included here
+[Contact us](/contact) if you want a reference to be included here.
