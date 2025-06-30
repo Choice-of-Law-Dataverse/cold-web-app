@@ -28,13 +28,7 @@
           >
             <span
               >Navigate private international law issues with precision.
-              <UButton
-                class="suggestion-button"
-                to="/about"
-                variant="link"
-                icon="i-material-symbols:arrow-forward"
-                trailing
-              >
+              <UButton class="suggestion-button" to="/about" variant="link">
                 <span>More</span>
               </UButton></span
             >
@@ -58,8 +52,6 @@
                 class="suggestion-button"
                 to="/about/about-cold#hcch-approval"
                 variant="link"
-                icon="i-material-symbols:arrow-forward"
-                trailing
               >
                 <span>More</span>
               </UButton></span

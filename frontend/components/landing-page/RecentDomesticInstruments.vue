@@ -12,12 +12,7 @@
       <template v-else>
         <div v-for="(instrument, index) in domesticInstruments" :key="index">
           <RouterLink :to="`/domestic-instrument/${instrument.ID}`">
-            <UButton
-              class="suggestion-button mt-8"
-              variant="link"
-              icon="i-material-symbols:arrow-forward"
-              trailing
-            >
+            <UButton class="suggestion-button mt-8" variant="link">
               <img
                 :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
                 style="height: 20px; border: 1px solid var(--color-cold-gray)"

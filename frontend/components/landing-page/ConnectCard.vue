@@ -77,7 +77,6 @@ const props = defineProps({
   buttonIcon: {
     type: String,
     required: false,
-    default: 'i-material-symbols:arrow-forward',
   },
 })
 </script>
