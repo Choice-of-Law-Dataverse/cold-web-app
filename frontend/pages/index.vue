@@ -122,6 +122,7 @@
             buttonText="Subscribe"
             :buttonLink="links.substack"
             iconName="i-bi:substack"
+            buttonIcon="i-material-symbols:open-in-new"
           />
         </div>
 
@@ -131,6 +132,7 @@
             buttonText="Follow Us"
             :buttonLink="links.linkedin"
             iconName="i-mdi:linkedin"
+            buttonIcon="i-material-symbols:open-in-new"
           />
         </div>
 
@@ -149,6 +151,7 @@
             buttonText="Beta User Sign Up"
             :buttonLink="links.beta"
             iconName="i-hugeicons:test-tube-01"
+            buttonIcon="i-material-symbols:open-in-new"
           />
         </div>
         <div class="col-span-12 sm:col-span-4">
