@@ -11,7 +11,11 @@ title: Disclaimer — CoLD
 The data published on this website is made available under the terms of the Creative Commons Attribution-ShareAlike (CC BY-SA) license. You are free to reuse, distribute, remix, adapt, and build upon the data, even commercially, provided you clearly attribute the original source and distribute any derivative works under the same or a compatible license.
 
 For details of the CC BY-SA license, see:
-https://creativecommons.org/licenses/by-sa/4.0/
+<a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">https://creativecommons.org/licenses/by-sa/4.0/<img
+     src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+     alt="external link"
+     class="external-link-icon"
+   /></a>
 
 ### Attribution Notice
 

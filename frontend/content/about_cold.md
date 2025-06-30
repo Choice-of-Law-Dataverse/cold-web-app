@@ -25,13 +25,25 @@ The discipline in which this research project is inserted is private internation
 
 ## HCCH Approval
 
-<a href="https://www.hcch.net/en/home" target="_blank">The Hague Conference on Private International Law (HCCH)</a> approves and endorses the Choice of Law Dataverse.
+<a href="https://www.hcch.net/en/home" target="_blank">The Hague Conference on Private International Law (HCCH)<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a> approves and endorses the Choice of Law Dataverse.
 
 ## CoLD on Github
 
 Follow the development of this website on GitHub:  
-<a href="https://github.com/Choice-of-Law-Dataverse/cold-web-app" target="_blank">github.com/Choice-of-Law-Dataverse/cold-web-app</a>
+<a href="https://github.com/Choice-of-Law-Dataverse/cold-web-app" target="_blank">github.com/Choice-of-Law-Dataverse/cold-web-app<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a>
 
 ## CoLD Tech Wiki
 
-For more information on the technologies used and developed to build CoLD, see <a href="https://choice-of-law-dataverse.github.io/" target="_blank">choice-of-law-dataverse.github.io</a>.
+For more information on the technologies used and developed to build CoLD, see <a href="https://choice-of-law-dataverse.github.io/" target="_blank">choice-of-law-dataverse.github.io<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a>.
