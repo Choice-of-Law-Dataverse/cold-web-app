@@ -2,9 +2,15 @@
 title: FAQ — CoLD
 ---
 
-## What are the <a href="https://www.hcch.net/en/instruments/conventions/full-text/?cid=135" target="_blank">HCCH Principles</a> and the history behind this project?
+## What are the HCCH Principles and the history behind this project?
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/1RtRCGOVJDk?si=lMmnUeOj5i_vgW64" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+Read the full text of the <a href="https://www.hcch.net/en/instruments/conventions/full-text/?cid=135" target="_blank">HCCH Principles<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a>.
 
 ## What is party autonomy?
 

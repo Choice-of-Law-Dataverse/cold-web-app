@@ -9,12 +9,7 @@
       <template v-else>
         <div v-for="(decision, index) in courtDecisions" :key="index">
           <RouterLink :to="`/court-decision/${decision.ID}`">
-            <UButton
-              class="suggestion-button mt-8"
-              variant="link"
-              icon="i-material-symbols:arrow-forward"
-              trailing
-            >
+            <UButton class="suggestion-button mt-8" variant="link">
               <img
                 :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${decision['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
                 style="height: 20px; border: 1px solid var(--color-cold-gray)"

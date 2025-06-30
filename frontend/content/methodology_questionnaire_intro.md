@@ -2,7 +2,11 @@
 
 Besides displaying the relevant information on legal provisions and case law decisions, the main dataset on choice of law contains an analytical layer. The work is organized around a questionnaire designed to systematize standard answers about choice of law rules in various jurisdictions. It covers the following topics:
 
-1. **Codification of private international law**: The first set of questions revolves around whether rules of private international law are codified and if there is any ongoing revision. Based on the response, further questions explore the role of the [HCCH Principles](https://www.hcch.net/en/instruments/conventions/specialised-sections/choice-of-law-principles) in this context.
+1. **Codification of private international law**: The first set of questions revolves around whether rules of private international law are codified and if there is any ongoing revision. Based on the response, further questions explore the role of the <a href="https://www.hcch.net/en/instruments/conventions/specialised-sections/choice-of-law-principles" target="_blank">HCCH Principles<img
+     src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+     alt="external link"
+     class="external-link-icon"
+   /></a> in this context.
 2. **Party autonomy**: This section focuses on the acceptance and implementation of the principle of [party autonomy](/learn/glossary#party-autonomy) in [international commercial contracts](/learn/glossary#international-commercial-contracts). It includes questions about the ability of parties to choose rules of law [(non-State law)](/learn/glossary#non-state-law-rules-of-law) to govern their contract. This section also addresses whether parties can choose different laws to be applied for different parts of the contract [(dépeçage)](/learn/glossary#dpeage).
 3. **Tacit choice**: This part addresses whether a choice of law needs to be explicitly stated or if it can be made tacitly. Various scenarios are explored, such as the role of a choice of forum clause or an [arbitration](/learn/glossary#arbitration) clause in indicating a [tacit choice](/learn/glossary#tacit-choice) of law.
 4. **Mandatory rules and public policy**: Questions in this section inquire about overriding mandatory provisions, their application, and the concept of [public policy](/learn/glossary#public-policy) in commercial law.

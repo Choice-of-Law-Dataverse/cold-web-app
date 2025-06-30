@@ -266,6 +266,15 @@ li::marker {
   transform: translateY(4px) !important;
 }
 
+.external-link-icon {
+  display: inline;
+  width: 1em;
+  vertical-align: top !important;
+  margin-left: 0.2em !important;
+  margin-top: 0.5em !important;
+  margin-bottom: 0em !important;
+}
+
 // Info Box in Jurisdiction Map
 .info {
   position: absolute;

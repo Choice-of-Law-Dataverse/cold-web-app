@@ -11,7 +11,11 @@ CoLD contains carefully curated private international law data, helping experts 
 Our main objective is to transform data points into knowledge through collaboration within a community.
 
 **CoLD is Open Research**  
-The Dataverse promotes sharing, preserving, citing, exploring and analyzing research data on choice of law. CoLD is licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank">CC BY 4.0</a>.
+The Dataverse promotes sharing, preserving, citing, exploring and analyzing research data on choice of law. CoLD is licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank">CC BY 4.0<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a>.
 
 The core subject of CoLD is of significant importance to the resolution of real-world international commercial disputes. Rules of law chosen by the parties (or otherwise identified as applicable by judges or arbitrators) can significantly impact the outcome of a case before courts or an arbitral tribunal, and a framework on how to choose these rules is therefore necessary.
 
@@ -21,13 +25,25 @@ The discipline in which this research project is inserted is private internation
 
 ## HCCH Approval
 
-<a href="https://www.hcch.net/en/home" target="_blank">The Hague Conference on Private International Law (HCCH)</a> approves and endorses the Choice of Law Dataverse.
+<a href="https://www.hcch.net/en/home" target="_blank">The Hague Conference on Private International Law (HCCH)<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a> approves and endorses the Choice of Law Dataverse.
 
 ## CoLD on Github
 
 Follow the development of this website on GitHub:  
-<a href="https://github.com/Choice-of-Law-Dataverse/cold-web-app" target="_blank">github.com/Choice-of-Law-Dataverse/cold-web-app</a>
+<a href="https://github.com/Choice-of-Law-Dataverse/cold-web-app" target="_blank">github.com/Choice-of-Law-Dataverse/cold-web-app<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a>
 
 ## CoLD Tech Wiki
 
-For more information on the technologies used and developed to build CoLD, see <a href="https://choice-of-law-dataverse.github.io/" target="_blank">choice-of-law-dataverse.github.io</a>.
+For more information on the technologies used and developed to build CoLD, see <a href="https://choice-of-law-dataverse.github.io/" target="_blank">choice-of-law-dataverse.github.io<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a>.

@@ -31,7 +31,7 @@
         <UButton
           class="suggestion-button"
           variant="link"
-          icon="i-material-symbols:arrow-forward"
+          :icon="buttonIcon"
           trailing
         >
           {{ buttonText }}
@@ -73,6 +73,10 @@ const props = defineProps({
   newTab: {
     type: Boolean,
     default: true,
+  },
+  buttonIcon: {
+    type: String,
+    required: false,
   },
 })
 </script>
