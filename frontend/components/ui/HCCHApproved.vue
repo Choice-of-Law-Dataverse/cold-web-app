@@ -1,11 +1,15 @@
 <template>
-  <span class="label-question">
+  <a
+    href="/about/endorsements"
+    class="label-question"
+    style="display: inline-flex; text-decoration: none"
+  >
     <UIcon
       name="i-material-symbols:check-circle"
-      class="-mb-[0.175em] mr-[0.1em] text-[1.15em] -ml-[0.1em]"
+      class="mr-[0.3em] text-[1.15em] mt-[0.1em]"
     />
     HCCH Approved
-  </span>
+  </a>
 </template>
 
 <style scoped>
