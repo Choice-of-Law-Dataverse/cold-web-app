@@ -104,10 +104,9 @@
           </a>
         </div> -->
 
-        <HCCHApproved />
-
-        <!-- Navigation Links replaced by Menu button -->
-        <div v-if="!isExpanded">
+        <!-- HCCHApproved and Menu/Links Row -->
+        <div v-if="!isExpanded" class="flex items-center space-x-4">
+          <HCCHApproved v-if="!showMenu" />
           <template v-if="!showMenu">
             <button class="menu-button custom-nav-links" @click="openMenu">
               Menu
