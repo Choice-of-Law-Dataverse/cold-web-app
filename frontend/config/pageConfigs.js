@@ -242,16 +242,12 @@ export const questionConfig = {
 // Domestic Instrument Page (formerly Legal Instrument Page)
 // Tooltips for Domestic Instrument Page
 import tooltipAbbreviation from '@/content/info_boxes/domestic_instrument/abbreviation.md?raw'
-import tooltipAmendedBy from '@/content/info_boxes/domestic_instrument/amended_by.md?raw'
-import tooltipAmends from '@/content/info_boxes/domestic_instrument/amends.md?raw'
 import tooltipCompatibleHCCH from '@/content/info_boxes/domestic_instrument/compatible_hcch.md?raw'
 import tooltipCompatibleUncitral from '@/content/info_boxes/domestic_instrument/compatible_uncitral.md?raw'
 import tooltipDomesticInstrumentDate from '@/content/info_boxes/domestic_instrument/date.md?raw'
 import tooltipEntryIntoForce from '@/content/info_boxes/domestic_instrument/entry_into_force.md?raw'
 import tooltipOfficialTitle from '@/content/info_boxes/domestic_instrument/official_title.md?raw'
 import tooltipDomesticInstrumentPublicationDate from '@/content/info_boxes/domestic_instrument/publication_date.md?raw'
-import tooltipDomesticInstrumentReplacedBy from '@/content/info_boxes/domestic_instrument/replaced_by.md?raw'
-import tooltipDomesticInstrumentReplaces from '@/content/info_boxes/domestic_instrument/replaces.md?raw'
 import tooltipDomesticInstrumentSelectedProvisions from '@/content/info_boxes/domestic_instrument/selected_provisions.md?raw'
 import tooltipDomesticInstrumentTitle from '@/content/info_boxes/domestic_instrument/title.md?raw'
 
@@ -269,7 +265,6 @@ export const legalInstrumentConfig = {
     {
       key: 'Amended by',
       label: 'Amended by',
-      tooltip: tooltipAmendedBy,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -277,7 +272,6 @@ export const legalInstrumentConfig = {
     {
       key: 'Amends',
       label: 'Amends',
-      tooltip: tooltipAmends,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -285,7 +279,6 @@ export const legalInstrumentConfig = {
     {
       key: 'Replaces',
       label: 'Replaces',
-      tooltip: tooltipDomesticInstrumentReplaces,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -293,7 +286,6 @@ export const legalInstrumentConfig = {
     {
       key: 'Replaced by',
       label: 'Replaced by',
-      tooltip: tooltipDomesticInstrumentReplacedBy,
       emptyValueBehavior: {
         action: 'hide',
       },
