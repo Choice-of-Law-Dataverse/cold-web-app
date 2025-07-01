@@ -100,19 +100,53 @@
           </a>
         </div> -->
 
-        <!-- Navigation Links (Always visible) -->
-        <div v-if="!isExpanded" class="space-x-3 sm:space-x-6">
-          <ULink
-            v-for="(link, i) in links"
-            :key="i"
-            :to="link.to"
-            :class="[
-              'custom-nav-links',
-              { active: route.path.startsWith(link.to) },
-            ]"
-          >
-            <span>{{ link.label }}</span>
-          </ULink>
+        <!-- Navigation Links replaced by Menu button -->
+        <div v-if="!isExpanded">
+          <template v-if="!showMenu">
+            <button class="menu-button custom-nav-links" @click="openMenu">
+              Menu
+            </button>
+          </template>
+          <template v-else>
+            <div class="space-x-3 sm:space-x-6 flex items-center">
+              <ULink
+                v-for="(link, i) in links"
+                :key="i"
+                :to="link.to"
+                :class="[
+                  'custom-nav-links',
+                  { active: route.path.startsWith(link.to) },
+                ]"
+              >
+                <span>{{ link.label }}</span>
+              </ULink>
+              <button
+                class="close-menu-button ml-2"
+                @click="closeMenu"
+                aria-label="Close menu"
+                style="
+                  background: none;
+                  border: none;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  height: 2.5rem;
+                  width: 2.5rem;
+                  min-width: 2.5rem;
+                  min-height: 2.5rem;
+                  z-index: 10;
+                "
+              >
+                <span>
+                  <UIcon
+                    name="i-material-symbols:close"
+                    class="ml-[1em] mt-[0.3em] text-[1.3em]"
+                  />
+                </span>
+              </button>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -139,6 +173,16 @@ const links = [
   { label: 'Learn', to: basePath(learnNavLinks) },
   { label: 'Contact', to: '/contact' },
 ]
+
+const showMenu = ref(false)
+
+function openMenu() {
+  showMenu.value = true
+}
+
+function closeMenu() {
+  showMenu.value = false
+}
 
 // Reactive state
 const searchText = ref('')
@@ -491,3 +535,10 @@ a {
   font-style: italic;
 } */
 </style>
+/* Ensure close-menu-button is always visible and not overlapped */
+.close-menu-button { position: relative; z-index: 20; background: none; border:
+none; cursor: pointer; min-width: 2.5rem; min-height: 2.5rem; display: flex;
+align-items: center; justify-content: center; } .close-x-icon { font-size: 2rem
+!important; color: var(--color-cold-night) !important; display: block
+!important; opacity: 1 !important; pointer-events: auto !important; z-index: 30
+!important; filter: none !important; }
