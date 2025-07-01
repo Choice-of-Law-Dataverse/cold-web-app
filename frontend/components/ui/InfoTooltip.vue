@@ -1,6 +1,5 @@
 <template>
   <UTooltip
-    :text="text"
     :popper="{ placement }"
     :ui="{
       background: 'bg-cold-night',
@@ -10,9 +9,12 @@
       ring: '',
     }"
   >
-    <span class="ml-1 cursor-pointer">
+    <span class="icon-span ml-1 cursor-pointer">
       <Icon name="i-material-symbols:info-outline" />
     </span>
+    <template #text>
+      <span class="tooltip-text" v-html="text" />
+    </template>
   </UTooltip>
 </template>
 
@@ -30,11 +32,18 @@ const props = defineProps({
 </script>
 
 <style scoped>
-span {
+.icon-span {
   display: inline-flex;
   align-items: center;
   margin-top: -1px;
   color: var(--color-cold-purple);
   font-size: 1.1em;
+}
+
+/* Ensure tooltip text is white and in one column */
+.tooltip-text {
+  color: white;
+  display: block;
+  white-space: normal;
 }
 </style>
