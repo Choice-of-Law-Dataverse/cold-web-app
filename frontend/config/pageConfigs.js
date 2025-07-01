@@ -23,7 +23,7 @@ export const literatureConfig = {
     },
     {
       key: 'Author',
-      label: 'Author',
+      label: 'Author(s)',
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No author available',
@@ -31,7 +31,7 @@ export const literatureConfig = {
     },
     {
       key: 'Editor',
-      label: 'Editor',
+      label: 'Editor(s)',
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -441,7 +441,7 @@ export const internationalInstrumentConfig = {
   keyLabelPairs: [
     {
       key: 'Name',
-      label: 'Name',
+      label: 'Title',
       emptyValueBehavior: { action: 'display', fallback: 'No title available' },
     },
     {
