@@ -149,7 +149,6 @@ export const jurisdictionConfig = {
 import tooltipQuestion from '@/content/info_boxes/question/question.md?raw'
 import tooltipAnswer from '@/content/info_boxes/question/answer.md?raw'
 import tooltipQuestionRelatedLiterature from '@/content/info_boxes/question/related_literature.md?raw'
-import tooltipMoreInformation from '@/content/info_boxes/question/more_information.md?raw'
 import tooltipSource from '@/content/info_boxes/question/source.md?raw'
 import tooltipOUPBookQuote from '@/content/info_boxes/question/oup_book_quote.md?raw'
 import tooltipRelatedCourtDecisions from '@/content/info_boxes/question/related_court_decisions.md?raw'
@@ -177,7 +176,6 @@ export const questionConfig = {
     {
       key: 'More Information',
       label: 'More Information',
-      tooltip: tooltipMoreInformation,
       emptyValueBehavior: {
         action: 'hide',
       },

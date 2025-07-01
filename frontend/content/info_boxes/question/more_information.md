@@ -1,1 +1,0 @@
-Elaboration on the predetermined answer.
