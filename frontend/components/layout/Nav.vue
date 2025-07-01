@@ -4,7 +4,7 @@
     :class="{ 'bg-purple-active': isExpanded }"
   >
     <div
-      class="mx-auto py-6"
+      class="mx-auto py-6 pt-8"
       style="max-width: var(--container-width); width: 100%"
     >
       <div
@@ -444,7 +444,6 @@ onUnmounted(() => {
 /* When expanded, span across available space */
 .search-container.expanded {
   width: 100%; /* Expand to full width */
-  padding-top: 0.625rem;
   padding-bottom: 0.625rem;
 }
 
@@ -533,16 +532,14 @@ a {
   color: var(--color-cold-night);
 }
 
+nav {
+  min-height: 7rem;
+  max-height: 7rem;
+}
+
 /* .suggestion-hint {
   font-size: 0.875rem;
   color: var(--color-cold-gray);
   font-style: italic;
 } */
 </style>
-/* Ensure close-menu-button is always visible and not overlapped */
-.close-menu-button { position: relative; z-index: 20; background: none; border:
-none; cursor: pointer; min-width: 2.5rem; min-height: 2.5rem; display: flex;
-align-items: center; justify-content: center; } .close-x-icon { font-size: 2rem
-!important; color: var(--color-cold-night) !important; display: block
-!important; opacity: 1 !important; pointer-events: auto !important; z-index: 30
-!important; filter: none !important; }
