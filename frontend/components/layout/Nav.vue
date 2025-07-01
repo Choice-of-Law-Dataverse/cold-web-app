@@ -121,6 +121,7 @@
                   'custom-nav-links',
                   { active: route.path.startsWith(link.to) },
                 ]"
+                @click="closeMenu"
               >
                 <span>{{ link.label }}</span>
               </ULink>
@@ -182,11 +183,45 @@ const showMenu = ref(false)
 
 function openMenu() {
   showMenu.value = true
+  // Add click-away listener
+  document.addEventListener('mousedown', handleClickAway)
 }
 
 function closeMenu() {
   showMenu.value = false
+  // Remove click-away listener
+  document.removeEventListener('mousedown', handleClickAway)
 }
+
+function handleClickAway(e) {
+  // Only close if menu is open
+  if (!showMenu.value) return
+  // Find the nav element
+  const nav = document.querySelector('nav')
+  if (nav && !nav.contains(e.target)) {
+    closeMenu()
+  }
+}
+
+// Click-away handler for menu
+function handleClickOutsideMenu(event) {
+  // Only close if menu is open
+  if (!showMenu.value) return
+  // Find the menu button and menu container
+  const nav = document.querySelector('nav')
+  // If click is outside nav, close menu
+  if (nav && !nav.contains(event.target)) {
+    closeMenu()
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('mousedown', handleClickOutsideMenu)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('mousedown', handleClickOutsideMenu)
+})
 
 // Reactive state
 const searchText = ref('')
@@ -401,6 +436,7 @@ onUnmounted(() => {
   // Clean up event listeners
   window.removeEventListener('resize', checkScreenSize)
   eventBus.off('update-search', updateSearchFromEvent)
+  document.removeEventListener('mousedown', handleClickAway)
 })
 </script>
 
