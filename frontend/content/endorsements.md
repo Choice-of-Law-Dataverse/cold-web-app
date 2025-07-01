@@ -2,15 +2,6 @@
 title: Endorsements — CoLD
 ---
 
-<img src="https://choiceoflawdataverse.blob.core.windows.net/assets/university-of-johannesburg-logo.svg" width="100"/>
-
-<a href="https://www.uj.ac.za/faculties/law/research-centre-for-private-international-law-in-emerging-countries/" target="_blank">**The Research Centre for Private International Law in Emerging Countries**<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
-    alt="external link"
-    class="external-link-icon"
-  /></a>  
-Led by Prof Jan L Neels and Prof Eesa A Fredericks (Project Partners), the Research Centre for Private International Law in Emerging Countries at the University of Johannesburg develops studies on the harmonization of international commercial law, most notably the African Principles on the Law Applicable to International Commercial Contracts.  
-<br><br><br>
 <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch-logo.svg" width="80"/>
 
 <a href="https://www.hcch.net/en/home" target="_blank">**The Hague Conference on Private International Law**<img
@@ -19,6 +10,16 @@ Led by Prof Jan L Neels and Prof Eesa A Fredericks (Project Partners), the Resea
     class="external-link-icon"
   /></a>  
 We count on the support of the Hague Conference on Private International Law (HCCH) and its wide network of specialists. This project will also follow the future work of the HCCH on the law applicable to international commercial contracts.
+<br><br><br>
+
+<img src="https://choiceoflawdataverse.blob.core.windows.net/assets/university-of-johannesburg-logo.svg" width="100"/>
+
+<a href="https://www.uj.ac.za/faculties/law/research-centre-for-private-international-law-in-emerging-countries/" target="_blank">**The Research Centre for Private International Law in Emerging Countries**<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a>  
+Led by Prof Jan L Neels and Prof Eesa A Fredericks (Project Partners), the Research Centre for Private International Law in Emerging Countries at the University of Johannesburg develops studies on the harmonization of international commercial law, most notably the African Principles on the Law Applicable to International Commercial Contracts.  
 <br><br><br>
 <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/universite-de-montreal-logo.svg" width="150"/>
 
