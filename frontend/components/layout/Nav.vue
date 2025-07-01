@@ -4,10 +4,12 @@
     :class="{ 'bg-purple-active': isExpanded }"
   >
     <div
-      class="mx-auto py-6"
+      class="mx-auto py-6 pt-8"
       style="max-width: var(--container-width); width: 100%"
     >
-      <div class="flex justify-between items-center space-x-4 sm:space-x-8">
+      <div
+        class="flex justify-between items-center space-x-4 sm:space-x-8 relative"
+      >
         <!-- Search Input -->
         <div class="search-container" :class="{ expanded: isExpanded }">
           <div class="search-input-row">
@@ -43,7 +45,7 @@
                   v-show="isExpanded"
                   style="opacity: 1; color: var(--color-cold-night) !important"
                   variant="link"
-                  icon="i-heroicons-x-mark-20-solid"
+                  icon="i-material-symbols:close"
                   :padded="false"
                   @mousedown.prevent
                   @click="clearSearch"
@@ -80,15 +82,17 @@
 
         <!-- Logo (Hidden when search is expanded) -->
         <!-- alpha Logo -->
-        <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
-          <a href="/">
-            <img
-              src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_alpha_logo.svg"
-              alt="CoLD Logo"
-              class="h-12 w-auto mb-4"
-            />
-          </a>
-        </div>
+        <a
+          v-if="!isExpanded"
+          href="/"
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center"
+        >
+          <img
+            src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_alpha_logo.svg"
+            alt="CoLD Logo"
+            class="h-12 w-auto mb-4"
+          />
+        </a>
         <!-- beta Logo -->
         <!-- <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
           <a href="/">
@@ -100,19 +104,55 @@
           </a>
         </div> -->
 
-        <!-- Navigation Links (Always visible) -->
-        <div v-if="!isExpanded" class="space-x-3 sm:space-x-6">
-          <ULink
-            v-for="(link, i) in links"
-            :key="i"
-            :to="link.to"
-            :class="[
-              'custom-nav-links',
-              { active: route.path.startsWith(link.to) },
-            ]"
-          >
-            <span>{{ link.label }}</span>
-          </ULink>
+        <!-- HCCHApproved and Menu/Links Row -->
+        <div v-if="!isExpanded" class="flex items-center space-x-4">
+          <HCCHApproved v-if="!showMenu" />
+          <template v-if="!showMenu">
+            <button class="menu-button custom-nav-links" @click="openMenu">
+              Menu
+            </button>
+          </template>
+          <template v-else>
+            <div class="space-x-3 sm:space-x-6 flex items-center">
+              <ULink
+                v-for="(link, i) in links"
+                :key="i"
+                :to="link.to"
+                :class="[
+                  'custom-nav-links',
+                  { active: route.path.startsWith(link.to) },
+                ]"
+                @click="closeMenu"
+              >
+                <span>{{ link.label }}</span>
+              </ULink>
+              <button
+                class="close-menu-button ml-2"
+                @click="closeMenu"
+                aria-label="Close menu"
+                style="
+                  background: none;
+                  border: none;
+                  cursor: pointer;
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  height: 2.5rem;
+                  width: 2.5rem;
+                  min-width: 2.5rem;
+                  min-height: 2.5rem;
+                  z-index: 10;
+                "
+              >
+                <span>
+                  <UIcon
+                    name="i-material-symbols:close"
+                    class="ml-[1em] mt-[0.3em] text-[1.3em]"
+                  />
+                </span>
+              </button>
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -122,6 +162,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import HCCHApproved from '../ui/HCCHApproved.vue'
 import eventBus from '@/eventBus'
 import jurisdictionsData from '@/assets/jurisdictions-data.json'
 // import your section‐nav configs:
@@ -139,6 +180,50 @@ const links = [
   { label: 'Learn', to: basePath(learnNavLinks) },
   { label: 'Contact', to: '/contact' },
 ]
+
+const showMenu = ref(false)
+
+function openMenu() {
+  showMenu.value = true
+  // Add click-away listener
+  document.addEventListener('mousedown', handleClickAway)
+}
+
+function closeMenu() {
+  showMenu.value = false
+  // Remove click-away listener
+  document.removeEventListener('mousedown', handleClickAway)
+}
+
+function handleClickAway(e) {
+  // Only close if menu is open
+  if (!showMenu.value) return
+  // Find the nav element
+  const nav = document.querySelector('nav')
+  if (nav && !nav.contains(e.target)) {
+    closeMenu()
+  }
+}
+
+// Click-away handler for menu
+function handleClickOutsideMenu(event) {
+  // Only close if menu is open
+  if (!showMenu.value) return
+  // Find the menu button and menu container
+  const nav = document.querySelector('nav')
+  // If click is outside nav, close menu
+  if (nav && !nav.contains(event.target)) {
+    closeMenu()
+  }
+}
+
+onMounted(() => {
+  document.addEventListener('mousedown', handleClickOutsideMenu)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('mousedown', handleClickOutsideMenu)
+})
 
 // Reactive state
 const searchText = ref('')
@@ -353,6 +438,7 @@ onUnmounted(() => {
   // Clean up event listeners
   window.removeEventListener('resize', checkScreenSize)
   eventBus.off('update-search', updateSearchFromEvent)
+  document.removeEventListener('mousedown', handleClickAway)
 })
 </script>
 
@@ -396,7 +482,6 @@ onUnmounted(() => {
 /* When expanded, span across available space */
 .search-container.expanded {
   width: 100%; /* Expand to full width */
-  padding-top: 0.625rem;
   padding-bottom: 0.625rem;
 }
 
@@ -483,6 +568,11 @@ a {
 .suggestion-text {
   font-weight: 500;
   color: var(--color-cold-night);
+}
+
+nav {
+  min-height: 7rem;
+  max-height: 7rem;
 }
 
 /* .suggestion-hint {
