@@ -18,7 +18,6 @@
         <UFormGroup size="lg" hint="Required" :error="errors.name">
           <template #label>
             <span class="label">Name</span>
-            <InfoTooltip :text="tooltipInternationalInstrumentName" />
           </template>
           <UInput
             v-model="name"
@@ -138,7 +137,6 @@ import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import DatePicker from '@/components/ui/DatePicker.vue'
 import CancelModal from '@/components/ui/CancelModal.vue'
 import SaveModal from '@/components/ui/SaveModal.vue'
-import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
 import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/international_instrument/specialists.md?raw'
 import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
 import tooltipInternationalInstrumentLink from '@/content/info_boxes/international_instrument/link.md?raw'

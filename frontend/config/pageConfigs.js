@@ -8,12 +8,7 @@
 // Literature Page
 
 // Tooltips for Literature Page
-import tooltipLiteratureAbstract from '@/content/info_boxes/literature/abstract.md?raw'
-import tooltipLiteratureAuthor from '@/content/info_boxes/literature/author.md?raw'
-import tooltipLiteratureEditor from '@/content/info_boxes/literature/editor.md?raw'
-import tooltipLiteraturePublication from '@/content/info_boxes/literature/publication.md?raw'
 import tooltipLiteraturePublisher from '@/content/info_boxes/literature/publisher.md?raw'
-import tooltipLiteratureTitle from '@/content/info_boxes/literature/title.md?raw'
 import tooltipLiteratureYear from '@/content/info_boxes/literature/year.md?raw'
 
 export const literatureConfig = {
@@ -21,7 +16,6 @@ export const literatureConfig = {
     {
       key: 'Title',
       label: 'Title',
-      tooltip: tooltipLiteratureTitle,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No title available',
@@ -29,8 +23,7 @@ export const literatureConfig = {
     },
     {
       key: 'Author',
-      label: 'Author',
-      tooltip: tooltipLiteratureAuthor,
+      label: 'Author(s)',
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No author available',
@@ -38,8 +31,7 @@ export const literatureConfig = {
     },
     {
       key: 'Editor',
-      label: 'Editor',
-      tooltip: tooltipLiteratureEditor,
+      label: 'Editor(s)',
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -56,7 +48,6 @@ export const literatureConfig = {
     {
       key: 'Publication Title',
       label: 'Publication',
-      tooltip: tooltipLiteraturePublication,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No publication available',
@@ -76,7 +67,6 @@ export const literatureConfig = {
     {
       key: 'Abstract Note',
       label: 'Abtract',
-      tooltip: tooltipLiteratureAbstract,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -101,7 +91,6 @@ export const literatureConfig = {
 import tooltipJurisdictionJurisdictionalDifferentiator from '@/content/info_boxes/jurisdiction/jurisdictional_differentiator.md?raw'
 import tooltipJurisdictionRelatedLiterature from '@/content/info_boxes/jurisdiction/related_literature.md?raw'
 import tooltipJurisdictionSpecialists from '@/content/info_boxes/jurisdiction/specialists.md?raw'
-import tooltipJurisdictionSummary from '@/content/info_boxes/jurisdiction/summary.md?raw'
 import tooltipJurisdictionRelatedData from '@/content/info_boxes/jurisdiction/related_data.md?raw'
 
 export const jurisdictionConfig = {
@@ -109,7 +98,6 @@ export const jurisdictionConfig = {
     {
       key: 'Jurisdiction Summary',
       label: 'Summary',
-      tooltip: tooltipJurisdictionSummary,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -159,7 +147,6 @@ export const jurisdictionConfig = {
 import tooltipQuestion from '@/content/info_boxes/question/question.md?raw'
 import tooltipAnswer from '@/content/info_boxes/question/answer.md?raw'
 import tooltipQuestionRelatedLiterature from '@/content/info_boxes/question/related_literature.md?raw'
-import tooltipMoreInformation from '@/content/info_boxes/question/more_information.md?raw'
 import tooltipSource from '@/content/info_boxes/question/source.md?raw'
 import tooltipOUPBookQuote from '@/content/info_boxes/question/oup_book_quote.md?raw'
 import tooltipRelatedCourtDecisions from '@/content/info_boxes/question/related_court_decisions.md?raw'
@@ -187,7 +174,6 @@ export const questionConfig = {
     {
       key: 'More Information',
       label: 'More Information',
-      tooltip: tooltipMoreInformation,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -242,16 +228,12 @@ export const questionConfig = {
 // Domestic Instrument Page (formerly Legal Instrument Page)
 // Tooltips for Domestic Instrument Page
 import tooltipAbbreviation from '@/content/info_boxes/domestic_instrument/abbreviation.md?raw'
-import tooltipAmendedBy from '@/content/info_boxes/domestic_instrument/amended_by.md?raw'
-import tooltipAmends from '@/content/info_boxes/domestic_instrument/amends.md?raw'
 import tooltipCompatibleHCCH from '@/content/info_boxes/domestic_instrument/compatible_hcch.md?raw'
 import tooltipCompatibleUncitral from '@/content/info_boxes/domestic_instrument/compatible_uncitral.md?raw'
 import tooltipDomesticInstrumentDate from '@/content/info_boxes/domestic_instrument/date.md?raw'
 import tooltipEntryIntoForce from '@/content/info_boxes/domestic_instrument/entry_into_force.md?raw'
 import tooltipOfficialTitle from '@/content/info_boxes/domestic_instrument/official_title.md?raw'
 import tooltipDomesticInstrumentPublicationDate from '@/content/info_boxes/domestic_instrument/publication_date.md?raw'
-import tooltipDomesticInstrumentReplacedBy from '@/content/info_boxes/domestic_instrument/replaced_by.md?raw'
-import tooltipDomesticInstrumentReplaces from '@/content/info_boxes/domestic_instrument/replaces.md?raw'
 import tooltipDomesticInstrumentSelectedProvisions from '@/content/info_boxes/domestic_instrument/selected_provisions.md?raw'
 import tooltipDomesticInstrumentTitle from '@/content/info_boxes/domestic_instrument/title.md?raw'
 
@@ -269,7 +251,6 @@ export const legalInstrumentConfig = {
     {
       key: 'Amended by',
       label: 'Amended by',
-      tooltip: tooltipAmendedBy,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -277,7 +258,6 @@ export const legalInstrumentConfig = {
     {
       key: 'Amends',
       label: 'Amends',
-      tooltip: tooltipAmends,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -285,7 +265,6 @@ export const legalInstrumentConfig = {
     {
       key: 'Replaces',
       label: 'Replaces',
-      tooltip: tooltipDomesticInstrumentReplaces,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -293,7 +272,6 @@ export const legalInstrumentConfig = {
     {
       key: 'Replaced by',
       label: 'Replaced by',
-      tooltip: tooltipDomesticInstrumentReplacedBy,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -396,25 +374,21 @@ export const legalInstrumentConfig = {
 
 // Regional Instrument Page
 // Tooltips for Regional Instrument Page
-import tooltipRegionalInstrumentAbbreviation from '@/content/info_boxes/regional_instrument/abbreviation.md?raw'
 import tooltipRegionalInstrumentDate from '@/content/info_boxes/regional_instrument/date.md?raw'
 import tooltipRegionalInstrumentRelatedLiterature from '@/content/info_boxes/regional_instrument/related_literature.md?raw'
 import tooltipRegionalInstrumentSelectedProvisions from '@/content/info_boxes/regional_instrument/selected_provisions.md?raw'
 import tooltipRegionalInstrumentSpecialists from '@/content/info_boxes/regional_instrument/specialists.md?raw'
-import tooltipRegionalInstrumentTitle from '@/content/info_boxes/regional_instrument/title.md?raw'
 
 export const regionalInstrumentConfig = {
   keyLabelPairs: [
     {
       key: 'Abbreviation',
       label: 'Abbreviation',
-      tooltip: tooltipRegionalInstrumentAbbreviation,
       emptyValueBehavior: { action: 'display', fallback: 'No title available' },
     },
     {
       key: 'Title',
       label: 'Title',
-      tooltip: tooltipRegionalInstrumentTitle,
       emptyValueBehavior: { action: 'hide' },
     },
     {
@@ -458,7 +432,6 @@ export const regionalInstrumentConfig = {
 
 // International Instrument Page
 // Tooltips for International Instrument Page
-import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
 import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
 import tooltipInternationalInstrumentRelatedLiterature from '@/content/info_boxes/international_instrument/related_literature.md?raw'
 import tooltipInternationalInstrumentSelectedProvisions from '@/content/info_boxes/international_instrument/selected_provisions.md?raw'
@@ -468,8 +441,7 @@ export const internationalInstrumentConfig = {
   keyLabelPairs: [
     {
       key: 'Name',
-      label: 'Name',
-      tooltip: tooltipInternationalInstrumentName,
+      label: 'Title',
       emptyValueBehavior: { action: 'display', fallback: 'No title available' },
     },
     {
@@ -519,7 +491,6 @@ import tooltipCaseTitle from '@/content/info_boxes/court_decision/case_title.md?
 import tooltipChoiceOfLawIssue from '@/content/info_boxes/court_decision/choice_of_law_issue.md?raw'
 import tooltipCourtsPosition from '@/content/info_boxes/court_decision/courts_position.md?raw'
 import tooltipDomesticLegalProvision from '@/content/info_boxes/court_decision/domestic_legal_provision.md?raw'
-import tooltipFullText from '@/content/info_boxes/court_decision/full_text.md?raw'
 import tooltipInstance from '@/content/info_boxes/court_decision/instance.md?raw'
 import tooltipJudgmentDate from '@/content/info_boxes/court_decision/judgment_date.md?raw'
 import tooltipPILProvisions from '@/content/info_boxes/court_decision/pil_provisions.md?raw'
@@ -652,7 +623,6 @@ export const courtDecisionConfig = {
     {
       key: 'Original Text',
       label: 'Full Text',
-      tooltip: tooltipFullText,
       emptyValueBehavior: {
         action: 'hide',
       },

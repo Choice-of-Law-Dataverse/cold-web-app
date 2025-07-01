@@ -253,7 +253,7 @@ export const internationalInstrumentCardConfig = {
   keyLabelPairs: [
     {
       key: 'Name',
-      label: 'Name',
+      label: 'Title',
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No title available',
@@ -295,7 +295,7 @@ export const literatureCardConfig = {
     },
     {
       key: 'Author',
-      label: 'Author',
+      label: 'Author(s)',
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No author available',
