@@ -43,7 +43,7 @@
                   v-show="isExpanded"
                   style="opacity: 1; color: var(--color-cold-night) !important"
                   variant="link"
-                  icon="i-heroicons-x-mark-20-solid"
+                  icon="i-material-symbols:close"
                   :padded="false"
                   @mousedown.prevent
                   @click="clearSearch"
