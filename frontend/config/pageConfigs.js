@@ -91,7 +91,6 @@ export const literatureConfig = {
 import tooltipJurisdictionJurisdictionalDifferentiator from '@/content/info_boxes/jurisdiction/jurisdictional_differentiator.md?raw'
 import tooltipJurisdictionRelatedLiterature from '@/content/info_boxes/jurisdiction/related_literature.md?raw'
 import tooltipJurisdictionSpecialists from '@/content/info_boxes/jurisdiction/specialists.md?raw'
-import tooltipJurisdictionSummary from '@/content/info_boxes/jurisdiction/summary.md?raw'
 import tooltipJurisdictionRelatedData from '@/content/info_boxes/jurisdiction/related_data.md?raw'
 
 export const jurisdictionConfig = {
@@ -99,7 +98,6 @@ export const jurisdictionConfig = {
     {
       key: 'Jurisdiction Summary',
       label: 'Summary',
-      tooltip: tooltipJurisdictionSummary,
       emptyValueBehavior: {
         action: 'hide',
       },
