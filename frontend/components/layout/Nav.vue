@@ -104,6 +104,8 @@
           </a>
         </div> -->
 
+        <HCCHApproved />
+
         <!-- Navigation Links replaced by Menu button -->
         <div v-if="!isExpanded">
           <template v-if="!showMenu">
@@ -161,6 +163,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
+import HCCHApproved from '../ui/HCCHApproved.vue'
 import eventBus from '@/eventBus'
 import jurisdictionsData from '@/assets/jurisdictions-data.json'
 // import your section‐nav configs:
