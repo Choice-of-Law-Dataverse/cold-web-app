@@ -8,12 +8,7 @@
 // Literature Page
 
 // Tooltips for Literature Page
-import tooltipLiteratureAbstract from '@/content/info_boxes/literature/abstract.md?raw'
-import tooltipLiteratureAuthor from '@/content/info_boxes/literature/author.md?raw'
-import tooltipLiteratureEditor from '@/content/info_boxes/literature/editor.md?raw'
-import tooltipLiteraturePublication from '@/content/info_boxes/literature/publication.md?raw'
 import tooltipLiteraturePublisher from '@/content/info_boxes/literature/publisher.md?raw'
-import tooltipLiteratureTitle from '@/content/info_boxes/literature/title.md?raw'
 import tooltipLiteratureYear from '@/content/info_boxes/literature/year.md?raw'
 
 export const literatureConfig = {
@@ -21,7 +16,6 @@ export const literatureConfig = {
     {
       key: 'Title',
       label: 'Title',
-      tooltip: tooltipLiteratureTitle,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No title available',
@@ -30,7 +24,6 @@ export const literatureConfig = {
     {
       key: 'Author',
       label: 'Author',
-      tooltip: tooltipLiteratureAuthor,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No author available',
@@ -39,7 +32,6 @@ export const literatureConfig = {
     {
       key: 'Editor',
       label: 'Editor',
-      tooltip: tooltipLiteratureEditor,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -56,7 +48,6 @@ export const literatureConfig = {
     {
       key: 'Publication Title',
       label: 'Publication',
-      tooltip: tooltipLiteraturePublication,
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No publication available',
@@ -76,7 +67,6 @@ export const literatureConfig = {
     {
       key: 'Abstract Note',
       label: 'Abtract',
-      tooltip: tooltipLiteratureAbstract,
       emptyValueBehavior: {
         action: 'hide',
       },
