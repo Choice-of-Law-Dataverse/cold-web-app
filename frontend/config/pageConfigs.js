@@ -450,7 +450,6 @@ export const regionalInstrumentConfig = {
 
 // International Instrument Page
 // Tooltips for International Instrument Page
-import tooltipInternationalInstrumentName from '@/content/info_boxes/international_instrument/name.md?raw'
 import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
 import tooltipInternationalInstrumentRelatedLiterature from '@/content/info_boxes/international_instrument/related_literature.md?raw'
 import tooltipInternationalInstrumentSelectedProvisions from '@/content/info_boxes/international_instrument/selected_provisions.md?raw'
@@ -461,7 +460,6 @@ export const internationalInstrumentConfig = {
     {
       key: 'Name',
       label: 'Name',
-      tooltip: tooltipInternationalInstrumentName,
       emptyValueBehavior: { action: 'display', fallback: 'No title available' },
     },
     {
