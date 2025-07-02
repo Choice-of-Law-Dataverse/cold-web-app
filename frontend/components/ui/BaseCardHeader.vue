@@ -13,7 +13,7 @@
         <NuxtLink
           v-for="(jurisdictionString, index) in formattedJurisdiction"
           :key="`jurisdiction-${index}`"
-          class="label-jurisdiction cursor-pointer"
+          class="label-jurisdiction cursor-pointer label-link"
           :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString)}`"
         >
           <img
@@ -500,5 +500,11 @@ const legalFamily = computed(() => {
 
 a {
   font-weight: 600 !important;
+}
+
+/* Preserve label color for clickable jurisdiction links */
+.label-link {
+  color: var(--color-cold-night) !important;
+  font-weight: 700 !important;
 }
 </style>
