@@ -144,7 +144,7 @@
                 Learn How the Search Works
               </UButton>
               <UIcon
-                name="i-material-symbols:play-arrow"
+                name="i-material-symbols:open-in-new"
                 class="inline-block ml-[-6px]"
                 style="
                   color: var(--color-cold-purple);
