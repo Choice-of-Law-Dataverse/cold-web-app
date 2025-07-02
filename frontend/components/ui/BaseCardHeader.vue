@@ -10,10 +10,11 @@
         class="tags-container flex items-center overflow-x-auto scrollbar-hidden"
       >
         <!-- Display 'Name (from Jurisdiction)' or alternatives -->
-        <span
+        <NuxtLink
           v-for="(jurisdictionString, index) in formattedJurisdiction"
           :key="`jurisdiction-${index}`"
-          class="label-jurisdiction"
+          class="label-jurisdiction cursor-pointer"
+          :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString)}`"
         >
           <img
             v-if="!erroredImages[jurisdictionString]"
@@ -23,7 +24,7 @@
             @error="handleImageError(erroredImages, jurisdictionString)"
           />
           {{ jurisdictionString }}
-        </span>
+        </NuxtLink>
         <!-- Legal Family next to jurisdiction name -->
         <span
           v-for="(family, index) in legalFamily"
