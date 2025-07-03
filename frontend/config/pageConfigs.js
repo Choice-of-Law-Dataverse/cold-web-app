@@ -522,6 +522,15 @@ export const courtDecisionConfig = {
       },
     },
     {
+      key: 'Case Citation',
+      label: 'Suggested Case Citation',
+      tooltip: tooltipCaseCitation,
+      emptyValueBehavior: {
+        action: 'display',
+        fallback: 'No case citation available',
+      },
+    },
+    {
       key: 'Publication Date ISO',
       label: 'Publication Date',
       tooltip: tooltipPublicationDate,
@@ -609,15 +618,6 @@ export const courtDecisionConfig = {
       tooltip: tooltipQuote,
       emptyValueBehavior: {
         action: 'hide',
-      },
-    },
-    {
-      key: 'Case Citation',
-      label: 'Suggested Case Citation',
-      tooltip: tooltipCaseCitation,
-      emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No case citation available',
       },
     },
     {
