@@ -522,6 +522,15 @@ export const courtDecisionConfig = {
       },
     },
     {
+      key: 'Case Citation',
+      label: 'Suggested Case Citation',
+      tooltip: tooltipCaseCitation,
+      emptyValueBehavior: {
+        action: 'display',
+        fallback: 'No case citation available',
+      },
+    },
+    {
       key: 'Publication Date ISO',
       label: 'Publication Date',
       tooltip: tooltipPublicationDate,
@@ -612,25 +621,8 @@ export const courtDecisionConfig = {
       },
     },
     {
-      key: 'Case Citation',
-      label: 'Case Citation',
-      tooltip: tooltipCaseCitation,
-      emptyValueBehavior: {
-        action: 'display',
-        fallback: 'No case citation available',
-      },
-    },
-    {
       key: 'Original Text',
       label: 'Full Text',
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-    },
-    {
-      key: 'Related Literature',
-      label: 'Related Literature',
-      tooltip: tooltipCourtDecisionRelatedLiterature,
       emptyValueBehavior: {
         action: 'hide',
       },
@@ -639,6 +631,14 @@ export const courtDecisionConfig = {
       key: 'Related Questions',
       label: 'Related Questions',
       tooltip: tooltipRelatedQuestions,
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Related Literature',
+      label: 'Related Literature',
+      tooltip: tooltipCourtDecisionRelatedLiterature,
       emptyValueBehavior: {
         action: 'hide',
       },

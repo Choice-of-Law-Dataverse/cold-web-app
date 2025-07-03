@@ -132,6 +132,50 @@
         />
       </section>
     </template>
+
+    <!-- Custom rendering for Full Text (Original Text) section -->
+<template #['original-text']="{ value }">
+  <section v-if="value && value.trim() !== ''" class="section-gap p-0 m-0">
+    <div class="flex items-center mb-2 mt-12">
+      <span class="label">
+        {{
+          computedKeyLabelPairs.find((pair) => pair.key === 'Original Text')?.label || 'Full Text'
+        }}
+      </span>
+    </div>
+    <div :class="valueClassMap['Original Text']">
+      <span v-if="!showFullText && value.length > 400">
+        {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
+        <div>
+          <NuxtLink class="ml-2 cursor-pointer" @click="showFullText = true">
+            <Icon name="material-symbols:add" :class="iconClass" />
+            Show entire full text
+          </NuxtLink>
+        </div>
+      </span>
+      <span v-else>
+        {{ value }}
+        <div>
+          <NuxtLink v-if="value.length > 400" class="ml-2 cursor-pointer" @click="showFullText = false">
+            <Icon name="material-symbols:remove" :class="iconClass" />
+            Show less
+          </NuxtLink>
+        </div>
+      </span>
+      <div>
+        <a
+          class="ml-2"
+          :href="downloadPDFLink"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon name="i-material-symbols:arrow-circle-down-outline" :class="iconClass" />
+          <span class="ml-1">Download the case as a PDF</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</template>
   </BaseDetailLayout>
 
   <!-- Error Alert -->
@@ -146,9 +190,8 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ref } from 'vue'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import RelatedQuestions from '@/components/legal/RelatedQuestions.vue'
@@ -160,6 +203,13 @@ import { courtDecisionConfig } from '@/config/pageConfigs'
 import { formatDate } from '@/utils/format.js'
 import { useHead } from '#imports'
 
+defineProps({
+  iconClass: {
+    type: String,
+    default: 'text-base translate-y-[3px] mt-2 ml-[-12px]',
+  },
+})
+
 const route = useRoute()
 const router = useRouter()
 const { loading, error, data: courtDecision, fetchData } = useApiFetch()
@@ -168,12 +218,6 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   courtDecision,
   courtDecisionConfig
 )
-
-// Debug the court decision data and configuration
-watch(courtDecision, (newValue) => {
-  if (newValue) {
-  }
-})
 
 const themes = computed(() => {
   if (!courtDecision.value) return ''
@@ -208,6 +252,18 @@ const hasEnglishQuoteTranslation = computed(() => {
     modifiedCourtDecision.value['Translated Excerpt'] &&
     modifiedCourtDecision.value['Translated Excerpt'].trim() !== ''
   )
+})
+
+// For Full Text show more/less
+const showFullText = ref(false)
+
+// PDF download link logic (same as BaseCardHeader.vue)
+const downloadPDFLink = computed(() => {
+  const segments = route.path.split('/').filter(Boolean)
+  const contentType = segments[0] || 'unknown'
+  const id = segments[1] || ''
+  const folder = `${contentType}s`
+  return `https://choiceoflawdataverse.blob.core.windows.net/${folder}/${id}.pdf`
 })
 
 const fetchCourtDecision = async () => {
