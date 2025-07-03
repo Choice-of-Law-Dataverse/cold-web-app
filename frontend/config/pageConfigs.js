@@ -628,17 +628,17 @@ export const courtDecisionConfig = {
       },
     },
     {
-      key: 'Related Literature',
-      label: 'Related Literature',
-      tooltip: tooltipCourtDecisionRelatedLiterature,
+      key: 'Related Questions',
+      label: 'Related Questions',
+      tooltip: tooltipRelatedQuestions,
       emptyValueBehavior: {
         action: 'hide',
       },
     },
     {
-      key: 'Related Questions',
-      label: 'Related Questions',
-      tooltip: tooltipRelatedQuestions,
+      key: 'Related Literature',
+      label: 'Related Literature',
+      tooltip: tooltipCourtDecisionRelatedLiterature,
       emptyValueBehavior: {
         action: 'hide',
       },
