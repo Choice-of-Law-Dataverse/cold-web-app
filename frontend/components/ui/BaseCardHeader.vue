@@ -26,26 +26,32 @@
           {{ jurisdictionString }}
         </NuxtLink>
         <!-- Legal Family next to jurisdiction name -->
-        <span
+        <NuxtLink
           v-for="(family, index) in legalFamily"
           :key="`legal-family-${index}`"
-          class="label-theme"
+          class="label-theme cursor-pointer label-link"
+          :to="
+            '/search?type=' + encodeURIComponent(family).replace(/%20/g, '+')
+          "
         >
           {{ family }}
-        </span>
+        </NuxtLink>
         <!-- Display 'source_table' -->
         <span v-if="adjustedSourceTable" :class="['label', labelColorClass]">
           {{ adjustedSourceTable }}
         </span>
 
         <!-- Display 'Themes' -->
-        <span
+        <NuxtLink
           v-for="(theme, index) in formattedTheme"
           :key="`theme-${index}`"
-          class="label-theme"
+          class="label-theme cursor-pointer label-link"
+          :to="
+            '/search?theme=' + encodeURIComponent(theme).replace(/%20/g, '+')
+          "
         >
           {{ theme }}
-        </span>
+        </NuxtLink>
       </div>
 
       <!-- Fade-out effect -->
