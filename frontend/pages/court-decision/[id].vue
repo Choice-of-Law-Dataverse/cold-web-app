@@ -161,9 +161,14 @@
                 <Icon name="material-symbols:remove" :class="iconClass" />
                 Show less
               </NuxtLink>
-            </div>
-            
+            </div>            
           </span>
+          <div>
+            <NuxtLink class="ml-2 cursor-pointer" >
+              <Icon name="i-material-symbols:arrow-circle-down-outline" :class="iconClass" />
+              Download the case’s PDF
+            </NuxtLink>
+          </div>
         </div>
       </section>
     </template>
