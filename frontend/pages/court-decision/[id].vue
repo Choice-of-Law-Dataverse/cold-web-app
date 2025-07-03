@@ -132,6 +132,22 @@
         />
       </section>
     </template>
+
+    <!-- Custom rendering for Full Text (Original Text) section -->
+    <template #['original-text']="{ value }">
+      <section class="section-gap p-0 m-0">
+        <div :class="valueClassMap['Original Text']">
+          <span v-if="!showFullText && value && value.length > 200">
+            {{ value.slice(0, 200) }}<span v-if="value.length > 200">...</span>
+            <button class="ml-2 text-blue-600 underline cursor-pointer" @click="showFullText = true">Show more</button>
+          </span>
+          <span v-else-if="value">
+            {{ value }}
+            <button v-if="value.length > 200" class="ml-2 text-blue-600 underline cursor-pointer" @click="showFullText = false">Show less</button>
+          </span>
+        </div>
+      </section>
+    </template>
   </BaseDetailLayout>
 
   <!-- Error Alert -->
@@ -146,9 +162,8 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue'
+import { computed, onMounted, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ref } from 'vue'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import RelatedQuestions from '@/components/legal/RelatedQuestions.vue'
@@ -168,12 +183,6 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   courtDecision,
   courtDecisionConfig
 )
-
-// Debug the court decision data and configuration
-watch(courtDecision, (newValue) => {
-  if (newValue) {
-  }
-})
 
 const themes = computed(() => {
   if (!courtDecision.value) return ''
@@ -209,6 +218,9 @@ const hasEnglishQuoteTranslation = computed(() => {
     modifiedCourtDecision.value['Translated Excerpt'].trim() !== ''
   )
 })
+
+// For Full Text show more/less
+const showFullText = ref(false)
 
 const fetchCourtDecision = async () => {
   try {
