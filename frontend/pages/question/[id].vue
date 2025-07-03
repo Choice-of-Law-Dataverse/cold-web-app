@@ -104,6 +104,7 @@
       </section>
     </template>
   </BaseDetailLayout>
+  <CountryReportLink />
 </template>
 
 <script setup>
@@ -113,6 +114,7 @@ import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import CourtDecisionRenderer from '@/components/legal/CourtDecisionRenderer.vue'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import QuestionSourceList from '@/components/sources/QuestionSourceList.vue'
+import CountryReportLink from '@/components/ui/CountryReportLink.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import { useQuestion } from '@/composables/useQuestion'
 import { questionConfig } from '@/config/pageConfigs'
