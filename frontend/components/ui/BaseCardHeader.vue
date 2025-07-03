@@ -14,7 +14,7 @@
           v-for="(jurisdictionString, index) in formattedJurisdiction"
           :key="`jurisdiction-${index}`"
           class="label-jurisdiction cursor-pointer jurisdiction-label-link"
-          :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString)}`"
+          :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString).replace(/%20/g, '+')}`"
         >
           <img
             v-if="!erroredImages[jurisdictionString]"
