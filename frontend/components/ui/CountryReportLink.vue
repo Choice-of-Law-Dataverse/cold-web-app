@@ -7,8 +7,21 @@
             <!-- Title Section -->
             <div>
               <h3 class="text-left md:whitespace-nowrap">
-                Go to the country report for
-                {{ processedAnswerData?.Jurisdictions || 'this jurisdiction' }}
+                <NuxtLink
+                  v-if="processedAnswerData?.['Jurisdictions Alpha-3 code']"
+                  :to="`/jurisdiction/${processedAnswerData['Jurisdictions Alpha-3 code'].toLowerCase()}`"
+                >
+                  Go to the country report for
+                  {{
+                    processedAnswerData?.Jurisdictions || 'this jurisdiction'
+                  }}
+                </NuxtLink>
+                <span v-else>
+                  Go to the country report for
+                  {{
+                    processedAnswerData?.Jurisdictions || 'this jurisdiction'
+                  }}
+                </span>
               </h3>
             </div>
           </div>
