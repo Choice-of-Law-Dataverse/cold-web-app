@@ -38,7 +38,9 @@
           v-if="adjustedSourceTable"
           :to="
             '/search?type=' +
-            encodeURIComponent(adjustedSourceTable).replace(/%20/g, '+')
+            encodeURIComponent(
+              getSourceTablePlural(adjustedSourceTable)
+            ).replace(/%20/g, '+')
           "
           :class="[
             'label',
@@ -442,6 +444,16 @@ const legalFamily = computed(() => {
   }
   return []
 })
+
+// Pluralize source table label for URL function
+function getSourceTablePlural(label) {
+  if (label === 'Court Decision') return 'Court Decisions'
+  if (label === 'Domestic Instrument') return 'Domestic Instruments'
+  if (label === 'Regional Instrument') return 'Regional Instruments'
+  if (label === 'International Instrument') return 'International Instruments'
+  if (label === 'Question') return 'Questions'
+  return label
+}
 </script>
 
 <style scoped>
