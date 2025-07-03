@@ -165,7 +165,7 @@
           </span>
           <div>
             <a
-              class="ml-2 cursor-pointer text-blue-600 underline flex items-center"
+              class="ml-2"
               :href="downloadPDFLink"
               target="_blank"
               rel="noopener noreferrer"
