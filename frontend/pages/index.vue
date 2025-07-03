@@ -26,6 +26,9 @@
         <div class="col-span-12">
           <JurisdictionMap />
         </div>
+        <div class="col-span-12">
+          <CountrySelectMenu />
+        </div>
         <div class="col-span-12 md:col-span-8">
           <SuccessfulLegalTransplantations />
         </div>
@@ -39,11 +42,8 @@
             :newTab="false"
           />
         </div>
-        <div class="col-span-12 sm:col-span-6">
+        <div class="col-span-12">
           <PopularSearches />
-        </div>
-        <div class="col-span-12 md:col-span-6">
-          <CountrySelectMenu />
         </div>
         <div class="col-span-12 sm:col-span-4">
           <NumberCard
