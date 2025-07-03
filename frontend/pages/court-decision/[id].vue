@@ -136,7 +136,7 @@
     <!-- Custom rendering for Full Text (Original Text) section -->
     <template #['original-text']="{ value }">
       <section class="section-gap p-0 m-0">
-        <div class="flex items-center mb-2">
+        <div class="flex items-center mb-2 mt-12">
           <span class="label">
             {{
               computedKeyLabelPairs.find((pair) => pair.key === 'Original Text')?.label || 'Full Text'
@@ -144,13 +144,25 @@
           </span>
         </div>
         <div :class="valueClassMap['Original Text']">
-          <span v-if="!showFullText && value && value.length > 200">
-            {{ value.slice(0, 200) }}<span v-if="value.length > 200">...</span>
-            <button class="ml-2 text-blue-600 underline cursor-pointer" @click="showFullText = true">Show more</button>
+          <span v-if="!showFullText && value && value.length > 400">
+            {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
+            <div>
+              <NuxtLink class="ml-2 cursor-pointer" @click="showFullText = true">
+                <Icon name="material-symbols:add" :class="iconClass" />
+                Show entire full text
+              </NuxtLink>
+            </div>
+            
           </span>
           <span v-else-if="value">
             {{ value }}
-            <button v-if="value.length > 200" class="ml-2 text-blue-600 underline cursor-pointer" @click="showFullText = false">Show less</button>
+            <div>
+              <NuxtLink v-if="value.length > 400" class="ml-2 cursor-pointer" @click="showFullText = false">
+                <Icon name="material-symbols:remove" :class="iconClass" />
+                Show less
+              </NuxtLink>
+            </div>
+            
           </span>
         </div>
       </section>
@@ -181,6 +193,13 @@ import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { courtDecisionConfig } from '@/config/pageConfigs'
 import { formatDate } from '@/utils/format.js'
 import { useHead } from '#imports'
+
+defineProps({
+  iconClass: {
+    type: String,
+    default: 'text-base translate-y-[3px] mt-2 ml-[-12px]',
+  },
+})
 
 const route = useRoute()
 const router = useRouter()
