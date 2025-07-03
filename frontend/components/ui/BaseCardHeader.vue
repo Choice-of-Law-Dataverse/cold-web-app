@@ -26,20 +26,29 @@
           {{ jurisdictionString }}
         </NuxtLink>
         <!-- Legal Family next to jurisdiction name -->
-        <NuxtLink
+        <span
           v-for="(family, index) in legalFamily"
           :key="`legal-family-${index}`"
-          class="label-theme cursor-pointer label-link"
-          :to="
-            '/search?type=' + encodeURIComponent(family).replace(/%20/g, '+')
-          "
+          class="label-theme"
         >
           {{ family }}
-        </NuxtLink>
-        <!-- Display 'source_table' -->
-        <span v-if="adjustedSourceTable" :class="['label', labelColorClass]">
-          {{ adjustedSourceTable }}
         </span>
+        <!-- Display 'source_table' -->
+        <NuxtLink
+          v-if="adjustedSourceTable"
+          :to="
+            '/search?type=' +
+            encodeURIComponent(adjustedSourceTable).replace(/%20/g, '+')
+          "
+          :class="[
+            'label',
+            labelColorClass,
+            'cursor-pointer',
+            'source-table-label-link',
+          ]"
+        >
+          {{ adjustedSourceTable }}
+        </NuxtLink>
 
         <!-- Display 'Themes' -->
         <NuxtLink
@@ -517,5 +526,27 @@ a {
 .theme-label-link {
   color: var(--color-cold-night-alpha) !important;
   font-weight: 700 !important;
+}
+
+.source-table-label-link {
+  font-weight: 700 !important;
+}
+
+/* Ensure NuxtLink.label-court-decision, etc. use the correct color even as a link */
+.label-court-decision,
+a.label-court-decision {
+  color: var(--color-label-court-decision) !important;
+}
+.label-question,
+a.label-question {
+  color: var(--color-label-question) !important;
+}
+.label-domestic-instrument,
+a.label-domestic-instrument {
+  color: var(--color-label-domestic-instrument) !important;
+}
+.label-literature,
+a.label-literature {
+  color: var(--color-label-literature) !important;
 }
 </style>
