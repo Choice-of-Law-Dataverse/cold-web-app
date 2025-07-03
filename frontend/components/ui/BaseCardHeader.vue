@@ -13,7 +13,7 @@
         <NuxtLink
           v-for="(jurisdictionString, index) in formattedJurisdiction"
           :key="`jurisdiction-${index}`"
-          class="label-jurisdiction cursor-pointer label-link"
+          class="label-jurisdiction cursor-pointer jurisdiction-label-link"
           :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString)}`"
         >
           <img
@@ -45,7 +45,7 @@
         <NuxtLink
           v-for="(theme, index) in formattedTheme"
           :key="`theme-${index}`"
-          class="label-theme cursor-pointer label-link"
+          class="label-theme cursor-pointer theme-label-link"
           :to="
             '/search?theme=' + encodeURIComponent(theme).replace(/%20/g, '+')
           "
@@ -509,8 +509,13 @@ a {
 }
 
 /* Preserve label color for clickable jurisdiction links */
-.label-link {
+.jurisdiction-label-link {
   color: var(--color-cold-night) !important;
+  font-weight: 700 !important;
+}
+
+.theme-label-link {
+  color: var(--color-cold-night-alpha) !important;
   font-weight: 700 !important;
 }
 </style>
