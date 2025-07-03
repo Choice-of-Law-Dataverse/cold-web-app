@@ -134,49 +134,48 @@
     </template>
 
     <!-- Custom rendering for Full Text (Original Text) section -->
-    <template #['original-text']="{ value }">
-      <section class="section-gap p-0 m-0">
-        <div class="flex items-center mb-2 mt-12">
-          <span class="label">
-            {{
-              computedKeyLabelPairs.find((pair) => pair.key === 'Original Text')?.label || 'Full Text'
-            }}
-          </span>
+<template #['original-text']="{ value }">
+  <section v-if="value && value.trim() !== ''" class="section-gap p-0 m-0">
+    <div class="flex items-center mb-2 mt-12">
+      <span class="label">
+        {{
+          computedKeyLabelPairs.find((pair) => pair.key === 'Original Text')?.label || 'Full Text'
+        }}
+      </span>
+    </div>
+    <div :class="valueClassMap['Original Text']">
+      <span v-if="!showFullText && value.length > 400">
+        {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
+        <div>
+          <NuxtLink class="ml-2 cursor-pointer" @click="showFullText = true">
+            <Icon name="material-symbols:add" :class="iconClass" />
+            Show entire full text
+          </NuxtLink>
         </div>
-        <div :class="valueClassMap['Original Text']">
-          <span v-if="!showFullText && value && value.length > 400">
-            {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
-            <div>
-              <NuxtLink class="ml-2 cursor-pointer" @click="showFullText = true">
-                <Icon name="material-symbols:add" :class="iconClass" />
-                Show entire full text
-              </NuxtLink>
-            </div>
-            
-          </span>
-          <span v-else-if="value">
-            {{ value }}
-            <div>
-              <NuxtLink v-if="value.length > 400" class="ml-2 cursor-pointer" @click="showFullText = false">
-                <Icon name="material-symbols:remove" :class="iconClass" />
-                Show less
-              </NuxtLink>
-            </div>            
-          </span>
-          <div>
-            <a
-              class="ml-2"
-              :href="downloadPDFLink"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <Icon name="i-material-symbols:arrow-circle-down-outline" :class="iconClass" />
-              <span class="ml-1">Download the case’s PDF</span>
-            </a>
-          </div>
+      </span>
+      <span v-else>
+        {{ value }}
+        <div>
+          <NuxtLink v-if="value.length > 400" class="ml-2 cursor-pointer" @click="showFullText = false">
+            <Icon name="material-symbols:remove" :class="iconClass" />
+            Show less
+          </NuxtLink>
         </div>
-      </section>
-    </template>
+      </span>
+      <div>
+        <a
+          class="ml-2"
+          :href="downloadPDFLink"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon name="i-material-symbols:arrow-circle-down-outline" :class="iconClass" />
+          <span class="ml-1">Download the case as a PDF</span>
+        </a>
+      </div>
+    </div>
+  </section>
+</template>
   </BaseDetailLayout>
 
   <!-- Error Alert -->
