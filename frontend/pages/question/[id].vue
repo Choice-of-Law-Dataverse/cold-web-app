@@ -104,7 +104,7 @@
       </section>
     </template>
   </BaseDetailLayout>
-  <CountryReportLink />
+  <CountryReportLink :processedAnswerData="processedAnswerData" />
 </template>
 
 <script setup>

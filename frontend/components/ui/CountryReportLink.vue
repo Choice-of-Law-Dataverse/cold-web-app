@@ -7,7 +7,8 @@
             <!-- Title Section -->
             <div>
               <h3 class="text-left md:whitespace-nowrap">
-                Go to the country report for [jurisdiction]
+                Go to the country report for
+                {{ processedAnswerData?.Jurisdictions || 'this jurisdiction' }}
               </h3>
             </div>
           </div>
@@ -17,6 +18,14 @@
   </main>
 </template>
 
-<script setup></script>
+<script setup>
+// Accept processedAnswerData as a prop from parent
+defineProps({
+  processedAnswerData: {
+    type: Object,
+    required: true,
+  },
+})
+</script>
 
 <style scoped></style>
