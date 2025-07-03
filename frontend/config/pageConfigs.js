@@ -613,7 +613,7 @@ export const courtDecisionConfig = {
     },
     {
       key: 'Case Citation',
-      label: 'Case Citation',
+      label: 'Suggested Case Citation',
       tooltip: tooltipCaseCitation,
       emptyValueBehavior: {
         action: 'display',
