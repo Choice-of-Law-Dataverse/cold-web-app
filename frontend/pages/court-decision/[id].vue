@@ -164,10 +164,15 @@
             </div>            
           </span>
           <div>
-            <NuxtLink class="ml-2 cursor-pointer" >
+            <a
+              class="ml-2 cursor-pointer text-blue-600 underline flex items-center"
+              :href="downloadPDFLink"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <Icon name="i-material-symbols:arrow-circle-down-outline" :class="iconClass" />
-              Download the case’s PDF
-            </NuxtLink>
+              <span class="ml-1">Download the case’s PDF</span>
+            </a>
           </div>
         </div>
       </section>
@@ -252,6 +257,15 @@ const hasEnglishQuoteTranslation = computed(() => {
 
 // For Full Text show more/less
 const showFullText = ref(false)
+
+// PDF download link logic (same as BaseCardHeader.vue)
+const downloadPDFLink = computed(() => {
+  const segments = route.path.split('/').filter(Boolean)
+  const contentType = segments[0] || 'unknown'
+  const id = segments[1] || ''
+  const folder = `${contentType}s`
+  return `https://choiceoflawdataverse.blob.core.windows.net/${folder}/${id}.pdf`
+})
 
 const fetchCourtDecision = async () => {
   try {
