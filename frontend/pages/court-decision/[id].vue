@@ -136,6 +136,13 @@
     <!-- Custom rendering for Full Text (Original Text) section -->
     <template #['original-text']="{ value }">
       <section class="section-gap p-0 m-0">
+        <div class="flex items-center mb-2">
+          <span class="label">
+            {{
+              computedKeyLabelPairs.find((pair) => pair.key === 'Original Text')?.label || 'Full Text'
+            }}
+          </span>
+        </div>
         <div :class="valueClassMap['Original Text']">
           <span v-if="!showFullText && value && value.length > 200">
             {{ value.slice(0, 200) }}<span v-if="value.length > 200">...</span>
