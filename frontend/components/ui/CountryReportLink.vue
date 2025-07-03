@@ -41,4 +41,8 @@ defineProps({
 })
 </script>
 
-<style scoped></style>
+<style scoped>
+h3 {
+  color: var(--color-cold-purple) !important;
+}
+</style>
