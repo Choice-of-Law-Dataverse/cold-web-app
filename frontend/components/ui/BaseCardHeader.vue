@@ -10,10 +10,11 @@
         class="tags-container flex items-center overflow-x-auto scrollbar-hidden"
       >
         <!-- Display 'Name (from Jurisdiction)' or alternatives -->
-        <span
+        <NuxtLink
           v-for="(jurisdictionString, index) in formattedJurisdiction"
           :key="`jurisdiction-${index}`"
-          class="label-jurisdiction"
+          class="label-jurisdiction cursor-pointer jurisdiction-label-link"
+          :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString).replace(/%20/g, '+')}`"
         >
           <img
             v-if="!erroredImages[jurisdictionString]"
@@ -23,7 +24,7 @@
             @error="handleImageError(erroredImages, jurisdictionString)"
           />
           {{ jurisdictionString }}
-        </span>
+        </NuxtLink>
         <!-- Legal Family next to jurisdiction name -->
         <span
           v-for="(family, index) in legalFamily"
@@ -33,18 +34,35 @@
           {{ family }}
         </span>
         <!-- Display 'source_table' -->
-        <span v-if="adjustedSourceTable" :class="['label', labelColorClass]">
+        <NuxtLink
+          v-if="adjustedSourceTable"
+          :to="
+            '/search?type=' +
+            encodeURIComponent(
+              getSourceTablePlural(adjustedSourceTable)
+            ).replace(/%20/g, '+')
+          "
+          :class="[
+            'label',
+            labelColorClass,
+            'cursor-pointer',
+            'source-table-label-link',
+          ]"
+        >
           {{ adjustedSourceTable }}
-        </span>
+        </NuxtLink>
 
         <!-- Display 'Themes' -->
-        <span
+        <NuxtLink
           v-for="(theme, index) in formattedTheme"
           :key="`theme-${index}`"
-          class="label-theme"
+          class="label-theme cursor-pointer theme-label-link"
+          :to="
+            '/search?theme=' + encodeURIComponent(theme).replace(/%20/g, '+')
+          "
         >
           {{ theme }}
-        </span>
+        </NuxtLink>
       </div>
 
       <!-- Fade-out effect -->
@@ -426,6 +444,16 @@ const legalFamily = computed(() => {
   }
   return []
 })
+
+// Pluralize source table label for URL function
+function getSourceTablePlural(label) {
+  if (label === 'Court Decision') return 'Court Decisions'
+  if (label === 'Domestic Instrument') return 'Domestic Instruments'
+  if (label === 'Regional Instrument') return 'Regional Instruments'
+  if (label === 'International Instrument') return 'International Instruments'
+  if (label === 'Question') return 'Questions'
+  return label
+}
 </script>
 
 <style scoped>
@@ -499,5 +527,38 @@ const legalFamily = computed(() => {
 
 a {
   font-weight: 600 !important;
+}
+
+/* Preserve label color for clickable jurisdiction links */
+.jurisdiction-label-link {
+  color: var(--color-cold-night) !important;
+  font-weight: 700 !important;
+}
+
+.theme-label-link {
+  color: var(--color-cold-night-alpha) !important;
+  font-weight: 700 !important;
+}
+
+.source-table-label-link {
+  font-weight: 700 !important;
+}
+
+/* Ensure NuxtLink.label-court-decision, etc. use the correct color even as a link */
+.label-court-decision,
+a.label-court-decision {
+  color: var(--color-label-court-decision) !important;
+}
+.label-question,
+a.label-question {
+  color: var(--color-label-question) !important;
+}
+.label-domestic-instrument,
+a.label-domestic-instrument {
+  color: var(--color-label-domestic-instrument) !important;
+}
+.label-literature,
+a.label-literature {
+  color: var(--color-label-literature) !important;
 }
 </style>
