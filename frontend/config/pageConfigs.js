@@ -249,6 +249,24 @@ export const legalInstrumentConfig = {
       },
     },
     {
+      key: 'Compatible With the UNCITRAL Model Law?',
+      label: 'Compatible With',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+      valueTransform: (val) =>
+        val === true || val === 'true' ? 'UNCITRAL Model Law' : '',
+    },
+    {
+      key: 'Compatible With the HCCH Principles?',
+      label: 'Compatible With',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+      valueTransform: (val) =>
+        val === true || val === 'true' ? 'HCCH Principles' : '',
+    },
+    {
       key: 'Amended by',
       label: 'Amended by',
       emptyValueBehavior: {
@@ -292,24 +310,24 @@ export const legalInstrumentConfig = {
         action: 'hide',
       },
     },
-    {
-      key: 'Compatible With the HCCH Principles?',
-      label: 'Compatible With the HCCH Principles?',
-      tooltip: tooltipCompatibleHCCH,
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-      valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
-    },
-    {
-      key: 'Compatible With the UNCITRAL Model Law?',
-      label: 'Compatible With the UNCITRAL Model Law?',
-      tooltip: tooltipCompatibleUncitral,
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-      valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
-    },
+    // {
+    //   key: 'Compatible With the HCCH Principles?',
+    //   label: 'Compatible With the HCCH Principles?',
+    //   tooltip: tooltipCompatibleHCCH,
+    //   emptyValueBehavior: {
+    //     action: 'hide',
+    //   },
+    //   valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
+    // },
+    // {
+    //   key: 'Compatible With the UNCITRAL Model Law?',
+    //   label: 'Compatible With the UNCITRAL Model Law?',
+    //   tooltip: tooltipCompatibleUncitral,
+    //   emptyValueBehavior: {
+    //     action: 'hide',
+    //   },
+    //   valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
+    // },
     {
       key: 'Date',
       label: 'Date',
