@@ -102,36 +102,32 @@
         class="result-value-small section-gap"
       >
         <p class="label mt-12">Compatible with</p>
-        <CompatibleLabel label="UNCITRAL Model Law" />
-        <CompatibleLabel label="HCCH Principles" />
-        <ul class="list-disc ml-6">
-          <li
-            v-if="
-              processedLegalInstrument &&
-              (processedLegalInstrument[
+        <span
+          v-if="
+            processedLegalInstrument &&
+            (processedLegalInstrument[
+              'Compatible With the UNCITRAL Model Law?'
+            ] === true ||
+              processedLegalInstrument[
                 'Compatible With the UNCITRAL Model Law?'
-              ] === true ||
-                processedLegalInstrument[
-                  'Compatible With the UNCITRAL Model Law?'
-                ] === 'true')
-            "
-          >
-            UNCITRAL Model Law
-          </li>
-          <li
-            v-if="
-              processedLegalInstrument &&
-              (processedLegalInstrument[
+              ] === 'true')
+          "
+        >
+          <CompatibleLabel label="UNCITRAL Model Law" />
+        </span>
+        <span
+          v-if="
+            processedLegalInstrument &&
+            (processedLegalInstrument[
+              'Compatible With the HCCH Principles?'
+            ] === true ||
+              processedLegalInstrument[
                 'Compatible With the HCCH Principles?'
-              ] === true ||
-                processedLegalInstrument[
-                  'Compatible With the HCCH Principles?'
-                ] === 'true')
-            "
-          >
-            HCCH Principles
-          </li>
-        </ul>
+              ] === 'true')
+          "
+        >
+          <CompatibleLabel label="HCCH Principles" />
+        </span>
       </div>
     </template>
     <!-- Slot for Legal provisions -->
