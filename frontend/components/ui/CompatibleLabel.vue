@@ -3,7 +3,7 @@
     class="label-question"
     style="display: inline-flex; width: 126px; align-items: center"
   >
-    <UIcon name="i-material-symbols:balance" class="text-[3em] mr-2" />
+    <UIcon name="i-material-symbols:balance" class="icon-fixed mr-2" />
     {{ label }}
   </span>
 </template>
@@ -23,5 +23,17 @@ defineProps({
   background-color: var(--color-cold-green-alpha);
   border: 1px solid var(--color-cold-green);
   line-height: 1.2em;
+}
+.icon-fixed {
+  font-size: 1.7em;
+  width: 1.2em;
+  height: 1.2em;
+  min-width: 1.2em;
+  min-height: 1.2em;
+  max-width: 1.2em;
+  max-height: 1.2em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
