@@ -20,7 +20,7 @@ defineProps({
 <style scoped>
 .label-question {
   color: var(--color-cold-night);
-  background-color: var(--color-cold-green-alpha);
+  background-color: var(--color-cold-green-alpha-10);
   border: 1px solid var(--color-cold-green);
   line-height: 1.2em;
   padding-top: 0.5em;
