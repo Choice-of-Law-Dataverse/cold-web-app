@@ -102,6 +102,8 @@
         class="result-value-small section-gap"
       >
         <p class="label mt-12">Compatible with</p>
+        <CompatibleLabel label="UNCITRAL Model Law" />
+        <CompatibleLabel label="HCCH Principles" />
         <ul class="list-disc ml-6">
           <li
             v-if="
@@ -178,7 +180,6 @@
       </section>
     </template>
   </BaseDetailLayout>
-  <CompatibleLabel />
 </template>
 
 <script setup>
