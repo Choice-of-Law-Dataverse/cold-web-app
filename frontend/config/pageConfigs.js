@@ -66,7 +66,7 @@ export const literatureConfig = {
     },
     {
       key: 'Abstract Note',
-      label: 'Abtract',
+      label: 'Abstract',
       emptyValueBehavior: {
         action: 'hide',
       },
