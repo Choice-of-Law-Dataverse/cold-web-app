@@ -34,7 +34,8 @@ export default {
         'cold-purple-alpha': '#6F4DFA0D', // 5% alpha
         'cold-purple-fake-alpha': '#f3f2fa', // 100% alpha but same color as cold-purple-alpha
         'cold-green': '#4DFAB2',
-        'cold-green-alpha': '#4DFAB280',
+        'cold-green-alpha': '#4DFAB280', // 50% alpha
+        'cold-green-alpha-10': '#4DFAB21A', // 10% alpha
         'cold-cream': '#FFF0D9',
         'cold-night': '#0F0035',
         'cold-night-alpha': '#0F003580', // 50% alpha; https://gist.github.com/lopspower/03fb1cc0ac9f32ef38f4
@@ -69,9 +70,12 @@ export default {
         ':root': {
           '--color-cold-purple': theme('colors.cold-purple'),
           '--color-cold-purple-alpha': theme('colors.cold-purple-alpha'),
-          '--color-cold-purple-fake-alpha': theme('colors.cold-purple-fake-alpha'),
+          '--color-cold-purple-fake-alpha': theme(
+            'colors.cold-purple-fake-alpha'
+          ),
           '--color-cold-green': theme('colors.cold-green'),
           '--color-cold-green-alpha': theme('colors.cold-green-alpha'),
+          '--color-cold-green-alpha-10': theme('colors.cold-green-alpha-10'),
           '--color-cold-cream': theme('colors.cold-cream'),
           '--color-cold-night': theme('colors.cold-night'),
           '--color-cold-night-alpha': theme('colors.cold-night-alpha'),
@@ -85,13 +89,21 @@ export default {
           '--color-label-question-alpha': theme('colors.label-question-alpha'),
 
           '--color-label-court-decision': theme('colors.label-court-decision'),
-          '--color-label-court-decision-alpha': theme('colors.label-court-decision-alpha'),
+          '--color-label-court-decision-alpha': theme(
+            'colors.label-court-decision-alpha'
+          ),
 
-          '--color-label-domestic-instrument': theme('colors.label-domestic-instrument'),
-          '--color-label-domestic-instrument-alpha': theme('colors.label-domestic-instrument-alpha'),
+          '--color-label-domestic-instrument': theme(
+            'colors.label-domestic-instrument'
+          ),
+          '--color-label-domestic-instrument-alpha': theme(
+            'colors.label-domestic-instrument-alpha'
+          ),
 
           '--color-label-literature': theme('colors.label-literature'),
-          '--color-label-literature-alpha': theme('colors.label-literature-alpha'),
+          '--color-label-literature-alpha': theme(
+            'colors.label-literature-alpha'
+          ),
         },
       })
     },

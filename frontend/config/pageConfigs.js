@@ -228,8 +228,7 @@ export const questionConfig = {
 // Domestic Instrument Page (formerly Legal Instrument Page)
 // Tooltips for Domestic Instrument Page
 import tooltipAbbreviation from '@/content/info_boxes/domestic_instrument/abbreviation.md?raw'
-import tooltipCompatibleHCCH from '@/content/info_boxes/domestic_instrument/compatible_hcch.md?raw'
-import tooltipCompatibleUncitral from '@/content/info_boxes/domestic_instrument/compatible_uncitral.md?raw'
+import tooltipCompatibleWith from '@/content/info_boxes/domestic_instrument/compatible_with.md?raw'
 import tooltipDomesticInstrumentDate from '@/content/info_boxes/domestic_instrument/date.md?raw'
 import tooltipEntryIntoForce from '@/content/info_boxes/domestic_instrument/entry_into_force.md?raw'
 import tooltipOfficialTitle from '@/content/info_boxes/domestic_instrument/official_title.md?raw'
@@ -246,6 +245,14 @@ export const legalInstrumentConfig = {
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No title available',
+      },
+    },
+    {
+      key: 'Compatibility',
+      label: 'Compatible with',
+      tooltip: tooltipCompatibleWith,
+      emptyValueBehavior: {
+        action: 'hide',
       },
     },
     {
@@ -291,24 +298,6 @@ export const legalInstrumentConfig = {
       emptyValueBehavior: {
         action: 'hide',
       },
-    },
-    {
-      key: 'Compatible With the HCCH Principles?',
-      label: 'Compatible With the HCCH Principles?',
-      tooltip: tooltipCompatibleHCCH,
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-      valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
-    },
-    {
-      key: 'Compatible With the UNCITRAL Model Law?',
-      label: 'Compatible With the UNCITRAL Model Law?',
-      tooltip: tooltipCompatibleUncitral,
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-      valueTransform: (val) => (val === true || val === 'true' ? 'Yes' : ''),
     },
     {
       key: 'Date',

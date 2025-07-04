@@ -83,6 +83,65 @@
         />
       </div>
     </template>
+    <!-- Slot for Compatibility section -->
+    <template #compatibility>
+      <div
+        v-if="
+          processedLegalInstrument &&
+          (processedLegalInstrument[
+            'Compatible With the UNCITRAL Model Law?'
+          ] === true ||
+            processedLegalInstrument[
+              'Compatible With the UNCITRAL Model Law?'
+            ] === 'true' ||
+            processedLegalInstrument['Compatible With the HCCH Principles?'] ===
+              true ||
+            processedLegalInstrument['Compatible With the HCCH Principles?'] ===
+              'true')
+        "
+        class="result-value-small section-gap"
+      >
+        <p class="label mt-12">
+          Compatible with
+          <InfoTooltip
+            v-if="
+              computedKeyLabelPairs.find((pair) => pair.key === 'Compatibility')
+                ?.tooltip
+            "
+            :text="
+              computedKeyLabelPairs.find((pair) => pair.key === 'Compatibility')
+                ?.tooltip
+            "
+          />
+        </p>
+        <span
+          v-if="
+            processedLegalInstrument &&
+            (processedLegalInstrument[
+              'Compatible With the UNCITRAL Model Law?'
+            ] === true ||
+              processedLegalInstrument[
+                'Compatible With the UNCITRAL Model Law?'
+              ] === 'true')
+          "
+        >
+          <CompatibleLabel label="UNCITRAL Model Law" />
+        </span>
+        <span
+          v-if="
+            processedLegalInstrument &&
+            (processedLegalInstrument[
+              'Compatible With the HCCH Principles?'
+            ] === true ||
+              processedLegalInstrument[
+                'Compatible With the HCCH Principles?'
+              ] === 'true')
+          "
+        >
+          <CompatibleLabel label="HCCH Principles" />
+        </span>
+      </div>
+    </template>
     <!-- Slot for Legal provisions -->
     <template #domestic-legal-provisions="{ value }">
       <!-- Only render if value exists and is not "N/A" -->
@@ -137,10 +196,11 @@ import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import LegalProvision from '@/components/legal/LegalProvision.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import SectionRenderer from '@/components/legal/SectionRenderer.vue'
+import CompatibleLabel from '@/components/ui/CompatibleLabel.vue'
 import { useApiFetch } from '@/composables/useApiFetch'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { legalInstrumentConfig } from '@/config/pageConfigs'
-import SectionRenderer from '@/components/legal/SectionRenderer.vue'
 import { useHead } from '#imports'
 
 const route = useRoute()
