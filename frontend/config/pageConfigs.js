@@ -250,7 +250,7 @@ export const legalInstrumentConfig = {
     },
     {
       key: 'Compatibility',
-      label: 'Compatibility',
+      label: 'Compatible with',
       emptyValueBehavior: {
         action: 'hide',
       },

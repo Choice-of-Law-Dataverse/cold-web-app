@@ -101,7 +101,7 @@
         "
         class="result-value-small section-gap"
       >
-        <p class="label mt-12">Compatibility</p>
+        <p class="label mt-12">Compatible with</p>
         <ul class="list-disc ml-6">
           <li
             v-if="
@@ -178,6 +178,7 @@
       </section>
     </template>
   </BaseDetailLayout>
+  <CompatibleLabel />
 </template>
 
 <script setup>
@@ -186,10 +187,11 @@ import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import LegalProvision from '@/components/legal/LegalProvision.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import SectionRenderer from '@/components/legal/SectionRenderer.vue'
+import CompatibleLabel from '@/components/ui/CompatibleLabel.vue'
 import { useApiFetch } from '@/composables/useApiFetch'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { legalInstrumentConfig } from '@/config/pageConfigs'
-import SectionRenderer from '@/components/legal/SectionRenderer.vue'
 import { useHead } from '#imports'
 
 const route = useRoute()
