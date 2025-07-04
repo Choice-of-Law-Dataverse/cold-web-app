@@ -249,22 +249,11 @@ export const legalInstrumentConfig = {
       },
     },
     {
-      key: 'Compatible With the UNCITRAL Model Law?',
-      label: 'Compatible With',
+      key: 'Compatibility',
+      label: 'Compatibility',
       emptyValueBehavior: {
         action: 'hide',
       },
-      valueTransform: (val) =>
-        val === true || val === 'true' ? 'UNCITRAL Model Law' : '',
-    },
-    {
-      key: 'Compatible With the HCCH Principles?',
-      label: 'Compatible With',
-      emptyValueBehavior: {
-        action: 'hide',
-      },
-      valueTransform: (val) =>
-        val === true || val === 'true' ? 'HCCH Principles' : '',
     },
     {
       key: 'Amended by',
