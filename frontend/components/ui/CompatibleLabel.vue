@@ -23,6 +23,8 @@ defineProps({
   background-color: var(--color-cold-green-alpha);
   border: 1px solid var(--color-cold-green);
   line-height: 1.2em;
+  padding-top: 0.5em;
+  padding-bottom: 0.4em;
 }
 .icon-fixed {
   font-size: 1.7em;
