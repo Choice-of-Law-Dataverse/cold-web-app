@@ -101,7 +101,19 @@
         "
         class="result-value-small section-gap"
       >
-        <p class="label mt-12">Compatible with</p>
+        <p class="label mt-12">
+          Compatible with
+          <InfoTooltip
+            v-if="
+              computedKeyLabelPairs.find((pair) => pair.key === 'Compatibility')
+                ?.tooltip
+            "
+            :text="
+              computedKeyLabelPairs.find((pair) => pair.key === 'Compatibility')
+                ?.tooltip
+            "
+          />
+        </p>
         <span
           v-if="
             processedLegalInstrument &&
