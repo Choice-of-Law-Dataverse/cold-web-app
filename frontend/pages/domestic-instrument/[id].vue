@@ -85,7 +85,22 @@
     </template>
     <!-- Slot for Compatibility section -->
     <template #compatibility>
-      <div class="result-value-small section-gap">
+      <div
+        v-if="
+          processedLegalInstrument &&
+          (processedLegalInstrument[
+            'Compatible With the UNCITRAL Model Law?'
+          ] === true ||
+            processedLegalInstrument[
+              'Compatible With the UNCITRAL Model Law?'
+            ] === 'true' ||
+            processedLegalInstrument['Compatible With the HCCH Principles?'] ===
+              true ||
+            processedLegalInstrument['Compatible With the HCCH Principles?'] ===
+              'true')
+        "
+        class="result-value-small section-gap"
+      >
         <p class="label mt-12">Compatibility</p>
         <ul class="list-disc ml-6">
           <li
@@ -113,26 +128,6 @@
             "
           >
             HCCH Principles
-          </li>
-          <li
-            v-if="
-              processedLegalInstrument &&
-              processedLegalInstrument[
-                'Compatible With the UNCITRAL Model Law?'
-              ] !== true &&
-              processedLegalInstrument[
-                'Compatible With the UNCITRAL Model Law?'
-              ] !== 'true' &&
-              processedLegalInstrument[
-                'Compatible With the HCCH Principles?'
-              ] !== true &&
-              processedLegalInstrument[
-                'Compatible With the HCCH Principles?'
-              ] !== 'true'
-            "
-            class="text-gray-500"
-          >
-            —
           </li>
         </ul>
       </div>
