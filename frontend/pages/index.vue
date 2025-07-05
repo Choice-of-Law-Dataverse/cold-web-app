@@ -42,6 +42,14 @@
             :newTab="false"
           />
         </div>
+
+        <div class="col-span-12 md:col-span-6">
+          <PopularSearches />
+        </div>
+        <div class="col-span-12 sm:col-span-6">
+          <TopLiteratureThemes />
+        </div>
+
         <div class="col-span-12">
           <PopularSearches />
         </div>
@@ -126,6 +134,7 @@
 
 <script setup>
 import PopularSearches from '@/components/landing-page/PopularSearches.vue'
+import TopLiteratureThemes from '@/components/landing-page/TopLiteratureThemes.vue'
 import JurisdictionMap from '@/components/landing-page/JurisdictionMap.vue'
 import CountrySelectMenu from '@/components/landing-page/TempJurisdictionPicker.vue'
 import PlotCourtDecisionsJurisdiction from '@/components/landing-page/PlotCourtDecisionsJurisdiction.vue'
