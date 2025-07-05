@@ -33,16 +33,13 @@ import eventBus from '@/eventBus'
 
 const router = useRouter()
 
-const searchSuggestions = ref(['Arbitration', 'Rules of Law', 'Tacit Choice'])
+const searchSuggestions = ref(['Arbitration', 'Rules of law', 'Tacit choice'])
 
 function formatQuery(query) {
   return query.replace(/ /g, '+')
 }
 
 function handleSuggestionClick(suggestion) {
-  // Emit an event to update the search input
-  eventBus.emit('update-search', suggestion)
-
   // Pass the query with both theme and type=Literature
   router.push({
     name: 'search',
