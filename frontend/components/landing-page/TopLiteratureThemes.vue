@@ -43,10 +43,10 @@ function handleSuggestionClick(suggestion) {
   // Emit an event to update the search input
   eventBus.emit('update-search', suggestion)
 
-  // Pass the query directly with spaces
+  // Pass the query with both theme and type=Literature
   router.push({
     name: 'search',
-    query: { q: suggestion },
+    query: { theme: suggestion, type: 'Literature' },
   })
 }
 </script>

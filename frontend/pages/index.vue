@@ -50,9 +50,6 @@
           <TopLiteratureThemes />
         </div>
 
-        <div class="col-span-12">
-          <PopularSearches />
-        </div>
         <div class="col-span-12 sm:col-span-4">
           <NumberCard
             title="Available Domestic Instruments"
