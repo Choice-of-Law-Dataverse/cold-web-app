@@ -46,7 +46,10 @@
                     class="w-5 h-5 mt-1"
                     v-if="row.hasExpand"
                     @click="toggle"
-                    :style="{ color: 'var(--color-cold-purple)' }"
+                    :style="{
+                      color: 'var(--color-cold-purple)',
+                      transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                    }"
                   ></UIcon>
                 </template>
               </UTable>
