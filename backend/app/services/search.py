@@ -2,6 +2,10 @@ import json
 from app.config import config
 from app.services.database import Database
 from app.services.nocodb import NocoDBService
+import logging
+
+# logger for this module
+logger = logging.getLogger(__name__)
 
 
 class SearchService:
@@ -153,6 +157,7 @@ class SearchService:
         count_result = self.db.execute_query(count_sql, params)
         total_matches = count_result[0].get("total_matches", 0) if count_result else 0
         # fetch paginated rows
+        print(f"Performing full-text search with params: {params}")
         sql = (
             "SELECT table_name AS source_table, record_id AS id, title, excerpt, rank "
             "FROM cold_views.search_all("
@@ -165,6 +170,7 @@ class SearchService:
             ")"
         )
         rows = self.db.execute_query(sql, params)
+        print("raw SQL results:\n", json.dumps(rows, indent=2))
         # augment each row with full NocoDB data
         augmented = []
         for row in rows:
