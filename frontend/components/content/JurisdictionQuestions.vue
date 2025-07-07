@@ -31,21 +31,25 @@ import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 const people = [
   {
     question: 'Is there a codification on choice of law?',
+    theme: 'Codification',
     answer: 'Yes',
   },
   {
     question:
       'Do the courts have the authority to refer to the HCCH Principles as persuasive authority?',
+    theme: 'Codification, HCCH Principles',
     answer: 'Yes',
   },
   {
     question:
       'Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in this jurisdiction?',
+    theme: 'Party autonomy, Freedom of choice',
     answer: 'No',
   },
   {
     question:
       'More specifically, are the parties to an international commercial contract allowed to choose the law applicable to their contract?',
+    theme: 'Party autonomy, Freedom of choice',
     answer: 'No',
   },
 ]
