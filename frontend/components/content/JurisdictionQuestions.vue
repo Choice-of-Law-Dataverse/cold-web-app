@@ -48,19 +48,23 @@
                   </span>
                 </template>
                 <template #theme-data="{ row }">
-                  <span
-                    v-for="theme in row.theme.split(',')"
-                    :key="theme.trim()"
-                    class="label-theme"
-                    style="margin-right: 12px"
-                  >
-                    {{ theme.trim() }}
-                  </span>
+                  <div style="text-align: right">
+                    <span
+                      v-for="theme in row.theme.split(',')"
+                      :key="theme.trim()"
+                      class="label-theme"
+                      style="margin-right: 12px"
+                    >
+                      {{ theme.trim() }}
+                    </span>
+                  </div>
                 </template>
                 <template #answer-data="{ row }">
-                  <span class="result-value-small">
-                    {{ row.answer }}
-                  </span>
+                  <div style="text-align: right">
+                    <span class="result-value-small">
+                      {{ row.answer }}
+                    </span>
+                  </div>
                 </template>
               </UTable>
             </div>
@@ -110,7 +114,6 @@ const rows = ref([
     level: 0,
     hasExpand: false,
   },
-  // ...more rows
 ])
 
 const columns = [
@@ -143,7 +146,6 @@ const visibleRows = computed(() => {
   return result
 })
 
-// Toggle expand/collapse for a row
 function toggleExpand(row) {
   row.expanded = !row.expanded
 }
@@ -161,7 +163,6 @@ function toggleExpand(row) {
 }
 
 .table-full-width-wrapper {
-  /* Remove padding from the UCard for this table only */
   margin-left: calc(-1 * var(--card-padding, 1.5rem));
   margin-right: calc(-1 * var(--card-padding, 1.5rem));
   width: calc(100% + 2 * var(--card-padding, 1.5rem));
@@ -185,7 +186,6 @@ function toggleExpand(row) {
   min-height: 80px !important;
 }
 
-/* Remove gray background on expanded row (Nuxt UI/UTable uses .bg-gray-50 or similar) */
 .table-full-width-wrapper tr[aria-expanded='true'],
 .table-full-width-wrapper tr.is-expanded,
 .table-full-width-wrapper tr.expanded,
@@ -210,22 +210,18 @@ function toggleExpand(row) {
 
 .table-full-width-wrapper td:first-child,
 .table-full-width-wrapper th:first-child {
-  width: 36px !important;
+  width: 50% !important;
   min-width: 32px !important;
   max-width: 40px !important;
   padding-left: 1rem !important;
 }
 .table-full-width-wrapper td:nth-child(2),
 .table-full-width-wrapper th:nth-child(2) {
-  width: 50%;
-}
-.table-full-width-wrapper :deep(td:nth-child(3)),
-.table-full-width-wrapper :deep(th:nth-child(3)) {
   width: 40%;
   text-align: right !important;
 }
-.table-full-width-wrapper :deep(td:nth-child(4)),
-.table-full-width-wrapper :deep(th:nth-child(4)) {
+.table-full-width-wrapper :deep(td:nth-child(3)),
+.table-full-width-wrapper :deep(th:nth-child(3)) {
   width: 10%;
   text-align: right !important;
   padding-right: 2em !important;
