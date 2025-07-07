@@ -4,7 +4,7 @@
       <div class="col-span-12">
         <UCard class="cold-ucard">
           <div>
-            <h2 class="mb-10">Questions</h2>
+            <h2 class="mb-10">Questions and Answers for Switzerland</h2>
             <div class="result-value-small table-full-width-wrapper">
               <UTable :rows="people" />
             </div>
