@@ -43,7 +43,7 @@
                 <template #expand-action="{ row, isExpanded, toggle }">
                   <UIcon
                     name="i-material-symbols:chevron-right"
-                    class="w-5 h-5 mt-1"
+                    class="w-5 h-5 mt-1 cursor-pointer"
                     v-if="row.hasExpand"
                     @click="toggle"
                     :style="{
