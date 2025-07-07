@@ -121,9 +121,10 @@ class SearchService:
 
     def full_text_search(self, search_string, filters=[], page=1, page_size=50, sort_by_date=False):
         """
-        Perform full-text search using the database function in cold_views schema.
+        Perform full-text search via cold_views.search_all and return correct total_matches.
         """
         tables, jurisdictions, themes = self._extract_filters(filters)
+        # Prepare parameters
         params = {
             "search_term": search_string,
             "filter_tables": tables or None,
@@ -132,22 +133,35 @@ class SearchService:
             "page": page,
             "page_size": page_size,
         }
-        # Invoke the DB function with explicit casts and alias the result
-        # Call the JSON-returning overload by using named args to disambiguate
+        # Count total matches using search_all over full set
+        count_sql = (
+            "SELECT COUNT(*) AS total_matches FROM cold_views.search_all("
+            "search_term := CAST(:search_term AS text), "
+            "filter_tables := CAST(:filter_tables AS text[]), "
+            "filter_jurisdictions := CAST(:filter_jurisdictions AS text[]), "
+            "filter_themes := CAST(:filter_themes AS text[]), "
+            "page := CAST(1 AS integer), "
+            "page_size := CAST(2147483647 AS integer))"
+        )
+        count_result = self.db.execute_query(count_sql, params)
+        total_matches = count_result[0].get("total_matches", 0) if count_result else 0
+        # Fetch paginated results
         sql = (
-            "SELECT cold_views.full_text_search("
+            "SELECT table_name AS source_table, record_id AS id, title, excerpt, rank "
+            "FROM cold_views.search_all("
             "search_term := CAST(:search_term AS text), "
             "filter_tables := CAST(:filter_tables AS text[]), "
             "filter_jurisdictions := CAST(:filter_jurisdictions AS text[]), "
             "filter_themes := CAST(:filter_themes AS text[]), "
             "page := CAST(:page AS integer), "
-            "page_size := CAST(:page_size AS integer)"  
-            ") AS data"
+            "page_size := CAST(:page_size AS integer)"
+            ")"
         )
-        result = self.db.execute_query(sql, params)
-        if result:
-            data = result[0].get("data")
-            if isinstance(data, str):
-                data = json.loads(data)
-            return data
-        return {"total_matches": 0, "page": page, "page_size": page_size, "results": []}
+        rows = self.db.execute_query(sql, params)
+        return {
+            "test": config.TEST,
+            "total_matches": total_matches,
+            "page": page,
+            "page_size": page_size,
+            "results": rows,
+        }
