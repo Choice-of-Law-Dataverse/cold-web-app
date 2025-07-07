@@ -17,6 +17,7 @@ logs
 .DS_Store
 .fleet
 .idea
+sandbox.vue
 
 # Local env files
 .env

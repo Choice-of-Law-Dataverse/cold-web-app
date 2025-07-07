@@ -9,8 +9,12 @@
               <InfoTooltip text="Questions" class="info-tooltip-small" />
             </h2>
 
-            <div class="result-value-small table-full-width-wrapper">
-              <UTable v-model:expand="expand" :rows="people">
+            <div class="table-full-width-wrapper">
+              <UTable v-model:expand="expand" :rows="people" :columns="columns">
+                <template #theme-data="{ row }">
+                  <span :class="row.theme.class">{{ row.theme.value }}</span>
+                </template>
+
                 <template #expand="{ row }">
                   <div class="p-4">
                     <pre>{{ row }}</pre>
@@ -31,27 +35,42 @@ import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 const people = [
   {
     question: 'Is there a codification on choice of law?',
-    theme: 'Codification',
+    theme: { value: 'Codification', class: 'label-theme' },
     answer: 'Yes',
   },
   {
     question:
       'Do the courts have the authority to refer to the HCCH Principles as persuasive authority?',
-    theme: 'Codification, HCCH Principles',
+    theme: {
+      value: 'Codification, HCCH Principles',
+      class: 'text-red-600 font-bold',
+    },
     answer: 'Yes',
   },
   {
     question:
       'Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in this jurisdiction?',
-    theme: 'Party autonomy, Freedom of choice',
+    theme: {
+      value: 'Party autonomy, Freedom of choice',
+      class: 'text-red-600 font-bold',
+    },
     answer: 'No',
   },
   {
     question:
       'More specifically, are the parties to an international commercial contract allowed to choose the law applicable to their contract?',
-    theme: 'Party autonomy, Freedom of choice',
+    theme: {
+      value: 'Party autonomy, Freedom of choice',
+      class: 'text-red-600 font-bold',
+    },
     answer: 'No',
   },
+]
+
+const columns = [
+  { key: 'question', label: 'Question' },
+  { key: 'theme', label: 'Theme' },
+  { key: 'answer', label: 'Answer' },
 ]
 
 const expand = ref({
