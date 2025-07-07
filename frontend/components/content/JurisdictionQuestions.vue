@@ -125,6 +125,17 @@ const expand = ref({
   min-height: 80px;
 }
 
+/* Remove gray background on expanded row (Nuxt UI/UTable uses .bg-gray-50 or similar) */
+.table-full-width-wrapper :deep(tr[aria-expanded='true']),
+.table-full-width-wrapper :deep(tr.is-expanded),
+.table-full-width-wrapper :deep(tr.expanded),
+.table-full-width-wrapper :deep(tr[aria-selected='true']),
+.table-full-width-wrapper :deep(.bg-gray-50),
+.table-full-width-wrapper :deep(.bg-gray-100),
+.table-full-width-wrapper :deep(.bg-gray-200) {
+  background-color: white !important;
+}
+
 .table-full-width-wrapper :deep(thead) {
   display: none;
 }
