@@ -68,6 +68,7 @@ const expand = ref({
 .result-value-small :deep(span),
 .result-value-small :deep(div) {
   color: var(--color-cold-night) !important;
+  line-height: 26px !important;
 }
 
 .table-full-width-wrapper {
@@ -80,11 +81,19 @@ const expand = ref({
 .table-full-width-wrapper :deep(table) {
   width: 100% !important;
   table-layout: auto;
+  table-layout: fixed;
+}
+
+.table-full-width-wrapper :deep(td),
+.table-full-width-wrapper :deep(th) {
+  white-space: normal !important;
+  word-break: break-word !important;
+  overflow-wrap: break-word !important;
 }
 
 .table-full-width-wrapper :deep(tr) {
-  height: 72px;
-  min-height: 72px;
+  height: 80px;
+  min-height: 80px;
 }
 
 .table-full-width-wrapper :deep(thead) {
@@ -95,6 +104,29 @@ const expand = ref({
 .table-full-width-wrapper :deep(td) {
   border-bottom: 1px solid var(--color-cold-gray) !important;
   border-top: 1px solid var(--color-cold-gray) !important;
+}
+
+.table-full-width-wrapper :deep(td:first-child),
+.table-full-width-wrapper :deep(th:first-child) {
+  width: 36px !important;
+  min-width: 32px !important;
+  max-width: 40px !important;
+  padding-left: 1rem !important;
+}
+.table-full-width-wrapper :deep(td:nth-child(2)),
+.table-full-width-wrapper :deep(th:nth-child(2)) {
+  width: 50%;
+}
+.table-full-width-wrapper :deep(td:nth-child(3)),
+.table-full-width-wrapper :deep(th:nth-child(3)) {
+  width: 40%;
+  text-align: right !important;
+}
+.table-full-width-wrapper :deep(td:nth-child(4)),
+.table-full-width-wrapper :deep(th:nth-child(4)) {
+  width: 10%;
+  text-align: right !important;
+  padding-right: 2em !important;
 }
 
 .info-tooltip-small :deep(.icon-span) {
