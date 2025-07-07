@@ -10,7 +10,13 @@
             </h2>
 
             <div class="result-value-small table-full-width-wrapper">
-              <UTable :rows="people" />
+              <UTable v-model:expand="expand" :rows="people">
+                <template #expand="{ row }">
+                  <div class="p-4">
+                    <pre>{{ row }}</pre>
+                  </div>
+                </template>
+              </UTable>
             </div>
           </div>
         </UCard>
@@ -43,6 +49,11 @@ const people = [
     answer: 'No',
   },
 ]
+
+const expand = ref({
+  openedRows: [people[0]],
+  row: {},
+})
 </script>
 
 <style scoped>
