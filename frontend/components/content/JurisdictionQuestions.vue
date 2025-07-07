@@ -79,38 +79,40 @@
 import { ref, computed } from 'vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
+const tempAnswer = 'Yeah'
+
 const rows = ref([
   {
-    id: 1,
+    id: '01-P',
     question: 'Is there a codification on choice of law?',
     theme: 'Codification',
-    answer: 'Yes',
+    answer: tempAnswer,
     level: 0,
     hasExpand: true,
-    expanded: false,
+    // expanded: false,
   },
   {
-    id: 2,
+    id: '01.1-P',
     question: 'What is the main source of codification?',
     theme: 'Codification',
-    answer: 'SPILA',
+    answer: tempAnswer,
     level: 1,
-    parentId: 1,
+    parentId: '01-P',
   },
   {
-    id: 3,
+    id: '01.2-P',
     question: 'When was it enacted?',
     theme: 'Codification',
-    answer: '1987',
+    answer: tempAnswer,
     level: 1,
-    parentId: 1,
+    parentId: '01-P',
   },
   {
-    id: 4,
+    id: '01.2.1-P',
     question:
       'Do the courts have the authority to refer to the HCCH Principles as persuasive authority?',
     theme: 'Codification, HCCH Principles',
-    answer: 'Yes',
+    answer: tempAnswer,
     level: 0,
     hasExpand: false,
   },
