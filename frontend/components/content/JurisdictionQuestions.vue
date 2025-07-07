@@ -12,7 +12,14 @@
             <div class="table-full-width-wrapper">
               <UTable v-model:expand="expand" :rows="rows" :columns="columns">
                 <template #theme-data="{ row }">
-                  <span class="label-theme">{{ row.theme }}</span>
+                  <span
+                    v-for="theme in row.theme.split(',')"
+                    :key="theme.trim()"
+                    class="label-theme"
+                    style="margin-right: 12px"
+                  >
+                    {{ theme.trim() }}
+                  </span>
                 </template>
 
                 <template #expand="{ row }">
