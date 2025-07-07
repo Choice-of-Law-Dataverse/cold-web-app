@@ -36,7 +36,14 @@
 
                 <template #expand="{ row }">
                   <div class="p-4">
-                    <pre>{{ row }}</pre>
+                    <pre v-if="!row.children">{{ row }}</pre>
+                    <UTable
+                      v-else
+                      :rows="row.children"
+                      :columns="columns"
+                      class="nested-table"
+                      :ui="{ td: { base: 'bg-white' } }"
+                    />
                   </div>
                 </template>
 
@@ -70,6 +77,20 @@ const rows = [
     theme: 'Codification',
     answer: 'Yes',
     hasExpand: true,
+    children: [
+      {
+        question: 'What is the main source of codification?',
+        theme: 'Codification',
+        answer: 'SPILA',
+        hasExpand: false,
+      },
+      {
+        question: 'When was it enacted?',
+        theme: 'Codification',
+        answer: '1987',
+        hasExpand: false,
+      },
+    ],
   },
   {
     question:
