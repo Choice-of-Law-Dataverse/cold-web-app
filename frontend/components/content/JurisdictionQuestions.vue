@@ -43,7 +43,7 @@ const people = [
       'Do the courts have the authority to refer to the HCCH Principles as persuasive authority?',
     theme: {
       value: 'Codification, HCCH Principles',
-      class: 'text-red-600 font-bold',
+      class: 'label-theme',
     },
     answer: 'Yes',
   },
@@ -52,7 +52,7 @@ const people = [
       'Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in this jurisdiction?',
     theme: {
       value: 'Party autonomy, Freedom of choice',
-      class: 'text-red-600 font-bold',
+      class: 'label-theme',
     },
     answer: 'No',
   },
@@ -61,7 +61,7 @@ const people = [
       'More specifically, are the parties to an international commercial contract allowed to choose the law applicable to their contract?',
     theme: {
       value: 'Party autonomy, Freedom of choice',
-      class: 'text-red-600 font-bold',
+      class: 'label-theme',
     },
     answer: 'No',
   },
@@ -123,6 +123,8 @@ const expand = ref({
 .table-full-width-wrapper :deep(td) {
   border-bottom: 1px solid var(--color-cold-gray) !important;
   border-top: 1px solid var(--color-cold-gray) !important;
+  border-left: 0px;
+  border-right: 0px;
 }
 
 .table-full-width-wrapper :deep(td:first-child),
