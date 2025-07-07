@@ -4,7 +4,11 @@
       <div class="col-span-12">
         <UCard class="cold-ucard">
           <div>
-            <h2 class="mb-10">Questions and Answers for Switzerland</h2>
+            <h2 class="mt-2 mb-8">
+              Questions and Answers for Switzerland
+              <InfoTooltip text="Questions" class="info-tooltip-small" />
+            </h2>
+
             <div class="result-value-small table-full-width-wrapper">
               <UTable :rows="people" />
             </div>
@@ -16,6 +20,8 @@
 </template>
 
 <script setup>
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+
 const people = [
   {
     question: 'Is there a codification on choice of law?',
@@ -74,5 +80,9 @@ const people = [
 .table-full-width-wrapper :deep(td) {
   border-bottom: 1px solid var(--color-cold-gray) !important;
   border-top: 1px solid var(--color-cold-gray) !important;
+}
+
+.info-tooltip-small :deep(.icon-span) {
+  font-size: 0.75em !important;
 }
 </style>
