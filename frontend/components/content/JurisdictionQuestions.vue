@@ -101,11 +101,21 @@ const rows = ref([
   },
   {
     id: '01.2-P',
-    question: 'When was it enacted?',
+    question: 'Why was it enacted?',
     theme: 'Codification',
     answer: tempAnswer,
     level: 1,
     parentId: '01-P',
+    hasExpand: true,
+    expanded: false,
+  },
+  {
+    id: '01.2.1-P-child',
+    question: 'When was it enacted?',
+    theme: 'Codification',
+    answer: tempAnswer,
+    level: 2,
+    parentId: '01.2-P',
   },
   {
     id: '01.2.1-P',
