@@ -211,9 +211,6 @@ function toggleExpand(row) {
 .table-full-width-wrapper td:first-child,
 .table-full-width-wrapper th:first-child {
   width: 50% !important;
-  min-width: 32px !important;
-  max-width: 40px !important;
-  padding-left: 1rem !important;
 }
 .table-full-width-wrapper td:nth-child(2),
 .table-full-width-wrapper th:nth-child(2) {
@@ -224,7 +221,7 @@ function toggleExpand(row) {
 .table-full-width-wrapper :deep(th:nth-child(3)) {
   width: 10%;
   text-align: right !important;
-  padding-right: 2em !important;
+  padding-right: 2.5em !important;
 }
 
 .info-tooltip-small {
