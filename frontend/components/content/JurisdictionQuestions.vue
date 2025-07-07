@@ -46,8 +46,8 @@
                     class="w-5 h-5 mt-1"
                     v-if="row.hasExpand"
                     @click="toggle"
-                  >
-                  </UIcon>
+                    :style="{ color: 'var(--color-cold-purple)' }"
+                  ></UIcon>
                 </template>
               </UTable>
             </div>
