@@ -1,12 +1,18 @@
 import json
 from app.config import config
 from app.services.database import Database
+from app.services.nocodb import NocoDBService
 
 
 class SearchService:
     def __init__(self):
         self.db = Database(config.SQL_CONN_STRING)
         self.test = config.TEST
+        # initialize NocoDB service for data augmentation
+        self.nocodb = NocoDBService(
+            base_url=config.NOCODB_BASE_URL,
+            api_token=config.NOCODB_API_TOKEN,
+        )
 
     def curated_details_search(self, table, id):
         """
@@ -121,10 +127,10 @@ class SearchService:
 
     def full_text_search(self, search_string, filters=[], page=1, page_size=50, sort_by_date=False):
         """
-        Perform full-text search via cold_views.search_all and return correct total_matches.
+        Perform full-text search via cold_views.search_all and return correct total_matches
+        along with full record data from NocoDB.
         """
         tables, jurisdictions, themes = self._extract_filters(filters)
-        # Prepare parameters
         params = {
             "search_term": search_string,
             "filter_tables": tables or None,
@@ -133,7 +139,7 @@ class SearchService:
             "page": page,
             "page_size": page_size,
         }
-        # Count total matches using search_all over full set
+        # count total matches
         count_sql = (
             "SELECT COUNT(*) AS total_matches FROM cold_views.search_all("
             "search_term := CAST(:search_term AS text), "
@@ -141,11 +147,12 @@ class SearchService:
             "filter_jurisdictions := CAST(:filter_jurisdictions AS text[]), "
             "filter_themes := CAST(:filter_themes AS text[]), "
             "page := CAST(1 AS integer), "
-            "page_size := CAST(2147483647 AS integer))"
+            "page_size := CAST(2147483647 AS integer)"
+            ")"
         )
         count_result = self.db.execute_query(count_sql, params)
         total_matches = count_result[0].get("total_matches", 0) if count_result else 0
-        # Fetch paginated results
+        # fetch paginated rows
         sql = (
             "SELECT table_name AS source_table, record_id AS id, title, excerpt, rank "
             "FROM cold_views.search_all("
@@ -158,10 +165,22 @@ class SearchService:
             ")"
         )
         rows = self.db.execute_query(sql, params)
+        # augment each row with full NocoDB data
+        augmented = []
+        for row in rows:
+            table = row.get("source_table")
+            record_id = row.get("id")
+            try:
+                full_data = self.nocodb.get_row(table, record_id)
+            except Exception:
+                full_data = {}
+            # merge partial and full data
+            merged = {**row, **full_data}
+            augmented.append(merged)
         return {
             "test": config.TEST,
             "total_matches": total_matches,
             "page": page,
             "page_size": page_size,
-            "results": rows,
+            "results": augmented,
         }
