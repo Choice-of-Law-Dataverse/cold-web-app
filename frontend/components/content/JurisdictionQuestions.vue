@@ -10,7 +10,7 @@
             </h2>
 
             <div class="table-full-width-wrapper">
-              <UTable v-model:expand="expand" :rows="people" :columns="columns">
+              <UTable v-model:expand="expand" :rows="rows" :columns="columns">
                 <template #theme-data="{ row }">
                   <span :class="row.theme.class">{{ row.theme.value }}</span>
                 </template>
@@ -32,7 +32,7 @@
 <script setup>
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
-const people = [
+const rows = [
   {
     question: 'Is there a codification on choice of law?',
     theme: { value: 'Codification', class: 'label-theme' },
@@ -74,7 +74,7 @@ const columns = [
 ]
 
 const expand = ref({
-  openedRows: [people[0]],
+  openedRows: [rows[0]],
   row: {},
 })
 </script>
