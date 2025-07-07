@@ -15,19 +15,35 @@
                     class="result-value-small"
                     :style="{ paddingLeft: `${row.level * 2}em` }"
                   >
-                    <UIcon
+                    <span
                       v-if="row.hasExpand"
-                      name="i-material-symbols:chevron-right"
-                      class="w-5 h-5 mr-1 align-middle cursor-pointer"
+                      class="mr-1 align-middle cursor-pointer"
+                      @click.stop="toggleExpand(row)"
                       :style="{
-                        color: 'var(--color-cold-purple)',
+                        display: 'inline-flex',
+                        alignItems: 'center',
                         transform: row.expanded
                           ? 'rotate(90deg)'
                           : 'rotate(0deg)',
-                        transition: 'transform 0.2s',
                       }"
-                      @click.stop="toggleExpand(row)"
-                    />
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        width="18"
+                        height="18"
+                        fill="none"
+                        style="color: var(--color-cold-purple)"
+                      >
+                        <path
+                          d="M9 6l6 6-6 6"
+                          stroke="currentColor"
+                          stroke-width="2"
+                          stroke-linecap="square"
+                          stroke-linejoin="square"
+                        />
+                      </svg>
+                    </span>
                     {{ row.question }}
                   </span>
                 </template>
@@ -59,7 +75,6 @@
 import { ref, computed } from 'vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
-// Your flattened rows array (as in your example)
 const rows = ref([
   {
     id: 1,
@@ -165,7 +180,7 @@ function toggleExpand(row) {
   overflow-wrap: break-word !important;
 }
 
-.table-full-width-wrapper tr {
+.table-full-width-wrapper :deep(tr) {
   height: 80px !important;
   min-height: 80px !important;
 }
@@ -181,12 +196,12 @@ function toggleExpand(row) {
   background-color: white !important;
 }
 
-.table-full-width-wrapper thead {
+.table-full-width-wrapper :deep(thead) {
   display: none;
 }
 
-.table-full-width-wrapper th,
-.table-full-width-wrapper td {
+.table-full-width-wrapper :deep(th),
+.table-full-width-wrapper :deep(td) {
   border-bottom: 1px solid var(--color-cold-gray) !important;
   border-top: 1px solid var(--color-cold-gray) !important;
   border-left: 0px;
@@ -204,19 +219,19 @@ function toggleExpand(row) {
 .table-full-width-wrapper th:nth-child(2) {
   width: 50%;
 }
-.table-full-width-wrapper td:nth-child(3),
-.table-full-width-wrapper th:nth-child(3) {
+.table-full-width-wrapper :deep(td:nth-child(3)),
+.table-full-width-wrapper :deep(th:nth-child(3)) {
   width: 40%;
   text-align: right !important;
 }
-.table-full-width-wrapper td:nth-child(4),
-.table-full-width-wrapper th:nth-child(4) {
+.table-full-width-wrapper :deep(td:nth-child(4)),
+.table-full-width-wrapper :deep(th:nth-child(4)) {
   width: 10%;
   text-align: right !important;
   padding-right: 2em !important;
 }
 
-.info-tooltip-small .icon-span {
+.info-tooltip-small {
   font-size: 0.75em !important;
 }
 </style>
