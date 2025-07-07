@@ -41,9 +41,13 @@
                 </template>
 
                 <template #expand-action="{ row, isExpanded, toggle }">
-                  <UButton v-if="row.hasExpand" @click="toggle">
-                    {{ isExpanded ? '-' : '+' }}
-                  </UButton>
+                  <UIcon
+                    name="i-material-symbols:chevron-right"
+                    class="w-5 h-5 mt-1"
+                    v-if="row.hasExpand"
+                    @click="toggle"
+                  >
+                  </UIcon>
                 </template>
               </UTable>
             </div>
