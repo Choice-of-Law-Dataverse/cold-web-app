@@ -39,6 +39,12 @@
                     <pre>{{ row }}</pre>
                   </div>
                 </template>
+
+                <template #expand-action="{ row, isExpanded, toggle }">
+                  <UButton v-if="row.hasExpand" @click="toggle">
+                    {{ isExpanded ? '-' : '+' }}
+                  </UButton>
+                </template>
               </UTable>
             </div>
           </div>
@@ -56,24 +62,28 @@ const rows = [
     question: 'Is there a codification on choice of law?',
     theme: 'Codification',
     answer: 'Yes',
+    hasExpand: true,
   },
   {
     question:
       'Do the courts have the authority to refer to the HCCH Principles as persuasive authority?',
     theme: 'Codification, HCCH Principles',
     answer: 'Yes',
+    hasExpand: true,
   },
   {
     question:
       'Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in this jurisdiction?',
     theme: 'Party autonomy, Freedom of choice',
     answer: 'No',
+    hasExpand: true,
   },
   {
     question:
       'More specifically, are the parties to an international commercial contract allowed to choose the law applicable to their contract?',
     theme: 'Party autonomy, Freedom of choice',
     answer: 'No',
+    hasExpand: true,
   },
 ]
 
