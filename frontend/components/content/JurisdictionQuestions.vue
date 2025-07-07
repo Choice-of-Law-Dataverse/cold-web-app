@@ -160,6 +160,21 @@ const visibleRows = computed(() => {
 
 function toggleExpand(row) {
   row.expanded = !row.expanded
+  if (!row.expanded) {
+    // Recursively collapse all descendants
+    collapseDescendants(row.id)
+  }
+}
+
+function collapseDescendants(parentId) {
+  for (const child of rows.value) {
+    if (child.parentId === parentId) {
+      if (child.hasExpand) {
+        child.expanded = false
+        collapseDescendants(child.id)
+      }
+    }
+  }
 }
 </script>
 
