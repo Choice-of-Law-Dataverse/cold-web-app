@@ -11,6 +11,12 @@
 
             <div class="table-full-width-wrapper">
               <UTable v-model:expand="expand" :rows="rows" :columns="columns">
+                <template #question-data="{ row }">
+                  <span class="result-value-small">
+                    {{ row.question }}
+                  </span>
+                </template>
+
                 <template #theme-data="{ row }">
                   <span
                     v-for="theme in row.theme.split(',')"
@@ -19,6 +25,12 @@
                     style="margin-right: 12px"
                   >
                     {{ theme.trim() }}
+                  </span>
+                </template>
+
+                <template #answer-data="{ row }">
+                  <span class="result-value-small">
+                    {{ row.answer }}
                   </span>
                 </template>
 
