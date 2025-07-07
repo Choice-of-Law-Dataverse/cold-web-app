@@ -8,15 +8,29 @@
               Questions and Answers for Switzerland
               <InfoTooltip text="Questions" class="info-tooltip-small" />
             </h2>
-
             <div class="table-full-width-wrapper">
-              <UTable v-model:expand="expand" :rows="rows" :columns="columns">
+              <UTable :rows="visibleRows" :columns="columns">
                 <template #question-data="{ row }">
-                  <span class="result-value-small">
+                  <span
+                    class="result-value-small"
+                    :style="{ paddingLeft: `${row.level * 2}em` }"
+                  >
+                    <UIcon
+                      v-if="row.hasExpand"
+                      name="i-material-symbols:chevron-right"
+                      class="w-5 h-5 mr-1 align-middle cursor-pointer"
+                      :style="{
+                        color: 'var(--color-cold-purple)',
+                        transform: row.expanded
+                          ? 'rotate(90deg)'
+                          : 'rotate(0deg)',
+                        transition: 'transform 0.2s',
+                      }"
+                      @click.stop="toggleExpand(row)"
+                    />
                     {{ row.question }}
                   </span>
                 </template>
-
                 <template #theme-data="{ row }">
                   <span
                     v-for="theme in row.theme.split(',')"
@@ -27,37 +41,10 @@
                     {{ theme.trim() }}
                   </span>
                 </template>
-
                 <template #answer-data="{ row }">
                   <span class="result-value-small">
                     {{ row.answer }}
                   </span>
-                </template>
-
-                <template #expand="{ row }">
-                  <div class="p-4">
-                    <pre v-if="!row.children">{{ row }}</pre>
-                    <UTable
-                      v-else
-                      :rows="row.children"
-                      :columns="columns"
-                      class="nested-table"
-                      :ui="{ td: { base: 'bg-white' } }"
-                    />
-                  </div>
-                </template>
-
-                <template #expand-action="{ row, isExpanded, toggle }">
-                  <UIcon
-                    name="i-material-symbols:chevron-right"
-                    class="w-5 h-5 mt-1 cursor-pointer"
-                    v-if="row.hasExpand"
-                    @click="toggle"
-                    :style="{
-                      color: 'var(--color-cold-purple)',
-                      transform: isExpanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                    }"
-                  ></UIcon>
                 </template>
               </UTable>
             </div>
@@ -69,51 +56,47 @@
 </template>
 
 <script setup>
+import { ref, computed } from 'vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
-const rows = [
+// Your flattened rows array (as in your example)
+const rows = ref([
   {
+    id: 1,
     question: 'Is there a codification on choice of law?',
     theme: 'Codification',
     answer: 'Yes',
+    level: 0,
     hasExpand: true,
-    children: [
-      {
-        question: 'What is the main source of codification?',
-        theme: 'Codification',
-        answer: 'SPILA',
-        hasExpand: false,
-      },
-      {
-        question: 'When was it enacted?',
-        theme: 'Codification',
-        answer: '1987',
-        hasExpand: false,
-      },
-    ],
+    expanded: false,
   },
   {
+    id: 2,
+    question: 'What is the main source of codification?',
+    theme: 'Codification',
+    answer: 'SPILA',
+    level: 1,
+    parentId: 1,
+  },
+  {
+    id: 3,
+    question: 'When was it enacted?',
+    theme: 'Codification',
+    answer: '1987',
+    level: 1,
+    parentId: 1,
+  },
+  {
+    id: 4,
     question:
       'Do the courts have the authority to refer to the HCCH Principles as persuasive authority?',
     theme: 'Codification, HCCH Principles',
     answer: 'Yes',
-    hasExpand: true,
+    level: 0,
+    hasExpand: false,
   },
-  {
-    question:
-      'Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in this jurisdiction?',
-    theme: 'Party autonomy, Freedom of choice',
-    answer: 'No',
-    hasExpand: true,
-  },
-  {
-    question:
-      'More specifically, are the parties to an international commercial contract allowed to choose the law applicable to their contract?',
-    theme: 'Party autonomy, Freedom of choice',
-    answer: 'No',
-    hasExpand: true,
-  },
-]
+  // ...more rows
+])
 
 const columns = [
   { key: 'question', label: 'Question' },
@@ -121,19 +104,43 @@ const columns = [
   { key: 'answer', label: 'Answer' },
 ]
 
-const expand = ref({
-  openedRows: [rows[0]],
-  row: {},
+// Compute visible rows based on expanded state
+const visibleRows = computed(() => {
+  const result = []
+  const parentExpanded = {}
+
+  for (const row of rows.value) {
+    // Top-level rows are always shown
+    if (row.level === 0) {
+      result.push(row)
+      parentExpanded[row.id] = row.expanded
+    } else {
+      // Show child if its parent is expanded
+      if (parentExpanded[row.parentId]) {
+        result.push(row)
+      }
+    }
+    // Track expanded state for nested children (if needed)
+    if (row.hasExpand) {
+      parentExpanded[row.id] = row.expanded
+    }
+  }
+  return result
 })
+
+// Toggle expand/collapse for a row
+function toggleExpand(row) {
+  row.expanded = !row.expanded
+}
 </script>
 
 <style scoped>
 .result-value-small,
-.result-value-small :deep(td),
-.result-value-small :deep(th),
-.result-value-small :deep(tr),
-.result-value-small :deep(span),
-.result-value-small :deep(div) {
+.result-value-small td,
+.result-value-small th,
+.result-value-small tr,
+.result-value-small span,
+.result-value-small div {
   color: var(--color-cold-night) !important;
   line-height: 26px !important;
 }
@@ -145,71 +152,71 @@ const expand = ref({
   width: calc(100% + 2 * var(--card-padding, 1.5rem));
   margin-bottom: -1.55rem !important;
 }
-.table-full-width-wrapper :deep(table) {
+.table-full-width-wrapper table {
   width: 100% !important;
   table-layout: auto;
   table-layout: fixed;
 }
 
-.table-full-width-wrapper :deep(td),
-.table-full-width-wrapper :deep(th) {
+.table-full-width-wrapper td,
+.table-full-width-wrapper th {
   white-space: normal !important;
   word-break: break-word !important;
   overflow-wrap: break-word !important;
 }
 
-.table-full-width-wrapper :deep(tr) {
-  height: 80px;
-  min-height: 80px;
+.table-full-width-wrapper tr {
+  height: 80px !important;
+  min-height: 80px !important;
 }
 
 /* Remove gray background on expanded row (Nuxt UI/UTable uses .bg-gray-50 or similar) */
-.table-full-width-wrapper :deep(tr[aria-expanded='true']),
-.table-full-width-wrapper :deep(tr.is-expanded),
-.table-full-width-wrapper :deep(tr.expanded),
-.table-full-width-wrapper :deep(tr[aria-selected='true']),
-.table-full-width-wrapper :deep(.bg-gray-50),
-.table-full-width-wrapper :deep(.bg-gray-100),
-.table-full-width-wrapper :deep(.bg-gray-200) {
+.table-full-width-wrapper tr[aria-expanded='true'],
+.table-full-width-wrapper tr.is-expanded,
+.table-full-width-wrapper tr.expanded,
+.table-full-width-wrapper tr[aria-selected='true'],
+.table-full-width-wrapper .bg-gray-50,
+.table-full-width-wrapper .bg-gray-100,
+.table-full-width-wrapper .bg-gray-200 {
   background-color: white !important;
 }
 
-.table-full-width-wrapper :deep(thead) {
+.table-full-width-wrapper thead {
   display: none;
 }
 
-.table-full-width-wrapper :deep(th),
-.table-full-width-wrapper :deep(td) {
+.table-full-width-wrapper th,
+.table-full-width-wrapper td {
   border-bottom: 1px solid var(--color-cold-gray) !important;
   border-top: 1px solid var(--color-cold-gray) !important;
   border-left: 0px;
   border-right: 0px;
 }
 
-.table-full-width-wrapper :deep(td:first-child),
-.table-full-width-wrapper :deep(th:first-child) {
+.table-full-width-wrapper td:first-child,
+.table-full-width-wrapper th:first-child {
   width: 36px !important;
   min-width: 32px !important;
   max-width: 40px !important;
   padding-left: 1rem !important;
 }
-.table-full-width-wrapper :deep(td:nth-child(2)),
-.table-full-width-wrapper :deep(th:nth-child(2)) {
+.table-full-width-wrapper td:nth-child(2),
+.table-full-width-wrapper th:nth-child(2) {
   width: 50%;
 }
-.table-full-width-wrapper :deep(td:nth-child(3)),
-.table-full-width-wrapper :deep(th:nth-child(3)) {
+.table-full-width-wrapper td:nth-child(3),
+.table-full-width-wrapper th:nth-child(3) {
   width: 40%;
   text-align: right !important;
 }
-.table-full-width-wrapper :deep(td:nth-child(4)),
-.table-full-width-wrapper :deep(th:nth-child(4)) {
+.table-full-width-wrapper td:nth-child(4),
+.table-full-width-wrapper th:nth-child(4) {
   width: 10%;
   text-align: right !important;
   padding-right: 2em !important;
 }
 
-.info-tooltip-small :deep(.icon-span) {
+.info-tooltip-small .icon-span {
   font-size: 0.75em !important;
 }
 </style>
