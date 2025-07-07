@@ -12,7 +12,7 @@
             <div class="table-full-width-wrapper">
               <UTable v-model:expand="expand" :rows="rows" :columns="columns">
                 <template #theme-data="{ row }">
-                  <span :class="row.theme.class">{{ row.theme.value }}</span>
+                  <span class="label-theme">{{ row.theme }}</span>
                 </template>
 
                 <template #expand="{ row }">
@@ -35,34 +35,25 @@ import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 const rows = [
   {
     question: 'Is there a codification on choice of law?',
-    theme: { value: 'Codification', class: 'label-theme' },
+    theme: 'Codification',
     answer: 'Yes',
   },
   {
     question:
       'Do the courts have the authority to refer to the HCCH Principles as persuasive authority?',
-    theme: {
-      value: 'Codification, HCCH Principles',
-      class: 'label-theme',
-    },
+    theme: 'Codification, HCCH Principles',
     answer: 'Yes',
   },
   {
     question:
       'Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in this jurisdiction?',
-    theme: {
-      value: 'Party autonomy, Freedom of choice',
-      class: 'label-theme',
-    },
+    theme: 'Party autonomy, Freedom of choice',
     answer: 'No',
   },
   {
     question:
       'More specifically, are the parties to an international commercial contract allowed to choose the law applicable to their contract?',
-    theme: {
-      value: 'Party autonomy, Freedom of choice',
-      class: 'label-theme',
-    },
+    theme: 'Party autonomy, Freedom of choice',
     answer: 'No',
   },
 ]
