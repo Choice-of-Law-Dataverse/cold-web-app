@@ -14,16 +14,19 @@ export function useQuestions() {
   // Preprocess data to handle custom rendering cases and mapping
   const processedQuestionsData = computed(() => {
     if (!questionsData.value || !Array.isArray(questionsData.value)) return []
-    return questionsData.value.map((item) => ({
-      id: item.ID,
-      question: item.Question,
-      theme: item['Theme Code'],
-      answer: 'yesh',
-      level: 0,
-      hasExpand: false, // Default to not expandable
-      expanded: false, // Default to collapsed
-      parentId: null, // Default to no parent
-    }))
+    return questionsData.value
+      .slice() // create a shallow copy to avoid mutating the original
+      .sort((a, b) => a.ID.localeCompare(b.ID))
+      .map((item) => ({
+        id: item.ID,
+        question: item.Question,
+        theme: item['Themes Link'],
+        answer: 'yesh',
+        level: 0,
+        hasExpand: false,
+        expanded: false,
+        parentId: null,
+      }))
   })
 
   const filteredKeyLabelPairs = computed(() => {
