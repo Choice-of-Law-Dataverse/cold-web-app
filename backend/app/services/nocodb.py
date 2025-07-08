@@ -26,5 +26,5 @@ class NocoDBService:
         resp.raise_for_status()
         payload = resp.json()
         logger.debug("NocoDBService.get_row response payload: %s", payload)
-        # NocoDB returns data under 'data' key
-        return payload.get('data', {})
+        # return full payload directly
+        return payload

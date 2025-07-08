@@ -181,6 +181,7 @@ class SearchService:
             except Exception:
                 full_data = {}
             # Always include NocoDB enrichment under a dedicated key
+            print("Full data from NocoDB for row:", full_data)
             merged = {**row, **full_data}
             merged["nocodb_data"] = full_data  # Add enrichment explicitly
             augmented.append(merged)
