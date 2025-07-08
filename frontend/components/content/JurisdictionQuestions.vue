@@ -50,7 +50,9 @@
                 <template #theme-data="{ row }">
                   <div style="text-align: right">
                     <span
-                      v-for="theme in row.theme.split(',')"
+                      v-for="theme in typeof row.theme === 'string'
+                        ? row.theme.split(',')
+                        : []"
                       :key="theme.trim()"
                       class="label-theme"
                       style="margin-right: 12px"
@@ -76,57 +78,19 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useQuestions } from '@/composables/useQuestions'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
-const tempAnswer = 'Yeah'
+// const { questions, loading, error, fetchQuestions } = useQuestions()
+const { processedQuestionsData, loading, error, fetchQuestions } =
+  useQuestions()
 
-const rows = ref([
-  {
-    id: '01-P',
-    question: 'Is there a codification on choice of law?',
-    theme: 'Codification',
-    answer: tempAnswer,
-    level: 0,
-    hasExpand: true,
-    // expanded: false,
-  },
-  {
-    id: '01.1-P',
-    question: 'What is the main source of codification?',
-    theme: 'Codification',
-    answer: tempAnswer,
-    level: 1,
-    parentId: '01-P',
-  },
-  {
-    id: '01.2-P',
-    question: 'Why was it enacted?',
-    theme: 'Codification',
-    answer: tempAnswer,
-    level: 1,
-    parentId: '01-P',
-    hasExpand: true,
-    expanded: false,
-  },
-  {
-    id: '01.2.1-P-child',
-    question: 'When was it enacted?',
-    theme: 'Codification',
-    answer: tempAnswer,
-    level: 2,
-    parentId: '01.2-P',
-  },
-  {
-    id: '01.2.1-P',
-    question:
-      'Do the courts have the authority to refer to the HCCH Principles as persuasive authority?',
-    theme: 'Codification, HCCH Principles',
-    answer: tempAnswer,
-    level: 0,
-    hasExpand: false,
-  },
-])
+onMounted(async () => {
+  await fetchQuestions()
+})
+
+const rows = computed(() => processedQuestionsData.value)
 
 const columns = [
   { key: 'question', label: 'Question' },
@@ -135,28 +99,7 @@ const columns = [
 ]
 
 // Compute visible rows based on expanded state
-const visibleRows = computed(() => {
-  const result = []
-  const parentExpanded = {}
-
-  for (const row of rows.value) {
-    // Top-level rows are always shown
-    if (row.level === 0) {
-      result.push(row)
-      parentExpanded[row.id] = row.expanded
-    } else {
-      // Show child if its parent is expanded
-      if (parentExpanded[row.parentId]) {
-        result.push(row)
-      }
-    }
-    // Track expanded state for nested children (if needed)
-    if (row.hasExpand) {
-      parentExpanded[row.id] = row.expanded
-    }
-  }
-  return result
-})
+const visibleRows = computed(() => rows.value)
 
 function toggleExpand(row) {
   row.expanded = !row.expanded
