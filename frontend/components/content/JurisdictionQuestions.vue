@@ -5,7 +5,7 @@
         <UCard class="cold-ucard">
           <div>
             <h2 class="mt-2 mb-8">
-              Questions and Answers for Switzerland
+              Questions and Answers for {{ jurisdictionName }}
               <InfoTooltip text="Questions" class="info-tooltip-small" />
             </h2>
             <div class="table-full-width-wrapper">
@@ -78,13 +78,16 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, useAttrs } from 'vue'
 import { useQuestions } from '@/composables/useQuestions'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
 // const { questions, loading, error, fetchQuestions } = useQuestions()
 const { processedQuestionsData, loading, error, fetchQuestions } =
   useQuestions()
+
+const attrs = useAttrs()
+const jurisdictionName = computed(() => attrs.formattedJurisdiction?.[0] || '')
 
 onMounted(async () => {
   await fetchQuestions()

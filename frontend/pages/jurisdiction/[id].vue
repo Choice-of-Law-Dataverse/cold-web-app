@@ -115,7 +115,7 @@
       </template>
     </template>
   </BaseDetailLayout>
-  <JurisdictionQuestions />
+  <JurisdictionQuestions :formattedJurisdiction="[jurisdictionData?.Name]" />
 </template>
 
 <script setup>
