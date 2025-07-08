@@ -180,8 +180,9 @@ class SearchService:
                 full_data = self.nocodb.get_row(table, record_id)
             except Exception:
                 full_data = {}
-            # merge partial and full data
+            # Always include NocoDB enrichment under a dedicated key
             merged = {**row, **full_data}
+            merged["nocodb_data"] = full_data  # Add enrichment explicitly
             augmented.append(merged)
         return {
             "test": config.TEST,

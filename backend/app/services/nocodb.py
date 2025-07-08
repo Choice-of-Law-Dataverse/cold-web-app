@@ -18,7 +18,7 @@ class NocoDBService:
         """
         print(f"Fetching row {record_id} from table {table} in NocoDB")
         logger = logging.getLogger(__name__)
-        url = f"{self.base_url}/api/v1/db/data/{table}/{record_id}"
+        url = f"{self.base_url}/{table}/{record_id}"
         logger.debug("NocoDBService.get_row: GET %s", url)
         logger.debug("NocoDBService headers: %s", self.headers)
         resp = requests.get(url, headers=self.headers)
