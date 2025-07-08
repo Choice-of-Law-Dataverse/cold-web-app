@@ -184,6 +184,16 @@ class SearchService:
             print("Full data from NocoDB for row:", full_data)
             merged = {**row, **full_data}
             merged["nocodb_data"] = full_data  # Add enrichment explicitly
+            # merge all full_data fields into top-level, unwrap lists
+            for k, v in full_data.items():
+                if isinstance(v, list):
+                    # unwrap list of dicts or join primitive lists
+                    if v and isinstance(v[0], dict):
+                        merged[k] = v[0]
+                    else:
+                        merged[k] = ", ".join(str(x) for x in v)
+                else:
+                    merged[k] = v
             augmented.append(merged)
         return {
             "test": config.TEST,
