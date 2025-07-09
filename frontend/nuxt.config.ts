@@ -27,7 +27,11 @@ export default defineNuxtConfig({
     },
     public: {
       apiBaseUrl: process.env.API_BASE_URL,
+<<<<<<< HEAD
       FASTAPI: process.env.FASTAPI_API_TOKEN
+=======
+      test: process.env.TEST || 'no test message found'
+>>>>>>> 0b4cf607bd54c2f5369d8159dc1994f203741852
     }
   },
   robots: {

@@ -8,4 +8,8 @@ services:
       - .env
     environment:
       API_BASE_URL: ${API_BASE_URL}
+<<<<<<< HEAD
       FASTAPI_API_TOKEN: ${FASTAPI_API_TOKEN}
+=======
+      TEST: ${TEST}
+>>>>>>> 0b4cf607bd54c2f5369d8159dc1994f203741852

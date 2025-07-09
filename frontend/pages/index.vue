@@ -4,6 +4,7 @@
       <!-- Header Section -->
       <div class="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6">
         <div class="col-span-12">
+<<<<<<< HEAD
           <div class="text-[60px] leading-[68px] font-bold mb-3 md:text-left">
             Choice of Law<br />
             Dataverse
@@ -20,7 +21,17 @@
                 <span>Read more</span>
               </UButton>
             </span>
+=======
+          <h1 class="text-3xl font-bold mb-3 md:text-left">
+            Choice of Law Dataverse [Alpha]
+          </h1>
+          <h2 class="text-xl font-medium mb-6 md:text-left">
+            Find relevant case law and choice of law answers for your case.
+>>>>>>> 0b4cf607bd54c2f5369d8159dc1994f203741852
           </h2>
+          <h3 class="text-lg font-normal mb-6 md:text-left" v-if="testVar">
+            Runtime TEST variable: {{ testVar }}
+          </h3>
         </div>
 
         <div class="col-span-12">
@@ -130,6 +141,7 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import PopularSearches from '@/components/landing-page/PopularSearches.vue'
 import TopLiteratureThemes from '@/components/landing-page/TopLiteratureThemes.vue'
 import JurisdictionMap from '@/components/landing-page/JurisdictionMap.vue'
@@ -160,6 +172,20 @@ useHead({
     },
   ],
 })
+=======
+import { useRuntimeConfig } from '#app'
+import PopularSearches from '~/components/PopularSearches.vue'
+import JurisdictionMap from '~/components/JurisdictionMap.vue'
+import CountrySelectMenu from '~/components/TempJurisdictionPicker.vue'
+import PlotCourtDecisionsJurisdiction from '~/components/PlotCourtDecisionsJurisdiction.vue'
+import ConnectCard from '~/components/LandingPage/ConnectCard.vue'
+
+import { externalLinks } from '~/utils/externalLinks'
+const links = externalLinks
+
+const config = useRuntimeConfig()
+const testVar = config.public.test
+>>>>>>> 0b4cf607bd54c2f5369d8159dc1994f203741852
 </script>
 
 <style scoped>
