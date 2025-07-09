@@ -18,7 +18,7 @@
                   >
                     <span
                       v-if="row.hasExpand"
-                      class="mr-1 align-middle cursor-pointer"
+                      class="mr-1 align-middle cursor-pointer mt-1"
                       @click.stop="toggleExpand(row)"
                       :style="{
                         display: 'inline-flex',
@@ -39,7 +39,7 @@
                         <path
                           d="M9 6l6 6-6 6"
                           stroke="currentColor"
-                          stroke-width="2"
+                          stroke-width="3"
                           stroke-linecap="square"
                           stroke-linejoin="square"
                         />
