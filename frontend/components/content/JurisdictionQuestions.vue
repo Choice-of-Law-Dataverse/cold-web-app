@@ -18,7 +18,7 @@
                   >
                     <span
                       v-if="row.hasExpand"
-                      class="mr-1 align-middle cursor-pointer mt-1"
+                      class="mr-1 align-middle cursor-pointer mt-1 expand-icon"
                       @click.stop="toggleExpand(row)"
                       :style="{
                         display: 'inline-flex',
@@ -238,5 +238,14 @@ function collapseDescendants(parentId) {
   display: block;
   width: 100%;
   word-break: break-word;
+  padding-top: 1.1em;
+}
+.expand-icon {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.5em;
+  cursor: pointer;
+  /* Optional: tweak vertical alignment */
+  margin-top: 1.3em;
 }
 </style>
