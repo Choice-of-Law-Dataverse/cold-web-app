@@ -27,12 +27,19 @@ export function useQuestions() {
       idsByLevel[level].push(id)
     }
 
-    return sorted.map((item, idx, arr) => {
+    // Build a map from id to array index for quick lookup
+    const idToIndex = {}
+    sorted.forEach((item, idx) => {
+      idToIndex[item.ID] = idx
+    })
+
+    // Precompute children for each id
+    const childrenMap = {}
+    sorted.forEach((item, idx, arr) => {
       const id = item.ID
       const level = typeof id === 'string' ? id.match(/\./g)?.length || 0 : 0
       let parentId = null
       if (level > 0) {
-        // Find previous id in sorted list with one less period
         for (let j = idx - 1; j >= 0; j--) {
           const prevId = arr[j].ID
           const prevLevel = prevId.match(/\./g)?.length || 0
@@ -42,13 +49,34 @@ export function useQuestions() {
           }
         }
       }
+      if (parentId) {
+        if (!childrenMap[parentId]) childrenMap[parentId] = []
+        childrenMap[parentId].push(id)
+      }
+    })
+
+    return sorted.map((item, idx, arr) => {
+      const id = item.ID
+      const level = typeof id === 'string' ? id.match(/\./g)?.length || 0 : 0
+      let parentId = null
+      if (level > 0) {
+        for (let j = idx - 1; j >= 0; j--) {
+          const prevId = arr[j].ID
+          const prevLevel = prevId.match(/\./g)?.length || 0
+          if (prevLevel === level - 1) {
+            parentId = prevId
+            break
+          }
+        }
+      }
+      const hasExpand = !!childrenMap[id]
       return {
         id,
         question: item.Question,
         theme: item['Themes Link'],
         answer: 'yesh',
         level,
-        hasExpand: false,
+        hasExpand,
         expanded: false,
         parentId,
       }
