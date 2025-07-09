@@ -245,7 +245,6 @@ function collapseDescendants(parentId) {
   align-items: center;
   margin-right: 0.5em;
   cursor: pointer;
-  /* Optional: tweak vertical alignment */
-  margin-top: 1.4em;
+  margin-top: 1.45em;
 }
 </style>
