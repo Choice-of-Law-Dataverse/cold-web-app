@@ -11,6 +11,37 @@ export function useQuestions() {
   const keyLabelPairs = questionConfig.keyLabelPairs
   const valueClassMap = questionConfig.valueClassMap
 
+  // Store the answer for the fixed id
+  const answer = ref('')
+
+  // Fetch answer for a fixed id (for now)
+  async function fetchAnswerForFixedId() {
+    try {
+      const response = await fetch(
+        `${config.public.apiBaseUrl}/search/details`,
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${config.public.FASTAPI}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ table: 'Answers', id: 'CHE_01.2-P' }),
+        }
+      )
+      if (!response.ok) {
+        throw new Error(`Failed to fetch answer: ${response.statusText}`)
+      }
+      const data = await response.json()
+      answer.value = data.Answer || ''
+    } catch (err) {
+      console.error('Error fetching answer:', err)
+      answer.value = ''
+    }
+  }
+
+  // Fetch answer for the fixed id on load
+  fetchAnswerForFixedId()
+
   // Preprocess data to handle custom rendering cases and mapping
   const processedQuestionsData = computed(() => {
     if (!questionsData.value || !Array.isArray(questionsData.value)) return []
@@ -74,7 +105,7 @@ export function useQuestions() {
         id,
         question: item.Question,
         theme: item['Themes Link'],
-        answer: 'yesh',
+        answer: answer.value,
         level,
         hasExpand,
         expanded: false,
