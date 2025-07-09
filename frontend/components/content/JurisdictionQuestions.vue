@@ -11,9 +11,10 @@
             <div class="table-full-width-wrapper">
               <UTable :rows="visibleRows" :columns="columns">
                 <template #question-data="{ row }">
-                  <span
-                    class="result-value-small"
-                    :style="{ paddingLeft: `${row.level * 2}em` }"
+                  <div
+                    class="result-value-small question-indent"
+                    :style="{ '--indent': `${row.level * 2}em` }"
+                    style="display: flex; align-items: flex-start"
                   >
                     <span
                       v-if="row.hasExpand"
@@ -44,8 +45,10 @@
                         />
                       </svg>
                     </span>
-                    {{ row.question }}
-                  </span>
+                    <span class="question-text" style="white-space: pre-line">{{
+                      row.question
+                    }}</span>
+                  </div>
                 </template>
                 <template #theme-data="{ row }">
                   <div style="text-align: right">
@@ -226,5 +229,14 @@ function collapseDescendants(parentId) {
 
 .info-tooltip-small {
   font-size: 0.75em !important;
+}
+.question-indent {
+  padding-left: var(--indent);
+}
+.question-text {
+  /* Ensures text wraps and all lines are indented */
+  display: block;
+  width: 100%;
+  word-break: break-word;
 }
 </style>
