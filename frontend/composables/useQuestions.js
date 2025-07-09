@@ -17,16 +17,20 @@ export function useQuestions() {
     return questionsData.value
       .slice() // create a shallow copy to avoid mutating the original
       .sort((a, b) => a.ID.localeCompare(b.ID))
-      .map((item) => ({
-        id: item.ID,
-        question: item.Question,
-        theme: item['Themes Link'],
-        answer: 'yesh',
-        level: 0,
-        hasExpand: false,
-        expanded: false,
-        parentId: null,
-      }))
+      .map((item) => {
+        const id = item.ID
+        const level = typeof id === 'string' ? id.match(/\./g)?.length || 0 : 0
+        return {
+          id,
+          question: item.Question,
+          theme: item['Themes Link'],
+          answer: 'yesh',
+          level,
+          hasExpand: false,
+          expanded: false,
+          parentId: null,
+        }
+      })
   })
 
   const filteredKeyLabelPairs = computed(() => {
