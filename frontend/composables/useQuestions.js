@@ -14,23 +14,45 @@ export function useQuestions() {
   // Preprocess data to handle custom rendering cases and mapping
   const processedQuestionsData = computed(() => {
     if (!questionsData.value || !Array.isArray(questionsData.value)) return []
-    return questionsData.value
-      .slice() // create a shallow copy to avoid mutating the original
+    const sorted = questionsData.value
+      .slice()
       .sort((a, b) => a.ID.localeCompare(b.ID))
-      .map((item) => {
-        const id = item.ID
-        const level = typeof id === 'string' ? id.match(/\./g)?.length || 0 : 0
-        return {
-          id,
-          question: item.Question,
-          theme: item['Themes Link'],
-          answer: 'yesh',
-          level,
-          hasExpand: false,
-          expanded: false,
-          parentId: null,
+
+    // Build a lookup for each level
+    const idsByLevel = {}
+    for (const item of sorted) {
+      const id = item.ID
+      const level = typeof id === 'string' ? id.match(/\./g)?.length || 0 : 0
+      if (!idsByLevel[level]) idsByLevel[level] = []
+      idsByLevel[level].push(id)
+    }
+
+    return sorted.map((item, idx, arr) => {
+      const id = item.ID
+      const level = typeof id === 'string' ? id.match(/\./g)?.length || 0 : 0
+      let parentId = null
+      if (level > 0) {
+        // Find previous id in sorted list with one less period
+        for (let j = idx - 1; j >= 0; j--) {
+          const prevId = arr[j].ID
+          const prevLevel = prevId.match(/\./g)?.length || 0
+          if (prevLevel === level - 1) {
+            parentId = prevId
+            break
+          }
         }
-      })
+      }
+      return {
+        id,
+        question: item.Question,
+        theme: item['Themes Link'],
+        answer: 'yesh',
+        level,
+        hasExpand: false,
+        expanded: false,
+        parentId,
+      }
+    })
   })
 
   const filteredKeyLabelPairs = computed(() => {
