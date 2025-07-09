@@ -93,7 +93,14 @@ onMounted(async () => {
   await fetchQuestions()
 })
 
-const rows = computed(() => processedQuestionsData.value)
+// Use a ref so we can mutate expanded state reactively
+const rows = ref([])
+
+onMounted(async () => {
+  await fetchQuestions()
+  // Deep clone processedQuestionsData so each row is a unique object
+  rows.value = processedQuestionsData.value.map((row) => ({ ...row }))
+})
 
 const columns = [
   { key: 'question', label: 'Question' },
@@ -102,7 +109,27 @@ const columns = [
 ]
 
 // Compute visible rows based on expanded state
-const visibleRows = computed(() => rows.value)
+// const visibleRows = computed(() => rows.value)
+
+const visibleRows = computed(() => {
+  const result = []
+  const parentExpanded = {}
+
+  for (const row of rows.value) {
+    // Always show top-level rows
+    if (row.level === 0) {
+      result.push(row)
+      parentExpanded[row.id] = row.expanded
+    } else {
+      // Show child if its parent is expanded
+      if (parentExpanded[row.parentId]) {
+        result.push(row)
+        parentExpanded[row.id] = row.expanded
+      }
+    }
+  }
+  return result
+})
 
 function toggleExpand(row) {
   row.expanded = !row.expanded
