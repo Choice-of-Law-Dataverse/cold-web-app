@@ -31,8 +31,8 @@
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
                         viewBox="0 0 24 24"
-                        width="18"
-                        height="18"
+                        width="16"
+                        height="16"
                         fill="none"
                         style="color: var(--color-cold-purple)"
                       >
@@ -246,6 +246,6 @@ function collapseDescendants(parentId) {
   margin-right: 0.5em;
   cursor: pointer;
   /* Optional: tweak vertical alignment */
-  margin-top: 1.3em;
+  margin-top: 1.4em;
 }
 </style>
