@@ -327,7 +327,7 @@ function collapseDescendants(parentId) {
 
 .table-full-width-wrapper td:first-child,
 .table-full-width-wrapper th:first-child {
-  width: 45% !important;
+  width: 380px !important;
 }
 .table-full-width-wrapper td:nth-child(2),
 .table-full-width-wrapper th:nth-child(2) {
@@ -345,6 +345,36 @@ function collapseDescendants(parentId) {
   word-wrap: break-word !important;
   overflow-wrap: break-word !important;
   line-height: 26px !important;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 1024px) {
+  .table-full-width-wrapper td:first-child,
+  .table-full-width-wrapper th:first-child {
+    width: 50% !important;
+  }
+
+  /* Stack theme labels vertically on tablet screens */
+  .table-full-width-wrapper td:nth-child(2) div,
+  .table-full-width-wrapper th:nth-child(2) div {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: flex-end !important;
+    gap: 0.25rem !important;
+  }
+
+  .table-full-width-wrapper td:nth-child(2) .label-theme,
+  .table-full-width-wrapper th:nth-child(2) .label-theme {
+    margin-right: 0 !important;
+    margin-bottom: 0.25rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .table-full-width-wrapper td:first-child,
+  .table-full-width-wrapper th:first-child {
+    width: 45% !important;
+  }
 }
 
 .info-tooltip-small {
@@ -410,9 +440,11 @@ function collapseDescendants(parentId) {
   display: block;
   width: 100%;
   word-break: break-word;
-  color: var(--color-cold-night) !important;
-  line-height: 1.6 !important;
-  font-size: 0.95rem;
+  font-size: 14px !important;
+  line-height: 26px !important;
+  /* color: var(--color-cold-night) !important; */
+  /* line-height: 1.6 !important; */
+  /* font-size: 0.95rem; */
 }
 
 .expand-icon-mobile {
