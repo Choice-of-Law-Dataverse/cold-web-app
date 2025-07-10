@@ -5,17 +5,18 @@ export function useQuestions() {
   const questionsData = ref([])
   const loading = ref(true)
   const error = ref(null)
+  const answersLoading = ref(false)
 
   const config = useRuntimeConfig()
 
   const keyLabelPairs = questionConfig.keyLabelPairs
   const valueClassMap = questionConfig.valueClassMap
 
-  // Store the answer for the fixed id
-  const answer = ref('')
+  // Store all answers keyed by answer ID
+  const answersMap = ref({})
 
-  // Fetch answer for a fixed id (for now)
-  async function fetchAnswerForFixedId() {
+  // Fetch answer for a specific ID
+  async function fetchAnswer(answerId) {
     try {
       const response = await fetch(
         `${config.public.apiBaseUrl}/search/details`,
@@ -25,22 +26,59 @@ export function useQuestions() {
             authorization: `Bearer ${config.public.FASTAPI}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ table: 'Answers', id: 'CHE_01.2-P' }),
+          body: JSON.stringify({ table: 'Answers', id: answerId }),
         }
       )
       if (!response.ok) {
         throw new Error(`Failed to fetch answer: ${response.statusText}`)
       }
       const data = await response.json()
-      answer.value = data.Answer || ''
+      return data.Answer || ''
     } catch (err) {
-      console.error('Error fetching answer:', err)
-      answer.value = ''
+      console.error(`Error fetching answer for ${answerId}:`, err)
+      return ''
     }
   }
 
-  // Fetch answer for the fixed id on load
-  fetchAnswerForFixedId()
+  // Fetch answers for all questions
+  async function fetchAllAnswers() {
+    if (!questionsData.value || !Array.isArray(questionsData.value)) return
+
+    answersLoading.value = true
+
+    // Get ISO3 code from the URL
+    let iso3 = ''
+    if (typeof window !== 'undefined') {
+      const match = window.location.pathname.match(/\/jurisdiction\/([^/]+)/)
+      if (match && match[1]) {
+        iso3 = match[1].toUpperCase()
+      }
+    }
+
+    try {
+      // Create promises for all answer fetches
+      const answerPromises = questionsData.value.map(async (item) => {
+        const answerId = iso3 ? `${iso3}_${item.ID}` : item.ID
+        const answer = await fetchAnswer(answerId)
+        return { id: answerId, answer }
+      })
+
+      // Wait for all answers to be fetched
+      const results = await Promise.all(answerPromises)
+
+      // Build the answers map
+      const newAnswersMap = {}
+      results.forEach(({ id, answer }) => {
+        newAnswersMap[id] = answer
+      })
+
+      answersMap.value = newAnswersMap
+    } catch (err) {
+      console.error('Error fetching answers:', err)
+    } finally {
+      answersLoading.value = false
+    }
+  }
 
   // Preprocess data to handle custom rendering cases and mapping
   const processedQuestionsData = computed(() => {
@@ -109,11 +147,15 @@ export function useQuestions() {
           iso3 = match[1].toUpperCase()
         }
       }
+
+      const answerId = iso3 ? `${iso3}_${item['ID']}` : item['ID']
+      const answerText = answersMap.value[answerId] || ''
+
       return {
         id,
         question: item.Question,
         theme: item['Themes Link'],
-        answer: iso3 ? `${iso3}_${item['ID']}` : item['ID'],
+        answer: answerText,
         level,
         hasExpand,
         expanded: false,
@@ -159,6 +201,9 @@ export function useQuestions() {
       }
 
       questionsData.value = data
+
+      // After questions are loaded, fetch the answers
+      await fetchAllAnswers()
     } catch (err) {
       error.value = err.message
       console.error('Error fetching questions:', err)
@@ -172,9 +217,12 @@ export function useQuestions() {
     questionsData,
     loading,
     error,
+    answersLoading,
+    answersMap,
     processedQuestionsData,
     filteredKeyLabelPairs,
     valueClassMap,
     fetchQuestions,
+    fetchAllAnswers,
   }
 }
