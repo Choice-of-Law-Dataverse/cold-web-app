@@ -101,11 +101,19 @@ export function useQuestions() {
         }
       }
       const hasExpand = !!childrenMap[id]
+      // Get ISO3 code from the URL (assume /jurisdiction/[id]) and uppercase it
+      let iso3 = ''
+      if (typeof window !== 'undefined') {
+        const match = window.location.pathname.match(/\/jurisdiction\/([^/]+)/)
+        if (match && match[1]) {
+          iso3 = match[1].toUpperCase()
+        }
+      }
       return {
         id,
         question: item.Question,
         theme: item['Themes Link'],
-        answer: answer.value,
+        answer: iso3 ? `${iso3}_${item['ID']}` : item['ID'],
         level,
         hasExpand,
         expanded: false,
