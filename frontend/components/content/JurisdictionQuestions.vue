@@ -16,10 +16,10 @@
                 :progress="{ color: 'primary', animation: 'carousel' }"
               >
                 <template #loading-state>
-                  <div
-                    class="flex flex-col items-center justify-center py-8 space-y-3"
-                  >
-                    <LoadingNumber />
+                  <div class="flex flex-col py-8 space-y-3 ml-8">
+                    <LoadingBar />
+                    <LoadingBar />
+                    <LoadingBar />
                   </div>
                 </template>
                 <template #question-data="{ row }">
@@ -103,7 +103,8 @@
 import { ref, computed, onMounted, useAttrs } from 'vue'
 import { useQuestions } from '@/composables/useQuestions'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
-import LoadingNumber from '@/components/layout/LoadingNumber.vue'
+
+import LoadingBar from '@/components/layout/LoadingBar.vue'
 
 const {
   processedQuestionsData,
@@ -279,5 +280,14 @@ function collapseDescendants(parentId) {
   text-decoration: none;
   color: var(--color-cold-purple) !important;
   font-weight: 600 !important;
+}
+
+.table-full-width-wrapper :deep(.mb-2\.5) {
+  margin-bottom: 0 !important;
+}
+
+.table-full-width-wrapper :deep(.h-2) {
+  height: 16px !important;
+  min-height: 16px !important;
 }
 </style>
