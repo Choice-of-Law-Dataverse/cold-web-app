@@ -5,7 +5,7 @@
         <UCard class="cold-ucard">
           <div>
             <h2 class="mt-2 mb-8">
-              Questions and Answers for {{ jurisdictionName }}
+              Questions and Answers {{ jurisdictionName }}
               <InfoTooltip text="Questions" class="info-tooltip-small" />
             </h2>
             <div class="table-full-width-wrapper">
@@ -115,7 +115,10 @@ const {
 } = useQuestions()
 
 const attrs = useAttrs()
-const jurisdictionName = computed(() => attrs.formattedJurisdiction?.[0] || '')
+const jurisdictionName = computed(() => {
+  const name = attrs.formattedJurisdiction?.[0] || ''
+  return name ? `for ${name}` : ''
+})
 
 onMounted(async () => {
   await fetchQuestions()
