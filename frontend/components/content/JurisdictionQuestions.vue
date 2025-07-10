@@ -220,18 +220,24 @@ function collapseDescendants(parentId) {
 
 .table-full-width-wrapper td:first-child,
 .table-full-width-wrapper th:first-child {
-  width: 50% !important;
+  width: 45% !important;
 }
 .table-full-width-wrapper td:nth-child(2),
 .table-full-width-wrapper th:nth-child(2) {
-  width: 40%;
+  width: 35%;
   text-align: right !important;
 }
 .table-full-width-wrapper :deep(td:nth-child(3)),
 .table-full-width-wrapper :deep(th:nth-child(3)) {
-  width: 10%;
+  width: 20%;
+  min-width: 120px;
+  max-width: 200px;
   text-align: right !important;
   padding-right: 2.5em !important;
+  white-space: normal !important;
+  word-wrap: break-word !important;
+  overflow-wrap: break-word !important;
+  line-height: 26px !important;
 }
 
 .info-tooltip-small {
