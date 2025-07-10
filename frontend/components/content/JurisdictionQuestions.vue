@@ -257,12 +257,7 @@ function collapseDescendants(parentId) {
 
 .answer-link {
   text-decoration: none;
-  color: var(--color-cold-night) !important;
-  transition: color 0.2s ease;
-}
-
-.answer-link:hover {
   color: var(--color-cold-purple) !important;
-  text-decoration: underline;
+  font-weight: 600 !important;
 }
 </style>
