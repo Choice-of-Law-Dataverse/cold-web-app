@@ -66,7 +66,14 @@
                 </template>
                 <template #answer-data="{ row }">
                   <div style="text-align: right">
-                    <span class="result-value-small">
+                    <NuxtLink
+                      v-if="row.answer"
+                      :to="row.answerLink"
+                      class="result-value-small answer-link"
+                    >
+                      {{ row.answer }}
+                    </NuxtLink>
+                    <span v-else class="result-value-small">
                       {{ row.answer }}
                     </span>
                   </div>
@@ -246,5 +253,16 @@ function collapseDescendants(parentId) {
   margin-right: 0.5em;
   cursor: pointer;
   margin-top: 1.45em;
+}
+
+.answer-link {
+  text-decoration: none;
+  color: var(--color-cold-night) !important;
+  transition: color 0.2s ease;
+}
+
+.answer-link:hover {
+  color: var(--color-cold-purple) !important;
+  text-decoration: underline;
 }
 </style>

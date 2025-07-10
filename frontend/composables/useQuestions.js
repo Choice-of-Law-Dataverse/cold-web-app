@@ -156,6 +156,7 @@ export function useQuestions() {
         question: item.Question,
         theme: item['Themes Link'],
         answer: answerText,
+        answerLink: `/question/${answerId}`,
         level,
         hasExpand,
         expanded: false,
