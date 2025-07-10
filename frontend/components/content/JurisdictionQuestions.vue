@@ -9,7 +9,16 @@
               <InfoTooltip text="Questions" class="info-tooltip-small" />
             </h2>
             <div class="table-full-width-wrapper">
-              <UTable :rows="visibleRows" :columns="columns">
+              <UTable
+                :rows="visibleRows"
+                :columns="columns"
+                :loading="loading || answersLoading"
+                :loading-state="{
+                  icon: 'i-heroicons-arrow-path-20-solid',
+                  label: 'Loading questions and answers...',
+                }"
+                :progress="{ color: 'primary', animation: 'carousel' }"
+              >
                 <template #question-data="{ row }">
                   <div
                     class="result-value-small question-indent"
@@ -93,8 +102,13 @@ import { useQuestions } from '@/composables/useQuestions'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
 // const { questions, loading, error, fetchQuestions } = useQuestions()
-const { processedQuestionsData, loading, error, fetchQuestions } =
-  useQuestions()
+const {
+  processedQuestionsData,
+  loading,
+  error,
+  answersLoading,
+  fetchQuestions,
+} = useQuestions()
 
 const attrs = useAttrs()
 const jurisdictionName = computed(() => attrs.formattedJurisdiction?.[0] || '')
