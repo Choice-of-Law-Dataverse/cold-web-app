@@ -13,12 +13,15 @@
                 :rows="visibleRows"
                 :columns="columns"
                 :loading="loading || answersLoading"
-                :loading-state="{
-                  icon: 'i-heroicons-arrow-path-20-solid',
-                  label: 'Loading questions and answers...',
-                }"
                 :progress="{ color: 'primary', animation: 'carousel' }"
               >
+                <template #loading-state>
+                  <div
+                    class="flex flex-col items-center justify-center py-8 space-y-3"
+                  >
+                    <LoadingNumber />
+                  </div>
+                </template>
                 <template #question-data="{ row }">
                   <div
                     class="result-value-small question-indent"
@@ -100,8 +103,8 @@
 import { ref, computed, onMounted, useAttrs } from 'vue'
 import { useQuestions } from '@/composables/useQuestions'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import LoadingNumber from '@/components/layout/LoadingNumber.vue'
 
-// const { questions, loading, error, fetchQuestions } = useQuestions()
 const {
   processedQuestionsData,
   loading,
@@ -131,9 +134,6 @@ const columns = [
   { key: 'theme', label: 'Theme' },
   { key: 'answer', label: 'Answer' },
 ]
-
-// Compute visible rows based on expanded state
-// const visibleRows = computed(() => rows.value)
 
 const visibleRows = computed(() => {
   const result = []
