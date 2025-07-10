@@ -8,7 +8,8 @@
               Questions and Answers {{ jurisdictionName }}
               <InfoTooltip text="Questions" class="info-tooltip-small" />
             </h2>
-            <div class="table-full-width-wrapper">
+            <!-- Desktop Table View -->
+            <div class="table-full-width-wrapper hidden md:block">
               <UTable
                 :rows="visibleRows"
                 :columns="columns"
@@ -91,6 +92,94 @@
                   </div>
                 </template>
               </UTable>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="mobile-cards-wrapper block md:hidden">
+              <div
+                v-if="loading || answersLoading"
+                class="flex flex-col py-8 space-y-3"
+              >
+                <LoadingBar />
+                <LoadingBar />
+                <LoadingBar />
+              </div>
+              <div v-else class="space-y-4">
+                <div
+                  v-for="row in visibleRows"
+                  :key="row.id"
+                  class="mobile-card"
+                  :style="{ '--indent': `${row.level * 1}em` }"
+                >
+                  <div class="mobile-card-question">
+                    <div class="flex items-start">
+                      <span
+                        v-if="row.hasExpand"
+                        class="mr-2 cursor-pointer expand-icon-mobile"
+                        @click.stop="toggleExpand(row)"
+                        :style="{
+                          transform: row.expanded
+                            ? 'rotate(90deg)'
+                            : 'rotate(0deg)',
+                        }"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          viewBox="0 0 24 24"
+                          width="16"
+                          height="16"
+                          fill="none"
+                          style="color: var(--color-cold-purple)"
+                        >
+                          <path
+                            d="M9 6l6 6-6 6"
+                            stroke="currentColor"
+                            stroke-width="3"
+                            stroke-linecap="square"
+                            stroke-linejoin="square"
+                          />
+                        </svg>
+                      </span>
+                      <span
+                        class="mobile-question-text"
+                        style="white-space: pre-line"
+                        >{{ row.question }}</span
+                      >
+                    </div>
+                  </div>
+
+                  <div class="mobile-card-details">
+                    <div class="mobile-card-row" v-if="row.theme">
+                      <div class="mobile-card-themes">
+                        <span
+                          v-for="theme in typeof row.theme === 'string'
+                            ? row.theme.split(',')
+                            : []"
+                          :key="theme.trim()"
+                          class="label-theme"
+                        >
+                          {{ theme.trim() }}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="mobile-card-row" v-if="row.answer">
+                      <div class="mobile-card-answer">
+                        <NuxtLink
+                          v-if="row.answer"
+                          :to="row.answerLink"
+                          class="result-value-small answer-link"
+                        >
+                          {{ row.answer }}
+                        </NuxtLink>
+                        <span v-else class="result-value-small">
+                          {{ row.answer }}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </UCard>
@@ -292,5 +381,85 @@ function collapseDescendants(parentId) {
 .table-full-width-wrapper :deep(.h-2) {
   height: 16px !important;
   min-height: 16px !important;
+}
+
+/* Mobile responsive styles */
+.mobile-cards-wrapper {
+  margin-left: calc(-1 * var(--card-padding, 1.5rem));
+  margin-right: calc(-1 * var(--card-padding, 1.5rem));
+  width: calc(100% + 2 * var(--card-padding, 1.5rem));
+  margin-bottom: -1.55rem !important;
+  padding: 0 var(--card-padding, 1.5rem);
+}
+
+.mobile-card {
+  border-bottom: 1px solid var(--color-cold-gray);
+  padding: 1.5rem 0;
+  margin-left: var(--indent);
+}
+
+.mobile-card:last-child {
+  border-bottom: none;
+}
+
+.mobile-card-question {
+  margin-bottom: 1rem;
+}
+
+.mobile-question-text {
+  display: block;
+  width: 100%;
+  word-break: break-word;
+  color: var(--color-cold-night) !important;
+  line-height: 1.6 !important;
+  font-size: 0.95rem;
+}
+
+.expand-icon-mobile {
+  display: inline-flex;
+  align-items: flex-start;
+  margin-top: 0.2rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.mobile-card-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mobile-card-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.mobile-card-row:last-child {
+  margin-bottom: 0;
+}
+
+.mobile-card-themes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.mobile-card-themes .label-theme {
+  margin-right: 0 !important;
+}
+
+.mobile-card-answer {
+  color: var(--color-cold-night) !important;
+  line-height: 1.6 !important;
+}
+
+/* Ensure themes and answers are properly styled on mobile */
+@media (max-width: 767px) {
+  .answer-link {
+    word-break: break-word;
+  }
 }
 </style>
