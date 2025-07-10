@@ -151,11 +151,19 @@ export function useQuestions() {
       const answerId = iso3 ? `${iso3}_${item['ID']}` : item['ID']
       const answerText = answersMap.value[answerId] || ''
 
+      // Replace commas with '; ' if multiple answers are present
+      let answerDisplay = answerText
+      if (typeof answerText === 'string' && answerText.includes(',')) {
+        answerDisplay = answerText
+          .split(',')
+          .map((s) => s.trim())
+          .join('; ')
+      }
       return {
         id,
         question: item.Question,
         theme: item['Themes Link'],
-        answer: answerText,
+        answer: answerDisplay,
         answerLink: `/question/${answerId}`,
         level,
         hasExpand,
