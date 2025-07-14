@@ -4,7 +4,14 @@
       <div class="jc-col-1">
         <h2 class="mt-8 mb-6">Overview</h2>
       </div>
-      <div class="jc-col-2 jc-empty"></div>
+      <div class="jc-col-2">
+        <SearchFilters
+          :options="jurisdictionOptions"
+          v-model="currentJurisdictionFilter"
+          class="w-full"
+          showAvatars="true"
+        />
+      </div>
       <div class="jc-col-3 jc-empty"></div>
       <div class="jc-col-4 jc-empty"></div>
     </div>
@@ -48,6 +55,15 @@
   </div>
 </template>
 
+<script setup>
+import { ref } from 'vue'
+import SearchFilters from '@/components/search-results/SearchFilters.vue'
+
+// Initialize jurisdiction options with default value
+const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
+const currentJurisdictionFilter = ref([])
+</script>
+
 <style scoped>
 .jc-grid {
   display: grid;
@@ -75,10 +91,6 @@
 }
 .jc-col-4 {
   grid-column: 4;
-}
-
-.jc-empty {
-  /* Empty cell for layout spacing */
 }
 
 .jc-hr {
