@@ -6,7 +6,11 @@
     :valueClassMap="{}"
     sourceTable=""
   >
-    <JCOverview />
+    <template #full-width>
+      <div class="px-6 py-4">
+        <JCOverview />
+      </div>
+    </template>
   </BaseDetailLayout>
 </template>
 
