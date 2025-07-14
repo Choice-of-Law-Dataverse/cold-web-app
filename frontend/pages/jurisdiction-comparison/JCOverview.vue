@@ -76,7 +76,11 @@
           class="jc-mobile-data-item"
         >
           <div class="result-value-medium">
-            <p v-for="(line, lineIndex) in sampleData" :key="lineIndex">
+            <p
+              v-for="(line, lineIndex) in sampleData"
+              :key="lineIndex"
+              class="pt-8"
+            >
               {{ line }}
               <br v-if="lineIndex < sampleData.length - 1" />
             </p>
