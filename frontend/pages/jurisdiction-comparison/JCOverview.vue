@@ -1,30 +1,39 @@
 <template>
-  <div class="jc-grid">
-    <div class="jc-col jc-col-1">
-      <h2>Overview</h2>
-    </div>
-    <div class="jc-col jc-col-2">
-      <div class="result-value-medium">
-        <span>Col 2 - Civil Law</span><br />
-        <span>44 court decisions</span><br />
-        <span>1 domestic instrument</span><br />
-        <span>0 arbitration laws</span>
+  <div>
+    <div class="jc-grid jc-overview-row">
+      <div class="jc-col-1">
+        <h2>Overview</h2>
       </div>
+      <div class="jc-col-2 jc-empty"></div>
+      <div class="jc-col-3 jc-empty"></div>
+      <div class="jc-col-4 jc-empty"></div>
     </div>
-    <div class="jc-col jc-col-3">
-      <div class="result-value-medium">
-        <span>Col 3 - Civil Law</span><br />
-        <span>44 court decisions</span><br />
-        <span>1 domestic instrument</span><br />
-        <span>0 arbitration laws</span>
+    <hr class="jc-hr" />
+    <div class="jc-grid jc-data-row">
+      <div class="jc-col-1 jc-empty"></div>
+      <div class="jc-col-2">
+        <div class="result-value-medium">
+          <span>Civil Law</span><br />
+          <span>44 court decisions</span><br />
+          <span>1 domestic instrument</span><br />
+          <span>0 arbitration laws</span>
+        </div>
       </div>
-    </div>
-    <div class="jc-col jc-col-4">
-      <div class="result-value-medium">
-        <span>Col 4 - Civil Law</span><br />
-        <span>44 court decisions</span><br />
-        <span>1 domestic instrument</span><br />
-        <span>0 arbitration laws</span>
+      <div class="jc-col-3">
+        <div class="result-value-medium">
+          <span>Civil Law</span><br />
+          <span>44 court decisions</span><br />
+          <span>1 domestic instrument</span><br />
+          <span>0 arbitration laws</span>
+        </div>
+      </div>
+      <div class="jc-col-4">
+        <div class="result-value-medium">
+          <span>Civil Law</span><br />
+          <span>44 court decisions</span><br />
+          <span>1 domestic instrument</span><br />
+          <span>0 arbitration laws</span>
+        </div>
       </div>
     </div>
   </div>
@@ -38,8 +47,12 @@
   gap: 0 1.5rem;
 }
 
-.jc-col {
-  /* Optional: for debugging columns */
+.jc-overview-row {
+  margin-bottom: 0;
+}
+
+.jc-data-row {
+  margin-top: 0;
 }
 
 .jc-col-1 {
@@ -53,6 +66,16 @@
 }
 .jc-col-4 {
   grid-column: 4;
+}
+
+.jc-empty {
+  /* Empty cell for layout spacing */
+}
+
+.jc-hr {
+  margin: 16px 0 24px 0;
+  border: none;
+  border-top: 1px solid var(--color-cold-night, #222);
 }
 
 .result-value-medium {
