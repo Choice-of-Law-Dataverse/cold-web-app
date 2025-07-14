@@ -56,12 +56,53 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import SearchFilters from '@/components/search-results/SearchFilters.vue'
 
 // Initialize jurisdiction options with default value
 const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
 const currentJurisdictionFilter = ref([])
+
+// Data fetching
+const loadJurisdictions = async () => {
+  try {
+    const config = useRuntimeConfig()
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to load jurisdictions')
+
+    const jurisdictionsData = await response.json()
+    jurisdictionOptions.value = [
+      { label: 'All Jurisdictions' },
+      ...jurisdictionsData
+        .filter((entry) => entry['Irrelevant?'] === null)
+        .map((entry) => ({
+          label: entry.Name,
+          avatar: entry['Alpha-3 Code']
+            ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+            : undefined,
+        }))
+        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
+    ]
+  } catch (error) {
+    console.error('Error loading jurisdictions:', error)
+  }
+}
+
+// Initialization
+onMounted(async () => {
+  await loadJurisdictions()
+})
 </script>
 
 <style scoped>
