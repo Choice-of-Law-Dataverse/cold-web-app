@@ -7,11 +7,14 @@
         :keyLabelPairs="[]"
         :valueClassMap="{}"
         sourceTable=""
-      />
+      >
+        <JCOverview />
+      </BaseDetailLayout>
     </div>
   </main>
 </template>
 
 <script setup>
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import JCOverview from './JCOverview.vue'
 </script>
