@@ -2,7 +2,7 @@
   <div>
     <div class="jc-grid jc-overview-row">
       <div class="jc-col-1">
-        <h2>Overview</h2>
+        <h2 class="mt-8 mb-6">Overview</h2>
       </div>
       <div class="jc-col-2 jc-empty"></div>
       <div class="jc-col-3 jc-empty"></div>
@@ -13,26 +13,35 @@
       <div class="jc-col-1 jc-empty"></div>
       <div class="jc-col-2">
         <div class="result-value-medium">
-          <span>Civil Law</span><br />
-          <span>44 court decisions</span><br />
-          <span>1 domestic instrument</span><br />
-          <span>0 arbitration laws</span>
+          <p>Civil Law</p>
+          <br />
+          <p>44 court decisions</p>
+          <br />
+          <p>1 domestic instrument</p>
+          <br />
+          <p>0 arbitration laws</p>
         </div>
       </div>
       <div class="jc-col-3">
         <div class="result-value-medium">
-          <span>Civil Law</span><br />
-          <span>44 court decisions</span><br />
-          <span>1 domestic instrument</span><br />
-          <span>0 arbitration laws</span>
+          <p>Civil Law</p>
+          <br />
+          <p>44 court decisions</p>
+          <br />
+          <p>1 domestic instrument</p>
+          <br />
+          <p>0 arbitration laws</p>
         </div>
       </div>
       <div class="jc-col-4">
         <div class="result-value-medium">
-          <span>Civil Law</span><br />
-          <span>44 court decisions</span><br />
-          <span>1 domestic instrument</span><br />
-          <span>0 arbitration laws</span>
+          <p>Civil Law</p>
+          <br />
+          <p>44 court decisions</p>
+          <br />
+          <p>1 domestic instrument</p>
+          <br />
+          <p>0 arbitration laws</p>
         </div>
       </div>
     </div>
@@ -42,7 +51,7 @@
 <style scoped>
 .jc-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 0.75fr 1fr 1fr 1fr;
   align-items: start;
   gap: 0 1.5rem;
 }
@@ -73,12 +82,11 @@
 }
 
 .jc-hr {
-  margin: 16px 0 24px 0;
-  border: none;
-  border-top: 1px solid var(--color-cold-night, #222);
+  border-top: 1px solid var(--color-cold-gray);
 }
 
 .result-value-medium {
   font-weight: 400 !important;
+  margin-top: 32px !important;
 }
 </style>
