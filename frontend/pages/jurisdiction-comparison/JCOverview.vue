@@ -46,7 +46,11 @@
     <!-- Mobile Layout -->
     <div class="md:hidden">
       <!-- Mobile filters row -->
-      <div class="jc-mobile-filters-container">
+      <div
+        ref="filtersContainer"
+        class="jc-mobile-filters-container"
+        @scroll="onFiltersScroll"
+      >
         <div
           v-for="(filter, index) in jurisdictionFilters"
           :key="`mobile-filter-${index}`"
@@ -69,7 +73,11 @@
       <hr class="jc-hr" />
 
       <!-- Mobile data row -->
-      <div class="jc-mobile-data-container">
+      <div
+        ref="dataContainer"
+        class="jc-mobile-data-container"
+        @scroll="onDataScroll"
+      >
         <div
           v-for="index in 3"
           :key="`mobile-data-${index}`"
@@ -95,6 +103,13 @@
 import { ref, computed, onMounted } from 'vue'
 import SearchFilters from '@/components/search-results/SearchFilters.vue'
 
+// Template refs for scroll synchronization
+const filtersContainer = ref(null)
+const dataContainer = ref(null)
+
+// Flag to prevent infinite scroll loops
+let isScrolling = false
+
 // Initialize jurisdiction options with default value
 const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
 
@@ -117,6 +132,33 @@ const sampleData = computed(() => [
   '1 domestic instrument',
   '0 arbitration laws',
 ])
+
+// Scroll synchronization functions
+const onFiltersScroll = () => {
+  if (isScrolling) return
+  isScrolling = true
+
+  if (filtersContainer.value && dataContainer.value) {
+    dataContainer.value.scrollLeft = filtersContainer.value.scrollLeft
+  }
+
+  requestAnimationFrame(() => {
+    isScrolling = false
+  })
+}
+
+const onDataScroll = () => {
+  if (isScrolling) return
+  isScrolling = true
+
+  if (filtersContainer.value && dataContainer.value) {
+    filtersContainer.value.scrollLeft = dataContainer.value.scrollLeft
+  }
+
+  requestAnimationFrame(() => {
+    isScrolling = false
+  })
+}
 
 // Data fetching
 const loadJurisdictions = async () => {
