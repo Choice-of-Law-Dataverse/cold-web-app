@@ -10,6 +10,7 @@
           v-model="currentJurisdictionFilter"
           class="w-full"
           showAvatars="true"
+          :multiple="false"
         />
       </div>
       <div class="jc-col-3 jc-empty"></div>
