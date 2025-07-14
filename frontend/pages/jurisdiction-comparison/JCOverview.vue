@@ -2,7 +2,7 @@
   <div>
     <div class="jc-grid jc-overview-row">
       <div class="jc-col-1">
-        <h2 class="mt-8 mb-6">Overview</h2>
+        <h2 class="mt-8 mb-6 mr-[106px]">Overview</h2>
       </div>
       <div class="jc-col-2 mt-6 mb-6">
         <SearchFilters
@@ -163,6 +163,6 @@ onMounted(async () => {
 }
 
 .jc-search-filter :deep(.cold-uselectmenu) {
-  width: 100% !important;
+  width: 270px !important;
 }
 </style>
