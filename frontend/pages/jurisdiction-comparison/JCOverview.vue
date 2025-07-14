@@ -4,17 +4,33 @@
       <div class="jc-col-1">
         <h2 class="mt-8 mb-6">Overview</h2>
       </div>
-      <div class="jc-col-2">
+      <div class="jc-col-2 mt-6 mb-6">
         <SearchFilters
           :options="jurisdictionOptions"
           v-model="currentJurisdictionFilter"
-          class="w-full"
+          class="jc-search-filter"
           showAvatars="true"
           :multiple="false"
         />
       </div>
-      <div class="jc-col-3 jc-empty"></div>
-      <div class="jc-col-4 jc-empty"></div>
+      <div class="jc-col-3 mt-6 mb-6">
+        <SearchFilters
+          :options="jurisdictionOptions"
+          v-model="currentJurisdictionFilter"
+          class="jc-search-filter"
+          showAvatars="true"
+          :multiple="false"
+        />
+      </div>
+      <div class="jc-col-4 mt-6 mb-6">
+        <SearchFilters
+          :options="jurisdictionOptions"
+          v-model="currentJurisdictionFilter"
+          class="jc-search-filter"
+          showAvatars="true"
+          :multiple="false"
+        />
+      </div>
     </div>
     <hr class="jc-hr" />
     <div class="jc-grid jc-data-row">
@@ -142,5 +158,9 @@ onMounted(async () => {
 .result-value-medium {
   font-weight: 400 !important;
   margin-top: 32px !important;
+}
+
+.jc-search-filter :deep(.cold-uselectmenu) {
+  width: 100% !important;
 }
 </style>
