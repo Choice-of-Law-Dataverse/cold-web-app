@@ -1,17 +1,13 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <BaseDetailLayout
-        :loading="false"
-        :resultData="{}"
-        :keyLabelPairs="[]"
-        :valueClassMap="{}"
-        sourceTable=""
-      >
-        <JCOverview />
-      </BaseDetailLayout>
-    </div>
-  </main>
+  <BaseDetailLayout
+    :loading="false"
+    :resultData="{}"
+    :keyLabelPairs="[]"
+    :valueClassMap="{}"
+    sourceTable=""
+  >
+    <JCOverview />
+  </BaseDetailLayout>
 </template>
 
 <script setup>
