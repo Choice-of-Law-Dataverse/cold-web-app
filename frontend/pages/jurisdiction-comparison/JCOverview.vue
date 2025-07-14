@@ -7,7 +7,7 @@
       <div class="jc-col-2 mt-6 mb-6">
         <SearchFilters
           :options="jurisdictionOptions"
-          v-model="currentJurisdictionFilter"
+          v-model="currentJurisdictionFilter1"
           class="jc-search-filter"
           showAvatars="true"
           :multiple="false"
@@ -16,7 +16,7 @@
       <div class="jc-col-3 mt-6 mb-6">
         <SearchFilters
           :options="jurisdictionOptions"
-          v-model="currentJurisdictionFilter"
+          v-model="currentJurisdictionFilter2"
           class="jc-search-filter"
           showAvatars="true"
           :multiple="false"
@@ -25,7 +25,7 @@
       <div class="jc-col-4 mt-6 mb-6">
         <SearchFilters
           :options="jurisdictionOptions"
-          v-model="currentJurisdictionFilter"
+          v-model="currentJurisdictionFilter3"
           class="jc-search-filter"
           showAvatars="true"
           :multiple="false"
@@ -78,7 +78,9 @@ import SearchFilters from '@/components/search-results/SearchFilters.vue'
 
 // Initialize jurisdiction options with default value
 const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
-const currentJurisdictionFilter = ref([])
+const currentJurisdictionFilter1 = ref([])
+const currentJurisdictionFilter2 = ref([])
+const currentJurisdictionFilter3 = ref([])
 
 // Data fetching
 const loadJurisdictions = async () => {
