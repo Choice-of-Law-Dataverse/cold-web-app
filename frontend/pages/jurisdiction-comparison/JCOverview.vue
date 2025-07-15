@@ -81,13 +81,34 @@
             :key="`mobile-data-${index}`"
             class="data-card"
           >
-            <h3 class="data-card-title">
-              {{
-                filter.value.value.length > 0 &&
-                filter.value.value[0]?.label !== 'All Jurisdictions'
-                  ? filter.value.value[0].label
-                  : `Jurisdiction ${index + 1}`
-              }}
+            <h3 class="data-card-title flex items-center">
+              <template
+                v-if="
+                  filter.value.value.length > 0 &&
+                  filter.value.value[0]?.label !== 'All Jurisdictions'
+                "
+              >
+                <img
+                  v-if="
+                    !erroredFlags[index] &&
+                    getFlagUrl(filter.value.value[0].label)
+                  "
+                  :src="getFlagUrl(filter.value.value[0].label)"
+                  @error="() => (erroredFlags[index] = true)"
+                  style="
+                    height: 18px;
+                    width: auto;
+                    margin-right: 0.5em;
+                    border-radius: 0;
+                    border: 1px solid var(--color-cold-gray);
+                  "
+                  :alt="filter.value.value[0].label + ' flag'"
+                />
+                {{ filter.value.value[0].label }}
+              </template>
+              <template v-else>
+                {{ `Jurisdiction ${index + 1}` }}
+              </template>
             </h3>
             <div class="data-card-content">
               <p
@@ -131,6 +152,18 @@ const sampleData = computed(() => [
   '1 domestic instrument',
   '0 arbitration laws',
 ])
+
+// --- Flag logic ---
+import { reactive } from 'vue'
+const erroredFlags = reactive({})
+function getFlagUrl(label) {
+  if (!label || label === 'All Jurisdictions') return ''
+  // Use Alpha-3 code if available in jurisdictionOptions
+  const found = jurisdictionOptions.value.find((j) => j.label === label)
+  if (found && found.avatar) return found.avatar
+  // Fallback: try to use label as ISO code (lowercase)
+  return `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
+}
 
 // Data fetching
 const loadJurisdictions = async () => {
