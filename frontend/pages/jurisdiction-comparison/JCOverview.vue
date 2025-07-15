@@ -221,7 +221,7 @@ onMounted(async () => {
 
 /* Mobile & Tablet Layout */
 .mobile-layout {
-  padding: 1rem;
+  padding: 0.25rem;
 }
 
 /* Filters grid for mobile */
@@ -268,11 +268,7 @@ onMounted(async () => {
 }
 
 .data-card {
-  background: white;
-  border: 1px solid var(--color-cold-gray);
-  border-radius: 8px;
-  padding: 1.5rem;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding-top: 2rem;
 }
 
 .data-card-title {
@@ -285,6 +281,7 @@ onMounted(async () => {
 .data-line {
   margin-bottom: 0.5rem;
   color: #374151;
+  line-height: 2;
 }
 
 .jc-hr {
