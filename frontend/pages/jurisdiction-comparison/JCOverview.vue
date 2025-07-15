@@ -14,7 +14,7 @@
         >
           <SearchFilters
             :options="jurisdictionOptions"
-            v-model="filter.value"
+            v-model="filter.value.value"
             class="jc-search-filter"
             showAvatars="true"
             :multiple="false"
@@ -43,55 +43,60 @@
       </div>
     </div>
 
-    <!-- Mobile Layout -->
+    <!-- Mobile & Tablet Layout -->
     <div class="md:hidden">
-      <!-- Mobile filters row -->
-      <div
-        ref="filtersContainer"
-        class="jc-mobile-filters-container"
-        @scroll="onFiltersScroll"
-      >
-        <div
-          v-for="(filter, index) in jurisdictionFilters"
-          :key="`mobile-filter-${index}`"
-          class="jc-mobile-filter-item"
-        >
-          <SearchFilters
-            :options="jurisdictionOptions"
-            v-model="filter.value"
-            class="jc-search-filter-mobile"
-            showAvatars="true"
-            :multiple="false"
-          />
+      <div class="mobile-layout">
+        <!-- Header -->
+        <div class="mb-6">
+          <h2 class="text-xl font-semibold">Overview</h2>
         </div>
-      </div>
 
-      <!-- Mobile header -->
-      <div class="jc-mobile-header">
-        <h2 class="mt-6 mb-4">Overview</h2>
-      </div>
-      <hr class="jc-hr" />
+        <!-- Filters in a responsive grid -->
+        <div class="filters-grid mb-6">
+          <div
+            v-for="(filter, index) in jurisdictionFilters"
+            :key="`mobile-filter-${index}`"
+            class="filter-item"
+          >
+            <label class="block text-sm font-medium mb-2 text-gray-700">
+              Jurisdiction {{ index + 1 }}
+            </label>
+            <SearchFilters
+              :options="jurisdictionOptions"
+              v-model="filter.value.value"
+              class="w-full"
+              showAvatars="true"
+              :multiple="false"
+            />
+          </div>
+        </div>
 
-      <!-- Mobile data row -->
-      <div
-        ref="dataContainer"
-        class="jc-mobile-data-container"
-        @scroll="onDataScroll"
-      >
-        <div
-          v-for="index in 3"
-          :key="`mobile-data-${index}`"
-          class="jc-mobile-data-item"
-        >
-          <div class="result-value-medium">
-            <p
-              v-for="(line, lineIndex) in sampleData"
-              :key="lineIndex"
-              class="pt-8"
-            >
-              {{ line }}
-              <br v-if="lineIndex < sampleData.length - 1" />
-            </p>
+        <hr class="border-gray-300 mb-6" />
+
+        <!-- Data cards -->
+        <div class="data-cards">
+          <div
+            v-for="(filter, index) in jurisdictionFilters"
+            :key="`mobile-data-${index}`"
+            class="data-card"
+          >
+            <h3 class="data-card-title">
+              {{
+                filter.value.value.length > 0 &&
+                filter.value.value[0]?.label !== 'All Jurisdictions'
+                  ? filter.value.value[0].label
+                  : `Jurisdiction ${index + 1}`
+              }}
+            </h3>
+            <div class="data-card-content">
+              <p
+                v-for="(line, lineIndex) in sampleData"
+                :key="lineIndex"
+                class="data-line"
+              >
+                {{ line }}
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -102,13 +107,6 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import SearchFilters from '@/components/search-results/SearchFilters.vue'
-
-// Template refs for scroll synchronization
-const filtersContainer = ref(null)
-const dataContainer = ref(null)
-
-// Flag to prevent infinite scroll loops
-let isScrolling = false
 
 // Initialize jurisdiction options with default value
 const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
@@ -132,33 +130,6 @@ const sampleData = computed(() => [
   '1 domestic instrument',
   '0 arbitration laws',
 ])
-
-// Scroll synchronization functions
-const onFiltersScroll = () => {
-  if (isScrolling) return
-  isScrolling = true
-
-  if (filtersContainer.value && dataContainer.value) {
-    dataContainer.value.scrollLeft = filtersContainer.value.scrollLeft
-  }
-
-  requestAnimationFrame(() => {
-    isScrolling = false
-  })
-}
-
-const onDataScroll = () => {
-  if (isScrolling) return
-  isScrolling = true
-
-  if (filtersContainer.value && dataContainer.value) {
-    filtersContainer.value.scrollLeft = dataContainer.value.scrollLeft
-  }
-
-  requestAnimationFrame(() => {
-    isScrolling = false
-  })
-}
 
 // Data fetching
 const loadJurisdictions = async () => {
@@ -248,34 +219,72 @@ onMounted(async () => {
   height: 6px;
 }
 
-.jc-mobile-filters-container::-webkit-scrollbar-track,
-.jc-mobile-data-container::-webkit-scrollbar-track {
-  background: transparent;
+/* Mobile & Tablet Layout */
+.mobile-layout {
+  padding: 1rem;
 }
 
-.jc-mobile-filters-container::-webkit-scrollbar-thumb,
-.jc-mobile-data-container::-webkit-scrollbar-thumb {
-  background: var(--color-cold-gray);
-  border-radius: 3px;
+/* Filters grid for mobile */
+.filters-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
 }
 
-/* Mobile Layout */
-.jc-mobile-filters-container {
-  margin-bottom: 0.5rem;
+@media (min-width: 640px) {
+  .filters-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.jc-mobile-data-container {
+@media (min-width: 768px) {
+  .filters-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Data cards for mobile */
+.data-cards {
+  display: grid;
+  grid-template-columns: 1fr;
   gap: 1.5rem;
 }
 
-.jc-mobile-filter-item,
-.jc-mobile-data-item {
-  flex: 0 0 auto;
-  min-width: 250px;
+@media (min-width: 640px) {
+  .data-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
-.jc-mobile-header {
-  text-align: left;
+@media (min-width: 768px) {
+  .data-cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.data-card {
+  background: white;
+  border: 1px solid var(--color-cold-gray);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.data-card-title {
+  font-weight: 600;
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+  color: var(--color-cold-purple);
+}
+
+.data-line {
+  margin-bottom: 0.5rem;
+  color: #374151;
 }
 
 .jc-hr {
@@ -290,9 +299,5 @@ onMounted(async () => {
 /* Search filter styling */
 .jc-search-filter :deep(.cold-uselectmenu) {
   width: 270px !important;
-}
-
-.jc-search-filter-mobile :deep(.cold-uselectmenu) {
-  width: 250px !important;
 }
 </style>

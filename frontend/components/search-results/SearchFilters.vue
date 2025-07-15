@@ -186,14 +186,7 @@ const internalValue = computed({
   set(newValue) {
     if (!props.multiple) {
       // Single selection mode
-      const allOption = props.options[0]
-      const isAllSelected =
-        newValue &&
-        (typeof newValue === 'object'
-          ? newValue.label === allOption.label
-          : newValue === allOption)
-
-      if (isAllSelected || !newValue) {
+      if (!newValue) {
         emit('update:modelValue', [])
       } else {
         const processed =
@@ -206,15 +199,6 @@ const internalValue = computed({
     }
 
     // Multiple selection mode
-    const allOption = props.options[0]
-    const isAllSelected = newValue.some((val) =>
-      typeof val === 'object'
-        ? val.label === allOption.label
-        : val === allOption
-    )
-    if (isAllSelected) {
-      newValue = []
-    }
     if (!isObjectOptions.value) {
       emit('update:modelValue', newValue)
     } else {
