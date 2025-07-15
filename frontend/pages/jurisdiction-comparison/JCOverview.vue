@@ -48,7 +48,7 @@
       <div class="mobile-layout">
         <!-- Header -->
         <div class="mb-6">
-          <h2 class="text-xl font-semibold">Overview</h2>
+          <h2 class="text-xl font-semibold">Select Jurisdictions</h2>
         </div>
 
         <!-- Filters in a responsive grid -->
@@ -59,7 +59,7 @@
             class="filter-item"
           >
             <label class="block text-sm font-medium mb-2 text-gray-700">
-              Jurisdiction {{ index + 1 }}
+              <!-- Jurisdiction {{ index + 1 }} -->
             </label>
             <SearchFilters
               :options="jurisdictionOptions"
@@ -75,6 +75,7 @@
 
         <!-- Data cards -->
         <div class="data-cards">
+          <h2 class="mt-4">Overview</h2>
           <div
             v-for="(filter, index) in jurisdictionFilters"
             :key="`mobile-data-${index}`"
