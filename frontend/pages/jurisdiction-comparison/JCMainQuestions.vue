@@ -9,13 +9,13 @@
       </div>
       <hr class="jc-hr" />
       <div class="jc-grid jc-data-row">
-        <div class="jc-col-1 jc-empty"></div>
+        <div class="jc-col-1"></div>
         <div
           v-for="index in 3"
           :key="`desktop-data-${index}`"
           :class="`jc-col-${index + 1}`"
         >
-          <div class="result-value-medium">
+          <div class="result-value-large">
             <p
               v-for="(line, lineIndex) in sampleData"
               :key="lineIndex"
