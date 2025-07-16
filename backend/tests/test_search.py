@@ -33,12 +33,15 @@ app.dependency_overrides[verify_jwt_token] = override_verify_jwt_token
 # Create a dummy search service to override the one used in routes.
 # ------------------------------------------------------------------------------
 class DummySearchService:
-    def full_text_search(self, search_string, filters=[]):
+    def full_text_search(self, search_string, filters=None, page=1, page_size=50, sort_by_date=False):
         # Return a predictable result for testing.
         return {
             "dummy": "full_text_search",
             "search_string": search_string,
             "filters": filters,
+            "page": page,
+            "page_size": page_size,
+            "sort_by_date": sort_by_date,
         }
 
     def curated_details_search(self, table, id):

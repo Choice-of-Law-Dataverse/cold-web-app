@@ -160,6 +160,7 @@ class SearchService:
             "filter_themes": themes or None,
             "page": page,
             "page_size": page_size,
+            "sort_by_date": sort_by_date,
         }
         # count total matches
         count_sql = (
@@ -169,7 +170,8 @@ class SearchService:
             "filter_jurisdictions := CAST(:filter_jurisdictions AS text[]), "
             "filter_themes := CAST(:filter_themes AS text[]), "
             "page := CAST(1 AS integer), "
-            "page_size := CAST(2147483647 AS integer)"
+            "page_size := CAST(2147483647 AS integer), "
+            "sort_by_date := CAST(:sort_by_date AS boolean)"
             ")"
         )
         count_result = self.db.execute_query(count_sql, params)
@@ -184,7 +186,8 @@ class SearchService:
             "filter_jurisdictions := CAST(:filter_jurisdictions AS text[]), "
             "filter_themes := CAST(:filter_themes AS text[]), "
             "page := CAST(:page AS integer), "
-            "page_size := CAST(:page_size AS integer)"
+            "page_size := CAST(:page_size AS integer), "
+            "sort_by_date := CAST(:sort_by_date AS boolean)"
             ")"
         )
         rows = self.db.execute_query(sql, params)
