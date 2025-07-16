@@ -9,7 +9,17 @@
       </div>
       <hr class="jc-hr" />
       <div class="jc-grid jc-data-row">
-        <div class="jc-col-1"></div>
+        <div class="jc-col-1">
+          <div class="result-value-medium">
+            <p
+              v-for="(label, i) in questionLabels"
+              :key="'q-label-' + i"
+              class="pt-6"
+            >
+              {{ label }}
+            </p>
+          </div>
+        </div>
         <div
           v-for="index in 3"
           :key="`desktop-data-${index}`"
@@ -22,7 +32,6 @@
               class="pt-8"
             >
               {{ line }}
-              <br v-if="lineIndex < sampleData.length - 1" />
             </p>
           </div>
         </div>
@@ -62,48 +71,59 @@
         <!-- Data cards -->
         <div class="data-cards">
           <h2 class="mt-4">Overview</h2>
-          <div
-            v-for="(filter, index) in jurisdictionFilters"
-            :key="`mobile-data-${index}`"
-            class="data-card"
-          >
-            <h3 class="data-card-title flex items-center">
-              <template
-                v-if="
-                  filter.value.value.length > 0 &&
-                  filter.value.value[0]?.label !== 'All Jurisdictions'
-                "
-              >
-                <img
-                  v-if="
-                    !erroredFlags[index] &&
-                    getFlagUrl(filter.value.value[0].label)
-                  "
-                  :src="getFlagUrl(filter.value.value[0].label)"
-                  @error="() => (erroredFlags[index] = true)"
-                  style="
-                    height: 18px;
-                    width: auto;
-                    margin-right: 0.5em;
-                    border-radius: 0;
-                    border: 1px solid var(--color-cold-gray);
-                  "
-                  :alt="filter.value.value[0].label + ' flag'"
-                />
-                {{ filter.value.value[0].label }}
-              </template>
-              <template v-else>
-                {{ `Jurisdiction ${index + 1}` }}
-              </template>
-            </h3>
-            <div class="data-card-content">
+          <div class="data-card grid grid-cols-4 gap-0">
+            <div class="data-card-labels flex flex-col">
               <p
-                v-for="(line, lineIndex) in sampleData"
-                :key="lineIndex"
+                v-for="(label, i) in questionLabels"
+                :key="'q-label-m-' + i"
                 class="data-line"
               >
-                {{ line }}
+                {{ label }}
               </p>
+            </div>
+            <div
+              v-for="(filter, index) in jurisdictionFilters"
+              :key="`mobile-data-${index}`"
+              class="data-card flex flex-col"
+            >
+              <h3 class="data-card-title flex items-center">
+                <template
+                  v-if="
+                    filter.value.value.length > 0 &&
+                    filter.value.value[0]?.label !== 'All Jurisdictions'
+                  "
+                >
+                  <img
+                    v-if="
+                      !erroredFlags[index] &&
+                      getFlagUrl(filter.value.value[0].label)
+                    "
+                    :src="getFlagUrl(filter.value.value[0].label)"
+                    @error="() => (erroredFlags[index] = true)"
+                    style="
+                      height: 18px;
+                      width: auto;
+                      margin-right: 0.5em;
+                      border-radius: 0;
+                      border: 1px solid var(--color-cold-gray);
+                    "
+                    :alt="filter.value.value[0].label + ' flag'"
+                  />
+                  {{ filter.value.value[0].label }}
+                </template>
+                <template v-else>
+                  {{ `Jurisdiction ${index + 1}` }}
+                </template>
+              </h3>
+              <div class="data-card-content">
+                <p
+                  v-for="(line, lineIndex) in sampleData"
+                  :key="'m-' + lineIndex"
+                  class="data-line"
+                >
+                  {{ line }}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -132,6 +152,12 @@ const jurisdictionFilters = computed(() => [
 ])
 
 // Static sample data as computed property
+const questionLabels = [
+  'Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in this jurisdiction?',
+  'Is a connection required between the chosen law and the parties or their transaction? ',
+  'Are the parties prevented from choosing the law of a third country with which there is no connection (a “neutral law”)?',
+  'Are the parties allowed to choose non-State law (“rules of law”) to govern their contract?',
+]
 const sampleData = computed(() => ['Yes', 'No', 'Yes', 'No'])
 
 // Data fetching
