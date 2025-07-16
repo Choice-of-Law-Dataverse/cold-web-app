@@ -14,11 +14,11 @@
           :key="'q-row-' + i"
           class="jc-table-row"
         >
-          <div class="jc-table-cell jc-table-question">
+          <div class="jc-table-cell jc-table-question result-value-medium">
             {{ label }}
           </div>
           <div
-            class="jc-table-cell jc-table-answer"
+            class="jc-table-cell jc-table-answer result-value-large !pt-10 !pl-4"
             v-for="j in 3"
             :key="'a-' + i + '-' + j"
           >
@@ -196,7 +196,7 @@ onMounted(async () => {
 /* Desktop Grid Layout */
 .jc-grid {
   display: grid;
-  grid-template-columns: 0.75fr 1fr 1fr 1fr;
+  grid-template-columns: 1.5fr 1fr 1fr 1fr;
   align-items: start;
   gap: 0 1.5rem;
 }
