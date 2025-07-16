@@ -31,63 +31,58 @@ class SearchService:
 
     def full_table(self, table):
         """
-        Fetch all records from a table using the new database function.
+        Fetch all records from a table using the NocoDB API.
         """
-        rows = self.db.execute_query(
-            "SELECT t.data FROM cold_views.full_table(:table_name) AS t(data)",
-            {"table_name": table},
-        )
-        results = []
-        for row in rows:
-            val = row.get("data")
-            if isinstance(val, str):
-                results.append(json.loads(val))
-            else:
-                results.append(val)
-        return results
+        try:
+            data = self.nocodb.list_rows(table)
+            return data
+        except Exception as e:
+            logger.error("Error listing records from table %s: %s", table, e)
+            return []
 
     def filtered_table(self, table, filters):
-        # Base query
-        query = f'SELECT * FROM "{table}"'
-        query_params = {}
-
-        # Check if filters are provided and construct WHERE clause
-        if filters:
-            conditions = []
-            for idx, filter_item in enumerate(filters):
+        """
+        Fetch and filter records from a table using the NocoDB API.
+        """
+        try:
+            rows = self.nocodb.list_rows(table)
+        except Exception as e:
+            logger.error("Error listing records from table %s: %s", table, e)
+            return []
+        if not filters:
+            return rows
+        results = []
+        for raw in rows:
+            # ensure each row is a dict; parse JSON strings if necessary
+            if isinstance(raw, str):
+                try:
+                    row = json.loads(raw)
+                except Exception:
+                    continue
+            elif isinstance(raw, dict):
+                row = raw
+            else:
+                continue
+            match = True
+            for filter_item in filters:
                 column = filter_item.column
                 value = filter_item.value
-
-                if not column or value is None:
-                    raise ValueError(f"Invalid filter: {filter_item}")
-
-                param_key = f"param_{idx}"
-
-                # Determine the type of the filter value and choose the operator accordingly
+                cell = row.get(column)
+                if cell is None:
+                    match = False
+                    break
                 if isinstance(value, str):
-                    # Use ILIKE for case-insensitive partial matching
-                    conditions.append(f'"{column}" ILIKE :{param_key}')
-                    query_params[param_key] = f"%{value}%"
+                    if not isinstance(cell, str) or value.lower() not in cell.lower():
+                        match = False
+                        break
                 elif isinstance(value, (int, float, bool)):
-                    # Use equality operator for integers, floats, and booleans
-                    conditions.append(f'"{column}" = :{param_key}')
-                    query_params[param_key] = value
+                    if cell != value:
+                        match = False
+                        break
                 else:
-                    # If you want to support other types later, add them here.
-                    raise ValueError(
-                        f"Unsupported filter type for column {column}: {value}"
-                    )
-
-            # Append the WHERE clause to the query if conditions exist
-            if conditions:
-                query += f' WHERE {" AND ".join(conditions)}'
-
-        # Debug: Print the full query and parameters
-        # print("Executing query:", query)
-        # print("With parameters:", query_params)
-
-        # Execute the query with parameters as a dictionary
-        results = self.db.execute_query(query, query_params)
+                    raise ValueError(f"Unsupported filter type for column {column}: {value}")
+            if match:
+                results.append(row)
         return results
 
     """

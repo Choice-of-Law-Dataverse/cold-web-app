@@ -28,3 +28,25 @@ class NocoDBService:
         logger.debug("NocoDBService.get_row response payload: %s", payload)
         # return full payload directly
         return payload
+    
+    def list_rows(self, table: str) -> list:
+        """
+        Fetch all records for a given table from NocoDB via API.
+        """
+        logger = logging.getLogger(__name__)
+        url = f"{self.base_url}/{table}"
+        logger.debug("NocoDBService.list_rows: GET %s", url)
+        resp = requests.get(url, headers=self.headers)
+        resp.raise_for_status()
+        payload = resp.json()
+        # Extract list of records; NocoDB wraps list under 'list' or 'data'
+        if isinstance(payload, dict):
+            if 'list' in payload and isinstance(payload['list'], list):
+                return payload['list']
+            if 'data' in payload and isinstance(payload['data'], list):
+                return payload['data']
+        # If payload itself is a list, return directly
+        if isinstance(payload, list):
+            return payload
+        # Unexpected format, return empty list
+        return []
