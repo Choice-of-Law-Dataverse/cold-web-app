@@ -20,18 +20,14 @@ class SearchService:
 
     def curated_details_search(self, table, id):
         """
-        Fetch a single record by table and id using the new database function.
+        Fetch a single record by table and id using the NocoDB API.
         """
-        result = self.db.execute_query(
-            "SELECT cold_views.curated_details_search(:table_name, :record_id) AS data",
-            {"table_name": table, "record_id": id},
-        )
-        if result:
-            data = result[0].get("data")
-            if isinstance(data, str):
-                data = json.loads(data)
+        try:
+            data = self.nocodb.get_row(table, id)
             return data
-        return {"error": "no entry found with the specified id"}
+        except Exception as e:
+            logger.error("Error fetching record %s from table %s: %s", id, table, e)
+            return {"error": f"Could not fetch record {id} from table {table}"}
 
     def full_table(self, table):
         """
