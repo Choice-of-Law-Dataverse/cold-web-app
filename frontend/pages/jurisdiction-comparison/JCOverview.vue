@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="hidden md:block">
-      <h2 class="mt-8 mb-6 mr-[106px]">Overview</h2>
+      <h2 class="mt-8 mb-6 mr-[106px] jc-z-top">Overview</h2>
       <hr class="jc-hr" />
       <div class="jc-grid jc-data-row">
         <div class="jc-col-1 jc-empty"></div>
@@ -323,5 +323,11 @@ onMounted(async () => {
   width: 240px !important;
   min-width: 0 !important;
   max-width: 240px !important;
+}
+
+/* Highest z-index for Overview heading */
+.jc-z-top {
+  position: relative;
+  z-index: 9999;
 }
 </style>

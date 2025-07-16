@@ -1,5 +1,5 @@
 <template>
-  <div class="jc-fixed-filters mb-12">
+  <div class="jc-fixed-filters -mb-16">
     <div class="jc-sticky-grid jc-overview-row">
       <div></div>
       <div
