@@ -220,6 +220,10 @@ onMounted(async () => {
 
 .jc-overview-row {
   margin-bottom: 0;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
 }
 
 .jc-data-row {
