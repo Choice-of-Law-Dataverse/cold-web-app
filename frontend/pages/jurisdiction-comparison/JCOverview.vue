@@ -331,12 +331,12 @@ onMounted(async () => {
 
 /* Search filter styling */
 .jc-search-filter {
+  width: 240px;
   max-width: 100%;
-  width: 100%;
 }
 .jc-search-filter :deep(.cold-uselectmenu) {
-  width: 100% !important;
+  width: 240px !important;
   min-width: 0 !important;
-  max-width: 100% !important;
+  max-width: 240px !important;
 }
 </style>
