@@ -328,7 +328,7 @@ onMounted(async () => {
 }
 .jc-table-cell {
   padding: 0.75rem 1rem 0.75rem 0;
-  border-bottom: 1px solid var(--color-cold-gray);
+  /* border-bottom: 1px solid var(--color-cold-gray); */
   vertical-align: top;
   font-size: 1rem;
 }
