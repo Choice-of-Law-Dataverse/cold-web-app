@@ -29,24 +29,31 @@ class NocoDBService:
         # return full payload directly
         return payload
     
-    def list_rows(self, table: str) -> list:
+    def list_rows(self, table: str, limit: int = 100) -> list:
         """
-        Fetch all records for a given table from NocoDB via API.
+        Fetch all records for a given table from NocoDB via API, paging through all entries.
         """
         logger = logging.getLogger(__name__)
-        url = f"{self.base_url}/{table}"
-        logger.debug("NocoDBService.list_rows: GET %s", url)
-        resp = requests.get(url, headers=self.headers)
-        resp.raise_for_status()
-        payload = resp.json()
-        # Extract list of records; NocoDB wraps list under 'list' or 'data'
-        if isinstance(payload, dict):
-            if 'list' in payload and isinstance(payload['list'], list):
-                return payload['list']
-            if 'data' in payload and isinstance(payload['data'], list):
-                return payload['data']
-        # If payload itself is a list, return directly
-        if isinstance(payload, list):
-            return payload
-        # Unexpected format, return empty list
-        return []
+        records = []
+        offset = 0
+        while True:
+            url = f"{self.base_url}/{table}"
+            params = {"limit": limit, "offset": offset}
+            logger.debug("NocoDBService.list_rows: GET %s with params %s", url, params)
+            resp = requests.get(url, headers=self.headers, params=params)
+            resp.raise_for_status()
+            payload = resp.json()
+            # extract batch list from response
+            if isinstance(payload, dict):
+                batch = payload.get('list') or payload.get('data') or []
+            elif isinstance(payload, list):
+                batch = payload
+            else:
+                break
+            if not isinstance(batch, list) or not batch:
+                break
+            records.extend(batch)
+            if len(batch) < limit:
+                break
+            offset += limit
+        return records
