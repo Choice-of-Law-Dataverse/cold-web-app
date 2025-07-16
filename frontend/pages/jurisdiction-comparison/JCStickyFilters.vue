@@ -85,6 +85,7 @@ onMounted(async () => {
   top: 0;
   z-index: 10;
   background: #fff;
+  padding-top: 1em;
 }
 .jc-sticky-grid {
   display: grid;
