@@ -71,6 +71,33 @@ class SearchService:
                 if cell is None:
                     match = False
                     break
+                # handle lookup/list fields
+                if isinstance(cell, list):
+                    # string matching in list elements
+                    if isinstance(value, str):
+                        found = False
+                        for elem in cell:
+                            if isinstance(elem, dict):
+                                for v in elem.values():
+                                    if isinstance(v, str) and value.lower() in v.lower():
+                                        found = True; break
+                                if found: break
+                            elif isinstance(elem, str) and value.lower() in elem.lower():
+                                found = True; break
+                        if not found:
+                            match = False; break
+                    # numeric or boolean matching in list elements
+                    elif isinstance(value, (int, float, bool)):
+                        found = False
+                        for elem in cell:
+                            if elem == value or (isinstance(elem, dict) and elem.get('id') == value):
+                                found = True; break
+                        if not found:
+                            match = False; break
+                    else:
+                        raise ValueError(f"Unsupported filter type for column {column}: {value}")
+                    continue
+                # scalar fields
                 if isinstance(value, str):
                     if not isinstance(cell, str) or value.lower() not in cell.lower():
                         match = False
