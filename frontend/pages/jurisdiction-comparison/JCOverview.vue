@@ -1,26 +1,7 @@
 <template>
   <div>
-    <!-- Desktop Layout -->
     <div class="hidden md:block">
-      <div class="jc-grid jc-overview-row">
-        <div class="jc-col-1">
-          <h2 class="mt-8 mb-6 mr-[106px]">Overview</h2>
-        </div>
-        <div
-          v-for="(filter, index) in jurisdictionFilters"
-          :key="`desktop-filter-${index}`"
-          :class="`jc-col-${index + 2}`"
-          class="mt-6 mb-6"
-        >
-          <SearchFilters
-            :options="jurisdictionOptions"
-            v-model="filter.value.value"
-            class="jc-search-filter"
-            showAvatars="true"
-            :multiple="false"
-          />
-        </div>
-      </div>
+      <h2 class="mt-8 mb-6 mr-[106px]">Overview</h2>
       <hr class="jc-hr" />
       <div class="jc-grid jc-data-row">
         <div class="jc-col-1 jc-empty"></div>
