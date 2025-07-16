@@ -209,9 +209,11 @@ onMounted(async () => {
 
 <style scoped>
 /* Desktop Grid Layout */
-.jc-grid {
+
+.jc-grid,
+.jc-data-row {
   display: grid;
-  grid-template-columns: 0.75fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   align-items: start;
   gap: 0 1.5rem;
 }
@@ -328,7 +330,13 @@ onMounted(async () => {
 }
 
 /* Search filter styling */
+.jc-search-filter {
+  max-width: 100%;
+  width: 100%;
+}
 .jc-search-filter :deep(.cold-uselectmenu) {
-  width: 270px !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
 }
 </style>

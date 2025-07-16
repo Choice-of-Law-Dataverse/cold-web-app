@@ -320,7 +320,7 @@ onMounted(async () => {
 /* Table-like grid for desktop */
 .jc-table-grid {
   display: grid;
-  grid-template-columns: 0.75fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   width: 100%;
 }
 .jc-table-row {
