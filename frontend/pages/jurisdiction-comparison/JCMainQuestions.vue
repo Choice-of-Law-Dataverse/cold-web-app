@@ -8,31 +8,21 @@
         </div>
       </div>
       <hr class="jc-hr" />
-      <div class="jc-grid jc-data-row">
-        <div class="jc-col-1">
-          <div class="result-value-medium">
-            <p
-              v-for="(label, i) in questionLabels"
-              :key="'q-label-' + i"
-              class="pt-6"
-            >
-              {{ label }}
-            </p>
-          </div>
-        </div>
+      <div class="jc-table-grid">
         <div
-          v-for="index in 3"
-          :key="`desktop-data-${index}`"
-          :class="`jc-col-${index + 1}`"
+          v-for="(label, i) in questionLabels"
+          :key="'q-row-' + i"
+          class="jc-table-row"
         >
-          <div class="result-value-large">
-            <p
-              v-for="(line, lineIndex) in sampleData"
-              :key="lineIndex"
-              class="pt-8"
-            >
-              {{ line }}
-            </p>
+          <div class="jc-table-cell jc-table-question">
+            {{ label }}
+          </div>
+          <div
+            class="jc-table-cell jc-table-answer"
+            v-for="j in 3"
+            :key="'a-' + i + '-' + j"
+          >
+            {{ sampleData[i] }}
           </div>
         </div>
       </div>
@@ -325,5 +315,39 @@ onMounted(async () => {
 /* Search filter styling */
 .jc-search-filter :deep(.cold-uselectmenu) {
   width: 270px !important;
+}
+
+/* Table-like grid for desktop */
+.jc-table-grid {
+  display: grid;
+  grid-template-columns: 0.75fr 1fr 1fr 1fr;
+  width: 100%;
+}
+.jc-table-row {
+  display: contents;
+}
+.jc-table-cell {
+  padding: 0.75rem 1rem 0.75rem 0;
+  border-bottom: 1px solid var(--color-cold-gray);
+  vertical-align: top;
+  font-size: 1rem;
+}
+.jc-table-question {
+  font-weight: 400;
+  white-space: pre-line;
+}
+.jc-table-answer {
+  text-align: left;
+  font-weight: 400;
+}
+.jc-table-question-header {
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-bottom: none;
+}
+.jc-table-answer-header {
+  font-weight: 600;
+  font-size: 1.1rem;
+  border-bottom: none;
 }
 </style>
