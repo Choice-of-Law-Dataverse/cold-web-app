@@ -172,11 +172,7 @@ onMounted(async () => {
   width: 100%;
 }
 
-.jc-fixed-filters > * {
-  max-width: var(--container-width, 1200px);
-  margin: 0 auto;
-}
-
+/* Removed 2-column grid media query */
 .jc-fixed-filters-bg {
   background: #fff;
   border-bottom: 1px solid var(--color-cold-gray);
@@ -205,12 +201,6 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
-}
-
-@media (min-width: 640px) {
-  .filters-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 @media (min-width: 768px) {

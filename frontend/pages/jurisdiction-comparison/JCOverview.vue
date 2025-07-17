@@ -232,12 +232,6 @@ onMounted(async () => {
   gap: 1rem;
 }
 
-@media (min-width: 640px) {
-  .filters-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 @media (min-width: 768px) {
   .filters-grid {
     grid-template-columns: repeat(3, 1fr);
@@ -254,12 +248,6 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1.5rem;
-}
-
-@media (min-width: 640px) {
-  .data-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 @media (min-width: 768px) {
