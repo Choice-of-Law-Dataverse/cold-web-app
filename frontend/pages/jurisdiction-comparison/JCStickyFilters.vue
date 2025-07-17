@@ -102,6 +102,8 @@ onMounted(async () => {
 }
 .jc-fixed-filters-bg {
   background: #fff;
+  padding-bottom: 1em;
+  border-bottom: 1px solid var(--color-cold-gray);
 }
 .jc-sticky-grid {
   display: grid;
