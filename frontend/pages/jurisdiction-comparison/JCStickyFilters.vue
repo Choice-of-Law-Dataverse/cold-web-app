@@ -128,12 +128,13 @@ onMounted(async () => {
     // Check if we've scrolled past the Overview title
     if (scrollTop > overviewTop - 80) {
       // 80px offset for better UX
-      // Make filters sticky at top of viewport
+      // Make filters sticky at top of viewport but constrained to container width
       filtersElement.style.position = 'fixed'
       filtersElement.style.top = '0'
-      filtersElement.style.left = '0'
-      filtersElement.style.right = '0'
-      filtersElement.style.width = '100%'
+      filtersElement.style.left = '50%'
+      filtersElement.style.transform = 'translateX(-50%)'
+      filtersElement.style.width = 'calc(100% - 3rem)' // Account for padding
+      filtersElement.style.maxWidth = 'var(--container-width, 1200px)'
       filtersElement.style.zIndex = '1000'
       isSticky.value = true
     } else {
@@ -141,8 +142,9 @@ onMounted(async () => {
       filtersElement.style.position = 'static'
       filtersElement.style.top = 'auto'
       filtersElement.style.left = 'auto'
-      filtersElement.style.right = 'auto'
+      filtersElement.style.transform = 'none'
       filtersElement.style.width = 'auto'
+      filtersElement.style.maxWidth = 'none'
       filtersElement.style.zIndex = 'auto'
       isSticky.value = false
     }
@@ -180,6 +182,9 @@ onMounted(async () => {
   /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
   padding-top: 1rem;
   padding-bottom: 1rem;
+  /* Ensure proper spacing when fixed */
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 
 .jc-sticky-grid {
