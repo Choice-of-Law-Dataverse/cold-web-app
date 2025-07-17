@@ -169,32 +169,28 @@ onMounted(async () => {
   top: 0;
   z-index: 1000;
   background: transparent;
-  /* padding: 1em 0; */
+
   width: 100%;
-  /* transition: background-color 0.2s ease; */
 }
 
 .jc-fixed-filters > * {
   max-width: var(--container-width, 1200px);
   margin: 0 auto;
-  /* padding: 0 1.5rem; */
 }
 
 .jc-fixed-filters-bg {
   background: #fff;
   border-bottom: 1px solid var(--color-cold-gray);
-  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
   padding-top: 1rem;
   padding-bottom: 1rem;
   /* Ensure proper spacing when fixed */
-  padding-left: 1.5rem;
+  padding-left: 0.5rem;
   padding-right: 1.5rem;
 }
 
 .jc-sticky-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 0 1.5rem;
   align-items: end;
   width: 100%;
 }
