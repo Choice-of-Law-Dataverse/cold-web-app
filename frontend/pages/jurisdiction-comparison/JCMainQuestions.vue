@@ -296,14 +296,14 @@ onMounted(async () => {
 .jc-table-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0 1.5rem;
   width: 100%;
 }
 .jc-table-row {
   display: contents;
 }
 .jc-table-cell {
-  padding: 0.75rem 1rem 0.75rem 0;
-  /* border-bottom: 1px solid var(--color-cold-gray); */
+  padding: 0.75rem 0 0.75rem 0;
   vertical-align: top;
   font-size: 1rem;
 }

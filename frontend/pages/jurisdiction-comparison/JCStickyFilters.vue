@@ -169,7 +169,6 @@ onMounted(async () => {
   top: 0;
   z-index: 1000;
   background: transparent;
-
   width: 100%;
 }
 
@@ -184,8 +183,8 @@ onMounted(async () => {
   padding-top: 1rem;
   padding-bottom: 1rem;
   /* Ensure proper spacing when fixed */
-  padding-left: 0.5rem;
-  padding-right: 1.5rem;
+  /* padding-left: 0.5rem; */
+  /* padding-right: 1rem; */
 }
 
 .jc-sticky-grid {
@@ -193,6 +192,7 @@ onMounted(async () => {
   grid-template-columns: 1fr 1fr 1fr 1fr;
   align-items: end;
   width: 100%;
+  gap: 0 1.5rem; /* Match JCOverview */
 }
 
 .jc-sticky-grid > div {
