@@ -131,10 +131,12 @@ onMounted(async () => {
       // Make filters sticky at top of viewport but constrained to container width
       filtersElement.style.position = 'fixed'
       filtersElement.style.top = '0'
-      filtersElement.style.left = '50%'
-      filtersElement.style.transform = 'translateX(-50%)'
-      filtersElement.style.width = 'calc(100% - 3rem)' // Account for padding
+      filtersElement.style.left = '100px'
+      filtersElement.style.right = '100px'
+      filtersElement.style.transform = 'none'
+      filtersElement.style.width = 'auto'
       filtersElement.style.maxWidth = 'var(--container-width, 1200px)'
+      filtersElement.style.margin = '0 auto'
       filtersElement.style.zIndex = '1000'
       isSticky.value = true
     } else {
@@ -142,9 +144,11 @@ onMounted(async () => {
       filtersElement.style.position = 'static'
       filtersElement.style.top = 'auto'
       filtersElement.style.left = 'auto'
+      filtersElement.style.right = 'auto'
       filtersElement.style.transform = 'none'
       filtersElement.style.width = 'auto'
       filtersElement.style.maxWidth = 'none'
+      filtersElement.style.margin = ''
       filtersElement.style.zIndex = 'auto'
       isSticky.value = false
     }
