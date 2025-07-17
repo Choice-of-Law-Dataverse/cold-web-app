@@ -1,19 +1,16 @@
 from app.config import config
 from app.services.database import Database
+from datetime import date
+from pathlib import Path
 
 
 class SitemapService:
     def __init__(self):
         self.db = Database(config.SQL_CONN_STRING)
-        self.base_urls = {
-            "beta": "https://www.cold.global",  # Production URL
-            "alpha": "https://alpha.cold.global"  # Alpha URL
-        }
-        
-        # Define the mapping between database tables and URL prefixes
+        # Map NocoDB table names to frontend URL prefixes
         self.table_url_mapping = {
             "Answers": "question",
-            "Literature": "literature", 
+            "Literature": "literature",
             "Regional_Instruments": "regional-instrument",
             "International_Instruments": "international-instrument",
             "Court_Decisions": "court-decision",
@@ -22,59 +19,72 @@ class SitemapService:
 
     def get_all_frontend_urls(self):
         """
-        Generate all possible frontend URLs by querying the database for all IDs
-        and mapping them to their respective URL prefixes.
+        Return a list of sitemap entries for dynamic and static frontend routes.
+        Each entry is a dict with 'loc' and 'lastmod' (ISO date).
         """
-        alpha_urls = []
-        beta_urls = []
-        
-        for table_name, url_prefix in self.table_url_mapping.items():
+        entries = []
+        # Dynamic entries from database tables
+        for table_name, prefix in self.table_url_mapping.items():
             try:
-                # Query the database to get all IDs for this table
                 ids = self._get_table_ids(table_name)
-                
-                # Generate URLs for each ID for both environments
-                for id_value in ids:
-                    alpha_url = f"{self.base_urls['alpha']}/{url_prefix}/{id_value}"
-                    beta_url = f"{self.base_urls['beta']}/{url_prefix}/{id_value}"
-                    alpha_urls.append(alpha_url)
-                    beta_urls.append(beta_url)
-                    
+                for id_val in ids:
+                    entries.append({
+                        "loc": f"/{prefix}/{id_val}",
+                        "lastmod": date.today().isoformat()
+                    })
             except Exception as e:
                 print(f"Error processing table {table_name}: {e}")
-                continue
-        
-        return {
-            "alpha": {
-                "urls": alpha_urls,
-                "total_count": len(alpha_urls),
-                "base_url": self.base_urls['alpha']
-            },
-            "beta": {
-                "urls": beta_urls,
-                "total_count": len(beta_urls),
-                "base_url": self.base_urls['beta']
-            },
-            "tables_processed": list(self.table_url_mapping.keys())
-        }
-    
+        # Static entries from frontend/pages
+        try:
+            static_paths = self._get_static_paths()
+            for route in static_paths:
+                entries.append({
+                    "loc": route,
+                    "lastmod": date.today().isoformat()
+                })
+        except Exception as e:
+            print(f"Error scanning static pages: {e}")
+        return entries
+
     def _get_table_ids(self, table_name):
         """
-        Get all IDs from a specific table.
+        Retrieve all non-null IDs from the given NocoDB table.
         """
         try:
-            # Execute query to get all IDs from the table
-            query = f'SELECT id FROM "{config.NOCODB_POSTGRES_SCHEMA}"."{table_name}" WHERE id IS NOT NULL ORDER BY id'
+            query = (
+                f'SELECT id FROM "{config.NOCODB_POSTGRES_SCHEMA}"."{table_name}" '
+                'WHERE id IS NOT NULL ORDER BY id'
+            )
             result = self.db.execute_query(query)
-            
-            # Extract IDs from the result
             ids = []
-            if result:
-                for row in result:
-                    if 'id' in row and row['id']:
-                        ids.append(row['id'])
-
+            for row in result or []:
+                if 'id' in row and row['id']:
+                    ids.append(row['id'])
             return ids
         except Exception as e:
             print(f"Error getting IDs from table {table_name}: {e}")
             return []
+    
+    def _get_static_paths(self):
+        """
+        Scan the frontend/pages directory to generate static route paths.
+        """
+        paths = []
+        project_root = Path(__file__).resolve().parents[4]
+        pages_dir = project_root / 'frontend' / 'pages'
+        for vue_file in pages_dir.rglob('*.vue'):
+            parts = vue_file.relative_to(pages_dir).with_suffix('').parts
+            # Skip dynamic routes
+            if any(part.startswith('[') for part in parts):
+                continue
+            # Build route
+            if parts[-1] == 'index':
+                route = '/' + '/'.join(parts[:-1])
+            else:
+                route = '/' + '/'.join(parts)
+            # Normalize
+            if route.endswith('/') and route != '/':
+                route = route[:-1]
+            paths.append(route or '/')
+        return sorted(set(paths))
+    
