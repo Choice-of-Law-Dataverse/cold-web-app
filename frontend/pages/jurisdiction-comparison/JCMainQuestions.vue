@@ -18,7 +18,7 @@
             {{ label }}
           </div>
           <div
-            class="jc-table-cell jc-table-answer result-value-large !pt-10 !pl-4"
+            class="jc-table-cell jc-table-answer result-value-large !pt-10 !pl-2"
             v-for="j in 3"
             :key="'a-' + i + '-' + j"
           >

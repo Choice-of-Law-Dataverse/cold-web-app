@@ -19,8 +19,6 @@
             <div class="md:mt-0 relative">
               <JCOverview />
               <JCMainQuestions />
-              <!-- Add minimum height to ensure sticky behavior works -->
-              <div class="h-96"></div>
             </div>
           </div>
         </div>
@@ -35,7 +33,3 @@ import JCOverview from '@/pages/jurisdiction-comparison/JCOverview.vue'
 import JCMainQuestions from '@/pages/jurisdiction-comparison/JCMainQuestions.vue'
 import JCStickyFilters from '@/pages/jurisdiction-comparison/JCStickyFilters.vue'
 </script>
-
-<style scoped>
-/* Remove previous sticky container styles */
-</style>
