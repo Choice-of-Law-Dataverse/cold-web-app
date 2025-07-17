@@ -99,7 +99,6 @@ onMounted(async () => {
   z-index: 10000;
   background: transparent;
   padding-top: 1em;
-  transition: background 0.2s;
 }
 .jc-fixed-filters-bg {
   background: #fff;
