@@ -16,6 +16,7 @@ class Config:
     # NocoDB configuration
     NOCODB_BASE_URL = os.getenv("NOCODB_BASE_URL")
     NOCODB_API_TOKEN = os.getenv("NOCODB_API_TOKEN")
+    NOCODB_POSTGRES_SCHEMA = os.getenv("NOCODB_POSTGRES_SCHEMA")
 
 
 config = Config()
