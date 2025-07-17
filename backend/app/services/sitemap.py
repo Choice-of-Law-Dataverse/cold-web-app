@@ -14,10 +14,10 @@ class SitemapService:
         self.table_url_mapping = {
             "Answers": "question",
             "Literature": "literature", 
-            "Regional Instruments": "regional-instrument",
-            "International Instruments": "international-instrument",
-            "Court Decisions": "court-decision",
-            "Domestic Instruments": "domestic-instrument"
+            "Regional_Instruments": "regional-instrument",
+            "International_Instruments": "international-instrument",
+            "Court_Decisions": "court-decision",
+            "Domestic_Instruments": "domestic-instrument"
         }
 
     def get_all_frontend_urls(self):
@@ -64,16 +64,16 @@ class SitemapService:
         """
         try:
             # Execute query to get all IDs from the table
-            query = f'SELECT "ID" FROM "{table_name}" WHERE "ID" IS NOT NULL ORDER BY "ID"'
+            query = f'SELECT id FROM "{config.NOCODB_POSTGRES_SCHEMA}"."{table_name}" WHERE id IS NOT NULL ORDER BY id'
             result = self.db.execute_query(query)
             
             # Extract IDs from the result
             ids = []
             if result:
                 for row in result:
-                    if 'ID' in row and row['ID']:
-                        ids.append(row['ID'])
-            
+                    if 'id' in row and row['id']:
+                        ids.append(row['id'])
+
             return ids
         except Exception as e:
             print(f"Error getting IDs from table {table_name}: {e}")
