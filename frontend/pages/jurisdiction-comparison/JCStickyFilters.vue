@@ -1,20 +1,48 @@
 <template>
-  <div
-    :class="['jc-fixed-filters', '-mb-16', { 'jc-fixed-filters-bg': isSticky }]"
-  >
-    <div class="jc-sticky-grid jc-overview-row">
-      <div></div>
-      <div
-        v-for="(filter, index) in jurisdictionFilters"
-        :key="`desktop-filter-${index}`"
-      >
-        <SearchFilters
-          :options="jurisdictionOptions"
-          v-model="filter.value.value"
-          class="jc-search-filter"
-          showAvatars="true"
-          :multiple="false"
-        />
+  <div>
+    <!-- Desktop/Tablet Sticky Filters -->
+    <div
+      :class="[
+        'jc-fixed-filters',
+        '-mb-16',
+        { 'jc-fixed-filters-bg': isSticky },
+        'md:block',
+        'hidden',
+      ]"
+    >
+      <div class="jc-sticky-grid jc-overview-row">
+        <div></div>
+        <div
+          v-for="(filter, index) in jurisdictionFilters"
+          :key="`desktop-filter-${index}`"
+        >
+          <SearchFilters
+            :options="jurisdictionOptions"
+            v-model="filter.value.value"
+            class="jc-search-filter"
+            showAvatars="true"
+            :multiple="false"
+          />
+        </div>
+      </div>
+    </div>
+
+    <!-- Mobile/Tablet Filters Grid -->
+    <div class="md:hidden">
+      <div class="filters-grid mb-6">
+        <div
+          v-for="(filter, index) in jurisdictionFilters"
+          :key="`mobile-filter-${index}`"
+          class="filter-item"
+        >
+          <SearchFilters
+            :options="jurisdictionOptions"
+            v-model="filter.value.value"
+            class="w-full"
+            showAvatars="true"
+            :multiple="false"
+          />
+        </div>
       </div>
     </div>
   </div>
