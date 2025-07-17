@@ -1,5 +1,7 @@
 <template>
-  <div class="jc-fixed-filters -mb-16">
+  <div
+    :class="['jc-fixed-filters', '-mb-16', { 'jc-fixed-filters-bg': isSticky }]"
+  >
     <div class="jc-sticky-grid jc-overview-row">
       <div></div>
       <div
@@ -36,6 +38,9 @@ const jurisdictionFilters = computed(() => [
   { value: currentJurisdictionFilter2 },
   { value: currentJurisdictionFilter3 },
 ])
+
+// Sticky state for background
+const isSticky = ref(false)
 
 // Data fetching
 const loadJurisdictions = async () => {
@@ -76,6 +81,14 @@ const loadJurisdictions = async () => {
 // Initialization
 onMounted(async () => {
   await loadJurisdictions()
+  // Sticky background logic
+  const el = document.querySelector('.jc-fixed-filters')
+  const onScroll = () => {
+    if (!el) return
+    const { top } = el.getBoundingClientRect()
+    isSticky.value = top <= 0
+  }
+  window.addEventListener('scroll', onScroll)
 })
 </script>
 
@@ -83,9 +96,13 @@ onMounted(async () => {
 .jc-fixed-filters {
   position: sticky;
   top: 0;
-  z-index: 10;
-  background: #fff;
+  z-index: 10000;
+  background: transparent;
   padding-top: 1em;
+  transition: background 0.2s;
+}
+.jc-fixed-filters-bg {
+  background: #fff;
 }
 .jc-sticky-grid {
   display: grid;
