@@ -27,11 +27,11 @@ app.middleware("http")(log_query)
 api_router = APIRouter(prefix="/api/v1")
 
 api_router.include_router(search.router)
- # api_router.include_router(user.router)
- api_router.include_router(ai.router)
- api_router.include_router(submarine.router)
- api_router.include_router(sitemap.router)
- api_router.include_router(landing_page.router)
+# api_router.include_router(user.router)
+api_router.include_router(ai.router)
+api_router.include_router(submarine.router)
+api_router.include_router(sitemap.router)
+api_router.include_router(landing_page.router)
 
 app.include_router(api_router)
 
