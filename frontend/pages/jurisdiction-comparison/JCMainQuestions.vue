@@ -31,31 +31,6 @@
     <!-- Mobile & Tablet Layout -->
     <div class="md:hidden">
       <div class="mobile-layout">
-        <!-- Header -->
-        <div class="mb-6">
-          <h2 class="text-xl font-semibold">Select Jurisdictions</h2>
-        </div>
-
-        <!-- Filters in a responsive grid -->
-        <div class="filters-grid mb-6">
-          <div
-            v-for="(filter, index) in jurisdictionFilters"
-            :key="`mobile-filter-${index}`"
-            class="filter-item"
-          >
-            <label class="block text-sm font-medium mb-2 text-gray-700">
-              <!-- Jurisdiction {{ index + 1 }} -->
-            </label>
-            <SearchFilters
-              :options="jurisdictionOptions"
-              v-model="filter.value.value"
-              class="w-full"
-              showAvatars="true"
-              :multiple="false"
-            />
-          </div>
-        </div>
-
         <hr class="border-gray-300 mb-6" />
 
         <!-- Data cards -->
