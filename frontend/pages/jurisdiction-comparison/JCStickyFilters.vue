@@ -2,13 +2,8 @@
   <div>
     <!-- Desktop/Tablet Sticky Filters -->
     <div
-      :class="[
-        'jc-fixed-filters',
-        '-mb-16',
-        { 'jc-fixed-filters-bg': isSticky },
-        'md:block',
-        'hidden',
-      ]"
+      class="jc-fixed-filters -mb-16 hidden md:block"
+      :class="{ 'jc-fixed-filters-bg': isSticky }"
     >
       <div class="jc-sticky-grid jc-overview-row">
         <div></div>
@@ -109,38 +104,118 @@ const loadJurisdictions = async () => {
 // Initialization
 onMounted(async () => {
   await loadJurisdictions()
-  // Sticky background logic
-  const el = document.querySelector('.jc-fixed-filters')
-  const onScroll = () => {
-    if (!el) return
-    const { top } = el.getBoundingClientRect()
-    isSticky.value = top <= 0
+
+  // JavaScript-based sticky implementation
+  const filtersElement = document.querySelector('.jc-fixed-filters')
+  const overviewElement = document.querySelector('.jc-z-top')
+
+  if (!filtersElement || !overviewElement) return
+
+  // Get the initial position of the filters relative to the Overview title
+  const getOverviewTop = () => {
+    const overviewRect = overviewElement.getBoundingClientRect()
+    return overviewRect.top + window.scrollY
   }
+
+  let overviewTop = getOverviewTop()
+
+  const onScroll = () => {
+    const scrollTop = window.scrollY
+
+    // Recalculate overview position (in case layout changes)
+    overviewTop = getOverviewTop()
+
+    // Check if we've scrolled past the Overview title
+    if (scrollTop > overviewTop - 80) {
+      // 80px offset for better UX
+      // Make filters sticky at top of viewport
+      filtersElement.style.position = 'fixed'
+      filtersElement.style.top = '0'
+      filtersElement.style.left = '0'
+      filtersElement.style.right = '0'
+      filtersElement.style.width = '100%'
+      filtersElement.style.zIndex = '1000'
+      isSticky.value = true
+    } else {
+      // Reset to normal flow
+      filtersElement.style.position = 'static'
+      filtersElement.style.top = 'auto'
+      filtersElement.style.left = 'auto'
+      filtersElement.style.right = 'auto'
+      filtersElement.style.width = 'auto'
+      filtersElement.style.zIndex = 'auto'
+      isSticky.value = false
+    }
+  }
+
   window.addEventListener('scroll', onScroll)
+  window.addEventListener('resize', () => {
+    overviewTop = getOverviewTop()
+    onScroll()
+  })
+  onScroll() // Call once to set initial state
 })
 </script>
 
 <style scoped>
 .jc-fixed-filters {
-  position: sticky;
+  position: static; /* Will be controlled by JavaScript */
   top: 0;
-  z-index: 10000;
+  z-index: 1000;
   background: transparent;
-  padding-top: 1em;
+  /* padding: 1em 0; */
+  width: 100%;
+  /* transition: background-color 0.2s ease; */
 }
+
+.jc-fixed-filters > * {
+  max-width: var(--container-width, 1200px);
+  margin: 0 auto;
+  /* padding: 0 1.5rem; */
+}
+
 .jc-fixed-filters-bg {
   background: #fff;
-  padding-bottom: 1em;
   border-bottom: 1px solid var(--color-cold-gray);
+  /* box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); */
+  padding-top: 1rem;
+  padding-bottom: 1rem;
 }
+
 .jc-sticky-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr 1fr;
   gap: 0 1.5rem;
   align-items: end;
+  width: 100%;
 }
+
 .jc-sticky-grid > div {
   /* Ensures SearchFilters fill their columns */
   min-width: 0;
+}
+
+/* Filters grid for mobile */
+.filters-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .filters-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .filters-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
 }
 </style>
