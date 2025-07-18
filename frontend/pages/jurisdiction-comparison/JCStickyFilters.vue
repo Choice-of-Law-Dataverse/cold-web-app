@@ -6,7 +6,7 @@
       :class="{ 'jc-fixed-filters-bg': isSticky }"
     >
       <div class="jc-sticky-grid jc-overview-row">
-        <div>Overview!</div>
+        <h2>Overview</h2>
         <div
           v-for="(filter, index) in jurisdictionFilters"
           :key="`desktop-filter-${index}`"
