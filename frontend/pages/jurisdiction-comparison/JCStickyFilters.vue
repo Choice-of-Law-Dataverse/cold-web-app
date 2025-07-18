@@ -6,7 +6,7 @@
       :class="{ 'jc-fixed-filters-bg': isSticky }"
     >
       <div class="jc-sticky-grid jc-overview-row">
-        <div></div>
+        <div>Overview!</div>
         <div
           v-for="(filter, index) in jurisdictionFilters"
           :key="`desktop-filter-${index}`"
@@ -167,7 +167,7 @@ onMounted(async () => {
 .jc-fixed-filters {
   position: static; /* Will be controlled by JavaScript */
   top: 0;
-  z-index: 1000;
+  z-index: 10001 !important;
   background: transparent;
   width: 100%;
 }
@@ -178,6 +178,7 @@ onMounted(async () => {
   border-bottom: 1px solid var(--color-cold-gray);
   padding-top: 1rem;
   padding-bottom: 1rem;
+  z-index: 10001 !important;
   /* Ensure proper spacing when fixed */
   /* padding-left: 0.5rem; */
   /* padding-right: 1rem; */
