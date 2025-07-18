@@ -16,6 +16,7 @@
         <div
           v-for="(filter, index) in jurisdictionFilters"
           :key="`desktop-filter-${index}`"
+          :style="`grid-column: ${index + 2}`"
         >
           <SearchFilters
             :options="jurisdictionOptions"
@@ -185,9 +186,6 @@ onMounted(async () => {
   padding-top: 1rem;
   padding-bottom: 1rem;
   z-index: 10001 !important;
-  /* Ensure proper spacing when fixed */
-  /* padding-left: 0.5rem; */
-  /* padding-right: 1rem; */
 }
 
 .jc-sticky-grid {
@@ -195,12 +193,8 @@ onMounted(async () => {
   grid-template-columns: 1fr 1fr 1fr 1fr;
   align-items: end;
   width: 100%;
-  gap: 0 1.5rem; /* Match JCOverview */
-}
-
-.jc-sticky-grid > div {
-  /* Ensures SearchFilters fill their columns */
-  min-width: 0;
+  min-width: 600px; /* Ensures enough space for 4 columns + gaps */
+  column-gap: 24px !important;
 }
 
 /* Filters grid for mobile */
