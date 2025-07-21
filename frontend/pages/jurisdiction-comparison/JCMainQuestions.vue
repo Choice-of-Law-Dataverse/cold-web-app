@@ -152,7 +152,6 @@
             </div>
           </div>
         </div>
-        <hr class="jc-hr" />
       </div>
     </div>
   </div>
