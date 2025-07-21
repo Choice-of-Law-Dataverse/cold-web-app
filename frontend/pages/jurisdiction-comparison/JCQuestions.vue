@@ -158,8 +158,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-defineProps({
+import { ref, computed, onMounted, watch } from 'vue'
+const props = defineProps({
   showCaret: {
     type: Boolean,
     default: true,
@@ -167,8 +167,20 @@ defineProps({
 })
 
 // Accordion state
-const isOpen = ref(true)
-const isOpenMobile = ref(true)
+const isOpen = ref(false)
+const isOpenMobile = ref(false)
+
+// Always force open if showCaret is false
+watch(
+  () => props.showCaret,
+  (val) => {
+    if (!val) {
+      isOpen.value = true
+      isOpenMobile.value = true
+    }
+  },
+  { immediate: true }
+)
 // Initialize jurisdiction options with default value
 const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
 
