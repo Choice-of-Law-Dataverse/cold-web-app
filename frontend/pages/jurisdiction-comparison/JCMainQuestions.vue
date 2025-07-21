@@ -7,7 +7,7 @@
           <button
             @click="isOpen = !isOpen"
             aria-label="Toggle Main Questions"
-            class="accordion-caret mr-2"
+            class="accordion-caret mr-2 mt-2"
             style="
               background: none;
               border: none;
