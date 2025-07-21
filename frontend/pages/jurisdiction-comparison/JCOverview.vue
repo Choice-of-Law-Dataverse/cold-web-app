@@ -90,7 +90,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import SearchFilters from '@/components/search-results/SearchFilters.vue'
+// import SearchFilters from '@/components/search-results/SearchFilters.vue'
 
 // Initialize jurisdiction options with default value
 const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
