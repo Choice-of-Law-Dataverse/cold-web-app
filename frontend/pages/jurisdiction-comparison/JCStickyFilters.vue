@@ -138,10 +138,10 @@ onMounted(async () => {
       // Make filters sticky at top of viewport but constrained to container width
       filtersElement.style.position = 'fixed'
       filtersElement.style.top = '0'
-      filtersElement.style.left = '100px'
-      filtersElement.style.right = '100px'
+      filtersElement.style.left = '0'
+      filtersElement.style.right = '0'
       filtersElement.style.transform = 'none'
-      filtersElement.style.width = 'auto'
+      filtersElement.style.width = '100%'
       filtersElement.style.maxWidth = 'var(--container-width, 1200px)'
       filtersElement.style.margin = '0 auto'
       filtersElement.style.zIndex = '1000'
