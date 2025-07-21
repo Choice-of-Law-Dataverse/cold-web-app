@@ -18,9 +18,9 @@
             <!-- Content area with sufficient height for sticky behavior -->
             <div class="md:mt-0 relative">
               <JCOverview />
-              <JCMainQuestions :showCaret="false" />
-              <JCMainQuestions />
-              <JCMainQuestions />
+              <JCQuestions :showCaret="false" />
+              <JCQuestions />
+              <JCQuestions />
             </div>
           </div>
         </div>
@@ -32,6 +32,6 @@
 <script setup>
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import JCOverview from '@/pages/jurisdiction-comparison/JCOverview.vue'
-import JCMainQuestions from '@/pages/jurisdiction-comparison/JCMainQuestions.vue'
+import JCQuestions from '~/pages/jurisdiction-comparison/JCQuestions.vue'
 import JCStickyFilters from '@/pages/jurisdiction-comparison/JCStickyFilters.vue'
 </script>
