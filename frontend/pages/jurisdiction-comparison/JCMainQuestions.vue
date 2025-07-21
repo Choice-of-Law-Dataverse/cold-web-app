@@ -65,8 +65,43 @@
     <div class="md:hidden">
       <div class="mobile-layout">
         <hr class="border-gray-300 mb-6" />
-        <div class="data-cards">
-          <h2 class="mt-4">Main Questions</h2>
+        <div class="flex items-center mb-2 mt-4">
+          <button
+            @click="isOpenMobile = !isOpenMobile"
+            aria-label="Toggle Main Questions"
+            class="accordion-caret mr-2"
+            style="
+              background: none;
+              border: none;
+              padding: 0;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+            "
+          >
+            <svg
+              :style="{
+                transform: isOpenMobile ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+              }"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M7 5l5 5-5 5"
+                stroke="#6B7280"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <h2 class="mt-0">Main Questions</h2>
+        </div>
+        <div v-show="isOpenMobile" class="data-cards">
           <div>
             <div
               v-for="(label, i) in questionLabels"
@@ -125,6 +160,7 @@ import { ref, computed, onMounted } from 'vue'
 
 // Accordion state
 const isOpen = ref(true)
+const isOpenMobile = ref(true)
 // Initialize jurisdiction options with default value
 const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
 
