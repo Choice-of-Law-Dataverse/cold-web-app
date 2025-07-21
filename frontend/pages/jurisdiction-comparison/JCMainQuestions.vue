@@ -46,7 +46,7 @@
                 :key="`mobile-q-${i}-j-${index}`"
                 class="mb-4"
               >
-                <div class="data-card-title flex items-center mb-1">
+                <h3 class="data-card-title flex items-center mb-1">
                   <template
                     v-if="
                       filter.value.value.length > 0 &&
@@ -74,8 +74,8 @@
                   <template v-else>
                     {{ `Jurisdiction ${index + 1}` }}
                   </template>
-                </div>
-                <div class="data-card-content">
+                </h3>
+                <div class="data-card-content result-value-large">
                   <p class="data-line">{{ sampleData[i] }}</p>
                 </div>
               </div>
@@ -263,8 +263,7 @@ onMounted(async () => {
 }
 
 .data-line {
-  margin-bottom: 0.5rem;
-  color: #374151;
+  margin-bottom: 1.5rem;
   line-height: 2;
 }
 
