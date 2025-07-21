@@ -20,7 +20,6 @@
             <svg
               :style="{
                 transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-                transition: 'transform 0.2s',
               }"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -83,7 +82,6 @@
             <svg
               :style="{
                 transform: isOpenMobile ? 'rotate(90deg)' : 'rotate(0deg)',
-                transition: 'transform 0.2s',
               }"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
