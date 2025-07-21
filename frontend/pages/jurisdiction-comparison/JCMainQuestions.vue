@@ -32,62 +32,52 @@
     <div class="md:hidden">
       <div class="mobile-layout">
         <hr class="border-gray-300 mb-6" />
-
-        <!-- Data cards -->
         <div class="data-cards">
           <h2 class="mt-4">Main Questions</h2>
-          <div class="data-card grid grid-cols-4 gap-0">
-            <div class="data-card-labels flex flex-col">
-              <p
-                v-for="(label, i) in questionLabels"
-                :key="'q-label-m-' + i"
-                class="data-line"
-              >
-                {{ label }}
-              </p>
-            </div>
+          <div>
             <div
-              v-for="(filter, index) in jurisdictionFilters"
-              :key="`mobile-data-${index}`"
-              class="data-card flex flex-col"
+              v-for="(label, i) in questionLabels"
+              :key="'q-label-m-' + i"
+              class="mb-8"
             >
-              <h3 class="data-card-title flex items-center">
-                <template
-                  v-if="
-                    filter.value.value.length > 0 &&
-                    filter.value.value[0]?.label !== 'All Jurisdictions'
-                  "
-                >
-                  <img
+              <p class="data-line font-semibold mb-2">{{ label }}</p>
+              <div
+                v-for="(filter, index) in jurisdictionFilters"
+                :key="`mobile-q-${i}-j-${index}`"
+                class="mb-4"
+              >
+                <div class="data-card-title flex items-center mb-1">
+                  <template
                     v-if="
-                      !erroredFlags[index] &&
-                      getFlagUrl(filter.value.value[0].label)
+                      filter.value.value.length > 0 &&
+                      filter.value.value[0]?.label !== 'All Jurisdictions'
                     "
-                    :src="getFlagUrl(filter.value.value[0].label)"
-                    @error="() => (erroredFlags[index] = true)"
-                    style="
-                      height: 18px;
-                      width: auto;
-                      margin-right: 0.5em;
-                      border-radius: 0;
-                      border: 1px solid var(--color-cold-gray);
-                    "
-                    :alt="filter.value.value[0].label + ' flag'"
-                  />
-                  {{ filter.value.value[0].label }}
-                </template>
-                <template v-else>
-                  {{ `Jurisdiction ${index + 1}` }}
-                </template>
-              </h3>
-              <div class="data-card-content">
-                <p
-                  v-for="(line, lineIndex) in sampleData"
-                  :key="'m-' + lineIndex"
-                  class="data-line"
-                >
-                  {{ line }}
-                </p>
+                  >
+                    <img
+                      v-if="
+                        !erroredFlags[index] &&
+                        getFlagUrl(filter.value.value[0].label)
+                      "
+                      :src="getFlagUrl(filter.value.value[0].label)"
+                      @error="() => (erroredFlags[index] = true)"
+                      style="
+                        height: 18px;
+                        width: auto;
+                        margin-right: 0.5em;
+                        border-radius: 0;
+                        border: 1px solid var(--color-cold-gray);
+                      "
+                      :alt="filter.value.value[0].label + ' flag'"
+                    />
+                    {{ filter.value.value[0].label }}
+                  </template>
+                  <template v-else>
+                    {{ `Jurisdiction ${index + 1}` }}
+                  </template>
+                </div>
+                <div class="data-card-content">
+                  <p class="data-line">{{ sampleData[i] }}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -99,7 +89,7 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import SearchFilters from '@/components/search-results/SearchFilters.vue'
+// import SearchFilters from '@/components/search-results/SearchFilters.vue'
 
 // Initialize jurisdiction options with default value
 const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
