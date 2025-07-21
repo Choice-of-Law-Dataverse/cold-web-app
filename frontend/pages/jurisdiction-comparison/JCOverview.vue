@@ -267,10 +267,6 @@ onMounted(async () => {
   line-height: 2;
 }
 
-.jc-hr {
-  border-top: 1px solid var(--color-cold-gray);
-}
-
 .result-value-medium {
   font-weight: 400 !important;
   margin-top: 32px !important;

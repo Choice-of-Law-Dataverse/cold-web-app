@@ -368,3 +368,8 @@ ul[role='listbox'] li[data-headlessui-state='selected']:hover {
 .section-gap {
   margin-bottom: 1.5rem; // 24px, adjust as needed for your design
 }
+
+// Jurisdiction Comparison Horizontal Lines
+.jc-hr {
+  border-top: 1px solid var(--color-cold-gray);
+}

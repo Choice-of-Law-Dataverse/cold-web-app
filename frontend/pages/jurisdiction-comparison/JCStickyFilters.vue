@@ -46,6 +46,7 @@
             :multiple="false"
           />
         </div>
+        <hr class="jc-hr mt-4" />
       </div>
     </div>
   </div>
