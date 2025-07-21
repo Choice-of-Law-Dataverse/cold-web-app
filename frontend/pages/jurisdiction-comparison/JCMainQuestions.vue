@@ -3,12 +3,45 @@
     <!-- Desktop Layout -->
     <div class="hidden md:block">
       <div class="jc-grid jc-overview-row">
-        <div class="jc-col-1">
+        <div class="jc-col-1 flex items-center">
+          <button
+            @click="isOpen = !isOpen"
+            aria-label="Toggle Main Questions"
+            class="accordion-caret mr-2"
+            style="
+              background: none;
+              border: none;
+              padding: 0;
+              cursor: pointer;
+              display: flex;
+              align-items: center;
+            "
+          >
+            <svg
+              :style="{
+                transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                transition: 'transform 0.2s',
+              }"
+              width="20"
+              height="20"
+              viewBox="0 0 20 20"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M7 5l5 5-5 5"
+                stroke="#6B7280"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
           <h2 class="mt-8 mb-6 mr-[106px]">Main Questions</h2>
         </div>
       </div>
       <hr class="jc-hr" />
-      <div class="jc-table-grid">
+      <div v-show="isOpen" class="jc-table-grid">
         <div
           v-for="(label, i) in questionLabels"
           :key="'q-row-' + i"
@@ -89,8 +122,9 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-// import SearchFilters from '@/components/search-results/SearchFilters.vue'
 
+// Accordion state
+const isOpen = ref(true)
 // Initialize jurisdiction options with default value
 const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
 
