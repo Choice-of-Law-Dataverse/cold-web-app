@@ -65,7 +65,7 @@
                 {{ `Jurisdiction ${index + 1}` }}
               </template>
             </h3>
-            <div class="data-card-content">
+            <div>
               <p
                 v-for="(line, lineIndex) in sampleData"
                 :key="lineIndex"
@@ -263,7 +263,7 @@ onMounted(async () => {
 
 .data-line {
   margin-bottom: 0.5rem;
-  color: #374151;
+  /* color: #374151; */
   line-height: 2;
 }
 

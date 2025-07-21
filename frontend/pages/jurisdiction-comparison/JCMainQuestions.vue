@@ -64,7 +64,7 @@
     <!-- Mobile & Tablet Layout -->
     <div class="md:hidden">
       <div class="mobile-layout">
-        <hr class="border-gray-300 mb-6" />
+        <hr class="jc-hr mt-4 mb-12" />
         <div class="flex items-center mb-2 mt-4">
           <button
             @click="isOpenMobile = !isOpenMobile"
@@ -152,6 +152,7 @@
         </div>
       </div>
     </div>
+    <hr class="jc-hr" />
   </div>
 </template>
 
@@ -323,10 +324,6 @@ onMounted(async () => {
 .data-line {
   margin-bottom: 1.5rem;
   line-height: 2;
-}
-
-.jc-hr {
-  border-top: 1px solid var(--color-cold-gray);
 }
 
 .result-value-medium {
