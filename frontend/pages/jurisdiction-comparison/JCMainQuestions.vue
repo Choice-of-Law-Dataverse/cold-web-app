@@ -5,6 +5,7 @@
       <div class="jc-grid jc-overview-row">
         <div class="jc-col-1 flex items-center">
           <button
+            v-if="showCaret"
             @click="isOpen = !isOpen"
             aria-label="Toggle Main Questions"
             class="accordion-caret mr-2 mt-2"
@@ -67,6 +68,7 @@
         <hr class="jc-hr mt-4 mb-12" />
         <div class="flex items-center mb-2 mt-4">
           <button
+            v-if="showCaret"
             @click="isOpenMobile = !isOpenMobile"
             aria-label="Toggle Main Questions"
             class="accordion-caret mr-2"
@@ -158,6 +160,12 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
+defineProps({
+  showCaret: {
+    type: Boolean,
+    default: true,
+  },
+})
 
 // Accordion state
 const isOpen = ref(true)

@@ -18,6 +18,8 @@
             <!-- Content area with sufficient height for sticky behavior -->
             <div class="md:mt-0 relative">
               <JCOverview />
+              <JCMainQuestions :showCaret="false" />
+              <JCMainQuestions />
               <JCMainQuestions />
             </div>
           </div>
