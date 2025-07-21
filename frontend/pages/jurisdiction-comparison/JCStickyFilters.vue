@@ -31,6 +31,7 @@
 
     <!-- Mobile/Tablet Filters Grid -->
     <div class="md:hidden">
+      <h2 class="text-xl font-semibold mb-8">Compare Jurisdictions</h2>
       <div class="filters-grid mb-6">
         <div
           v-for="(filter, index) in jurisdictionFilters"

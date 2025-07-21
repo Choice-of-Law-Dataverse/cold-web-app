@@ -28,13 +28,6 @@
     <!-- Mobile & Tablet Layout -->
     <div class="md:hidden">
       <div class="mobile-layout">
-        <!-- Header -->
-        <div class="mb-6">
-          <h2 class="text-xl font-semibold">Select Jurisdictions</h2>
-        </div>
-
-        <hr class="border-gray-300 mb-6" />
-
         <!-- Data cards -->
         <div class="data-cards">
           <h2 class="mt-4">Overview</h2>
