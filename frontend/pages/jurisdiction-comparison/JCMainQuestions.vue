@@ -35,7 +35,7 @@
 
         <!-- Data cards -->
         <div class="data-cards">
-          <h2 class="mt-4">Overview</h2>
+          <h2 class="mt-4">Main Questions</h2>
           <div class="data-card grid grid-cols-4 gap-0">
             <div class="data-card-labels flex flex-col">
               <p
