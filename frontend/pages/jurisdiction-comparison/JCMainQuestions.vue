@@ -22,18 +22,19 @@
                 transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
                 transition: 'transform 0.2s',
               }"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              style="color: var(--color-cold-purple)"
             >
               <path
-                d="M7 5l5 5-5 5"
-                stroke="#6B7280"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                d="M9 6l6 6-6 6"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="square"
+                stroke-linejoin="square"
               />
             </svg>
           </button>
@@ -84,18 +85,19 @@
                 transform: isOpenMobile ? 'rotate(90deg)' : 'rotate(0deg)',
                 transition: 'transform 0.2s',
               }"
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
               xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              style="color: var(--color-cold-purple)"
             >
               <path
-                d="M7 5l5 5-5 5"
-                stroke="#6B7280"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
+                d="M9 6l6 6-6 6"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="square"
+                stroke-linejoin="square"
               />
             </svg>
           </button>
