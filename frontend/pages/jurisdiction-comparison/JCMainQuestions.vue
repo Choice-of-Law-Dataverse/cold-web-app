@@ -150,8 +150,8 @@
             </div>
           </div>
         </div>
+        <hr class="jc-hr" />
       </div>
-      <hr class="jc-hr" />
     </div>
   </div>
 </template>
