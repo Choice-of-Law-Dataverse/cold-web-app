@@ -18,9 +18,9 @@
             <!-- Content area with sufficient height for sticky behavior -->
             <div class="md:mt-0 relative">
               <JCOverview />
-              <JCQuestions :showCaret="false" />
-              <JCQuestions />
-              <JCQuestions />
+              <JCQuestions :showCaret="false" title="Main Questions" />
+              <JCQuestions title="Codification" />
+              <JCQuestions title="Codification, HCCH Principles" />
             </div>
           </div>
         </div>

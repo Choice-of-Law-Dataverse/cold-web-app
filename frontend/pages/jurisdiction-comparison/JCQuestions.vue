@@ -7,7 +7,6 @@
           <button
             v-if="showCaret"
             @click="isOpen = !isOpen"
-            aria-label="Toggle Main Questions"
             class="accordion-caret mr-2 mt-2"
             style="
               background: none;
@@ -38,7 +37,7 @@
               />
             </svg>
           </button>
-          <h2 class="mt-8 mb-6 mr-[106px]">Main Questions</h2>
+          <h2 class="mt-8 mb-6 mr-[106px]">{{ props.title }}</h2>
         </div>
       </div>
       <hr class="jc-hr" />
@@ -70,7 +69,6 @@
           <button
             v-if="showCaret"
             @click="isOpenMobile = !isOpenMobile"
-            aria-label="Toggle Main Questions"
             class="accordion-caret mr-2"
             style="
               background: none;
@@ -101,7 +99,7 @@
               />
             </svg>
           </button>
-          <h2 class="mt-0">Main Questions</h2>
+          <h2 class="mt-0">{{ props.title }}</h2>
         </div>
         <div v-show="isOpenMobile" class="data-cards">
           <div>
@@ -163,6 +161,10 @@ const props = defineProps({
   showCaret: {
     type: Boolean,
     default: true,
+  },
+  title: {
+    type: String,
+    default: 'Please Set Title',
   },
 })
 
