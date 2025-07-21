@@ -239,18 +239,6 @@ onMounted(async () => {
   gap: 1.5rem;
 }
 
-@media (min-width: 640px) {
-  .data-cards {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 768px) {
-  .data-cards {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
 .data-card {
   padding-top: 2rem;
 }
