@@ -2,12 +2,12 @@
   <div>
     <!-- Desktop/Tablet Sticky Filters -->
     <div
-      class="jc-fixed-filters -mb-16 hidden md:block"
+      class="jc-fixed-filters -mb-[72px] hidden md:block"
       :class="{ 'jc-fixed-filters-bg': isSticky }"
     >
       <div class="jc-sticky-grid jc-overview-row">
         <div style="grid-column: 1">
-          <h2 v-show="!isSticky">Overview</h2>
+          <h2 v-show="!isSticky" class="mb-1">Overview</h2>
           <div
             v-show="isSticky"
             style="visibility: hidden; height: 1.5em"
