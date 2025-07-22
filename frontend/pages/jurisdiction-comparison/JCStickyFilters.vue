@@ -93,18 +93,15 @@ const loadJurisdictions = async () => {
     if (!response.ok) throw new Error('Failed to load jurisdictions')
 
     const jurisdictionsData = await response.json()
-    const options = [
-      { label: 'All Jurisdictions' },
-      ...jurisdictionsData
-        .filter((entry) => entry['Irrelevant?'] === null)
-        .map((entry) => ({
-          label: entry.Name,
-          avatar: entry['Alpha-3 Code']
-            ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
-            : undefined,
-        }))
-        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
-    ]
+    const options = jurisdictionsData
+      .filter((entry) => entry['Irrelevant?'] === null)
+      .map((entry) => ({
+        label: entry.Name,
+        avatar: entry['Alpha-3 Code']
+          ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+          : undefined,
+      }))
+      .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
     jurisdictionOptions.value = options
 
     // Set each filter to the first country (not 'All Jurisdictions')
