@@ -42,8 +42,10 @@
       </div>
       <hr class="jc-hr" />
       <div v-show="isOpen">
-        <div v-if="loadingQuestions" class="flex justify-left py-8">
-          <LoadingBar />
+        <div v-if="loadingQuestions" class="flex justify-left py-8 w-full">
+          <div class="w-full max-w-xs">
+            <LoadingBar />
+          </div>
         </div>
         <div v-else class="jc-table-grid">
           <div
@@ -107,8 +109,10 @@
           <h2 class="mt-0">{{ props.title }}</h2>
         </div>
         <div v-show="isOpenMobile" class="data-cards">
-          <div v-if="loadingQuestions" class="flex justify-left py-8">
-            <LoadingBar />
+          <div v-if="loadingQuestions" class="py-8">
+            <div class="mobile-loading-wrapper">
+              <LoadingBar />
+            </div>
           </div>
           <div v-else>
             <div
@@ -233,7 +237,6 @@ const fetchQuestions = async () => {
       )
       if (!response.ok) {
         const errorText = await response.text()
-        // console.error(`API error for ID ${id}:`, errorText)
         labels.push(id)
         continue
       }
@@ -250,14 +253,6 @@ const fetchQuestions = async () => {
 }
 
 onMounted(fetchQuestions)
-
-// Static sample data as computed property
-// const questionLabels = [
-//   'Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in this jurisdiction?', // 03-PA
-//   'Is a connection required between the chosen law and the parties or their transaction? ', // 07-PA
-//   'Are the parties prevented from choosing the law of a third country with which there is no connection (a “neutral law”)?', // 08-PA
-//   'Are the parties allowed to choose non-State law (“rules of law”) to govern their contract?', // 09-FoC
-// ]
 const sampleData = computed(() => ['Yes', 'No', 'Yes', 'No'])
 
 // Data fetching
@@ -303,6 +298,27 @@ onMounted(async () => {
 </script>
 
 <style scoped>
+/* Mobile LoadingBar constraint - force it to stay within bounds */
+.mobile-loading-wrapper {
+  max-width: 200px !important;
+  width: 100% !important;
+  margin: 0;
+  overflow: hidden !important;
+}
+
+.mobile-loading-wrapper :deep(*) {
+  max-width: 100% !important;
+}
+
+.mobile-loading-wrapper :deep(.space-y-2) {
+  max-width: 100% !important;
+}
+
+.mobile-loading-wrapper :deep(.h-2) {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
 /* Desktop Grid Layout */
 .jc-grid {
   display: grid;
@@ -386,6 +402,14 @@ onMounted(async () => {
 
 .data-card {
   padding-top: 2rem;
+}
+
+/* Restrict LoadingBar width in mobile layout */
+.mobile-layout .flex {
+  max-width: 100% !important;
+  width: 100% !important;
+  justify-content: left;
+  align-items: left;
 }
 
 .data-card-title {
