@@ -200,10 +200,10 @@ const jurisdictionFilters = computed(() => [
 
 // Static sample data as computed property
 const questionLabels = [
-  'Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in this jurisdiction?',
-  'Is a connection required between the chosen law and the parties or their transaction? ',
-  'Are the parties prevented from choosing the law of a third country with which there is no connection (a “neutral law”)?',
-  'Are the parties allowed to choose non-State law (“rules of law”) to govern their contract?',
+  'Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in this jurisdiction?', // 03-PA
+  'Is a connection required between the chosen law and the parties or their transaction? ', // 07-PA
+  'Are the parties prevented from choosing the law of a third country with which there is no connection (a “neutral law”)?', // 08-PA
+  'Are the parties allowed to choose non-State law (“rules of law”) to govern their contract?', // 09-FoC
 ]
 const sampleData = computed(() => ['Yes', 'No', 'Yes', 'No'])
 
