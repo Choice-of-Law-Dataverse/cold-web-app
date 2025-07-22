@@ -41,7 +41,10 @@
         </div>
       </div>
       <hr class="jc-hr" />
-      <div v-show="isOpen" class="jc-table-grid">
+      <div v-if="loadingQuestions" class="flex justify-left items-left py-8">
+        <LoadingBar />
+      </div>
+      <div v-else v-show="isOpen" class="jc-table-grid">
         <div
           v-for="(label, i) in questionLabels"
           :key="'q-row-' + i"
@@ -157,6 +160,7 @@
 
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
 const props = defineProps({
   showCaret: {
     type: Boolean,
@@ -200,8 +204,10 @@ const jurisdictionFilters = computed(() => [
 
 const questionIDs = ['03-PA', '07-PA', '08-PA', '09-FoC']
 const questionLabels = ref([])
+const loadingQuestions = ref(true)
 
 const fetchQuestions = async () => {
+  loadingQuestions.value = true
   try {
     const config = useRuntimeConfig()
     const labels = []
@@ -233,6 +239,8 @@ const fetchQuestions = async () => {
   } catch (error) {
     // console.error('Error fetching questions:', error)
     questionLabels.value = questionIDs // fallback to IDs
+  } finally {
+    loadingQuestions.value = false
   }
 }
 
