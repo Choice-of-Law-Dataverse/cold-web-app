@@ -41,24 +41,26 @@
         </div>
       </div>
       <hr class="jc-hr" />
-      <div v-if="loadingQuestions" class="flex justify-left items-left py-8">
-        <LoadingBar />
-      </div>
-      <div v-else v-show="isOpen" class="jc-table-grid">
-        <div
-          v-for="(label, i) in questionLabels"
-          :key="'q-row-' + i"
-          class="jc-table-row"
-        >
-          <div class="jc-table-cell jc-table-question result-value-medium">
-            {{ label }}
-          </div>
+      <div v-show="isOpen">
+        <div v-if="loadingQuestions" class="flex justify-left py-8">
+          <LoadingBar />
+        </div>
+        <div v-else class="jc-table-grid">
           <div
-            class="jc-table-cell jc-table-answer result-value-large !pt-10 !pl-2"
-            v-for="j in 3"
-            :key="'a-' + i + '-' + j"
+            v-for="(label, i) in questionLabels"
+            :key="'q-row-' + i"
+            class="jc-table-row"
           >
-            {{ sampleData[i] }}
+            <div class="jc-table-cell jc-table-question result-value-medium">
+              {{ label }}
+            </div>
+            <div
+              class="jc-table-cell jc-table-answer result-value-large !pt-10 !pl-2"
+              v-for="j in 3"
+              :key="'a-' + i + '-' + j"
+            >
+              {{ sampleData[i] }}
+            </div>
           </div>
         </div>
       </div>
@@ -105,7 +107,10 @@
           <h2 class="mt-0">{{ props.title }}</h2>
         </div>
         <div v-show="isOpenMobile" class="data-cards">
-          <div>
+          <div v-if="loadingQuestions" class="flex justify-left py-8">
+            <LoadingBar />
+          </div>
+          <div v-else>
             <div
               v-for="(label, i) in questionLabels"
               :key="'q-label-m-' + i"
