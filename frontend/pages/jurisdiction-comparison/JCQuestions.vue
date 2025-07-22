@@ -204,32 +204,34 @@ const questionLabels = ref([])
 const fetchQuestions = async () => {
   try {
     const config = useRuntimeConfig()
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          table: 'Questions',
-          filters: [{ column: 'ID', value: questionIDs }],
-        }),
+    const labels = []
+    for (const id of questionIDs) {
+      const response = await fetch(
+        `${config.public.apiBaseUrl}/search/full_table`,
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${config.public.FASTAPI}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            table: 'Questions',
+            filters: [{ column: 'ID', value: id }],
+          }),
+        }
+      )
+      if (!response.ok) {
+        const errorText = await response.text()
+        // console.error(`API error for ID ${id}:`, errorText)
+        labels.push(id)
+        continue
       }
-    )
-    console.log('Response status:', response.status)
-    if (!response.ok) {
-      const errorText = await response.text()
-      console.error('API error response:', errorText)
-      throw new Error('Failed to fetch questions')
+      const data = await response.json()
+      labels.push(data[0]?.Question || id)
     }
-    const data = await response.json()
-    questionLabels.value = questionIDs.map(
-      (id) => data.find((q) => q.ID === id)?.Question || id
-    )
+    questionLabels.value = labels
   } catch (error) {
-    console.error('Error fetching questions:', error)
+    // console.error('Error fetching questions:', error)
     questionLabels.value = questionIDs // fallback to IDs
   }
 }
