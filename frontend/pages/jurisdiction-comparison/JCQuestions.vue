@@ -204,7 +204,6 @@ const questionLabels = ref([])
 const fetchQuestions = async () => {
   try {
     const config = useRuntimeConfig()
-    // Fetch all questions in one request if supported
     const response = await fetch(
       `${config.public.apiBaseUrl}/search/full_table`,
       {
@@ -219,9 +218,13 @@ const fetchQuestions = async () => {
         }),
       }
     )
-    if (!response.ok) throw new Error('Failed to fetch questions')
+    console.log('Response status:', response.status)
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('API error response:', errorText)
+      throw new Error('Failed to fetch questions')
+    }
     const data = await response.json()
-    // Map to just the "Question" string, in the order of questionIDs
     questionLabels.value = questionIDs.map(
       (id) => data.find((q) => q.ID === id)?.Question || id
     )
