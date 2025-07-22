@@ -18,9 +18,25 @@
             <!-- Content area with sufficient height for sticky behavior -->
             <div class="md:mt-0 relative">
               <JCOverview />
-              <JCQuestions :showCaret="false" title="Main Questions" />
-              <JCQuestions title="Codification" />
-              <JCQuestions title="Codification, HCCH Principles" />
+              <JCQuestions
+                :showCaret="false"
+                title="Main Questions"
+                :questionIDs="['03-PA', '07-PA', '08-PA', '09-FoC']"
+              />
+              <JCQuestions
+                title="Codification"
+                :questionIDs="['01-P', '01.1-P', '01.2-P', '01.2.1-P']"
+              />
+              <JCQuestions
+                title="Codification, HCCH Principles"
+                :questionIDs="[
+                  '01.2.2-P',
+                  '01.2.3.1-P',
+                  '01.2.3.2-P',
+                  '01.2.3.3-P',
+                  '02-P',
+                ]"
+              />
             </div>
           </div>
         </div>

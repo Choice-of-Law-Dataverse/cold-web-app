@@ -179,6 +179,11 @@ const props = defineProps({
     type: String,
     default: 'Please Set Title',
   },
+  questionIDs: {
+    type: Array,
+    required: true,
+    default: () => [],
+  },
 })
 
 // Accordion state
@@ -211,7 +216,6 @@ const jurisdictionFilters = computed(() => [
   { value: currentJurisdictionFilter3 },
 ])
 
-const questionIDs = ['03-PA', '07-PA', '08-PA', '09-FoC']
 const questionLabels = ref([])
 const loadingQuestions = ref(true)
 
@@ -220,7 +224,7 @@ const fetchQuestions = async () => {
   try {
     const config = useRuntimeConfig()
     const labels = []
-    for (const id of questionIDs) {
+    for (const id of props.questionIDs) {
       const response = await fetch(
         `${config.public.apiBaseUrl}/search/full_table`,
         {
@@ -245,8 +249,7 @@ const fetchQuestions = async () => {
     }
     questionLabels.value = labels
   } catch (error) {
-    // console.error('Error fetching questions:', error)
-    questionLabels.value = questionIDs // fallback to IDs
+    questionLabels.value = props.questionIDs // fallback to IDs
   } finally {
     loadingQuestions.value = false
   }
