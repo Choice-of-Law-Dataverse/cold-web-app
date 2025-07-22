@@ -198,13 +198,48 @@ const jurisdictionFilters = computed(() => [
   { value: currentJurisdictionFilter3 },
 ])
 
+const questionIDs = ['03-PA', '07-PA', '08-PA', '09-FoC']
+const questionLabels = ref([])
+
+const fetchQuestions = async () => {
+  try {
+    const config = useRuntimeConfig()
+    // Fetch all questions in one request if supported
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          table: 'Questions',
+          filters: [{ column: 'ID', value: questionIDs }],
+        }),
+      }
+    )
+    if (!response.ok) throw new Error('Failed to fetch questions')
+    const data = await response.json()
+    // Map to just the "Question" string, in the order of questionIDs
+    questionLabels.value = questionIDs.map(
+      (id) => data.find((q) => q.ID === id)?.Question || id
+    )
+  } catch (error) {
+    console.error('Error fetching questions:', error)
+    questionLabels.value = questionIDs // fallback to IDs
+  }
+}
+
+onMounted(fetchQuestions)
+
 // Static sample data as computed property
-const questionLabels = [
-  'Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in this jurisdiction?', // 03-PA
-  'Is a connection required between the chosen law and the parties or their transaction? ', // 07-PA
-  'Are the parties prevented from choosing the law of a third country with which there is no connection (a “neutral law”)?', // 08-PA
-  'Are the parties allowed to choose non-State law (“rules of law”) to govern their contract?', // 09-FoC
-]
+// const questionLabels = [
+//   'Is the principle of party autonomy in respect of choice of law in international commercial contracts widely accepted in this jurisdiction?', // 03-PA
+//   'Is a connection required between the chosen law and the parties or their transaction? ', // 07-PA
+//   'Are the parties prevented from choosing the law of a third country with which there is no connection (a “neutral law”)?', // 08-PA
+//   'Are the parties allowed to choose non-State law (“rules of law”) to govern their contract?', // 09-FoC
+// ]
 const sampleData = computed(() => ['Yes', 'No', 'Yes', 'No'])
 
 // Data fetching
