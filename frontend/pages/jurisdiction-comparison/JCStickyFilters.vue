@@ -93,7 +93,7 @@ const loadJurisdictions = async () => {
     if (!response.ok) throw new Error('Failed to load jurisdictions')
 
     const jurisdictionsData = await response.json()
-    jurisdictionOptions.value = [
+    const options = [
       { label: 'All Jurisdictions' },
       ...jurisdictionsData
         .filter((entry) => entry['Irrelevant?'] === null)
@@ -105,6 +105,17 @@ const loadJurisdictions = async () => {
         }))
         .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
     ]
+    jurisdictionOptions.value = options
+
+    // Set each filter to the first country (not 'All Jurisdictions')
+    const firstCountry = options.find(
+      (opt) => opt.label !== 'All Jurisdictions'
+    )
+    if (firstCountry) {
+      currentJurisdictionFilter1.value = [firstCountry]
+      currentJurisdictionFilter2.value = [firstCountry]
+      currentJurisdictionFilter3.value = [firstCountry]
+    }
   } catch (error) {
     console.error('Error loading jurisdictions:', error)
   }
