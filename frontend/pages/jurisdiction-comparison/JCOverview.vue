@@ -299,7 +299,7 @@ const getSampleDataForColumn = (columnIndex) => {
     legalFamily,
     courtDecisionsCount,
     domesticInstrumentsCount,
-    '0 arbitration laws',
+    // '0 arbitration laws', // To Do: Add arbitration laws
   ]
 }
 
