@@ -253,9 +253,7 @@ const getSampleDataForColumn = (columnIndex) => {
     hasValidJurisdiction && iso3Code
       ? legalFamilies.value[iso3Code] ||
         (loadingLegalFamily.value[iso3Code] ? 'Loading…' : 'Loading…')
-      : hasValidJurisdiction
-        ? 'Loading…'
-        : '—'
+      : 'Loading…'
 
   // Determine court decisions count display
   const courtDecisionsCount = hasValidJurisdiction
@@ -264,7 +262,7 @@ const getSampleDataForColumn = (columnIndex) => {
       : loadingCourtDecisions.value[jurisdictionName]
         ? 'Loading…'
         : 'Loading…'
-    : '—'
+    : 'Loading…'
 
   // Determine domestic instruments count display
   const domesticInstrumentsCount = hasValidJurisdiction
@@ -273,7 +271,7 @@ const getSampleDataForColumn = (columnIndex) => {
       : loadingDomesticInstruments.value[jurisdictionName]
         ? 'Loading…'
         : 'Loading…'
-    : '—'
+    : 'Loading…'
 
   return [
     legalFamily,
