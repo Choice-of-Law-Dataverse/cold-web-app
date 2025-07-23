@@ -83,30 +83,26 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-// import SearchFilters from '@/components/search-results/SearchFilters.vue'
+import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
 
-// Initialize jurisdiction options with default value
-const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
+// Use shared jurisdiction comparison state
+const {
+  jurisdictionOptions,
+  jurisdictionFilters,
+  selectedJurisdictionCodes,
+  loadJurisdictions,
+} = useJurisdictionComparison()
 
-// Create reactive filter references
-const currentJurisdictionFilter1 = ref([])
-const currentJurisdictionFilter2 = ref([])
-const currentJurisdictionFilter3 = ref([])
-
-// Create computed array for easier iteration
-const jurisdictionFilters = computed(() => [
-  { value: currentJurisdictionFilter1 },
-  { value: currentJurisdictionFilter2 },
-  { value: currentJurisdictionFilter3 },
-])
-
-// Static sample data as computed property
-const sampleData = computed(() => [
-  'Civil Law',
-  '44 court decisions',
-  '1 domestic instrument',
-  '0 arbitration laws',
-])
+// Dynamic sample data based on selected jurisdictions
+const sampleData = computed(() => {
+  const codes = selectedJurisdictionCodes.value
+  return [
+    codes[0] || 'Civil Law', // Replace 'Civil Law' with ISO3 code
+    '44 court decisions',
+    '1 domestic instrument',
+    '0 arbitration laws',
+  ]
+})
 
 // --- Flag logic ---
 import { reactive } from 'vue'
@@ -118,42 +114,6 @@ function getFlagUrl(label) {
   if (found && found.avatar) return found.avatar
   // Fallback: try to use label as ISO code (lowercase)
   return `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
-}
-
-// Data fetching
-const loadJurisdictions = async () => {
-  try {
-    const config = useRuntimeConfig()
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
-      }
-    )
-
-    if (!response.ok) throw new Error('Failed to load jurisdictions')
-
-    const jurisdictionsData = await response.json()
-    jurisdictionOptions.value = [
-      { label: 'All Jurisdictions' },
-      ...jurisdictionsData
-        .filter((entry) => entry['Irrelevant?'] === null)
-        .map((entry) => ({
-          label: entry.Name,
-          avatar: entry['Alpha-3 Code']
-            ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
-            : undefined,
-        }))
-        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
-    ]
-  } catch (error) {
-    console.error('Error loading jurisdictions:', error)
-  }
 }
 
 // Initialization

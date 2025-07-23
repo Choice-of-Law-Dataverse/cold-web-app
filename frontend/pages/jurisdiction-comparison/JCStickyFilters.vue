@@ -22,7 +22,7 @@
             :options="jurisdictionOptions"
             v-model="filter.value.value"
             class="jc-search-filter"
-            showAvatars="true"
+            :showAvatars="true"
             :multiple="false"
             :loading="loadingJurisdictions"
           />
@@ -43,7 +43,7 @@
             :options="jurisdictionOptions"
             v-model="filter.value.value"
             class="w-full"
-            showAvatars="true"
+            :showAvatars="true"
             :multiple="false"
             :loading="loadingJurisdictions"
           />
@@ -55,8 +55,9 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import SearchFilters from '@/components/search-results/SearchFilters.vue'
+import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
 
 // Props for initial countries from URL
 const props = defineProps({
@@ -70,98 +71,20 @@ const props = defineProps({
 const router = useRouter()
 const route = useRoute()
 
-// Initialize jurisdiction options with default value
-const jurisdictionOptions = ref([{ label: 'Loading…' }])
-
-// Create reactive filter references
-const currentJurisdictionFilter1 = ref([])
-const currentJurisdictionFilter2 = ref([])
-const currentJurisdictionFilter3 = ref([])
-
-// Create computed array for easier iteration
-const jurisdictionFilters = computed(() => [
-  { value: currentJurisdictionFilter1 },
-  { value: currentJurisdictionFilter2 },
-  { value: currentJurisdictionFilter3 },
-])
+// Use shared jurisdiction comparison state
+const {
+  currentJurisdictionFilter1,
+  currentJurisdictionFilter2,
+  currentJurisdictionFilter3,
+  jurisdictionOptions,
+  loadingJurisdictions,
+  jurisdictionFilters,
+  loadJurisdictions,
+  setInitialFilters,
+} = useJurisdictionComparison()
 
 // Sticky state for background
 const isSticky = ref(false)
-
-// Loading state for jurisdiction options
-const loadingJurisdictions = ref(true)
-
-// Data fetching
-const loadJurisdictions = async () => {
-  loadingJurisdictions.value = true
-  try {
-    const config = useRuntimeConfig()
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
-      }
-    )
-
-    if (!response.ok) throw new Error('Failed to load jurisdictions')
-
-    const jurisdictionsData = await response.json()
-    const options = jurisdictionsData
-      .filter((entry) => entry['Irrelevant?'] === null)
-      .map((entry) => ({
-        label: entry.Name,
-        alpha3Code: entry['Alpha-3 Code'],
-        avatar: entry['Alpha-3 Code']
-          ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
-          : undefined,
-      }))
-      .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
-    jurisdictionOptions.value = options
-
-    // Set initial filters based on URL parameters or defaults
-    setInitialFilters(options)
-  } catch (error) {
-    console.error('Error loading jurisdictions:', error)
-  } finally {
-    loadingJurisdictions.value = false
-  }
-}
-
-// Function to set initial filter values
-const setInitialFilters = (options) => {
-  if (props.initialCountries.length === 3) {
-    // Set filters based on URL country codes
-    const filters = [
-      currentJurisdictionFilter1,
-      currentJurisdictionFilter2,
-      currentJurisdictionFilter3,
-    ]
-
-    props.initialCountries.forEach((countryCode, index) => {
-      const matchingCountry = options.find(
-        (opt) =>
-          opt.alpha3Code &&
-          opt.alpha3Code.toUpperCase() === countryCode.toUpperCase()
-      )
-      if (matchingCountry && filters[index]) {
-        filters[index].value = [matchingCountry]
-      }
-    })
-  } else {
-    // Set each filter to the first country (not 'All Jurisdictions') as default
-    const firstCountry = options.find((opt) => opt.label !== 'Loading…')
-    if (firstCountry) {
-      currentJurisdictionFilter1.value = [firstCountry]
-      currentJurisdictionFilter2.value = [firstCountry]
-      currentJurisdictionFilter3.value = [firstCountry]
-    }
-  }
-}
 
 // Watch for changes in initialCountries prop
 watch(
@@ -169,7 +92,7 @@ watch(
   () => {
     if (jurisdictionOptions.value.length > 1) {
       // Ensure jurisdictions are loaded
-      setInitialFilters(jurisdictionOptions.value)
+      setInitialFilters(jurisdictionOptions.value, props.initialCountries)
     }
   },
   { immediate: true }
@@ -208,6 +131,11 @@ watch(
 // Initialization
 onMounted(async () => {
   await loadJurisdictions()
+
+  // Set initial filters after loading
+  if (jurisdictionOptions.value.length > 1) {
+    setInitialFilters(jurisdictionOptions.value, props.initialCountries)
+  }
 
   // JavaScript-based sticky implementation
   const filtersElement = document.querySelector('.jc-fixed-filters')
