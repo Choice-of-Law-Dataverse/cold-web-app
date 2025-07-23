@@ -102,6 +102,10 @@ const loadingLegalFamily = ref({})
 const courtDecisionsCounts = ref({})
 const loadingCourtDecisions = ref({})
 
+// Reactive state for domestic instruments count
+const domesticInstrumentsCounts = ref({})
+const loadingDomesticInstruments = ref({})
+
 // Function to fetch legal family for a jurisdiction
 const fetchLegalFamily = async (iso3Code) => {
   if (!iso3Code || legalFamilies.value[iso3Code]) return
@@ -182,6 +186,54 @@ const fetchCourtDecisions = async (jurisdictionName) => {
   }
 }
 
+// Function to fetch domestic instruments count for a jurisdiction
+const fetchDomesticInstruments = async (jurisdictionName) => {
+  if (!jurisdictionName || domesticInstrumentsCounts.value[jurisdictionName])
+    return
+
+  loadingDomesticInstruments.value[jurisdictionName] = true
+
+  try {
+    const config = useRuntimeConfig()
+    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: `Bearer ${config.public.FASTAPI}`,
+      },
+      body: JSON.stringify({
+        search_string: '',
+        filters: [
+          {
+            column: 'tables',
+            values: ['Domestic Instruments'],
+          },
+          {
+            column: 'jurisdictions',
+            values: [jurisdictionName],
+          },
+        ],
+      }),
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      domesticInstrumentsCounts.value[jurisdictionName] =
+        data.total_matches || 0
+    } else {
+      domesticInstrumentsCounts.value[jurisdictionName] = 0
+    }
+  } catch (error) {
+    console.error(
+      `Error fetching domestic instruments for ${jurisdictionName}:`,
+      error
+    )
+    domesticInstrumentsCounts.value[jurisdictionName] = 0
+  } finally {
+    loadingDomesticInstruments.value[jurisdictionName] = false
+  }
+}
+
 // Dynamic sample data based on selected jurisdictions
 const getSampleDataForColumn = (columnIndex) => {
   const codes = selectedJurisdictionCodes.value
@@ -210,6 +262,16 @@ const getSampleDataForColumn = (columnIndex) => {
     fetchCourtDecisions(jurisdictionName)
   }
 
+  // Fetch domestic instruments if we have a jurisdiction name
+  if (
+    jurisdictionName &&
+    jurisdictionName !== 'All Jurisdictions' &&
+    !domesticInstrumentsCounts.value[jurisdictionName] &&
+    !loadingDomesticInstruments.value[jurisdictionName]
+  ) {
+    fetchDomesticInstruments(jurisdictionName)
+  }
+
   const legalFamily = iso3Code
     ? legalFamilies.value[iso3Code] ||
       (loadingLegalFamily.value[iso3Code] ? 'Loading…' : 'Loading…')
@@ -224,10 +286,19 @@ const getSampleDataForColumn = (columnIndex) => {
           : 'Loading…'
       : 'Loading…'
 
+  const domesticInstrumentsCount =
+    jurisdictionName && jurisdictionName !== 'All Jurisdictions'
+      ? domesticInstrumentsCounts.value[jurisdictionName] !== undefined
+        ? `${domesticInstrumentsCounts.value[jurisdictionName]} domestic instrument${domesticInstrumentsCounts.value[jurisdictionName] === 1 ? '' : 's'}`
+        : loadingDomesticInstruments.value[jurisdictionName]
+          ? 'Loading…'
+          : 'Loading…'
+      : 'Loading…'
+
   return [
     legalFamily,
     courtDecisionsCount,
-    '1 domestic instrument',
+    domesticInstrumentsCount,
     '0 arbitration laws',
   ]
 }
@@ -259,6 +330,7 @@ watch(
         jurisdictionName !== oldJurisdictionName
       ) {
         fetchCourtDecisions(jurisdictionName)
+        fetchDomesticInstruments(jurisdictionName)
       }
     })
   },
