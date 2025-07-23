@@ -140,58 +140,20 @@ const fetchLegalFamily = async (iso3Code) => {
   }
 }
 
-// Function to fetch court decisions count for a jurisdiction
-const fetchCourtDecisions = async (jurisdictionName) => {
-  if (!jurisdictionName || courtDecisionsCounts.value[jurisdictionName]) return
+// Generic function to fetch data count for a jurisdiction by table type
+const fetchDataCount = async (jurisdictionName, tableType) => {
+  const countsRef =
+    tableType === 'Court Decisions'
+      ? courtDecisionsCounts
+      : domesticInstrumentsCounts
+  const loadingRef =
+    tableType === 'Court Decisions'
+      ? loadingCourtDecisions
+      : loadingDomesticInstruments
 
-  loadingCourtDecisions.value[jurisdictionName] = true
+  if (!jurisdictionName || countsRef.value[jurisdictionName]) return
 
-  try {
-    const config = useRuntimeConfig()
-    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Bearer ${config.public.FASTAPI}`,
-      },
-      body: JSON.stringify({
-        search_string: '',
-        filters: [
-          {
-            column: 'tables',
-            values: ['Court Decisions'],
-          },
-          {
-            column: 'jurisdictions',
-            values: [jurisdictionName],
-          },
-        ],
-      }),
-    })
-
-    if (response.ok) {
-      const data = await response.json()
-      courtDecisionsCounts.value[jurisdictionName] = data.total_matches || 0
-    } else {
-      courtDecisionsCounts.value[jurisdictionName] = 0
-    }
-  } catch (error) {
-    console.error(
-      `Error fetching court decisions for ${jurisdictionName}:`,
-      error
-    )
-    courtDecisionsCounts.value[jurisdictionName] = 0
-  } finally {
-    loadingCourtDecisions.value[jurisdictionName] = false
-  }
-}
-
-// Function to fetch domestic instruments count for a jurisdiction
-const fetchDomesticInstruments = async (jurisdictionName) => {
-  if (!jurisdictionName || domesticInstrumentsCounts.value[jurisdictionName])
-    return
-
-  loadingDomesticInstruments.value[jurisdictionName] = true
+  loadingRef.value[jurisdictionName] = true
 
   try {
     const config = useRuntimeConfig()
@@ -206,7 +168,7 @@ const fetchDomesticInstruments = async (jurisdictionName) => {
         filters: [
           {
             column: 'tables',
-            values: ['Domestic Instruments'],
+            values: [tableType],
           },
           {
             column: 'jurisdictions',
@@ -218,21 +180,26 @@ const fetchDomesticInstruments = async (jurisdictionName) => {
 
     if (response.ok) {
       const data = await response.json()
-      domesticInstrumentsCounts.value[jurisdictionName] =
-        data.total_matches || 0
+      countsRef.value[jurisdictionName] = data.total_matches || 0
     } else {
-      domesticInstrumentsCounts.value[jurisdictionName] = 0
+      countsRef.value[jurisdictionName] = 0
     }
   } catch (error) {
     console.error(
-      `Error fetching domestic instruments for ${jurisdictionName}:`,
+      `Error fetching ${tableType.toLowerCase()} for ${jurisdictionName}:`,
       error
     )
-    domesticInstrumentsCounts.value[jurisdictionName] = 0
+    countsRef.value[jurisdictionName] = 0
   } finally {
-    loadingDomesticInstruments.value[jurisdictionName] = false
+    loadingRef.value[jurisdictionName] = false
   }
 }
+
+// Wrapper functions for specific data types
+const fetchCourtDecisions = (jurisdictionName) =>
+  fetchDataCount(jurisdictionName, 'Court Decisions')
+const fetchDomesticInstruments = (jurisdictionName) =>
+  fetchDataCount(jurisdictionName, 'Domestic Instruments')
 
 // Dynamic sample data based on selected jurisdictions
 const getSampleDataForColumn = (columnIndex) => {
