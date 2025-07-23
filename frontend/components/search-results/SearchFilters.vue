@@ -17,6 +17,7 @@
       :multiple="multiple"
       :loading="loading"
       loadingIcon="i-material-symbols:progress-activity"
+      trailing
     >
       <template #option="{ option }">
         <div class="flex items-center">
