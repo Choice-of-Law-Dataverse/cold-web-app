@@ -14,7 +14,7 @@
             <div
               v-for="(line, lineIndex) in getSampleDataForColumn(index - 1)"
               :key="lineIndex"
-              class="pt-8"
+              class="pt-8 mobile-loading-wrapper"
             >
               <LoadingBar v-if="line === 'Loading…'" />
               <p v-else>
@@ -75,7 +75,7 @@
               <div
                 v-for="(line, lineIndex) in getSampleDataForColumn(index)"
                 :key="lineIndex"
-                class="data-line"
+                class="data-line mobile-loading-wrapper"
               >
                 <LoadingBar v-if="line === 'Loading…'" />
                 <p v-else>{{ line }}</p>
@@ -467,5 +467,26 @@ onMounted(async () => {
 .jc-z-top {
   position: relative;
   pointer-events: none;
+}
+
+/* Mobile LoadingBar constraint - force it to stay within bounds */
+.mobile-loading-wrapper {
+  max-width: 200px !important;
+  width: 100% !important;
+  margin: 0;
+  overflow: hidden !important;
+}
+
+.mobile-loading-wrapper :deep(*) {
+  max-width: 100% !important;
+}
+
+.mobile-loading-wrapper :deep(.space-y-2) {
+  max-width: 100% !important;
+}
+
+.mobile-loading-wrapper :deep(.h-2) {
+  max-width: 100% !important;
+  width: 100% !important;
 }
 </style>
