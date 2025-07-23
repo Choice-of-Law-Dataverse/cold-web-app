@@ -53,8 +53,20 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import SearchFilters from '@/components/search-results/SearchFilters.vue'
+
+// Props for initial countries from URL
+const props = defineProps({
+  initialCountries: {
+    type: Array,
+    default: () => [],
+  },
+})
+
+// Router for URL updates
+const router = useRouter()
+const route = useRoute()
 
 // Initialize jurisdiction options with default value
 const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
@@ -97,6 +109,7 @@ const loadJurisdictions = async () => {
       .filter((entry) => entry['Irrelevant?'] === null)
       .map((entry) => ({
         label: entry.Name,
+        alpha3Code: entry['Alpha-3 Code'],
         avatar: entry['Alpha-3 Code']
           ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
           : undefined,
@@ -104,7 +117,35 @@ const loadJurisdictions = async () => {
       .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
     jurisdictionOptions.value = options
 
-    // Set each filter to the first country (not 'All Jurisdictions')
+    // Set initial filters based on URL parameters or defaults
+    setInitialFilters(options)
+  } catch (error) {
+    console.error('Error loading jurisdictions:', error)
+  }
+}
+
+// Function to set initial filter values
+const setInitialFilters = (options) => {
+  if (props.initialCountries.length === 3) {
+    // Set filters based on URL country codes
+    const filters = [
+      currentJurisdictionFilter1,
+      currentJurisdictionFilter2,
+      currentJurisdictionFilter3,
+    ]
+
+    props.initialCountries.forEach((countryCode, index) => {
+      const matchingCountry = options.find(
+        (opt) =>
+          opt.alpha3Code &&
+          opt.alpha3Code.toUpperCase() === countryCode.toUpperCase()
+      )
+      if (matchingCountry && filters[index]) {
+        filters[index].value = [matchingCountry]
+      }
+    })
+  } else {
+    // Set each filter to the first country (not 'All Jurisdictions') as default
     const firstCountry = options.find(
       (opt) => opt.label !== 'All Jurisdictions'
     )
@@ -113,10 +154,50 @@ const loadJurisdictions = async () => {
       currentJurisdictionFilter2.value = [firstCountry]
       currentJurisdictionFilter3.value = [firstCountry]
     }
-  } catch (error) {
-    console.error('Error loading jurisdictions:', error)
   }
 }
+
+// Watch for changes in initialCountries prop
+watch(
+  () => props.initialCountries,
+  () => {
+    if (jurisdictionOptions.value.length > 1) {
+      // Ensure jurisdictions are loaded
+      setInitialFilters(jurisdictionOptions.value)
+    }
+  },
+  { immediate: true }
+)
+
+// Watch for changes in filter selections and update URL
+watch(
+  [
+    currentJurisdictionFilter1,
+    currentJurisdictionFilter2,
+    currentJurisdictionFilter3,
+  ],
+  () => {
+    // Only update URL if all three filters have selections and we have alpha3 codes
+    const filter1 = currentJurisdictionFilter1.value[0]
+    const filter2 = currentJurisdictionFilter2.value[0]
+    const filter3 = currentJurisdictionFilter3.value[0]
+
+    if (filter1?.alpha3Code && filter2?.alpha3Code && filter3?.alpha3Code) {
+      const countryCodes = [
+        filter1.alpha3Code.toLowerCase(),
+        filter2.alpha3Code.toLowerCase(),
+        filter3.alpha3Code.toLowerCase(),
+      ].join('+')
+
+      // Only update if the URL would actually change
+      const currentCountries = route.params.countries
+      if (currentCountries !== countryCodes) {
+        router.push(`/jurisdiction-comparison/${countryCodes}`)
+      }
+    }
+  },
+  { deep: true }
+)
 
 // Initialization
 onMounted(async () => {
