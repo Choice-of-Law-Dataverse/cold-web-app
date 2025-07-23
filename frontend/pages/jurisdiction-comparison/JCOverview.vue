@@ -99,7 +99,7 @@ const {
 const getSampleDataForColumn = (columnIndex) => {
   const codes = selectedJurisdictionCodes.value
   return [
-    codes[columnIndex] || 'Civil Law', // Use the specific column's ISO3 code
+    codes[columnIndex] || 'Loading…',
     '44 court decisions',
     '1 domestic instrument',
     '0 arbitration laws',
