@@ -11,16 +11,21 @@
           :class="`jc-col-${index + 1}`"
         >
           <div class="result-value-medium">
-            <p
+            <div
               v-for="(line, lineIndex) in getSampleDataForColumn(index - 1)"
               :key="lineIndex"
               class="pt-8"
             >
-              {{ line }}
-              <br
-                v-if="lineIndex < getSampleDataForColumn(index - 1).length - 1"
-              />
-            </p>
+              <LoadingBar v-if="line === 'Loading…'" />
+              <p v-else>
+                {{ line }}
+                <br
+                  v-if="
+                    lineIndex < getSampleDataForColumn(index - 1).length - 1
+                  "
+                />
+              </p>
+            </div>
           </div>
         </div>
       </div>
@@ -67,13 +72,14 @@
               </template>
             </h3>
             <div>
-              <p
+              <div
                 v-for="(line, lineIndex) in getSampleDataForColumn(index)"
                 :key="lineIndex"
                 class="data-line"
               >
-                {{ line }}
-              </p>
+                <LoadingBar v-if="line === 'Loading…'" />
+                <p v-else>{{ line }}</p>
+              </div>
             </div>
           </div>
         </div>
@@ -85,6 +91,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
 
 // Use shared jurisdiction comparison state
 const {
