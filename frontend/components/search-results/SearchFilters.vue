@@ -16,6 +16,7 @@
       selected-icon="i-material-symbols:circle"
       :multiple="multiple"
       :loading="loading"
+      loadingIcon="i-material-symbols:progress-activity"
     >
       <template #option="{ option }">
         <div class="flex items-center">
