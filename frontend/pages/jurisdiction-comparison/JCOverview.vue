@@ -217,6 +217,10 @@ const getSampleDataForColumn = (columnIndex) => {
   const filter = jurisdictionFilters.value[columnIndex]
   const jurisdictionName = filter?.value?.value?.[0]?.label
 
+  // Check if we have a valid jurisdiction selected (not empty and not "All Jurisdictions")
+  const hasValidJurisdiction =
+    jurisdictionName && jurisdictionName !== 'All Jurisdictions'
+
   // Fetch legal family if we have an ISO3 code
   if (
     iso3Code &&
@@ -228,8 +232,7 @@ const getSampleDataForColumn = (columnIndex) => {
 
   // Fetch court decisions if we have a jurisdiction name
   if (
-    jurisdictionName &&
-    jurisdictionName !== 'All Jurisdictions' &&
+    hasValidJurisdiction &&
     !courtDecisionsCounts.value[jurisdictionName] &&
     !loadingCourtDecisions.value[jurisdictionName]
   ) {
@@ -238,36 +241,39 @@ const getSampleDataForColumn = (columnIndex) => {
 
   // Fetch domestic instruments if we have a jurisdiction name
   if (
-    jurisdictionName &&
-    jurisdictionName !== 'All Jurisdictions' &&
+    hasValidJurisdiction &&
     !domesticInstrumentsCounts.value[jurisdictionName] &&
     !loadingDomesticInstruments.value[jurisdictionName]
   ) {
     fetchDomesticInstruments(jurisdictionName)
   }
 
-  const legalFamily = iso3Code
-    ? legalFamilies.value[iso3Code] ||
-      (loadingLegalFamily.value[iso3Code] ? 'Loading…' : 'Loading…')
-    : 'Loading…'
+  // Determine legal family display
+  const legalFamily =
+    hasValidJurisdiction && iso3Code
+      ? legalFamilies.value[iso3Code] ||
+        (loadingLegalFamily.value[iso3Code] ? 'Loading…' : 'Loading…')
+      : hasValidJurisdiction
+        ? 'Loading…'
+        : '—'
 
-  const courtDecisionsCount =
-    jurisdictionName && jurisdictionName !== 'All Jurisdictions'
-      ? courtDecisionsCounts.value[jurisdictionName] !== undefined
-        ? `${courtDecisionsCounts.value[jurisdictionName]} court decisions`
-        : loadingCourtDecisions.value[jurisdictionName]
-          ? 'Loading…'
-          : 'Loading…'
-      : 'Loading…'
+  // Determine court decisions count display
+  const courtDecisionsCount = hasValidJurisdiction
+    ? courtDecisionsCounts.value[jurisdictionName] !== undefined
+      ? `${courtDecisionsCounts.value[jurisdictionName]} court decisions`
+      : loadingCourtDecisions.value[jurisdictionName]
+        ? 'Loading…'
+        : 'Loading…'
+    : '—'
 
-  const domesticInstrumentsCount =
-    jurisdictionName && jurisdictionName !== 'All Jurisdictions'
-      ? domesticInstrumentsCounts.value[jurisdictionName] !== undefined
-        ? `${domesticInstrumentsCounts.value[jurisdictionName]} domestic instrument${domesticInstrumentsCounts.value[jurisdictionName] === 1 ? '' : 's'}`
-        : loadingDomesticInstruments.value[jurisdictionName]
-          ? 'Loading…'
-          : 'Loading…'
-      : 'Loading…'
+  // Determine domestic instruments count display
+  const domesticInstrumentsCount = hasValidJurisdiction
+    ? domesticInstrumentsCounts.value[jurisdictionName] !== undefined
+      ? `${domesticInstrumentsCounts.value[jurisdictionName]} domestic instrument${domesticInstrumentsCounts.value[jurisdictionName] === 1 ? '' : 's'}`
+      : loadingDomesticInstruments.value[jurisdictionName]
+        ? 'Loading…'
+        : 'Loading…'
+    : '—'
 
   return [
     legalFamily,
@@ -353,15 +359,26 @@ onMounted(async () => {
 
 .jc-col-1 {
   grid-column: 1;
+  min-width: 0; /* Ensure column can shrink but maintains grid layout */
 }
 .jc-col-2 {
   grid-column: 2;
+  min-width: 0; /* Ensure column can shrink but maintains grid layout */
 }
 .jc-col-3 {
   grid-column: 3;
+  min-width: 0; /* Ensure column can shrink but maintains grid layout */
 }
 .jc-col-4 {
   grid-column: 4;
+  min-width: 0; /* Ensure column can shrink but maintains grid layout */
+}
+
+/* Ensure consistent spacing for data items */
+.jc-col-2 > .result-value-medium,
+.jc-col-3 > .result-value-medium,
+.jc-col-4 > .result-value-medium {
+  min-height: 200px; /* Ensure minimum height for consistent layout */
 }
 
 /* Shared scrollbar styles */
