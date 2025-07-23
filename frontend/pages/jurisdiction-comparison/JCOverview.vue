@@ -84,7 +84,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
 
 // Use shared jurisdiction comparison state
@@ -95,16 +95,83 @@ const {
   loadJurisdictions,
 } = useJurisdictionComparison()
 
+// Reactive state for legal families
+const legalFamilies = ref({})
+const loadingLegalFamily = ref({})
+
+// Function to fetch legal family for a jurisdiction
+const fetchLegalFamily = async (iso3Code) => {
+  if (!iso3Code || legalFamilies.value[iso3Code]) return
+
+  loadingLegalFamily.value[iso3Code] = true
+
+  try {
+    const config = useRuntimeConfig()
+    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: `Bearer ${config.public.FASTAPI}`,
+      },
+      body: JSON.stringify({
+        table: 'Jurisdictions',
+        id: iso3Code,
+      }),
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      legalFamilies.value[iso3Code] = data['Legal Family'] || 'Unknown'
+    } else {
+      legalFamilies.value[iso3Code] = 'Unknown'
+    }
+  } catch (error) {
+    console.error(`Error fetching legal family for ${iso3Code}:`, error)
+    legalFamilies.value[iso3Code] = 'Unknown'
+  } finally {
+    loadingLegalFamily.value[iso3Code] = false
+  }
+}
+
 // Dynamic sample data based on selected jurisdictions
 const getSampleDataForColumn = (columnIndex) => {
   const codes = selectedJurisdictionCodes.value
+  const iso3Code = codes[columnIndex]
+
+  // Fetch legal family if we have an ISO3 code
+  if (
+    iso3Code &&
+    !legalFamilies.value[iso3Code] &&
+    !loadingLegalFamily.value[iso3Code]
+  ) {
+    fetchLegalFamily(iso3Code)
+  }
+
+  const legalFamily = iso3Code
+    ? legalFamilies.value[iso3Code] ||
+      (loadingLegalFamily.value[iso3Code] ? 'Loading…' : 'Loading…')
+    : 'Loading…'
+
   return [
-    codes[columnIndex] || 'Loading…',
+    legalFamily,
     '44 court decisions',
     '1 domestic instrument',
     '0 arbitration laws',
   ]
 }
+
+// Watch for changes in selected jurisdiction codes to fetch legal families
+watch(
+  selectedJurisdictionCodes,
+  (newCodes, oldCodes) => {
+    newCodes.forEach((code, index) => {
+      if (code && code !== oldCodes?.[index]) {
+        fetchLegalFamily(code)
+      }
+    })
+  },
+  { immediate: true }
+)
 
 // --- Flag logic ---
 import { reactive } from 'vue'
