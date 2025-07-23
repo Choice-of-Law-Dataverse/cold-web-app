@@ -24,6 +24,7 @@
             class="jc-search-filter"
             showAvatars="true"
             :multiple="false"
+            :loading="loadingJurisdictions"
           />
         </div>
       </div>
@@ -44,6 +45,7 @@
             class="w-full"
             showAvatars="true"
             :multiple="false"
+            :loading="loadingJurisdictions"
           />
         </div>
         <hr class="jc-hr mt-4" />
@@ -69,7 +71,7 @@ const router = useRouter()
 const route = useRoute()
 
 // Initialize jurisdiction options with default value
-const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
+const jurisdictionOptions = ref([{ label: 'Loading…' }])
 
 // Create reactive filter references
 const currentJurisdictionFilter1 = ref([])
@@ -86,8 +88,12 @@ const jurisdictionFilters = computed(() => [
 // Sticky state for background
 const isSticky = ref(false)
 
+// Loading state for jurisdiction options
+const loadingJurisdictions = ref(true)
+
 // Data fetching
 const loadJurisdictions = async () => {
+  loadingJurisdictions.value = true
   try {
     const config = useRuntimeConfig()
     const response = await fetch(
@@ -121,6 +127,8 @@ const loadJurisdictions = async () => {
     setInitialFilters(options)
   } catch (error) {
     console.error('Error loading jurisdictions:', error)
+  } finally {
+    loadingJurisdictions.value = false
   }
 }
 
@@ -146,9 +154,7 @@ const setInitialFilters = (options) => {
     })
   } else {
     // Set each filter to the first country (not 'All Jurisdictions') as default
-    const firstCountry = options.find(
-      (opt) => opt.label !== 'All Jurisdictions'
-    )
+    const firstCountry = options.find((opt) => opt.label !== 'Loading…')
     if (firstCountry) {
       currentJurisdictionFilter1.value = [firstCountry]
       currentJurisdictionFilter2.value = [firstCountry]

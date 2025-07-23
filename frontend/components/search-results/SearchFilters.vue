@@ -15,6 +15,7 @@
       searchable
       selected-icon="i-material-symbols:circle"
       :multiple="multiple"
+      :loading="loading"
     >
       <template #option="{ option }">
         <div class="flex items-center">
@@ -144,6 +145,7 @@ const props = defineProps({
   modelValue: { type: Array, default: () => [] },
   showAvatars: { type: Boolean, default: false },
   multiple: { type: Boolean, default: true },
+  loading: { type: Boolean, default: false },
 })
 
 const emit = defineEmits(['update:modelValue'])
