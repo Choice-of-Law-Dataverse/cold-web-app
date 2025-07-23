@@ -13,12 +13,14 @@
         >
           <div class="result-value-medium">
             <p
-              v-for="(line, lineIndex) in sampleData"
+              v-for="(line, lineIndex) in getSampleDataForColumn(index - 1)"
               :key="lineIndex"
               class="pt-8"
             >
               {{ line }}
-              <br v-if="lineIndex < sampleData.length - 1" />
+              <br
+                v-if="lineIndex < getSampleDataForColumn(index - 1).length - 1"
+              />
             </p>
           </div>
         </div>
@@ -67,7 +69,7 @@
             </h3>
             <div>
               <p
-                v-for="(line, lineIndex) in sampleData"
+                v-for="(line, lineIndex) in getSampleDataForColumn(index)"
                 :key="lineIndex"
                 class="data-line"
               >
@@ -94,15 +96,15 @@ const {
 } = useJurisdictionComparison()
 
 // Dynamic sample data based on selected jurisdictions
-const sampleData = computed(() => {
+const getSampleDataForColumn = (columnIndex) => {
   const codes = selectedJurisdictionCodes.value
   return [
-    codes[0] || 'Civil Law', // Replace 'Civil Law' with ISO3 code
+    codes[columnIndex] || 'Civil Law', // Use the specific column's ISO3 code
     '44 court decisions',
     '1 domestic instrument',
     '0 arbitration laws',
   ]
-})
+}
 
 // --- Flag logic ---
 import { reactive } from 'vue'
