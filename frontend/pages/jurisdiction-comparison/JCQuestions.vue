@@ -3,7 +3,7 @@
     <!-- Desktop Layout -->
     <div class="hidden md:block">
       <div class="jc-grid jc-overview-row">
-        <div class="jc-col-1 flex items-center">
+        <div class="jc-title-row flex items-center" style="grid-column: 1 / -1">
           <button
             v-if="showCaret"
             @click="isOpen = !isOpen"
@@ -37,7 +37,9 @@
               />
             </svg>
           </button>
-          <h2 class="mt-8 mb-6 mr-[106px]">{{ props.title }}</h2>
+          <h2 class="mt-8 mb-6 jc-title-fullwidth">
+            {{ props.title }}
+          </h2>
         </div>
       </div>
       <hr class="jc-hr" />
@@ -469,5 +471,9 @@ onMounted(async () => {
   font-weight: 600;
   font-size: 1.1rem;
   border-bottom: none;
+}
+
+.jc-title-fullwidth {
+  grid-column: 1 / -1 !important;
 }
 </style>
