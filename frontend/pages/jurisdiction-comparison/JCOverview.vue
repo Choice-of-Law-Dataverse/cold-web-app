@@ -1,7 +1,6 @@
 <template>
   <div>
     <div class="hidden md:block">
-      <!-- <h2 class="mt-8 mb-6 mr-[106px] jc-z-top">asd</h2> -->
       <div class="mt-24 jc-z-top"></div>
       <hr class="jc-hr" />
       <div class="jc-grid jc-data-row">
@@ -206,7 +205,6 @@ onMounted(async () => {
   margin-bottom: 0;
   position: sticky;
   top: 0;
-  /* z-index: 10; */
   background: #fff;
 }
 
@@ -292,7 +290,6 @@ onMounted(async () => {
 
 .data-line {
   margin-bottom: 0.5rem;
-  /* color: #374151; */
   line-height: 2;
 }
 
@@ -315,7 +312,6 @@ onMounted(async () => {
 /* Highest z-index for Overview heading */
 .jc-z-top {
   position: relative;
-  /* z-index: 9999; */
   pointer-events: none;
 }
 </style>
