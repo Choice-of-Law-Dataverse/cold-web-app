@@ -98,6 +98,10 @@ const {
 const legalFamilies = ref({})
 const loadingLegalFamily = ref({})
 
+// Reactive state for court decisions count
+const courtDecisionsCounts = ref({})
+const loadingCourtDecisions = ref({})
+
 // Function to fetch legal family for a jurisdiction
 const fetchLegalFamily = async (iso3Code) => {
   if (!iso3Code || legalFamilies.value[iso3Code]) return
@@ -132,10 +136,60 @@ const fetchLegalFamily = async (iso3Code) => {
   }
 }
 
+// Function to fetch court decisions count for a jurisdiction
+const fetchCourtDecisions = async (jurisdictionName) => {
+  if (!jurisdictionName || courtDecisionsCounts.value[jurisdictionName]) return
+
+  loadingCourtDecisions.value[jurisdictionName] = true
+
+  try {
+    const config = useRuntimeConfig()
+    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: `Bearer ${config.public.FASTAPI}`,
+      },
+      body: JSON.stringify({
+        search_string: '',
+        filters: [
+          {
+            column: 'tables',
+            values: ['Court Decisions'],
+          },
+          {
+            column: 'jurisdictions',
+            values: [jurisdictionName],
+          },
+        ],
+      }),
+    })
+
+    if (response.ok) {
+      const data = await response.json()
+      courtDecisionsCounts.value[jurisdictionName] = data.total_matches || 0
+    } else {
+      courtDecisionsCounts.value[jurisdictionName] = 0
+    }
+  } catch (error) {
+    console.error(
+      `Error fetching court decisions for ${jurisdictionName}:`,
+      error
+    )
+    courtDecisionsCounts.value[jurisdictionName] = 0
+  } finally {
+    loadingCourtDecisions.value[jurisdictionName] = false
+  }
+}
+
 // Dynamic sample data based on selected jurisdictions
 const getSampleDataForColumn = (columnIndex) => {
   const codes = selectedJurisdictionCodes.value
   const iso3Code = codes[columnIndex]
+
+  // Get jurisdiction name from filters
+  const filter = jurisdictionFilters.value[columnIndex]
+  const jurisdictionName = filter?.value?.value?.[0]?.label
 
   // Fetch legal family if we have an ISO3 code
   if (
@@ -146,14 +200,33 @@ const getSampleDataForColumn = (columnIndex) => {
     fetchLegalFamily(iso3Code)
   }
 
+  // Fetch court decisions if we have a jurisdiction name
+  if (
+    jurisdictionName &&
+    jurisdictionName !== 'All Jurisdictions' &&
+    !courtDecisionsCounts.value[jurisdictionName] &&
+    !loadingCourtDecisions.value[jurisdictionName]
+  ) {
+    fetchCourtDecisions(jurisdictionName)
+  }
+
   const legalFamily = iso3Code
     ? legalFamilies.value[iso3Code] ||
       (loadingLegalFamily.value[iso3Code] ? 'Loading…' : 'Loading…')
     : 'Loading…'
 
+  const courtDecisionsCount =
+    jurisdictionName && jurisdictionName !== 'All Jurisdictions'
+      ? courtDecisionsCounts.value[jurisdictionName] !== undefined
+        ? `${courtDecisionsCounts.value[jurisdictionName]} court decisions`
+        : loadingCourtDecisions.value[jurisdictionName]
+          ? 'Loading…'
+          : 'Loading…'
+      : 'Loading…'
+
   return [
     legalFamily,
-    '44 court decisions',
+    courtDecisionsCount,
     '1 domestic instrument',
     '0 arbitration laws',
   ]
@@ -170,6 +243,26 @@ watch(
     })
   },
   { immediate: true }
+)
+
+// Watch for changes in jurisdiction filters to fetch court decisions
+watch(
+  jurisdictionFilters,
+  (newFilters, oldFilters) => {
+    newFilters.forEach((filter, index) => {
+      const jurisdictionName = filter?.value?.value?.[0]?.label
+      const oldJurisdictionName = oldFilters?.[index]?.value?.value?.[0]?.label
+
+      if (
+        jurisdictionName &&
+        jurisdictionName !== 'All Jurisdictions' &&
+        jurisdictionName !== oldJurisdictionName
+      ) {
+        fetchCourtDecisions(jurisdictionName)
+      }
+    })
+  },
+  { immediate: true, deep: true }
 )
 
 // --- Flag logic ---
