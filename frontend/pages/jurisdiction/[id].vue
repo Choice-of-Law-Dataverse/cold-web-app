@@ -115,6 +115,7 @@
       </template>
     </template>
   </BaseDetailLayout>
+  <JurisdictionComparisonLink :formattedJurisdiction="jurisdictionData" />
   <JurisdictionQuestions :formattedJurisdiction="[jurisdictionData?.Name]" />
 </template>
 
@@ -123,6 +124,7 @@ import { onMounted, computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 // import JurisdictionComparison from '@/components/jurisdiction-comparison/JurisdictionComparison.vue'
+import JurisdictionComparisonLink from '@/components/ui/JurisdictionComparisonLink.vue'
 import JurisdictionQuestions from '@/components/content/JurisdictionQuestions.vue'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
