@@ -17,6 +17,24 @@
               class="pt-8 mobile-loading-wrapper"
             >
               <LoadingBar v-if="line === 'Loading…'" />
+              <p
+                v-else-if="
+                  lineIndex === 0 && selectedJurisdictionCodes[index - 1]
+                "
+              >
+                <!-- Legal Family link -->
+                <NuxtLink
+                  :to="`/jurisdiction/${selectedJurisdictionCodes[index - 1].toLowerCase()}`"
+                  class="legal-family-link"
+                >
+                  {{ line }}
+                </NuxtLink>
+                <br
+                  v-if="
+                    lineIndex < getSampleDataForColumn(index - 1).length - 1
+                  "
+                />
+              </p>
               <p v-else>
                 {{ line }}
                 <br
@@ -78,6 +96,19 @@
                 class="data-line mobile-loading-wrapper"
               >
                 <LoadingBar v-if="line === 'Loading…'" />
+                <p
+                  v-else-if="
+                    lineIndex === 0 && selectedJurisdictionCodes[index]
+                  "
+                >
+                  <!-- Legal Family link -->
+                  <NuxtLink
+                    :to="`/jurisdiction/${selectedJurisdictionCodes[index].toLowerCase()}`"
+                    class="legal-family-link"
+                  >
+                    {{ line }}
+                  </NuxtLink>
+                </p>
                 <p v-else>{{ line }}</p>
               </div>
             </div>
@@ -488,5 +519,17 @@ onMounted(async () => {
 .mobile-loading-wrapper :deep(.h-2) {
   max-width: 100% !important;
   width: 100% !important;
+}
+
+/* Legal family link styling */
+.legal-family-link {
+  color: var(--color-cold-purple, #6366f1);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.legal-family-link:hover {
+  color: var(--color-cold-purple-dark, #4f46e5);
+  text-decoration: underline;
 }
 </style>
