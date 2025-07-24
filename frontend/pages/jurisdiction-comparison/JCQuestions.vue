@@ -44,7 +44,10 @@
       </div>
       <hr class="jc-hr" />
       <div v-show="isOpen">
-        <div v-if="loadingQuestions" class="flex justify-left py-8 w-full">
+        <div
+          v-if="loadingQuestions || loadingAnswers"
+          class="flex justify-left py-8 w-full"
+        >
           <div class="w-full max-w-xs">
             <LoadingBar />
           </div>
@@ -128,7 +131,7 @@
           <h2 class="mt-0">{{ props.title }}</h2>
         </div>
         <div v-show="isOpenMobile" class="data-cards">
-          <div v-if="loadingQuestions" class="py-8">
+          <div v-if="loadingQuestions || loadingAnswers" class="py-8">
             <div class="mobile-loading-wrapper">
               <LoadingBar />
             </div>
@@ -388,7 +391,7 @@ const sampleData = computed(() => {
         return answer || questionID // Use questionID as fallback if answer is null
       }
 
-      return loadingAnswers.value ? '...' : questionID
+      return questionID // Just return questionID as fallback
     })
   })
 })
