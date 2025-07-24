@@ -258,7 +258,7 @@ const fetchQuestions = async () => {
 }
 
 onMounted(fetchQuestions)
-const sampleData = computed(() => ['Yes', 'No', 'Yes', 'No'])
+const sampleData = computed(() => props.questionIDs)
 
 // Data fetching
 const loadJurisdictions = async () => {
