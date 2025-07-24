@@ -248,7 +248,7 @@ const getFlagUrl = (label) => {
 
 // Questions state
 const questionLabels = ref([])
-const loadingQuestions = ref(true)
+const loadingQuestions = ref(false) // Start as false, only set to true when actually loading
 
 // Answers state
 const answersData = ref({})
@@ -275,7 +275,6 @@ const getApiConfig = () => {
 const fetchQuestions = async () => {
   if (!hasBeenOpened.value) return // Don't fetch if accordion hasn't been opened
 
-  loadingQuestions.value = true
   const { baseUrl, headers } = getApiConfig()
 
   try {
@@ -303,9 +302,8 @@ const fetchQuestions = async () => {
   } catch (error) {
     console.error('Error fetching questions:', error)
     questionLabels.value = props.questionIDs
-  } finally {
-    loadingQuestions.value = false
   }
+  // Note: Don't set loadingQuestions to false here - let loadAccordionData handle it
 }
 
 // Fetch answer data with caching
@@ -348,8 +346,6 @@ const fetchAllAnswers = async () => {
   )
     return
 
-  loadingAnswers.value = true
-
   const promises = jurisdictionFilters.value.flatMap((filter) => {
     const alpha3Code = filter.value.value[0]?.alpha3Code?.toUpperCase()
     if (!alpha3Code) return []
@@ -360,21 +356,38 @@ const fetchAllAnswers = async () => {
   })
 
   await Promise.all(promises)
-  loadingAnswers.value = false
+  // Note: Don't set loadingAnswers to false here - let loadAccordionData handle it
 }
 
 // Load accordion data when opened
 const loadAccordionData = async () => {
-  await Promise.all([loadJurisdictions(), fetchQuestions()])
-  await fetchAllAnswers()
+  // Set loading state for both questions and answers
+  loadingQuestions.value = true
+  loadingAnswers.value = true
+
+  try {
+    // Load jurisdictions and questions in parallel
+    await Promise.all([loadJurisdictions(), fetchQuestions()])
+    // Then load answers (which depends on jurisdictions being loaded)
+    await fetchAllAnswers()
+  } finally {
+    // Ensure loading states are cleared even if there's an error
+    loadingQuestions.value = false
+    loadingAnswers.value = false
+  }
 }
 
 // Watch for changes and refetch data (only if accordion has been opened)
 watch(
   [jurisdictionFilters, () => props.questionIDs],
-  () => {
+  async () => {
     if (hasBeenOpened.value) {
-      fetchAllAnswers()
+      loadingAnswers.value = true
+      try {
+        await fetchAllAnswers()
+      } finally {
+        loadingAnswers.value = false
+      }
     }
   },
   { deep: true }
