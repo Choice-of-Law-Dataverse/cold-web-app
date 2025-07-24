@@ -35,6 +35,26 @@
                   "
                 />
               </p>
+              <p
+                v-else-if="
+                  lineIndex === 1 &&
+                  getJurisdictionName(index - 1) &&
+                  getJurisdictionName(index - 1) !== 'All Jurisdictions'
+                "
+              >
+                <!-- Court Decisions link -->
+                <NuxtLink
+                  :to="`/search?jurisdiction=${getJurisdictionName(index - 1).replace(/\s+/g, '+')}&type=Court+Decisions`"
+                  class="court-decisions-link"
+                >
+                  {{ line }}
+                </NuxtLink>
+                <br
+                  v-if="
+                    lineIndex < getSampleDataForColumn(index - 1).length - 1
+                  "
+                />
+              </p>
               <p v-else>
                 {{ line }}
                 <br
@@ -105,6 +125,21 @@
                   <NuxtLink
                     :to="`/jurisdiction/${selectedJurisdictionCodes[index].toLowerCase()}`"
                     class="legal-family-link"
+                  >
+                    {{ line }}
+                  </NuxtLink>
+                </p>
+                <p
+                  v-else-if="
+                    lineIndex === 1 &&
+                    getJurisdictionName(index) &&
+                    getJurisdictionName(index) !== 'All Jurisdictions'
+                  "
+                >
+                  <!-- Court Decisions link -->
+                  <NuxtLink
+                    :to="`/search?jurisdiction=${getJurisdictionName(index).replace(/\s+/g, '+')}&type=Court+Decisions`"
+                    class="court-decisions-link"
                   >
                     {{ line }}
                   </NuxtLink>
@@ -238,6 +273,15 @@ const fetchCourtDecisions = (jurisdictionName) =>
   fetchDataCount(jurisdictionName, 'Court Decisions')
 const fetchDomesticInstruments = (jurisdictionName) =>
   fetchDataCount(jurisdictionName, 'Domestic Instruments')
+
+// Helper function to get jurisdiction name for a given column index
+const getJurisdictionName = (columnIndex) => {
+  if (columnIndex >= 0 && columnIndex < jurisdictionFilters.value.length) {
+    const filter = jurisdictionFilters.value[columnIndex]
+    return filter?.value?.value?.[0]?.label
+  }
+  return null
+}
 
 // Dynamic sample data based on selected jurisdictions
 const getSampleDataForColumn = (columnIndex) => {
@@ -522,14 +566,16 @@ onMounted(async () => {
 }
 
 /* Legal family link styling */
-.legal-family-link {
-  color: var(--color-cold-purple, #6366f1);
+.legal-family-link,
+.court-decisions-link {
+  color: var(--purple);
   text-decoration: none;
-  transition: color 0.2s ease;
+  transition: opacity 0.2s ease;
 }
 
-.legal-family-link:hover {
-  color: var(--color-cold-purple-dark, #4f46e5);
+.legal-family-link:hover,
+.court-decisions-link:hover {
   text-decoration: underline;
+  opacity: 0.8;
 }
 </style>
