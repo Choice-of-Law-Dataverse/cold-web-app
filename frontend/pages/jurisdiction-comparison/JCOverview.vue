@@ -55,6 +55,26 @@
                   "
                 />
               </p>
+              <p
+                v-else-if="
+                  lineIndex === 2 &&
+                  getJurisdictionName(index - 1) &&
+                  getJurisdictionName(index - 1) !== 'All Jurisdictions'
+                "
+              >
+                <!-- Domestic Instruments link -->
+                <NuxtLink
+                  :to="`/search?jurisdiction=${getJurisdictionName(index - 1).replace(/\s+/g, '+')}&type=Domestic+Instruments`"
+                  class="domestic-instruments-link"
+                >
+                  {{ line }}
+                </NuxtLink>
+                <br
+                  v-if="
+                    lineIndex < getSampleDataForColumn(index - 1).length - 1
+                  "
+                />
+              </p>
               <p v-else>
                 {{ line }}
                 <br
@@ -140,6 +160,21 @@
                   <NuxtLink
                     :to="`/search?jurisdiction=${getJurisdictionName(index).replace(/\s+/g, '+')}&type=Court+Decisions`"
                     class="court-decisions-link"
+                  >
+                    {{ line }}
+                  </NuxtLink>
+                </p>
+                <p
+                  v-else-if="
+                    lineIndex === 2 &&
+                    getJurisdictionName(index) &&
+                    getJurisdictionName(index) !== 'All Jurisdictions'
+                  "
+                >
+                  <!-- Domestic Instruments link -->
+                  <NuxtLink
+                    :to="`/search?jurisdiction=${getJurisdictionName(index).replace(/\s+/g, '+')}&type=Domestic+Instruments`"
+                    class="domestic-instruments-link"
                   >
                     {{ line }}
                   </NuxtLink>
@@ -567,14 +602,16 @@ onMounted(async () => {
 
 /* Legal family link styling */
 .legal-family-link,
-.court-decisions-link {
+.court-decisions-link,
+.domestic-instruments-link {
   color: var(--purple);
   text-decoration: none;
   transition: opacity 0.2s ease;
 }
 
 .legal-family-link:hover,
-.court-decisions-link:hover {
+.court-decisions-link:hover,
+.domestic-instruments-link:hover {
   text-decoration: underline;
   opacity: 0.8;
 }
