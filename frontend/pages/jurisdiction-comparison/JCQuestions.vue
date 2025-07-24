@@ -18,9 +18,7 @@
             "
           >
             <svg
-              :style="{
-                transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-              }"
+              :style="{ transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
               width="16"
@@ -37,17 +35,12 @@
               />
             </svg>
           </button>
-          <h2 class="mt-8 mb-6 jc-title-fullwidth">
-            {{ props.title }}
-          </h2>
+          <h2 class="mt-8 mb-6 jc-title-fullwidth">{{ title }}</h2>
         </div>
       </div>
       <hr class="jc-hr" />
       <div v-show="isOpen">
-        <div
-          v-if="loadingQuestions || loadingAnswers"
-          class="flex justify-left py-8 w-full"
-        >
+        <div v-if="isLoading" class="flex justify-left py-8 w-full">
           <div class="w-full max-w-xs">
             <LoadingBar />
           </div>
@@ -62,28 +55,18 @@
               {{ label }}
             </div>
             <div
-              class="jc-table-cell jc-table-answer result-value-large !pt-10 !pl-2"
               v-for="j in 3"
               :key="'a-' + i + '-' + j"
+              class="jc-table-cell jc-table-answer result-value-large !pt-10 !pl-2"
             >
               <NuxtLink
                 v-if="jurisdictionFilters[j - 1]?.value.value[0]?.alpha3Code"
-                :to="`/question/${jurisdictionFilters[j - 1].value.value[0].alpha3Code.toUpperCase()}_${props.questionIDs[i]}`"
+                :to="`/question/${jurisdictionFilters[j - 1]?.value.value[0]?.alpha3Code?.toUpperCase()}_${questionIDs[i]}`"
                 class="result-value-large"
               >
-                {{
-                  sampleData[j - 1]
-                    ? sampleData[j - 1][i]
-                    : props.questionIDs[i]
-                }}
+                {{ sampleData[j - 1]?.[i] || questionIDs[i] }}
               </NuxtLink>
-              <span v-else>
-                {{
-                  sampleData[j - 1]
-                    ? sampleData[j - 1][i]
-                    : props.questionIDs[i]
-                }}
-              </span>
+              <span v-else>{{ sampleData[j - 1]?.[i] || questionIDs[i] }}</span>
             </div>
           </div>
         </div>
@@ -128,10 +111,10 @@
               />
             </svg>
           </button>
-          <h2 class="mt-0">{{ props.title }}</h2>
+          <h2 class="mt-0">{{ title }}</h2>
         </div>
         <div v-show="isOpenMobile" class="data-cards">
-          <div v-if="loadingQuestions || loadingAnswers" class="py-8">
+          <div v-if="isLoading" class="py-8">
             <div class="mobile-loading-wrapper">
               <LoadingBar />
             </div>
@@ -142,9 +125,7 @@
               :key="'q-label-m-' + i"
               class="mb-8"
             >
-              <p class="data-line-question font-semibold mb-2">
-                {{ label }}
-              </p>
+              <p class="data-line-question font-semibold mb-2">{{ label }}</p>
               <div
                 v-for="(filter, index) in jurisdictionFilters"
                 :key="`mobile-q-${i}-j-${index}`"
@@ -182,23 +163,15 @@
                 <div class="data-card-content result-value-large">
                   <p class="data-line">
                     <NuxtLink
-                      v-if="filter.value.value[0]?.alpha3Code"
-                      :to="`/question/${filter.value.value[0].alpha3Code.toUpperCase()}_${props.questionIDs[i]}`"
+                      v-if="filter?.value.value[0]?.alpha3Code"
+                      :to="`/question/${filter?.value.value[0]?.alpha3Code?.toUpperCase()}_${questionIDs[i]}`"
                       class="result-value-large"
                     >
-                      {{
-                        sampleData[index]
-                          ? sampleData[index][i]
-                          : props.questionIDs[i]
-                      }}
+                      {{ sampleData[index]?.[i] || questionIDs[i] }}
                     </NuxtLink>
-                    <span v-else>
-                      {{
-                        sampleData[index]
-                          ? sampleData[index][i]
-                          : props.questionIDs[i]
-                      }}
-                    </span>
+                    <span v-else>{{
+                      sampleData[index]?.[i] || questionIDs[i]
+                    }}</span>
                   </p>
                 </div>
               </div>
@@ -214,6 +187,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
+
 const props = defineProps({
   showCaret: {
     type: Boolean,
@@ -247,99 +221,101 @@ watch(
 )
 
 // Use shared jurisdiction comparison state
-const {
-  currentJurisdictionFilter1,
-  currentJurisdictionFilter2,
-  currentJurisdictionFilter3,
-  jurisdictionOptions,
-  loadingJurisdictions,
-  jurisdictionFilters,
-  loadJurisdictions,
-} = useJurisdictionComparison()
+const { jurisdictionOptions, jurisdictionFilters, loadJurisdictions } =
+  useJurisdictionComparison()
 
 // Track errored flag images
 const erroredFlags = ref({})
 
 // Flag URL helper function
-function getFlagUrl(label) {
+const getFlagUrl = (label) => {
   if (!label || label === 'All Jurisdictions') return ''
   const found = jurisdictionOptions.value.find((j) => j.label === label)
-  if (found && found.avatar) return found.avatar
+  if (found?.avatar) return found.avatar
   return `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
 }
 
+// Questions state
 const questionLabels = ref([])
 const loadingQuestions = ref(true)
 
+// Answers state
+const answersData = ref({})
+const loadingAnswers = ref(false)
+
+// Combined loading state
+const isLoading = computed(() => loadingQuestions.value || loadingAnswers.value)
+
+// API configuration
+const getApiConfig = () => {
+  const config = useRuntimeConfig()
+  return {
+    baseUrl: config.public.apiBaseUrl,
+    headers: {
+      Authorization: `Bearer ${config.public.FASTAPI}`,
+      'Content-Type': 'application/json',
+    },
+  }
+}
+
+// Fetch questions with improved error handling
 const fetchQuestions = async () => {
   loadingQuestions.value = true
+  const { baseUrl, headers } = getApiConfig()
+
   try {
-    const config = useRuntimeConfig()
-    const labels = []
-    for (const id of props.questionIDs) {
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/full_table`,
-        {
+    const promises = props.questionIDs.map(async (id) => {
+      try {
+        const response = await fetch(`${baseUrl}/search/full_table`, {
           method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
+          headers,
           body: JSON.stringify({
             table: 'Questions',
             filters: [{ column: 'ID', value: id }],
           }),
-        }
-      )
-      if (!response.ok) {
-        const errorText = await response.text()
-        labels.push(id)
-        continue
+        })
+
+        if (!response.ok) return id
+
+        const data = await response.json()
+        return data[0]?.Question || id
+      } catch {
+        return id
       }
-      const data = await response.json()
-      labels.push(data[0]?.Question || id)
-    }
-    questionLabels.value = labels
+    })
+
+    questionLabels.value = await Promise.all(promises)
   } catch (error) {
-    questionLabels.value = props.questionIDs // fallback to IDs
+    console.error('Error fetching questions:', error)
+    questionLabels.value = props.questionIDs
   } finally {
     loadingQuestions.value = false
   }
 }
 
-onMounted(fetchQuestions)
-
-// Store for API data
-const answersData = ref({})
-const loadingAnswers = ref(false)
-
-// Function to fetch answer data
+// Fetch answer data with caching
 const fetchAnswerData = async (id) => {
-  if (!id || answersData.value[id]) return answersData.value[id]
+  if (!id || answersData.value[id] !== undefined) {
+    return answersData.value[id]
+  }
+
+  const { baseUrl, headers } = getApiConfig()
 
   try {
-    const config = useRuntimeConfig()
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
+    const response = await fetch(`${baseUrl}/search/details`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Bearer ${config.public.FASTAPI}`,
-      },
-      body: JSON.stringify({
-        table: 'Answers',
-        id: id,
-      }),
+      headers,
+      body: JSON.stringify({ table: 'Answers', id }),
     })
 
     if (!response.ok) {
-      console.warn(`Failed to fetch answer for ${id}`)
+      answersData.value[id] = null
       return null
     }
 
     const data = await response.json()
     const answer = data?.Answer || null
     answersData.value[id] = answer
-    // console.log(`Fetched answer for ${id}:`, answer) // Debug log
     return answer
   } catch (error) {
     console.error(`Error fetching answer for ${id}:`, error)
@@ -348,70 +324,61 @@ const fetchAnswerData = async (id) => {
   }
 }
 
-// Function to fetch all answers for current jurisdictions and questions
+// Fetch all answers for current jurisdictions and questions
 const fetchAllAnswers = async () => {
   if (!jurisdictionFilters.value.length || !props.questionIDs.length) return
 
   loadingAnswers.value = true
-  const promises = []
 
-  jurisdictionFilters.value.forEach((filter) => {
-    const selectedJurisdiction = filter.value.value[0]
-    const alpha3Code = selectedJurisdiction?.alpha3Code?.toUpperCase()
+  const promises = jurisdictionFilters.value.flatMap((filter) => {
+    const alpha3Code = filter.value.value[0]?.alpha3Code?.toUpperCase()
+    if (!alpha3Code) return []
 
-    if (alpha3Code) {
-      props.questionIDs.forEach((questionID) => {
-        const id = `${alpha3Code}_${questionID}`
-        promises.push(fetchAnswerData(id))
-      })
-    }
+    return props.questionIDs.map((questionID) =>
+      fetchAnswerData(`${alpha3Code}_${questionID}`)
+    )
   })
 
   await Promise.all(promises)
   loadingAnswers.value = false
 }
 
-// Watch for changes in jurisdiction filters or questions and refetch data
+// Watch for changes and refetch data
 watch([jurisdictionFilters, () => props.questionIDs], fetchAllAnswers, {
   deep: true,
 })
 
-// Modified sampleData to return actual answer data
+// Computed answer data
 const sampleData = computed(() => {
   return jurisdictionFilters.value.map((filter) => {
-    const selectedJurisdiction = filter.value.value[0]
-    const alpha3Code = selectedJurisdiction?.alpha3Code?.toUpperCase()
+    const alpha3Code = filter.value.value[0]?.alpha3Code?.toUpperCase()
 
-    // Return array of answers for each question
     return props.questionIDs.map((questionID) => {
       if (!alpha3Code) return questionID
 
       const id = `${alpha3Code}_${questionID}`
       const answer = answersData.value[id]
 
-      // Return the answer if available, otherwise show loading or fallback
       if (answer !== undefined) {
-        // Only use questionID as fallback if answer is explicitly null, not if it's an empty string
         return answer !== null
           ? answer
           : `No answer available for ${questionID}`
       }
 
-      return questionID // Just return questionID as fallback
+      return questionID
     })
   })
 })
 
 // Initialization
 onMounted(async () => {
-  await loadJurisdictions()
-  // Fetch answers after jurisdictions are loaded
+  await Promise.all([loadJurisdictions(), fetchQuestions()])
   await fetchAllAnswers()
 })
 </script>
 
 <style scoped>
-/* Mobile LoadingBar constraint - force it to stay within bounds */
+/* Loading components */
 .mobile-loading-wrapper {
   max-width: 200px !important;
   width: 100% !important;
@@ -419,20 +386,14 @@ onMounted(async () => {
   overflow: hidden !important;
 }
 
-.mobile-loading-wrapper :deep(*) {
-  max-width: 100% !important;
-}
-
-.mobile-loading-wrapper :deep(.space-y-2) {
-  max-width: 100% !important;
-}
-
+.mobile-loading-wrapper :deep(*),
+.mobile-loading-wrapper :deep(.space-y-2),
 .mobile-loading-wrapper :deep(.h-2) {
   max-width: 100% !important;
   width: 100% !important;
 }
 
-/* Desktop Grid Layout */
+/* Grid layouts */
 .jc-grid {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr 1fr;
@@ -440,89 +401,49 @@ onMounted(async () => {
   gap: 0 1.5rem;
 }
 
-.jc-overview-row {
-  margin-bottom: 0;
+.jc-table-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 0 1.5rem;
+  width: 100%;
 }
 
-.jc-data-row {
-  margin-top: 0;
+.jc-table-row {
+  display: contents;
 }
 
-.jc-col-1 {
-  grid-column: 1;
-}
-.jc-col-2 {
-  grid-column: 2;
-}
-.jc-col-3 {
-  grid-column: 3;
-}
-.jc-col-4 {
-  grid-column: 4;
+.jc-table-cell {
+  padding: 0.75rem 0;
+  vertical-align: top;
+  font-size: 1rem;
 }
 
-/* Shared scrollbar styles */
-.jc-mobile-filters-container,
-.jc-mobile-data-container {
-  display: flex;
-  gap: 1rem;
-  overflow-x: auto;
-  padding: 1rem 0;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-cold-gray) transparent;
+.jc-table-question {
+  font-weight: 400;
+  white-space: pre-line;
 }
 
-.jc-mobile-filters-container::-webkit-scrollbar,
-.jc-mobile-data-container::-webkit-scrollbar {
-  height: 6px;
+.jc-table-answer {
+  text-align: left;
+  font-weight: 400;
 }
 
-/* Mobile & Tablet Layout */
+/* Mobile layout */
 .mobile-layout {
   padding: 0.25rem;
 }
 
-/* Filters grid for mobile */
-.filters-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1rem;
-}
-
-@media (min-width: 640px) {
-  .filters-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 768px) {
-  .filters-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-.filter-item {
-  display: flex;
-  flex-direction: column;
-}
-
-/* Data cards for mobile */
-.data-cards {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.5rem;
-}
-
-.data-card {
-  padding-top: 2rem;
-}
-
-/* Restrict LoadingBar width in mobile layout */
 .mobile-layout .flex {
   max-width: 100% !important;
   width: 100% !important;
   justify-content: left;
   align-items: left;
+}
+
+.data-cards {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
 }
 
 .data-card-title {
@@ -543,51 +464,34 @@ onMounted(async () => {
   line-height: 1.6em;
 }
 
+/* Utility classes */
 .result-value-medium {
   font-weight: 400 !important;
   margin-top: 32px !important;
 }
 
-/* Search filter styling */
+.jc-title-fullwidth {
+  grid-column: 1 / -1 !important;
+}
+
+/* Component-specific styles */
 .jc-search-filter :deep(.cold-uselectmenu) {
   width: 270px !important;
 }
 
-/* Table-like grid for desktop */
-.jc-table-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 0 1.5rem;
-  width: 100%;
-}
-.jc-table-row {
-  display: contents;
-}
-.jc-table-cell {
-  padding: 0.75rem 0 0.75rem 0;
-  vertical-align: top;
-  font-size: 1rem;
-}
-.jc-table-question {
-  font-weight: 400;
-  white-space: pre-line;
-}
-.jc-table-answer {
-  text-align: left;
-  font-weight: 400;
-}
-.jc-table-question-header {
-  font-weight: 600;
-  font-size: 1.1rem;
-  border-bottom: none;
-}
-.jc-table-answer-header {
-  font-weight: 600;
-  font-size: 1.1rem;
-  border-bottom: none;
+/* Scrollbar styles */
+.jc-mobile-filters-container,
+.jc-mobile-data-container {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 1rem 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-cold-gray) transparent;
 }
 
-.jc-title-fullwidth {
-  grid-column: 1 / -1 !important;
+.jc-mobile-filters-container::-webkit-scrollbar,
+.jc-mobile-data-container::-webkit-scrollbar {
+  height: 6px;
 }
 </style>
