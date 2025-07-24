@@ -140,8 +140,26 @@ import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import JCOverview from '@/pages/jurisdiction-comparison/JCOverview.vue'
 import JCQuestions from '~/pages/jurisdiction-comparison/JCQuestions.vue'
 import JCStickyFilters from '@/pages/jurisdiction-comparison/JCStickyFilters.vue'
+import { useHead } from '#app'
 
 const route = useRoute()
+
+// Set static page title
+useHead({
+  title: 'Compare Jurisdictions — CoLD',
+  link: [
+    {
+      rel: 'canonical',
+      href: `https://cold.global${route.fullPath}`,
+    },
+  ],
+  meta: [
+    {
+      name: 'description',
+      content: 'Compare Jurisdictions — CoLD',
+    },
+  ],
+})
 
 // Parse country codes from the URL parameter
 const countryCodes = computed(() => {
