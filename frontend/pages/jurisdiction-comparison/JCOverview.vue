@@ -599,20 +599,4 @@ onMounted(async () => {
   max-width: 100% !important;
   width: 100% !important;
 }
-
-/* Legal family link styling */
-.legal-family-link,
-.court-decisions-link,
-.domestic-instruments-link {
-  color: var(--purple);
-  text-decoration: none;
-  transition: opacity 0.2s ease;
-}
-
-.legal-family-link:hover,
-.court-decisions-link:hover,
-.domestic-instruments-link:hover {
-  text-decoration: underline;
-  opacity: 0.8;
-}
 </style>
