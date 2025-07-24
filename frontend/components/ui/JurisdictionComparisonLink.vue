@@ -9,7 +9,7 @@
               <h3 class="text-left md:whitespace-nowrap">
                 <NuxtLink
                   v-if="formattedJurisdiction?.Name && iso3Code"
-                  :to="`/jurisdiction-comparison/${iso3Code.toLowerCase()}+che+bra`"
+                  :to="comparisonUrl"
                 >
                   Compare
                   {{ formattedJurisdiction?.Name || 'this jurisdiction' }} with
@@ -31,7 +31,8 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
+import { useJurisdictionComparison } from '~/composables/useJurisdictionComparison'
 
 // Accept processedAnswerData as a prop from parent
 defineProps({
@@ -42,10 +43,48 @@ defineProps({
 })
 
 const route = useRoute()
+const { jurisdictionOptions, loadJurisdictions } = useJurisdictionComparison()
 
 // Get the ISO3 code from the route params
 const iso3Code = computed(() => {
   return route.params.id?.toUpperCase()
+})
+
+// Computed property to get 2 random ISO3 codes (excluding current jurisdiction)
+const randomJurisdictionCodes = computed(() => {
+  const availableOptions = jurisdictionOptions.value.filter(
+    (option) =>
+      option.alpha3Code &&
+      option.alpha3Code.toUpperCase() !== iso3Code.value &&
+      option.label !== 'Loading…'
+  )
+
+  if (availableOptions.length < 2) {
+    return ['che', 'bra'] // fallback to original codes
+  }
+
+  // Shuffle array and take first 2
+  const shuffled = [...availableOptions].sort(() => Math.random() - 0.5)
+  return shuffled.slice(0, 2).map((option) => option.alpha3Code.toLowerCase())
+})
+
+// Computed property for the complete comparison URL
+const comparisonUrl = computed(() => {
+  if (!iso3Code.value) return '#'
+
+  const codes = [iso3Code.value.toLowerCase(), ...randomJurisdictionCodes.value]
+
+  return `/jurisdiction-comparison/${codes.join('+')}`
+})
+
+// Load jurisdictions when component mounts
+onMounted(() => {
+  if (
+    jurisdictionOptions.value.length === 1 &&
+    jurisdictionOptions.value[0].label === 'Loading…'
+  ) {
+    loadJurisdictions()
+  }
 })
 </script>
 
