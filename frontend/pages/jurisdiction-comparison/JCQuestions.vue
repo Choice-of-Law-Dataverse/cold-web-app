@@ -337,6 +337,7 @@ const fetchAnswerData = async (id) => {
     const data = await response.json()
     const answer = data?.Answer || null
     answersData.value[id] = answer
+    // console.log(`Fetched answer for ${id}:`, answer) // Debug log
     return answer
   } catch (error) {
     console.error(`Error fetching answer for ${id}:`, error)
@@ -388,7 +389,10 @@ const sampleData = computed(() => {
 
       // Return the answer if available, otherwise show loading or fallback
       if (answer !== undefined) {
-        return answer || questionID // Use questionID as fallback if answer is null
+        // Only use questionID as fallback if answer is explicitly null, not if it's an empty string
+        return answer !== null
+          ? answer
+          : `No answer available for ${questionID}`
       }
 
       return questionID // Just return questionID as fallback
