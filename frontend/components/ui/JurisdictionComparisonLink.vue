@@ -7,9 +7,19 @@
             <!-- Title Section -->
             <div>
               <h3 class="text-left md:whitespace-nowrap">
-                Compare
-                {{ formattedJurisdiction?.Name || 'this jurisdiction' }} with
-                other jurisdictions
+                <NuxtLink
+                  v-if="formattedJurisdiction?.Name && iso3Code"
+                  :to="`/jurisdiction-comparison/${iso3Code.toLowerCase()}+che+bra`"
+                >
+                  Compare
+                  {{ formattedJurisdiction?.Name || 'this jurisdiction' }} with
+                  other jurisdictions
+                </NuxtLink>
+                <span v-else>
+                  Compare
+                  {{ formattedJurisdiction?.Name || 'this jurisdiction' }} with
+                  other jurisdictions
+                </span>
               </h3>
             </div>
           </div>
@@ -20,12 +30,22 @@
 </template>
 
 <script setup>
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
+
 // Accept processedAnswerData as a prop from parent
 defineProps({
   formattedJurisdiction: {
     type: Object,
     required: true,
   },
+})
+
+const route = useRoute()
+
+// Get the ISO3 code from the route params
+const iso3Code = computed(() => {
+  return route.params.id?.toUpperCase()
 })
 </script>
 
