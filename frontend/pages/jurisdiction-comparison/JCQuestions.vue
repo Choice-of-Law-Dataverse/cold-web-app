@@ -142,7 +142,9 @@
               :key="'q-label-m-' + i"
               class="mb-8"
             >
-              <p class="data-line font-semibold mb-2">{{ label }}</p>
+              <p class="data-line-question font-semibold mb-2">
+                {{ label }}
+              </p>
               <div
                 v-for="(filter, index) in jurisdictionFilters"
                 :key="`mobile-q-${i}-j-${index}`"
@@ -533,6 +535,12 @@ onMounted(async () => {
 .data-line {
   margin-bottom: 1.5rem;
   line-height: 1.3em;
+}
+
+.data-line-question {
+  margin-bottom: 1.5rem;
+  margin-top: 4rem;
+  line-height: 1.6em;
 }
 
 .result-value-medium {
