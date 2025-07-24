@@ -63,7 +63,9 @@
               v-for="j in 3"
               :key="'a-' + i + '-' + j"
             >
-              {{ sampleData[i] }}
+              {{
+                sampleData[j - 1] ? sampleData[j - 1][i] : props.questionIDs[i]
+              }}
             </div>
           </div>
         </div>
@@ -158,7 +160,13 @@
                   </template>
                 </h3>
                 <div class="data-card-content result-value-large">
-                  <p class="data-line">{{ sampleData[i] }}</p>
+                  <p class="data-line">
+                    {{
+                      sampleData[index]
+                        ? sampleData[index][i]
+                        : props.questionIDs[i]
+                    }}
+                  </p>
                 </div>
               </div>
             </div>
@@ -172,6 +180,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
+import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
 const props = defineProps({
   showCaret: {
     type: Boolean,
@@ -203,20 +212,28 @@ watch(
   },
   { immediate: true }
 )
-// Initialize jurisdiction options with default value
-const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
 
-// Create reactive filter references
-const currentJurisdictionFilter1 = ref([])
-const currentJurisdictionFilter2 = ref([])
-const currentJurisdictionFilter3 = ref([])
+// Use shared jurisdiction comparison state
+const {
+  currentJurisdictionFilter1,
+  currentJurisdictionFilter2,
+  currentJurisdictionFilter3,
+  jurisdictionOptions,
+  loadingJurisdictions,
+  jurisdictionFilters,
+  loadJurisdictions,
+} = useJurisdictionComparison()
 
-// Create computed array for easier iteration
-const jurisdictionFilters = computed(() => [
-  { value: currentJurisdictionFilter1 },
-  { value: currentJurisdictionFilter2 },
-  { value: currentJurisdictionFilter3 },
-])
+// Track errored flag images
+const erroredFlags = ref({})
+
+// Flag URL helper function
+function getFlagUrl(label) {
+  if (!label || label === 'All Jurisdictions') return ''
+  const found = jurisdictionOptions.value.find((j) => j.label === label)
+  if (found && found.avatar) return found.avatar
+  return `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
+}
 
 const questionLabels = ref([])
 const loadingQuestions = ref(true)
@@ -258,43 +275,19 @@ const fetchQuestions = async () => {
 }
 
 onMounted(fetchQuestions)
-const sampleData = computed(() => props.questionIDs)
 
-// Data fetching
-const loadJurisdictions = async () => {
-  try {
-    const config = useRuntimeConfig()
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
-      }
-    )
+// Modified sampleData to include ISO3 codes with questionIDs
+const sampleData = computed(() => {
+  return jurisdictionFilters.value.map((filter) => {
+    const selectedJurisdiction = filter.value.value[0]
+    const alpha3Code = selectedJurisdiction?.alpha3Code?.toUpperCase()
 
-    if (!response.ok) throw new Error('Failed to load jurisdictions')
-
-    const jurisdictionsData = await response.json()
-    jurisdictionOptions.value = [
-      { label: 'All Jurisdictions' },
-      ...jurisdictionsData
-        .filter((entry) => entry['Irrelevant?'] === null)
-        .map((entry) => ({
-          label: entry.Name,
-          avatar: entry['Alpha-3 Code']
-            ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
-            : undefined,
-        }))
-        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
-    ]
-  } catch (error) {
-    console.error('Error loading jurisdictions:', error)
-  }
-}
+    // Return array of formatted strings for each question
+    return props.questionIDs.map((questionID) => {
+      return alpha3Code ? `${alpha3Code}_${questionID}` : questionID
+    })
+  })
+})
 
 // Initialization
 onMounted(async () => {
