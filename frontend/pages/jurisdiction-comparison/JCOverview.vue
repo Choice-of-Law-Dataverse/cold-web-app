@@ -48,7 +48,13 @@
                   :to="`/search?jurisdiction=${getJurisdictionName(index - 1).replace(/\s+/g, '+')}&type=Court+Decisions`"
                   class="overview-link"
                 >
-                  {{ line }}
+                  <span style="white-space: nowrap">
+                    {{ line }}
+                    <Icon
+                      name="i-material-symbols:arrow-forward"
+                      class="arrow-icon-lower"
+                    />
+                  </span>
                 </NuxtLink>
                 <br
                   v-if="
@@ -69,7 +75,13 @@
                   :to="`/search?jurisdiction=${getJurisdictionName(index - 1).replace(/\s+/g, '+')}&type=Domestic+Instruments`"
                   class="overview-link"
                 >
-                  {{ line }}
+                  <span style="white-space: nowrap">
+                    {{ line }}
+                    <Icon
+                      name="i-material-symbols:arrow-forward"
+                      class="arrow-icon-lower"
+                    />
+                  </span>
                 </NuxtLink>
                 <br
                   v-if="
@@ -164,7 +176,13 @@
                     :to="`/search?jurisdiction=${getJurisdictionName(index).replace(/\s+/g, '+')}&type=Court+Decisions`"
                     class="court-decisions-link"
                   >
-                    {{ line }}
+                    <span style="white-space: nowrap">
+                      {{ line }}
+                      <Icon
+                        name="i-material-symbols:arrow-forward"
+                        class="arrow-icon-lower"
+                      />
+                    </span>
                   </NuxtLink>
                 </p>
                 <p
@@ -180,7 +198,13 @@
                     :to="`/search?jurisdiction=${getJurisdictionName(index).replace(/\s+/g, '+')}&type=Domestic+Instruments`"
                     class="domestic-instruments-link"
                   >
-                    {{ line }}
+                    <span style="white-space: nowrap">
+                      {{ line }}
+                      <Icon
+                        name="i-material-symbols:arrow-forward"
+                        class="arrow-icon-lower"
+                      />
+                    </span>
                   </NuxtLink>
                 </p>
                 <p v-else>{{ line }}</p>
@@ -568,6 +592,12 @@ onMounted(async () => {
 
 .overview-link {
   font-weight: 500 !important;
+}
+
+/* Move link arrow down a bit */
+.arrow-icon-lower {
+  position: relative;
+  top: 3px;
 }
 
 /* Search filter styling */
