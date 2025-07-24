@@ -7,7 +7,7 @@
           <button
             v-if="showCaret"
             @click="isOpen = !isOpen"
-            class="accordion-caret mr-2 mt-2"
+            class="accordion-caret mr-2 mt-10"
             style="
               background: none;
               border: none;
@@ -35,7 +35,7 @@
               />
             </svg>
           </button>
-          <h2 class="mt-8 mb-6 jc-title-fullwidth">{{ title }}</h2>
+          <h2 class="mt-16 mb-6 jc-title-fullwidth">{{ title }}</h2>
         </div>
       </div>
       <hr class="jc-hr" />
