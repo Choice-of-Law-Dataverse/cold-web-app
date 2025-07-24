@@ -276,15 +276,91 @@ const fetchQuestions = async () => {
 
 onMounted(fetchQuestions)
 
-// Modified sampleData to include ISO3 codes with questionIDs
+// Store for API data
+const answersData = ref({})
+const loadingAnswers = ref(false)
+
+// Function to fetch answer data
+const fetchAnswerData = async (id) => {
+  if (!id || answersData.value[id]) return answersData.value[id]
+
+  try {
+    const config = useRuntimeConfig()
+    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        authorization: `Bearer ${config.public.FASTAPI}`,
+      },
+      body: JSON.stringify({
+        table: 'Answers',
+        id: id,
+      }),
+    })
+
+    if (!response.ok) {
+      console.warn(`Failed to fetch answer for ${id}`)
+      return null
+    }
+
+    const data = await response.json()
+    const answer = data?.Answer || null
+    answersData.value[id] = answer
+    return answer
+  } catch (error) {
+    console.error(`Error fetching answer for ${id}:`, error)
+    answersData.value[id] = null
+    return null
+  }
+}
+
+// Function to fetch all answers for current jurisdictions and questions
+const fetchAllAnswers = async () => {
+  if (!jurisdictionFilters.value.length || !props.questionIDs.length) return
+
+  loadingAnswers.value = true
+  const promises = []
+
+  jurisdictionFilters.value.forEach((filter) => {
+    const selectedJurisdiction = filter.value.value[0]
+    const alpha3Code = selectedJurisdiction?.alpha3Code?.toUpperCase()
+
+    if (alpha3Code) {
+      props.questionIDs.forEach((questionID) => {
+        const id = `${alpha3Code}_${questionID}`
+        promises.push(fetchAnswerData(id))
+      })
+    }
+  })
+
+  await Promise.all(promises)
+  loadingAnswers.value = false
+}
+
+// Watch for changes in jurisdiction filters or questions and refetch data
+watch([jurisdictionFilters, () => props.questionIDs], fetchAllAnswers, {
+  deep: true,
+})
+
+// Modified sampleData to return actual answer data
 const sampleData = computed(() => {
   return jurisdictionFilters.value.map((filter) => {
     const selectedJurisdiction = filter.value.value[0]
     const alpha3Code = selectedJurisdiction?.alpha3Code?.toUpperCase()
 
-    // Return array of formatted strings for each question
+    // Return array of answers for each question
     return props.questionIDs.map((questionID) => {
-      return alpha3Code ? `${alpha3Code}_${questionID}` : questionID
+      if (!alpha3Code) return questionID
+
+      const id = `${alpha3Code}_${questionID}`
+      const answer = answersData.value[id]
+
+      // Return the answer if available, otherwise show loading or fallback
+      if (answer !== undefined) {
+        return answer || questionID // Use questionID as fallback if answer is null
+      }
+
+      return loadingAnswers.value ? '...' : questionID
     })
   })
 })
@@ -292,6 +368,8 @@ const sampleData = computed(() => {
 // Initialization
 onMounted(async () => {
   await loadJurisdictions()
+  // Fetch answers after jurisdictions are loaded
+  await fetchAllAnswers()
 })
 </script>
 
