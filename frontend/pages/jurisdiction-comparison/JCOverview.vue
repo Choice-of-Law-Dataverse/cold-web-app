@@ -75,7 +75,7 @@
                   :to="`/search?jurisdiction=${getJurisdictionName(index - 1).replace(/\s+/g, '+')}&type=Domestic+Instruments`"
                   class="overview-link"
                 >
-                  <span style="white-space: nowrap">
+                  <span>
                     {{ line }}
                     <Icon
                       name="i-material-symbols:arrow-forward"
@@ -158,7 +158,7 @@
                   <!-- Legal Family link -->
                   <NuxtLink
                     :to="`/jurisdiction/${selectedJurisdictionCodes[index].toLowerCase()}`"
-                    class="legal-family-link"
+                    class="overview-link"
                   >
                     {{ line }}
                   </NuxtLink>
@@ -174,7 +174,7 @@
                   <!-- Court Decisions link -->
                   <NuxtLink
                     :to="`/search?jurisdiction=${getJurisdictionName(index).replace(/\s+/g, '+')}&type=Court+Decisions`"
-                    class="court-decisions-link"
+                    class="overview-link"
                   >
                     <span style="white-space: nowrap">
                       {{ line }}
@@ -196,7 +196,7 @@
                   <!-- Domestic Instruments link -->
                   <NuxtLink
                     :to="`/search?jurisdiction=${getJurisdictionName(index).replace(/\s+/g, '+')}&type=Domestic+Instruments`"
-                    class="domestic-instruments-link"
+                    class="overview-link"
                   >
                     <span style="white-space: nowrap">
                       {{ line }}
@@ -581,6 +581,7 @@ onMounted(async () => {
 }
 
 .data-line {
+  font-weight: 500;
   margin-bottom: 0.5rem;
   line-height: 2;
 }
