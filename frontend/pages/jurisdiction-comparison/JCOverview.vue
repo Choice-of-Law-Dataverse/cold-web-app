@@ -25,7 +25,7 @@
                 <!-- Legal Family link -->
                 <NuxtLink
                   :to="`/jurisdiction/${selectedJurisdictionCodes[index - 1].toLowerCase()}`"
-                  class="legal-family-link"
+                  class="overview-link"
                 >
                   {{ line }}
                 </NuxtLink>
@@ -46,7 +46,7 @@
                 <!-- Court Decisions link -->
                 <NuxtLink
                   :to="`/search?jurisdiction=${getJurisdictionName(index - 1).replace(/\s+/g, '+')}&type=Court+Decisions`"
-                  class="court-decisions-link"
+                  class="overview-link"
                 >
                   {{ line }}
                 </NuxtLink>
@@ -67,7 +67,7 @@
                 <!-- Domestic Instruments link -->
                 <NuxtLink
                   :to="`/search?jurisdiction=${getJurisdictionName(index - 1).replace(/\s+/g, '+')}&type=Domestic+Instruments`"
-                  class="domestic-instruments-link"
+                  class="overview-link"
                 >
                   {{ line }}
                 </NuxtLink>
@@ -562,8 +562,12 @@ onMounted(async () => {
 }
 
 .result-value-medium {
-  font-weight: 400 !important;
+  font-weight: 500 !important;
   margin-top: 32px !important;
+}
+
+.overview-link {
+  font-weight: 500 !important;
 }
 
 /* Search filter styling */
