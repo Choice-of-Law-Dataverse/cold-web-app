@@ -66,7 +66,7 @@
               <NuxtLink
                 v-if="jurisdictionFilters[j - 1]?.value.value[0]?.alpha3Code"
                 :to="`/question/${jurisdictionFilters[j - 1].value.value[0].alpha3Code.toUpperCase()}_${props.questionIDs[i]}`"
-                class="answer-link"
+                class="result-value-large"
               >
                 {{
                   sampleData[j - 1]
@@ -179,7 +179,7 @@
                     <NuxtLink
                       v-if="filter.value.value[0]?.alpha3Code"
                       :to="`/question/${filter.value.value[0].alpha3Code.toUpperCase()}_${props.questionIDs[i]}`"
-                      class="answer-link"
+                      class="result-value-large"
                     >
                       {{
                         sampleData[index]
@@ -574,17 +574,5 @@ onMounted(async () => {
 
 .jc-title-fullwidth {
   grid-column: 1 / -1 !important;
-}
-
-/* Answer link styling */
-.answer-link {
-  color: var(--color-cold-purple, #6366f1);
-  text-decoration: none;
-  transition: color 0.2s ease;
-}
-
-.answer-link:hover {
-  color: var(--color-cold-purple-dark, #4f46e5);
-  text-decoration: underline;
 }
 </style>
