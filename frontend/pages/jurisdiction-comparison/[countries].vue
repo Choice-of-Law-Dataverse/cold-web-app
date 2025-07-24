@@ -37,6 +37,95 @@
                   '02-P',
                 ]"
               />
+              <JCQuestions title="No Theme" :questionIDs="['01.3-']" />
+              <JCQuestions
+                title="Party Autonomy, Freedom of Choice"
+                :questionIDs="[
+                  '03-PA',
+                  '04-PA',
+                  '06-PA',
+                  '06.1-PA',
+                  '06.2-PA',
+                  '07-PA',
+                  '08-PA',
+                  '08.1-PA',
+                ]"
+              />
+              <JCQuestions
+                title="Party Autonomy, Freedom of Choice, Dépeçage"
+                :questionIDs="['05-PA']"
+              />
+              <JCQuestions
+                title="Party Autonomy, Freedom of Choice, Partial Choice"
+                :questionIDs="['05.1-PA']"
+              />
+              <JCQuestions
+                title="Party Autonomy, Rules of Law"
+                :questionIDs="['09-FoC', '10-FoC', '11-FoC', '11.1-FoC']"
+              />
+              <JCQuestions
+                title="Party Autonomy, Tacit Choice"
+                :questionIDs="[
+                  '12-TC',
+                  '13-TC',
+                  '14-TC',
+                  '15-TC',
+                  '16.1-TC',
+                  '16.2-TC',
+                  '16.3-TC',
+                  '16.4-TC',
+                  '16.5-TC',
+                  '17-TC',
+                  '17.1-TC',
+                  '18-TC',
+                  '19-TC',
+                  '19.1-TC',
+                ]"
+              />
+              <JCQuestions
+                title="Overriding Mandatory Rules"
+                :questionIDs="['20-MR', '21-MR', '21.1-MR', '22-MR', '22.1-MR']"
+              />
+              <JCQuestions
+                title="Public Policy"
+                :questionIDs="['23-PP', '23.1-PP', '24-PP']"
+              />
+              <JCQuestions
+                title="Public Policy, Absence of Choice"
+                :questionIDs="['25-PP']"
+              />
+              <JCQuestions
+                title="Arbitration, Codification, HCCH Principles"
+                :questionIDs="['26-Arb']"
+              />
+              <JCQuestions
+                title="Arbitration, Overriding Mandatory Rules, Public Policy"
+                :questionIDs="['27-Arb']"
+              />
+              <JCQuestions
+                title="Arbitration"
+                :questionIDs="['28-Arb', '28.1-Arb']"
+              />
+              <JCQuestions
+                title="Absence of Choice"
+                :questionIDs="[
+                  '29-AoC',
+                  '30-AoC',
+                  '30.1-AoC',
+                  '30.2-AoC',
+                  '31-AoC',
+                  '32-AoC',
+                  '33-FV',
+                ]"
+              />
+              <JCQuestions
+                title="Employment Contracts, Consumer Contracts"
+                :questionIDs="['34-FV']"
+              />
+              <JCQuestions
+                title="HCCH Principles"
+                :questionIDs="['35-FV', '36-FV']"
+              />
             </div>
           </div>
         </div>
