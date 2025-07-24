@@ -39,7 +39,8 @@
                 v-else-if="
                   lineIndex === 1 &&
                   getJurisdictionName(index - 1) &&
-                  getJurisdictionName(index - 1) !== 'All Jurisdictions'
+                  getJurisdictionName(index - 1) !== 'All Jurisdictions' &&
+                  courtDecisionsCounts[getJurisdictionName(index - 1)] > 0
                 "
               >
                 <!-- Court Decisions link -->
@@ -59,7 +60,8 @@
                 v-else-if="
                   lineIndex === 2 &&
                   getJurisdictionName(index - 1) &&
-                  getJurisdictionName(index - 1) !== 'All Jurisdictions'
+                  getJurisdictionName(index - 1) !== 'All Jurisdictions' &&
+                  domesticInstrumentsCounts[getJurisdictionName(index - 1)] > 0
                 "
               >
                 <!-- Domestic Instruments link -->
@@ -153,7 +155,8 @@
                   v-else-if="
                     lineIndex === 1 &&
                     getJurisdictionName(index) &&
-                    getJurisdictionName(index) !== 'All Jurisdictions'
+                    getJurisdictionName(index) !== 'All Jurisdictions' &&
+                    courtDecisionsCounts[getJurisdictionName(index)] > 0
                   "
                 >
                   <!-- Court Decisions link -->
@@ -168,7 +171,8 @@
                   v-else-if="
                     lineIndex === 2 &&
                     getJurisdictionName(index) &&
-                    getJurisdictionName(index) !== 'All Jurisdictions'
+                    getJurisdictionName(index) !== 'All Jurisdictions' &&
+                    domesticInstrumentsCounts[getJurisdictionName(index)] > 0
                   "
                 >
                   <!-- Domestic Instruments link -->
