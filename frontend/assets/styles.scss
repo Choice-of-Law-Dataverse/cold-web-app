@@ -216,7 +216,7 @@ li::marker {
 .result-value-large {
   @extend .result-value;
   font-size: 28px !important;
-  line-height: 28px !important;
+  line-height: 34px !important;
   margin-top: 6px !important;
   margin-bottom: 24px !important;
 }
@@ -224,6 +224,7 @@ li::marker {
 .result-value-medium {
   @extend .result-value-large;
   font-size: 20px !important;
+  line-height: 28px !important;
 }
 
 .result-value-small {
