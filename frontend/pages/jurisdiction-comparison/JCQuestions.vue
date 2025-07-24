@@ -63,9 +63,24 @@
               v-for="j in 3"
               :key="'a-' + i + '-' + j"
             >
-              {{
-                sampleData[j - 1] ? sampleData[j - 1][i] : props.questionIDs[i]
-              }}
+              <NuxtLink
+                v-if="jurisdictionFilters[j - 1]?.value.value[0]?.alpha3Code"
+                :to="`/question/${jurisdictionFilters[j - 1].value.value[0].alpha3Code.toUpperCase()}_${props.questionIDs[i]}`"
+                class="answer-link"
+              >
+                {{
+                  sampleData[j - 1]
+                    ? sampleData[j - 1][i]
+                    : props.questionIDs[i]
+                }}
+              </NuxtLink>
+              <span v-else>
+                {{
+                  sampleData[j - 1]
+                    ? sampleData[j - 1][i]
+                    : props.questionIDs[i]
+                }}
+              </span>
             </div>
           </div>
         </div>
@@ -161,11 +176,24 @@
                 </h3>
                 <div class="data-card-content result-value-large">
                   <p class="data-line">
-                    {{
-                      sampleData[index]
-                        ? sampleData[index][i]
-                        : props.questionIDs[i]
-                    }}
+                    <NuxtLink
+                      v-if="filter.value.value[0]?.alpha3Code"
+                      :to="`/question/${filter.value.value[0].alpha3Code.toUpperCase()}_${props.questionIDs[i]}`"
+                      class="answer-link"
+                    >
+                      {{
+                        sampleData[index]
+                          ? sampleData[index][i]
+                          : props.questionIDs[i]
+                      }}
+                    </NuxtLink>
+                    <span v-else>
+                      {{
+                        sampleData[index]
+                          ? sampleData[index][i]
+                          : props.questionIDs[i]
+                      }}
+                    </span>
                   </p>
                 </div>
               </div>
@@ -546,5 +574,17 @@ onMounted(async () => {
 
 .jc-title-fullwidth {
   grid-column: 1 / -1 !important;
+}
+
+/* Answer link styling */
+.answer-link {
+  color: var(--color-cold-purple, #6366f1);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.answer-link:hover {
+  color: var(--color-cold-purple-dark, #4f46e5);
+  text-decoration: underline;
 }
 </style>
