@@ -525,7 +525,7 @@ onMounted(async () => {
 
 .data-line {
   margin-bottom: 1.5rem;
-  line-height: 2;
+  line-height: 1.3em;
 }
 
 .result-value-medium {
