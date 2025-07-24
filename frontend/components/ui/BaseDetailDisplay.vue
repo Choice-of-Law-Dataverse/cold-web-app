@@ -45,6 +45,8 @@
         </BaseCardHeader>
       </template>
 
+      <slot name="full-width"></slot>
+
       <!-- Main content -->
       <div class="flex">
         <div
