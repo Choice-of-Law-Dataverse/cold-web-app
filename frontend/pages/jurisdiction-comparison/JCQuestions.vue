@@ -207,6 +207,7 @@ const props = defineProps({
 // Accordion state
 const isOpen = ref(false)
 const isOpenMobile = ref(false)
+const hasBeenOpened = ref(false)
 
 // Always force open if showCaret is false
 watch(
@@ -215,10 +216,20 @@ watch(
     if (!val) {
       isOpen.value = true
       isOpenMobile.value = true
+      hasBeenOpened.value = true
     }
   },
   { immediate: true }
 )
+
+// Track when accordion is opened for the first time
+watch([isOpen, isOpenMobile], ([desktop, mobile]) => {
+  if ((desktop || mobile) && !hasBeenOpened.value) {
+    hasBeenOpened.value = true
+    // Start loading data when first opened
+    loadAccordionData()
+  }
+})
 
 // Use shared jurisdiction comparison state
 const { jurisdictionOptions, jurisdictionFilters, loadJurisdictions } =
@@ -243,8 +254,10 @@ const loadingQuestions = ref(true)
 const answersData = ref({})
 const loadingAnswers = ref(false)
 
-// Combined loading state
-const isLoading = computed(() => loadingQuestions.value || loadingAnswers.value)
+// Combined loading state - only load when accordion has been opened
+const isLoading = computed(
+  () => hasBeenOpened.value && (loadingQuestions.value || loadingAnswers.value)
+)
 
 // API configuration
 const getApiConfig = () => {
@@ -260,6 +273,8 @@ const getApiConfig = () => {
 
 // Fetch questions with improved error handling
 const fetchQuestions = async () => {
+  if (!hasBeenOpened.value) return // Don't fetch if accordion hasn't been opened
+
   loadingQuestions.value = true
   const { baseUrl, headers } = getApiConfig()
 
@@ -326,7 +341,12 @@ const fetchAnswerData = async (id) => {
 
 // Fetch all answers for current jurisdictions and questions
 const fetchAllAnswers = async () => {
-  if (!jurisdictionFilters.value.length || !props.questionIDs.length) return
+  if (
+    !hasBeenOpened.value ||
+    !jurisdictionFilters.value.length ||
+    !props.questionIDs.length
+  )
+    return
 
   loadingAnswers.value = true
 
@@ -343,13 +363,27 @@ const fetchAllAnswers = async () => {
   loadingAnswers.value = false
 }
 
-// Watch for changes and refetch data
-watch([jurisdictionFilters, () => props.questionIDs], fetchAllAnswers, {
-  deep: true,
-})
+// Load accordion data when opened
+const loadAccordionData = async () => {
+  await Promise.all([loadJurisdictions(), fetchQuestions()])
+  await fetchAllAnswers()
+}
+
+// Watch for changes and refetch data (only if accordion has been opened)
+watch(
+  [jurisdictionFilters, () => props.questionIDs],
+  () => {
+    if (hasBeenOpened.value) {
+      fetchAllAnswers()
+    }
+  },
+  { deep: true }
+)
 
 // Computed answer data
 const sampleData = computed(() => {
+  if (!hasBeenOpened.value) return [] // Return empty array if not opened yet
+
   return jurisdictionFilters.value.map((filter) => {
     const alpha3Code = filter.value.value[0]?.alpha3Code?.toUpperCase()
 
@@ -370,10 +404,15 @@ const sampleData = computed(() => {
   })
 })
 
-// Initialization
+// Initialization - only load jurisdictions initially, not questions/answers
 onMounted(async () => {
-  await Promise.all([loadJurisdictions(), fetchQuestions()])
-  await fetchAllAnswers()
+  await loadJurisdictions()
+
+  // If showCaret is false, immediately load data since accordion should be open
+  if (!props.showCaret) {
+    hasBeenOpened.value = true
+    await loadAccordionData()
+  }
 })
 </script>
 
