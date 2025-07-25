@@ -216,7 +216,7 @@ li::marker {
 .result-value-large {
   @extend .result-value;
   font-size: 28px !important;
-  line-height: 28px !important;
+  line-height: 34px !important;
   margin-top: 6px !important;
   margin-bottom: 24px !important;
 }
@@ -224,6 +224,7 @@ li::marker {
 .result-value-medium {
   @extend .result-value-large;
   font-size: 20px !important;
+  line-height: 28px !important;
 }
 
 .result-value-small {
@@ -367,4 +368,9 @@ ul[role='listbox'] li[data-headlessui-state='selected']:hover {
 // Consistent vertical gap between page sections
 .section-gap {
   margin-bottom: 1.5rem; // 24px, adjust as needed for your design
+}
+
+// Jurisdiction Comparison Horizontal Lines
+.jc-hr {
+  border-top: 1px solid var(--color-cold-gray);
 }
