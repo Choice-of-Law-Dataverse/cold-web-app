@@ -8,8 +8,8 @@
             <div>
               <h3 class="text-left md:whitespace-nowrap">
                 <NuxtLink
-                  v-if="processedAnswerData?.['Jurisdictions Alpha-3 code']"
-                  :to="`/jurisdiction/${processedAnswerData['Jurisdictions Alpha-3 code'].toLowerCase()}`"
+                  v-if="jurisdictionCode"
+                  :to="`/jurisdiction/${jurisdictionCode.toLowerCase()}`"
                 >
                   Go to the country report for
                   {{
@@ -32,12 +32,22 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 // Accept processedAnswerData as a prop from parent
-defineProps({
+const props = defineProps({
   processedAnswerData: {
     type: Object,
     required: true,
   },
+})
+
+// Computed property to handle different property name variations
+const jurisdictionCode = computed(() => {
+  return (
+    props.processedAnswerData?.['Jurisdictions Alpha-3 code'] ||
+    props.processedAnswerData?.['Jurisdictions Alpha-3 Code']
+  )
 })
 </script>
 

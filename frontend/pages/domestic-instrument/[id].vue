@@ -188,7 +188,7 @@
       </section>
     </template>
   </BaseDetailLayout>
-  <CountryReportLink :processedAnswerData="processedAnswerData" />
+  <CountryReportLink :processedAnswerData="processedLegalInstrument" />
 </template>
 
 <script setup>
