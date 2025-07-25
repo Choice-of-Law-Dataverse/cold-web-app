@@ -6,23 +6,28 @@
           <div class="popular-searches-container flex flex-col gap-8">
             <!-- Title Section -->
             <div>
-              <h3 class="text-left md:whitespace-nowrap">
+              <h3 class="text-left md:whitespace-nowrap mb-1">
                 <NuxtLink
                   v-if="jurisdictionCode"
                   :to="`/jurisdiction/${jurisdictionCode.toLowerCase()}`"
                 >
-                  Go to the country report for
+                  Country report for
                   {{
                     processedAnswerData?.Jurisdictions || 'this jurisdiction'
                   }}
                 </NuxtLink>
                 <span v-else>
-                  Go to the country report for
+                  Country report for
                   {{
                     processedAnswerData?.Jurisdictions || 'this jurisdiction'
                   }}
                 </span>
               </h3>
+              <span class="result-value-small">
+                The country report provides detailed information, answers and
+                more on
+                {{ processedAnswerData?.Jurisdictions || 'this jurisdiction' }}
+              </span>
             </div>
           </div>
         </UCard>
@@ -55,4 +60,8 @@ const jurisdictionCode = computed(() => {
 h3 {
   color: var(--color-cold-purple) !important;
 }
+
+/* :deep(span.result-value-small) {
+  margin-top: 24px !important;
+} */
 </style>
