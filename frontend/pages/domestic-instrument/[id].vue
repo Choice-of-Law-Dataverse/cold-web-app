@@ -188,6 +188,7 @@
       </section>
     </template>
   </BaseDetailLayout>
+  <CountryReportLink :processedAnswerData="processedLegalInstrument" />
 </template>
 
 <script setup>
@@ -198,6 +199,7 @@ import LegalProvision from '@/components/legal/LegalProvision.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import SectionRenderer from '@/components/legal/SectionRenderer.vue'
 import CompatibleLabel from '@/components/ui/CompatibleLabel.vue'
+import CountryReportLink from '@/components/ui/CountryReportLink.vue'
 import { useApiFetch } from '@/composables/useApiFetch'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { legalInstrumentConfig } from '@/config/pageConfigs'

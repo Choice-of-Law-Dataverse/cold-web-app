@@ -6,23 +6,28 @@
           <div class="popular-searches-container flex flex-col gap-8">
             <!-- Title Section -->
             <div>
-              <h3 class="text-left md:whitespace-nowrap">
+              <h3 class="text-left md:whitespace-nowrap mb-1">
                 <NuxtLink
-                  v-if="processedAnswerData?.['Jurisdictions Alpha-3 code']"
-                  :to="`/jurisdiction/${processedAnswerData['Jurisdictions Alpha-3 code'].toLowerCase()}`"
+                  v-if="jurisdictionCode"
+                  :to="`/jurisdiction/${jurisdictionCode.toLowerCase()}`"
                 >
-                  Go to the country report for
+                  Country report for
                   {{
                     processedAnswerData?.Jurisdictions || 'this jurisdiction'
                   }}
                 </NuxtLink>
                 <span v-else>
-                  Go to the country report for
+                  Country report for
                   {{
                     processedAnswerData?.Jurisdictions || 'this jurisdiction'
                   }}
                 </span>
               </h3>
+              <span class="result-value-small">
+                The country report provides detailed information, answers and
+                more on
+                {{ processedAnswerData?.Jurisdictions || 'this jurisdiction' }}
+              </span>
             </div>
           </div>
         </UCard>
@@ -32,12 +37,22 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
+
 // Accept processedAnswerData as a prop from parent
-defineProps({
+const props = defineProps({
   processedAnswerData: {
     type: Object,
     required: true,
   },
+})
+
+// Computed property to handle different property name variations
+const jurisdictionCode = computed(() => {
+  return (
+    props.processedAnswerData?.['Jurisdictions Alpha-3 code'] ||
+    props.processedAnswerData?.['Jurisdictions Alpha-3 Code']
+  )
 })
 </script>
 
@@ -45,4 +60,8 @@ defineProps({
 h3 {
   color: var(--color-cold-purple) !important;
 }
+
+/* :deep(span.result-value-small) {
+  margin-top: 24px !important;
+} */
 </style>
