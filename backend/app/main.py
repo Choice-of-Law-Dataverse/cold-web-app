@@ -7,6 +7,15 @@ from app.services.query_logging import log_query
 
 app = FastAPI(
     title="CoLD API",
+    description="""
+    # CoLD API Documentation
+    This API provides access to the database of the Choice of Law Dataverse (CoLD).
+    The CoLD is a research project at the University of Lucerne that collects and analyzes data on choice of law in international contracts.
+
+    The API allows users to query the data, with a full text search feature as the core data retrieval method.
+    Other features include fetching all data from specific tables and filtering for specific entries.
+    The API also supports JWT authentication for secure access.
+    """,
     openapi_url="/api/v1/openapi.json",
     docs_url="/api/v1/docs",
     redoc_url="/api/v1/redoc"
