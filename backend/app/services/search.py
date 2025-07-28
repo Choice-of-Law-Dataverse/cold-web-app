@@ -149,7 +149,7 @@ class SearchService:
 
     def full_text_search(self, search_string, filters=[], page=1, page_size=50, sort_by_date=False):
         """
-        Perform full-text search via cold_views.search_all and return correct total_matches
+        Perform full-text search via data_views.search_all and return correct total_matches
         along with full record data from NocoDB.
         """
         tables, jurisdictions, themes = self._extract_filters(filters)
@@ -164,7 +164,7 @@ class SearchService:
         }
         # count total matches
         count_sql = (
-            "SELECT COUNT(*) AS total_matches FROM cold_views.search_all("
+            "SELECT COUNT(*) AS total_matches FROM data_views.search_all("
             "search_term := CAST(:search_term AS text), "
             "filter_tables := CAST(:filter_tables AS text[]), "
             "filter_jurisdictions := CAST(:filter_jurisdictions AS text[]), "
@@ -179,8 +179,8 @@ class SearchService:
         # fetch paginated rows
         print(f"Performing full-text search with params: {params}")
         sql = (
-            "SELECT table_name AS source_table, record_id AS id, title, excerpt, rank "
-            "FROM cold_views.search_all("
+            "SELECT table_name AS source_table, record_id AS id, complete_record AS complete_record, rank, result_date "
+            "FROM data_views.search_all("
             "search_term := CAST(:search_term AS text), "
             "filter_tables := CAST(:filter_tables AS text[]), "
             "filter_jurisdictions := CAST(:filter_jurisdictions AS text[]), "
@@ -191,7 +191,9 @@ class SearchService:
             ")"
         )
         rows = self.db.execute_query(sql, params)
-        print("raw SQL results:\n", json.dumps(rows, indent=2))
+        # print raw SQL rows, serializing dates as strings
+        print("raw SQL results:\n", json.dumps(rows, indent=2, default=str))
+        """
         # augment each row with full NocoDB data
         augmented = []
         for row in rows:
@@ -216,10 +218,13 @@ class SearchService:
                 else:
                     merged[k] = v
             augmented.append(merged)
+        """
         return {
             "test": config.TEST,
             "total_matches": total_matches,
             "page": page,
             "page_size": page_size,
-            "results": augmented,
+            #"results": augmented,
+            # return raw results for now as a json object
+            "results": rows,
         }
