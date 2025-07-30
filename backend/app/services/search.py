@@ -193,38 +193,25 @@ class SearchService:
         rows = self.db.execute_query(sql, params)
         # print raw SQL rows, serializing dates as strings
         print("raw SQL results:\n", json.dumps(rows, indent=2, default=str))
-        """
-        # augment each row with full NocoDB data
-        augmented = []
+        # flatten nested complete_record into top-level
+        flattened = []
         for row in rows:
-            table = row.get("source_table")
-            record_id = row.get("id")
-            try:
-                full_data = self.nocodb.get_row(table, record_id)
-            except Exception:
-                full_data = {}
-            # Always include NocoDB enrichment under a dedicated key
-            print("Full data from NocoDB for row:", full_data)
-            merged = {**row, **full_data}
-            merged["nocodb_data"] = full_data  # Add enrichment explicitly
-            # merge all full_data fields into top-level, unwrap lists
-            for k, v in full_data.items():
-                if isinstance(v, list):
-                    # unwrap list of dicts or join primitive lists
-                    if v and isinstance(v[0], dict):
-                        merged[k] = v[0]
-                    else:
-                        merged[k] = ", ".join(str(x) for x in v)
-                else:
-                    merged[k] = v
-            augmented.append(merged)
-        """
+            complete = row.get("complete_record") or {}
+            flat = {
+                "source_table": row.get("source_table"),
+                "id": row.get("id"),
+                "rank": row.get("rank"),
+                "result_date": row.get("result_date"),
+            }
+            for key, value in complete.items():
+                if key == "id":
+                    continue
+                flat[key] = value
+            flattened.append(flat)
         return {
             "test": config.TEST,
             "total_matches": total_matches,
             "page": page,
             "page_size": page_size,
-            #"results": augmented,
-            # return raw results for now as a json object
-            "results": rows,
+            "results": flattened,
         }
