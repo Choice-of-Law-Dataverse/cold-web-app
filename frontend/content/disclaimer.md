@@ -23,13 +23,15 @@ Any use or redistribution of this data must include proper attribution. Please u
 
 **Choice of Law Dataverse ([Year]). [Dataset Title] ([version if applicable] or [publication date]) [Specific data point]. Licensed under CC BY-SA. Available at: [DOI or URL]**
 
+For example, to cite a country report from a given jurisdiction, we recommend adapting this template: **Argentinian Report. Choice of Law Dataverse ([2025]). [Country Report] ([May 2025]). Licensed under CC BY-SA. Available at: [[DOI or URL]](https://www.cold.global/jurisdiction/arg)**
+
 ## 2. Data Input Disclaimer
 
 By submitting your contribution, you hereby transfer and assign all copyright interests and ownership to the Choice of Law Dataverse. The Choice of Law Dataverse will then license the contribution publicly under the Creative Commons Attribution (CC BY-SA) license.
 
 ## 3. AI Applications and Fair Use Criteria
 
-We apply clear policies to manage intellectual property rights and use of content. In training our case analyzer, we adhere strictly to fair use principles, assessing factors such as:
+We apply clear policies to manage intellectual property rights and the use of content. In training our [case analyzer] (https://case-analyzer.cold.global/), we adhere to fair use principles, assessing factors such as:
 
 - Impact on the value of the original work.
 - Ensuring adequate transformative distance between the original content and generated output.
@@ -52,7 +54,7 @@ This data protection statement clearly and comprehensively informs you about the
 
 ### 6.1 Collection of Personal Data When Visiting www.cold.global
 
-Our website can generally be accessed without providing personal data identifying you directly. Google Analytics is only used with your consent. Certain technical data (e.g., IP address, browser type, device information, and usage statistics) are collected by our web analytics software when performing a search. These data are processed anonymously to analyze usage patterns and enhance website performance.
+Our website can generally be accessed without providing personal data identifying you directly. Google Analytics is only used with your consent. Certain technical data (e.g., IP address, browser type, device information, and usage statistics) is collected by our web analytics software when performing a search. These data are processed anonymously to analyze usage patterns and enhance website performance.
 
 ### 6.2 SSL Encryption
 
