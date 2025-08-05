@@ -2,6 +2,7 @@ import json
 from app.config import config
 from app.services.database import Database
 from app.services.nocodb import NocoDBService
+from app.services.transformers import DataTransformerFactory
 import logging
 
 # logger for this module
@@ -207,7 +208,13 @@ class SearchService:
                 if key == "id":
                     continue
                 flat[key] = value
+            
+            # Apply transformation using the appropriate transformer
+            table_name = row.get("source_table")
+            flat = DataTransformerFactory.transform_result(table_name, flat)
+            
             flattened.append(flat)
+        
         return {
             "test": config.TEST,
             "total_matches": total_matches,

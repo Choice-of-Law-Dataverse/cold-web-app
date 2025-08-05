@@ -1,0 +1,103 @@
+{
+  "table_name": "Court Decisions",
+  "description": "Transformation rules for converting Court Decisions table from current NocoDB format to reference format",
+  "version": "1.0",
+  "mappings": {
+    "direct_mappings": {
+      "source_table": "source_table",
+      "id": "CoLD_ID",
+      "rank": "rank",
+      "ID": "CoLD_ID",
+      "Case Citation": "Case_Citation",
+      "Case Title": "Case_Title",
+      "Instance": "Instance",
+      "Date": "Date",
+      "Abstract": "Abstract",
+      "Created": "Created",
+      "Record ID": "ncRecordId",
+      "ID-number": "ID_number",
+      "Last Modified": "updated_at",
+      "Last Modified By.id": "updated_by",
+      "Created By.id": "created_by",
+      "Added By.id": "created_by",
+      "Created time": "Created",
+      "Questions": "Questions",
+      "Answers Link": "Answers_Link",
+      "Answers Question": "Answers_Question",
+      "Text_of_the_Relevant_Legal_Provisions": "Text_of_the_Relevant_Legal_Provisions"
+    },
+    "conditional_mappings": {
+      "sort_date": {
+        "primary": "Publication_Date_ISO",
+        "fallback": "updated_at"
+      },
+      "Publication Date ISO": {
+        "primary": "Publication_Date_ISO",
+        "fallback": "Date"
+      },
+      "Official Source (URL)": {
+        "primary": "Official_Source__URL_",
+        "fallback": "Official_Source_URL"
+      }
+    },
+    "nested_mappings": {
+      "related_jurisdictions": {
+        "source_array": "related_jurisdictions",
+        "index": 0,
+        "mappings": {
+          "Jurisdictions Link": "ncRecordId",
+          "Jurisdictions Alpha-3 Code": "Alpha_3_Code",
+          "Jurisdictions": "Name",
+          "Region (from Jurisdictions)": "Region"
+        }
+      },
+      "related_themes": {
+        "source_array": "related_themes",
+        "array_operations": {
+          "Themes": {
+            "operation": "join",
+            "field": "Theme",
+            "separator": ","
+          }
+        }
+      }
+    },
+    "complex_mappings": {
+      "Official Source (PDF)": {
+        "source_field": "Official_Source__PDF_",
+        "type": "json_extract",
+        "operation": "first_item_as_airtable_format"
+      }
+    },
+    "user_mappings": {
+      "Last Modified By": {
+        "source_field": "updated_by",
+        "user_fields": {
+          "Last Modified By.id": "id",
+          "Last Modified By.email": "email", 
+          "Last Modified By.name": "name"
+        }
+      },
+      "Added By": {
+        "source_field": "created_by",
+        "user_fields": {
+          "Added By.id": "id",
+          "Added By.email": "email",
+          "Added By.name": "name"
+        }
+      },
+      "Created By": {
+        "source_field": "created_by", 
+        "user_fields": {
+          "Created By.id": "id",
+          "Created By.email": "email",
+          "Created By.name": "name"
+        }
+      }
+    }
+  },
+  "post_processing": {
+    "remove_null_values": true,
+    "remove_empty_strings": false
+  }
+}
