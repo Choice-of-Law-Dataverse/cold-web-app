@@ -253,8 +253,8 @@ class SearchService:
             
             # Apply transformation using the appropriate transformer
             table_name = row.get("source_table")
-            flat = DataTransformerFactory.transform_result(table_name, flat)
-            
+            #flat = DataTransformerFactory.transform_result(table_name, flat)
+
             flattened.append(flat)
         
         return {
