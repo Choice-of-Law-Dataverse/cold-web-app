@@ -19,16 +19,58 @@ class SearchService:
             api_token=config.NOCODB_API_TOKEN,
         )
 
-    def curated_details_search(self, table, id):
+    def curated_details_search(self, table, cold_id):
         """
-        Fetch a single record by table and id using the NocoDB API.
+        Fetch a single record by table and CoLD_ID using the new search_for_entry SQL function.
+        Returns the complete record along with hop-1 (directly related) entries, transformed
+        similar to full text search results.
         """
         try:
-            data = self.nocodb.get_row(table, id)
-            return data
+            sql = """
+            SELECT found_table, record_id, complete_record, hop1_relations
+            FROM data_views.search_for_entry(:table_name, :cold_id)
+            """
+            params = {
+                "table_name": table,
+                "cold_id": cold_id
+            }
+            
+            results = self.db.execute_query(sql, params)
+            
+            if not results:
+                logger.warning("No record found for table %s with CoLD_ID %s", table, cold_id)
+                return {"error": f"No record found for {cold_id} in table {table}"}
+            
+            result = results[0]
+            
+            # Extract the data from the SQL result
+            found_table = result.get("found_table")
+            record_id = result.get("record_id")
+            complete_record = result.get("complete_record") or {}
+            hop1_relations = result.get("hop1_relations") or {}
+            
+            # Flatten nested complete_record into top-level (similar to full_text_search)
+            flat_record = {
+                "source_table": found_table,
+                "id": record_id,
+                "cold_id": cold_id,
+                "hop1_relations": hop1_relations,
+            }
+            
+            # Add all fields from complete_record, avoiding id collision
+            for key, value in complete_record.items():
+                if key == "id":
+                    continue
+                flat_record[key] = value
+            
+            # Apply transformation using the appropriate transformer (similar to full_text_search)
+            transformed_record = DataTransformerFactory.transform_result(found_table, flat_record)
+            
+            return transformed_record
+            
         except Exception as e:
-            logger.error("Error fetching record %s from table %s: %s", id, table, e)
-            return {"error": f"Could not fetch record {id} from table {table}"}
+            logger.error("Error fetching record %s from table %s: %s", cold_id, table, e)
+            return {"error": f"Could not fetch record {cold_id} from table {table}: {str(e)}"}
 
     def full_table(self, table):
         """
