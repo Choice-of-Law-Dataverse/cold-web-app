@@ -164,6 +164,12 @@ backend/testing.ipynb
 backend/test.py
 testing/*
 
+# deprecated files
+SITEMAP_IMPLEMENTATION_SUMMARY.md
+backend/SITEMAP_API.md
+backend/REFACTOR_SUMMARY.md
+backend/app/mapping/deprecated/*
+
 # nuxt and node
 frontend/.env
 frontend/.nuxt
