@@ -115,18 +115,16 @@ function selectAnswer(answer) {
 }
 
 function splitIntoThreeLines(items) {
-  const lines = [[], [], []]
-  const lengths = [0, 0, 0]
-  for (const name of items) {
-    // choose the line with the smallest current length
-    let idx = 0
-    if (lengths[1] < lengths[idx]) idx = 1
-    if (lengths[2] < lengths[idx]) idx = 2
-    lines[idx].push(name)
-    // account for name length plus a space separator
-    lengths[idx] += name.length + 1
-  }
-  return lines
+  // Keep strict alphabetical order left-to-right, top-to-bottom by
+  // splitting the already-sorted list into three contiguous rows.
+  const n = items.length
+  const first = Math.ceil(n / 3)
+  const second = Math.ceil((n - first) / 2)
+  return [
+    items.slice(0, first),
+    items.slice(first, first + second),
+    items.slice(first + second),
+  ]
 }
 </script>
 
