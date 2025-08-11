@@ -137,6 +137,11 @@ class SearchService:
             
             return transformed_results
         
+        # Get reverse field mapping to convert filter column names from transformed names to source names
+        from app.services.configurable_transformer import get_configurable_transformer
+        transformer = get_configurable_transformer()
+        reverse_mapping = transformer.get_reverse_field_mapping(table)
+        
         # Apply filters and transform matching records
         results = []
         for raw in rows:
@@ -155,7 +160,16 @@ class SearchService:
             for filter_item in filters:
                 column = filter_item.column
                 value = filter_item.value
-                cell = row.get(column)
+                
+                # Try to reverse-map the column name from transformed name to source name
+                source_column = reverse_mapping.get(column, column)
+                
+                # Also try with question mark suffix removed (for boolean fields)
+                if source_column == column and column.endswith('?'):
+                    source_column_without_q = column[:-1]
+                    source_column = reverse_mapping.get(source_column_without_q, column)
+                
+                cell = row.get(source_column)
                 if cell is None:
                     match = False
                     break

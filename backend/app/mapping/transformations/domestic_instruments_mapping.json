@@ -46,7 +46,6 @@
         "index": 0,
         "mappings": {
           "Jurisdictions Link": "ncRecordId",
-          "Jurisdictions Alpha-3 Code": "Alpha-3 Code",
           "Jurisdictions": "Name",
           "Type (from Jurisdictions)": "Type"
         }
@@ -67,6 +66,11 @@
         "source_field": "Source (PDF)",
         "type": "json_extract",
         "operation": "first_item_as_airtable_format"
+      },
+      "Jurisdictions Alpha-3 Code": {
+        "source_field": "Jurisdictions Alpha-3 Code",
+        "type": "array_extract",
+        "operation": "first_item"
       }
     },
     "user_mappings": {
@@ -89,12 +93,12 @@
     },
     "boolean_mappings": {
       "Compatible With the HCCH Principles": {
-        "source_field": "Compatible_With_the_HCCH_Principles_",
+        "source_field": "Compatible With the HCCH Principles?",
         "true_value": true,
         "false_value": false
       },
       "Compatible With the UNCITRAL Model Law": {
-        "source_field": "Compatible_With_the_UNCITRAL_Model_Law_",
+        "source_field": "Compatible With the UNCITRAL Model Law?",
         "true_value": true,
         "false_value": false
       }

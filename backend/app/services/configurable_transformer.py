@@ -198,6 +198,16 @@ class ConfigurableTransformer:
                             transformed[target_field] = str(airtable_format)
                 except (json.JSONDecodeError, KeyError, IndexError) as e:
                     logger.warning(f"Error processing complex mapping for {target_field}: {e}")
+            elif mapping_type == 'array_extract' and operation == 'first_item':
+                try:
+                    # Extract first item from array
+                    if isinstance(source_value, list) and source_value:
+                        transformed[target_field] = source_value[0]
+                    elif source_value is not None:
+                        # If it's not an array, use the value as is
+                        transformed[target_field] = source_value
+                except (KeyError, IndexError) as e:
+                    logger.warning(f"Error processing array_extract mapping for {target_field}: {e}")
                     transformed[target_field] = source_value
             
             elif mapping_type == 'array_extract':
@@ -259,6 +269,54 @@ class ConfigurableTransformer:
             transformed = {k: v for k, v in transformed.items() if v != ''}
         
         return transformed
+    
+    def get_reverse_field_mapping(self, table_name: str) -> Dict[str, str]:
+        """
+        Create a reverse mapping from transformed field names back to source field names.
+        This is useful for filtering operations that need to work on raw data.
+        
+        Args:
+            table_name (str): Name of the source table
+            
+        Returns:
+            dict: Mapping from transformed field names to source field names
+        """
+        mapping_config = self.mapping_repo.get_mapping(table_name)
+        if not mapping_config:
+            return {}
+        
+        reverse_mapping = {}
+        mappings = mapping_config.get('mappings', {})
+        
+        # Reverse direct mappings
+        direct_mappings = mappings.get('direct_mappings', {})
+        for target_field, source_field in direct_mappings.items():
+            reverse_mapping[target_field] = source_field
+        
+        # Reverse conditional mappings (use primary field)
+        conditional_mappings = mappings.get('conditional_mappings', {})
+        for target_field, condition_config in conditional_mappings.items():
+            primary_field = condition_config.get('primary')
+            if primary_field:
+                reverse_mapping[target_field] = primary_field
+        
+        # Reverse boolean mappings
+        boolean_mappings = mappings.get('boolean_mappings', {})
+        for target_field, boolean_config in boolean_mappings.items():
+            source_field = boolean_config.get('source_field')
+            if source_field:
+                reverse_mapping[target_field] = source_field
+        
+        # Handle nested mappings (from related data)
+        nested_mappings = mappings.get('nested_mappings', {})
+        for mapping_name, mapping_config in nested_mappings.items():
+            direct_mappings = mapping_config.get('mappings', {})
+            for target_field, source_field in direct_mappings.items():
+                # For nested mappings, we can't directly reverse map since they come from arrays
+                # But we can at least note the relationship
+                reverse_mapping[target_field] = f"{mapping_config.get('source_array')}.{source_field}"
+        
+        return reverse_mapping
 
 
 # Global instance for easy access
