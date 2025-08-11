@@ -27,16 +27,23 @@
             </p>
           </div>
           <div
-            v-if="selectedAnswer && countries.length"
+            v-if="selectedAnswer && countriesLines.length"
             class="countries-scroll mt-2"
           >
-            <span
-              v-for="country in countries"
-              :key="country"
-              class="country-item"
-            >
-              {{ country }}
-            </span>
+            <div class="countries-lines">
+              <div
+                class="countries-line"
+                v-for="(line, li) in countriesLines"
+                :key="li"
+              >
+                <span
+                  v-for="country in line"
+                  :key="country"
+                  class="country-item"
+                  >{{ country }}</span
+                >
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -62,6 +69,7 @@ const regions = [
 
 const selectedAnswer = ref('')
 const countries = ref([])
+const countriesLines = ref([])
 const config = useRuntimeConfig()
 
 async function fetchCountries() {
@@ -89,18 +97,36 @@ async function fetchCountries() {
     })
     if (!res.ok) throw new Error('API error')
     const data = await res.json()
-    countries.value = data
+    const list = data
       .filter((item) => item['Jurisdictions Irrelevant'] !== 'True')
       .map((item) => item.Jurisdictions)
       .sort((a, b) => a.localeCompare(b))
+    countries.value = list
+    countriesLines.value = splitIntoThreeLines(list)
   } catch (e) {
     countries.value = ['Error loading countries']
+    countriesLines.value = [['Error loading countries']]
   }
 }
 
 function selectAnswer(answer) {
   selectedAnswer.value = answer
   fetchCountries()
+}
+
+function splitIntoThreeLines(items) {
+  const lines = [[], [], []]
+  const lengths = [0, 0, 0]
+  for (const name of items) {
+    // choose the line with the smallest current length
+    let idx = 0
+    if (lengths[1] < lengths[idx]) idx = 1
+    if (lengths[2] < lengths[idx]) idx = 2
+    lines[idx].push(name)
+    // account for name length plus a space separator
+    lengths[idx] += name.length + 1
+  }
+  return lines
 }
 </script>
 
@@ -121,18 +147,23 @@ function selectAnswer(answer) {
 }
 
 .countries-scroll {
-  columns: 3;
-  column-gap: 1em;
-  max-height: 6.6em;
   overflow-x: auto;
   overflow-y: hidden;
-  white-space: nowrap;
-  display: block;
+  max-height: 6.6em; /* 3 lines * 2.2em */
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
 .countries-scroll::-webkit-scrollbar {
   display: none;
+}
+.countries-lines {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+.countries-line {
+  display: inline-flex;
+  gap: 1em;
 }
 .country-item {
   display: inline-block;
