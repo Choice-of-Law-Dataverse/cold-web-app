@@ -5,54 +5,54 @@
   "mappings": {
     "direct_mappings": {
       "source_table": "source_table",
-      "id": "CoLD_ID",
+      "id": "CoLD ID",
       "rank": "rank",
-      "ID": "CoLD_ID",
-      "ID-number": "ID_Number",
+      "ID": "CoLD ID",
+      "ID-number": "ID Number",
       "Date": "Date",
       "Status": "Status",
       "Abbreviation": "Abbreviation",
-      "Relevant Provisions": "Relevant_Provisions",
+      "Relevant Provisions": "Relevant Provisions",
       "Record ID": "ncRecordId",
       "Created": "Created",
-      "Last Modified": "updated_at",
-      "Last Modified By.id": "updated_by",
-      "Created By.id": "created_by",
-      "Entry Into Force": "Entry_Into_Force",
-      "Publication Date": "Publication_Date",
-      "Full Text of the Provisions": "Full_Text_of_the_Provisions"
+      "Last Modified": "UpdatedAt",
+      "Last Modified By.id": "UpdatedBy",
+      "Created By.id": "CreatedBy",
+      "Entry Into Force": "Entry Into Force",
+      "Publication Date": "Publication Date",
+      "Full Text of the Provisions": "Full Text of the Provisions"
     },
     "conditional_mappings": {
       "sort_date": {
-        "primary": "updated_at",
+        "primary": "UpdatedAt",
         "fallback": "result_date"
       },
       "Title (in English)": {
-        "primary": "Title__in_English_",
-        "fallback": "Official_Title"
+        "primary": "Title (in English)",
+        "fallback": "Official Title"
       },
       "Source (URL)": {
-        "primary": "Source__URL_",
+        "primary": "Source (URL)",
         "fallback": "Official_Source_URL"
       },
       "Source (PDF)": {
-        "primary": "Source__PDF_",
+        "primary": "Source (PDF)",
         "fallback": "Official_Source_PDF"
       }
     },
     "nested_mappings": {
       "related_jurisdictions": {
-        "source_array": "related_jurisdictions",
+        "source_array": "_nc_m2m_Jurisdictions_Domestic_Instrus",
         "index": 0,
         "mappings": {
           "Jurisdictions Link": "ncRecordId",
-          "Jurisdictions Alpha-3 Code": "Alpha_3_Code",
+          "Jurisdictions Alpha-3 Code": "Alpha-3 Code",
           "Jurisdictions": "Name",
           "Type (from Jurisdictions)": "Type"
         }
       },
       "related_questions": {
-        "source_array": "related_questions",
+        "source_array": "_nc_m2m_Questions_Domestic_Instrus",
         "array_operations": {
           "Question ID": {
             "operation": "join",
@@ -64,14 +64,14 @@
     },
     "complex_mappings": {
       "Source (PDF)": {
-        "source_field": "Source__PDF_",
+        "source_field": "Source (PDF)",
         "type": "json_extract",
         "operation": "first_item_as_airtable_format"
       }
     },
     "user_mappings": {
       "Last Modified By": {
-        "source_field": "updated_by",
+        "source_field": "UpdatedBy",
         "user_fields": {
           "Last Modified By.id": "id",
           "Last Modified By.email": "email",
@@ -79,7 +79,7 @@
         }
       },
       "Created By": {
-        "source_field": "created_by",
+        "source_field": "CreatedBy",
         "user_fields": {
           "Created By.id": "id",
           "Created By.email": "email",

@@ -74,26 +74,70 @@ class SearchService:
 
     def full_table(self, table):
         """
-        Fetch all records from a table using the NocoDB API.
+        Fetch all records from a table using the NocoDB API and transform them to flat structure.
         """
         try:
             data = self.nocodb.list_rows(table)
-            return data
+            
+            # Transform each record to flat structure similar to other search functions
+            transformed_results = []
+            for raw_record in data:
+                # Create flat record with consistent structure
+                flat_record = {
+                    "source_table": table,
+                    "id": raw_record.get("Id"),
+                    "cold_id": raw_record.get("CoLD ID"),
+                }
+                
+                # Add all other fields from the raw record, avoiding id collision
+                for key, value in raw_record.items():
+                    if key == "Id":  # Skip the Id field since we already mapped it
+                        continue
+                    flat_record[key] = value
+                
+                # Apply transformation using the appropriate transformer
+                transformed_record = DataTransformerFactory.transform_result(table, flat_record)
+                transformed_results.append(transformed_record)
+            
+            return transformed_results
         except Exception as e:
             logger.error("Error listing records from table %s: %s", table, e)
             return []
 
     def filtered_table(self, table, filters):
         """
-        Fetch and filter records from a table using the NocoDB API.
+        Fetch and filter records from a table using the NocoDB API and transform them to flat structure.
         """
         try:
             rows = self.nocodb.list_rows(table)
         except Exception as e:
             logger.error("Error listing records from table %s: %s", table, e)
             return []
+        
         if not filters:
-            return rows
+            # No filters, transform all records
+            transformed_results = []
+            for raw_record in rows:
+                # Create flat record with consistent structure
+                flat_record = {
+                    "source_table": table,
+                    "id": raw_record.get("Id"),
+                    "cold_id": raw_record.get("CoLD ID"),
+                }
+                
+                # Add all other fields from the raw record, avoiding id collision
+                for key, value in raw_record.items():
+                    if key == "Id":  # Skip the Id field since we already mapped it
+                        continue
+                    flat_record[key] = value
+                
+                # Apply transformation using the appropriate transformer
+                transformed_record = DataTransformerFactory.transform_result(table, flat_record)
+                transformed_results.append(transformed_record)
+            
+            return transformed_results
+        
+        # Apply filters and transform matching records
         results = []
         for raw in rows:
             # ensure each row is a dict; parse JSON strings if necessary
@@ -106,6 +150,7 @@ class SearchService:
                 row = raw
             else:
                 continue
+            
             match = True
             for filter_item in filters:
                 column = filter_item.column
@@ -151,8 +196,25 @@ class SearchService:
                         break
                 else:
                     raise ValueError(f"Unsupported filter type for column {column}: {value}")
+            
             if match:
-                results.append(row)
+                # Transform the matching record to flat structure
+                flat_record = {
+                    "source_table": table,
+                    "id": row.get("Id"),
+                    "cold_id": row.get("CoLD ID"),
+                }
+                
+                # Add all other fields from the raw record, avoiding id collision
+                for key, value in row.items():
+                    if key == "Id":  # Skip the Id field since we already mapped it
+                        continue
+                    flat_record[key] = value
+                
+                # Apply transformation using the appropriate transformer
+                transformed_record = DataTransformerFactory.transform_result(table, flat_record)
+                results.append(transformed_record)
+        
         return results
 
     """
@@ -253,7 +315,7 @@ class SearchService:
             
             # Apply transformation using the appropriate transformer
             table_name = row.get("source_table")
-            #flat = DataTransformerFactory.transform_result(table_name, flat)
+            flat = DataTransformerFactory.transform_result(table_name, flat)
 
             flattened.append(flat)
         

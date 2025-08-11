@@ -1,0 +1,72 @@
+{
+  "domestic_instruments": {
+    "simple_mappings": {
+      "Title (in English)": "title_en",
+      "Relevant Provisions": "provisions", 
+      "Source (URL)": "source_url",
+      "ID Number": "id_number",
+      "Abbreviation": "abbreviation",
+      "Date": "date",
+      "CoLD ID": "cold_id",
+      "Official Title": "official_title",
+      "Full Text of the Provisions": "full_text",
+      "Publication Date": "publication_date",
+      "Entry Into Force": "entry_into_force",
+      "Compatible With the HCCH Principles?": "hcch_compatible",
+      "Compatible With the UNCITRAL Model Law?": "uncitral_compatible",
+      "Status": "status",
+      "Last modified time": "last_modified",
+      "Created": "created"
+    },
+    "complex_mappings": {
+      "Source (PDF)": {
+        "target_field": "source_pdf",
+        "transform": "pdf_attachment"
+      },
+      "UpdatedBy": {
+        "target_field": "updated_by",
+        "transform": "user_info"
+      },
+      "CreatedBy": {
+        "target_field": "created_by", 
+        "transform": "user_info"
+      },
+      "Jurisdictions": {
+        "target_field": "jurisdictions",
+        "transform": "array_first_or_list"
+      },
+      "Jurisdictions Alpha-3 Code": {
+        "target_field": "jurisdiction_codes",
+        "transform": "array_first_or_list"
+      },
+      "Type (from Jurisdictions)": {
+        "target_field": "jurisdiction_type",
+        "transform": "array_first_or_list"
+      },
+      "Question ID": {
+        "target_field": "question_ids", 
+        "transform": "array_or_none"
+      },
+      "Replaces": {
+        "target_field": "replaces",
+        "transform": "array_or_none"
+      },
+      "Replaced by": {
+        "target_field": "replaced_by",
+        "transform": "array_or_none"
+      },
+      "Amends": {
+        "target_field": "amends",
+        "transform": "array_or_none"
+      },
+      "Amended by": {
+        "target_field": "amended_by",
+        "transform": "array_or_none"
+      }
+    },
+    "system_fields": {
+      "Id": "record_id",
+      "ncRecordId": "nc_record_id"
+    }
+  }
+}
