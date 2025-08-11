@@ -3,8 +3,7 @@
     <div class="popular-searches-container flex flex-col gap-8">
       <div>
         <h2 class="popular-title text-left">
-          Is there a codification on choice of law or are there similar
-          established rules?
+          Is there a codification on choice of law?
         </h2>
         <div>
           <h3 class="mt-4">
