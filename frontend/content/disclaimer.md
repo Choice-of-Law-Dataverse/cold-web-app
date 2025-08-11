@@ -31,7 +31,7 @@ By submitting your contribution, you hereby transfer and assign all copyright in
 
 ## 3. AI Applications and Fair Use Criteria
 
-We apply clear policies to manage intellectual property rights and the use of content. In training our [case analyzer] (https://case-analyzer.cold.global/), we adhere to fair use principles, assessing factors such as:
+We apply clear policies to manage intellectual property rights and the use of content. In training our [case analyzer](https://case-analyzer.cold.global/), we adhere to fair use principles, assessing factors such as:
 
 - Impact on the value of the original work.
 - Ensuring adequate transformative distance between the original content and generated output.
