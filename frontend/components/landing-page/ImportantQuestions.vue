@@ -86,6 +86,7 @@ async function fetchCountries() {
     countries.value = data
       .filter((item) => item['Jurisdictions Irrelevant'] !== 'True')
       .map((item) => item.Jurisdictions)
+      .sort((a, b) => a.localeCompare(b))
   } catch (e) {
     countries.value = ['Error loading countries']
   }
