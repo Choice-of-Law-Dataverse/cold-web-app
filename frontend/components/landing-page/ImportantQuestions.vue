@@ -19,7 +19,7 @@
               {{ option }}
             </span>
           </h3>
-          <div v-if="selectedAnswer === 'Yes' && countries.length">
+          <div v-if="selectedAnswer && countries.length">
             <div v-for="country in countries" :key="country">
               {{ country }}
             </div>
@@ -59,7 +59,7 @@ const countries = ref([])
 const config = useRuntimeConfig()
 
 async function fetchCountries() {
-  if (selectedAnswer.value !== 'Yes') {
+  if (!selectedAnswer.value) {
     countries.value = []
     return
   }
@@ -77,7 +77,7 @@ async function fetchCountries() {
             column: 'Question',
             value: 'Is there a codification on choice of law?',
           },
-          { column: 'Answer', value: 'Yes' },
+          { column: 'Answer', value: selectedAnswer.value },
         ],
       }),
     })
