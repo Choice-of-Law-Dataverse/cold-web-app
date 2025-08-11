@@ -10,7 +10,7 @@
           </div>
         </div>
 
-        <div class="col-span-12">
+        <!-- <div class="col-span-12">
           <h2
             class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 flex flex-row items-center gap-1"
           >
@@ -123,6 +123,9 @@
             iconName="i-material-symbols:add-notes"
             :newTab="false"
           />
+        </div> -->
+        <div class="col-span-12 md:col-span-8">
+          <ImportantQuestions />
         </div>
       </div>
     </div>
@@ -142,6 +145,7 @@ import RecentDomesticInstruments from '@/components/landing-page/RecentDomesticI
 import SuccessfulLegalTransplantations from '@/components/landing-page/SuccessfulLegalTransplantations.vue'
 import LeadingCases from '@/components/landing-page/LeadingCases.vue'
 import { useHead } from '#imports'
+import ImportantQuestions from '~/components/landing-page/ImportantQuestions.vue'
 const links = externalLinks
 
 useHead({
