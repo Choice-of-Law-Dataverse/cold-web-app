@@ -121,13 +121,13 @@ function selectAnswer(answer) {
 }
 
 .countries-scroll {
-  display: flex;
-  flex-wrap: wrap;
-  max-height: calc(3 * 2.2em); /* 3 lines, adjust line height as needed */
+  columns: 3;
+  column-gap: 1em;
+  max-height: 6.6em;
   overflow-x: auto;
   overflow-y: hidden;
-  gap: 1em;
-  align-items: flex-start;
+  white-space: nowrap;
+  display: block;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
@@ -135,6 +135,9 @@ function selectAnswer(answer) {
   display: none;
 }
 .country-item {
+  display: inline-block;
+  margin-right: 1em;
+  margin-bottom: 0.5em;
   white-space: nowrap;
 }
 </style>
