@@ -15,7 +15,7 @@
         </div>
 
         <div>
-          <p class="label mt-4">
+          <p class="label mt-4 regions-scroll">
             <span v-for="(region, idx) in regions" :key="region" class="mr-4">
               {{ region }}
             </span>
@@ -43,5 +43,16 @@ const regions = [
 <style scoped>
 .label {
   font-weight: 600 !important;
+}
+
+.regions-scroll {
+  overflow-x: auto;
+  white-space: nowrap;
+  display: block;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}
+.regions-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }
 </style>
