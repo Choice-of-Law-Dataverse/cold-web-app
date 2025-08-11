@@ -115,15 +115,23 @@ function selectAnswer(answer) {
 }
 
 function splitIntoThreeLines(items) {
-  // Keep strict alphabetical order left-to-right, top-to-bottom by
-  // splitting the already-sorted list into three contiguous rows.
+  // Split already-sorted items into 3 contiguous rows with equal counts when possible.
+  // Any remainder (n % 3) is distributed to the first rows to keep them balanced.
   const n = items.length
-  const first = Math.ceil(n / 3)
-  const second = Math.ceil((n - first) / 2)
+  const base = Math.floor(n / 3)
+  const rem = n % 3 // 0,1,2
+
+  const size1 = base + (rem > 0 ? 1 : 0)
+  const size2 = base + (rem > 1 ? 1 : 0)
+  const size3 = n - size1 - size2
+
+  const firstEnd = size1
+  const secondEnd = size1 + size2
+
   return [
-    items.slice(0, first),
-    items.slice(first, first + second),
-    items.slice(first + second),
+    items.slice(0, firstEnd),
+    items.slice(firstEnd, secondEnd),
+    items.slice(secondEnd),
   ]
 }
 </script>
