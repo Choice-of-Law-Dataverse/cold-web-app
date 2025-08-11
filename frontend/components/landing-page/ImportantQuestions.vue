@@ -19,19 +19,25 @@
               {{ option }}
             </span>
           </h3>
-          <div v-if="selectedAnswer && countries.length">
-            <div v-for="country in countries" :key="country">
-              {{ country }}
-            </div>
+          <div>
+            <p class="label mt-4 mb-4 regions-scroll">
+              <span v-for="(region, idx) in regions" :key="region" class="mr-4">
+                {{ region }}
+              </span>
+            </p>
           </div>
-        </div>
-
-        <div>
-          <p class="label mt-4 regions-scroll">
-            <span v-for="(region, idx) in regions" :key="region" class="mr-4">
-              {{ region }}
+          <div
+            v-if="selectedAnswer && countries.length"
+            class="countries-scroll mt-2"
+          >
+            <span
+              v-for="country in countries"
+              :key="country"
+              class="country-item"
+            >
+              {{ country }}
             </span>
-          </p>
+          </div>
         </div>
       </div>
     </div>
@@ -112,5 +118,23 @@ function selectAnswer(answer) {
 }
 .regions-scroll::-webkit-scrollbar {
   display: none; /* Chrome, Safari, Opera */
+}
+
+.countries-scroll {
+  display: flex;
+  flex-wrap: wrap;
+  max-height: calc(3 * 2.2em); /* 3 lines, adjust line height as needed */
+  overflow-x: auto;
+  overflow-y: hidden;
+  gap: 1em;
+  align-items: flex-start;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.countries-scroll::-webkit-scrollbar {
+  display: none;
+}
+.country-item {
+  white-space: nowrap;
 }
 </style>
