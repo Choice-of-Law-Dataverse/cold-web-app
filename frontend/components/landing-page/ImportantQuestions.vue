@@ -83,7 +83,9 @@ async function fetchCountries() {
     })
     if (!res.ok) throw new Error('API error')
     const data = await res.json()
-    countries.value = data.map((item) => item.Jurisdictions)
+    countries.value = data
+      .filter((item) => item['Jurisdictions Irrelevant'] !== 'True')
+      .map((item) => item.Jurisdictions)
   } catch (e) {
     countries.value = ['Error loading countries']
   }
