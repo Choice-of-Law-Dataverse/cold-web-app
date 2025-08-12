@@ -188,3 +188,6 @@ frontend/assets/access_key.txt
 # R
 *.rds
 *.Rhistory
+
+# bruno
+backend/bruno/*
