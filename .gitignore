@@ -191,3 +191,6 @@ frontend/assets/access_key.txt
 
 # bruno
 backend/bruno/*
+
+# data
+backend/*.csv
