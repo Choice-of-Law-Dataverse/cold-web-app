@@ -24,7 +24,9 @@
       "Questions": "Questions",
       "Answers Link": "Answers_Link",
       "Answers Question": "Answers_Question",
-      "Text_of_the_Relevant_Legal_Provisions": "Text_of_the_Relevant_Legal_Provisions"
+      "Text_of_the_Relevant_Legal_Provisions": "Text_of_the_Relevant_Legal_Provisions",
+      "Quote": "Quote",
+      "Case_Rank": "Case_Rank"
     },
     "conditional_mappings": {
       "sort_date": {

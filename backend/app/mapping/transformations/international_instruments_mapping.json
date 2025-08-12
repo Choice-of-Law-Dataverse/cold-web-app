@@ -23,7 +23,8 @@
       "Entry Into Force": "Entry_Into_Force",
       "Publication Date": "Publication_Date",
       "Relevant Provisions": "Relevant_Provisions",
-      "Full Text of the Provisions": "Full_Text_of_the_Provisions"
+      "Full Text of the Provisions": "Full_Text_of_the_Provisions",
+      "Name": "Name"
     },
     "conditional_mappings": {
       "sort_date": {
