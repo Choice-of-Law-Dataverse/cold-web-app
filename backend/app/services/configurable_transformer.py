@@ -315,6 +315,21 @@ class ConfigurableTransformer:
                 # For nested mappings, we can't directly reverse map since they come from arrays
                 # But we can at least note the relationship
                 reverse_mapping[target_field] = f"{mapping_config.get('source_array')}.{source_field}"
+
+            # Include array_operations (e.g., joins) to allow filtering by user-faced aggregated names
+            array_ops = mapping_config.get('array_operations', {})
+            for target_field, op_cfg in array_ops.items():
+                # Map to underlying array field path for reverse lookup
+                field = op_cfg.get('field')
+                if field:
+                    reverse_mapping[target_field] = f"{mapping_config.get('source_array')}.{field}"
+
+            # Include nested boolean_mappings
+            boolean_mappings = mapping_config.get('boolean_mappings', {})
+            for target_field, boolean_config in boolean_mappings.items():
+                src = boolean_config.get('source_field')
+                if src:
+                    reverse_mapping[target_field] = f"{mapping_config.get('source_array')}.{src}"
         
         return reverse_mapping
 

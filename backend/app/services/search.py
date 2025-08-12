@@ -1,8 +1,10 @@
 import json
+from typing import Any, Dict, List, Tuple
 from app.config import config
 from app.services.database import Database
-from app.services.nocodb import NocoDBService
 from app.services.transformers import DataTransformerFactory
+from app.services.configurable_transformer import get_configurable_transformer
+from app.services.mapping_repository import get_mapping_repository
 import logging
 
 # logger for this module
@@ -13,11 +15,167 @@ class SearchService:
     def __init__(self):
         self.db = Database(config.SQL_CONN_STRING)
         self.test = config.TEST
-        # initialize NocoDB service for data augmentation
-        self.nocodb = NocoDBService(
-            base_url=config.NOCODB_BASE_URL,
-            api_token=config.NOCODB_API_TOKEN,
-        )
+        self.mapping_repo = get_mapping_repository()
+        self.configurable_transformer = get_configurable_transformer()
+
+    # ------------------------------
+    # Helper utilities
+    # ------------------------------
+    def _complete_view_for_table(self, table: str) -> str:
+        """
+        Map user-facing table names to data_views <table>_complete view names.
+        """
+        mapping = {
+            "Answers": "data_views.answers_complete",
+            "HCCH Answers": "data_views.hcch_answers_complete",
+            "Court Decisions": "data_views.court_decisions_complete",
+            "Domestic Instruments": "data_views.domestic_instruments_complete",
+            "Domestic Legal Provisions": "data_views.domestic_legal_provisions_complete",
+            "Regional Instruments": "data_views.regional_instruments_complete",
+            "Regional Legal Provisions": "data_views.regional_legal_provisions_complete",
+            "International Instruments": "data_views.international_instruments_complete",
+            "International Legal Provisions": "data_views.international_legal_provisions_complete",
+            "Literature": "data_views.literature_complete",
+            "Arbitral Awards": "data_views.arbitral_awards_complete",
+            "Jurisdictions": "data_views.jurisdictions_complete",
+            "Questions": "data_views.questions_complete",
+        }
+        view = mapping.get(table)
+        if not view:
+            raise ValueError(f"Unsupported table for full/filtered query: {table}")
+        return view
+
+    def _quote_ident(self, name: str) -> str:
+        """Quote an identifier for SQL (simple double-quote escaping)."""
+        return '"' + name.replace('"', '""') + '"'
+
+    def _quote_json_key(self, key: str) -> str:
+        """Quote a JSON object key as a SQL string literal."""
+        return "'" + key.replace("'", "''") + "'"
+
+    def _prepare_boolean_value(self, table: str, column: str, user_value: Any) -> Any:
+        """
+        If the column corresponds to a boolean mapping target in the table mapping,
+        convert user-faced value (e.g., "Yes"/"None") into boolean True/False.
+        Otherwise, return value unchanged.
+        """
+        mapping_conf = self.mapping_repo.get_mapping(table) or {}
+        bool_maps = ((mapping_conf.get('mappings') or {}).get('boolean_mappings') or {})
+        bm = bool_maps.get(column)
+        if not bm:
+            # also check nested boolean mappings (inside nested_mappings)
+            nested = ((mapping_conf.get('mappings') or {}).get('nested_mappings') or {})
+            for _k, nm in nested.items():
+                nbm = (nm or {}).get('boolean_mappings') or {}
+                if column in nbm:
+                    bm = nbm[column]
+                    break
+        if bm:
+            true_val = bm.get('true_value')
+            false_val = bm.get('false_value')
+            if isinstance(user_value, str):
+                if true_val is not None and user_value == true_val:
+                    return True
+                if false_val is not None and user_value == false_val:
+                    return False
+            # if already boolean, keep it
+            if isinstance(user_value, bool):
+                return user_value
+        return user_value
+
+    def _build_filter_sql(self, table: str, alias: str, filters) -> Tuple[str, Dict[str, Any]]:
+        """
+        Build SQL WHERE clause and params from user-faced filters using reverse mapping,
+        including nested array JSONB access for paths like related_array.Field.
+
+        Returns: (where_sql, params)
+        """
+        if not filters:
+            return "", {}
+
+        reverse_mapping = self.configurable_transformer.get_reverse_field_mapping(table) or {}
+
+        clauses: List[str] = []
+        params: Dict[str, Any] = {}
+
+        def normalize_column(col: str) -> str:
+            # Support columns ending with '?' by stripping it if needed
+            if col not in reverse_mapping and col.endswith('?'):
+                alt = col[:-1]
+                if alt in reverse_mapping:
+                    return alt
+            return col
+
+        for i, f in enumerate(filters):
+            # Support both pydantic model with attributes and plain dicts
+            col = getattr(f, 'column', None) if hasattr(f, 'column') else f.get('column')
+            raw_val = (
+                getattr(f, 'value', None) if hasattr(f, 'value') else f.get('value')
+            )
+            if col is None:
+                continue
+
+            col = normalize_column(col)
+            source_path = reverse_mapping.get(col, col)  # fall back to provided name
+            # convert boolean user-faced values if applicable
+            if isinstance(raw_val, list):
+                conv_values = [self._prepare_boolean_value(table, col, v) for v in raw_val]
+            else:
+                conv_values = [self._prepare_boolean_value(table, col, raw_val)]
+
+            # Build OR for multiple values
+            or_parts: List[str] = []
+            for j, v in enumerate(conv_values):
+                p_name = f"p_{i}_{j}"
+                # Nested path: e.g., related_jurisdictions.Name
+                if '.' in source_path:
+                    arr_name, field_name = source_path.split('.', 1)
+                    arr_sql = f"{alias}.{self._quote_ident(arr_name)}"
+                    # EXISTS over jsonb array
+                    if isinstance(v, str):
+                        or_parts.append(
+                            f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE elem->>{self._quote_json_key(field_name)} ILIKE '%' || :{p_name} || '%')"
+                        )
+                        params[p_name] = v
+                    elif isinstance(v, bool):
+                        # Compare boolean by casting text to boolean
+                        or_parts.append(
+                            f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE (elem->>{self._quote_json_key(field_name)})::boolean = :{p_name})"
+                        )
+                        params[p_name] = v
+                    elif isinstance(v, (int, float)):
+                        # numeric compare: cast to numeric where possible
+                        or_parts.append(
+                            f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE (elem->>{self._quote_json_key(field_name)})::numeric = :{p_name})"
+                        )
+                        params[p_name] = v
+                    else:
+                        # fallback to text match
+                        or_parts.append(
+                            f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE elem->>{self._quote_json_key(field_name)} = :{p_name})"
+                        )
+                        params[p_name] = str(v)
+                else:
+                    col_sql = f"{alias}.{self._quote_ident(source_path)}"
+                    if isinstance(v, str):
+                        or_parts.append(f"{col_sql} ILIKE '%' || :{p_name} || '%'")
+                        params[p_name] = v
+                    elif isinstance(v, bool):
+                        or_parts.append(f"{col_sql} = :{p_name}")
+                        params[p_name] = v
+                    elif isinstance(v, (int, float)):
+                        or_parts.append(f"{col_sql} = :{p_name}")
+                        params[p_name] = v
+                    else:
+                        # fallback as text equality
+                        or_parts.append(f"{col_sql}::text = :{p_name}")
+                        params[p_name] = json.dumps(v)
+
+            if or_parts:
+                clauses.append('(' + ' OR '.join(or_parts) + ')')
+
+        where_sql = (' WHERE ' + ' AND '.join(clauses)) if clauses else ''
+        return where_sql, params
 
     def curated_details_search(self, table, cold_id):
         """
@@ -74,162 +232,54 @@ class SearchService:
 
     def full_table(self, table):
         """
-        Fetch all records from a table using the NocoDB API and transform them to flat structure.
+        Fetch all records from a table directly via SQL (data_views.*_complete) and transform.
         """
         try:
-            data = self.nocodb.list_rows(table)
-            
-            # Transform each record to flat structure similar to other search functions
-            transformed_results = []
-            for raw_record in data:
-                # Create flat record with consistent structure
-                flat_record = {
-                    "source_table": table,
-                    "id": raw_record.get("Id"),
-                    "cold_id": raw_record.get("CoLD ID"),
-                }
-                
-                # Add all other fields from the raw record, avoiding id collision
-                for key, value in raw_record.items():
-                    if key == "Id":  # Skip the Id field since we already mapped it
+            view = self._complete_view_for_table(table)
+            sql = f"SELECT c.id AS record_id, to_jsonb(c.*) AS complete_record FROM {view} c"
+            rows = self.db.execute_query(sql, {}) or []
+
+            results: List[Dict[str, Any]] = []
+            for row in rows:
+                complete = row.get("complete_record") or {}
+                # Flatten: start with metadata, then merge complete_record fields
+                flat = {"source_table": table, "id": row.get("record_id")}
+                for k, v in complete.items():
+                    if k == "id":
                         continue
-                    flat_record[key] = value
-                
-                # Apply transformation using the appropriate transformer
-                transformed_record = DataTransformerFactory.transform_result(table, flat_record)
-                transformed_results.append(transformed_record)
-            
-            return transformed_results
+                    flat[k] = v
+                transformed = DataTransformerFactory.transform_result(table, flat)
+                results.append(transformed)
+            return results
         except Exception as e:
-            logger.error("Error listing records from table %s: %s", table, e)
+            logger.error("Error querying full table %s: %s", table, e)
             return []
 
     def filtered_table(self, table, filters):
         """
-        Fetch and filter records from a table using the NocoDB API and transform them to flat structure.
+        Fetch and filter records from a table using SQL with mapping-aware filters, then transform.
         """
         try:
-            rows = self.nocodb.list_rows(table)
+            view = self._complete_view_for_table(table)
+            alias = 'c'
+            where_sql, params = self._build_filter_sql(table, alias, filters)
+            sql = f"SELECT {alias}.id AS record_id, to_jsonb({alias}.*) AS complete_record FROM {view} {alias}{where_sql}"
+            rows = self.db.execute_query(sql, params) or []
+
+            results: List[Dict[str, Any]] = []
+            for row in rows:
+                complete = row.get("complete_record") or {}
+                flat = {"source_table": table, "id": row.get("record_id")}
+                for k, v in complete.items():
+                    if k == "id":
+                        continue
+                    flat[k] = v
+                transformed = DataTransformerFactory.transform_result(table, flat)
+                results.append(transformed)
+            return results
         except Exception as e:
-            logger.error("Error listing records from table %s: %s", table, e)
+            logger.error("Error querying filtered table %s with filters %s: %s", table, filters, e)
             return []
-        
-        if not filters:
-            # No filters, transform all records
-            transformed_results = []
-            for raw_record in rows:
-                # Create flat record with consistent structure
-                flat_record = {
-                    "source_table": table,
-                    "id": raw_record.get("Id"),
-                    "cold_id": raw_record.get("CoLD ID"),
-                }
-                
-                # Add all other fields from the raw record, avoiding id collision
-                for key, value in raw_record.items():
-                    if key == "Id":  # Skip the Id field since we already mapped it
-                        continue
-                    flat_record[key] = value
-                
-                # Apply transformation using the appropriate transformer
-                transformed_record = DataTransformerFactory.transform_result(table, flat_record)
-                transformed_results.append(transformed_record)
-            
-            return transformed_results
-        
-        # Get reverse field mapping to convert filter column names from transformed names to source names
-        from app.services.configurable_transformer import get_configurable_transformer
-        transformer = get_configurable_transformer()
-        reverse_mapping = transformer.get_reverse_field_mapping(table)
-        
-        # Apply filters and transform matching records
-        results = []
-        for raw in rows:
-            # ensure each row is a dict; parse JSON strings if necessary
-            if isinstance(raw, str):
-                try:
-                    row = json.loads(raw)
-                except Exception:
-                    continue
-            elif isinstance(raw, dict):
-                row = raw
-            else:
-                continue
-            
-            match = True
-            for filter_item in filters:
-                column = filter_item.column
-                value = filter_item.value
-                
-                # Try to reverse-map the column name from transformed name to source name
-                source_column = reverse_mapping.get(column, column)
-                
-                # Also try with question mark suffix removed (for boolean fields)
-                if source_column == column and column.endswith('?'):
-                    source_column_without_q = column[:-1]
-                    source_column = reverse_mapping.get(source_column_without_q, column)
-                
-                cell = row.get(source_column)
-                if cell is None:
-                    match = False
-                    break
-                # handle lookup/list fields
-                if isinstance(cell, list):
-                    # string matching in list elements
-                    if isinstance(value, str):
-                        found = False
-                        for elem in cell:
-                            if isinstance(elem, dict):
-                                for v in elem.values():
-                                    if isinstance(v, str) and value.lower() in v.lower():
-                                        found = True; break
-                                if found: break
-                            elif isinstance(elem, str) and value.lower() in elem.lower():
-                                found = True; break
-                        if not found:
-                            match = False; break
-                    # numeric or boolean matching in list elements
-                    elif isinstance(value, (int, float, bool)):
-                        found = False
-                        for elem in cell:
-                            if elem == value or (isinstance(elem, dict) and elem.get('id') == value):
-                                found = True; break
-                        if not found:
-                            match = False; break
-                    else:
-                        raise ValueError(f"Unsupported filter type for column {column}: {value}")
-                    continue
-                # scalar fields
-                if isinstance(value, str):
-                    if not isinstance(cell, str) or value.lower() not in cell.lower():
-                        match = False
-                        break
-                elif isinstance(value, (int, float, bool)):
-                    if cell != value:
-                        match = False
-                        break
-                else:
-                    raise ValueError(f"Unsupported filter type for column {column}: {value}")
-            
-            if match:
-                # Transform the matching record to flat structure
-                flat_record = {
-                    "source_table": table,
-                    "id": row.get("Id"),
-                    "cold_id": row.get("CoLD ID"),
-                }
-                
-                # Add all other fields from the raw record, avoiding id collision
-                for key, value in row.items():
-                    if key == "Id":  # Skip the Id field since we already mapped it
-                        continue
-                    flat_record[key] = value
-                
-                # Apply transformation using the appropriate transformer
-                transformed_record = DataTransformerFactory.transform_result(table, flat_record)
-                results.append(transformed_record)
-        
-        return results
 
     """
     =======================================================================
