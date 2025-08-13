@@ -26,7 +26,15 @@
       "Answers Question": "Answers_Question",
       "Text_of_the_Relevant_Legal_Provisions": "Text_of_the_Relevant_Legal_Provisions",
       "Quote": "Quote",
-      "Case_Rank": "Case_Rank"
+      "Case Rank": "Case_Rank",
+      "English Translation": "English_Translation",
+      "Choice of Law Issue": "Choice_of_Law_Issue",
+      "Court's Position": "Court's_Position",
+      "Translated Excerpt": "Translated_Excerpt",
+      "Relevant Facts": "Relevant_Facts",
+      "Date of Judgment": "Date_of_Judgment",
+      "PIL Provisions": "PIL_Provisions",
+      "Original Text": "Original_Text"
     },
     "conditional_mappings": {
       "sort_date": {
