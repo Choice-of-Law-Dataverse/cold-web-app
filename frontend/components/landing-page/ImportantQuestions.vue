@@ -46,11 +46,12 @@
                 v-for="(line, li) in countriesLines"
                 :key="li"
               >
-                <span
+                <a
                   v-for="country in line"
-                  :key="country"
+                  :key="country.code"
                   class="country-item label-jurisdiction"
-                  >{{ country }}</span
+                  :href="`/question/${country.code}_01-P`"
+                  >{{ country.name }}</a
                 >
               </div>
             </div>
@@ -116,9 +117,13 @@ async function fetchCountries() {
         (item) => item['Jurisdictions Region'] === selectedRegion.value
       )
     }
+    // Map to objects with name and code, then sort by name
     const list = filtered
-      .map((item) => item.Jurisdictions)
-      .sort((a, b) => a.localeCompare(b))
+      .map((item) => ({
+        name: item.Jurisdictions,
+        code: item['Jurisdictions Alpha-3 code'],
+      }))
+      .sort((a, b) => a.name.localeCompare(b.name))
     countries.value = list
     countriesLines.value = splitIntoThreeLines(list)
   } catch (e) {
