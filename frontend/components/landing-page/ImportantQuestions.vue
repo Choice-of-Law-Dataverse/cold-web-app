@@ -49,7 +49,7 @@
                 <span
                   v-for="country in line"
                   :key="country"
-                  class="country-item"
+                  class="country-item label-jurisdiction"
                   >{{ country }}</span
                 >
               </div>
@@ -200,7 +200,7 @@ function splitIntoThreeLines(items) {
 }
 .country-item {
   display: inline-block;
-  margin-right: 1em;
+  margin-right: 0em !important;
   margin-bottom: 0.5em;
   white-space: nowrap;
 }
