@@ -22,7 +22,7 @@
       "Legal Family": "Legal_Family"
     },
     "boolean_mappings": {
-      "Irrelevant": {
+      "Irrelevant?": {
         "source_field": "Irrelevant_",
         "true_value": true,
         "false_value": false

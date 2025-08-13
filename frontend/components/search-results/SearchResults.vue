@@ -311,7 +311,7 @@ const loadJurisdictions = async () => {
     jurisdictionOptions.value = [
       { label: 'All Jurisdictions' },
       ...jurisdictionsData
-        .filter((entry) => entry['Irrelevant?'] === null)
+        .filter((entry) => entry['Irrelevant?'] === false)
         .map((entry) => ({
           label: entry.Name,
           avatar: entry['Alpha-3 Code']
