@@ -52,7 +52,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRuntimeConfig } from '#imports'
 
 const answers = ['Yes', 'No']
@@ -67,7 +67,7 @@ const regions = [
   'Middle East',
 ]
 
-const selectedAnswer = ref('')
+const selectedAnswer = ref('Yes')
 const countries = ref([])
 const countriesLines = ref([])
 const config = useRuntimeConfig()
@@ -113,6 +113,10 @@ function selectAnswer(answer) {
   selectedAnswer.value = answer
   fetchCountries()
 }
+
+onMounted(() => {
+  fetchCountries()
+})
 
 function splitIntoThreeLines(items) {
   // Split already-sorted items into 3 contiguous rows with equal counts when possible.
