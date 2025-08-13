@@ -21,7 +21,17 @@
           </h3>
           <div>
             <p class="label mt-4 mb-4 regions-scroll">
-              <span v-for="(region, idx) in regions" :key="region" class="mr-4">
+              <span
+                v-for="(region, idx) in regions"
+                :key="region"
+                class="mr-4 region-label"
+                :style="{
+                  color: selectedRegion === region ? '#2563eb' : '',
+                  cursor: 'pointer',
+                  fontWeight: selectedRegion === region ? 'bold' : 'normal',
+                }"
+                @click="selectRegion(region)"
+              >
                 {{ region }}
               </span>
             </p>
@@ -68,6 +78,7 @@ const regions = [
 ]
 
 const selectedAnswer = ref('Yes')
+const selectedRegion = ref('All')
 const countries = ref([])
 const countriesLines = ref([])
 const config = useRuntimeConfig()
@@ -97,8 +108,15 @@ async function fetchCountries() {
     })
     if (!res.ok) throw new Error('API error')
     const data = await res.json()
-    const list = data
-      .filter((item) => item['Jurisdictions Irrelevant'] !== 'True')
+    let filtered = data.filter(
+      (item) => item['Jurisdictions Irrelevant'] !== 'True'
+    )
+    if (selectedRegion.value !== 'All') {
+      filtered = filtered.filter(
+        (item) => item['Jurisdictions Region'] === selectedRegion.value
+      )
+    }
+    const list = filtered
       .map((item) => item.Jurisdictions)
       .sort((a, b) => a.localeCompare(b))
     countries.value = list
@@ -111,6 +129,11 @@ async function fetchCountries() {
 
 function selectAnswer(answer) {
   selectedAnswer.value = answer
+  fetchCountries()
+}
+
+function selectRegion(region) {
+  selectedRegion.value = region
   fetchCountries()
 }
 
@@ -180,5 +203,10 @@ function splitIntoThreeLines(items) {
   margin-right: 1em;
   margin-bottom: 0.5em;
   white-space: nowrap;
+}
+.region-label {
+  transition:
+    color 0.2s,
+    font-weight 0.2s;
 }
 </style>
