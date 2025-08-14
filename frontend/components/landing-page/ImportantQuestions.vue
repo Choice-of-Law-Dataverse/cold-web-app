@@ -10,11 +10,9 @@
             <span
               v-for="(option, idx) in answers"
               :key="option"
-              class="mr-4 cursor-pointer"
+              class="mr-4 cursor-pointer answer-option"
+              :class="{ 'selected-answer': selectedAnswer === option }"
               @click="selectAnswer(option)"
-              :style="{
-                fontWeight: selectedAnswer === option ? 'bold' : 'normal',
-              }"
             >
               {{ option }}
             </span>
@@ -289,5 +287,12 @@ function splitIntoThreeLines(items) {
     white,
     transparent
   ); /* Ensure fade-out effect */
+}
+.answer-option {
+  padding-bottom: 2px;
+  border-bottom: 2px solid transparent;
+}
+.selected-answer {
+  border-bottom: 2px solid var(--color-cold-purple);
 }
 </style>
