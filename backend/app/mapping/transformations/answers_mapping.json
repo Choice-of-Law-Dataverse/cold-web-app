@@ -13,7 +13,10 @@
       "Record ID": "ncRecordId",
       "Last Modified": "updated_at",
       "Last Modified By.id": "updated_by",
-      "Created By.id": "created_by"
+  "Created By.id": "created_by",
+  "To Review?": "To_Review_",
+  "OUP Book Quote": "OUP_Book_Quote",
+  "More Information": "More_Information"
     },
     "conditional_mappings": {
       "sort_date": {
@@ -22,7 +25,7 @@
       }
     },
     "nested_mappings": {
-      "related_questions": {
+  "related_questions": {
         "source_array": "related_questions",
         "index": 0,
         "mappings": {
@@ -32,8 +35,8 @@
         },
         "conditional_mappings": {
           "Questions Theme Code": {
-            "primary": "Primary_Theme",
-            "fallback": "Theme_Code"
+    "primary": "Theme_Code",
+    "fallback": "Primary_Theme"
           }
         }
       },
@@ -52,6 +55,43 @@
             "true_value": "Yes",
             "false_value": "None"
           }
+        }
+      },
+      "hop1_relations.related_court_decisions": {
+        "source_array": "hop1_relations.related_court_decisions",
+        "array_operations": {
+          "Court Decisions": {
+            "operation": "join",
+            "field": "Title",
+            "separator": ","
+          },
+          "Court Decisions Link": {
+            "operation": "join",
+            "field": "ncRecordId",
+            "separator": ","
+          },
+          "Court Decisions ID": {
+            "operation": "join",
+            "field": "CoLD_ID",
+            "separator": ","
+          }
+        }
+      },
+      "hop1_relations.related_domestic_instruments": {
+        "source_array": "hop1_relations.related_domestic_instruments",
+        "index": 0,
+        "mappings": {
+          "Domestic Instruments Link": "ncRecordId",
+          "Domestic Instruments": "Official_Title",
+          "Domestic Instruments ID": "CoLD_ID"
+        }
+      },
+      "hop1_relations.related_domestic_legal_provisions": {
+        "source_array": "hop1_relations.related_domestic_legal_provisions",
+        "index": 0,
+        "mappings": {
+          "Domestic Legal Provisions Link": "ncRecordId",
+          "Domestic Legal Provisions": "CoLD_ID"
         }
       },
       "related_themes": {
