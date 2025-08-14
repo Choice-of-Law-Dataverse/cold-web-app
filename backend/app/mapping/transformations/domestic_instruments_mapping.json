@@ -20,7 +20,8 @@
       "Created By.id": "created_by",
       "Entry Into Force": "Entry_Into_Force",
       "Publication Date": "Publication_Date",
-      "Full Text of the Provisions": "Full_Text_of_the_Provisions"
+      "Full Text of the Provisions": "Full_Text_of_the_Provisions",
+      "Official Title": "Official_Title"
     },
     "conditional_mappings": {
       "sort_date": {
