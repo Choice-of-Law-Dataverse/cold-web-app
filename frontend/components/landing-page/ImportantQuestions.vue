@@ -19,7 +19,7 @@
               {{ option }}
             </span>
           </h3>
-          <div>
+          <div style="position: relative">
             <p class="label mt-4 mb-4 regions-scroll">
               <span
                 v-for="(region, idx) in regions"
@@ -35,10 +35,12 @@
                 {{ region }}
               </span>
             </p>
+            <div class="fade-out fade-out-region"></div>
           </div>
           <div
             v-if="selectedAnswer && countriesLines.length"
             class="countries-scroll mt-2"
+            style="position: relative"
           >
             <div class="countries-lines">
               <div
@@ -66,6 +68,7 @@
                 </a>
               </div>
             </div>
+            <div class="fade-out fade-out-countries"></div>
           </div>
         </div>
       </div>
@@ -232,5 +235,23 @@ function splitIntoThreeLines(items) {
   transition:
     color 0.2s,
     font-weight 0.2s;
+}
+.fade-out {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 100%;
+  background: linear-gradient(to left, white, transparent);
+  pointer-events: none;
+  z-index: 10;
+}
+.fade-out-region {
+  height: 2.2em;
+  right: 0;
+}
+.fade-out-countries {
+  height: 100%;
+  right: 0;
 }
 </style>
