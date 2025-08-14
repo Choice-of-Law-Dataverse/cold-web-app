@@ -39,7 +39,7 @@
           </div>
           <div
             v-if="selectedAnswer && countriesLines.length"
-            class="countries-scroll mt-2"
+            class="countries-scroll mt-2 countries-scroll-fade-container"
             style="position: relative"
           >
             <div class="countries-lines">
@@ -67,8 +67,9 @@
                   {{ country.name }}
                 </a>
               </div>
+              <div class="end-spacer" aria-hidden="true"></div>
             </div>
-            <div class="fade-out fade-out-countries"></div>
+            <div class="fade-out fade-out-countries countries-fade-fixed"></div>
           </div>
         </div>
       </div>
@@ -203,33 +204,49 @@ function splitIntoThreeLines(items) {
 }
 
 .countries-scroll {
-  overflow-x: auto;
+  overflow-x: hidden; /* viewport only; inner handles scroll */
   overflow-y: hidden;
-  max-height: 6.6em; /* 3 lines * 2.2em */
+  position: relative;
+}
+
+.countries-scroll-fade-container {
+  --fade-width: 60px;
+}
+
+.countries-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75em;
+  overflow-x: auto; /* Scrollable element */
   scrollbar-width: none;
   -ms-overflow-style: none;
+  padding-right: calc(
+    var(--fade-width) + 24px
+  ); /* space so last item clears fade */
 }
-.countries-scroll::-webkit-scrollbar {
+.countries-lines::-webkit-scrollbar {
   display: none;
 }
-.countries-lines {
-  display: inline-flex;
-  flex-direction: column;
-  gap: 0.5em;
-}
+
 .countries-line {
   display: inline-flex;
-  gap: 1em;
+  gap: 0.1em;
 }
-.country-item {
-  display: inline-block;
-  margin-right: 0em !important;
-  margin-bottom: 0.5em;
-  white-space: nowrap;
+
+/* Remove previous hack spacer */
+.countries-line::after {
+  content: none;
 }
-.country-link-flex {
-  display: inline-flex;
-  align-items: center;
+
+.end-spacer {
+  flex: 0 0 1px;
+  width: 1px;
+  height: 1px;
+}
+
+/* Remove outdated negative margin rule if still present */
+.countries-lines {
+  margin-right: 0 !important;
 }
 .region-label {
   transition:
@@ -253,5 +270,26 @@ function splitIntoThreeLines(items) {
 .fade-out-countries {
   height: 100%;
   right: 0;
+}
+.countries-scroll-fade-container {
+  position: relative;
+  overflow: hidden; /* Ensure the fade-out stays fixed */
+}
+.countries-lines {
+  overflow-x: auto; /* Allow scrolling within the container */
+}
+.countries-fade-fixed {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(
+    to left,
+    white,
+    transparent
+  ); /* Ensure fade-out effect */
 }
 </style>
