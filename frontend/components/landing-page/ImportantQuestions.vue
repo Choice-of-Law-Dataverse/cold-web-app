@@ -173,6 +173,10 @@ function splitIntoThreeLines(items) {
   font-weight: 600 !important;
 }
 
+.label-jurisdiction {
+  color: var(--color-cold-night) !important;
+}
+
 .regions-scroll {
   overflow-x: auto;
   white-space: nowrap;
