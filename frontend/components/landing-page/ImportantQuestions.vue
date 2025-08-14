@@ -49,10 +49,21 @@
                 <a
                   v-for="country in line"
                   :key="country.code"
-                  class="country-item label-jurisdiction"
+                  class="country-item label-jurisdiction country-link-flex"
                   :href="`/question/${country.code}_01-P`"
-                  >{{ country.name }}</a
                 >
+                  <img
+                    :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
+                    style="height: 12px; margin-right: 6px; margin-bottom: 2px"
+                    :alt="country.code + ' flag'"
+                    @error="
+                      (e) => {
+                        e.target.style.display = 'none'
+                      }
+                    "
+                  />
+                  {{ country.name }}
+                </a>
               </div>
             </div>
           </div>
@@ -212,6 +223,10 @@ function splitIntoThreeLines(items) {
   margin-right: 0em !important;
   margin-bottom: 0.5em;
   white-space: nowrap;
+}
+.country-link-flex {
+  display: inline-flex;
+  align-items: center;
 }
 .region-label {
   transition:
