@@ -106,10 +106,23 @@ class ConfigurableTransformer:
         """Apply nested field mappings for related data."""
         for mapping_name, mapping_config in nested_mappings.items():
             source_array_name = mapping_config.get('source_array')
-            if not source_array_name or source_array_name not in source_data:
+            if not source_array_name:
                 continue
-            
-            source_array = source_data[source_array_name]
+
+            # Support dotted paths, e.g., 'hop1_relations.related_items'
+            def _resolve_path(data, path: str):
+                cur = data
+                for part in path.split('.'):
+                    if isinstance(cur, dict) and part in cur:
+                        cur = cur[part]
+                    else:
+                        return None
+                return cur
+
+            source_array = (
+                source_data.get(source_array_name)
+                if source_array_name in source_data else _resolve_path(source_data, source_array_name)
+            )
             if not isinstance(source_array, list) or not source_array:
                 continue
             

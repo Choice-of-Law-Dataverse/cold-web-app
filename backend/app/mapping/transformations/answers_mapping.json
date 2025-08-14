@@ -62,7 +62,7 @@
         "array_operations": {
           "Court Decisions": {
             "operation": "join",
-            "field": "Title",
+            "field": "Case_Title",
             "separator": ","
           },
           "Court Decisions Link": {
