@@ -910,6 +910,14 @@ BEGIN
         JOIN data_views.answers search_view ON search_view.id = a.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'Answers' = ANY(filter_tables))
+        -- THE FOLLOWING BLOCK REMOVES ALL ANSWERS WHERE THE JURISDICTION IS IRRELEVANT!
+        --
+        AND NOT EXISTS (
+            SELECT 1 FROM jsonb_array_elements(a.related_jurisdictions) AS elem
+            WHERE COALESCE((elem->>'Irrelevant_')::boolean, FALSE) = TRUE
+        )
+        --
+        --
           AND (filter_jurisdictions IS NULL OR EXISTS (
                SELECT 1 FROM unnest(filter_jurisdictions) AS jf
                WHERE search_view."Jurisdictions" ILIKE '%'||jf||'%'
