@@ -285,7 +285,31 @@ SELECT
         FROM p1q5x3pj29vkrdr."_nc_m2m_HCCH_Answers_International_I" haii
         JOIN p1q5x3pj29vkrdr."HCCH_Answers" ha ON ha.id = haii."HCCH_Answers_id"
         WHERE haii."International_Instruments_id" = ii.id
-    ) AS related_hcch_answers
+    ) AS related_hcch_answers,
+    (
+        SELECT jsonb_agg(
+                   to_jsonb(ilp)
+                   || jsonb_build_object(
+                        'CoLD_ID',
+                        ('II-' || LEFT(ii."Name", 3) || '-' || ii."ID_Number" || ' ' || ilp."Provision")
+                   )
+               )
+        FROM p1q5x3pj29vkrdr."_nc_m2m_International_I_International_L" miil
+        JOIN p1q5x3pj29vkrdr."International_Legal_Provisions" ilp ON ilp.id = miil."International_Legal_Provisions_id"
+        WHERE miil."International_Instruments_id" = ii.id
+    ) AS related_legal_provisions,
+    (
+        SELECT jsonb_agg(
+                   to_jsonb(l)
+                   || jsonb_build_object(
+                        'CoLD_ID',
+                        ('L-' || l."ID_Number")
+                   )
+               )
+        FROM p1q5x3pj29vkrdr."_nc_m2m_International_I_Literature" mil
+        JOIN p1q5x3pj29vkrdr."Literature" l ON l.id = mil."Literature_id"
+        WHERE mil."International_Instruments_id" = ii.id
+    ) AS related_literature
 FROM p1q5x3pj29vkrdr."International_Instruments" ii;
 
 CREATE UNIQUE INDEX idx_international_instruments_complete_id ON data_views.international_instruments_complete(id);
@@ -300,8 +324,9 @@ SELECT
 FROM p1q5x3pj29vkrdr."International_Legal_Provisions" ilp
 LEFT JOIN LATERAL (
     SELECT ('II-' || LEFT(ii."Name", 3) || '-' || ii."ID_Number") AS "CoLD_ID"
-    FROM p1q5x3pj29vkrdr."International_Instruments" ii
-    WHERE ii.id = ilp.id
+    FROM p1q5x3pj29vkrdr."_nc_m2m_International_I_International_L" miil
+    JOIN p1q5x3pj29vkrdr."International_Instruments" ii ON ii.id = miil."International_Instruments_id"
+    WHERE miil."International_Legal_Provisions_id" = ilp.id
     LIMIT 1
 ) ii_cold ON true;
 
@@ -1152,7 +1177,9 @@ BEGIN
         SELECT 
             jsonb_build_object(
                 'related_specialists', ii.related_specialists,
-                'related_hcch_answers', ii.related_hcch_answers
+                'related_hcch_answers', ii.related_hcch_answers,
+                'related_legal_provisions', ii.related_legal_provisions,
+                'related_literature', ii.related_literature
             )
         INTO hop1
         FROM data_views.international_instruments_complete ii

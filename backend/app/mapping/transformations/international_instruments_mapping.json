@@ -59,6 +59,51 @@
             "separator": ","
           }
         }
+      },
+      "related_legal_provisions": {
+        "source_array": "related_legal_provisions",
+        "array_operations": {
+          "International Legal Provisions": {
+            "operation": "join",
+            "field": "CoLD_ID",
+            "separator": ","
+          },
+          "International Legal Provisions Link": {
+            "operation": "join",
+            "field": "ncRecordId",
+            "separator": ","
+          }
+        }
+      },
+      "related_literature": {
+        "source_array": "related_literature",
+        "array_operations": {
+          "Literature": {
+            "operation": "join",
+            "field": "CoLD_ID",
+            "separator": ","
+          },
+          "Literature Link": {
+            "operation": "join",
+            "field": "ncRecordId",
+            "separator": ","
+          }
+        }
+      },
+      "related_hcch_answers": {
+        "source_array": "related_hcch_answers",
+        "array_operations": {
+          "HCCH Answers": {
+            "operation": "join",
+            "field": "Adapted_Question",
+            "separator": ","
+          },
+          "HCCH Answers Link": {
+            "operation": "join",
+            "field": "ncRecordId",
+            "separator": ","
+          }
+        }
       }
     },
     "complex_mappings": {
