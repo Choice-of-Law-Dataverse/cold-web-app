@@ -121,7 +121,55 @@ SELECT
         FROM p1q5x3pj29vkrdr."_nc_m2m_Answers_Literature" al
         JOIN p1q5x3pj29vkrdr."Literature" l ON l.id = al."Literature_id"
         WHERE al."Answers_id" = a.id
-    ) AS related_literature
+    ) AS related_literature,
+    (
+        SELECT jsonb_agg(
+            to_jsonb(di) || jsonb_build_object(
+                'CoLD_ID', (
+                    'DI-' || COALESCE(jdi."Alpha_3_Code", '') || '-' || COALESCE(di."ID_Number"::text, '')
+                )
+            )
+        )
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Answers_Domestic_Instru" adi
+        JOIN p1q5x3pj29vkrdr."Domestic_Instruments" di ON di.id = adi."Domestic_Instruments_id"
+        LEFT JOIN LATERAL (
+            SELECT j."Alpha_3_Code"
+            FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Domestic_Instru" jdi
+            JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = jdi."Jurisdictions_id"
+            WHERE jdi."Domestic_Instruments_id" = di.id
+            LIMIT 1
+        ) jdi ON true
+        WHERE adi."Answers_id" = a.id
+    ) AS related_domestic_instruments,
+    (
+        SELECT jsonb_agg(
+            to_jsonb(dlp) || jsonb_build_object(
+                'CoLD_ID', (
+                    'DI-' || COALESCE(jdi."Alpha_3_Code", '') || '-' || COALESCE(di."ID_Number"::text, '') || ' ' || COALESCE(dlp."Article", '')
+                )
+            )
+        )
+        FROM (
+            SELECT dlp.id, dlp."Article", dlp."ncRecordId", dlp."created_at", dlp."updated_at", dlp."created_by", dlp."updated_by"
+            FROM p1q5x3pj29vkrdr."_nc_m2m_Answers_Domestic_Legal_" adl
+            JOIN p1q5x3pj29vkrdr."Domestic_Legal_Provisions" dlp ON dlp.id = adl."Domestic_Legal_Provisions_id"
+            WHERE adl."Answers_id" = a.id
+            UNION
+            SELECT dlp1.id, dlp1."Article", dlp1."ncRecordId", dlp1."created_at", dlp1."updated_at", dlp1."created_by", dlp1."updated_by"
+            FROM p1q5x3pj29vkrdr."_nc_m2m_Answers_Domestic_Legal_1" adl1
+            JOIN p1q5x3pj29vkrdr."Domestic_Legal_Provisions" dlp1 ON dlp1.id = adl1."Domestic_Legal_Provisions_id"
+            WHERE adl1."Answers_id" = a.id
+        ) dlp
+        LEFT JOIN p1q5x3pj29vkrdr."_nc_m2m_Domestic_Instru_Domestic_Legal_" didlp ON didlp."Domestic_Legal_Provisions_id" = dlp.id
+        LEFT JOIN p1q5x3pj29vkrdr."Domestic_Instruments" di ON di.id = didlp."Domestic_Instruments_id"
+        LEFT JOIN LATERAL (
+            SELECT j."Alpha_3_Code"
+            FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Domestic_Instru" jdi
+            JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = jdi."Jurisdictions_id"
+            WHERE jdi."Domestic_Instruments_id" = di.id
+            LIMIT 1
+        ) jdi ON true
+    ) AS related_domestic_legal_provisions
 FROM p1q5x3pj29vkrdr."Answers" a
 LEFT JOIN LATERAL (
     SELECT j."Alpha_3_Code"
@@ -1061,7 +1109,9 @@ BEGIN
                 'related_jurisdictions', a.related_jurisdictions,
                 'related_themes', a.related_themes,
                 'related_court_decisions', a.related_court_decisions,
-                'related_literature', a.related_literature
+                'related_literature', a.related_literature,
+                'related_domestic_instruments', a.related_domestic_instruments,
+                'related_domestic_legal_provisions', a.related_domestic_legal_provisions
             )
         INTO hop1
         FROM data_views.answers_complete a
