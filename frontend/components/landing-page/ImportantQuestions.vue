@@ -23,11 +23,8 @@
                 v-for="(region, idx) in regions"
                 :key="region"
                 class="mr-4 region-label"
-                :style="{
-                  color: selectedRegion === region ? '#2563eb' : '',
-                  cursor: 'pointer',
-                  fontWeight: selectedRegion === region ? 'bold' : 'normal',
-                }"
+                :class="{ 'selected-region': selectedRegion === region }"
+                style="cursor: pointer"
                 @click="selectRegion(region)"
               >
                 {{ region }}
@@ -245,9 +242,14 @@ function splitIntoThreeLines(items) {
   display: none;
 }
 .region-label {
+  color: var(--color-cold-night-alpha-25);
   transition:
     color 0.2s,
     font-weight 0.2s;
+}
+.selected-region {
+  color: inherit; /* will inherit .label color */
+  /* font-weight: normal; */
 }
 .fade-out {
   position: absolute;
