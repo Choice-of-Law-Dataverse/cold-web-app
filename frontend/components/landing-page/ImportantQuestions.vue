@@ -67,7 +67,6 @@
                   {{ country.name }}
                 </a>
               </div>
-              <div class="end-spacer" aria-hidden="true"></div>
             </div>
             <div class="fade-out fade-out-countries countries-fade-fixed"></div>
           </div>
@@ -204,28 +203,38 @@ function splitIntoThreeLines(items) {
 }
 
 .countries-scroll {
-  overflow-x: hidden; /* viewport only; inner handles scroll */
+  overflow-x: hidden; /* outer acts as viewport */
   overflow-y: hidden;
   position: relative;
 }
 
 .countries-scroll-fade-container {
-  --fade-width: 60px;
+  --fade-width: 20px;
+  --scroll-padding-buffer: 100px; /* space to clear fade */
+  --scroll-tail-buffer: 200px; /* extra empty space AFTER last item */
 }
 
 .countries-lines {
   display: flex;
   flex-direction: column;
-  gap: 0.75em;
-  overflow-x: auto; /* Scrollable element */
+  gap: 0.5em; /* tighter horizontal spacing within each row */
+  overflow-x: auto; /* actual horizontal scroll container */
   scrollbar-width: none;
   -ms-overflow-style: none;
-  padding-right: calc(
-    var(--fade-width) + 24px
-  ); /* space so last item clears fade */
+  padding-right: calc(var(--fade-width) + var(--scroll-padding-buffer));
+  margin-right: 0 !important;
 }
+
 .countries-lines::-webkit-scrollbar {
   display: none;
+}
+
+/* Spacer to allow final country to clear the fade overlay */
+.countries-lines::after {
+  content: '';
+  flex: 0 0 auto;
+  width: calc(var(--fade-width) + var(--scroll-tail-buffer));
+  height: 1px;
 }
 
 .countries-line {
@@ -233,20 +242,9 @@ function splitIntoThreeLines(items) {
   gap: 0.1em;
 }
 
-/* Remove previous hack spacer */
-.countries-line::after {
-  content: none;
-}
-
+/* Remove obsolete element-based spacer styles (end-spacer div removed) */
 .end-spacer {
-  flex: 0 0 1px;
-  width: 1px;
-  height: 1px;
-}
-
-/* Remove outdated negative margin rule if still present */
-.countries-lines {
-  margin-right: 0 !important;
+  display: none;
 }
 .region-label {
   transition:
