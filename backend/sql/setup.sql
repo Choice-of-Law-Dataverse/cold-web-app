@@ -227,7 +227,19 @@ SELECT
         FROM p1q5x3pj29vkrdr."_nc_m2m_Regional_Instru_Specialists" ris
         JOIN p1q5x3pj29vkrdr."Specialists" s ON s.id = ris."Specialists_id"
         WHERE ris."Regional_Instruments_id" = ri.id
-    ) AS related_specialists
+    ) AS related_specialists,
+    (
+        SELECT jsonb_agg(
+                   to_jsonb(rlp)
+                   || jsonb_build_object(
+                        'CoLD_ID',
+                        ('RI-' || LEFT(ri."Abbreviation", 3) || '-' || ri."ID_Number" || ' ' || rlp."Provision")
+                   )
+               )
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Regional_Instru_Regional_Legal_" mirl
+        JOIN p1q5x3pj29vkrdr."Regional_Legal_Provisions" rlp ON rlp.id = mirl."Regional_Legal_Provisions_id"
+        WHERE mirl."Regional_Instruments_id" = ri.id
+    ) AS related_legal_provisions
 FROM p1q5x3pj29vkrdr."Regional_Instruments" ri;
 
 CREATE UNIQUE INDEX idx_regional_instruments_complete_id ON data_views.regional_instruments_complete(id);
@@ -238,12 +250,19 @@ CREATE MATERIALIZED VIEW data_views.regional_legal_provisions_complete AS
 SELECT 
     rlp.*,
     ri_cold."CoLD_ID" AS "Instrument_CoLD_ID",
-    (COALESCE(ri_cold."CoLD_ID", '') || ' ' || rlp."Provision") AS "CoLD_ID"
+    (COALESCE(ri_cold."CoLD_ID", '') || ' ' || rlp."Provision") AS "CoLD_ID",
+    (
+        SELECT jsonb_agg(ri.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Regional_Instru_Regional_Legal_" mirl2
+        JOIN p1q5x3pj29vkrdr."Regional_Instruments" ri ON ri.id = mirl2."Regional_Instruments_id"
+        WHERE mirl2."Regional_Legal_Provisions_id" = rlp.id
+    ) AS related_regional_instruments
 FROM p1q5x3pj29vkrdr."Regional_Legal_Provisions" rlp
 LEFT JOIN LATERAL (
     SELECT ('RI-' || LEFT(ri."Abbreviation", 3) || '-' || ri."ID_Number") AS "CoLD_ID"
-    FROM p1q5x3pj29vkrdr."Regional_Instruments" ri
-    WHERE ri.id = rlp.id
+    FROM p1q5x3pj29vkrdr."_nc_m2m_Regional_Instru_Regional_Legal_" mirl
+    JOIN p1q5x3pj29vkrdr."Regional_Instruments" ri ON ri.id = mirl."Regional_Instruments_id"
+    WHERE mirl."Regional_Legal_Provisions_id" = rlp.id
     LIMIT 1
 ) ri_cold ON true;
 
@@ -1092,7 +1111,8 @@ BEGIN
 
         SELECT 
             jsonb_build_object(
-                'related_specialists', ri.related_specialists
+                'related_specialists', ri.related_specialists,
+                'related_legal_provisions', ri.related_legal_provisions
             )
         INTO hop1
         FROM data_views.regional_instruments_complete ri
@@ -1111,7 +1131,8 @@ BEGIN
 
         SELECT 
             jsonb_build_object(
-                'Instrument_CoLD_ID', rlp."Instrument_CoLD_ID"
+                'Instrument_CoLD_ID', rlp."Instrument_CoLD_ID",
+                'related_regional_instruments', rlp.related_regional_instruments
             )
         INTO hop1
         FROM data_views.regional_legal_provisions_complete rlp

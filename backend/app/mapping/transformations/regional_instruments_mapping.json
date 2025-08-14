@@ -22,8 +22,8 @@
     },
     "conditional_mappings": {
       "sort_date": {
-        "primary": "updated_at",
-        "fallback": "result_date"
+  "primary": "Date",
+  "fallback": "updated_at"
       }
     },
     "nested_mappings": {
@@ -41,29 +41,25 @@
             "separator": ","
           }
         }
+      },
+      "related_legal_provisions": {
+        "source_array": "related_legal_provisions",
+        "array_operations": {
+          "Regional Legal Provisions": {
+            "operation": "join",
+            "field": "CoLD_ID",
+            "separator": ","
+          },
+          "Regional Legal Provisions Link": {
+            "operation": "join",
+            "field": "ncRecordId",
+            "separator": ","
+          }
+        }
       }
     },
     "complex_mappings": {
-      "Literature": {
-        "source_field": "Literature_Link",
-        "type": "array_extract",
-        "operation": "join_ids"
-      },
-      "Literature Link": {
-        "source_field": "Literature_Link",
-        "type": "array_extract", 
-        "operation": "join_record_ids"
-      },
-      "Regional Legal Provisions": {
-        "source_field": "Regional_Legal_Provisions_Link",
-        "type": "array_extract",
-        "operation": "join_display_values"
-      },
-      "Regional Legal Provisions Link": {
-        "source_field": "Regional_Legal_Provisions_Link", 
-        "type": "array_extract",
-        "operation": "join_record_ids"
-      }
+      
     },
     "user_mappings": {
       "Last Modified By": {
