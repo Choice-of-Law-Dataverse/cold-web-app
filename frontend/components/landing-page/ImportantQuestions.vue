@@ -243,13 +243,9 @@ function splitIntoThreeLines(items) {
 }
 .region-label {
   color: var(--color-cold-night-alpha-25);
-  transition:
-    color 0.2s,
-    font-weight 0.2s;
 }
 .selected-region {
-  color: inherit; /* will inherit .label color */
-  /* font-weight: normal; */
+  color: inherit;
 }
 .fade-out {
   position: absolute;
