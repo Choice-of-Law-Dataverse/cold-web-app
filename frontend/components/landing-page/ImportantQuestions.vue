@@ -18,7 +18,7 @@
             </span>
           </h3>
           <div style="position: relative">
-            <p class="label mt-4 mb-4 regions-scroll">
+            <p class="label mt-6 mb-6 regions-scroll">
               <span
                 v-for="(region, idx) in regions"
                 :key="region"
