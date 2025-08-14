@@ -217,7 +217,7 @@ function splitIntoThreeLines(items) {
 .countries-lines {
   display: flex;
   flex-direction: column;
-  gap: 0.5em; /* tighter horizontal spacing within each row */
+  gap: 0.75em; /* tighter horizontal spacing within each row */
   overflow-x: auto; /* actual horizontal scroll container */
   scrollbar-width: none;
   -ms-overflow-style: none;
