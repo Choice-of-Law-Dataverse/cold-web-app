@@ -1041,6 +1041,18 @@ BEGIN
 
     ) AS sub
     ORDER BY 
+        CASE 
+            WHEN sub.table_name = 'Court Decisions' 
+                 AND COALESCE((sub.complete_record->>'Case_Rank')::numeric, 1000000) <= 5 
+            THEN 1 
+            ELSE 0 
+        END ASC,
+        -- Within the low-ranked Court Decisions bucket, sort by Case_Rank DESC (5,4,...,1,null)
+        CASE 
+            WHEN sub.table_name = 'Court Decisions' 
+                 AND COALESCE((sub.complete_record->>'Case_Rank')::numeric, 1000000) <= 5 
+            THEN COALESCE((sub.complete_record->>'Case_Rank')::numeric, -1)
+        END DESC NULLS LAST,
         CASE WHEN sort_by_date THEN sub.result_date ELSE NULL END DESC NULLS LAST,
         sub.rank DESC,
         sub.table_name
