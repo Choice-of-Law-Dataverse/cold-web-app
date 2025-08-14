@@ -161,7 +161,13 @@ SELECT
         WHERE jdi."Domestic_Instruments_id" = di.id
     ) AS related_jurisdictions,
     (
-        SELECT jsonb_agg(dlp.*)
+        SELECT jsonb_agg(
+                   to_jsonb(dlp)
+                   || jsonb_build_object(
+                        'CoLD_ID',
+                        ('DI-' || COALESCE(jcodes."Alpha_3_Code", '') || '-' || di."ID_Number" || ' ' || dlp."Article")
+                   )
+               )
         FROM p1q5x3pj29vkrdr."_nc_m2m_Domestic_Instru_Domestic_Legal_" didlp
         JOIN p1q5x3pj29vkrdr."Domestic_Legal_Provisions" dlp ON dlp.id = didlp."Domestic_Legal_Provisions_id"
         WHERE didlp."Domestic_Instruments_id" = di.id

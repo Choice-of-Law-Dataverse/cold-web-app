@@ -25,8 +25,8 @@
     },
     "conditional_mappings": {
       "sort_date": {
-        "primary": "updated_at",
-        "fallback": "result_date"
+  "primary": "Date",
+  "fallback": "updated_at"
       },
       "Title (in English)": {
         "primary": "Title__in_English_",
@@ -58,6 +58,41 @@
           "Question ID": {
             "operation": "join",
             "field": "ncRecordId",
+            "separator": ","
+          }
+        }
+      },
+      "related_answers": {
+        "source_array": "related_answers",
+        "array_operations": {
+          "Answers Link": {
+            "operation": "join",
+            "field": "ncRecordId",
+            "separator": ","
+          }
+        }
+      },
+      "related_legal_provisions": {
+        "source_array": "related_legal_provisions",
+        "array_operations": {
+          "Domestic Legal Provisions Link": {
+            "operation": "join",
+            "field": "ncRecordId",
+            "separator": ","
+          },
+          "Domestic Legal Provisions Full Text of the Provision (English T": {
+            "operation": "join",
+            "field": "Full_Text_of_the_Provision__English_Translation_",
+            "separator": ","
+          },
+          "Domestic Legal Provisions Full Text of the Provision (Original ": {
+            "operation": "join",
+            "field": "Full_Text_of_the_Provision__Original_Language_",
+            "separator": ","
+          },
+          "Domestic Legal Provisions": {
+            "operation": "join",
+            "field": "CoLD_ID",
             "separator": ","
           }
         }
