@@ -225,6 +225,7 @@ class SearchService:
             transformed_record = DataTransformerFactory.transform_result(found_table, flat_record)
             
             return transformed_record
+            #return flat_record
             
         except Exception as e:
             logger.error("Error fetching record %s from table %s: %s", cold_id, table, e)
