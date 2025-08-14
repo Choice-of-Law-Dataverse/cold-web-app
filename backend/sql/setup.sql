@@ -98,7 +98,30 @@ SELECT
         JOIN p1q5x3pj29vkrdr."_nc_m2m_Themes_Questions" tq ON tq."Questions_id" = qa."Questions_id"
         JOIN p1q5x3pj29vkrdr."Themes" t ON t.id = tq."Themes_id"
         WHERE qa."Answers_id" = a.id
-    ) AS related_themes
+    ) AS related_themes,
+    (
+        SELECT jsonb_agg(
+            to_jsonb(cd) || jsonb_build_object(
+                'CoLD_ID', ('CD-' || COALESCE(jcodes."Alpha_3_Code", '') || '-' || COALESCE(cd."ID_Number"::text, ''))
+            )
+        )
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Answers_Court_Decisions" acd
+        JOIN p1q5x3pj29vkrdr."Court_Decisions" cd ON cd.id = acd."Court_Decisions_id"
+        LEFT JOIN LATERAL (
+            SELECT j."Alpha_3_Code"
+            FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Court_Decisions" jcd
+            JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = jcd."Jurisdictions_id"
+            WHERE jcd."Court_Decisions_id" = cd.id
+            LIMIT 1
+        ) jcodes ON true
+        WHERE acd."Answers_id" = a.id
+    ) AS related_court_decisions,
+    (
+        SELECT jsonb_agg(l.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Answers_Literature" al
+        JOIN p1q5x3pj29vkrdr."Literature" l ON l.id = al."Literature_id"
+        WHERE al."Answers_id" = a.id
+    ) AS related_literature
 FROM p1q5x3pj29vkrdr."Answers" a
 LEFT JOIN LATERAL (
     SELECT j."Alpha_3_Code"
@@ -1036,7 +1059,9 @@ BEGIN
             jsonb_build_object(
                 'related_questions', a.related_questions,
                 'related_jurisdictions', a.related_jurisdictions,
-                'related_themes', a.related_themes
+                'related_themes', a.related_themes,
+                'related_court_decisions', a.related_court_decisions,
+                'related_literature', a.related_literature
             )
         INTO hop1
         FROM data_views.answers_complete a
