@@ -7,19 +7,54 @@ from app.services.query_logging import log_query
 
 app = FastAPI(
     title="CoLD API",
+    version="1.0.0",
     description="""
     # CoLD API Documentation
-    This API provides access to the database of the Choice of Law Dataverse (CoLD).
-    The CoLD is a research project at the University of Lucerne that collects and analyzes data on choice of law in international contracts.
+    The Choice of Law Dataverse (CoLD) API provides programmatic access to a curated knowledge base on choice of law in international contracts.
 
-    The API allows users to query the data, with a full text search feature as the core data retrieval method.
-    Other features include fetching all data from specific tables and filtering for specific entries.
-    The API also supports JWT authentication for secure access.
+    Core capabilities:
+    - Full-text search across all data domains with filtering and sorting by date.
+    - Fetch curated details for a specific record by CoLD ID, including first-hop related entries.
+    - Retrieve full tables or filtered subsets using user-facing fields (mapping-aware).
+    - Site map and landing page helper endpoints for the frontend.
+
+    Authentication:
+    - All endpoints (except the root) require a Bearer JWT in the `Authorization` header: `Authorization: Bearer <token>`.
     """,
+    contact={
+        "name": "CoLD Team",
+        "url": "https://choice-of-law-dataverse.org/",
+    },
+    license_info={
+        "name": "MIT License",
+        "url": "https://opensource.org/licenses/MIT",
+    },
+    openapi_tags=[
+        {
+            "name": "Search",
+            "description": "Full text search, curated details, and full/filtered table retrieval.",
+        },
+        {
+            "name": "AI",
+            "description": "AI helpers such as query classification.",
+        },
+        {
+            "name": "Sitemap",
+            "description": "Frontend URLs for site map generation.",
+        },
+        {
+            "name": "LandingPage",
+            "description": "Landing page support endpoints (e.g., jurisdictions with data).",
+        },
+        {
+            "name": "Submarine",
+            "description": "Fun demo route.",
+        },
+    ],
     openapi_url="/api/v1/openapi.json",
     docs_url="/api/v1/docs",
-    redoc_url="/api/v1/redoc"
-    )
+    redoc_url="/api/v1/redoc",
+)
 
 origins = ["*"]
 
@@ -46,4 +81,5 @@ app.include_router(api_router)
 
 @app.get("/api/v1")
 def root():
+    """Simple health check endpoint for the CoLD API root."""
     return {"message": "Hello World from CoLD"}
