@@ -313,6 +313,7 @@ const fetchAnswerData = async (id) => {
   }
 
   const { baseUrl, headers } = getApiConfig()
+  console.log('[JCQuestions.vue] fetchAnswerData id:', id)
 
   try {
     const response = await fetch(`${baseUrl}/search/details`, {
