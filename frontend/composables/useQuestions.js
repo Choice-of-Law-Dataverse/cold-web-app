@@ -58,7 +58,8 @@ export function useQuestions() {
     try {
       // Create promises for all answer fetches
       const answerPromises = questionsData.value.map(async (item) => {
-        const answerId = iso3 ? `${iso3}_${item.ID}` : item.ID
+        const baseId = item['CoLD ID'] ?? item.ID // backward compatibility
+        const answerId = iso3 ? `${iso3}_${baseId}` : baseId
         const answer = await fetchAnswer(answerId)
         return { id: answerId, answer }
       })
@@ -83,14 +84,16 @@ export function useQuestions() {
   // Preprocess data to handle custom rendering cases and mapping
   const processedQuestionsData = computed(() => {
     if (!questionsData.value || !Array.isArray(questionsData.value)) return []
-    const sorted = questionsData.value
-      .slice()
-      .sort((a, b) => a.ID.localeCompare(b.ID))
+    const sorted = questionsData.value.slice().sort((a, b) => {
+      const aId = a['CoLD ID'] ?? a.ID ?? ''
+      const bId = b['CoLD ID'] ?? b.ID ?? ''
+      return aId.localeCompare(bId)
+    })
 
     // Build a lookup for each level
     const idsByLevel = {}
     for (const item of sorted) {
-      const id = item.ID
+      const id = item['CoLD ID'] ?? item.ID
       const level = typeof id === 'string' ? id.match(/\./g)?.length || 0 : 0
       if (!idsByLevel[level]) idsByLevel[level] = []
       idsByLevel[level].push(id)
@@ -99,13 +102,14 @@ export function useQuestions() {
     // Build a map from id to array index for quick lookup
     const idToIndex = {}
     sorted.forEach((item, idx) => {
-      idToIndex[item.ID] = idx
+      const id = item['CoLD ID'] ?? item.ID
+      idToIndex[id] = idx
     })
 
     // Precompute children for each id
     const childrenMap = {}
     sorted.forEach((item, idx, arr) => {
-      const id = item.ID
+      const id = item['CoLD ID'] ?? item.ID
       const level = typeof id === 'string' ? id.match(/\./g)?.length || 0 : 0
       let parentId = null
       if (level > 0) {
@@ -125,12 +129,12 @@ export function useQuestions() {
     })
 
     return sorted.map((item, idx, arr) => {
-      const id = item.ID
+      const id = item['CoLD ID'] ?? item.ID
       const level = typeof id === 'string' ? id.match(/\./g)?.length || 0 : 0
       let parentId = null
       if (level > 0) {
         for (let j = idx - 1; j >= 0; j--) {
-          const prevId = arr[j].ID
+          const prevId = arr[j]['CoLD ID'] ?? arr[j].ID
           const prevLevel = prevId.match(/\./g)?.length || 0
           if (prevLevel === level - 1) {
             parentId = prevId
@@ -148,7 +152,8 @@ export function useQuestions() {
         }
       }
 
-      const answerId = iso3 ? `${iso3}_${item['ID']}` : item['ID']
+      const baseId = item['CoLD ID'] ?? item.ID
+      const answerId = iso3 ? `${iso3}_${baseId}` : baseId
       const answerText = answersMap.value[answerId] || ''
 
       // Replace commas with '; ' if multiple answers are present
