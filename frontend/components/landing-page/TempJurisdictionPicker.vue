@@ -55,16 +55,19 @@ async function fetchJurisdictions() {
     const relevantJurisdictions = jurisdictionsData.filter(
       (entry) => entry['Irrelevant?'] === false
     )
+    console.log('relevantJurisdictions:', relevantJurisdictions)
 
     // Extract "Name" field
     const jurisdictionNames = relevantJurisdictions
       .map((entry) => entry.Name)
       .filter(Boolean)
+    console.log('jurisdictionNames:', jurisdictionNames)
 
     // Merge both lists, remove duplicates, and sort alphabetically
     countries.value = [
       ...new Set([...jurisdictionNames]), // ...instrumentNames]),
     ].sort((a, b) => a.localeCompare(b))
+    console.log('countries:', countries.value)
   } catch (error) {
     console.error(error)
     countries.value = [] // Fallback to empty list
