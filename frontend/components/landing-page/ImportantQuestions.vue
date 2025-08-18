@@ -64,7 +64,7 @@
                     v-for="country in line"
                     :key="country.code"
                     class="country-item label-jurisdiction country-link-flex"
-                    :href="`/question/${country.code}${currentSuffix.value}`"
+                    :href="`/question/${country.code}${currentSuffix}`"
                   >
                     <img
                       :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
@@ -96,7 +96,7 @@
       <div class="mt-4">
         <div class="carousel-dots flex justify-center gap-2">
           <button
-            v-for="(suf, idx) in props.questionSuffixes"
+            v-for="(suf, idx) in suffixes"
             :key="idx"
             @click="((currentIndex = idx), fetchCountries())"
             :aria-label="`Go to question ${idx + 1}`"
@@ -110,7 +110,6 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { defineProps } from 'vue'
 import { useRuntimeConfig } from '#imports'
 
 const answers = ['Yes', 'No']
@@ -139,8 +138,9 @@ const props = defineProps({
 })
 
 const currentIndex = ref(0)
-const totalQuestions = computed(() => props.questionSuffixes.length)
-const currentSuffix = computed(() => props.questionSuffixes[currentIndex.value])
+const suffixes = computed(() => props.questionSuffixes)
+const totalQuestions = computed(() => suffixes.value.length)
+const currentSuffix = computed(() => suffixes.value[currentIndex.value])
 
 const prevQuestion = () => {
   currentIndex.value =
