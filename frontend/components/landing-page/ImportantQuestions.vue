@@ -101,6 +101,8 @@ const selectedRegion = ref('All')
 const countries = ref([])
 const countriesLines = ref([])
 const questionTitle = ref('')
+// Centralised suffix for question IDs used across the component
+const questionSuffix = '_01-P'
 const config = useRuntimeConfig()
 
 async function fetchCountries() {
@@ -119,7 +121,7 @@ async function fetchCountries() {
         table: 'Answers',
         // Ask backend for rows where ID contains the suffix; we'll enforce endsWith on the client
         filters: [
-          { column: 'ID', value: '_01-P' },
+          { column: 'ID', value: questionSuffix },
           { column: 'Answer', value: selectedAnswer.value },
         ],
       }),
@@ -127,10 +129,10 @@ async function fetchCountries() {
     if (!res.ok) throw new Error('API error')
     const data = await res.json()
     // Ensure we only keep rows whose ID actually ends with the requested suffix
-    const suffix = '_01-P'
     const dataWithSuffix = Array.isArray(data)
       ? data.filter(
-          (item) => typeof item.ID === 'string' && item.ID.endsWith(suffix)
+          (item) =>
+            typeof item.ID === 'string' && item.ID.endsWith(questionSuffix)
         )
       : []
 
