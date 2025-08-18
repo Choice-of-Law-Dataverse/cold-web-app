@@ -119,7 +119,7 @@ async function fetchCountries() {
     if (!res.ok) throw new Error('API error')
     const data = await res.json()
     let filtered = data.filter(
-      (item) => item['Jurisdictions Irrelevant'] !== 'True'
+      (item) => item['Jurisdictions Irrelevant'] !== 'Yes'
     )
     if (selectedRegion.value !== 'All') {
       filtered = filtered.filter(
