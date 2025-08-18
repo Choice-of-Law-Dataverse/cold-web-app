@@ -17,6 +17,10 @@ class Config:
     NOCODB_BASE_URL = os.getenv("NOCODB_BASE_URL")
     NOCODB_API_TOKEN = os.getenv("NOCODB_API_TOKEN")
     NOCODB_POSTGRES_SCHEMA = os.getenv("NOCODB_POSTGRES_SCHEMA")
+    # Suggestions storage configuration
+    SUGGESTIONS_SCHEMA = os.getenv("SUGGESTIONS_SCHEMA")  # e.g., 'public' or 'cold_suggestions'
+    SUGGESTIONS_TABLE = os.getenv("SUGGESTIONS_TABLE", "user_suggestions")
+    SUGGESTIONS_SQL_CONN_STRING = os.getenv("SUGGESTIONS_SQL_CONN_STRING")  # separate DB for suggestions
 
 
 config = Config()

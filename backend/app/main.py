@@ -50,6 +50,10 @@ app = FastAPI(
             "name": "Submarine",
             "description": "Fun demo route.",
         },
+        {
+            "name": "Suggestions",
+            "description": "User-submitted data suggestions storage.",
+        },
     ],
     openapi_url="/api/v1/openapi.json",
     docs_url="/api/v1/docs",
@@ -76,6 +80,8 @@ api_router.include_router(ai.router)
 api_router.include_router(submarine.router)
 api_router.include_router(sitemap.router)
 api_router.include_router(landing_page.router)
+from app.routes import suggestions as suggestions_router
+api_router.include_router(suggestions_router.router)
 
 app.include_router(api_router)
 
