@@ -116,18 +116,24 @@ async function fetchCountries() {
       },
       body: JSON.stringify({
         table: 'Answers',
+        // Ask backend for rows where ID contains the suffix; we'll enforce endsWith on the client
         filters: [
-          {
-            column: 'Question',
-            value: 'Is there a codification on choice of law?',
-          },
+          { column: 'ID', value: '_01-P' },
           { column: 'Answer', value: selectedAnswer.value },
         ],
       }),
     })
     if (!res.ok) throw new Error('API error')
     const data = await res.json()
-    let filtered = data.filter(
+    // Ensure we only keep rows whose ID actually ends with the requested suffix
+    const suffix = '_01-P'
+    const dataWithSuffix = Array.isArray(data)
+      ? data.filter(
+          (item) => typeof item.ID === 'string' && item.ID.endsWith(suffix)
+        )
+      : []
+
+    let filtered = dataWithSuffix.filter(
       (item) => item['Jurisdictions Irrelevant'] !== 'Yes'
     )
     if (selectedRegion.value !== 'All') {
