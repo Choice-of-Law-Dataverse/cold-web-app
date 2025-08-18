@@ -2,9 +2,28 @@
   <UCard class="cold-ucard">
     <div class="popular-searches-container flex flex-col gap-8">
       <div>
-        <h2 class="popular-title text-left">
-          {{ questionTitle || 'Missing Question' }}
-        </h2>
+        <div class="flex items-center justify-between">
+          <button
+            class="mr-4 p-1"
+            aria-label="Previous question"
+            @click="prevQuestion"
+          >
+            ◀
+          </button>
+          <h2 class="popular-title flex-1 text-center md:text-left">
+            {{ questionTitle || 'Missing Question' }}
+            <span class="ml-2 text-sm text-gray-500"
+              >({{ currentIndex + 1 }} / {{ totalQuestions }})</span
+            >
+          </h2>
+          <button
+            class="ml-4 p-1"
+            aria-label="Next question"
+            @click="nextQuestion"
+          >
+            ▶
+          </button>
+        </div>
         <div>
           <h3 class="mt-4">
             <span
@@ -48,7 +67,7 @@
                     v-for="country in line"
                     :key="country.code"
                     class="country-item label-jurisdiction country-link-flex"
-                    :href="`/question/${country.code}_01-P`"
+                    :href="`/question/${country.code}${currentSuffix.value}`"
                   >
                     <img
                       :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
@@ -81,7 +100,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
+import { defineProps } from 'vue'
 import { useRuntimeConfig } from '#imports'
 
 const answers = ['Yes', 'No']
@@ -101,8 +121,29 @@ const selectedRegion = ref('All')
 const countries = ref([])
 const countriesLines = ref([])
 const questionTitle = ref('')
-// Centralised suffix for question IDs used across the component
-const questionSuffix = '_01-P'
+// Carousel: accept an array of question suffixes to rotate through
+const props = defineProps({
+  questionSuffixes: {
+    type: Array,
+    default: () => ['_01-P'],
+  },
+})
+
+const currentIndex = ref(0)
+const totalQuestions = computed(() => props.questionSuffixes.length)
+const currentSuffix = computed(() => props.questionSuffixes[currentIndex.value])
+
+const prevQuestion = () => {
+  currentIndex.value =
+    (currentIndex.value - 1 + totalQuestions.value) % totalQuestions.value
+  fetchCountries()
+}
+
+const nextQuestion = () => {
+  currentIndex.value = (currentIndex.value + 1) % totalQuestions.value
+  fetchCountries()
+}
+
 const config = useRuntimeConfig()
 
 async function fetchCountries() {
@@ -121,7 +162,7 @@ async function fetchCountries() {
         table: 'Answers',
         // Ask backend for rows where ID contains the suffix; we'll enforce endsWith on the client
         filters: [
-          { column: 'ID', value: questionSuffix },
+          { column: 'ID', value: currentSuffix.value },
           { column: 'Answer', value: selectedAnswer.value },
         ],
       }),
@@ -132,7 +173,7 @@ async function fetchCountries() {
     const dataWithSuffix = Array.isArray(data)
       ? data.filter(
           (item) =>
-            typeof item.ID === 'string' && item.ID.endsWith(questionSuffix)
+            typeof item.ID === 'string' && item.ID.endsWith(currentSuffix.value)
         )
       : []
 

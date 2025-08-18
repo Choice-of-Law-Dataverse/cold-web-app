@@ -125,7 +125,7 @@
           />
         </div> -->
         <div class="col-span-12 md:col-span-8">
-          <ImportantQuestions />
+          <ImportantQuestions :questionSuffixes="['_01-P', '_02-P']" />
         </div>
       </div>
     </div>
