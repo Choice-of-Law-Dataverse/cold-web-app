@@ -194,28 +194,33 @@ class SuggestionService:
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
         with self.Session() as session:
-            # Update JSONB payload with moderation info
+            # Ensure concrete SQL types to avoid polymorphic unknown errors in to_jsonb
+            status_json = sa.func.to_jsonb(sa.cast(sa.literal(status), sa.Text))
+            moderator_json = sa.func.to_jsonb(sa.cast(sa.literal(moderator), sa.Text))
+            note_json = sa.func.to_jsonb(sa.cast(sa.literal(note or ""), sa.Text))
+
             update_expr = sa.func.jsonb_set(
                 sa.func.jsonb_set(
                     sa.func.jsonb_set(
                         target.c.payload,
                         "{moderation_status}",
-                        sa.cast(sa.text(f"'\"{status}\"'"), JSONB),
+                        status_json,
                         True,
                     ),
                     "{moderated_by}",
-                    sa.cast(sa.text(f"'\"{moderator}\"'"), JSONB),
+                    moderator_json,
                     True,
                 ),
                 "{moderation_note}",
-                sa.cast(sa.text(f"'{(note or '').replace("'","''")}'"), JSONB),
+                note_json,
                 True,
             )
             if merged_id is not None:
+                merged_id_json = sa.func.to_jsonb(sa.cast(sa.literal(merged_id), sa.Integer))
                 update_expr = sa.func.jsonb_set(
                     update_expr,
                     "{merged_record_id}",
-                    sa.cast(sa.text(str(merged_id)), JSONB),
+                    merged_id_json,
                     True,
                 )
             stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=update_expr)
