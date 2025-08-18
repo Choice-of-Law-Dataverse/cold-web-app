@@ -12,9 +12,6 @@
           </button>
           <h2 class="popular-title flex-1 text-center md:text-left">
             {{ questionTitle || 'Missing Question' }}
-            <span class="ml-2 text-sm text-gray-500"
-              >({{ currentIndex + 1 }} / {{ totalQuestions }})</span
-            >
           </h2>
           <button
             class="ml-4 p-1"
@@ -93,6 +90,18 @@
             </div>
             <div v-else class="mt-4 copy">No jurisdictions to be displayed</div>
           </div>
+        </div>
+      </div>
+      <!-- Dots navigation -->
+      <div class="mt-4">
+        <div class="carousel-dots flex justify-center gap-2">
+          <button
+            v-for="(suf, idx) in props.questionSuffixes"
+            :key="idx"
+            @click="((currentIndex = idx), fetchCountries())"
+            :aria-label="`Go to question ${idx + 1}`"
+            :class="['dot', { 'dot-active': currentIndex === idx }]"
+          />
         </div>
       </div>
     </div>
@@ -359,5 +368,17 @@ function splitIntoThreeLines(items) {
 }
 .selected-answer {
   border-bottom: 2px solid var(--color-cold-purple);
+}
+
+/* Carousel dots */
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: #d1d5db; /* gray-300 */
+  border: none;
+}
+.dot-active {
+  background: var(--color-cold-purple);
 }
 </style>
