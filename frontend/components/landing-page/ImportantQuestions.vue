@@ -72,9 +72,7 @@
                 class="fade-out fade-out-countries countries-fade-fixed"
               ></div>
             </div>
-            <div v-else class="mt-4 text-sm text-gray-600">
-              No jurisdictions to be displayed
-            </div>
+            <div v-else class="mt-4 copy">No jurisdictions to be displayed</div>
           </div>
         </div>
       </div>
