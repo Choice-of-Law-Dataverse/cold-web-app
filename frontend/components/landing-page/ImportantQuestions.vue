@@ -32,38 +32,49 @@
             </p>
             <div class="fade-out fade-out-region"></div>
           </div>
-          <div
-            v-if="selectedAnswer && countriesLines.length"
-            class="countries-scroll mt-2 countries-scroll-fade-container"
-            style="position: relative"
-          >
-            <div class="countries-lines">
-              <div
-                class="countries-line"
-                v-for="(line, li) in countriesLines"
-                :key="li"
-              >
-                <a
-                  v-for="country in line"
-                  :key="country.code"
-                  class="country-item label-jurisdiction country-link-flex"
-                  :href="`/question/${country.code}_01-P`"
+          <div v-if="selectedAnswer">
+            <div
+              v-if="countries.length"
+              class="countries-scroll mt-2 countries-scroll-fade-container"
+              style="position: relative"
+            >
+              <div class="countries-lines">
+                <div
+                  class="countries-line"
+                  v-for="(line, li) in countriesLines"
+                  :key="li"
                 >
-                  <img
-                    :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
-                    style="height: 12px; margin-right: 6px; margin-bottom: 2px"
-                    :alt="country.code + ' flag'"
-                    @error="
-                      (e) => {
-                        e.target.style.display = 'none'
-                      }
-                    "
-                  />
-                  {{ country.name }}
-                </a>
+                  <a
+                    v-for="country in line"
+                    :key="country.code"
+                    class="country-item label-jurisdiction country-link-flex"
+                    :href="`/question/${country.code}_01-P`"
+                  >
+                    <img
+                      :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
+                      style="
+                        height: 12px;
+                        margin-right: 6px;
+                        margin-bottom: 2px;
+                      "
+                      :alt="country.code + ' flag'"
+                      @error="
+                        (e) => {
+                          e.target.style.display = 'none'
+                        }
+                      "
+                    />
+                    {{ country.name }}
+                  </a>
+                </div>
               </div>
+              <div
+                class="fade-out fade-out-countries countries-fade-fixed"
+              ></div>
             </div>
-            <div class="fade-out fade-out-countries countries-fade-fixed"></div>
+            <div v-else class="mt-4 text-sm text-gray-600">
+              No jurisdictions to be displayed
+            </div>
           </div>
         </div>
       </div>
