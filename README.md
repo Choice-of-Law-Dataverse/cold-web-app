@@ -19,6 +19,7 @@ This approach allows for flexibility in development while maintaining coherence 
 For website and data input
 
 - Language: `en-US` – English as used in the United States
+- Use the [Oxford comma](https://en.wikipedia.org/wiki/Serial_comma)
 - Apply "Bluebook" title case style for titles, convert titles [here](https://titlecaseconverter.com/)
 - When in doubt, look to [George](https://en.wikipedia.org/wiki/Politics_and_the_English_Language#Remedy_of_Six_Rules)
 
