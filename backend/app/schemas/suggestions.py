@@ -31,8 +31,8 @@ class CourtDecisionSuggestion(BaseModel):
     # Required
     case_citation: str = Field(..., description="Case Citation")
     date_publication: date = Field(..., description="Date of Publication")
-    official_source_url: Optional[str] = Field(
-        None, description="Official Source (URL)"
+    official_source_url: str = Field(
+        ..., description="Official Source (URL)"
     )
     official_source_pdf: Optional[str] = Field(
         None, description="Official Source (PDF link, storage key, or identifier)"
@@ -54,9 +54,6 @@ class CourtDecisionSuggestion(BaseModel):
         None, description="Court's Position"
     )
     translated_excerpt: Optional[str] = None
-    relevant_legal_provisions_text: Optional[str] = Field(
-        None, description="Text of the Relevant Legal Provisions"
-    )
     quote: Optional[str] = None
     decision_date: Optional[date] = Field(
         None, description="Decision date or other relevant date"

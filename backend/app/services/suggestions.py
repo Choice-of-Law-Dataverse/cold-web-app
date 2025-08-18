@@ -166,3 +166,58 @@ class SuggestionService:
             session.commit()
             new_id = result.scalar_one()
             return int(new_id)
+
+    def list_pending(self, table: str, limit: int = 100) -> list[dict]:
+        target = self.tables.get(table)
+        if target is None:
+            raise ValueError(f"Unknown suggestions table '{table}'")
+        with self.Session() as session:
+            # pending = no moderation_status in payload
+            query = sa.select(
+                target.c.id,
+                target.c.created_at,
+                target.c.payload,
+                target.c.source,
+            ).where(
+                sa.or_(
+                    ~target.c.payload.has_key("moderation_status"),  # type: ignore[attr-defined]
+                    target.c.payload["moderation_status"].astext == None,
+                )
+            ).order_by(target.c.created_at.desc()).limit(limit)
+            rows = session.execute(query).mappings().all()
+            return [dict(r) for r in rows]
+
+    def mark_status(self, table: str, suggestion_id: int, status: str, moderator: str, note: Optional[str] = None, merged_id: Optional[int] = None) -> None:
+        if status not in {"approved", "rejected"}:
+            raise ValueError("status must be 'approved' or 'rejected'")
+        target = self.tables.get(table)
+        if target is None:
+            raise ValueError(f"Unknown suggestions table '{table}'")
+        with self.Session() as session:
+            # Update JSONB payload with moderation info
+            update_expr = sa.func.jsonb_set(
+                sa.func.jsonb_set(
+                    sa.func.jsonb_set(
+                        target.c.payload,
+                        "{moderation_status}",
+                        sa.cast(sa.text(f"'\"{status}\"'"), JSONB),
+                        True,
+                    ),
+                    "{moderated_by}",
+                    sa.cast(sa.text(f"'\"{moderator}\"'"), JSONB),
+                    True,
+                ),
+                "{moderation_note}",
+                sa.cast(sa.text(f"'{(note or '').replace("'","''")}'"), JSONB),
+                True,
+            )
+            if merged_id is not None:
+                update_expr = sa.func.jsonb_set(
+                    update_expr,
+                    "{merged_record_id}",
+                    sa.cast(sa.text(str(merged_id)), JSONB),
+                    True,
+                )
+            stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=update_expr)
+            session.execute(stmt)
+            session.commit()
