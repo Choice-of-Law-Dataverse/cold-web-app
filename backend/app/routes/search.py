@@ -50,8 +50,9 @@ def handle_full_text_search(request: Request, body: FullTextSearchRequest):
     page = body.page
     page_size = body.page_size
     sort_by_date = getattr(body, 'sort_by_date', False)
+    response_type = getattr(body, 'response_type', 'parsed')
 
-    results = search_service.full_text_search(search_string, filters, page, page_size, sort_by_date)
+    results = search_service.full_text_search(search_string, filters, page, page_size, sort_by_date, response_type=response_type)
     return results
 
 
@@ -76,8 +77,9 @@ def handle_full_text_search(request: Request, body: FullTextSearchRequest):
 def handle_curated_details_search(request: Request, body: CuratedDetailsRequest):
     table = body.table
     record_id = body.id
+    response_type = getattr(body, 'response_type', 'parsed')
 
-    results = search_service.curated_details_search(table, record_id)
+    results = search_service.curated_details_search(table, record_id, response_type=response_type)
     return results
 
 
@@ -106,15 +108,16 @@ def handle_curated_details_search(request: Request, body: CuratedDetailsRequest)
 def return_full_table(request: Request, body: FullTableRequest):
     table = body.table
     filters = body.filters or []
+    response_type = getattr(body, 'response_type', 'parsed')
 
     if not table:
         raise HTTPException(status_code=400, detail="No table provided")
 
     try:
         if filters:
-            results = search_service.filtered_table(table, filters)
+            results = search_service.filtered_table(table, filters, response_type=response_type)
         else:
-            results = search_service.full_table(table)
+            results = search_service.full_table(table, response_type=response_type)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

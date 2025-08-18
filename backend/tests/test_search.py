@@ -33,7 +33,7 @@ app.dependency_overrides[verify_jwt_token] = override_verify_jwt_token
 # Create a dummy search service to override the one used in routes.
 # ------------------------------------------------------------------------------
 class DummySearchService:
-    def full_text_search(self, search_string, filters=None, page=1, page_size=50, sort_by_date=False):
+    def full_text_search(self, search_string, filters=None, page=1, page_size=50, sort_by_date=False, response_type: str = 'parsed'):
         # Return a predictable result for testing.
         return {
             "dummy": "full_text_search",
@@ -42,9 +42,10 @@ class DummySearchService:
             "page": page,
             "page_size": page_size,
             "sort_by_date": sort_by_date,
+            "response_type": response_type,
         }
 
-    def curated_details_search(self, table, cold_id):
+    def curated_details_search(self, table, cold_id, response_type: str = 'parsed'):
         # For allowed table names, return dummy data; otherwise, return an error dict.
         allowed_tables = [
             "Answers",
@@ -62,18 +63,19 @@ class DummySearchService:
                 "source_table": table,
                 "record_id": 123,
                 "cold_id": cold_id,
-                "hop1_relations": {"test": "relations"}
+                "hop1_relations": {"test": "relations"},
+                "response_type": response_type,
             }
         else:
             return {
                 "error": "this table either does not exist or has not been implemented in this route"
             }
 
-    def full_table(self, table):
-        return {"dummy": "full_table", "table": table}
+    def full_table(self, table, response_type: str = 'parsed'):
+        return {"dummy": "full_table", "table": table, "response_type": response_type}
 
-    def filtered_table(self, table, filters):
-        return {"dummy": "filtered_table", "table": table, "filters": filters}
+    def filtered_table(self, table, filters, response_type: str = 'parsed'):
+        return {"dummy": "filtered_table", "table": table, "filters": filters, "response_type": response_type}
 
 
 # Override the search_service instance in the search routes with our dummy service.

@@ -177,7 +177,7 @@ class SearchService:
         where_sql = (' WHERE ' + ' AND '.join(clauses)) if clauses else ''
         return where_sql, params
 
-    def curated_details_search(self, table, cold_id):
+    def curated_details_search(self, table, cold_id, response_type: str = 'parsed'):
         """
         Fetch a single record by table and CoLD_ID using the new search_for_entry SQL function.
         Returns the complete record along with hop-1 (directly related) entries, transformed
@@ -207,7 +207,7 @@ class SearchService:
             complete_record = result.get("complete_record") or {}
             hop1_relations = result.get("hop1_relations") or {}
             
-            # Flatten nested complete_record into top-level (similar to full_text_search)
+            # Flatten nested complete_record into top-level (similar to full text search)
             flat_record = {
                 "source_table": found_table,
                 "id": record_id,
@@ -224,14 +224,24 @@ class SearchService:
             # Apply transformation using the appropriate transformer (similar to full_text_search)
             transformed_record = DataTransformerFactory.transform_result(found_table, flat_record)
             
+            raw_payload = {
+                "found_table": found_table,
+                "record_id": record_id,
+                "complete_record": complete_record,
+                "hop1_relations": hop1_relations,
+            }
+
+            if response_type == 'raw':
+                return raw_payload
+            if response_type == 'both':
+                return {"parsed": transformed_record, "raw": raw_payload}
             return transformed_record
-            #return flat_record
             
         except Exception as e:
             logger.error("Error fetching record %s from table %s: %s", cold_id, table, e)
             return {"error": f"Could not fetch record {cold_id} from table {table}: {str(e)}"}
 
-    def full_table(self, table):
+    def full_table(self, table, response_type: str = 'parsed'):
         """
         Fetch all records from a table directly via SQL (data_views.*_complete) and transform.
         """
@@ -239,6 +249,9 @@ class SearchService:
             view = self._complete_view_for_table(table)
             sql = f"SELECT c.id AS record_id, to_jsonb(c.*) AS complete_record FROM {view} c"
             rows = self.db.execute_query(sql, {}) or []
+
+            if response_type == 'raw':
+                return [row.get("complete_record") or {} for row in rows]
 
             results: List[Dict[str, Any]] = []
             for row in rows:
@@ -250,13 +263,16 @@ class SearchService:
                         continue
                     flat[k] = v
                 transformed = DataTransformerFactory.transform_result(table, flat)
-                results.append(transformed)
+                if response_type == 'both':
+                    results.append({"parsed": transformed, "raw": complete})
+                else:
+                    results.append(transformed)
             return results
         except Exception as e:
             logger.error("Error querying full table %s: %s", table, e)
             return []
 
-    def filtered_table(self, table, filters):
+    def filtered_table(self, table, filters, response_type: str = 'parsed'):
         """
         Fetch and filter records from a table using SQL with mapping-aware filters, then transform.
         """
@@ -267,6 +283,9 @@ class SearchService:
             sql = f"SELECT {alias}.id AS record_id, to_jsonb({alias}.*) AS complete_record FROM {view} {alias}{where_sql}"
             rows = self.db.execute_query(sql, params) or []
 
+            if response_type == 'raw':
+                return [row.get("complete_record") or {} for row in rows]
+
             results: List[Dict[str, Any]] = []
             for row in rows:
                 complete = row.get("complete_record") or {}
@@ -276,7 +295,10 @@ class SearchService:
                         continue
                     flat[k] = v
                 transformed = DataTransformerFactory.transform_result(table, flat)
-                results.append(transformed)
+                if response_type == 'both':
+                    results.append({"parsed": transformed, "raw": complete})
+                else:
+                    results.append(transformed)
             return results
         except Exception as e:
             logger.error("Error querying filtered table %s with filters %s: %s", table, filters, e)
@@ -317,7 +339,7 @@ class SearchService:
                     tables.extend(values)
         return tables, jurisdictions, themes
 
-    def full_text_search(self, search_string, filters=[], page=1, page_size=50, sort_by_date=False):
+    def full_text_search(self, search_string, filters=[], page=1, page_size=50, sort_by_date=False, response_type: str = 'parsed'):
         """
         Perform full-text search via data_views.search_all and return correct total_matches
         along with full record data from NocoDB.
@@ -364,30 +386,59 @@ class SearchService:
         # print raw SQL rows, serializing dates as strings
         print("raw SQL results:\n", json.dumps(rows, indent=2, default=str))
         # flatten nested complete_record into top-level
-        flattened = []
+        parsed_results = []
+        raw_results = []
         for row in rows:
             complete = row.get("complete_record") or {}
-            flat = {
-                "source_table": row.get("source_table"),
-                "id": row.get("id"),
-                "rank": row.get("rank"),
-                "result_date": row.get("result_date"),
-            }
-            for key, value in complete.items():
-                if key == "id":
-                    continue
-                flat[key] = value
-            
-            # Apply transformation using the appropriate transformer
-            table_name = row.get("source_table")
-            flat = DataTransformerFactory.transform_result(table_name, flat)
+            if response_type in ('parsed', 'both'):
+                flat = {
+                    "source_table": row.get("source_table"),
+                    "id": row.get("id"),
+                    "rank": row.get("rank"),
+                    "result_date": row.get("result_date"),
+                }
+                for key, value in complete.items():
+                    if key == "id":
+                        continue
+                    flat[key] = value
+                # Apply transformation using the appropriate transformer
+                table_name = row.get("source_table")
+                flat = DataTransformerFactory.transform_result(table_name, flat)
+                parsed_results.append(flat)
 
-            flattened.append(flat)
+            if response_type in ('raw', 'both'):
+                raw_results.append({
+                    "source_table": row.get("source_table"),
+                    "id": row.get("id"),
+                    "rank": row.get("rank"),
+                    "result_date": row.get("result_date"),
+                    "complete_record": complete,
+                })
+        
+        if response_type == 'raw':
+            return {
+                "test": config.TEST,
+                "total_matches": total_matches,
+                "page": page,
+                "page_size": page_size,
+                "results": raw_results,
+            }
+        if response_type == 'both':
+            combined = [
+                {"parsed": p, "raw": r} for p, r in zip(parsed_results, raw_results)
+            ]
+            return {
+                "test": config.TEST,
+                "total_matches": total_matches,
+                "page": page,
+                "page_size": page_size,
+                "results": combined,
+            }
         
         return {
             "test": config.TEST,
             "total_matches": total_matches,
             "page": page,
             "page_size": page_size,
-            "results": flattened,
+            "results": parsed_results,
         }
