@@ -167,7 +167,7 @@ export function useQuestions() {
       return {
         id,
         question: item.Question,
-        theme: item['Themes Link'],
+        theme: item['Themes'],
         answer: answerDisplay,
         answerLink: `/question/${answerId}`,
         level,
