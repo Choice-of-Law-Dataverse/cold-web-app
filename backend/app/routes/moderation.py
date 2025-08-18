@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Request, Form, Response, HTTPException
+from fastapi import APIRouter, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
 from typing import Optional
 
@@ -14,15 +14,6 @@ writer: MainDBWriter | None = None
 
 def _is_logged_in(request: Request) -> bool:
     return bool(request.session.get("moderator"))
-
-
-@router.get("/ping")
-def ping():
-    return {"status": "ok"}
-
-@router.get("/ping/")
-def ping_slash():
-    return {"status": "ok"}
 
 
 @router.get("/login", response_class=HTMLResponse)
@@ -43,10 +34,6 @@ def login_form(request: Request):
         """
     )
 
-@router.get("/login/", response_class=HTMLResponse)
-def login_form_slash(request: Request):
-    return login_form(request)
-
 
 @router.post("/login")
 def login(request: Request, username: str = Form(...), password: str = Form(...)):
@@ -57,19 +44,11 @@ def login(request: Request, username: str = Form(...), password: str = Form(...)
         return RedirectResponse(url="/moderation", status_code=302)
     return HTMLResponse("Invalid credentials", status_code=401)
 
-@router.post("/login/")
-def login_slash(request: Request, username: str = Form(...), password: str = Form(...)):
-    return login(request, username, password)
-
 
 @router.get("/logout")
 def logout(request: Request):
     request.session.clear()
     return RedirectResponse(url="/moderation/login", status_code=302)
-
-@router.get("/logout/")
-def logout_slash(request: Request):
-    return logout(request)
 
 
 @router.get("/")
@@ -94,10 +73,6 @@ def index(request: Request):
         """
     )
 
-@router.get("//")
-def index_slash(request: Request):
-    return index(request)
-
 
 def _table_key(path_segment: str) -> Optional[str]:
     mapping = {
@@ -121,17 +96,12 @@ def list_pending(request: Request, category: str):
     if service is None:
         service = SuggestionService()
     items = service.list_pending(table)
-    # minimal HTML list
     entries = "".join(
         f"<li>#{i['id']} <pre style='white-space:pre-wrap'>{i['payload']}</pre>"
         f"<form method='post' action='/moderation/{category}/{i['id']}/approve' style='display:inline'><button>Approve</button></form>"
         f"<form method='post' action='/moderation/{category}/{i['id']}/reject' style='display:inline;margin-left:10px'><button>Reject</button></form>"
         f"</li>" for i in items
     )
-
-@router.get("/{category}/")
-def list_pending_slash(request: Request, category: str):
-    return list_pending(request, category)
     return HTMLResponse(
         f"""
         <html><head><title>Pending - {category}</title></head>
@@ -151,17 +121,17 @@ def approve(request: Request, category: str, suggestion_id: int):
     table = _table_key(category)
     if not table:
         raise HTTPException(status_code=404)
-    # fetch payload
+    global service
+    if service is None:
+        service = SuggestionService()
     items = service.list_pending(table)
     item = next((i for i in items if i["id"] == suggestion_id), None)
     if not item:
         raise HTTPException(status_code=404, detail="Suggestion not found or not pending")
     payload = item["payload"]
-    # Lazily initialize writer to avoid import-time failures if env not ready
     global writer
     if writer is None:
         writer = MainDBWriter()
-    # Map category to target table and insert
     table_map = {
         "court-decisions": "Court_Decisions",
         "domestic-instruments": "Domestic_Instruments",
@@ -172,14 +142,9 @@ def approve(request: Request, category: str, suggestion_id: int):
     target_table = table_map.get(category)
     if not target_table:
         raise HTTPException(status_code=400, detail="Unsupported category")
-    # Insert payload as-is with basic field name mapping already aligned in schemas
     merged_id = writer.insert_record(target_table, payload)
     service.mark_status(table, suggestion_id, "approved", request.session.get("moderator", "moderator"), merged_id=merged_id)
     return RedirectResponse(url=f"/moderation/{category}", status_code=302)
-
-@router.post("/{category}/{suggestion_id}/approve/")
-def approve_slash(request: Request, category: str, suggestion_id: int):
-    return approve(request, category, suggestion_id)
 
 
 @router.post("/{category}/{suggestion_id}/reject")
@@ -189,9 +154,8 @@ def reject(request: Request, category: str, suggestion_id: int):
     table = _table_key(category)
     if not table:
         raise HTTPException(status_code=404)
+    global service
+    if service is None:
+        service = SuggestionService()
     service.mark_status(table, suggestion_id, "rejected", request.session.get("moderator", "moderator"))
     return RedirectResponse(url=f"/moderation/{category}", status_code=302)
-
-@router.post("/{category}/{suggestion_id}/reject/")
-def reject_slash(request: Request, category: str, suggestion_id: int):
-    return reject(request, category, suggestion_id)

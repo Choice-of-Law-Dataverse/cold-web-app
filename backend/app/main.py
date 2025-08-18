@@ -1,7 +1,6 @@
 from fastapi import FastAPI, APIRouter, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-import logging
 
 from app.auth import verify_jwt_token
 from app.routes import ai, search, submarine, user, sitemap, landing_page
@@ -85,7 +84,6 @@ api_router.include_router(landing_page.router)
 from app.routes import suggestions as suggestions_router
 api_router.include_router(suggestions_router.router)
 from app.routes import moderation as moderation_router
-api_router.include_router(moderation_router.router)
 
 app.include_router(api_router)
 
@@ -100,18 +98,3 @@ app.include_router(moderation_router.router)
 def root():
     """Simple health check endpoint for the CoLD API root."""
     return {"message": "Hello World from CoLD"}
-
-
-@app.get("/_routes")
-def list_routes():
-    return {"routes": [getattr(r, "path", str(r)) for r in app.routes]}
-
-
-@app.on_event("startup")
-def _log_routes_on_startup():
-    logger = logging.getLogger("uvicorn")
-    try:
-        paths = [getattr(r, "path", str(r)) for r in app.routes]
-        logger.info("Registered routes: %s", paths)
-    except Exception as e:
-        logger.warning("Could not enumerate routes: %s", e)
