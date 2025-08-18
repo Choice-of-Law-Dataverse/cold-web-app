@@ -3,7 +3,7 @@
     <div class="popular-searches-container flex flex-col gap-8">
       <div>
         <h2 class="popular-title text-left">
-          Is there a codification on choice of law?
+          {{ questionTitle || 'Missing Question' }}
         </h2>
         <div>
           <h3 class="mt-4">
@@ -100,6 +100,7 @@ const selectedAnswer = ref('Yes')
 const selectedRegion = ref('All')
 const countries = ref([])
 const countriesLines = ref([])
+const questionTitle = ref('')
 const config = useRuntimeConfig()
 
 async function fetchCountries() {
@@ -132,6 +133,14 @@ async function fetchCountries() {
           (item) => typeof item.ID === 'string' && item.ID.endsWith(suffix)
         )
       : []
+
+    // Populate questionTitle from API response (use first matching row)
+    if (
+      dataWithSuffix.length > 0 &&
+      typeof dataWithSuffix[0].Question === 'string'
+    ) {
+      questionTitle.value = dataWithSuffix[0].Question
+    }
 
     let filtered = dataWithSuffix.filter(
       (item) => item['Jurisdictions Irrelevant'] !== 'Yes'
