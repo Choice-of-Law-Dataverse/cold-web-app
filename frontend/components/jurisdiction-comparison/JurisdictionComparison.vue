@@ -256,7 +256,7 @@ async function fetchJurisdictions() {
 
     // Filter out jurisdictions where "Irrelevant?" is explicitly true
     const relevantJurisdictions = data.filter(
-      (entry) => entry['Irrelevant?'] === null
+      (entry) => entry['Irrelevant?'] === false
     )
 
     // Extract and format jurisdiction names

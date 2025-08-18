@@ -10,11 +10,40 @@ from app.auth import verify_jwt_token
 search_service = SearchService()
 
 router = APIRouter(
-    prefix="/search", tags=["Search"], dependencies=[Depends(verify_jwt_token)]
+    prefix="/search",
+    tags=["Search"],
+    dependencies=[Depends(verify_jwt_token)],
 )
 
 
-@router.post("/")
+@router.post(
+    "/",
+    summary="Full-text search across CoLD data",
+    description=(
+        "Searches across multiple domains (Answers, HCCH Answers, Court Decisions, Domestic Instruments, Regional Instruments, International Instruments, and Literature). "
+        "Filters support user-facing fields like 'tables', 'Jurisdictions', or 'Themes'. "
+        "You can sort by date and paginate results."
+    ),
+    responses={
+        200: {
+            "description": "Search results including pagination and total matches.",
+            "content": {
+                "application/json": {
+                    "example": {
+                        "test": False,
+                        "total_matches": 2,
+                        "page": 1,
+                        "page_size": 2,
+                        "results": [
+                            {"source_table": "Answers", "id": "CHE_15-TC", "Title": "…"},
+                            {"source_table": "Court Decisions", "id": "CD-GBR-1167", "Title": "…"}
+                        ],
+                    }
+                }
+            },
+        }
+    },
+)
 def handle_full_text_search(request: Request, body: FullTextSearchRequest):
     search_string = body.search_string
     filters = body.filters or []
@@ -26,7 +55,24 @@ def handle_full_text_search(request: Request, body: FullTextSearchRequest):
     return results
 
 
-@router.post("/details")
+@router.post(
+    "/details",
+    summary="Fetch a curated record by CoLD ID including hop-1 relations",
+    description=(
+        "Given a user-facing table and a CoLD ID, returns the canonical record and its first-hop related entries."
+    ),
+    responses={
+        200: {
+            "description": "Flattened, mapping-transformed record.",
+            "content": {
+                "application/json": {
+                    "example": {"source_table": "Answers", "id": "CHE_15-TC", "Title": "…", "hop1_relations": {}}
+                }
+            },
+        },
+        404: {"description": "Record not found."},
+    },
+)
 def handle_curated_details_search(request: Request, body: CuratedDetailsRequest):
     table = body.table
     record_id = body.id
@@ -35,7 +81,28 @@ def handle_curated_details_search(request: Request, body: CuratedDetailsRequest)
     return results
 
 
-@router.post("/full_table")
+@router.post(
+    "/full_table",
+    summary="Return full or filtered table",
+    description=(
+        "Returns all records from the specified table or a filtered subset. "
+        "Filters accept user-facing field names and values (mapping-aware)."
+    ),
+    responses={
+        200: {
+            "description": "Array of transformed records from the requested table.",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {"source_table": "Answers", "id": "CHE_15-TC", "Jurisdictions": ["Switzerland"], "Title": "…"}
+                    ]
+                }
+            },
+        },
+        400: {"description": "Missing or invalid table parameter."},
+        500: {"description": "Server error while querying the table."},
+    },
+)
 def return_full_table(request: Request, body: FullTableRequest):
     table = body.table
     filters = body.filters or []

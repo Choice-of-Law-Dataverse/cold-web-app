@@ -4,7 +4,11 @@ from fastapi.responses import HTMLResponse
 router = APIRouter(prefix="/submarine", tags=["Submarine"])
 
 
-@router.get("/", response_class=HTMLResponse)
+@router.get(
+    "/",
+    summary="Animated submarine easter egg",
+    response_class=HTMLResponse,
+)
 def submarine():
     html_content = """
     <!DOCTYPE html>

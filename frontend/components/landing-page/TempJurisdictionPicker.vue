@@ -53,7 +53,7 @@ async function fetchJurisdictions() {
 
     // Filter jurisdictions (only applies to "Jurisdictions" table)
     const relevantJurisdictions = jurisdictionsData.filter(
-      (entry) => entry['Irrelevant?'] === null
+      (entry) => entry['Irrelevant?'] === false
     )
 
     // Extract "Name" field
