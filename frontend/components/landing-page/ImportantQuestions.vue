@@ -441,6 +441,22 @@ function splitIntoThreeLines(items) {
 .card-inner {
   position: relative; /* make nav buttons position relative to the card height */
 }
+/* Fixed component height */
+.card-inner {
+  height: 326px;
+}
+
+/* Ensure UCard fills the fixed height and internal content scrolls if needed */
+.card-container .cold-ucard {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.popular-searches-container {
+  flex: 1 1 auto; /* allow inner container to grow and scroll */
+  overflow: auto;
+}
 
 /* Ensure the UCard fills the container width so the component doesn't shrink/expand
    based on its internal content */
@@ -462,7 +478,7 @@ function splitIntoThreeLines(items) {
 }
 .dots-outside {
   /* ensure dots sit below the card and don't overlap nav buttons */
-  margin-top: -8px !important;
+  margin-top: 12px !important;
   padding-bottom: 0.25rem;
 }
 .nav-button-outside {
