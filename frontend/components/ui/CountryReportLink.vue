@@ -24,7 +24,7 @@
                 </span>
               </h3>
               <span class="result-value-small">
-                The country report provides detailed information, answers and
+                The country report provides detailed information, answers, and
                 more on
                 {{ processedAnswerData?.Jurisdictions || 'this jurisdiction' }}
               </span>
