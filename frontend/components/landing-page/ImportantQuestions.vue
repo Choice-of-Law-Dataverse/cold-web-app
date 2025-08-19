@@ -89,18 +89,8 @@
                 </div>
               </div>
             </div>
-            <!-- Dots navigation -->
-            <div class="mt-4">
-              <div class="carousel-dots flex justify-center gap-2">
-                <button
-                  v-for="(suf, idx) in suffixes"
-                  :key="idx"
-                  @click="((currentIndex = idx), fetchCountries())"
-                  :aria-label="`Go to question ${idx + 1}`"
-                  :class="['dot', { 'dot-active': currentIndex === idx }]"
-                />
-              </div>
-            </div>
+            <!-- Dots navigation (moved outside the UCard to sit below the component) -->
+            <!-- removed from here -->
           </div>
         </div>
       </UCard>
@@ -112,6 +102,18 @@
       >
         ▶
       </button>
+      <!-- Dots navigation (outside the UCard, centered below) -->
+      <div class="dots-outside mt-4 w-full flex justify-center">
+        <div class="carousel-dots flex justify-center gap-2">
+          <button
+            v-for="(suf, idx) in suffixes"
+            :key="idx"
+            @click="((currentIndex = idx), fetchCountries())"
+            :aria-label="`Go to question ${idx + 1}`"
+            :class="['dot', { 'dot-active': currentIndex === idx }]"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -425,6 +427,11 @@ function splitIntoThreeLines(items) {
   white-space: nowrap; /* keep country label and flag on one line */
   display: inline-flex;
   align-items: center;
+}
+.dots-outside {
+  /* ensure dots sit below the card and don't overlap nav buttons */
+  margin-top: 8px;
+  padding-bottom: 0.25rem;
 }
 .nav-button-outside {
   position: absolute;
