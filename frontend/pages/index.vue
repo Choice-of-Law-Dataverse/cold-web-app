@@ -10,7 +10,7 @@
           </div>
         </div>
 
-        <!-- <div class="col-span-12">
+        <div class="col-span-12">
           <h2
             class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 flex flex-row items-center gap-1"
           >
@@ -123,7 +123,7 @@
             iconName="i-material-symbols:add-notes"
             :newTab="false"
           />
-        </div> -->
+        </div>
         <div class="col-span-12 md:col-span-8">
           <ImportantQuestions
             :questionSuffixes="[
