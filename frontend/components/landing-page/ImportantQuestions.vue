@@ -7,7 +7,21 @@
         @click="prevQuestion"
         type="button"
       >
-        ◀
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          height="24"
+          fill="none"
+          style="transform: rotate(180deg); color: var(--color-cold-purple)"
+        >
+          <path
+            d="M9 6l6 6-6 6"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="square"
+            stroke-linejoin="square"
+          />
+        </svg>
       </button>
       <UCard class="cold-ucard">
         <div class="popular-searches-container flex flex-col gap-8">
@@ -98,7 +112,21 @@
         @click="nextQuestion"
         type="button"
       >
-        ▶
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          height="24"
+          fill="none"
+          style="color: var(--color-cold-purple)"
+        >
+          <path
+            d="M9 6l6 6-6 6"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="square"
+            stroke-linejoin="square"
+          />
+        </svg>
       </button>
       <!-- Dots navigation (outside the UCard, centered below) -->
       <div class="dots-outside mt-4 w-full flex justify-center">
@@ -435,28 +463,25 @@ function splitIntoThreeLines(items) {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: #ffffff;
-  border: 1px solid #e5e7eb; /* gray-200 */
-  border-radius: 9999px;
-  width: 36px;
-  height: 36px;
-  display: flex;
+  background: transparent; /* no circle behind svg */
+  border: none;
+  padding: 6px; /* keep a comfortable hit area */
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   font-size: 16px;
   line-height: 1;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  color: var(--color-cold-night);
   transition:
-    background 0.15s ease,
     color 0.15s ease,
-    box-shadow 0.15s ease;
+    transform 0.12s ease;
   z-index: 20; /* above card */
 }
 .nav-button-outside:hover {
-  background: var(--color-cold-purple);
-  color: #fff;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+  /* no hover effect for icons */
+  color: var(--color-cold-purple);
+  transform: translateY(-50%);
 }
 .nav-button-outside.left {
   left: -44px;
