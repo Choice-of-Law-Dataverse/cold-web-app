@@ -89,8 +89,6 @@
                 </div>
               </div>
             </div>
-            <!-- Dots navigation (moved outside the UCard to sit below the component) -->
-            <!-- removed from here -->
           </div>
         </div>
       </UCard>
