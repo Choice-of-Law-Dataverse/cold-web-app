@@ -263,6 +263,15 @@ const getDisplayValue = (item, value) => {
   ) {
     return value.split(',').map((part) => part.trim())
   }
+  // Treat empty arrays as empty for fallback logic
+  if (
+    Array.isArray(value) &&
+    value.length === 0 &&
+    item.emptyValueBehavior &&
+    item.emptyValueBehavior.action === 'display'
+  ) {
+    return item.emptyValueBehavior.fallback || 'N/A'
+  }
   if (!item.emptyValueBehavior) return value || 'N/A'
   if (
     (!value || value === 'NA') &&
