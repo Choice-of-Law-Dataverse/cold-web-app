@@ -1,133 +1,135 @@
 <template>
   <div class="important-questions-wrapper relative">
     <div class="card-container">
-      <button
-        class="nav-button-outside left"
-        aria-label="Previous question"
-        @click="prevQuestion"
-        type="button"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          height="24"
-          fill="none"
-          style="transform: rotate(180deg); color: var(--color-cold-purple)"
+      <div class="card-inner">
+        <button
+          class="nav-button-outside left"
+          aria-label="Previous question"
+          @click="prevQuestion"
+          type="button"
         >
-          <path
-            d="M9 6l6 6-6 6"
-            stroke="currentColor"
-            stroke-width="3"
-            stroke-linecap="square"
-            stroke-linejoin="square"
-          />
-        </svg>
-      </button>
-      <UCard class="cold-ucard">
-        <div class="popular-searches-container flex flex-col gap-8">
-          <div>
-            <div class="flex items-center justify-center md:justify-between">
-              <h2 class="popular-title text-center md:text-left mb-0">
-                {{ questionTitle || 'Missing Question' }}
-              </h2>
-            </div>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            height="24"
+            fill="none"
+            style="transform: rotate(180deg); color: var(--color-cold-purple)"
+          >
+            <path
+              d="M9 6l6 6-6 6"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="square"
+              stroke-linejoin="square"
+            />
+          </svg>
+        </button>
+        <UCard class="cold-ucard">
+          <div class="popular-searches-container flex flex-col gap-8">
             <div>
-              <h3 class="mt-4">
-                <span
-                  v-for="(option, idx) in answers"
-                  :key="option"
-                  class="mr-4 cursor-pointer answer-option"
-                  :class="{ 'selected-answer': selectedAnswer === option }"
-                  @click="selectAnswer(option)"
-                >
-                  {{ option }}
-                </span>
-              </h3>
-              <div style="position: relative">
-                <p class="label mt-6 mb-6 regions-scroll">
-                  <span
-                    v-for="(region, idx) in regions"
-                    :key="region"
-                    class="mr-4 region-label"
-                    :class="{ 'selected-region': selectedRegion === region }"
-                    style="cursor: pointer"
-                    @click="selectRegion(region)"
-                  >
-                    {{ region }}
-                  </span>
-                </p>
-                <div class="fade-out fade-out-region"></div>
+              <div class="flex items-center justify-center md:justify-between">
+                <h2 class="popular-title text-center md:text-left mb-0">
+                  {{ questionTitle || 'Missing Question' }}
+                </h2>
               </div>
-              <div v-if="selectedAnswer">
-                <div
-                  v-if="countries.length"
-                  class="countries-scroll mt-2 countries-scroll-fade-container"
-                  style="position: relative"
-                >
-                  <div class="countries-lines">
-                    <div
-                      class="countries-line"
-                      v-for="(line, li) in countriesLines"
-                      :key="li"
+              <div>
+                <h3 class="mt-4">
+                  <span
+                    v-for="(option, idx) in answers"
+                    :key="option"
+                    class="mr-4 cursor-pointer answer-option"
+                    :class="{ 'selected-answer': selectedAnswer === option }"
+                    @click="selectAnswer(option)"
+                  >
+                    {{ option }}
+                  </span>
+                </h3>
+                <div style="position: relative">
+                  <p class="label mt-6 mb-6 regions-scroll">
+                    <span
+                      v-for="(region, idx) in regions"
+                      :key="region"
+                      class="mr-4 region-label"
+                      :class="{ 'selected-region': selectedRegion === region }"
+                      style="cursor: pointer"
+                      @click="selectRegion(region)"
                     >
-                      <a
-                        v-for="country in line"
-                        :key="country.code"
-                        class="country-item label-jurisdiction country-link-flex"
-                        :href="`/question/${country.code}${currentSuffix}`"
-                      >
-                        <img
-                          :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
-                          style="
-                            height: 12px;
-                            margin-right: 6px;
-                            margin-bottom: 2px;
-                          "
-                          :alt="country.code + ' flag'"
-                          @error="
-                            (e) => {
-                              e.target.style.display = 'none'
-                            }
-                          "
-                        />
-                        {{ country.name }}
-                      </a>
-                    </div>
-                  </div>
-                  <div
-                    class="fade-out fade-out-countries countries-fade-fixed"
-                  ></div>
+                      {{ region }}
+                    </span>
+                  </p>
+                  <div class="fade-out fade-out-region"></div>
                 </div>
-                <div v-else class="mt-4 copy">
-                  No jurisdictions to be displayed
+                <div v-if="selectedAnswer">
+                  <div
+                    v-if="countries.length"
+                    class="countries-scroll mt-2 countries-scroll-fade-container"
+                    style="position: relative"
+                  >
+                    <div class="countries-lines">
+                      <div
+                        class="countries-line"
+                        v-for="(line, li) in countriesLines"
+                        :key="li"
+                      >
+                        <a
+                          v-for="country in line"
+                          :key="country.code"
+                          class="country-item label-jurisdiction country-link-flex"
+                          :href="`/question/${country.code}${currentSuffix}`"
+                        >
+                          <img
+                            :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
+                            style="
+                              height: 12px;
+                              margin-right: 6px;
+                              margin-bottom: 2px;
+                            "
+                            :alt="country.code + ' flag'"
+                            @error="
+                              (e) => {
+                                e.target.style.display = 'none'
+                              }
+                            "
+                          />
+                          {{ country.name }}
+                        </a>
+                      </div>
+                    </div>
+                    <div
+                      class="fade-out fade-out-countries countries-fade-fixed"
+                    ></div>
+                  </div>
+                  <div v-else class="mt-4 copy">
+                    No jurisdictions to be displayed
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </UCard>
-      <button
-        class="nav-button-outside right"
-        aria-label="Next question"
-        @click="nextQuestion"
-        type="button"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          height="24"
-          fill="none"
-          style="color: var(--color-cold-purple)"
+        </UCard>
+        <button
+          class="nav-button-outside right"
+          aria-label="Next question"
+          @click="nextQuestion"
+          type="button"
         >
-          <path
-            d="M9 6l6 6-6 6"
-            stroke="currentColor"
-            stroke-width="3"
-            stroke-linecap="square"
-            stroke-linejoin="square"
-          />
-        </svg>
-      </button>
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            height="24"
+            fill="none"
+            style="color: var(--color-cold-purple)"
+          >
+            <path
+              d="M9 6l6 6-6 6"
+              stroke="currentColor"
+              stroke-width="3"
+              stroke-linecap="square"
+              stroke-linejoin="square"
+            />
+          </svg>
+        </button>
+      </div>
       <!-- Dots navigation (outside the UCard, centered below) -->
       <div class="dots-outside mt-4 w-full flex justify-center">
         <div class="carousel-dots flex justify-center gap-2">
@@ -434,6 +436,10 @@ function splitIntoThreeLines(items) {
   width: 100%;
   max-width: 820px; /* adjust as needed to match design */
   margin: 0 auto; /* center the card */
+}
+
+.card-inner {
+  position: relative; /* make nav buttons position relative to the card height */
 }
 
 /* Ensure the UCard fills the container width so the component doesn't shrink/expand
