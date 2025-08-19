@@ -37,7 +37,7 @@
             title="Transnational Standard"
             subtitle="Authoritative Instrument on Choice of Law"
             buttonText="HCCH Principles"
-            buttonLink="/international-instrument/II-HCC-1"
+            buttonLink="/international-instrument/II-Pri-1"
             imageSrc="https://choiceoflawdataverse.blob.core.windows.net/assets/hcch-logo-circle.svg"
             :newTab="false"
           />
