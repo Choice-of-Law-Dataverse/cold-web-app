@@ -143,7 +143,7 @@ const config = useRuntimeConfig()
 const {
   loading,
   jurisdictionData,
-  // specialists,
+  specialists,
   compareJurisdiction,
   keyLabelPairs,
   valueClassMap,
