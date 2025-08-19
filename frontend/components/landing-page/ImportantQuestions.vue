@@ -400,7 +400,31 @@ function splitIntoThreeLines(items) {
 }
 .card-container {
   position: relative;
-  display: inline-block; /* shrink-wrap to card width */
+  /* Make the card container a consistent width so internal content (number of countries)
+     doesn't change the overall component width. It remains centered and responsive. */
+  display: block;
+  width: 100%;
+  max-width: 820px; /* adjust as needed to match design */
+  margin: 0 auto; /* center the card */
+}
+
+/* Ensure the UCard fills the container width so the component doesn't shrink/expand
+   based on its internal content */
+.card-container .cold-ucard {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0; /* allow card to shrink within its container and prevent children from forcing expansion */
+}
+/* Prevent internal flex children from growing the card beyond its max-width */
+.countries-lines,
+.countries-line {
+  max-width: 100%;
+  min-width: 0;
+}
+.country-item {
+  white-space: nowrap; /* keep country label and flag on one line */
+  display: inline-flex;
+  align-items: center;
 }
 .nav-button-outside {
   position: absolute;
