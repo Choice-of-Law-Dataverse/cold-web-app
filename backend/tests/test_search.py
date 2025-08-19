@@ -33,36 +33,49 @@ app.dependency_overrides[verify_jwt_token] = override_verify_jwt_token
 # Create a dummy search service to override the one used in routes.
 # ------------------------------------------------------------------------------
 class DummySearchService:
-    def full_text_search(self, search_string, filters=[]):
+    def full_text_search(self, search_string, filters=None, page=1, page_size=50, sort_by_date=False, response_type: str = 'parsed'):
         # Return a predictable result for testing.
         return {
             "dummy": "full_text_search",
             "search_string": search_string,
             "filters": filters,
+            "page": page,
+            "page_size": page_size,
+            "sort_by_date": sort_by_date,
+            "response_type": response_type,
         }
 
-    def curated_details_search(self, table, id):
+    def curated_details_search(self, table, cold_id, response_type: str = 'parsed'):
         # For allowed table names, return dummy data; otherwise, return an error dict.
         allowed_tables = [
             "Answers",
-            "Legislation",
+            "Legislation", 
             "Legal provisions",
             "Court decisions",
             "Jurisdictions",
             "Literature",
         ]
         if table in allowed_tables:
-            return {"dummy": "curated_details_search", "table": table, "id": id}
+            return {
+                "dummy": "curated_details_search", 
+                "table": table, 
+                "id": cold_id,
+                "source_table": table,
+                "record_id": 123,
+                "cold_id": cold_id,
+                "hop1_relations": {"test": "relations"},
+                "response_type": response_type,
+            }
         else:
             return {
                 "error": "this table either does not exist or has not been implemented in this route"
             }
 
-    def full_table(self, table):
-        return {"dummy": "full_table", "table": table}
+    def full_table(self, table, response_type: str = 'parsed'):
+        return {"dummy": "full_table", "table": table, "response_type": response_type}
 
-    def filtered_table(self, table, filters):
-        return {"dummy": "filtered_table", "table": table, "filters": filters}
+    def filtered_table(self, table, filters, response_type: str = 'parsed'):
+        return {"dummy": "filtered_table", "table": table, "filters": filters, "response_type": response_type}
 
 
 # Override the search_service instance in the search routes with our dummy service.
@@ -188,14 +201,18 @@ def test_service_full_text_search(dummy_service):
 
 
 def test_service_curated_details_search_valid(dummy_service):
-    result = dummy_service.curated_details_search("Answers", 123)
+    result = dummy_service.curated_details_search("Answers", "CHE_01.1-P")
     assert result["dummy"] == "curated_details_search"
     assert result["table"] == "Answers"
-    assert result["id"] == 123
+    assert result["id"] == "CHE_01.1-P"
+    assert result["source_table"] == "Answers"
+    assert result["record_id"] == 123
+    assert result["cold_id"] == "CHE_01.1-P"
+    assert "hop1_relations" in result
 
 
 def test_service_curated_details_search_invalid(dummy_service):
-    result = dummy_service.curated_details_search("InvalidTable", 123)
+    result = dummy_service.curated_details_search("InvalidTable", "TEST_ID")
     assert "error" in result
     assert (
         result["error"]

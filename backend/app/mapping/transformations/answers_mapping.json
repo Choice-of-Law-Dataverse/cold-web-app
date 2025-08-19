@@ -1,0 +1,113 @@
+{
+  "table_name": "Answers",
+  "description": "Transformation rules for converting Answers table from current NocoDB format to reference format",
+  "version": "1.0",
+  "mappings": {
+    "direct_mappings": {
+      "source_table": "source_table",
+      "id": "CoLD_ID",
+      "rank": "rank",
+      "ID": "CoLD_ID",
+      "Answer": "Answer",
+      "Created": "Created",
+      "Record ID": "ncRecordId",
+      "Last Modified": "updated_at",
+      "Last Modified By.id": "updated_by",
+  "Created By.id": "created_by",
+  "To Review?": "To_Review_",
+  "OUP Book Quote": "OUP_Book_Quote",
+  "More Information": "More_Information"
+    },
+    "conditional_mappings": {
+      "sort_date": {
+        "primary": "updated_at",
+        "fallback": "result_date"
+      }
+    },
+    "nested_mappings": {
+  "related_questions": {
+        "source_array": "related_questions",
+        "index": 0,
+        "mappings": {
+          "Question Link": "ncRecordId",
+          "Question": "Question",
+          "Number": "Question_Number"
+        },
+        "conditional_mappings": {
+          "Questions Theme Code": {
+    "primary": "Theme_Code",
+    "fallback": "Primary_Theme"
+          }
+        }
+      },
+      "related_jurisdictions": {
+        "source_array": "related_jurisdictions",
+        "index": 0,
+        "mappings": {
+          "Jurisdictions Link": "ncRecordId",
+          "Jurisdictions Alpha-3 code": "Alpha_3_Code",
+          "Jurisdictions": "Name",
+          "Jurisdictions Region": "Region"
+        },
+        "boolean_mappings": {
+          "Jurisdictions Irrelevant": {
+            "source_field": "Irrelevant_",
+            "true_value": "Yes",
+            "false_value": "None"
+          }
+        }
+      },
+      "hop1_relations.related_court_decisions": {
+        "source_array": "hop1_relations.related_court_decisions",
+        "array_operations": {
+          "Court Decisions": {
+            "operation": "join",
+            "field": "Case_Title",
+            "separator": ","
+          },
+          "Court Decisions Link": {
+            "operation": "join",
+            "field": "ncRecordId",
+            "separator": ","
+          },
+          "Court Decisions ID": {
+            "operation": "join",
+            "field": "CoLD_ID",
+            "separator": ","
+          }
+        }
+      },
+      "hop1_relations.related_domestic_instruments": {
+        "source_array": "hop1_relations.related_domestic_instruments",
+        "index": 0,
+        "mappings": {
+          "Domestic Instruments Link": "ncRecordId",
+          "Domestic Instruments": "Official_Title",
+          "Domestic Instruments ID": "CoLD_ID"
+        }
+      },
+      "hop1_relations.related_domestic_legal_provisions": {
+        "source_array": "hop1_relations.related_domestic_legal_provisions",
+        "index": 0,
+        "mappings": {
+          "Domestic Legal Provisions Link": "ncRecordId",
+          "Domestic Legal Provisions": "CoLD_ID"
+        }
+      },
+      "related_themes": {
+        "source_array": "related_themes",
+        "array_operations": {
+          "Themes": {
+            "operation": "join",
+            "field": "Theme",
+            "separator": ", "
+          }
+        }
+      }
+    }
+  },
+  "post_processing": {
+    "remove_null_values": true,
+    "remove_empty_strings": false
+  }
+}

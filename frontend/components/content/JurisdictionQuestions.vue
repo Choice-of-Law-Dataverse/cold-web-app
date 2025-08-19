@@ -195,13 +195,16 @@ import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 
+const questionsResult = useQuestions()
+
 const {
+  questionsData,
   processedQuestionsData,
   loading,
   error,
   answersLoading,
   fetchQuestions,
-} = useQuestions()
+} = questionsResult
 
 const attrs = useAttrs()
 const jurisdictionName = computed(() => {

@@ -44,7 +44,7 @@ export function useJurisdictionComparison() {
 
       const jurisdictionsData = await response.json()
       const options = jurisdictionsData
-        .filter((entry) => entry['Irrelevant?'] === null)
+        .filter((entry) => entry['Irrelevant?'] === false)
         .map((entry) => ({
           label: entry.Name,
           alpha3Code: entry['Alpha-3 Code'],

@@ -56,8 +56,9 @@ async def log_query(request: Request, call_next: Callable) -> Response:
         "request_body": request_json,
     }
 
-    collection.insert_one(log_data)
-    print("Logged query:", log_data)
+    #collection.insert_one(log_data)
+    #print("Logged query:", log_data)
+    print("Query was not logged")
 
     response = await call_next(request)
     return response

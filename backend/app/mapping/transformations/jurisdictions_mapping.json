@@ -1,0 +1,58 @@
+{
+  "table_name": "Jurisdictions",
+  "description": "Transformation rules for converting Jurisdictions table from current NocoDB format to reference format",
+  "version": "1.0",
+  "mappings": {
+    "direct_mappings": {
+      "source_table": "source_table",
+      "id": "id",
+      "cold_id": "cold_id",
+      "Name": "Name",
+      "Alpha-3 Code": "Alpha_3_Code",
+      "Type": "Type",
+      "Region": "Region",
+      "North-South Divide": "North_South_Divide",
+      "Jurisdictional Differentiator": "Jurisdictional_Differentiator",
+      "Record ID": "ncRecordId",
+      "Created": "Created",
+      "Last Modified": "Last_Modified",
+      "Last Modified By.id": "updated_by",
+      "Created By.id": "created_by",
+      "Jurisdiction Summary": "Jurisdiction_Summary",
+      "Legal Family": "Legal_Family"
+    },
+    "boolean_mappings": {
+      "Irrelevant?": {
+        "source_field": "Irrelevant_",
+        "true_value": true,
+        "false_value": false
+      },
+      "Done": {
+        "source_field": "Done",
+        "true_value": true,
+        "false_value": false
+      }
+    },
+    "nested_mappings": {
+      "related_specialists": {
+        "source_array": "related_specialists",
+        "array_operations": {
+          "Specialists": {
+            "operation": "join",
+            "field": "Specialist",
+            "separator": ","
+          },
+          "Specialists ID": {
+            "operation": "join",
+            "field": "id",
+            "separator": ","
+          }
+        }
+      }
+    }
+  },
+  "post_processing": {
+    "remove_null_values": true,
+    "remove_empty_strings": false
+  }
+}
