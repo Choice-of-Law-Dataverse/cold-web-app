@@ -28,7 +28,10 @@
           <div class="popular-searches-container flex flex-col gap-8">
             <div>
               <div class="flex items-center justify-center md:justify-between">
-                <h2 class="popular-title text-center md:text-left mb-0">
+                <h2
+                  ref="titleRef"
+                  class="popular-title text-center md:text-left mb-0"
+                >
                   {{ questionTitle || 'Missing Question' }}
                 </h2>
               </div>
@@ -153,7 +156,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, nextTick, onUnmounted } from 'vue'
 import { useRuntimeConfig } from '#imports'
 
 const answers = ['Yes', 'No']
@@ -173,6 +176,8 @@ const selectedRegion = ref('All')
 const countries = ref([])
 const countriesLines = ref([])
 const questionTitle = ref('')
+const titleRef = ref(null)
+const rowsCount = ref(3)
 // Carousel: accept an array of question suffixes to rotate through
 const props = defineProps({
   questionSuffixes: {
@@ -254,7 +259,10 @@ async function fetchCountries() {
       }))
       .sort((a, b) => a.name.localeCompare(b.name))
     countries.value = list
-    countriesLines.value = splitIntoThreeLines(list)
+    // after DOM updates, measure title and compute rows, then split
+    await nextTick()
+    computeRows()
+    countriesLines.value = splitIntoLines(list, rowsCount.value)
   } catch (e) {
     countries.value = ['Error loading countries']
     countriesLines.value = [['Error loading countries']]
@@ -273,27 +281,54 @@ function selectRegion(region) {
 
 onMounted(() => {
   fetchCountries()
+  // compute rows on mount and on resize
+  computeRows()
+  window.addEventListener('resize', computeRows)
 })
 
-function splitIntoThreeLines(items) {
-  // Split already-sorted items into 3 contiguous rows with equal counts when possible.
-  // Any remainder (n % 3) is distributed to the first rows to keep them balanced.
+// Cleanup resize listener when component unmounts
+onUnmounted(() => {
+  window.removeEventListener('resize', computeRows)
+})
+
+function computeRows() {
+  // Measure rendered title height to determine how many text lines it takes.
+  // If the title occupies 1 line, allow 4 country rows; otherwise keep 3.
+  const el = titleRef.value
+  if (!el) {
+    rowsCount.value = 3
+    return
+  }
+  try {
+    const style = getComputedStyle(el)
+    const lineHeight = parseFloat(style.lineHeight)
+    const height = el.offsetHeight
+    if (lineHeight > 0 && height > 0) {
+      const lines = Math.round(height / lineHeight) || 1
+      rowsCount.value = lines <= 1 ? 4 : 3
+    } else {
+      rowsCount.value = 3
+    }
+  } catch (err) {
+    rowsCount.value = 3
+  }
+}
+
+function splitIntoLines(items, rows) {
+  // Split already-sorted items into `rows` contiguous rows with equal counts when possible.
   const n = items.length
-  const base = Math.floor(n / 3)
-  const rem = n % 3 // 0,1,2
-
-  const size1 = base + (rem > 0 ? 1 : 0)
-  const size2 = base + (rem > 1 ? 1 : 0)
-  const size3 = n - size1 - size2
-
-  const firstEnd = size1
-  const secondEnd = size1 + size2
-
-  return [
-    items.slice(0, firstEnd),
-    items.slice(firstEnd, secondEnd),
-    items.slice(secondEnd),
-  ]
+  if (n === 0) return Array.from({ length: rows }, () => [])
+  const base = Math.floor(n / rows)
+  const rem = n % rows
+  const sizes = Array.from({ length: rows }, (_, i) => base + (i < rem ? 1 : 0))
+  const out = []
+  let idx = 0
+  for (let i = 0; i < rows; i++) {
+    const size = sizes[i]
+    out.push(items.slice(idx, idx + size))
+    idx += size
+  }
+  return out
 }
 </script>
 
