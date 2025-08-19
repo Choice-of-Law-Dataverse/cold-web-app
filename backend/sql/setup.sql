@@ -471,6 +471,7 @@ SELECT
 FROM p1q5x3pj29vkrdr."Arbitral_Awards" aa;
 
 CREATE UNIQUE INDEX idx_arbitral_awards_complete_id ON data_views.arbitral_awards_complete(id);
+
 -- 13. Jurisdictions: CoLD_ID is Alpha-3 code, include direct relations to other entities
 DROP MATERIALIZED VIEW IF EXISTS data_views.jurisdictions_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.jurisdictions_complete AS
@@ -500,7 +501,13 @@ SELECT
         FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Literature" jl
         JOIN p1q5x3pj29vkrdr."Literature" l ON l.id = jl."Literature_id"
         WHERE jl."Jurisdictions_id" = j.id
-    ) AS related_literature
+    ) AS related_literature,
+    (
+        SELECT jsonb_agg(s.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Specialists" js
+        JOIN p1q5x3pj29vkrdr."Specialists" s ON s.id = js."Specialists_id"
+        WHERE js."Jurisdictions_id" = j.id
+    ) AS related_specialists
 FROM p1q5x3pj29vkrdr."Jurisdictions" j;
 CREATE UNIQUE INDEX idx_jurisdictions_complete_id ON data_views.jurisdictions_complete(id);
 
@@ -1346,7 +1353,8 @@ BEGIN
             'related_answers', j.related_answers,
             'related_domestic_instruments', j.related_domestic_instruments,
             'related_court_decisions', j.related_court_decisions,
-            'related_literature', j.related_literature
+            'related_literature', j.related_literature,
+            'related_specialists', j.related_specialists
         )
         INTO hop1
         FROM data_views.jurisdictions_complete j
