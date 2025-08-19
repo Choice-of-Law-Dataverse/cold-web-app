@@ -235,15 +235,27 @@ async function fetchCountries() {
         )
       : []
 
-    // Populate questionTitle from API response (use first matching row)
+    // Enforce exact match on the Answer field (API may do substring matching)
+    const exactAnswerMatches = dataWithSuffix.filter(
+      (item) =>
+        typeof item.Answer === 'string' && item.Answer === selectedAnswer.value
+    )
+
+    // Populate questionTitle from an exact-answer match if available, otherwise fall back
     if (
+      exactAnswerMatches.length > 0 &&
+      typeof exactAnswerMatches[0].Question === 'string'
+    ) {
+      questionTitle.value = exactAnswerMatches[0].Question
+    } else if (
       dataWithSuffix.length > 0 &&
       typeof dataWithSuffix[0].Question === 'string'
     ) {
       questionTitle.value = dataWithSuffix[0].Question
     }
 
-    let filtered = dataWithSuffix.filter(
+    // Start from exact-answer matches so "No" does not match "No Data"
+    let filtered = exactAnswerMatches.filter(
       (item) => item['Jurisdictions Irrelevant'] !== 'Yes'
     )
     if (selectedRegion.value !== 'All') {
