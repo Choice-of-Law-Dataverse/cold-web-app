@@ -45,7 +45,7 @@
                   </span>
                 </h3>
                 <div style="position: relative">
-                  <p class="label mt-6 mb-6 regions-scroll">
+                  <p class="label mt-6 mb-6 ml-1 regions-scroll">
                     <span
                       v-for="(region, idx) in regions"
                       :key="region"
@@ -58,6 +58,8 @@
                     </span>
                   </p>
                   <div class="fade-out fade-out-region"></div>
+                  <!-- left-side fade (mirror of the right-side) -->
+                  <div class="fade-out fade-out-region fade-out-left"></div>
                 </div>
                 <div v-if="selectedAnswer">
                   <div
@@ -97,6 +99,10 @@
                     </div>
                     <div
                       class="fade-out fade-out-countries countries-fade-fixed"
+                    ></div>
+                    <!-- left-side fade for countries -->
+                    <div
+                      class="fade-out fade-out-countries countries-fade-fixed-left"
                     ></div>
                   </div>
                   <div v-else class="mt-4 copy">
@@ -378,6 +384,28 @@ function splitIntoThreeLines(items) {
 .fade-out-countries {
   height: 100%;
   right: 0;
+}
+/* Left-side fades mirror the right-side fades but anchored to the left */
+.fade-out-left {
+  /* mirror right-side fade but anchored left and narrower */
+  left: 0;
+  right: auto;
+  top: 0;
+  width: 10px; /* narrower left fade */
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(to right, white, transparent);
+}
+.countries-fade-fixed-left {
+  left: 0;
+  right: auto;
+  top: 0;
+  width: 10px; /* match left fade width */
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+  background: linear-gradient(to right, white, transparent);
 }
 .countries-scroll-fade-container {
   position: relative;
