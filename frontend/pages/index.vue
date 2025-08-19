@@ -77,6 +77,19 @@
           <LeadingCases />
         </div>
 
+        <div class="col-span-12 flex justify-center mb-4">
+          <ImportantQuestions
+            :questionSuffixes="[
+              '_01-P',
+              '_03-PA',
+              '_07-PA',
+              '_09-FoC',
+              '_13-TC',
+              '_22-MR',
+            ]"
+          />
+        </div>
+
         <div class="col-span-12 sm:col-span-3">
           <ConnectCard
             title="CoLD Newsletter"
@@ -115,25 +128,14 @@
             buttonIcon="i-material-symbols:open-in-new"
           />
         </div>
-        <div class="col-span-12 sm:col-span-4">
+
+        <div class="col-span-12">
           <ConnectCard
             title="Enter a new International Instrument"
             buttonText="Submit your data"
             buttonLink="/international-instrument/new"
             iconName="i-material-symbols:add-notes"
             :newTab="false"
-          />
-        </div>
-        <div class="col-span-12 md:col-span-8">
-          <ImportantQuestions
-            :questionSuffixes="[
-              '_01-P',
-              '_03-PA',
-              '_07-PA',
-              '_09-FoC',
-              '_13-TC',
-              '_22-MR',
-            ]"
           />
         </div>
       </div>
