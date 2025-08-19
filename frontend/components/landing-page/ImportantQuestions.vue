@@ -1,111 +1,119 @@
 <template>
-  <UCard class="cold-ucard">
-    <div class="popular-searches-container flex flex-col gap-8">
-      <div>
-        <div class="flex items-center justify-between">
-          <button
-            class="mr-4 p-1"
-            aria-label="Previous question"
-            @click="prevQuestion"
-          >
-            ◀
-          </button>
-          <h2 class="popular-title flex-1 text-center md:text-left">
-            {{ questionTitle || 'Missing Question' }}
-          </h2>
-          <button
-            class="ml-4 p-1"
-            aria-label="Next question"
-            @click="nextQuestion"
-          >
-            ▶
-          </button>
-        </div>
-        <div>
-          <h3 class="mt-4">
-            <span
-              v-for="(option, idx) in answers"
-              :key="option"
-              class="mr-4 cursor-pointer answer-option"
-              :class="{ 'selected-answer': selectedAnswer === option }"
-              @click="selectAnswer(option)"
-            >
-              {{ option }}
-            </span>
-          </h3>
-          <div style="position: relative">
-            <p class="label mt-6 mb-6 regions-scroll">
-              <span
-                v-for="(region, idx) in regions"
-                :key="region"
-                class="mr-4 region-label"
-                :class="{ 'selected-region': selectedRegion === region }"
-                style="cursor: pointer"
-                @click="selectRegion(region)"
-              >
-                {{ region }}
-              </span>
-            </p>
-            <div class="fade-out fade-out-region"></div>
-          </div>
-          <div v-if="selectedAnswer">
-            <div
-              v-if="countries.length"
-              class="countries-scroll mt-2 countries-scroll-fade-container"
-              style="position: relative"
-            >
-              <div class="countries-lines">
-                <div
-                  class="countries-line"
-                  v-for="(line, li) in countriesLines"
-                  :key="li"
+  <div class="important-questions-wrapper relative">
+    <div class="card-container">
+      <button
+        class="nav-button-outside left"
+        aria-label="Previous question"
+        @click="prevQuestion"
+        type="button"
+      >
+        ◀
+      </button>
+      <UCard class="cold-ucard">
+        <div class="popular-searches-container flex flex-col gap-8">
+          <div>
+            <div class="flex items-center justify-center md:justify-between">
+              <h2 class="popular-title text-center md:text-left mb-0">
+                {{ questionTitle || 'Missing Question' }}
+              </h2>
+            </div>
+            <div>
+              <h3 class="mt-4">
+                <span
+                  v-for="(option, idx) in answers"
+                  :key="option"
+                  class="mr-4 cursor-pointer answer-option"
+                  :class="{ 'selected-answer': selectedAnswer === option }"
+                  @click="selectAnswer(option)"
                 >
-                  <a
-                    v-for="country in line"
-                    :key="country.code"
-                    class="country-item label-jurisdiction country-link-flex"
-                    :href="`/question/${country.code}${currentSuffix}`"
+                  {{ option }}
+                </span>
+              </h3>
+              <div style="position: relative">
+                <p class="label mt-6 mb-6 regions-scroll">
+                  <span
+                    v-for="(region, idx) in regions"
+                    :key="region"
+                    class="mr-4 region-label"
+                    :class="{ 'selected-region': selectedRegion === region }"
+                    style="cursor: pointer"
+                    @click="selectRegion(region)"
                   >
-                    <img
-                      :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
-                      style="
-                        height: 12px;
-                        margin-right: 6px;
-                        margin-bottom: 2px;
-                      "
-                      :alt="country.code + ' flag'"
-                      @error="
-                        (e) => {
-                          e.target.style.display = 'none'
-                        }
-                      "
-                    />
-                    {{ country.name }}
-                  </a>
+                    {{ region }}
+                  </span>
+                </p>
+                <div class="fade-out fade-out-region"></div>
+              </div>
+              <div v-if="selectedAnswer">
+                <div
+                  v-if="countries.length"
+                  class="countries-scroll mt-2 countries-scroll-fade-container"
+                  style="position: relative"
+                >
+                  <div class="countries-lines">
+                    <div
+                      class="countries-line"
+                      v-for="(line, li) in countriesLines"
+                      :key="li"
+                    >
+                      <a
+                        v-for="country in line"
+                        :key="country.code"
+                        class="country-item label-jurisdiction country-link-flex"
+                        :href="`/question/${country.code}${currentSuffix}`"
+                      >
+                        <img
+                          :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
+                          style="
+                            height: 12px;
+                            margin-right: 6px;
+                            margin-bottom: 2px;
+                          "
+                          :alt="country.code + ' flag'"
+                          @error="
+                            (e) => {
+                              e.target.style.display = 'none'
+                            }
+                          "
+                        />
+                        {{ country.name }}
+                      </a>
+                    </div>
+                  </div>
+                  <div
+                    class="fade-out fade-out-countries countries-fade-fixed"
+                  ></div>
+                </div>
+                <div v-else class="mt-4 copy">
+                  No jurisdictions to be displayed
                 </div>
               </div>
-              <div
-                class="fade-out fade-out-countries countries-fade-fixed"
-              ></div>
             </div>
-            <div v-else class="mt-4 copy">No jurisdictions to be displayed</div>
+            <!-- Dots navigation -->
+            <div class="mt-4">
+              <div class="carousel-dots flex justify-center gap-2">
+                <button
+                  v-for="(suf, idx) in suffixes"
+                  :key="idx"
+                  @click="((currentIndex = idx), fetchCountries())"
+                  :aria-label="`Go to question ${idx + 1}`"
+                  :class="['dot', { 'dot-active': currentIndex === idx }]"
+                />
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-      <!-- Dots navigation -->
-      <div class="mt-4">
-        <div class="carousel-dots flex justify-center gap-2">
-          <button
-            v-for="(suf, idx) in suffixes"
-            :key="idx"
-            @click="((currentIndex = idx), fetchCountries())"
-            :aria-label="`Go to question ${idx + 1}`"
-            :class="['dot', { 'dot-active': currentIndex === idx }]"
-          />
-        </div>
-      </div>
+      </UCard>
+      <button
+        class="nav-button-outside right"
+        aria-label="Next question"
+        @click="nextQuestion"
+        type="button"
+      >
+        ▶
+      </button>
     </div>
-  </UCard>
+  </div>
 </template>
 
 <script setup>
@@ -380,5 +388,62 @@ function splitIntoThreeLines(items) {
 }
 .dot-active {
   background: var(--color-cold-purple);
+}
+
+/* Outside navigation buttons */
+.important-questions-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* remove horizontal padding to avoid causing overflow */
+  padding: 0;
+}
+.card-container {
+  position: relative;
+  display: inline-block; /* shrink-wrap to card width */
+}
+.nav-button-outside {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ffffff;
+  border: 1px solid #e5e7eb; /* gray-200 */
+  border-radius: 9999px;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease,
+    box-shadow 0.15s ease;
+  z-index: 20; /* above card */
+}
+.nav-button-outside:hover {
+  background: var(--color-cold-purple);
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+.nav-button-outside.left {
+  left: -44px;
+}
+.nav-button-outside.right {
+  right: -44px;
+}
+
+@media (max-width: 768px) {
+  .important-questions-wrapper {
+    padding: 0 1.5rem;
+  }
+  .nav-button-outside {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
 }
 </style>
