@@ -130,8 +130,8 @@
           </svg>
         </button>
       </div>
-      <!-- Dots navigation (outside the UCard, centered below) -->
-      <div class="dots-outside mt-4 w-full flex justify-center">
+      <!-- Dots navigation -->
+      <div class="dots-outside w-full flex justify-center">
         <div class="carousel-dots flex justify-center gap-2">
           <button
             v-for="(suf, idx) in suffixes"
@@ -410,10 +410,10 @@ function splitIntoThreeLines(items) {
 
 /* Carousel dots */
 .dot {
-  width: 10px;
-  height: 10px;
+  width: 6px;
+  height: 6px;
   border-radius: 9999px;
-  background: #d1d5db; /* gray-300 */
+  background: var(--color-cold-purple-alpha-25);
   border: none;
 }
 .dot-active {
@@ -462,7 +462,7 @@ function splitIntoThreeLines(items) {
 }
 .dots-outside {
   /* ensure dots sit below the card and don't overlap nav buttons */
-  margin-top: 8px;
+  margin-top: -8px !important;
   padding-bottom: 0.25rem;
 }
 .nav-button-outside {
