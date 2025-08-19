@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
-from typing import Any, Dict
+from typing import Any, Dict, Iterable, List, Optional
 from datetime import datetime, date
 from decimal import Decimal
 
@@ -134,3 +134,89 @@ class MainDBWriter:
             session.commit()
             new_id = result.scalar_one()
             return int(new_id)
+
+    # --- Jurisdictions linking helpers ---
+    def _resolve_jurisdiction_ids(self, raw_value: Any) -> List[int]:
+        """Return a list of Jurisdictions.id resolved from user input.
+        Accepts: integer id, numeric string id, ISO3 code (Alpha_3_Code), or Name; comma-separated list supported.
+        """
+        if raw_value is None:
+            return []
+        values: List[str]
+        if isinstance(raw_value, (list, tuple)):
+            values = [str(v) for v in raw_value]
+        else:
+            values = [s.strip() for s in str(raw_value).split(",")]
+        values = [v for v in values if v]
+        if not values:
+            return []
+
+        jur_table = sa.Table("Jurisdictions", self.metadata, autoload_with=self.engine)
+        found: List[int] = []
+        with self.Session() as session:
+            for v in values:
+                # Try numeric id first
+                try:
+                    vid = int(v)
+                    # verify exists
+                    q = sa.select(jur_table.c.id).where(jur_table.c.id == vid)
+                    row = session.execute(q).scalar_one_or_none()
+                    if row is not None:
+                        found.append(int(row))
+                        continue
+                except Exception:
+                    pass
+                # Try ISO3 code (Alpha_3_Code)
+                q = sa.select(jur_table.c.id).where(sa.func.lower(jur_table.c.Alpha_3_Code) == v.lower())
+                row = session.execute(q).scalar_one_or_none()
+                if row is not None:
+                    found.append(int(row))
+                    continue
+                # Try exact name match (case-insensitive)
+                q = sa.select(jur_table.c.id).where(sa.func.lower(jur_table.c.Name) == v.lower())
+                row = session.execute(q).scalar_one_or_none()
+                if row is not None:
+                    found.append(int(row))
+                    continue
+        return found
+
+    def link_jurisdictions(self, table_name: str, record_id: int, jurisdiction_value: Any) -> None:
+        """Link one or more jurisdictions to a record using NocoDB m2m link tables.
+        table_name: target main table (e.g., 'Court_Decisions')
+        jurisdiction_value: input that can be an id, ISO3, Name, or comma-separated values.
+        """
+        link_map: Dict[str, Dict[str, str]] = {
+            "Court_Decisions": {
+                "link_table": "_nc_m2m_Jurisdictions_Court_Decisions",
+                "left_key": "Court_Decisions_id",
+                "right_key": "Jurisdictions_id",
+            },
+            "Domestic_Instruments": {
+                "link_table": "_nc_m2m_Jurisdictions_Domestic_Instru",
+                "left_key": "Domestic_Instruments_id",
+                "right_key": "Jurisdictions_id",
+            },
+            "Literature": {
+                "link_table": "_nc_m2m_Jurisdictions_Literature",
+                "left_key": "Literature_id",
+                "right_key": "Jurisdictions_id",
+            },
+        }
+        meta = link_map.get(table_name)
+        if not meta:
+            return
+        jur_ids = self._resolve_jurisdiction_ids(jurisdiction_value)
+        if not jur_ids:
+            return
+
+        link_table = sa.Table(meta["link_table"], self.metadata, autoload_with=self.engine)
+        left_col = link_table.c[meta["left_key"]]
+        right_col = link_table.c[meta["right_key"]]
+        with self.Session() as session:
+            for jid in jur_ids:
+                # Avoid duplicate link
+                exists_q = sa.select(sa.literal(1)).where(sa.and_(left_col == record_id, right_col == jid)).limit(1)
+                exists = session.execute(exists_q).scalar_one_or_none()
+                if exists is None:
+                    session.execute(link_table.insert().values({meta["left_key"]: record_id, meta["right_key"]: jid}))
+            session.commit()

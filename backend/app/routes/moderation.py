@@ -280,6 +280,14 @@ async def approve(request: Request, category: str, suggestion_id: int):
         raise HTTPException(status_code=400, detail="Unsupported category")
     moderation_note = str(form.get("moderation_note") or "")
     merged_id = writer.insert_record(target_table, payload)
+    # Link jurisdictions if provided and supported by target table
+    for key in ("jurisdiction", "jurisdiction_link"):
+        if key in payload and payload.get(key):
+            try:
+                writer.link_jurisdictions(target_table, merged_id, payload.get(key))
+            except Exception:
+                # Best-effort linking; ignore errors to not block approval
+                pass
     service.mark_status(
         table,
         suggestion_id,
