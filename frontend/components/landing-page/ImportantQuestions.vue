@@ -438,7 +438,7 @@ function splitIntoLines(items, rows) {
   left: 0;
   right: auto;
   top: 0;
-  width: 10px; /* narrower left fade */
+  width: 8px; /* narrower left fade */
   height: 100%;
   pointer-events: none;
   z-index: 10;
@@ -448,7 +448,7 @@ function splitIntoLines(items, rows) {
   left: 0;
   right: auto;
   top: 0;
-  width: 10px; /* match left fade width */
+  width: 8px; /* match left fade width */
   height: 100%;
   pointer-events: none;
   z-index: 10;
