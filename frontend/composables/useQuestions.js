@@ -12,70 +12,96 @@ export function useQuestions() {
   const keyLabelPairs = questionConfig.keyLabelPairs
   const valueClassMap = questionConfig.valueClassMap
 
-  // Store all answers keyed by answer ID
+  // Store all answers keyed by composite answer ID (e.g. CHE_01.1-P)
   const answersMap = ref({})
 
-  // Fetch answer for a specific ID
-  async function fetchAnswer(answerId) {
+  /**
+   * Fetch all answers for the current jurisdiction in ONE request using /search/full_table.
+   * Replaces N calls to /search/details (performance improvement).
+   */
+  async function fetchAllAnswers() {
+    // Need questions loaded (for IDs) but we mainly rely on jurisdiction code.
+    answersLoading.value = true
+
+    // Derive ISO3 from URL (/jurisdiction/[code])
+    let iso3 = ''
+    if (typeof window !== 'undefined') {
+      const match = window.location.pathname.match(/\/jurisdiction\/([^/]+)/)
+      if (match && match[1]) iso3 = match[1].toUpperCase()
+    }
+
+    // If no jurisdiction in URL we cannot batch fetch; leave map empty.
+    if (!iso3) {
+      answersMap.value = {}
+      answersLoading.value = false
+      return
+    }
+
     try {
+      const payload = {
+        table: 'Answers',
+        filters: [
+          {
+            column: 'Jurisdictions Alpha-3 code',
+            value: iso3,
+          },
+        ],
+      }
+
       const response = await fetch(
-        `${config.public.apiBaseUrl}/search/details`,
+        `${config.public.apiBaseUrl}/search/full_table`,
         {
           method: 'POST',
           headers: {
             authorization: `Bearer ${config.public.FASTAPI}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ table: 'Answers', id: answerId }),
+          body: JSON.stringify(payload),
         }
       )
       if (!response.ok) {
-        throw new Error(`Failed to fetch answer: ${response.statusText}`)
+        throw new Error(`Failed to fetch answers: ${response.statusText}`)
       }
       const data = await response.json()
-      return data.Answer || ''
-    } catch (err) {
-      console.error(`Error fetching answer for ${answerId}:`, err)
-      return ''
-    }
-  }
 
-  // Fetch answers for all questions
-  async function fetchAllAnswers() {
-    if (!questionsData.value || !Array.isArray(questionsData.value)) return
+      // Expect an array of answer rows. We construct the composite key
+      // based on either existing 'CoLD ID' or by combining jurisdiction + question ID if needed.
+      const map = {}
+      if (Array.isArray(data)) {
+        for (const row of data) {
+          const jurisdiction =
+            row['Jurisdictions Alpha-3 code'] ||
+            row['Jurisdictions Alpha-3 Code'] ||
+            iso3
+          const rawQuestionId =
+            row['Question ID'] || row['QuestionID'] || row['CoLD ID'] || row.ID
+          const rawColdId = row['CoLD ID'] || row['Answer ID'] || rawQuestionId
+          const answerValue = row.Answer || row['Answer'] || ''
 
-    answersLoading.value = true
+          // If rawColdId already contains a jurisdiction prefix (ABC_), keep it.
+          // Otherwise, build a composite with jurisdiction if available.
+          // (Answers table spec: composite = {Jurisdictions Alpha-3 code}_ {Question ID})
+          let compositeId
+          if (rawColdId && /^[A-Z]{3}_/.test(rawColdId)) {
+            compositeId = rawColdId
+          } else if (jurisdiction && rawColdId) {
+            compositeId = `${jurisdiction}_${rawColdId}`
+          } else if (jurisdiction && rawQuestionId) {
+            compositeId = `${jurisdiction}_${rawQuestionId}`
+          } else {
+            compositeId = rawColdId || rawQuestionId
+          }
 
-    // Get ISO3 code from the URL
-    let iso3 = ''
-    if (typeof window !== 'undefined') {
-      const match = window.location.pathname.match(/\/jurisdiction\/([^/]+)/)
-      if (match && match[1]) {
-        iso3 = match[1].toUpperCase()
+          // Store under composite ID
+          if (compositeId) map[compositeId] = answerValue
+          // Also store under base ID (without jurisdiction) for any legacy lookups
+          if (rawQuestionId && !map[rawQuestionId])
+            map[rawQuestionId] = answerValue
+        }
       }
-    }
-
-    try {
-      // Create promises for all answer fetches
-      const answerPromises = questionsData.value.map(async (item) => {
-        const baseId = item['CoLD ID'] ?? item.ID // backward compatibility
-        const answerId = iso3 ? `${iso3}_${baseId}` : baseId
-        const answer = await fetchAnswer(answerId)
-        return { id: answerId, answer }
-      })
-
-      // Wait for all answers to be fetched
-      const results = await Promise.all(answerPromises)
-
-      // Build the answers map
-      const newAnswersMap = {}
-      results.forEach(({ id, answer }) => {
-        newAnswersMap[id] = answer
-      })
-
-      answersMap.value = newAnswersMap
+      answersMap.value = map
     } catch (err) {
-      console.error('Error fetching answers:', err)
+      console.error('Error fetching answers (batch):', err)
     } finally {
       answersLoading.value = false
     }
