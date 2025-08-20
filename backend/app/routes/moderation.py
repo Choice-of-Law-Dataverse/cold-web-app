@@ -249,6 +249,189 @@ def _normalize_case_analyzer_payload(raw: Dict[str, Any], item: Dict[str, Any]) 
     return result
 
 
+# New helpers: overview and detail rendering
+
+def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
+    payload: Dict[str, Any] = item.get("payload", {}) or {}
+
+    def val_to_str(v: Any) -> str:
+        if v is None:
+            return "NA"
+        if isinstance(v, (list, tuple)):
+            return ", ".join(str(x) for x in v if x is not None)
+        return str(v)
+
+    # Case Analyzer summary
+    if category == "case-analyzer":
+        normalized = _normalize_case_analyzer_payload(payload, item)
+        title = normalized.get("case_citation") or f"Case #{item['id']}"
+        parts = [
+            ("Jurisdiction", normalized.get("jurisdiction")),
+            ("Theme", normalized.get("theme")),
+            ("Date", normalized.get("date")),
+        ]
+        meta = " | ".join(f"{html.escape(k)}: {html.escape(val_to_str(v))}" for k, v in parts)
+        src = html.escape(str(item.get("source") or ""))
+        created = item.get("created_at")
+        created_s = created.isoformat() if hasattr(created, "isoformat") else str(created or "")
+        submit_name = normalized.get("username") or item.get("username") or payload.get("username")
+        submit_email = normalized.get("user_email") or item.get("user_email") or payload.get("user_email")
+        byline = (
+            f"<div style='color:#555;font-size:12px;margin-top:2px'>By: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}</div>"
+            if (submit_name or submit_email) else ""
+        )
+        return (
+            f"<li style='border:1px solid #eee;padding:8px;border-radius:6px;margin-bottom:8px'>"
+            f"<a href='/moderation/{category}/{item['id']}' style='font-weight:600;text-decoration:none'>{html.escape(str(title))}</a>"
+            f"<div style='color:#555;font-size:12px;margin-top:4px'>{meta}</div>"
+            f"{byline}"
+            f"<div style='color:#777;font-size:11px;margin-top:2px'>ID #{item['id']} — Source: {src} — Created: {html.escape(created_s)}</div>"
+            f"</li>"
+        )
+
+    # Default: other categories
+    summary_specs: Dict[str, Dict[str, Any]] = {
+        "court-decisions": {
+            "title_keys": ["case_citation", "case_name", "title", "name"],
+            "info": [
+                ("Jurisdiction", ["jurisdiction", "country"]),
+                ("Date", ["date_of_judgment", "decision_date", "date", "year"]),
+            ],
+        },
+        "domestic-instruments": {
+            "title_keys": ["title", "name"],
+            "info": [("Jurisdiction", ["jurisdiction", "country"]), ("Date", ["date", "year"])],
+        },
+        "regional-instruments": {
+            "title_keys": ["title", "name"],
+            "info": [("Jurisdiction", ["jurisdiction", "region"]), ("Date", ["date", "year"])],
+        },
+        "international-instruments": {
+            "title_keys": ["title", "name"],
+            "info": [("Date", ["date", "year"])],
+        },
+        "literature": {
+            "title_keys": ["title", "name"],
+            "info": [("Authors", ["authors", "author"]), ("Year", ["year", "publication_year"])],
+        },
+    }
+
+    spec = summary_specs.get(category, {"title_keys": ["title", "name"], "info": []})
+    def first_key(*keys: str) -> Any:
+        return _first(payload, *keys)
+
+    title = first_key(*spec["title_keys"]) or f"Entry #{item['id']}"
+    info_parts: List[Tuple[str, Any]] = []
+    for label, keys in spec.get("info", []):
+        info_parts.append((label, first_key(*keys)))
+    meta = " | ".join(f"{html.escape(label)}: {html.escape(val_to_str(val))}" for label, val in info_parts)
+    src = html.escape(str(item.get("source") or ""))
+    created = item.get("created_at")
+    created_s = created.isoformat() if hasattr(created, "isoformat") else str(created or "")
+    submit_name = item.get("username") or first_key("username", "submitter_name", "name")
+    submit_email = item.get("user_email") or first_key("user_email", "email", "submitter_email")
+    byline = (
+        f"<div style='color:#555;font-size:12px;margin-top:2px'>By: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}</div>"
+        if (submit_name or submit_email) else ""
+    )
+    return (
+        f"<li style='border:1px solid #eee;padding:8px;border-radius:6px;margin-bottom:8px'>"
+        f"<a href='/moderation/{category}/{item['id']}' style='font-weight:600;text-decoration:none'>{html.escape(str(title))}</a>"
+        f"<div style='color:#555;font-size:12px;margin-top:4px'>{meta}</div>"
+        f"{byline}"
+        f"<div style='color:#777;font-size:11px;margin-top:2px'>ID #{item['id']} — Source: {src} — Created: {html.escape(created_s)}</div>"
+        f"</li>"
+    )
+
+
+def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
+    payload: Dict[str, Any] = item.get("payload", {}) or {}
+    if category == "case-analyzer":
+        normalized = _normalize_case_analyzer_payload(payload, item)
+        def show(key: str) -> str:
+            val = normalized.get(key)
+            text = "NA" if val is None or (isinstance(val, str) and val.strip() == "") else str(val)
+            return html.escape(text)
+        ordered_rows = [
+            ("Username", show("username")),
+            ("E-Mail", show("user_email")),
+            ("Model", show("model")),
+            ("Date", show("date")),
+            ("Case Citation", show("case_citation")),
+            ("Jurisdiction", show("jurisdiction")),
+            ("Jurisdiction Type", show("jurisdiction_type")),
+            ("Choice of Law Section(s)", show("choice_of_law_sections")),
+            ("Theme", show("theme")),
+            ("Abstract", show("abstract")),
+            ("Relevant Facts", show("relevant_facts")),
+            ("PIL Provisions", show("pil_provisions")),
+            ("Choice of Law Issue", show("choice_of_law_issue")),
+            ("Court's Position", show("courts_position")),
+        ]
+        rows_html = [f"<div style='margin:4px 0'><strong>{html.escape(label)}:</strong> {value}</div>" for label, value in ordered_rows]
+        submit_name = normalized.get("username") or item.get("username") or payload.get("username")
+        submit_email = normalized.get("user_email") or item.get("user_email") or payload.get("user_email")
+        by_meta = (
+            f" — By: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}"
+            if (submit_name or submit_email) else ""
+        )
+        meta = (
+            f"<div style='color:#555;font-size:12px;margin-bottom:6px'>"
+            f"ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"
+        )
+        buttons = (
+            f"<form method='post' action='/moderation/{category}/{item['id']}/approve'>"
+            f"<div style='margin-top:8px'>"
+            f"<button type='submit' style='padding:6px 12px'>Mark as finished</button>"
+            f"<button type='submit' formaction='/moderation/{category}/{item['id']}/reject' style='padding:6px 12px;margin-left:8px'>Reject</button>"
+            f"</div></form>"
+        )
+        return (
+            f"<div style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>"
+            f"{meta}"
+            + "".join(rows_html)
+            + buttons
+            + "</div>"
+        )
+
+    # Default: form-based editing for other categories
+    inputs: List[str] = []
+    for fname, finfo in getattr(model, "model_fields").items():  # type: ignore[attr-defined]
+        val = payload.get(fname)
+        if isinstance(val, list):
+            val = ", ".join(str(v) for v in val)
+        inputs.append(_render_input(fname, val, finfo))
+    # moderation note (not for case analyzer)
+    inputs.append(
+        "<label style='display:block;margin:8px 0'>Moderation Note (optional)<br/>"
+        "<textarea name='moderation_note' rows='2' style='width:100%'></textarea></label>"
+    )
+    buttons = (
+        f"<div style='margin-top:8px'>"
+        f"<button type='submit' style='padding:6px 12px'>Approve</button>"
+        f"<button type='submit' formaction='/moderation/{category}/{item['id']}/reject' style='padding:6px 12px;margin-left:8px'>Reject</button>"
+        f"</div>"
+    )
+    submit_name = item.get("username") or _first(payload, "username", "submitter_name", "name")
+    submit_email = item.get("user_email") or _first(payload, "user_email", "email", "submitter_email")
+    by_meta = (
+        f" — Submitted by: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}"
+        if (submit_name or submit_email) else ""
+    )
+    meta = (
+        f"<div style='color:#555;font-size:12px;margin-bottom:6px'>"
+        f"ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"
+    )
+    return (
+        f"<div style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>"
+        f"{meta}"
+        f"<form method='post' action='/moderation/{category}/{item['id']}/approve'>"
+        + "".join(inputs)
+        + buttons
+        + "</form></div>"
+    )
+
+
 @router.get("/login", response_class=HTMLResponse)
 def login_form(request: Request):
     if _is_logged_in(request):
@@ -336,94 +519,49 @@ def list_pending(request: Request, category: str):
     if model is None:
         raise HTTPException(status_code=404)
 
-    def render_form(item: Dict[str, Any]) -> str:
-        payload: Dict[str, Any] = item.get("payload", {}) or {}
-        if category == "case-analyzer":
-            normalized = _normalize_case_analyzer_payload(payload, item)
-            def show(key: str) -> str:
-                val = normalized.get(key)
-                text = "NA" if val is None or (isinstance(val, str) and val.strip() == "") else str(val)
-                return html.escape(text)
-            ordered_rows = [
-                ("Username", show("username")),
-                ("E-Mail", show("user_email")),
-                ("Model", show("model")),
-                ("Date", show("date")),
-                ("Case Citation", show("case_citation")),
-                ("Jurisdiction", show("jurisdiction")),
-                ("Jurisdiction Type", show("jurisdiction_type")),
-                ("Choice of Law Section(s)", show("choice_of_law_sections")),
-                ("Theme", show("theme")),
-                ("Abstract", show("abstract")),
-                ("Relevant Facts", show("relevant_facts")),
-                ("PIL Provisions", show("pil_provisions")),
-                ("Choice of Law Issue", show("choice_of_law_issue")),
-                ("Court's Position", show("courts_position")),
-            ]
-            rows_html = [f"<div style='margin:4px 0'><strong>{html.escape(label)}:</strong> {value}</div>" for label, value in ordered_rows]
-            meta = (
-                f"<div style='color:#555;font-size:12px;margin-bottom:6px'>"
-                f"ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}</div>"
-            )
-            buttons = (
-                f"<form method='post' action='/moderation/{category}/{item['id']}/approve'>"
-                f"<div style='margin-top:8px'>"
-                f"<button type='submit' style='padding:6px 12px'>Mark as finished</button>"
-                f"<button type='submit' formaction='/moderation/{category}/{item['id']}/reject' style='padding:6px 12px;margin-left:8px'>Reject</button>"
-                f"</div></form>"
-            )
-            return (
-                f"<li style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>"
-                f"{meta}"
-                + "".join(rows_html)
-                + buttons
-                + "</li>"
-            )
-
-        # Default: form-based editing for other categories
-        if category != "case-analyzer":
-            inputs: List[str] = []
-            for fname, finfo in getattr(model, "model_fields").items():  # type: ignore[attr-defined]
-                val = payload.get(fname)
-                if isinstance(val, list):
-                    val = ", ".join(str(v) for v in val)
-                inputs.append(_render_input(fname, val, finfo))
-            # moderation note (not for case analyzer)
-            inputs.append(
-                "<label style='display:block;margin:8px 0'>Moderation Note (optional)<br/>"
-                "<textarea name='moderation_note' rows='2' style='width:100%'></textarea></label>"
-            )
-            buttons = (
-                f"<div style='margin-top:8px'>"
-                f"<button type='submit' style='padding:6px 12px'>Approve</button>"
-                f"<button type='submit' formaction='/moderation/{category}/{item['id']}/reject' style='padding:6px 12px;margin-left:8px'>Reject</button>"
-                f"</div>"
-            )
-            meta = (
-                f"<div style='color:#555;font-size:12px;margin-bottom:6px'>"
-                f"ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}</div>"
-            )
-            return (
-                f"<li style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>"
-                f"{meta}"
-                f"<form method='post' action='/moderation/{category}/{item['id']}/approve'>"
-                + "".join(inputs)
-                + buttons
-                + "</form></li>"
-            )
-
-        return ""  # fallback, shouldn't hit
-
-    entries = "".join(render_form(i) for i in items)
+    # Overview list with key info and link to detail view
+    entries = "".join(_render_overview_item(category, model, i) for i in items)
     empty_state = "<p>No pending suggestions.</p>" if not entries else ""
     return HTMLResponse(
         f"""
-        <html><head><title>Pending - {category}</title></head>
+        <html><head><title>Pending - {html.escape(category)}</title></head>
         <body>
-          <h3>Pending suggestions: {category}</h3>
-          <ul>{entries}</ul>
+          <h3>Pending suggestions: {html.escape(category)}</h3>
+          <ul style='list-style:none;padding-left:0'>{entries}</ul>
           {empty_state}
           <p><a href="/moderation">Back</a></p>
+        </body></html>
+        """
+    )
+
+
+# New: detail page per entry
+@router.get("/{category}/{suggestion_id}")
+def view_entry(request: Request, category: str, suggestion_id: int):
+    if not _is_logged_in(request):
+        return RedirectResponse(url="/moderation/login", status_code=302)
+    table = _table_key(category)
+    if not table:
+        raise HTTPException(status_code=404)
+    global service
+    if service is None:
+        service = SuggestionService()
+    items = service.list_pending(table)
+    item = next((i for i in items if i["id"] == suggestion_id), None)
+    if not item:
+        raise HTTPException(status_code=404, detail="Suggestion not found or not pending")
+    model = _category_schema(category)
+    if model is None:
+        raise HTTPException(status_code=404)
+
+    detail_html = _render_detail_entry(category, model, item)
+    return HTMLResponse(
+        f"""
+        <html><head><title>Detail - {html.escape(category)} #{suggestion_id}</title></head>
+        <body>
+          <h3>{html.escape(category.title())} — Entry #{suggestion_id}</h3>
+          {detail_html}
+          <p><a href="/moderation/{html.escape(category)}">Back to list</a></p>
         </body></html>
         """
     )
