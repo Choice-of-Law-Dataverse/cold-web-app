@@ -462,15 +462,129 @@ FROM p1q5x3pj29vkrdr."Literature" l;
 
 CREATE UNIQUE INDEX idx_literature_complete_id ON data_views.literature_complete(id);
 
--- 12. Arbitral Awards: ("AA-" & {ID Number})
+-- 12. Arbitral Awards: ("AA-" & {ID Number}) with full relations
 DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_awards_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.arbitral_awards_complete AS
 SELECT 
-    aa.*,
-    ('AA-' || aa."ID_Number") AS "CoLD_ID"
+    aa.*, 
+    ('AA-' || aa."ID_Number") AS "CoLD_ID",
+    (
+        SELECT jsonb_agg(ai.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral_Instit_Arbitral_Awards" m
+        JOIN p1q5x3pj29vkrdr."Arbitral_Institutions" ai ON ai.id = m."Arbitral_Institutions_id"
+        WHERE m."Arbitral_Awards_id" = aa.id
+    ) AS related_arbitral_institutions,
+    (
+        SELECT jsonb_agg(ap.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral Provis_Arbitral_Awards" m
+        JOIN p1q5x3pj29vkrdr."Arbitral Provisions" ap ON ap.id = m."Arbitral Provisions_id"
+        WHERE m."Arbitral_Awards_id" = aa.id
+    ) AS related_arbitral_provisions,
+    (
+        SELECT jsonb_agg(cd.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Court_Decisions_Arbitral_Awards" m
+        JOIN p1q5x3pj29vkrdr."Court_Decisions" cd ON cd.id = m."Court_Decisions_id"
+        WHERE m."Arbitral_Awards_id" = aa.id
+    ) AS related_court_decisions,
+    (
+        SELECT jsonb_agg(j.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Arbitral_Awards" m
+        JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = m."Jurisdictions_id"
+        WHERE m."Arbitral_Awards_id" = aa.id
+    ) AS related_jurisdictions,
+    (
+        SELECT jsonb_agg(t.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Themes_Arbitral_Awards" m
+        JOIN p1q5x3pj29vkrdr."Themes" t ON t.id = m."Themes_id"
+        WHERE m."Arbitral_Awards_id" = aa.id
+    ) AS related_themes
 FROM p1q5x3pj29vkrdr."Arbitral_Awards" aa;
 
 CREATE UNIQUE INDEX idx_arbitral_awards_complete_id ON data_views.arbitral_awards_complete(id);
+
+-- 12b. Arbitral Institutions complete view with relations
+DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_institutions_complete CASCADE;
+CREATE MATERIALIZED VIEW data_views.arbitral_institutions_complete AS
+SELECT
+    ai.*,
+    ('AI-' || ai.id::text) AS "CoLD_ID",
+    (
+        SELECT jsonb_agg(aa.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral_Instit_Arbitral_Awards" m
+        JOIN p1q5x3pj29vkrdr."Arbitral_Awards" aa ON aa.id = m."Arbitral_Awards_id"
+        WHERE m."Arbitral_Institutions_id" = ai.id
+    ) AS related_arbitral_awards,
+    (
+        SELECT jsonb_agg(ar.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral_Instit_Arbitral_Rules" m
+        JOIN p1q5x3pj29vkrdr."Arbitral_Rules" ar ON ar.id = m."Arbitral_Rules_id"
+        WHERE m."Arbitral_Institutions_id" = ai.id
+    ) AS related_arbitral_rules,
+    (
+        SELECT jsonb_agg(ap.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral Provis_Arbitral_Instit" m
+        JOIN p1q5x3pj29vkrdr."Arbitral Provisions" ap ON ap.id = m."Arbitral Provisions_id"
+        WHERE m."Arbitral_Institutions_id" = ai.id
+    ) AS related_arbitral_provisions,
+    (
+        SELECT jsonb_agg(j.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Arbitral_Instit" m
+        JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = m."Jurisdictions_id"
+        WHERE m."Arbitral_Institutions_id" = ai.id
+    ) AS related_jurisdictions
+FROM p1q5x3pj29vkrdr."Arbitral_Institutions" ai;
+
+CREATE UNIQUE INDEX idx_arbitral_institutions_complete_id ON data_views.arbitral_institutions_complete(id);
+
+-- 12c. Arbitral Rules complete view with relations
+DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_rules_complete CASCADE;
+CREATE MATERIALIZED VIEW data_views.arbitral_rules_complete AS
+SELECT
+    ar.*,
+    ('AR-' || COALESCE(ar."ID_Number"::text, ar.id::text)) AS "CoLD_ID",
+    (
+        SELECT jsonb_agg(ai.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral_Instit_Arbitral_Rules" m
+        JOIN p1q5x3pj29vkrdr."Arbitral_Institutions" ai ON ai.id = m."Arbitral_Institutions_id"
+        WHERE m."Arbitral_Rules_id" = ar.id
+    ) AS related_arbitral_institutions,
+    (
+        SELECT jsonb_agg(ap.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral Provis_Arbitral_Rules" m
+        JOIN p1q5x3pj29vkrdr."Arbitral Provisions" ap ON ap.id = m."Arbitral Provisions_id"
+        WHERE m."Arbitral_Rules_id" = ar.id
+    ) AS related_arbitral_provisions
+FROM p1q5x3pj29vkrdr."Arbitral_Rules" ar;
+
+CREATE UNIQUE INDEX idx_arbitral_rules_complete_id ON data_views.arbitral_rules_complete(id);
+
+-- 12d. Arbitral Provisions complete view with relations
+DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_provisions_complete CASCADE;
+CREATE MATERIALIZED VIEW data_views.arbitral_provisions_complete AS
+SELECT
+    ap.*,
+    ('AP-' || ap.id::text) AS "CoLD_ID",
+    (
+        SELECT jsonb_agg(aa.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral Provis_Arbitral_Awards" m
+        JOIN p1q5x3pj29vkrdr."Arbitral_Awards" aa ON aa.id = m."Arbitral_Awards_id"
+        WHERE m."Arbitral Provisions_id" = ap.id
+    ) AS related_arbitral_awards,
+    (
+        SELECT jsonb_agg(ai.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral Provis_Arbitral_Instit" m
+        JOIN p1q5x3pj29vkrdr."Arbitral_Institutions" ai ON ai.id = m."Arbitral_Institutions_id"
+        WHERE m."Arbitral Provisions_id" = ap.id
+    ) AS related_arbitral_institutions,
+    (
+        SELECT jsonb_agg(ar.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral Provis_Arbitral_Rules" m
+        JOIN p1q5x3pj29vkrdr."Arbitral_Rules" ar ON ar.id = m."Arbitral_Rules_id"
+        WHERE m."Arbitral Provisions_id" = ap.id
+    ) AS related_arbitral_rules
+FROM p1q5x3pj29vkrdr."Arbitral Provisions" ap;
+
+CREATE UNIQUE INDEX idx_arbitral_provisions_complete_id ON data_views.arbitral_provisions_complete(id);
 
 -- 13. Jurisdictions: CoLD_ID is Alpha-3 code, include direct relations to other entities
 DROP MATERIALIZED VIEW IF EXISTS data_views.jurisdictions_complete CASCADE;
@@ -1343,9 +1457,83 @@ BEGIN
         WHERE aa."CoLD_ID" = cold_id
         LIMIT 1;
 
-        SELECT NULL::JSONB INTO hop1;
+        SELECT 
+            jsonb_build_object(
+                'related_arbitral_institutions', aa.related_arbitral_institutions,
+                'related_arbitral_provisions', aa.related_arbitral_provisions,
+                'related_court_decisions', aa.related_court_decisions,
+                'related_jurisdictions', aa.related_jurisdictions,
+                'related_themes', aa.related_themes
+            )
+        INTO hop1
+        FROM data_views.arbitral_awards_complete aa
+        WHERE aa."CoLD_ID" = cold_id
+        LIMIT 1;
 
         RETURN QUERY SELECT 'Arbitral Awards', rec_id, rec, hop1;
+
+    -- Arbitral Institutions
+    ELSIF table_name = 'Arbitral Institutions' THEN
+        SELECT id, to_jsonb(ai.*)
+        INTO rec_id, rec
+        FROM data_views.arbitral_institutions_complete ai
+        WHERE ai."CoLD_ID" = cold_id
+        LIMIT 1;
+
+        SELECT 
+            jsonb_build_object(
+                'related_arbitral_awards', ai.related_arbitral_awards,
+                'related_arbitral_rules', ai.related_arbitral_rules,
+                'related_arbitral_provisions', ai.related_arbitral_provisions,
+                'related_jurisdictions', ai.related_jurisdictions
+            )
+        INTO hop1
+        FROM data_views.arbitral_institutions_complete ai
+        WHERE ai."CoLD_ID" = cold_id
+        LIMIT 1;
+
+        RETURN QUERY SELECT 'Arbitral Institutions', rec_id, rec, hop1;
+
+    -- Arbitral Rules
+    ELSIF table_name = 'Arbitral Rules' THEN
+        SELECT id, to_jsonb(ar.*)
+        INTO rec_id, rec
+        FROM data_views.arbitral_rules_complete ar
+        WHERE ar."CoLD_ID" = cold_id
+        LIMIT 1;
+
+        SELECT 
+            jsonb_build_object(
+                'related_arbitral_institutions', ar.related_arbitral_institutions,
+                'related_arbitral_provisions', ar.related_arbitral_provisions
+            )
+        INTO hop1
+        FROM data_views.arbitral_rules_complete ar
+        WHERE ar."CoLD_ID" = cold_id
+        LIMIT 1;
+
+        RETURN QUERY SELECT 'Arbitral Rules', rec_id, rec, hop1;
+
+    -- Arbitral Provisions
+    ELSIF table_name = 'Arbitral Provisions' THEN
+        SELECT id, to_jsonb(ap.*)
+        INTO rec_id, rec
+        FROM data_views.arbitral_provisions_complete ap
+        WHERE ap."CoLD_ID" = cold_id
+        LIMIT 1;
+
+        SELECT 
+            jsonb_build_object(
+                'related_arbitral_awards', ap.related_arbitral_awards,
+                'related_arbitral_institutions', ap.related_arbitral_institutions,
+                'related_arbitral_rules', ap.related_arbitral_rules
+            )
+        INTO hop1
+        FROM data_views.arbitral_provisions_complete ap
+        WHERE ap."CoLD_ID" = cold_id
+        LIMIT 1;
+
+        RETURN QUERY SELECT 'Arbitral Provisions', rec_id, rec, hop1;
 
     -- Jurisdictions
     ELSIF table_name = 'Jurisdictions' THEN

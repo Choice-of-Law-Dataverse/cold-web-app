@@ -1,0 +1,52 @@
+{
+  "table_name": "Arbitral Provisions",
+  "description": "Pretty mapping for Arbitral Provisions with related awards, institutions, and rules",
+  "version": "1.0",
+  "mappings": {
+    "direct_mappings": {
+      "source_table": "source_table",
+      "id": "CoLD_ID",
+      "rank": "rank",
+      "ID": "CoLD_ID",
+      "Record ID": "ncRecordId",
+      "Article": "Article",
+      "Full Text (Original Language)": "Full_Text_of_the_Provision__Original_Language_",
+      "Full Text (English Translation)": "Full_Text_of_the_Provision__English_Translation_",
+      "Arbitration method type": "Arbitration_method_type",
+      "Non-State law allowed in AoC?": "Non_State_law_allowed_in_AoC_",
+      "Created": "Created",
+      "Last Modified": "updated_at",
+      "Last Modified By.id": "updated_by",
+      "Created By.id": "created_by"
+    },
+    "nested_mappings": {
+      "related_arbitral_awards": {
+        "source_array": "related_arbitral_awards",
+        "array_operations": {
+          "Arbitral Awards": {"operation": "join", "field": "Case_Number", "separator": ", "},
+          "Arbitral Awards Link": {"operation": "join", "field": "ncRecordId", "separator": ","}
+        }
+      },
+      "related_arbitral_institutions": {
+        "source_array": "related_arbitral_institutions",
+        "array_operations": {
+          "Arbitral Institutions": {"operation": "join", "field": "Institution", "separator": ", "},
+          "Arbitral Institutions Abbrev": {"operation": "join", "field": "Abbreviation", "separator": ", "},
+          "Arbitral Institutions Link": {"operation": "join", "field": "ncRecordId", "separator": ","}
+        }
+      },
+      "related_arbitral_rules": {
+        "source_array": "related_arbitral_rules",
+        "array_operations": {
+          "Arbitral Rules": {"operation": "join", "field": "Set_of_Rules", "separator": ", "},
+          "Arbitral Rules In Force From": {"operation": "join", "field": "In_Force_From", "separator": ", "},
+          "Arbitral Rules Link": {"operation": "join", "field": "ncRecordId", "separator": ","}
+        }
+      }
+    }
+  },
+  "post_processing": {
+    "remove_null_values": true,
+    "remove_empty_strings": false
+  }
+}

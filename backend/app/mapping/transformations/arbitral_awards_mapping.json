@@ -1,0 +1,73 @@
+{
+  "table_name": "Arbitral Awards",
+  "description": "Pretty mapping for Arbitral Awards with relations to institutions, provisions, court decisions, jurisdictions, and themes",
+  "version": "1.0",
+  "mappings": {
+    "direct_mappings": {
+      "source_table": "source_table",
+      "id": "CoLD_ID",
+      "rank": "rank",
+      "ID": "CoLD_ID",
+      "Record ID": "ncRecordId",
+      "Case Number": "Case_Number",
+      "Context": "Context",
+      "Award Summary": "Award_Summary",
+      "Year": "Year",
+      "Nature of the Award": "Nature_of_the_Award",
+      "Seat (Town)": "Seat__Town_",
+      "Source": "Source",
+      "Created": "Created",
+      "Last Modified": "updated_at",
+      "Last Modified By.id": "updated_by",
+      "Created By.id": "created_by"
+    },
+    "conditional_mappings": {
+      "sort_date": {
+        "primary": "Year",
+        "fallback": "updated_at"
+      }
+    },
+    "nested_mappings": {
+      "related_arbitral_institutions": {
+        "source_array": "related_arbitral_institutions",
+        "array_operations": {
+          "Arbitral Institutions": {"operation": "join", "field": "Institution", "separator": ", "},
+          "Arbitral Institutions Abbrev": {"operation": "join", "field": "Abbreviation", "separator": ", "},
+          "Arbitral Institutions Link": {"operation": "join", "field": "ncRecordId", "separator": ","}
+        }
+      },
+      "related_arbitral_provisions": {
+        "source_array": "related_arbitral_provisions",
+        "array_operations": {
+          "Arbitral Provisions (Articles)": {"operation": "join", "field": "Article", "separator": ", "},
+          "Arbitral Provisions Link": {"operation": "join", "field": "ncRecordId", "separator": ","}
+        }
+      },
+      "related_court_decisions": {
+        "source_array": "related_court_decisions",
+        "array_operations": {
+          "Court Decisions": {"operation": "join", "field": "Case_Title", "separator": ", "},
+          "Court Decisions Link": {"operation": "join", "field": "ncRecordId", "separator": ","}
+        }
+      },
+      "related_jurisdictions": {
+        "source_array": "related_jurisdictions",
+        "array_operations": {
+          "Jurisdictions": {"operation": "join", "field": "Name", "separator": ", "},
+          "Jurisdictions Alpha-3 Code": {"operation": "join", "field": "Alpha_3_Code", "separator": ","},
+          "Jurisdictions Link": {"operation": "join", "field": "ncRecordId", "separator": ","}
+        }
+      },
+      "related_themes": {
+        "source_array": "related_themes",
+        "array_operations": {
+          "Themes": {"operation": "join", "field": "Theme", "separator": ", "}
+        }
+      }
+    }
+  },
+  "post_processing": {
+    "remove_null_values": true,
+    "remove_empty_strings": false
+  }
+}
