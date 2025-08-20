@@ -1048,12 +1048,18 @@ BEGIN
           ))
 
     ) AS sub
-    ORDER BY 
-        CASE 
-            WHEN sub.table_name = 'Court Decisions' 
-                 AND COALESCE((sub.complete_record->>'Case_Rank')::numeric, 1000000) <= 5 
-            THEN 1 
-            ELSE 0 
+    ORDER BY
+        -- Bucket results to enforce special ordering rules:
+        -- 0 = normal results, 1 = low-ranked Court Decisions (Case_Rank <= 5), 2 = Answers with "No data"
+        -- This ensures "No data" Answers are always at the very end, even after low-ranked Court Decisions.
+        CASE
+            WHEN sub.table_name = 'Answers'
+                 AND btrim(COALESCE(sub.complete_record->>'Answer', '')) ILIKE '%no data%'
+            THEN 2
+            WHEN sub.table_name = 'Court Decisions'
+                 AND COALESCE((sub.complete_record->>'Case_Rank')::numeric, 1000000) <= 5
+            THEN 1
+            ELSE 0
         END ASC,
         -- Within the low-ranked Court Decisions bucket, sort by Case_Rank DESC (5,4,...,1,null)
         CASE 
