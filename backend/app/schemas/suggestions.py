@@ -143,3 +143,35 @@ class LiteratureSuggestion(BaseModel):
     url: Optional[str] = None
     publication_date: Optional[date] = None
     theme: Optional[str] = None
+
+
+# New: Case Analyzer Suggestions (standalone; no direct DB merge)
+class CaseAnalyzerSuggestion(BaseModel):
+    # Meta
+    username: Optional[str] = Field(None, description="Submitter Username")
+    user_email: Optional[str] = Field(None, description="Submitter Email")
+    model: Optional[str] = Field(None, description="Model used to analyze")
+
+    # Core case fields
+    case_citation: Optional[str] = Field(None, description="Case Citation")
+    case_title: Optional[str] = Field(None, description="Case Title")
+    court_name: Optional[str] = Field(None, description="Court Name")
+    jurisdiction: Optional[str] = Field(None, description="Jurisdiction")
+    decision_date: Optional[date] = Field(None, description="Decision Date")
+    source_url: Optional[str] = Field(None, description="Source URL")
+
+    # Content
+    is_common_law: Optional[bool] = Field(None, description="Common Law Jurisdiction")
+    ratio_decidendi: Optional[str] = Field(None, description="Ratio Decidendi")
+    obiter_dicta: Optional[str] = Field(None, description="Obiter Dicta")
+    dissenting_opinions: Optional[str] = Field(None, description="Dissenting Opinions")
+    courts_position: Optional[str] = Field(None, description="Court's Position (merged summary)")
+
+    relevant_facts: Optional[str] = None
+    legal_provisions: Optional[str] = Field(None, description="Relevant Legal Provisions")
+    choice_of_law_issue: Optional[str] = None
+    abstract: Optional[str] = None
+    notes: Optional[str] = None
+
+    # Raw material
+    raw_data: Optional[str] = Field(None, description="Original analyzer output (for reference)")

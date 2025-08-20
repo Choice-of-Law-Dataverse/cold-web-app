@@ -99,9 +99,16 @@ class SuggestionService:
                 sa.Column("token_sub", sa.String(256), nullable=True),
                 extend_existing=True,
             ),
+            # Case Analyzer uses existing schema with a 'data' column, so autoload it
+            "case_analyzer": sa.Table(
+                "suggestions_case_analyzer",
+                self.metadata,
+                autoload_with=self.engine,
+                extend_existing=True,
+            ),
         }
 
-        # Ensure all tables exist
+        # Ensure all tables exist (will not alter existing ones)
         self.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
 
@@ -151,17 +158,30 @@ class SuggestionService:
 
         with self.Session() as session:
             safe_payload = self._to_jsonable(payload)
-            stmt = (
-                target.insert()
-                .values(
-                    payload=safe_payload,
-                    client_ip=client_ip,
-                    user_agent=user_agent,
-                    source=source,
-                    token_sub=token_sub,
+            # Case analyzer table stores JSON in 'data' column
+            if table == "case_analyzer":
+                values: Dict[str, Any] = {"data": safe_payload}
+                if hasattr(target.c, "client_ip"):
+                    values["client_ip"] = client_ip
+                if hasattr(target.c, "user_agent"):
+                    values["user_agent"] = user_agent
+                if hasattr(target.c, "source"):
+                    values["source"] = source
+                if hasattr(target.c, "token_sub"):
+                    values["token_sub"] = token_sub
+                stmt = target.insert().values(**values).returning(target.c.id)
+            else:
+                stmt = (
+                    target.insert()
+                    .values(
+                        payload=safe_payload,
+                        client_ip=client_ip,
+                        user_agent=user_agent,
+                        source=source,
+                        token_sub=token_sub,
+                    )
+                    .returning(target.c.id)
                 )
-                .returning(target.c.id)
-            )
             result = session.execute(stmt)
             session.commit()
             new_id = result.scalar_one()
@@ -172,7 +192,59 @@ class SuggestionService:
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
         with self.Session() as session:
-            # pending = no moderation_status in payload
+            if table == "case_analyzer":
+                # Select raw 'data' and filter in Python for moderation status
+                cols = [target.c.id]
+                created_col = getattr(target.c, "created_at", None)
+                if created_col is not None:
+                    cols.append(created_col)
+                data_col = getattr(target.c, "data", None)
+                if data_col is None:
+                    return []
+                cols.append(data_col)
+                # Optional meta columns
+                username_col = getattr(target.c, "username", None)
+                user_email_col = getattr(target.c, "user_email", None)
+                model_col = getattr(target.c, "model", None)
+                citation_col = getattr(target.c, "case_citation", None)
+                source_col = getattr(target.c, "source", None)
+                for c in (username_col, user_email_col, model_col, citation_col, source_col):
+                    if c is not None:
+                        cols.append(c)
+                query = sa.select(*cols)
+                if created_col is not None:
+                    query = query.order_by(created_col.desc())
+                query = query.limit(limit * 5)  # read more since we'll filter client-side
+                rows = session.execute(query).mappings().all()
+
+                results: list[dict] = []
+                import json as _json
+                for r in rows:
+                    raw_data = r.get("data")
+                    payload: Any
+                    if isinstance(raw_data, dict):
+                        payload = raw_data
+                    else:
+                        try:
+                            payload = _json.loads(raw_data) if raw_data is not None else {}
+                        except Exception:
+                            payload = {}
+                    status = payload.get("moderation_status") if isinstance(payload, dict) else None
+                    if status in {"approved", "rejected"}:
+                        continue
+                    results.append({
+                        "id": r["id"],
+                        "created_at": r.get("created_at"),
+                        "payload": payload,
+                        "source": r.get("source") if source_col is not None else None,
+                        "username": r.get("username") if username_col is not None else None,
+                        "user_email": r.get("user_email") if user_email_col is not None else None,
+                        "model": r.get("model") if model_col is not None else None,
+                        "case_citation": r.get("case_citation") if citation_col is not None else None,
+                    })
+                return results[:limit]
+
+            # Default flow uses JSONB 'payload'
             query = sa.select(
                 target.c.id,
                 target.c.created_at,
@@ -194,6 +266,29 @@ class SuggestionService:
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
         with self.Session() as session:
+            if table == "case_analyzer":
+                import json as _json
+                sel = sa.select(getattr(target.c, "data")).where(target.c.id == suggestion_id).limit(1)
+                row = session.execute(sel).first()
+                current: Dict[str, Any]
+                if row and isinstance(row[0], dict):
+                    current = dict(row[0])
+                else:
+                    try:
+                        current = _json.loads(row[0]) if row else {}
+                    except Exception:
+                        current = {}
+                current["moderation_status"] = status
+                current["moderated_by"] = moderator
+                current["moderation_note"] = note or ""
+                if merged_id is not None:
+                    current["merged_record_id"] = int(merged_id)
+                new_val = _json.dumps(self._to_jsonable(current))
+                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val)
+                session.execute(upd)
+                session.commit()
+                return
+
             # Ensure concrete SQL types to avoid polymorphic unknown errors in to_jsonb
             status_json = sa.func.to_jsonb(sa.cast(sa.literal(status), sa.Text))
             moderator_json = sa.func.to_jsonb(sa.cast(sa.literal(moderator), sa.Text))
@@ -224,5 +319,34 @@ class SuggestionService:
                     True,
                 )
             stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=update_expr)
+            session.execute(stmt)
+            session.commit()
+
+    # New: update the entire payload for a specific suggestion (used to persist edited fields)
+    def update_payload(self, table: str, suggestion_id: int, payload: Dict[str, Any]) -> None:
+        target = self.tables.get(table)
+        if target is None:
+            raise ValueError(f"Unknown suggestions table '{table}'")
+        with self.Session() as session:
+            if table == "case_analyzer":
+                import json as _json
+                sel = sa.select(getattr(target.c, "data")).where(target.c.id == suggestion_id).limit(1)
+                row = session.execute(sel).first()
+                current: Dict[str, Any]
+                if row and isinstance(row[0], dict):
+                    current = dict(row[0])
+                else:
+                    try:
+                        current = _json.loads(row[0]) if row else {}
+                    except Exception:
+                        current = {}
+                merged = {**current, **payload}
+                new_val = _json.dumps(self._to_jsonable(merged))
+                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val)
+                session.execute(upd)
+                session.commit()
+                return
+
+            stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=self._to_jsonable(payload))
             session.execute(stmt)
             session.commit()
