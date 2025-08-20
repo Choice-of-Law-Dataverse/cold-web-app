@@ -417,11 +417,22 @@ SELECT
         WHERE jcd."Court_Decisions_id" = cd.id
     ) AS related_jurisdictions,
     (
-        SELECT jsonb_agg(q.*)
+        SELECT jsonb_agg(
+                   to_jsonb(q)
+                   || jsonb_build_object(
+                        'CoLD_ID', (q."Question_Number" || '-' || q."Primary_Theme")
+                   )
+               )
         FROM p1q5x3pj29vkrdr."_nc_m2m_Questions_Court_Decisions" qcd
         JOIN p1q5x3pj29vkrdr."Questions" q ON q.id = qcd."Questions_id"
         WHERE qcd."Court_Decisions_id" = cd.id
     ) AS related_questions,
+    (
+        SELECT jsonb_agg(a.*)
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Answers_Court_Decisions" acd
+        JOIN p1q5x3pj29vkrdr."Answers" a ON a.id = acd."Answers_id"
+        WHERE acd."Court_Decisions_id" = cd.id
+    ) AS related_answers,
     (
         SELECT jsonb_agg(DISTINCT t.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Questions_Court_Decisions" qcd
@@ -1306,6 +1317,7 @@ BEGIN
             jsonb_build_object(
                 'related_jurisdictions', cd.related_jurisdictions,
                 'related_questions', cd.related_questions,
+                'related_answers', cd.related_answers,
                 'related_themes', cd.related_themes
             )
         INTO hop1
