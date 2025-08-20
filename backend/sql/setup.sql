@@ -507,7 +507,6 @@ DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_institutions_complete CASCA
 CREATE MATERIALIZED VIEW data_views.arbitral_institutions_complete AS
 SELECT
     ai.*,
-    ('AI-' || ai.id::text) AS "CoLD_ID",
     (
         SELECT jsonb_agg(aa.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral_Instit_Arbitral_Awards" m
@@ -563,7 +562,8 @@ DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_provisions_complete CASCADE
 CREATE MATERIALIZED VIEW data_views.arbitral_provisions_complete AS
 SELECT
     ap.*,
-    ('AP-' || ap.id::text) AS "CoLD_ID",
+    ar_cold."CoLD_ID" AS "Arbitral_Rules_CoLD_ID",
+    (COALESCE(ar_cold."CoLD_ID", '') || ' ' || COALESCE(ap."Article", '')) AS "CoLD_ID",
     (
         SELECT jsonb_agg(aa.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral Provis_Arbitral_Awards" m
@@ -582,7 +582,14 @@ SELECT
         JOIN p1q5x3pj29vkrdr."Arbitral_Rules" ar ON ar.id = m."Arbitral_Rules_id"
         WHERE m."Arbitral Provisions_id" = ap.id
     ) AS related_arbitral_rules
-FROM p1q5x3pj29vkrdr."Arbitral Provisions" ap;
+FROM p1q5x3pj29vkrdr."Arbitral Provisions" ap
+LEFT JOIN LATERAL (
+    SELECT ('AR-' || COALESCE(ar."ID_Number"::text, ar.id::text)) AS "CoLD_ID"
+    FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral Provis_Arbitral_Rules" m
+    JOIN p1q5x3pj29vkrdr."Arbitral_Rules" ar ON ar.id = m."Arbitral_Rules_id"
+    WHERE m."Arbitral Provisions_id" = ap.id
+    LIMIT 1
+) ar_cold ON true;
 
 CREATE UNIQUE INDEX idx_arbitral_provisions_complete_id ON data_views.arbitral_provisions_complete(id);
 
@@ -1472,12 +1479,13 @@ BEGIN
 
         RETURN QUERY SELECT 'Arbitral Awards', rec_id, rec, hop1;
 
-    -- Arbitral Institutions
+    -- Arbitral Institutions (no CoLD_ID; resolve by id)
     ELSIF table_name = 'Arbitral Institutions' THEN
         SELECT id, to_jsonb(ai.*)
         INTO rec_id, rec
         FROM data_views.arbitral_institutions_complete ai
-        WHERE ai."CoLD_ID" = cold_id
+        WHERE ai.id::text = cold_id
+           OR ('AI-' || ai.id::text) = cold_id
         LIMIT 1;
 
         SELECT 
@@ -1488,8 +1496,9 @@ BEGIN
                 'related_jurisdictions', ai.related_jurisdictions
             )
         INTO hop1
-        FROM data_views.arbitral_institutions_complete ai
-        WHERE ai."CoLD_ID" = cold_id
+    FROM data_views.arbitral_institutions_complete ai
+    WHERE ai.id::text = cold_id
+       OR ('AI-' || ai.id::text) = cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Arbitral Institutions', rec_id, rec, hop1;
