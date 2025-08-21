@@ -1,0 +1,57 @@
+name: Trigger auto deployment for cold-frontend-alpha
+
+# When this action will be executed
+on:
+  # Automatically trigger it when detected changes in repo
+  push:
+    branches: 
+      [ alpha ]
+    paths:
+    - '**'
+    - '.github/workflows/cold-frontend-alpha-AutoDeployTrigger-62f3b9c8-5189-41e0-b182-f92276c4ded6.yml'
+
+  # Allow manual trigger 
+  workflow_dispatch:      
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    permissions: 
+      id-token: write #This is required for requesting the OIDC JWT Token
+      contents: read #Required when GH token is used to authenticate with private repo
+
+    steps:
+      - name: Checkout to the branch
+        uses: actions/checkout@v2
+
+      - name: Azure Login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.COLDFRONTENDALPHA_AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.COLDFRONTENDALPHA_AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.COLDFRONTENDALPHA_AZURE_SUBSCRIPTION_ID }}
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.COLDFRONTENDALPHA_REGISTRY_PASSWORD }}" | docker login -u "${{ secrets.COLDFRONTENDALPHA_REGISTRY_USERNAME }}" --password-stdin
+
+      - name: Build image with build-time arguments
+        run: |
+          docker build ./frontend \
+            --file ./frontend/Dockerfile \
+            --build-arg API_BASE_URL=${{ secrets.COLDFRONTENDALPHA_API_BASE_URL }} \
+            --build-arg FASTAPI_API_TOKEN=${{ secrets.COLDFRONTENDALPHA_FASTAPI_API_TOKEN }} \
+            --build-arg NUXT_SITE_URL=https://cold.global \
+            --build-arg NUXT_SITE_NAME="Choice of Law Dataverse" \
+            --build-arg NUXT_TURNSTILE_SITE_KEY=${{ secrets.COLDFRONTENDALPHA_TURNSTILE_SITE_KEY }} \
+            --build-arg NUXT_TURNSTILE_SECRET_KEY=${{ secrets.COLDFRONTENDALPHA_TURNSTILE_SECRET_KEY }} \
+            -t simonweigold/cold-frontend-alpha:${{ github.sha }}
+
+      - name: Push image to Docker Hub
+        run: docker push simonweigold/cold-frontend-alpha:${{ github.sha }}
+
+      - name: Deploy to Azure Container App
+        uses: azure/container-apps-deploy-action@v2
+        with:
+          containerAppName: cold-frontend-alpha
+          resourceGroup: cold
+          imageToDeploy: simonweigold/cold-frontend-alpha:${{ github.sha }}
