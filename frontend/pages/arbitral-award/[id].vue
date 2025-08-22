@@ -5,6 +5,7 @@
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
     :formattedJurisdiction="formattedJurisdictions"
+    :formattedTheme="formattedThemes"
     sourceTable="Arbitral Award"
   />
 </template>
@@ -55,6 +56,17 @@ const formattedJurisdictions = computed(() => {
     .filter((n) => n && String(n).trim())
     .map((n) => String(n).trim())
   return [...new Set(names)]
+})
+
+// Themes for header labels
+const formattedThemes = computed(() => {
+  const list = arbitralAward.value?.related_themes
+  if (!Array.isArray(list)) return []
+  const themes = list
+    .map((t) => t?.Theme)
+    .filter((n) => n && String(n).trim())
+    .map((n) => String(n).trim())
+  return [...new Set(themes)]
 })
 
 // Dynamic page title based on Title
