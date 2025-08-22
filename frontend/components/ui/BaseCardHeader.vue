@@ -283,6 +283,8 @@ const adjustedSourceTable = computed(() => {
       return 'Literature'
     case 'Arbitral Rule':
       return 'Arbitral Rule'
+    case 'Arbitral Award':
+      return 'Arbitral Award'
     // Add more adjustments as needed
     default:
       return formattedSourceTable.value || '' // Fallback if no match
@@ -300,6 +302,7 @@ const labelColorClass = computed(() => {
     case 'Regional Instrument':
     case 'International Instrument':
     case 'Arbitral Rule':
+    case 'Arbitral Award':
       return 'label-arbitration'
     case 'Literature':
       return 'label-literature'
@@ -360,6 +363,8 @@ const suggestEditActions = computed(() => {
     linkUrl = props.resultData['URL'] || ''
   } else if (props.cardType === 'Arbitral Rule') {
     linkUrl = props.resultData['Official_Source__URL_'] || ''
+  } else if (props.cardType === 'Arbitral Award') {
+    linkUrl = props.resultData['Official_Source__URL_'] || ''
   }
   const actions = []
   if (linkUrl) {
@@ -410,6 +415,8 @@ function getLink() {
       return `/international-instrument/${props.resultData.id}`
     case 'Arbitral Rule':
       return `/arbitral-rule/${props.resultData.id}`
+    case 'Arbitral Award':
+      return `/arbitral-award/${props.resultData.id}`
     case 'Literature':
       return `/literature/${props.resultData.id}`
     default:
@@ -460,6 +467,7 @@ function getSourceTablePlural(label) {
   if (label === 'International Instrument') return 'International Instruments'
   if (label === 'Question') return 'Questions'
   if (label === 'Arbitral Rule') return 'Arbitral Rules'
+  if (label === 'Arbitral Award') return 'Arbitral Awards'
   return label
 }
 </script>

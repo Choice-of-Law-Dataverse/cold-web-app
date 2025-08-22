@@ -507,6 +507,37 @@ export const arbitralRuleConfig = {
   },
 }
 
+// Arbitral Award Page
+export const arbitralAwardConfig = {
+  keyLabelPairs: [
+    {
+      key: 'Title',
+      label: 'Title',
+      emptyValueBehavior: { action: 'display', fallback: 'No title available' },
+    },
+    {
+      key: 'Arbitral Institution',
+      label: 'Arbitral Institution',
+      emptyValueBehavior: {
+        action: 'display',
+        fallback: 'No institution available',
+      },
+    },
+    {
+      key: 'Date',
+      label: 'Date',
+      emptyValueBehavior: { action: 'display', fallback: 'N/A' },
+      valueTransform: (val) =>
+        typeof formatDate === 'function' ? formatDate(val) : val,
+    },
+  ],
+  valueClassMap: {
+    Title: 'result-value-medium section-gap',
+    'Arbitral Institution': 'result-value-small section-gap',
+    Date: 'result-value-small section-gap',
+  },
+}
+
 // Court Decision Page
 // Tooltips for Court Decision Page
 import tooltipAbstract from '@/content/info_boxes/court_decision/abstract.md?raw'
