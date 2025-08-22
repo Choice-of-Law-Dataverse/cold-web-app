@@ -281,6 +281,8 @@ const adjustedSourceTable = computed(() => {
       return 'Domestic Instrument'
     case 'Literature':
       return 'Literature'
+    case 'Arbitral Rule':
+      return 'Arbitral Rule'
     // Add more adjustments as needed
     default:
       return formattedSourceTable.value || '' // Fallback if no match
@@ -297,6 +299,7 @@ const labelColorClass = computed(() => {
     case 'Domestic Instrument':
     case 'Regional Instrument':
     case 'International Instrument':
+    case 'Arbitral Rule':
       return 'label-domestic-instrument'
     case 'Literature':
       return 'label-literature'
@@ -403,6 +406,8 @@ function getLink() {
       return `/regional-instrument/${props.resultData.id}`
     case 'International Instrument':
       return `/international-instrument/${props.resultData.id}`
+    case 'Arbitral Rule':
+      return `/arbitral-rule/${props.resultData.id}`
     case 'Literature':
       return `/literature/${props.resultData.id}`
     default:
@@ -452,6 +457,7 @@ function getSourceTablePlural(label) {
   if (label === 'Regional Instrument') return 'Regional Instruments'
   if (label === 'International Instrument') return 'International Instruments'
   if (label === 'Question') return 'Questions'
+  if (label === 'Arbitral Rule') return 'Arbitral Rules'
   return label
 }
 </script>

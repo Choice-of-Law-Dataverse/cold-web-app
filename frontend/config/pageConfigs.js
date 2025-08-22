@@ -472,6 +472,26 @@ export const internationalInstrumentConfig = {
   },
 }
 
+// Arbitral Rule Page
+export const arbitralRuleConfig = {
+  keyLabelPairs: [
+    {
+      key: 'Set_of_Rules',
+      label: 'Set of Rules',
+      emptyValueBehavior: { action: 'display', fallback: 'No title available' },
+    },
+    {
+      key: 'In_Force_From',
+      label: 'In Force From',
+      emptyValueBehavior: { action: 'display', fallback: 'N/A' },
+    },
+  ],
+  valueClassMap: {
+    Set_of_Rules: 'result-value-medium section-gap',
+    In_Force_From: 'result-value-small section-gap',
+  },
+}
+
 // Court Decision Page
 // Tooltips for Court Decision Page
 import tooltipAbstract from '@/content/info_boxes/court_decision/abstract.md?raw'
