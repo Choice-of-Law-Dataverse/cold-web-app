@@ -511,8 +511,8 @@ export const arbitralRuleConfig = {
 export const arbitralAwardConfig = {
   keyLabelPairs: [
     {
-      key: 'Title',
-      label: 'Title',
+      key: 'Case_Number',
+      label: 'Case Number',
       emptyValueBehavior: { action: 'display', fallback: 'No title available' },
     },
     {
@@ -524,17 +524,57 @@ export const arbitralAwardConfig = {
       },
     },
     {
-      key: 'Date',
-      label: 'Date',
-      emptyValueBehavior: { action: 'display', fallback: 'N/A' },
+      key: 'Source',
+      label: 'Source',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Year',
+      label: 'Year',
+      emptyValueBehavior: { action: 'display', fallback: 'hide' },
       valueTransform: (val) =>
         typeof formatDate === 'function' ? formatDate(val) : val,
     },
+    {
+      key: 'Nature_of_the_Award',
+      label: 'Nature of the Award',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Context',
+      label: 'Context',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Seat__Town_',
+      label: 'Seat (Town)',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Award_Summary',
+      label: 'Award Summary',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
   ],
   valueClassMap: {
-    Title: 'result-value-medium section-gap',
+    Case_Number: 'result-value-medium section-gap',
     'Arbitral Institution': 'result-value-small section-gap',
-    Date: 'result-value-small section-gap',
+    Source: 'result-value-small section-gap',
+    Year: 'result-value-small section-gap',
+    'Nature of the Award': 'result-value-small section-gap',
+    Context: 'result-value-small section-gap',
+    Seat__Town_: 'result-value-small section-gap',
+    Award_Summary: 'result-value-small section-gap',
   },
 }
 
