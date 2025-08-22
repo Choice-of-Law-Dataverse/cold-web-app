@@ -4,6 +4,7 @@
     :resultData="processedArbitralAward"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
+    :formattedJurisdiction="formattedJurisdictions"
     sourceTable="Arbitral Award"
   />
 </template>
@@ -43,6 +44,17 @@ const processedArbitralAward = computed(() => {
           .join(', ')
       : undefined,
   }
+})
+
+// Jurisdictions for header labels
+const formattedJurisdictions = computed(() => {
+  const list = arbitralAward.value?.related_jurisdictions
+  if (!Array.isArray(list)) return []
+  const names = list
+    .map((j) => j?.Name)
+    .filter((n) => n && String(n).trim())
+    .map((n) => String(n).trim())
+  return [...new Set(names)]
 })
 
 // Dynamic page title based on Title
