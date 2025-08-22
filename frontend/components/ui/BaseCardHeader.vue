@@ -300,7 +300,7 @@ const labelColorClass = computed(() => {
     case 'Regional Instrument':
     case 'International Instrument':
     case 'Arbitral Rule':
-      return 'label-domestic-instrument'
+      return 'label-arbitration'
     case 'Literature':
       return 'label-literature'
     default:
@@ -566,5 +566,10 @@ a.label-domestic-instrument {
 .label-literature,
 a.label-literature {
   color: var(--color-label-literature) !important;
+}
+
+.label-arbitration,
+a.label-arbitration {
+  color: var(--color-label-arbitration) !important;
 }
 </style>

@@ -196,6 +196,14 @@ li::marker {
   border: 1px solid var(--color-label-literature);
 }
 
+.label-arbitration {
+  @extend .label;
+  color: var(--color-label-arbitration);
+  padding: 2px 6px;
+  background-color: var(--color-label-arbitration-alpha);
+  border: 1px solid var(--color-label-arbitration);
+}
+
 .label-theme {
   @extend .label;
   color: var(--color-cold-night-alpha);

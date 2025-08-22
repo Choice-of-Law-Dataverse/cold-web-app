@@ -59,6 +59,9 @@ export default {
 
         'label-literature': '#4DC3FA',
         'label-literature-alpha': '#4DC3FA1A', // 10% alpha
+
+        'label-arbitration': '#01B9A7',
+        'label-arbitration-alpha': '#01B9A71A', // 10% alpha
       },
     },
   },
@@ -105,6 +108,11 @@ export default {
           '--color-label-literature': theme('colors.label-literature'),
           '--color-label-literature-alpha': theme(
             'colors.label-literature-alpha'
+          ),
+
+          '--color-label-arbitration': theme('colors.label-arbitration'),
+          '--color-label-arbitration-alpha': theme(
+            'colors.label-arbitration-alpha'
           ),
         },
       })
