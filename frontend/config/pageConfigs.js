@@ -5,6 +5,8 @@
  * - valueClassMap: Object mapping API keys to CSS classes for styling
  */
 
+import { formatDate } from '@/utils/format.js'
+
 // Literature Page
 
 // Tooltips for Literature Page
@@ -481,17 +483,21 @@ export const arbitralRuleConfig = {
       emptyValueBehavior: { action: 'display', fallback: 'No title available' },
     },
     {
-      key: 'In_Force_From',
-      label: 'In Force From',
-      emptyValueBehavior: { action: 'display', fallback: 'N/A' },
-    },
-    {
       key: 'Arbitral Institution',
       label: 'Arbitral Institution',
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No institution available',
       },
+    },
+    {
+      key: 'In_Force_From',
+      label: 'In Force From',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+      valueTransform: (val) =>
+        typeof formatDate === 'function' ? formatDate(val) : val,
     },
   ],
   valueClassMap: {
