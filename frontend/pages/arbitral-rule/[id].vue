@@ -31,6 +31,15 @@ const processedArbitralRule = computed(() => {
   if (!arbitralRule.value) return null
   return {
     ...arbitralRule.value,
+    // Derive flat display field from nested related_arbitral_institutions
+    'Arbitral Institution': Array.isArray(
+      arbitralRule.value?.related_arbitral_institutions
+    )
+      ? arbitralRule.value.related_arbitral_institutions
+          .map((inst) => inst?.Institution)
+          .filter((v) => v && String(v).trim())
+          .join(', ')
+      : undefined,
   }
 })
 

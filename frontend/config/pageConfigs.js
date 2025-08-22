@@ -485,10 +485,19 @@ export const arbitralRuleConfig = {
       label: 'In Force From',
       emptyValueBehavior: { action: 'display', fallback: 'N/A' },
     },
+    {
+      key: 'Arbitral Institution',
+      label: 'Arbitral Institution',
+      emptyValueBehavior: {
+        action: 'display',
+        fallback: 'No institution available',
+      },
+    },
   ],
   valueClassMap: {
     Set_of_Rules: 'result-value-medium section-gap',
     In_Force_From: 'result-value-small section-gap',
+    'Arbitral Institution': 'result-value-small section-gap',
   },
 }
 
