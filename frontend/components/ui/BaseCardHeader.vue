@@ -358,6 +358,8 @@ const suggestEditActions = computed(() => {
     linkUrl = props.resultData['URL'] || ''
   } else if (props.cardType === 'International Instrument') {
     linkUrl = props.resultData['URL'] || ''
+  } else if (props.cardType === 'Arbitral Rule') {
+    linkUrl = props.resultData['Official_Source__URL_'] || ''
   }
   const actions = []
   if (linkUrl) {
