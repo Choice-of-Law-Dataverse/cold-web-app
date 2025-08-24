@@ -21,7 +21,6 @@
       "Created By.id": "created_by",
       "Added By.id": "created_by",
       "Created time": "Created",
-      "Questions": "Questions",
       "Answers Link": "Answers_Link",
       "Answers Question": "Answers_Question",
       "Text_of_the_Relevant_Legal_Provisions": "Text_of_the_Relevant_Legal_Provisions",
@@ -51,6 +50,16 @@
       }
     },
     "nested_mappings": {
+      "related_questions": {
+        "source_array": "related_questions",
+        "array_operations": {
+          "Questions": {
+            "operation": "join",
+            "field": "CoLD_ID",
+            "separator": ","
+          }
+        }
+      },
       "related_jurisdictions": {
         "source_array": "related_jurisdictions",
         "index": 0,

@@ -14,7 +14,8 @@
 			"Full Text of the Provision (English Translation)": "Full_Text_of_the_Provision__English_Translation_",
 			"Record ID": "ncRecordId",
 			"Last Modified": "updated_at",
-			"Created": "Created"
+			"Created": "Created",
+			"Ranking (Display Order)": "Ranking__Display_Order_"
 		},
 		"nested_mappings": {
 			"related_domestic_instruments": {
