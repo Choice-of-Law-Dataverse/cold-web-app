@@ -43,6 +43,7 @@
             <a
               :href="`#${anchorId}`"
               class="label-key-provision-article anchor flex-1 min-w-0"
+              @click="onTitleClick"
             >
               {{ displayTitle }}
             </a>
@@ -92,6 +93,11 @@ const displayTitle = computed(() => (props.loading ? '' : props.title || ''))
 const isOpen = ref(false)
 const toggleOpen = () => {
   isOpen.value = !isOpen.value
+}
+
+// Open content when clicking the title (preserve anchor navigation)
+const onTitleClick = () => {
+  isOpen.value = true
 }
 
 // Determine if this is the first provision instance in the container
