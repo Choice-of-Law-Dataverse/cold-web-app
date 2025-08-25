@@ -1,14 +1,18 @@
 <template>
-  <div>
+  <div
+    class="base-legal-content"
+    :class="{ 'is-first': isFirstProvision }"
+    ref="rootEl"
+  >
     <div v-if="error">{{ error }}</div>
     <div v-else>
       <div :id="anchorId" :class="['legal-content', customClass]">
-        <div class="flex justify-between items-baseline mb-4">
+        <div class="flex justify-between items-center mb-4 no-margin">
           <div class="flex items-center gap-2 min-w-0 flex-1">
             <!-- Caret toggle button -->
             <button
               type="button"
-              class="p-1 rounded focus:outline-none focus:ring-2 focus:ring-gray-300 hover:bg-gray-100 transition-colors"
+              class="py-1 pr-1 pl-[0.025rem] rounded focus:outline-none focus:ring-2 focus:ring-gray-300"
               :aria-controls="`${anchorId}-content`"
               :aria-expanded="isOpen.toString()"
               aria-label="Toggle content"
@@ -16,15 +20,21 @@
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                class="h-4 w-4 transition-transform"
-                :class="{ 'rotate-90': isOpen }"
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                :style="{
+                  color: 'var(--color-cold-purple)',
+                  transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                }"
               >
                 <path
-                  fill-rule="evenodd"
-                  d="M7.293 14.707a1 1 0 0 1 0-1.414L10.586 10 7.293 6.707a1 1 0 1 1 1.414-1.414l4 4a1 1 0 0 1 0 1.414l-4 4a1 1 0 0 1-1.414 0Z"
-                  clip-rule="evenodd"
+                  d="M9 6l6 6-6 6"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="square"
+                  stroke-linejoin="square"
                 />
               </svg>
             </button>
@@ -84,6 +94,21 @@ const toggleOpen = () => {
   isOpen.value = !isOpen.value
 }
 
+// Determine if this is the first provision instance in the container
+const rootEl = ref(null)
+const isFirstProvision = ref(false)
+const evaluateIsFirst = () => {
+  const el = rootEl.value
+  const parent = el?.parentElement
+  if (!el || !parent) {
+    isFirstProvision.value = false
+    return
+  }
+  // Find the first BaseLegalContent under the same parent in DOM order
+  const firstBase = parent.querySelector('.base-legal-content')
+  isFirstProvision.value = firstBase === el
+}
+
 const scrollToAnchor = async () => {
   const hash = window.location.hash.slice(1) // Remove the # symbol
   if (hash === props.anchorId) {
@@ -97,7 +122,10 @@ const scrollToAnchor = async () => {
   }
 }
 
-onMounted(scrollToAnchor)
+onMounted(() => {
+  evaluateIsFirst()
+  scrollToAnchor()
+})
 </script>
 
 <style scoped>
@@ -126,5 +154,15 @@ onMounted(scrollToAnchor)
   white-space: pre-line;
   word-wrap: break-word;
   word-break: break-word;
+}
+
+/* Add spacing between provision component instances */
+.base-legal-content {
+  margin-top: 16px; /* default spacing between items */
+}
+
+/* Only the first provision gets larger top margin */
+.base-legal-content.is-first {
+  margin-top: 60px !important; /* larger space for the first item */
 }
 </style>
