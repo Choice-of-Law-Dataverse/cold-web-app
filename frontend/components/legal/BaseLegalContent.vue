@@ -12,7 +12,7 @@
             <!-- Caret toggle button -->
             <button
               type="button"
-              class="py-1 pr-1 pl-[0.025rem] rounded focus:outline-none focus:ring-2 focus:ring-gray-300"
+              class="py-1 pr-1 pl-[0.025rem] rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
               :aria-controls="`${anchorId}-content`"
               :aria-expanded="isOpen.toString()"
               aria-label="Toggle content"
