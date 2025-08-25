@@ -44,18 +44,31 @@
           </template>
         </div>
 
-        <!-- Last Modified (inline under Answer) -->
-        <div v-if="resultData['Last Modified']" class="mt-2">
-          <div class="label label-key">{{ getLabel('Last Modified') }}</div>
+        <!-- Last Modified (inline under Answer), fallback to Created when absent -->
+        <div
+          v-if="resultData['Last Modified'] || resultData['Created']"
+          class="mt-2"
+        >
+          <div class="label label-key">
+            {{
+              resultData['Last Modified']
+                ? getLabel('Last Modified')
+                : 'Created'
+            }}
+          </div>
           <div
             :class="
               computeTextClasses(
-                'Last Modified',
+                resultData['Last Modified'] ? 'Last Modified' : 'Created',
                 config.valueClassMap['Last Modified']
               )
             "
           >
-            {{ getValue('Last Modified') }}
+            {{
+              resultData['Last Modified']
+                ? getValue('Last Modified')
+                : resultData['Created']
+            }}
           </div>
         </div>
       </div>
