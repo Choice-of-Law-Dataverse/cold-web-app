@@ -150,6 +150,7 @@ import tooltipQuestionRelatedLiterature from '@/content/info_boxes/question/rela
 import tooltipSource from '@/content/info_boxes/question/source.md?raw'
 import tooltipOUPBookQuote from '@/content/info_boxes/question/oup_book_quote.md?raw'
 import tooltipRelatedCourtDecisions from '@/content/info_boxes/question/related_court_decisions.md?raw'
+import { formatDate, formatYear } from '@/utils/format'
 
 export const questionConfig = {
   keyLabelPairs: [
@@ -201,7 +202,7 @@ export const questionConfig = {
         },
       },
       valueTransform: (val) =>
-        typeof formatYear === 'function' ? formatYear(val) : val,
+        typeof formatDate === 'function' ? formatDate(val) : val,
     },
     {
       key: 'Created',
@@ -221,7 +222,7 @@ export const questionConfig = {
         },
       },
       valueTransform: (val) =>
-        typeof formatYear === 'function' ? formatYear(val) : val,
+        typeof formatDate === 'function' ? formatDate(val) : val,
     },
     {
       key: 'OUP Book Quote',
