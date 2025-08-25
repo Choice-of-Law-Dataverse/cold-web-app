@@ -52,7 +52,8 @@ def _python_type(t: Any) -> Any:
             return origin
         if origin is Union:
             args = [a for a in get_args(t) if a is not type(None)]  # noqa: E721
-            return args[0] if args else Any
+            # Recurse to resolve nested typing like Optional[List[str]] -> list
+            return _python_type(args[0]) if args else Any
         return t
     except Exception:
         return t
@@ -71,21 +72,21 @@ def _render_input(name: str, value: Any, field_info) -> str:
     # Choose widget by type
     if base_t is bool:
         checked = " checked" if (value is True or (isinstance(value, str) and value.lower() in {"true", "1", "yes"})) else ""
-        return f"<label style='display:block;margin:6px 0'><input type='checkbox' name='{html.escape(name)}' value='true'{checked}/> {html.escape(label)}</label>"
+        return f"<label><input type='checkbox' name='{html.escape(name)}' value='true'{checked}/> {html.escape(label)}</label>"
     if base_t in (date,):
         return (
-            f"<label style='display:block;margin:6px 0'>{html.escape(label)} "
+            f"<label>{html.escape(label)} "
             f"<input type='date' name='{html.escape(name)}' value='{safe_val}'/></label>"
         )
     if base_t in (int, float):
         return (
-            f"<label style='display:block;margin:6px 0'>{html.escape(label)} "
+            f"<label>{html.escape(label)} "
             f"<input type='number' step='any' name='{html.escape(name)}' value='{safe_val}'/></label>"
         )
     # For lists, accept comma-separated text
     if base_t in (list, tuple):
         return (
-            f"<label style='display:block;margin:6px 0'>{html.escape(label)} "
+            f"<label>{html.escape(label)} "
             f"<input type='text' name='{html.escape(name)}' value='{safe_val}' placeholder='Comma-separated values'/></label>"
         )
     # Default to text input; use textarea for likely long text fields
@@ -93,13 +94,57 @@ def _render_input(name: str, value: Any, field_info) -> str:
         or (isinstance(value, str) and len(value) > 180)
     if longish:
         return (
-            f"<label style='display:block;margin:6px 0'>{html.escape(label)}<br/>"
-            f"<textarea name='{html.escape(name)}' rows='4' style='width:100%'>{safe_val}</textarea></label>"
+            f"<label>{html.escape(label)}<br/>"
+            f"<textarea name='{html.escape(name)}' rows='4'>{safe_val}</textarea></label>"
         )
+    # Fallback: standard text input
     return (
-        f"<label style='display:block;margin:6px 0'>{html.escape(label)} "
+        f"<label>{html.escape(label)} "
         f"<input type='text' name='{html.escape(name)}' value='{safe_val}'/></label>"
     )
+
+
+def _page(title: str, inner_html: str, show_logout: bool = True) -> HTMLResponse:
+        style = """
+        <style>
+            :root { --bg:#FAFAFA; --text:#0F0035; --accent:#6F4DFA; --card:#FFFFFF; }
+            *{ box-sizing: border-box; }
+            body{ margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; background:var(--bg); color:var(--text); }
+            a{ color:var(--accent); text-decoration:none; }
+            a:hover{ text-decoration:underline; }
+            .container{ max-width:960px; margin:0 auto; padding:24px; }
+            .header{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+            h1,h2,h3{ margin:0 0 12px; }
+            .card{ background:var(--card); border:1px solid #EAE7FF; border-radius:10px; padding:16px; box-shadow:0 1px 2px rgba(15,0,53,0.05); }
+            ul.plain{ list-style:none; padding:0; margin:0; }
+            .meta{ color:#463E78; font-size:12px; }
+            .byline{ color:#5B528F; font-size:12px; }
+            button{ background:var(--accent); color:var(--bg); border:0; border-radius:8px; padding:8px 14px; cursor:pointer; }
+            button:hover{ filter:brightness(0.95); }
+            input, textarea{ width:100%; padding:8px 10px; border:1px solid #E0D9FF; border-radius:8px; background:var(--card); color:var(--text); }
+            label{ display:block; margin:8px 0; }
+            .space-x > * + * { margin-left: 8px; }
+        </style>
+        """
+        logout_html = "" if not show_logout else "<a href='/moderation/logout'>Logout</a>"
+        html_doc = f"""
+        <html>
+            <head>
+                <title>{html.escape(title)}</title>
+                {style}
+            </head>
+            <body>
+                <div class='container'>
+                    <div class='header'>
+                        <h2>{html.escape(title)}</h2>
+                        <div>{logout_html}</div>
+                    </div>
+                    {inner_html}
+                </div>
+            </body>
+        </html>
+        """
+        return HTMLResponse(html_doc)
 
 
 def _norm_key_map(d: Dict[str, Any]) -> Dict[str, Any]:
@@ -400,7 +445,15 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
         val = payload.get(fname)
         if isinstance(val, list):
             val = ", ".join(str(v) for v in val)
-        inputs.append(_render_input(fname, val, finfo))
+        try:
+            rendered = _render_input(fname, val, finfo)
+        except Exception:
+            # Fallback to a simple text input if rendering fails
+            safe_label = html.escape(finfo.description or fname.replace("_", " ").title())
+            safe_name = html.escape(fname)
+            safe_val = html.escape("" if val is None else str(val))
+            rendered = f"<label>{safe_label} <input type='text' name='{safe_name}' value='{safe_val}'/></label>"
+        inputs.append(rendered)
     # moderation note (not for case analyzer)
     inputs.append(
         "<label style='display:block;margin:8px 0'>Moderation Note (optional)<br/>"
@@ -422,11 +475,13 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
         f"<div style='color:#555;font-size:12px;margin-bottom:6px'>"
         f"ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"
     )
+    # Safeguard join if any element is None
+    inputs_html = "".join(i for i in inputs if isinstance(i, str))
     return (
         f"<div style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>"
         f"{meta}"
         f"<form method='post' action='/moderation/{category}/{item['id']}/approve'>"
-        + "".join(inputs)
+        + inputs_html
         + buttons
         + "</form></div>"
     )
@@ -436,19 +491,16 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
 def login_form(request: Request):
     if _is_logged_in(request):
         return RedirectResponse(url="/moderation", status_code=302)
-    return HTMLResponse(
-        """
-        <html><head><title>Moderation Login</title></head>
-        <body>
-          <h2>Moderation Login</h2>
-          <form method="post" action="/moderation/login">
-            <label>Username <input name="username"/></label><br/>
-            <label>Password <input name="password" type="password"/></label><br/>
-            <button type="submit">Login</button>
-          </form>
-        </body></html>
-        """
+    content = (
+        "<div class='card' style='max-width:520px'>"
+        "<form method='post' action='/moderation/login'>"
+        "<label>Username<input name='username'/></label>"
+        "<label>Password<input name='password' type='password'/></label>"
+        "<div class='space-x'><button type='submit'>Login</button></div>"
+        "</form>"
+        "</div>"
     )
+    return _page("Moderation Login", content, show_logout=False)
 
 
 @router.post("/login")
@@ -471,24 +523,19 @@ def logout(request: Request):
 def index(request: Request):
     if not _is_logged_in(request):
         return RedirectResponse(url="/moderation/login", status_code=302)
-    # simple landing listing links per table
-    return HTMLResponse(
-        """
-        <html><head><title>Moderation</title></head>
-        <body>
-          <h2>Suggestions Moderation</h2>
-          <ul>
-            <li><a href="/moderation/court-decisions">Court Decisions</a></li>
-            <li><a href="/moderation/domestic-instruments">Domestic Instruments</a></li>
-            <li><a href="/moderation/regional-instruments">Regional Instruments</a></li>
-            <li><a href="/moderation/international-instruments">International Instruments</a></li>
-            <li><a href="/moderation/literature">Literature</a></li>
-            <li><a href="/moderation/case-analyzer">Case Analyzer</a></li>
-          </ul>
-          <p><a href="/moderation/logout">Logout</a></p>
-        </body></html>
-        """
+    content = (
+        "<div class='card'>"
+        "<ul class='plain'>"
+        "<li><a href='/moderation/court-decisions'>Court Decisions</a></li>"
+        "<li><a href='/moderation/domestic-instruments'>Domestic Instruments</a></li>"
+        "<li><a href='/moderation/regional-instruments'>Regional Instruments</a></li>"
+        "<li><a href='/moderation/international-instruments'>International Instruments</a></li>"
+        "<li><a href='/moderation/literature'>Literature</a></li>"
+        "<li><a href='/moderation/case-analyzer'>Case Analyzer</a></li>"
+        "</ul>"
+        "</div>"
     )
+    return _page("Suggestions Moderation", content)
 
 
 def _table_key(path_segment: str) -> Optional[str]:
@@ -522,17 +569,13 @@ def list_pending(request: Request, category: str):
     # Overview list with key info and link to detail view
     entries = "".join(_render_overview_item(category, model, i) for i in items)
     empty_state = "<p>No pending suggestions.</p>" if not entries else ""
-    return HTMLResponse(
-        f"""
-        <html><head><title>Pending - {html.escape(category)}</title></head>
-        <body>
-          <h3>Pending suggestions: {html.escape(category)}</h3>
-          <ul style='list-style:none;padding-left:0'>{entries}</ul>
-          {empty_state}
-          <p><a href="/moderation">Back</a></p>
-        </body></html>
-        """
+    content = (
+        f"<h3>Pending suggestions: {html.escape(category)}</h3>"
+        f"<ul class='plain'>{entries}</ul>"
+        f"{empty_state}"
+        f"<p><a href='/moderation'>Back</a></p>"
     )
+    return _page(f"Pending - {category}", content)
 
 
 # New: detail page per entry
@@ -555,16 +598,12 @@ def view_entry(request: Request, category: str, suggestion_id: int):
         raise HTTPException(status_code=404)
 
     detail_html = _render_detail_entry(category, model, item)
-    return HTMLResponse(
-        f"""
-        <html><head><title>Detail - {html.escape(category)} #{suggestion_id}</title></head>
-        <body>
-          <h3>{html.escape(category.title())} — Entry #{suggestion_id}</h3>
-          {detail_html}
-          <p><a href="/moderation/{html.escape(category)}">Back to list</a></p>
-        </body></html>
-        """
+    content = (
+        f"<h3>{html.escape(category.title())} — Entry #{suggestion_id}</h3>"
+        f"{detail_html}"
+        f"<p><a href='/moderation/{html.escape(category)}'>Back to list</a></p>"
     )
+    return _page(f"Detail - {category} #{suggestion_id}", content)
 
 
 @router.post("/{category}/{suggestion_id}/approve")

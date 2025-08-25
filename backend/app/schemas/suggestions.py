@@ -30,7 +30,7 @@ class SuggestionResponse(BaseModel):
 class CourtDecisionSuggestion(BaseModel):
     # Required
     case_citation: str = Field(..., description="Case Citation")
-    date_publication: date = Field(..., description="Date of Publication")
+    date_publication: date = Field(..., description="Date [of Publication]")
     official_source_url: str = Field(
         ..., description="Official Source (URL)"
     )
@@ -42,26 +42,27 @@ class CourtDecisionSuggestion(BaseModel):
     )
 
     # Optional
-    original_text: Optional[str] = None
-    english_translation: Optional[str] = None
-    case_rank: Optional[str] = None
-    jurisdiction: Optional[str] = None
-    abstract: Optional[str] = None
-    relevant_facts: Optional[str] = None
-    pil_provisions: Optional[str] = None
-    choice_of_law_issue: Optional[str] = None
+    original_text: Optional[str] = Field(None, description="Original Text")
+    english_translation: Optional[str] = Field(None, description="English Translation")
+    case_rank: Optional[str] = Field(None, description="Case Rank")
+    jurisdiction: Optional[str] = Field(None, description="Jurisdiction")
+    abstract: Optional[str] = Field(None, description="Abstract")
+    relevant_facts: Optional[str] = Field(None, description="Relevant Facts")
+    pil_provisions: Optional[str] = Field(None, description="PIL Provisions")
+    choice_of_law_issue: Optional[str] = Field(None, description="Choice of Law Issue")
     courts_position: Optional[str] = Field(
         None, description="Court's Position"
     )
-    translated_excerpt: Optional[str] = None
+    translated_excerpt: Optional[str] = Field(None, description="Translated Excerpt")
+    text_of_relevant_legal_provisions: Optional[str] = Field(None, description="Text of the Relevant Legal Provisions")
     quote: Optional[str] = None
     decision_date: Optional[date] = Field(
         None, description="Decision date or other relevant date"
     )
-    case_title: Optional[str] = None
-    instance: Optional[str] = None
-    official_keywords: Optional[str] = None
-    publication_date_iso: Optional[str] = None
+    case_title: Optional[str] = Field(None, description="Case Title")
+    instance: Optional[str] = Field(None, description="Instance")
+    official_keywords: Optional[str] = Field(None, description="Official Keywords")
+    publication_date_iso: Optional[str] = Field(None, description="Publication Date ISO")
 
     @model_validator(mode="after")
     def _require_one_official_source(self):
@@ -74,10 +75,10 @@ class DomesticInstrumentSuggestion(BaseModel):
     # Required
     jurisdiction_link: str = Field(..., description="Jurisdiction Link")
     official_title: str = Field(
-        ..., description="Official Title (e.g., Bundesgesetz über das IPR)"
+        ..., description="Official Title [e.g. Bundesgesetz über das Internationale Privatrecht/Loi sur le droit international privé]"
     )
     title_en: str = Field(
-        ..., description="Title in English (include jurisdiction demonym)"
+        ..., description="Title (in English) [include demonym before the title]"
     )
     entry_into_force: date = Field(..., description="Entry Into Force date")
     # Year of entry into force (automated)
@@ -92,12 +93,12 @@ class DomesticInstrumentSuggestion(BaseModel):
     )
 
     # Optional
-    themes: Optional[List[str]] = None
-    status: Optional[str] = None
-    publication_date: Optional[date] = None
-    abbreviation: Optional[str] = None
-    compatible_hcch_principles: Optional[bool] = None
-    compatible_uncitral_model_law: Optional[bool] = None
+    themes: Optional[List[str]] = Field(None, description="Themes")
+    status: Optional[str] = Field(None, description="Status")
+    publication_date: Optional[date] = Field(None, description="Publication Date")
+    abbreviation: Optional[str] = Field(None, description="Abbrevation")
+    compatible_hcch_principles: Optional[bool] = Field(None, description="Compatible With the HCCH Principles?")
+    compatible_uncitral_model_law: Optional[bool] = Field(None, description="Compatible With the UNCITRAL Model Law?")
 
     @model_validator(mode="after")
     def _require_one_source(self):
@@ -116,33 +117,33 @@ class RegionalInstrumentSuggestion(BaseModel):
     abbreviation: str = Field(..., description="Abbreviation")
 
     # Optional
-    title: Optional[str] = None
-    url: Optional[str] = None
-    attachment: Optional[str] = None
-    instrument_date: Optional[date] = None
+    title: Optional[str] = Field(None, description="Title")
+    url: Optional[str] = Field(None, description="URL")
+    attachment: Optional[str] = Field(None, description="Attachment")
+    instrument_date: Optional[date] = Field(None, description="Date")
 
 
 class InternationalInstrumentSuggestion(BaseModel):
     # Required
     name: str = Field(..., description="Name")
     url: str = Field(..., description="URL")
-    attachment: str = Field(..., description="Attachment (link, storage key, or identifier)")
+    attachment: str = Field(..., description="Attachment")
     instrument_date: date = Field(..., description="Date")
 
 
 class LiteratureSuggestion(BaseModel):
     # All optional
-    jurisdiction: Optional[str] = None
-    publication_year: Optional[int] = None
-    author: Optional[str] = None
-    title: Optional[str] = None
-    publication_title: Optional[str] = None
-    isbn: Optional[str] = None
-    issn: Optional[str] = None
-    doi: Optional[str] = None
-    url: Optional[str] = None
-    publication_date: Optional[date] = None
-    theme: Optional[str] = None
+    jurisdiction: Optional[str] = Field(None, description="Jurisdiction")
+    publication_year: Optional[int] = Field(None, description="Publication Year")
+    author: Optional[str] = Field(None, description="Author")
+    title: Optional[str] = Field(None, description="Title")
+    publication_title: Optional[str] = Field(None, description="Publication Title")
+    isbn: Optional[str] = Field(None, description="ISBN")
+    issn: Optional[str] = Field(None, description="ISSN")
+    doi: Optional[str] = Field(None, description="DOI")
+    url: Optional[str] = Field(None, description="Url")
+    publication_date: Optional[date] = Field(None, description="Date")
+    theme: Optional[str] = Field(None, description="Theme")
 
 
 # New: Case Analyzer Suggestions (standalone; no direct DB merge)
