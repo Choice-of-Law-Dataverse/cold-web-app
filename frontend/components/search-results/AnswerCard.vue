@@ -8,7 +8,7 @@
           config.gridConfig.question.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Question') }}</div>
+        <div class="label label-key">{{ getLabel('Question') }}</div>
         <div
           :class="computeTextClasses('Question', config.valueClassMap.Question)"
         >
@@ -23,7 +23,7 @@
           config.gridConfig.answer.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Answer') }}</div>
+        <div class="label label-key">{{ getLabel('Answer') }}</div>
         <div
           :class="
             computeTextClasses(
@@ -43,17 +43,32 @@
             {{ getValue('Answer') }}
           </template>
         </div>
+
+        <!-- Last Modified (inline under Answer) -->
+        <div v-if="resultData['Last Modified']" class="mt-2">
+          <div class="label label-key">{{ getLabel('Last Modified') }}</div>
+          <div
+            :class="
+              computeTextClasses(
+                'Last Modified',
+                config.valueClassMap['Last Modified']
+              )
+            "
+          >
+            {{ getValue('Last Modified') }}
+          </div>
+        </div>
       </div>
 
       <!-- More Information section -->
       <div
-        v-if="hasMoreInformation"
         :class="[
           config.gridConfig.source.columnSpan,
           config.gridConfig.source.startColumn,
         ]"
+        v-if="hasMoreInformation"
       >
-        <div class="label-key">{{ getLabel('More Information') }}</div>
+        <div class="label label-key">{{ getLabel('More Information') }}</div>
         <ul class="result-value-small">
           <li v-if="resultData['More Information']">
             {{ getValue('More Information') }}
@@ -272,7 +287,6 @@ const computeTextClasses = (key, baseClass) => {
 }
 
 .label-key {
-  @extend .label;
   padding: 0;
   margin-top: 12px;
 }
