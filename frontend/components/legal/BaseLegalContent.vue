@@ -47,7 +47,7 @@
               {{ displayTitle }}
             </a>
           </div>
-          <slot name="header-actions" />
+          <slot v-if="isOpen" name="header-actions" />
         </div>
 
         <div class="content-body" :id="`${anchorId}-content`" v-show="isOpen">
