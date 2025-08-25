@@ -49,13 +49,7 @@
           v-if="resultData['Last Modified'] || resultData['Created']"
           class="mt-2"
         >
-          <div class="label label-key">
-            {{
-              resultData['Last Modified']
-                ? getLabel('Last Modified')
-                : 'Created'
-            }}
-          </div>
+          <div class="label label-key">Last Updated</div>
           <div
             :class="
               computeTextClasses(
