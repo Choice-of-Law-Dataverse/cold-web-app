@@ -45,10 +45,7 @@
         </div>
 
         <!-- Last Modified (inline under Answer), fallback to Created when absent -->
-        <div
-          v-if="resultData['Last Modified'] || resultData['Created']"
-          class="mt-2"
-        >
+        <div v-if="lastUpdatedDisplay" class="mt-2">
           <div class="label label-key">Last Updated</div>
           <div
             :class="
@@ -58,11 +55,7 @@
               )
             "
           >
-            {{
-              resultData['Last Modified']
-                ? getValue('Last Modified')
-                : resultData['Created']
-            }}
+            {{ lastUpdatedDisplay }}
           </div>
         </div>
       </div>
@@ -134,6 +127,7 @@ import { answerCardConfig } from '@/config/cardConfigs'
 import { literatureCache } from '@/utils/literatureCache'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 import LegalProvisionRenderer from '@/components/legal/LegalProvisionRenderer.vue'
+import { formatYear } from '@/utils/format'
 
 const props = defineProps({
   resultData: {
@@ -241,6 +235,13 @@ const hasMoreInformation = computed(() => {
     hasDomesticValue.value ||
     relatedCasesCount.value > 0
   )
+})
+
+// Last updated value (year only), prefers Last Modified then falls back to Created
+const lastUpdatedDisplay = computed(() => {
+  const raw = props.resultData['Last Modified'] || props.resultData['Created']
+  const y = formatYear(raw)
+  return y ? String(y) : ''
 })
 
 // Helper functions to get labels and values with fallbacks
