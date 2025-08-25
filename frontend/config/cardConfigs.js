@@ -55,10 +55,18 @@ export const answerCardConfig = {
         action: 'hide',
       },
     },
+    {
+      key: 'Last Modified',
+      label: 'Last Modified',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
   ],
   valueClassMap: {
     Question: 'result-value-medium',
     Answer: 'result-value-large', // This will be overridden by getAnswerClass for Yes/No answers
+    'Last Modified': 'result-value-small',
     'More Information': 'result-value-small',
   },
   gridConfig: {
@@ -67,6 +75,10 @@ export const answerCardConfig = {
       startColumn: 'md:col-start-1',
     },
     answer: {
+      columnSpan: 'md:col-span-2',
+      startColumn: 'md:col-start-6',
+    },
+    lastModified: {
       columnSpan: 'md:col-span-2',
       startColumn: 'md:col-start-6',
     },

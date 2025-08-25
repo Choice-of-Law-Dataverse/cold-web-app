@@ -1,19 +1,57 @@
 <template>
-  <div>
+  <div
+    class="base-legal-content"
+    :class="{ 'is-first': isFirstProvision }"
+    ref="rootEl"
+  >
     <div v-if="error">{{ error }}</div>
     <div v-else>
       <div :id="anchorId" :class="['legal-content', customClass]">
-        <div class="flex justify-between items-baseline mb-4">
-          <a
-            :href="`#${anchorId}`"
-            class="label-key-provision-article anchor flex-1 min-w-0"
-          >
-            {{ displayTitle }}
-          </a>
-          <slot name="header-actions" />
+        <div class="flex justify-between items-center mb-4 no-margin">
+          <div class="flex items-center gap-2 min-w-0 flex-1">
+            <!-- Caret toggle button -->
+            <button
+              type="button"
+              class="py-1 pr-1 pl-[0.025rem] rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
+              :aria-controls="`${anchorId}-content`"
+              :aria-expanded="isOpen.toString()"
+              aria-label="Toggle content"
+              @click="toggleOpen"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="16"
+                height="16"
+                fill="none"
+                :style="{
+                  color: 'var(--color-cold-purple)',
+                  transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                }"
+              >
+                <path
+                  d="M9 6l6 6-6 6"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="square"
+                  stroke-linejoin="square"
+                />
+              </svg>
+            </button>
+
+            <!-- Title / anchor link -->
+            <a
+              :href="`#${anchorId}`"
+              class="label-key-provision-article anchor flex-1 min-w-0"
+              @click="onTitleClick"
+            >
+              {{ displayTitle }}
+            </a>
+          </div>
+          <slot v-if="isOpen" name="header-actions" />
         </div>
 
-        <div class="content-body">
+        <div class="content-body" :id="`${anchorId}-content`" v-show="isOpen">
           <slot />
         </div>
       </div>
@@ -22,7 +60,7 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted } from 'vue'
+import { computed, nextTick, onMounted, ref } from 'vue'
 
 const props = defineProps({
   title: {
@@ -51,9 +89,37 @@ const props = defineProps({
 const customClass = computed(() => props.class || '')
 const displayTitle = computed(() => (props.loading ? '' : props.title || ''))
 
+// Collapsible state (hidden by default)
+const isOpen = ref(false)
+const toggleOpen = () => {
+  isOpen.value = !isOpen.value
+}
+
+// Open content when clicking the title (preserve anchor navigation)
+const onTitleClick = () => {
+  isOpen.value = true
+}
+
+// Determine if this is the first provision instance in the container
+const rootEl = ref(null)
+const isFirstProvision = ref(false)
+const evaluateIsFirst = () => {
+  const el = rootEl.value
+  const parent = el?.parentElement
+  if (!el || !parent) {
+    isFirstProvision.value = false
+    return
+  }
+  // Find the first BaseLegalContent under the same parent in DOM order
+  const firstBase = parent.querySelector('.base-legal-content')
+  isFirstProvision.value = firstBase === el
+}
+
 const scrollToAnchor = async () => {
   const hash = window.location.hash.slice(1) // Remove the # symbol
   if (hash === props.anchorId) {
+    // If navigated directly via hash, auto-expand for visibility
+    isOpen.value = true
     await nextTick()
     const anchorElement = document.getElementById(hash)
     if (anchorElement) {
@@ -62,7 +128,10 @@ const scrollToAnchor = async () => {
   }
 }
 
-onMounted(scrollToAnchor)
+onMounted(() => {
+  evaluateIsFirst()
+  scrollToAnchor()
+})
 </script>
 
 <style scoped>
@@ -91,5 +160,15 @@ onMounted(scrollToAnchor)
   white-space: pre-line;
   word-wrap: break-word;
   word-break: break-word;
+}
+
+/* Add spacing between provision component instances */
+.base-legal-content {
+  margin-top: 16px; /* default spacing between items */
+}
+
+/* Only the first provision gets larger top margin */
+.base-legal-content.is-first {
+  margin-top: 60px !important; /* larger space for the first item */
 }
 </style>

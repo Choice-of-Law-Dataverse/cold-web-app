@@ -8,7 +8,7 @@
           config.gridConfig.question.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Question') }}</div>
+        <div class="label label-key">{{ getLabel('Question') }}</div>
         <div
           :class="computeTextClasses('Question', config.valueClassMap.Question)"
         >
@@ -23,7 +23,7 @@
           config.gridConfig.answer.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Answer') }}</div>
+        <div class="label label-key">{{ getLabel('Answer') }}</div>
         <div
           :class="
             computeTextClasses(
@@ -43,17 +43,32 @@
             {{ getValue('Answer') }}
           </template>
         </div>
+
+        <!-- Last Modified (inline under Answer), fallback to Created when absent -->
+        <div v-if="lastUpdatedDisplay" class="mt-2">
+          <div class="label label-key">Last Updated</div>
+          <div
+            :class="
+              computeTextClasses(
+                resultData['Last Modified'] ? 'Last Modified' : 'Created',
+                config.valueClassMap['Last Modified']
+              )
+            "
+          >
+            {{ lastUpdatedDisplay }}
+          </div>
+        </div>
       </div>
 
       <!-- More Information section -->
       <div
-        v-if="hasMoreInformation"
         :class="[
           config.gridConfig.source.columnSpan,
           config.gridConfig.source.startColumn,
         ]"
+        v-if="hasMoreInformation"
       >
-        <div class="label-key">{{ getLabel('More Information') }}</div>
+        <div class="label label-key">{{ getLabel('More Information') }}</div>
         <ul class="result-value-small">
           <li v-if="resultData['More Information']">
             {{ getValue('More Information') }}
@@ -112,6 +127,7 @@ import { answerCardConfig } from '@/config/cardConfigs'
 import { literatureCache } from '@/utils/literatureCache'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 import LegalProvisionRenderer from '@/components/legal/LegalProvisionRenderer.vue'
+import { formatYear } from '@/utils/format'
 
 const props = defineProps({
   resultData: {
@@ -221,6 +237,13 @@ const hasMoreInformation = computed(() => {
   )
 })
 
+// Last updated value (year only), prefers Last Modified then falls back to Created
+const lastUpdatedDisplay = computed(() => {
+  const raw = props.resultData['Last Modified'] || props.resultData['Created']
+  const y = formatYear(raw)
+  return y ? String(y) : ''
+})
+
 // Helper functions to get labels and values with fallbacks
 const getLabel = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key)
@@ -272,7 +295,6 @@ const computeTextClasses = (key, baseClass) => {
 }
 
 .label-key {
-  @extend .label;
   padding: 0;
   margin-top: 12px;
 }
