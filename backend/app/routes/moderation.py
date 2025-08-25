@@ -667,6 +667,15 @@ async def approve(request: Request, category: str, suggestion_id: int):
     target_table = table_map.get(category)
     if not target_table:
         raise HTTPException(status_code=400, detail="Unsupported category")
+    # Small normalization: for Domestic Instruments, auto-derive year text if missing
+    if target_table == "Domestic_Instruments":
+        if (not updated_fields.get("date_year_of_entry_into_force")) and updated_fields.get("entry_into_force"):
+            try:
+                # Keep as string; writer will coerce types as needed
+                year = str(updated_fields["entry_into_force"])[:4]
+                updated_fields["date_year_of_entry_into_force"] = year
+            except Exception:
+                pass
     payload: Dict[str, Any] = {**original_payload, **updated_fields}
     merged_id = writer.insert_record(target_table, payload)
     for key in ("jurisdiction", "jurisdiction_link"):

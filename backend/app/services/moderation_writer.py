@@ -30,7 +30,7 @@ class MainDBWriter:
             "pil_provisions": "PIL_Provisions",
             "choice_of_law_issue": "Choice_of_Law_Issue",
             "courts_position": "Court_s_Position",
-            "relevant_legal_provisions_text": "Text_of_the_Relevant_Legal_Provisions",
+            "text_of_relevant_legal_provisions": "Text_of_the_Relevant_Legal_Provisions",
             "translated_excerpt": "Translated_Excerpt",
             "quote": "Quote",
             "copyright_issues": "Copyright_Issues",
@@ -50,7 +50,47 @@ class MainDBWriter:
             "publication_date_iso": "Publication_Date_ISO",
             "created_by": "Created_By",
         },
-        # Add other table mappings as needed
+        # Domestic Instruments
+        "Domestic_Instruments": {
+            "title_en": "Title__in_English_",
+            "official_title": "Official_Title",
+            "entry_into_force": "Entry_Into_Force",
+            "source_url": "Source__URL_",
+            "source_pdf": "Source__PDF_",
+            "publication_date": "Publication_Date",
+            "abbreviation": "Abbreviation",
+            "status": "Status",
+            "compatible_hcch_principles": "Compatible_With_the_HCCH_Principles_",
+            "compatible_uncitral_model_law": "Compatible_With_the_UNCITRAL_Model_Law_",
+            "date_year_of_entry_into_force": "Date",
+        },
+        # Regional Instruments
+        "Regional_Instruments": {
+            "abbreviation": "Abbreviation",
+            "title": "Title",
+            "url": "URL",
+            "attachment": "Attachment",
+            "instrument_date": "Date",
+        },
+        # International Instruments
+        "International_Instruments": {
+            "name": "Name",
+            "url": "URL",
+            "attachment": "Attachment",
+            "instrument_date": "Date",
+        },
+        # Literature
+        "Literature": {
+            "publication_year": "Publication_Year",
+            "author": "Author",
+            "title": "Title",
+            "publication_title": "Publication_Title",
+            "isbn": "ISBN",
+            "issn": "ISSN",
+            "doi": "DOI",
+            "url": "Url",
+            "publication_date": "Date",
+        },
     }
 
     @staticmethod
