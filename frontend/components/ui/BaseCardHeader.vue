@@ -39,7 +39,7 @@
           <select
             v-if="headerMode === 'new'"
             v-model="selectedType"
-            class="border border-gray-300 px-2 py-2 text-xs font-bold uppercase mr-3"
+            class="border border-gray-300 px-2 pr-8 py-2 text-xs font-bold uppercase mr-3 min-w-[240px]"
           >
             <option v-for="type in typeOptions" :key="type" :value="type">
               {{ type }}
