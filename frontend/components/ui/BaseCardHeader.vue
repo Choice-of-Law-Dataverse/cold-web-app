@@ -79,7 +79,7 @@
             >Cancel</UButton
           >
           <UButton color="primary" @click="$emit('open-save-modal')"
-            >Save</UButton
+            >Submit</UButton
           >
         </template>
         <template v-else>

@@ -26,7 +26,7 @@
         />
       </UFormGroup>
       <UFormGroup size="lg" class="mt-8">
-        <template #label>
+        <!-- <template #label>
           <span class="label">Specialists</span>
           <InfoTooltip :text="tooltipInternationalInstrumentSpecialist" />
         </template>
@@ -63,10 +63,10 @@
               @click="addSpecialist"
               >Add another specialist</UButton
             >
-          </div>
-        </template>
+          </div> 
+        </template> -->
       </UFormGroup>
-      <UFormGroup size="lg" class="mt-8">
+      <!-- <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">PDF</span>
           <InfoTooltip :text="tooltipInternationalInstrumentSpecialist" />
@@ -76,7 +76,7 @@
           icon="i-material-symbols:upload-file"
           @change="onPdfChange"
         />
-      </UFormGroup>
+      </UFormGroup> -->
       <UFormGroup size="lg" class="mt-8" :error="errors.link">
         <template #label>
           <span class="label">Link</span>
