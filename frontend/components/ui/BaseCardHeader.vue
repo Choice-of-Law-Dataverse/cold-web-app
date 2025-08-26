@@ -35,14 +35,16 @@
         </span>
         <!-- Display 'source_table' or a type selector when in 'new' mode -->
         <template v-if="adjustedSourceTable">
-          <!-- In 'new' mode, show a dropdown to switch data type -->
-          <USelect
+          <!-- In 'new' mode, show a simple dropdown to switch data type -->
+          <select
             v-if="headerMode === 'new'"
             v-model="selectedType"
-            :options="typeOptions"
-            class="min-w-[220px] source-table-label-link"
-            :class="['label', labelColorClass]"
-          />
+            class="border border-gray-300 px-2 py-2 text-xs font-bold uppercase mr-3"
+          >
+            <option v-for="type in typeOptions" :key="type" :value="type">
+              {{ type }}
+            </option>
+          </select>
           <!-- In other modes, keep the clickable label linking to search -->
           <NuxtLink
             v-else
@@ -316,6 +318,23 @@ const labelColorClass = computed(() => {
       return '' // No color for unknown labels
   }
 })
+
+function labelClassForType(label) {
+  switch (label) {
+    case 'Court Decision':
+      return 'label-court-decision'
+    case 'Question':
+      return 'label-question'
+    case 'Domestic Instrument':
+    case 'Regional Instrument':
+    case 'International Instrument':
+      return 'label-domestic-instrument'
+    case 'Literature':
+      return 'label-literature'
+    default:
+      return 'label'
+  }
+}
 
 const formattedTheme = computed(() => {
   if (props.formattedTheme.length > 0) {
