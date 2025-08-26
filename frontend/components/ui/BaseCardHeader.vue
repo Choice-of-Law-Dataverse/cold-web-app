@@ -33,24 +33,35 @@
         >
           {{ family }}
         </span>
-        <!-- Display 'source_table' -->
-        <NuxtLink
-          v-if="adjustedSourceTable"
-          :to="
-            '/search?type=' +
-            encodeURIComponent(
-              getSourceTablePlural(adjustedSourceTable)
-            ).replace(/%20/g, '+')
-          "
-          :class="[
-            'label',
-            labelColorClass,
-            'cursor-pointer',
-            'source-table-label-link',
-          ]"
-        >
-          {{ adjustedSourceTable }}
-        </NuxtLink>
+        <!-- Display 'source_table' or a type selector when in 'new' mode -->
+        <template v-if="adjustedSourceTable">
+          <!-- In 'new' mode, show a dropdown to switch data type -->
+          <USelect
+            v-if="headerMode === 'new'"
+            v-model="selectedType"
+            :options="typeOptions"
+            class="min-w-[220px] source-table-label-link"
+            :class="['label', labelColorClass]"
+          />
+          <!-- In other modes, keep the clickable label linking to search -->
+          <NuxtLink
+            v-else
+            :to="
+              '/search?type=' +
+              encodeURIComponent(
+                getSourceTablePlural(adjustedSourceTable)
+              ).replace(/%20/g, '+')
+            "
+            :class="[
+              'label',
+              labelColorClass,
+              'cursor-pointer',
+              'source-table-label-link',
+            ]"
+          >
+            {{ adjustedSourceTable }}
+          </NuxtLink>
+        </template>
 
         <!-- Display 'Themes' -->
         <NuxtLink
@@ -188,14 +199,15 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, reactive } from 'vue'
-import { useRoute } from 'vue-router'
+import { onMounted, ref, computed, reactive, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import jurisdictionsData from '@/assets/jurisdictions-data.json'
 import { handleImageError } from '@/utils/handleImageError'
 
 import availableSoon from '@/content/available_soon.md?raw'
 
 const route = useRoute()
+const router = useRouter()
 const pdfExists = ref(false)
 const isOpen = ref(false)
 const isSaveOpen = ref(false)
@@ -454,6 +466,51 @@ function getSourceTablePlural(label) {
   if (label === 'Question') return 'Questions'
   return label
 }
+
+// Dropdown options for 'new' pages
+const typeOptions = [
+  'Court Decision',
+  'Domestic Instrument',
+  'Regional Instrument',
+  'International Instrument',
+  'Literature',
+  'Question',
+]
+const selectedType = ref('')
+
+// Keep dropdown in sync with current header label
+watch(
+  () => adjustedSourceTable.value,
+  (val) => {
+    if (props.headerMode === 'new') {
+      selectedType.value = val || ''
+    }
+  },
+  { immediate: true }
+)
+
+function typeToNewPath(label) {
+  const slug =
+    label === 'Court Decision'
+      ? 'court-decision'
+      : label === 'Domestic Instrument'
+        ? 'domestic-instrument'
+        : label === 'Regional Instrument'
+          ? 'regional-instrument'
+          : label === 'International Instrument'
+            ? 'international-instrument'
+            : label === 'Question'
+              ? 'question'
+              : 'literature'
+  return `/${slug}/new`
+}
+
+// Navigate on selection change in 'new' mode
+watch(selectedType, (val, old) => {
+  if (props.headerMode === 'new' && val && val !== old) {
+    router.push(typeToNewPath(val))
+  }
+})
 </script>
 
 <style scoped>
