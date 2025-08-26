@@ -140,6 +140,8 @@ import tooltipInternationalInstrumentLink from '@/content/info_boxes/internation
 import { format } from 'date-fns'
 const date = ref(new Date())
 
+const config = useRuntimeConfig()
+
 // Form data
 const name = ref('')
 const link = ref('')
@@ -249,10 +251,17 @@ function handleNewSave() {
   console.log('Submitting:', JSON.stringify(payload, null, 2))
   ;(async () => {
     try {
-      await $fetch('/api/v1/suggestions/international-instruments', {
-        method: 'POST',
-        body: payload,
-      })
+      await $fetch(
+        `${config.public.apiBaseUrl}/suggestions/international-instruments`,
+        {
+          method: 'POST',
+          headers: {
+            authorization: `Bearer ${config.public.FASTAPI}`,
+            'Content-Type': 'application/json',
+          },
+          body: payload,
+        }
+      )
 
       showSaveModal.value = false
       router.push({
