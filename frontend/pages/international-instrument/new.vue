@@ -216,49 +216,14 @@ function openSaveModal() {
 function onPdfChange(event) {
   // Handle different event types - UInput might pass FileList directly or as event.target.files
   let file = null
-
   if (event instanceof FileList) {
-    // UInput passes FileList directly
     file = event[0] || null
   } else if (event && event.target && event.target.files) {
-    // Standard file input event
     file = event.target.files[0] || null
   } else if (event && event.files) {
-    // Alternative event structure
     file = event.files[0] || null
   }
-
   pdfFile.value = file
-}
-
-function onSave() {
-  const mergedSpecialists = specialists.value
-    .filter((s) => s && s.trim())
-    .join(', ')
-  const payload = {
-    data_type: 'international instrument',
-    data_content: {
-      name: name.value,
-      specialists: mergedSpecialists,
-      date: format(date.value, 'yyyy-MM-dd'),
-      pdf: pdfFile.value && pdfFile.value.name ? pdfFile.value.name : null,
-    },
-    user: {
-      email: email.value,
-      comments: comments.value || null,
-    },
-  }
-  // Remove pdf if not set
-  if (!payload.data_content.pdf) {
-    delete payload.data_content.pdf
-  }
-  // Remove comments if empty
-  if (!payload.user.comments) {
-    delete payload.user.comments
-  }
-  // Print payload as a single, clear console log (matches alert)
-  console.log('Submitting: ' + JSON.stringify(payload, null, 2))
-  router.push('/confirmation')
 }
 
 function confirmCancel() {
@@ -273,13 +238,35 @@ function removeSpecialist(idx) {
 }
 
 function handleNewSave() {
-  showSaveModal.value = false
-  router.push({
-    path: '/confirmation',
-    query: {
-      message: 'Thanks, we have received your submission.',
-    },
-  })
+  const payload = {
+    name: name.value, // Title
+    url: link.value, // Link
+    attachment: '', // ignored for now
+    instrument_date: format(date.value, 'yyyy-MM-dd'), // Date
+  }
+
+  // Explicitly log the exact payload we send
+  console.log('Submitting:', JSON.stringify(payload, null, 2))
+  ;(async () => {
+    try {
+      await $fetch('/api/v1/suggestions/international-instruments', {
+        method: 'POST',
+        body: payload,
+      })
+
+      showSaveModal.value = false
+      router.push({
+        path: '/confirmation',
+        query: { message: 'Thanks, we have received your submission.' },
+      })
+    } catch (err) {
+      saveModalErrors.value = {
+        general:
+          'There was a problem submitting your suggestion. Please try again.',
+      }
+      console.error('Submission failed:', err)
+    }
+  })()
 }
 
 async function onSubmit() {

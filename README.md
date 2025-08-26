@@ -4,7 +4,7 @@ Repository for building and deploying the CoLD web app on [www.cold.global](http
 
 ## API Documentation
 
-The API documentation can be found [here](https://cold-backend-alpha.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/api/v1/docs).
+The API documentation can be found [here](https://cold-backend.thankfulcoast-6e0fb265.switzerlandnorth.azurecontainerapps.io/api/v1/docs).
 
 ## Versioning and Deployment Policy
 
