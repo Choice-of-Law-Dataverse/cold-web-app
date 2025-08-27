@@ -1,12 +1,14 @@
 from typing import Any, Dict, Optional, List
 from datetime import date
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, EmailStr
 
 
 class SuggestionPayload(BaseModel):
     # Accept any dict content as the "new data" suggestion from frontend
     data: Dict[str, Any] = Field(..., description="Arbitrary dictionary provided by the frontend as new data suggestion")
     source: Optional[str] = Field(None, description="Optional source/context identifier on the frontend")
+    submitter_email: Optional[EmailStr] = Field(None, description="Submitter e-mail address")
+    submitter_comments: Optional[str] = Field(None, description="Submitter comments")
 
     model_config = {
         "json_schema_extra": {
@@ -14,6 +16,8 @@ class SuggestionPayload(BaseModel):
                 {
                     "data": {"table": "Answers", "id": "CHE_15-TC", "field": "Summary", "value": "Proposed correction"},
                     "source": "detail-view",
+                    "submitter_email": "user@example.com",
+                    "submitter_comments": "Found a typo in the field value.",
                 }
             ]
         }
@@ -64,6 +68,25 @@ class CourtDecisionSuggestion(BaseModel):
     official_keywords: Optional[str] = Field(None, description="Official Keywords")
     publication_date_iso: Optional[str] = Field(None, description="Publication Date ISO")
 
+    # Submitter metadata
+    submitter_email: Optional[EmailStr] = Field(None, description="Submitter e-mail address")
+    submitter_comments: Optional[str] = Field(None, description="Submitter comments")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "case_citation": "Doe v. Smith, 123 A.3d 456",
+                "date_publication": "2024-05-01",
+                "official_source_url": "https://example.org/cases/123",
+                "copyright_issues": "none",
+                "jurisdiction": "AR",
+                "case_title": "Doe v. Smith",
+                "submitter_email": "user@example.com",
+                "submitter_comments": "Spotted a typo in the abstract.",
+            }
+        }
+    }
+
     @model_validator(mode="after")
     def _require_one_official_source(self):
         if not (self.official_source_url or self.official_source_pdf):
@@ -100,6 +123,25 @@ class DomesticInstrumentSuggestion(BaseModel):
     compatible_hcch_principles: Optional[bool] = Field(None, description="Compatible With the HCCH Principles?")
     compatible_uncitral_model_law: Optional[bool] = Field(None, description="Compatible With the UNCITRAL Model Law?")
 
+    # Submitter metadata
+    submitter_email: Optional[EmailStr] = Field(None, description="Submitter e-mail address")
+    submitter_comments: Optional[str] = Field(None, description="Submitter comments")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "jurisdiction_link": "https://example.org/jurisdictions/ar",
+                "official_title": "Ley de Derecho Internacional Privado",
+                "title_en": "Argentinian Private International Law Act",
+                "entry_into_force": "2023-01-01",
+                "source_url": "https://boletin.oficial.ar/ley.pdf",
+                "themes": ["contract", "choice-of-law"],
+                "submitter_email": "user@example.com",
+                "submitter_comments": "Newer consolidated version available.",
+            }
+        }
+    }
+
     @model_validator(mode="after")
     def _require_one_source(self):
         if not (self.source_url or self.source_pdf):
@@ -122,6 +164,23 @@ class RegionalInstrumentSuggestion(BaseModel):
     attachment: Optional[str] = Field(None, description="Attachment")
     instrument_date: Optional[date] = Field(None, description="Date")
 
+    # Submitter metadata
+    submitter_email: Optional[EmailStr] = Field(None, description="Submitter e-mail address")
+    submitter_comments: Optional[str] = Field(None, description="Submitter comments")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "abbreviation": "EU-Rome I",
+                "title": "Regulation (EC) No 593/2008 (Rome I)",
+                "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32008R0593",
+                "instrument_date": "2008-06-17",
+                "submitter_email": "user@example.com",
+                "submitter_comments": "Add link to consolidated version.",
+            }
+        }
+    }
+
 
 class InternationalInstrumentSuggestion(BaseModel):
     # Required
@@ -129,6 +188,23 @@ class InternationalInstrumentSuggestion(BaseModel):
     url: str = Field(..., description="URL")
     attachment: str = Field(..., description="Attachment")
     instrument_date: date = Field(..., description="Date")
+
+    # Submitter metadata
+    submitter_email: Optional[EmailStr] = Field(None, description="Submitter e-mail address")
+    submitter_comments: Optional[str] = Field(None, description="Submitter comments")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "name": "HCCH Principles on Choice of Law in International Commercial Contracts",
+                "url": "https://www.hcch.net/en/instruments/conventions/full-text/?cid=135",
+                "attachment": "hcch_principles.pdf",
+                "instrument_date": "2015-03-19",
+                "submitter_email": "user@example.com",
+                "submitter_comments": "Typo in the title capitalization.",
+            }
+        }
+    }
 
 
 class LiteratureSuggestion(BaseModel):
@@ -144,6 +220,24 @@ class LiteratureSuggestion(BaseModel):
     url: Optional[str] = Field(None, description="Url")
     publication_date: Optional[date] = Field(None, description="Date")
     theme: Optional[str] = Field(None, description="Theme")
+
+    # Submitter metadata
+    submitter_email: Optional[EmailStr] = Field(None, description="Submitter e-mail address")
+    submitter_comments: Optional[str] = Field(None, description="Submitter comments")
+
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "author": "Jane Doe",
+                "title": "Choice of Law in Cross-Border Contracts",
+                "publication_year": 2022,
+                "doi": "10.1000/j.jicl.2022.12345",
+                "url": "https://doi.org/10.1000/j.jicl.2022.12345",
+                "submitter_email": "user@example.com",
+                "submitter_comments": "Add missing ISSN.",
+            }
+        }
+    }
 
 
 # New: Case Analyzer Suggestions (standalone; no direct DB merge)
