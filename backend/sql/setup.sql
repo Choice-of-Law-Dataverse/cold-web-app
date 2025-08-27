@@ -563,7 +563,16 @@ SELECT
         FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral Provis_Arbitral_Rules" m
         JOIN p1q5x3pj29vkrdr."Arbitral Provisions" ap ON ap.id = m."Arbitral Provisions_id"
         WHERE m."Arbitral_Rules_id" = ar.id
-    ) AS related_arbitral_provisions
+        ) AS related_arbitral_provisions,
+        (
+                SELECT jsonb_agg(DISTINCT to_jsonb(j))
+                FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral_Instit_Arbitral_Rules" air
+                JOIN p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Arbitral_Instit" jai
+                    ON jai."Arbitral_Institutions_id" = air."Arbitral_Institutions_id"
+                JOIN p1q5x3pj29vkrdr."Jurisdictions" j
+                    ON j.id = jai."Jurisdictions_id"
+                WHERE air."Arbitral_Rules_id" = ar.id
+        ) AS related_jurisdictions
 FROM p1q5x3pj29vkrdr."Arbitral_Rules" ar;
 
 CREATE UNIQUE INDEX idx_arbitral_rules_complete_id ON data_views.arbitral_rules_complete(id);
@@ -1526,7 +1535,8 @@ BEGIN
         SELECT 
             jsonb_build_object(
                 'related_arbitral_institutions', ar.related_arbitral_institutions,
-                'related_arbitral_provisions', ar.related_arbitral_provisions
+                'related_arbitral_provisions', ar.related_arbitral_provisions,
+                'related_jurisdictions', ar.related_jurisdictions
             )
         INTO hop1
         FROM data_views.arbitral_rules_complete ar
