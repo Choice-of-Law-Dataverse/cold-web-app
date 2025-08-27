@@ -5,8 +5,6 @@
  * - valueClassMap: Object mapping API keys to CSS classes for styling
  */
 
-import { formatDate } from '@/utils/format.js'
-
 // Literature Page
 
 // Tooltips for Literature Page
