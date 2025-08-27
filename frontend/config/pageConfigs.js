@@ -511,6 +511,110 @@ export const internationalInstrumentConfig = {
   },
 }
 
+// Arbitral Rule Page
+export const arbitralRuleConfig = {
+  keyLabelPairs: [
+    {
+      key: 'Set of Rules',
+      label: 'Set of Rules',
+      emptyValueBehavior: { action: 'display', fallback: 'No title available' },
+    },
+    {
+      key: 'Arbitral Institutions',
+      label: 'Arbitral Institutions',
+      emptyValueBehavior: {
+        action: 'display',
+        fallback: 'No institution available',
+      },
+    },
+    {
+      key: 'In Force From',
+      label: 'In Force From',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+      valueTransform: (val) =>
+        typeof formatDate === 'function' ? formatDate(val) : val,
+    },
+  ],
+  valueClassMap: {
+    'Set of Rules': 'result-value-medium section-gap',
+    'In Force From': 'result-value-small section-gap',
+    'Arbitral Institutions': 'result-value-small section-gap',
+  },
+}
+
+// Arbitral Award Page
+export const arbitralAwardConfig = {
+  keyLabelPairs: [
+    {
+      key: 'Case Number',
+      label: 'Case Number',
+      emptyValueBehavior: { action: 'display', fallback: 'No title available' },
+    },
+    {
+      key: 'Arbitral Institutions',
+      label: 'Arbitral Institutions',
+      emptyValueBehavior: {
+        action: 'display',
+        fallback: 'No institution available',
+      },
+    },
+    {
+      key: 'Source',
+      label: 'Source',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Year',
+      label: 'Year',
+      emptyValueBehavior: { action: 'display', fallback: 'hide' },
+      valueTransform: (val) =>
+        typeof formatDate === 'function' ? formatDate(val) : val,
+    },
+    {
+      key: 'Nature of the Award',
+      label: 'Nature of the Award',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Context',
+      label: 'Context',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Seat (Town)',
+      label: 'Seat (Town)',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+    {
+      key: 'Award Summary',
+      label: 'Award Summary',
+      emptyValueBehavior: {
+        action: 'hide',
+      },
+    },
+  ],
+  valueClassMap: {
+    'Case Number': 'result-value-medium section-gap',
+    'Arbitral Institution': 'result-value-small section-gap',
+    Source: 'result-value-small section-gap',
+    Year: 'result-value-small section-gap',
+    'Nature of the Award': 'result-value-small section-gap',
+    Context: 'result-value-small section-gap',
+    'Seat (Town)': 'result-value-small section-gap',
+    'Award Summary': 'result-value-small section-gap',
+  },
+}
+
 // Court Decision Page
 // Tooltips for Court Decision Page
 import tooltipAbstract from '@/content/info_boxes/court_decision/abstract.md?raw'

@@ -295,6 +295,10 @@ const adjustedSourceTable = computed(() => {
       return 'Domestic Instrument'
     case 'Literature':
       return 'Literature'
+    case 'Arbitral Rule':
+      return 'Arbitral Rule'
+    case 'Arbitral Award':
+      return 'Arbitral Award'
     // Add more adjustments as needed
     default:
       return formattedSourceTable.value || '' // Fallback if no match
@@ -311,7 +315,9 @@ const labelColorClass = computed(() => {
     case 'Domestic Instrument':
     case 'Regional Instrument':
     case 'International Instrument':
-      return 'label-domestic-instrument'
+    case 'Arbitral Rule':
+    case 'Arbitral Award':
+      return 'label-arbitration'
     case 'Literature':
       return 'label-literature'
     default:
@@ -386,6 +392,10 @@ const suggestEditActions = computed(() => {
     linkUrl = props.resultData['URL'] || ''
   } else if (props.cardType === 'International Instrument') {
     linkUrl = props.resultData['URL'] || ''
+  } else if (props.cardType === 'Arbitral Rule') {
+    linkUrl = props.resultData['Official_Source__URL_'] || ''
+  } else if (props.cardType === 'Arbitral Award') {
+    linkUrl = props.resultData['Official_Source__URL_'] || ''
   }
   const actions = []
   if (linkUrl) {
@@ -434,6 +444,10 @@ function getLink() {
       return `/regional-instrument/${props.resultData.id}`
     case 'International Instrument':
       return `/international-instrument/${props.resultData.id}`
+    case 'Arbitral Rule':
+      return `/arbitral-rule/${props.resultData.id}`
+    case 'Arbitral Award':
+      return `/arbitral-award/${props.resultData.id}`
     case 'Literature':
       return `/literature/${props.resultData.id}`
     default:
@@ -483,6 +497,8 @@ function getSourceTablePlural(label) {
   if (label === 'Regional Instrument') return 'Regional Instruments'
   if (label === 'International Instrument') return 'International Instruments'
   if (label === 'Question') return 'Questions'
+  if (label === 'Arbitral Rule') return 'Arbitral Rules'
+  if (label === 'Arbitral Award') return 'Arbitral Awards'
   return label
 }
 
@@ -636,5 +652,10 @@ a.label-domestic-instrument {
 .label-literature,
 a.label-literature {
   color: var(--color-label-literature) !important;
+}
+
+.label-arbitration,
+a.label-arbitration {
+  color: var(--color-label-arbitration) !important;
 }
 </style>
