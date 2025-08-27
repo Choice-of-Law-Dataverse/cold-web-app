@@ -38,9 +38,6 @@ class CourtDecisionSuggestion(BaseModel):
     official_source_url: str = Field(
         ..., description="Official Source (URL)"
     )
-    official_source_pdf: Optional[str] = Field(
-        None, description="Official Source (PDF link, storage key, or identifier)"
-    )
     copyright_issues: str = Field(
         ..., description="Copyright issues (description or flag)"
     )
@@ -89,8 +86,8 @@ class CourtDecisionSuggestion(BaseModel):
 
     @model_validator(mode="after")
     def _require_one_official_source(self):
-        if not (self.official_source_url or self.official_source_pdf):
-            raise ValueError("Either official_source_url or official_source_pdf is required")
+        if not self.official_source_url:
+            raise ValueError("official_source_url is required")
         return self
 
 
@@ -109,11 +106,8 @@ class DomesticInstrumentSuggestion(BaseModel):
         None, description="Year of Entry Into Force (auto-derived from entry_into_force)"
     )
 
-    # Required: either URL or PDF
+    # Required: Source URL
     source_url: Optional[str] = Field(None, description="Source (URL)")
-    source_pdf: Optional[str] = Field(
-        None, description="Source (PDF link, storage key, or identifier)"
-    )
 
     # Optional
     themes: Optional[List[str]] = Field(None, description="Themes")
@@ -144,8 +138,8 @@ class DomesticInstrumentSuggestion(BaseModel):
 
     @model_validator(mode="after")
     def _require_one_source(self):
-        if not (self.source_url or self.source_pdf):
-            raise ValueError("Either source_url or source_pdf is required")
+        if not self.source_url:
+            raise ValueError("source_url is required")
         # auto-derive year if missing
         if self.entry_into_force and not self.date_year_of_entry_into_force:
             object.__setattr__(
@@ -161,7 +155,6 @@ class RegionalInstrumentSuggestion(BaseModel):
     # Optional
     title: Optional[str] = Field(None, description="Title")
     url: Optional[str] = Field(None, description="URL")
-    attachment: Optional[str] = Field(None, description="Attachment")
     instrument_date: Optional[date] = Field(None, description="Date")
 
     # Submitter metadata
@@ -186,7 +179,6 @@ class InternationalInstrumentSuggestion(BaseModel):
     # Required
     name: str = Field(..., description="Name")
     url: str = Field(..., description="URL")
-    attachment: str = Field(..., description="Attachment")
     instrument_date: date = Field(..., description="Date")
 
     # Submitter metadata
@@ -198,7 +190,6 @@ class InternationalInstrumentSuggestion(BaseModel):
             "example": {
                 "name": "HCCH Principles on Choice of Law in International Commercial Contracts",
                 "url": "https://www.hcch.net/en/instruments/conventions/full-text/?cid=135",
-                "attachment": "hcch_principles.pdf",
                 "instrument_date": "2015-03-19",
                 "submitter_email": "user@example.com",
                 "submitter_comments": "Typo in the title capitalization.",

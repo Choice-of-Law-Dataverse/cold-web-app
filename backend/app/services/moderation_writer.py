@@ -23,7 +23,7 @@ class MainDBWriter:
         "Court_Decisions": {
             "case_citation": "Case_Citation",
             "official_source_url": "Official_Source__URL_",
-            "official_source_pdf": "Official_Source__PDF_",
+            # removed: official_source_pdf
             "abstract": "Abstract",
             "internal_notes": "Internal_Notes",
             "english_translation": "English_Translation",
@@ -56,7 +56,7 @@ class MainDBWriter:
             "official_title": "Official_Title",
             "entry_into_force": "Entry_Into_Force",
             "source_url": "Source__URL_",
-            "source_pdf": "Source__PDF_",
+            # removed: source_pdf
             "publication_date": "Publication_Date",
             "abbreviation": "Abbreviation",
             "status": "Status",
@@ -69,14 +69,14 @@ class MainDBWriter:
             "abbreviation": "Abbreviation",
             "title": "Title",
             "url": "URL",
-            "attachment": "Attachment",
+            # removed: attachment
             "instrument_date": "Date",
         },
         # International Instruments
         "International_Instruments": {
             "name": "Name",
             "url": "URL",
-            "attachment": "Attachment",
+            # removed: attachment
             "instrument_date": "Date",
         },
         # Literature

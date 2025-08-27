@@ -375,9 +375,16 @@ def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
     created_s = created.isoformat() if hasattr(created, "isoformat") else str(created or "")
     submit_name = item.get("username") or first_key("username", "submitter_name", "name")
     submit_email = item.get("user_email") or first_key("user_email", "email", "submitter_email")
+    submit_comments = first_key("submitter_comments", "comments", "note")
+    comments_snippet = ""
+    if isinstance(submit_comments, str) and submit_comments.strip():
+        txt = submit_comments.strip()
+        if len(txt) > 120:
+            txt = txt[:117] + "..."
+        comments_snippet = f" — Comments: {html.escape(txt)}"
     byline = (
-        f"<div style='color:#555;font-size:12px;margin-top:2px'>By: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}</div>"
-        if (submit_name or submit_email) else ""
+        f"<div style='color:#555;font-size:12px;margin-top:2px'>By: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}{comments_snippet}</div>"
+        if (submit_name or submit_email or submit_comments) else ""
     )
     return (
         f"<li style='border:1px solid #eee;padding:8px;border-radius:6px;margin-bottom:8px'>"
@@ -441,7 +448,11 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
 
     # Default: form-based editing for other categories
     inputs: List[str] = []
+    # Do not render submitter meta as editable inputs; show read-only in header instead
+    _meta_fields = {"submitter_email", "submitter_comments", "official_source_pdf", "source_pdf", "attachment"}
     for fname, finfo in getattr(model, "model_fields").items():  # type: ignore[attr-defined]
+        if fname in _meta_fields:
+            continue
         val = payload.get(fname)
         if isinstance(val, list):
             val = ", ".join(str(v) for v in val)
@@ -454,11 +465,7 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
             safe_val = html.escape("" if val is None else str(val))
             rendered = f"<label>{safe_label} <input type='text' name='{safe_name}' value='{safe_val}'/></label>"
         inputs.append(rendered)
-    # moderation note (not for case analyzer)
-    inputs.append(
-        "<label style='display:block;margin:8px 0'>Moderation Note (optional)<br/>"
-        "<textarea name='moderation_note' rows='2' style='width:100%'></textarea></label>"
-    )
+    # Moderation note field removed per request
     buttons = (
         f"<div style='margin-top:8px'>"
         f"<button type='submit' style='padding:6px 12px'>Approve</button>"
@@ -467,10 +474,29 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
     )
     submit_name = item.get("username") or _first(payload, "username", "submitter_name", "name")
     submit_email = item.get("user_email") or _first(payload, "user_email", "email", "submitter_email")
+    submit_comments = _first(payload, "submitter_comments", "comments", "note")
+    comments_snippet = ""
+    if isinstance(submit_comments, str) and submit_comments.strip():
+        comments_snippet = f" — Comments: {html.escape(submit_comments.strip())}"
     by_meta = (
-        f" — Submitted by: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}"
-        if (submit_name or submit_email) else ""
+        f" — Submitted by: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}{comments_snippet}"
+        if (submit_name or submit_email or submit_comments) else ""
     )
+    # Explicit read-only block for submitter info (clear visibility)
+    submit_block = ""
+    if (submit_name or submit_email or submit_comments):
+        comments_block = ""
+        if isinstance(submit_comments, str) and submit_comments.strip():
+            # Preserve line breaks in comments
+            c = html.escape(submit_comments.strip()).replace("\n", "<br/>")
+            comments_block = f"<div><strong>Comments:</strong> {c}</div>"
+        submit_block = (
+            "<div style='background:#F8F7FF;border:1px solid #EAE7FF;padding:8px;border-radius:6px;margin:8px 0'>"
+            + (f"<div><strong>Submitted by:</strong> {html.escape(str(submit_name or ''))}</div>" if submit_name else "")
+            + (f"<div><strong>E-Mail:</strong> {html.escape(str(submit_email or ''))}</div>" if submit_email else "")
+            + comments_block
+            + "</div>"
+        )
     meta = (
         f"<div style='color:#555;font-size:12px;margin-bottom:6px'>"
         f"ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"
@@ -480,6 +506,7 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
     return (
         f"<div style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>"
         f"{meta}"
+        f"{submit_block}"
         f"<form method='post' action='/moderation/{category}/{item['id']}/approve'>"
         + inputs_html
         + buttons
@@ -641,7 +668,11 @@ async def approve(request: Request, category: str, suggestion_id: int):
     if model is None:
         raise HTTPException(status_code=400, detail="Unsupported category")
     updated_fields: Dict[str, Any] = {}
+    # Exclude submitter meta from write-back to main DB
+    _reserved = {"submitter_email", "submitter_comments", "official_source_pdf", "source_pdf", "attachment"}
     for fname, finfo in getattr(model, "model_fields").items():  # type: ignore[attr-defined]
+        if fname in _reserved:
+            continue
         raw = form.get(fname)
         ann = getattr(finfo, "annotation", str)
         base_t = _python_type(ann)
@@ -652,7 +683,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
         else:
             updated_fields[fname] = raw if raw is not None else ""
 
-    moderation_note = str(form.get("moderation_note") or "")
+    moderation_note = ""
 
     global writer
     if writer is None:
@@ -676,12 +707,14 @@ async def approve(request: Request, category: str, suggestion_id: int):
                 updated_fields["date_year_of_entry_into_force"] = year
             except Exception:
                 pass
-    payload: Dict[str, Any] = {**original_payload, **updated_fields}
-    merged_id = writer.insert_record(target_table, payload)
+    payload_merged: Dict[str, Any] = {**original_payload, **updated_fields}
+    # Prepare payload for main DB without submitter meta
+    payload_for_writer = {k: v for k, v in payload_merged.items() if k not in _reserved}
+    merged_id = writer.insert_record(target_table, payload_for_writer)
     for key in ("jurisdiction", "jurisdiction_link"):
-        if key in payload and payload.get(key):
+        if key in payload_for_writer and payload_for_writer.get(key):
             try:
-                writer.link_jurisdictions(target_table, merged_id, payload.get(key))
+                writer.link_jurisdictions(target_table, merged_id, payload_for_writer.get(key))
             except Exception:
                 pass
     service.mark_status(
@@ -706,7 +739,7 @@ async def reject(request: Request, category: str, suggestion_id: int):
     if service is None:
         service = SuggestionService()
     form = await request.form()
-    moderation_note = str(form.get("moderation_note") or "")
+    moderation_note = ""
     service.mark_status(
         table,
         suggestion_id,
