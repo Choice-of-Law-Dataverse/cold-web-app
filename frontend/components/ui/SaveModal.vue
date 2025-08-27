@@ -56,10 +56,9 @@
 </template>
 
 <script setup>
-import { ref, watch, toRefs } from 'vue'
+import { ref, watch } from 'vue'
 import { z } from 'zod'
 import { useRouter } from '#imports'
-import { format } from 'date-fns'
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
@@ -83,6 +82,7 @@ const emit = defineEmits([
   'update:comments',
   'update:token',
   'update:saveModalErrors',
+  'update:link',
   'save',
 ])
 
@@ -185,33 +185,8 @@ function validateSaveModal() {
 }
 
 function onSave() {
-  const mergedSpecialists = (props.specialists || [])
-    .filter((s) => s && s.trim())
-    .join(', ')
-  const dataContent = {
-    ...(props.instrumentId ? { ID: props.instrumentId } : {}),
-    name: props.name,
-    specialists: mergedSpecialists,
-    date: format(new Date(props.date), 'yyyy-MM-dd'),
-    pdf: props.pdfFile && props.pdfFile.name ? props.pdfFile.name : null,
-    link: typeof linkProxy.value === 'string' ? linkProxy.value : '',
-  }
-  if (!dataContent.pdf) {
-    delete dataContent.pdf
-  }
-  const payload = {
-    data_type: 'international instrument',
-    data_content: dataContent,
-    user: {
-      email: emailProxy.value,
-      comments: commentsProxy.value || null,
-    },
-  }
-  if (!payload.user.comments) {
-    delete payload.user.comments
-  }
-  console.log('Submitting: ' + JSON.stringify(payload, null, 2))
-  emit('save', payload)
+  // Delegate submission to parent (new.vue). Validation was already performed here.
+  emit('save')
 }
 
 watch(

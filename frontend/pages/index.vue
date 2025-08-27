@@ -131,7 +131,7 @@
 
         <div class="col-span-12">
           <ConnectCard
-            title="Enter a new International Instrument"
+            title="Enter a new Data Point"
             buttonText="Submit your data"
             buttonLink="/international-instrument/new"
             iconName="i-material-symbols:add-notes"
