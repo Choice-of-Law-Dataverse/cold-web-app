@@ -63,6 +63,13 @@ Under the supervision of Prof. Daniel Girsberger and Agatha Brandão, Olga resea
     class="external-link-icon"
   /></a> holds a Ph.D. from the University of Bern, Switzerland. He oversees data input from Latin American countries into the Dataverse.
 
+**Anna**   
+<a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/dr-rorick-daniel-tovar-galvan-llm/" target="_blank">Rorick<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a> holds a Ph.D. from the University of Bern, Switzerland. He oversees data input from Latin American countries into the Dataverse.
+
 ## Partners
 
 Prof. Geneviève Saumier, Université de Montréal  
