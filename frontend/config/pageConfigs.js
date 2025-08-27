@@ -515,20 +515,20 @@ export const internationalInstrumentConfig = {
 export const arbitralRuleConfig = {
   keyLabelPairs: [
     {
-      key: 'Set_of_Rules',
+      key: 'Set of Rules',
       label: 'Set of Rules',
       emptyValueBehavior: { action: 'display', fallback: 'No title available' },
     },
     {
-      key: 'Arbitral Institution',
-      label: 'Arbitral Institution',
+      key: 'Arbitral Institutions',
+      label: 'Arbitral Institutions',
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No institution available',
       },
     },
     {
-      key: 'In_Force_From',
+      key: 'In Force From',
       label: 'In Force From',
       emptyValueBehavior: {
         action: 'hide',
@@ -538,9 +538,9 @@ export const arbitralRuleConfig = {
     },
   ],
   valueClassMap: {
-    Set_of_Rules: 'result-value-medium section-gap',
-    In_Force_From: 'result-value-small section-gap',
-    'Arbitral Institution': 'result-value-small section-gap',
+    'Set of Rules': 'result-value-medium section-gap',
+    'In Force From': 'result-value-small section-gap',
+    'Arbitral Institutions': 'result-value-small section-gap',
   },
 }
 
@@ -548,13 +548,13 @@ export const arbitralRuleConfig = {
 export const arbitralAwardConfig = {
   keyLabelPairs: [
     {
-      key: 'Case_Number',
+      key: 'Case Number',
       label: 'Case Number',
       emptyValueBehavior: { action: 'display', fallback: 'No title available' },
     },
     {
-      key: 'Arbitral Institution',
-      label: 'Arbitral Institution',
+      key: 'Arbitral Institutions',
+      label: 'Arbitral Institutions',
       emptyValueBehavior: {
         action: 'display',
         fallback: 'No institution available',
@@ -575,7 +575,7 @@ export const arbitralAwardConfig = {
         typeof formatDate === 'function' ? formatDate(val) : val,
     },
     {
-      key: 'Nature_of_the_Award',
+      key: 'Nature of the Award',
       label: 'Nature of the Award',
       emptyValueBehavior: {
         action: 'hide',
@@ -589,14 +589,14 @@ export const arbitralAwardConfig = {
       },
     },
     {
-      key: 'Seat__Town_',
+      key: 'Seat (Town)',
       label: 'Seat (Town)',
       emptyValueBehavior: {
         action: 'hide',
       },
     },
     {
-      key: 'Award_Summary',
+      key: 'Award Summary',
       label: 'Award Summary',
       emptyValueBehavior: {
         action: 'hide',
@@ -604,14 +604,14 @@ export const arbitralAwardConfig = {
     },
   ],
   valueClassMap: {
-    Case_Number: 'result-value-medium section-gap',
+    'Case Number': 'result-value-medium section-gap',
     'Arbitral Institution': 'result-value-small section-gap',
     Source: 'result-value-small section-gap',
     Year: 'result-value-small section-gap',
     'Nature of the Award': 'result-value-small section-gap',
     Context: 'result-value-small section-gap',
-    Seat__Town_: 'result-value-small section-gap',
-    Award_Summary: 'result-value-small section-gap',
+    'Seat (Town)': 'result-value-small section-gap',
+    'Award Summary': 'result-value-small section-gap',
   },
 }
 
