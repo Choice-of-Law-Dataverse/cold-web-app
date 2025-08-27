@@ -79,7 +79,7 @@
                 class="mb-6"
               >
                 <!-- Conditionally render the label -->
-                <p class="label-key mb-2.5 flex items-center">
+                <p class="label label-key mb-2.5 flex items-center">
                   {{ item.label }}
                   <!-- Add this line to support header-actions slot for each section -->
                   <slot
@@ -235,6 +235,13 @@ watchEffect(() => {
 // Add these new functions
 const shouldDisplayValue = (item, value) => {
   if (!item.emptyValueBehavior) return true
+  // If a positive display condition is provided, honor it first using the full result data
+  if (
+    item.emptyValueBehavior.shouldDisplay &&
+    !item.emptyValueBehavior.shouldDisplay(props.resultData)
+  ) {
+    return false
+  }
   if (
     item.emptyValueBehavior.shouldHide &&
     item.emptyValueBehavior.shouldHide(props.resultData)
@@ -303,7 +310,6 @@ const getDisplayValue = (item, value) => {
 }
 
 .label-key {
-  @extend .label;
   padding: 0;
 }
 

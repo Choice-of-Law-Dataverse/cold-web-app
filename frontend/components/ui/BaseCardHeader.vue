@@ -33,24 +33,37 @@
         >
           {{ family }}
         </span>
-        <!-- Display 'source_table' -->
-        <NuxtLink
-          v-if="adjustedSourceTable"
-          :to="
-            '/search?type=' +
-            encodeURIComponent(
-              getSourceTablePlural(adjustedSourceTable)
-            ).replace(/%20/g, '+')
-          "
-          :class="[
-            'label',
-            labelColorClass,
-            'cursor-pointer',
-            'source-table-label-link',
-          ]"
-        >
-          {{ adjustedSourceTable }}
-        </NuxtLink>
+        <!-- Display 'source_table' or a type selector when in 'new' mode -->
+        <template v-if="adjustedSourceTable">
+          <!-- In 'new' mode, show a simple dropdown to switch data type -->
+          <select
+            v-if="headerMode === 'new'"
+            v-model="selectedType"
+            class="border border-gray-300 px-2 pr-8 py-2 text-xs font-bold uppercase mr-3 min-w-[240px]"
+          >
+            <option v-for="type in typeOptions" :key="type" :value="type">
+              {{ type }}
+            </option>
+          </select>
+          <!-- In other modes, keep the clickable label linking to search -->
+          <NuxtLink
+            v-else
+            :to="
+              '/search?type=' +
+              encodeURIComponent(
+                getSourceTablePlural(adjustedSourceTable)
+              ).replace(/%20/g, '+')
+            "
+            :class="[
+              'label',
+              labelColorClass,
+              'cursor-pointer',
+              'source-table-label-link',
+            ]"
+          >
+            {{ adjustedSourceTable }}
+          </NuxtLink>
+        </template>
 
         <!-- Display 'Themes' -->
         <NuxtLink
@@ -79,7 +92,7 @@
             >Cancel</UButton
           >
           <UButton color="primary" @click="$emit('open-save-modal')"
-            >Save</UButton
+            >Submit</UButton
           >
         </template>
         <template v-else>
@@ -188,14 +201,15 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, reactive } from 'vue'
-import { useRoute } from 'vue-router'
+import { onMounted, ref, computed, reactive, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import jurisdictionsData from '@/assets/jurisdictions-data.json'
 import { handleImageError } from '@/utils/handleImageError'
 
 import availableSoon from '@/content/available_soon.md?raw'
 
 const route = useRoute()
+const router = useRouter()
 const pdfExists = ref(false)
 const isOpen = ref(false)
 const isSaveOpen = ref(false)
@@ -310,6 +324,23 @@ const labelColorClass = computed(() => {
       return '' // No color for unknown labels
   }
 })
+
+function labelClassForType(label) {
+  switch (label) {
+    case 'Court Decision':
+      return 'label-court-decision'
+    case 'Question':
+      return 'label-question'
+    case 'Domestic Instrument':
+    case 'Regional Instrument':
+    case 'International Instrument':
+      return 'label-domestic-instrument'
+    case 'Literature':
+      return 'label-literature'
+    default:
+      return 'label'
+  }
+}
 
 const formattedTheme = computed(() => {
   if (props.formattedTheme.length > 0) {
@@ -470,6 +501,51 @@ function getSourceTablePlural(label) {
   if (label === 'Arbitral Award') return 'Arbitral Awards'
   return label
 }
+
+// Dropdown options for 'new' pages
+const typeOptions = [
+  'Court Decision',
+  'Domestic Instrument',
+  'Regional Instrument',
+  'International Instrument',
+  'Literature',
+  'Question',
+]
+const selectedType = ref('')
+
+// Keep dropdown in sync with current header label
+watch(
+  () => adjustedSourceTable.value,
+  (val) => {
+    if (props.headerMode === 'new') {
+      selectedType.value = val || ''
+    }
+  },
+  { immediate: true }
+)
+
+function typeToNewPath(label) {
+  const slug =
+    label === 'Court Decision'
+      ? 'court-decision'
+      : label === 'Domestic Instrument'
+        ? 'domestic-instrument'
+        : label === 'Regional Instrument'
+          ? 'regional-instrument'
+          : label === 'International Instrument'
+            ? 'international-instrument'
+            : label === 'Question'
+              ? 'question'
+              : 'literature'
+  return `/${slug}/new`
+}
+
+// Navigate on selection change in 'new' mode
+watch(selectedType, (val, old) => {
+  if (props.headerMode === 'new' && val && val !== old) {
+    router.push(typeToNewPath(val))
+  }
+})
 </script>
 
 <style scoped>

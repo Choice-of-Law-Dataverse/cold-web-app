@@ -23,8 +23,49 @@ class SearchService:
     # ------------------------------
     def _complete_view_for_table(self, table: str) -> str:
         """
-        Map user-facing table names to data_views <table>_complete view names.
+        Map user-facing table names (case-insensitive; supports common singular/plural variants)
+        to data_views <table>_complete view names.
         """
+        if not table:
+            raise ValueError("No table provided")
+
+        normalized = table.strip().lower()
+
+        # Canonical names
+        canonical = {
+            "answers": "Answers",
+            "hcch answers": "HCCH Answers",
+            "court decisions": "Court Decisions",
+            "domestic instruments": "Domestic Instruments",
+            "domestic legal provisions": "Domestic Legal Provisions",
+            "regional instruments": "Regional Instruments",
+            "regional legal provisions": "Regional Legal Provisions",
+            "international instruments": "International Instruments",
+            "international legal provisions": "International Legal Provisions",
+            "literature": "Literature",
+            # Arbitration domain (support plural and singular, and common synonyms)
+            "arbitral awards": "Arbitral Awards",
+            "arbitral award": "Arbitral Awards",
+            "arbitration awards": "Arbitral Awards",
+            "arbitration award": "Arbitral Awards",
+            "arbitral institutions": "Arbitral Institutions",
+            "arbitral institution": "Arbitral Institutions",
+            "arbitration institutions": "Arbitral Institutions",
+            "arbitration institution": "Arbitral Institutions",
+            "arbitral rules": "Arbitral Rules",
+            "arbitration rules": "Arbitral Rules",
+            "arbitral provisions": "Arbitral Provisions",
+            "arbitral provision": "Arbitral Provisions",
+            "arbitration provisions": "Arbitral Provisions",
+            "arbitration provision": "Arbitral Provisions",
+            "jurisdictions": "Jurisdictions",
+            "questions": "Questions",
+        }
+
+        table_key = canonical.get(normalized)
+        if not table_key:
+            raise ValueError(f"Unsupported table for full/filtered query: {table}")
+
         mapping = {
             "Answers": "data_views.answers_complete",
             "HCCH Answers": "data_views.hcch_answers_complete",
@@ -37,10 +78,14 @@ class SearchService:
             "International Legal Provisions": "data_views.international_legal_provisions_complete",
             "Literature": "data_views.literature_complete",
             "Arbitral Awards": "data_views.arbitral_awards_complete",
+            "Arbitral Institutions": "data_views.arbitral_institutions_complete",
+            "Arbitral Rules": "data_views.arbitral_rules_complete",
+            "Arbitral Provisions": "data_views.arbitral_provisions_complete",
             "Jurisdictions": "data_views.jurisdictions_complete",
             "Questions": "data_views.questions_complete",
         }
-        view = mapping.get(table)
+
+        view = mapping.get(table_key)
         if not view:
             raise ValueError(f"Unsupported table for full/filtered query: {table}")
         return view

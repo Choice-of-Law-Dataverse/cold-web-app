@@ -4,7 +4,7 @@
     :resultData="{}"
     :keyLabelPairs="[]"
     :valueClassMap="{}"
-    sourceTable="International Instrument"
+    sourceTable="Regional Instrument"
     :hideBackButton="true"
     headerMode="new"
     @open-save-modal="openSaveModal"
@@ -15,79 +15,36 @@
   >
     <!-- Always render this section, even if keyLabelPairs is empty -->
     <div class="section-gap p-0 m-0">
-      <UFormGroup size="lg" hint="Required" :error="errors.name">
+      <UFormGroup size="lg" :error="errors.abbreviation">
+        <template #label>
+          <span class="label">Abbreviation</span>
+        </template>
+        <UInput
+          v-model="abbreviation"
+          class="mt-2"
+          placeholder="Abbreviation of the Regional Instrument"
+        />
+      </UFormGroup>
+      <UFormGroup size="lg" hint="Required" :error="errors.title" class="mt-8">
         <template #label>
           <span class="label">Title</span>
         </template>
         <UInput
-          v-model="name"
+          v-model="title"
           class="mt-2"
-          placeholder="Name of the International Instrument"
+          placeholder="Name of the Regional Instrument"
         />
       </UFormGroup>
-      <UFormGroup size="lg" class="mt-8">
-        <!-- <template #label>
-          <span class="label">Specialists</span>
-          <InfoTooltip :text="tooltipInternationalInstrumentSpecialist" />
-        </template>
-        <div
-          v-for="(specialist, idx) in specialists"
-          :key="idx"
-          class="flex items-center mt-2"
-        >
-          <UInput
-            v-model="specialists[idx]"
-            placeholder="Specialist’s name"
-            class="flex-1"
-          />
-          <UButton
-            v-if="idx > 0"
-            icon="i-heroicons-x-mark"
-            color="red"
-            variant="ghost"
-            class="ml-2"
-            @click="removeSpecialist(idx)"
-            aria-label="Remove specialist"
-          />
-        </div>
-        <template v-for="(specialist, idx) in specialists">
-          <div
-            v-if="specialists[idx] && idx === specialists.length - 1"
-            :key="'add-btn-' + idx"
-          >
-            <UButton
-              class="mt-2"
-              color="primary"
-              variant="soft"
-              icon="i-heroicons-plus"
-              @click="addSpecialist"
-              >Add another specialist</UButton
-            >
-          </div> 
-        </template> -->
-      </UFormGroup>
-      <!-- <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label">PDF</span>
-          <InfoTooltip :text="tooltipInternationalInstrumentSpecialist" />
-        </template>
-        <UInput
-          type="file"
-          icon="i-material-symbols:upload-file"
-          @change="onPdfChange"
-        />
-      </UFormGroup> -->
       <UFormGroup size="lg" class="mt-8" :error="errors.link">
         <template #label>
           <span class="label">Link</span>
-          <InfoTooltip :text="tooltipInternationalInstrumentLink" />
         </template>
         <UInput v-model="link" class="mt-2" placeholder="Link" />
       </UFormGroup>
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Date</span>
-          <InfoTooltip :text="tooltipInternationalInstrumentDate" />
+          <InfoTooltip :text="tooltipRegionalInstrumentDate" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
@@ -111,7 +68,7 @@
     :comments="comments"
     :token="token"
     :saveModalErrors="saveModalErrors"
-    :name="name"
+    :name="title"
     :specialists="specialists"
     :date="date"
     :pdfFile="pdfFile"
@@ -133,9 +90,7 @@ import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import DatePicker from '@/components/ui/DatePicker.vue'
 import CancelModal from '@/components/ui/CancelModal.vue'
 import SaveModal from '@/components/ui/SaveModal.vue'
-import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/international_instrument/specialists.md?raw'
-import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
-import tooltipInternationalInstrumentLink from '@/content/info_boxes/international_instrument/link.md?raw'
+import tooltipRegionalInstrumentDate from '@/content/info_boxes/regional_instrument/date.md?raw'
 
 import { format } from 'date-fns'
 const date = ref(new Date())
@@ -143,7 +98,8 @@ const date = ref(new Date())
 const config = useRuntimeConfig()
 
 // Form data
-const name = ref('')
+const abbreviation = ref('')
+const title = ref('')
 const link = ref('')
 const specialists = ref([''])
 const pdfFile = ref(null)
@@ -160,10 +116,10 @@ watch(token, () => {
 
 // Validation schema
 const formSchema = z.object({
-  name: z
+  title: z
     .string()
-    .min(1, { message: 'Name is required' })
-    .min(3, { message: 'Name must be at least 3 characters long' }),
+    .min(1, { message: 'Title is required' })
+    .min(3, { message: 'Title must be at least 3 characters long' }),
   specialists: z.array(z.string()).optional(),
   link: z
     .string()
@@ -183,12 +139,12 @@ const showCancelModal = ref(false)
 const notificationBannerMessage =
   'Please back up your data when working here. Closing or reloading this window will delete everything. Data is only saved after you submit.'
 
-useHead({ title: 'New International Instrument — CoLD' })
+useHead({ title: 'New Regional Instrument — CoLD' })
 
 function validateForm() {
   try {
     const formData = {
-      name: name.value,
+      title: title.value,
       specialists: specialists.value,
       link: link.value,
     }
@@ -241,7 +197,8 @@ function removeSpecialist(idx) {
 
 function handleNewSave() {
   const payload = {
-    name: name.value, // Title
+    abbreviation: abbreviation.value, // abbreviation
+    title: title.value, // title
     url: link.value, // Link
     attachment: '', // ignored for now
     instrument_date: format(date.value, 'yyyy-MM-dd'), // Date
@@ -252,7 +209,7 @@ function handleNewSave() {
   ;(async () => {
     try {
       await $fetch(
-        `${config.public.apiBaseUrl}/suggestions/international-instruments`,
+        `${config.public.apiBaseUrl}/suggestions/regional-instruments`,
         {
           method: 'POST',
           headers: {

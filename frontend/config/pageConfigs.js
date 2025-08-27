@@ -152,6 +152,7 @@ import tooltipQuestionRelatedLiterature from '@/content/info_boxes/question/rela
 import tooltipSource from '@/content/info_boxes/question/source.md?raw'
 import tooltipOUPBookQuote from '@/content/info_boxes/question/oup_book_quote.md?raw'
 import tooltipRelatedCourtDecisions from '@/content/info_boxes/question/related_court_decisions.md?raw'
+import { formatDate, formatYear } from '@/utils/format'
 
 export const questionConfig = {
   keyLabelPairs: [
@@ -190,6 +191,42 @@ export const questionConfig = {
       },
     },
     {
+      key: 'Last Modified',
+      label: 'Last Updated',
+      emptyValueBehavior: {
+        action: 'hide',
+        shouldDisplay: (data) => {
+          const lm = data && data['Last Modified']
+          if (typeof formatYear === 'function') {
+            return !!formatYear(lm)
+          }
+          return !!(lm && !isNaN(new Date(lm)))
+        },
+      },
+      valueTransform: (val) =>
+        typeof formatDate === 'function' ? formatDate(val) : val,
+    },
+    {
+      key: 'Created',
+      label: 'Last Updated',
+      emptyValueBehavior: {
+        action: 'hide',
+        shouldDisplay: (data) => {
+          const lm = data && data['Last Modified']
+          const created = data && data['Created']
+          if (typeof formatYear === 'function') {
+            return !formatYear(lm) && !!formatYear(created)
+          }
+          return (
+            !(lm && !isNaN(new Date(lm))) &&
+            !!(created && !isNaN(new Date(created)))
+          )
+        },
+      },
+      valueTransform: (val) =>
+        typeof formatDate === 'function' ? formatDate(val) : val,
+    },
+    {
       key: 'OUP Book Quote',
       label: 'OUP Book Quote',
       tooltip: tooltipOUPBookQuote,
@@ -220,6 +257,8 @@ export const questionConfig = {
     Question: 'result-value-medium section-gap',
     Answer: 'result-value-large section-gap',
     'Domestic Legal Provisions': 'result-value-small section-gap',
+    'Last Modified': 'result-value-small section-gap',
+    Created: 'result-value-small section-gap',
     'More Information': 'result-value-small whitespace-pre-line section-gap',
     'OUP Book Quote': 'result-value-small section-gap',
     'Court Decisions ID': 'result-value-small section-gap',
