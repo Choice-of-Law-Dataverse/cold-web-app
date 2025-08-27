@@ -22,38 +22,6 @@ title: Team — CoLD
     class="external-link-icon"
   /></a> is responsible for the strategic vision and practical execution of the project. She manages a multidisciplinary staff and is in charge of fostering partnerships. Agatha also acts as a Senior Researcher for the Dataverse, with a focus on data input.
 
-<img src="https://www.unilu.ch/fileadmin/_processed_/b/a/csm_Weigold_Simon_Q_7a3afcd4c3.jpg" width="150"/>
-
-**Simon Weigold** Data Engineer  
-<a href="https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/simon-weigold-ma/" target="_blank">Simon<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
-    alt="external link"
-    class="external-link-icon"
-  /></a> translates the project requirements into a data infrastructure. He implements data management procedures and facilitates systems used to input, store, review, and process data.
-
-<img src="https://www.unilu.ch/fileadmin/_processed_/b/7/csm_Aiolfi_Fabian_Q_b751def4d4.jpg" width="150"/>
-
-**Fabian Aiolfi** Product Developer  
-<a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/fabian-aiolfi-ma" target="_blank">Fabian<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
-    alt="external link"
-    class="external-link-icon"
-  /></a> is behind the conceptual development of the Dataverse. He coordinates user needs, academic input and technical feasibility to ensure that CoLD is user-friendly and useful.
-
-<img src="https://www.unilu.ch/fileadmin/_processed_/3/c/csm_McMahon_Dominic-C_ba344cde89.jpg" width="150"/>
-
-**Dominic McMahon** Legal NLP Specialist & Data Analytics Lead  
-<a href="https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/dominic-mcmahon-mlaw/" target="_blank">Dominic<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
-    alt="external link"
-    class="external-link-icon"
-  /></a> has recently completed his Master's degree in Law at the University of Lucerne. He acts as a Researcher for the Dataverse, with a focus on data analysis and data input. Dominic is also responsible for administrative tasks and for the coordination of events.
-
-<img src="https://www.unilu.ch/fileadmin/_processed_/6/6/csm_Shpakova_Olga_Q_451e7ba545.jpg" width="150"/>
-
-**Olga Shpakova** Data Scientist  
-Under the supervision of Prof. Daniel Girsberger and Agatha Brandão, Olga researches the application of large language models in the legal field. She joined the team in March 2024 and worked as a research assistant for a year.
-
 <img src="https://www.unilu.ch/fileadmin/_processed_/e/f/csm_Tovar_Rorick_Q_34c41b210f.jpg" width="150"/>
 
 **Rorick Daniel Tovar Galván** Senior Researcher  
@@ -62,6 +30,45 @@ Under the supervision of Prof. Daniel Girsberger and Agatha Brandão, Olga resea
     alt="external link"
     class="external-link-icon"
   /></a> holds a Ph.D. from the University of Bern, Switzerland. He oversees data input from Latin American countries into the Dataverse.
+
+<img src="https://www.unilu.ch/fileadmin/_processed_/3/c/csm_McMahon_Dominic-C_ba344cde89.jpg" width="150"/>
+
+**Dominic McMahon** Researcher  
+<a href="https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/dominic-mcmahon-mlaw/" target="_blank">Dominic<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a> has recently completed his Master's degree in Law at the University of Lucerne. He acts as a Researcher for the Dataverse, with a focus on data analysis and data input. Dominic is also responsible for administrative tasks and for the coordination of events.
+
+**Anna Ptitsina** Researcher
+<a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/fabian-aiolfi-ma" target="_blank">Fabian<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a> works with outreach activities and publications.
+  
+<img src="https://www.unilu.ch/fileadmin/_processed_/b/a/csm_Weigold_Simon_Q_7a3afcd4c3.jpg" width="150"/>
+
+**Simon Weigold**   
+<a href="https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/simon-weigold-ma/" target="_blank">Simon<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a> translates the project requirements into a data infrastructure. He implements data management procedures and facilitates systems used to input, store, review, and process data. He joined the team in September 2023 and worked as a Data Engineer for two years.
+
+<img src="https://www.unilu.ch/fileadmin/_processed_/b/7/csm_Aiolfi_Fabian_Q_b751def4d4.jpg" width="150"/>
+
+**Fabian Aiolfi**
+<a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/fabian-aiolfi-ma" target="_blank">Fabian<img
+    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    alt="external link"
+    class="external-link-icon"
+  /></a> is behind the conceptual development of the Dataverse. He coordinated user needs, academic input and technical feasibility to ensure that CoLD is user-friendly and useful. He joined the team in February 2024 and worked as a Product Developer for a year and a half.
+
+<img src="https://www.unilu.ch/fileadmin/_processed_/6/6/csm_Shpakova_Olga_Q_451e7ba545.jpg" width="150"/>
+
+**Olga Shpakova**  
+Under the supervision of Prof. Daniel Girsberger and Agatha Brandão, Olga studied the application of large language models in the legal field. She joined the team in March 2024 and worked as a research assistant for a year.
 
 ## Partners
 
