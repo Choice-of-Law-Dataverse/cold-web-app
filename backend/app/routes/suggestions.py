@@ -36,8 +36,13 @@ async def submit_suggestion(
     authorization: str = Header(None),
 ):
     try:
+        payload = {
+            **body.data,
+            **({"submitter_email": body.submitter_email} if body.submitter_email else {}),
+            **({"submitter_comments": body.submitter_comments} if body.submitter_comments else {}),
+        }
         new_id = service.save_suggestion(
-            payload=body.data,
+            payload=payload,
             table="generic",
             client_ip=request.client.host if request.client else None,
             user_agent=request.headers.get("User-Agent"),
