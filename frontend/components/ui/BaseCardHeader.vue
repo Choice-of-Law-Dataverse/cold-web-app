@@ -18,7 +18,7 @@
         >
           <img
             v-if="!erroredImages[jurisdictionString]"
-            :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
+            :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
             style="height: 9px"
             class="mr-1.5 mb-0.5"
             @error="handleImageError(erroredImages, jurisdictionString)"
@@ -220,7 +220,7 @@ const downloadPDFLink = computed(() => {
   const id = segments[1] || '' // e.g., 'CD-ARE-1128'
   // If your Azure folders always follow the plural of the content type
   const folder = `${contentType}s`
-  return `https://choiceoflawdataverse.blob.core.windows.net/${folder}/${id}.pdf`
+  return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`
 })
 
 // Props

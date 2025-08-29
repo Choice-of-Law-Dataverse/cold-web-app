@@ -12,7 +12,7 @@ The data published on this website is made available under the terms of the Crea
 
 For details of the CC BY-SA license, see:
 <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank">https://creativecommons.org/licenses/by-sa/4.0/<img
-     src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+     src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
      alt="external link"
      class="external-link-icon"
    /></a>

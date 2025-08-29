@@ -4,7 +4,7 @@ title: Supporters — CoLD
 
 ## Who Supports CoLD?
 
-- <img src="https://choiceoflawdataverse.blob.core.windows.net/assets/snf-logo.svg" width="250"/>
+- <img src="https://choiceoflaw.blob.core.windows.net/assets/snf-logo.svg" width="250"/>
   Swiss National Science Foundation: “The Hague Principles and Beyond”, Project No. 179515 (2018–2021)
 - Forschungskommission der Universität Luzern: Start up funding (2022)
 - Swiss National Science Foundation: “Choice of Law Dataverse: promoting transparency and access in private international law data”, Project No. 215469 (2023-2026)

@@ -49,7 +49,7 @@ export function useJurisdictionComparison() {
           label: entry.Name,
           alpha3Code: entry['Alpha-3 Code'],
           avatar: entry['Alpha-3 Code']
-            ? `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
             : undefined,
         }))
         .sort((a, b) => (a.label || '').localeCompare(b.label || ''))

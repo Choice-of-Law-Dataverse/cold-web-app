@@ -14,7 +14,7 @@
           <RouterLink :to="`/domestic-instrument/${instrument.ID}`">
             <UButton class="suggestion-button mt-8" variant="link">
               <img
-                :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
+                :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
                 style="height: 20px; border: 1px solid var(--color-cold-gray)"
                 class="mr-3"
               />

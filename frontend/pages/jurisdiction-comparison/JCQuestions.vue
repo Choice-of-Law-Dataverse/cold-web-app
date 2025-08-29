@@ -243,7 +243,7 @@ const getFlagUrl = (label) => {
   if (!label || label === 'All Jurisdictions') return ''
   const found = jurisdictionOptions.value.find((j) => j.label === label)
   if (found?.avatar) return found.avatar
-  return `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
+  return `https://choiceoflaw.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
 }
 
 // Questions state

@@ -12,7 +12,7 @@ Our main objective is to transform data points into knowledge through collaborat
 
 **CoLD is Open Research**  
 The Dataverse promotes sharing, preserving, citing, exploring and analyzing research data on choice of law. CoLD is licensed under <a href="https://creativecommons.org/licenses/by/4.0/?ref=chooser-v1" target="_blank">CC BY 4.0<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a>.
@@ -27,7 +27,7 @@ The discipline in which this research project is inserted is private internation
 
 Follow the development of this website on GitHub:  
 <a href="https://github.com/Choice-of-Law-Dataverse/cold-web-app" target="_blank">github.com/Choice-of-Law-Dataverse/cold-web-app<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a>
@@ -35,7 +35,7 @@ Follow the development of this website on GitHub:
 ## CoLD Tech Wiki
 
 For more information on the technologies used and developed to build CoLD, see <a href="https://choice-of-law-dataverse.github.io/" target="_blank">choice-of-law-dataverse.github.io<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a>.

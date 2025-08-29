@@ -81,28 +81,17 @@
         </div>
 
         <!-- Logo (Hidden when search is expanded) -->
-        <!-- alpha Logo -->
         <a
           v-if="!isExpanded"
           href="/"
           class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center"
         >
           <img
-            src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_alpha_logo.svg"
+            src="https://choiceoflaw.blob.core.windows.net/assets/cold_beta_logo.svg"
             alt="CoLD Logo"
             class="h-12 w-auto mb-4"
           />
         </a>
-        <!-- beta Logo -->
-        <!-- <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
-          <a href="/">
-            <img
-              src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_beta_logo.svg"
-              alt="CoLD Logo"
-              class="h-12 w-auto mb-4"
-            />
-          </a>
-        </div> -->
 
         <!-- HCCHApproved and Menu/Links Row -->
         <div v-if="!isExpanded" class="flex items-center space-x-4">

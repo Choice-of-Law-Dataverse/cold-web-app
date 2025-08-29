@@ -462,7 +462,7 @@ function getFlagUrl(label) {
   const found = jurisdictionOptions.value.find((j) => j.label === label)
   if (found && found.avatar) return found.avatar
   // Fallback: try to use label as ISO code (lowercase)
-  return `https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
+  return `https://choiceoflaw.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
 }
 
 // Initialization

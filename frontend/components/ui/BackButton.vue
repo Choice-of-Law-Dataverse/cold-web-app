@@ -7,7 +7,7 @@
       :trailing="false"
       class="suggestion-button"
     >
-      Back to Results
+      Back
     </UButton>
   </div>
 </template>

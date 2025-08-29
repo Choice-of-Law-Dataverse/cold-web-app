@@ -83,7 +83,7 @@
                           :href="`/question/${country.code}${currentSuffix}`"
                         >
                           <img
-                            :src="`https://choiceoflawdataverse.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
+                            :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
                             style="
                               height: 12px;
                               margin-right: 6px;

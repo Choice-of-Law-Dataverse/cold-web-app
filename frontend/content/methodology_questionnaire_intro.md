@@ -3,7 +3,7 @@
 Besides displaying the relevant information on legal provisions and case law decisions, the main dataset on choice of law contains an analytical layer. The work is organized around a questionnaire designed to systematize standard answers about choice of law rules in various jurisdictions. It covers the following topics:
 
 1. **Codification of private international law**: The first set of questions revolves around whether rules of private international law are codified and if there is any ongoing revision. Based on the response, further questions explore the role of the <a href="https://www.hcch.net/en/instruments/conventions/specialised-sections/choice-of-law-principles" target="_blank">HCCH Principles<img
-     src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+     src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
      alt="external link"
      class="external-link-icon"
    /></a> in this context.
