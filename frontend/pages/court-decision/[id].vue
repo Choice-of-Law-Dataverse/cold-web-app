@@ -263,7 +263,7 @@ const downloadPDFLink = computed(() => {
   const contentType = segments[0] || 'unknown'
   const id = segments[1] || ''
   const folder = `${contentType}s`
-  return `https://choiceoflawdataverse.blob.core.windows.net/${folder}/${id}.pdf`
+  return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`
 })
 
 const fetchCourtDecision = async () => {

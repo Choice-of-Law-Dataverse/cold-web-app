@@ -8,7 +8,7 @@ title: Team — CoLD
 
 **Daniel Girsberger** Project Leader  
 <a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/" target="_blank">Daniel<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a> is the grant holder of the SNF Project. He oversees the strategic and operational decisions and is responsible for data quality control for the Dataverse. Daniel steers the Scientific Board, composed of legal experts from all continents.
@@ -17,7 +17,7 @@ title: Team — CoLD
 
 **Agatha Brandão de Oliveira** Project Coordinator  
 <a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/agatha-brandao-de-oliveira-mlaw" target="_blank">Agatha<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a> is responsible for the strategic vision and practical execution of the project. She manages a multidisciplinary staff and is in charge of fostering partnerships. Agatha also acts as a Senior Researcher for the Dataverse, with a focus on data input.
@@ -26,7 +26,7 @@ title: Team — CoLD
 
 **Simon Weigold** Data Engineer  
 <a href="https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/simon-weigold-ma/" target="_blank">Simon<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a> translates the project requirements into a data infrastructure. He implements data management procedures and facilitates systems used to input, store, review, and process data.
@@ -35,7 +35,7 @@ title: Team — CoLD
 
 **Fabian Aiolfi** Product Developer  
 <a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/fabian-aiolfi-ma" target="_blank">Fabian<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a> is behind the conceptual development of the Dataverse. He coordinates user needs, academic input and technical feasibility to ensure that CoLD is user-friendly and useful.
@@ -44,7 +44,7 @@ title: Team — CoLD
 
 **Dominic McMahon** Legal NLP Specialist & Data Analytics Lead  
 <a href="https://www.unilu.ch/fakultaeten/rf/professuren/girsberger-daniel/mitarbeitende/dominic-mcmahon-mlaw/" target="_blank">Dominic<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a> has recently completed his Master's degree in Law at the University of Lucerne. He acts as a Researcher for the Dataverse, with a focus on data analysis and data input. Dominic is also responsible for administrative tasks and for the coordination of events.
@@ -58,7 +58,7 @@ Under the supervision of Prof. Daniel Girsberger and Agatha Brandão, Olga resea
 
 **Rorick Daniel Tovar Galván** Senior Researcher  
 <a href="https://www.unilu.ch/en/faculties/faculty-of-law/professorships/girsberger-daniel/staff/dr-rorick-daniel-tovar-galvan-llm/" target="_blank">Rorick<img
-    src="https://choiceoflawdataverse.blob.core.windows.net/assets/external_link.svg"
+    src="https://choiceoflaw.blob.core.windows.net/assets/external_link.svg"
     alt="external link"
     class="external-link-icon"
   /></a> holds a Ph.D. from the University of Bern, Switzerland. He oversees data input from Latin American countries into the Dataverse.

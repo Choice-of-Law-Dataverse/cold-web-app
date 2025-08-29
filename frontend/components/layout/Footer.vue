@@ -6,7 +6,7 @@
     >
       <div class="md:col-span-8 flex flex-col gap-3 mt-4">
         <img
-          src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_flag_footer.svg"
+          src="https://choiceoflaw.blob.core.windows.net/assets/cold_flag_footer.svg"
           style="width: 100px"
           class="mb-6"
         />

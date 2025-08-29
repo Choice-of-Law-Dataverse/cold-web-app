@@ -88,7 +88,7 @@
           class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center"
         >
           <img
-            src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_alpha_logo.svg"
+            src="https://choiceoflaw.blob.core.windows.net/assets/cold_alpha_logo.svg"
             alt="CoLD Logo"
             class="h-12 w-auto mb-4"
           />
@@ -97,7 +97,7 @@
         <!-- <div v-if="!isExpanded" class="flex-1 flex justify-center items-center">
           <a href="/">
             <img
-              src="https://choiceoflawdataverse.blob.core.windows.net/assets/cold_beta_logo.svg"
+              src="https://choiceoflaw.blob.core.windows.net/assets/cold_beta_logo.svg"
               alt="CoLD Logo"
               class="h-12 w-auto mb-4"
             />
