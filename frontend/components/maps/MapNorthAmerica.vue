@@ -30,8 +30,8 @@
       ]"
       :fill="true"
       color="white"
-      weight="0"
-      fill-opacity="1"
+      :weight="0"
+      :fill-opacity="1"
     />
     <!-- GeoJSON Layer -->
     <LGeoJson
