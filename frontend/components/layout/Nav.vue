@@ -81,9 +81,9 @@
         </div>
 
         <!-- Logo (Hidden when search is expanded) -->
-        <a
+        <NuxtLink
           v-if="!isExpanded"
-          href="/"
+          to="/"
           class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center"
         >
           <img
@@ -91,7 +91,7 @@
             alt="CoLD Logo"
             class="h-12 w-auto mb-4"
           />
-        </a>
+        </NuxtLink>
 
         <!-- HCCHApproved and Menu/Links Row -->
         <div v-if="!isExpanded" class="flex items-center space-x-4">
