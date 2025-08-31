@@ -21,13 +21,13 @@ const plotlyContainer = ref(null)
 
 const { data, isLoading } = useJurisdictionChart()
 
-async function setupChart() {
-  if (!data.value || !plotlyContainer.value) return
+async function setupChart(values) {
+  if (!values || !plotlyContainer.value) return
 
   // Dynamically import Plotly only on the client
   const Plotly = await import('plotly.js-dist-min')
 
-  const { xValues, yValues, links } = data.value
+  const { xValues, yValues, links } = values
 
   // Fetch the Tailwind color from CSS variables
   const coldGreen = getComputedStyle(document.documentElement)
@@ -149,8 +149,8 @@ async function setupChart() {
 watch(
   data,
   (newData) => {
-    if (newData && !isLoading.value) {
-      setupChart()
+    if (newData) {
+      setupChart(newData)
     }
   },
   { immediate: true }

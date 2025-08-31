@@ -6,7 +6,7 @@
       <h2 class="popular-title">Open a Country Report</h2>
       <div class="suggestions w-full md:w-auto">
         <JurisdictionSelectMenu
-          :countries="countries"
+          :countries="countries || []"
           @countrySelected="navigateToCountry"
         />
       </div>
