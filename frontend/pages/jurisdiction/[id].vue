@@ -1,10 +1,11 @@
 <template>
   <BaseDetailLayout
-    :loading="loading"
+    :loading="isLoading.value"
     :resultData="jurisdictionData"
     :keyLabelPairs="keyLabelPairsWithoutLegalFamily"
     :valueClassMap="valueClassMap"
     :formattedJurisdiction="[jurisdictionData?.Name]"
+    sourceTable="Jurisdiction"
   >
     <template #related-literature>
       <section class="section-gap p-0 m-0">
@@ -34,7 +35,8 @@
     <template #search-links>
       <template
         v-if="
-          countsLoading ||
+          courtDecisionCountLoading ||
+          domesticInstrumentCountLoading ||
           (courtDecisionCount !== 0 && courtDecisionCount !== null) ||
           (domesticInstrumentCount !== 0 && domesticInstrumentCount !== null)
         "
@@ -43,7 +45,9 @@
           >Related Data <InfoTooltip :text="tooltip"
         /></span>
 
-        <template v-if="countsLoading">
+        <template
+          v-if="courtDecisionCountLoading || domesticInstrumentCountLoading"
+        >
           <LoadingBar />
         </template>
         <template v-else>
@@ -115,12 +119,46 @@
       </template>
     </template>
   </BaseDetailLayout>
-  <JurisdictionComparisonLink :formattedJurisdiction="jurisdictionData" />
-  <JurisdictionQuestions :formattedJurisdiction="[jurisdictionData?.Name]" />
+  <JurisdictionComparisonLink
+    v-if="jurisdictionData"
+    :formattedJurisdiction="jurisdictionData"
+  />
+  <ClientOnly>
+    <JurisdictionQuestions
+      v-if="jurisdictionData?.Name"
+      :formattedJurisdiction="[jurisdictionData.Name]"
+    />
+    <template #fallback>
+      <div class="px-6">
+        <div
+          class="mx-auto"
+          style="max-width: var(--container-width); width: 100%"
+        >
+          <div class="col-span-12">
+            <UCard class="cold-ucard">
+              <div>
+                <h2 class="mt-2 mb-8">
+                  Questions and Answers
+                  {{
+                    jurisdictionData?.Name ? `for ${jurisdictionData.Name}` : ''
+                  }}
+                </h2>
+                <div class="flex flex-col py-8 space-y-3 ml-8">
+                  <LoadingBar />
+                  <LoadingBar />
+                  <LoadingBar />
+                </div>
+              </div>
+            </UCard>
+          </div>
+        </div>
+      </div>
+    </template>
+  </ClientOnly>
 </template>
 
 <script setup>
-import { onMounted, computed, ref, watch } from 'vue'
+import { computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 // import JurisdictionComparison from '@/components/jurisdiction-comparison/JurisdictionComparison.vue'
@@ -130,8 +168,14 @@ import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import { useJurisdiction } from '@/composables/useJurisdiction'
+import {
+  useDomesticInstrumentsCount,
+  useCourtDecisionsCount,
+} from '@/composables/useJurisdictionCounts'
+import { useLiteratureTitle } from '@/composables/useLiteratureTitle'
+import { useSpecialists } from '@/composables/useSpecialists'
 import { jurisdictionConfig } from '@/config/pageConfigs'
-import { useRuntimeConfig, useHead } from '#app'
+import { useHead } from '#app'
 
 const tooltip = jurisdictionConfig.keyLabelPairs.find(
   (pair) => pair.key === 'Related Data'
@@ -139,16 +183,40 @@ const tooltip = jurisdictionConfig.keyLabelPairs.find(
 
 const route = useRoute()
 const router = useRouter()
-const config = useRuntimeConfig()
+
+const { keyLabelPairs, valueClassMap } = jurisdictionConfig
+
+const compareJurisdiction = ref(null)
+
 const {
-  loading,
-  jurisdictionData,
-  specialists,
-  compareJurisdiction,
-  keyLabelPairs,
-  valueClassMap,
-  fetchJurisdiction,
-} = useJurisdiction()
+  isLoading: isJurisdictionLoading,
+  data: jurisdictionData,
+  error,
+} = useJurisdiction(computed(() => route.params.id))
+
+// const {
+//   data: literatureTitle,
+//   isLoading: literatureLoading,
+//   error: literatureError,
+// } = useLiteratureTitle(computed(() => jurisdictionData.value?.Literature))
+
+// const {
+//   data: specialists,
+//   isLoading: specialistsLoading,
+//   error: specialistsError,
+// } = useSpecialists(computed(() => jurisdictionData.value?.Name))
+
+const {
+  data: courtDecisionCount,
+  isLoading: courtDecisionCountLoading,
+  error: courtDecisionCountError,
+} = useCourtDecisionsCount(computed(() => jurisdictionData.value?.Name))
+
+const {
+  data: domesticInstrumentCount,
+  isLoading: domesticInstrumentCountLoading,
+  error: domesticInstrumentCountError,
+} = useDomesticInstrumentsCount(computed(() => jurisdictionData.value?.Name))
 
 // Remove Legal Family from keyLabelPairs for detail display
 const keyLabelPairsWithoutLegalFamily = computed(() =>
@@ -158,60 +226,13 @@ const keyLabelPairsWithoutLegalFamily = computed(() =>
 // Set compare jurisdiction from query parameter
 compareJurisdiction.value = route.query.c || null
 
-// --- New: State for result counts ---
-const courtDecisionCount = ref(null)
-const domesticInstrumentCount = ref(null)
-const countsLoading = ref(true)
-
-async function fetchResultCount(jurisdiction, table) {
-  if (!jurisdiction) return null
-  const payload = {
-    search_string: '',
-    filters: [
-      { column: 'jurisdictions', values: [jurisdiction] },
-      { column: 'tables', values: [table] },
-    ],
-    page: 1,
-    page_size: 1,
-  }
-  try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    })
-    if (!response.ok) throw new Error('Failed to fetch count')
-    const data = await response.json()
-    return data.total_matches || 0
-  } catch (e) {
-    console.error('Error fetching result count:', e)
-    return null
-  }
-}
-
-// Fetch counts when jurisdiction changes
-watch(
-  () => jurisdictionData?.value?.Name,
-  async (newName) => {
-    if (newName) {
-      countsLoading.value = true
-      const [courtCount, legalCount] = await Promise.all([
-        fetchResultCount(newName, 'Court Decisions'),
-        fetchResultCount(newName, 'Domestic Instruments'),
-      ])
-      courtDecisionCount.value = courtCount
-      domesticInstrumentCount.value = legalCount
-      countsLoading.value = false
-    } else {
-      courtDecisionCount.value = null
-      domesticInstrumentCount.value = null
-      countsLoading.value = false
-    }
-  },
-  { immediate: true }
+const isLoading = computed(
+  () =>
+    isJurisdictionLoading ||
+    // literatureLoading ||
+    // specialistsLoading ||
+    courtDecisionCountLoading ||
+    domesticInstrumentCountLoading
 )
 
 // Set dynamic page title based on 'Name'
@@ -241,19 +262,26 @@ watch(
   { immediate: true }
 )
 
-onMounted(async () => {
-  try {
-    const id = route.params.id
-    await fetchJurisdiction(id)
-  } catch (err) {
-    if (err.message === 'no entry found with the specified id') {
-      router.push({
-        path: '/error',
-        query: { message: 'Jurisdiction not found' },
-      })
-    } else {
-      console.error('Error fetching jurisdiction:', err)
+// Handle errors from any of the queries
+watch(
+  [
+    error,
+    domesticInstrumentCountError,
+    courtDecisionCountError,
+    //literatureError, specialistsError
+  ],
+  (errors) => {
+    const firstError = errors.filter(Boolean)?.[0]
+    if (firstError) {
+      if (firstError.message === 'no entry found with the specified id') {
+        router.push({
+          path: '/error',
+          query: { message: 'Jurisdiction not found' },
+        })
+      } else {
+        console.error('Error fetching data:', firstError)
+      }
     }
   }
-})
+)
 </script>

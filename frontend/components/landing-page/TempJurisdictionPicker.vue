@@ -16,63 +16,12 @@
 
 <script setup>
 import { useRouter } from 'vue-router'
-import { ref, onMounted } from 'vue'
 import JurisdictionSelectMenu from '@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue'
-import { useRuntimeConfig } from '#app'
+import { useJurisdictions } from '@/composables/useJurisdictions'
 
-// Reactive states
-const countries = ref([])
 const router = useRouter()
-const config = useRuntimeConfig()
 
-// Fetch jurisdictions from the text file
-async function fetchJurisdictions() {
-  try {
-    const jsonPayloads = [{ table: 'Jurisdictions', filters: [] }]
-
-    // Fetch both tables concurrently
-    const responses = await Promise.all(
-      jsonPayloads.map((payload) =>
-        fetch(`${config.public.apiBaseUrl}/search/full_table`, {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        })
-      )
-    )
-
-    // Process both responses
-    const [jurisdictionsData, instrumentsData] = await Promise.all(
-      responses.map((res) =>
-        res.ok ? res.json() : Promise.reject('Failed to load data')
-      )
-    )
-
-    // Filter jurisdictions (only applies to "Jurisdictions" table)
-    const relevantJurisdictions = jurisdictionsData.filter(
-      (entry) => entry['Irrelevant?'] === false
-    )
-    console.log('relevantJurisdictions:', relevantJurisdictions)
-
-    // Extract "Name" field
-    const jurisdictionNames = relevantJurisdictions
-      .map((entry) => entry.Name)
-      .filter(Boolean)
-    console.log('jurisdictionNames:', jurisdictionNames)
-
-    // Merge both lists, remove duplicates, and sort alphabetically
-    countries.value = [
-      ...new Set([...jurisdictionNames]), // ...instrumentNames]),
-    ].sort((a, b) => a.localeCompare(b))
-    console.log('countries:', countries.value)
-  } catch (error) {
-    console.error(error)
-    countries.value = [] // Fallback to empty list
-  }
-}
+const { data: countries } = useJurisdictions()
 
 // Navigate to country route
 const navigateToCountry = async (country) => {
@@ -94,9 +43,6 @@ const navigateToCountry = async (country) => {
     }
   }
 }
-
-// Fetch data on mount
-onMounted(fetchJurisdictions)
 </script>
 
 <style scoped>

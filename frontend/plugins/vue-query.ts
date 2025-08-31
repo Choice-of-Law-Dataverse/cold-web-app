@@ -27,7 +27,8 @@ export default defineNuxtPlugin((nuxt) => {
         // Retry with exponential backoff
         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
         // Only refetch on window focus in production and on client
-        refetchOnWindowFocus: !import.meta.server && process.env.NODE_ENV === 'production',
+        refetchOnWindowFocus:
+          !import.meta.server && process.env.NODE_ENV === 'production',
         // Don't refetch on reconnect by default to avoid unnecessary requests
         refetchOnReconnect: false,
         // Disable background refetching on server
@@ -39,10 +40,12 @@ export default defineNuxtPlugin((nuxt) => {
         retry: import.meta.server ? 0 : 1,
       },
     },
-    
   })
 
-  const options: VueQueryPluginOptions = { queryClient, enableDevtoolsV6Plugin: true, }
+  const options: VueQueryPluginOptions = {
+    queryClient,
+    enableDevtoolsV6Plugin: true,
+  }
 
   nuxt.vueApp.use(VueQueryPlugin, options)
 
