@@ -146,7 +146,7 @@ onMounted(async () => {
     plot.on('plotly_click', (data) => {
       const clickedUrl = data.points[0].customdata
       if (clickedUrl) {
-        window.location.href = clickedUrl
+        navigateTo(clickedUrl)
       }
     })
 

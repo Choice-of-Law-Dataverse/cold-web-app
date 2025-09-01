@@ -114,7 +114,7 @@ const onEachFeature = (feature, layer) => {
 
   // Add a click event to navigate to the country-specific URL
   layer.on('click', () => {
-    window.location.href = `/jurisdiction/${isoCode.toLowerCase()}`
+    navigateTo(`/jurisdiction/${isoCode.toLowerCase()}`)
   })
 }
 
