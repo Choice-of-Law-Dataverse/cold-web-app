@@ -121,17 +121,7 @@
         </div>
         <div class="col-span-12 sm:col-span-3">
           <ConnectCard
-            title="Access New Features"
-            buttonText="Beta User Sign Up"
-            :buttonLink="links.beta"
-            iconName="i-hugeicons:test-tube-01"
-            buttonIcon="i-material-symbols:open-in-new"
-          />
-        </div>
-
-        <div class="col-span-12">
-          <ConnectCard
-            title="Enter a new Data Point"
+            title="Enter new Data"
             buttonText="Submit your data"
             buttonLink="/international-instrument/new"
             iconName="i-material-symbols:add-notes"
