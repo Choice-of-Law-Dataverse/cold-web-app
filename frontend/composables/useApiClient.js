@@ -33,8 +33,6 @@ export function useApiClient() {
         fetchOptions
       )
 
-      clearTimeout(timeoutId)
-
       if (!response.ok) {
         throw new Error(
           `API request failed: ${response.status} ${response.statusText}`
@@ -49,11 +47,12 @@ export function useApiClient() {
 
       return data
     } catch (err) {
-      clearTimeout(timeoutId)
       if (err.name === 'AbortError') {
         throw new Error('Request timed out. Please try again.')
       }
       throw err
+    } finally {
+      clearTimeout(timeoutId)
     }
   }
 
