@@ -13,11 +13,13 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute } from 'vue-router'
 
-defineProps({
+const props = defineProps({
   modelValue: { type: Boolean, default: false },
+  // Optional override if you want to pass a known title directly
+  title: { type: String, default: '' },
 })
 defineEmits(['update:modelValue'])
 
@@ -25,11 +27,37 @@ const route = useRoute()
 
 const pageTitle = ref('')
 const currentURL = ref('')
+let titleObserver
 
 onMounted(() => {
   // Safely access browser APIs on client
   pageTitle.value = typeof document !== 'undefined' ? document.title || '' : ''
   currentURL.value = typeof window !== 'undefined' ? window.location.href : ''
+
+  // Observe <title> changes so we react if another component updates it later
+  if (
+    typeof window !== 'undefined' &&
+    typeof MutationObserver !== 'undefined'
+  ) {
+    const titleEl = document.querySelector('title')
+    if (titleEl) {
+      titleObserver = new MutationObserver(() => {
+        pageTitle.value = document.title || ''
+      })
+      titleObserver.observe(titleEl, {
+        subtree: true,
+        characterData: true,
+        childList: true,
+      })
+    }
+  }
+})
+
+onBeforeUnmount(() => {
+  if (titleObserver) {
+    titleObserver.disconnect()
+    titleObserver = undefined
+  }
 })
 
 function slugToPageType(slug) {
@@ -76,10 +104,17 @@ const monthYear = computed(() => {
 })
 
 const citationText = computed(() => {
+  // Pick provided prop title when available, else current document.title
+  const rawTitle = (props.title && props.title.trim()) || pageTitle.value || ''
   // Remove trailing "— CoLD" or "- CoLD" (with or without surrounding spaces)
-  const raw = pageTitle.value || ''
+  let raw = rawTitle
   const cleaned = raw.replace(/[\s\u00A0]*[\u2014\-][\s\u00A0]*CoLD\s*$/i, '')
-  const title = cleaned || 'Choice of Law Dataverse'
+  // If title ends up being only "CoLD" (or blank), fall back to site name
+  const normalized = cleaned.trim()
+  const title =
+    normalized && !/^CoLD$/i.test(normalized)
+      ? normalized
+      : 'Choice of Law Dataverse'
   const url = currentURL.value
   return `${title}. Choice of Law Dataverse (${year.value}). ${pageType.value} (${monthYear.value}). Licensed under CC BY-SA. Available at: ${url}`
 })
