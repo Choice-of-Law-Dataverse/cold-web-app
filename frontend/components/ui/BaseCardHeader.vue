@@ -109,18 +109,18 @@
                 )"
                 :key="index"
               >
-                <button
+                <a
                   v-if="action.label === 'Cite'"
-                  type="button"
-                  class="flex items-center label"
-                  @click="isCiteOpen = true"
+                  href="#"
+                  class="flex items-center"
+                  @click.prevent="isCiteOpen = true"
                 >
                   {{ action.label }}
                   <UIcon
                     :name="action.icon"
                     class="inline-block ml-1 text-[1.2em] mb-0.5"
                   />
-                </button>
+                </a>
                 <NuxtLink
                   v-else
                   class="flex items-center"
