@@ -4,10 +4,28 @@
     @update:model-value="(v) => $emit('update:modelValue', v)"
   >
     <div class="p-4">
-      <h2 class="mb-4">Cite this page</h2>
+      <h2 class="mb-4">Cite This Page</h2>
       <p class="result-value-small-citation leading-relaxed break-words">
         {{ citationText }}
       </p>
+      <div class="mt-2">
+        <NuxtLink
+          :to="route.fullPath"
+          class="link-button no-underline !mb-2"
+          :aria-disabled="copying ? 'true' : 'false'"
+          @click.prevent="!copying && copyToClipboard()"
+        >
+          {{ copied ? 'Copied' : 'Copy to Clipboard' }}
+          <UIcon
+            :name="
+              copied
+                ? 'i-material-symbols:check-circle-outline'
+                : 'i-material-symbols:content-copy-outline'
+            "
+            class="inline-block relative top-[1px]"
+          />
+        </NuxtLink>
+      </div>
     </div>
   </UModal>
 </template>
@@ -28,6 +46,8 @@ const route = useRoute()
 const pageTitle = ref('')
 const currentURL = ref('')
 let titleObserver
+const copied = ref(false)
+const copying = ref(false)
 
 onMounted(() => {
   // Safely access browser APIs on client
@@ -118,4 +138,32 @@ const citationText = computed(() => {
   const url = currentURL.value
   return `${title}. Choice of Law Dataverse (${year.value}). ${pageType.value} (${monthYear.value}). Licensed under CC BY-SA. Available at: ${url}`
 })
+
+async function copyToClipboard() {
+  if (copying.value) return
+  copying.value = true
+  const text = citationText.value
+  try {
+    if (navigator?.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text)
+    } else {
+      // Fallback
+      const ta = document.createElement('textarea')
+      ta.value = text
+      ta.setAttribute('readonly', '')
+      ta.style.position = 'absolute'
+      ta.style.left = '-9999px'
+      document.body.appendChild(ta)
+      ta.select()
+      document.execCommand('copy')
+      document.body.removeChild(ta)
+    }
+    copied.value = true
+    setTimeout(() => (copied.value = false), 1500)
+  } catch (e) {
+    // no-op; keep silent per UX
+  } finally {
+    copying.value = false
+  }
+}
 </script>
