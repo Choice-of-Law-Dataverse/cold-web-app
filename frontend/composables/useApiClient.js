@@ -41,11 +41,13 @@ export function useApiClient() {
         )
       }
 
-      if (data.error) {
+      const data = await response.json()
+
+      if (data?.error) {
         throw new Error(data.error)
       }
 
-      return response.json()
+      return data
     } catch (err) {
       clearTimeout(timeoutId)
       if (err.name === 'AbortError') {
