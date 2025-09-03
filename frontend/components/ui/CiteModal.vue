@@ -2,8 +2,9 @@
   <UModal
     :model-value="modelValue"
     @update:model-value="(v) => $emit('update:modelValue', v)"
+    :ui="{ rounded: 'rounded-none' }"
   >
-    <div class="p-4">
+    <div class="p-6">
       <h2 class="mb-4">Cite This Page</h2>
       <p class="result-value-small-citation leading-relaxed break-words">
         {{ citationText }}
