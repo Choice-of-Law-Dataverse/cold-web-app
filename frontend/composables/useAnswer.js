@@ -37,7 +37,7 @@ const fetchAnswerData = async (answerId) => {
 
 export function useAnswer(answerId) {
   return useQuery({
-    queryKey: ['answer', answerId],
+    queryKey: computed(() => ['answer', answerId]),
     queryFn: () => fetchAnswerData(answerId.value),
     enabled: computed(() => !!answerId.value),
   })

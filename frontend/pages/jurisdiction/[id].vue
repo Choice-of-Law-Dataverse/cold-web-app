@@ -172,7 +172,7 @@ import {
   useDomesticInstrumentsCount,
   useCourtDecisionsCount,
 } from '@/composables/useJurisdictionCounts'
-import { useLiteratureTitle } from '@/composables/useLiteratureTitle'
+import { useLiteratures} from '@/composables/useLiteratures'
 import { useSpecialists } from '@/composables/useSpecialists'
 import { jurisdictionConfig } from '@/config/pageConfigs'
 import { useHead } from '#app'
@@ -195,10 +195,10 @@ const {
 } = useJurisdiction(computed(() => route.params.id))
 
 // const {
-//   data: literatureTitle,
+//   data: literatures,
 //   isLoading: literatureLoading,
 //   error: literatureError,
-// } = useLiteratureTitle(computed(() => jurisdictionData.value?.Literature))
+// } = useLiteratures(computed(() => jurisdictionData.value?.Literature))
 
 // const {
 //   data: specialists,
