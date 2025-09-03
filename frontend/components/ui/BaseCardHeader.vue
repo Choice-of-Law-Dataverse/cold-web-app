@@ -114,34 +114,11 @@
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <template v-if="action.label === 'Cite'">
-                  <UTooltip
-                    :text="availableSoon"
-                    :popper="{ placement: 'top' }"
-                    :ui="{
-                      background: 'bg-cold-night',
-                      color: 'text-white',
-                      base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
-                      rounded: 'rounded-none',
-                      ring: '',
-                    }"
-                  >
-                    <span class="flex items-center">
-                      {{ action.label }}
-                      <UIcon
-                        :name="action.icon"
-                        class="inline-block ml-1 text-[1.2em] mb-0.5"
-                      />
-                    </span>
-                  </UTooltip>
-                </template>
-                <template v-else>
-                  {{ action.label }}
-                  <UIcon
-                    :name="action.icon"
-                    class="inline-block ml-1 text-[1.2em] mb-0.5"
-                  />
-                </template>
+                {{ action.label }}
+                <UIcon
+                  :name="action.icon"
+                  class="inline-block ml-1 text-[1.2em] mb-0.5"
+                />
               </NuxtLink>
               <!-- The Edit link for International Instrument only, no target/rel -->
               <NuxtLink
@@ -155,34 +132,11 @@
                 :class="action.class"
                 v-bind="action.to ? { to: action.to } : {}"
               >
-                <template v-if="action.label === 'Cite'">
-                  <UTooltip
-                    :text="availableSoon"
-                    :popper="{ placement: 'top' }"
-                    :ui="{
-                      background: 'bg-cold-night',
-                      color: 'text-white',
-                      base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
-                      rounded: 'rounded-none',
-                      ring: '',
-                    }"
-                  >
-                    <span class="flex items-center">
-                      {{ action.label }}
-                      <UIcon
-                        :name="action.icon"
-                        class="inline-block ml-1 text-[1.2em] mb-0.5"
-                      />
-                    </span>
-                  </UTooltip>
-                </template>
-                <template v-else>
-                  {{ action.label }}
-                  <UIcon
-                    :name="action.icon"
-                    class="inline-block ml-1 text-[1.2em] mb-0.5"
-                  />
-                </template>
+                {{ action.label }}
+                <UIcon
+                  :name="action.icon"
+                  class="inline-block ml-1 text-[1.2em] mb-0.5"
+                />
               </NuxtLink>
             </div>
           </template>
@@ -408,7 +362,6 @@ const suggestEditActions = computed(() => {
   actions.push({
     label: 'Cite',
     icon: 'i-material-symbols:verified-outline',
-    class: 'gray-link',
   })
   if (pdfExists.value) {
     actions.push({
