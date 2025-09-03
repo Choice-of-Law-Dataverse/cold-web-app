@@ -99,7 +99,7 @@
           <template v-if="showSuggestEdit">
             <div class="flex items-center space-x-5 label">
               <!-- All actions except the International Instrument Edit link -->
-              <NuxtLink
+              <template
                 v-for="(action, index) in suggestEditActions.filter(
                   (a) =>
                     !(
@@ -108,41 +108,34 @@
                     )
                 )"
                 :key="index"
-                class="flex items-center"
-                :class="action.class"
-                v-bind="action.to ? { to: action.to } : {}"
-                target="_blank"
-                rel="noopener noreferrer"
               >
-                <template v-if="action.label === 'Cite'">
-                  <UTooltip
-                    :text="availableSoon"
-                    :popper="{ placement: 'top' }"
-                    :ui="{
-                      background: 'bg-cold-night',
-                      color: 'text-white',
-                      base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
-                      rounded: 'rounded-none',
-                      ring: '',
-                    }"
-                  >
-                    <span class="flex items-center">
-                      {{ action.label }}
-                      <UIcon
-                        :name="action.icon"
-                        class="inline-block ml-1 text-[1.2em] mb-0.5"
-                      />
-                    </span>
-                  </UTooltip>
-                </template>
-                <template v-else>
+                <a
+                  v-if="action.label === 'Cite'"
+                  href="#"
+                  class="flex items-center"
+                  @click.prevent="isCiteOpen = true"
+                >
                   {{ action.label }}
                   <UIcon
                     :name="action.icon"
                     class="inline-block ml-1 text-[1.2em] mb-0.5"
                   />
-                </template>
-              </NuxtLink>
+                </a>
+                <NuxtLink
+                  v-else
+                  class="flex items-center"
+                  :class="action.class"
+                  v-bind="action.to ? { to: action.to } : {}"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ action.label }}
+                  <UIcon
+                    :name="action.icon"
+                    class="inline-block ml-1 text-[1.2em] mb-0.5"
+                  />
+                </NuxtLink>
+              </template>
               <!-- The Edit link for International Instrument only, no target/rel -->
               <NuxtLink
                 v-for="(action, index) in suggestEditActions.filter(
@@ -155,34 +148,11 @@
                 :class="action.class"
                 v-bind="action.to ? { to: action.to } : {}"
               >
-                <template v-if="action.label === 'Cite'">
-                  <UTooltip
-                    :text="availableSoon"
-                    :popper="{ placement: 'top' }"
-                    :ui="{
-                      background: 'bg-cold-night',
-                      color: 'text-white',
-                      base: 'pt-3 pr-3 pb-3 pl-3 normal-case whitespace-normal h-auto',
-                      rounded: 'rounded-none',
-                      ring: '',
-                    }"
-                  >
-                    <span class="flex items-center">
-                      {{ action.label }}
-                      <UIcon
-                        :name="action.icon"
-                        class="inline-block ml-1 text-[1.2em] mb-0.5"
-                      />
-                    </span>
-                  </UTooltip>
-                </template>
-                <template v-else>
-                  {{ action.label }}
-                  <UIcon
-                    :name="action.icon"
-                    class="inline-block ml-1 text-[1.2em] mb-0.5"
-                  />
-                </template>
+                {{ action.label }}
+                <UIcon
+                  :name="action.icon"
+                  class="inline-block ml-1 text-[1.2em] mb-0.5"
+                />
               </NuxtLink>
             </div>
           </template>
@@ -198,6 +168,7 @@
       </div>
     </template>
   </div>
+  <CiteModal v-model="isCiteOpen" />
 </template>
 
 <script setup>
@@ -206,13 +177,15 @@ import { useRoute, useRouter } from 'vue-router'
 import jurisdictionsData from '@/assets/jurisdictions-data.json'
 import { handleImageError } from '@/utils/handleImageError'
 
-import availableSoon from '@/content/available_soon.md?raw'
+// removed tooltip content import
+import CiteModal from '@/components/ui/CiteModal.vue'
 
 const route = useRoute()
 const router = useRouter()
 const pdfExists = ref(false)
 const isOpen = ref(false)
 const isSaveOpen = ref(false)
+const isCiteOpen = ref(false)
 
 const downloadPDFLink = computed(() => {
   const segments = route.path.split('/').filter(Boolean) // removes empty parts from path like ['', 'court-decision', 'CD-ARE-1128']
@@ -408,7 +381,6 @@ const suggestEditActions = computed(() => {
   actions.push({
     label: 'Cite',
     icon: 'i-material-symbols:verified-outline',
-    class: 'gray-link',
   })
   if (pdfExists.value) {
     actions.push({

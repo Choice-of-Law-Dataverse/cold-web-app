@@ -221,7 +221,9 @@ watch(
     if (!newVal) return
     const name = newVal.Name
     const pageTitle =
-      name && name.trim() ? `${name} — CoLD` : 'Jurisdiction — CoLD'
+      name && name.trim()
+        ? `${name} Country Report — CoLD`
+        : 'Jurisdiction Country Report — CoLD'
     useHead({
       title: pageTitle,
       link: [
