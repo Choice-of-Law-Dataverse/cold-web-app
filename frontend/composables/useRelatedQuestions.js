@@ -1,33 +1,22 @@
 import { computed } from 'vue'
 import { useQueries } from '@tanstack/vue-query'
+import { useApiClient } from '~/composables/useApiClient'
 
 const fetchQuestionLabel = async (jurisdictionCode, questionId) => {
-  const config = useRuntimeConfig()
+  const { apiClient } = useApiClient()
 
-  const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${config.public.FASTAPI}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      table: 'Answers',
-      id: `${jurisdictionCode}_${questionId}`,
-    }),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch question label: ${response.statusText}`)
+  const body = {
+    table: 'Answers',
+    id: `${jurisdictionCode}_${questionId}`,
   }
 
-  const data = await response.json()
+  try {
+    const data = await apiClient('/search/details', { body })
 
-  // Check if the API returned an error response
-  if (data.error) {
-    throw new Error(data.error)
+    return data.Question || `${jurisdictionCode}_${questionId}`
+  } catch (err) {
+    throw new Error(`Failed to fetch question label: ${err.message}`)
   }
-
-  return data.Question || `${jurisdictionCode}_${questionId}`
 }
 
 export function useRelatedQuestions(jurisdictionCode, questions) {

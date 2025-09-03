@@ -1,24 +1,30 @@
 import { useQuery } from '@tanstack/vue-query'
+import { useApiClient } from '~/composables/useApiClient'
 
 const fetchJurisdictionChartData = async () => {
-  const response = await fetch('count_jurisdictions.json')
+  const { apiClient } = useApiClient()
 
-  if (!response.ok) {
-    throw new Error('Failed to load jurisdiction chart data')
+  const body = {
+    table: 'Jurisdictions',
   }
 
-  const jurisdictionData = await response.json()
+  try {
+    const data = await apiClient('/search/full_table', { body })
 
-  // Transform the JSON data for Plotly
-  const xValues = jurisdictionData.map((item) => item.n) // Extract 'n' values
-  const yValues = jurisdictionData.map((item) => item.jurisdiction) // Extract 'Jurisdiction.Names'
-  const links = jurisdictionData.map((item) => item.url) // Extract URLs
+    // Transform the JSON data for Plotly
+    const xValues = data.map((item) => item.n) // Extract 'n' values
+    const yValues = data.map((item) => item.jurisdiction) // Extract 'Jurisdiction.Names'
+    const links = data.map((item) => item.url) // Extract URLs
 
-  return {
-    xValues,
-    yValues,
-    links,
-    rawData: jurisdictionData,
+    return {
+      xValues,
+      yValues,
+      links,
+      rawData: data,
+    }
+  } catch (error) {
+    console.error('Error fetching jurisdiction chart data:', error)
+    throw new Error(`Failed to fetch jurisdiction chart data: ${error.message}`)
   }
 }
 

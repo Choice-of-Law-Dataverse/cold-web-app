@@ -1,12 +1,13 @@
 import { computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
+import { useApiClient } from '~/composables/useApiClient'
 
 const fetchNumberCount = async (tableName) => {
   if (!tableName) {
     return 0
   }
 
-  const config = useRuntimeConfig()
+  const { apiClient } = useApiClient()
 
   const body = {
     search_string: '',
@@ -18,21 +19,12 @@ const fetchNumberCount = async (tableName) => {
     ],
   }
 
-  const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${config.public.FASTAPI}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  })
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch number count: ${response.statusText}`)
+  try {
+    const data = await apiClient('/search/', { body })
+    return data.total_matches ?? 0
+  } catch (err) {
+    throw new Error(`Failed to fetch number count: ${err.message}`)
   }
-
-  const data = await response.json()
-  return data.total_matches ?? 0
 }
 
 export function useNumberCount(tableName) {

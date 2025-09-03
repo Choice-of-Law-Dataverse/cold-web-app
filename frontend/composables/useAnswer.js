@@ -1,41 +1,38 @@
 import { computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
+import { useApiClient } from '~/composables/useApiClient'
 
 const fetchAnswerData = async (answerId) => {
   if (!answerId) {
     throw new Error('Answer ID is required')
   }
 
-  const config = useRuntimeConfig()
-  const jsonPayload = {
+  const { apiClient } = useApiClient()
+
+  const body = {
     table: 'Answers',
     id: answerId,
   }
 
-  const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${config.public.FASTAPI}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(jsonPayload),
-  })
+  try {
+    const data = await apiClient('/search/details', { body })
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch answer: ${response.statusText}`)
+    // Check if the API returned an error response
+    if (data.error === 'no entry found with the specified id') {
+      const error = new Error('no entry found with the specified id')
+      error.isNotFound = true
+      error.table = 'Question'
+      throw error
+    }
+
+    return data
+  } catch (err) {
+    // Handle specific error cases or re-throw
+    if (err.message.includes('no entry found')) {
+      throw err // Re-throw with original error properties
+    }
+    throw new Error(`Failed to fetch answer: ${err.message}`)
   }
-
-  const data = await response.json()
-
-  // Check if the API returned an error response
-  if (data.error === 'no entry found with the specified id') {
-    const error = new Error('no entry found with the specified id')
-    error.isNotFound = true
-    error.table = 'Question'
-    throw error
-  }
-
-  return data
 }
 
 export function useAnswer(answerId) {

@@ -1,6 +1,6 @@
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { questionConfig } from '~/config/pageConfigs'
+import { useApiClient } from '~/composables/useApiClient'
 
 const buildCompositeId = (jurisdiction, rawColdId, rawQuestionId) => {
   // If rawColdId already contains a jurisdiction prefix (ABC_), keep it.
@@ -51,9 +51,9 @@ const buildChildrenMap = (sortedItems) => {
 }
 
 const fetchAnswersData = async (jurisdiction) => {
-  const config = useRuntimeConfig()
+  const { apiClient } = useApiClient()
 
-  const payload = {
+  const body = {
     table: 'Answers',
     filters: [
       {
@@ -63,51 +63,40 @@ const fetchAnswersData = async (jurisdiction) => {
     ],
   }
 
-  const response = await fetch(
-    `${config.public.apiBaseUrl}/search/full_table`,
-    {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
+  try {
+    const data = await apiClient('/search/full_table', { body })
+
+    // Expect an array of answer rows. We construct the composite key
+    // based on either existing 'CoLD ID' or by combining jurisdiction + question ID if needed.
+    const map = {}
+    if (Array.isArray(data)) {
+      for (const row of data) {
+        const jurisdiction =
+          row['Jurisdictions Alpha-3 code'] ||
+          row['Jurisdictions Alpha-3 Code'] ||
+          iso3
+        const rawQuestionId =
+          row['Question ID'] || row['QuestionID'] || row['CoLD ID'] || row.ID
+        const rawColdId = row['CoLD ID'] || row['Answer ID'] || rawQuestionId
+        const answerValue = row.Answer || row['Answer'] || ''
+
+        const compositeId = buildCompositeId(
+          jurisdiction,
+          rawColdId,
+          rawQuestionId
+        )
+
+        // Store under composite ID
+        if (compositeId) map[compositeId] = answerValue
+        // Also store under base ID (without jurisdiction) for any legacy lookups
+        if (rawQuestionId && !map[rawQuestionId])
+          map[rawQuestionId] = answerValue
+      }
     }
-  )
-
-  if (!response.ok) {
-    throw new Error(`Failed to fetch answers: ${response.statusText}`)
+    return map
+  } catch (err) {
+    throw new Error(`Failed to fetch answers: ${err.message}`)
   }
-
-  const data = await response.json()
-
-  // Expect an array of answer rows. We construct the composite key
-  // based on either existing 'CoLD ID' or by combining jurisdiction + question ID if needed.
-  const map = {}
-  if (Array.isArray(data)) {
-    for (const row of data) {
-      const jurisdiction =
-        row['Jurisdictions Alpha-3 code'] ||
-        row['Jurisdictions Alpha-3 Code'] ||
-        iso3
-      const rawQuestionId =
-        row['Question ID'] || row['QuestionID'] || row['CoLD ID'] || row.ID
-      const rawColdId = row['CoLD ID'] || row['Answer ID'] || rawQuestionId
-      const answerValue = row.Answer || row['Answer'] || ''
-
-      const compositeId = buildCompositeId(
-        jurisdiction,
-        rawColdId,
-        rawQuestionId
-      )
-
-      // Store under composite ID
-      if (compositeId) map[compositeId] = answerValue
-      // Also store under base ID (without jurisdiction) for any legacy lookups
-      if (rawQuestionId && !map[rawQuestionId]) map[rawQuestionId] = answerValue
-    }
-  }
-  return map
 }
 
 export function useQuestionsWithAnswers(jurisdiction) {

@@ -1,11 +1,13 @@
 import { computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
+import { useApiClient } from '~/composables/useApiClient'
 
 const fetchJurisdictionCount = async (jurisdiction, table) => {
   if (!jurisdiction) return null
 
-  const config = useRuntimeConfig()
-  const payload = {
+  const { apiClient } = useApiClient()
+
+  const body = {
     search_string: '',
     filters: [
       { column: 'jurisdictions', values: [jurisdiction] },
@@ -15,21 +17,12 @@ const fetchJurisdictionCount = async (jurisdiction, table) => {
     page_size: 1,
   }
 
-  const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
-    method: 'POST',
-    headers: {
-      authorization: `Bearer ${config.public.FASTAPI}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-  })
-
-  if (!response.ok) {
-    throw new Error('Failed to fetch count')
+  try {
+    const data = await apiClient('/search/', { body })
+    return data.total_matches || 0
+  } catch (err) {
+    throw new Error(`Failed to fetch count: ${err.message}`)
   }
-
-  const data = await response.json()
-  return data.total_matches || 0
 }
 
 export function useCourtDecisionsCount(jurisdictionName) {

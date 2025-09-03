@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/vue-query'
 import { formatYear } from '@/utils/format'
+import { useApiClient } from '~/composables/useApiClient'
 
 const fetchLeadingCases = async () => {
-  const config = useRuntimeConfig()
-  const payload = {
+  const { apiClient } = useApiClient()
+
+  const body = {
     table: 'Court Decisions',
     filters: [
       {
@@ -13,32 +15,20 @@ const fetchLeadingCases = async () => {
     ],
   }
 
-  const response = await fetch(
-    `${config.public.apiBaseUrl}/search/full_table`,
-    {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    }
-  )
+  try {
+    const decisionsData = await apiClient('/search/full_table', { body })
 
-  if (!response.ok) {
-    throw new Error('Failed to load leading cases data')
+    // Sort by publication date descending
+    decisionsData.sort(
+      (a, b) =>
+        formatYear(b['Publication Date ISO']) -
+        formatYear(a['Publication Date ISO'])
+    )
+
+    return decisionsData
+  } catch (err) {
+    throw new Error(`Failed to load leading cases data: ${err.message}`)
   }
-
-  const decisionsData = await response.json()
-
-  // Sort by publication date descending
-  decisionsData.sort(
-    (a, b) =>
-      formatYear(b['Publication Date ISO']) -
-      formatYear(a['Publication Date ISO'])
-  )
-
-  return decisionsData
 }
 
 export function useLeadingCases() {

@@ -1,9 +1,9 @@
-import { computed } from 'vue'
+import { useApiClient } from '~/composables/useApiClient'
 import { useQuery } from '@tanstack/vue-query'
 
 const fetchDomesticInstrumentsData = async (filterCompatible) => {
-  const config = useRuntimeConfig()
-  const payload = {
+  const { apiClient } = useApiClient()
+  const body = {
     table: 'Domestic Instruments',
     filters: filterCompatible
       ? [
@@ -15,27 +15,17 @@ const fetchDomesticInstrumentsData = async (filterCompatible) => {
       : [],
   }
 
-  const response = await fetch(
-    `${config.public.apiBaseUrl}/search/full_table`,
-    {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(payload),
-    }
-  )
+  try {
+    const instrumentsData = await apiClient('/search/full_table', {
+      body,
+    })
 
-  if (!response.ok) {
-    throw new Error('Failed to load domestic instruments data')
+    // Convert Date to number, sort descending and take the 7 most recent
+    instrumentsData.sort((a, b) => Number(b.Date) - Number(a.Date))
+    return instrumentsData
+  } catch (err) {
+    throw new Error(`Failed to load domestic instruments data: ${err.message}`)
   }
-
-  const instrumentsData = await response.json()
-
-  // Convert Date to number, sort descending and take the 7 most recent
-  instrumentsData.sort((a, b) => Number(b.Date) - Number(a.Date))
-  return instrumentsData
 }
 
 export function useDomesticInstruments({ filterCompatible }) {
