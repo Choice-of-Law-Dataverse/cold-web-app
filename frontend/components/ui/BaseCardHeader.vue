@@ -266,6 +266,10 @@ const adjustedSourceTable = computed(() => {
       return 'Question'
     case 'Domestic Instrument':
       return 'Domestic Instrument'
+    case 'Regional Instrument':
+      return 'Regional Instrument'
+    case 'International Instrument':
+      return 'International Instrument'
     case 'Literature':
       return 'Literature'
     case 'Arbitral Rule':
@@ -288,6 +292,7 @@ const labelColorClass = computed(() => {
     case 'Domestic Instrument':
     case 'Regional Instrument':
     case 'International Instrument':
+      return 'label-instrument'
     case 'Arbitral Rule':
     case 'Arbitral Award':
       return 'label-arbitration'
@@ -307,7 +312,7 @@ function labelClassForType(label) {
     case 'Domestic Instrument':
     case 'Regional Instrument':
     case 'International Instrument':
-      return 'label-domestic-instrument'
+      return 'label-instrument'
     case 'Literature':
       return 'label-literature'
     default:
@@ -617,9 +622,9 @@ a.label-court-decision {
 a.label-question {
   color: var(--color-label-question) !important;
 }
-.label-domestic-instrument,
-a.label-domestic-instrument {
-  color: var(--color-label-domestic-instrument) !important;
+.label-instrument,
+a.label-instrument {
+  color: var(--color-label-instrument) !important;
 }
 .label-literature,
 a.label-literature {
