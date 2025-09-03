@@ -13,6 +13,7 @@
         <div class="relative min-h-screen">
           <div class="px-6 py-4 md:pt-8">
             <!-- Sticky filters positioned within BaseDetailLayout -->
+            <h1 class="mb-16">Jurisdiction Comparison</h1>
             <JCStickyFilters :initialCountries="validatedCountryCodes" />
 
             <!-- Content area with sufficient height for sticky behavior -->
