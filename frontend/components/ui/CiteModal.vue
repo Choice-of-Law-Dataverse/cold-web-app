@@ -4,8 +4,8 @@
     @update:model-value="(v) => $emit('update:modelValue', v)"
   >
     <div class="p-4">
-      <h3 class="text-lg font-semibold mb-2">Cite this entry</h3>
-      <p class="text-sm text-gray-700 leading-relaxed break-words">
+      <h2 class="mb-4">Cite this page</h2>
+      <p class="result-value-small-citation leading-relaxed break-words">
         {{ citationText }}
       </p>
     </div>
@@ -76,7 +76,10 @@ const monthYear = computed(() => {
 })
 
 const citationText = computed(() => {
-  const title = pageTitle.value || 'Choice of Law Dataverse'
+  // Remove trailing "— CoLD" or "- CoLD" (with or without surrounding spaces)
+  const raw = pageTitle.value || ''
+  const cleaned = raw.replace(/[\s\u00A0]*[\u2014\-][\s\u00A0]*CoLD\s*$/i, '')
+  const title = cleaned || 'Choice of Law Dataverse'
   const url = currentURL.value
   return `${title}. Choice of Law Dataverse (${year.value}). ${pageType.value} (${monthYear.value}). Licensed under CC BY-SA. Available at: ${url}`
 })
