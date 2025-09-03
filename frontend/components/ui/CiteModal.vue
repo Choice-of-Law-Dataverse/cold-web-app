@@ -83,7 +83,7 @@ onBeforeUnmount(() => {
 function slugToPageType(slug) {
   switch (slug) {
     case 'jurisdiction':
-      return 'Jurisdiction'
+      return 'Country Report'
     case 'court-decision':
       return 'Court Decision'
     case 'domestic-instrument':
