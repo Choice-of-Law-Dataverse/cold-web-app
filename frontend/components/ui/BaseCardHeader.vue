@@ -47,12 +47,37 @@
                 variant="none"
                 v-model="selectedType"
                 :options="typeOptions"
-                :class="
+                value-attribute="value"
+                option-attribute="label"
+                :class="[
+                  'no-caret-select',
                   selectedType === ''
                     ? 'text-[color:var(--color-cold-purple)]'
-                    : ''
-                "
-              />
+                    : '',
+                ]"
+              >
+                <!-- Custom caret (replaces default chevron) -->
+                <template #trailing>
+                  <span class="custom-caret" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="16"
+                      height="16"
+                      fill="none"
+                      style="color: white; transform: rotate(90deg)"
+                    >
+                      <path
+                        d="M9 6l6 6-6 6"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="square"
+                        stroke-linejoin="square"
+                      />
+                    </svg>
+                  </span>
+                </template>
+              </USelect>
             </div>
           </div>
           <!-- In other modes, keep the clickable label linking to search -->
@@ -651,5 +676,56 @@ a.label-literature {
 .label-arbitration,
 a.label-arbitration {
   color: var(--color-label-arbitration) !important;
+}
+
+/* Make the dropdown caret white so it blends into white background */
+.no-caret-select :deep([class*='i-heroicons-chevron']) {
+  /* Hide built-in chevrons */
+  display: none !important;
+}
+.no-caret-select :deep([class*='i-heroicons-chevron']) svg {
+  display: none !important;
+}
+/* Iconify/Material icons use a class with a colon; escape it */
+.no-caret-select :deep([class*='i-material-symbols\:arrow-drop-down']) {
+  display: none !important;
+}
+/* Up/Down combined chevron variant */
+.no-caret-select :deep([class*='i-heroicons-chevron-up-down']) {
+  display: none !important;
+}
+/* Trailing container color fallback */
+.no-caret-select :deep(.ui-input-trailing),
+.no-caret-select :deep(.u-input-trailing) {
+  color: inherit !important;
+}
+
+/* Align custom caret visually with input text */
+.no-caret-select :deep(.u-input-trailing),
+.no-caret-select :deep(.ui-input-trailing) {
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.custom-caret {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.25rem; /* slight spacing from text */
+  pointer-events: none; /* do not block input interactions */
+}
+
+/* Keep select interactive without overlay */
+
+/* If USelect renders a native <select>, remove the default browser arrow */
+.no-caret-select :deep(select) {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: none !important;
+  background: none !important;
+}
+/* IE/Edge old */
+.no-caret-select :deep(select::-ms-expand) {
+  display: none !important;
 }
 </style>
