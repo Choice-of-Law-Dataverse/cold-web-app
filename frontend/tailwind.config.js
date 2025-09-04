@@ -54,8 +54,8 @@ export default {
         'label-court-decision': '#FF7167',
         'label-court-decision-alpha': '#FF71671A', // 10% alpha
 
-        'label-domestic-instrument': '#FF9D00',
-        'label-domestic-instrument-alpha': '#FF9D001A', // 10% alpha
+        'label-instrument': '#FF9D00',
+        'label-instrument-alpha': '#FF9D001A', // 10% alpha
 
         'label-literature': '#4DC3FA',
         'label-literature-alpha': '#4DC3FA1A', // 10% alpha
@@ -98,11 +98,9 @@ export default {
             'colors.label-court-decision-alpha'
           ),
 
-          '--color-label-domestic-instrument': theme(
-            'colors.label-domestic-instrument'
-          ),
-          '--color-label-domestic-instrument-alpha': theme(
-            'colors.label-domestic-instrument-alpha'
+          '--color-label-instrument': theme('colors.label-instrument'),
+          '--color-label-instrument-alpha': theme(
+            'colors.label-instrument-alpha'
           ),
 
           '--color-label-literature': theme('colors.label-literature'),
