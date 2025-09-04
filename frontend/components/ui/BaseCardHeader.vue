@@ -43,7 +43,12 @@
               {{ adjustedSourceTable }}
             </span>
             <div class="ml-2">
-              <USelect v-model="selectedType" :options="typeOptions" />
+              <USelect
+                variant="none"
+                v-model="selectedType"
+                :options="typeOptions"
+                placeholder="Change Data Type"
+              />
             </div>
           </div>
           <!-- In other modes, keep the clickable label linking to search -->
@@ -483,17 +488,23 @@ const typeOptions = [
   'International Instrument',
   'Literature',
 ]
-const selectedType = ref('')
+const selectedType = ref(null)
 
-// Keep dropdown in sync with current header label
+// Ensure placeholder shows by default in 'new' mode
+onMounted(() => {
+  if (props.headerMode === 'new') {
+    selectedType.value = null
+  }
+})
+
+// Reset selection on route change to keep placeholder visible by default
 watch(
-  () => adjustedSourceTable.value,
-  (val) => {
+  () => route.fullPath,
+  () => {
     if (props.headerMode === 'new') {
-      selectedType.value = val || ''
+      selectedType.value = null
     }
-  },
-  { immediate: true }
+  }
 )
 
 function typeToNewPath(label) {
