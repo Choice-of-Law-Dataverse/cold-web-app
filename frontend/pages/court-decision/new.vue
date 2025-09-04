@@ -13,6 +13,20 @@
     :notificationBannerMessage="notificationBannerMessage"
     :icon="'i-material-symbols:warning-outline'"
   >
+    <h3 class="mb-12">
+      The CoLD Case Analyzer extracts information from court cases
+      <NuxtLink
+        to="https://case-analyzer.cold.global/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Open it now
+        <UIcon
+          name="i-material-symbols:open-in-new"
+          class="relative top-[2px]"
+        />
+      </NuxtLink>
+    </h3>
     <div class="section-gap p-0 m-0">
       <UFormGroup size="lg" hint="Required" :error="errors.case_citation">
         <template #label>
@@ -516,8 +530,15 @@ async function onSubmit() {
 
 <style scoped>
 /* Hide the back button and all right-side card header buttons */
-:deep(.card-header__actions),
+:deep(.card-header__actions) {
+  display: none !important;
+}
 :deep(.card-header [class*='actions']) {
   display: none !important;
+}
+
+/* Only make links inside h3 purple */
+h3 a {
+  color: var(--color-cold-purple) !important;
 }
 </style>

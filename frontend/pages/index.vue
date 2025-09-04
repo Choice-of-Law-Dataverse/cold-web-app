@@ -134,7 +134,7 @@
           <ConnectCard
             title="Enter new Data"
             buttonText="Submit your data"
-            buttonLink="/international-instrument/new"
+            buttonLink="/court-decision/new"
             iconName="i-material-symbols:add-notes"
             :newTab="false"
           />
