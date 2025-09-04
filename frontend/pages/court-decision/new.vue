@@ -271,14 +271,12 @@ import tooltipCaseCitation from '@/content/info_boxes/court_decision/case_citati
 import tooltipCaseTitle from '@/content/info_boxes/court_decision/case_title.md?raw'
 import tooltipChoiceofLawIssue from '@/content/info_boxes/court_decision/choice_of_law_issue.md?raw'
 import tooltipCourtsPosition from '@/content/info_boxes/court_decision/courts_position.md?raw'
-// import tooltipDomesticLegalProvision from '@/content/info_boxes/court_decision/domestic_legal_provision.md?raw'
 import tooltipInstance from '@/content/info_boxes/court_decision/instance.md?raw'
 import tooltipJudgmentDate from '@/content/info_boxes/court_decision/judgment_date.md?raw'
 import tooltipPILProvisions from '@/content/info_boxes/court_decision/pil_provisions.md?raw'
 import tooltipPublicationDate from '@/content/info_boxes/court_decision/publication_date.md?raw'
 import tooltipQuote from '@/content/info_boxes/court_decision/quote.md?raw'
 import tooltipRelevantFacts from '@/content/info_boxes/court_decision/relevant_facts.md?raw'
-// import tooltipTextRelevantLegalProvision from '@/content/info_boxes/court_decision/text_relevant_legal_provision.md?raw'
 
 const config = useRuntimeConfig()
 
