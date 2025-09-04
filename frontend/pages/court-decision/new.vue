@@ -60,35 +60,53 @@
         <template #label>
           <span class="label">Copyright issues</span>
         </template>
-        <UInput v-model="copyrightIssues" class="mt-2" />
+        <URadioGroup
+          v-model="copyrightIssues"
+          class="mt-2"
+          :options="copyrightOptions"
+        />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Original Text</span>
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UTextarea
+          v-model="caseOriginalText"
+          class="mt-2 resize-y min-h-[140px]"
+          :rows="6"
+        />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">English Translation</span>
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UTextarea
+          v-model="caseEnglishTranslation"
+          class="mt-2 resize-y min-h-[140px]"
+          :rows="6"
+        />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Case Rank</span>
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UInput v-model="caseRank" class="mt-2" />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Jurisdiction</span>
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <SearchFilters
+          :options="jurisdictionOptions"
+          v-model="selectedJurisdiction"
+          class="mt-2 w-full sm:w-auto"
+          showAvatars="true"
+          :multiple="false"
+        />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
@@ -207,13 +225,14 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useHead, useRouter } from '#imports'
 import { z } from 'zod'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import DatePicker from '@/components/ui/DatePicker.vue'
 import CancelModal from '@/components/ui/CancelModal.vue'
 import SaveModal from '@/components/ui/SaveModal.vue'
+import SearchFilters from '@/components/search-results/SearchFilters.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import { format } from 'date-fns'
 
@@ -225,8 +244,12 @@ const config = useRuntimeConfig()
 // Form data
 const caseCitation = ref('')
 const caseTitle = ref('')
+// Newly added fields used by multi-line inputs
+const caseOriginalText = ref('')
+const caseEnglishTranslation = ref('')
+const caseRank = ref('')
 const officialSourceUrl = ref('')
-const copyrightIssues = ref('')
+const copyrightIssues = ref('No')
 const datePublication = ref(new Date())
 
 // Required by SaveModal (kept for parity with other pages)
@@ -240,6 +263,50 @@ const token = ref('')
 
 // Ensure Submit button reactivity when token changes
 watch(token, () => {})
+// Jurisdiction select state and options (reuse SearchResults strategy)
+const selectedJurisdiction = ref([])
+const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
+
+const loadJurisdictions = async () => {
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to load jurisdictions')
+
+    const jurisdictionsData = await response.json()
+    jurisdictionOptions.value = [
+      { label: 'Select Jurisdiction' },
+      ...jurisdictionsData
+        .filter((entry) => entry['Irrelevant?'] === false)
+        .map((entry) => ({
+          label: entry.Name,
+          avatar: entry['Alpha-3 Code']
+            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+            : undefined,
+        }))
+        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
+    ]
+  } catch (error) {
+    console.error('Error loading jurisdictions:', error)
+  }
+}
+
+onMounted(loadJurisdictions)
+// Radio options for Copyright issues
+const copyrightOptions = [
+  { value: 'No', label: 'No' },
+  { value: 'Yes', label: 'Yes' },
+]
 
 // Validation schema
 const formSchema = z.object({
@@ -250,6 +317,10 @@ const formSchema = z.object({
   official_source_url: z.string().url({
     message: 'Link must be a valid URL. It must start with "https://"',
   }),
+  jurisdiction: z
+    .string()
+    .min(1, { message: 'Please select a jurisdiction' })
+    .optional(),
   copyright_issues: z.string().min(1, {
     message: 'Please specify copyright issues (e.g., none/unknown or describe)',
   }),
@@ -272,6 +343,10 @@ function validateForm() {
     const formData = {
       case_citation: caseCitation.value,
       official_source_url: officialSourceUrl.value,
+      jurisdiction:
+        (Array.isArray(selectedJurisdiction.value) &&
+          selectedJurisdiction.value[0]?.label) ||
+        undefined,
       copyright_issues: copyrightIssues.value,
     }
     formSchema.parse(formData)
@@ -305,6 +380,10 @@ function handleNewSave() {
     case_title: caseTitle.value || undefined,
     official_source_url: officialSourceUrl.value,
     date_publication: format(datePublication.value, 'yyyy-MM-dd'),
+    jurisdiction:
+      (Array.isArray(selectedJurisdiction.value) &&
+        selectedJurisdiction.value[0]?.label) ||
+      undefined,
     copyright_issues: copyrightIssues.value,
   }
 
