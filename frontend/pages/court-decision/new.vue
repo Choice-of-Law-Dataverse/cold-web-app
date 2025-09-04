@@ -178,6 +178,17 @@
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
+          <span class="label">Text of the Relevant Legal Provisions</span>
+        </template>
+        <UTextarea
+          v-model="caseTextofRelevantLegalProvisions"
+          class="mt-2 resize-y min-h-[140px]"
+          :rows="6"
+        />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
           <span class="label">Quote</span>
           <InfoTooltip :text="tooltipQuote" />
         </template>
@@ -242,10 +253,7 @@
     :token="token"
     :saveModalErrors="saveModalErrors"
     :name="caseCitation"
-    :specialists="specialists"
     :date="datePublication"
-    :pdfFile="pdfFile"
-    :link="officialSourceUrl"
     @update:email="(val) => (email = val)"
     @update:comments="(val) => (comments = val)"
     @update:token="(val) => (token = val)"
@@ -293,6 +301,7 @@ const casePILProvisions = ref('')
 const caseChoiceofLawIssue = ref('')
 const caseCourtsPosition = ref('')
 const caseTranslatedExcerpt = ref('')
+const caseTextofRelevantLegalProvisions = ref('')
 const caseQuote = ref('')
 const caseInstance = ref('')
 const caseOfficialKeywords = ref('')
@@ -366,13 +375,6 @@ const formSchema = z.object({
   official_source_url: z.string().url({
     message: 'Link must be a valid URL. It must start with "https://"',
   }),
-  jurisdiction: z
-    .string()
-    .min(1, { message: 'Please select a jurisdiction' })
-    .optional(),
-  copyright_issues: z.string().min(1, {
-    message: 'Please specify copyright issues (e.g., none/unknown or describe)',
-  }),
 })
 
 // Form validation state
@@ -391,12 +393,29 @@ function validateForm() {
   try {
     const formData = {
       case_citation: caseCitation.value,
+      date_publication: datePublication.value,
       official_source_url: officialSourceUrl.value,
+      copyright_issues: copyrightIssues.value,
+      full_text: caseFullText.value,
+      english_translation: caseEnglishTranslation.value,
+      case_rank: caseRank.value,
       jurisdiction:
         (Array.isArray(selectedJurisdiction.value) &&
           selectedJurisdiction.value[0]?.label) ||
         undefined,
-      copyright_issues: copyrightIssues.value,
+      abstract: caseAbstract.value,
+      relevant_facts: caseRelevantFacts.value,
+      pil_provisions: casePILProvisions.value,
+      choice_of_law_issue: caseChoiceofLawIssue.value,
+      courts_position: caseCourtsPosition.value,
+      translated_excerpt: caseTranslatedExcerpt.value,
+      text_of_relevant_legal_provisions:
+        caseTextofRelevantLegalProvisions.value,
+      quote: caseQuote.value,
+      date_judgment: dateJudgment.value,
+      case_title: caseTitle.value,
+      instance: caseInstance.value,
+      official_keywords: caseOfficialKeywords.value,
     }
     formSchema.parse(formData)
     errors.value = {}
@@ -426,14 +445,28 @@ function confirmCancel() {
 function handleNewSave() {
   const payload = {
     case_citation: caseCitation.value,
-    case_title: caseTitle.value || undefined,
-    official_source_url: officialSourceUrl.value,
     date_publication: format(datePublication.value, 'yyyy-MM-dd'),
+    official_source_url: officialSourceUrl.value,
+    copyright_issues: copyrightIssues.value,
+    original_text: caseFullText.value,
+    english_translation: caseEnglishTranslation.value,
+    case_rank: caseRank.value,
     jurisdiction:
       (Array.isArray(selectedJurisdiction.value) &&
         selectedJurisdiction.value[0]?.label) ||
       undefined,
-    copyright_issues: copyrightIssues.value,
+    abstract: caseAbstract.value,
+    relevant_facts: caseRelevantFacts.value,
+    pil_provisions: casePILProvisions.value,
+    choice_of_law_issue: caseChoiceofLawIssue.value,
+    courts_position: caseCourtsPosition.value,
+    translated_excerpt: caseTranslatedExcerpt.value,
+    text_of_relevant_legal_provisions: caseTextofRelevantLegalProvisions.value,
+    quote: caseQuote.value,
+    decision_date: format(dateJudgment.value, 'yyyy-MM-dd'),
+    case_title: caseTitle.value,
+    instance: caseInstance.value,
+    official_keywords: caseOfficialKeywords.value,
   }
 
   // Explicitly log the exact payload we send
