@@ -47,7 +47,11 @@
                 variant="none"
                 v-model="selectedType"
                 :options="typeOptions"
-                placeholder="Change Data Type"
+                :class="
+                  selectedType === ''
+                    ? 'text-[color:var(--color-cold-purple)]'
+                    : ''
+                "
               />
             </div>
           </div>
@@ -486,20 +490,21 @@ function getSourceTablePlural(label) {
   return label
 }
 
-// Dropdown options for 'new' pages
+// Dropdown options for 'new' pages (first is a real placeholder)
 const typeOptions = [
-  'Court Decision',
-  'Domestic Instrument',
-  'Regional Instrument',
-  'International Instrument',
-  'Literature',
+  { label: 'Change Data Type', value: '' },
+  { label: 'Court Decision', value: 'Court Decision' },
+  { label: 'Domestic Instrument', value: 'Domestic Instrument' },
+  { label: 'Regional Instrument', value: 'Regional Instrument' },
+  { label: 'International Instrument', value: 'International Instrument' },
+  { label: 'Literature', value: 'Literature' },
 ]
-const selectedType = ref(null)
+const selectedType = ref('')
 
 // Ensure placeholder shows by default in 'new' mode
 onMounted(() => {
   if (props.headerMode === 'new') {
-    selectedType.value = null
+    selectedType.value = ''
   }
 })
 
@@ -508,7 +513,7 @@ watch(
   () => route.fullPath,
   () => {
     if (props.headerMode === 'new') {
-      selectedType.value = null
+      selectedType.value = ''
     }
   }
 )
@@ -531,7 +536,7 @@ function typeToNewPath(label) {
 
 // Navigate on selection change in 'new' mode
 watch(selectedType, (val, old) => {
-  if (props.headerMode === 'new' && val && val !== old) {
+  if (props.headerMode === 'new' && val !== '' && val !== old) {
     router.push(typeToNewPath(val))
   }
 })
