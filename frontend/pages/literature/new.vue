@@ -43,7 +43,11 @@
         <template #label>
           <span class="label">Publication year</span>
         </template>
-        <UInput v-model="publicationYear" class="mt-2" placeholder="e.g., 2024" />
+        <UInput
+          v-model="publicationYear"
+          class="mt-2"
+          placeholder="e.g., 2024"
+        />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.url">
@@ -94,7 +98,11 @@
         <template #label>
           <span class="label">Jurisdiction</span>
         </template>
-        <UInput v-model="jurisdiction" class="mt-2" placeholder="Jurisdiction" />
+        <UInput
+          v-model="jurisdiction"
+          class="mt-2"
+          placeholder="Jurisdiction"
+        />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8">
@@ -254,7 +262,8 @@ function handleNewSave() {
       })
     } catch (err) {
       saveModalErrors.value = {
-        general: 'There was a problem submitting your suggestion. Please try again.',
+        general:
+          'There was a problem submitting your suggestion. Please try again.',
       }
       console.error('Submission failed:', err)
     }
