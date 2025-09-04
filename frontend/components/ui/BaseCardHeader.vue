@@ -291,6 +291,7 @@ const adjustedSourceTable = computed(() => {
 const labelColorClass = computed(() => {
   switch (formattedSourceTable.value) {
     case 'Court Decisions':
+    case 'Court Decision':
       return 'label-court-decision'
     case 'Answers':
     case 'Question':
