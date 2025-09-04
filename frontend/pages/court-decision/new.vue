@@ -17,13 +17,15 @@
       <UFormGroup size="lg" hint="Required" :error="errors.case_citation">
         <template #label>
           <span class="label">Case citation</span>
+          <InfoTooltip :text="tooltipCaseCitation" />
         </template>
         <UInput v-model="caseCitation" class="mt-2" />
       </UFormGroup>
 
       <UFormGroup size="lg" hint="Required" class="mt-8">
         <template #label>
-          <span class="label">Date of Publication</span>
+          <span class="label">Publication Date</span>
+          <InfoTooltip :text="tooltipPublicationDate" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
@@ -212,7 +214,11 @@ import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import DatePicker from '@/components/ui/DatePicker.vue'
 import CancelModal from '@/components/ui/CancelModal.vue'
 import SaveModal from '@/components/ui/SaveModal.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import { format } from 'date-fns'
+
+import tooltipCaseCitation from '@/content/info_boxes/court_decision/case_citation.md?raw'
+import tooltipPublicationDate from '@/content/info_boxes/court_decision/publication_date.md?raw'
 
 const config = useRuntimeConfig()
 
