@@ -202,6 +202,9 @@ function handleNewSave() {
     url: link.value, // Link
     attachment: '', // ignored for now
     instrument_date: format(date.value, 'yyyy-MM-dd'), // Date
+    // Submitter metadata from SaveModal
+    submitter_email: email.value || undefined,
+    submitter_comments: comments.value || undefined,
   }
 
   // Explicitly log the exact payload we send

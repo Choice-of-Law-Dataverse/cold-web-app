@@ -143,16 +143,12 @@ const formSchema = z.object({
     .string()
     .min(1, { message: 'English title is required' })
     .min(3, { message: 'English title must be at least 3 characters long' }),
-  jurisdiction_link: z
-    .string()
-    .url({
-      message: 'Jurisdiction link must be a valid URL starting with "https://"',
-    }),
-  source_url: z
-    .string()
-    .url({
-      message: 'Source link must be a valid URL starting with "https://"',
-    }),
+  jurisdiction_link: z.string().url({
+    message: 'Jurisdiction link must be a valid URL starting with "https://"',
+  }),
+  source_url: z.string().url({
+    message: 'Source link must be a valid URL starting with "https://"',
+  }),
 })
 
 // State
@@ -207,6 +203,9 @@ function handleNewSave() {
     title_en: titleEn.value,
     entry_into_force: format(entryIntoForce.value, 'yyyy-MM-dd'),
     source_url: sourceUrl.value,
+    // Submitter metadata from SaveModal
+    submitter_email: email.value || undefined,
+    submitter_comments: comments.value || undefined,
   }
 
   console.log('Submitting:', JSON.stringify(payload, null, 2))

@@ -9,7 +9,7 @@
       <!-- Email Field -->
       <UFormGroup
         size="lg"
-        :error="saveModalErrorsProxy.email"
+        :error="saveModalErrorsProxy.submitter_email"
         class="mb-4"
         hint="Required"
       >
@@ -75,11 +75,16 @@ const props = defineProps({
     default: null,
   },
   link: { type: String, required: false, default: '' },
+  // New preferred keys for contact info
+  submitter_email: { type: String, required: false, default: undefined },
+  submitter_comments: { type: String, required: false, default: undefined },
 })
 const emit = defineEmits([
   'update:modelValue',
   'update:email',
   'update:comments',
+  'update:submitter_email',
+  'update:submitter_comments',
   'update:token',
   'update:saveModalErrors',
   'update:link',
@@ -87,8 +92,9 @@ const emit = defineEmits([
 ])
 
 const modelValueProxy = ref(props.modelValue)
-const emailProxy = ref(props.email)
-const commentsProxy = ref(props.comments)
+// Prefer new keys if provided, fallback to legacy
+const emailProxy = ref(props.submitter_email ?? props.email)
+const commentsProxy = ref(props.submitter_comments ?? props.comments)
 const tokenProxy = ref(props.token)
 const saveModalErrorsProxy = ref({ ...props.saveModalErrors })
 const linkProxy = ref(props.link)
@@ -105,22 +111,24 @@ watch(modelValueProxy, (val) => {
 })
 
 watch(
-  () => props.email,
-  (val) => {
-    emailProxy.value = val
+  () => [props.submitter_email, props.email],
+  ([newEmail, legacyEmail]) => {
+    emailProxy.value = newEmail ?? legacyEmail
   }
 )
 watch(emailProxy, (val) => {
+  emit('update:submitter_email', val)
   emit('update:email', val)
 })
 
 watch(
-  () => props.comments,
-  (val) => {
-    commentsProxy.value = val
+  () => [props.submitter_comments, props.comments],
+  ([newVal, legacyVal]) => {
+    commentsProxy.value = newVal ?? legacyVal
   }
 )
 watch(commentsProxy, (val) => {
+  emit('update:submitter_comments', val)
   emit('update:comments', val)
 })
 
@@ -156,18 +164,18 @@ watch(linkProxy, (val) => {
 
 // Validation schema for SaveModal
 const saveModalSchema = z.object({
-  email: z
+  submitter_email: z
     .string()
     .min(1, { message: 'Email is required' })
     .email({ message: 'Please enter a valid email address' }),
-  comments: z.string().optional(),
+  submitter_comments: z.string().optional(),
 })
 
 function validateSaveModal() {
   try {
     const modalData = {
-      email: emailProxy.value,
-      comments: commentsProxy.value,
+      submitter_email: emailProxy.value,
+      submitter_comments: commentsProxy.value,
     }
     saveModalSchema.parse(modalData)
     saveModalErrorsProxy.value = {}
@@ -200,22 +208,24 @@ watch(modelValueProxy, (val) => {
 })
 
 watch(
-  () => props.email,
-  (val) => {
-    emailProxy.value = val
+  () => [props.submitter_email, props.email],
+  ([newEmail, legacyEmail]) => {
+    emailProxy.value = newEmail ?? legacyEmail
   }
 )
 watch(emailProxy, (val) => {
+  emit('update:submitter_email', val)
   emit('update:email', val)
 })
 
 watch(
-  () => props.comments,
-  (val) => {
-    commentsProxy.value = val
+  () => [props.submitter_comments, props.comments],
+  ([newVal, legacyVal]) => {
+    commentsProxy.value = newVal ?? legacyVal
   }
 )
 watch(commentsProxy, (val) => {
+  emit('update:submitter_comments', val)
   emit('update:comments', val)
 })
 

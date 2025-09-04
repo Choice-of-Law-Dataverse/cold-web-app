@@ -242,6 +242,9 @@ function handleNewSave() {
     issn: issn.value || undefined,
     jurisdiction: jurisdiction.value || undefined,
     theme: theme.value || undefined,
+    // Submitter metadata from SaveModal
+    submitter_email: email.value || undefined,
+    submitter_comments: comments.value || undefined,
   }
 
   console.log('Submitting:', JSON.stringify(payload, null, 2))

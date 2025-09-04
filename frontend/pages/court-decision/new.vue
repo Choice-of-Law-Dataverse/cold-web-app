@@ -467,6 +467,9 @@ function handleNewSave() {
     case_title: caseTitle.value,
     instance: caseInstance.value,
     official_keywords: caseOfficialKeywords.value,
+    // Submitter metadata from SaveModal
+    submitter_email: email.value || undefined,
+    submitter_comments: comments.value || undefined,
   }
 
   // Explicitly log the exact payload we send
