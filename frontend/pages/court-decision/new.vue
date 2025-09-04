@@ -69,10 +69,10 @@
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
-          <span class="label">Original Text</span>
+          <span class="label">Full Text</span>
         </template>
         <UTextarea
-          v-model="caseOriginalText"
+          v-model="caseFullText"
           class="mt-2 resize-y min-h-[140px]"
           :rows="6"
         />
@@ -80,7 +80,7 @@
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
-          <span class="label">English Translation</span>
+          <span class="label">English Translation of Full Text</span>
         </template>
         <UTextarea
           v-model="caseEnglishTranslation"
@@ -112,64 +112,95 @@
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Abstract</span>
+          <InfoTooltip :text="tooltipAbstract" />
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UTextarea
+          v-model="caseAbstract"
+          class="mt-2 resize-y min-h-[140px]"
+          :rows="6"
+        />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Relevant Facts</span>
+          <InfoTooltip :text="tooltipRelevantFacts" />
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UTextarea
+          v-model="caseRelevantFacts"
+          class="mt-2 resize-y min-h-[140px]"
+          :rows="6"
+        />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">PIL Provisions</span>
+          <InfoTooltip :text="tooltipPILProvisions" />
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UInput v-model="casePILProvisions" class="mt-2" />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Choice of Law Issue</span>
+          <InfoTooltip :text="tooltipChoiceofLawIssue" />
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UTextarea
+          v-model="caseChoiceofLawIssue"
+          class="mt-2 resize-y min-h-[140px]"
+          :rows="6"
+        />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Court's Position</span>
+          <InfoTooltip :text="tooltipCourtsPosition" />
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UTextarea
+          v-model="caseCourtsPosition"
+          class="mt-2 resize-y min-h-[140px]"
+          :rows="6"
+        />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Translated Excerpt</span>
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UTextarea
+          v-model="caseTranslatedExcerpt"
+          class="mt-2 resize-y min-h-[140px]"
+          :rows="6"
+        />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Quote</span>
+          <InfoTooltip :text="tooltipQuote" />
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UTextarea
+          v-model="caseQuote"
+          class="mt-2 resize-y min-h-[140px]"
+          :rows="6"
+        />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8">
         <template #label>
-          <span class="label">Date</span>
+          <span class="label">Judgment Date</span>
+          <InfoTooltip :text="tooltipJudgmentDate" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
             icon="i-heroicons-calendar-days-20-solid"
-            :label="format(datePublication, 'dd MMMM yyyy')"
+            :label="format(dateJudgment, 'dd MMMM yyyy')"
             class="mt-2"
           />
           <template #panel="{ close }">
-            <DatePicker v-model="datePublication" is-required @close="close" />
+            <DatePicker v-model="dateJudgment" is-required @close="close" />
           </template>
         </UPopover>
       </UFormGroup>
@@ -177,6 +208,7 @@
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Case Title</span>
+          <InfoTooltip :text="tooltipCaseTitle" />
         </template>
         <UInput v-model="caseTitle" class="mt-2" />
       </UFormGroup>
@@ -184,22 +216,20 @@
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Instance</span>
+          <InfoTooltip :text="tooltipInstance" />
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UInput v-model="caseInstance" class="mt-2" />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Official Keywords</span>
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label">Official Keywords</span>
-        </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UTextarea
+          v-model="caseOfficialKeywords"
+          class="mt-2 resize-y min-h-[140px]"
+          :rows="6"
+        />
       </UFormGroup>
     </div>
   </BaseDetailLayout>
@@ -236,8 +266,19 @@ import SearchFilters from '@/components/search-results/SearchFilters.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import { format } from 'date-fns'
 
+import tooltipAbstract from '@/content/info_boxes/court_decision/abstract.md?raw'
 import tooltipCaseCitation from '@/content/info_boxes/court_decision/case_citation.md?raw'
+import tooltipCaseTitle from '@/content/info_boxes/court_decision/case_title.md?raw'
+import tooltipChoiceofLawIssue from '@/content/info_boxes/court_decision/choice_of_law_issue.md?raw'
+import tooltipCourtsPosition from '@/content/info_boxes/court_decision/courts_position.md?raw'
+// import tooltipDomesticLegalProvision from '@/content/info_boxes/court_decision/domestic_legal_provision.md?raw'
+import tooltipInstance from '@/content/info_boxes/court_decision/instance.md?raw'
+import tooltipJudgmentDate from '@/content/info_boxes/court_decision/judgment_date.md?raw'
+import tooltipPILProvisions from '@/content/info_boxes/court_decision/pil_provisions.md?raw'
 import tooltipPublicationDate from '@/content/info_boxes/court_decision/publication_date.md?raw'
+import tooltipQuote from '@/content/info_boxes/court_decision/quote.md?raw'
+import tooltipRelevantFacts from '@/content/info_boxes/court_decision/relevant_facts.md?raw'
+// import tooltipTextRelevantLegalProvision from '@/content/info_boxes/court_decision/text_relevant_legal_provision.md?raw'
 
 const config = useRuntimeConfig()
 
@@ -245,12 +286,22 @@ const config = useRuntimeConfig()
 const caseCitation = ref('')
 const caseTitle = ref('')
 // Newly added fields used by multi-line inputs
-const caseOriginalText = ref('')
+const caseFullText = ref('')
 const caseEnglishTranslation = ref('')
 const caseRank = ref('')
+const caseAbstract = ref('')
+const caseRelevantFacts = ref('')
+const casePILProvisions = ref('')
+const caseChoiceofLawIssue = ref('')
+const caseCourtsPosition = ref('')
+const caseTranslatedExcerpt = ref('')
+const caseQuote = ref('')
+const caseInstance = ref('')
+const caseOfficialKeywords = ref('')
 const officialSourceUrl = ref('')
 const copyrightIssues = ref('No')
 const datePublication = ref(new Date())
+const dateJudgment = ref(new Date())
 
 // Required by SaveModal (kept for parity with other pages)
 const specialists = ref([''])
