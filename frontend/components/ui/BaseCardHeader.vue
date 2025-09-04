@@ -481,7 +481,6 @@ const typeOptions = [
   'Regional Instrument',
   'International Instrument',
   'Literature',
-  'Question',
 ]
 const selectedType = ref('')
 
