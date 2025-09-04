@@ -35,16 +35,17 @@
         </span>
         <!-- Display 'source_table' or a type selector when in 'new' mode -->
         <template v-if="adjustedSourceTable">
-          <!-- In 'new' mode, show a simple dropdown to switch data type -->
-          <select
-            v-if="headerMode === 'new'"
-            v-model="selectedType"
-            class="border border-gray-300 px-2 pr-8 py-2 text-xs font-bold uppercase mr-3 min-w-[240px]"
-          >
-            <option v-for="type in typeOptions" :key="type" :value="type">
-              {{ type }}
-            </option>
-          </select>
+          <!-- In 'new' mode, show the data type label style and a link to reveal the dropdown -->
+          <div v-if="headerMode === 'new'" class="flex items-center mr-3">
+            <span
+              :class="['label', labelColorClass, 'source-table-label-link']"
+            >
+              {{ adjustedSourceTable }}
+            </span>
+            <div class="ml-2">
+              <USelect v-model="selectedType" :options="typeOptions" />
+            </div>
+          </div>
           <!-- In other modes, keep the clickable label linking to search -->
           <NuxtLink
             v-else
