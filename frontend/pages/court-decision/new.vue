@@ -18,34 +18,12 @@
         <template #label>
           <span class="label">Case citation</span>
         </template>
-        <UInput
-          v-model="caseCitation"
-          class="mt-2"
-          placeholder="e.g., Doe v. Smith, 123 A.3d 456"
-        />
+        <UInput v-model="caseCitation" class="mt-2" />
       </UFormGroup>
 
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+      <UFormGroup size="lg" hint="Required" class="mt-8">
         <template #label>
-          <span class="label">Case title (optional)</span>
-        </template>
-        <UInput v-model="caseTitle" class="mt-2" placeholder="Case title" />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.official_source_url">
-        <template #label>
-          <span class="label">Official source link</span>
-        </template>
-        <UInput
-          v-model="officialSourceUrl"
-          class="mt-2"
-          placeholder="https://…"
-        />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label">Publication date</span>
+          <span class="label">Date of Publication</span>
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
@@ -59,15 +37,149 @@
         </UPopover>
       </UFormGroup>
 
-      <UFormGroup size="lg" class="mt-8" :error="errors.copyright_issues">
+      <UFormGroup
+        size="lg"
+        hint="Required"
+        class="mt-8"
+        :error="errors.official_source_url"
+      >
+        <template #label>
+          <span class="label">Official source (URL)</span>
+        </template>
+        <UInput v-model="officialSourceUrl" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup
+        size="lg"
+        class="mt-8"
+        hint="Required"
+        :error="errors.copyright_issues"
+      >
         <template #label>
           <span class="label">Copyright issues</span>
         </template>
-        <UInput
-          v-model="copyrightIssues"
-          class="mt-2"
-          placeholder="e.g., none / unknown / describe restrictions"
-        />
+        <UInput v-model="copyrightIssues" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Original Text</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">English Translation</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Case Rank</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Jurisdiction</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Abstract</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Relevant Facts</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">PIL Provisions</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Choice of Law Issue</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Court's Position</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Translated Excerpt</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Quote</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8">
+        <template #label>
+          <span class="label">Date</span>
+        </template>
+        <UPopover :popper="{ placement: 'bottom-start' }">
+          <UButton
+            icon="i-heroicons-calendar-days-20-solid"
+            :label="format(datePublication, 'dd MMMM yyyy')"
+            class="mt-2"
+          />
+          <template #panel="{ close }">
+            <DatePicker v-model="datePublication" is-required @close="close" />
+          </template>
+        </UPopover>
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Case Title</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Instance</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Official Keywords</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
+      </UFormGroup>
+
+      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <template #label>
+          <span class="label">Official Keywords</span>
+        </template>
+        <UInput v-model="caseTitle" class="mt-2" />
       </UFormGroup>
     </div>
   </BaseDetailLayout>
@@ -129,17 +241,12 @@ const formSchema = z.object({
     .string()
     .min(1, { message: 'Case citation is required' })
     .min(3, { message: 'Case citation must be at least 3 characters long' }),
-  official_source_url: z
-    .string()
-    .url({
-      message: 'Link must be a valid URL. It must start with "https://"',
-    }),
-  copyright_issues: z
-    .string()
-    .min(1, {
-      message:
-        'Please specify copyright issues (e.g., none/unknown or describe)',
-    }),
+  official_source_url: z.string().url({
+    message: 'Link must be a valid URL. It must start with "https://"',
+  }),
+  copyright_issues: z.string().min(1, {
+    message: 'Please specify copyright issues (e.g., none/unknown or describe)',
+  }),
 })
 
 // Form validation state

@@ -517,7 +517,7 @@ function getSourceTablePlural(label) {
 
 // Dropdown options for 'new' pages (first is a real placeholder)
 const typeOptions = [
-  { label: 'Change Data Type', value: '' },
+  { label: 'Switch Data Type', value: '' },
   { label: 'Court Decision', value: 'Court Decision' },
   { label: 'Domestic Instrument', value: 'Domestic Instrument' },
   { label: 'Regional Instrument', value: 'Regional Instrument' },
