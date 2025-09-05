@@ -37,6 +37,7 @@
       >
         <template #label>
           <span class="label">Official Title</span>
+          <InfoTooltip :text="tooltipOfficialTitle" />
         </template>
         <UInput
           v-model="officialTitle"
@@ -54,6 +55,7 @@
       >
         <template #label>
           <span class="label">Name</span>
+          <InfoTooltip :text="tooltipDomesticInstrumentTitle" />
         </template>
         <UInput
           v-model="titleEn"
@@ -71,6 +73,7 @@
       >
         <template #label>
           <span class="label">Entry Into Force</span>
+          <InfoTooltip :text="tooltipEntryIntoForce" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
@@ -117,6 +120,7 @@
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Publication Date</span>
+          <InfoTooltip :text="tooltipDomesticInstrumentPublicationDate" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
@@ -138,6 +142,7 @@
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Abbreviation</span>
+          <InfoTooltip :text="tooltipAbbreviation" />
         </template>
         <UInput v-model="abbreviation" class="mt-2" />
       </UFormGroup>
@@ -146,6 +151,7 @@
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Compatible With the HCCH Principles?</span>
+          <InfoTooltip :text="tooltipCompatibleWithHCCH" />
         </template>
         <URadioGroup
           v-model="compatibleHcchPrinciples"
@@ -158,6 +164,7 @@
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Compatible With the UNCITRAL Model Law?</span>
+          <InfoTooltip :text="tooltipCompatibleWithUNCITRAL" />
         </template>
         <URadioGroup
           v-model="compatibleUncitralModelLaw"
@@ -199,6 +206,14 @@ import SaveModal from '@/components/ui/SaveModal.vue'
 import SearchFilters from '@/components/search-results/SearchFilters.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import { format } from 'date-fns'
+// Tooltips: match detail page content
+import tooltipAbbreviation from '@/content/info_boxes/domestic_instrument/abbreviation.md?raw'
+import tooltipCompatibleWithHCCH from '@/content/info_boxes/domestic_instrument/compatible_hcch.md?raw'
+import tooltipCompatibleWithUNCITRAL from '@/content/info_boxes/domestic_instrument/compatible_uncitral.md?raw'
+import tooltipEntryIntoForce from '@/content/info_boxes/domestic_instrument/entry_into_force.md?raw'
+import tooltipOfficialTitle from '@/content/info_boxes/domestic_instrument/official_title.md?raw'
+import tooltipDomesticInstrumentPublicationDate from '@/content/info_boxes/domestic_instrument/publication_date.md?raw'
+import tooltipDomesticInstrumentTitle from '@/content/info_boxes/domestic_instrument/title.md?raw'
 
 const config = useRuntimeConfig()
 
