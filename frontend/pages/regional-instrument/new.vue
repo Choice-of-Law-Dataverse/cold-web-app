@@ -15,32 +15,27 @@
   >
     <!-- Always render this section, even if keyLabelPairs is empty -->
     <div class="section-gap p-0 m-0">
-      <UFormGroup size="lg" :error="errors.abbreviation">
+      <UFormGroup size="lg" hint="Required" :error="errors.abbreviation">
         <template #label>
           <span class="label">Abbreviation</span>
         </template>
-        <UInput
-          v-model="abbreviation"
-          class="mt-2"
-          placeholder="Abbreviation of the Regional Instrument"
-        />
+        <UInput v-model="abbreviation" class="mt-2" />
       </UFormGroup>
-      <UFormGroup size="lg" hint="Required" :error="errors.title" class="mt-8">
+
+      <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Title</span>
         </template>
-        <UInput
-          v-model="title"
-          class="mt-2"
-          placeholder="Name of the Regional Instrument"
-        />
+        <UInput v-model="title" class="mt-2" />
       </UFormGroup>
-      <UFormGroup size="lg" class="mt-8" :error="errors.link">
+
+      <UFormGroup size="lg" class="mt-8">
         <template #label>
-          <span class="label">Link</span>
+          <span class="label">URL</span>
         </template>
-        <UInput v-model="link" class="mt-2" placeholder="Link" />
+        <UInput v-model="url" class="mt-2" />
       </UFormGroup>
+
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Date</span>
@@ -49,12 +44,12 @@
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
             icon="i-heroicons-calendar-days-20-solid"
-            :label="format(date, 'dd MMMM yyyy')"
+            :label="date ? format(date, 'dd MMMM yyyy') : 'Add date'"
             class="mt-2"
           />
 
           <template #panel="{ close }">
-            <DatePicker v-model="date" is-required @close="close" />
+            <DatePicker v-model="date" @close="close" />
           </template>
         </UPopover>
       </UFormGroup>
@@ -72,7 +67,7 @@
     :specialists="specialists"
     :date="date"
     :pdfFile="pdfFile"
-    :link="link"
+    :link="url"
     @update:email="(val) => (email = val)"
     @update:comments="(val) => (comments = val)"
     @update:token="(val) => (token = val)"
@@ -93,14 +88,14 @@ import SaveModal from '@/components/ui/SaveModal.vue'
 import tooltipRegionalInstrumentDate from '@/content/info_boxes/regional_instrument/date.md?raw'
 
 import { format } from 'date-fns'
-const date = ref(new Date())
+const date = ref(null)
 
 const config = useRuntimeConfig()
 
 // Form data
 const abbreviation = ref('')
 const title = ref('')
-const link = ref('')
+const url = ref('')
 const specialists = ref([''])
 const pdfFile = ref(null)
 const email = ref('')
@@ -116,16 +111,10 @@ watch(token, () => {
 
 // Validation schema
 const formSchema = z.object({
-  title: z
+  abbreviation: z
     .string()
-    .min(1, { message: 'Title is required' })
-    .min(3, { message: 'Title must be at least 3 characters long' }),
-  specialists: z.array(z.string()).optional(),
-  link: z
-    .string()
-    .url({ message: 'Link must be a valid URL. It must start with "https://"' })
-    .optional()
-    .or(z.literal('')),
+    .min(1, { message: 'Abbreviation is required' })
+    .min(3, { message: 'Abbreviation must be at least 3 characters long' }),
 })
 
 // Form validation state
@@ -144,9 +133,7 @@ useHead({ title: 'New Regional Instrument — CoLD' })
 function validateForm() {
   try {
     const formData = {
-      title: title.value,
-      specialists: specialists.value,
-      link: link.value,
+      abbreviation: abbreviation.value,
     }
 
     formSchema.parse(formData)
@@ -197,11 +184,11 @@ function removeSpecialist(idx) {
 
 function handleNewSave() {
   const payload = {
-    abbreviation: abbreviation.value, // abbreviation
-    title: title.value, // title
-    url: link.value, // Link
+    abbreviation: abbreviation.value,
+    title: title.value || undefined,
+    url: url.value || undefined,
     attachment: '', // ignored for now
-    instrument_date: format(date.value, 'yyyy-MM-dd'), // Date
+    instrument_date: date ? format(date, 'yyyy-MM-dd') : undefined,
     // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
