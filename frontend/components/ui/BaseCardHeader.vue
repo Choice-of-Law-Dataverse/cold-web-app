@@ -42,7 +42,7 @@
             >
               {{ adjustedSourceTable }}
             </span>
-            <div class="ml-2">
+            <div class="-ml-2">
               <USelect
                 variant="none"
                 v-model="selectedType"
@@ -51,10 +51,11 @@
                 option-attribute="label"
                 :class="[
                   'no-caret-select',
-                  selectedType === ''
-                    ? 'text-[color:var(--color-cold-purple)]'
-                    : '',
+                  'leading-none',
+                  'new-select-label',
+                  '!text-[var(--color-cold-purple)]',
                 ]"
+                :ui="selectUiLabel"
               >
                 <!-- Custom caret (replaces default chevron) -->
                 <template #trailing>
@@ -560,6 +561,16 @@ watch(selectedType, (val, old) => {
     router.push(typeToNewPath(val))
   }
 })
+
+// Ensure USelect internal trigger/value adopt the global .label style
+const selectUiLabel = {
+  base: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
+  wrapper: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
+  input: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
+  trigger: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
+  value: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
+  placeholder: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
+}
 </script>
 
 <style scoped>
@@ -722,5 +733,90 @@ a.label-arbitration {
 /* IE/Edge old */
 .no-caret-select :deep(select::-ms-expand) {
   display: none !important;
+}
+
+/* Make the select as compact as label text to keep header height consistent */
+.no-caret-select :deep(.ui-input),
+.no-caret-select :deep(.u-input),
+.no-caret-select :deep([role='button']),
+.no-caret-select :deep([role='combobox']) {
+  height: 22px !important;
+  min-height: 22px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 1 !important;
+}
+.no-caret-select :deep(.ui-input-trailing),
+.no-caret-select :deep(.u-input-trailing) {
+  height: 22px !important;
+}
+
+/* Make the USelect trigger look like a header label/link */
+.no-caret-select.label :deep(button[role='combobox']) {
+  color: inherit !important;
+  font-weight: inherit !important;
+  font-size: inherit !important;
+  text-transform: inherit !important;
+}
+.no-caret-select.label :deep(.ui-input),
+.no-caret-select.label :deep(.u-input) {
+  color: inherit !important;
+  font-weight: inherit !important;
+  font-size: inherit !important;
+  text-transform: inherit !important;
+}
+
+/* Ensure inner spans/values also adopt label sizing and casing */
+.no-caret-select.label :deep(.u-input *),
+.no-caret-select.label :deep(.ui-input *),
+.no-caret-select.label :deep(button[role='combobox'] *) {
+  font-size: inherit !important;
+  text-transform: inherit !important;
+}
+
+/* Hard-apply .label metrics to trigger/value for reliability */
+.no-caret-select :deep(button[role='combobox']) {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  color: var(--color-cold-purple) !important;
+}
+.no-caret-select :deep(button[role='combobox'] span),
+.no-caret-select :deep(button[role='combobox'] div),
+.no-caret-select :deep(.u-input .u-input-value),
+.no-caret-select :deep(.ui-input .ui-input-value) {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  color: var(--color-cold-purple) !important;
+}
+
+/* Nuxt UI select specific wrappers */
+.no-caret-select :deep(.u-select),
+.no-caret-select :deep(.ui-select),
+.no-caret-select :deep(.u-input-wrapper),
+.no-caret-select :deep(.ui-input-wrapper) {
+  height: 22px !important;
+}
+.no-caret-select :deep(button[role='combobox']) {
+  height: 22px !important;
+  min-height: 22px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Final authority: enforce 12px uppercase, weight 600, and purple color */
+.new-select-label :deep(button[role='combobox']),
+.new-select-label :deep(button[role='combobox'] *),
+.new-select-label :deep(.u-input .u-input-value),
+.new-select-label :deep(.ui-input .ui-input-value),
+.no-caret-select.new-select-label :deep(button[role='combobox']),
+.no-caret-select.new-select-label :deep(button[role='combobox'] *),
+.no-caret-select.new-select-label :deep(.u-input .u-input-value),
+.no-caret-select.new-select-label :deep(.ui-input .ui-input-value) {
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  font-weight: 600 !important;
+  color: var(--color-cold-purple) !important;
 }
 </style>
