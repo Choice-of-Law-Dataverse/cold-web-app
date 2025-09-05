@@ -221,11 +221,13 @@
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
             icon="i-heroicons-calendar-days-20-solid"
-            :label="format(dateJudgment, 'dd MMMM yyyy')"
+            :label="
+              dateJudgment ? format(dateJudgment, 'dd MMMM yyyy') : 'Add date'
+            "
             class="mt-2"
           />
           <template #panel="{ close }">
-            <DatePicker v-model="dateJudgment" is-required @close="close" />
+            <DatePicker v-model="dateJudgment" @close="close" />
           </template>
         </UPopover>
       </UFormGroup>
@@ -322,7 +324,7 @@ const caseOfficialKeywords = ref('')
 const officialSourceUrl = ref('')
 const copyrightIssues = ref('No')
 const datePublication = ref(new Date())
-const dateJudgment = ref(new Date())
+const dateJudgment = ref(null)
 
 // Required by SaveModal (kept for parity with other pages)
 const specialists = ref([''])
@@ -477,7 +479,9 @@ function handleNewSave() {
     translated_excerpt: caseTranslatedExcerpt.value,
     text_of_relevant_legal_provisions: caseTextofRelevantLegalProvisions.value,
     quote: caseQuote.value,
-    decision_date: format(dateJudgment.value, 'yyyy-MM-dd'),
+    decision_date: dateJudgment.value
+      ? format(dateJudgment.value, 'yyyy-MM-dd')
+      : undefined,
     case_title: caseTitle.value,
     instance: caseInstance.value,
     official_keywords: caseOfficialKeywords.value,
