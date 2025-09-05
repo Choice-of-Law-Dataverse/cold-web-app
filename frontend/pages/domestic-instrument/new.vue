@@ -41,7 +41,7 @@
         </template>
         <UInput
           v-model="officialTitle"
-          class="mt-2"
+          class="mt-2 cold-input"
           placeholder="e.g. Bundesgesetz über das Internationale Privatrecht"
         />
       </UFormGroup>
@@ -59,7 +59,7 @@
         </template>
         <UInput
           v-model="titleEn"
-          class="mt-2"
+          class="mt-2 cold-input"
           placeholder="e.g. Swiss Private International Law Act"
         />
       </UFormGroup>
@@ -97,7 +97,11 @@
         <template #label>
           <span class="label">Source (URL)</span>
         </template>
-        <UInput v-model="sourceUrl" class="mt-2" placeholder="https://…" />
+        <UInput
+          v-model="sourceUrl"
+          class="mt-2 cold-input"
+          placeholder="https://…"
+        />
       </UFormGroup>
 
       <!-- Themes (optional) -->
@@ -105,7 +109,7 @@
         <template #label>
           <span class="label">Themes</span>
         </template>
-        <UInput v-model="themes" class="mt-2" />
+        <UInput v-model="themes" class="mt-2 cold-input" />
       </UFormGroup>
 
       <!-- Status (optional) -->
@@ -113,7 +117,7 @@
         <template #label>
           <span class="label">Status</span>
         </template>
-        <UInput v-model="status" class="mt-2" />
+        <UInput v-model="status" class="mt-2 cold-input" />
       </UFormGroup>
 
       <!-- Publication Date (optional) -->
@@ -144,7 +148,7 @@
           <span class="label">Abbreviation</span>
           <InfoTooltip :text="tooltipAbbreviation" />
         </template>
-        <UInput v-model="abbreviation" class="mt-2" />
+        <UInput v-model="abbreviation" class="mt-2 cold-input" />
       </UFormGroup>
 
       <!-- Compatible HCCH Principles (optional) -->

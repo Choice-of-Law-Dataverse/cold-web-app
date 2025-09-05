@@ -38,7 +38,7 @@
         <template #label>
           <span class="label">Year</span>
         </template>
-        <UInput v-model="publicationYear" class="mt-2" />
+        <UInput v-model="publicationYear" class="mt-2 cold-input" />
       </UFormGroup>
 
       <!-- Author(s) (required) -->
@@ -46,7 +46,7 @@
         <template #label>
           <span class="label">Author</span>
         </template>
-        <UInput v-model="author" class="mt-2" />
+        <UInput v-model="author" class="mt-2 cold-input" />
       </UFormGroup>
 
       <!-- Title (required) -->
@@ -54,7 +54,7 @@
         <template #label>
           <span class="label">Title</span>
         </template>
-        <UInput v-model="title" class="mt-2" />
+        <UInput v-model="title" class="mt-2 cold-input" />
       </UFormGroup>
 
       <!-- Publication (optional) -->
@@ -62,7 +62,7 @@
         <template #label>
           <span class="label">Publication title</span>
         </template>
-        <UInput v-model="publicationTitle" class="mt-2" />
+        <UInput v-model="publicationTitle" class="mt-2 cold-input" />
       </UFormGroup>
 
       <!-- URL (optional) -->
@@ -70,7 +70,7 @@
         <template #label>
           <span class="label">URL</span>
         </template>
-        <UInput v-model="url" class="mt-2" />
+        <UInput v-model="url" class="mt-2 cold-input" />
       </UFormGroup>
 
       <!-- DOI (optional) -->
@@ -78,7 +78,7 @@
         <template #label>
           <span class="label">DOI</span>
         </template>
-        <UInput v-model="doi" class="mt-2" />
+        <UInput v-model="doi" class="mt-2 cold-input" />
       </UFormGroup>
 
       <!-- Date (optional) -->
@@ -107,7 +107,7 @@
         <template #label>
           <span class="label">ISBN</span>
         </template>
-        <UInput v-model="isbn" class="mt-2" />
+        <UInput v-model="isbn" class="mt-2 cold-input" />
       </UFormGroup>
 
       <!-- ISSN (optional) -->
@@ -115,14 +115,14 @@
         <template #label>
           <span class="label">ISSN</span>
         </template>
-        <UInput v-model="issn" class="mt-2" />
+        <UInput v-model="issn" class="mt-2 cold-input" />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Theme</span>
         </template>
-        <UInput v-model="theme" class="mt-2" />
+        <UInput v-model="theme" class="mt-2 cold-input" />
       </UFormGroup>
     </div>
   </BaseDetailLayout>

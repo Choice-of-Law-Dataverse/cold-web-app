@@ -33,7 +33,7 @@
           <span class="label">Case citation</span>
           <InfoTooltip :text="tooltipCaseCitation" />
         </template>
-        <UInput v-model="caseCitation" class="mt-2" />
+        <UInput v-model="caseCitation" class="mt-2 cold-input" />
       </UFormGroup>
 
       <UFormGroup size="lg" hint="Required" class="mt-8">
@@ -62,7 +62,7 @@
         <template #label>
           <span class="label">Official source (URL)</span>
         </template>
-        <UInput v-model="officialSourceUrl" class="mt-2" />
+        <UInput v-model="officialSourceUrl" class="mt-2 cold-input" />
       </UFormGroup>
 
       <UFormGroup
@@ -87,7 +87,7 @@
         </template>
         <UTextarea
           v-model="caseFullText"
-          class="mt-2 resize-y min-h-[140px]"
+          class="mt-2 cold-input resize-y min-h-[140px]"
           :rows="6"
         />
       </UFormGroup>
@@ -98,7 +98,7 @@
         </template>
         <UTextarea
           v-model="caseEnglishTranslation"
-          class="mt-2 resize-y min-h-[140px]"
+          class="mt-2 cold-input resize-y min-h-[140px]"
           :rows="6"
         />
       </UFormGroup>
@@ -107,7 +107,7 @@
         <template #label>
           <span class="label">Case Rank</span>
         </template>
-        <UInput v-model="caseRank" class="mt-2" />
+        <UInput v-model="caseRank" class="mt-2 cold-input" />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
@@ -130,7 +130,7 @@
         </template>
         <UTextarea
           v-model="caseAbstract"
-          class="mt-2 resize-y min-h-[140px]"
+          class="mt-2 cold-input resize-y min-h-[140px]"
           :rows="6"
         />
       </UFormGroup>
@@ -142,7 +142,7 @@
         </template>
         <UTextarea
           v-model="caseRelevantFacts"
-          class="mt-2 resize-y min-h-[140px]"
+          class="mt-2 cold-input resize-y min-h-[140px]"
           :rows="6"
         />
       </UFormGroup>
@@ -152,7 +152,7 @@
           <span class="label">PIL Provisions</span>
           <InfoTooltip :text="tooltipPILProvisions" />
         </template>
-        <UInput v-model="casePILProvisions" class="mt-2" />
+        <UInput v-model="casePILProvisions" class="mt-2 cold-input" />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
@@ -162,7 +162,7 @@
         </template>
         <UTextarea
           v-model="caseChoiceofLawIssue"
-          class="mt-2 resize-y min-h-[140px]"
+          class="mt-2 cold-input resize-y min-h-[140px]"
           :rows="6"
         />
       </UFormGroup>
@@ -174,7 +174,7 @@
         </template>
         <UTextarea
           v-model="caseCourtsPosition"
-          class="mt-2 resize-y min-h-[140px]"
+          class="mt-2 cold-input resize-y min-h-[140px]"
           :rows="6"
         />
       </UFormGroup>
@@ -185,7 +185,7 @@
         </template>
         <UTextarea
           v-model="caseTranslatedExcerpt"
-          class="mt-2 resize-y min-h-[140px]"
+          class="mt-2 cold-input resize-y min-h-[140px]"
           :rows="6"
         />
       </UFormGroup>
@@ -196,7 +196,7 @@
         </template>
         <UTextarea
           v-model="caseTextofRelevantLegalProvisions"
-          class="mt-2 resize-y min-h-[140px]"
+          class="mt-2 cold-input resize-y min-h-[140px]"
           :rows="6"
         />
       </UFormGroup>
@@ -208,7 +208,7 @@
         </template>
         <UTextarea
           v-model="caseQuote"
-          class="mt-2 resize-y min-h-[140px]"
+          class="mt-2 cold-input resize-y min-h-[140px]"
           :rows="6"
         />
       </UFormGroup>
@@ -237,7 +237,7 @@
           <span class="label">Case Title</span>
           <InfoTooltip :text="tooltipCaseTitle" />
         </template>
-        <UInput v-model="caseTitle" class="mt-2" />
+        <UInput v-model="caseTitle" class="mt-2 cold-input" />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
@@ -245,7 +245,7 @@
           <span class="label">Instance</span>
           <InfoTooltip :text="tooltipInstance" />
         </template>
-        <UInput v-model="caseInstance" class="mt-2" />
+        <UInput v-model="caseInstance" class="mt-2 cold-input" />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
@@ -254,7 +254,7 @@
         </template>
         <UTextarea
           v-model="caseOfficialKeywords"
-          class="mt-2 resize-y min-h-[140px]"
+          class="mt-2 cold-input resize-y min-h-[140px]"
           :rows="6"
         />
       </UFormGroup>

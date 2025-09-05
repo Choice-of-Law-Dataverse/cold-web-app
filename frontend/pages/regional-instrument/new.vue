@@ -19,21 +19,21 @@
         <template #label>
           <span class="label">Abbreviation</span>
         </template>
-        <UInput v-model="abbreviation" class="mt-2" />
+        <UInput v-model="abbreviation" class="mt-2 cold-input" />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Title</span>
         </template>
-        <UInput v-model="title" class="mt-2" />
+        <UInput v-model="title" class="mt-2 cold-input" />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">URL</span>
         </template>
-        <UInput v-model="url" class="mt-2" />
+        <UInput v-model="url" class="mt-2 cold-input" />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8">

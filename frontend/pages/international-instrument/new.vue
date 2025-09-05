@@ -19,7 +19,7 @@
         <template #label>
           <span class="label">Title</span>
         </template>
-        <UInput v-model="name" class="mt-2" />
+        <UInput v-model="name" class="mt-2 cold-input" />
       </UFormGroup>
       <UFormGroup size="lg" class="mt-8">
         <!-- <template #label>
@@ -78,7 +78,7 @@
           <span class="label">Link</span>
           <InfoTooltip :text="tooltipInternationalInstrumentLink" />
         </template>
-        <UInput v-model="link" class="mt-2" />
+        <UInput v-model="link" class="mt-2 cold-input" />
       </UFormGroup>
       <UFormGroup
         size="lg"
