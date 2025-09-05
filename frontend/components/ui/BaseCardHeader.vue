@@ -182,6 +182,8 @@
                 class="flex items-center"
                 :class="action.class"
                 v-bind="action.to ? { to: action.to } : {}"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 {{ action.label }}
                 <UIcon
@@ -432,9 +434,6 @@ const suggestEditActions = computed(() => {
   }
   // Adjust the Edit link for International Instrument page only
   let editLink = suggestEditLink.value
-  if (props.cardType === 'International Instrument' && props.resultData?.ID) {
-    editLink = `/international-instrument/${props.resultData.ID}/edit`
-  }
   actions.push({
     label: 'Edit',
     icon: 'i-material-symbols:edit-square-outline',
