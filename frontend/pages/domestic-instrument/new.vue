@@ -14,48 +14,63 @@
     :icon="'i-material-symbols:warning-outline'"
   >
     <div class="section-gap p-0 m-0">
-      <UFormGroup size="lg" hint="Required" :error="errors.official_title">
+      <!-- Jurisdiction (required) -->
+      <UFormGroup size="lg" hint="Required" :error="errors.jurisdiction_link">
         <template #label>
-          <span class="label">Official title</span>
+          <span class="label">Jurisdiction</span>
+        </template>
+        <SearchFilters
+          :options="jurisdictionOptions"
+          v-model="selectedJurisdiction"
+          class="mt-2 w-full sm:w-auto"
+          showAvatars="true"
+          :multiple="false"
+        />
+      </UFormGroup>
+
+      <!-- Official Title (required) -->
+      <UFormGroup
+        size="lg"
+        class="mt-8"
+        :error="errors.official_title"
+        hint="Required"
+      >
+        <template #label>
+          <span class="label">Official Title</span>
         </template>
         <UInput
           v-model="officialTitle"
           class="mt-2"
-          placeholder="Official title (original language)"
+          placeholder="e.g. Bundesgesetz über das Internationale Privatrecht"
         />
       </UFormGroup>
 
+      <!-- Name (English) (required) -->
       <UFormGroup
         size="lg"
         class="mt-8"
-        hint="Required"
         :error="errors.title_en"
-      >
-        <template #label>
-          <span class="label">Title (English)</span>
-        </template>
-        <UInput v-model="titleEn" class="mt-2" placeholder="English title" />
-      </UFormGroup>
-
-      <UFormGroup
-        size="lg"
-        class="mt-8"
         hint="Required"
-        :error="errors.jurisdiction_link"
       >
         <template #label>
-          <span class="label">Jurisdiction link</span>
+          <span class="label">Name</span>
         </template>
         <UInput
-          v-model="jurisdictionLink"
+          v-model="titleEn"
           class="mt-2"
-          placeholder="https://…"
+          placeholder="e.g. Swiss Private International Law Act"
         />
       </UFormGroup>
 
-      <UFormGroup size="lg" class="mt-8" hint="Required">
+      <!-- Entry Into Force (required) -->
+      <UFormGroup
+        size="lg"
+        class="mt-8"
+        hint="Required"
+        :error="errors.entry_into_force"
+      >
         <template #label>
-          <span class="label">Entry into force</span>
+          <span class="label">Entry Into Force</span>
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
@@ -69,6 +84,7 @@
         </UPopover>
       </UFormGroup>
 
+      <!-- Source (URL) (required) -->
       <UFormGroup
         size="lg"
         class="mt-8"
@@ -76,9 +92,78 @@
         :error="errors.source_url"
       >
         <template #label>
-          <span class="label">Source link</span>
+          <span class="label">Source (URL)</span>
         </template>
         <UInput v-model="sourceUrl" class="mt-2" placeholder="https://…" />
+      </UFormGroup>
+
+      <!-- Themes (optional) -->
+      <UFormGroup size="lg" class="mt-8">
+        <template #label>
+          <span class="label">Themes</span>
+        </template>
+        <UInput v-model="themes" class="mt-2" />
+      </UFormGroup>
+
+      <!-- Status (optional) -->
+      <UFormGroup size="lg" class="mt-8">
+        <template #label>
+          <span class="label">Status</span>
+        </template>
+        <UInput v-model="status" class="mt-2" />
+      </UFormGroup>
+
+      <!-- Publication Date (optional) -->
+      <UFormGroup size="lg" class="mt-8">
+        <template #label>
+          <span class="label">Publication Date</span>
+        </template>
+        <UPopover :popper="{ placement: 'bottom-start' }">
+          <UButton
+            icon="i-heroicons-calendar-days-20-solid"
+            :label="
+              publicationDate
+                ? format(publicationDate, 'dd MMMM yyyy')
+                : 'Add date'
+            "
+            class="mt-2"
+          />
+          <template #panel="{ close }">
+            <DatePicker v-model="publicationDate" @close="close" />
+          </template>
+        </UPopover>
+      </UFormGroup>
+
+      <!-- Abbreviation (optional) -->
+      <UFormGroup size="lg" class="mt-8">
+        <template #label>
+          <span class="label">Abbreviation</span>
+        </template>
+        <UInput v-model="abbreviation" class="mt-2" />
+      </UFormGroup>
+
+      <!-- Compatible HCCH Principles (optional) -->
+      <UFormGroup size="lg" class="mt-8">
+        <template #label>
+          <span class="label">Compatible With the HCCH Principles?</span>
+        </template>
+        <URadioGroup
+          v-model="compatibleHcchPrinciples"
+          class="mt-2"
+          :options="yesNoBoolOptions"
+        />
+      </UFormGroup>
+
+      <!-- Compatible UNCITRAL Model Law (optional) -->
+      <UFormGroup size="lg" class="mt-8">
+        <template #label>
+          <span class="label">Compatible With the UNCITRAL Model Law?</span>
+        </template>
+        <URadioGroup
+          v-model="compatibleUncitralModelLaw"
+          class="mt-2"
+          :options="yesNoBoolOptions"
+        />
       </UFormGroup>
     </div>
   </BaseDetailLayout>
@@ -104,13 +189,15 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useHead, useRouter } from '#imports'
 import { z } from 'zod'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import DatePicker from '@/components/ui/DatePicker.vue'
 import CancelModal from '@/components/ui/CancelModal.vue'
 import SaveModal from '@/components/ui/SaveModal.vue'
+import SearchFilters from '@/components/search-results/SearchFilters.vue'
+import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import { format } from 'date-fns'
 
 const config = useRuntimeConfig()
@@ -118,9 +205,18 @@ const config = useRuntimeConfig()
 // Form data
 const officialTitle = ref('')
 const titleEn = ref('')
-const jurisdictionLink = ref('')
+// Jurisdiction selector
+const selectedJurisdiction = ref([])
+const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
 const entryIntoForce = ref(new Date())
 const sourceUrl = ref('')
+// Optional fields
+const themes = ref('')
+const status = ref('')
+const publicationDate = ref(null)
+const abbreviation = ref('')
+const compatibleHcchPrinciples = ref(undefined)
+const compatibleUncitralModelLaw = ref(undefined)
 
 // For SaveModal parity
 const specialists = ref([''])
@@ -133,8 +229,48 @@ const token = ref('')
 
 watch(token, () => {})
 
+// Load jurisdictions like on Court Decision page
+const loadJurisdictions = async () => {
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to load jurisdictions')
+
+    const jurisdictionsData = await response.json()
+    jurisdictionOptions.value = [
+      { label: 'Select Jurisdiction' },
+      ...jurisdictionsData
+        .filter((entry) => entry['Irrelevant?'] === false)
+        .map((entry) => ({
+          label: entry.Name,
+          avatar: entry['Alpha-3 Code']
+            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+            : undefined,
+        }))
+        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
+    ]
+  } catch (error) {
+    console.error('Error loading jurisdictions:', error)
+  }
+}
+
+onMounted(loadJurisdictions)
+
 // Validation schema
 const formSchema = z.object({
+  jurisdiction_link: z
+    .string()
+    .min(1, { message: 'Selected jurisdiction is required' }),
   official_title: z
     .string()
     .min(1, { message: 'Official title is required' })
@@ -143,9 +279,7 @@ const formSchema = z.object({
     .string()
     .min(1, { message: 'English title is required' })
     .min(3, { message: 'English title must be at least 3 characters long' }),
-  jurisdiction_link: z.string().url({
-    message: 'Jurisdiction link must be a valid URL starting with "https://"',
-  }),
+  entry_into_force: z.date({ required_error: 'Entry into force is required' }),
   source_url: z.string().url({
     message: 'Source link must be a valid URL starting with "https://"',
   }),
@@ -166,9 +300,13 @@ useHead({ title: 'New Domestic Instrument — CoLD' })
 function validateForm() {
   try {
     const formData = {
+      jurisdiction_link:
+        (Array.isArray(selectedJurisdiction.value) &&
+          selectedJurisdiction.value[0]?.label) ||
+        '',
       official_title: officialTitle.value,
       title_en: titleEn.value,
-      jurisdiction_link: jurisdictionLink.value,
+      entry_into_force: entryIntoForce.value,
       source_url: sourceUrl.value,
     }
     formSchema.parse(formData)
@@ -198,11 +336,33 @@ function confirmCancel() {
 
 function handleNewSave() {
   const payload = {
-    jurisdiction_link: jurisdictionLink.value,
+    jurisdiction_link:
+      (Array.isArray(selectedJurisdiction.value) &&
+        selectedJurisdiction.value[0]?.label) ||
+      undefined,
     official_title: officialTitle.value,
     title_en: titleEn.value,
     entry_into_force: format(entryIntoForce.value, 'yyyy-MM-dd'),
     source_url: sourceUrl.value,
+    themes: themes.value
+      ? themes.value
+          .split(',')
+          .map((t) => t.trim())
+          .filter((t) => t)
+      : undefined,
+    status: status.value || undefined,
+    publication_date: publicationDate
+      ? format(publicationDate.value, 'yyyy-MM-dd')
+      : undefined,
+    abbreviation: abbreviation.value || undefined,
+    compatible_hcch_principles:
+      compatibleHcchPrinciples.value !== undefined
+        ? compatibleHcchPrinciples.value
+        : undefined,
+    compatible_uncitral_model_law:
+      compatibleUncitralModelLaw.value !== undefined
+        ? compatibleUncitralModelLaw.value
+        : undefined,
     // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
