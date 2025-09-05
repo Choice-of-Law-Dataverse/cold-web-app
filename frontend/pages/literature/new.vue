@@ -118,18 +118,6 @@
         <UInput v-model="issn" class="mt-2" />
       </UFormGroup>
 
-      <!-- Theme (optional) -->
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label">Jurisdiction</span>
-        </template>
-        <UInput
-          v-model="jurisdiction"
-          class="mt-2"
-          placeholder="Jurisdiction"
-        />
-      </UFormGroup>
-
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Theme</span>
@@ -182,7 +170,6 @@ const doi = ref('')
 const publicationDate = ref(null)
 const isbn = ref('')
 const issn = ref('')
-const jurisdiction = ref('')
 const theme = ref('')
 
 // Jurisdiction selector
@@ -222,7 +209,12 @@ const loadJurisdictions = async () => {
       { label: 'Select Jurisdiction' },
       ...jurisdictionsData
         .filter((entry) => entry['Irrelevant?'] === false)
-        .map((entry) => ({ label: entry.Name }))
+        .map((entry) => ({
+          label: entry.Name,
+          avatar: entry['Alpha-3 Code']
+            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+            : undefined,
+        }))
         .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
     ]
   } catch (error) {
