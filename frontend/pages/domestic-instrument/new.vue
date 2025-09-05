@@ -157,11 +157,26 @@
           <span class="label">Compatible With the HCCH Principles?</span>
           <InfoTooltip :text="tooltipCompatibleWithHCCH" />
         </template>
-        <URadioGroup
-          v-model="compatibleHcchPrinciples"
-          class="mt-2"
-          :options="yesNoBoolOptions"
-        />
+        <div
+          class="mt-2 cold-toggle-group"
+          role="group"
+          aria-label="Compatible with the HCCH Principles"
+        >
+          <UButton
+            class="cold-toggle-btn"
+            @click="compatibleHcchPrinciples = 'No'"
+            :aria-pressed="compatibleHcchPrinciples === 'No'"
+          >
+            No
+          </UButton>
+          <UButton
+            class="cold-toggle-btn"
+            @click="compatibleHcchPrinciples = 'Yes'"
+            :aria-pressed="compatibleHcchPrinciples === 'Yes'"
+          >
+            Yes
+          </UButton>
+        </div>
       </UFormGroup>
 
       <!-- Compatible UNCITRAL Model Law (optional) -->
@@ -170,11 +185,26 @@
           <span class="label">Compatible With the UNCITRAL Model Law?</span>
           <InfoTooltip :text="tooltipCompatibleWithUNCITRAL" />
         </template>
-        <URadioGroup
-          v-model="compatibleUncitralModelLaw"
-          class="mt-2"
-          :options="yesNoBoolOptions"
-        />
+        <div
+          class="mt-2 cold-toggle-group"
+          role="group"
+          aria-label="Compatible with the UNCITRAL Model Law"
+        >
+          <UButton
+            class="cold-toggle-btn"
+            @click="compatibleUncitralModelLaw = 'No'"
+            :aria-pressed="compatibleUncitralModelLaw === 'No'"
+          >
+            No
+          </UButton>
+          <UButton
+            class="cold-toggle-btn"
+            @click="compatibleUncitralModelLaw = 'Yes'"
+            :aria-pressed="compatibleUncitralModelLaw === 'Yes'"
+          >
+            Yes
+          </UButton>
+        </div>
       </UFormGroup>
     </div>
   </BaseDetailLayout>
@@ -246,11 +276,7 @@ const comments = ref('')
 const turnstile = ref()
 const token = ref('')
 
-// Radio options for Radio Groups
-const yesNoBoolOptions = [
-  { value: 'No', label: 'No' },
-  { value: 'Yes', label: 'Yes' },
-]
+// Toggle buttons write 'Yes'/'No' directly to the refs above
 
 watch(token, () => {})
 
