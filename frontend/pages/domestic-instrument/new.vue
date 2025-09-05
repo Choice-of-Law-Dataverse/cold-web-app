@@ -344,7 +344,7 @@ const router = useRouter()
 const showSaveModal = ref(false)
 const showCancelModal = ref(false)
 const notificationBannerMessage =
-  'Please back up your data when working here. Closing or reloading this window will delete everything. Data is only saved after you submit.'
+  'Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.'
 
 useHead({ title: 'New Domestic Instrument — CoLD' })
 

@@ -119,13 +119,6 @@
       <!-- Right side of the header: Show either "Suggest Edit"/"Open" or custom for 'new' mode -->
       <div class="open-link ml-4">
         <template v-if="headerMode === 'new'">
-          <UButton
-            class="mr-2"
-            color="gray"
-            variant="outline"
-            @click="$emit('open-cancel-modal')"
-            >Cancel</UButton
-          >
           <UButton color="primary" @click="$emit('open-save-modal')"
             >Submit</UButton
           >
