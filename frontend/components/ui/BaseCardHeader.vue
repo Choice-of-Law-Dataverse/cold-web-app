@@ -117,11 +117,14 @@
       <div class="fade-out" :class="fadeOutClasses"></div>
 
       <!-- Right side of the header: Show either "Suggest Edit"/"Open" or custom for 'new' mode -->
-      <div class="open-link ml-4">
+      <div class="open-link ml-4 label">
         <template v-if="headerMode === 'new'">
-          <UButton color="primary" @click="$emit('open-save-modal')"
-            >Submit</UButton
+          <NuxtLink
+            class="label flex items-center cursor-pointer"
+            @click="$emit('open-save-modal')"
           >
+            Submit your data …
+          </NuxtLink>
         </template>
         <template v-else>
           <template v-if="showSuggestEdit">
