@@ -402,9 +402,6 @@ select.cold-input {
   line-height: 1.4 !important;
   box-shadow: none !important;
   outline: none !important;
-  transition:
-    border-color 0.15s ease,
-    background-color 0.15s ease;
 }
 
 // Support component wrappers (e.g., UInput/UTextarea) where the class is on the root wrapper
@@ -443,16 +440,7 @@ select.cold-input::placeholder {
   opacity: 1 !important;
 }
 
-// Hover + focus
-.cold-input:hover,
-input.cold-input:hover,
-textarea.cold-input:hover,
-select.cold-input:hover {
-  border-color: var(--color-cold-purple) !important;
-}
-.cold-input:hover {
-  border-color: var(--color-cold-purple) !important;
-}
+// Focus only (no hover)
 
 .cold-input:focus,
 input.cold-input:focus,
