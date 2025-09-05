@@ -527,7 +527,7 @@ select.cold-input[disabled] {
 .cold-date-trigger,
 button.cold-date-trigger {
   width: 100% !important;
-  height: 48px !important; /* h-12 */
+  height: 42px !important;
   padding: 0 12px !important;
   border: none !important;
   border-radius: 0 !important;
@@ -564,6 +564,44 @@ button.cold-date-trigger {
 .cold-date-trigger[disabled],
 .cold-date-trigger:disabled,
 .cold-date-trigger[aria-disabled='true'] {
+  background-color: var(--color-cold-gray-alpha) !important;
+  color: var(--color-cold-night-alpha) !important;
+  cursor: not-allowed !important;
+}
+
+// Full-width two-option toggle styled like the date picker
+.cold-toggle-group {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+}
+
+.cold-toggle-btn,
+button.cold-toggle-btn {
+  width: 100% !important; /* fill each grid cell */
+  height: 42px !important; /* match date trigger */
+  padding: 0 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: var(--color-cold-purple-alpha) !important;
+  color: var(--color-cold-purple) !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important; /* center label for toggle */
+}
+
+/* Active state (selected) */
+.cold-toggle-btn[aria-pressed='true'] {
+  background-color: var(--color-cold-purple) !important;
+  color: #ffffff !important;
+}
+
+/* Disabled state */
+.cold-toggle-btn[disabled],
+.cold-toggle-btn:disabled,
+.cold-toggle-btn[aria-disabled='true'] {
   background-color: var(--color-cold-gray-alpha) !important;
   color: var(--color-cold-night-alpha) !important;
   cursor: not-allowed !important;

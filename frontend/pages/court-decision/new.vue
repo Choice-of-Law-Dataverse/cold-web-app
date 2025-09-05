@@ -74,11 +74,26 @@
         <template #label>
           <span class="label">Copyright issues</span>
         </template>
-        <URadioGroup
-          v-model="copyrightIssues"
-          class="mt-2"
-          :options="copyrightOptions"
-        />
+        <div
+          class="mt-2 cold-toggle-group"
+          role="group"
+          aria-label="Copyright issues"
+        >
+          <UButton
+            class="cold-toggle-btn"
+            @click="copyrightIssues = 'No'"
+            :aria-pressed="copyrightIssues === 'No'"
+          >
+            No
+          </UButton>
+          <UButton
+            class="cold-toggle-btn"
+            @click="copyrightIssues = 'Yes'"
+            :aria-pressed="copyrightIssues === 'Yes'"
+          >
+            Yes
+          </UButton>
+        </div>
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
@@ -376,11 +391,7 @@ const loadJurisdictions = async () => {
 }
 
 onMounted(loadJurisdictions)
-// Radio options for Copyright issues
-const copyrightOptions = [
-  { value: 'No', label: 'No' },
-  { value: 'Yes', label: 'Yes' },
-]
+// Toggle buttons will set this directly (No/Yes)
 
 // Validation schema
 const formSchema = z.object({
