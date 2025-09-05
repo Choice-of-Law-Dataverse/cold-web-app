@@ -227,6 +227,12 @@ const comments = ref('')
 const turnstile = ref()
 const token = ref('')
 
+// Radio options for Radio Groups
+const yesNoBoolOptions = [
+  { value: 'No', label: 'No' },
+  { value: 'Yes', label: 'Yes' },
+]
+
 watch(token, () => {})
 
 // Load jurisdictions like on Court Decision page
