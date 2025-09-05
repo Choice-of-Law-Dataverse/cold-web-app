@@ -121,7 +121,7 @@
       <div class="open-link ml-4 label">
         <template v-if="headerMode === 'new'">
           <NuxtLink
-            class="label flex items-center cursor-pointer"
+            class="label flex items-center cursor-pointer pt-0.5"
             @click="$emit('open-save-modal')"
           >
             Submit your data …
@@ -513,7 +513,7 @@ function getSourceTablePlural(label) {
 
 // Dropdown options for 'new' pages (first is a real placeholder)
 const typeOptions = [
-  { label: 'Switch Data Type', value: '' },
+  { label: 'Change', value: '' },
   { label: 'Court Decision', value: 'Court Decision' },
   { label: 'Domestic Instrument', value: 'Domestic Instrument' },
   { label: 'Regional Instrument', value: 'Regional Instrument' },
