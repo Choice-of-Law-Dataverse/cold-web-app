@@ -132,7 +132,7 @@
         <SearchFilters
           :options="jurisdictionOptions"
           v-model="selectedJurisdiction"
-          class="mt-2 w-full sm:w-auto"
+          class="mt-2 w-full"
           showAvatars="true"
           :multiple="false"
         />

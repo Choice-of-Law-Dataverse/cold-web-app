@@ -295,17 +295,27 @@ li::marker {
 }
 
 // USelectmenu
+.cold-uselectmenu {
+  width: 100% !important;
+}
 .cold-uselectmenu button {
   box-shadow: none !important;
   border: 1px solid var(--color-cold-gray) !important;
   border-radius: 0 !important;
   background-color: white !important;
   height: 42px;
+  width: 100% !important; /* make trigger full width */
 }
 
 .cold-uselectmenu.non-all-selected button {
   border-color: var(--color-cold-purple) !important;
   color: var(--color-cold-purple) !important;
+}
+
+/* In case the trigger is rendered as a div/combobox instead of button */
+.cold-uselectmenu [role='combobox'],
+.cold-uselectmenu [data-headlessui-state][role='combobox'] {
+  width: 100% !important;
 }
 
 // Popper Style
