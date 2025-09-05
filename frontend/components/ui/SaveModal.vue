@@ -1,5 +1,13 @@
 <template>
-  <UModal v-model="modelValueProxy" prevent-close>
+  <UModal
+    v-model="modelValueProxy"
+    prevent-close
+    :ui="{
+      container: 'w-screen max-w-none',
+      width: 'w-screen max-w-none',
+      rounded: 'rounded-none',
+    }"
+  >
     <div class="p-6">
       <h2 class="text-lg font-bold mb-4 text-center">Ready to submit?</h2>
       <p class="mb-6 text-center">
@@ -37,9 +45,14 @@
         />
       </UFormGroup>
 
-      <div>
-        <form @submit.prevent="onSubmit">
-          <NuxtTurnstile ref="turnstile" v-model="tokenProxy" />
+      <div class="mb-4 w-full">
+        <form class="w-full" @submit.prevent="onSubmit">
+          <NuxtTurnstile
+            ref="turnstile"
+            v-model="tokenProxy"
+            class="turnstile-full w-full"
+            :options="{ size: 'flexible' }"
+          />
         </form>
       </div>
 
@@ -249,3 +262,17 @@ function handleSubmit() {
   }
 }
 </script>
+
+<style scoped>
+/* Ensure the Cloudflare Turnstile widget spans the full column width */
+.turnstile-full {
+  display: block;
+  width: 100% !important;
+}
+.turnstile-full :deep(iframe),
+.turnstile-full :deep(div),
+.turnstile-full :deep(*) {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+</style>
