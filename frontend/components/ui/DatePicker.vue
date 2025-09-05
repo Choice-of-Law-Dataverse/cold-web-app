@@ -20,11 +20,13 @@ const props = defineProps({
   },
 })
 
-const emit = defineEmits(['update:model-value', 'close'])
+const emit = defineEmits(['update:modelValue', 'update:model-value', 'close'])
 
 const date = computed({
   get: () => props.modelValue,
   set: (value) => {
+    // Emit both for maximum compatibility with v-model expectations
+    emit('update:modelValue', value)
     emit('update:model-value', value)
     emit('close')
   },
