@@ -306,7 +306,6 @@ function handleNewSave() {
     submitter_comments: comments.value || undefined,
   }
 
-  console.log('Submitting:', JSON.stringify(payload, null, 2))
   ;(async () => {
     try {
       await $fetch(`${config.public.apiBaseUrl}/suggestions/literature`, {

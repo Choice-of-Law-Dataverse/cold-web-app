@@ -252,7 +252,6 @@ function handleNewSave() {
   }
 
   // Explicitly log the exact payload we send
-  console.log('Submitting:', JSON.stringify(payload, null, 2))
   ;(async () => {
     try {
       await $fetch(
