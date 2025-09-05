@@ -94,7 +94,7 @@
                 ? format(publicationDate, 'dd MMMM yyyy')
                 : 'Add date'
             "
-            class="mt-2"
+            class="mt-2 cold-date-trigger"
           />
           <template #panel="{ close }">
             <DatePicker v-model="publicationDate" @close="close" />

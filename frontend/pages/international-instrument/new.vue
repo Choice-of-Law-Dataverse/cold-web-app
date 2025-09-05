@@ -94,7 +94,7 @@
           <UButton
             icon="i-heroicons-calendar-days-20-solid"
             :label="date ? format(date, 'dd MMMM yyyy') : 'Add date'"
-            class="mt-2"
+            class="mt-2 cold-date-trigger"
           />
 
           <template #panel="{ close }">

@@ -522,3 +522,49 @@ select.cold-input[disabled] {
   color: var(--color-cold-night-alpha) !important;
   margin-top: 4px !important;
 }
+
+// Date Picker trigger (make it look like the main nav search input)
+.cold-date-trigger,
+button.cold-date-trigger {
+  width: 100% !important;
+  height: 48px !important; /* h-12 */
+  padding: 0 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: var(--color-cold-purple-alpha) !important;
+  color: var(--color-cold-purple) !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+/* Ensure icons inside the trigger inherit the text color */
+.cold-date-trigger .iconify,
+.cold-date-trigger svg,
+.cold-date-trigger [class*='icon'] {
+  color: var(--color-cold-purple) !important;
+  fill: currentColor !important;
+}
+
+/* Focus without hover effects */
+.cold-date-trigger:focus,
+.cold-date-trigger:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.cold-date-trigger:hover {
+  background-color: var(
+    --color-cold-purple-alpha
+  ) !important; /* no hover change */
+}
+
+/* Disabled state */
+.cold-date-trigger[disabled],
+.cold-date-trigger:disabled,
+.cold-date-trigger[aria-disabled='true'] {
+  background-color: var(--color-cold-gray-alpha) !important;
+  color: var(--color-cold-night-alpha) !important;
+  cursor: not-allowed !important;
+}

@@ -79,7 +79,7 @@
           <UButton
             icon="i-heroicons-calendar-days-20-solid"
             :label="format(entryIntoForce, 'dd MMMM yyyy')"
-            class="mt-2"
+            class="mt-2 cold-date-trigger"
           />
           <template #panel="{ close }">
             <DatePicker v-model="entryIntoForce" is-required @close="close" />
@@ -134,7 +134,7 @@
                 ? format(publicationDate, 'dd MMMM yyyy')
                 : 'Add date'
             "
-            class="mt-2"
+            class="mt-2 cold-date-trigger"
           />
           <template #panel="{ close }">
             <DatePicker v-model="publicationDate" @close="close" />

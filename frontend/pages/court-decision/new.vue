@@ -45,7 +45,7 @@
           <UButton
             icon="i-heroicons-calendar-days-20-solid"
             :label="format(datePublication, 'dd MMMM yyyy')"
-            class="mt-2"
+            class="mt-2 cold-date-trigger"
           />
           <template #panel="{ close }">
             <DatePicker v-model="datePublication" is-required @close="close" />
@@ -224,7 +224,7 @@
             :label="
               dateJudgment ? format(dateJudgment, 'dd MMMM yyyy') : 'Add date'
             "
-            class="mt-2"
+            class="mt-2 cold-date-trigger"
           />
           <template #panel="{ close }">
             <DatePicker v-model="dateJudgment" @close="close" />
