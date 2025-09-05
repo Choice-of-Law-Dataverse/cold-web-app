@@ -14,56 +14,74 @@
     :icon="'i-material-symbols:warning-outline'"
   >
     <div class="section-gap p-0 m-0">
-      <UFormGroup size="lg" :error="errors.author">
+      <!-- Jurisdiction (optional) -->
+      <UFormGroup size="lg">
+        <template #label>
+          <span class="label">Jurisdiction</span>
+        </template>
+        <SearchFilters
+          :options="jurisdictionOptions"
+          v-model="selectedJurisdiction"
+          class="mt-2 w-full sm:w-auto"
+          showAvatars="true"
+          :multiple="false"
+        />
+      </UFormGroup>
+
+      <!-- Year (required) -->
+      <UFormGroup
+        size="lg"
+        class="mt-8"
+        hint="Required"
+        :error="errors.publication_year"
+      >
+        <template #label>
+          <span class="label">Year</span>
+        </template>
+        <UInput v-model="publicationYear" class="mt-2" />
+      </UFormGroup>
+
+      <!-- Author(s) (required) -->
+      <UFormGroup size="lg" class="mt-8" hint="Required" :error="errors.author">
         <template #label>
           <span class="label">Author</span>
         </template>
-        <UInput v-model="author" class="mt-2" placeholder="Author(s)" />
+        <UInput v-model="author" class="mt-2" />
       </UFormGroup>
 
-      <UFormGroup size="lg" class="mt-8" :error="errors.title">
+      <!-- Title (required) -->
+      <UFormGroup size="lg" class="mt-8" hint="Required" :error="errors.title">
         <template #label>
           <span class="label">Title</span>
         </template>
-        <UInput v-model="title" class="mt-2" placeholder="Work title" />
+        <UInput v-model="title" class="mt-2" />
       </UFormGroup>
 
+      <!-- Publication (optional) -->
       <UFormGroup size="lg" class="mt-8" :error="errors.publication_title">
         <template #label>
           <span class="label">Publication title</span>
         </template>
-        <UInput
-          v-model="publicationTitle"
-          class="mt-2"
-          placeholder="Journal / Book / Proceedings"
-        />
+        <UInput v-model="publicationTitle" class="mt-2" />
       </UFormGroup>
 
-      <UFormGroup size="lg" class="mt-8" :error="errors.publication_year">
-        <template #label>
-          <span class="label">Publication year</span>
-        </template>
-        <UInput
-          v-model="publicationYear"
-          class="mt-2"
-          placeholder="e.g., 2024"
-        />
-      </UFormGroup>
-
+      <!-- URL (optional) -->
       <UFormGroup size="lg" class="mt-8" :error="errors.url">
         <template #label>
           <span class="label">URL</span>
         </template>
-        <UInput v-model="url" class="mt-2" placeholder="https://…" />
+        <UInput v-model="url" class="mt-2" />
       </UFormGroup>
 
+      <!-- DOI (optional) -->
       <UFormGroup size="lg" class="mt-8" :error="errors.doi">
         <template #label>
           <span class="label">DOI</span>
         </template>
-        <UInput v-model="doi" class="mt-2" placeholder="e.g., 10.1000/xyz123" />
+        <UInput v-model="doi" class="mt-2" />
       </UFormGroup>
 
+      <!-- Date (optional) -->
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Publication date</span>
@@ -71,7 +89,11 @@
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
             icon="i-heroicons-calendar-days-20-solid"
-            :label="format(publicationDate, 'dd MMMM yyyy')"
+            :label="
+              publicationDate
+                ? format(publicationDate, 'dd MMMM yyyy')
+                : 'Add date'
+            "
             class="mt-2"
           />
           <template #panel="{ close }">
@@ -80,20 +102,23 @@
         </UPopover>
       </UFormGroup>
 
+      <!-- ISBN (optional) -->
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">ISBN</span>
         </template>
-        <UInput v-model="isbn" class="mt-2" placeholder="ISBN" />
+        <UInput v-model="isbn" class="mt-2" />
       </UFormGroup>
 
+      <!-- ISSN (optional) -->
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">ISSN</span>
         </template>
-        <UInput v-model="issn" class="mt-2" placeholder="ISSN" />
+        <UInput v-model="issn" class="mt-2" />
       </UFormGroup>
 
+      <!-- Theme (optional) -->
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Jurisdiction</span>
@@ -109,7 +134,7 @@
         <template #label>
           <span class="label">Theme</span>
         </template>
-        <UInput v-model="theme" class="mt-2" placeholder="Theme" />
+        <UInput v-model="theme" class="mt-2" />
       </UFormGroup>
     </div>
   </BaseDetailLayout>
@@ -123,7 +148,7 @@
     :saveModalErrors="saveModalErrors"
     :name="title"
     :specialists="specialists"
-    :date="publicationDate"
+    :date="publicationDate || null"
     :pdfFile="pdfFile"
     :link="url"
     @update:email="(val) => (email = val)"
@@ -135,29 +160,34 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useHead, useRouter } from '#imports'
 import { z } from 'zod'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import DatePicker from '@/components/ui/DatePicker.vue'
 import CancelModal from '@/components/ui/CancelModal.vue'
 import SaveModal from '@/components/ui/SaveModal.vue'
+import SearchFilters from '@/components/search-results/SearchFilters.vue'
 import { format } from 'date-fns'
 
 const config = useRuntimeConfig()
 
-// Form fields (all optional)
+// Form fields
 const author = ref('')
 const title = ref('')
 const publicationTitle = ref('')
 const publicationYear = ref('')
 const url = ref('')
 const doi = ref('')
-const publicationDate = ref(new Date())
+const publicationDate = ref(null)
 const isbn = ref('')
 const issn = ref('')
 const jurisdiction = ref('')
 const theme = ref('')
+
+// Jurisdiction selector
+const selectedJurisdiction = ref([])
+const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
 
 // For SaveModal parity
 const specialists = ref([''])
@@ -170,19 +200,51 @@ const token = ref('')
 
 watch(token, () => {})
 
-// Validation (only validate formats if provided)
+// Load jurisdictions similar to other pages
+const loadJurisdictions = async () => {
+  try {
+    const response = await fetch(
+      `${config.public.apiBaseUrl}/search/full_table`,
+      {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
+      }
+    )
+
+    if (!response.ok) throw new Error('Failed to load jurisdictions')
+
+    const jurisdictionsData = await response.json()
+    jurisdictionOptions.value = [
+      { label: 'Select Jurisdiction' },
+      ...jurisdictionsData
+        .filter((entry) => entry['Irrelevant?'] === false)
+        .map((entry) => ({ label: entry.Name }))
+        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
+    ]
+  } catch (error) {
+    console.error('Error loading jurisdictions:', error)
+  }
+}
+
+onMounted(loadJurisdictions)
+
+// Validation (required fields only)
 const formSchema = z.object({
-  url: z
+  author: z
     .string()
-    .url({ message: 'URL must be valid and start with "https://"' })
-    .optional()
-    .or(z.literal('')),
+    .min(1, { message: 'Author is required' })
+    .min(3, { message: 'Author must be at least 3 characters long' }),
+  title: z
+    .string()
+    .min(1, { message: 'Title is required' })
+    .min(3, { message: 'Title must be at least 3 characters long' }),
   publication_year: z
     .string()
-    .regex(/^\d{4}$/u, { message: 'Year must be 4 digits (e.g., 2024)' })
-    .optional()
-    .or(z.literal('')),
-  doi: z.string().optional().or(z.literal('')),
+    .regex(/^\d{4}$/u, { message: 'Year must be 4 digits (e.g., 2024)' }),
 })
 
 const errors = ref({})
@@ -199,9 +261,9 @@ useHead({ title: 'New Literature — CoLD' })
 function validateForm() {
   try {
     const formData = {
-      url: url.value,
+      author: author.value,
+      title: title.value,
       publication_year: publicationYear.value,
-      doi: doi.value,
     }
     formSchema.parse(formData)
     errors.value = {}
@@ -230,17 +292,22 @@ function confirmCancel() {
 
 function handleNewSave() {
   const payload = {
-    author: author.value || undefined,
-    title: title.value || undefined,
+    author: author.value,
+    title: title.value,
     publication_title: publicationTitle.value || undefined,
-    publication_year:
-      (publicationYear.value && Number(publicationYear.value)) || undefined,
+    publication_year: Number(publicationYear.value),
     url: url.value || undefined,
     doi: doi.value || undefined,
-    publication_date: format(publicationDate.value, 'yyyy-MM-dd'),
+    publication_date:
+      publicationDate && publicationDate.value
+        ? format(publicationDate.value, 'yyyy-MM-dd')
+        : undefined,
     isbn: isbn.value || undefined,
     issn: issn.value || undefined,
-    jurisdiction: jurisdiction.value || undefined,
+    jurisdiction:
+      (Array.isArray(selectedJurisdiction.value) &&
+        selectedJurisdiction.value[0]?.label) ||
+      undefined,
     theme: theme.value || undefined,
     // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
