@@ -11,7 +11,7 @@
     <div class="p-6">
       <h2 class="text-lg font-bold mb-4 text-center">Ready to submit?</h2>
       <p class="mb-6 text-center">
-        Please provide your contact information to complete the submission.
+        Please provide your contact information to complete your submission.
       </p>
 
       <!-- Email Field -->
@@ -45,7 +45,7 @@
         />
       </UFormGroup>
 
-      <div class="mb-4 w-full">
+      <div class="mb-8 w-full">
         <form class="w-full" @submit.prevent="onSubmit">
           <NuxtTurnstile
             ref="turnstile"
@@ -56,12 +56,20 @@
         </form>
       </div>
 
-      <div class="flex justify-center gap-4">
-        <UButton color="primary" :disabled="!tokenProxy" @click="handleSubmit"
-          >Submit</UButton
+      <div class="flex flex-col items-center gap-2">
+        <h2
+          class="submit-heading cursor-pointer flex items-center mb-4 p-0"
+          :aria-disabled="!tokenProxy ? 'true' : 'false'"
+          @click.prevent="tokenProxy ? handleSubmit() : null"
         >
-        <UButton color="gray" variant="outline" @click="closeModal"
-          >Cancel</UButton
+          Submit Your Data Now
+          <UIcon
+            name="i-material-symbols:article-shortcut-outline"
+            class="inline-block ml-1 text-[1.2em] relative"
+          />
+        </h2>
+        <NuxtLink class="gray-link cursor-pointer" @click="closeModal"
+          >Go Back</NuxtLink
         >
       </div>
     </div>
@@ -274,5 +282,10 @@ function handleSubmit() {
 .turnstile-full :deep(*) {
   max-width: 100% !important;
   width: 100% !important;
+}
+
+/* Local purple heading for the Submit action */
+.submit-heading {
+  color: var(--color-cold-purple) !important;
 }
 </style>
