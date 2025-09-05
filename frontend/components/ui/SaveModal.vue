@@ -20,7 +20,7 @@
           v-model="emailProxy"
           type="email"
           placeholder="Your email address"
-          class="mt-2"
+          class="mt-2 cold-input"
         />
       </UFormGroup>
 
@@ -32,7 +32,7 @@
         <UTextarea
           v-model="commentsProxy"
           placeholder="Optional comments about your submission"
-          class="mt-2"
+          class="mt-2 cold-input"
           :rows="3"
         />
       </UFormGroup>
