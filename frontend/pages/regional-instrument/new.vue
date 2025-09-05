@@ -33,7 +33,7 @@
         <template #label>
           <span class="label">URL</span>
         </template>
-        <UInput v-model="url" class="mt-2 cold-input" />
+        <UInput v-model="url" placeholder="https://…" class="mt-2 cold-input" />
       </UFormGroup>
 
       <UFormGroup size="lg" class="mt-8">

@@ -78,7 +78,11 @@
           <span class="label">Link</span>
           <InfoTooltip :text="tooltipInternationalInstrumentLink" />
         </template>
-        <UInput v-model="link" class="mt-2 cold-input" />
+        <UInput
+          v-model="link"
+          class="mt-2 cold-input"
+          placeholder="https://…"
+        />
       </UFormGroup>
       <UFormGroup
         size="lg"

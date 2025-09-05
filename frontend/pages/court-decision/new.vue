@@ -62,7 +62,11 @@
         <template #label>
           <span class="label">Official source (URL)</span>
         </template>
-        <UInput v-model="officialSourceUrl" class="mt-2 cold-input" />
+        <UInput
+          v-model="officialSourceUrl"
+          placeholder="https://…"
+          class="mt-2 cold-input"
+        />
       </UFormGroup>
 
       <UFormGroup
