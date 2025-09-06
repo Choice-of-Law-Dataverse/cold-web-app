@@ -43,7 +43,7 @@ defineProps({
 })
 
 const route = useRoute()
-const { jurisdictionOptions, loadJurisdictions } = useJurisdictionComparison()
+const { data: jurisdictionOptions } = useJurisdictionOptions()
 
 // Get the ISO3 code from the route params
 const iso3Code = computed(() => {
@@ -77,15 +77,6 @@ const comparisonUrl = computed(() => {
   return `/jurisdiction-comparison/${codes.join('+')}`
 })
 
-// Load jurisdictions when component mounts
-onMounted(() => {
-  if (
-    jurisdictionOptions.value.length === 1 &&
-    jurisdictionOptions.value[0].label === 'Loading…'
-  ) {
-    loadJurisdictions()
-  }
-})
 </script>
 
 <style scoped>

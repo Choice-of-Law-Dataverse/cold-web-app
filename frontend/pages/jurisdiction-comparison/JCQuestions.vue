@@ -231,9 +231,10 @@ watch([isOpen, isOpenMobile], ([desktop, mobile]) => {
   }
 })
 
+const { data: jurisdictionOptions } = useJurisdictionOptions()
+
 // Use shared jurisdiction comparison state
-const { jurisdictionOptions, jurisdictionFilters, loadJurisdictions } =
-  useJurisdictionComparison()
+const { jurisdictionFilters } = useJurisdictionComparison()
 
 // Track errored flag images
 const erroredFlags = ref({})
@@ -368,7 +369,7 @@ const loadAccordionData = async () => {
 
   try {
     // Load jurisdictions and questions in parallel
-    await Promise.all([loadJurisdictions(), fetchQuestions()])
+    await Promise.all([fetchQuestions()])
     // Then load answers (which depends on jurisdictions being loaded)
     await fetchAllAnswers()
   } finally {
@@ -420,8 +421,6 @@ const sampleData = computed(() => {
 
 // Initialization - only load jurisdictions initially, not questions/answers
 onMounted(async () => {
-  await loadJurisdictions()
-
   // If showCaret is false, immediately load data since accordion should be open
   if (!props.showCaret) {
     hasBeenOpened.value = true

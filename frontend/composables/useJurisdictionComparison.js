@@ -23,33 +23,6 @@ export function useJurisdictionComparison() {
     })
   })
 
-  // Data fetching function
-  const loadJurisdictions = async () => {
-    loadingJurisdictions.value = true
-    try {
-      const { useApiClient } = await import('@/composables/useApiClient')
-      const { apiClient } = useApiClient()
-      const data = await apiClient('/search/full_table', {
-        body: { table: 'Jurisdictions', filters: [] },
-      })
-      const options = data
-        .filter((entry) => entry['Irrelevant?'] === false)
-        .map((entry) => ({
-          label: entry.Name,
-          alpha3Code: entry['Alpha-3 Code'],
-          avatar: entry['Alpha-3 Code']
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
-            : undefined,
-        }))
-        .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
-      jurisdictionOptions.value = options
-    } catch (error) {
-      console.error('Error loading jurisdictions:', error)
-    } finally {
-      loadingJurisdictions.value = false
-    }
-  }
-
   // Function to set initial filter values
   const setInitialFilters = (options, initialCountries = []) => {
     if (initialCountries.length === 3) {
@@ -94,7 +67,6 @@ export function useJurisdictionComparison() {
     selectedJurisdictionCodes,
 
     // Methods
-    loadJurisdictions,
     setInitialFilters,
   }
 }

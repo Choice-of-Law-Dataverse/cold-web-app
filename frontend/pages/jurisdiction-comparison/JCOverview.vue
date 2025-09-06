@@ -223,12 +223,12 @@ import { useJurisdictionComparison } from '@/composables/useJurisdictionComparis
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 import { useApiClient } from '@/composables/useApiClient'
 
+const {data: jurisdictionOptions} = useJurisdictionOptions()
+
 // Use shared jurisdiction comparison state
 const {
-  jurisdictionOptions,
   jurisdictionFilters,
   selectedJurisdictionCodes,
-  loadJurisdictions,
 } = useJurisdictionComparison()
 
 // Reactive state for legal families
@@ -410,6 +410,12 @@ watch(
       const jurisdictionName = filter?.value?.value?.[0]?.label
       const oldJurisdictionName = oldFilters?.[index]?.value?.value?.[0]?.label
 
+      console.log(
+        `watch`,
+        jurisdictionName,
+        oldJurisdictionName
+      )
+
       if (
         jurisdictionName &&
         jurisdictionName !== 'All Jurisdictions' &&
@@ -435,10 +441,6 @@ function getFlagUrl(label) {
   return `https://choiceoflaw.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
 }
 
-// Initialization
-onMounted(async () => {
-  await loadJurisdictions()
-})
 </script>
 
 <style scoped>
