@@ -341,8 +341,8 @@ const getSampleDataForColumn = (columnIndex) => {
   // Fetch court decisions if we have a jurisdiction name
   if (
     hasValidJurisdiction &&
-    !courtDecisionsCounts.value[jurisdictionName] &&
-    !loadingCourtDecisions.value[jurisdictionName]
+    courtDecisionsCounts.value[jurisdictionName] === undefined &&
+    loadingCourtDecisions.value[jurisdictionName] === undefined
   ) {
     fetchCourtDecisions(jurisdictionName)
   }
@@ -350,8 +350,8 @@ const getSampleDataForColumn = (columnIndex) => {
   // Fetch domestic instruments if we have a jurisdiction name
   if (
     hasValidJurisdiction &&
-    !domesticInstrumentsCounts.value[jurisdictionName] &&
-    !loadingDomesticInstruments.value[jurisdictionName]
+    domesticInstrumentsCounts.value[jurisdictionName] === undefined &&
+    loadingDomesticInstruments.value[jurisdictionName] === undefined
   ) {
     fetchDomesticInstruments(jurisdictionName)
   }
