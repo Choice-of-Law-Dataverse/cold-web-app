@@ -1,21 +1,24 @@
-import { computed } from 'vue'
-import { useRecordDetails } from '@/composables/useRecordDetails'
+import { useFullTable } from '@/composables/useFullTable'
 
 export function useJurisdiction(iso3: Ref<string>) {
-  return useRecordDetails(
-    computed(() => 'Jurisdictions'),
-    computed(() => iso3.value && iso3.value.toUpperCase()),
+  return useFullTable (
+    'Jurisdictions',
     {
-      select: (data) => {
+      select: (data) => 
+        {
+        const record = data?.find(r => r?.['Alpha-3 Code'] === iso3.value.toLocaleUpperCase())
+
+        if(!record) return null
+
         return {
-          ...data,
-          Name: data?.Name || 'N/A',
-          'Jurisdiction Summary': data?.['Jurisdiction Summary'] || 'N/A',
+          ...record,
+          Name: record?.Name || 'N/A',
+          'Jurisdiction Summary': record?.['Jurisdiction Summary'] || 'N/A',
           'Jurisdictional Differentiator':
-            data?.['Jurisdictional Differentiator'] || 'N/A',
-          'Legal Family': data?.['Legal Family'] || 'N/A',
-          Specialists: data?.Specialists || '',
-          Literature: data?.Literature,
+            record?.['Jurisdictional Differentiator'] || 'N/A',
+          'Legal Family': record?.['Legal Family'] || 'N/A',
+          Specialists: record?.Specialists || '',
+          Literature: record?.Literature,
         }
       }
     }
