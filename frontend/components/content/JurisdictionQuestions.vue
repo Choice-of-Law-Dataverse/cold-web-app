@@ -189,22 +189,19 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, useAttrs } from 'vue'
-import { useQuestions } from '@/composables/useQuestions'
+import { ref, computed, useAttrs } from 'vue'
+import { useRoute } from 'vue-router'
+import { useQuestionsWithAnswers } from '@/composables/useQuestionsWithAnswers'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
-
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 
-const questionsResult = useQuestions()
+const route = useRoute()
 
 const {
-  questionsData,
-  processedQuestionsData,
+  data: questionWithAnswersData,
   loading,
-  error,
   answersLoading,
-  fetchQuestions,
-} = questionsResult
+} = useQuestionsWithAnswers(computed(() => route?.params?.id))
 
 const attrs = useAttrs()
 const jurisdictionName = computed(() => {
@@ -212,17 +209,21 @@ const jurisdictionName = computed(() => {
   return name ? `for ${name}` : ''
 })
 
-onMounted(async () => {
-  await fetchQuestions()
-})
+// Track expanded state for each row by ID
+const expandedRows = ref(new Set())
 
-// Use a ref so we can mutate expanded state reactively
-const rows = ref([])
-
-onMounted(async () => {
-  await fetchQuestions()
-  // Deep clone processedQuestionsData so each row is a unique object
-  rows.value = processedQuestionsData.value.map((row) => ({ ...row }))
+// Create rows with computed expanded state
+const rows = computed(() => {
+  if (
+    !questionWithAnswersData.value ||
+    !Array.isArray(questionWithAnswersData.value)
+  ) {
+    return []
+  }
+  return questionWithAnswersData.value.map((row) => ({
+    ...row,
+    expanded: expandedRows.value.has(row.id),
+  }))
 })
 
 const columns = [
@@ -252,19 +253,28 @@ const visibleRows = computed(() => {
 })
 
 function toggleExpand(row) {
-  row.expanded = !row.expanded
-  if (!row.expanded) {
-    // Recursively collapse all descendants
-    collapseDescendants(row.id)
+  const newExpandedRows = new Set(expandedRows.value)
+
+  if (newExpandedRows.has(row.id)) {
+    // Collapse this row and all descendants
+    newExpandedRows.delete(row.id)
+    collapseDescendants(row.id, newExpandedRows)
+  } else {
+    // Expand this row
+    newExpandedRows.add(row.id)
   }
+
+  expandedRows.value = newExpandedRows
 }
 
-function collapseDescendants(parentId) {
+function collapseDescendants(parentId, expandedSet) {
+  if (!rows.value) return
+
   for (const child of rows.value) {
     if (child.parentId === parentId) {
       if (child.hasExpand) {
-        child.expanded = false
-        collapseDescendants(child.id)
+        expandedSet.delete(child.id)
+        collapseDescendants(child.id, expandedSet)
       }
     }
   }

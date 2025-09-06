@@ -180,6 +180,8 @@ import { handleImageError } from '@/utils/handleImageError'
 // removed tooltip content import
 import CiteModal from '@/components/ui/CiteModal.vue'
 
+defineEmits(['save', 'open-save-modal', 'open-cancel-modal'])
+
 const route = useRoute()
 const router = useRouter()
 const pdfExists = ref(false)

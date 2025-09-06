@@ -26,7 +26,7 @@
               showAvatars &&
               isObjectOptions &&
               option.avatar &&
-              !erroredAvatars[option.label]
+              !erroredAvatars?.[option.label]
             "
           >
             <UAvatar
@@ -158,7 +158,7 @@ import { handleImageError } from '@/utils/handleImageError'
 // Reactive object for errored avatars
 const erroredAvatars = reactive({})
 
-const isObjectOptions = computed(() => typeof props.options[0] === 'object')
+const isObjectOptions = computed(() => typeof props.options?.[0] === 'object')
 
 // computed wrapper to ensure selected options are the option objects from props.options
 const internalValue = computed({

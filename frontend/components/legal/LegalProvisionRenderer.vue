@@ -43,7 +43,7 @@ import {
   generateLegalProvisionLink,
   parseLegalProvisionLink,
 } from '@/utils/legal'
-import { useRuntimeConfig } from '#imports'
+import { useRecordDetailsList } from '@/composables/useRecordDetails'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 
 const props = defineProps({
@@ -99,45 +99,42 @@ const processedProvisions = computed(() =>
   })
 )
 
-const config = useRuntimeConfig()
-const instrumentTitles = ref({})
+// Build a list of unique instrument IDs to fetch titles for
+const instrumentIds = computed(() => {
+  const unique = new Set(
+    processedProvisions.value.map((p) => p.instrumentId).filter(Boolean)
+  )
+  return Array.from(unique)
+})
 
-async function fetchInstrumentTitle(instrumentId) {
-  if (!instrumentId || instrumentTitles.value[instrumentId]) return
-  const jsonPayload = { table: 'Domestic Instruments', id: instrumentId }
-  try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonPayload),
-    })
-    if (!response.ok) throw new Error('Failed to fetch instrument title')
-    const data = await response.json()
+// Fetch full records via composable (Domestic Instruments), pick titles locally
+const { dataMap: recordMap, isLoading } = useRecordDetailsList(
+  computed(() => 'Domestic Instruments'),
+  instrumentIds
+)
+
+const instrumentTitles = computed(() => {
+  const map = {}
+  instrumentIds.value.forEach((id) => {
+    const rec = recordMap.value?.[id] || {}
     const title =
-      data['Abbreviation'] || data['Title (in English)'] || instrumentId
-    instrumentTitles.value[instrumentId] = title
-  } catch (err) {
-    console.error('Error fetching instrument title:', err)
-    instrumentTitles.value[instrumentId] = instrumentId
-  }
-}
+      rec['Abbreviation'] ||
+      rec['Title (in English)'] ||
+      rec['Title'] ||
+      String(id)
+    map[id] = title
+  })
+  return map
+})
 
 const formatArticle = (article) =>
   article ? article.replace(/(Art\.)(\d+)/, '$1 $2') : ''
 
-// Watch processed provisions and fetch missing instrument titles
+// Trigger initial computation of IDs
 watch(
   processedProvisions,
-  (newProvisions) => {
-    const uniqueIds = new Set(newProvisions.map((p) => p.instrumentId))
-    uniqueIds.forEach((id) => {
-      if (!instrumentTitles.value[id]) {
-        fetchInstrumentTitle(id)
-      }
-    })
+  () => {
+    /* IDs are computed reactively; useRecordDetailsList handles fetching */
   },
   { immediate: true }
 )

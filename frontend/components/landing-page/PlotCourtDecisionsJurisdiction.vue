@@ -10,29 +10,24 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import LoadingLandingPageCard from '@/components/layout/LoadingLandingPageCard.vue'
+import { useJurisdictionChart } from '@/composables/useJurisdictionChart'
 
-const chartData = ref(null)
+const plotlyData = ref(null)
 const chartLayout = ref(null)
 const chartConfig = ref(null)
-
 const plotlyContainer = ref(null)
 
-const isLoading = ref(true)
+const { data, isLoading } = useJurisdictionChart()
 
-onMounted(async () => {
+async function setupChart(values) {
+  if (!values || !plotlyContainer.value) return
+
   // Dynamically import Plotly only on the client
   const Plotly = await import('plotly.js-dist-min')
 
-  // Fetch JSON data
-  const response = await fetch('count_jurisdictions.json')
-  const jurisdictionData = await response.json()
-
-  // Transform the JSON data for Plotly
-  const xValues = jurisdictionData.map((item) => item.n) // Extract 'n' values
-  const yValues = jurisdictionData.map((item) => item.jurisdiction) // Extract 'Jurisdiction.Names'
-  const links = jurisdictionData.map((item) => item.url) // Extract URLs (add this to your JSON)
+  const { xValues, yValues, links } = values
 
   // Fetch the Tailwind color from CSS variables
   const coldGreen = getComputedStyle(document.documentElement)
@@ -55,7 +50,7 @@ onMounted(async () => {
   const initialColors = Array(xValues.length).fill(coldGreen)
 
   // Define the bar chart data
-  chartData.value = [
+  plotlyData.value = [
     {
       x: xValues, // Use the 'n' values for x-axis
       y: yValues, // Use the 'Jurisdiction.Names' for y-axis
@@ -73,7 +68,7 @@ onMounted(async () => {
   chartLayout.value = {
     dragmode: false, // Disable drag to zoom
     bargap: 0.45, // Adjust spacing between bars (smaller value = thicker bars)
-    height: chartData.value[0].y.length * 45, // Dynamically adjust chart height for y-axis labels
+    height: plotlyData.value[0].y.length * 45, // Dynamically adjust chart height for y-axis labels
     margin: {
       l: 150, // Increase left margin to accommodate long country names
       r: 20, // Right margin
@@ -107,55 +102,59 @@ onMounted(async () => {
   }
 
   // Render the chart
-  if (plotlyContainer.value) {
-    const plot = await Plotly.newPlot(
-      plotlyContainer.value,
-      chartData.value,
-      chartLayout.value,
-      chartConfig.value
-    )
+  const plot = await Plotly.newPlot(
+    plotlyContainer.value,
+    plotlyData.value,
+    chartLayout.value,
+    chartConfig.value
+  )
 
-    // Get the drag layer for pointer adjustments
-    const dragLayer = document.getElementsByClassName('nsewdrag')[0]
+  // Get the drag layer for pointer adjustments
+  const dragLayer = document.getElementsByClassName('nsewdrag')[0]
 
-    // Add hover effect to change bar color
-    // Add hover effect to change the pointer style
-    plot.on('plotly_hover', function (data) {
-      if (dragLayer) {
-        dragLayer.style.cursor = 'pointer' // Change cursor to pointer
-      }
-      // Change bar color on hover
-      const colors = [...data.points[0].data.marker.color] // Copy current colors
-      const pointIndex = data.points[0].pointNumber // Index of the hovered bar
-      colors[pointIndex] = coldGreenAlpha // Set the hover color for the specific bar
-      const update = { 'marker.color': [colors] } // Create the update payload
-      Plotly.restyle(plotlyContainer.value, update) // Apply the hover color
-    })
+  // Add hover effect to change bar color
+  // Add hover effect to change the pointer style
+  plot.on('plotly_hover', function (data) {
+    if (dragLayer) {
+      dragLayer.style.cursor = 'pointer' // Change cursor to pointer
+    }
+    // Change bar color on hover
+    const colors = [...data.points[0].data.marker.color] // Copy current colors
+    const pointIndex = data.points[0].pointNumber // Index of the hovered bar
+    colors[pointIndex] = coldGreenAlpha // Set the hover color for the specific bar
+    const update = { 'marker.color': [colors] } // Create the update payload
+    Plotly.restyle(plotlyContainer.value, update) // Apply the hover color
+  })
 
-    // Reset pointer style on unhover
-    plot.on('plotly_unhover', function () {
-      if (dragLayer) {
-        dragLayer.style.cursor = 'default' // Reset cursor to default
-      }
-      // Reset bar colors on unhover
-      const update = { 'marker.color': [initialColors] } // Reset to initial colors
-      Plotly.restyle(plotlyContainer.value, update)
-    })
+  // Reset pointer style on unhover
+  plot.on('plotly_unhover', function () {
+    if (dragLayer) {
+      dragLayer.style.cursor = 'default' // Reset cursor to default
+    }
+    // Reset bar colors on unhover
+    const update = { 'marker.color': [initialColors] } // Reset to initial colors
+    Plotly.restyle(plotlyContainer.value, update)
+  })
 
-    // Add click event for navigation
-    plot.on('plotly_click', (data) => {
-      const clickedUrl = data.points[0].customdata
-      if (clickedUrl) {
-        navigateTo(clickedUrl)
-      }
-    })
+  // Add click event for navigation
+  plot.on('plotly_click', (data) => {
+    const clickedUrl = data.points[0].customdata
+    if (clickedUrl) {
+      navigateTo(clickedUrl)
+    }
+  })
+}
 
-    // Update loading state
-    isLoading.value = false
-  } else {
-    console.error('Plotly container is not ready')
-  }
-})
+// Watch for data to be available and setup the chart
+watch(
+  () => data.value,
+  (newData) => {
+    if (newData) {
+      setupChart(newData)
+    }
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped>

@@ -19,8 +19,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { useRuntimeConfig } from '#imports'
+import { computed } from 'vue'
+import { useRecordDetailsList } from '@/composables/useRecordDetails'
 import BaseLegalRenderer from './BaseLegalRenderer.vue'
 import { NuxtLink } from '#components'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
@@ -36,47 +36,33 @@ const props = defineProps({
   },
 })
 
-const config = useRuntimeConfig()
-const caseTitles = ref({})
+// Compute unique IDs and fetch titles via composable
+const decisionIds = computed(() => {
+  const items = Array.isArray(props.value) ? props.value : [props.value]
+  const s = new Set(items.filter(Boolean))
+  return Array.from(s)
+})
 
-// Fetch the title of a court decision given its ID.
-async function fetchCaseTitle(caseId) {
-  if (!caseId || caseTitles.value[caseId]) return
-  const jsonPayload = { table: 'Court Decisions', id: caseId }
-  try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(jsonPayload),
-    })
-    if (!response.ok) throw new Error('Failed to fetch case title')
-    const data = await response.json()
-    // If 'Case Title' is not available or equals "NA", use 'Case Citation'
-    const title = data['Case Title']
-    const finalTitle =
-      title && title !== 'NA' ? title : data['Case Citation'] || caseId
-    caseTitles.value[caseId] = finalTitle
-  } catch (err) {
-    console.error('Error fetching case title:', err)
-    caseTitles.value[caseId] = caseId
-  }
-}
-
-// Watch the items and fetch titles for each case ID.
-watch(
-  () => props.value,
-  (newValue) => {
-    const items = Array.isArray(newValue) ? newValue : [newValue]
-    const uniqueIds = new Set(items)
-    uniqueIds.forEach((id) => {
-      fetchCaseTitle(id)
-    })
-  },
-  { immediate: true }
+const { data: decisions } = useRecordDetailsList(
+  computed(() => 'Court Decisions'),
+  decisionIds
 )
+
+const caseTitles = computed(() => {
+  const map = {}
+  decisionIds.value.forEach((id) => {
+    const rec = decisions.value?.[id] || {}
+    const titleCandidate = rec['Case Title']
+    const finalTitle =
+      titleCandidate &&
+      titleCandidate !== 'NA' &&
+      titleCandidate !== 'Not found'
+        ? titleCandidate
+        : rec['Case Citation'] || String(id)
+    map[id] = finalTitle
+  })
+  return map
+})
 
 // Helper to generate the link URL for a court decision.
 function generateCourtDecisionLink(caseId) {

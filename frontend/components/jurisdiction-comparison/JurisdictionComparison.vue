@@ -184,23 +184,9 @@ async function fetchFilteredTableData(filters) {
   }
 
   try {
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      }
-    )
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`)
-    }
-
-    const data = await response.json()
+    const { useApiClient } = await import('@/composables/useApiClient')
+    const { apiClient } = useApiClient()
+    const data = await apiClient('/search/full_table', { body: payload })
 
     return data.map((item) => ({
       ...item,
@@ -231,28 +217,11 @@ async function fetchTableData(jurisdiction) {
 // Fetch jurisdictions from the text file
 async function fetchJurisdictions() {
   try {
-    const config = useRuntimeConfig() // Ensure config is accessible
-
-    const jsonPayload = {
-      table: 'Jurisdictions',
-      filters: [],
-    }
-
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(jsonPayload),
-      }
-    )
-
-    if (!response.ok) throw new Error('Failed to load jurisdictions')
-
-    const data = await response.json()
+    const { useApiClient } = await import('@/composables/useApiClient')
+    const { apiClient } = useApiClient()
+    const data = await apiClient('/search/full_table', {
+      body: { table: 'Jurisdictions', filters: [] },
+    })
 
     // Filter out jurisdictions where "Irrelevant?" is explicitly true
     const relevantJurisdictions = data.filter(

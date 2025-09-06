@@ -9,14 +9,15 @@
         </NuxtLink>
       </li>
     </ul>
+    <span v-else-if="isLoading">Loading related questions...</span>
     <span v-else>No related questions.</span>
   </div>
 </template>
 
 <script setup>
-import { computed, toRefs, ref, watchEffect } from 'vue'
-import { useRuntimeConfig } from '#imports'
+import { computed, toRefs } from 'vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import { useRelatedQuestions } from '@/composables/useRelatedQuestions'
 
 const props = defineProps({
   label: { type: String, default: 'Related Questions' },
@@ -27,15 +28,10 @@ const props = defineProps({
 })
 
 const { jurisdictionCode, questions, emptyValueBehavior } = toRefs(props)
-const config = useRuntimeConfig()
 
-const questionList = computed(() =>
-  questions.value
-    ? questions.value
-        .split(',')
-        .map((q) => q.trim())
-        .filter((q) => q)
-    : []
+const { questionList, questionLabels, isLoading } = useRelatedQuestions(
+  jurisdictionCode,
+  questions
 )
 
 const shouldDisplay = computed(() => {
@@ -46,41 +42,5 @@ const shouldDisplay = computed(() => {
     return false
   }
   return true
-})
-
-const questionLabels = ref([])
-
-watchEffect(async () => {
-  // Only fetch if there are questions and a jurisdiction code
-  if (!jurisdictionCode.value || !questionList.value.length) {
-    questionLabels.value = []
-    return
-  }
-  // Fetch all question labels in parallel
-  const results = await Promise.all(
-    questionList.value.map(async (q) => {
-      try {
-        const response = await fetch(
-          `${config.public.apiBaseUrl}/search/details`,
-          {
-            method: 'POST',
-            headers: {
-              authorization: `Bearer ${config.public.FASTAPI}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              table: 'Answers',
-              id: `${jurisdictionCode.value}_${q}`,
-            }),
-          }
-        )
-        const data = await response.json()
-        return data.Question || `${jurisdictionCode.value}_${q}`
-      } catch (e) {
-        return `${jurisdictionCode.value}_${q}`
-      }
-    })
-  )
-  questionLabels.value = results
 })
 </script>

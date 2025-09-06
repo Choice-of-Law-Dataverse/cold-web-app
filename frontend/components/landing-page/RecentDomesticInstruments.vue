@@ -10,7 +10,10 @@
         <LoadingLandingPageCard />
       </div>
       <template v-else>
-        <div v-for="(instrument, index) in domesticInstruments" :key="index">
+        <div
+          v-for="(instrument, index) in domesticInstruments.slice(0, 3)"
+          :key="index"
+        >
           <RouterLink :to="`/domestic-instrument/${instrument.ID}`">
             <UButton class="suggestion-button mt-8" variant="link">
               <img
@@ -44,43 +47,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRuntimeConfig } from '#app'
 import { RouterLink } from 'vue-router'
 import LoadingLandingPageCard from '@/components/layout/LoadingLandingPageCard.vue'
+import { useDomesticInstruments } from '@/composables/useDomesticInstruments'
 
-const domesticInstruments = ref([])
-const isLoading = ref(true) // Added loading state
-const config = useRuntimeConfig()
-
-async function fetchDomesticInstruments() {
-  try {
-    const payload = { table: 'Domestic Instruments', filters: [] }
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      }
-    )
-    if (!response.ok) throw new Error('Failed to load data')
-    const instrumentsData = await response.json()
-    // Convert Date to number, sort descending and take the n most recent
-    instrumentsData.sort((a, b) => Number(b.Date) - Number(a.Date))
-    domesticInstruments.value = instrumentsData.slice(0, 3)
-  } catch (error) {
-    console.error(error)
-    domesticInstruments.value = []
-  } finally {
-    isLoading.value = false // Set loading to false once finished
-  }
-}
-
-onMounted(fetchDomesticInstruments)
+const { data: domesticInstruments, isLoading } = useDomesticInstruments({
+  filterCompatible: false,
+})
 </script>
 
 <style scoped></style>

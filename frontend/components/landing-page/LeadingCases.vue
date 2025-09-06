@@ -7,7 +7,10 @@
         <LoadingLandingPageCard />
       </div>
       <template v-else>
-        <div v-for="(decision, index) in courtDecisions" :key="index">
+        <div
+          v-for="(decision, index) in leadingCases?.slice(0, 3)"
+          :key="index"
+        >
           <RouterLink :to="`/court-decision/${decision.ID}`">
             <UButton class="suggestion-button mt-8" variant="link">
               <img
@@ -28,7 +31,7 @@
         </div>
         <div class="mt-8">
           <ShowMoreLess
-            v-if="allDecisions.length > 3"
+            v-if="leadingCases.length > 3"
             :isExpanded="showAll"
             label="leading cases"
             @update:isExpanded="showAll = $event"
@@ -42,65 +45,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import { useRuntimeConfig } from '#app'
 import { RouterLink } from 'vue-router'
 import LoadingLandingPageCard from '@/components/layout/LoadingLandingPageCard.vue'
 import ShowMoreLess from '@/components/ui/ShowMoreLess.vue'
+import { useLeadingCases } from '@/composables/useLeadingCases'
+import { formatYear } from '@/utils/format'
 
-const courtDecisions = ref([])
-const allDecisions = ref([])
-const isLoading = ref(true)
 const showAll = ref(false)
-const config = useRuntimeConfig()
 
-async function fetchCourtDecisions() {
-  try {
-    const payload = {
-      table: 'Court Decisions',
-      filters: [
-        {
-          column: 'Case Rank',
-          value: 10,
-        },
-      ],
-    }
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      }
-    )
-    if (!response.ok) throw new Error('Failed to load data')
-    const decisionsData = await response.json()
-    decisionsData.sort(
-      (a, b) =>
-        formatYear(b['Publication Date ISO']) -
-        formatYear(a['Publication Date ISO'])
-    )
-    allDecisions.value = decisionsData
-    courtDecisions.value = decisionsData.slice(0, 3)
-  } catch (error) {
-    console.error(error)
-    courtDecisions.value = []
-    allDecisions.value = []
-  } finally {
-    isLoading.value = false
-  }
-}
-
-watch(showAll, (val) => {
-  courtDecisions.value = val
-    ? allDecisions.value
-    : allDecisions.value.slice(0, 3)
-})
-
-onMounted(fetchCourtDecisions)
+const { data: leadingCases, isLoading } = useLeadingCases()
 </script>
 
 <style scoped>

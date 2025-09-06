@@ -71,15 +71,14 @@ const props = defineProps({
 const router = useRouter()
 const route = useRoute()
 
+const { data: jurisdictionOptions, isLoading: loadingJurisdictions } = useJurisdictionOptions()
+
 // Use shared jurisdiction comparison state
 const {
   currentJurisdictionFilter1,
   currentJurisdictionFilter2,
   currentJurisdictionFilter3,
-  jurisdictionOptions,
-  loadingJurisdictions,
   jurisdictionFilters,
-  loadJurisdictions,
   setInitialFilters,
 } = useJurisdictionComparison()
 
@@ -130,8 +129,6 @@ watch(
 
 // Initialization
 onMounted(async () => {
-  await loadJurisdictions()
-
   // Set initial filters after loading
   if (jurisdictionOptions.value.length > 1) {
     setInitialFilters(jurisdictionOptions.value, props.initialCountries)

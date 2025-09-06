@@ -44,6 +44,11 @@ const props = defineProps({
     type: String,
     required: true,
   },
+  formattedTheme: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
 })
 </script>
 
