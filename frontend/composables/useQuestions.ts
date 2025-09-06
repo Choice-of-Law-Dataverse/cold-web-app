@@ -1,22 +1,19 @@
-import { computed } from 'vue'
+import { computed, type Ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { useApiClient } from '~/composables/useApiClient'
+import { useApiClient } from '@/composables/useApiClient'
+import type { FullTableRequest } from '~/types/api'
 
 const fetchQuestionsData = async () => {
   const { apiClient } = useApiClient()
 
-  const body = {
+  const body: FullTableRequest = {
     table: 'Questions',
   }
 
-  try {
-    return await apiClient('/search/full_table', { body })
-  } catch (err) {
-    throw new Error(`Failed to fetch questions: ${err.message}`)
-  }
+  return await apiClient('/search/full_table', { body })
 }
 
-export function useQuestions(jurisdiction) {
+export function useQuestions(jurisdiction: Ref<string>) {
   return useQuery({
     queryKey: ['questions', jurisdiction],
     queryFn: fetchQuestionsData,

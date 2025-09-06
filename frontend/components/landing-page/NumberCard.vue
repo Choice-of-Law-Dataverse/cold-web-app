@@ -33,9 +33,11 @@ const props = defineProps({
 })
 
 // Use the composable for data fetching
-const { data: number, isLoading: loading, error } = useNumberCount(
-  computed(() => props.tableName)
-)
+const {
+  data: number,
+  isLoading: loading,
+  error,
+} = useNumberCount(computed(() => props.tableName))
 </script>
 
 <style scoped>

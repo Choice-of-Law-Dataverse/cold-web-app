@@ -12,8 +12,7 @@ useSeoMeta({
   description: 'Choice of Law Dataverse',
   ogTitle: 'Choice of Law Dataverse',
   ogDescription: 'Navigate private international law issues with precision',
-  ogImage:
-    'https://choiceoflaw.blob.core.windows.net/assets/cold_og_image.svg',
+  ogImage: 'https://choiceoflaw.blob.core.windows.net/assets/cold_og_image.svg',
   ogUrl: 'www.cold.global',
   twitterTitle: 'Choice of Law Dataverse',
   twitterDescription:

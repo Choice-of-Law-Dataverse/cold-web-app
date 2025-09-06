@@ -7,8 +7,8 @@
         customClass,
         {
           'text-gray-500': loading,
-          'text-red-500': error
-        }
+          'text-red-500': error,
+        },
       ]"
     >
       <span v-if="loading">Loading...</span>
@@ -24,25 +24,25 @@ import { computed } from 'vue'
 const props = defineProps({
   to: {
     type: String,
-    required: true
+    required: true,
   },
   class: {
     type: String,
-    default: ''
+    default: '',
   },
   baseClass: {
     type: String,
-    default: 'result-value-small'
+    default: 'result-value-small',
   },
   loading: {
     type: Boolean,
-    default: false
+    default: false,
   },
   error: {
     type: String,
-    default: null
-  }
+    default: null,
+  },
 })
 
 const customClass = computed(() => props.class || '')
-</script> 
+</script>

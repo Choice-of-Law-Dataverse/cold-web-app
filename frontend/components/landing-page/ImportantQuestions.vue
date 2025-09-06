@@ -163,7 +163,7 @@
 
 <script setup>
 import { ref, onMounted, computed, nextTick, onUnmounted, watch } from 'vue'
-import { useQuestionCountries } from '~/composables/useQuestionCountries'
+import { useQuestionCountries } from '@/composables/useQuestionCountries'
 
 const answers = ['Yes', 'No']
 const regions = [
@@ -194,16 +194,17 @@ const suffixes = computed(() => props.questionSuffixes)
 const totalQuestions = computed(() => suffixes.value.length)
 const currentSuffix = computed(() => suffixes.value[currentIndex.value])
 
-const { data: questionData, isLoading, error } = useQuestionCountries(
-  currentSuffix,
-  selectedAnswer,
-  selectedRegion
-)
+const {
+  data: questionData,
+  isLoading,
+  error,
+} = useQuestionCountries(currentSuffix, selectedAnswer, selectedRegion)
 
 const countries = computed(() => questionData.value?.countries || [])
-const questionTitle = computed(() => questionData.value?.questionTitle || 'Missing Question')
+const questionTitle = computed(
+  () => questionData.value?.questionTitle || 'Missing Question'
+)
 // Carousel: accept an array of question suffixes to rotate through
-
 
 const prevQuestion = () => {
   currentIndex.value =
@@ -223,15 +224,19 @@ function selectRegion(region) {
 }
 
 // Watch for countries data changes and update countriesLines
-watch(countries, async (newCountries) => {
-  if (newCountries && newCountries.length > 0) {
-    await nextTick()
-    computeRows()
-    countriesLines.value = splitIntoLines(newCountries, rowsCount.value)
-  } else {
-    countriesLines.value = []
-  }
-}, { immediate: true })
+watch(
+  countries,
+  async (newCountries) => {
+    if (newCountries && newCountries.length > 0) {
+      await nextTick()
+      computeRows()
+      countriesLines.value = splitIntoLines(newCountries, rowsCount.value)
+    } else {
+      countriesLines.value = []
+    }
+  },
+  { immediate: true }
+)
 
 onMounted(() => {
   // compute rows on mount and on resize

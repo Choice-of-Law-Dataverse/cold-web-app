@@ -49,27 +49,24 @@
       <section id="related-court-decisions" class="section-gap">
         <span class="label">
           {{
-            keyLabelPairs.find(
-              (pair) => pair.key === 'Court Decisions ID'
-            )?.label || 'Related Court Decisions'
+            keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
+              ?.label || 'Related Court Decisions'
           }}
           <InfoTooltip
             v-if="
-              keyLabelPairs.find(
-                (pair) => pair.key === 'Court Decisions ID'
-              )?.tooltip
+              keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
+                ?.tooltip
             "
             :text="
-              keyLabelPairs.find(
-                (pair) => pair.key === 'Court Decisions ID'
-              )?.tooltip
+              keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
+                ?.tooltip
             "
           />
         </span>
         <CourtDecisionRenderer
           :value="value"
           :valueClassMap="valueClassMap['Court Decisions ID']"
-                    :emptyValueBehavior="
+          :emptyValueBehavior="
             keyLabelPairs.find(
               (pair) => pair.key === 'Domestic Legal Provisions'
             )?.emptyValueBehavior
@@ -86,9 +83,8 @@
           :mode="'both'"
           :valueClassMap="valueClassMap['Related Literature']"
           :label="
-            keyLabelPairs.find(
-              (pair) => pair.key === 'Related Literature'
-            )?.label || 'Related Literature'
+            keyLabelPairs.find((pair) => pair.key === 'Related Literature')
+              ?.label || 'Related Literature'
           "
           :emptyValueBehavior="
             questionConfig.keyLabelPairs.find(
@@ -96,9 +92,8 @@
             )?.emptyValueBehavior
           "
           :tooltip="
-            keyLabelPairs.find(
-              (pair) => pair.key === 'Related Literature'
-            )?.tooltip
+            keyLabelPairs.find((pair) => pair.key === 'Related Literature')
+              ?.tooltip
           "
         />
       </section>
@@ -123,7 +118,11 @@ import { useHead } from '#imports'
 const route = useRoute()
 const router = useRouter()
 
-const { data: answerData, isLoading, error } = useAnswer(computed(() => route.params.id))
+const {
+  data: answerData,
+  isLoading,
+  error,
+} = useAnswer(computed(() => route.params.id))
 
 const { keyLabelPairs, valueClassMap } = questionConfig
 
@@ -132,7 +131,8 @@ const processedAnswerData = computed(() => {
   if (!answerData.value) return null
   return {
     ...answerData.value,
-    'Domestic Legal Provisions': answerData.value['Domestic Legal Provisions'] || '',
+    'Domestic Legal Provisions':
+      answerData.value['Domestic Legal Provisions'] || '',
     'Court Decisions ID': answerData.value['Court Decisions ID']
       ? answerData.value['Court Decisions ID']
           .split(',')

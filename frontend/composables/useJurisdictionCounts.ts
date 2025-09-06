@@ -1,13 +1,17 @@
-import { computed } from 'vue'
+import { computed, type Ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { useApiClient } from '~/composables/useApiClient'
+import { useApiClient } from '@/composables/useApiClient'
+import type { SearchRequest, TableName } from '~/types/api'
 
-const fetchJurisdictionCount = async (jurisdiction, table) => {
-  if (!jurisdiction) return null
+const fetchJurisdictionCount = async (
+  jurisdiction: string,
+  table: TableName
+): Promise<number> => {
+  if (!jurisdiction) return 0
 
   const { apiClient } = useApiClient()
 
-  const body = {
+  const body: SearchRequest = {
     search_string: '',
     filters: [
       { column: 'jurisdictions', values: [jurisdiction] },
@@ -17,15 +21,11 @@ const fetchJurisdictionCount = async (jurisdiction, table) => {
     page_size: 1,
   }
 
-  try {
-    const data = await apiClient('/search/', { body })
-    return data.total_matches || 0
-  } catch (err) {
-    throw new Error(`Failed to fetch count: ${err.message}`)
-  }
+  const data = await apiClient('/search/', { body })
+  return data.total_matches || 0
 }
 
-export function useCourtDecisionsCount(jurisdictionName) {
+export function useCourtDecisionsCount(jurisdictionName: Ref<string>) {
   return useQuery({
     queryKey: ['courtDecisionsCount', jurisdictionName],
     queryFn: () =>
@@ -34,7 +34,7 @@ export function useCourtDecisionsCount(jurisdictionName) {
   })
 }
 
-export function useDomesticInstrumentsCount(jurisdictionName) {
+export function useDomesticInstrumentsCount(jurisdictionName: Ref<string>) {
   return useQuery({
     queryKey: ['domesticInstrumentsCount', jurisdictionName],
     queryFn: () =>

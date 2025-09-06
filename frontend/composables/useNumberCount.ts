@@ -1,15 +1,16 @@
 import { computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { useApiClient } from '~/composables/useApiClient'
+import { useApiClient } from '@/composables/useApiClient'
+import type { SearchRequest, TableName } from '~/types/api'
 
-const fetchNumberCount = async (tableName) => {
+const fetchNumberCount = async (tableName: TableName) => {
   if (!tableName) {
     return 0
   }
 
   const { apiClient } = useApiClient()
 
-  const body = {
+  const body: SearchRequest = {
     search_string: '',
     filters: [
       {
@@ -19,15 +20,11 @@ const fetchNumberCount = async (tableName) => {
     ],
   }
 
-  try {
-    const data = await apiClient('/search/', { body })
-    return data.total_matches ?? 0
-  } catch (err) {
-    throw new Error(`Failed to fetch number count: ${err.message}`)
-  }
+  const data = await apiClient('/search/', { body })
+  return data.total_matches ?? 0
 }
 
-export function useNumberCount(tableName) {
+export function useNumberCount(tableName: Ref<TableName>) {
   return useQuery({
     queryKey: ['numberCount', tableName],
     queryFn: () => fetchNumberCount(tableName.value),

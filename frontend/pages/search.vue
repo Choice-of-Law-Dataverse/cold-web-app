@@ -63,18 +63,22 @@ const searchParams = computed(() => ({
 const { data: searchData, isLoading, error } = useSearch(searchParams)
 
 // Watch search data and update local state for pagination
-watch(searchData, (newData) => {
-  if (newData) {
-    if (currentPage.value === 1) {
-      // First page - replace results
-      searchResults.value = newData.results
-    } else {
-      // Additional pages - append results
-      searchResults.value = [...searchResults.value, ...newData.results]
+watch(
+  searchData,
+  (newData) => {
+    if (newData) {
+      if (currentPage.value === 1) {
+        // First page - replace results
+        searchResults.value = newData.results
+      } else {
+        // Additional pages - append results
+        searchResults.value = [...searchResults.value, ...newData.results]
+      }
+      totalMatches.value = newData.totalMatches
     }
-    totalMatches.value = newData.totalMatches
-  }
-}, { immediate: true })
+  },
+  { immediate: true }
+)
 
 // Create computed values for template
 const loading = computed(() => isLoading.value)
@@ -168,7 +172,6 @@ onMounted(() => {
   // Initialize search text from query
   searchText.value = route.query.q || ''
 })
-
 </script>
 
 <style scoped>

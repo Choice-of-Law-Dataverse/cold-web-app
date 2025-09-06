@@ -147,7 +147,7 @@ async function setupChart(values) {
 
 // Watch for data to be available and setup the chart
 watch(
-  data,
+  () => data.value,
   (newData) => {
     if (newData) {
       setupChart(newData)

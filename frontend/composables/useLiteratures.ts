@@ -1,48 +1,31 @@
-import { computed } from 'vue'
+import { computed, type Ref } from 'vue'
 import { useQueries } from '@tanstack/vue-query'
-import { useApiClient } from '~/composables/useApiClient'
+import { useApiClient } from '@/composables/useApiClient'
+import type { DetailsByIdRequest } from '~/types/api'
 
-const fetchLiteratureData = async (literatureId) => {
+const fetchLiteratureData = async (literatureId: string | number) => {
   const { apiClient } = useApiClient()
 
-  const body = {
+  const body: DetailsByIdRequest = {
     table: 'Literature',
     id: literatureId,
   }
 
-  try {
-    const data = await apiClient('/search/details', { body })
-
-    // Check if the API returned an error response
-    if (data.error === 'no entry found with the specified id') {
-      const error = new Error('no entry found with the specified id')
-      error.isNotFound = true
-      error.table = 'Literature'
-      throw error
-    }
-
-    return data
-  } catch (err) {
-    // Handle specific error cases or re-throw
-    if (err.message.includes('no entry found')) {
-      throw err // Re-throw with original error properties
-    }
-    throw new Error(`Failed to fetch literature: ${err.message}`)
-  }
+  return await apiClient('/search/details', { body })
 }
 
-export function useLiteratures(ids) {
+export function useLiteratures(ids: Ref<string>) {
   const queries = computed(() => {
     const literatureIds = ids.value
       ? ids.value
           .split(',')
-          .map((id) => id.trim())
-          .filter((id) => id)
+          .map((id: string) => id.trim())
+          .filter((id: string) => id)
       : []
 
     console.log('Literature IDs:', literatureIds)
 
-    return literatureIds.map((literatureId) => ({
+    return literatureIds.map((literatureId: string) => ({
       queryKey: ['literature', literatureId],
       queryFn: () => fetchLiteratureData(literatureId),
       enabled: !!literatureId,

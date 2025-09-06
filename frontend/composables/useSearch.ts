@@ -1,6 +1,12 @@
-import { computed } from 'vue'
+import { computed, type Ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { useApiClient } from '~/composables/useApiClient'
+import { useApiClient } from '@/composables/useApiClient'
+import type {
+  EnhancedSearchRequest,
+  SearchParams,
+  BrowserInfo,
+  SearchResponse,
+} from '~/types/api'
 
 const fetchUserInfo = async () => {
   const { apiClient } = useApiClient()
@@ -21,8 +27,16 @@ const fetchUserInfo = async () => {
   }
 }
 
-const getBrowserInfo = () => {
-  if (typeof window === 'undefined') return {}
+const getBrowserInfo = (): BrowserInfo => {
+  if (typeof window === 'undefined')
+    return {
+      userAgent: '',
+      platform: '',
+      language: '',
+      screenWidth: 0,
+      screenHeight: 0,
+    }
+
   const userAgent = navigator.userAgent
   const platform = navigator.platform
   const language = navigator.language
@@ -43,10 +57,10 @@ const fetchSearchResults = async ({
   filters,
   page = 1,
   pageSize = 10,
-}) => {
+}: SearchParams): Promise<SearchResponse> => {
   const { apiClient } = useApiClient()
 
-  const body = {
+  const body: EnhancedSearchRequest = {
     search_string: query || '',
     page,
     page_size: pageSize,
@@ -77,7 +91,7 @@ const fetchSearchResults = async ({
   }
 
   // Set up mapping: Filter options have different wording to table names
-  const typeFilterMapping = {
+  const typeFilterMapping: Record<string, string> = {
     Questions: 'Answers',
     'Court Decisions': 'Court Decisions',
     'Legal Instruments': 'Domestic Instruments',
@@ -91,7 +105,9 @@ const fetchSearchResults = async ({
   if (filters.type) {
     body.filters.push({
       column: 'tables',
-      values: filters.type.split(',').map((type) => typeFilterMapping[type]),
+      values: filters.type
+        .split(',')
+        .map((type) => typeFilterMapping[type] || type),
     })
   }
 
@@ -119,19 +135,15 @@ const fetchSearchResults = async ({
   body.browser_info_hint = userInfo || {}
   body.hostname = userHost
 
-  try {
-    const data = await apiClient('/search/', { body })
+  const data = await apiClient('/search/', { body })
 
-    return {
-      results: Object.values(data.results),
-      totalMatches: data.total_matches || 0,
-    }
-  } catch (err) {
-    throw new Error(`Search failed: ${err.message}`)
+  return {
+    results: Object.values(data.results),
+    totalMatches: data.total_matches || 0,
   }
 }
 
-export function useSearch(searchParams) {
+export function useSearch(searchParams: Ref<SearchParams>) {
   return useQuery({
     queryKey: ['search', searchParams],
     queryFn: () => fetchSearchResults(searchParams.value),
@@ -145,6 +157,7 @@ export function useSearch(searchParams) {
         params.filters.type
       )
     }),
-    keepPreviousData: true, // Keep previous results while loading new ones
+    // Note: keepPreviousData is deprecated in newer versions of TanStack Query
+    // Replace with placeholderData if needed
   })
 }

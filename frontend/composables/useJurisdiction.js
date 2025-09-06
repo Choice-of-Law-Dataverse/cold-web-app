@@ -1,6 +1,6 @@
 import { computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { useApiClient } from '~/composables/useApiClient'
+import { useApiClient } from '@/composables/useApiClient'
 
 const fetchJurisdictionData = async (jurisdictionIso3) => {
   if (!jurisdictionIso3) {

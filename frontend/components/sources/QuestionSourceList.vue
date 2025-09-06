@@ -65,7 +65,7 @@
 import { ref, computed, onMounted } from 'vue'
 import LegalProvisionRenderer from '@/components/legal/LegalProvisionRenderer.vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
-import { useLiteratures } from '~/composables/useLiteratures'
+import { useLiteratures } from '@/composables/useLiteratures'
 
 const props = defineProps({
   sources: {
@@ -102,18 +102,26 @@ const primarySource = ref([])
 const oupChapterSource = ref(null)
 const oupChapterLoading = ref(false)
 
-const {data: literaturesByJurisdiction, isLoading} = useLiteratureByJurisdiction(computed(() => props.fallbackData['Jurisdictions'] || null))
+const { data: literaturesByJurisdiction, isLoading } =
+  useLiteratureByJurisdiction(
+    computed(() => props.fallbackData['Jurisdictions'] || null)
+  )
 
-watch(() => literaturesByJurisdiction, (newVal) => {
-  newVal.value?.forEach(item => {
-    if (item['OUP JD Chapter'] && props.fetchOupChapter) {
-      oupChapterSource.value = { title: item.Title, id: item.ID }
-    } else {
-      primarySource.value.push({ title: item.Title, id: item.ID })
-    }
-  })
-}, { immediate: true })
+watch(
+  () => literaturesByJurisdiction,
+  (newVal) => {
+    newVal.value?.forEach((item) => {
+      if (item['OUP JD Chapter'] && props.fetchOupChapter) {
+        oupChapterSource.value = { title: item.Title, id: item.ID }
+      } else {
+        primarySource.value.push({ title: item.Title, id: item.ID })
+      }
+    })
+  },
+  { immediate: true }
+)
 
-const {data: literatures, isLoading: literaturesLoading} = useLiteratures(computed(() => props.fallbackData['Jurisdictions'] || null))
-
+const { data: literatures, isLoading: literaturesLoading } = useLiteratures(
+  computed(() => props.fallbackData['Jurisdictions'] || null)
+)
 </script>

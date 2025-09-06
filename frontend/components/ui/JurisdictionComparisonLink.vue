@@ -32,7 +32,7 @@
 <script setup>
 import { useRoute } from 'vue-router'
 import { computed, onMounted } from 'vue'
-import { useJurisdictionComparison } from '~/composables/useJurisdictionComparison'
+import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
 
 // Accept processedAnswerData as a prop from parent
 defineProps({

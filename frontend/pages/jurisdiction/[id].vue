@@ -175,7 +175,7 @@ import {
   useDomesticInstrumentsCount,
   useCourtDecisionsCount,
 } from '@/composables/useJurisdictionCounts'
-import { useLiteratures} from '@/composables/useLiteratures'
+import { useLiteratures } from '@/composables/useLiteratures'
 import { useSpecialists } from '@/composables/useSpecialists'
 import { jurisdictionConfig } from '@/config/pageConfigs'
 import { useHead } from '#app'

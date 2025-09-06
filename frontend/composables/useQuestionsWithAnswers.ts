@@ -1,8 +1,13 @@
 import { computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
-import { useApiClient } from '~/composables/useApiClient'
+import { useApiClient } from '@/composables/useApiClient'
+import type { FullTableRequest } from '~/types/api'
 
-const buildCompositeId = (jurisdiction, rawColdId, rawQuestionId) => {
+const buildCompositeId = (
+  jurisdiction: string,
+  rawColdId: string,
+  rawQuestionId: string
+) => {
   // If rawColdId already contains a jurisdiction prefix (ABC_), keep it.
   // Otherwise, build a composite with jurisdiction if available.
   if (rawColdId && /^[A-Z]{3}_/.test(rawColdId)) {
@@ -16,7 +21,7 @@ const buildCompositeId = (jurisdiction, rawColdId, rawQuestionId) => {
   }
 }
 
-const processAnswerText = (answerText) => {
+const processAnswerText = (answerText: string) => {
   if (typeof answerText === 'string' && answerText.includes(',')) {
     return answerText
       .split(',')
@@ -26,8 +31,8 @@ const processAnswerText = (answerText) => {
   return answerText
 }
 
-const buildChildrenMap = (sortedItems) => {
-  const childrenMap = {}
+const buildChildrenMap = (sortedItems: Record<string, any>[]) => {
+  const childrenMap: Record<string, string[]> = {}
   sortedItems.forEach((item, idx, arr) => {
     const id = item['CoLD ID'] ?? item.ID
     const level = typeof id === 'string' ? id.match(/\./g)?.length || 0 : 0
@@ -50,10 +55,10 @@ const buildChildrenMap = (sortedItems) => {
   return childrenMap
 }
 
-const fetchAnswersData = async (jurisdiction) => {
+const fetchAnswersData = async (jurisdiction: string) => {
   const { apiClient } = useApiClient()
 
-  const body = {
+  const body: FullTableRequest = {
     table: 'Answers',
     filters: [
       {
@@ -63,51 +68,46 @@ const fetchAnswersData = async (jurisdiction) => {
     ],
   }
 
-  try {
-    const data = await apiClient('/search/full_table', { body })
+  const data = await apiClient('/search/full_table', { body })
 
-    // Expect an array of answer rows. We construct the composite key
-    // based on either existing 'CoLD ID' or by combining jurisdiction + question ID if needed.
-    const map = {}
-    if (Array.isArray(data)) {
-      for (const row of data) {
-        const jurisdiction =
-          row['Jurisdictions Alpha-3 code'] ||
-          row['Jurisdictions Alpha-3 Code'] ||
-          iso3
-        const rawQuestionId =
-          row['Question ID'] || row['QuestionID'] || row['CoLD ID'] || row.ID
-        const rawColdId = row['CoLD ID'] || row['Answer ID'] || rawQuestionId
-        const answerValue = row.Answer || row['Answer'] || ''
+  // Expect an array of answer rows. We construct the composite key
+  // based on either existing 'CoLD ID' or by combining jurisdiction + question ID if needed.
+  const map: Record<string, any> = {}
+  if (Array.isArray(data)) {
+    for (const row of data) {
+      const isoCode =
+        row['Jurisdictions Alpha-3 code'] ||
+        row['Jurisdictions Alpha-3 Code'] ||
+        jurisdiction
+      const rawQuestionId =
+        row['Question ID'] || row['QuestionID'] || row['CoLD ID'] || row.ID
+      const rawColdId = row['CoLD ID'] || row['Answer ID'] || rawQuestionId
+      const answerValue = row.Answer || row['Answer'] || ''
 
-        const compositeId = buildCompositeId(
-          jurisdiction,
-          rawColdId,
-          rawQuestionId
-        )
+      const compositeId = buildCompositeId(isoCode, rawColdId, rawQuestionId)
 
-        // Store under composite ID
-        if (compositeId) map[compositeId] = answerValue
-        // Also store under base ID (without jurisdiction) for any legacy lookups
-        if (rawQuestionId && !map[rawQuestionId])
-          map[rawQuestionId] = answerValue
-      }
+      // Store under composite ID
+      if (compositeId) map[compositeId] = answerValue
+      // Also store under base ID (without jurisdiction) for any legacy lookups
+      if (rawQuestionId && !map[rawQuestionId]) map[rawQuestionId] = answerValue
     }
-    return map
-  } catch (err) {
-    throw new Error(`Failed to fetch answers: ${err.message}`)
   }
+  return map
 }
 
-export function useQuestionsWithAnswers(jurisdiction) {
+export function useQuestionsWithAnswers(jurisdiction: Ref<string>) {
   const {
     data: questionsData,
-    isLoading,
+    isLoading: questionsLoading,
     error: questionsError,
   } = useQuestions(jurisdiction)
 
-  const answersQuery = useQuery({
-    queryKey: ['answers', jurisdiction],
+  const {
+    data: answersData,
+    isLoading: answersLoading,
+    error: answersError,
+  } = useQuery({
+    queryKey: computed(() => ['answers', jurisdiction.value]),
     queryFn: () => fetchAnswersData(jurisdiction.value),
     enabled: computed(() => !!jurisdiction.value),
   })
@@ -142,7 +142,7 @@ export function useQuestionsWithAnswers(jurisdiction) {
       const iso3 = jurisdiction?.value?.toUpperCase()
       const baseId = item['CoLD ID'] ?? item.ID
       const answerId = iso3 ? `${iso3}_${baseId}` : baseId
-      const answerText = answersQuery.data.value?.[answerId] || ''
+      const answerText = answersData?.value?.[answerId] || ''
       const answerDisplay = processAnswerText(answerText)
 
       return {
@@ -160,9 +160,8 @@ export function useQuestionsWithAnswers(jurisdiction) {
   })
 
   return {
-    ...answersQuery,
     data,
-    isLoading: computed(() => isLoading.value || answersQuery.isLoading.value),
+    isLoading: computed(() => questionsLoading.value || answersLoading.value),
     error: computed(() => questionsError.value || answersError.value),
   }
 }

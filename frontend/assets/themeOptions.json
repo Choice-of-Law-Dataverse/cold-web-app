@@ -7,7 +7,10 @@
   { "label": "Partial choice", "value": "Partial choice" },
   { "label": "Rules of law", "value": "Rules of law" },
   { "label": "Tacit choice", "value": "Tacit choice" },
-  { "label": "Overriding mandatory rules", "value": "Overriding mandatory rules" },
+  {
+    "label": "Overriding mandatory rules",
+    "value": "Overriding mandatory rules"
+  },
   { "label": "Public policy", "value": "Public policy" },
   { "label": "Absence of choice", "value": "Absence of choice" },
   { "label": "Arbitration", "value": "Arbitration" }

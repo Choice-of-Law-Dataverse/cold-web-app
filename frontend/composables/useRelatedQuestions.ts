@@ -1,25 +1,28 @@
 import { computed } from 'vue'
 import { useQueries } from '@tanstack/vue-query'
-import { useApiClient } from '~/composables/useApiClient'
+import { useApiClient } from '@/composables/useApiClient'
+import type { DetailsByIdRequest } from '~/types/api'
 
-const fetchQuestionLabel = async (jurisdictionCode, questionId) => {
+const fetchQuestionLabel = async (
+  jurisdictionCode: string,
+  questionId: string
+) => {
   const { apiClient } = useApiClient()
 
-  const body = {
+  const body: DetailsByIdRequest = {
     table: 'Answers',
     id: `${jurisdictionCode}_${questionId}`,
   }
 
-  try {
-    const data = await apiClient('/search/details', { body })
+  const data = await apiClient('/search/details', { body })
 
-    return data.Question || `${jurisdictionCode}_${questionId}`
-  } catch (err) {
-    throw new Error(`Failed to fetch question label: ${err.message}`)
-  }
+  return data.Question || `${jurisdictionCode}_${questionId}`
 }
 
-export function useRelatedQuestions(jurisdictionCode, questions) {
+export function useRelatedQuestions(
+  jurisdictionCode: Ref<string>,
+  questions: Ref<string>
+) {
   const questionList = computed(() =>
     questions.value
       ? questions.value
