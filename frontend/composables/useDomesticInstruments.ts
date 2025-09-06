@@ -7,21 +7,12 @@ const fetchDomesticInstrumentsData = async (filterCompatible: boolean) => {
   const { apiClient } = useApiClient()
   const body: FullTableRequest = {
     table: 'Domestic Instruments',
-    filters: filterCompatible
-      ? [
-          {
-            column: 'Compatible With the HCCH Principles?',
-            value: true,
-          },
-        ]
-      : [],
   }
 
   const instrumentsData = await apiClient('/search/full_table', {
     body,
   })
 
-  // Convert Date to number, sort descending and take the 7 most recent
   instrumentsData.sort((a: any, b: any) => Number(b.Date) - Number(a.Date))
   return instrumentsData
 }
@@ -38,5 +29,8 @@ export function useDomesticInstruments({
         : ['domesticInstruments']
     ),
     queryFn: () => fetchDomesticInstrumentsData(filterCompatible.value),
+    select: filterCompatible.value
+      ? (data) => data.filter((item: any) => item['Compatible With the HCCH Principles?'])
+      : undefined
   })
 }
