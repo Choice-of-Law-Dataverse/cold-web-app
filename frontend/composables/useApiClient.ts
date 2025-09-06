@@ -15,9 +15,16 @@ export function useApiClient() {
       method?: string
       timeout?: number
       headers?: Record<string, string>
+      responseType?: 'json' | 'text'
     } = {}
   ): Promise<T> => {
-    const { body, method = 'POST', timeout = 30000, ...otherOptions } = options
+    const {
+      body,
+      method = 'POST',
+      timeout = 30000,
+      responseType = 'json',
+      ...otherOptions
+    } = options
 
     // Create an AbortController for timeout
     const controller = new AbortController()
@@ -59,19 +66,30 @@ export function useApiClient() {
         )
       }
 
-      const data = await response.json()
+      const data =
+        responseType === 'text' ? await response.text() : await response.json()
 
-      if (data?.error) {
+      if (responseType === 'json' && (data as any)?.error) {
         // Check if the error indicates a not found condition
-        const errorMessage = data.error.toLowerCase()
+        const errorMessage = (data as any).error.toLowerCase()
         if (
           errorMessage.includes('not found') ||
           errorMessage.includes('no entry found')
         ) {
-          throw new NotFoundError(endpoint, method, body, new Error(data.error))
+          throw new NotFoundError(
+            endpoint,
+            method,
+            body,
+            new Error((data as any).error)
+          )
         }
 
-        throw new ApiError(endpoint, method, body, new Error(data.error))
+        throw new ApiError(
+          endpoint,
+          method,
+          body,
+          new Error((data as any).error)
+        )
       }
 
       return data

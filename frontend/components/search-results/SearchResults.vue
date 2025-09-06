@@ -289,41 +289,20 @@ const updateSelectWidth = () => {
   })
 }
 
-// Data fetching
-const loadJurisdictions = async () => {
-  try {
-    const config = useRuntimeConfig()
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
-      }
-    )
-
-    if (!response.ok) throw new Error('Failed to load jurisdictions')
-
-    const jurisdictionsData = await response.json()
+// Data fetching via composable
+import { useJurisdictionOptions } from '@/composables/useJurisdictionOptions'
+const { data: jurisdictionData } = useJurisdictionOptions()
+watch(
+  () => jurisdictionData?.value,
+  (list) => {
+    if (!list) return
     jurisdictionOptions.value = [
       { label: 'All Jurisdictions' },
-      ...jurisdictionsData
-        .filter((entry) => entry['Irrelevant?'] === false)
-        .map((entry) => ({
-          label: entry.Name,
-          avatar: entry['Alpha-3 Code']
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
-            : undefined,
-        }))
-        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
+      ...list.map((j) => ({ label: j.label, avatar: j.avatar })),
     ]
-  } catch (error) {
-    console.error('Error loading jurisdictions:', error)
-  }
-}
+  },
+  { immediate: true }
+)
 
 // Watchers
 watch(
@@ -348,7 +327,6 @@ watch(
 
 // Initialization
 onMounted(async () => {
-  await loadJurisdictions()
   syncFiltersFromQuery(route.query)
   updateSelectWidth()
 })

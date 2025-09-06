@@ -208,17 +208,9 @@ function handleNewSave() {
   console.log('Submitting:', JSON.stringify(payload, null, 2))
   ;(async () => {
     try {
-      await $fetch(
-        `${config.public.apiBaseUrl}/suggestions/regional-instruments`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: payload,
-        }
-      )
+      const { useApiClient } = await import('@/composables/useApiClient')
+      const { apiClient } = useApiClient()
+      await apiClient('/suggestions/regional-instruments', { body: payload })
 
       showSaveModal.value = false
       router.push({

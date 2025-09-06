@@ -2,6 +2,7 @@ import { computed } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { useApiClient } from '@/composables/useApiClient'
 import type { FullTableRequest } from '~/types/api'
+import { useFullTable } from '@/composables/useFullTable'
 
 const buildCompositeId = (
   jurisdiction: string,
@@ -100,7 +101,7 @@ export function useQuestionsWithAnswers(jurisdiction: Ref<string>) {
     data: questionsData,
     isLoading: questionsLoading,
     error: questionsError,
-  } = useQuestions(jurisdiction)
+  } = useFullTable('Questions')
 
   const {
     data: answersData,

@@ -19,15 +19,10 @@ export interface DetailsByIdRequest extends BaseTableRequest {
  * Request body for full table queries
  */
 export interface FullTableRequest extends BaseTableRequest {
-  filters?:
-    | Array<{
-        column: string
-        value: string | number | boolean
-      }>
-    | Array<{
-        column: string
-        values: (string | number | boolean)[]
-      }>
+  filters?: Array<{
+    column: string
+    value: string | number | boolean
+  }>
 }
 
 /**
@@ -126,6 +121,7 @@ export type TableName =
   | 'Specialists'
   | 'Regional Instruments'
   | 'International Instruments'
+  | 'International Legal Provisions'
 
 /**
  * Search filter column names

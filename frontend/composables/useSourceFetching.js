@@ -1,4 +1,5 @@
 import { ref } from 'vue'
+import { useApiClient } from '@/composables/useApiClient'
 
 export function useSourceFetching({
   jurisdiction,
@@ -26,20 +27,8 @@ export function useSourceFetching({
 
     try {
       loading.value = true
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/full_table`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(jsonPayload),
-        }
-      )
-      if (!response.ok) throw new Error('Failed to fetch primary source')
-
-      const data = await response.json()
+      const { apiClient } = useApiClient()
+      const data = await apiClient('/search/full_table', { body: jsonPayload })
 
       // Filter out entries where "OUP JD Chapter" is explicitly true
       const nonOupEntries = data.filter(
@@ -81,21 +70,8 @@ export function useSourceFetching({
 
     try {
       loading.value = true
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/full_table`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(jsonPayload),
-        }
-      )
-
-      if (!response.ok) throw new Error('Failed to fetch OUP JD Chapter source')
-
-      const data = await response.json()
+      const { apiClient } = useApiClient()
+      const data = await apiClient('/search/full_table', { body: jsonPayload })
       if (data.length > 0) {
         oupChapterSource.value = { title: data[0].Title, id: data[0].ID }
       }

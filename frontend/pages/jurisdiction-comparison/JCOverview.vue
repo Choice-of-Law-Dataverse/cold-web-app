@@ -221,6 +221,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
+import { useApiClient } from '@/composables/useApiClient'
 
 // Use shared jurisdiction comparison state
 const {
@@ -249,25 +250,11 @@ const fetchLegalFamily = async (iso3Code) => {
   loadingLegalFamily.value[iso3Code] = true
 
   try {
-    const config = useRuntimeConfig()
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Bearer ${config.public.FASTAPI}`,
-      },
-      body: JSON.stringify({
-        table: 'Jurisdictions',
-        id: iso3Code,
-      }),
+    const { apiClient } = useApiClient()
+    const data = await apiClient('/search/details', {
+      body: { table: 'Jurisdictions', id: iso3Code },
     })
-
-    if (response.ok) {
-      const data = await response.json()
-      legalFamilies.value[iso3Code] = data['Legal Family'] || 'Unknown'
-    } else {
-      legalFamilies.value[iso3Code] = 'Unknown'
-    }
+    legalFamilies.value[iso3Code] = data['Legal Family'] || 'Unknown'
   } catch (error) {
     console.error(`Error fetching legal family for ${iso3Code}:`, error)
     legalFamilies.value[iso3Code] = 'Unknown'
@@ -292,34 +279,17 @@ const fetchDataCount = async (jurisdictionName, tableType) => {
   loadingRef.value[jurisdictionName] = true
 
   try {
-    const config = useRuntimeConfig()
-    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Bearer ${config.public.FASTAPI}`,
-      },
-      body: JSON.stringify({
+    const { apiClient } = useApiClient()
+    const data = await apiClient('/search/', {
+      body: {
         search_string: '',
         filters: [
-          {
-            column: 'tables',
-            values: [tableType],
-          },
-          {
-            column: 'jurisdictions',
-            values: [jurisdictionName],
-          },
+          { column: 'tables', values: [tableType] },
+          { column: 'jurisdictions', values: [jurisdictionName] },
         ],
-      }),
+      },
     })
-
-    if (response.ok) {
-      const data = await response.json()
-      countsRef.value[jurisdictionName] = data.total_matches || 0
-    } else {
-      countsRef.value[jurisdictionName] = 0
-    }
+    countsRef.value[jurisdictionName] = data.total_matches || 0
   } catch (error) {
     console.error(
       `Error fetching ${tableType.toLowerCase()} for ${jurisdictionName}:`,

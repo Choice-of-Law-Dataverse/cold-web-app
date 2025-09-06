@@ -27,23 +27,12 @@ export function useJurisdictionComparison() {
   const loadJurisdictions = async () => {
     loadingJurisdictions.value = true
     try {
-      const config = useRuntimeConfig()
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/full_table`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
-        }
-      )
-
-      if (!response.ok) throw new Error('Failed to load jurisdictions')
-
-      const jurisdictionsData = await response.json()
-      const options = jurisdictionsData
+      const { useApiClient } = await import('@/composables/useApiClient')
+      const { apiClient } = useApiClient()
+      const data = await apiClient('/search/full_table', {
+        body: { table: 'Jurisdictions', filters: [] },
+      })
+      const options = data
         .filter((entry) => entry['Irrelevant?'] === false)
         .map((entry) => ({
           label: entry.Name,

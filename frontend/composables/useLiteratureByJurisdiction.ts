@@ -1,28 +1,12 @@
-import { computed } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
-import { useApiClient } from '@/composables/useApiClient'
-import type { FullTableRequest } from '~/types/api'
+import { useFullTable } from '@/composables/useFullTable'
 
-const fetchLiteratureByJurisdiction = async (jurisdiction: string) => {
-  const { apiClient } = useApiClient()
-
-  const body: FullTableRequest = {
-    table: 'Literature',
+export function useLiteratureByJurisdiction(jurisdiction: Ref<string>) {
+  return useFullTable('Literature', {
     filters: [
       {
         column: 'Jurisdiction',
-        value: jurisdiction,
+        value: jurisdiction.value,
       },
     ],
-  }
-
-  return await apiClient('/search/full_table', { body })
-}
-
-export function useLiteratureByJurisdiction(jurisdiction: Ref<string>) {
-  return useQuery({
-    queryKey: computed(() => ['literature_jurisdiction', jurisdiction]),
-    queryFn: () => fetchLiteratureByJurisdiction(jurisdiction.value),
-    enabled: computed(() => !!jurisdiction.value),
   })
 }

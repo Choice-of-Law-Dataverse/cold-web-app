@@ -81,18 +81,12 @@ export default {
     async classifyQuery(query) {
       try {
         // Step 1: Call classify_query API to classify the search query
-        const response = await fetch(
-          `${config.public.apiBaseUrl}/classify_query`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ query }),
-          }
-        )
-
-        const category = await response.text() // Category returned from API
+        const { useApiClient } = await import('@/composables/useApiClient')
+        const { apiClient } = useApiClient()
+        const category = await apiClient('/classify_query', {
+          body: { query },
+          responseType: 'text',
+        })
         this.category = category
 
         // Process the category to fetch relevant data
@@ -131,19 +125,9 @@ export default {
 
     async fetchData(term, table) {
       try {
-        const response = await fetch(
-          `${config.public.apiBaseUrl}/search/full_table`,
-          {
-            method: 'POST',
-            headers: {
-              authorization: `Bearer ${config.public.FASTAPI}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ table }),
-          }
-        )
-
-        const data = await response.json()
+        const { useApiClient } = await import('@/composables/useApiClient')
+        const { apiClient } = useApiClient()
+        const data = await apiClient('/search/full_table', { body: { table } })
 
         // Step 4: Find the entry with the appropriate matching key
         let matchedEntry
