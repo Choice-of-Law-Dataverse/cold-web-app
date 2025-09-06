@@ -7,6 +7,9 @@
     :formattedJurisdiction="[jurisdictionData?.Name]"
     sourceTable="Jurisdiction"
   >
+    <h1 class="mb-12">
+      Country Report for {{ jurisdictionData?.Name || 'N/A' }}
+    </h1>
     <template #related-literature>
       <section class="section-gap p-0 m-0">
         <RelatedLiterature

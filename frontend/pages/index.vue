@@ -15,9 +15,11 @@
             class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 flex flex-row items-center gap-1"
           >
             <span>
-              Navigate private international law issues with precision.
+              Navigate private international law issues with precision — for
+              ever for free.
+
               <UButton class="suggestion-button" to="/about" variant="link">
-                <span>Read more</span>
+                <span>Read more </span>
               </UButton>
             </span>
           </h2>
@@ -73,8 +75,17 @@
           />
         </div>
 
-        <div class="col-span-12">
+        <div class="col-span-12 md:col-span-8">
           <LeadingCases />
+        </div>
+        <div class="col-span-12 sm:col-span-4">
+          <ConnectCard
+            title="CoLD Case Analyzer"
+            buttonText="Analyze Court Cases with AI"
+            :buttonLink="links.case_analyzer"
+            iconName="i-material-symbols:chat-outline"
+            buttonIcon="i-material-symbols:open-in-new"
+          />
         </div>
 
         <div class="col-span-12 flex justify-center mb-4">
@@ -121,17 +132,7 @@
         </div>
         <div class="col-span-12 sm:col-span-3">
           <ConnectCard
-            title="Access New Features"
-            buttonText="Beta User Sign Up"
-            :buttonLink="links.beta"
-            iconName="i-hugeicons:test-tube-01"
-            buttonIcon="i-material-symbols:open-in-new"
-          />
-        </div>
-
-        <div class="col-span-12">
-          <ConnectCard
-            title="Enter a new Data Point"
+            title="Enter new Data"
             buttonText="Submit your data"
             buttonLink="/international-instrument/new"
             iconName="i-material-symbols:add-notes"
