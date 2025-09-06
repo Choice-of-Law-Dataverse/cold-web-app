@@ -164,6 +164,14 @@ const props = defineProps({
     type: Boolean,
     default: true, // Default to true so headers are shown unless explicitly disabled
   },
+  showOpenLink: {
+    type: Boolean,
+    default: false,
+  },
+  showSuggestEdit: {
+    type: Boolean,
+    default: false,
+  },
   formattedJurisdiction: { type: Array, required: false, default: () => [] },
   formattedTheme: { type: Array, required: false, default: () => [] },
   hideBackButton: {

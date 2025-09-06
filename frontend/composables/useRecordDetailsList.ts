@@ -3,10 +3,7 @@ import { useQueries } from '@tanstack/vue-query'
 import { useApiClient } from '@/composables/useApiClient'
 import type { TableName } from '@/types/api'
 
-const fetchRecordDetails = async (
-  table: TableName,
-  id: string | number
-) => {
+const fetchRecordDetails = async (table: TableName, id: string | number) => {
   const { apiClient } = useApiClient()
   return await apiClient('/search/details', { body: { table, id } })
 }
@@ -15,8 +12,6 @@ export function useRecordDetailsList(
   table: Ref<TableName>,
   ids: Ref<Array<string | number>>
 ) {
-
-
   const queries = computed(() => {
     const list = ids.value || []
     return list.map((id) => ({
@@ -43,4 +38,3 @@ export function useRecordDetailsList(
 
   return { dataMap, isLoading, hasError, results }
 }
-

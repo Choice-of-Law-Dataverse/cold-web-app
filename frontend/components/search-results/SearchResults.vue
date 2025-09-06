@@ -12,7 +12,7 @@
               :options="jurisdictionOptions"
               v-model="currentJurisdictionFilter"
               class="w-full sm:w-auto"
-              showAvatars="true"
+              :showAvatars="true"
             />
             <SearchFilters
               :options="themeOptions"

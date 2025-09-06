@@ -76,7 +76,6 @@ const comparisonUrl = computed(() => {
 
   return `/jurisdiction-comparison/${codes.join('+')}`
 })
-
 </script>
 
 <style scoped>

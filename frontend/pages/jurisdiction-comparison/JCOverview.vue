@@ -223,13 +223,11 @@ import { useJurisdictionComparison } from '@/composables/useJurisdictionComparis
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 import { useApiClient } from '@/composables/useApiClient'
 
-const {data: jurisdictionOptions} = useJurisdictionOptions()
+const { data: jurisdictionOptions } = useJurisdictionOptions()
 
 // Use shared jurisdiction comparison state
-const {
-  jurisdictionFilters,
-  selectedJurisdictionCodes,
-} = useJurisdictionComparison()
+const { jurisdictionFilters, selectedJurisdictionCodes } =
+  useJurisdictionComparison()
 
 // Reactive state for legal families
 const legalFamilies = ref({})
@@ -410,11 +408,7 @@ watch(
       const jurisdictionName = filter?.value?.value?.[0]?.label
       const oldJurisdictionName = oldFilters?.[index]?.value?.value?.[0]?.label
 
-      console.log(
-        `watch`,
-        jurisdictionName,
-        oldJurisdictionName
-      )
+      console.log(`watch`, jurisdictionName, oldJurisdictionName)
 
       if (
         jurisdictionName &&
@@ -440,7 +434,6 @@ function getFlagUrl(label) {
   // Fallback: try to use label as ISO code (lowercase)
   return `https://choiceoflaw.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
 }
-
 </script>
 
 <style scoped>
