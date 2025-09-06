@@ -2,25 +2,22 @@ import { computed } from 'vue'
 import { useRecordDetails } from '@/composables/useRecordDetails'
 
 export function useJurisdiction(iso3: Ref<string>) {
-  const base = useRecordDetails(
+  return useRecordDetails(
     computed(() => 'Jurisdictions'),
-    computed(() => iso3.value && iso3.value.toUpperCase())
-  )
-
-  const data = computed(() => {
-    const rec = base.data.value
-    if (!rec) return null
-    return {
-      ...rec,
-      Name: rec?.Name || 'N/A',
-      'Jurisdiction Summary': rec?.['Jurisdiction Summary'] || 'N/A',
-      'Jurisdictional Differentiator':
-        rec?.['Jurisdictional Differentiator'] || 'N/A',
-      'Legal Family': rec?.['Legal Family'] || 'N/A',
-      Specialists: rec?.Specialists || '',
-      Literature: rec?.Literature,
+    computed(() => iso3.value && iso3.value.toUpperCase()),
+    {
+      select: (data) => {
+        return {
+          ...data,
+          Name: data?.Name || 'N/A',
+          'Jurisdiction Summary': data?.['Jurisdiction Summary'] || 'N/A',
+          'Jurisdictional Differentiator':
+            data?.['Jurisdictional Differentiator'] || 'N/A',
+          'Legal Family': data?.['Legal Family'] || 'N/A',
+          Specialists: data?.Specialists || '',
+          Literature: data?.Literature,
+        }
+      }
     }
-  })
-
-  return { ...base, data }
+  )
 }

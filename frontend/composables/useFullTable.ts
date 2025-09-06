@@ -12,7 +12,7 @@ const fetchFullTableData = async (table: TableName): Promise<any[]> => {
 type Options = Partial<{
   select: (data: any[]) => any[]
   filters: FullTableRequest['filters']
-}>
+}> | undefined
 
 export function useFullTable(
   table: TableName,
@@ -21,6 +21,6 @@ export function useFullTable(
   return useQuery({
     queryKey: [table, filters ? filters.join(',') : undefined],
     queryFn: () => fetchFullTableData(table),
-    select: select ? (data) => select(data) : undefined,
+    select,
   })
 }
