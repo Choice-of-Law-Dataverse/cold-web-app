@@ -223,7 +223,7 @@ import { useJurisdictionComparison } from '@/composables/useJurisdictionComparis
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 import { useApiClient } from '@/composables/useApiClient'
 
-const { data: jurisdictionOptions } = useJurisdictionOptions()
+const { data: jurisdictions } = useJurisdictions()
 
 // Use shared jurisdiction comparison state
 const { jurisdictionFilters, selectedJurisdictionCodes } =
@@ -428,8 +428,8 @@ import { reactive } from 'vue'
 const erroredFlags = reactive({})
 function getFlagUrl(label) {
   if (!label || label === 'All Jurisdictions') return ''
-  // Use Alpha-3 code if available in jurisdictionOptions
-  const found = jurisdictionOptions.value.find((j) => j.label === label)
+  // Use Alpha-3 code if available in jurisdictions
+  const found = jurisdictions.value.find((j) => j.label === label)
   if (found && found.avatar) return found.avatar
   // Fallback: try to use label as ISO code (lowercase)
   return `https://choiceoflaw.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`

@@ -43,7 +43,7 @@ defineProps({
 })
 
 const route = useRoute()
-const { data: jurisdictionOptions } = useJurisdictionOptions()
+const { data: jurisdictions } = useJurisdictions()
 
 // Get the ISO3 code from the route params
 const iso3Code = computed(() => {
@@ -52,7 +52,7 @@ const iso3Code = computed(() => {
 
 // Computed property to get 2 random ISO3 codes (excluding current jurisdiction)
 const randomJurisdictionCodes = computed(() => {
-  const availableOptions = jurisdictionOptions.value.filter(
+  const availableOptions = jurisdictions.value.filter(
     (option) =>
       option.alpha3Code &&
       option.alpha3Code.toUpperCase() !== iso3Code.value &&

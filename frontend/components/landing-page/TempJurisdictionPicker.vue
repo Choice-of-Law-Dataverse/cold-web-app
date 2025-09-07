@@ -6,7 +6,7 @@
       <h2 class="popular-title">Open a Country Report</h2>
       <div class="suggestions w-full md:w-auto">
         <JurisdictionSelectMenu
-          :countries="countries || []"
+          :countries="jurisdictions || []"
           @countrySelected="navigateToCountry"
         />
       </div>
@@ -21,28 +21,11 @@ import { useJurisdictions } from '@/composables/useJurisdictions'
 
 const router = useRouter()
 
-const { data: countries } = useJurisdictions()
+const { data: jurisdictions } = useJurisdictions()
 
 // Navigate to country route
-const navigateToCountry = async (country) => {
-  if (country) {
-    try {
-      const response = await fetch(
-        `https://restcountries.com/v3.1/name/${country}?fields=cca3`
-      )
-      const data = await response.json()
-
-      if (data && data[0] && data[0].cca3) {
-        const isoCode = data[0].cca3.toLowerCase() // Convert to lowercase
-        router.push(`/jurisdiction/${isoCode}`)
-      } else {
-        console.error(`ISO3 code not found for country: ${country}`)
-      }
-    } catch (error) {
-      console.error('Error fetching ISO3 code:', error)
-    }
-  }
-}
+const navigateToCountry = async (country) =>
+  router.push(`/jurisdiction/${country.alpha3Code.toLowerCase()}`)
 </script>
 
 <style scoped>

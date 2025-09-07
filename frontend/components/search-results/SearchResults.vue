@@ -9,7 +9,7 @@
           <!-- Filter Controls -->
           <div class="flex flex-col sm:flex-row gap-5 w-full">
             <SearchFilters
-              :options="jurisdictionOptions"
+              :options="jurisdictions"
               v-model="currentJurisdictionFilter"
               class="w-full sm:w-auto"
               :showAvatars="true"
@@ -239,7 +239,7 @@ const selectWidth = ref('auto')
 const measureRef = ref(null)
 
 // Filter options
-const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
+const jurisdictions = ref([{ label: 'All Jurisdictions' }])
 const themeOptions = ref([
   'All Themes',
   ...importedThemeOptions.map((theme) => theme.label),
@@ -290,13 +290,13 @@ const updateSelectWidth = () => {
 }
 
 // Data fetching via composable
-import { useJurisdictionOptions } from '@/composables/useJurisdictionOptions'
-const { data: jurisdictionData } = useJurisdictionOptions()
+import { useJurisdictions } from '@/composables/useJurisdictions'
+const { data: jurisdictionData } = useJurisdictions()
 watch(
   () => jurisdictionData?.value,
   (list) => {
     if (!list) return
-    jurisdictionOptions.value = [
+    jurisdictions.value = [
       { label: 'All Jurisdictions' },
       ...list.map((j) => ({ label: j.label, avatar: j.avatar })),
     ]

@@ -170,7 +170,7 @@ import JurisdictionQuestions from '@/components/content/JurisdictionQuestions.vu
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
-import { useJurisdiction } from '@/composables/useJurisdiction'
+import { useJurisdiction } from '@/composables/useJurisdictions'
 import {
   useDomesticInstrumentsCount,
   useCourtDecisionsCount,

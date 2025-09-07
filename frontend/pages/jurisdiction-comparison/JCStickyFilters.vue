@@ -19,7 +19,7 @@
           :style="`grid-column: ${index + 2}`"
         >
           <SearchFilters
-            :options="jurisdictionOptions"
+            :options="jurisdictions"
             v-model="filter.value.value"
             class="jc-search-filter"
             :showAvatars="true"
@@ -40,7 +40,7 @@
           class="filter-item"
         >
           <SearchFilters
-            :options="jurisdictionOptions"
+            :options="jurisdictions"
             v-model="filter.value.value"
             class="w-full"
             :showAvatars="true"
@@ -71,8 +71,8 @@ const props = defineProps({
 const router = useRouter()
 const route = useRoute()
 
-const { data: jurisdictionOptions, isLoading: loadingJurisdictions } =
-  useJurisdictionOptions()
+const { data: jurisdictions, isLoading: loadingJurisdictions } =
+  useJurisdictions()
 
 // Use shared jurisdiction comparison state
 const {
@@ -90,9 +90,9 @@ const isSticky = ref(false)
 watch(
   () => props.initialCountries,
   () => {
-    if (jurisdictionOptions.value.length > 1) {
+    if (jurisdictions.value.length > 1) {
       // Ensure jurisdictions are loaded
-      setInitialFilters(jurisdictionOptions.value, props.initialCountries)
+      setInitialFilters(jurisdictions.value, props.initialCountries)
     }
   },
   { immediate: true }
@@ -131,8 +131,8 @@ watch(
 // Initialization
 onMounted(async () => {
   // Set initial filters after loading
-  if (jurisdictionOptions.value.length > 1) {
-    setInitialFilters(jurisdictionOptions.value, props.initialCountries)
+  if (jurisdictions.value.length > 1) {
+    setInitialFilters(jurisdictions.value, props.initialCountries)
   }
 
   // JavaScript-based sticky implementation

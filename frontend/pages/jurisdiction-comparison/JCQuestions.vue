@@ -231,7 +231,7 @@ watch([isOpen, isOpenMobile], ([desktop, mobile]) => {
   }
 })
 
-const { data: jurisdictionOptions } = useJurisdictionOptions()
+const { data: jurisdictions } = useJurisdictions()
 
 // Use shared jurisdiction comparison state
 const { jurisdictionFilters } = useJurisdictionComparison()
@@ -242,7 +242,7 @@ const erroredFlags = ref({})
 // Flag URL helper function
 const getFlagUrl = (label) => {
   if (!label || label === 'All Jurisdictions') return ''
-  const found = jurisdictionOptions.value.find((j) => j.label === label)
+  const found = jurisdictions.value.find((j) => j.label === label)
   if (found?.avatar) return found.avatar
   return `https://choiceoflaw.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
 }

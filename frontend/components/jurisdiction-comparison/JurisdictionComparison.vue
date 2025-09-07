@@ -38,7 +38,7 @@
               </div>
               <JurisdictionSelectMenu
                 v-model="selectedJurisdiction"
-                :countries="jurisdictionOptions"
+                :countries="jurisdictions"
                 @countrySelected="updateComparison"
                 class="w-full md:w-72 cold-uselectmenu"
               />
@@ -99,6 +99,7 @@
 <script setup>
 import { ref, watch, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useJurisdictions } from '@/composables/useJurisdictions'
 import JurisdictionComparisonMatchSummary from './JurisdictionComparisonMatchSummary.vue'
 import JurisdictionComparisonTable from './JurisdictionComparisonTable.vue'
 import JurisdictionSelectMenu from './JurisdictionSelectMenu.vue'
@@ -119,9 +120,10 @@ const props = defineProps({
 })
 
 const router = useRouter() // Access the router to update the query parameters
+const { data: jurisdictions, isLoading: jurisdictionsLoading } =
+  useJurisdictions()
 const loading = ref(true)
 const rows = ref([])
-const jurisdictionOptions = ref([]) // Options for the dropdown
 const selectedJurisdiction = ref(null) // Selected jurisdiction for comparison
 const selectedTheme = ref(null) // Selected theme for filtering
 const showInfo = ref(false) // Reactive state to toggle the JurisdictionComparisonInfo component
@@ -214,38 +216,7 @@ async function fetchTableData(jurisdiction) {
   }
 }
 
-// Fetch jurisdictions from the text file
-async function fetchJurisdictions() {
-  try {
-    const { useApiClient } = await import('@/composables/useApiClient')
-    const { apiClient } = useApiClient()
-    const data = await apiClient('/search/full_table', {
-      body: { table: 'Jurisdictions', filters: [] },
-    })
-
-    // Filter out jurisdictions where "Irrelevant?" is explicitly true
-    const relevantJurisdictions = data.filter(
-      (entry) => entry['Irrelevant?'] === false
-    )
-
-    // Extract and format jurisdiction names
-    let jurisdictionNames = relevantJurisdictions
-      .map((entry) => entry.Name)
-      .filter(Boolean)
-
-    // Sort and format the list
-    jurisdictionOptions.value = jurisdictionNames
-      .sort((a, b) => a.localeCompare(b))
-      .map((name) => ({ label: name, value: name })) // Ensure correct structure
-  } catch (error) {
-    console.error('Error fetching jurisdictions:', error)
-    jurisdictionOptions.value = [] // Fallback to an empty list
-  }
-}
-
 onMounted(async () => {
-  await fetchJurisdictions() // Ensure jurisdictions are loaded first
-
   const compareQuery = router.currentRoute.value.query.c
   if (compareQuery) {
     await syncCompareJurisdiction(compareQuery) // Sync the dropdown
@@ -268,7 +239,7 @@ async function updateComparison(jurisdiction) {
   loading.value = true
   try {
     const jurisdictionData = await fetchFilteredTableData([
-      { column: 'Jurisdictions', value: jurisdiction.value },
+      { column: 'Jurisdictions', value: jurisdiction.label },
     ])
 
     updateColumns(jurisdiction)
@@ -279,7 +250,7 @@ async function updateComparison(jurisdiction) {
 }
 
 function updateColumns(jurisdiction) {
-  const secondColumnKey = `Answer_${jurisdiction.value}`
+  const secondColumnKey = `Answer_${jurisdiction.label}`
   columns.value = [
     { key: 'Themes', label: 'Theme', class: 'label' },
     { key: 'Question', label: 'Question', class: 'label' },
@@ -290,7 +261,7 @@ function updateColumns(jurisdiction) {
 }
 
 function updateRows(jurisdictionData, jurisdiction) {
-  const secondColumnKey = `Answer_${jurisdiction.value}`
+  const secondColumnKey = `Answer_${jurisdiction.label}`
   rows.value = rows.value.map((row) => {
     const match = jurisdictionData.find(
       (item) => item.Question === row.Question
@@ -317,9 +288,6 @@ watch(
   () => router.currentRoute.value.query.c,
   async (newCompare) => {
     if (newCompare) {
-      if (!jurisdictionOptions.value.length) {
-        await fetchJurisdictions() // Ensure jurisdictions are loaded
-      }
       await syncCompareJurisdiction(newCompare) // Sync dropdown
       const jurisdiction = selectedJurisdiction.value
       if (jurisdiction) {
@@ -364,9 +332,7 @@ async function syncCompareJurisdiction(compare) {
 
     if (data && data.name?.common) {
       const fullName = data.name.common
-      const option = jurisdictionOptions.value.find(
-        (opt) => opt.value === fullName
-      )
+      const option = jurisdictions.value?.find((opt) => opt.label === fullName)
       if (option) {
         selectedJurisdiction.value = option // Update dropdown selection
       } else {
