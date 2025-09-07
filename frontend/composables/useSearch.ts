@@ -1,5 +1,5 @@
 import { computed, type Ref } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
+import { useInfiniteQuery } from '@tanstack/vue-query'
 import { useApiClient } from '@/composables/useApiClient'
 import type {
   EnhancedSearchRequest,
@@ -54,7 +54,7 @@ const getBrowserInfo = (): BrowserInfo => {
 
 const fetchSearchResults = async ({
   query,
-  filters,
+  filters, 
   page = 1,
   pageSize = 10,
 }: SearchParams): Promise<SearchResponse> => {
@@ -144,11 +144,11 @@ const fetchSearchResults = async ({
 }
 
 export function useSearch(searchParams: Ref<SearchParams>) {
-  return useQuery({
-    queryKey: ['search', searchParams],
-    queryFn: () => fetchSearchResults(searchParams.value),
+  return useInfiniteQuery({
+    queryKey: computed(() => ['search', searchParams.value]),
+    queryFn: ({ pageParam }) => fetchSearchResults({...searchParams.value, page: pageParam}),
+    initialPageParam: 1,
     enabled: computed(() => {
-      // Enable query when we have search params
       const params = searchParams.value
       return !!(
         params.query ||
@@ -157,7 +157,13 @@ export function useSearch(searchParams: Ref<SearchParams>) {
         params.filters.type
       )
     }),
-    // Note: keepPreviousData is deprecated in newer versions of TanStack Query
-    // Replace with placeholderData if needed
+    getNextPageParam: (lastPage, allPages, lastPageParam) => {
+      const totalItems = lastPage.totalMatches
+      const pageSize = searchParams.value.pageSize || 10
+      const totalPages = Math.ceil(totalItems / pageSize)
+      const currentPage = lastPageParam
+      
+      return currentPage < totalPages ? currentPage + 1 : undefined
+    },
   })
 }

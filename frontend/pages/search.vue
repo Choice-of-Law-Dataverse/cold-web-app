@@ -15,14 +15,14 @@
       :total-matches="totalMatches"
       :loading="loading"
       v-model:filters="filter"
-      :canLoadMore="searchResults.length < totalMatches"
+      :canLoadMore="hasNextPage && !isFetchingNextPage"
       @load-more="loadMoreResults"
     />
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed, nextTick } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import SearchResults from '@/components/search-results/SearchResults.vue'
 import { useSearch } from '@/composables/useSearch'
@@ -36,10 +36,6 @@ useSeoMeta({
 const route = useRoute()
 const router = useRouter()
 const searchQuery = ref(route.query.q || '') // Holds the search query from the URL
-const searchResults = ref([]) // Stores search results to be displayed
-const totalMatches = ref(0) // Save number of total matches to display at top of search results
-
-const currentPage = ref(1)
 
 // Persistent filter state
 const filter = ref({
@@ -51,37 +47,49 @@ const filter = ref({
 
 const searchText = ref(route.query.q || '') // Initialize searchText from query
 
-// Create search parameters for TanStack Query
-const searchParams = computed(() => ({
-  query: searchQuery.value,
-  filters: filter.value,
-  page: currentPage.value,
-  pageSize: 10,
-}))
+// Flag to prevent queries during component initialization
+const isInitialized = ref(false)
 
-// Use TanStack Query for search
-const { data: searchData, isLoading, error } = useSearch(searchParams)
-
-// Watch search data and update local state for pagination
-watch(
-  searchData,
-  (newData) => {
-    if (newData) {
-      if (currentPage.value === 1) {
-        // First page - replace results
-        searchResults.value = newData.results
-      } else {
-        // Additional pages - append results
-        searchResults.value = [...searchResults.value, ...newData.results]
-      }
-      totalMatches.value = newData.totalMatches
+// Create search parameters for TanStack Query - only when initialized
+const searchParams = computed(() => {
+  if (!isInitialized.value) {
+    // Return empty params while not initialized to prevent queries
+    return {
+      query: '',
+      filters: {},
+      pageSize: 10,
     }
-  },
-  { immediate: true }
-)
+  }
+  
+  return {
+    query: searchQuery.value,
+    filters: filter.value,
+    pageSize: 10,
+  }
+})
+
+// Use TanStack Query for infinite search
+const { 
+  data: searchData, 
+  isLoading, 
+  error, 
+  fetchNextPage,
+  hasNextPage,
+  isFetchingNextPage
+} = useSearch(searchParams)
+
+// Computed values for search results and total matches
+const searchResults = computed(() => {
+  if (!searchData.value?.pages) return []
+  return searchData.value.pages.flatMap(page => page.results)
+})
+
+const totalMatches = computed(() => {
+  return searchData.value?.pages?.[0]?.totalMatches || 0
+})
 
 // Create computed values for template
-const loading = computed(() => isLoading.value)
+const loading = computed(() => isLoading.value || isFetchingNextPage.value)
 const apiError = computed(() => error.value?.message || null)
 
 // Keep searchText in sync with searchQuery
@@ -106,10 +114,6 @@ watch(
   filter,
   (newFilters, oldFilters) => {
     if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return // Avoid redundant updates
-
-    // Reset pagination when filters change
-    currentPage.value = 1
-    searchResults.value = []
 
     const query = {
       ...route.query, // Retain existing query parameters
@@ -146,10 +150,6 @@ watch(
     // Update searchQuery and filters based on the URL
     searchQuery.value = newQuery.q || ''
 
-    // Reset pagination when URL changes
-    currentPage.value = 1
-    searchResults.value = []
-
     // Only update filters if they exist in the URL
     const newFilters = {}
     if (newQuery.jurisdiction) newFilters.jurisdiction = newQuery.jurisdiction
@@ -160,12 +160,22 @@ watch(
     if (JSON.stringify(newFilters) !== JSON.stringify(filter.value)) {
       filter.value = newFilters
     }
+    
+    // Mark as initialized after first URL processing
+    if (!isInitialized.value) {
+      // Use nextTick to ensure all reactive updates are complete
+      nextTick(() => {
+        isInitialized.value = true
+      })
+    }
   },
   { deep: true, immediate: true } // Add immediate to handle initial URL
 )
 
 function loadMoreResults() {
-  currentPage.value += 1
+  if (hasNextPage.value && !isFetchingNextPage.value) {
+    fetchNextPage()
+  }
 }
 
 onMounted(() => {
