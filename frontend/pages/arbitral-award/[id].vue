@@ -6,6 +6,7 @@
     :valueClassMap="valueClassMap"
     :formattedJurisdiction="formattedJurisdictions"
     :formattedTheme="formattedThemes"
+    :showSuggestEdit="true"
     sourceTable="Arbitral Award"
   />
 </template>

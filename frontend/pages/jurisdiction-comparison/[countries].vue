@@ -6,6 +6,7 @@
       :resultData="{}"
       :keyLabelPairs="[]"
       :valueClassMap="{}"
+      :showHeader="false"
       sourceTable=""
     >
       <template #full-width>

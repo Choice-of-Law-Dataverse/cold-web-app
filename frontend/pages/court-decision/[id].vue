@@ -4,6 +4,7 @@
     :resultData="courtDecision"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
     sourceTable="Court Decisions"
   >
     <!-- Slot for Domestic Legal Provisions -->

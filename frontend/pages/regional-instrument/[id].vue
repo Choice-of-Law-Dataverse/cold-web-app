@@ -4,6 +4,7 @@
     :resultData="processedRegionalInstrument"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
     sourceTable="Regional Instrument"
   >
     <template #literature>

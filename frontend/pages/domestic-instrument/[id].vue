@@ -4,6 +4,7 @@
     :resultData="processedLegalInstrument"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
     sourceTable="Domestic Instrument"
   >
     <!-- Slot for Amended by -->

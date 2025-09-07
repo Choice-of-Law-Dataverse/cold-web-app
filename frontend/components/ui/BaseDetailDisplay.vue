@@ -25,8 +25,8 @@
   </template>
   <template v-else>
     <UCard class="cold-ucard">
-      <!-- Header section: always render, but pass headerMode -->
-      <template #header>
+      <!-- Header section: render only when showHeader is true -->
+      <template v-if="showHeader" #header>
         <BaseCardHeader
           :resultData="resultData"
           :cardType="formattedSourceTable"

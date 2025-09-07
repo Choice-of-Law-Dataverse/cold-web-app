@@ -4,6 +4,7 @@
     :resultData="literature"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
     sourceTable="Literature"
   >
     <template #publication-title="{ value }">

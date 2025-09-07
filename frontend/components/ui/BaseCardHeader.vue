@@ -156,7 +156,7 @@
               </NuxtLink>
             </div>
           </template>
-          <template v-else>
+          <template v-else-if="showOpenLink">
             <NuxtLink :to="getLink()" class="label">
               Open
               <UIcon

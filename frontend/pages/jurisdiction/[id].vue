@@ -5,6 +5,7 @@
     :keyLabelPairs="keyLabelPairsWithoutLegalFamily"
     :valueClassMap="valueClassMap"
     :formattedJurisdiction="[jurisdictionData?.Name]"
+    :showSuggestEdit="true"
     sourceTable="Jurisdiction"
   >
     <h1 class="mb-12">

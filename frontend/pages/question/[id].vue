@@ -4,6 +4,7 @@
     :resultData="processedAnswerData"
     :keyLabelPairs="keyLabelPairs"
     :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
     :sourceTable="'Question'"
   >
     <!-- Custom rendering for Legal provision articles -->

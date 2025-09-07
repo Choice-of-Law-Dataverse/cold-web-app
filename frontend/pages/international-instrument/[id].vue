@@ -4,6 +4,7 @@
     :resultData="processedInternationalInstrument"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
     sourceTable="International Instrument"
   >
     <template #literature>
