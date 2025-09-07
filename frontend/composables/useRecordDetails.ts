@@ -8,9 +8,11 @@ const fetchRecordDetails = async (table: TableName, id: string | number) => {
   return await apiClient('/search/details', { body: { table, id } })
 }
 
-type Options = Partial<{
-  select: (data: any) => any
-}> | undefined
+type Options =
+  | Partial<{
+      select: (data: any) => any
+    }>
+  | undefined
 
 export function useRecordDetails(
   table: Ref<TableName>,
@@ -21,7 +23,7 @@ export function useRecordDetails(
     queryKey: computed(() => [table.value, id.value]),
     queryFn: () => fetchRecordDetails(table.value, id.value),
     enabled: computed(() => Boolean(table.value && id.value)),
-    select
+    select,
   })
 }
 
@@ -36,7 +38,7 @@ export function useRecordDetailsList(
       queryKey: [table.value, id],
       queryFn: () => fetchRecordDetails(table.value, id),
       enabled: Boolean(table.value && id),
-      select
+      select,
     }))
   })
 

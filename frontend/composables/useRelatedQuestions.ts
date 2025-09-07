@@ -22,7 +22,7 @@ export function useRelatedQuestions(
 
   const results = useRecordDetailsList(
     computed(() => 'Answers'),
-    compositeIds,
+    compositeIds
   )
 
   const questionLabels = computed(() => {

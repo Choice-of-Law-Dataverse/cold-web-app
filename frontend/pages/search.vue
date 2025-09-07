@@ -40,9 +40,9 @@ const searchQuery = ref(route.query.q || '') // Holds the search query from the 
 // Persistent filter state
 const filter = ref({
   jurisdiction: route.query.jurisdiction,
+  sortBy: route.query.sortBy || 'relevance', // Add sortBy to filter state
   theme: route.query.theme,
   type: route.query.type,
-  sortBy: route.query.sortBy || 'relevance', // Add sortBy to filter state
 })
 
 const searchText = ref(route.query.q || '') // Initialize searchText from query
@@ -55,33 +55,33 @@ const searchParams = computed(() => {
   if (!isInitialized.value) {
     // Return empty params while not initialized to prevent queries
     return {
-      query: '',
       filters: {},
       pageSize: 10,
+      query: '',
     }
   }
-  
+
   return {
-    query: searchQuery.value,
     filters: filter.value,
     pageSize: 10,
+    query: searchQuery.value,
   }
 })
 
 // Use TanStack Query for infinite search
-const { 
-  data: searchData, 
-  isLoading, 
-  error, 
+const {
+  data: searchData,
+  isLoading,
+  error,
   fetchNextPage,
   hasNextPage,
-  isFetchingNextPage
+  isFetchingNextPage,
 } = useSearch(searchParams)
 
 // Computed values for search results and total matches
 const searchResults = computed(() => {
   if (!searchData.value?.pages) return []
-  return searchData.value.pages.flatMap(page => page.results)
+  return searchData.value.pages.flatMap((page) => page.results)
 })
 
 const totalMatches = computed(() => {
@@ -160,7 +160,7 @@ watch(
     if (JSON.stringify(newFilters) !== JSON.stringify(filter.value)) {
       filter.value = newFilters
     }
-    
+
     // Mark as initialized after first URL processing
     if (!isInitialized.value) {
       // Use nextTick to ensure all reactive updates are complete

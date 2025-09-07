@@ -71,7 +71,8 @@ const props = defineProps({
 const router = useRouter()
 const route = useRoute()
 
-const { data: jurisdictionOptions, isLoading: loadingJurisdictions } = useJurisdictionOptions()
+const { data: jurisdictionOptions, isLoading: loadingJurisdictions } =
+  useJurisdictionOptions()
 
 // Use shared jurisdiction comparison state
 const {

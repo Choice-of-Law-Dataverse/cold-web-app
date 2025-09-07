@@ -22,9 +22,10 @@ export function useCourtDecision(courtDecisionId: Ref<string | number>) {
           'Publication Date ISO': formatDate(data['Publication Date ISO']),
           'Date of Judgment': formatDate(data['Date of Judgment']),
           hasEnglishQuoteTranslation:
-            data['Translated Excerpt'] && data['Translated Excerpt'].trim() !== '',
+            data['Translated Excerpt'] &&
+            data['Translated Excerpt'].trim() !== '',
         }
-      }
+      },
     }
   )
 }

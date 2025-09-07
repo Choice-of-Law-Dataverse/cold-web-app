@@ -34,8 +34,7 @@
         <div
           v-if="
             courtDecision &&
-            (courtDecision['Quote'] ||
-              courtDecision['Translated Excerpt'])
+            (courtDecision['Quote'] || courtDecision['Translated Excerpt'])
           "
         >
           <div class="flex items-center justify-between">
@@ -106,9 +105,7 @@
     <template #related-questions>
       <section class="section-gap p-0 m-0">
         <RelatedQuestions
-          :jurisdictionCode="
-            courtDecision['Jurisdictions Alpha-3 Code'] || ''
-          "
+          :jurisdictionCode="courtDecision['Jurisdictions Alpha-3 Code'] || ''"
           :questions="courtDecision['Questions'] || ''"
           :tooltip="
             computedKeyLabelPairs.find(
@@ -134,48 +131,59 @@
     </template>
 
     <!-- Custom rendering for Full Text (Original Text) section -->
-<template #['original-text']="{ value }">
-  <section v-if="value && value.trim() !== ''" class="section-gap p-0 m-0">
-    <div class="flex items-center mb-2 mt-12">
-      <span class="label">
-        {{
-          computedKeyLabelPairs.find((pair) => pair.key === 'Original Text')?.label || 'Full Text'
-        }}
-      </span>
-    </div>
-    <div :class="valueClassMap['Original Text']">
-      <span v-if="!showFullText && value.length > 400">
-        {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
-        <div>
-          <NuxtLink class="ml-2 cursor-pointer" @click="showFullText = true">
-            <Icon name="material-symbols:add" :class="iconClass" />
-            Show entire full text
-          </NuxtLink>
+    <template #original-text="{ value }">
+      <section v-if="value && value.trim() !== ''" class="section-gap p-0 m-0">
+        <div class="flex items-center mb-2 mt-12">
+          <span class="label">
+            {{
+              computedKeyLabelPairs.find((pair) => pair.key === 'Original Text')
+                ?.label || 'Full Text'
+            }}
+          </span>
         </div>
-      </span>
-      <span v-else>
-        {{ value }}
-        <div>
-          <NuxtLink v-if="value.length > 400" class="ml-2 cursor-pointer" @click="showFullText = false">
-            <Icon name="material-symbols:remove" :class="iconClass" />
-            Show less
-          </NuxtLink>
+        <div :class="valueClassMap['Original Text']">
+          <span v-if="!showFullText && value.length > 400">
+            {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
+            <div>
+              <NuxtLink
+                class="ml-2 cursor-pointer"
+                @click="showFullText = true"
+              >
+                <Icon name="material-symbols:add" :class="iconClass" />
+                Show entire full text
+              </NuxtLink>
+            </div>
+          </span>
+          <span v-else>
+            {{ value }}
+            <div>
+              <NuxtLink
+                v-if="value.length > 400"
+                class="ml-2 cursor-pointer"
+                @click="showFullText = false"
+              >
+                <Icon name="material-symbols:remove" :class="iconClass" />
+                Show less
+              </NuxtLink>
+            </div>
+          </span>
+          <div>
+            <a
+              class="ml-2"
+              :href="downloadPDFLink"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon
+                name="i-material-symbols:arrow-circle-down-outline"
+                :class="iconClass"
+              />
+              <span class="ml-1">Download the case as a PDF</span>
+            </a>
+          </div>
         </div>
-      </span>
-      <div>
-        <a
-          class="ml-2"
-          :href="downloadPDFLink"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Icon name="i-material-symbols:arrow-circle-down-outline" :class="iconClass" />
-          <span class="ml-1">Download the case as a PDF</span>
-        </a>
-      </div>
-    </div>
-  </section>
-</template>
+      </section>
+    </template>
   </BaseDetailLayout>
 
   <!-- Error Alert -->
@@ -212,11 +220,11 @@ defineProps({
 const route = useRoute()
 const router = useRouter()
 
-const { 
-  data: courtDecision, 
-  isLoading, 
+const {
+  data: courtDecision,
+  isLoading,
   error: queryError,
-  isError 
+  isError,
 } = useCourtDecision(computed(() => route.params.id))
 
 // Transform the error to match the expected format

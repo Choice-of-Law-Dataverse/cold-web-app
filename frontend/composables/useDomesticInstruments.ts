@@ -30,7 +30,10 @@ export function useDomesticInstruments({
     ),
     queryFn: () => fetchDomesticInstrumentsData(filterCompatible.value),
     select: filterCompatible.value
-      ? (data) => data.filter((item: any) => item['Compatible With the HCCH Principles?'])
-      : undefined
+      ? (data) =>
+          data.filter(
+            (item: any) => item['Compatible With the HCCH Principles?']
+          )
+      : undefined,
   })
 }
