@@ -33,8 +33,8 @@
         >
           {{ family }}
         </span>
-        <!-- Display 'source_table' or a type selector when in 'new' mode -->
-        <template v-if="adjustedSourceTable">
+        <!-- Display 'source_table' or a type selector when in 'new' mode (hide on Jurisdiction page) -->
+        <template v-if="adjustedSourceTable && adjustedSourceTable !== 'Jurisdiction'">
           <!-- In 'new' mode, show a simple dropdown to switch data type -->
           <select
             v-if="headerMode === 'new'"
