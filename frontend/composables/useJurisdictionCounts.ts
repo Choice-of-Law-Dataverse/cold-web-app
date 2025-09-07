@@ -1,44 +1,53 @@
 import { computed, type Ref } from 'vue'
-import { useQuery } from '@tanstack/vue-query'
-import { useApiClient } from '@/composables/useApiClient'
-import type { SearchRequest, TableName } from '~/types/api'
+import { useSearch } from '~/composables/useSearch'
+import type { SearchParams } from '~/types/api'
 
-const fetchJurisdictionCount = async (
-  jurisdiction: string,
-  table: TableName
-): Promise<number> => {
-  if (!jurisdiction) return 0
+export const useCourtDecisionsCount = (
+  jurisdictionId: Ref<string | undefined>
+) => {
+  const searchParams = computed<SearchParams>(() => ({
+    filters: {
+      jurisdiction: jurisdictionId.value || '',
+      sortBy: 'relevance',
+      type: 'Court Decisions',
+    },
+    pageSize: 10,
+    query: '',
+  }))
 
-  const { apiClient } = useApiClient()
+  const searchQuery = useSearch(searchParams)
 
-  const body: SearchRequest = {
-    search_string: '',
-    filters: [
-      { column: 'jurisdictions', values: [jurisdiction] },
-      { column: 'tables', values: [table] },
-    ],
-    page: 1,
-    page_size: 1,
+  return {
+    data: computed(() => {
+      if (!searchQuery.data.value?.pages?.[0]) return undefined
+      return searchQuery.data.value.pages[0].totalMatches
+    }),
+    isLoading: searchQuery.isLoading,
+    error: searchQuery.error,
   }
-
-  const data = await apiClient('/search/', { body })
-  return data.total_matches || 0
 }
 
-export function useCourtDecisionsCount(jurisdictionName: Ref<string>) {
-  return useQuery({
-    queryKey: ['courtDecisionsCount', jurisdictionName],
-    queryFn: () =>
-      fetchJurisdictionCount(jurisdictionName.value, 'Court Decisions'),
-    enabled: computed(() => !!jurisdictionName.value),
-  })
-}
+export const useDomesticInstrumentsCount = (
+  jurisdictionId: Ref<string | undefined>
+) => {
+  const searchParams = computed<SearchParams>(() => ({
+    filters: {
+      jurisdiction: jurisdictionId.value || '',
+      sortBy: 'relevance',
+      type: 'Domestic Instruments',
+    },
+    pageSize: 10,
+    query: '',
+  }))
 
-export function useDomesticInstrumentsCount(jurisdictionName: Ref<string>) {
-  return useQuery({
-    queryKey: ['domesticInstrumentsCount', jurisdictionName],
-    queryFn: () =>
-      fetchJurisdictionCount(jurisdictionName.value, 'Domestic Instruments'),
-    enabled: computed(() => !!jurisdictionName.value),
-  })
+  const searchQuery = useSearch(searchParams)
+
+  return {
+    data: computed(() => {
+      if (!searchQuery.data.value?.pages?.[0]) return undefined
+      return searchQuery.data.value.pages[0].totalMatches
+    }),
+    isLoading: searchQuery.isLoading,
+    error: searchQuery.error,
+  }
 }

@@ -54,7 +54,7 @@ const getBrowserInfo = (): BrowserInfo => {
 
 const fetchSearchResults = async ({
   query,
-  filters, 
+  filters,
   page = 1,
   pageSize = 10,
 }: SearchParams): Promise<SearchResponse> => {
@@ -146,7 +146,8 @@ const fetchSearchResults = async ({
 export function useSearch(searchParams: Ref<SearchParams>) {
   return useInfiniteQuery({
     queryKey: computed(() => ['search', searchParams.value]),
-    queryFn: ({ pageParam }) => fetchSearchResults({...searchParams.value, page: pageParam}),
+    queryFn: ({ pageParam }) =>
+      fetchSearchResults({ ...searchParams.value, page: pageParam }),
     initialPageParam: 1,
     enabled: computed(() => {
       const params = searchParams.value
@@ -162,7 +163,7 @@ export function useSearch(searchParams: Ref<SearchParams>) {
       const pageSize = searchParams.value.pageSize || 10
       const totalPages = Math.ceil(totalItems / pageSize)
       const currentPage = lastPageParam
-      
+
       return currentPage < totalPages ? currentPage + 1 : undefined
     },
   })
