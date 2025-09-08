@@ -16,7 +16,7 @@
           >
             <span>
               Navigate private international law issues with precision — for
-              ever for free.
+              free for ever.
 
               <UButton class="suggestion-button" to="/about" variant="link">
                 <span>Read more </span>
@@ -134,7 +134,7 @@
           <ConnectCard
             title="Enter new Data"
             buttonText="Submit your data"
-            buttonLink="/international-instrument/new"
+            buttonLink="/court-decision/new"
             iconName="i-material-symbols:add-notes"
             :newTab="false"
           />

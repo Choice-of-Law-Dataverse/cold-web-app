@@ -35,16 +35,52 @@
         </span>
         <!-- Display 'source_table' or a type selector when in 'new' mode -->
         <template v-if="adjustedSourceTable">
-          <!-- In 'new' mode, show a simple dropdown to switch data type -->
-          <select
-            v-if="headerMode === 'new'"
-            v-model="selectedType"
-            class="border border-gray-300 px-2 pr-8 py-2 text-xs font-bold uppercase mr-3 min-w-[240px]"
-          >
-            <option v-for="type in typeOptions" :key="type" :value="type">
-              {{ type }}
-            </option>
-          </select>
+          <!-- In 'new' mode, show the data type label style and a link to reveal the dropdown -->
+          <div v-if="headerMode === 'new'" class="flex items-center mr-3">
+            <span
+              :class="['label', labelColorClass, 'source-table-label-link']"
+            >
+              {{ adjustedSourceTable }}
+            </span>
+            <div class="-ml-2">
+              <USelect
+                variant="none"
+                v-model="selectedType"
+                :options="typeOptions"
+                value-attribute="value"
+                option-attribute="label"
+                :class="[
+                  'no-caret-select',
+                  'leading-none',
+                  'new-select-label',
+                  '!text-[var(--color-cold-purple)]',
+                ]"
+                :ui="selectUiLabel"
+              >
+                <!-- Custom caret (replaces default chevron) -->
+                <template #trailing>
+                  <span class="custom-caret" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 24 24"
+                      width="16"
+                      height="16"
+                      fill="none"
+                      style="color: white; transform: rotate(90deg)"
+                    >
+                      <path
+                        d="M9 6l6 6-6 6"
+                        stroke="currentColor"
+                        stroke-width="3"
+                        stroke-linecap="square"
+                        stroke-linejoin="square"
+                      />
+                    </svg>
+                  </span>
+                </template>
+              </USelect>
+            </div>
+          </div>
           <!-- In other modes, keep the clickable label linking to search -->
           <NuxtLink
             v-else
@@ -82,18 +118,14 @@
       <div class="fade-out" :class="fadeOutClasses"></div>
 
       <!-- Right side of the header: Show either "Suggest Edit"/"Open" or custom for 'new' mode -->
-      <div class="open-link ml-4">
+      <div class="open-link ml-4 label">
         <template v-if="headerMode === 'new'">
-          <UButton
-            class="mr-2"
-            color="gray"
-            variant="outline"
-            @click="$emit('open-cancel-modal')"
-            >Cancel</UButton
+          <NuxtLink
+            class="label flex items-center cursor-pointer pt-0.5"
+            @click="$emit('open-save-modal')"
           >
-          <UButton color="primary" @click="$emit('open-save-modal')"
-            >Submit</UButton
-          >
+            Submit your data …
+          </NuxtLink>
         </template>
         <template v-else>
           <template v-if="showSuggestEdit">
@@ -147,6 +179,8 @@
                 class="flex items-center"
                 :class="action.class"
                 v-bind="action.to ? { to: action.to } : {}"
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 {{ action.label }}
                 <UIcon
@@ -285,6 +319,7 @@ const adjustedSourceTable = computed(() => {
 const labelColorClass = computed(() => {
   switch (formattedSourceTable.value) {
     case 'Court Decisions':
+    case 'Court Decision':
       return 'label-court-decision'
     case 'Answers':
     case 'Question':
@@ -396,9 +431,6 @@ const suggestEditActions = computed(() => {
   }
   // Adjust the Edit link for International Instrument page only
   let editLink = suggestEditLink.value
-  if (props.cardType === 'International Instrument' && props.resultData?.ID) {
-    editLink = `/international-instrument/${props.resultData.ID}/edit`
-  }
   actions.push({
     label: 'Edit',
     icon: 'i-material-symbols:edit-square-outline',
@@ -479,26 +511,32 @@ function getSourceTablePlural(label) {
   return label
 }
 
-// Dropdown options for 'new' pages
+// Dropdown options for 'new' pages (first is a real placeholder)
 const typeOptions = [
-  'Court Decision',
-  'Domestic Instrument',
-  'Regional Instrument',
-  'International Instrument',
-  'Literature',
-  'Question',
+  { label: 'Change', value: '' },
+  { label: 'Court Decision', value: 'Court Decision' },
+  { label: 'Domestic Instrument', value: 'Domestic Instrument' },
+  { label: 'Regional Instrument', value: 'Regional Instrument' },
+  { label: 'International Instrument', value: 'International Instrument' },
+  { label: 'Literature', value: 'Literature' },
 ]
 const selectedType = ref('')
 
-// Keep dropdown in sync with current header label
+// Ensure placeholder shows by default in 'new' mode
+onMounted(() => {
+  if (props.headerMode === 'new') {
+    selectedType.value = ''
+  }
+})
+
+// Reset selection on route change to keep placeholder visible by default
 watch(
-  () => adjustedSourceTable.value,
-  (val) => {
+  () => route.fullPath,
+  () => {
     if (props.headerMode === 'new') {
-      selectedType.value = val || ''
+      selectedType.value = ''
     }
-  },
-  { immediate: true }
+  }
 )
 
 function typeToNewPath(label) {
@@ -519,10 +557,20 @@ function typeToNewPath(label) {
 
 // Navigate on selection change in 'new' mode
 watch(selectedType, (val, old) => {
-  if (props.headerMode === 'new' && val && val !== old) {
+  if (props.headerMode === 'new' && val !== '' && val !== old) {
     router.push(typeToNewPath(val))
   }
 })
+
+// Ensure USelect internal trigger/value adopt the global .label style
+const selectUiLabel = {
+  base: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
+  wrapper: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
+  input: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
+  trigger: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
+  value: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
+  placeholder: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
+}
 </script>
 
 <style scoped>
@@ -634,5 +682,141 @@ a.label-literature {
 .label-arbitration,
 a.label-arbitration {
   color: var(--color-label-arbitration) !important;
+}
+
+/* Make the dropdown caret white so it blends into white background */
+.no-caret-select :deep([class*='i-heroicons-chevron']) {
+  /* Hide built-in chevrons */
+  display: none !important;
+}
+.no-caret-select :deep([class*='i-heroicons-chevron']) svg {
+  display: none !important;
+}
+/* Iconify/Material icons use a class with a colon; escape it */
+.no-caret-select :deep([class*='i-material-symbols\:arrow-drop-down']) {
+  display: none !important;
+}
+/* Up/Down combined chevron variant */
+.no-caret-select :deep([class*='i-heroicons-chevron-up-down']) {
+  display: none !important;
+}
+/* Trailing container color fallback */
+.no-caret-select :deep(.ui-input-trailing),
+.no-caret-select :deep(.u-input-trailing) {
+  color: inherit !important;
+}
+
+/* Align custom caret visually with input text */
+.no-caret-select :deep(.u-input-trailing),
+.no-caret-select :deep(.ui-input-trailing) {
+  display: inline-flex !important;
+  align-items: center !important;
+}
+
+.custom-caret {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 0.25rem; /* slight spacing from text */
+  pointer-events: none; /* do not block input interactions */
+}
+
+/* Keep select interactive without overlay */
+
+/* If USelect renders a native <select>, remove the default browser arrow */
+.no-caret-select :deep(select) {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  background-image: none !important;
+  background: none !important;
+}
+/* IE/Edge old */
+.no-caret-select :deep(select::-ms-expand) {
+  display: none !important;
+}
+
+/* Make the select as compact as label text to keep header height consistent */
+.no-caret-select :deep(.ui-input),
+.no-caret-select :deep(.u-input),
+.no-caret-select :deep([role='button']),
+.no-caret-select :deep([role='combobox']) {
+  height: 22px !important;
+  min-height: 22px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  line-height: 1 !important;
+}
+.no-caret-select :deep(.ui-input-trailing),
+.no-caret-select :deep(.u-input-trailing) {
+  height: 22px !important;
+}
+
+/* Make the USelect trigger look like a header label/link */
+.no-caret-select.label :deep(button[role='combobox']) {
+  color: inherit !important;
+  font-weight: inherit !important;
+  font-size: inherit !important;
+  text-transform: inherit !important;
+}
+.no-caret-select.label :deep(.ui-input),
+.no-caret-select.label :deep(.u-input) {
+  color: inherit !important;
+  font-weight: inherit !important;
+  font-size: inherit !important;
+  text-transform: inherit !important;
+}
+
+/* Ensure inner spans/values also adopt label sizing and casing */
+.no-caret-select.label :deep(.u-input *),
+.no-caret-select.label :deep(.ui-input *),
+.no-caret-select.label :deep(button[role='combobox'] *) {
+  font-size: inherit !important;
+  text-transform: inherit !important;
+}
+
+/* Hard-apply .label metrics to trigger/value for reliability */
+.no-caret-select :deep(button[role='combobox']) {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  color: var(--color-cold-purple) !important;
+}
+.no-caret-select :deep(button[role='combobox'] span),
+.no-caret-select :deep(button[role='combobox'] div),
+.no-caret-select :deep(.u-input .u-input-value),
+.no-caret-select :deep(.ui-input .ui-input-value) {
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  text-transform: uppercase !important;
+  color: var(--color-cold-purple) !important;
+}
+
+/* Nuxt UI select specific wrappers */
+.no-caret-select :deep(.u-select),
+.no-caret-select :deep(.ui-select),
+.no-caret-select :deep(.u-input-wrapper),
+.no-caret-select :deep(.ui-input-wrapper) {
+  height: 22px !important;
+}
+.no-caret-select :deep(button[role='combobox']) {
+  height: 22px !important;
+  min-height: 22px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Final authority: enforce 12px uppercase, weight 600, and purple color */
+.new-select-label :deep(button[role='combobox']),
+.new-select-label :deep(button[role='combobox'] *),
+.new-select-label :deep(.u-input .u-input-value),
+.new-select-label :deep(.ui-input .ui-input-value),
+.no-caret-select.new-select-label :deep(button[role='combobox']),
+.no-caret-select.new-select-label :deep(button[role='combobox'] *),
+.no-caret-select.new-select-label :deep(.u-input .u-input-value),
+.no-caret-select.new-select-label :deep(.ui-input .ui-input-value) {
+  font-size: 12px !important;
+  text-transform: uppercase !important;
+  font-weight: 600 !important;
+  color: var(--color-cold-purple) !important;
 }
 </style>
