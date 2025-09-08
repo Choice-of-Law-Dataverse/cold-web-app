@@ -64,7 +64,7 @@
         >
           Submit Your Data Now
           <UIcon
-            name="i-material-symbols:article-shortcut-outline"
+            name="i-material-symbols:add-notes-outline"
             class="inline-block ml-1 text-[1.2em] relative"
           />
         </h2>

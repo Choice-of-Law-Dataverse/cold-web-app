@@ -193,6 +193,21 @@ const internalValue = computed({
       if (!newValue) {
         emit('update:modelValue', [])
       } else {
+        // If the selected value corresponds to the first "All…" option, clear selection
+        const firstLabel = isObjectOptions.value
+          ? props.options[0]?.label
+          : props.options[0]
+        const newLabel =
+          typeof newValue === 'object' ? newValue?.label : newValue
+        if (
+          firstLabel &&
+          newLabel &&
+          firstLabel === newLabel &&
+          /^All(\s|\b)/.test(firstLabel)
+        ) {
+          emit('update:modelValue', [])
+          return
+        }
         const processed =
           typeof newValue === 'object'
             ? props.options.find((o) => o.label === newValue.label) || newValue
@@ -204,8 +219,31 @@ const internalValue = computed({
 
     // Multiple selection mode
     if (!isObjectOptions.value) {
+      // If first option (All…) is present in selection, clear to empty (reset)
+      const firstLabel = props.options[0]
+      if (
+        firstLabel &&
+        /^All(\s|\b)/.test(firstLabel) &&
+        newValue.includes(firstLabel)
+      ) {
+        emit('update:modelValue', [])
+        return
+      }
       emit('update:modelValue', newValue)
     } else {
+      // Object option case
+      // Detect if selection contains the first option whose label starts with All…
+      const firstLabel = props.options[0]?.label
+      const containsAll = newValue.some((val) => {
+        const lbl = typeof val === 'object' ? val.label : val
+        return (
+          firstLabel && lbl === firstLabel && /^All(\s|\b)/.test(firstLabel)
+        )
+      })
+      if (containsAll) {
+        emit('update:modelValue', [])
+        return
+      }
       const processed = newValue.map((val) => {
         if (typeof val === 'object') {
           return props.options.find((o) => o.label === val.label) || val

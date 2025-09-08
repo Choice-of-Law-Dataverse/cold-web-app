@@ -509,7 +509,8 @@ function splitIntoLines(items, rows) {
      doesn't change the overall component width. It remains centered and responsive. */
   display: block;
   width: 100%;
-  max-width: 820px; /* adjust as needed to match design */
+  /* Use clamp so it naturally shrinks on narrow screens without needing many breakpoints */
+  max-width: clamp(300px, 92vw, 820px);
   margin: 0 auto; /* center the card */
 }
 
@@ -587,14 +588,57 @@ function splitIntoLines(items, rows) {
   right: -44px;
 }
 
+/* Additional responsive refinements */
+@media (max-width: 1024px) {
+  .card-inner {
+    height: 310px; /* slightly reduce fixed height to create better proportion */
+  }
+}
+@media (max-width: 880px) {
+  .nav-button-outside.left {
+    left: -32px;
+  }
+  .nav-button-outside.right {
+    right: -32px;
+  }
+}
 @media (max-width: 768px) {
   .important-questions-wrapper {
-    padding: 0 1.5rem;
+    padding: 0 1rem; /* tighter side padding */
+    overflow-x: hidden; /* prevent any accidental horizontal scroll from nav buttons */
+  }
+  .card-inner {
+    height: 300px; /* keep overall look while allowing a bit more breathing room */
   }
   .nav-button-outside {
     width: 32px;
     height: 32px;
     font-size: 14px;
+  }
+  .nav-button-outside.left {
+    left: -20px; /* reduce negative offset so buttons sit closer to card */
+  }
+  .nav-button-outside.right {
+    right: -20px;
+  }
+}
+@media (max-width: 600px) {
+  .nav-button-outside.left {
+    left: -12px;
+  }
+  .nav-button-outside.right {
+    right: -12px;
+  }
+  .card-inner {
+    height: 290px;
+  }
+}
+@media (max-width: 480px) {
+  .card-inner {
+    height: 280px; /* final small reduction; content still scrolls internally if needed */
+  }
+  .nav-button-outside svg {
+    height: 20px;
   }
 }
 </style>

@@ -11,18 +11,18 @@
             <SearchFilters
               :options="jurisdictionOptions"
               v-model="currentJurisdictionFilter"
-              class="w-full sm:w-auto"
+              class="w-full lg:w-60 flex-shrink-0"
               showAvatars="true"
             />
             <SearchFilters
               :options="themeOptions"
               v-model="currentThemeFilter"
-              class="w-full sm:w-auto"
+              class="w-full lg:w-60 flex-shrink-0"
             />
             <SearchFilters
               :options="typeOptions"
               v-model="currentTypeFilter"
-              class="w-full sm:w-auto"
+              class="w-full lg:w-60 flex-shrink-0"
             />
             <UButton
               v-if="hasActiveFilters"
