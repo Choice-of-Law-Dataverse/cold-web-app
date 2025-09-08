@@ -18,13 +18,13 @@ ENV API_BASE_URL=$API_BASE_URL \
     NUXT_SITE_NAME=$NUXT_SITE_NAME \
     NUXT_TURNSTILE_SITE_KEY=$NUXT_TURNSTILE_SITE_KEY \
     NUXT_TURNSTILE_SECRET_KEY=$NUXT_TURNSTILE_SECRET_KEY
-    
+
 # Copy the package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install && \
-    npm install sass sass-loader sass-embedded-linux-musl-x64 --save-dev
+RUN npm install --legacy-peer-deps && \
+    npm install sass sass-loader sass-embedded-linux-musl-x64 --save-dev  --legacy-peer-deps
 
 # Copy project files
 COPY . .
