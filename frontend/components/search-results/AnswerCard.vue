@@ -99,7 +99,7 @@
               <template v-else>
                 <template v-if="Array.isArray(domesticValue)">
                   <li v-for="(item, index) in domesticValue" :key="index">
-                    <a :href="`/literature/${item.id}`">{{ item.title }}</a>
+                    <a :href="`/literature/L-${item.id}`">{{ item.title }}</a>
                   </li>
                 </template>
                 <li v-else>

@@ -40,7 +40,7 @@
           :key="index"
           class="section-gap p-0 m-0"
         >
-          <a :href="`/literature/${item.id}`">{{ item.title }}</a>
+          <a :href="`/literature/L-${item.id}`">{{ item.title }}</a>
         </li>
       </template>
       <li v-else class="section-gap p-0 m-0">
@@ -52,7 +52,7 @@
         <LoadingBar class="pt-[9px]" />
       </li>
       <li v-else-if="oupChapterSource" class="section-gap p-0 m-0">
-        <a :href="`/literature/${oupChapterSource.id}`">{{
+        <a :href="`/literature/L-${oupChapterSource.id}`">{{
           oupChapterSource.title
         }}</a>
       </li>
