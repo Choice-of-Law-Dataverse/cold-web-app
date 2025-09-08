@@ -119,7 +119,8 @@ const fetchSearchResults = async ({
   body.ip_address = 'Unknown'
 
   try {
-    const data = await apiClient('https://api.ipify.org?format=json')
+    const response = await fetch('https://api.ipify.org?format=json')
+    const data = await response.json()
 
     body.ip_address = data.ip
   } catch (error) {
