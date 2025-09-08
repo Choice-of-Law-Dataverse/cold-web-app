@@ -16,7 +16,7 @@
           >
             <span>
               Navigate private international law issues with precision — for
-              ever for free.
+              free for ever.
 
               <UButton class="suggestion-button" to="/about" variant="link">
                 <span>Read more </span>
