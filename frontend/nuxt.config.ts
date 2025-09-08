@@ -27,6 +27,9 @@ export default defineNuxtConfig({
     },
     apiBaseUrl: process.env.API_BASE_URL,
     fastApiToken: process.env.FASTAPI_API_TOKEN,
+    public: {
+      siteUrl: process.env.NUXT_SITE_URL,
+    },
   },
   robots: {
     robotsTxt: true,

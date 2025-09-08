@@ -6,6 +6,8 @@ import { ApiError, NotFoundError } from '~/types/errors'
  * Provides configured fetch function that uses server-side proxy for secure API calls
  */
 export function useApiClient() {
+  const config = useRuntimeConfig()
+
   const apiClient = async <T = any>(
     endpoint: string,
     options: {
@@ -40,7 +42,16 @@ export function useApiClient() {
         ...otherOptions,
       }
 
-      const response = await fetch(`/api/proxy${endpoint}`, fetchOptions)
+      const proxiedPath = `/api/proxy/${endpoint.replace(/^\/+/, '')}`
+
+      let url = proxiedPath
+      if (typeof window === 'undefined') {
+        // SSR context - need absolute URL
+        const baseUrl = config.public.siteUrl
+        url = `${baseUrl}${proxiedPath}`
+      }
+
+      const response = await fetch(url, fetchOptions)
 
       if (!response.ok) {
         if (response.status === 404) {
