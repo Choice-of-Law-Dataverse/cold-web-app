@@ -11,9 +11,28 @@
         class="flex justify-between items-center space-x-4 sm:space-x-8 relative"
       >
         <!-- Search Input -->
-        <div class="search-container" :class="{ expanded: isExpanded }">
+        <div
+          class="search-container"
+          :class="{ expanded: isExpanded }"
+          v-show="!(isMobile && showMenu)"
+        >
           <div class="search-input-row">
+            <!-- Collapsed mobile search icon -->
+            <button
+              v-if="isMobile && !isExpanded"
+              class="collapsed-search-icon"
+              type="button"
+              aria-label="Open search"
+              :aria-expanded="isExpanded.toString()"
+              @click="handleSearchIconClick"
+            >
+              <span
+                class="iconify i-material-symbols:search"
+                aria-hidden="true"
+              ></span>
+            </button>
             <UInput
+              v-show="!isMobile || isExpanded"
               size="xl"
               ref="searchInput"
               v-model="searchText"
@@ -52,7 +71,7 @@
                 />
               </template>
             </UInput>
-            <button @click="emitSearch" class="icon-button">
+            <button v-if="!isMobile" @click="emitSearch" class="icon-button">
               <span
                 class="iconify i-material-symbols:search"
                 aria-hidden="true"
@@ -82,7 +101,7 @@
 
         <!-- Logo (Hidden when search is expanded) -->
         <NuxtLink
-          v-if="!isExpanded"
+          v-if="!isExpanded && !(isMobile && showMenu)"
           to="/"
           class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center"
         >
@@ -174,6 +193,12 @@ const showMenu = ref(false)
 
 function openMenu() {
   showMenu.value = true
+  // On mobile hide / collapse search state when menu opens
+  if (isMobile.value) {
+    isExpanded.value = false
+    isSearchFocused.value = false
+    showSuggestions.value = false
+  }
   // Add click-away listener
   document.addEventListener('mousedown', handleClickAway)
 }
@@ -218,6 +243,7 @@ onUnmounted(() => {
 const searchText = ref('')
 const isExpanded = ref(false) // Track if the input is expanded
 const isSmallScreen = ref(false)
+const isMobile = ref(false)
 const suggestions = ref([]) // Add suggestions state
 const showSuggestions = ref(false) // Add visibility state for suggestions
 const isSearchFocused = ref(false)
@@ -334,6 +360,16 @@ function expandSearch() {
   // Suggestions will be updated by the watcher on searchText or if updateSuggestions is called
 }
 
+function handleSearchIconClick() {
+  if (isMobile.value && !isExpanded.value) {
+    expandSearch()
+    nextTick(() => {
+      const inputEl = searchInput.value?.$el.querySelector('input')
+      if (inputEl) inputEl.focus()
+    })
+  }
+}
+
 function collapseSearch() {
   isExpanded.value = false // Visual shrink can be immediate
 
@@ -373,7 +409,9 @@ const searchPlaceholder = computed(() =>
 
 // Check screen size
 function checkScreenSize() {
-  isSmallScreen.value = window.innerWidth < 640 // Tailwind's `sm` breakpoint
+  const width = window.innerWidth
+  isSmallScreen.value = width < 640 // Tailwind's `sm` breakpoint
+  isMobile.value = width < 640
 }
 
 // Listen for events from PopularSearches.vue
@@ -562,6 +600,40 @@ a {
 nav {
   min-height: 7rem;
   max-height: 7rem;
+}
+
+/* Mobile collapsed search icon styles */
+.collapsed-search-icon {
+  display: none; /* hidden on desktop */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.25rem 0 0;
+  color: var(--color-cold-purple);
+  height: 2.5rem;
+  width: 2.5rem;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 639px) {
+  .collapsed-search-icon {
+    display: inline-flex;
+    height: 3rem;
+    width: 3rem;
+  }
+  .collapsed-search-icon .iconify {
+    font-size: 1.5rem; /* bigger icon */
+  }
+  .search-container:not(.expanded) :deep(.u-input) {
+    display: none !important;
+  }
+  .search-container:not(.expanded) .icon-button {
+    display: none;
+  }
+  .search-container {
+    width: auto;
+  }
 }
 
 /* .suggestion-hint {
