@@ -465,8 +465,7 @@ function getLink() {
   }
 }
 
-const {data: pdfExists} = useVerifyPdfLink(downloadPDFLink)
-
+const { data: pdfExists } = useVerifyPdfLink(downloadPDFLink)
 
 const suggestEditLink = ref('')
 const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'

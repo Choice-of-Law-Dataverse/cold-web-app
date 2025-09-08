@@ -25,10 +25,8 @@ export default defineNuxtConfig({
     turnstile: {
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
     },
-    public: {
-      apiBaseUrl: process.env.API_BASE_URL,
-      FASTAPI: process.env.FASTAPI_API_TOKEN,
-    },
+    apiBaseUrl: process.env.API_BASE_URL,
+    fastApiToken: process.env.FASTAPI_API_TOKEN,
   },
   robots: {
     robotsTxt: true,

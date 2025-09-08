@@ -260,19 +260,11 @@ async function fetchInstrument() {
       loading.value = false
       return
     }
-    const apiBaseUrl =
-      (typeof useRuntimeConfig === 'function'
-        ? useRuntimeConfig().public.apiBaseUrl
-        : '') || window.location.origin
-    const fastApiKey =
-      typeof useRuntimeConfig === 'function'
-        ? useRuntimeConfig().public.FASTAPI
-        : ''
-    const response = await fetch(`${apiBaseUrl}/search/details`, {
+
+    const response = await fetch(`/api/proxy/search/details`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        authorization: `Bearer ${fastApiKey}`,
       },
       body: JSON.stringify({
         table: 'International Instruments',

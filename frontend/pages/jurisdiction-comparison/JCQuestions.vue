@@ -260,30 +260,18 @@ const isLoading = computed(
   () => hasBeenOpened.value && (loadingQuestions.value || loadingAnswers.value)
 )
 
-// API configuration
-const getApiConfig = () => {
-  const config = useRuntimeConfig()
-  return {
-    baseUrl: config.public.apiBaseUrl,
-    headers: {
-      Authorization: `Bearer ${config.public.FASTAPI}`,
-      'Content-Type': 'application/json',
-    },
-  }
-}
-
 // Fetch questions with improved error handling
 const fetchQuestions = async () => {
   if (!hasBeenOpened.value) return // Don't fetch if accordion hasn't been opened
 
-  const { baseUrl, headers } = getApiConfig()
-
   try {
     const promises = props.questionIDs.map(async (id) => {
       try {
-        const response = await fetch(`${baseUrl}/search/full_table`, {
+        const response = await fetch(`/api/proxy/search/full_table`, {
           method: 'POST',
-          headers,
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({
             table: 'Questions',
             filters: [{ column: 'ID', value: id }],
@@ -313,13 +301,14 @@ const fetchAnswerData = async (id) => {
     return answersData.value[id]
   }
 
-  const { baseUrl, headers } = getApiConfig()
   console.log('[JCQuestions.vue] fetchAnswerData id:', id)
 
   try {
-    const response = await fetch(`${baseUrl}/search/details`, {
+    const response = await fetch(`/api/proxy/search/details`, {
       method: 'POST',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ table: 'Answers', id }),
     })
 

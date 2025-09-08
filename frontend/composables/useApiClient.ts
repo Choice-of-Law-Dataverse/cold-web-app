@@ -3,11 +3,9 @@ import { ApiError, NotFoundError } from '~/types/errors'
 
 /**
  * Shared API client hook for TanStack Query composables
- * Provides configured fetch function with base URL and headers
+ * Provides configured fetch function that uses server-side proxy for secure API calls
  */
 export function useApiClient() {
-  const config = useRuntimeConfig()
-
   const apiClient = async <T = any>(
     endpoint: string,
     options: {
@@ -34,7 +32,6 @@ export function useApiClient() {
       const fetchOptions = {
         method,
         headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
           'Content-Type': 'application/json',
           ...otherOptions.headers,
         },
@@ -43,10 +40,7 @@ export function useApiClient() {
         ...otherOptions,
       }
 
-      const response = await fetch(
-        `${config.public.apiBaseUrl}${endpoint}`,
-        fetchOptions
-      )
+      const response = await fetch(`/api/proxy${endpoint}`, fetchOptions)
 
       if (!response.ok) {
         if (response.status === 404) {

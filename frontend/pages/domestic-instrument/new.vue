@@ -283,17 +283,13 @@ watch(token, () => {})
 // Load jurisdictions like on Court Decision page
 const loadJurisdictions = async () => {
   try {
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
-      }
-    )
+    const response = await fetch(`/api/proxy/search/full_table`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
+    })
 
     if (!response.ok) throw new Error('Failed to load jurisdictions')
 
@@ -421,17 +417,13 @@ function handleNewSave() {
 
   ;(async () => {
     try {
-      await $fetch(
-        `${config.public.apiBaseUrl}/suggestions/domestic-instruments`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: payload,
-        }
-      )
+      await $fetch(`/api/proxy/suggestions/domestic-instruments`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: payload,
+      })
       showSaveModal.value = false
       router.push({
         path: '/confirmation',
