@@ -19,6 +19,9 @@
   border: 1px solid var(--color-cold-night);
 }
 @media (max-width: 639px) {
+  .label-question {
+    padding-right: 9px !important;
+  }
   .desktop-only-text {
     display: none;
   }

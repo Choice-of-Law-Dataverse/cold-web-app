@@ -622,9 +622,9 @@ nav {
 @media (max-width: 639px) {
   .mobile-inline-logo {
     flex: 0 0 auto;
-    margin-left: 0.5rem !important; /* tighten space after search icon */
+    margin-left: 0.3rem !important; /* tighten space after search icon */
     margin-right: 0.5rem !important;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0.75rem;
   }
   .mobile-nav-group {
     gap: 0.75rem;
