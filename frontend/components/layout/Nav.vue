@@ -99,11 +99,11 @@
           </div>
         </div>
 
-        <!-- Logo (Hidden when search is expanded) -->
+        <!-- Desktop centered logo -->
         <NuxtLink
-          v-if="!isExpanded && !(isMobile && showMenu)"
+          v-if="!isMobile && !isExpanded && !(isMobile && showMenu)"
           to="/"
-          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center"
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 flex items-center justify-center desktop-logo"
         >
           <img
             src="https://choiceoflaw.blob.core.windows.net/assets/cold_beta_logo.svg"
@@ -111,9 +111,25 @@
             class="h-12 w-auto mb-4"
           />
         </NuxtLink>
+        <!-- Inline mobile logo for horizontal arrangement -->
+        <NuxtLink
+          v-if="isMobile && !isExpanded && !showMenu"
+          to="/"
+          class="mobile-inline-logo flex items-center justify-center"
+          aria-label="Home"
+        >
+          <img
+            src="https://choiceoflaw.blob.core.windows.net/assets/cold_beta_logo.svg"
+            alt="CoLD Logo"
+            class="h-10 w-auto"
+          />
+        </NuxtLink>
 
         <!-- HCCHApproved and Menu/Links Row -->
-        <div v-if="!isExpanded" class="flex items-center space-x-4">
+        <div
+          v-if="!isExpanded"
+          class="flex items-center space-x-4 mobile-nav-group"
+        >
           <HCCHApproved v-if="!showMenu" />
           <template v-if="!showMenu">
             <button class="menu-button custom-nav-links" @click="openMenu">
@@ -600,6 +616,28 @@ a {
 nav {
   min-height: 7rem;
   max-height: 7rem;
+}
+
+/* Mobile layout adjustments */
+@media (max-width: 639px) {
+  .mobile-inline-logo {
+    flex: 0 0 auto;
+  }
+  .mobile-nav-group {
+    gap: 0.75rem;
+  }
+  .search-container {
+    flex: 0 0 auto;
+  }
+  /* Reduce overall spacing so four items fit comfortably */
+  .flex.justify-between.items-center {
+    justify-content: flex-start;
+    gap: 0.4rem;
+  }
+  .menu-button.custom-nav-links {
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
 }
 
 /* Mobile collapsed search icon styles */
