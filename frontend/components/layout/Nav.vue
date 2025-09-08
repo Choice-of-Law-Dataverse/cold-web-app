@@ -130,7 +130,7 @@
           v-if="!isExpanded"
           class="flex items-center space-x-4 mobile-nav-group"
         >
-          <HCCHApproved v-if="!showMenu" />
+          <HCCHApproved v-if="!showMenu" class="hcch-approved" />
           <template v-if="!showMenu">
             <button class="menu-button custom-nav-links" @click="openMenu">
               Menu
@@ -622,12 +622,21 @@ nav {
 @media (max-width: 639px) {
   .mobile-inline-logo {
     flex: 0 0 auto;
+    margin-left: 0.5rem !important; /* tighten space after search icon */
   }
   .mobile-nav-group {
     gap: 0.75rem;
   }
   .search-container {
     flex: 0 0 auto;
+  }
+  /* Push HCCHApproved further right */
+  .mobile-nav-group .hcch-approved {
+    margin-left: 0; /* reset so it doesn't jump to far edge */
+  }
+  /* Decrease spacing between HCCHApproved and Menu */
+  .mobile-nav-group > * + * {
+    margin-left: 0rem !important; /* override tailwind space-x-4 */
   }
   /* Reduce overall spacing so four items fit comfortably */
   .flex.justify-between.items-center {
