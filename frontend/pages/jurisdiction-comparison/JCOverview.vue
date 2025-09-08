@@ -264,7 +264,16 @@ const fetchLegalFamily = async (iso3Code) => {
 
     if (response.ok) {
       const data = await response.json()
-      legalFamilies.value[iso3Code] = data['Legal Family'] || 'Unknown'
+      // Normalize multiple legal families ensuring a space after commas
+      const raw = data['Legal Family'] || 'Unknown'
+      const normalized =
+        typeof raw === 'string'
+          ? raw
+              .split(',')
+              .map((s) => s.trim())
+              .join(', ')
+          : raw
+      legalFamilies.value[iso3Code] = normalized
     } else {
       legalFamilies.value[iso3Code] = 'Unknown'
     }
