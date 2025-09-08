@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div class="w-full">
     <USelectMenu
-      class="lg:w-60 cold-uselectmenu"
+      class="w-full cold-uselectmenu"
       :class="{
         'non-all-selected': multiple
           ? internalValue.length > 0

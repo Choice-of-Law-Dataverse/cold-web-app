@@ -295,17 +295,27 @@ li::marker {
 }
 
 // USelectmenu
+.cold-uselectmenu {
+  width: 100% !important;
+}
 .cold-uselectmenu button {
   box-shadow: none !important;
   border: 1px solid var(--color-cold-gray) !important;
   border-radius: 0 !important;
   background-color: white !important;
   height: 42px;
+  width: 100% !important; /* make trigger full width */
 }
 
 .cold-uselectmenu.non-all-selected button {
   border-color: var(--color-cold-purple) !important;
   color: var(--color-cold-purple) !important;
+}
+
+/* In case the trigger is rendered as a div/combobox instead of button */
+.cold-uselectmenu [role='combobox'],
+.cold-uselectmenu [data-headlessui-state][role='combobox'] {
+  width: 100% !important;
 }
 
 // Popper Style
@@ -381,4 +391,228 @@ ul[role='listbox'] li[data-headlessui-state='selected']:hover {
 // Jurisdiction Comparison Horizontal Lines
 .jc-hr {
   border-top: 1px solid var(--color-cold-gray);
+}
+
+// Form Inputs -----------------------------------------------
+
+// Base input style: apply to inputs by adding the `cold-input` class.
+// Usage: <input class="cold-input" /> or <textarea class="cold-input"></textarea> or <select class="cold-input"></select>
+.cold-input,
+input.cold-input,
+textarea.cold-input,
+select.cold-input {
+  width: 100% !important;
+  height: 42px !important; // Align with USelect height
+  padding: 0 12px !important;
+  border: 1px solid var(--color-cold-gray) !important;
+  border-radius: 0 !important;
+  background-color: #ffffff !important;
+  color: var(--color-cold-night) !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+// Support component wrappers (e.g., UInput/UTextarea) where the class is on the root wrapper
+.cold-input :is(input, textarea, select) {
+  width: 100% !important;
+  height: 100% !important;
+  padding: 0 !important; /* padding provided by wrapper */
+  border: none !important; /* prevent double borders */
+  border-radius: 0 !important;
+  background-color: transparent !important; /* wrapper controls bg */
+  color: var(--color-cold-night) !important;
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+// Textarea sizing and behavior
+textarea.cold-input {
+  min-height: 96px !important;
+  padding: 10px 12px !important;
+  height: auto !important;
+  resize: vertical !important;
+}
+
+// Placeholder color
+.cold-input::placeholder,
+input.cold-input::placeholder,
+textarea.cold-input::placeholder,
+select.cold-input::placeholder {
+  color: var(--color-cold-night-alpha-50, #8193a8) !important;
+  opacity: 1 !important;
+}
+.cold-input :is(input, textarea, select)::placeholder {
+  color: var(--color-cold-night-alpha-50, #8193a8) !important;
+  opacity: 1 !important;
+}
+
+// Focus only (no hover)
+
+.cold-input:focus,
+input.cold-input:focus,
+textarea.cold-input:focus,
+select.cold-input:focus {
+  border-color: var(--color-cold-purple) !important;
+  background-color: #ffffff !important;
+}
+.cold-input:focus-within {
+  border-color: var(--color-cold-purple) !important;
+  background-color: #ffffff !important;
+}
+
+// Disabled state
+.cold-input[disabled],
+.cold-input:disabled,
+.cold-input[aria-disabled='true'],
+input.cold-input[disabled],
+textarea.cold-input[disabled],
+select.cold-input[disabled] {
+  background-color: var(--color-cold-gray-alpha) !important;
+  color: var(--color-cold-night-alpha) !important;
+  cursor: not-allowed !important;
+}
+.cold-input :is(input, textarea, select)[disabled],
+.cold-input :is(input, textarea, select):disabled,
+.cold-input :is(input, textarea, select)[aria-disabled='true'] {
+  color: var(--color-cold-night-alpha) !important;
+  cursor: not-allowed !important;
+}
+.cold-input:has(:is(input, textarea, select):disabled) {
+  background-color: var(--color-cold-gray-alpha) !important;
+}
+
+// Size variants
+.cold-input--sm {
+  height: 34px !important;
+  font-size: 12px !important;
+  padding: 0 10px !important;
+}
+.cold-input--sm :is(input, textarea, select) {
+  height: 100% !important;
+  font-size: 12px !important;
+}
+
+.cold-input--lg {
+  height: 50px !important;
+  font-size: 16px !important;
+  padding: 0 14px !important;
+}
+.cold-input--lg :is(input, textarea, select) {
+  height: 100% !important;
+  font-size: 16px !important;
+}
+
+/* Wrapper adjustments when it contains a textarea */
+.cold-input:has(textarea) {
+  height: auto !important;
+  padding: 10px 12px !important;
+}
+
+// Validation helpers (opt-in via classes)
+.cold-input--invalid {
+  border-color: #dc2626 !important; // red-600
+}
+
+.cold-input--valid {
+  border-color: #22c55e !important; // green-500
+}
+
+// Labels and help text for form fields
+.cold-input-label {
+  @extend .label-key;
+  text-transform: none;
+}
+
+.cold-input-help {
+  @extend .result-value-small;
+  color: var(--color-cold-night-alpha) !important;
+  margin-top: 4px !important;
+}
+
+// Date Picker trigger (make it look like the main nav search input)
+.cold-date-trigger,
+button.cold-date-trigger {
+  width: 100% !important;
+  height: 42px !important;
+  padding: 0 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: var(--color-cold-purple-alpha) !important;
+  color: var(--color-cold-purple) !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+}
+
+/* Ensure icons inside the trigger inherit the text color */
+.cold-date-trigger .iconify,
+.cold-date-trigger svg,
+.cold-date-trigger [class*='icon'] {
+  color: var(--color-cold-purple) !important;
+  fill: currentColor !important;
+}
+
+/* Focus without hover effects */
+.cold-date-trigger:focus,
+.cold-date-trigger:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+.cold-date-trigger:hover {
+  background-color: var(
+    --color-cold-purple-alpha
+  ) !important; /* no hover change */
+}
+
+/* Disabled state */
+.cold-date-trigger[disabled],
+.cold-date-trigger:disabled,
+.cold-date-trigger[aria-disabled='true'] {
+  background-color: var(--color-cold-gray-alpha) !important;
+  color: var(--color-cold-night-alpha) !important;
+  cursor: not-allowed !important;
+}
+
+// Full-width two-option toggle styled like the date picker
+.cold-toggle-group {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+}
+
+.cold-toggle-btn,
+button.cold-toggle-btn {
+  width: 100% !important; /* fill each grid cell */
+  height: 42px !important; /* match date trigger */
+  padding: 0 12px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background-color: var(--color-cold-purple-alpha) !important;
+  color: var(--color-cold-purple) !important;
+  font-weight: 500 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important; /* center label for toggle */
+}
+
+/* Active state (selected) */
+.cold-toggle-btn[aria-pressed='true'] {
+  background-color: var(--color-cold-purple) !important;
+  color: #ffffff !important;
+}
+
+/* Disabled state */
+.cold-toggle-btn[disabled],
+.cold-toggle-btn:disabled,
+.cold-toggle-btn[aria-disabled='true'] {
+  background-color: var(--color-cold-gray-alpha) !important;
+  color: var(--color-cold-night-alpha) !important;
+  cursor: not-allowed !important;
 }
