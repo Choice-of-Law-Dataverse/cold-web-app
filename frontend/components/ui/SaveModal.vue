@@ -1,15 +1,23 @@
 <template>
-  <UModal v-model="modelValueProxy" prevent-close>
+  <UModal
+    v-model="modelValueProxy"
+    prevent-close
+    :ui="{
+      container: 'w-screen max-w-none',
+      width: 'w-screen max-w-none',
+      rounded: 'rounded-none',
+    }"
+  >
     <div class="p-6">
       <h2 class="text-lg font-bold mb-4 text-center">Ready to submit?</h2>
       <p class="mb-6 text-center">
-        Please provide your contact information to complete the submission.
+        Please provide your contact information to complete your submission.
       </p>
 
       <!-- Email Field -->
       <UFormGroup
         size="lg"
-        :error="saveModalErrorsProxy.email"
+        :error="saveModalErrorsProxy.submitter_email"
         class="mb-4"
         hint="Required"
       >
@@ -20,7 +28,7 @@
           v-model="emailProxy"
           type="email"
           placeholder="Your email address"
-          class="mt-2"
+          class="mt-2 cold-input"
         />
       </UFormGroup>
 
@@ -32,23 +40,36 @@
         <UTextarea
           v-model="commentsProxy"
           placeholder="Optional comments about your submission"
-          class="mt-2"
+          class="mt-2 cold-input"
           :rows="3"
         />
       </UFormGroup>
 
-      <div>
-        <form @submit.prevent="onSubmit">
-          <NuxtTurnstile ref="turnstile" v-model="tokenProxy" />
+      <div class="mb-8 w-full">
+        <form class="w-full" @submit.prevent="onSubmit">
+          <NuxtTurnstile
+            ref="turnstile"
+            v-model="tokenProxy"
+            class="turnstile-full w-full"
+            :options="{ size: 'flexible' }"
+          />
         </form>
       </div>
 
-      <div class="flex justify-center gap-4">
-        <UButton color="primary" :disabled="!tokenProxy" @click="handleSubmit"
-          >Submit</UButton
+      <div class="flex flex-col items-center gap-2">
+        <h2
+          class="submit-heading cursor-pointer flex items-center mb-4 p-0"
+          :aria-disabled="!tokenProxy ? 'true' : 'false'"
+          @click.prevent="tokenProxy ? handleSubmit() : null"
         >
-        <UButton color="gray" variant="outline" @click="closeModal"
-          >Cancel</UButton
+          Submit Your Data Now
+          <UIcon
+            name="i-material-symbols:article-shortcut-outline"
+            class="inline-block ml-1 text-[1.2em] relative"
+          />
+        </h2>
+        <NuxtLink class="gray-link cursor-pointer" @click="closeModal"
+          >Go Back</NuxtLink
         >
       </div>
     </div>
@@ -75,11 +96,16 @@ const props = defineProps({
     default: null,
   },
   link: { type: String, required: false, default: '' },
+  // New preferred keys for contact info
+  submitter_email: { type: String, required: false, default: undefined },
+  submitter_comments: { type: String, required: false, default: undefined },
 })
 const emit = defineEmits([
   'update:modelValue',
   'update:email',
   'update:comments',
+  'update:submitter_email',
+  'update:submitter_comments',
   'update:token',
   'update:saveModalErrors',
   'update:link',
@@ -87,8 +113,9 @@ const emit = defineEmits([
 ])
 
 const modelValueProxy = ref(props.modelValue)
-const emailProxy = ref(props.email)
-const commentsProxy = ref(props.comments)
+// Prefer new keys if provided, fallback to legacy
+const emailProxy = ref(props.submitter_email ?? props.email)
+const commentsProxy = ref(props.submitter_comments ?? props.comments)
 const tokenProxy = ref(props.token)
 const saveModalErrorsProxy = ref({ ...props.saveModalErrors })
 const linkProxy = ref(props.link)
@@ -105,22 +132,24 @@ watch(modelValueProxy, (val) => {
 })
 
 watch(
-  () => props.email,
-  (val) => {
-    emailProxy.value = val
+  () => [props.submitter_email, props.email],
+  ([newEmail, legacyEmail]) => {
+    emailProxy.value = newEmail ?? legacyEmail
   }
 )
 watch(emailProxy, (val) => {
+  emit('update:submitter_email', val)
   emit('update:email', val)
 })
 
 watch(
-  () => props.comments,
-  (val) => {
-    commentsProxy.value = val
+  () => [props.submitter_comments, props.comments],
+  ([newVal, legacyVal]) => {
+    commentsProxy.value = newVal ?? legacyVal
   }
 )
 watch(commentsProxy, (val) => {
+  emit('update:submitter_comments', val)
   emit('update:comments', val)
 })
 
@@ -156,18 +185,18 @@ watch(linkProxy, (val) => {
 
 // Validation schema for SaveModal
 const saveModalSchema = z.object({
-  email: z
+  submitter_email: z
     .string()
     .min(1, { message: 'Email is required' })
     .email({ message: 'Please enter a valid email address' }),
-  comments: z.string().optional(),
+  submitter_comments: z.string().optional(),
 })
 
 function validateSaveModal() {
   try {
     const modalData = {
-      email: emailProxy.value,
-      comments: commentsProxy.value,
+      submitter_email: emailProxy.value,
+      submitter_comments: commentsProxy.value,
     }
     saveModalSchema.parse(modalData)
     saveModalErrorsProxy.value = {}
@@ -200,22 +229,24 @@ watch(modelValueProxy, (val) => {
 })
 
 watch(
-  () => props.email,
-  (val) => {
-    emailProxy.value = val
+  () => [props.submitter_email, props.email],
+  ([newEmail, legacyEmail]) => {
+    emailProxy.value = newEmail ?? legacyEmail
   }
 )
 watch(emailProxy, (val) => {
+  emit('update:submitter_email', val)
   emit('update:email', val)
 })
 
 watch(
-  () => props.comments,
-  (val) => {
-    commentsProxy.value = val
+  () => [props.submitter_comments, props.comments],
+  ([newVal, legacyVal]) => {
+    commentsProxy.value = newVal ?? legacyVal
   }
 )
 watch(commentsProxy, (val) => {
+  emit('update:submitter_comments', val)
   emit('update:comments', val)
 })
 
@@ -239,3 +270,22 @@ function handleSubmit() {
   }
 }
 </script>
+
+<style scoped>
+/* Ensure the Cloudflare Turnstile widget spans the full column width */
+.turnstile-full {
+  display: block;
+  width: 100% !important;
+}
+.turnstile-full :deep(iframe),
+.turnstile-full :deep(div),
+.turnstile-full :deep(*) {
+  max-width: 100% !important;
+  width: 100% !important;
+}
+
+/* Local purple heading for the Submit action */
+.submit-heading {
+  color: var(--color-cold-purple) !important;
+}
+</style>

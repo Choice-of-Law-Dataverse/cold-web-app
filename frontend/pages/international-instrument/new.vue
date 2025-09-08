@@ -19,11 +19,7 @@
         <template #label>
           <span class="label">Title</span>
         </template>
-        <UInput
-          v-model="name"
-          class="mt-2"
-          placeholder="Name of the International Instrument"
-        />
+        <UInput v-model="name" class="mt-2 cold-input" />
       </UFormGroup>
       <UFormGroup size="lg" class="mt-8">
         <!-- <template #label>
@@ -77,14 +73,23 @@
           @change="onPdfChange"
         />
       </UFormGroup> -->
-      <UFormGroup size="lg" class="mt-8" :error="errors.link">
+      <UFormGroup size="lg" class="mt-8" hint="Required" :error="errors.link">
         <template #label>
           <span class="label">Link</span>
           <InfoTooltip :text="tooltipInternationalInstrumentLink" />
         </template>
-        <UInput v-model="link" class="mt-2" placeholder="Link" />
+        <UInput
+          v-model="link"
+          class="mt-2 cold-input"
+          placeholder="https://…"
+        />
       </UFormGroup>
-      <UFormGroup size="lg" class="mt-8">
+      <UFormGroup
+        size="lg"
+        class="mt-8"
+        hint="Required"
+        :error="errors.instrument_date"
+      >
         <template #label>
           <span class="label">Date</span>
           <InfoTooltip :text="tooltipInternationalInstrumentDate" />
@@ -92,8 +97,8 @@
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
             icon="i-heroicons-calendar-days-20-solid"
-            :label="format(date, 'dd MMMM yyyy')"
-            class="mt-2"
+            :label="date ? format(date, 'dd MMMM yyyy') : 'Add date'"
+            class="mt-2 cold-date-trigger"
           />
 
           <template #panel="{ close }">
@@ -162,14 +167,13 @@ watch(token, () => {
 const formSchema = z.object({
   name: z
     .string()
-    .min(1, { message: 'Name is required' })
-    .min(3, { message: 'Name must be at least 3 characters long' }),
-  specialists: z.array(z.string()).optional(),
+    .min(1, { message: 'Title is required' })
+    .min(3, { message: 'Title must be at least 3 characters long' }),
   link: z
     .string()
-    .url({ message: 'Link must be a valid URL. It must start with "https://"' })
-    .optional()
-    .or(z.literal('')),
+    .min(1, { message: 'URL is required' })
+    .url({ message: 'URL must be valid and start with "https://"' }),
+  instrument_date: z.date({ required_error: 'Date is required' }),
 })
 
 // Form validation state
@@ -181,7 +185,7 @@ const emit = defineEmits(['close-cancel-modal', 'close-save-modal'])
 const showSaveModal = ref(false)
 const showCancelModal = ref(false)
 const notificationBannerMessage =
-  'Please back up your data when working here. Closing or reloading this window will delete everything. Data is only saved after you submit.'
+  'Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.'
 
 useHead({ title: 'New International Instrument — CoLD' })
 
@@ -189,8 +193,8 @@ function validateForm() {
   try {
     const formData = {
       name: name.value,
-      specialists: specialists.value,
       link: link.value,
+      instrument_date: date.value,
     }
 
     formSchema.parse(formData)
@@ -241,14 +245,17 @@ function removeSpecialist(idx) {
 
 function handleNewSave() {
   const payload = {
-    name: name.value, // Title
-    url: link.value, // Link
+    name: name.value,
+    url: link.value,
     attachment: '', // ignored for now
-    instrument_date: format(date.value, 'yyyy-MM-dd'), // Date
+    instrument_date:
+      date && date.value ? format(date.value, 'yyyy-MM-dd') : undefined,
+    // Submitter metadata from SaveModal
+    submitter_email: email.value || undefined,
+    submitter_comments: comments.value || undefined,
   }
 
   // Explicitly log the exact payload we send
-  console.log('Submitting:', JSON.stringify(payload, null, 2))
   ;(async () => {
     try {
       await $fetch(
