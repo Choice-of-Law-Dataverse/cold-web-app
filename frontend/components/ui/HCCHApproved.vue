@@ -19,6 +19,8 @@
   border: 1px solid var(--color-cold-night);
 }
 @media (max-width: 639px) {
-  .desktop-only-text { display: none; }
+  .desktop-only-text {
+    display: none;
+  }
 }
 </style>
