@@ -137,7 +137,10 @@
             </button>
           </template>
           <template v-else>
-            <div class="space-x-3 sm:space-x-6 flex items-center">
+            <div
+              class="space-x-3 sm:space-x-6 flex items-center"
+              :class="{ 'mobile-menu-links': isMobile }"
+            >
               <ULink
                 v-for="(link, i) in links"
                 :key="i"
@@ -639,6 +642,21 @@ nav {
   /* Decrease spacing between HCCHApproved and Menu */
   .mobile-nav-group > * + * {
     margin-left: 0rem !important; /* override tailwind space-x-4 */
+  }
+  /* Shift open menu links to the right */
+  .mobile-menu-links {
+    margin-left: 3rem; /* prevent pushing content off screen */
+    margin-top: 0.4rem;
+    width: 100%;
+    display: flex;
+  }
+  /* Space only between link items (anchors), not before close button */
+  .mobile-menu-links a:not(:last-of-type) {
+    margin-right: 1.1rem; /* desired spacing between About, Learn, Contact */
+  }
+  /* Keep close button aligned to the far right */
+  .mobile-menu-links .close-menu-button {
+    margin-left: auto !important;
   }
   /* Reduce overall spacing so four items fit comfortably */
   .flex.justify-between.items-center {
