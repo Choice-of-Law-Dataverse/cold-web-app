@@ -151,13 +151,10 @@ const countryCodes = computed(() => {
   return []
 })
 
-// Ensure we always have exactly 3 country codes
+// Accept 2 or 3 country codes; otherwise, let defaults apply
 const validatedCountryCodes = computed(() => {
   const codes = countryCodes.value
-  // If we don't have exactly 3 codes, return empty array to use defaults
-  if (codes.length !== 3) {
-    return []
-  }
-  return codes
+  if (codes.length === 2 || codes.length === 3) return codes
+  return []
 })
 </script>
