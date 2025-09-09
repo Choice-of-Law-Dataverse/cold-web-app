@@ -6,7 +6,7 @@
     :resultData="resultData"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
-    sourceTable="Loading"
+    sourceTable="Arbitral Award"
   >
     <h1 class="mb-12">Arbitral Awards</h1>
   </BaseDetailLayout>
