@@ -90,7 +90,8 @@ h2 {
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 12px;
-  margin-top: 8px;
+  margin-top: 32px;
+  margin-bottom: 12px;
 }
 .flag-cell {
   display: flex;
@@ -115,7 +116,7 @@ h2 {
 }
 
 .codes-row {
-  margin-top: 8px;
+  margin-top: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px;
@@ -127,7 +128,7 @@ h2 {
   letter-spacing: 0.5px;
 }
 .link-container {
-  margin-top: 6px;
+  margin-top: 24px;
   display: flex;
   justify-content: center;
 }
