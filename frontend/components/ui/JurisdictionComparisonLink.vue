@@ -50,29 +50,18 @@ const iso3Code = computed(() => {
   return route.params.id?.toUpperCase()
 })
 
-// Computed property to get 2 random ISO3 codes (excluding current jurisdiction)
-const randomJurisdictionCodes = computed(() => {
-  const availableOptions = jurisdictionOptions.value.filter(
-    (option) =>
-      option.alpha3Code &&
-      option.alpha3Code.toUpperCase() !== iso3Code.value &&
-      option.label !== 'Loading…'
-  )
-
-  if (availableOptions.length < 2) {
-    return ['che', 'bra'] // fallback to original codes
-  }
-
-  // Shuffle array and take first 2
-  const shuffled = [...availableOptions].sort(() => Math.random() - 0.5)
-  return shuffled.slice(0, 2).map((option) => option.alpha3Code.toLowerCase())
+// Computed property to choose a fixed second jurisdiction code
+// Use 'ago' by default; if current is 'ago', use 'arg'
+const secondJurisdictionCode = computed(() => {
+  const current = iso3Code.value?.toLowerCase()
+  return current === 'ago' ? 'arg' : 'ago'
 })
 
 // Computed property for the complete comparison URL
 const comparisonUrl = computed(() => {
   if (!iso3Code.value) return '#'
 
-  const codes = [iso3Code.value.toLowerCase(), ...randomJurisdictionCodes.value]
+  const codes = [iso3Code.value.toLowerCase(), secondJurisdictionCode.value]
 
   return `/jurisdiction-comparison/${codes.join('+')}`
 })
