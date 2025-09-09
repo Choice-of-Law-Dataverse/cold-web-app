@@ -53,6 +53,14 @@
             :overrideNumber="74"
           />
         </div>
+        <div class="col-span-12 md:col-span-6">
+          <CompareJurisdictionsCard
+            title="Compare Jurisdictions"
+            buttonText="Go to comparison"
+            iso3Left="USA"
+            iso3Right="DEU"
+          />
+        </div>
         <div class="col-span-12 sm:col-span-6">
           <NumberCard
             title="Available Arbitral Rules"
@@ -169,6 +177,7 @@ import CountrySelectMenu from '@/components/landing-page/TempJurisdictionPicker.
 import PlotCourtDecisionsJurisdiction from '@/components/landing-page/PlotCourtDecisionsJurisdiction.vue'
 import ConnectCard from '@/components/landing-page/ConnectCard.vue'
 import NumberCard from '@/components/landing-page/NumberCard.vue'
+import CompareJurisdictionsCard from '@/components/landing-page/CompareJurisdictionsCard.vue'
 import { externalLinks } from '@/utils/externalLinks'
 import RecentDomesticInstruments from '@/components/landing-page/RecentDomesticInstruments.vue'
 import SuccessfulLegalTransplantations from '@/components/landing-page/SuccessfulLegalTransplantations.vue'
