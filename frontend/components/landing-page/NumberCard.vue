@@ -2,8 +2,8 @@
   <UCard class="cold-ucard">
     <h2 class="popular-title">{{ title }}</h2>
     <div class="number-container">
-      <span v-if="!loading && !error">{{ number }}</span>
-      <span v-else-if="loading"><LoadingNumber /></span>
+      <span v-if="!showLoading && !error">{{ displayedNumber }}</span>
+      <span v-else-if="showLoading"><LoadingNumber /></span>
       <span v-else>Error</span>
     </div>
     <div class="link-container">
@@ -22,13 +22,15 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import LoadingNumber from '@/components/layout/LoadingNumber.vue'
 const props = defineProps({
   title: { type: String, required: true },
   buttonText: { type: String, required: true },
   buttonLink: { type: String, required: true },
   tableName: { type: String, required: true },
+  // Optional manual override; when provided, the API will not be called
+  overrideNumber: { type: [Number, String], required: false, default: null },
 })
 
 const number = ref(null)
@@ -38,6 +40,12 @@ const error = ref(false)
 const config = useRuntimeConfig()
 
 async function fetchNumber() {
+  // If manual override is provided, skip fetching and stop loading
+  if (props.overrideNumber !== null && props.overrideNumber !== undefined) {
+    loading.value = false
+    error.value = false
+    return
+  }
   loading.value = true
   error.value = false
   try {
@@ -71,6 +79,30 @@ async function fetchNumber() {
 
 onMounted(fetchNumber)
 watch(() => props.tableName, fetchNumber)
+// If override switches from/to provided, re-evaluate loading state
+watch(
+  () => props.overrideNumber,
+  () => {
+    if (props.overrideNumber !== null && props.overrideNumber !== undefined) {
+      loading.value = false
+      error.value = false
+    } else {
+      fetchNumber()
+    }
+  }
+)
+
+const displayedNumber = computed(() =>
+  props.overrideNumber !== null && props.overrideNumber !== undefined
+    ? props.overrideNumber
+    : number.value
+)
+const showLoading = computed(
+  () =>
+    props.overrideNumber === null &&
+    props.overrideNumber === undefined &&
+    loading.value
+)
 </script>
 
 <style scoped>

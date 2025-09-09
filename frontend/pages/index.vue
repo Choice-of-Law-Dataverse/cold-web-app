@@ -46,6 +46,23 @@
         </div>
 
         <div class="col-span-12 md:col-span-6">
+          <NumberCard
+            title="Available Arbitral Awards"
+            buttonText="See all"
+            buttonLink="/arbitral-awards"
+            :overrideNumber="74"
+          />
+        </div>
+        <div class="col-span-12 sm:col-span-6">
+          <NumberCard
+            title="Available Arbitral Rules"
+            buttonText="See all"
+            buttonLink="/arbitral-rules"
+            :overrideNumber="37"
+          />
+        </div>
+
+        <div class="col-span-12 md:col-span-6">
           <PopularSearches />
         </div>
         <div class="col-span-12 sm:col-span-6">
