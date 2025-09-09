@@ -11,7 +11,26 @@
     <template #full-width>
       <div class="px-6 py-6">
         <h1 class="mb-6">Arbitral Awards</h1>
-        <UTable :columns="columns" :rows="rows" />
+        <div class="awards-table">
+          <UTable
+            :columns="columns"
+            :rows="rows"
+            :ui="{
+              th: {
+                base: 'first:w-[150px] first:min-w-[150px] first:max-w-[150px]',
+              },
+              td: {
+                base: 'first:w-[150px] first:min-w-[150px] first:max-w-[150px]',
+              },
+            }"
+          >
+            <template #caseNumber-data="{ row }">
+              <span class="block truncate whitespace-nowrap">{{
+                row.caseNumber
+              }}</span>
+            </template>
+          </UTable>
+        </div>
       </div>
     </template>
   </BaseDetailLayout>
@@ -19,6 +38,7 @@
 
 <script setup lang="ts">
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+// Using static CSV because API does not provide arbitral awards
 import csvRaw from './all-arbitral-awards.csv?raw'
 
 useHead({
@@ -36,9 +56,15 @@ const columns = [
   { key: 'caseNumber', label: 'Case Number', sortable: true },
   { key: 'year', label: 'Year', sortable: true },
   { key: 'seatTown', label: 'Seat (Town)', sortable: true },
+  { key: 'source', label: 'Source', sortable: true },
 ]
 
-type Row = { caseNumber: string; year: string; seatTown: string }
+type Row = {
+  caseNumber: string
+  year: string
+  seatTown: string
+  source: string
+}
 
 function parseCSV(text: string): string[][] {
   const rows: string[][] = []
@@ -91,6 +117,7 @@ const header = csvRows[0] || []
 const idxCase = header.indexOf('Case Number')
 const idxYear = header.indexOf('Year')
 const idxSeat = header.indexOf('Seat (Town)')
+const idxSource = header.indexOf('Source')
 
 const rows: Row[] = (csvRows.slice(1) || [])
   .map((r) => {
@@ -101,7 +128,26 @@ const rows: Row[] = (csvRows.slice(1) || [])
       caseNumber: sanitize(get(idxCase)),
       year: sanitize(get(idxYear)),
       seatTown: sanitize(get(idxSeat)),
+      source: sanitize(get(idxSource)),
     }
   })
-  .filter((r) => r.caseNumber || r.year || r.seatTown)
+  .filter((r) => r.caseNumber || r.year || r.seatTown || r.source)
 </script>
+
+<style scoped>
+.awards-table :deep(table) {
+  table-layout: fixed;
+  width: 100%;
+}
+
+.awards-table :deep(th:first-child),
+.awards-table :deep(td:first-child) {
+  box-sizing: border-box;
+  width: 150px !important;
+  min-width: 150px !important;
+  max-width: 150px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+</style>
