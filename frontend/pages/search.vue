@@ -58,6 +58,7 @@ const searchParams = computed(() => {
       filters: {},
       pageSize: 10,
       query: '',
+      enabledOverride: false,
     }
   }
 
@@ -65,6 +66,7 @@ const searchParams = computed(() => {
     filters: filter.value,
     pageSize: 10,
     query: searchQuery.value,
+    enabledOverride: true,
   }
 })
 

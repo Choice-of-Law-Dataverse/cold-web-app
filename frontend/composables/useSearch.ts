@@ -152,6 +152,9 @@ export function useSearch(searchParams: Ref<SearchParams>) {
     initialPageParam: 1,
     enabled: computed(() => {
       const params = searchParams.value
+      if (typeof params.enabledOverride !== 'undefined') {
+        return !!params.enabledOverride
+      }
       return !!(
         params.query ||
         params.filters.jurisdiction ||

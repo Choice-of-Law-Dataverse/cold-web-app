@@ -62,6 +62,12 @@ export interface SearchParams {
   filters: SearchFilters
   page?: number
   pageSize?: number
+  /**
+   * Optional override to control query enablement.
+   * When defined, useSearch will use this value for the `enabled` flag
+   * instead of inferring from query/filters.
+   */
+  enabledOverride?: boolean
 }
 
 /**
