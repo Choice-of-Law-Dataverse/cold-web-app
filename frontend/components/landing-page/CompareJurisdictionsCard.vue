@@ -90,7 +90,7 @@ h2 {
   grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 12px;
-  margin-top: 32px;
+  margin-top: 28px;
   margin-bottom: 12px;
 }
 .flag-cell {
@@ -98,7 +98,7 @@ h2 {
   justify-content: center;
 }
 .flag-img {
-  height: 36px;
+  height: 48px;
   width: auto;
   max-width: 100%;
   display: block;
@@ -128,7 +128,7 @@ h2 {
   letter-spacing: 0.5px;
 }
 .link-container {
-  margin-top: 24px;
+  margin-top: 18px;
   display: flex;
   justify-content: center;
 }

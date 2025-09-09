@@ -57,8 +57,8 @@
           <CompareJurisdictionsCard
             title="Compare Jurisdictions"
             buttonText="Go to comparison"
-            iso3Left="USA"
-            iso3Right="DEU"
+            iso3Left="CHE"
+            iso3Right="CAN"
           />
         </div>
         <div class="col-span-12 sm:col-span-4">
