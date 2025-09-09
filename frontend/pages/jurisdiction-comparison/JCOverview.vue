@@ -252,7 +252,16 @@ const fetchLegalFamily = async (iso3Code) => {
     const data = await apiClient('/search/details', {
       body: { table: 'Jurisdictions', id: iso3Code },
     })
-    legalFamilies.value[iso3Code] = data['Legal Family'] || 'Unknown'
+
+    const raw = data['Legal Family'] || 'Unknown'
+    const normalized =
+      typeof raw === 'string'
+        ? raw
+            .split(',')
+            .map((s) => s.trim())
+            .join(', ')
+        : raw
+    legalFamilies.value[iso3Code] = normalized
   } catch (error) {
     console.error(`Error fetching legal family for ${iso3Code}:`, error)
     legalFamilies.value[iso3Code] = 'Unknown'
