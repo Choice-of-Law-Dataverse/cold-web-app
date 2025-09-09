@@ -20,7 +20,9 @@
               >
             </template>
             <template #inForceFrom-data="{ row }">
-              <span class="result-value-small">{{ row.inForceFrom }}</span>
+              <span class="result-value-small">{{
+                formatDate(row.inForceFrom) || ''
+              }}</span>
             </template>
             <template #open-data="{ row }">
               <NuxtLink
@@ -46,6 +48,7 @@
 <script setup lang="ts">
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import { ref, onMounted } from 'vue'
+import { formatDate } from '@/utils/format'
 // Using static CSV downloaded from NocoDB because API does not provide arbitral rules
 import csvRaw from './all-arbitral-rules.csv?raw'
 
