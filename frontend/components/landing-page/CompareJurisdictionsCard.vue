@@ -155,7 +155,7 @@ h2 {
 }
 .code {
   text-align: center;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
