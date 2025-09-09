@@ -186,6 +186,7 @@ const rows: Row[] = (csvRows.slice(1) || [])
 /* Ensure the "Open" link uses font-weight 600 even if .label sets 700 */
 .awards-table :deep(td:last-child a.label) {
   font-weight: 600 !important;
+  font-size: 12px !important;
 }
 
 /* Increase data row height to 72px and vertically center content */
