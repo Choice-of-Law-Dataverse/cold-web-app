@@ -202,4 +202,37 @@ const rows: Row[] = (csvRows.slice(1) || [])
 .awards-table :deep(tbody td:first-child) {
   padding-top: 10px !important;
 }
+
+/* Style header titles to visually resemble `.label` without breaking sorting */
+.awards-table :deep(thead th) {
+  font-weight: 700 !important; /* similar to .label */
+  font-size: 12px !important; /* similar sizing */
+  letter-spacing: 0.01em;
+  text-transform: uppercase !important;
+  color: var(--color-cold-night);
+}
+/* Stronger override for frameworks that style inner elements */
+.awards-table :deep(thead th span),
+.awards-table :deep(thead th button),
+.awards-table :deep(thead th button span) {
+  font-weight: 700 !important;
+  font-size: 12px !important;
+  letter-spacing: 0.01em !important;
+  text-transform: uppercase !important;
+  color: var(--color-cold-night);
+}
+
+/* Remove hover effect on header titles but keep sorting clickable */
+.awards-table :deep(thead th button:hover),
+.awards-table :deep(thead th a:hover) {
+  background-color: transparent !important;
+  color: inherit !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+}
+.awards-table :deep(thead th button:hover span),
+.awards-table :deep(thead th a:hover span) {
+  color: inherit !important;
+  text-decoration: none !important;
+}
 </style>
