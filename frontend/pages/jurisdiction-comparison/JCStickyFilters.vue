@@ -5,61 +5,60 @@
       class="jc-fixed-filters -mb-[72px] hidden md:block"
       :class="{ 'jc-fixed-filters-bg': isSticky }"
     >
-      <div
-        class="jc-sticky-grid jc-overview-row"
-        :class="showThirdColumn ? 'cols-3' : 'cols-2'"
-      >
-        <div style="grid-column: 1">
-          <h2 v-show="!isSticky" class="mb-1">Overview</h2>
-          <div v-show="isSticky" style="visibility: hidden; height: 1.5em" />
-        </div>
-
-        <!-- Two jurisdictions: align with columns 2 and 3 -->
-        <template v-if="!showThirdColumn">
-          <div style="grid-column: 2">
-            <SearchFilters
-              :options="jurisdictionOptions"
-              v-model="jurisdictionFilters[0].value.value"
-              class="jc-search-filter"
-              :showAvatars="true"
-              :multiple="false"
-              :loading="loadingJurisdictions"
-            />
+      <div class="jc-sticky-wrap">
+        <div
+          class="jc-sticky-grid jc-overview-row"
+          :class="showThirdColumn ? 'cols-3' : 'cols-2'"
+        >
+          <div style="grid-column: 1">
+            <h2 v-show="!isSticky" class="mb-1">Overview</h2>
+            <div v-show="isSticky" style="visibility: hidden; height: 1.5em" />
           </div>
-          <div style="grid-column: 3">
-            <div class="jc-right-cell">
+
+          <!-- Two jurisdictions: align with columns 2 and 3 -->
+          <template v-if="!showThirdColumn">
+            <div style="grid-column: 2">
               <SearchFilters
                 :options="jurisdictionOptions"
-                v-model="jurisdictionFilters[1].value.value"
+                v-model="jurisdictionFilters[0].value.value"
                 class="jc-search-filter"
                 :showAvatars="true"
                 :multiple="false"
                 :loading="loadingJurisdictions"
               />
-              <button class="btn-add" @click="showThirdColumn = true">
-                + Add third jurisdiction
-              </button>
             </div>
-          </div>
-        </template>
+            <div style="grid-column: 3">
+              <div class="jc-right-cell">
+                <SearchFilters
+                  :options="jurisdictionOptions"
+                  v-model="jurisdictionFilters[1].value.value"
+                  class="jc-search-filter"
+                  :showAvatars="true"
+                  :multiple="false"
+                  :loading="loadingJurisdictions"
+                />
+              </div>
+            </div>
+          </template>
 
-        <!-- Three jurisdictions: columns 2, 3, 4 -->
-        <template v-else>
-          <div
-            v-for="(filter, index) in jurisdictionFilters"
-            :key="`desktop-filter-${index}`"
-            :style="`grid-column: ${index + 2}`"
-          >
-            <SearchFilters
-              :options="jurisdictionOptions"
-              v-model="filter.value.value"
-              class="jc-search-filter"
-              :showAvatars="true"
-              :multiple="false"
-              :loading="loadingJurisdictions"
-            />
-          </div>
-        </template>
+          <!-- Three jurisdictions: columns 2, 3, 4 -->
+          <template v-else>
+            <div
+              v-for="(filter, index) in jurisdictionFilters"
+              :key="`desktop-filter-${index}`"
+              :style="`grid-column: ${index + 2}`"
+            >
+              <SearchFilters
+                :options="jurisdictionOptions"
+                v-model="filter.value.value"
+                class="jc-search-filter"
+                :showAvatars="true"
+                :multiple="false"
+                :loading="loadingJurisdictions"
+              />
+            </div>
+          </template>
+        </div>
       </div>
     </div>
 
@@ -81,11 +80,7 @@
             :loading="loadingJurisdictions"
           />
         </div>
-        <div v-if="!showThirdColumn" class="mt-2">
-          <button class="btn-add w-full" @click="showThirdColumn = true">
-            + Add third jurisdiction
-          </button>
-        </div>
+
         <hr class="jc-hr mt-4" />
       </div>
     </div>
@@ -248,12 +243,19 @@ onMounted(async () => {
   z-index: 10001 !important;
 }
 
+.jc-sticky-wrap {
+  display: flex;
+  align-items: end;
+}
+
 .jc-sticky-grid {
   display: grid;
   align-items: end;
   width: 100%;
   min-width: 600px;
-  column-gap: 24px !important;
+  column-gap: 8px !important;
+  padding-left: 16px !important; /* shift dropdowns slightly right */
+  padding-right: 12px; /* space for external add button */
 }
 .jc-sticky-grid.cols-2 {
   grid-template-columns: 1fr 1fr 1fr; /* label + 2 filters */
@@ -266,6 +268,7 @@ onMounted(async () => {
   display: flex;
   gap: 12px;
   align-items: end;
+  margin-left: 0 !important;
 }
 
 /* Filters grid for mobile */
@@ -286,22 +289,16 @@ onMounted(async () => {
   flex-direction: column;
 }
 
-.btn-add {
-  background: var(--color-cold-purple);
-  color: #fff;
-  border-radius: 6px;
-  padding: 8px 12px;
-  font-weight: 600;
-}
+/* Button styles removed */
 
 /* Ensure both desktop dropdowns have identical widths (matching the right one) */
 .jc-search-filter {
-  width: 270px;
+  width: 210px;
   max-width: 100%;
 }
 .jc-search-filter :deep(.cold-uselectmenu) {
-  width: 270px !important;
+  width: 210px !important;
   min-width: 0 !important;
-  max-width: 270px !important;
+  max-width: 210px !important;
 }
 </style>

@@ -496,7 +496,7 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1fr repeat(2, 1fr);
   align-items: start;
-  gap: 0 1.5rem;
+  gap: 0 0.5rem;
 }
 
 .jc-overview-row {
@@ -515,6 +515,8 @@ onMounted(async () => {
   min-width: 0; /* Ensure column can shrink but maintains grid layout */
 }
 .jc-col-2 {
+  /* Pull second jurisdiction column left to reduce visual gap */
+  /* Removed forced negative margin; spacing controlled by grid gaps */
   grid-column: 2;
   min-width: 0; /* Ensure column can shrink but maintains grid layout */
 }
