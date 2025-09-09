@@ -97,20 +97,20 @@ h2 {
   justify-content: center;
 }
 .flag-img {
-  width: 80px;
-  height: 80px;
-  object-fit: cover;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  height: 36px;
+  width: auto;
+  max-width: 100%;
+  display: block;
+  border: 1px solid var(--color-cold-gray);
 }
 .flag-fallback {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  display: flex;
+  height: 72px;
+  padding: 0 12px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   background: #f3f4f6;
+  border: 1px solid var(--color-cold-gray);
   font-weight: 600;
 }
 .and-cell {
@@ -133,12 +133,5 @@ h2 {
   margin-top: 6px;
   display: flex;
   justify-content: center;
-}
-@media (min-width: 768px) {
-  .flag-img,
-  .flag-fallback {
-    width: 96px;
-    height: 96px;
-  }
 }
 </style>
