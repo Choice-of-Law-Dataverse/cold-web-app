@@ -39,10 +39,15 @@
                 />
                 <button
                   type="button"
-                  class="jc-add-link"
+                  class="jc-add-link mb-2"
                   @click="showThirdColumn = true"
                 >
-                  Add jurisdiction
+                  <Icon
+                    name="i-material-symbols:add-circle-outline"
+                    style="font-size: 20px"
+                    class="mr-1 ml-8"
+                  />
+                  Add
                 </button>
               </div>
             </div>
@@ -283,7 +288,9 @@ onMounted(async () => {
   border: none;
   color: var(--color-cold-purple);
   font-weight: 600;
-  text-decoration: underline;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
   padding: 0;
   cursor: pointer;
 }
