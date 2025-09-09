@@ -27,6 +27,15 @@
             :loading="loadingJurisdictions"
           />
         </div>
+        <div
+          v-if="!showThirdColumn"
+          class="jc-add-col"
+          style="grid-column: 4; align-self: end"
+        >
+          <button class="btn-add" @click="showThirdColumn = true">
+            + Add third jurisdiction
+          </button>
+        </div>
       </div>
     </div>
 
@@ -47,6 +56,11 @@
             :multiple="false"
             :loading="loadingJurisdictions"
           />
+        </div>
+        <div v-if="!showThirdColumn" class="mt-2">
+          <button class="btn-add w-full" @click="showThirdColumn = true">
+            + Add third jurisdiction
+          </button>
         </div>
         <hr class="jc-hr mt-4" />
       </div>
@@ -81,6 +95,7 @@ const {
   jurisdictionFilters,
   loadJurisdictions,
   setInitialFilters,
+  showThirdColumn,
 } = useJurisdictionComparison()
 
 // Sticky state for background
@@ -104,21 +119,18 @@ watch(
     currentJurisdictionFilter1,
     currentJurisdictionFilter2,
     currentJurisdictionFilter3,
+    showThirdColumn,
   ],
   () => {
-    // Only update URL if all three filters have selections and we have alpha3 codes
-    const filter1 = currentJurisdictionFilter1.value[0]
-    const filter2 = currentJurisdictionFilter2.value[0]
-    const filter3 = currentJurisdictionFilter3.value[0]
+    const f1 = currentJurisdictionFilter1.value[0]?.alpha3Code?.toLowerCase()
+    const f2 = currentJurisdictionFilter2.value[0]?.alpha3Code?.toLowerCase()
+    const f3 = currentJurisdictionFilter3.value[0]?.alpha3Code?.toLowerCase()
 
-    if (filter1?.alpha3Code && filter2?.alpha3Code && filter3?.alpha3Code) {
-      const countryCodes = [
-        filter1.alpha3Code.toLowerCase(),
-        filter2.alpha3Code.toLowerCase(),
-        filter3.alpha3Code.toLowerCase(),
-      ].join('+')
-
-      // Only update if the URL would actually change
+    // Require at least two to build URL
+    if (f1 && f2) {
+      const parts = [f1, f2]
+      if (showThirdColumn.value && f3) parts.push(f3)
+      const countryCodes = parts.join('+')
       const currentCountries = route.params.countries
       if (currentCountries !== countryCodes) {
         router.push(`/jurisdiction-comparison/${countryCodes}`)
@@ -215,10 +227,10 @@ onMounted(async () => {
 
 .jc-sticky-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr; /* label + up to 3 filters */
   align-items: end;
   width: 100%;
-  min-width: 600px; /* Ensures enough space for 4 columns + gaps */
+  min-width: 600px; /* Ensures enough space for columns + gaps */
   column-gap: 24px !important;
 }
 
@@ -231,12 +243,20 @@ onMounted(async () => {
 
 @media (min-width: 768px) {
   .filters-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 .filter-item {
   display: flex;
   flex-direction: column;
+}
+
+.btn-add {
+  background: var(--color-cold-purple);
+  color: #fff;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-weight: 600;
 }
 </style>
