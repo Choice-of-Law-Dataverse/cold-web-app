@@ -41,11 +41,13 @@
                   type="button"
                   class="jc-add-link mb-2"
                   @click="showThirdColumn = true"
+                  aria-label="Add third jurisdiction"
+                  title="Add third jurisdiction"
                 >
                   <Icon
                     name="i-material-symbols:add-circle-outline"
                     style="font-size: 20px"
-                    class="mr-1 ml-8"
+                    class="mr-2 ml-8"
                   />
                   Add
                 </button>
@@ -265,7 +267,7 @@ onMounted(async () => {
   align-items: end;
   width: 100%;
   min-width: 600px;
-  column-gap: 8px !important;
+  column-gap: 4px !important; /* tighter gap */
   padding-left: 16px !important; /* shift dropdowns slightly right */
   padding-right: 12px; /* space for external add button */
 }

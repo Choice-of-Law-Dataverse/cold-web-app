@@ -455,13 +455,13 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr 1fr;
   align-items: start;
-  gap: 0 0.5rem;
+  gap: 0 0.25rem; /* tighter horizontal gap */
 }
 
 .jc-table-grid {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr; /* question + 2 answers by default */
-  gap: 0 0.5rem;
+  gap: 0 0.25rem; /* tighter horizontal gap */
   width: 100%;
 }
 

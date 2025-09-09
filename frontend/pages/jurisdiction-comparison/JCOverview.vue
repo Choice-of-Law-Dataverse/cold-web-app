@@ -496,7 +496,7 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1fr repeat(2, 1fr);
   align-items: start;
-  gap: 0 0.5rem;
+  gap: 0 0.25rem; /* tighter horizontal gap */
 }
 
 .jc-overview-row {
