@@ -51,7 +51,7 @@
 
 <script setup lang="ts">
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-// Using static CSV because API does not provide arbitral awards
+// Using static CSV downloaded from NocoDB because API does not provide arbitral awards
 import csvRaw from './all-arbitral-awards.csv?raw'
 
 useHead({
