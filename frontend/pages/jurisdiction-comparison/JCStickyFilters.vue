@@ -37,6 +37,9 @@
                   :multiple="false"
                   :loading="loadingJurisdictions"
                 />
+                <button type="button" class="jc-add-link" @click="showThirdColumn = true">
+                  Add jurisdiction
+                </button>
               </div>
             </div>
           </template>
@@ -269,6 +272,16 @@ onMounted(async () => {
   gap: 12px;
   align-items: end;
   margin-left: 0 !important;
+}
+
+.jc-add-link {
+  background: none;
+  border: none;
+  color: var(--color-cold-purple);
+  font-weight: 600;
+  text-decoration: underline;
+  padding: 0;
+  cursor: pointer;
 }
 
 /* Filters grid for mobile */
