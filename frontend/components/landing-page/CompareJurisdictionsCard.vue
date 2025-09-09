@@ -88,7 +88,10 @@ onMounted(async () => {
   if (!props.detectVisitorRight) return
   try {
     const res = await fetch('https://ipapi.co/json/')
-    if (!res.ok) return
+    if (!res.ok) {
+      rightIso3.value = 'CAN'
+      return
+    }
     const data = await res.json()
     // Prefer ISO3 if available; fallback to ISO2 -> ISO3 minimal conversion if needed
     let iso3 = (data.country_code_iso3 || '').toUpperCase()
@@ -98,11 +101,14 @@ onMounted(async () => {
       const quickMap = { US: 'USA', GB: 'GBR' }
       iso3 = quickMap[iso2] || ''
     }
-    if (iso3 && iso3.length === 3) {
-      rightIso3.value = iso3
+    // If Switzerland is detected, fallback to Canada per requirement
+    if (iso3 === 'CHE') {
+      iso3 = 'CAN'
     }
+    rightIso3.value = iso3 && iso3.length === 3 ? iso3 : 'CAN'
   } catch (_) {
-    // silent fallback to provided iso3Right
+    // fallback to Canada if detection fails
+    rightIso3.value = 'CAN'
   }
 })
 </script>
