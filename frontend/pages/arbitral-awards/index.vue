@@ -7,7 +7,9 @@
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
     sourceTable="Loading"
-  />
+  >
+    <h1 class="mb-12">Arbitral Awards</h1>
+  </BaseDetailLayout>
 </template>
 
 <script setup lang="ts">
