@@ -93,6 +93,22 @@
             :multiple="false"
             :loading="loadingJurisdictions"
           />
+          <!-- Mobile: Add third jurisdiction below second dropdown -->
+          <button
+            v-if="!showThirdColumn && index === 1"
+            type="button"
+            class="jc-add-link mt-4"
+            @click="showThirdColumn = true"
+            aria-label="Add third jurisdiction"
+            title="Add third jurisdiction"
+          >
+            <Icon
+              name="i-material-symbols:add-circle-outline"
+              style="font-size: 20px"
+              class="mr-2"
+            />
+            Add Jurisdiction
+          </button>
         </div>
 
         <hr class="jc-hr mt-4" />
