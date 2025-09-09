@@ -5,37 +5,61 @@
       class="jc-fixed-filters -mb-[72px] hidden md:block"
       :class="{ 'jc-fixed-filters-bg': isSticky }"
     >
-      <div class="jc-sticky-grid jc-overview-row">
+      <div
+        class="jc-sticky-grid jc-overview-row"
+        :class="showThirdColumn ? 'cols-3' : 'cols-2'"
+      >
         <div style="grid-column: 1">
           <h2 v-show="!isSticky" class="mb-1">Overview</h2>
+          <div v-show="isSticky" style="visibility: hidden; height: 1.5em" />
+        </div>
+
+        <!-- Two jurisdictions: align with columns 2 and 3 -->
+        <template v-if="!showThirdColumn">
+          <div style="grid-column: 2">
+            <SearchFilters
+              :options="jurisdictionOptions"
+              v-model="jurisdictionFilters[0].value.value"
+              class="jc-search-filter"
+              :showAvatars="true"
+              :multiple="false"
+              :loading="loadingJurisdictions"
+            />
+          </div>
+          <div style="grid-column: 3">
+            <div class="jc-right-cell">
+              <SearchFilters
+                :options="jurisdictionOptions"
+                v-model="jurisdictionFilters[1].value.value"
+                class="jc-search-filter"
+                :showAvatars="true"
+                :multiple="false"
+                :loading="loadingJurisdictions"
+              />
+              <button class="btn-add" @click="showThirdColumn = true">
+                + Add third jurisdiction
+              </button>
+            </div>
+          </div>
+        </template>
+
+        <!-- Three jurisdictions: columns 2, 3, 4 -->
+        <template v-else>
           <div
-            v-show="isSticky"
-            style="visibility: hidden; height: 1.5em"
-          ></div>
-        </div>
-        <div
-          v-for="(filter, index) in jurisdictionFilters"
-          :key="`desktop-filter-${index}`"
-          :style="`grid-column: ${index + 2}`"
-        >
-          <SearchFilters
-            :options="jurisdictionOptions"
-            v-model="filter.value.value"
-            class="jc-search-filter"
-            :showAvatars="true"
-            :multiple="false"
-            :loading="loadingJurisdictions"
-          />
-        </div>
-        <div
-          v-if="!showThirdColumn"
-          class="jc-add-col"
-          style="grid-column: 4; align-self: end"
-        >
-          <button class="btn-add" @click="showThirdColumn = true">
-            + Add third jurisdiction
-          </button>
-        </div>
+            v-for="(filter, index) in jurisdictionFilters"
+            :key="`desktop-filter-${index}`"
+            :style="`grid-column: ${index + 2}`"
+          >
+            <SearchFilters
+              :options="jurisdictionOptions"
+              v-model="filter.value.value"
+              class="jc-search-filter"
+              :showAvatars="true"
+              :multiple="false"
+              :loading="loadingJurisdictions"
+            />
+          </div>
+        </template>
       </div>
     </div>
 
@@ -216,7 +240,6 @@ onMounted(async () => {
   width: 100%;
 }
 
-/* Removed 2-column grid media query */
 .jc-fixed-filters-bg {
   background: #fff;
   border-bottom: 1px solid var(--color-cold-gray);
@@ -227,11 +250,22 @@ onMounted(async () => {
 
 .jc-sticky-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr; /* label + up to 3 filters */
   align-items: end;
   width: 100%;
-  min-width: 600px; /* Ensures enough space for columns + gaps */
+  min-width: 600px;
   column-gap: 24px !important;
+}
+.jc-sticky-grid.cols-2 {
+  grid-template-columns: 1fr 1fr 1fr; /* label + 2 filters */
+}
+.jc-sticky-grid.cols-3 {
+  grid-template-columns: 1fr 1fr 1fr 1fr; /* label + 3 filters */
+}
+
+.jc-right-cell {
+  display: flex;
+  gap: 12px;
+  align-items: end;
 }
 
 /* Filters grid for mobile */
@@ -258,5 +292,16 @@ onMounted(async () => {
   border-radius: 6px;
   padding: 8px 12px;
   font-weight: 600;
+}
+
+/* Ensure both desktop dropdowns have identical widths (matching the right one) */
+.jc-search-filter {
+  width: 270px;
+  max-width: 100%;
+}
+.jc-search-filter :deep(.cold-uselectmenu) {
+  width: 270px !important;
+  min-width: 0 !important;
+  max-width: 270px !important;
 }
 </style>
