@@ -59,6 +59,7 @@
             buttonText="Go to comparison"
             iso3Left="CHE"
             iso3Right="CAN"
+            :detectVisitorRight="true"
           />
         </div>
         <div class="col-span-12 sm:col-span-4">

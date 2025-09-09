@@ -18,17 +18,17 @@
         <img
           v-if="!rightFlagError"
           :src="rightFlagUrl"
-          :alt="`${iso3Right} flag`"
+          :alt="`${rightIso3} flag`"
           class="flag-img"
           @error="rightFlagError = true"
         />
-        <div v-else class="flag-fallback">{{ iso3Right }}</div>
+        <div v-else class="flag-fallback">{{ rightIso3 }}</div>
       </div>
     </div>
 
     <div class="codes-row">
       <div class="code">{{ iso3Left }}</div>
-      <div class="code">{{ iso3Right }}</div>
+      <div class="code">{{ rightIso3 }}</div>
     </div>
 
     <div class="link-container">
@@ -47,7 +47,7 @@
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 
 const props = defineProps({
   title: { type: String, default: 'Compare Jurisdictions' },
@@ -57,10 +57,13 @@ const props = defineProps({
   // ISO3 codes, e.g., 'USA', 'DEU'
   iso3Left: { type: String, required: true },
   iso3Right: { type: String, required: true },
+  // If true, the right flag/code will be set to the visitor's country (client-side only)
+  detectVisitorRight: { type: Boolean, default: false },
 })
 
 const upperLeft = computed(() => (props.iso3Left || '').toUpperCase())
-const upperRight = computed(() => (props.iso3Right || '').toUpperCase())
+// Right ISO3 can be overridden by visitor detection
+const rightIso3 = ref((props.iso3Right || '').toUpperCase())
 
 const leftFlagUrl = computed(
   () =>
@@ -68,7 +71,7 @@ const leftFlagUrl = computed(
 )
 const rightFlagUrl = computed(
   () =>
-    `https://choiceoflaw.blob.core.windows.net/assets/flags/${upperRight.value.toLowerCase()}.svg`
+    `https://choiceoflaw.blob.core.windows.net/assets/flags/${rightIso3.value.toLowerCase()}.svg`
 )
 
 const leftFlagError = ref(false)
@@ -76,8 +79,31 @@ const rightFlagError = ref(false)
 
 const resolvedButtonLink = computed(() => {
   if (props.buttonLink) return props.buttonLink
-  if (!upperLeft.value || !upperRight.value) return '#'
-  return `/jurisdiction-comparison/${upperLeft.value}+${upperRight.value}`
+  if (!upperLeft.value || !rightIso3.value) return '#'
+  return `/jurisdiction-comparison/${upperLeft.value}+${rightIso3.value}`
+})
+
+// Client-side: detect visitor country and set rightIso3
+onMounted(async () => {
+  if (!props.detectVisitorRight) return
+  try {
+    const res = await fetch('https://ipapi.co/json/')
+    if (!res.ok) return
+    const data = await res.json()
+    // Prefer ISO3 if available; fallback to ISO2 -> ISO3 minimal conversion if needed
+    let iso3 = (data.country_code_iso3 || '').toUpperCase()
+    if (!iso3 && data.country) {
+      // Some providers might use 'country' like 'US' - map a few common ones; otherwise keep fallback
+      const iso2 = String(data.country).toUpperCase()
+      const quickMap = { US: 'USA', GB: 'GBR' }
+      iso3 = quickMap[iso2] || ''
+    }
+    if (iso3 && iso3.length === 3) {
+      rightIso3.value = iso3
+    }
+  } catch (_) {
+    // silent fallback to provided iso3Right
+  }
 })
 </script>
 
