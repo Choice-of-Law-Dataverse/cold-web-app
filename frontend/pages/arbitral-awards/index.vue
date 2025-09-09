@@ -12,22 +12,35 @@
       <div class="px-6 py-6">
         <h1 class="mb-6">Arbitral Awards</h1>
         <div class="awards-table">
-          <UTable
-            :columns="columns"
-            :rows="rows"
-            :ui="{
-              th: {
-                base: 'first:w-[150px] first:min-w-[150px] first:max-w-[150px]',
-              },
-              td: {
-                base: 'first:w-[150px] first:min-w-[150px] first:max-w-[150px]',
-              },
-            }"
-          >
+          <UTable :columns="columns" :rows="rows">
             <template #caseNumber-data="{ row }">
-              <span class="block truncate whitespace-nowrap">{{
-                row.caseNumber
-              }}</span>
+              <span
+                class="result-value-small block truncate whitespace-nowrap"
+                >{{ row.caseNumber }}</span
+              >
+            </template>
+            <template #year-data="{ row }">
+              <span class="result-value-small">{{ row.year }}</span>
+            </template>
+            <template #seatTown-data="{ row }">
+              <span class="result-value-small">{{ row.seatTown }}</span>
+            </template>
+            <template #source-data="{ row }">
+              <span class="result-value-small">{{ row.source }}</span>
+            </template>
+            <template #open-data="{ row }">
+              <NuxtLink
+                v-if="row.coldId"
+                :to="`/arbitral-award/${row.coldId}`"
+                class="label font-semibold result-value-small"
+              >
+                Open
+                <UIcon
+                  name="i-material-symbols:play-arrow"
+                  class="inline-block -mb-[1px]"
+                />
+              </NuxtLink>
+              <span v-else class="text-gray-300">—</span>
             </template>
           </UTable>
         </div>
@@ -56,7 +69,8 @@ const columns = [
   { key: 'caseNumber', label: 'Case Number', sortable: true },
   { key: 'year', label: 'Year', sortable: true },
   { key: 'seatTown', label: 'Seat (Town)', sortable: true },
-  { key: 'source', label: 'Source', sortable: true },
+  { key: 'source', label: 'Source', sortable: false },
+  { key: 'open', label: '' },
 ]
 
 type Row = {
@@ -64,6 +78,7 @@ type Row = {
   year: string
   seatTown: string
   source: string
+  coldId: string
 }
 
 function parseCSV(text: string): string[][] {
@@ -118,6 +133,7 @@ const idxCase = header.indexOf('Case Number')
 const idxYear = header.indexOf('Year')
 const idxSeat = header.indexOf('Seat (Town)')
 const idxSource = header.indexOf('Source')
+const idxColdId = header.indexOf('CoLD ID')
 
 const rows: Row[] = (csvRows.slice(1) || [])
   .map((r) => {
@@ -129,9 +145,10 @@ const rows: Row[] = (csvRows.slice(1) || [])
       year: sanitize(get(idxYear)),
       seatTown: sanitize(get(idxSeat)),
       source: sanitize(get(idxSource)),
+      coldId: sanitize(get(idxColdId)),
     }
   })
-  .filter((r) => r.caseNumber || r.year || r.seatTown || r.source)
+  .filter((r) => r.caseNumber || r.year || r.seatTown || r.source || r.coldId)
 </script>
 
 <style scoped>
@@ -140,14 +157,48 @@ const rows: Row[] = (csvRows.slice(1) || [])
   width: 100%;
 }
 
-.awards-table :deep(th:first-child),
-.awards-table :deep(td:first-child) {
+.awards-table :deep(th),
+.awards-table :deep(td) {
   box-sizing: border-box;
-  width: 150px !important;
-  min-width: 150px !important;
-  max-width: 150px !important;
+  width: 125px !important;
+  min-width: 125px !important;
+  max-width: 125px !important;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  padding-right: 16px !important; /* column gutter */
+}
+
+/* Make the Source column 100px wider (125px + 100px = 225px) */
+.awards-table :deep(th:nth-child(4)),
+.awards-table :deep(td:nth-child(4)) {
+  width: 225px !important;
+  min-width: 225px !important;
+  max-width: 225px !important;
+}
+
+.awards-table :deep(th:last-child),
+.awards-table :deep(td:last-child) {
+  padding-right: 0 !important; /* no gutter after last column */
+  text-align: right !important; /* align Open column to the right */
+}
+
+/* Ensure the "Open" link uses font-weight 600 even if .label sets 700 */
+.awards-table :deep(td:last-child a.label) {
+  font-weight: 600 !important;
+}
+
+/* Increase data row height to 72px and vertically center content */
+.awards-table :deep(tbody tr) {
+  height: 72px !important;
+}
+.awards-table :deep(tbody td) {
+  height: 72px !important;
+  vertical-align: top !important;
+}
+
+/* Remove top padding from the first column (Case Number) to avoid visual offset */
+.awards-table :deep(tbody td:first-child) {
+  padding-top: 10px !important;
 }
 </style>
