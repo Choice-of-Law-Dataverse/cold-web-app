@@ -13,7 +13,7 @@
         />
         <div v-else class="flag-fallback">{{ iso3Left }}</div>
       </div>
-      <div class="and-cell">and</div>
+
       <div class="flag-cell">
         <img
           v-if="!rightFlagError"
@@ -87,7 +87,7 @@ h2 {
 }
 .flags-row {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 1fr 1fr;
   align-items: center;
   gap: 12px;
   margin-top: 8px;
@@ -104,7 +104,7 @@ h2 {
   border: 1px solid var(--color-cold-gray);
 }
 .flag-fallback {
-  height: 72px;
+  height: 36px;
   padding: 0 12px;
   display: inline-flex;
   align-items: center;
@@ -113,10 +113,7 @@ h2 {
   border: 1px solid var(--color-cold-gray);
   font-weight: 600;
 }
-.and-cell {
-  font-size: 14px;
-  color: #6b7280;
-}
+
 .codes-row {
   margin-top: 8px;
   display: grid;

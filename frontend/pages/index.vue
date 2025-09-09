@@ -45,7 +45,7 @@
           />
         </div>
 
-        <div class="col-span-12 md:col-span-6">
+        <div class="col-span-12 md:col-span-4">
           <NumberCard
             title="Available Arbitral Awards"
             buttonText="See all"
@@ -53,7 +53,7 @@
             :overrideNumber="74"
           />
         </div>
-        <div class="col-span-12 md:col-span-6">
+        <div class="col-span-12 md:col-span-4">
           <CompareJurisdictionsCard
             title="Compare Jurisdictions"
             buttonText="Go to comparison"
@@ -61,7 +61,7 @@
             iso3Right="DEU"
           />
         </div>
-        <div class="col-span-12 sm:col-span-6">
+        <div class="col-span-12 sm:col-span-4">
           <NumberCard
             title="Available Arbitral Rules"
             buttonText="See all"
