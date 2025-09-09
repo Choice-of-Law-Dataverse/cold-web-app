@@ -11,7 +11,7 @@
     <template #full-width>
       <div class="px-6 py-6">
         <h1 class="mb-6">Arbitral Rules</h1>
-        <div class="rules-table">
+        <div class="rules-table" :style="{ '--set-col-width': setColWidth }">
           <UTable :columns="columns" :rows="rows">
             <template #setofRules-data="{ row }">
               <span
@@ -45,7 +45,8 @@
 
 <script setup lang="ts">
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-// Using static CSV because API does not provide arbitral rules
+import { ref, onMounted } from 'vue'
+// Using static CSV downloaded from NocoDB because API does not provide arbitral rules
 import csvRaw from './all-arbitral-rules.csv?raw'
 
 useHead({
@@ -134,6 +135,45 @@ const rows: Row[] = (csvRows.slice(1) || [])
     }
   })
   .filter((r) => r.setofRules || r.inForceFrom || r.coldId)
+
+// Dynamically size the first column (Set of Rules) to the longest string
+const setColWidth = ref<string>('125px')
+
+function computeSetOfRulesColumnWidth() {
+  if (typeof window === 'undefined') return
+  try {
+    // Create a temp element to capture the font used by result-value-small
+    const temp = document.createElement('span')
+    temp.className = 'result-value-small'
+    temp.style.visibility = 'hidden'
+    temp.style.position = 'absolute'
+    temp.style.whiteSpace = 'nowrap'
+    document.body.appendChild(temp)
+    const cs = getComputedStyle(temp)
+    document.body.removeChild(temp)
+
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    if (!ctx) return
+    ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
+
+    let max = 0
+    for (const r of rows) {
+      const text = r.setofRules || ''
+      const m = ctx.measureText(text)
+      max = Math.max(max, m.width)
+    }
+    // Add padding/gutter allowance and a small buffer
+    const px = Math.ceil(max + 28)
+    setColWidth.value = `${px}px`
+  } catch (_) {
+    setColWidth.value = '225px'
+  }
+}
+
+onMounted(() => {
+  computeSetOfRulesColumnWidth()
+})
 </script>
 
 <style scoped>
@@ -152,6 +192,14 @@ const rows: Row[] = (csvRows.slice(1) || [])
   text-overflow: ellipsis;
   white-space: nowrap;
   padding-right: 16px !important; /* column gutter */
+}
+
+/* Make the first column (Set of Rules) width match the longest string */
+.rules-table :deep(th:first-child),
+.rules-table :deep(td:first-child) {
+  width: var(--set-col-width) !important;
+  min-width: var(--set-col-width) !important;
+  max-width: var(--set-col-width) !important;
 }
 
 /* Make the Source column 100px wider (125px + 100px = 225px) */
