@@ -37,7 +37,11 @@
                   :multiple="false"
                   :loading="loadingJurisdictions"
                 />
-                <button type="button" class="jc-add-link" @click="showThirdColumn = true">
+                <button
+                  type="button"
+                  class="jc-add-link"
+                  @click="showThirdColumn = true"
+                >
                   Add jurisdiction
                 </button>
               </div>
