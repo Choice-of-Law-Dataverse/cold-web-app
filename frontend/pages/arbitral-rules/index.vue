@@ -49,7 +49,7 @@ import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import csvRaw from './all-arbitral-rules.csv?raw'
 
 useHead({
-  title: 'Arbitral rules — CoLD',
+  title: 'Arbitral Rules — CoLD',
 })
 
 // Minimal props for BaseDetailLayout to render a blank card with the same layout
@@ -62,6 +62,7 @@ const valueClassMap: Record<string, string> = {}
 const columns = [
   { key: 'setofRules', label: 'Set of Rules', sortable: true },
   { key: 'inForceFrom', label: 'In Force From', sortable: true },
+  { key: 'open', label: '' },
 ]
 
 type Row = {
