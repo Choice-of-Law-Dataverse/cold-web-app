@@ -78,10 +78,10 @@
         </div>
 
         <div class="col-span-12 md:col-span-5">
-          <PopularSearches class="h-full" />
+          <PopularSearches class="h-[250px]" />
         </div>
         <div class="col-span-12 sm:col-span-4">
-          <TopLiteratureThemes class="h-full" />
+          <TopLiteratureThemes class="h-[250px]" />
         </div>
         <div class="col-span-12 sm:col-span-3">
           <ConnectCard
@@ -91,6 +91,7 @@
             iconName="i-material-symbols:add-notes"
             :newTab="false"
             class="h-full"
+            cardHeight="250px"
           />
         </div>
 
