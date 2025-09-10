@@ -1,5 +1,9 @@
 <template>
-  <UCard :ui="cardUi" class="cold-ucard h-full">
+  <UCard
+    :ui="cardUi"
+    class="cold-ucard h-full"
+    :style="cardHeight ? { height: cardHeight } : undefined"
+  >
     <template #header>
       <h2 class="popular-title">{{ title }}</h2>
       <p v-if="subtitle" class="result-value-small text-center px-2">
@@ -9,6 +13,7 @@
 
     <!-- Middle section (body) grows to fill available space -->
     <div
+      ref="iconContainerEl"
       class="middle flex-1 min-h-0 flex flex-col items-center justify-center"
     >
       <div class="icon-container">
@@ -24,7 +29,7 @@
             <Icon
               :name="iconName"
               class="icon-media"
-              :size="200"
+              :size="computedIconSize"
               :style="{ color: 'var(--color-cold-green)' }"
             />
           </template>
@@ -54,18 +59,15 @@
 </template>
 
 <script setup>
-const cardUi = {
-  base: 'h-full flex flex-col border-0 shadow-none ring-0',
-  divide: 'divide-y-0',
-  header: { base: 'border-none' },
-  body: { base: 'flex-1 min-h-0 flex flex-col' },
-  footer: { base: 'mt-auto border-none' },
-}
-
 const props = defineProps({
   title: {
     type: String,
     required: true,
+  },
+  cardHeight: {
+    type: String,
+    required: false,
+    default: '',
   },
   subtitle: {
     type: String,
@@ -99,6 +101,45 @@ const props = defineProps({
     required: false,
   },
 })
+
+const iconContainerEl = ref(null)
+const measuredMiddleHeight = ref(0)
+
+function clamp(n, min, max) {
+  return Math.max(min, Math.min(max, n))
+}
+
+onMounted(() => {
+  if (!iconContainerEl.value) return
+  const ro = new ResizeObserver((entries) => {
+    for (const entry of entries) {
+      measuredMiddleHeight.value = entry.contentRect.height || 0
+    }
+  })
+  ro.observe(iconContainerEl.value)
+  onBeforeUnmount(() => ro.disconnect())
+})
+
+const computedIconSize = computed(() => {
+  if (measuredMiddleHeight.value > 0) {
+    // Use 70% of available middle height, clamped to keep it tidy
+    return clamp(Math.floor(measuredMiddleHeight.value * 0.7), 64, 200)
+  }
+  // Fallback: derive from provided cardHeight if any
+  const m = /([0-9.]+)px/.exec(props.cardHeight || '')
+  if (m) {
+    const h = parseFloat(m[1]) || 0
+    return clamp(Math.floor(h * 0.45), 64, 200)
+  }
+  return 120
+})
+const cardUi = {
+  base: 'h-full flex flex-col border-0 shadow-none ring-0',
+  divide: 'divide-y-0',
+  header: { base: 'border-none' },
+  body: { base: 'flex-1 min-h-0 flex flex-col' },
+  footer: { base: 'mt-auto border-none' },
+}
 </script>
 
 <style scoped>
@@ -126,11 +167,11 @@ h2 {
   height: auto;
 }
 
+/* Let Icon component control final size via :size */
 .icon-container :deep(svg) {
-  width: 100%;
-  max-width: 200px;
+  width: auto;
   height: auto;
-  max-height: 200px;
+  max-height: none;
 }
 
 .icon-media {

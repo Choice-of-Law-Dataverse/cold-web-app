@@ -144,6 +144,7 @@
             iconName="i-bi:substack"
             buttonIcon="i-material-symbols:open-in-new"
             class="h-full"
+            cardHeight="200px"
           />
         </div>
 
@@ -155,6 +156,7 @@
             iconName="i-mdi:linkedin"
             buttonIcon="i-material-symbols:open-in-new"
             class="h-full"
+            cardHeight="200px"
           />
         </div>
 
@@ -166,6 +168,7 @@
             :newTab="false"
             iconName="i-material-symbols:alternate-email"
             class="h-full"
+            cardHeight="200px"
           />
         </div>
         <div class="col-span-12 sm:col-span-3">
@@ -176,6 +179,7 @@
             iconName="i-material-symbols:add-notes"
             :newTab="false"
             class="h-full"
+            cardHeight="200px"
           />
         </div>
       </div>
