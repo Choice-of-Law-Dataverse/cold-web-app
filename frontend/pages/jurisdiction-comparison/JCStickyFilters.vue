@@ -5,27 +5,73 @@
       class="jc-fixed-filters -mb-[72px] hidden md:block"
       :class="{ 'jc-fixed-filters-bg': isSticky }"
     >
-      <div class="jc-sticky-grid jc-overview-row">
-        <div style="grid-column: 1">
-          <h2 v-show="!isSticky" class="mb-1">Overview</h2>
-          <div
-            v-show="isSticky"
-            style="visibility: hidden; height: 1.5em"
-          ></div>
-        </div>
+      <div class="jc-sticky-wrap">
         <div
-          v-for="(filter, index) in jurisdictionFilters"
-          :key="`desktop-filter-${index}`"
-          :style="`grid-column: ${index + 2}`"
+          class="jc-sticky-grid jc-overview-row"
+          :class="showThirdColumn ? 'cols-3' : 'cols-2'"
         >
-          <SearchFilters
-            :options="jurisdictions"
-            v-model="filter.value.value"
-            class="jc-search-filter"
-            :showAvatars="true"
-            :multiple="false"
-            :loading="loadingJurisdictions"
-          />
+          <div style="grid-column: 1">
+            <h2 v-show="!isSticky" class="mb-1">Overview</h2>
+            <div v-show="isSticky" style="visibility: hidden; height: 1.5em" />
+          </div>
+
+          <!-- Two jurisdictions: align with columns 2 and 3 -->
+          <template v-if="!showThirdColumn">
+            <div style="grid-column: 2">
+              <SearchFilters
+                :options="jurisdictions"
+                v-model="jurisdictionFilters[0].value.value"
+                class="jc-search-filter"
+                :showAvatars="true"
+                :multiple="false"
+                :loading="loadingJurisdictions"
+              />
+            </div>
+            <div style="grid-column: 3">
+              <div class="jc-right-cell">
+                <SearchFilters
+                  :options="jurisdictions"
+                  v-model="jurisdictionFilters[1].value.value"
+                  class="jc-search-filter"
+                  :showAvatars="true"
+                  :multiple="false"
+                  :loading="loadingJurisdictions"
+                />
+                <button
+                  type="button"
+                  class="jc-add-link mb-2"
+                  @click="showThirdColumn = true"
+                  aria-label="Add third jurisdiction"
+                  title="Add third jurisdiction"
+                >
+                  <Icon
+                    name="i-material-symbols:add-circle-outline"
+                    style="font-size: 20px"
+                    class="mr-2 ml-8"
+                  />
+                  Add
+                </button>
+              </div>
+            </div>
+          </template>
+
+          <!-- Three jurisdictions: columns 2, 3, 4 -->
+          <template v-else>
+            <div
+              v-for="(filter, index) in jurisdictionFilters"
+              :key="`desktop-filter-${index}`"
+              :style="`grid-column: ${index + 2}`"
+            >
+              <SearchFilters
+                :options="jurisdictions"
+                v-model="filter.value.value"
+                class="jc-search-filter"
+                :showAvatars="true"
+                :multiple="false"
+                :loading="loadingJurisdictions"
+              />
+            </div>
+          </template>
         </div>
       </div>
     </div>
@@ -47,7 +93,24 @@
             :multiple="false"
             :loading="loadingJurisdictions"
           />
+          <!-- Mobile: Add third jurisdiction below second dropdown -->
+          <button
+            v-if="!showThirdColumn && index === 1"
+            type="button"
+            class="jc-add-link mt-4"
+            @click="showThirdColumn = true"
+            aria-label="Add third jurisdiction"
+            title="Add third jurisdiction"
+          >
+            <Icon
+              name="i-material-symbols:add-circle-outline"
+              style="font-size: 20px"
+              class="mr-2"
+            />
+            Add Jurisdiction
+          </button>
         </div>
+
         <hr class="jc-hr mt-4" />
       </div>
     </div>
@@ -81,6 +144,7 @@ const {
   currentJurisdictionFilter3,
   jurisdictionFilters,
   setInitialFilters,
+  showThirdColumn,
 } = useJurisdictionComparison()
 
 // Sticky state for background
@@ -104,21 +168,18 @@ watch(
     currentJurisdictionFilter1,
     currentJurisdictionFilter2,
     currentJurisdictionFilter3,
+    showThirdColumn,
   ],
   () => {
-    // Only update URL if all three filters have selections and we have alpha3 codes
-    const filter1 = currentJurisdictionFilter1.value[0]
-    const filter2 = currentJurisdictionFilter2.value[0]
-    const filter3 = currentJurisdictionFilter3.value[0]
+    const f1 = currentJurisdictionFilter1.value[0]?.alpha3Code?.toLowerCase()
+    const f2 = currentJurisdictionFilter2.value[0]?.alpha3Code?.toLowerCase()
+    const f3 = currentJurisdictionFilter3.value[0]?.alpha3Code?.toLowerCase()
 
-    if (filter1?.alpha3Code && filter2?.alpha3Code && filter3?.alpha3Code) {
-      const countryCodes = [
-        filter1.alpha3Code.toLowerCase(),
-        filter2.alpha3Code.toLowerCase(),
-        filter3.alpha3Code.toLowerCase(),
-      ].join('+')
-
-      // Only update if the URL would actually change
+    // Require at least two to build URL
+    if (f1 && f2) {
+      const parts = [f1, f2]
+      if (showThirdColumn.value && f3) parts.push(f3)
+      const countryCodes = parts.join('+')
       const currentCountries = route.params.countries
       if (currentCountries !== countryCodes) {
         router.push(`/jurisdiction-comparison/${countryCodes}`)
@@ -202,7 +263,6 @@ onMounted(async () => {
   width: 100%;
 }
 
-/* Removed 2-column grid media query */
 .jc-fixed-filters-bg {
   background: #fff;
   border-bottom: 1px solid var(--color-cold-gray);
@@ -211,13 +271,44 @@ onMounted(async () => {
   z-index: 10001 !important;
 }
 
+.jc-sticky-wrap {
+  display: flex;
+  align-items: end;
+}
+
 .jc-sticky-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
   align-items: end;
   width: 100%;
-  min-width: 600px; /* Ensures enough space for 4 columns + gaps */
-  column-gap: 24px !important;
+  min-width: 600px;
+  column-gap: 4px !important; /* tighter gap */
+  padding-left: 16px !important; /* shift dropdowns slightly right */
+  padding-right: 12px; /* space for external add button */
+}
+.jc-sticky-grid.cols-2 {
+  grid-template-columns: 1fr 1fr 1fr; /* label + 2 filters */
+}
+.jc-sticky-grid.cols-3 {
+  grid-template-columns: 1fr 1fr 1fr 1fr; /* label + 3 filters */
+}
+
+.jc-right-cell {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  margin-left: 0 !important;
+}
+
+.jc-add-link {
+  background: none;
+  border: none;
+  color: var(--color-cold-purple);
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 0;
+  cursor: pointer;
 }
 
 /* Filters grid for mobile */
@@ -229,12 +320,25 @@ onMounted(async () => {
 
 @media (min-width: 768px) {
   .filters-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 .filter-item {
   display: flex;
   flex-direction: column;
+}
+
+/* Button styles removed */
+
+/* Ensure both desktop dropdowns have identical widths (matching the right one) */
+.jc-search-filter {
+  width: 210px;
+  max-width: 100%;
+}
+.jc-search-filter :deep(.cold-uselectmenu) {
+  width: 210px !important;
+  min-width: 0 !important;
+  max-width: 210px !important;
 }
 </style>

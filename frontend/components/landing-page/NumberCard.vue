@@ -2,7 +2,9 @@
   <UCard class="cold-ucard">
     <h2 class="popular-title">{{ title }}</h2>
     <div class="number-container">
-      <span v-if="!loading && !error">{{ number ?? 0 }}</span>
+      <span v-if="!loading && !error">{{
+        number ?? props.overrideNumber ?? 0
+      }}</span>
       <span v-else-if="loading"><LoadingNumber /></span>
       <span v-else>Error</span>
     </div>
@@ -22,7 +24,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, computed } from 'vue'
 import { useNumberCount } from '~/composables/useNumberCount'
 import LoadingNumber from '@/components/layout/LoadingNumber.vue'
 const props = defineProps({
@@ -30,6 +32,8 @@ const props = defineProps({
   buttonText: { type: String, required: true },
   buttonLink: { type: String, required: true },
   tableName: { type: String, required: true },
+  // Optional manual override; when provided, the API will not be called
+  overrideNumber: { type: [Number, String], required: false, default: null },
 })
 
 // Use the composable for data fetching
@@ -37,7 +41,9 @@ const {
   data: number,
   isLoading: loading,
   error,
-} = useNumberCount(computed(() => props.tableName))
+} = useNumberCount(
+  computed(() => (props.overrideNumber ? undefined : props.tableName))
+)
 </script>
 
 <style scoped>

@@ -49,7 +49,7 @@ watch(
   arbitralRule,
   (newVal) => {
     if (!newVal) return
-    const title = newVal['Set_of_Rules']
+    const title = newVal['Set of Rules']
     const pageTitle =
       title && String(title).trim() ? `${title} — CoLD` : 'Arbitral Rule — CoLD'
     useHead({

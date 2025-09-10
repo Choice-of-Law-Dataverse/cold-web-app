@@ -3,10 +3,18 @@
     <div class="hidden md:block">
       <div class="mt-24 jc-z-top"></div>
       <hr class="jc-hr" />
-      <div class="jc-grid jc-data-row">
+      <div
+        class="jc-grid jc-data-row"
+        :style="{
+          gridTemplateColumns:
+            jurisdictionFilters.length === 3
+              ? '1fr 1fr 1fr 1fr'
+              : '1fr 1fr 1fr',
+        }"
+      >
         <div class="jc-col-1 jc-empty"></div>
         <div
-          v-for="index in 3"
+          v-for="index in jurisdictionFilters.length"
           :key="`desktop-data-${index}`"
           :class="`jc-col-${index + 1}`"
         >
@@ -451,9 +459,9 @@ function getFlagUrl(label) {
 .jc-grid,
 .jc-data-row {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr repeat(2, 1fr);
   align-items: start;
-  gap: 0 1.5rem;
+  gap: 0 0.25rem; /* tighter horizontal gap */
 }
 
 .jc-overview-row {
@@ -472,6 +480,8 @@ function getFlagUrl(label) {
   min-width: 0; /* Ensure column can shrink but maintains grid layout */
 }
 .jc-col-2 {
+  /* Pull second jurisdiction column left to reduce visual gap */
+  /* Removed forced negative margin; spacing controlled by grid gaps */
   grid-column: 2;
   min-width: 0; /* Ensure column can shrink but maintains grid layout */
 }
@@ -481,7 +491,7 @@ function getFlagUrl(label) {
 }
 .jc-col-4 {
   grid-column: 4;
-  min-width: 0; /* Ensure column can shrink but maintains grid layout */
+  min-width: 0;
 }
 
 /* Ensure consistent spacing for data items */
@@ -521,7 +531,7 @@ function getFlagUrl(label) {
 
 @media (min-width: 768px) {
   .filters-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -539,7 +549,7 @@ function getFlagUrl(label) {
 
 @media (min-width: 768px) {
   .data-cards {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

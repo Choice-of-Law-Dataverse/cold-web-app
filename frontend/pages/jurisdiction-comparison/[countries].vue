@@ -27,47 +27,37 @@
               />
               <JCQuestions
                 title="Codification"
-                :questionIDs="['01-P', '01.1-P', '01.2-P', '01.2.1-P']"
-              />
-              <JCQuestions
-                title="Codification, HCCH Principles"
                 :questionIDs="[
+                  '01.1-P',
+                  '01.2.1-P',
                   '01.2.2-P',
                   '01.2.3.1-P',
                   '01.2.3.2-P',
                   '01.2.3.3-P',
+                  '01.2-P',
+                  '01.3-',
+                  '01-P',
                   '02-P',
                 ]"
               />
-              <JCQuestions title="No Theme" :questionIDs="['01.3-']" />
+
               <JCQuestions
-                title="Party Autonomy, Freedom of Choice"
+                title="Party Autonomy"
                 :questionIDs="[
                   '03-PA',
                   '04-PA',
-                  '06-PA',
+                  '05.1-PA',
+                  '05-PA',
                   '06.1-PA',
                   '06.2-PA',
+                  '06-PA',
                   '07-PA',
-                  '08-PA',
                   '08.1-PA',
-                ]"
-              />
-              <JCQuestions
-                title="Party Autonomy, Freedom of Choice, Dépeçage"
-                :questionIDs="['05-PA']"
-              />
-              <JCQuestions
-                title="Party Autonomy, Freedom of Choice, Partial Choice"
-                :questionIDs="['05.1-PA']"
-              />
-              <JCQuestions
-                title="Party Autonomy, Rules of Law"
-                :questionIDs="['09-FoC', '10-FoC', '11-FoC', '11.1-FoC']"
-              />
-              <JCQuestions
-                title="Party Autonomy, Tacit Choice"
-                :questionIDs="[
+                  '08-PA',
+                  '09-FoC',
+                  '10-FoC',
+                  '11.1-FoC',
+                  '11-FoC',
                   '12-TC',
                   '13-TC',
                   '14-TC',
@@ -77,56 +67,45 @@
                   '16.3-TC',
                   '16.4-TC',
                   '16.5-TC',
-                  '17-TC',
                   '17.1-TC',
+                  '17-TC',
                   '18-TC',
-                  '19-TC',
                   '19.1-TC',
+                  '19-TC',
                 ]"
               />
+
               <JCQuestions
                 title="Overriding Mandatory Rules"
-                :questionIDs="['20-MR', '21-MR', '21.1-MR', '22-MR', '22.1-MR']"
+                :questionIDs="['20-MR', '21.1-MR', '21-MR', '22.1-MR', '22-MR']"
               />
+
               <JCQuestions
                 title="Public Policy"
-                :questionIDs="['23-PP', '23.1-PP', '24-PP']"
+                :questionIDs="['23.1-PP', '23-PP', '24-PP', '25-PP']"
               />
-              <JCQuestions
-                title="Public Policy, Absence of Choice"
-                :questionIDs="['25-PP']"
-              />
-              <JCQuestions
-                title="Arbitration, Codification, HCCH Principles"
-                :questionIDs="['26-Arb']"
-              />
-              <JCQuestions
-                title="Arbitration, Overriding Mandatory Rules, Public Policy"
-                :questionIDs="['27-Arb']"
-              />
+
               <JCQuestions
                 title="Arbitration"
-                :questionIDs="['28-Arb', '28.1-Arb']"
+                :questionIDs="['26-Arb', '27-Arb', '28.1-Arb', '28-Arb']"
               />
+
               <JCQuestions
                 title="Absence of Choice"
                 :questionIDs="[
                   '29-AoC',
-                  '30-AoC',
                   '30.1-AoC',
                   '30.2-AoC',
+                  '30-AoC',
                   '31-AoC',
                   '32-AoC',
                   '33-FV',
                 ]"
               />
+
               <JCQuestions
-                title="Employment Contracts, Consumer Contracts"
+                title="Employment and Consumer Contracts"
                 :questionIDs="['34-FV']"
-              />
-              <JCQuestions
-                title="HCCH Principles"
-                :questionIDs="['35-FV', '36-FV']"
               />
             </div>
           </div>
@@ -173,13 +152,10 @@ const countryCodes = computed(() => {
   return []
 })
 
-// Ensure we always have exactly 3 country codes
+// Accept 2 or 3 country codes; otherwise, let defaults apply
 const validatedCountryCodes = computed(() => {
   const codes = countryCodes.value
-  // If we don't have exactly 3 codes, return empty array to use defaults
-  if (codes.length !== 3) {
-    return []
-  }
-  return codes
+  if (codes.length === 2 || codes.length === 3) return codes
+  return []
 })
 </script>

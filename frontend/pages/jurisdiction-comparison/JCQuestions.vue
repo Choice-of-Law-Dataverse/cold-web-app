@@ -45,7 +45,11 @@
             <LoadingBar />
           </div>
         </div>
-        <div v-else class="jc-table-grid">
+        <div
+          v-else
+          class="jc-table-grid"
+          :class="{ 'cols-3': jurisdictionFilters.length === 3 }"
+        >
           <div
             v-for="(label, i) in questionLabels"
             :key="'q-row-' + i"
@@ -55,7 +59,7 @@
               {{ label }}
             </div>
             <div
-              v-for="j in 3"
+              v-for="j in jurisdictionFilters.length"
               :key="'a-' + i + '-' + j"
               class="jc-table-cell jc-table-answer result-value-large !pt-10 !pl-2"
             >
@@ -439,15 +443,21 @@ onMounted(async () => {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr 1fr;
   align-items: start;
-  gap: 0 1.5rem;
+  gap: 0 0.25rem; /* tighter horizontal gap */
 }
 
 .jc-table-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 0 1.5rem;
+  grid-template-columns: 1fr 1fr 1fr; /* question + 2 answers by default */
+  gap: 0 0.25rem; /* tighter horizontal gap */
   width: 100%;
 }
+
+.jc-table-grid.cols-3 {
+  grid-template-columns: 1fr 1fr 1fr 1fr; /* question + 3 answers */
+}
+
+/* Spacing controlled by grid gaps */
 
 .jc-table-row {
   display: contents;

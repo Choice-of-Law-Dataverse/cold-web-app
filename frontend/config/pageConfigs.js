@@ -571,8 +571,6 @@ export const arbitralAwardConfig = {
       key: 'Year',
       label: 'Year',
       emptyValueBehavior: { action: 'display', fallback: 'hide' },
-      valueTransform: (val) =>
-        typeof formatDate === 'function' ? formatDate(val) : val,
     },
     {
       key: 'Nature of the Award',

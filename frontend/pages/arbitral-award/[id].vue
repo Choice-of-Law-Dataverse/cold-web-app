@@ -34,7 +34,7 @@ const processedArbitralAward = computed(() => {
   if (!arbitralAward.value) return null
   const raw = arbitralAward.value
   const derivedTitle =
-    raw['Award_Title'] || raw['Case Title'] || raw['Title'] || raw['Name']
+    raw['Award Title'] || raw['Case Title'] || raw['Title'] || raw['Name']
   return {
     ...raw,
     Title: derivedTitle,
@@ -75,10 +75,10 @@ watch(
   processedArbitralAward,
   (newVal) => {
     if (!newVal) return
-    const title = newVal['Title']
+    const title = newVal['Case Number']
     const pageTitle =
       title && String(title).trim()
-        ? `${title} — CoLD`
+        ? `Arbitral Award Case Number ${title} — CoLD`
         : 'Arbitral Award — CoLD'
     useHead({
       title: pageTitle,
