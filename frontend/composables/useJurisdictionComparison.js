@@ -4,6 +4,7 @@ import { ref, computed } from 'vue'
 const currentJurisdictionFilter1 = ref([])
 const currentJurisdictionFilter2 = ref([])
 const currentJurisdictionFilter3 = ref([])
+const showThirdColumn = ref(false)
 
 export function useJurisdictionComparison() {
   // Create computed array for easier iteration

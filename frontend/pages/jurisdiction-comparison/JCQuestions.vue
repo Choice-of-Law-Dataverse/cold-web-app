@@ -305,8 +305,6 @@ const fetchAnswerData = async (id) => {
     return answersData.value[id]
   }
 
-  console.log('[JCQuestions.vue] fetchAnswerData id:', id)
-
   try {
     const response = await fetch(`/api/proxy/search/details`, {
       method: 'POST',

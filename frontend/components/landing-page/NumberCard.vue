@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { computed, computed } from 'vue'
+import { computed } from 'vue'
 import { useNumberCount } from '~/composables/useNumberCount'
 import LoadingNumber from '@/components/layout/LoadingNumber.vue'
 const props = defineProps({

@@ -425,8 +425,6 @@ watch(
       const jurisdictionName = filter?.value?.value?.[0]?.label
       const oldJurisdictionName = oldFilters?.[index]?.value?.value?.[0]?.label
 
-      console.log(`watch`, jurisdictionName, oldJurisdictionName)
-
       if (
         jurisdictionName &&
         jurisdictionName !== 'All Jurisdictions' &&

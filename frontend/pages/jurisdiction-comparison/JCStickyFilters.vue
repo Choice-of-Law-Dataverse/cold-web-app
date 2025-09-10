@@ -121,6 +121,7 @@
 import { ref, onMounted, watch } from 'vue'
 import SearchFilters from '@/components/search-results/SearchFilters.vue'
 import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
+import { useJurisdictions } from '@/composables/useJurisdictions'
 
 // Props for initial countries from URL
 const props = defineProps({
@@ -150,13 +151,12 @@ const {
 // Sticky state for background
 const isSticky = ref(false)
 
-// Watch for changes in initialCountries prop
+// Watch for changes in jurisdictions data and initialCountries prop
 watch(
-  () => props.initialCountries,
-  () => {
-    if (jurisdictions.value.length > 1) {
-      // Ensure jurisdictions are loaded
-      setInitialFilters(jurisdictions.value, props.initialCountries)
+  [() => jurisdictions?.value, () => props.initialCountries],
+  ([jurisdictionsData, initialCountries]) => {
+    if (jurisdictionsData?.length > 1 && initialCountries?.length > 0) {
+      setInitialFilters(jurisdictionsData, initialCountries)
     }
   },
   { immediate: true }
@@ -191,11 +191,6 @@ watch(
 
 // Initialization
 onMounted(async () => {
-  // Set initial filters after loading
-  if (jurisdictions.value.length > 1) {
-    setInitialFilters(jurisdictions.value, props.initialCountries)
-  }
-
   // JavaScript-based sticky implementation
   const filtersElement = document.querySelector('.jc-fixed-filters')
   const overviewElement = document.querySelector('.jc-z-top')
