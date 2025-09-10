@@ -13,7 +13,7 @@ const fetchUserInfo = async () => {
 
   try {
     // Initial request to get the client hints
-    await apiClient('/get_user_info', {
+    await apiClient('/user/get_user_info', {
       method: 'GET',
     })
 
@@ -128,7 +128,7 @@ const fetchSearchResults = async ({
   }
 
   // Fetch detailed user info (browser, platform, etc.)
-  const userInfo = await fetchUserInfo()
+  const userInfo = {} // await fetchUserInfo()
   const browserInfo = getBrowserInfo()
 
   // Add additional data to requestBody
