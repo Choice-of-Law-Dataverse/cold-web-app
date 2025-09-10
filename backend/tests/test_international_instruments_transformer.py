@@ -2,8 +2,6 @@
 Tests for International Instruments data transformation functionality.
 """
 
-import pytest
-import json
 from app.services.international_instruments_transformer import InternationalInstrumentsTransformer
 
 
