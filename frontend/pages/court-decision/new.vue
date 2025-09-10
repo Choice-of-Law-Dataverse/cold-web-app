@@ -20,7 +20,7 @@
         target="_blank"
         rel="noopener noreferrer"
       >
-        Open the Case Analyze now
+        Open the Case Analyzer now
         <UIcon
           name="i-material-symbols:open-in-new"
           class="relative top-[2px]"
