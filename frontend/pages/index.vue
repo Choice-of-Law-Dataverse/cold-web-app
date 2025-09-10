@@ -2,7 +2,9 @@
   <main class="px-6">
     <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
       <!-- Header Section -->
-      <div class="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6">
+      <div
+        class="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-6 items-stretch"
+      >
         <div class="col-span-12">
           <div class="text-[60px] leading-[68px] font-bold mb-3 md:text-left">
             Choice of Law<br />
@@ -32,7 +34,7 @@
           <CountrySelectMenu />
         </div>
         <div class="col-span-12 md:col-span-8">
-          <SuccessfulLegalTransplantations />
+          <SuccessfulLegalTransplantations class="h-full" />
         </div>
         <div class="col-span-12 sm:col-span-4">
           <ConnectCard
@@ -42,6 +44,7 @@
             buttonLink="/international-instrument/II-Pri-1"
             imageSrc="https://choiceoflaw.blob.core.windows.net/assets/hcch-logo-circle.svg"
             :newTab="false"
+            class="h-full"
           />
         </div>
 
@@ -51,6 +54,7 @@
             buttonText="See all"
             buttonLink="/arbitral-awards"
             :overrideNumber="74"
+            class="h-full"
           />
         </div>
         <div class="col-span-12 md:col-span-4">
@@ -60,6 +64,7 @@
             iso3Left="CHE"
             iso3Right="CAN"
             :detectVisitorRight="true"
+            class="h-full"
           />
         </div>
         <div class="col-span-12 sm:col-span-4">
@@ -68,14 +73,15 @@
             buttonText="See all"
             buttonLink="/arbitral-rules"
             :overrideNumber="37"
+            class="h-full"
           />
         </div>
 
         <div class="col-span-12 md:col-span-6">
-          <PopularSearches />
+          <PopularSearches class="h-full" />
         </div>
         <div class="col-span-12 sm:col-span-6">
-          <TopLiteratureThemes />
+          <TopLiteratureThemes class="h-full" />
         </div>
 
         <div class="col-span-12 sm:col-span-4">
@@ -84,13 +90,14 @@
             buttonText="See all"
             buttonLink="/search?type=Domestic+Instruments"
             tableName="Domestic Instruments"
+            class="h-full"
           />
         </div>
         <div class="col-span-12 md:col-span-8">
-          <RecentDomesticInstruments />
+          <RecentDomesticInstruments class="h-full" />
         </div>
         <div class="col-span-12 md:col-span-8">
-          <PlotCourtDecisionsJurisdiction />
+          <PlotCourtDecisionsJurisdiction class="h-full" />
         </div>
         <div class="col-span-12 sm:col-span-4">
           <NumberCard
@@ -98,11 +105,12 @@
             buttonText="See all"
             buttonLink="/search?type=Court+Decisions"
             tableName="Court Decisions"
+            class="h-full"
           />
         </div>
 
         <div class="col-span-12 md:col-span-8">
-          <LeadingCases />
+          <LeadingCases class="h-full" />
         </div>
         <div class="col-span-12 sm:col-span-4">
           <ConnectCard
@@ -111,6 +119,7 @@
             :buttonLink="links.case_analyzer"
             iconName="i-material-symbols:chat-outline"
             buttonIcon="i-material-symbols:open-in-new"
+            class="h-full"
           />
         </div>
 
@@ -134,6 +143,7 @@
             :buttonLink="links.substack"
             iconName="i-bi:substack"
             buttonIcon="i-material-symbols:open-in-new"
+            class="h-full"
           />
         </div>
 
@@ -144,6 +154,7 @@
             :buttonLink="links.linkedin"
             iconName="i-mdi:linkedin"
             buttonIcon="i-material-symbols:open-in-new"
+            class="h-full"
           />
         </div>
 
@@ -154,6 +165,7 @@
             buttonLink="/contact"
             :newTab="false"
             iconName="i-material-symbols:alternate-email"
+            class="h-full"
           />
         </div>
         <div class="col-span-12 sm:col-span-3">
@@ -163,6 +175,7 @@
             buttonLink="/court-decision/new"
             iconName="i-material-symbols:add-notes"
             :newTab="false"
+            class="h-full"
           />
         </div>
       </div>
