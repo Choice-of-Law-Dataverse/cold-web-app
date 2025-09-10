@@ -193,7 +193,7 @@ def test_boolean_mappings():
         }
     )
     
-    print(f"Boolean mapping results:")
+    print("Boolean mapping results:")
     for key, value in transformed.items():
         print(f"  {key}: {value} (type: {type(value).__name__})")
 
@@ -228,7 +228,7 @@ def test_conditional_mappings():
         }
     )
     
-    print(f"Conditional mapping results:")
+    print("Conditional mapping results:")
     for key, value in transformed.items():
         print(f"  {key}: {value}")
 

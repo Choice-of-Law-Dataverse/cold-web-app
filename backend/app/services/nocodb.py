@@ -1,6 +1,5 @@
 import requests
 import logging
-from app.config import config
 
 class NocoDBService:
     def __init__(self, base_url: str, api_token: str = None):

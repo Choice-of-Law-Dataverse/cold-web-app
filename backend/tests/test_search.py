@@ -3,19 +3,18 @@
 import sys
 from pathlib import Path
 
-# Ensure the project root is in sys.path so we can import the app package.
-project_root = Path(__file__).parent.parent.resolve()
-sys.path.insert(0, str(project_root))
 
 import pytest
 from fastapi.testclient import TestClient
-from fastapi import HTTPException
 
 # Import the FastAPI app, JWT dependency, and the search routes
 from app.main import app
 from app.auth import verify_jwt_token
 from app.routes import search as search_routes
-from app.services.search import SearchService
+
+# Ensure the project root is in sys.path so we can import the app package.
+project_root = Path(__file__).parent.parent.resolve()
+sys.path.insert(0, str(project_root))
 
 
 # ------------------------------------------------------------------------------
@@ -33,7 +32,15 @@ app.dependency_overrides[verify_jwt_token] = override_verify_jwt_token
 # Create a dummy search service to override the one used in routes.
 # ------------------------------------------------------------------------------
 class DummySearchService:
-    def full_text_search(self, search_string, filters=None, page=1, page_size=50, sort_by_date=False, response_type: str = 'parsed'):
+    def full_text_search(
+        self,
+        search_string,
+        filters=None,
+        page=1,
+        page_size=50,
+        sort_by_date=False,
+        response_type: str = "parsed",
+    ):
         # Return a predictable result for testing.
         return {
             "dummy": "full_text_search",
@@ -45,11 +52,11 @@ class DummySearchService:
             "response_type": response_type,
         }
 
-    def curated_details_search(self, table, cold_id, response_type: str = 'parsed'):
+    def curated_details_search(self, table, cold_id, response_type: str = "parsed"):
         # For allowed table names, return dummy data; otherwise, return an error dict.
         allowed_tables = [
             "Answers",
-            "Legislation", 
+            "Legislation",
             "Legal provisions",
             "Court decisions",
             "Jurisdictions",
@@ -57,8 +64,8 @@ class DummySearchService:
         ]
         if table in allowed_tables:
             return {
-                "dummy": "curated_details_search", 
-                "table": table, 
+                "dummy": "curated_details_search",
+                "table": table,
                 "id": cold_id,
                 "source_table": table,
                 "record_id": 123,
@@ -71,11 +78,16 @@ class DummySearchService:
                 "error": "this table either does not exist or has not been implemented in this route"
             }
 
-    def full_table(self, table, response_type: str = 'parsed'):
+    def full_table(self, table, response_type: str = "parsed"):
         return {"dummy": "full_table", "table": table, "response_type": response_type}
 
-    def filtered_table(self, table, filters, response_type: str = 'parsed'):
-        return {"dummy": "filtered_table", "table": table, "filters": filters, "response_type": response_type}
+    def filtered_table(self, table, filters, response_type: str = "parsed"):
+        return {
+            "dummy": "filtered_table",
+            "table": table,
+            "filters": filters,
+            "response_type": response_type,
+        }
 
 
 # Override the search_service instance in the search routes with our dummy service.

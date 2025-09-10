@@ -1,6 +1,6 @@
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
-from typing import Any, Dict, Iterable, List, Optional
+from typing import Any, Dict, List
 from datetime import datetime, date
 from decimal import Decimal
 

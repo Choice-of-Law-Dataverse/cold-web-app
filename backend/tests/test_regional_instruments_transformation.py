@@ -207,7 +207,7 @@ def test_array_operations():
         }
     )
     
-    print(f"Array operations results:")
+    print("Array operations results:")
     for key, value in transformed.items():
         print(f"  {key}: {value}")
 
@@ -253,7 +253,7 @@ def test_complex_mappings():
         }
     )
     
-    print(f"Complex mapping results:")
+    print("Complex mapping results:")
     for key, value in transformed.items():
         print(f"  {key}: {value}")
 

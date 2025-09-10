@@ -30,9 +30,9 @@ def verify_jwt_token(authorization: str = Header(None)):
     token = parts[1]
 
     try:
-        payload = jwt.decode(token, config.JWT_SECRET, algorithms=["HS256"])
-        # Optionally check payload claims here if desired
-        # e.g. check if "sub" in payload or "role" in payload
+        jwt.decode(token, config.JWT_SECRET, algorithms=["HS256"])
+    # Optionally check payload claims here if desired
+    # e.g. check if "sub" in payload or "role" in payload
 
     except jwt.PyJWTError:
         raise HTTPException(

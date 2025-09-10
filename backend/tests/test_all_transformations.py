@@ -3,7 +3,6 @@
 Comprehensive test script for all table transformations.
 """
 
-import json
 import sys
 import os
 

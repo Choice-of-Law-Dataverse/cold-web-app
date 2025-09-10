@@ -50,7 +50,7 @@ def test_nocodb_response():
             print(f"Boolean/Compatible fields: {boolean_fields}")
             
             # Print full first row for inspection
-            print(f"Full first row:")
+            print("Full first row:")
             for key, value in sorted(first_row.items()):
                 print(f"  {key}: {value} (type: {type(value)})")
                 
@@ -88,7 +88,7 @@ if __name__ == "__main__":
         config = mapping_repo.get_mapping('Domestic Instruments')
         boolean_mappings = config.get('mappings', {}).get('boolean_mappings', {})
         
-        print(f"\n=== Boolean Mapping Configuration ===")
+        print("\n=== Boolean Mapping Configuration ===")
         for target_field, boolean_config in boolean_mappings.items():
             source_field = boolean_config.get('source_field')
             print(f"  '{target_field}' <- '{source_field}'")

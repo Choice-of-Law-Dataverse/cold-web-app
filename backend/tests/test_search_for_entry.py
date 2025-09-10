@@ -6,13 +6,11 @@ Test script for the new search_for_entry function integration
 
 import os
 import sys
-import pytest
 
 # Add the backend directory to Python path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from app.services.search import SearchService
-from app.config import config
 
 
 def test_search_for_entry_integration():
@@ -50,7 +48,7 @@ def test_search_for_entry_integration():
                 if relations:
                     print(f"  Relations found: {list(relations.keys())}")
                 else:
-                    print(f"  No relations for this record")
+                    print("  No relations for this record")
 
 
 def test_data_structure_consistency():

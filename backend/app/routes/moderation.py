@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, RedirectResponse
-from typing import Optional, Any, Dict, List, Tuple, Type
+from typing import Optional, Any, Dict, List, Tuple
 import html
 from datetime import date
 import json
@@ -71,7 +71,14 @@ def _render_input(name: str, value: Any, field_info) -> str:
 
     # Choose widget by type
     if base_t is bool:
-        checked = " checked" if (value is True or (isinstance(value, str) and value.lower() in {"true", "1", "yes"})) else ""
+        checked = (
+            " checked"
+            if (
+                value is True
+                or (isinstance(value, str) and value.lower() in {"true", "1", "yes"})
+            )
+            else ""
+        )
         return f"<label><input type='checkbox' name='{html.escape(name)}' value='true'{checked}/> {html.escape(label)}</label>"
     if base_t in (date,):
         return (
@@ -90,8 +97,20 @@ def _render_input(name: str, value: Any, field_info) -> str:
             f"<input type='text' name='{html.escape(name)}' value='{safe_val}' placeholder='Comma-separated values'/></label>"
         )
     # Default to text input; use textarea for likely long text fields
-    longish = any(k in name for k in ["abstract", "quote", "excerpt", "notes", "relevant", "original_text", "english_translation", "raw_data", "legal_provisions"]) \
-        or (isinstance(value, str) and len(value) > 180)
+    longish = any(
+        k in name
+        for k in [
+            "abstract",
+            "quote",
+            "excerpt",
+            "notes",
+            "relevant",
+            "original_text",
+            "english_translation",
+            "raw_data",
+            "legal_provisions",
+        ]
+    ) or (isinstance(value, str) and len(value) > 180)
     if longish:
         return (
             f"<label>{html.escape(label)}<br/>"
@@ -105,7 +124,7 @@ def _render_input(name: str, value: Any, field_info) -> str:
 
 
 def _page(title: str, inner_html: str, show_logout: bool = True) -> HTMLResponse:
-        style = """
+    style = """
         <style>
             :root { --bg:#FAFAFA; --text:#0F0035; --accent:#6F4DFA; --card:#FFFFFF; }
             *{ box-sizing: border-box; }
@@ -126,8 +145,8 @@ def _page(title: str, inner_html: str, show_logout: bool = True) -> HTMLResponse
             .space-x > * + * { margin-left: 8px; }
         </style>
         """
-        logout_html = "" if not show_logout else "<a href='/moderation/logout'>Logout</a>"
-        html_doc = f"""
+    logout_html = "" if not show_logout else "<a href='/moderation/logout'>Logout</a>"
+    html_doc = f"""
         <html>
             <head>
                 <title>{html.escape(title)}</title>
@@ -144,13 +163,15 @@ def _page(title: str, inner_html: str, show_logout: bool = True) -> HTMLResponse
             </body>
         </html>
         """
-        return HTMLResponse(html_doc)
+    return HTMLResponse(html_doc)
 
 
 def _norm_key_map(d: Dict[str, Any]) -> Dict[str, Any]:
     """Return a case- and punctuation-insensitive key map for convenient lookup."""
+
     def norm(s: str) -> str:
         return "".join(ch.lower() for ch in s if ch.isalnum())
+
     return {norm(k): v for k, v in d.items()}
 
 
@@ -165,7 +186,9 @@ def _first(d: Dict[str, Any], *keys: str) -> Any:
     return None
 
 
-def _normalize_case_analyzer_payload(raw: Dict[str, Any], item: Dict[str, Any]) -> Dict[str, Any]:
+def _normalize_case_analyzer_payload(
+    raw: Dict[str, Any], item: Dict[str, Any]
+) -> Dict[str, Any]:
     """Flatten and normalize the analyzer payload for read-only display.
     Rules:
     - Prefer *_edited fields.
@@ -221,7 +244,14 @@ def _normalize_case_analyzer_payload(raw: Dict[str, Any], item: Dict[str, Any]) 
         return val
 
     # Date: prefer decision date; fallback to row created_at
-    decision_date = pref("decision_date_edited", "decision_date", "date_of_judgment_edited", "date_of_judgment", "date_edited", "date")
+    decision_date = pref(
+        "decision_date_edited",
+        "decision_date",
+        "date_of_judgment_edited",
+        "date_of_judgment",
+        "date_edited",
+        "date",
+    )
     created_at = item.get("created_at")
     if created_at and hasattr(created_at, "isoformat"):
         created_at = created_at.isoformat()
@@ -235,7 +265,9 @@ def _normalize_case_analyzer_payload(raw: Dict[str, Any], item: Dict[str, Any]) 
     result["jurisdiction_type"] = jurisdiction_type
 
     # Sections and themes
-    result["choice_of_law_sections"] = last_item(pref("col_section_edited", "col_section"))
+    result["choice_of_law_sections"] = last_item(
+        pref("col_section_edited", "col_section")
+    )
     theme_val = last_item(pref("classification_edited", "classification"))
     # If list item is dict or list, stringify
     if isinstance(theme_val, (list, dict)):
@@ -246,20 +278,38 @@ def _normalize_case_analyzer_payload(raw: Dict[str, Any], item: Dict[str, Any]) 
     result["theme"] = theme_val
 
     # Abstract and facts
-    result["abstract"] = pref("abstract_edited", "abstract", "summary_edited", "summary")
-    result["relevant_facts"] = pref("relevant_facts_edited", "relevant_facts", "facts_edited", "facts")
+    result["abstract"] = pref(
+        "abstract_edited", "abstract", "summary_edited", "summary"
+    )
+    result["relevant_facts"] = pref(
+        "relevant_facts_edited", "relevant_facts", "facts_edited", "facts"
+    )
 
     # PIL/CoL
     result["pil_provisions"] = pref("pil_provisions_edited", "pil_provisions")
-    result["choice_of_law_issue"] = pref("choice_of_law_issue_edited", "choice_of_law_issue", "col_issue_edited", "col_issue")
+    result["choice_of_law_issue"] = pref(
+        "choice_of_law_issue_edited",
+        "choice_of_law_issue",
+        "col_issue_edited",
+        "col_issue",
+    )
 
     # Determine common vs civil law for Court's Position assembly
-    is_common_law_raw = pref("is_common_law_edited", "is_common_law", "common_law_edited", "common_law")
+    is_common_law_raw = pref(
+        "is_common_law_edited", "is_common_law", "common_law_edited", "common_law"
+    )
     is_common_law: Optional[bool] = None
     if isinstance(is_common_law_raw, bool):
         is_common_law = is_common_law_raw
     elif isinstance(is_common_law_raw, str):
-        is_common_law = is_common_law_raw.strip().lower() in {"true", "1", "yes", "y", "common", "common law"}
+        is_common_law = is_common_law_raw.strip().lower() in {
+            "true",
+            "1",
+            "yes",
+            "y",
+            "common",
+            "common law",
+        }
     # If still unknown, infer from jurisdiction_type string
     if is_common_law is None and isinstance(jurisdiction_type, str):
         jt = jurisdiction_type.strip().lower()
@@ -296,6 +346,7 @@ def _normalize_case_analyzer_payload(raw: Dict[str, Any], item: Dict[str, Any]) 
 
 # New helpers: overview and detail rendering
 
+
 def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
     payload: Dict[str, Any] = item.get("payload", {}) or {}
 
@@ -315,15 +366,28 @@ def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
             ("Theme", normalized.get("theme")),
             ("Date", normalized.get("date")),
         ]
-        meta = " | ".join(f"{html.escape(k)}: {html.escape(val_to_str(v))}" for k, v in parts)
+        meta = " | ".join(
+            f"{html.escape(k)}: {html.escape(val_to_str(v))}" for k, v in parts
+        )
         src = html.escape(str(item.get("source") or ""))
         created = item.get("created_at")
-        created_s = created.isoformat() if hasattr(created, "isoformat") else str(created or "")
-        submit_name = normalized.get("username") or item.get("username") or payload.get("username")
-        submit_email = normalized.get("user_email") or item.get("user_email") or payload.get("user_email")
+        created_s = (
+            created.isoformat() if hasattr(created, "isoformat") else str(created or "")
+        )
+        submit_name = (
+            normalized.get("username")
+            or item.get("username")
+            or payload.get("username")
+        )
+        submit_email = (
+            normalized.get("user_email")
+            or item.get("user_email")
+            or payload.get("user_email")
+        )
         byline = (
             f"<div style='color:#555;font-size:12px;margin-top:2px'>By: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}</div>"
-            if (submit_name or submit_email) else ""
+            if (submit_name or submit_email)
+            else ""
         )
         return (
             f"<li style='border:1px solid #eee;padding:8px;border-radius:6px;margin-bottom:8px'>"
@@ -345,11 +409,17 @@ def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
         },
         "domestic-instruments": {
             "title_keys": ["title", "name"],
-            "info": [("Jurisdiction", ["jurisdiction", "country"]), ("Date", ["date", "year"])],
+            "info": [
+                ("Jurisdiction", ["jurisdiction", "country"]),
+                ("Date", ["date", "year"]),
+            ],
         },
         "regional-instruments": {
             "title_keys": ["title", "name"],
-            "info": [("Jurisdiction", ["jurisdiction", "region"]), ("Date", ["date", "year"])],
+            "info": [
+                ("Jurisdiction", ["jurisdiction", "region"]),
+                ("Date", ["date", "year"]),
+            ],
         },
         "international-instruments": {
             "title_keys": ["title", "name"],
@@ -357,11 +427,15 @@ def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
         },
         "literature": {
             "title_keys": ["title", "name"],
-            "info": [("Authors", ["authors", "author"]), ("Year", ["year", "publication_year"])],
+            "info": [
+                ("Authors", ["authors", "author"]),
+                ("Year", ["year", "publication_year"]),
+            ],
         },
     }
 
     spec = summary_specs.get(category, {"title_keys": ["title", "name"], "info": []})
+
     def first_key(*keys: str) -> Any:
         return _first(payload, *keys)
 
@@ -369,12 +443,21 @@ def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
     info_parts: List[Tuple[str, Any]] = []
     for label, keys in spec.get("info", []):
         info_parts.append((label, first_key(*keys)))
-    meta = " | ".join(f"{html.escape(label)}: {html.escape(val_to_str(val))}" for label, val in info_parts)
+    meta = " | ".join(
+        f"{html.escape(label)}: {html.escape(val_to_str(val))}"
+        for label, val in info_parts
+    )
     src = html.escape(str(item.get("source") or ""))
     created = item.get("created_at")
-    created_s = created.isoformat() if hasattr(created, "isoformat") else str(created or "")
-    submit_name = item.get("username") or first_key("username", "submitter_name", "name")
-    submit_email = item.get("user_email") or first_key("user_email", "email", "submitter_email")
+    created_s = (
+        created.isoformat() if hasattr(created, "isoformat") else str(created or "")
+    )
+    submit_name = item.get("username") or first_key(
+        "username", "submitter_name", "name"
+    )
+    submit_email = item.get("user_email") or first_key(
+        "user_email", "email", "submitter_email"
+    )
     submit_comments = first_key("submitter_comments", "comments", "note")
     comments_snippet = ""
     if isinstance(submit_comments, str) and submit_comments.strip():
@@ -384,7 +467,8 @@ def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
         comments_snippet = f" — Comments: {html.escape(txt)}"
     byline = (
         f"<div style='color:#555;font-size:12px;margin-top:2px'>By: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}{comments_snippet}</div>"
-        if (submit_name or submit_email or submit_comments) else ""
+        if (submit_name or submit_email or submit_comments)
+        else ""
     )
     return (
         f"<li style='border:1px solid #eee;padding:8px;border-radius:6px;margin-bottom:8px'>"
@@ -400,10 +484,16 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
     payload: Dict[str, Any] = item.get("payload", {}) or {}
     if category == "case-analyzer":
         normalized = _normalize_case_analyzer_payload(payload, item)
+
         def show(key: str) -> str:
             val = normalized.get(key)
-            text = "NA" if val is None or (isinstance(val, str) and val.strip() == "") else str(val)
+            text = (
+                "NA"
+                if val is None or (isinstance(val, str) and val.strip() == "")
+                else str(val)
+            )
             return html.escape(text)
+
         ordered_rows = [
             ("Username", show("username")),
             ("E-Mail", show("user_email")),
@@ -420,12 +510,24 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
             ("Choice of Law Issue", show("choice_of_law_issue")),
             ("Court's Position", show("courts_position")),
         ]
-        rows_html = [f"<div style='margin:4px 0'><strong>{html.escape(label)}:</strong> {value}</div>" for label, value in ordered_rows]
-        submit_name = normalized.get("username") or item.get("username") or payload.get("username")
-        submit_email = normalized.get("user_email") or item.get("user_email") or payload.get("user_email")
+        rows_html = [
+            f"<div style='margin:4px 0'><strong>{html.escape(label)}:</strong> {value}</div>"
+            for label, value in ordered_rows
+        ]
+        submit_name = (
+            normalized.get("username")
+            or item.get("username")
+            or payload.get("username")
+        )
+        submit_email = (
+            normalized.get("user_email")
+            or item.get("user_email")
+            or payload.get("user_email")
+        )
         by_meta = (
             f" — By: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}"
-            if (submit_name or submit_email) else ""
+            if (submit_name or submit_email)
+            else ""
         )
         meta = (
             f"<div style='color:#555;font-size:12px;margin-bottom:6px'>"
@@ -440,16 +542,19 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
         )
         return (
             f"<div style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>"
-            f"{meta}"
-            + "".join(rows_html)
-            + buttons
-            + "</div>"
+            f"{meta}" + "".join(rows_html) + buttons + "</div>"
         )
 
     # Default: form-based editing for other categories
     inputs: List[str] = []
     # Do not render submitter meta as editable inputs; show read-only in header instead
-    _meta_fields = {"submitter_email", "submitter_comments", "official_source_pdf", "source_pdf", "attachment"}
+    _meta_fields = {
+        "submitter_email",
+        "submitter_comments",
+        "official_source_pdf",
+        "source_pdf",
+        "attachment",
+    }
     for fname, finfo in getattr(model, "model_fields").items():  # type: ignore[attr-defined]
         if fname in _meta_fields:
             continue
@@ -460,7 +565,9 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
             rendered = _render_input(fname, val, finfo)
         except Exception:
             # Fallback to a simple text input if rendering fails
-            safe_label = html.escape(finfo.description or fname.replace("_", " ").title())
+            safe_label = html.escape(
+                finfo.description or fname.replace("_", " ").title()
+            )
             safe_name = html.escape(fname)
             safe_val = html.escape("" if val is None else str(val))
             rendered = f"<label>{safe_label} <input type='text' name='{safe_name}' value='{safe_val}'/></label>"
@@ -472,19 +579,24 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
         f"<button type='submit' formaction='/moderation/{category}/{item['id']}/reject' style='padding:6px 12px;margin-left:8px'>Reject</button>"
         f"</div>"
     )
-    submit_name = item.get("username") or _first(payload, "username", "submitter_name", "name")
-    submit_email = item.get("user_email") or _first(payload, "user_email", "email", "submitter_email")
+    submit_name = item.get("username") or _first(
+        payload, "username", "submitter_name", "name"
+    )
+    submit_email = item.get("user_email") or _first(
+        payload, "user_email", "email", "submitter_email"
+    )
     submit_comments = _first(payload, "submitter_comments", "comments", "note")
     comments_snippet = ""
     if isinstance(submit_comments, str) and submit_comments.strip():
         comments_snippet = f" — Comments: {html.escape(submit_comments.strip())}"
     by_meta = (
         f" — Submitted by: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}{comments_snippet}"
-        if (submit_name or submit_email or submit_comments) else ""
+        if (submit_name or submit_email or submit_comments)
+        else ""
     )
     # Explicit read-only block for submitter info (clear visibility)
     submit_block = ""
-    if (submit_name or submit_email or submit_comments):
+    if submit_name or submit_email or submit_comments:
         comments_block = ""
         if isinstance(submit_comments, str) and submit_comments.strip():
             # Preserve line breaks in comments
@@ -492,8 +604,16 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
             comments_block = f"<div><strong>Comments:</strong> {c}</div>"
         submit_block = (
             "<div style='background:#F8F7FF;border:1px solid #EAE7FF;padding:8px;border-radius:6px;margin:8px 0'>"
-            + (f"<div><strong>Submitted by:</strong> {html.escape(str(submit_name or ''))}</div>" if submit_name else "")
-            + (f"<div><strong>E-Mail:</strong> {html.escape(str(submit_email or ''))}</div>" if submit_email else "")
+            + (
+                f"<div><strong>Submitted by:</strong> {html.escape(str(submit_name or ''))}</div>"
+                if submit_name
+                else ""
+            )
+            + (
+                f"<div><strong>E-Mail:</strong> {html.escape(str(submit_email or ''))}</div>"
+                if submit_email
+                else ""
+            )
             + comments_block
             + "</div>"
         )
@@ -533,8 +653,13 @@ def login_form(request: Request):
 @router.post("/login")
 def login(request: Request, username: str = Form(...), password: str = Form(...)):
     if not config.MODERATION_USERNAME or not config.MODERATION_PASSWORD:
-        raise HTTPException(status_code=500, detail="Moderation credentials not configured")
-    if username == config.MODERATION_USERNAME and password == config.MODERATION_PASSWORD:
+        raise HTTPException(
+            status_code=500, detail="Moderation credentials not configured"
+        )
+    if (
+        username == config.MODERATION_USERNAME
+        and password == config.MODERATION_PASSWORD
+    ):
         request.session["moderator"] = username
         return RedirectResponse(url="/moderation", status_code=302)
     return HTMLResponse("Invalid credentials", status_code=401)
@@ -619,7 +744,9 @@ def view_entry(request: Request, category: str, suggestion_id: int):
     items = service.list_pending(table)
     item = next((i for i in items if i["id"] == suggestion_id), None)
     if not item:
-        raise HTTPException(status_code=404, detail="Suggestion not found or not pending")
+        raise HTTPException(
+            status_code=404, detail="Suggestion not found or not pending"
+        )
     model = _category_schema(category)
     if model is None:
         raise HTTPException(status_code=404)
@@ -646,7 +773,9 @@ async def approve(request: Request, category: str, suggestion_id: int):
     items = service.list_pending(table)
     item = next((i for i in items if i["id"] == suggestion_id), None)
     if not item:
-        raise HTTPException(status_code=404, detail="Suggestion not found or not pending")
+        raise HTTPException(
+            status_code=404, detail="Suggestion not found or not pending"
+        )
     original_payload: Dict[str, Any] = item["payload"] or {}
 
     # Case Analyzer: recompute normalized snapshot and mark finished; no editable inputs expected
@@ -669,7 +798,13 @@ async def approve(request: Request, category: str, suggestion_id: int):
         raise HTTPException(status_code=400, detail="Unsupported category")
     updated_fields: Dict[str, Any] = {}
     # Exclude submitter meta from write-back to main DB
-    _reserved = {"submitter_email", "submitter_comments", "official_source_pdf", "source_pdf", "attachment"}
+    _reserved = {
+        "submitter_email",
+        "submitter_comments",
+        "official_source_pdf",
+        "source_pdf",
+        "attachment",
+    }
     for fname, finfo in getattr(model, "model_fields").items():  # type: ignore[attr-defined]
         if fname in _reserved:
             continue
@@ -700,7 +835,9 @@ async def approve(request: Request, category: str, suggestion_id: int):
         raise HTTPException(status_code=400, detail="Unsupported category")
     # Small normalization: for Domestic Instruments, auto-derive year text if missing
     if target_table == "Domestic_Instruments":
-        if (not updated_fields.get("date_year_of_entry_into_force")) and updated_fields.get("entry_into_force"):
+        if (
+            not updated_fields.get("date_year_of_entry_into_force")
+        ) and updated_fields.get("entry_into_force"):
             try:
                 # Keep as string; writer will coerce types as needed
                 year = str(updated_fields["entry_into_force"])[:4]
@@ -714,7 +851,9 @@ async def approve(request: Request, category: str, suggestion_id: int):
     for key in ("jurisdiction", "jurisdiction_link"):
         if key in payload_for_writer and payload_for_writer.get(key):
             try:
-                writer.link_jurisdictions(target_table, merged_id, payload_for_writer.get(key))
+                writer.link_jurisdictions(
+                    target_table, merged_id, payload_for_writer.get(key)
+                )
             except Exception:
                 pass
     service.mark_status(
@@ -738,7 +877,6 @@ async def reject(request: Request, category: str, suggestion_id: int):
     global service
     if service is None:
         service = SuggestionService()
-    form = await request.form()
     moderation_note = ""
     service.mark_status(
         table,

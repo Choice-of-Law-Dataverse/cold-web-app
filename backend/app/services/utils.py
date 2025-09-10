@@ -1,6 +1,5 @@
 import re
 import requests
-from fastapi import Request
 from app.config import config
 
 """
