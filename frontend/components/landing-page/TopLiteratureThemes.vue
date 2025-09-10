@@ -9,12 +9,12 @@
       </div>
 
       <!-- Suggestions Section -->
-      <div class="suggestions flex flex-wrap gap-6">
+      <div class="suggestions flex flex-col gap-4">
         <UButton
           v-for="(suggestion, index) in searchSuggestions"
           :key="index"
           @click="handleSuggestionClick(suggestion)"
-          class="suggestion-button"
+          class="suggestion-button w-full justify-start items-center gap-2"
           variant="link"
           icon="i-material-symbols:arrow-forward"
           trailing
@@ -51,15 +51,23 @@ function handleSuggestionClick(suggestion) {
 <style scoped>
 .suggestions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1rem; /* Adjust spacing between buttons */
+  flex-direction: column;
+  gap: 1rem; /* Increased spacing between buttons */
 }
 
 .suggestion-button {
+  width: 100%; /* Full width to ensure each is on a new line */
+  display: inline-flex; /* Changed to inline-flex for proper alignment */
   max-width: 100%; /* Ensure the button doesn’t overflow */
   white-space: normal; /* Allow text wrapping */
   text-align: left; /* Align text to the left */
   padding: 0.5rem 1rem; /* Adjust padding for better fit */
   word-break: break-word; /* Break long words */
+}
+
+/* Slightly lower the trailing arrow icon for better visual alignment */
+:deep(.i-material-symbols\:arrow-forward) {
+  position: relative;
+  top: 1px;
 }
 </style>

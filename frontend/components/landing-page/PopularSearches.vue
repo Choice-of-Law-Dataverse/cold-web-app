@@ -36,6 +36,7 @@ const router = useRouter()
 const searchSuggestions = ref([
   'Tacit Choice in Argentina',
   'Party Autonomy in Switzerland',
+  'Codification in the UK',
 ])
 
 function formatQuery(query) {

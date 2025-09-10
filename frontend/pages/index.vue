@@ -77,11 +77,21 @@
           />
         </div>
 
-        <div class="col-span-12 md:col-span-6">
+        <div class="col-span-12 md:col-span-5">
           <PopularSearches class="h-full" />
         </div>
-        <div class="col-span-12 sm:col-span-6">
+        <div class="col-span-12 sm:col-span-4">
           <TopLiteratureThemes class="h-full" />
+        </div>
+        <div class="col-span-12 sm:col-span-3">
+          <ConnectCard
+            title="Enter new Data"
+            buttonText="Submit your data"
+            buttonLink="/court-decision/new"
+            iconName="i-material-symbols:add-notes"
+            :newTab="false"
+            class="h-full"
+          />
         </div>
 
         <div class="col-span-12 sm:col-span-4">
@@ -136,7 +146,7 @@
           />
         </div>
 
-        <div class="col-span-12 sm:col-span-3">
+        <div class="col-span-12 sm:col-span-4">
           <ConnectCard
             title="CoLD Newsletter"
             buttonText="Subscribe"
@@ -148,7 +158,7 @@
           />
         </div>
 
-        <div class="col-span-12 sm:col-span-3">
+        <div class="col-span-12 sm:col-span-4">
           <ConnectCard
             title="CoLD on LinkedIn"
             buttonText="Follow Us"
@@ -160,24 +170,13 @@
           />
         </div>
 
-        <div class="col-span-12 sm:col-span-3">
+        <div class="col-span-12 sm:col-span-4">
           <ConnectCard
             title="Questions, Feedback?"
             buttonText="Contact Us"
             buttonLink="/contact"
             :newTab="false"
             iconName="i-material-symbols:alternate-email"
-            class="h-full"
-            cardHeight="200px"
-          />
-        </div>
-        <div class="col-span-12 sm:col-span-3">
-          <ConnectCard
-            title="Enter new Data"
-            buttonText="Submit your data"
-            buttonLink="/court-decision/new"
-            iconName="i-material-symbols:add-notes"
-            :newTab="false"
             class="h-full"
             cardHeight="200px"
           />
