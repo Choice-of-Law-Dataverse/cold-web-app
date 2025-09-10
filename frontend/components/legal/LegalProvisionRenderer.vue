@@ -116,7 +116,7 @@ const { dataMap: recordMap, isLoading } = useRecordDetailsList(
 const instrumentTitles = computed(() => {
   const map = {}
   instrumentIds.value.forEach((id) => {
-    const rec = recordMap.value?.[id] || {}
+    const rec = recordMap?.value?.[id] || {}
     const title =
       rec['Abbreviation'] ||
       rec['Title (in English)'] ||
