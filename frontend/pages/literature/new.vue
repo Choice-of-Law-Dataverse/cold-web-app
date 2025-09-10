@@ -304,16 +304,13 @@ function handleNewSave() {
 
   ;(async () => {
     try {
-      await $fetch(
-        `      await $fetch(` / api / proxy / suggestions / literature`, {`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: payload,
-        }
-      )
+      await $fetch(`/api/proxy/suggestions/literature`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: payload,
+      })
       showSaveModal.value = false
       router.push({
         path: '/confirmation',
