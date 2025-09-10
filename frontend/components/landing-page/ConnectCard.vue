@@ -23,6 +23,8 @@
           <template v-else>
             <Icon
               :name="iconName"
+              class="icon-media"
+              :size="200"
               :style="{ color: 'var(--color-cold-green)' }"
             />
           </template>
@@ -55,9 +57,9 @@
 const cardUi = {
   base: 'h-full flex flex-col border-0 shadow-none ring-0',
   divide: 'divide-y-0',
-  header: { base: 'border-none pb-0' },
-  body: { base: 'flex-1 min-h-0 flex flex-col py-0' },
-  footer: { base: 'mt-auto border-none pt-0' },
+  header: { base: 'border-none' },
+  body: { base: 'flex-1 min-h-0 flex flex-col' },
+  footer: { base: 'mt-auto border-none' },
 }
 
 const props = defineProps({
@@ -114,14 +116,25 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 32px;
+  margin: 0;
+  flex: 1;
 }
 
-.icon-container img,
-.icon-container :deep(svg) {
-  max-height: 40px;
+.icon-container img {
+  max-height: 100px;
   width: auto;
   height: auto;
+}
+
+.icon-container :deep(svg) {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  max-height: 200px;
+}
+
+.icon-media {
+  display: inline-flex;
 }
 
 .link-container {
