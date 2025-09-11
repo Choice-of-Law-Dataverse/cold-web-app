@@ -1,6 +1,6 @@
 <template>
   <div v-if="shouldShowSection" class="mt-12">
-    <span v-if="showLabel" class="label">
+    <span v-if="showLabel" class="label flex flex-row items-center">
       {{ label }}
       <InfoPopover v-if="tooltip" :text="tooltip" />
     </span>

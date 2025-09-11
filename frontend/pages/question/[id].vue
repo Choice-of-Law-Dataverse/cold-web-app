@@ -10,7 +10,7 @@
     <!-- Custom rendering for Legal provision articles -->
     <template #domestic-legal-provisions="{ value }">
       <section class="section-gap">
-        <span class="label">
+        <span class="label flex flex-row items-center">
           {{
             keyLabelPairs.find(
               (pair) => pair.key === 'Domestic Legal Provisions'
@@ -48,7 +48,7 @@
     <!-- Custom rendering for Court Decisions ID -->
     <template #court-decisions-id="{ value }">
       <section id="related-court-decisions" class="section-gap">
-        <span class="label">
+        <span class="label flex flex-row items-center">
           {{
             keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
               ?.label || 'Related Court Decisions'

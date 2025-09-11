@@ -6,7 +6,6 @@
           <div>
             <h2 class="mt-2 mb-8">
               Questions and Answers {{ jurisdictionName }}
-              <InfoPopover text="Questions" class="info-tooltip-small" />
             </h2>
             <!-- Desktop Table View -->
             <div class="table-full-width-wrapper hidden md:block">
@@ -192,7 +191,6 @@
 import { ref, computed, useAttrs } from 'vue'
 import { useRoute } from 'vue-router'
 import { useQuestionsWithAnswers } from '@/composables/useQuestionsWithAnswers'
-import InfoPopover from '~/components/ui/InfoPopover.vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 
 const route = useRoute()
