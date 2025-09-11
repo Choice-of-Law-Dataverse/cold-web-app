@@ -119,11 +119,11 @@ const isDisclaimerVisible = ref(false)
   position: absolute;
   top: 12px; /* Adjust as needed */
   right: 12px; /* Adjust as needed */
-  z-index: 10; /* Ensure it appears above the map */
+  z-index: 1000; /* Ensure it appears above the map */
 }
 
 /* Ensure the dropdown menu appears correctly */
 .select-menu-container .u-select-menu-dropdown {
-  z-index: 11; /* Higher than the container for the dropdown */
+  z-index: 1001; /* Higher than the container for the dropdown */
 }
 </style>
