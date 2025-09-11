@@ -15,8 +15,7 @@
             class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 flex flex-row items-center gap-1"
           >
             <span>
-              Navigate private international law issues with precision — for
-              free forever.
+              Navigate private international law issues with precision.
 
               <UButton class="suggestion-button" to="/about" variant="link">
                 <span>Read more </span>
