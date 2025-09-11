@@ -40,40 +40,43 @@ import { ref, computed } from 'vue'
 const props = defineProps({
   zoom: {
     type: Number,
-    default: 1.5
+    default: 1.5,
   },
   center: {
     type: Array,
-    default: () => [35, 0]
+    default: () => [35, 0],
   },
   enableDragging: {
     type: Boolean,
-    default: false
+    default: false,
   },
   enableScrollWheelZoom: {
     type: Boolean,
-    default: false
+    default: false,
   },
   enableZoomControl: {
     type: Boolean,
-    default: false
+    default: false,
   },
   enableDoubleClickZoom: {
     type: Boolean,
-    default: false
+    default: false,
   },
   backgroundBounds: {
     type: Array,
-    default: () => [[-200, -400], [200, 400]]
+    default: () => [
+      [-200, -400],
+      [200, 400],
+    ],
   },
   maxBounds: {
     type: Array,
-    default: null
+    default: null,
   },
   maxBoundsViscosity: {
     type: Number,
-    default: 1.0
-  }
+    default: 1.0,
+  },
 })
 
 // Import the new composables
