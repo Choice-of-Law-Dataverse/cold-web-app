@@ -31,7 +31,7 @@
       <UFormGroup size="lg" hint="Required" :error="errors.case_citation">
         <template #label>
           <span class="label">Case citation</span>
-          <InfoTooltip :text="tooltipCaseCitation" />
+          <InfoPopover :text="tooltipCaseCitation" />
         </template>
         <UInput v-model="caseCitation" class="mt-2 cold-input" />
       </UFormGroup>
@@ -39,7 +39,7 @@
       <UFormGroup size="lg" hint="Required" class="mt-8">
         <template #label>
           <span class="label">Publication Date</span>
-          <InfoTooltip :text="tooltipPublicationDate" />
+          <InfoPopover :text="tooltipPublicationDate" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
@@ -145,7 +145,7 @@
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Abstract</span>
-          <InfoTooltip :text="tooltipAbstract" />
+          <InfoPopover :text="tooltipAbstract" />
         </template>
         <UTextarea
           v-model="caseAbstract"
@@ -157,7 +157,7 @@
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Relevant Facts</span>
-          <InfoTooltip :text="tooltipRelevantFacts" />
+          <InfoPopover :text="tooltipRelevantFacts" />
         </template>
         <UTextarea
           v-model="caseRelevantFacts"
@@ -169,7 +169,7 @@
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">PIL Provisions</span>
-          <InfoTooltip :text="tooltipPILProvisions" />
+          <InfoPopover :text="tooltipPILProvisions" />
         </template>
         <UInput v-model="casePILProvisions" class="mt-2 cold-input" />
       </UFormGroup>
@@ -177,7 +177,7 @@
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Choice of Law Issue</span>
-          <InfoTooltip :text="tooltipChoiceofLawIssue" />
+          <InfoPopover :text="tooltipChoiceofLawIssue" />
         </template>
         <UTextarea
           v-model="caseChoiceofLawIssue"
@@ -189,7 +189,7 @@
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Court's Position</span>
-          <InfoTooltip :text="tooltipCourtsPosition" />
+          <InfoPopover :text="tooltipCourtsPosition" />
         </template>
         <UTextarea
           v-model="caseCourtsPosition"
@@ -223,7 +223,7 @@
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Quote</span>
-          <InfoTooltip :text="tooltipQuote" />
+          <InfoPopover :text="tooltipQuote" />
         </template>
         <UTextarea
           v-model="caseQuote"
@@ -235,7 +235,7 @@
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Judgment Date</span>
-          <InfoTooltip :text="tooltipJudgmentDate" />
+          <InfoPopover :text="tooltipJudgmentDate" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
@@ -254,7 +254,7 @@
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Case Title</span>
-          <InfoTooltip :text="tooltipCaseTitle" />
+          <InfoPopover :text="tooltipCaseTitle" />
         </template>
         <UInput v-model="caseTitle" class="mt-2 cold-input" />
       </UFormGroup>
@@ -262,7 +262,7 @@
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
           <span class="label">Instance</span>
-          <InfoTooltip :text="tooltipInstance" />
+          <InfoPopover :text="tooltipInstance" />
         </template>
         <UInput v-model="caseInstance" class="mt-2 cold-input" />
       </UFormGroup>
@@ -306,7 +306,7 @@ import DatePicker from '@/components/ui/DatePicker.vue'
 import CancelModal from '@/components/ui/CancelModal.vue'
 import SaveModal from '@/components/ui/SaveModal.vue'
 import SearchFilters from '@/components/search-results/SearchFilters.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 import { format } from 'date-fns'
 
 import tooltipAbstract from '@/content/info_boxes/court_decision/abstract.md?raw'

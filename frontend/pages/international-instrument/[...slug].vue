@@ -28,7 +28,7 @@
         <UFormGroup size="lg" class="mt-8">
           <template #label>
             <span class="label">Specialists</span>
-            <InfoTooltip :text="tooltipInternationalInstrumentSpecialist" />
+            <InfoPopover :text="tooltipInternationalInstrumentSpecialist" />
           </template>
           <div
             v-for="(specialist, idx) in specialists"
@@ -69,7 +69,7 @@
         <UFormGroup size="lg" class="mt-8">
           <template #label>
             <span class="label">PDF</span>
-            <InfoTooltip :text="tooltipInternationalInstrumentSpecialist" />
+            <InfoPopover :text="tooltipInternationalInstrumentSpecialist" />
           </template>
           <UInput
             type="file"
@@ -83,14 +83,14 @@
         <UFormGroup size="lg" class="mt-8" :error="errors.link">
           <template #label>
             <span class="label">Link</span>
-            <InfoTooltip :text="tooltipInternationalInstrumentLink" />
+            <InfoPopover :text="tooltipInternationalInstrumentLink" />
           </template>
           <UInput v-model="link" class="mt-2" placeholder="Link" />
         </UFormGroup>
         <UFormGroup size="lg" class="mt-8">
           <template #label>
             <span class="label">Date</span>
-            <InfoTooltip :text="tooltipInternationalInstrumentDate" />
+            <InfoPopover :text="tooltipInternationalInstrumentDate" />
           </template>
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton
@@ -133,7 +133,7 @@ import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { z } from 'zod'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 import DatePicker from '@/components/ui/DatePicker.vue'
 import CancelModal from '@/components/ui/CancelModal.vue'
 import SaveModal from '@/components/ui/SaveModal.vue'

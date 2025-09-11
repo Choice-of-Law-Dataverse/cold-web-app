@@ -37,7 +37,7 @@
       >
         <template #label>
           <span class="label">Official Title</span>
-          <InfoTooltip :text="tooltipOfficialTitle" />
+          <InfoPopover :text="tooltipOfficialTitle" />
         </template>
         <UInput
           v-model="officialTitle"
@@ -55,7 +55,7 @@
       >
         <template #label>
           <span class="label">Name</span>
-          <InfoTooltip :text="tooltipDomesticInstrumentTitle" />
+          <InfoPopover :text="tooltipDomesticInstrumentTitle" />
         </template>
         <UInput
           v-model="titleEn"
@@ -73,7 +73,7 @@
       >
         <template #label>
           <span class="label">Entry Into Force</span>
-          <InfoTooltip :text="tooltipEntryIntoForce" />
+          <InfoPopover :text="tooltipEntryIntoForce" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
@@ -124,7 +124,7 @@
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Publication Date</span>
-          <InfoTooltip :text="tooltipDomesticInstrumentPublicationDate" />
+          <InfoPopover :text="tooltipDomesticInstrumentPublicationDate" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
@@ -146,7 +146,7 @@
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Abbreviation</span>
-          <InfoTooltip :text="tooltipAbbreviation" />
+          <InfoPopover :text="tooltipAbbreviation" />
         </template>
         <UInput v-model="abbreviation" class="mt-2 cold-input" />
       </UFormGroup>
@@ -155,7 +155,7 @@
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Compatible With the HCCH Principles?</span>
-          <InfoTooltip :text="tooltipCompatibleWithHCCH" />
+          <InfoPopover :text="tooltipCompatibleWithHCCH" />
         </template>
         <div
           class="mt-2 cold-toggle-group"
@@ -183,7 +183,7 @@
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Compatible With the UNCITRAL Model Law?</span>
-          <InfoTooltip :text="tooltipCompatibleWithUNCITRAL" />
+          <InfoPopover :text="tooltipCompatibleWithUNCITRAL" />
         </template>
         <div
           class="mt-2 cold-toggle-group"
@@ -238,7 +238,7 @@ import DatePicker from '@/components/ui/DatePicker.vue'
 import CancelModal from '@/components/ui/CancelModal.vue'
 import SaveModal from '@/components/ui/SaveModal.vue'
 import SearchFilters from '@/components/search-results/SearchFilters.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 import { format } from 'date-fns'
 // Tooltips: match detail page content
 import tooltipAbbreviation from '@/content/info_boxes/domestic_instrument/abbreviation.md?raw'

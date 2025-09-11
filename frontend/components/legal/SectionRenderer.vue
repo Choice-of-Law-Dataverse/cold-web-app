@@ -2,7 +2,7 @@
   <div>
     <p class="label mb-1">
       {{ sectionLabel }}
-      <InfoTooltip v-if="sectionTooltip" :text="sectionTooltip" />
+      <InfoPopover v-if="sectionTooltip" :text="sectionTooltip" />
     </p>
     <span v-if="!isLoading">
       <NuxtLink v-if="displayTitle && id" :to="generateInstrumentLink(id)">{{
@@ -19,7 +19,7 @@ import { ref, watch, computed } from 'vue'
 import { useRecordDetails } from '@/composables/useRecordDetails'
 import { NuxtLink } from '#components'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 
 const props = defineProps({
   id: {

@@ -2,7 +2,7 @@
   <div v-if="shouldShowSection" class="mt-12">
     <span v-if="showLabel" class="label">
       {{ label }}
-      <InfoTooltip v-if="tooltip" :text="tooltip" />
+      <InfoPopover v-if="tooltip" :text="tooltip" />
     </span>
     <ul v-if="loadingTitles || loading">
       <LoadingBar class="pt-[11px] ml-[-22px]" />
@@ -36,7 +36,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import ShowMoreLess from '@/components/ui/ShowMoreLess.vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 
 const props = defineProps({
   label: { type: String, default: 'Related Literature' },

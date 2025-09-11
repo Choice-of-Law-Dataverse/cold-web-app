@@ -46,7 +46,7 @@
         "
       >
         <span class="label !mb-4 !mt-0.5"
-          >Related Data <InfoTooltip :text="tooltip"
+          >Related Data <InfoPopover :text="tooltip"
         /></span>
 
         <template
@@ -170,7 +170,7 @@ import JurisdictionComparisonLink from '@/components/ui/JurisdictionComparisonLi
 import JurisdictionQuestions from '@/components/content/JurisdictionQuestions.vue'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 import { useJurisdiction } from '@/composables/useJurisdictions'
 import {
   useDomesticInstrumentsCount,

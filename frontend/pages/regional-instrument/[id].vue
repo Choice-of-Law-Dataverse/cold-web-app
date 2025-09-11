@@ -40,7 +40,7 @@
               (pair) => pair.key === 'Regional Legal Provisions'
             )?.label || 'Selected Provisions'
           }}
-          <InfoTooltip
+          <InfoPopover
             v-if="
               computedKeyLabelPairs.find(
                 (pair) => pair.key === 'Regional Legal Provisions'
@@ -85,7 +85,7 @@ import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { regionalInstrumentConfig } from '@/config/pageConfigs'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import LegalProvision from '@/components/legal/LegalProvision.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 import { useHead } from '#imports'
 
 const route = useRoute()

@@ -39,7 +39,7 @@
       <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">Date</span>
-          <InfoTooltip :text="tooltipRegionalInstrumentDate" />
+          <InfoPopover :text="tooltipRegionalInstrumentDate" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
           <UButton
@@ -81,7 +81,7 @@ import { ref, watch } from 'vue'
 import { useHead, useRouter } from '#imports'
 import { z } from 'zod'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 import DatePicker from '@/components/ui/DatePicker.vue'
 import CancelModal from '@/components/ui/CancelModal.vue'
 import SaveModal from '@/components/ui/SaveModal.vue'

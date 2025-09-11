@@ -1,7 +1,7 @@
 <template>
   <div v-if="shouldDisplay" class="mt-12">
     <span v-if="label" class="label">{{ label }}</span>
-    <InfoTooltip v-if="tooltip" :text="tooltip" />
+    <InfoPopover v-if="tooltip" :text="tooltip" />
     <ul v-if="questionList.length">
       <li v-for="(q, idx) in questionList" :key="idx">
         <NuxtLink :to="`/question/${jurisdictionCode}_${q}`">
@@ -16,7 +16,7 @@
 
 <script setup>
 import { computed, toRefs } from 'vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 import { useRelatedQuestions } from '@/composables/useRelatedQuestions'
 
 const props = defineProps({
