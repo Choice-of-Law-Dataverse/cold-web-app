@@ -82,23 +82,36 @@
             </div>
           </div>
           <!-- In other modes, keep the clickable label linking to search -->
-          <NuxtLink
-            v-else
-            :to="
-              '/search?type=' +
-              encodeURIComponent(
-                getSourceTablePlural(adjustedSourceTable)
-              ).replace(/%20/g, '+')
-            "
-            :class="[
-              'label',
-              labelColorClass,
-              'cursor-pointer',
-              'source-table-label-link',
-            ]"
-          >
-            {{ adjustedSourceTable }}
-          </NuxtLink>
+          <template v-else>
+            <!-- Remove link functionality for Arbitral Rule and Arbitral Award -->
+            <span
+              v-if="
+                ['Arbitral Rule', 'Arbitral Award'].includes(
+                  adjustedSourceTable
+                )
+              "
+              :class="['label', labelColorClass, 'source-table-label-link']"
+            >
+              {{ adjustedSourceTable }}
+            </span>
+            <NuxtLink
+              v-else
+              :to="
+                '/search?type=' +
+                encodeURIComponent(
+                  getSourceTablePlural(adjustedSourceTable)
+                ).replace(/%20/g, '+')
+              "
+              :class="[
+                'label',
+                labelColorClass,
+                'cursor-pointer',
+                'source-table-label-link',
+              ]"
+            >
+              {{ adjustedSourceTable }}
+            </NuxtLink>
+          </template>
         </template>
 
         <!-- Display 'Themes' -->
