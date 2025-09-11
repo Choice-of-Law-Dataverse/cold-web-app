@@ -194,7 +194,7 @@ const route = useRoute()
 const isJurisdictionPage = route.path.startsWith('/jurisdiction/')
 const isQuestionPage = route.path.startsWith('/question/')
 const jurisdictionCode = ref(null)
-const coveredJurisdictions = ref([])
+const { data: coveredCountriesSet } = useCoveredCountries()
 const shouldShowBanner = ref(false)
 
 watch(
@@ -214,27 +214,14 @@ watch(
   { immediate: true }
 )
 
-onMounted(async () => {
-  try {
-    const response = await fetch('/temp_answer_coverage.txt')
-    const text = await response.text()
-
-    coveredJurisdictions.value = text
-      .split('\n')
-      .map((code) => code.trim().toLowerCase())
-  } catch (error) {
-    console.error('Failed to fetch covered jurisdictions:', error)
-  }
-})
-
 // Reactively update banner display once everything is ready
 watchEffect(() => {
   if (
     (isJurisdictionPage || isQuestionPage) &&
     jurisdictionCode.value &&
-    coveredJurisdictions.value.length > 0
+    coveredCountriesSet.value
   ) {
-    shouldShowBanner.value = !coveredJurisdictions.value.includes(
+    shouldShowBanner.value = !coveredCountriesSet.value.has(
       jurisdictionCode.value
     )
   }
