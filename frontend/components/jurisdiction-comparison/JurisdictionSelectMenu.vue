@@ -22,15 +22,17 @@
               boxSizing: 'border-box',
               width: 'auto',
               height: '16px',
-              filter: isCovered(option?.alpha3Code) ? undefined : 'grayscale(0.9)',
+              filter: isCovered(option?.alpha3Code)
+                ? undefined
+                : 'grayscale(0.9)',
             }"
             class="mr-2 self-center"
             @error="() => handleImageError(erroredAvatars, option?.label)"
           />
         </template>
-        <span 
-          :style="{ 
-            color: isCovered(option?.alpha3Code) ? undefined : 'gray' 
+        <span
+          :style="{
+            color: isCovered(option?.alpha3Code) ? undefined : 'gray',
           }"
         >
           {{ option?.label }}
@@ -53,16 +55,18 @@
               boxSizing: 'border-box',
               width: 'auto',
               height: '16px',
-              filter: isCovered(selected?.alpha3Code) ? undefined : 'grayscale(0.9)',
+              filter: isCovered(selected?.alpha3Code)
+                ? undefined
+                : 'grayscale(0.9)',
             }"
             class="mr-1.5 self-center"
             @error="() => handleImageError(erroredAvatars, selected?.label)"
           />
         </template>
-        <span 
+        <span
           class="truncate"
-          :style="{ 
-            color: isCovered(selected?.alpha3Code) ? undefined : 'gray' 
+          :style="{
+            color: isCovered(selected?.alpha3Code) ? undefined : 'gray',
           }"
         >
           {{ selected?.label }}

@@ -41,7 +41,7 @@
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <span class="label">Quote</span>
-              <InfoTooltip
+              <InfoPopover
                 v-if="
                   computedKeyLabelPairs.find((pair) => pair.key === 'Quote')
                     ?.tooltip
@@ -204,7 +204,7 @@ import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import RelatedQuestions from '@/components/legal/RelatedQuestions.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 import ProvisionRenderer from '@/components/legal/SectionRenderer.vue'
 import { useCourtDecision } from '@/composables/useCourtDecision'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'

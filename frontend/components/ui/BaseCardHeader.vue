@@ -1,13 +1,13 @@
 <template>
   <div
-    class="header-container flex items-center justify-between mt-0.5"
+    class="header-container flex flex-wrap items-center justify-between mt-0.5"
     :key="formattedJurisdiction + formattedTheme + legalFamily"
   >
     <template v-if="cardType === 'Loading'"> </template>
     <template v-else>
       <!-- Left side of the header: Tags -->
       <div
-        class="tags-container flex items-center overflow-x-auto scrollbar-hidden"
+        class="tags-container flex flex-wrap items-center overflow-x-auto scrollbar-hidden w-full gap-2"
       >
         <!-- Display 'Name (from Jurisdiction)' or alternatives -->
         <NuxtLink
@@ -36,7 +36,7 @@
         <!-- Display 'source_table' or a type selector when in 'new' mode -->
         <template v-if="adjustedSourceTable">
           <!-- In 'new' mode, show the data type label style and a link to reveal the dropdown -->
-          <div v-if="headerMode === 'new'" class="flex items-center mr-3">
+          <div v-if="headerMode === 'new'" class="flex items-center">
             <span
               :class="['label', labelColorClass, 'source-table-label-link']"
             >
@@ -125,49 +125,65 @@
         >
           {{ theme }}
         </NuxtLink>
-      </div>
 
-      <!-- Fade-out effect -->
-      <div class="fade-out" :class="fadeOutClasses"></div>
-
-      <!-- Right side of the header: Show either "Suggest Edit"/"Open" or custom for 'new' mode -->
-      <div class="open-link ml-4 label">
-        <template v-if="headerMode === 'new'">
-          <NuxtLink
-            class="label flex items-center cursor-pointer pt-0.5"
-            @click="$emit('open-save-modal')"
-          >
-            Submit your data …
-          </NuxtLink>
-        </template>
-        <template v-else>
-          <template v-if="showSuggestEdit">
-            <div class="flex items-center space-x-5 label">
-              <!-- All actions except the International Instrument Edit link -->
-              <template
-                v-for="(action, index) in suggestEditActions.filter(
-                  (a) =>
-                    !(
+        <div class="justify-self-end ml-auto">
+          <template v-if="headerMode === 'new'">
+            <NuxtLink
+              class="label flex items-center cursor-pointer pt-0.5"
+              @click="$emit('open-save-modal')"
+            >
+              Submit your data …
+            </NuxtLink>
+          </template>
+          <template v-else>
+            <template v-if="showSuggestEdit">
+              <div class="flex flex-row items-center gap-3 label">
+                <!-- All actions except the International Instrument Edit link -->
+                <template
+                  v-for="(action, index) in suggestEditActions.filter(
+                    (a) =>
+                      !(
+                        props.cardType === 'International Instrument' &&
+                        a.label === 'Edit'
+                      )
+                  )"
+                  :key="index"
+                >
+                  <a
+                    v-if="action.label === 'Cite'"
+                    href="#"
+                    class="flex items-center"
+                    @click.prevent="isCiteOpen = true"
+                  >
+                    {{ action.label }}
+                    <UIcon
+                      :name="action.icon"
+                      class="inline-block ml-1 text-[1.2em] mb-0.5"
+                    />
+                  </a>
+                  <NuxtLink
+                    v-else
+                    class="flex items-center"
+                    :class="action.class"
+                    v-bind="action.to ? { to: action.to } : {}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {{ action.label }}
+                    <UIcon
+                      :name="action.icon"
+                      class="inline-block ml-1 text-[1.2em] mb-0.5"
+                    />
+                  </NuxtLink>
+                </template>
+                <!-- The Edit link for International Instrument only, no target/rel -->
+                <NuxtLink
+                  v-for="(action, index) in suggestEditActions.filter(
+                    (a) =>
                       props.cardType === 'International Instrument' &&
                       a.label === 'Edit'
-                    )
-                )"
-                :key="index"
-              >
-                <a
-                  v-if="action.label === 'Cite'"
-                  href="#"
-                  class="flex items-center"
-                  @click.prevent="isCiteOpen = true"
-                >
-                  {{ action.label }}
-                  <UIcon
-                    :name="action.icon"
-                    class="inline-block ml-1 text-[1.2em] mb-0.5"
-                  />
-                </a>
-                <NuxtLink
-                  v-else
+                  )"
+                  :key="'edit-' + index"
                   class="flex items-center"
                   :class="action.class"
                   v-bind="action.to ? { to: action.to } : {}"
@@ -180,38 +196,18 @@
                     class="inline-block ml-1 text-[1.2em] mb-0.5"
                   />
                 </NuxtLink>
-              </template>
-              <!-- The Edit link for International Instrument only, no target/rel -->
-              <NuxtLink
-                v-for="(action, index) in suggestEditActions.filter(
-                  (a) =>
-                    props.cardType === 'International Instrument' &&
-                    a.label === 'Edit'
-                )"
-                :key="'edit-' + index"
-                class="flex items-center"
-                :class="action.class"
-                v-bind="action.to ? { to: action.to } : {}"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {{ action.label }}
+              </div>
+            </template>
+            <template v-else-if="showOpenLink">
+              <NuxtLink :to="getLink()" class="label">
+                Open
                 <UIcon
-                  :name="action.icon"
-                  class="inline-block ml-1 text-[1.2em] mb-0.5"
-                />
-              </NuxtLink>
-            </div>
+                  name="i-material-symbols:play-arrow"
+                  class="inline-block -mb-[1px]"
+              /></NuxtLink>
+            </template>
           </template>
-          <template v-else-if="showOpenLink">
-            <NuxtLink :to="getLink()" class="label">
-              Open
-              <UIcon
-                name="i-material-symbols:play-arrow"
-                class="inline-block -mb-[1px]"
-            /></NuxtLink>
-          </template>
-        </template>
+        </div>
       </div>
     </template>
   </div>
@@ -391,14 +387,6 @@ const formattedTheme = computed(() => {
 })
 
 const erroredImages = reactive({}) // new reactive object
-
-// New computed property for fade-out classes
-const fadeOutClasses = computed(() => ({
-  'open-link-true': props.showOpenLink,
-  'suggest-edit-true': props.showSuggestEdit,
-  'open-link-false': !props.showOpenLink,
-  'suggest-edit-false': !props.showSuggestEdit,
-}))
 
 // Action items in "Suggest Edit" area
 const suggestEditActions = computed(() => {

@@ -86,9 +86,9 @@
                     :name="item.key + '-header-actions'"
                     :value="resultData?.[item.key]"
                   />
-                  <!-- Render InfoTooltip if tooltip is defined in config -->
+                  <!-- Render InfoPopover if tooltip is defined in config -->
                   <template v-if="item.tooltip">
-                    <InfoTooltip :text="item.tooltip" />
+                    <InfoPopover :text="item.tooltip" />
                   </template>
                 </p>
                 <!-- Conditionally render bullet list if Answer or Specialists is an array -->
@@ -147,7 +147,7 @@ import BackButton from '@/components/ui/BackButton.vue'
 import BaseCardHeader from '@/components/ui/BaseCardHeader.vue'
 import NotificationBanner from '@/components/ui/NotificationBanner.vue'
 import LoadingCard from '@/components/layout/LoadingCard.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 
 // Tooltips for Question Page
 import tooltipQuestion from '@/content/info_boxes/question/question.md?raw'

@@ -35,7 +35,7 @@
               (pair) => pair.key === 'Selected Provisions'
             )?.label || 'Selected Provisions'
           }}
-          <InfoTooltip
+          <InfoPopover
             v-if="
               computedKeyLabelPairs.find(
                 (pair) => pair.key === 'Selected Provisions'
@@ -84,7 +84,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import BaseLegalContent from '@/components/legal/BaseLegalContent.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 import { useApiFetch } from '@/composables/useApiFetch'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { internationalInstrumentConfig } from '@/config/pageConfigs'

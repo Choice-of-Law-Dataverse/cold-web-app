@@ -104,7 +104,7 @@
       >
         <p class="label mt-12">
           Compatible with
-          <InfoTooltip
+          <InfoPopover
             v-if="
               computedKeyLabelPairs.find((pair) => pair.key === 'Compatibility')
                 ?.tooltip
@@ -156,7 +156,7 @@
               (pair) => pair.key === 'Domestic Legal Provisions'
             )?.label || 'Selected Provisions'
           }}
-          <InfoTooltip
+          <InfoPopover
             v-if="
               computedKeyLabelPairs.find(
                 (pair) => pair.key === 'Domestic Legal Provisions'
@@ -197,7 +197,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import LegalProvision from '@/components/legal/LegalProvision.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 import SectionRenderer from '@/components/legal/SectionRenderer.vue'
 import CompatibleLabel from '@/components/ui/CompatibleLabel.vue'
 import CountryReportLink from '@/components/ui/CountryReportLink.vue'

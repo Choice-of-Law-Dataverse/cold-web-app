@@ -45,9 +45,7 @@
           (domesticInstrumentCount !== 0 && domesticInstrumentCount !== null)
         "
       >
-        <span class="label !mb-4 !mt-0.5"
-          >Related Data <InfoTooltip :text="tooltip"
-        /></span>
+        <span class="label !mb-4 !mt-0.5">Related Data</span>
 
         <template
           v-if="courtDecisionCountLoading || domesticInstrumentCountLoading"
@@ -170,7 +168,6 @@ import JurisdictionComparisonLink from '@/components/ui/JurisdictionComparisonLi
 import JurisdictionQuestions from '@/components/content/JurisdictionQuestions.vue'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import { useJurisdiction } from '@/composables/useJurisdictions'
 import {
   useDomesticInstrumentsCount,
@@ -180,10 +177,6 @@ import { useLiteratures } from '@/composables/useLiteratures'
 import { useSpecialists } from '@/composables/useSpecialists'
 import { jurisdictionConfig } from '@/config/pageConfigs'
 import { useHead } from '#app'
-
-const tooltip = jurisdictionConfig.keyLabelPairs.find(
-  (pair) => pair.key === 'Related Data'
-)?.tooltip
 
 const route = useRoute()
 const router = useRouter()

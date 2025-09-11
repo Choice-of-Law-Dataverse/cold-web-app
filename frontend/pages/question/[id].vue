@@ -10,13 +10,13 @@
     <!-- Custom rendering for Legal provision articles -->
     <template #domestic-legal-provisions="{ value }">
       <section class="section-gap">
-        <span class="label">
+        <span class="label flex flex-row items-center">
           {{
             keyLabelPairs.find(
               (pair) => pair.key === 'Domestic Legal Provisions'
             )?.label || 'Source fallback'
           }}
-          <InfoTooltip
+          <InfoPopover
             v-if="
               keyLabelPairs.find(
                 (pair) => pair.key === 'Domestic Legal Provisions'
@@ -48,12 +48,12 @@
     <!-- Custom rendering for Court Decisions ID -->
     <template #court-decisions-id="{ value }">
       <section id="related-court-decisions" class="section-gap">
-        <span class="label">
+        <span class="label flex flex-row items-center">
           {{
             keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
               ?.label || 'Related Court Decisions'
           }}
-          <InfoTooltip
+          <InfoPopover
             v-if="
               keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
                 ?.tooltip
@@ -111,7 +111,7 @@ import CourtDecisionRenderer from '@/components/legal/CourtDecisionRenderer.vue'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import QuestionSourceList from '@/components/sources/QuestionSourceList.vue'
 import CountryReportLink from '@/components/ui/CountryReportLink.vue'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 import { useAnswer } from '@/composables/useAnswer'
 import { questionConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'

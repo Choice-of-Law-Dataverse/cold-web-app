@@ -16,7 +16,7 @@
                 (pair) => pair.key === 'Publication Title'
               )?.label || 'Publication'
             }}
-            <InfoTooltip
+            <InfoPopover
               v-if="
                 computedKeyLabelPairs.find(
                   (pair) => pair.key === 'Publication Title'
@@ -41,7 +41,7 @@
               computedKeyLabelPairs.find((pair) => pair.key === 'Publisher')
                 ?.label || 'Publisher'
             }}
-            <InfoTooltip
+            <InfoPopover
               v-if="
                 computedKeyLabelPairs.find((pair) => pair.key === 'Publisher')
                   ?.tooltip
@@ -65,7 +65,7 @@ import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import { useApiFetch } from '@/composables/useApiFetch'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
-import InfoTooltip from '@/components/ui/InfoTooltip.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 import { literatureConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
 
