@@ -19,7 +19,7 @@
           <template v-if="!showThirdColumn">
             <div style="grid-column: 2">
               <SearchFilters
-                :options="jurisdictionOptions"
+                :options="jurisdictions"
                 v-model="jurisdictionFilters[0].value.value"
                 class="jc-search-filter"
                 :showAvatars="true"
@@ -30,7 +30,7 @@
             <div style="grid-column: 3">
               <div class="jc-right-cell">
                 <SearchFilters
-                  :options="jurisdictionOptions"
+                  :options="jurisdictions"
                   v-model="jurisdictionFilters[1].value.value"
                   class="jc-search-filter"
                   :showAvatars="true"
@@ -63,7 +63,7 @@
               :style="`grid-column: ${index + 2}`"
             >
               <SearchFilters
-                :options="jurisdictionOptions"
+                :options="jurisdictions"
                 v-model="filter.value.value"
                 class="jc-search-filter"
                 :showAvatars="true"
@@ -86,7 +86,7 @@
           class="filter-item"
         >
           <SearchFilters
-            :options="jurisdictionOptions"
+            :options="jurisdictions"
             v-model="filter.value.value"
             class="w-full"
             :showAvatars="true"
@@ -121,6 +121,7 @@
 import { ref, onMounted, watch } from 'vue'
 import SearchFilters from '@/components/search-results/SearchFilters.vue'
 import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
+import { useJurisdictions } from '@/composables/useJurisdictions'
 
 // Props for initial countries from URL
 const props = defineProps({
@@ -134,15 +135,15 @@ const props = defineProps({
 const router = useRouter()
 const route = useRoute()
 
+const { data: jurisdictions, isLoading: loadingJurisdictions } =
+  useJurisdictions()
+
 // Use shared jurisdiction comparison state
 const {
   currentJurisdictionFilter1,
   currentJurisdictionFilter2,
   currentJurisdictionFilter3,
-  jurisdictionOptions,
-  loadingJurisdictions,
   jurisdictionFilters,
-  loadJurisdictions,
   setInitialFilters,
   showThirdColumn,
 } = useJurisdictionComparison()
@@ -150,13 +151,12 @@ const {
 // Sticky state for background
 const isSticky = ref(false)
 
-// Watch for changes in initialCountries prop
+// Watch for changes in jurisdictions data and initialCountries prop
 watch(
-  () => props.initialCountries,
-  () => {
-    if (jurisdictionOptions.value.length > 1) {
-      // Ensure jurisdictions are loaded
-      setInitialFilters(jurisdictionOptions.value, props.initialCountries)
+  [() => jurisdictions?.value, () => props.initialCountries],
+  ([jurisdictionsData, initialCountries]) => {
+    if (jurisdictionsData?.length > 1 && initialCountries?.length > 0) {
+      setInitialFilters(jurisdictionsData, initialCountries)
     }
   },
   { immediate: true }
@@ -191,13 +191,6 @@ watch(
 
 // Initialization
 onMounted(async () => {
-  await loadJurisdictions()
-
-  // Set initial filters after loading
-  if (jurisdictionOptions.value.length > 1) {
-    setInitialFilters(jurisdictionOptions.value, props.initialCountries)
-  }
-
   // JavaScript-based sticky implementation
   const filtersElement = document.querySelector('.jc-fixed-filters')
   const overviewElement = document.querySelector('.jc-z-top')

@@ -6,6 +6,7 @@
       :resultData="{}"
       :keyLabelPairs="[]"
       :valueClassMap="{}"
+      :showHeader="false"
       sourceTable=""
     >
       <template #full-width>
@@ -18,7 +19,9 @@
 
             <!-- Content area with sufficient height for sticky behavior -->
             <div class="md:mt-0 relative">
-              <JCOverview />
+              <JCOverview
+                :selected-jurisdiction-codes="validatedCountryCodes"
+              />
               <JCQuestions
                 :showCaret="false"
                 title="Main Questions"
@@ -141,20 +144,13 @@ useHead({
   ],
 })
 
-// Parse country codes from the URL parameter
-const countryCodes = computed(() => {
-  const countries = route.params.countries
-  if (typeof countries === 'string') {
-    // Split by '+' and convert to uppercase for consistency
-    return countries.split('+').map((code) => code.toUpperCase())
-  }
-  return []
-})
-
-// Accept 2 or 3 country codes; otherwise, let defaults apply
+// Parse and validate country codes from the URL parameter
 const validatedCountryCodes = computed(() => {
-  const codes = countryCodes.value
-  if (codes.length === 2 || codes.length === 3) return codes
-  return []
+  const countries = route.params.countries
+  if (typeof countries !== 'string') return []
+  // Split by '+' and convert to uppercase for consistency
+  const codes = countries.split('+').map((code) => code.toUpperCase())
+  // Accept 2 or 3 country codes; otherwise, let defaults apply
+  return codes.length === 2 || codes.length === 3 ? codes : []
 })
 </script>

@@ -190,17 +190,13 @@ watch(token, () => {})
 // Load jurisdictions similar to other pages
 const loadJurisdictions = async () => {
   try {
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
-      }
-    )
+    const response = await fetch(`/api/proxy/search/full_table`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
+    })
 
     if (!response.ok) throw new Error('Failed to load jurisdictions')
 
@@ -308,10 +304,9 @@ function handleNewSave() {
 
   ;(async () => {
     try {
-      await $fetch(`${config.public.apiBaseUrl}/suggestions/literature`, {
+      await $fetch(`/api/proxy/suggestions/literature`, {
         method: 'POST',
         headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
           'Content-Type': 'application/json',
         },
         body: payload,

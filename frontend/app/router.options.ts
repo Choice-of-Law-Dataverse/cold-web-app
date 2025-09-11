@@ -4,5 +4,5 @@ export default {
       return { el: to.hash, behavior: 'smooth' }
     }
     return { top: 0 }
-  }
+  },
 }

@@ -28,13 +28,16 @@
         <div class="col-span-12">
           <JurisdictionMap />
         </div>
+
         <div class="col-span-12">
           <CountrySelectMenu />
         </div>
+
         <div class="col-span-12 md:col-span-8">
           <SuccessfulLegalTransplantations />
         </div>
-        <div class="col-span-12 sm:col-span-4">
+
+        <div class="col-span-12 md:col-span-4">
           <ConnectCard
             title="Transnational Standard"
             subtitle="Authoritative Instrument on Choice of Law"
@@ -62,7 +65,7 @@
             :detectVisitorRight="true"
           />
         </div>
-        <div class="col-span-12 sm:col-span-4">
+        <div class="col-span-12 md:col-span-4">
           <NumberCard
             title="Available Arbitral Rules"
             buttonText="See all"
@@ -92,7 +95,7 @@
         <div class="col-span-12 md:col-span-8">
           <PlotCourtDecisionsJurisdiction />
         </div>
-        <div class="col-span-12 sm:col-span-4">
+        <div class="col-span-12 md:col-span-4">
           <NumberCard
             title="Available Court Decisions"
             buttonText="See all"
@@ -104,7 +107,8 @@
         <div class="col-span-12 md:col-span-8">
           <LeadingCases />
         </div>
-        <div class="col-span-12 sm:col-span-4">
+
+        <div class="col-span-12 md:col-span-4">
           <ConnectCard
             title="CoLD Case Analyzer"
             buttonText="Analyze Court Cases with AI"
@@ -127,7 +131,7 @@
           />
         </div>
 
-        <div class="col-span-12 sm:col-span-3">
+        <div class="col-span-12 sm:col-span-6 md:col-span-3">
           <ConnectCard
             title="CoLD Newsletter"
             buttonText="Subscribe"
@@ -137,7 +141,7 @@
           />
         </div>
 
-        <div class="col-span-12 sm:col-span-3">
+        <div class="col-span-12 sm:col-span-6 md:col-span-3">
           <ConnectCard
             title="CoLD on LinkedIn"
             buttonText="Follow Us"
@@ -147,7 +151,7 @@
           />
         </div>
 
-        <div class="col-span-12 sm:col-span-3">
+        <div class="col-span-12 sm:col-span-6 md:col-span-3">
           <ConnectCard
             title="Questions, Feedback?"
             buttonText="Contact Us"
@@ -156,7 +160,8 @@
             iconName="i-material-symbols:alternate-email"
           />
         </div>
-        <div class="col-span-12 sm:col-span-3">
+
+        <div class="col-span-12 sm:col-span-6 md:col-span-3">
           <ConnectCard
             title="Enter new Data"
             buttonText="Submit your data"

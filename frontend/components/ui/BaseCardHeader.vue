@@ -190,7 +190,7 @@
               </NuxtLink>
             </div>
           </template>
-          <template v-else>
+          <template v-else-if="showOpenLink">
             <NuxtLink :to="getLink()" class="label">
               Open
               <UIcon
@@ -214,9 +214,10 @@ import { handleImageError } from '@/utils/handleImageError'
 // removed tooltip content import
 import CiteModal from '@/components/ui/CiteModal.vue'
 
+defineEmits(['save', 'open-save-modal', 'open-cancel-modal'])
+
 const route = useRoute()
 const router = useRouter()
-const pdfExists = ref(false)
 const isOpen = ref(false)
 const isSaveOpen = ref(false)
 const isCiteOpen = ref(false)
@@ -464,12 +465,7 @@ function getLink() {
   }
 }
 
-onMounted(async () => {
-  const res = await $fetch('/api/check-pdf-exists', {
-    query: { url: downloadPDFLink.value },
-  })
-  pdfExists.value = res.exists
-})
+const { data: pdfExists } = useVerifyPdfLink(downloadPDFLink)
 
 const suggestEditLink = ref('')
 const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'

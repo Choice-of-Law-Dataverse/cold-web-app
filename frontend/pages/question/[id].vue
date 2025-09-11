@@ -1,9 +1,10 @@
 <template>
   <BaseDetailLayout
-    :loading="loading"
+    :loading="isLoading"
     :resultData="processedAnswerData"
-    :keyLabelPairs="filteredKeyLabelPairs"
+    :keyLabelPairs="keyLabelPairs"
     :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
     :sourceTable="'Question'"
   >
     <!-- Custom rendering for Legal provision articles -->
@@ -11,18 +12,18 @@
       <section class="section-gap">
         <span class="label">
           {{
-            filteredKeyLabelPairs.find(
+            keyLabelPairs.find(
               (pair) => pair.key === 'Domestic Legal Provisions'
             )?.label || 'Source fallback'
           }}
           <InfoTooltip
             v-if="
-              filteredKeyLabelPairs.find(
+              keyLabelPairs.find(
                 (pair) => pair.key === 'Domestic Legal Provisions'
               )?.tooltip
             "
             :text="
-              filteredKeyLabelPairs.find(
+              keyLabelPairs.find(
                 (pair) => pair.key === 'Domestic Legal Provisions'
               )?.tooltip
             "
@@ -31,12 +32,12 @@
         <QuestionSourceList
           :sources="
             [
-              ...(value || processedAnswerData?.['Domestic Legal Provisions']
-                ? [value || processedAnswerData?.['Domestic Legal Provisions']]
+              ...(value || answerData?.['Domestic Legal Provisions']
+                ? [value || answerData?.['Domestic Legal Provisions']]
                 : []),
             ].filter(Boolean)
           "
-          :fallbackData="processedAnswerData"
+          :fallbackData="answerData"
           :valueClassMap="valueClassMap"
           :fetchOupChapter="true"
           :fetchPrimarySource="true"
@@ -49,20 +50,17 @@
       <section id="related-court-decisions" class="section-gap">
         <span class="label">
           {{
-            filteredKeyLabelPairs.find(
-              (pair) => pair.key === 'Court Decisions ID'
-            )?.label || 'Related Court Decisions'
+            keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
+              ?.label || 'Related Court Decisions'
           }}
           <InfoTooltip
             v-if="
-              filteredKeyLabelPairs.find(
-                (pair) => pair.key === 'Court Decisions ID'
-              )?.tooltip
+              keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
+                ?.tooltip
             "
             :text="
-              filteredKeyLabelPairs.find(
-                (pair) => pair.key === 'Court Decisions ID'
-              )?.tooltip
+              keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
+                ?.tooltip
             "
           />
         </span>
@@ -70,8 +68,8 @@
           :value="value"
           :valueClassMap="valueClassMap['Court Decisions ID']"
           :emptyValueBehavior="
-            filteredKeyLabelPairs.find(
-              (pair) => pair.key === 'Court Decisions ID'
+            keyLabelPairs.find(
+              (pair) => pair.key === 'Domestic Legal Provisions'
             )?.emptyValueBehavior
           "
         />
@@ -86,9 +84,8 @@
           :mode="'both'"
           :valueClassMap="valueClassMap['Related Literature']"
           :label="
-            filteredKeyLabelPairs.find(
-              (pair) => pair.key === 'Related Literature'
-            )?.label || 'Related Literature'
+            keyLabelPairs.find((pair) => pair.key === 'Related Literature')
+              ?.label || 'Related Literature'
           "
           :emptyValueBehavior="
             questionConfig.keyLabelPairs.find(
@@ -96,15 +93,14 @@
             )?.emptyValueBehavior
           "
           :tooltip="
-            filteredKeyLabelPairs.find(
-              (pair) => pair.key === 'Related Literature'
-            )?.tooltip
+            keyLabelPairs.find((pair) => pair.key === 'Related Literature')
+              ?.tooltip
           "
         />
       </section>
     </template>
   </BaseDetailLayout>
-  <CountryReportLink :processedAnswerData="processedAnswerData" />
+  <CountryReportLink :processedAnswerData="processedAnswerData ?? {}" />
 </template>
 
 <script setup>
@@ -116,47 +112,64 @@ import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import QuestionSourceList from '@/components/sources/QuestionSourceList.vue'
 import CountryReportLink from '@/components/ui/CountryReportLink.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
-import { useQuestion } from '@/composables/useQuestion'
+import { useAnswer } from '@/composables/useAnswer'
 import { questionConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
 
 const route = useRoute()
 const router = useRouter()
+
 const {
-  loading,
-  processedAnswerData,
-  filteredKeyLabelPairs,
-  valueClassMap,
-  fetchAnswer,
-} = useQuestion()
+  data: answerData,
+  isLoading,
+  error,
+} = useAnswer(computed(() => route.params.id))
+
+const { keyLabelPairs, valueClassMap } = questionConfig
+
+// Preprocess data to handle custom rendering cases
+const processedAnswerData = computed(() => {
+  if (!answerData.value) return null
+  return {
+    ...answerData.value,
+    'Domestic Legal Provisions':
+      answerData.value['Domestic Legal Provisions'] || '',
+    'Court Decisions ID': answerData.value['Court Decisions ID']
+      ? answerData.value['Court Decisions ID']
+          .split(',')
+          .map((caseId) => caseId.trim())
+      : [],
+  }
+})
 
 onMounted(async () => {
-  try {
-    const id = route.params.id
-    await fetchAnswer(id)
-    // Wait for the DOM to update then scroll if the hash is present
-    await nextTick()
-    if (window.location.hash === '#related-court-decisions') {
-      const target = document.getElementById('related-court-decisions')
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth' })
-      }
+  // Wait for the DOM to update then scroll if the hash is present
+  await nextTick()
+  if (window.location.hash === '#related-court-decisions') {
+    const target = document.getElementById('related-court-decisions')
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth' })
     }
-  } catch (err) {
-    if (err.isNotFound) {
+  }
+})
+
+// Watch for errors and handle them
+watch(error, (newError) => {
+  if (newError) {
+    if (newError.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: `${err.table} not found` },
+        query: { message: `${newError.table} not found` },
       })
     } else {
-      console.error('Error fetching question:', err)
+      console.error('Error fetching question:', newError)
     }
   }
 })
 
 // Set dynamic page title: 'Jurisdictions: Question — CoLD'
 watch(
-  processedAnswerData,
+  answerData,
   (newVal) => {
     if (!newVal) return
     const question = newVal['Question'] || ''

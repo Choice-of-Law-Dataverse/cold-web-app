@@ -4,7 +4,7 @@
       {{ sectionLabel }}
       <InfoTooltip v-if="sectionTooltip" :text="sectionTooltip" />
     </p>
-    <span v-if="instrumentTitle !== null">
+    <span v-if="!isLoading">
       <NuxtLink v-if="displayTitle && id" :to="generateInstrumentLink(id)">{{
         displayTitle
       }}</NuxtLink>
@@ -16,7 +16,7 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import { useRuntimeConfig } from '#imports'
+import { useRecordDetails } from '@/composables/useRecordDetails'
 import { NuxtLink } from '#components'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
@@ -44,9 +44,8 @@ const props = defineProps({
   },
 })
 
-const config = useRuntimeConfig()
 const title = ref(null)
-const instrumentTitle = ref(null)
+const instrumentTitleId = ref('')
 const articlePart = ref('')
 
 function parseIdParts(id) {
@@ -59,38 +58,30 @@ function parseIdParts(id) {
   }
 }
 
-async function fetchTitle(instrumentId) {
-  if (!instrumentId) return
-  try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ table: props.table, id: instrumentId }),
-    })
-    if (!response.ok) throw new Error('Failed to fetch instrument title')
-    const data = await response.json()
-    instrumentTitle.value =
-      data['Abbreviation'] || data['Title (in English)'] || instrumentId
-  } catch (err) {
-    console.error('Error fetching instrument title:', err)
-    instrumentTitle.value = instrumentId
-  }
-}
+const { data: record, isLoading } = useRecordDetails(
+  computed(() => props.table),
+  instrumentTitleId
+)
 
 const displayTitle = computed(() => {
   // If loading instrumentTitle, show nothing (handled by LoadingBar)
-  if (instrumentTitle.value === null) return ''
+  if (isLoading.value) return ''
   // Compose display: article part (if any), then instrument title (if any)
   let result = ''
   if (articlePart.value) {
     result += articlePart.value
   }
-  if (instrumentTitle.value) {
+  const rec = record.value || {}
+  let derivedTitle =
+    rec['Abbreviation'] || rec['Title (in English)'] || rec['Title'] || ''
+  if (!derivedTitle) {
+    const ct = rec['Case Title']
+    derivedTitle =
+      ct && ct !== 'NA' && ct !== 'Not found' ? ct : rec['Case Citation'] || ''
+  }
+  if (derivedTitle) {
     if (result) result += ', '
-    result += instrumentTitle.value
+    result += derivedTitle
   }
   // Fallback: if nothing, show id
   return result || props.id
@@ -100,11 +91,11 @@ watch(
   () => props.id,
   (newId) => {
     title.value = null
-    instrumentTitle.value = null
+    // compute the instrument id used for fetching the title
     articlePart.value = ''
     const { instrumentId, article } = parseIdParts(newId)
     articlePart.value = article
-    fetchTitle(instrumentId)
+    instrumentTitleId.value = String(instrumentId)
   },
   { immediate: true }
 )

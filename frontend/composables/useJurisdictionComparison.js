@@ -4,9 +4,6 @@ import { ref, computed } from 'vue'
 const currentJurisdictionFilter1 = ref([])
 const currentJurisdictionFilter2 = ref([])
 const currentJurisdictionFilter3 = ref([])
-const jurisdictionOptions = ref([{ label: 'Loading…' }])
-const loadingJurisdictions = ref(true)
-// Controls whether a third jurisdiction column is shown
 const showThirdColumn = ref(false)
 
 export function useJurisdictionComparison() {
@@ -28,44 +25,6 @@ export function useJurisdictionComparison() {
       return selected?.alpha3Code || null
     })
   })
-
-  // Data fetching function
-  const loadJurisdictions = async () => {
-    loadingJurisdictions.value = true
-    try {
-      const config = useRuntimeConfig()
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/full_table`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
-        }
-      )
-
-      if (!response.ok) throw new Error('Failed to load jurisdictions')
-
-      const jurisdictionsData = await response.json()
-      const options = jurisdictionsData
-        .filter((entry) => entry['Irrelevant?'] === false)
-        .map((entry) => ({
-          label: entry.Name,
-          alpha3Code: entry['Alpha-3 Code'],
-          avatar: entry['Alpha-3 Code']
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
-            : undefined,
-        }))
-        .sort((a, b) => (a.label || '').localeCompare(b.label || ''))
-      jurisdictionOptions.value = options
-    } catch (error) {
-      console.error('Error loading jurisdictions:', error)
-    } finally {
-      loadingJurisdictions.value = false
-    }
-  }
 
   // Function to set initial filter values
   const setInitialFilters = (options, initialCountries = []) => {
@@ -101,8 +60,7 @@ export function useJurisdictionComparison() {
     currentJurisdictionFilter1,
     currentJurisdictionFilter2,
     currentJurisdictionFilter3,
-    jurisdictionOptions,
-    loadingJurisdictions,
+
     showThirdColumn,
 
     // Computed
@@ -110,7 +68,6 @@ export function useJurisdictionComparison() {
     selectedJurisdictionCodes,
 
     // Methods
-    loadJurisdictions,
     setInitialFilters,
   }
 }

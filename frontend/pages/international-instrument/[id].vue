@@ -4,6 +4,7 @@
     :resultData="processedInternationalInstrument"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
     sourceTable="International Instrument"
   >
     <template #literature>
@@ -89,6 +90,7 @@ import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { internationalInstrumentConfig } from '@/config/pageConfigs'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
+import { useInternationalLegalProvisions } from '@/composables/useInternationalLegalProvisions'
 import { useHead } from '#imports'
 
 const config = useRuntimeConfig()
@@ -120,48 +122,12 @@ const processedInternationalInstrument = computed(() => {
   }
 })
 
-// Fetch all provisions from International Legal Provisions table
-const provisions = ref([])
-const provisionsLoading = ref(false)
-const provisionsError = ref(null)
-
-async function fetchProvisions() {
-  provisionsLoading.value = true
-  provisionsError.value = null
-  try {
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ table: 'International Legal Provisions' }),
-      }
-    )
-    if (!response.ok) throw new Error('Failed to fetch provisions')
-    let data = await response.json()
-    // Sort by Interface Order (ascending, starts with 0)
-    data = data.slice().sort((a, b) => {
-      const aOrder =
-        typeof a['Interface Order'] === 'number'
-          ? a['Interface Order']
-          : Number(a['Interface Order']) || 0
-      const bOrder =
-        typeof b['Interface Order'] === 'number'
-          ? b['Interface Order']
-          : Number(b['Interface Order']) || 0
-      return aOrder - bOrder
-    })
-    provisions.value = data
-  } catch (err) {
-    provisionsError.value = err.message || 'Error fetching provisions'
-    provisions.value = []
-  } finally {
-    provisionsLoading.value = false
-  }
-}
+// Provisions via composable
+const {
+  data: provisions,
+  isLoading: provisionsLoading,
+  error: provisionsError,
+} = useInternationalLegalProvisions()
 
 function normalizeAnchorId(str) {
   if (!str) return ''
@@ -207,7 +173,7 @@ onMounted(async () => {
       table: 'International Instruments',
       id: route.params.id,
     })
-    await fetchProvisions()
+    // provisions are loaded via vue-query composable
   } catch (err) {
     if (err.isNotFound) {
       router.push({

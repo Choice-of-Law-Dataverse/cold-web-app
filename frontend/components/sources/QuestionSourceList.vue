@@ -34,21 +34,21 @@
     </template>
     <!-- Updated OUP Chapter bullet point -->
     <template v-if="fallbackData && fallbackData['Literature']">
-      <template v-if="literatureTitles.length">
+      <template v-if="literatures?.length">
         <li
-          v-for="(item, index) in literatureTitles"
+          v-for="(item, index) in literatures"
           :key="index"
           class="section-gap p-0 m-0"
         >
           <a :href="`/literature/L-${item.id}`">{{ item.title }}</a>
         </li>
       </template>
-      <li v-else class="section-gap p-0 m-0">
+      <li v-else-if="literaturesLoading" class="section-gap p-0 m-0">
         <LoadingBar class="pt-[9px]" />
       </li>
     </template>
     <template v-else>
-      <li v-if="oupChapterLoading" class="section-gap p-0 m-0">
+      <li v-if="isLoading" class="section-gap p-0 m-0">
         <LoadingBar class="pt-[9px]" />
       </li>
       <li v-else-if="oupChapterSource" class="section-gap p-0 m-0">
@@ -65,6 +65,7 @@
 import { ref, computed, onMounted } from 'vue'
 import LegalProvisionRenderer from '@/components/legal/LegalProvisionRenderer.vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
+import { useLiteratures } from '@/composables/useLiteratures'
 
 const props = defineProps({
   sources: {
@@ -97,155 +98,30 @@ const props = defineProps({
   },
 })
 
-const config = useRuntimeConfig()
-const primarySource = ref(null)
+const primarySource = ref([])
 const oupChapterSource = ref(null)
-const loading = ref(false)
-const error = ref(null)
 const oupChapterLoading = ref(false)
 
-// Function to fetch the primary source from API
-async function fetchPrimarySource() {
-  if (!props.fallbackData?.['Jurisdictions']) return
+const { data: literaturesByJurisdiction, isLoading } =
+  useLiteratureByJurisdiction(
+    computed(() => props.fallbackData['Jurisdictions'] || null)
+  )
 
-  const jsonPayload = {
-    table: 'Literature',
-    filters: [
-      {
-        column: 'Jurisdiction',
-        value: props.fallbackData['Jurisdictions'],
-      },
-    ],
-  }
-
-  try {
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(jsonPayload),
+watch(
+  () => literaturesByJurisdiction,
+  (newVal) => {
+    newVal.value?.forEach((item) => {
+      if (item['OUP JD Chapter'] && props.fetchOupChapter) {
+        oupChapterSource.value = { title: item.Title, id: item.ID }
+      } else {
+        primarySource.value.push({ title: item.Title, id: item.ID })
       }
-    )
-    if (!response.ok) throw new Error('Failed to fetch primary source')
+    })
+  },
+  { immediate: true }
+)
 
-    const data = await response.json()
-
-    // Filter out entries where "OUP JD Chapter" is explicitly true
-    const nonOupEntries = data.filter(
-      (entry) => entry['OUP JD Chapter'] === null
-    )
-
-    // Select the first valid non-OUP entry as the primary source
-    if (nonOupEntries.length > 0) {
-      primarySource.value = nonOupEntries.map((entry) => ({
-        title: entry.Title,
-        id: entry.ID,
-      }))
-    }
-  } catch (err) {
-    console.error('Error fetching primary source:', err)
-    error.value = err.message
-  }
-}
-
-// Fetch OUP JD Chapter only if the prop is true
-async function fetchOupChapterSource() {
-  if (!props.fetchOupChapter || !props.fallbackData?.['Jurisdictions']) return
-
-  oupChapterLoading.value = true
-  const jsonPayload = {
-    table: 'Literature',
-    filters: [
-      {
-        column: 'Jurisdiction',
-        value: props.fallbackData['Jurisdictions'],
-      },
-      {
-        column: 'OUP JD Chapter',
-        value: true,
-      },
-    ],
-  }
-
-  try {
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(jsonPayload),
-      }
-    )
-
-    if (!response.ok) throw new Error('Failed to fetch OUP JD Chapter source')
-
-    const data = await response.json()
-    if (data.length > 0) {
-      oupChapterSource.value = { title: data[0].Title, id: data[0].ID }
-    } else {
-      oupChapterSource.value = null
-    }
-  } catch (err) {
-    console.error('Error fetching OUP JD Chapter source:', err)
-    error.value = err.message
-    oupChapterSource.value = null
-  } finally {
-    oupChapterLoading.value = false
-  }
-}
-
-// Compute final list of sources
-const computedSources = computed(() => {
-  return [
-    ...props.sources,
-    props.fetchOupChapter ? oupChapterSource.value : null,
-    ...(props.fetchPrimarySource && Array.isArray(primarySource.value)
-      ? primarySource.value
-      : []),
-  ].filter(Boolean)
-})
-
-// Fetch both sources when the component mounts
-onMounted(() => {
-  if (props.fetchOupChapter) fetchOupChapterSource()
-  if (props.fetchPrimarySource) fetchPrimarySource()
-})
-
-// NEW: Fetch literature titles logic for 'Literature'
-const literatureTitles = ref([])
-async function fetchLiteratureTitles(idStr) {
-  const ids = idStr.split(',').map((id) => id.trim())
-  const promises = ids.map(async (id) => {
-    try {
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/details`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ table: 'Literature', id }),
-        }
-      )
-      if (!response.ok) throw new Error('Failed to fetch literature title')
-      const data = await response.json()
-      return { id, title: data['Title'] }
-    } catch (err) {
-      console.error('Error fetching literature title:', err)
-      return { id, title: id }
-    }
-  })
-  literatureTitles.value = await Promise.all(promises)
-}
-if (props.fallbackData && props.fallbackData['Literature']) {
-  fetchLiteratureTitles(props.fallbackData['Literature'])
-}
+const { data: literatures, isLoading: literaturesLoading } = useLiteratures(
+  computed(() => props.fallbackData['Jurisdictions'] || null)
+)
 </script>

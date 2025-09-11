@@ -21,6 +21,7 @@ bun install
 ```
 
 For running locally, make sure you have Nuxt and Nuxt UI set up
+
 ```bash
 npx nuxi@latest init <project-name>
 npx nuxi@latest module add ui

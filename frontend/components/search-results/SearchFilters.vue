@@ -4,10 +4,10 @@
       class="w-full cold-uselectmenu"
       :class="{
         'non-all-selected': multiple
-          ? internalValue.length > 0
+          ? internalValue?.length > 0
           : !!internalValue,
       }"
-      :placeholder="isObjectOptions ? options[0].label : options[0]"
+      :placeholder="isObjectOptions ? options?.[0].label : options?.[0]"
       size="lg"
       :options="options"
       v-model="internalValue"
@@ -26,7 +26,7 @@
               showAvatars &&
               isObjectOptions &&
               option.avatar &&
-              !erroredAvatars[option.label]
+              !erroredAvatars?.[option.label]
             "
           >
             <UAvatar
@@ -88,7 +88,7 @@
           </template>
         </div>
         <!-- Multiple selection mode -->
-        <div v-else-if="multiple && internalValue.length" class="w-full">
+        <div v-else-if="multiple && internalValue?.length" class="w-full">
           <template v-if="isObjectOptions">
             <div
               v-if="showAvatars"
@@ -134,7 +134,7 @@
         </div>
         <!-- Default placeholder -->
         <span v-else class="truncate">
-          {{ isObjectOptions ? options[0].label : options[0] }}
+          {{ isObjectOptions ? options?.[0].label : options?.[0] }}
         </span>
       </template>
     </USelectMenu>
@@ -158,15 +158,15 @@ import { handleImageError } from '@/utils/handleImageError'
 // Reactive object for errored avatars
 const erroredAvatars = reactive({})
 
-const isObjectOptions = computed(() => typeof props.options[0] === 'object')
+const isObjectOptions = computed(() => typeof props.options?.[0] === 'object')
 
 // computed wrapper to ensure selected options are the option objects from props.options
 const internalValue = computed({
   get() {
     if (!props.multiple) {
       // Single selection mode - return single value or null
-      if (props.modelValue.length === 0) return null
-      const item = props.modelValue[0]
+      if (props.modelValue?.length === 0) return null
+      const item = props.modelValue?.[0]
       if (!isObjectOptions.value) {
         return item
       }
@@ -195,8 +195,8 @@ const internalValue = computed({
       } else {
         // If the selected value corresponds to the first "All…" option, clear selection
         const firstLabel = isObjectOptions.value
-          ? props.options[0]?.label
-          : props.options[0]
+          ? props.options?.[0]?.label
+          : props.options?.[0]
         const newLabel =
           typeof newValue === 'object' ? newValue?.label : newValue
         if (
@@ -220,7 +220,7 @@ const internalValue = computed({
     // Multiple selection mode
     if (!isObjectOptions.value) {
       // If first option (All…) is present in selection, clear to empty (reset)
-      const firstLabel = props.options[0]
+      const firstLabel = props.options?.[0]
       if (
         firstLabel &&
         /^All(\s|\b)/.test(firstLabel) &&
@@ -233,7 +233,7 @@ const internalValue = computed({
     } else {
       // Object option case
       // Detect if selection contains the first option whose label starts with All…
-      const firstLabel = props.options[0]?.label
+      const firstLabel = props.options?.[0]?.label
       const containsAll = newValue.some((val) => {
         const lbl = typeof val === 'object' ? val.label : val
         return (

@@ -31,8 +31,7 @@
 
 <script setup>
 import { useRoute } from 'vue-router'
-import { computed, onMounted } from 'vue'
-import { useJurisdictionComparison } from '~/composables/useJurisdictionComparison'
+import { computed } from 'vue'
 
 // Accept processedAnswerData as a prop from parent
 defineProps({
@@ -43,7 +42,6 @@ defineProps({
 })
 
 const route = useRoute()
-const { jurisdictionOptions, loadJurisdictions } = useJurisdictionComparison()
 
 // Get the ISO3 code from the route params
 const iso3Code = computed(() => {
@@ -64,16 +62,6 @@ const comparisonUrl = computed(() => {
   const codes = [iso3Code.value.toLowerCase(), secondJurisdictionCode.value]
 
   return `/jurisdiction-comparison/${codes.join('+')}`
-})
-
-// Load jurisdictions when component mounts
-onMounted(() => {
-  if (
-    jurisdictionOptions.value.length === 1 &&
-    jurisdictionOptions.value[0].label === 'Loading…'
-  ) {
-    loadJurisdictions()
-  }
 })
 </script>
 

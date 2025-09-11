@@ -1,9 +1,10 @@
 <template>
   <BaseDetailLayout
-    :loading="loading"
-    :resultData="modifiedCourtDecision"
+    :loading="isLoading"
+    :resultData="courtDecision"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
     sourceTable="Court Decisions"
   >
     <!-- Slot for Domestic Legal Provisions -->
@@ -33,9 +34,8 @@
       <section class="section-gap p-0 m-0">
         <div
           v-if="
-            modifiedCourtDecision &&
-            (modifiedCourtDecision['Quote'] ||
-              modifiedCourtDecision['Translated Excerpt'])
+            courtDecision &&
+            (courtDecision['Quote'] || courtDecision['Translated Excerpt'])
           "
         >
           <div class="flex items-center justify-between">
@@ -55,9 +55,9 @@
             </div>
             <div
               v-if="
-                hasEnglishQuoteTranslation &&
-                modifiedCourtDecision['Quote'] &&
-                modifiedCourtDecision['Quote'].trim() !== ''
+                courtDecision.hasEnglishQuoteTranslation &&
+                courtDecision['Quote'] &&
+                courtDecision['Quote'].trim() !== ''
               "
               class="flex items-center gap-1"
             >
@@ -90,12 +90,12 @@
             <span style="white-space: pre-line">
               {{
                 showEnglishQuote &&
-                hasEnglishQuoteTranslation &&
-                modifiedCourtDecision['Quote'] &&
-                modifiedCourtDecision['Quote'].trim() !== ''
-                  ? modifiedCourtDecision['Translated Excerpt']
-                  : modifiedCourtDecision['Quote'] ||
-                    modifiedCourtDecision['Translated Excerpt']
+                courtDecision.hasEnglishQuoteTranslation &&
+                courtDecision['Quote'] &&
+                courtDecision['Quote'].trim() !== ''
+                  ? courtDecision['Translated Excerpt']
+                  : courtDecision['Quote'] ||
+                    courtDecision['Translated Excerpt']
               }}
             </span>
           </div>
@@ -106,10 +106,8 @@
     <template #related-questions>
       <section class="section-gap p-0 m-0">
         <RelatedQuestions
-          :jurisdictionCode="
-            modifiedCourtDecision['Jurisdictions Alpha-3 Code'] || ''
-          "
-          :questions="modifiedCourtDecision['Questions'] || ''"
+          :jurisdictionCode="courtDecision['Jurisdictions Alpha-3 Code'] || ''"
+          :questions="courtDecision['Questions'] || ''"
           :tooltip="
             computedKeyLabelPairs.find(
               (pair) => pair.key === 'Related Questions'
@@ -121,7 +119,7 @@
     <template #related-literature>
       <section class="section-gap p-0 m-0">
         <RelatedLiterature
-          :themes="themes"
+          :themes="courtDecision.themes"
           :valueClassMap="valueClassMap['Related Literature']"
           :useId="false"
           :tooltip="
@@ -134,48 +132,59 @@
     </template>
 
     <!-- Custom rendering for Full Text (Original Text) section -->
-<template #['original-text']="{ value }">
-  <section v-if="value && value.trim() !== ''" class="section-gap p-0 m-0">
-    <div class="flex items-center mb-2 mt-12">
-      <span class="label">
-        {{
-          computedKeyLabelPairs.find((pair) => pair.key === 'Original Text')?.label || 'Full Text'
-        }}
-      </span>
-    </div>
-    <div :class="valueClassMap['Original Text']">
-      <span v-if="!showFullText && value.length > 400">
-        {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
-        <div>
-          <NuxtLink class="ml-2 cursor-pointer" @click="showFullText = true">
-            <Icon name="material-symbols:add" :class="iconClass" />
-            Show entire full text
-          </NuxtLink>
+    <template #original-text="{ value }">
+      <section v-if="value && value.trim() !== ''" class="section-gap p-0 m-0">
+        <div class="flex items-center mb-2 mt-12">
+          <span class="label">
+            {{
+              computedKeyLabelPairs.find((pair) => pair.key === 'Original Text')
+                ?.label || 'Full Text'
+            }}
+          </span>
         </div>
-      </span>
-      <span v-else>
-        {{ value }}
-        <div>
-          <NuxtLink v-if="value.length > 400" class="ml-2 cursor-pointer" @click="showFullText = false">
-            <Icon name="material-symbols:remove" :class="iconClass" />
-            Show less
-          </NuxtLink>
+        <div :class="valueClassMap['Original Text']">
+          <span v-if="!showFullText && value.length > 400">
+            {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
+            <div>
+              <NuxtLink
+                class="ml-2 cursor-pointer"
+                @click="showFullText = true"
+              >
+                <Icon name="material-symbols:add" :class="iconClass" />
+                Show entire full text
+              </NuxtLink>
+            </div>
+          </span>
+          <span v-else>
+            {{ value }}
+            <div>
+              <NuxtLink
+                v-if="value.length > 400"
+                class="ml-2 cursor-pointer"
+                @click="showFullText = false"
+              >
+                <Icon name="material-symbols:remove" :class="iconClass" />
+                Show less
+              </NuxtLink>
+            </div>
+          </span>
+          <div>
+            <a
+              class="ml-2"
+              :href="downloadPDFLink"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Icon
+                name="i-material-symbols:arrow-circle-down-outline"
+                :class="iconClass"
+              />
+              <span class="ml-1">Download the case as a PDF</span>
+            </a>
+          </div>
         </div>
-      </span>
-      <div>
-        <a
-          class="ml-2"
-          :href="downloadPDFLink"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Icon name="i-material-symbols:arrow-circle-down-outline" :class="iconClass" />
-          <span class="ml-1">Download the case as a PDF</span>
-        </a>
-      </div>
-    </div>
-  </section>
-</template>
+      </section>
+    </template>
   </BaseDetailLayout>
 
   <!-- Error Alert -->
@@ -190,17 +199,16 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch, ref } from 'vue'
+import { computed, watch, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import RelatedQuestions from '@/components/legal/RelatedQuestions.vue'
 import InfoTooltip from '@/components/ui/InfoTooltip.vue'
 import ProvisionRenderer from '@/components/legal/SectionRenderer.vue'
-import { useApiFetch } from '@/composables/useApiFetch'
+import { useCourtDecision } from '@/composables/useCourtDecision'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { courtDecisionConfig } from '@/config/pageConfigs'
-import { formatDate } from '@/utils/format.js'
 import { useHead } from '#imports'
 
 defineProps({
@@ -212,47 +220,36 @@ defineProps({
 
 const route = useRoute()
 const router = useRouter()
-const { loading, error, data: courtDecision, fetchData } = useApiFetch()
+
+const {
+  data: courtDecision,
+  isLoading,
+  error: queryError,
+  isError,
+} = useCourtDecision(computed(() => route.params.id))
+
+// Transform the error to match the expected format
+const error = computed(() => {
+  if (isError.value) {
+    const errorMessage = queryError.value?.message
+    if (errorMessage === 'no entry found with the specified id') {
+      router.push({
+        path: '/error',
+        query: { message: `Court decision not found` },
+      })
+      return null
+    }
+    return errorMessage || 'Failed to fetch court decision'
+  }
+  return null
+})
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   courtDecision,
   courtDecisionConfig
 )
 
-const themes = computed(() => {
-  if (!courtDecision.value) return ''
-  const themesData = courtDecision.value['Themes']
-  return themesData || ''
-})
-
-const modifiedCourtDecision = computed(() => {
-  if (!courtDecision.value) return null
-  return {
-    ...courtDecision.value,
-    'Case Title':
-      courtDecision.value['Case Title'] === 'Not found'
-        ? courtDecision.value['Case Citation']
-        : courtDecision.value['Case Title'],
-    'Related Literature': themes.value,
-    'Case Citation': courtDecision.value['Case Citation'],
-    Questions: courtDecision.value['Questions'],
-    'Jurisdictions Alpha-3 Code':
-      courtDecision.value['Jurisdictions Alpha-3 Code'],
-    'Publication Date ISO': formatDate(
-      courtDecision.value['Publication Date ISO']
-    ),
-    'Date of Judgment': formatDate(courtDecision.value['Date of Judgment']),
-  }
-})
-
 const showEnglishQuote = ref(true)
-const hasEnglishQuoteTranslation = computed(() => {
-  return !!(
-    modifiedCourtDecision.value &&
-    modifiedCourtDecision.value['Translated Excerpt'] &&
-    modifiedCourtDecision.value['Translated Excerpt'].trim() !== ''
-  )
-})
 
 // For Full Text show more/less
 const showFullText = ref(false)
@@ -266,41 +263,9 @@ const downloadPDFLink = computed(() => {
   return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`
 })
 
-const fetchCourtDecision = async () => {
-  try {
-    await fetchData({
-      table: 'Court Decisions',
-      id: route.params.id,
-    })
-  } catch (err) {
-    if (err.isNotFound) {
-      router.push({
-        path: '/error',
-        query: { message: `Court decision not found` },
-      })
-    } else {
-      console.error('Failed to fetch court decision:', err)
-    }
-  }
-}
-
-onMounted(() => {
-  fetchCourtDecision()
-})
-
-// Refetch if the route ID changes
-watch(
-  () => route.params.id,
-  (newId) => {
-    if (newId) {
-      fetchCourtDecision()
-    }
-  }
-)
-
 // Set dynamic page title based on Case Title or Citation
 watch(
-  modifiedCourtDecision,
+  courtDecision,
   (newVal) => {
     if (!newVal) return
     const caseTitle = newVal['Case Title']

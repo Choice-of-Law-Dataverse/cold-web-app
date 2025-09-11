@@ -229,14 +229,13 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
 import LoadingBar from '@/components/layout/LoadingBar.vue'
+import { useApiClient } from '@/composables/useApiClient'
+
+const { data: jurisdictions } = useJurisdictions()
 
 // Use shared jurisdiction comparison state
-const {
-  jurisdictionOptions,
-  jurisdictionFilters,
-  selectedJurisdictionCodes,
-  loadJurisdictions,
-} = useJurisdictionComparison()
+const { jurisdictionFilters, selectedJurisdictionCodes } =
+  useJurisdictionComparison()
 
 // Reactive state for legal families
 const legalFamilies = ref({})
@@ -257,34 +256,20 @@ const fetchLegalFamily = async (iso3Code) => {
   loadingLegalFamily.value[iso3Code] = true
 
   try {
-    const config = useRuntimeConfig()
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Bearer ${config.public.FASTAPI}`,
-      },
-      body: JSON.stringify({
-        table: 'Jurisdictions',
-        id: iso3Code,
-      }),
+    const { apiClient } = useApiClient()
+    const data = await apiClient('/search/details', {
+      body: { table: 'Jurisdictions', id: iso3Code },
     })
 
-    if (response.ok) {
-      const data = await response.json()
-      // Normalize multiple legal families ensuring a space after commas
-      const raw = data['Legal Family'] || 'Unknown'
-      const normalized =
-        typeof raw === 'string'
-          ? raw
-              .split(',')
-              .map((s) => s.trim())
-              .join(', ')
-          : raw
-      legalFamilies.value[iso3Code] = normalized
-    } else {
-      legalFamilies.value[iso3Code] = 'Unknown'
-    }
+    const raw = data['Legal Family'] || 'Unknown'
+    const normalized =
+      typeof raw === 'string'
+        ? raw
+            .split(',')
+            .map((s) => s.trim())
+            .join(', ')
+        : raw
+    legalFamilies.value[iso3Code] = normalized
   } catch (error) {
     console.error(`Error fetching legal family for ${iso3Code}:`, error)
     legalFamilies.value[iso3Code] = 'Unknown'
@@ -309,34 +294,17 @@ const fetchDataCount = async (jurisdictionName, tableType) => {
   loadingRef.value[jurisdictionName] = true
 
   try {
-    const config = useRuntimeConfig()
-    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        authorization: `Bearer ${config.public.FASTAPI}`,
-      },
-      body: JSON.stringify({
+    const { apiClient } = useApiClient()
+    const data = await apiClient('/search/', {
+      body: {
         search_string: '',
         filters: [
-          {
-            column: 'tables',
-            values: [tableType],
-          },
-          {
-            column: 'jurisdictions',
-            values: [jurisdictionName],
-          },
+          { column: 'tables', values: [tableType] },
+          { column: 'jurisdictions', values: [jurisdictionName] },
         ],
-      }),
+      },
     })
-
-    if (response.ok) {
-      const data = await response.json()
-      countsRef.value[jurisdictionName] = data.total_matches || 0
-    } else {
-      countsRef.value[jurisdictionName] = 0
-    }
+    countsRef.value[jurisdictionName] = data.total_matches || 0
   } catch (error) {
     console.error(
       `Error fetching ${tableType.toLowerCase()} for ${jurisdictionName}:`,
@@ -388,8 +356,8 @@ const getSampleDataForColumn = (columnIndex) => {
   // Fetch court decisions if we have a jurisdiction name
   if (
     hasValidJurisdiction &&
-    !courtDecisionsCounts.value[jurisdictionName] &&
-    !loadingCourtDecisions.value[jurisdictionName]
+    courtDecisionsCounts.value[jurisdictionName] === undefined &&
+    loadingCourtDecisions.value[jurisdictionName] === undefined
   ) {
     fetchCourtDecisions(jurisdictionName)
   }
@@ -397,8 +365,8 @@ const getSampleDataForColumn = (columnIndex) => {
   // Fetch domestic instruments if we have a jurisdiction name
   if (
     hasValidJurisdiction &&
-    !domesticInstrumentsCounts.value[jurisdictionName] &&
-    !loadingDomesticInstruments.value[jurisdictionName]
+    domesticInstrumentsCounts.value[jurisdictionName] === undefined &&
+    loadingDomesticInstruments.value[jurisdictionName] === undefined
   ) {
     fetchDomesticInstruments(jurisdictionName)
   }
@@ -475,17 +443,12 @@ import { reactive } from 'vue'
 const erroredFlags = reactive({})
 function getFlagUrl(label) {
   if (!label || label === 'All Jurisdictions') return ''
-  // Use Alpha-3 code if available in jurisdictionOptions
-  const found = jurisdictionOptions.value.find((j) => j.label === label)
+  // Use Alpha-3 code if available in jurisdictions
+  const found = jurisdictions.value.find((j) => j.label === label)
   if (found && found.avatar) return found.avatar
   // Fallback: try to use label as ISO code (lowercase)
   return `https://choiceoflaw.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
 }
-
-// Initialization
-onMounted(async () => {
-  await loadJurisdictions()
-})
 </script>
 
 <style scoped>

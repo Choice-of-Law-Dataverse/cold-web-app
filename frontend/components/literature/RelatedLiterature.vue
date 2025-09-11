@@ -117,31 +117,24 @@ const displayedLiterature = computed(() => {
   return !showAll.value && arr.length > 5 ? arr.slice(0, 3) : arr
 })
 
+import { useApiClient } from '@/composables/useApiClient'
+const { apiClient } = useApiClient()
+
 async function fetchLiteratureTitlesById(ids, useJurisdictionsColumn = false) {
   if (!ids.length) return []
   loadingTitles.value = true
   const titles = await Promise.all(
     ids.map(async (id) => {
       try {
-        const response = await fetch(
-          `${config.public.apiBaseUrl}/search/details`,
-          {
-            method: 'POST',
-            headers: {
-              authorization: `Bearer ${config.public.FASTAPI}`,
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              table: 'Literature',
-              id,
-              column: useJurisdictionsColumn
-                ? 'Jurisdictions Literature ID'
-                : undefined,
-            }),
-          }
-        )
-        if (!response.ok) throw new Error('Error fetching title')
-        const data = await response.json()
+        const data = await apiClient('/search/details', {
+          body: {
+            table: 'Literature',
+            id,
+            column: useJurisdictionsColumn
+              ? 'Jurisdictions Literature ID'
+              : undefined,
+          },
+        })
         return data?.Title ? data.Title : data[id]?.Title || ''
       } catch {
         return ''
@@ -156,22 +149,15 @@ async function fetchRelatedLiterature(themes) {
   if (!themes) return
   loading.value = true
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    const data = await apiClient('/search/', {
+      body: {
         filters: [
           { column: 'tables', values: ['Literature'] },
           { column: 'themes', values: themes.split(',').map((t) => t.trim()) },
         ],
         page_size: 100,
-      }),
+      },
     })
-    if (!response.ok) throw new Error('Failed to fetch related literature')
-    const data = await response.json()
     literatureList.value = Array.isArray(data.results)
       ? data.results.map((item) => ({
           title: item.Title || item.title || 'Untitled',

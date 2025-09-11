@@ -4,6 +4,7 @@
     :resultData="processedLegalInstrument"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
     sourceTable="Domestic Instrument"
   >
     <!-- Slot for Amended by -->
@@ -299,7 +300,10 @@ function getSortedProvisionIds(rawValue) {
   try {
     if (typeof rankingRaw === 'string') {
       // Strategy 0: Simple numeric CSV (e.g. "2,1,3") aligned by index to ids
-      if (typeof rankingRaw === 'string' && /^(\s*\d+\s*)([,;]\s*\d+\s*)*$/.test(rankingRaw.trim())) {
+      if (
+        typeof rankingRaw === 'string' &&
+        /^(\s*\d+\s*)([,;]\s*\d+\s*)*$/.test(rankingRaw.trim())
+      ) {
         const nums = rankingRaw.split(/[,;]+/).map((n) => Number(n.trim()))
         if (nums.length === ids.length) {
           ids.forEach((pid, idx) => {
@@ -310,13 +314,16 @@ function getSortedProvisionIds(rawValue) {
       }
 
       // Try JSON first
-      if (rankingRaw.trim().startsWith('{') || rankingRaw.trim().startsWith('[')) {
+      if (
+        rankingRaw.trim().startsWith('{') ||
+        rankingRaw.trim().startsWith('[')
+      ) {
         const parsed = JSON.parse(rankingRaw)
         if (Array.isArray(parsed)) {
           // If array, assume it is in order already
-            parsed.forEach((pid, idx) => {
-              if (typeof pid === 'string') rankingMap[pid] = idx + 1
-            })
+          parsed.forEach((pid, idx) => {
+            if (typeof pid === 'string') rankingMap[pid] = idx + 1
+          })
         } else if (parsed && typeof parsed === 'object') {
           rankingMap = Object.fromEntries(
             Object.entries(parsed).map(([k, v]) => {
@@ -351,7 +358,8 @@ function getSortedProvisionIds(rawValue) {
       rankingMap = Object.fromEntries(
         Object.entries(rankingRaw).map(([k, v]) => {
           if (ids.includes(k) && !isNaN(Number(v))) return [k, Number(v)]
-          if (ids.includes(String(v)) && !isNaN(Number(k))) return [String(v), Number(k)]
+          if (ids.includes(String(v)) && !isNaN(Number(k)))
+            return [String(v), Number(k)]
           return [k, Number(v)]
         })
       )
@@ -361,7 +369,9 @@ function getSortedProvisionIds(rawValue) {
   }
 
   // If we got no usable ranking numbers, keep original order
-  const hasNumbers = Object.values(rankingMap).some((n) => typeof n === 'number' && !isNaN(n))
+  const hasNumbers = Object.values(rankingMap).some(
+    (n) => typeof n === 'number' && !isNaN(n)
+  )
   if (!hasNumbers) return ids
 
   return [...ids].sort((a, b) => {
@@ -373,5 +383,4 @@ function getSortedProvisionIds(rawValue) {
     return ra - rb
   })
 }
-
 </script>

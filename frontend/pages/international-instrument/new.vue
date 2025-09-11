@@ -258,17 +258,11 @@ function handleNewSave() {
   // Explicitly log the exact payload we send
   ;(async () => {
     try {
-      await $fetch(
-        `${config.public.apiBaseUrl}/suggestions/international-instruments`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: payload,
-        }
-      )
+      const { useApiClient } = await import('@/composables/useApiClient')
+      const { apiClient } = useApiClient()
+      await apiClient('/suggestions/international-instruments', {
+        body: payload,
+      })
 
       showSaveModal.value = false
       router.push({

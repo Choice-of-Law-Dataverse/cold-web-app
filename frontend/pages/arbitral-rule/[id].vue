@@ -4,6 +4,7 @@
     :resultData="processedArbitralRule"
     :keyLabelPairs="computedKeyLabelPairs"
     :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
     sourceTable="Arbitral Rule"
   />
 </template>

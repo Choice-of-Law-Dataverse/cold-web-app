@@ -65,8 +65,14 @@
                   <div class="fade-out fade-out-region fade-out-left"></div>
                 </div>
                 <div v-if="selectedAnswer">
+                  <div v-if="isLoading" class="mt-4 copy">
+                    Loading jurisdictions...
+                  </div>
+                  <div v-else-if="error" class="mt-4 copy">
+                    Error loading jurisdictions
+                  </div>
                   <div
-                    v-if="countries.length"
+                    v-else-if="countries.length"
                     class="countries-scroll mt-2 countries-scroll-fade-container"
                     style="position: relative"
                   >
@@ -145,7 +151,7 @@
           <button
             v-for="(suf, idx) in suffixes"
             :key="idx"
-            @click="((currentIndex = idx), fetchCountries())"
+            @click="currentIndex = idx"
             :aria-label="`Go to question ${idx + 1}`"
             :class="['dot', { 'dot-active': currentIndex === idx }]"
           />
@@ -156,8 +162,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick, onUnmounted } from 'vue'
-import { useRuntimeConfig } from '#imports'
+import { ref, onMounted, computed, nextTick, onUnmounted, watch } from 'vue'
+import { useQuestionCountries } from '@/composables/useQuestionCountries'
 
 const answers = ['Yes', 'No']
 const regions = [
@@ -170,15 +176,6 @@ const regions = [
   'North America',
   'Middle East',
 ]
-
-const selectedAnswer = ref('Yes')
-const selectedRegion = ref('All')
-const countries = ref([])
-const countriesLines = ref([])
-const questionTitle = ref('')
-const titleRef = ref(null)
-const rowsCount = ref(3)
-// Carousel: accept an array of question suffixes to rotate through
 const props = defineProps({
   questionSuffixes: {
     type: Array,
@@ -186,113 +183,62 @@ const props = defineProps({
   },
 })
 
+const selectedAnswer = ref('Yes')
+const selectedRegion = ref('All')
+const countriesLines = ref([])
+const titleRef = ref(null)
+const rowsCount = ref(3)
+
 const currentIndex = ref(0)
 const suffixes = computed(() => props.questionSuffixes)
 const totalQuestions = computed(() => suffixes.value.length)
 const currentSuffix = computed(() => suffixes.value[currentIndex.value])
 
+const {
+  data: questionData,
+  isLoading,
+  error,
+} = useQuestionCountries(currentSuffix, selectedAnswer, selectedRegion)
+
+const countries = computed(() => questionData.value?.countries || [])
+const questionTitle = computed(
+  () => questionData.value?.questionTitle || 'Missing Question'
+)
+// Carousel: accept an array of question suffixes to rotate through
+
 const prevQuestion = () => {
   currentIndex.value =
     (currentIndex.value - 1 + totalQuestions.value) % totalQuestions.value
-  fetchCountries()
 }
 
 const nextQuestion = () => {
   currentIndex.value = (currentIndex.value + 1) % totalQuestions.value
-  fetchCountries()
-}
-
-const config = useRuntimeConfig()
-
-async function fetchCountries() {
-  if (!selectedAnswer.value) {
-    countries.value = []
-    return
-  }
-  try {
-    const res = await fetch(`${config.public.apiBaseUrl}/search/full_table`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        table: 'Answers',
-        // Ask backend for rows where ID contains the suffix; we'll enforce endsWith on the client
-        filters: [
-          { column: 'ID', value: currentSuffix.value },
-          { column: 'Answer', value: selectedAnswer.value },
-        ],
-      }),
-    })
-    if (!res.ok) throw new Error('API error')
-    const data = await res.json()
-    // Ensure we only keep rows whose ID actually ends with the requested suffix
-    const dataWithSuffix = Array.isArray(data)
-      ? data.filter(
-          (item) =>
-            typeof item.ID === 'string' && item.ID.endsWith(currentSuffix.value)
-        )
-      : []
-
-    // Enforce exact match on the Answer field (API may do substring matching)
-    const exactAnswerMatches = dataWithSuffix.filter(
-      (item) =>
-        typeof item.Answer === 'string' && item.Answer === selectedAnswer.value
-    )
-
-    // Populate questionTitle from an exact-answer match if available, otherwise fall back
-    if (
-      exactAnswerMatches.length > 0 &&
-      typeof exactAnswerMatches[0].Question === 'string'
-    ) {
-      questionTitle.value = exactAnswerMatches[0].Question
-    } else if (
-      dataWithSuffix.length > 0 &&
-      typeof dataWithSuffix[0].Question === 'string'
-    ) {
-      questionTitle.value = dataWithSuffix[0].Question
-    }
-
-    // Start from exact-answer matches so "No" does not match "No Data"
-    let filtered = exactAnswerMatches.filter(
-      (item) => item['Jurisdictions Irrelevant'] !== 'Yes'
-    )
-    if (selectedRegion.value !== 'All') {
-      filtered = filtered.filter(
-        (item) => item['Jurisdictions Region'] === selectedRegion.value
-      )
-    }
-    // Map to objects with name and code, then sort by name
-    const list = filtered
-      .map((item) => ({
-        name: item.Jurisdictions,
-        code: item['Jurisdictions Alpha-3 code'],
-      }))
-      .sort((a, b) => a.name.localeCompare(b.name))
-    countries.value = list
-    // after DOM updates, measure title and compute rows, then split
-    await nextTick()
-    computeRows()
-    countriesLines.value = splitIntoLines(list, rowsCount.value)
-  } catch (e) {
-    countries.value = ['Error loading countries']
-    countriesLines.value = [['Error loading countries']]
-  }
 }
 
 function selectAnswer(answer) {
   selectedAnswer.value = answer
-  fetchCountries()
 }
 
 function selectRegion(region) {
   selectedRegion.value = region
-  fetchCountries()
 }
 
+// Watch for countries data changes and update countriesLines
+watch(
+  countries,
+  async (newCountries) => {
+    if (newCountries && newCountries.length > 0) {
+      await nextTick()
+      computeRows()
+      countriesLines.value = splitIntoLines(newCountries, rowsCount.value)
+    } else {
+      countriesLines.value = []
+    }
+  },
+  { immediate: true }
+)
+
 onMounted(() => {
-  fetchCountries()
   // compute rows on mount and on resize
   computeRows()
   window.addEventListener('resize', computeRows)

@@ -9,10 +9,10 @@
           <!-- Filter Controls -->
           <div class="flex flex-col sm:flex-row gap-5 w-full">
             <SearchFilters
-              :options="jurisdictionOptions"
+              :options="jurisdictions"
               v-model="currentJurisdictionFilter"
               class="w-full lg:w-60 flex-shrink-0"
-              showAvatars="true"
+              :showAvatars="true"
             />
             <SearchFilters
               :options="themeOptions"
@@ -239,7 +239,7 @@ const selectWidth = ref('auto')
 const measureRef = ref(null)
 
 // Filter options
-const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
+const jurisdictions = ref([{ label: 'All Jurisdictions' }])
 const themeOptions = ref([
   'All Themes',
   ...importedThemeOptions.map((theme) => theme.label),
@@ -289,41 +289,20 @@ const updateSelectWidth = () => {
   })
 }
 
-// Data fetching
-const loadJurisdictions = async () => {
-  try {
-    const config = useRuntimeConfig()
-    const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
-      {
-        method: 'POST',
-        headers: {
-          authorization: `Bearer ${config.public.FASTAPI}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
-      }
-    )
-
-    if (!response.ok) throw new Error('Failed to load jurisdictions')
-
-    const jurisdictionsData = await response.json()
-    jurisdictionOptions.value = [
+// Data fetching via composable
+import { useJurisdictions } from '@/composables/useJurisdictions'
+const { data: jurisdictionData } = useJurisdictions()
+watch(
+  () => jurisdictionData?.value,
+  (list) => {
+    if (!list) return
+    jurisdictions.value = [
       { label: 'All Jurisdictions' },
-      ...jurisdictionsData
-        .filter((entry) => entry['Irrelevant?'] === false)
-        .map((entry) => ({
-          label: entry.Name,
-          avatar: entry['Alpha-3 Code']
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
-            : undefined,
-        }))
-        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
+      ...list.map((j) => ({ label: j.label, avatar: j.avatar })),
     ]
-  } catch (error) {
-    console.error('Error loading jurisdictions:', error)
-  }
-}
+  },
+  { immediate: true }
+)
 
 // Watchers
 watch(
@@ -348,7 +327,6 @@ watch(
 
 // Initialization
 onMounted(async () => {
-  await loadJurisdictions()
   syncFiltersFromQuery(route.query)
   updateSelectWidth()
 })

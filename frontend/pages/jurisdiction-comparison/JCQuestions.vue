@@ -235,9 +235,10 @@ watch([isOpen, isOpenMobile], ([desktop, mobile]) => {
   }
 })
 
+const { data: jurisdictions } = useJurisdictions()
+
 // Use shared jurisdiction comparison state
-const { jurisdictionOptions, jurisdictionFilters, loadJurisdictions } =
-  useJurisdictionComparison()
+const { jurisdictionFilters } = useJurisdictionComparison()
 
 // Track errored flag images
 const erroredFlags = ref({})
@@ -245,7 +246,7 @@ const erroredFlags = ref({})
 // Flag URL helper function
 const getFlagUrl = (label) => {
   if (!label || label === 'All Jurisdictions') return ''
-  const found = jurisdictionOptions.value.find((j) => j.label === label)
+  const found = jurisdictions.value.find((j) => j.label === label)
   if (found?.avatar) return found.avatar
   return `https://choiceoflaw.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
 }
@@ -263,30 +264,18 @@ const isLoading = computed(
   () => hasBeenOpened.value && (loadingQuestions.value || loadingAnswers.value)
 )
 
-// API configuration
-const getApiConfig = () => {
-  const config = useRuntimeConfig()
-  return {
-    baseUrl: config.public.apiBaseUrl,
-    headers: {
-      Authorization: `Bearer ${config.public.FASTAPI}`,
-      'Content-Type': 'application/json',
-    },
-  }
-}
-
 // Fetch questions with improved error handling
 const fetchQuestions = async () => {
   if (!hasBeenOpened.value) return // Don't fetch if accordion hasn't been opened
 
-  const { baseUrl, headers } = getApiConfig()
-
   try {
     const promises = props.questionIDs.map(async (id) => {
       try {
-        const response = await fetch(`${baseUrl}/search/full_table`, {
+        const response = await fetch(`/api/proxy/search/full_table`, {
           method: 'POST',
-          headers,
+          headers: {
+            'Content-Type': 'application/json',
+          },
           body: JSON.stringify({
             table: 'Questions',
             filters: [{ column: 'ID', value: id }],
@@ -316,13 +305,12 @@ const fetchAnswerData = async (id) => {
     return answersData.value[id]
   }
 
-  const { baseUrl, headers } = getApiConfig()
-  console.log('[JCQuestions.vue] fetchAnswerData id:', id)
-
   try {
-    const response = await fetch(`${baseUrl}/search/details`, {
+    const response = await fetch(`/api/proxy/search/details`, {
       method: 'POST',
-      headers,
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ table: 'Answers', id }),
     })
 
@@ -372,7 +360,7 @@ const loadAccordionData = async () => {
 
   try {
     // Load jurisdictions and questions in parallel
-    await Promise.all([loadJurisdictions(), fetchQuestions()])
+    await Promise.all([fetchQuestions()])
     // Then load answers (which depends on jurisdictions being loaded)
     await fetchAllAnswers()
   } finally {
@@ -424,8 +412,6 @@ const sampleData = computed(() => {
 
 // Initialization - only load jurisdictions initially, not questions/answers
 onMounted(async () => {
-  await loadJurisdictions()
-
   // If showCaret is false, immediately load data since accordion should be open
   if (!props.showCaret) {
     hasBeenOpened.value = true

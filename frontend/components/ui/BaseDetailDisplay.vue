@@ -25,8 +25,8 @@
   </template>
   <template v-else>
     <UCard class="cold-ucard">
-      <!-- Header section: always render, but pass headerMode -->
-      <template #header>
+      <!-- Header section: render only when showHeader is true -->
+      <template v-if="showHeader" #header>
         <BaseCardHeader
           :resultData="resultData"
           :cardType="formattedSourceTable"
@@ -163,6 +163,14 @@ const props = defineProps({
   showHeader: {
     type: Boolean,
     default: true, // Default to true so headers are shown unless explicitly disabled
+  },
+  showOpenLink: {
+    type: Boolean,
+    default: false,
+  },
+  showSuggestEdit: {
+    type: Boolean,
+    default: false,
   },
   formattedJurisdiction: { type: Array, required: false, default: () => [] },
   formattedTheme: { type: Array, required: false, default: () => [] },

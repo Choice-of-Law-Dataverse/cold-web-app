@@ -149,17 +149,13 @@ async function fetchLiteratureTitles(idStr) {
   const promises = ids.map(async (id) => {
     if (literatureCache[id]) return { id, title: literatureCache[id] }
     try {
-      const response = await fetch(
-        `${runtimeConfig.public.apiBaseUrl}/search/details`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${runtimeConfig.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ table: 'Literature', id }),
-        }
-      )
+      const response = await fetch(`/api/proxy/search/details`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table: 'Literature', id }),
+      })
       if (!response.ok) throw new Error('Failed to fetch literature title')
       const data = await response.json()
       const title = data['Title']

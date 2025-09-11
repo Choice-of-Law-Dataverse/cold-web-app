@@ -2,8 +2,10 @@
   <UCard class="cold-ucard">
     <h2 class="popular-title">{{ title }}</h2>
     <div class="number-container">
-      <span v-if="!showLoading && !error">{{ displayedNumber }}</span>
-      <span v-else-if="showLoading"><LoadingNumber /></span>
+      <span v-if="!loading && !error">{{
+        number ?? props.overrideNumber ?? 0
+      }}</span>
+      <span v-else-if="loading"><LoadingNumber /></span>
       <span v-else>Error</span>
     </div>
     <div class="link-container">
@@ -22,7 +24,8 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { computed } from 'vue'
+import { useNumberCount } from '~/composables/useNumberCount'
 import LoadingNumber from '@/components/layout/LoadingNumber.vue'
 const props = defineProps({
   title: { type: String, required: true },
@@ -33,75 +36,13 @@ const props = defineProps({
   overrideNumber: { type: [Number, String], required: false, default: null },
 })
 
-const number = ref(null)
-const loading = ref(true)
-const error = ref(false)
-
-const config = useRuntimeConfig()
-
-async function fetchNumber() {
-  // If manual override is provided, skip fetching and stop loading
-  if (props.overrideNumber !== null && props.overrideNumber !== undefined) {
-    loading.value = false
-    error.value = false
-    return
-  }
-  loading.value = true
-  error.value = false
-  try {
-    const body = {
-      search_string: '',
-      filters: [
-        {
-          column: 'tables',
-          values: [props.tableName],
-        },
-      ],
-    }
-    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
-      method: 'POST',
-      headers: {
-        authorization: `Bearer ${config.public.FASTAPI}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    })
-    if (!response.ok) throw new Error('API error')
-    const data = await response.json()
-    number.value = data.total_matches ?? 0
-  } catch (e) {
-    error.value = true
-    number.value = 0
-  } finally {
-    loading.value = false
-  }
-}
-
-onMounted(fetchNumber)
-watch(() => props.tableName, fetchNumber)
-// If override switches from/to provided, re-evaluate loading state
-watch(
-  () => props.overrideNumber,
-  () => {
-    if (props.overrideNumber !== null && props.overrideNumber !== undefined) {
-      loading.value = false
-      error.value = false
-    } else {
-      fetchNumber()
-    }
-  }
-)
-
-const displayedNumber = computed(() =>
-  props.overrideNumber !== null && props.overrideNumber !== undefined
-    ? props.overrideNumber
-    : number.value
-)
-const showLoading = computed(
-  () =>
-    props.overrideNumber === null &&
-    props.overrideNumber === undefined &&
-    loading.value
+// Use the composable for data fetching
+const {
+  data: number,
+  isLoading: loading,
+  error,
+} = useNumberCount(
+  computed(() => (props.overrideNumber ? undefined : props.tableName))
 )
 </script>
 
