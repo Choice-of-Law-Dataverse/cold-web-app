@@ -10,7 +10,7 @@
           <USelectMenu
             :model-value="selectedRegion"
             @update:modelValue="updateSelectedRegion"
-            class="w-12 lg:w-60"
+            class="w-60"
             placeholder="Select a Region"
             size="xl"
             :options="regionOptions"
@@ -117,13 +117,13 @@ const isDisclaimerVisible = ref(false)
 
 .select-menu-container {
   position: absolute;
-  top: 12px; /* Adjust as needed */
+  top: 32px; /* Adjust as needed */
   right: 12px; /* Adjust as needed */
-  z-index: 1000; /* Ensure it appears above the map */
+  z-index: 2000; /* Ensure it appears above the map */
 }
 
 /* Ensure the dropdown menu appears correctly */
 .select-menu-container .u-select-menu-dropdown {
-  z-index: 1001; /* Higher than the container for the dropdown */
+  z-index: 2001; /* Higher than the container for the dropdown */
 }
 </style>
