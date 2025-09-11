@@ -124,6 +124,6 @@ const isDisclaimerVisible = ref(false)
 
 /* Ensure the dropdown menu appears correctly */
 .select-menu-container .u-select-menu-dropdown {
-  z-index: 1100; /* Higher than the container for the dropdown */
+  z-index: 1001; /* Higher than the container for the dropdown */
 }
 </style>

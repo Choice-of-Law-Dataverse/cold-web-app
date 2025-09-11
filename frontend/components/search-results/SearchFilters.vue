@@ -37,12 +37,19 @@
                 boxSizing: 'border-box',
                 width: 'auto',
                 height: '16px',
+                filter: isCovered(option.alpha3Code) ? undefined : 'grayscale(0.9)',
               }"
               class="mr-2 self-center"
               @error="() => handleImageError(erroredAvatars, option.label)"
             />
           </template>
-          <span>{{ isObjectOptions ? option.label : option }}</span>
+          <span 
+            :style="{ 
+              color: isCovered(option?.alpha3Code) ? undefined : 'gray' 
+            }"
+          >
+            {{ isObjectOptions ? option.label : option }}
+          </span>
         </div>
       </template>
       <template #label>
@@ -64,19 +71,34 @@
                   boxSizing: 'border-box',
                   width: 'auto',
                   height: '16px',
+                  filter: isCovered(internalValue.alpha3Code) ? undefined : 'grayscale(0.9)',
                 }"
                 class="mr-1.5 self-center"
                 @error="
                   () => handleImageError(erroredAvatars, internalValue.label)
                 "
               />
-              <span class="truncate">{{ internalValue.label }}</span>
+              <span 
+                class="truncate"
+                :style="{ 
+                  color: isCovered(internalValue?.alpha3Code) ? undefined : 'gray' 
+                }"
+              >
+                {{ internalValue.label }}
+              </span>
             </div>
             <div
               v-else
               class="flex items-center w-full overflow-hidden whitespace-nowrap"
             >
-              <span class="truncate">{{ internalValue.label }}</span>
+              <span 
+                class="truncate"
+                :style="{ 
+                  color: isCovered(internalValue?.alpha3Code) ? undefined : 'gray' 
+                }"
+              >
+                {{ internalValue.label }}
+              </span>
             </div>
           </template>
           <template v-else>
@@ -104,15 +126,21 @@
                     boxSizing: 'border-box',
                     width: 'auto',
                     height: '16px',
+                    filter: isCovered(selected.alpha3Code) ? undefined : 'grayscale(0.9)',
                   }"
                   class="mr-1.5 self-center"
                   @error="
                     () => handleImageError(erroredAvatars, selected.label)
                   "
                 />
-                <span class="mr-2 inline-block truncate">{{
-                  selected.label
-                }}</span>
+                <span 
+                  class="mr-2 inline-block truncate"
+                  :style="{ 
+                    color: isCovered(selected?.alpha3Code) ? undefined : 'gray' 
+                  }"
+                >
+                  {{ selected.label }}
+                </span>
               </template>
             </div>
             <div
@@ -154,9 +182,19 @@ const emit = defineEmits(['update:modelValue'])
 
 import { computed, reactive } from 'vue'
 import { handleImageError } from '@/utils/handleImageError'
+import { useCoveredCountries } from '@/composables/useCoveredCountries'
 
 // Reactive object for errored avatars
 const erroredAvatars = reactive({})
+
+const { data: coveredCountries } = useCoveredCountries()
+
+// Check if a country is covered (only apply to options with alpha3Code)
+const isCovered = (alpha3Code) => {
+  if (!alpha3Code) return true // If no alpha3Code, don't apply coverage logic
+  if (!coveredCountries.value) return true // If no coverage data, don't apply logic
+  return coveredCountries.value.has(alpha3Code.toLowerCase())
+}
 
 const isObjectOptions = computed(() => typeof props.options?.[0] === 'object')
 

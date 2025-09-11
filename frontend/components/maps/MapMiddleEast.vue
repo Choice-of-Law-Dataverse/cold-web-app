@@ -43,13 +43,18 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed } from 'vue'
 
-// GeoJSON data and readiness state
-const geoJsonData = ref(null)
-const coveredCountries = ref([]) // Example: Country coverage data
+// Import the new composables
+const { data: geoJsonData } = useGeoJsonData()
+const { data: coveredCountries } = useCoveredCountries()
+
+// Data readiness state
 const isDataReady = computed(
-  () => geoJsonData.value && coveredCountries.value.length > 0
+  () =>
+    geoJsonData.value &&
+    coveredCountries.value &&
+    coveredCountries.value.size > 0
 )
 
 // Map configuration
@@ -65,7 +70,7 @@ defineProps({
 const onEachFeature = (feature, layer) => {
   const isoCode = feature.properties.iso_a3_eh // Get the ISO3 code
   const countryName = feature.properties.name // Get the country's name
-  const isCovered = coveredCountries.value.includes(isoCode)
+  const isCovered = coveredCountries.value?.has(isoCode?.toLowerCase()) || false
 
   // Default style
   const defaultStyle = {
@@ -117,24 +122,4 @@ const onEachFeature = (feature, layer) => {
     navigateTo(`/jurisdiction/${isoCode.toLowerCase()}`)
   })
 }
-
-// Fetch GeoJSON data and country coverage data
-onMounted(async () => {
-  try {
-    // Example: Fetch GeoJSON data
-    const geoJsonResponse = await fetch('/temp_custom.geo.json')
-    if (!geoJsonResponse.ok) throw new Error('Failed to fetch GeoJSON file')
-    geoJsonData.value = await geoJsonResponse.json()
-
-    // Example: Fetch covered countries
-    const countriesResponse = await fetch('/temp_answer_coverage.txt')
-    if (!countriesResponse.ok) throw new Error('Failed to fetch countries file')
-    const countriesText = await countriesResponse.text()
-    coveredCountries.value = countriesText
-      .split('\n')
-      .map((line) => line.trim())
-  } catch (error) {
-    console.error(error)
-  }
-})
 </script>
