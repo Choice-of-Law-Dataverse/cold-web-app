@@ -70,7 +70,7 @@ defineProps({
 const onEachFeature = (feature, layer) => {
   const isoCode = feature.properties.iso_a3_eh // Get the ISO3 code
   const countryName = feature.properties.name // Get the country's name
-  const isCovered = coveredCountries.value?.has(isoCode) || false
+  const isCovered = coveredCountries.value?.has(isoCode?.toLowerCase()) || false
 
   // Default style
   const defaultStyle = {
