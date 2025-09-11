@@ -1,11 +1,14 @@
 <template>
   <nav
-    class="bg-white border-b border-cold-gray w-screen px-6 overflow-x-auto"
+    class="bg-white border-b border-cold-gray w-full px-6"
     :class="{ 'bg-purple-active': isExpanded }"
   >
-    <div class="mx-auto w-screen py-6 pt-8">
+    <div
+      class="mx-auto py-6 pt-8"
+      style="max-width: var(--container-width); width: 100%"
+    >
       <div
-        class="flex justify-between items-center gap-4 relative min-w-max"
+        class="flex justify-between items-center space-x-4 sm:space-x-8 relative"
       >
         <!-- Search Input -->
         <div
@@ -642,23 +645,18 @@ nav {
   }
   /* Shift open menu links to the right */
   .mobile-menu-links {
-    margin-left: 0; 
+    margin-left: 3rem; /* prevent pushing content off screen */
     margin-top: 0.4rem;
-    width: auto;
+    width: 100%;
     display: flex;
-    flex-shrink: 0;
   }
   /* Space only between link items (anchors), not before close button */
   .mobile-menu-links a:not(:last-of-type) {
-    margin-right: 0.8rem; /* reduced spacing to fit better */
+    margin-right: 1.1rem; /* desired spacing between About, Learn, Contact */
   }
   /* Keep close button aligned to the far right */
   .mobile-menu-links .close-menu-button {
-    margin-left: 0.5rem !important;
-  }
-  /* Reduce overall spacing so four items fit comfortably */
-  .flex.justify-between.items-center {
-    gap: 0.2rem;
+    margin-left: auto !important;
   }
   .menu-button.custom-nav-links {
     padding-left: 0.25rem;
