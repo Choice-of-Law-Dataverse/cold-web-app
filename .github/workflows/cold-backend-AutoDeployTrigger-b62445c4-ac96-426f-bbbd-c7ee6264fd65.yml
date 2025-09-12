@@ -2,14 +2,6 @@ name: Trigger auto deployment for cold-backend
 
 # When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
-  push:
-    branches: 
-      [ main ]
-    paths:
-    - '**'
-    - '.github/workflows/cold-backend-AutoDeployTrigger-b62445c4-ac96-426f-bbbd-c7ee6264fd65.yml'
-
   # Allow manual trigger 
   workflow_dispatch:      
 

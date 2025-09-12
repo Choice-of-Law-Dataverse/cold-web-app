@@ -9,6 +9,9 @@ jobs:
     permissions:
       id-token: write
       contents: read
+    environment:
+      name: production
+      url: https://cold.world
 
     steps:
       - name: Checkout
