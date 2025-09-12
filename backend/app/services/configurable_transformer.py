@@ -6,7 +6,7 @@ loaded from external configuration files via the mapping repository.
 
 import json
 import logging
-from typing import Dict, Any, Optional, List
+from typing import Dict, Any, List
 from .mapping_repository import get_mapping_repository
 
 logger = logging.getLogger(__name__)

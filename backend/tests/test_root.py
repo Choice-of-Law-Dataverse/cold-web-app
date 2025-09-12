@@ -1,4 +1,3 @@
-import pytest
 from fastapi.testclient import TestClient
 
 # Import your FastAPI app and the dependency to override
