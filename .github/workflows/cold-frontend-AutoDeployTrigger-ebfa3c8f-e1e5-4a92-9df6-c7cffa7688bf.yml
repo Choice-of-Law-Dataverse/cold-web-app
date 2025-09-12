@@ -2,27 +2,19 @@ name: Trigger auto deployment for cold-frontend
 
 # When this action will be executed
 on:
-  # Automatically trigger it when detected changes in repo
-  push:
-    branches: 
-      [ main ]
-    paths:
-    - '**'
-    - '.github/workflows/cold-frontend-AutoDeployTrigger-ebfa3c8f-e1e5-4a92-9df6-c7cffa7688bf.yml'
-
   # Allow manual trigger 
   workflow_dispatch:      
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions: 
-      id-token: write #This is required for requesting the OIDC JWT Token
-      contents: read #Required when GH token is used to authenticate with private repo
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
-      - name: Checkout to the branch
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
 
       - name: Azure Login
         uses: azure/login@v2
@@ -31,19 +23,43 @@ jobs:
           tenant-id: ${{ secrets.COLDFRONTEND_AZURE_TENANT_ID }}
           subscription-id: ${{ secrets.COLDFRONTEND_AZURE_SUBSCRIPTION_ID }}
 
-      - name: Build and push container image to registry
+      - name: Sanity check build context
+        run: |
+          echo "Workspace: ${{ github.workspace }}"
+          test -f "${{ github.workspace }}/frontend/Dockerfile" && echo "Found frontend/Dockerfile" || (echo "frontend/Dockerfile missing" && exit 1)
+
+      - name: Prepare build args (include only non-empty)
+        id: prep-args
+        shell: bash
+        run: |
+          set -euo pipefail
+          strip_newlines() { printf "%s" "$1" | tr -d '\n\r'; }
+          args=()
+          v="$(strip_newlines "${{ secrets.API_BASE_URL }}")";             if [ -n "${v:-}" ]; then args+=("API_BASE_URL=$v"); fi
+          v="$(strip_newlines "${{ secrets.FASTAPI_API_TOKEN }}")";        if [ -n "${v:-}" ]; then args+=("FASTAPI_API_TOKEN=$v"); fi
+          v="$(strip_newlines "${{ secrets.NUXT_SITE_URL }}")";            if [ -n "${v:-}" ]; then args+=("NUXT_SITE_URL=$v"); fi
+          v="$(strip_newlines "${{ secrets.NUXT_SITE_NAME }}")";           if [ -n "${v:-}" ]; then args+=("NUXT_SITE_NAME=$v"); fi
+          v="$(strip_newlines "${{ secrets.NUXT_TURNSTILE_SITE_KEY }}")";  if [ -n "${v:-}" ]; then args+=("NUXT_TURNSTILE_SITE_KEY=$v"); fi
+          v="$(strip_newlines "${{ secrets.NUXT_TURNSTILE_SECRET_KEY }}")";if [ -n "${v:-}" ]; then args+=("NUXT_TURNSTILE_SECRET_KEY=$v"); fi
+          build_args="${args[*]}"
+          echo "build_args_keys=$(printf '%s\n' "$build_args" | sed 's/=[^ ]*/=/g')" >> "$GITHUB_OUTPUT"
+          echo "build_args=$build_args" >> "$GITHUB_OUTPUT"
+
+      - name: Show which build args will be passed (keys only)
+        run: |
+          echo "${{ steps.prep-args.outputs.build_args_keys }}"
+
+      - name: Build and deploy to Azure Container Apps
         uses: azure/container-apps-deploy-action@v2
         with:
-          appSourcePath: ${{ github.workspace }}frontend
-          _dockerfilePathKey_: _dockerfilePath_
-          _targetLabelKey_: _targetLabel_
+          appSourcePath: ${{ github.workspace }}/frontend
+          buildArguments: ${{ steps.prep-args.outputs.build_args }}
+          containerAppName: cold-frontend
+          dockerfilePath: Dockerfile
+          imageToBuild: choiceoflawdataverse/cold-frontend:${{ github.sha }}
+          ingress: external
+          registryPassword: ${{ secrets.COLDFRONTEND_REGISTRY_PASSWORD }}
           registryUrl: docker.io
           registryUsername: ${{ secrets.COLDFRONTEND_REGISTRY_USERNAME }}
-          registryPassword: ${{ secrets.COLDFRONTEND_REGISTRY_PASSWORD }}
-          containerAppName: cold-frontend
           resourceGroup: cold
-          imageToBuild: choiceoflawdataverse/cold-frontend:${{ github.sha }}
-          _buildArgumentsKey_: |
-            _buildArgumentsValues_
-
-
+          targetPort: 3000
