@@ -3,13 +3,13 @@ export default defineEventHandler(async (event) => {
   const { url } = getQuery(event)
 
   if (!url || typeof url !== 'string') {
-    return { exists: false }
+    return false
   }
 
   try {
     const res = await fetch(url, { method: 'HEAD' })
-    return { exists: res.ok }
+    return res.ok
   } catch (e) {
-    return { exists: false }
+    return false
   }
 })

@@ -219,6 +219,7 @@ import { onMounted, ref, computed, reactive, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import jurisdictionsData from '@/assets/jurisdictions-data.json'
 import { handleImageError } from '@/utils/handleImageError'
+import { useCheckTarget } from '~/composables/useCheckTarget'
 
 // removed tooltip content import
 import CiteModal from '@/components/ui/CiteModal.vue'
@@ -466,7 +467,7 @@ function getLink() {
   }
 }
 
-const { data: pdfExists } = useVerifyPdfLink(downloadPDFLink)
+const { data: pdfExists } = useCheckTarget(downloadPDFLink)
 
 const suggestEditLink = ref('')
 const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
