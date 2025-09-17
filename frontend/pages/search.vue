@@ -37,7 +37,6 @@ const route = useRoute()
 const router = useRouter()
 const searchQuery = ref(route.query.q || '') // Holds the search query from the URL
 
-// Persistent filter state
 const filter = ref({
   jurisdiction: route.query.jurisdiction,
   sortBy: route.query.sortBy || 'relevance', // Add sortBy to filter state
@@ -47,10 +46,8 @@ const filter = ref({
 
 const searchText = ref(route.query.q || '') // Initialize searchText from query
 
-// Flag to prevent queries during component initialization
 const isInitialized = ref(false)
 
-// Create search parameters for TanStack Query - only when initialized
 const searchParams = computed(() => {
   if (!isInitialized.value) {
     // Return empty params while not initialized to prevent queries
@@ -70,7 +67,7 @@ const searchParams = computed(() => {
   }
 })
 
-// Use TanStack Query for infinite search
+
 const {
   data: searchData,
   isLoading,

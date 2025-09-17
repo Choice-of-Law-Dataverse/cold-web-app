@@ -103,6 +103,7 @@ import { useJurisdictions } from '@/composables/useJurisdictions'
 import JurisdictionComparisonMatchSummary from './JurisdictionComparisonMatchSummary.vue'
 import JurisdictionComparisonTable from './JurisdictionComparisonTable.vue'
 import JurisdictionSelectMenu from './JurisdictionSelectMenu.vue'
+import themeOptionsData from '@/assets/themeOptions.json'
 
 const props = defineProps({
   jurisdiction: {
@@ -152,8 +153,7 @@ const resetFilters = () => {
 }
 
 // Dropdown options for themes
-import themeOptionsData from '@/assets/themeOptions.json'
-const themeOptions = ref(themeOptionsData)
+const themeOptions = themeOptionsData
 
 // Desired order for the questions
 import questionOrderData from '@/assets/questionOrder.json'

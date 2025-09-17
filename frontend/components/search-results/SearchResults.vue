@@ -244,7 +244,7 @@ const selectWidth = ref('auto')
 const measureRef = ref(null)
 
 // Filter options
-const themeOptions = ref(importedThemeOptions.map((theme) => theme.label))
+const themeOptions = importedThemeOptions
 const typeOptions = importedTypeOptions
 
 // Computed values
