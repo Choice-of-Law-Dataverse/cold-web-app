@@ -294,7 +294,6 @@ const updateSelectWidth = () => {
 import { useJurisdictions } from '@/composables/useJurisdictions'
 const { data: jurisdictions } = useJurisdictions()
 
-
 // Watchers
 watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],

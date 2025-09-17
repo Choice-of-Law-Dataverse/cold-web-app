@@ -7,7 +7,10 @@
           ? internalValue?.length > 0
           : !!internalValue,
       }"
-      :placeholder="props.placeholder || (isObjectOptions ? options?.[0].label : options?.[0])"
+      :placeholder="
+        props.placeholder ||
+        (isObjectOptions ? options?.[0].label : options?.[0])
+      "
       size="lg"
       :options="options"
       v-model="internalValue"
@@ -172,7 +175,10 @@
         </div>
         <!-- Default placeholder -->
         <span v-else class="truncate">
-          {{ props.placeholder || (isObjectOptions ? options?.[0].label : options?.[0]) }}
+          {{
+            props.placeholder ||
+            (isObjectOptions ? options?.[0].label : options?.[0])
+          }}
         </span>
       </template>
     </USelectMenu>
@@ -204,7 +210,7 @@ const { data: coveredCountries } = useCoveredCountries()
 // Check if a country is covered (only apply to options with alpha3Code)
 const isCovered = (alpha3Code) => {
   if (!props.highlightJurisdictions) {
-    return true 
+    return true
   } else {
     // When highlighting jurisdictions, use same logic as JurisdictionSelectMenu
     if (!alpha3Code) return true // If no alpha3Code, show normally (not a jurisdiction)

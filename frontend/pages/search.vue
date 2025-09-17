@@ -67,7 +67,6 @@ const searchParams = computed(() => {
   }
 })
 
-
 const {
   data: searchData,
   isLoading,
