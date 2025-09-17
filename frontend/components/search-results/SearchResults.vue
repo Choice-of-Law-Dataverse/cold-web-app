@@ -13,6 +13,7 @@
               v-model="currentJurisdictionFilter"
               class="w-full lg:w-60 flex-shrink-0"
               :showAvatars="true"
+              :multiple="false"
             />
             <SearchFilters
               :options="themeOptions"
