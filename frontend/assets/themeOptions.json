@@ -1,17 +1,9 @@
 [
-  { "label": "Codification", "value": "Codification" },
-  { "label": "HCCH Principles", "value": "HCCH Principles" },
-  { "label": "Party autonomy", "value": "Party autonomy" },
-  { "label": "Freedom of choice", "value": "Freedom of choice" },
-  { "label": "Dépeçage", "value": "Dépeçage" },
-  { "label": "Partial choice", "value": "Partial choice" },
-  { "label": "Rules of law", "value": "Rules of law" },
-  { "label": "Tacit choice", "value": "Tacit choice" },
-  {
-    "label": "Overriding mandatory rules",
-    "value": "Overriding mandatory rules"
-  },
-  { "label": "Public policy", "value": "Public policy" },
-  { "label": "Absence of choice", "value": "Absence of choice" },
-  { "label": "Arbitration", "value": "Arbitration" }
+  "Codification",
+  "Freedom of choice",
+  "Overriding mandatory rules",
+  "Party autonomy",
+  "Public policy",
+  "Rules of law",
+  "Tacit choice"
 ]

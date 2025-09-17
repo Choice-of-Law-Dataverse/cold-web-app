@@ -13,16 +13,21 @@
               v-model="currentJurisdictionFilter"
               class="w-full lg:w-60 flex-shrink-0"
               :showAvatars="true"
+              :multiple="false"
+              :highlight-jurisdictions="true"
+              :placeholder="'Jurisdiction'"
             />
             <SearchFilters
               :options="themeOptions"
               v-model="currentThemeFilter"
               class="w-full lg:w-60 flex-shrink-0"
+              :placeholder="'Themes'"
             />
             <SearchFilters
               :options="typeOptions"
               v-model="currentTypeFilter"
               class="w-full lg:w-60 flex-shrink-0"
+              :placeholder="'Types'"
             />
             <UButton
               v-if="hasActiveFilters"
@@ -239,11 +244,7 @@ const selectWidth = ref('auto')
 const measureRef = ref(null)
 
 // Filter options
-const jurisdictions = ref([{ label: 'All Jurisdictions' }])
-const themeOptions = ref([
-  'All Themes',
-  ...importedThemeOptions.map((theme) => theme.label),
-])
+const themeOptions = importedThemeOptions
 const typeOptions = importedTypeOptions
 
 // Computed values
@@ -291,18 +292,7 @@ const updateSelectWidth = () => {
 
 // Data fetching via composable
 import { useJurisdictions } from '@/composables/useJurisdictions'
-const { data: jurisdictionData } = useJurisdictions()
-watch(
-  () => jurisdictionData?.value,
-  (list) => {
-    if (!list) return
-    jurisdictions.value = [
-      { label: 'All Jurisdictions' },
-      ...list.map((j) => ({ label: j.label, avatar: j.avatar })),
-    ]
-  },
-  { immediate: true }
-)
+const { data: jurisdictions } = useJurisdictions()
 
 // Watchers
 watch(
