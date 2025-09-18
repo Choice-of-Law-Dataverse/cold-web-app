@@ -3,6 +3,15 @@ export default defineNuxtConfig({
   compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
   ssr: true, // Ensure SSR is enabled
+  $production: {
+    scripts: {
+      registry: {
+        plausibleAnalytics: {
+          domain: 'cold.global',
+        },
+      },
+    },
+  },
   modules: [
     '@nuxt/ui',
     '@nuxtjs/tailwindcss',
