@@ -1,0 +1,70 @@
+[project]
+name = "backend"
+version = "0.1.0"
+description = "cold-backend"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "annotated-types==0.7.0",
+    "anyio==4.4.0",
+    "attrs==24.3.0",
+    "black==24.10.0",
+    "blinker==1.8.2",
+    "certifi==2024.7.4",
+    "charset-normalizer==3.4.1",
+    "click==8.1.7",
+    "colorama==0.4.6",
+    "dnspython==2.7.0",
+    "email-validator==2.2.0",
+    "fastapi==0.115.6",
+    "flasgger==0.9.7.1",
+    "flask==3.0.3",
+    "flask-cors==4.0.1",
+    "greenlet==3.0.3",
+    "h11==0.14.0",
+    "httpcore==1.0.5",
+    "httpx==0.27.0",
+    "idna==3.7",
+    "iniconfig==2.0.0",
+    "itsdangerous==2.2.0",
+    "jinja2==3.1.4",
+    "jsonschema==4.23.0",
+    "jsonschema-specifications==2024.10.1",
+    "markupsafe==2.1.5",
+    "mistune==3.1.0",
+    "mixedbread-ai==2.2.6",
+    "mypy-extensions==1.0.0",
+    "numpy==2.0.0",
+    "packaging==24.2",
+    "passlib==1.7.4",
+    "pathspec==0.12.1",
+    "platformdirs==4.3.6",
+    "pluggy==1.5.0",
+    "psycopg2-binary==2.9.9",
+    "pydantic==2.8.2",
+    "pydantic-core==2.20.1",
+    "pyjwt==2.10.1",
+    "pymongo==4.10.1",
+    "pyodbc==5.1.0",
+    "pytest==8.3.4",
+    "python-dotenv==1.0.1",
+    "python-multipart==0.0.20",
+    "pyyaml==6.0.2",
+    "referencing==0.36.1",
+    "requests==2.32.3",
+    "rpds-py==0.22.3",
+    "six==1.17.0",
+    "sniffio==1.3.1",
+    "sqlalchemy==2.0.31",
+    "starlette==0.41.3",
+    "typing-extensions==4.12.2",
+    "urllib3==2.3.0",
+    "uvicorn==0.34.0",
+    "werkzeug==3.0.3",
+]
+
+[tool.uv]
+package = true
+
+[project.scripts]
+serve = "app.main:main"

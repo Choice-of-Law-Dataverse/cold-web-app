@@ -1,6 +1,7 @@
 from fastapi import FastAPI, APIRouter
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
+import uvicorn
 
 from app.routes import ai, search, submarine, sitemap, landing_page
 from app.services.query_logging import log_query
@@ -101,3 +102,11 @@ app.include_router(moderation_router.router)
 def root():
     """Simple health check endpoint for the CoLD API root."""
     return {"message": "Hello World from CoLD"}
+
+
+def main():
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=False)
+
+
+if __name__ == "__main__":
+    main()
