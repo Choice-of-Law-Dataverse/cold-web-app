@@ -19,8 +19,8 @@ export default defineNuxtConfig({
     '@nuxtjs/leaflet',
     '@nuxt/icon',
     '@nuxt/content',
-    'nuxt-purgecss',
-    'nuxt-plotly',
+    // 'nuxt-purgecss', // Temporarily disabled - not compatible with Nuxt v4
+    // 'nuxt-plotly', // Temporarily disabled - not compatible with Nuxt v4
     '@nuxtjs/robots',
     '@nuxtjs/sitemap',
     '@nuxt/scripts',
@@ -74,13 +74,13 @@ export default defineNuxtConfig({
   colorMode: {
     preference: 'light',
   },
-  css: ['@/assets/styles.scss', 'tailwindcss/tailwind.css'], // Tailwind last
+  css: ['@/assets/styles.scss'], // Tailwind v4 imported via @import in styles.scss
   tailwindcss: {
     configPath: './tailwind.config.js',
   },
   vite: {
     optimizeDeps: {
-      include: ['plotly.js-dist-min'],
+      // include: ['plotly.js-dist-min'], // Disabled since nuxt-plotly is temporarily disabled
     },
     // Fix legacy JS bug (https://stackoverflow.com/a/79054778/22393957)
     css: {
