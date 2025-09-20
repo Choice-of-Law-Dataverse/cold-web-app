@@ -1,6 +1,11 @@
-# Nuxt 3 Minimal Starter
+# Nuxt 4 Frontend Application
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Look at the [Nuxt 4 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+
+## Requirements
+
+- Node.js v20.5.0 or higher (currently tested with v20.19.5)
+- npm 10.x or higher
 
 ## Setup
 
@@ -20,12 +25,13 @@ yarn install
 bun install
 ```
 
-For running locally, make sure you have Nuxt and Nuxt UI set up
+## Technology Stack
 
-```bash
-npx nuxi@latest init <project-name>
-npx nuxi@latest module add ui
-```
+This application runs on:
+- **Nuxt 4.1.2** - Latest Nuxt framework
+- **Tailwind CSS v4.1.13** - Latest Tailwind with built-in features
+- **@nuxt/ui v3.3.4** - Modern UI components
+- **Vue 3** - Latest Vue framework
 
 ## Development Server
 
@@ -93,6 +99,22 @@ To run the container run:
 The docker image has been pushed to dockerhub using:
 `docker tag cold-nuxt-frontend simonweigold/cold-nuxt-frontend:latest`
 `docker push simonweigold/cold-nuxt-frontend:latest`
+
+# Migration to Nuxt v4
+
+This application has been successfully migrated from Nuxt 3 to Nuxt 4.1.2, coordinated with the Tailwind v4 migration.
+
+## What Changed
+- **Framework**: Nuxt 3.12.4 → Nuxt 4.1.2
+- **CSS Framework**: Tailwind CSS v3 → v4.1.13 with `@import "tailwindcss"`
+- **UI Library**: @nuxt/ui v2 → v3.3.4
+- **Modules**: Updated to Nuxt v4 compatible versions
+
+## Temporarily Disabled Modules
+- `nuxt-purgecss` - Awaiting Nuxt v4 compatibility
+- `nuxt-plotly` - Awaiting Nuxt v4 compatibility
+
+These modules will be re-enabled when Nuxt v4 compatible versions are available.
 
 # Nuxt Leaflet
 
