@@ -60,10 +60,10 @@
 </template>
 
 <script setup>
-import { onMounted, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import { useApiFetch } from '@/composables/useApiFetch'
+import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import InfoPopover from '~/components/ui/InfoPopover.vue'
 import { literatureConfig } from '@/config/pageConfigs'
@@ -72,7 +72,15 @@ import { useHead } from '#imports'
 const route = useRoute()
 const router = useRouter()
 
-const { loading, error, data: literature, fetchData } = useApiFetch()
+// Use TanStack Vue Query for data fetching
+const table = ref('Literature')
+const id = ref(route.params.id)
+
+const {
+  data: literature,
+  isLoading: loading,
+  error,
+} = useRecordDetails(table, id)
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   literature,
@@ -106,24 +114,33 @@ watch(
   { immediate: true }
 )
 
-onMounted(async () => {
-  try {
-    const result = await fetchData({
-      table: 'Literature',
-      id: route.params.id,
-    })
-    if (!result || Object.keys(result).length === 0) {
-      throw { isNotFound: true, table: 'Literature' }
-    }
-  } catch (err) {
-    if (err.isNotFound) {
+// Handle not found errors
+watch(
+  error,
+  (newError) => {
+    if (newError?.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: `${err.table} not found` },
+        query: { message: 'Literature not found' },
       })
-    } else {
-      console.error('Error fetching literature:', err)
+    } else if (newError) {
+      console.error('Error fetching literature:', newError)
     }
-  }
-})
+  },
+  { immediate: true }
+)
+
+// Handle empty data as not found
+watch(
+  literature,
+  (newData) => {
+    if (newData && Object.keys(newData).length === 0) {
+      router.push({
+        path: '/error',
+        query: { message: 'Literature not found' },
+      })
+    }
+  },
+  { immediate: true }
+)
 </script>

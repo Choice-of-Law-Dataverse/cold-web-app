@@ -193,7 +193,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import LegalProvision from '@/components/legal/LegalProvision.vue'
@@ -201,7 +201,7 @@ import InfoPopover from '~/components/ui/InfoPopover.vue'
 import SectionRenderer from '@/components/legal/SectionRenderer.vue'
 import CompatibleLabel from '@/components/ui/CompatibleLabel.vue'
 import CountryReportLink from '@/components/ui/CountryReportLink.vue'
-import { useApiFetch } from '@/composables/useApiFetch'
+import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { legalInstrumentConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
@@ -211,7 +211,15 @@ const router = useRouter()
 const textType = ref('Full Text of the Provision (English Translation)')
 const hasEnglishTranslation = ref(false)
 
-const { loading, error, data: legalInstrument, fetchData } = useApiFetch()
+// Use TanStack Vue Query for data fetching
+const table = ref('Domestic Instruments')
+const id = ref(route.params.id)
+
+const {
+  data: legalInstrument,
+  isLoading: loading,
+  error,
+} = useRecordDetails(table, id)
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   legalInstrument,
@@ -259,23 +267,21 @@ watch(
   { immediate: true }
 )
 
-onMounted(async () => {
-  try {
-    await fetchData({
-      table: 'Domestic Instruments',
-      id: route.params.id,
-    })
-  } catch (err) {
-    if (err.isNotFound) {
+// Handle not found errors
+watch(
+  error,
+  (newError) => {
+    if (newError?.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: `Domestic instrument not found` },
+        query: { message: 'Domestic instrument not found' },
       })
-    } else {
-      console.error('Error fetching legal instrument:', err)
+    } else if (newError) {
+      console.error('Error fetching legal instrument:', newError)
     }
-  }
-})
+  },
+  { immediate: true }
+)
 
 /**
  * Returns provision IDs sorted by their "Ranking (Display Order)" value.

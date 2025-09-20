@@ -10,10 +10,10 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import { useApiFetch } from '@/composables/useApiFetch'
+import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { arbitralRuleConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
@@ -21,7 +21,15 @@ import { useHead } from '#imports'
 const route = useRoute()
 const router = useRouter()
 
-const { loading, error, data: arbitralRule, fetchData } = useApiFetch()
+// Use TanStack Vue Query for data fetching
+const table = ref('Arbitral Rules')
+const id = ref(route.params.id)
+
+const {
+  data: arbitralRule,
+  isLoading: loading,
+  error,
+} = useRecordDetails(table, id)
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   arbitralRule,
@@ -63,20 +71,21 @@ watch(
   { immediate: true }
 )
 
-onMounted(async () => {
-  try {
-    await fetchData({ table: 'Arbitral Rules', id: route.params.id })
-  } catch (err) {
-    if (err.isNotFound) {
+// Handle not found errors
+watch(
+  error,
+  (newError) => {
+    if (newError?.isNotFound) {
       router.push({
         path: '/error',
         query: { message: 'Arbitral rule not found' },
       })
-    } else {
-      console.error('Error fetching arbitral rule:', err)
+    } else if (newError) {
+      console.error('Error fetching arbitral rule:', newError)
     }
-  }
-})
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped></style>

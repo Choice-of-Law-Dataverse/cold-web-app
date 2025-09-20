@@ -12,10 +12,10 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import { useApiFetch } from '@/composables/useApiFetch'
+import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { arbitralAwardConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
@@ -23,7 +23,15 @@ import { useHead } from '#imports'
 const route = useRoute()
 const router = useRouter()
 
-const { loading, error, data: arbitralAward, fetchData } = useApiFetch()
+// Use TanStack Vue Query for data fetching
+const table = ref('Arbitral Awards')
+const id = ref(route.params.id)
+
+const {
+  data: arbitralAward,
+  isLoading: loading,
+  error,
+} = useRecordDetails(table, id)
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   arbitralAward,
@@ -91,20 +99,21 @@ watch(
   { immediate: true }
 )
 
-onMounted(async () => {
-  try {
-    await fetchData({ table: 'Arbitral Awards', id: route.params.id })
-  } catch (err) {
-    if (err.isNotFound) {
+// Handle not found errors
+watch(
+  error,
+  (newError) => {
+    if (newError?.isNotFound) {
       router.push({
         path: '/error',
         query: { message: 'Arbitral award not found' },
       })
-    } else {
-      console.error('Error fetching arbitral award:', err)
+    } else if (newError) {
+      console.error('Error fetching arbitral award:', newError)
     }
-  }
-})
+  },
+  { immediate: true }
+)
 </script>
 
 <style scoped></style>
