@@ -1,5 +1,5 @@
-import { ref, computed } from 'vue'
-import { useApiFetch } from './useApiFetch'
+import { ref, computed, watch } from 'vue'
+import { useRecordDetails } from './useRecordDetails'
 
 export function useLegalProvision({
   provisionId,
@@ -7,13 +7,40 @@ export function useLegalProvision({
   onHasEnglishTranslationUpdate,
   table = 'Domestic Legal Provisions', // default table
 }) {
-  const title = ref('')
-  const content = ref('')
-  const loading = ref(true)
-  const error = ref(null)
   const hasEnglishTranslation = ref(false)
   const showEnglish = ref(true)
-  const provisionData = ref(null)
+
+  // Use TanStack Vue Query for data fetching
+  const tableRef = ref(table)
+  const idRef = ref(provisionId)
+
+  const {
+    data: provisionData,
+    isLoading: loading,
+    error,
+  } = useRecordDetails(tableRef, idRef)
+
+  // Computed properties derived from the fetched data
+  const title = computed(() => {
+    if (!provisionData.value) return ''
+    return table === 'Regional Legal Provisions'
+      ? provisionData.value['Title of the Provision'] || 'Unknown Article'
+      : provisionData.value.Article || 'Unknown Article'
+  })
+
+  const content = computed(() => {
+    if (!provisionData.value) return ''
+    
+    return showEnglish.value
+      ? (table === 'Regional Legal Provisions'
+          ? provisionData.value['Full Text']
+          : provisionData.value['Full Text of the Provision (English Translation)']) ||
+        provisionData.value['Full Text of the Provision (Original Language)'] ||
+        'No content available'
+      : provisionData.value['Full Text of the Provision (Original Language)'] ||
+        'No content available'
+  })
+
   const anchorId = computed(() => {
     const articleNumber = title.value
       ? title.value.replace(/\s+/g, '')
@@ -21,62 +48,33 @@ export function useLegalProvision({
     return articleNumber
   })
 
-  const { fetchData } = useApiFetch()
-
-  async function fetchProvisionDetails() {
-    loading.value = true
-    error.value = null
-
-    try {
-      const data = await fetchData({
-        table, // use the passed-in table
-        id: provisionId,
-      })
-
-      if (!data) {
-        throw new Error('No data received')
+  // Watch for data changes to update hasEnglishTranslation
+  watch(
+    provisionData,
+    (newData) => {
+      if (newData) {
+        hasEnglishTranslation.value =
+          'Full Text of the Provision (English Translation)' in newData
+        
+        if (onHasEnglishTranslationUpdate) {
+          onHasEnglishTranslationUpdate(hasEnglishTranslation.value)
+        }
       }
-
-      title.value =
-        table === 'Regional Legal Provisions'
-          ? data['Title of the Provision'] || 'Unknown Article'
-          : data.Article || 'Unknown Article'
-      hasEnglishTranslation.value =
-        'Full Text of the Provision (English Translation)' in data
-      provisionData.value = data
-
-      // Set initial content to English first, then fallback to Original Language
-      content.value = showEnglish.value
-        ? (table === 'Regional Legal Provisions'
-            ? data['Full Text']
-            : data['Full Text of the Provision (English Translation)']) ||
-          data['Full Text of the Provision (Original Language)'] ||
-          'No content available'
-        : data['Full Text of the Provision (Original Language)'] ||
-          'No content available'
-
-      if (onHasEnglishTranslationUpdate) {
-        onHasEnglishTranslationUpdate(hasEnglishTranslation.value)
-      }
-    } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : 'Failed to fetch provision details'
-    } finally {
-      loading.value = false
-    }
-  }
+    },
+    { immediate: true }
+  )
 
   function updateContent() {
-    if (!provisionData.value) return
+    // This function now triggers a reactivity update by changing showEnglish
+    // The computed content will automatically update
+  }
 
-    content.value = showEnglish.value
-      ? (table === 'Regional Legal Provisions'
-          ? provisionData.value['Full Text']
-          : provisionData.value[
-              'Full Text of the Provision (English Translation)'
-            ]) || 'No English translation available'
-      : provisionData.value['Full Text of the Provision (Original Language)'] ||
-        'No content available'
+  // For backwards compatibility, provide a fetchProvisionDetails function
+  function fetchProvisionDetails() {
+    // With TanStack Query, this is handled automatically
+    // We can update the refs to trigger a refetch if needed
+    idRef.value = provisionId
+    tableRef.value = table
   }
 
   return {
