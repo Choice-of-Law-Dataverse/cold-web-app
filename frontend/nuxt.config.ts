@@ -74,7 +74,7 @@ export default defineNuxtConfig({
   colorMode: {
     preference: 'light',
   },
-  css: ['@/assets/styles.scss', 'tailwindcss/tailwind.css'], // Tailwind last
+  css: ['@/assets/styles.scss'], // Tailwind imported in styles.scss
   tailwindcss: {
     configPath: './tailwind.config.js',
   },
