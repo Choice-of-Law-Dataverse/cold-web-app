@@ -66,8 +66,7 @@ export default {
     },
   },
   plugins: [
-    require('@tailwindcss/forms'),
-    require('@tailwindcss/aspect-ratio'),
+    // Note: @tailwindcss/forms and @tailwindcss/aspect-ratio are now built-in to Tailwind v4
     function ({ addBase, theme }) {
       // Generate CSS variables for colors
       addBase({
