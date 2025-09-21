@@ -1,68 +1,71 @@
 <template>
-  <BaseDetailLayout
-    :loading="loading"
-    :resultData="literature"
-    :keyLabelPairs="computedKeyLabelPairs"
-    :valueClassMap="valueClassMap"
-    :showSuggestEdit="true"
-    sourceTable="Literature"
-  >
-    <template #publication-title="{ value }">
-      <section v-if="value" class="section-gap">
-        <div>
-          <span class="label flex flex-row items-center mb-0.5" >
-            {{
-              computedKeyLabelPairs.find(
-                (pair) => pair.key === 'Publication Title'
-              )?.label || 'Publication'
-            }}
-            <InfoPopover
-              v-if="
+  <EntityErrorBoundary entity-type="Literature">
+    <BaseDetailLayout
+      :loading="loading"
+      :resultData="literature"
+      :keyLabelPairs="computedKeyLabelPairs"
+      :valueClassMap="valueClassMap"
+      :showSuggestEdit="true"
+      sourceTable="Literature"
+    >
+      <template #publication-title="{ value }">
+        <section v-if="value" class="section-gap">
+          <div>
+            <span class="label flex flex-row items-center mb-0.5" >
+              {{
                 computedKeyLabelPairs.find(
                   (pair) => pair.key === 'Publication Title'
-                )?.tooltip
-              "
-              :text="
-                computedKeyLabelPairs.find(
-                  (pair) => pair.key === 'Publication Title'
-                )?.tooltip
-              "
-            />
-          </span>
-          <span class="result-value-small">{{ value }}</span>
-        </div>
-      </section>
-    </template>
-    <template #publisher="{ value }">
-      <section v-if="value" class="section-gap">
-        <div>
-          <span class="label flex flex-row items-center mb-0.5">
-            {{
-              computedKeyLabelPairs.find((pair) => pair.key === 'Publisher')
-                ?.label || 'Publisher'
-            }}
-            <InfoPopover
-              v-if="
+                )?.label || 'Publication'
+              }}
+              <InfoPopover
+                v-if="
+                  computedKeyLabelPairs.find(
+                    (pair) => pair.key === 'Publication Title'
+                  )?.tooltip
+                "
+                :text="
+                  computedKeyLabelPairs.find(
+                    (pair) => pair.key === 'Publication Title'
+                  )?.tooltip
+                "
+              />
+            </span>
+            <span class="result-value-small">{{ value }}</span>
+          </div>
+        </section>
+      </template>
+      <template #publisher="{ value }">
+        <section v-if="value" class="section-gap">
+          <div>
+            <span class="label flex flex-row items-center mb-0.5">
+              {{
                 computedKeyLabelPairs.find((pair) => pair.key === 'Publisher')
-                  ?.tooltip
-              "
-              :text="
-                computedKeyLabelPairs.find((pair) => pair.key === 'Publisher')
-                  ?.tooltip
-              "
-            />
-          </span>
-          <span class="result-value-small">{{ value }}</span>
-        </div>
-      </section>
-    </template>
-  </BaseDetailLayout>
+                  ?.label || 'Publisher'
+              }}
+              <InfoPopover
+                v-if="
+                  computedKeyLabelPairs.find((pair) => pair.key === 'Publisher')
+                    ?.tooltip
+                "
+                :text="
+                  computedKeyLabelPairs.find((pair) => pair.key === 'Publisher')
+                    ?.tooltip
+                "
+              />
+            </span>
+            <span class="result-value-small">{{ value }}</span>
+          </div>
+        </section>
+      </template>
+    </BaseDetailLayout>
+  </EntityErrorBoundary>
 </template>
 
 <script setup>
 import { ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import EntityErrorBoundary from '@/components/ui/EntityErrorBoundary.vue'
 import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import InfoPopover from '~/components/ui/InfoPopover.vue'
@@ -70,7 +73,6 @@ import { literatureConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
 
 const route = useRoute()
-const router = useRouter()
 
 // Use TanStack Vue Query for data fetching
 const table = ref('Literature')
@@ -110,36 +112,6 @@ watch(
         },
       ],
     })
-  },
-  { immediate: true }
-)
-
-// Handle not found errors
-watch(
-  error,
-  (newError) => {
-    if (newError?.isNotFound) {
-      router.push({
-        path: '/error',
-        query: { message: 'Literature not found' },
-      })
-    } else if (newError) {
-      console.error('Error fetching literature:', newError)
-    }
-  },
-  { immediate: true }
-)
-
-// Handle empty data as not found
-watch(
-  literature,
-  (newData) => {
-    if (newData && Object.keys(newData).length === 0) {
-      router.push({
-        path: '/error',
-        query: { message: 'Literature not found' },
-      })
-    }
   },
   { immediate: true }
 )

@@ -1,5 +1,6 @@
 <template>
-  <BaseDetailLayout
+  <EntityErrorBoundary entity-type="Question">
+    <BaseDetailLayout
     :loading="isLoading"
     :resultData="processedAnswerData"
     :keyLabelPairs="keyLabelPairs"
@@ -101,12 +102,14 @@
     </template>
   </BaseDetailLayout>
   <CountryReportLink :processedAnswerData="processedAnswerData ?? {}" />
+  </EntityErrorBoundary>
 </template>
 
 <script setup>
 import { onMounted, nextTick, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import EntityErrorBoundary from '@/components/ui/EntityErrorBoundary.vue'
 import CourtDecisionRenderer from '@/components/legal/CourtDecisionRenderer.vue'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import QuestionSourceList from '@/components/sources/QuestionSourceList.vue'
@@ -117,7 +120,6 @@ import { questionConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
 
 const route = useRoute()
-const router = useRouter()
 
 const {
   data: answerData,
@@ -149,20 +151,6 @@ onMounted(async () => {
     const target = document.getElementById('related-court-decisions')
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-})
-
-// Watch for errors and handle them
-watch(error, (newError) => {
-  if (newError) {
-    if (newError.isNotFound) {
-      router.push({
-        path: '/error',
-        query: { message: `${newError.table} not found` },
-      })
-    } else {
-      console.error('Error fetching question:', newError)
     }
   }
 })
