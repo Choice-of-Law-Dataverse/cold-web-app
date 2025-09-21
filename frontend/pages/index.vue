@@ -1,6 +1,6 @@
 <template>
   <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
+    <div class="mx-auto w-full max-w-container">
       <!-- Header Section -->
       <div class="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6">
         <div class="col-span-12">

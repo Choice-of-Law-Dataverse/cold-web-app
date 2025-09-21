@@ -12,7 +12,7 @@
         >
           <div style="grid-column: 1">
             <h2 v-show="!isSticky" class="mb-1">Overview</h2>
-            <div v-show="isSticky" style="visibility: hidden; height: 1.5em" />
+            <div v-show="isSticky" class="invisible h-6" />
           </div>
 
           <!-- Two jurisdictions: align with columns 2 and 3 -->
@@ -46,8 +46,7 @@
                 >
                   <Icon
                     name="i-material-symbols:add-circle-outline"
-                    style="font-size: 20px"
-                    class="mr-2 ml-8"
+                    class="mr-2 ml-8 text-[20px]"
                   />
                   Add
                 </button>
@@ -104,8 +103,7 @@
           >
             <Icon
               name="i-material-symbols:add-circle-outline"
-              style="font-size: 20px"
-              class="mr-2"
+              class="mr-2 text-[20px]"
             />
             Add Jurisdiction
           </button>

@@ -29,6 +29,9 @@ export default {
   ],
   theme: {
     extend: {
+      maxWidth: {
+        container: 'var(--container-width)',
+      },
       colors: {
         'cold-purple': '#6F4DFA',
         'cold-purple-alpha': '#6F4DFA0D', // 5% alpha

@@ -3,10 +3,7 @@
     class="bg-white border-b border-cold-gray w-full px-6"
     :class="{ 'bg-purple-active': isExpanded }"
   >
-    <div
-      class="mx-auto py-6 pt-8"
-      style="max-width: var(--container-width); width: 100%"
-    >
+    <div class="mx-auto w-full max-w-container py-6 pt-8">
       <div
         class="flex justify-between items-center space-x-4 sm:space-x-8 relative"
       >
@@ -62,7 +59,8 @@
               <template #trailing>
                 <UButton
                   v-show="isExpanded"
-                  style="opacity: 1; color: var(--color-cold-night) !important"
+                  style="opacity: 1"
+                  class="!text-cold-night"
                   variant="link"
                   icon="i-material-symbols:close"
                   :padded="false"
@@ -508,15 +506,6 @@ onUnmounted(() => {
 .input-custom-purple ::placeholder {
   color: var(--color-cold-purple) !important;
   opacity: 1;
-}
-
-.inner-content {
-  max-width: var(--container-width);
-  margin: 0 auto;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
 }
 
 .search-container {

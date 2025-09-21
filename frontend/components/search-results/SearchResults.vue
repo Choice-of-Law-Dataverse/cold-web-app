@@ -1,6 +1,6 @@
 <template>
   <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
+    <div class="mx-auto w-full max-w-container">
       <div class="col-span-12">
         <!-- Filters and Results Header -->
         <div
@@ -83,18 +83,17 @@
                   <template #trailing>
                     <UIcon
                       name="i-material-symbols:keyboard-arrow-down"
-                      class="w-5 h-5"
-                      style="color: var(--color-cold-purple)"
+                      class="w-5 h-5 text-cold-purple"
                     />
                   </template>
                 </USelect>
               </template>
-              <span v-else style="margin-right: 0; padding-right: 0">
+              <span v-else class="mr-0 pr-0">
                 {{ formattedTotalMatches }} {{ resultLabel }}
               </span>
             </template>
             <!-- Loading placeholder to maintain space -->
-            <span v-else class="opacity-0" style="height: 1.5rem">
+            <span v-else class="opacity-0 h-6">
               <!-- Invisible placeholder to maintain layout -->
             </span>
           </span>

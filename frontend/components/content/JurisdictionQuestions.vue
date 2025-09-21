@@ -1,6 +1,6 @@
 <template>
   <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
+    <div class="mx-auto w-full max-w-container">
       <div class="col-span-12">
         <UCard class="cold-ucard">
           <div>
@@ -57,7 +57,7 @@
                         />
                       </svg>
                     </span>
-                    <span class="question-text" style="white-space: pre-line">{{
+                    <span class="question-text whitespace-pre-line">{{
                       row.question
                     }}</span>
                   </div>
@@ -69,8 +69,7 @@
                         ? row.theme.split(',')
                         : []"
                       :key="theme.trim()"
-                      class="label-theme"
-                      style="margin-right: 12px"
+                      class="label-theme mr-3"
                     >
                       {{ theme.trim() }}
                     </span>
@@ -139,11 +138,9 @@
                           />
                         </svg>
                       </span>
-                      <span
-                        class="mobile-question-text"
-                        style="white-space: pre-line"
-                        >{{ row.question }}</span
-                      >
+                      <span class="mobile-question-text whitespace-pre-line">{{
+                        row.question
+                      }}</span>
                     </div>
                   </div>
 

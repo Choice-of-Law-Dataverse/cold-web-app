@@ -87,7 +87,7 @@
             </div>
           </div>
           <div>
-            <span style="white-space: pre-line">
+            <span class="whitespace-pre-line">
               {{
                 showEnglishQuote &&
                 courtDecision.hasEnglishQuoteTranslation &&
@@ -188,12 +188,7 @@
   </BaseDetailLayout>
 
   <!-- Error Alert -->
-  <UAlert
-    v-if="error"
-    type="error"
-    class="mx-auto mt-4"
-    style="max-width: var(--container-width)"
-  >
+  <UAlert v-if="error" type="error" class="mx-auto mt-4 max-w-container">
     {{ error }}
   </UAlert>
 </template>

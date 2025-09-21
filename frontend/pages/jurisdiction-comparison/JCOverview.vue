@@ -56,7 +56,7 @@
                   :to="`/search?jurisdiction=${getJurisdictionName(index - 1).replace(/\s+/g, '+')}&type=Court+Decisions`"
                   class="overview-link"
                 >
-                  <span style="white-space: nowrap">
+                  <span class="whitespace-nowrap">
                     {{ line }}
                     <Icon
                       name="i-material-symbols:arrow-forward"
@@ -184,7 +184,7 @@
                     :to="`/search?jurisdiction=${getJurisdictionName(index).replace(/\s+/g, '+')}&type=Court+Decisions`"
                     class="overview-link"
                   >
-                    <span style="white-space: nowrap">
+                    <span class="whitespace-nowrap">
                       {{ line }}
                       <Icon
                         name="i-material-symbols:arrow-forward"
@@ -206,7 +206,7 @@
                     :to="`/search?jurisdiction=${getJurisdictionName(index).replace(/\s+/g, '+')}&type=Domestic+Instruments`"
                     class="overview-link"
                   >
-                    <span style="white-space: nowrap">
+                    <span class="whitespace-nowrap">
                       {{ line }}
                       <Icon
                         name="i-material-symbols:arrow-forward"
