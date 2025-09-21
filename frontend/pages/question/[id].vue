@@ -1,107 +1,109 @@
 <template>
   <div>
     <BaseDetailLayout
-    :loading="isLoading"
-    :result-data="processedAnswerData"
-    :key-label-pairs="keyLabelPairs"
-    :value-class-map="valueClassMap"
-    :show-suggest-edit="true"
-    :source-table="'Question'"
-  >
-    <!-- Custom rendering for Legal provision articles -->
-    <template #domestic-legal-provisions="{ value }">
-      <section class="section-gap">
-        <span class="label flex flex-row items-center">
-          {{
-            keyLabelPairs.find(
-              (pair) => pair.key === "Domestic Legal Provisions",
-            )?.label || "Source fallback"
-          }}
-          <InfoPopover
-            v-if="
+      :loading="isLoading"
+      :result-data="processedAnswerData"
+      :key-label-pairs="keyLabelPairs"
+      :value-class-map="valueClassMap"
+      :show-suggest-edit="true"
+      :source-table="'Question'"
+    >
+      <!-- Custom rendering for Legal provision articles -->
+      <template #domestic-legal-provisions="{ value }">
+        <section class="section-gap">
+          <span class="label flex flex-row items-center">
+            {{
+              keyLabelPairs.find(
+                (pair) => pair.key === "Domestic Legal Provisions",
+              )?.label || "Source fallback"
+            }}
+            <InfoPopover
+              v-if="
+                keyLabelPairs.find(
+                  (pair) => pair.key === 'Domestic Legal Provisions',
+                )?.tooltip
+              "
+              :text="
+                keyLabelPairs.find(
+                  (pair) => pair.key === 'Domestic Legal Provisions',
+                )?.tooltip
+              "
+            />
+          </span>
+          <QuestionSourceList
+            :sources="
+              [
+                ...(value || answerData?.['Domestic Legal Provisions']
+                  ? [value || answerData?.['Domestic Legal Provisions']]
+                  : []),
+              ].filter(Boolean)
+            "
+            :fallback-data="answerData"
+            :value-class-map="valueClassMap"
+            :fetch-oup-chapter="true"
+            :fetch-primary-source="true"
+          />
+        </section>
+      </template>
+
+      <!-- Custom rendering for Court Decisions ID -->
+      <template #court-decisions-id="{ value }">
+        <section id="related-court-decisions" class="section-gap">
+          <span class="label flex flex-row items-center">
+            {{
+              keyLabelPairs.find((pair) => pair.key === "Court Decisions ID")
+                ?.label || "Related Court Decisions"
+            }}
+            <InfoPopover
+              v-if="
+                keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
+                  ?.tooltip
+              "
+              :text="
+                keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
+                  ?.tooltip
+              "
+            />
+          </span>
+          <CourtDecisionRenderer
+            :value="value"
+            :value-class-map="valueClassMap['Court Decisions ID']"
+            :empty-value-behavior="
               keyLabelPairs.find(
                 (pair) => pair.key === 'Domestic Legal Provisions',
-              )?.tooltip
-            "
-            :text="
-              keyLabelPairs.find(
-                (pair) => pair.key === 'Domestic Legal Provisions',
-              )?.tooltip
+              )?.emptyValueBehavior
             "
           />
-        </span>
-        <QuestionSourceList
-          :sources="
-            [
-              ...(value || answerData?.['Domestic Legal Provisions']
-                ? [value || answerData?.['Domestic Legal Provisions']]
-                : []),
-            ].filter(Boolean)
-          "
-          :fallback-data="answerData"
-          :value-class-map="valueClassMap"
-          :fetch-oup-chapter="true"
-          :fetch-primary-source="true"
-        />
-      </section>
-    </template>
+        </section>
+      </template>
 
-    <!-- Custom rendering for Court Decisions ID -->
-    <template #court-decisions-id="{ value }">
-      <section id="related-court-decisions" class="section-gap">
-        <span class="label flex flex-row items-center">
-          {{
-            keyLabelPairs.find((pair) => pair.key === "Court Decisions ID")
-              ?.label || "Related Court Decisions"
-          }}
-          <InfoPopover
-            v-if="
-              keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
-                ?.tooltip
+      <template #related-literature>
+        <section class="section-gap">
+          <RelatedLiterature
+            :themes="processedAnswerData?.Themes"
+            :literature-id="
+              processedAnswerData?.['Jurisdictions Literature ID']
             "
-            :text="
-              keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
+            :mode="'both'"
+            :value-class-map="valueClassMap['Related Literature']"
+            :label="
+              keyLabelPairs.find((pair) => pair.key === 'Related Literature')
+                ?.label || 'Related Literature'
+            "
+            :empty-value-behavior="
+              questionConfig.keyLabelPairs.find(
+                (pair) => pair.key === 'Related Literature',
+              )?.emptyValueBehavior
+            "
+            :tooltip="
+              keyLabelPairs.find((pair) => pair.key === 'Related Literature')
                 ?.tooltip
             "
           />
-        </span>
-        <CourtDecisionRenderer
-          :value="value"
-          :value-class-map="valueClassMap['Court Decisions ID']"
-          :empty-value-behavior="
-            keyLabelPairs.find(
-              (pair) => pair.key === 'Domestic Legal Provisions',
-            )?.emptyValueBehavior
-          "
-        />
-      </section>
-    </template>
-
-    <template #related-literature>
-      <section class="section-gap">
-        <RelatedLiterature
-          :themes="processedAnswerData?.Themes"
-          :literature-id="processedAnswerData?.['Jurisdictions Literature ID']"
-          :mode="'both'"
-          :value-class-map="valueClassMap['Related Literature']"
-          :label="
-            keyLabelPairs.find((pair) => pair.key === 'Related Literature')
-              ?.label || 'Related Literature'
-          "
-          :empty-value-behavior="
-            questionConfig.keyLabelPairs.find(
-              (pair) => pair.key === 'Related Literature',
-            )?.emptyValueBehavior
-          "
-          :tooltip="
-            keyLabelPairs.find((pair) => pair.key === 'Related Literature')
-              ?.tooltip
-          "
-        />
-      </section>
-    </template>
-  </BaseDetailLayout>
-  <CountryReportLink :processed-answer-data="processedAnswerData ?? {}" />
+        </section>
+      </template>
+    </BaseDetailLayout>
+    <CountryReportLink :processed-answer-data="processedAnswerData ?? {}" />
   </div>
 </template>
 
@@ -120,11 +122,9 @@ import { useHead } from "#imports";
 
 const route = useRoute();
 
-const {
-  data: answerData,
-  isLoading,
-  error,
-} = useAnswer(computed(() => route.params.id));
+const { data: answerData, isLoading } = useAnswer(
+  computed(() => route.params.id),
+);
 
 const { keyLabelPairs, valueClassMap } = questionConfig;
 

@@ -77,7 +77,7 @@ defineProps({
 });
 
 // Function to return tooltip text based on status and count
-function getTooltipText(status, _count) {
+function getTooltipText(status) {
   switch (status) {
     case "green":
       return `Positive Match`;

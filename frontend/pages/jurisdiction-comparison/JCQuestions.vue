@@ -191,6 +191,7 @@
 import { ref, computed, onMounted, watch } from "vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useJurisdictionComparison } from "@/composables/useJurisdictionComparison";
+import { useJurisdictions } from "@/composables/useJurisdictions";
 
 const props = defineProps({
   showCaret: {
@@ -203,7 +204,7 @@ const props = defineProps({
   },
   questionIDs: {
     type: Array,
-    required: true,
+    required: false,
     default: () => [],
   },
 });

@@ -12,6 +12,9 @@ export default defineNuxtConfig({
       },
     },
   },
+  typescript: {
+    typeCheck: true,
+  },
   modules: [
     "@nuxt/ui",
     "@nuxtjs/tailwindcss",

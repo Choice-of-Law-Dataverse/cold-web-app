@@ -95,6 +95,7 @@
 <script setup>
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import { courtDecisionCardConfig } from "@/config/cardConfigs";
+import { extractYear } from "@/utils/dateUtils";
 
 const props = defineProps({
   resultData: {
@@ -130,17 +131,6 @@ const getValue = (key) => {
   }
 
   return value;
-};
-
-const _getFallbackClass = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  const value = props.resultData[key];
-
-  if (!value && pair?.emptyValueBehavior?.fallbackClass) {
-    return pair.emptyValueBehavior.fallbackClass;
-  }
-
-  return "";
 };
 </script>
 

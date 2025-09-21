@@ -123,8 +123,7 @@ const props = defineProps({
 });
 
 const router = useRouter(); // Access the router to update the query parameters
-const { data: jurisdictions, isLoading: _jurisdictionsLoading } =
-  useJurisdictions();
+const { data: jurisdictions } = useJurisdictions();
 const loading = ref(true);
 const rows = ref([]);
 const selectedJurisdiction = ref(null); // Selected jurisdiction for comparison
@@ -135,8 +134,6 @@ const columns = ref([
   { key: "Question", label: "Question", class: "label" },
   { key: "Answer", label: props.jurisdiction || "Answer", class: "label" },
 ]);
-
-const _config = useRuntimeConfig();
 
 // Computed filtered rows
 const filteredRows = computed(() => {
@@ -161,21 +158,6 @@ const questionOrder = questionOrderData;
 // Function to toggle the state
 function toggleInfo() {
   showInfo.value = !showInfo.value;
-}
-
-async function _fetchData(url, payload) {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!response.ok) throw new Error("Fetch failed");
-    return await response.json();
-  } catch (error) {
-    console.error("Error fetching data:", error);
-    return [];
-  }
 }
 
 async function fetchFilteredTableData(filters) {

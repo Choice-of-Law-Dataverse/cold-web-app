@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="hidden md:block">
-      <div class="jc-z-top mt-24"/>
+      <div class="jc-z-top mt-24" />
       <hr class="jc-hr" >
       <div
         class="jc-grid jc-data-row"
@@ -12,7 +12,7 @@
               : '1fr 1fr 1fr',
         }"
       >
-        <div class="jc-col-1 jc-empty"/>
+        <div class="jc-col-1 jc-empty" />
         <div
           v-for="index in jurisdictionFilters.length"
           :key="`desktop-data-${index}`"
@@ -226,13 +226,11 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, reactive, watch } from "vue";
 import { useJurisdictionComparison } from "@/composables/useJurisdictionComparison";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useApiClient } from "@/composables/useApiClient";
-
-// --- Flag logic ---
-import { reactive } from "vue";
+import { useJurisdictions } from "@/composables/useJurisdictions";
 
 const { data: jurisdictions } = useJurisdictions();
 

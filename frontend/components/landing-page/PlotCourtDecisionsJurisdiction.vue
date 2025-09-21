@@ -4,7 +4,7 @@
     <p class="result-value-small">
       Click bars to see a jurisdiction's decisions
     </p>
-    <div ref="plotlyContainer"/>
+    <div ref="plotlyContainer" />
     <div v-if="isLoading" class="loading-state"><LoadingLandingPageCard /></div>
   </UCard>
 </template>
@@ -13,6 +13,7 @@
 import { ref, watch } from "vue";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
 import { useJurisdictionChart } from "@/composables/useJurisdictionChart";
+import { navigateTo } from "#app";
 
 const plotlyData = ref(null);
 const chartLayout = ref(null);

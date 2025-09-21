@@ -65,7 +65,9 @@
                       processedInternationalInstrument['Title (in English)'])
                   : '')
               "
-              :anchor-id="normalizeAnchorId(provision['Title of the Provision'])"
+              :anchor-id="
+                normalizeAnchorId(provision['Title of the Provision'])
+              "
             >
               <template #default>
                 {{ provision["Full Text"] }}
@@ -93,18 +95,16 @@ import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useInternationalLegalProvisions } from "@/composables/useInternationalLegalProvisions";
 import { useHead } from "#imports";
 
-const config = useRuntimeConfig();
 const route = useRoute();
 
 // Use TanStack Vue Query for data fetching
 const table = ref("International Instruments");
 const id = ref(route.params.id);
 
-const {
-  data: internationalInstrument,
-  isLoading: loading,
-  error,
-} = useRecordDetails(table, id);
+const { data: internationalInstrument, isLoading: loading } = useRecordDetails(
+  table,
+  id,
+);
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   internationalInstrument,
   internationalInstrumentConfig,

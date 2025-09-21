@@ -81,8 +81,7 @@ import { reactive } from "vue";
 import { handleImageError } from "@/utils/handleImageError";
 import { useCoveredCountries } from "@/composables/useCoveredCountries";
 
-// Props for the country options
-const _props = defineProps({
+defineProps({
   countries: {
     type: Array,
     required: true,
@@ -105,7 +104,7 @@ const emit = defineEmits(["countrySelected"]);
 
 const selected = defineModel({
   type: String,
-  default: null
+  default: null,
 }); // v-model integration
 
 // Reactive object for errored avatars

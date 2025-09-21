@@ -161,7 +161,7 @@ async function copyToClipboard() {
     }
     copied.value = true;
     setTimeout(() => (copied.value = false), 1500);
-  } catch (_e) {
+  } catch {
     // no-op; keep silent per UX
   } finally {
     copying.value = false;

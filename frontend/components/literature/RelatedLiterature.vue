@@ -43,7 +43,7 @@ import { useApiClient } from "@/composables/useApiClient";
 const props = defineProps({
   label: { type: String, default: "Related Literature" },
   tooltip: { type: String, default: "" },
-  themes: String,
+  themes: { type: String, default: "" },
   valueClassMap: { type: String, default: "result-value-small" },
   literatureId: { type: String, default: "" },
   useId: { type: Boolean, default: false }, // deprecated, kept for backward compatibility
@@ -58,7 +58,6 @@ const props = defineProps({
   },
 });
 
-const _config = useRuntimeConfig();
 const showAll = ref(false);
 const loadingTitles = ref(false);
 const loading = ref(false);
@@ -93,11 +92,6 @@ const hasRelatedLiterature = computed(() => {
     return mergedLiterature.value.length > 0;
   }
   return false;
-});
-
-const _displayedTitles = computed(() => {
-  const arr = literatureTitles.value;
-  return !showAll.value && arr.length > 5 ? arr.slice(0, 3) : arr;
 });
 
 const fullLiteratureList = computed(() => {

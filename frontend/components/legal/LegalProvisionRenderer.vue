@@ -108,7 +108,7 @@ const instrumentIds = computed(() => {
 });
 
 // Fetch full records via composable (Domestic Instruments), pick titles locally
-const { dataMap: recordMap, isLoading: _isLoading } = useRecordDetailsList(
+const { dataMap: recordMap } = useRecordDetailsList(
   computed(() => "Domestic Instruments"),
   instrumentIds,
 );

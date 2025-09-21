@@ -19,7 +19,7 @@
 <script setup>
 import SectionNav from "@/components/layout/SectionNav.vue";
 
-const _props = defineProps({
+defineProps({
   navLinks: {
     type: Array,
     default: null,

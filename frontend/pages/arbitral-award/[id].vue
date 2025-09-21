@@ -26,11 +26,7 @@ const route = useRoute();
 const table = ref("Arbitral Awards");
 const id = ref(route.params.id);
 
-const {
-  data: arbitralAward,
-  isLoading: loading,
-  error,
-} = useRecordDetails(table, id);
+const { data: arbitralAward, isLoading: loading } = useRecordDetails(table, id);
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   arbitralAward,

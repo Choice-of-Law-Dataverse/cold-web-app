@@ -50,8 +50,6 @@
 </template>
 
 <script>
-const _config = useRuntimeConfig();
-
 export default {
   props: {
     searchText: {

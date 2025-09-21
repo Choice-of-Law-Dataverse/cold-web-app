@@ -1,5 +1,8 @@
 <template>
-  <ResultCard :result-data="processedResultData" card-type="Regional Instrument">
+  <ResultCard
+    :result-data="processedResultData"
+    card-type="Regional Instrument"
+  >
     <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
       <!-- Abbreviation section -->
       <div

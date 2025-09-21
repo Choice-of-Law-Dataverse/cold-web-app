@@ -45,7 +45,7 @@
         </BaseCardHeader>
       </template>
 
-      <slot name="full-width"/>
+      <slot name="full-width" />
 
       <!-- Main content -->
       <div class="flex">
@@ -62,7 +62,7 @@
           >
             <!-- Check if it's the special 'Specialist' key -->
             <template v-if="item.key === 'Region'">
-              <slot/>
+              <slot />
             </template>
             <!-- Check for slot first -->
             <template v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]">
@@ -133,7 +133,7 @@
               </div>
             </template>
           </section>
-          <slot name="search-links"/>
+          <slot name="search-links" />
         </div>
       </div>
     </UCard>
@@ -142,24 +142,32 @@
 
 <script setup>
 import { useRoute } from "vue-router";
-
+import { useCoveredCountries } from "@/composables/useCoveredCountries";
 import BackButton from "@/components/ui/BackButton.vue";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 import InfoPopover from "~/components/ui/InfoPopover.vue";
 
-// Tooltips for Question Page
-import _tooltipQuestion from "@/content/info_boxes/question/question.md?raw";
-import _tooltipAnswer from "@/content/info_boxes/question/answer.md?raw";
-
 // Props for reusability across pages
 const props = defineProps({
   loading: Boolean,
-  resultData: Object,
-  keyLabelPairs: Array,
-  valueClassMap: Object,
-  formattedSourceTable: String, // Receive the hard-coded value from [id].vue
+  resultData: {
+    type: Object,
+    default: () => ({}),
+  },
+  keyLabelPairs: {
+    type: Array,
+    default: () => [],
+  },
+  valueClassMap: {
+    type: Object,
+    default: () => ({}),
+  },
+  formattedSourceTable: {
+    type: String,
+    default: "",
+  }, // Receive the hard-coded value from [id].vue
   showHeader: {
     type: Boolean,
     default: true, // Default to true so headers are shown unless explicitly disabled
@@ -188,7 +196,7 @@ const props = defineProps({
   icon: String,
 });
 
-const _emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
+defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
 const route = useRoute();
 const isJurisdictionPage = route.path.startsWith("/jurisdiction/");

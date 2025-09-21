@@ -79,7 +79,6 @@
 <script setup>
 import { ref, watch } from "vue";
 import { z } from "zod";
-import { useRouter } from "#imports";
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
@@ -119,7 +118,6 @@ const commentsProxy = ref(props.submitter_comments ?? props.comments);
 const tokenProxy = ref(props.token);
 const saveModalErrorsProxy = ref({ ...props.saveModalErrors });
 const linkProxy = ref(props.link);
-const router = useRouter();
 
 watch(
   () => props.modelValue,

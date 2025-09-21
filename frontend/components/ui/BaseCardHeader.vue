@@ -3,7 +3,7 @@
     :key="formattedJurisdiction + formattedTheme + legalFamily"
     class="header-container mt-0.5 flex flex-wrap items-center justify-between"
   >
-    <template v-if="cardType === 'Loading'"/>
+    <template v-if="cardType === 'Loading'" />
     <template v-else>
       <!-- Left side of the header: Tags -->
       <div
@@ -227,8 +227,6 @@ defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
 const route = useRoute();
 const router = useRouter();
-const _isOpen = ref(false);
-const _isSaveOpen = ref(false);
 const isCiteOpen = ref(false);
 
 const downloadPDFLink = computed(() => {
@@ -347,23 +345,6 @@ const labelColorClass = computed(() => {
       return ""; // No color for unknown labels
   }
 });
-
-function _labelClassForType(label) {
-  switch (label) {
-    case "Court Decision":
-      return "label-court-decision";
-    case "Question":
-      return "label-question";
-    case "Domestic Instrument":
-    case "Regional Instrument":
-    case "International Instrument":
-      return "label-instrument";
-    case "Literature":
-      return "label-literature";
-    default:
-      return "label";
-  }
-}
 
 const formattedTheme = computed(() => {
   if (props.formattedTheme.length > 0) {

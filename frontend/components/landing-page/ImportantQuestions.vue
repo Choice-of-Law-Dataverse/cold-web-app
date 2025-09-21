@@ -60,9 +60,9 @@
                       {{ region }}
                     </span>
                   </p>
-                  <div class="fade-out fade-out-region"/>
+                  <div class="fade-out fade-out-region" />
                   <!-- left-side fade (mirror of the right-side) -->
-                  <div class="fade-out fade-out-region fade-out-left"/>
+                  <div class="fade-out fade-out-region fade-out-left" />
                 </div>
                 <div v-if="selectedAnswer">
                   <div v-if="isLoading" class="copy mt-4">

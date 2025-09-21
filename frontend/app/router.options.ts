@@ -1,5 +1,5 @@
 export default {
-  scrollBehavior(to, _from, _savedPosition) {
+  scrollBehavior(to: URL) {
     if (to.hash) {
       return { el: to.hash, behavior: "smooth" };
     }

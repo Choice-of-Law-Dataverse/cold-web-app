@@ -24,6 +24,7 @@
 <script setup>
 import { ref, computed, onErrorCaptured, provide } from "vue";
 import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
 
 const props = defineProps({
   onError: {

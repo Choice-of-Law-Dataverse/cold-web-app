@@ -66,6 +66,7 @@ import { ref, computed } from "vue";
 import LegalProvisionRenderer from "@/components/legal/LegalProvisionRenderer.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useLiteratures } from "@/composables/useLiteratures";
+import { useLiteratureByJurisdiction } from "@/composables/useLiteratureByJurisdiction";
 
 const props = defineProps({
   sources: {
@@ -100,7 +101,6 @@ const props = defineProps({
 
 const primarySource = ref([]);
 const oupChapterSource = ref(null);
-const _oupChapterLoading = ref(false);
 
 const { data: literaturesByJurisdiction, isLoading } =
   useLiteratureByJurisdiction(

@@ -1,122 +1,95 @@
 <template>
   <div>
     <BaseDetailLayout
-    :loading="loading"
-    :result-data="processedLegalInstrument"
-    :key-label-pairs="computedKeyLabelPairs"
-    :value-class-map="valueClassMap"
-    :show-suggest-edit="true"
-    source-table="Domestic Instrument"
-  >
-    <!-- Slot for Amended by -->
-    <template #amended-by="{ value }">
-      <div :class="valueClassMap['Amended by']">
-        <SectionRenderer
-          v-if="value"
-          :id="value"
-          section="Amended by"
-          :section-label="
-            computedKeyLabelPairs.find((pair) => pair.key === 'Amended by')
-              ?.label
-          "
-          :section-tooltip="
-            computedKeyLabelPairs.find((pair) => pair.key === 'Amended by')
-              ?.tooltip
-          "
-          table="Domestic Instruments"
-          class="mb-8"
-        />
-      </div>
-    </template>
-    <!-- Slot for Amends -->
-    <template #amends="{ value }">
-      <div :class="valueClassMap['Amends']">
-        <SectionRenderer
-          v-if="value"
-          :id="value"
-          section="Amends"
-          :section-label="
-            computedKeyLabelPairs.find((pair) => pair.key === 'Amends')?.label
-          "
-          :section-tooltip="
-            computedKeyLabelPairs.find((pair) => pair.key === 'Amends')?.tooltip
-          "
-          table="Domestic Instruments"
-          class="mb-8"
-        />
-      </div>
-    </template>
-    <!-- Slot for Replaced by -->
-    <template #replaced-by="{ value }">
-      <div :class="valueClassMap['Replaced by']">
-        <SectionRenderer
-          v-if="value"
-          :id="value"
-          section="Replaced by"
-          :section-label="
-            computedKeyLabelPairs.find((pair) => pair.key === 'Replaced by')
-              ?.label
-          "
-          :section-tooltip="
-            computedKeyLabelPairs.find((pair) => pair.key === 'Replaced by')
-              ?.tooltip
-          "
-          table="Domestic Instruments"
-          class="mb-8"
-        />
-      </div>
-    </template>
-    <!-- Slot for Replaces -->
-    <template #replaces="{ value }">
-      <div :class="valueClassMap['Replaces']">
-        <SectionRenderer
-          v-if="value"
-          :id="value"
-          section="Replaces"
-          :section-label="
-            computedKeyLabelPairs.find((pair) => pair.key === 'Replaces')?.label
-          "
-          :section-tooltip="
-            computedKeyLabelPairs.find((pair) => pair.key === 'Replaces')
-              ?.tooltip
-          "
-          table="Domestic Instruments"
-          class="mb-8"
-        />
-      </div>
-    </template>
-    <!-- Slot for Compatibility section -->
-    <template #compatibility>
-      <div
-        v-if="
-          processedLegalInstrument &&
-          (processedLegalInstrument[
-            'Compatible With the UNCITRAL Model Law?'
-          ] === true ||
-            processedLegalInstrument[
-              'Compatible With the UNCITRAL Model Law?'
-            ] === 'true' ||
-            processedLegalInstrument['Compatible With the HCCH Principles?'] ===
-              true ||
-            processedLegalInstrument['Compatible With the HCCH Principles?'] ===
-              'true')
-        "
-        class="result-value-small section-gap"
-      >
-        <p class="label mt-12 flex flex-row items-center">
-          Compatible with
-          <InfoPopover
-            v-if="
-              computedKeyLabelPairs.find((pair) => pair.key === 'Compatibility')
+      :loading="loading"
+      :result-data="processedLegalInstrument"
+      :key-label-pairs="computedKeyLabelPairs"
+      :value-class-map="valueClassMap"
+      :show-suggest-edit="true"
+      source-table="Domestic Instrument"
+    >
+      <!-- Slot for Amended by -->
+      <template #amended-by="{ value }">
+        <div :class="valueClassMap['Amended by']">
+          <SectionRenderer
+            v-if="value"
+            :id="value"
+            section="Amended by"
+            :section-label="
+              computedKeyLabelPairs.find((pair) => pair.key === 'Amended by')
+                ?.label
+            "
+            :section-tooltip="
+              computedKeyLabelPairs.find((pair) => pair.key === 'Amended by')
                 ?.tooltip
             "
-            :text="
-              computedKeyLabelPairs.find((pair) => pair.key === 'Compatibility')
-                ?.tooltip
-            "
+            table="Domestic Instruments"
+            class="mb-8"
           />
-        </p>
-        <span
+        </div>
+      </template>
+      <!-- Slot for Amends -->
+      <template #amends="{ value }">
+        <div :class="valueClassMap['Amends']">
+          <SectionRenderer
+            v-if="value"
+            :id="value"
+            section="Amends"
+            :section-label="
+              computedKeyLabelPairs.find((pair) => pair.key === 'Amends')?.label
+            "
+            :section-tooltip="
+              computedKeyLabelPairs.find((pair) => pair.key === 'Amends')
+                ?.tooltip
+            "
+            table="Domestic Instruments"
+            class="mb-8"
+          />
+        </div>
+      </template>
+      <!-- Slot for Replaced by -->
+      <template #replaced-by="{ value }">
+        <div :class="valueClassMap['Replaced by']">
+          <SectionRenderer
+            v-if="value"
+            :id="value"
+            section="Replaced by"
+            :section-label="
+              computedKeyLabelPairs.find((pair) => pair.key === 'Replaced by')
+                ?.label
+            "
+            :section-tooltip="
+              computedKeyLabelPairs.find((pair) => pair.key === 'Replaced by')
+                ?.tooltip
+            "
+            table="Domestic Instruments"
+            class="mb-8"
+          />
+        </div>
+      </template>
+      <!-- Slot for Replaces -->
+      <template #replaces="{ value }">
+        <div :class="valueClassMap['Replaces']">
+          <SectionRenderer
+            v-if="value"
+            :id="value"
+            section="Replaces"
+            :section-label="
+              computedKeyLabelPairs.find((pair) => pair.key === 'Replaces')
+                ?.label
+            "
+            :section-tooltip="
+              computedKeyLabelPairs.find((pair) => pair.key === 'Replaces')
+                ?.tooltip
+            "
+            table="Domestic Instruments"
+            class="mb-8"
+          />
+        </div>
+      </template>
+      <!-- Slot for Compatibility section -->
+      <template #compatibility>
+        <div
           v-if="
             processedLegalInstrument &&
             (processedLegalInstrument[
@@ -124,73 +97,106 @@
             ] === true ||
               processedLegalInstrument[
                 'Compatible With the UNCITRAL Model Law?'
-              ] === 'true')
-          "
-        >
-          <CompatibleLabel label="UNCITRAL Model Law" />
-        </span>
-        <span
-          v-if="
-            processedLegalInstrument &&
-            (processedLegalInstrument[
-              'Compatible With the HCCH Principles?'
-            ] === true ||
+              ] === 'true' ||
+              processedLegalInstrument[
+                'Compatible With the HCCH Principles?'
+              ] === true ||
               processedLegalInstrument[
                 'Compatible With the HCCH Principles?'
               ] === 'true')
           "
+          class="result-value-small section-gap"
         >
-          <CompatibleLabel label="HCCH Principles" />
-        </span>
-      </div>
-    </template>
-    <!-- Slot for Legal provisions -->
-    <template #domestic-legal-provisions="{ value }">
-      <!-- Only render if value exists and is not "N/A" -->
-      <section
-        v-if="value && value.trim() && value.trim() !== 'N/A'"
-        class="section-gap m-0 p-0"
-      >
-        <p class="label mb-[-24px] mt-12 flex flex-row items-center">
-          {{
-            computedKeyLabelPairs.find(
-              (pair) => pair.key === "Domestic Legal Provisions",
-            )?.label || "Selected Provisions"
-          }}
-          <InfoPopover
-            v-if="
-              computedKeyLabelPairs.find(
-                (pair) => pair.key === 'Domestic Legal Provisions',
-              )?.tooltip
-            "
-            :text="
-              computedKeyLabelPairs.find(
-                (pair) => pair.key === 'Domestic Legal Provisions',
-              )?.tooltip
-            "
-          />
-        </p>
-        <div :class="valueClassMap['Domestic Legal Provisions']">
-          <div v-if="value && value.trim()">
-            <LegalProvision
-              v-for="(provisionId, index) in getSortedProvisionIds(value)"
-              :key="index"
-              :provision-id="provisionId"
-              :text-type="textType"
-              :instrument-title="
-                processedLegalInstrument
-                  ? processedLegalInstrument['Abbreviation'] ||
-                    processedLegalInstrument['Title (in English)']
-                  : ''
+          <p class="label mt-12 flex flex-row items-center">
+            Compatible with
+            <InfoPopover
+              v-if="
+                computedKeyLabelPairs.find(
+                  (pair) => pair.key === 'Compatibility',
+                )?.tooltip
               "
-              @update:has-english-translation="hasEnglishTranslation = $event"
+              :text="
+                computedKeyLabelPairs.find(
+                  (pair) => pair.key === 'Compatibility',
+                )?.tooltip
+              "
             />
-          </div>
+          </p>
+          <span
+            v-if="
+              processedLegalInstrument &&
+              (processedLegalInstrument[
+                'Compatible With the UNCITRAL Model Law?'
+              ] === true ||
+                processedLegalInstrument[
+                  'Compatible With the UNCITRAL Model Law?'
+                ] === 'true')
+            "
+          >
+            <CompatibleLabel label="UNCITRAL Model Law" />
+          </span>
+          <span
+            v-if="
+              processedLegalInstrument &&
+              (processedLegalInstrument[
+                'Compatible With the HCCH Principles?'
+              ] === true ||
+                processedLegalInstrument[
+                  'Compatible With the HCCH Principles?'
+                ] === 'true')
+            "
+          >
+            <CompatibleLabel label="HCCH Principles" />
+          </span>
         </div>
-      </section>
-    </template>
-  </BaseDetailLayout>
-  <CountryReportLink :processed-answer-data="processedLegalInstrument" />
+      </template>
+      <!-- Slot for Legal provisions -->
+      <template #domestic-legal-provisions="{ value }">
+        <!-- Only render if value exists and is not "N/A" -->
+        <section
+          v-if="value && value.trim() && value.trim() !== 'N/A'"
+          class="section-gap m-0 p-0"
+        >
+          <p class="label mb-[-24px] mt-12 flex flex-row items-center">
+            {{
+              computedKeyLabelPairs.find(
+                (pair) => pair.key === "Domestic Legal Provisions",
+              )?.label || "Selected Provisions"
+            }}
+            <InfoPopover
+              v-if="
+                computedKeyLabelPairs.find(
+                  (pair) => pair.key === 'Domestic Legal Provisions',
+                )?.tooltip
+              "
+              :text="
+                computedKeyLabelPairs.find(
+                  (pair) => pair.key === 'Domestic Legal Provisions',
+                )?.tooltip
+              "
+            />
+          </p>
+          <div :class="valueClassMap['Domestic Legal Provisions']">
+            <div v-if="value && value.trim()">
+              <LegalProvision
+                v-for="(provisionId, index) in getSortedProvisionIds(value)"
+                :key="index"
+                :provision-id="provisionId"
+                :text-type="textType"
+                :instrument-title="
+                  processedLegalInstrument
+                    ? processedLegalInstrument['Abbreviation'] ||
+                      processedLegalInstrument['Title (in English)']
+                    : ''
+                "
+                @update:has-english-translation="hasEnglishTranslation = $event"
+              />
+            </div>
+          </div>
+        </section>
+      </template>
+    </BaseDetailLayout>
+    <CountryReportLink :processed-answer-data="processedLegalInstrument" />
   </div>
 </template>
 
@@ -216,11 +222,10 @@ const hasEnglishTranslation = ref(false);
 const table = ref("Domestic Instruments");
 const id = ref(route.params.id);
 
-const {
-  data: legalInstrument,
-  isLoading: loading,
-  error,
-} = useRecordDetails(table, id);
+const { data: legalInstrument, isLoading: loading } = useRecordDetails(
+  table,
+  id,
+);
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   legalInstrument,

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { DatePicker as VCalendarDatePicker } from "v-calendar";
-// @ts-ignore
 import type {
   DatePickerDate,
   DatePickerRangeObject,

@@ -6,6 +6,8 @@
 </template>
 
 <script setup>
+import { useHead, useSeoMeta } from "@vueuse/head";
+
 useSeoMeta({
   description: "Choice of Law Dataverse",
   ogTitle: "Choice of Law Dataverse",

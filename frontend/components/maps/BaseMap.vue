@@ -35,6 +35,10 @@
 
 <script setup>
 import { computed } from "vue";
+import { navigateTo } from "#app";
+
+import { useGeoJsonData } from "@/composables/useGeoJsonData";
+import { useCoveredCountries } from "@/composables/useCoveredCountries";
 
 // Props
 const props = defineProps({

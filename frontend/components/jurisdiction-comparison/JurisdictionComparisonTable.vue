@@ -109,7 +109,7 @@
 </template>
 
 <script setup>
-const _props = defineProps({
+defineProps({
   rows: {
     type: Array,
     required: true,
@@ -128,12 +128,7 @@ const _props = defineProps({
   },
 });
 
-const emit = defineEmits(["update-rows"]);
-
-// Example function to update rows (emit changes back to parent)
-function _filterRows(newFilteredRows) {
-  emit("update-rows", newFilteredRows);
-}
+defineEmits(["update-rows"]);
 
 function getBackgroundColor(status) {
   switch (status) {

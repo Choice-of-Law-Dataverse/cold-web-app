@@ -1,29 +1,29 @@
 <template>
   <div>
     <BaseDetailLayout
-    :loading="false"
-    :result-data="{}"
-    :key-label-pairs="[]"
-    :value-class-map="{}"
-    source-table="International Instrument"
-    :hide-back-button="true"
-    header-mode="new"
-    :show-notification-banner="true"
-    :notification-banner-message="notificationBannerMessage"
-    :icon="'i-material-symbols:warning-outline'"
-    @open-save-modal="openSaveModal"
-    @open-cancel-modal="showCancelModal = true"
-  >
-    <!-- Always render this section, even if keyLabelPairs is empty -->
-    <div class="section-gap m-0 p-0">
-      <UFormGroup size="lg" hint="Required" :error="errors.name">
-        <template #label>
-          <span class="label">Title</span>
-        </template>
-        <UInput v-model="name" class="cold-input mt-2" />
-      </UFormGroup>
-      <UFormGroup size="lg" class="mt-8">
-        <!-- <template #label>
+      :loading="false"
+      :result-data="{}"
+      :key-label-pairs="[]"
+      :value-class-map="{}"
+      source-table="International Instrument"
+      :hide-back-button="true"
+      header-mode="new"
+      :show-notification-banner="true"
+      :notification-banner-message="notificationBannerMessage"
+      :icon="'i-material-symbols:warning-outline'"
+      @open-save-modal="openSaveModal"
+      @open-cancel-modal="showCancelModal = true"
+    >
+      <!-- Always render this section, even if keyLabelPairs is empty -->
+      <div class="section-gap m-0 p-0">
+        <UFormGroup size="lg" hint="Required" :error="errors.name">
+          <template #label>
+            <span class="label">Title</span>
+          </template>
+          <UInput v-model="name" class="cold-input mt-2" />
+        </UFormGroup>
+        <UFormGroup size="lg" class="mt-8">
+          <!-- <template #label>
           <span class="label">Specialists</span>
           <InfoPopover :text="tooltipInternationalInstrumentSpecialist" />
         </template>
@@ -62,8 +62,8 @@
             >
           </div> 
         </template> -->
-      </UFormGroup>
-      <!-- <UFormGroup size="lg" class="mt-8">
+        </UFormGroup>
+        <!-- <UFormGroup size="lg" class="mt-8">
         <template #label>
           <span class="label">PDF</span>
           <InfoPopover :text="tooltipInternationalInstrumentSpecialist" />
@@ -74,60 +74,60 @@
           @change="onPdfChange"
         />
       </UFormGroup> -->
-      <UFormGroup size="lg" class="mt-8" hint="Required" :error="errors.link">
-        <template #label>
-          <span class="label flex flex-row items-center">Link</span>
-          <InfoPopover :text="tooltipInternationalInstrumentLink" />
-        </template>
-        <UInput
-          v-model="link"
-          class="cold-input mt-2"
-          placeholder="https://…"
-        />
-      </UFormGroup>
-      <UFormGroup
-        size="lg"
-        class="mt-8"
-        hint="Required"
-        :error="errors.instrument_date"
-      >
-        <template #label>
-          <span class="label flex flex-row items-center">Date</span>
-          <InfoPopover :text="tooltipInternationalInstrumentDate" />
-        </template>
-        <UPopover :popper="{ placement: 'bottom-start' }">
-          <UButton
-            icon="i-heroicons-calendar-days-20-solid"
-            :label="date ? format(date, 'dd MMMM yyyy') : 'Add date'"
-            class="cold-date-trigger mt-2"
-          />
-
-          <template #panel="{ close }">
-            <DatePicker v-model="date" is-required @close="close" />
+        <UFormGroup size="lg" class="mt-8" hint="Required" :error="errors.link">
+          <template #label>
+            <span class="label flex flex-row items-center">Link</span>
+            <InfoPopover :text="tooltipInternationalInstrumentLink" />
           </template>
-        </UPopover>
-      </UFormGroup>
-    </div>
-  </BaseDetailLayout>
+          <UInput
+            v-model="link"
+            class="cold-input mt-2"
+            placeholder="https://…"
+          />
+        </UFormGroup>
+        <UFormGroup
+          size="lg"
+          class="mt-8"
+          hint="Required"
+          :error="errors.instrument_date"
+        >
+          <template #label>
+            <span class="label flex flex-row items-center">Date</span>
+            <InfoPopover :text="tooltipInternationalInstrumentDate" />
+          </template>
+          <UPopover :popper="{ placement: 'bottom-start' }">
+            <UButton
+              icon="i-heroicons-calendar-days-20-solid"
+              :label="date ? format(date, 'dd MMMM yyyy') : 'Add date'"
+              class="cold-date-trigger mt-2"
+            />
 
-  <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
-  <SaveModal
-    v-model="showSaveModal"
-    :email="email"
-    :comments="comments"
-    :token="token"
-    :save-modal-errors="saveModalErrors"
-    :name="name"
-    :specialists="specialists"
-    :date="date"
-    :pdf-file="pdfFile"
-    :link="link"
-    @update:email="(val) => (email = val)"
-    @update:comments="(val) => (comments = val)"
-    @update:token="(val) => (token = val)"
-    @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
-    @save="handleNewSave"
-  />
+            <template #panel="{ close }">
+              <DatePicker v-model="date" is-required @close="close" />
+            </template>
+          </UPopover>
+        </UFormGroup>
+      </div>
+    </BaseDetailLayout>
+
+    <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
+    <SaveModal
+      v-model="showSaveModal"
+      :email="email"
+      :comments="comments"
+      :token="token"
+      :save-modal-errors="saveModalErrors"
+      :name="name"
+      :specialists="specialists"
+      :date="date"
+      :pdf-file="pdfFile"
+      :link="link"
+      @update:email="(val) => (email = val)"
+      @update:comments="(val) => (comments = val)"
+      @update:token="(val) => (token = val)"
+      @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
+      @save="handleNewSave"
+    />
   </div>
 </template>
 
@@ -140,14 +140,11 @@ import InfoPopover from "~/components/ui/InfoPopover.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
-import tooltipInternationalInstrumentSpecialist from "@/content/info_boxes/international_instrument/specialists.md?raw";
 import tooltipInternationalInstrumentDate from "@/content/info_boxes/international_instrument/date.md?raw";
 import tooltipInternationalInstrumentLink from "@/content/info_boxes/international_instrument/link.md?raw";
 
 import { format } from "date-fns";
 const date = ref(new Date());
-
-const config = useRuntimeConfig();
 
 // Form data
 const name = ref("");
@@ -157,7 +154,6 @@ const pdfFile = ref(null);
 const email = ref("");
 const comments = ref("");
 
-const turnstile = ref();
 const token = ref("");
 
 // Ensure Submit button reactivity when token changes
@@ -183,7 +179,6 @@ const errors = ref({});
 const saveModalErrors = ref({});
 
 const router = useRouter();
-const emit = defineEmits(["close-cancel-modal", "close-save-modal"]);
 const showSaveModal = ref(false);
 const showCancelModal = ref(false);
 const notificationBannerMessage =
@@ -221,28 +216,8 @@ function openSaveModal() {
   }
 }
 
-function onPdfChange(event) {
-  // Handle different event types - UInput might pass FileList directly or as event.target.files
-  let file = null;
-  if (event instanceof FileList) {
-    file = event[0] || null;
-  } else if (event && event.target && event.target.files) {
-    file = event.target.files[0] || null;
-  } else if (event && event.files) {
-    file = event.files[0] || null;
-  }
-  pdfFile.value = file;
-}
-
 function confirmCancel() {
   router.push("/");
-}
-
-function addSpecialist() {
-  specialists.value.push("");
-}
-function removeSpecialist(idx) {
-  specialists.value.splice(idx, 1);
 }
 
 function handleNewSave() {
@@ -279,20 +254,6 @@ function handleNewSave() {
       console.error("Submission failed:", err);
     }
   })();
-}
-
-async function onSubmit() {
-  const res = await $fetch("/api/submit", {
-    method: "POST",
-    body: { token /* form fields */ },
-  });
-
-  if (res.success) {
-    // handle success
-  } else {
-    // handle error
-  }
-  turnstile.value?.reset();
 }
 </script>
 

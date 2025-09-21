@@ -120,6 +120,7 @@ import { ref, onMounted, watch } from "vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import { useJurisdictionComparison } from "@/composables/useJurisdictionComparison";
 import { useJurisdictions } from "@/composables/useJurisdictions";
+import { useRoute, useRouter } from "vue-router";
 
 // Props for initial countries from URL
 const props = defineProps({

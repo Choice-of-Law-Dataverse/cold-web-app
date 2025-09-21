@@ -76,10 +76,7 @@ export const literatureConfig = {
     {
       key: "Title",
       label: "Title",
-      emptyValueBehavior: {
-        action: "display",
-        fallback: "No title available",
-      },
+      emptyValueBehavior: { action: "display", fallback: "No title available" },
     },
     {
       key: "Author",
@@ -92,18 +89,13 @@ export const literatureConfig = {
     {
       key: "Editor",
       label: "Editor(s)",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Publication Year",
       label: "Year",
       tooltip: tooltipLiteratureYear,
-      emptyValueBehavior: {
-        action: "display",
-        fallback: "No year available",
-      },
+      emptyValueBehavior: { action: "display", fallback: "No year available" },
     },
     {
       key: "Publication Title",
@@ -127,9 +119,7 @@ export const literatureConfig = {
     {
       key: "Abstract Note",
       label: "Abstract",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
   ],
   valueClassMap: {
@@ -151,17 +141,13 @@ export const jurisdictionConfig = {
     {
       key: "Jurisdiction Summary",
       label: "Summary",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Jurisdictional Differentiator",
       label: "Jurisdictional Differentiator",
       tooltip: tooltipJurisdictionJurisdictionalDifferentiator,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Specialists",
@@ -176,9 +162,7 @@ export const jurisdictionConfig = {
       key: "Related Literature",
       label: "Related Literature",
       tooltip: tooltipJurisdictionRelatedLiterature,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Related Data",
@@ -218,9 +202,7 @@ export const questionConfig = {
     {
       key: "More Information",
       label: "More Information",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Domestic Legal Provisions",
@@ -271,9 +253,7 @@ export const questionConfig = {
       key: "OUP Book Quote",
       label: "OUP Book Quote",
       tooltip: tooltipOUPBookQuote,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Court Decisions ID",
@@ -313,62 +293,41 @@ export const legalInstrumentConfig = {
       key: "Title (in English)",
       label: "Name",
       tooltip: tooltipDomesticInstrumentTitle,
-      emptyValueBehavior: {
-        action: "display",
-        fallback: "No title available",
-      },
+      emptyValueBehavior: { action: "display", fallback: "No title available" },
     },
     {
       key: "Compatibility",
       label: "Compatible with",
       tooltip: tooltipCompatibleWith,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Amended by",
       label: "Amended by",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
-    {
-      key: "Amends",
-      label: "Amends",
-      emptyValueBehavior: {
-        action: "hide",
-      },
-    },
+    { key: "Amends", label: "Amends", emptyValueBehavior: { action: "hide" } },
     {
       key: "Replaces",
       label: "Replaces",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Replaced by",
       label: "Replaced by",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Official Title",
       label: "Official Title",
       tooltip: tooltipOfficialTitle,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Abbreviation",
       label: "Abbreviation",
       tooltip: tooltipAbbreviation,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Date",
@@ -386,9 +345,7 @@ export const legalInstrumentConfig = {
       key: "Entry Into Force",
       label: "Entry Into Force",
       tooltip: tooltipEntryIntoForce,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
       valueTransform: (val) =>
         typeof formatDate === "function" ? formatDate(val) : val,
     },
@@ -396,9 +353,7 @@ export const legalInstrumentConfig = {
       key: "Publication Date",
       label: "Publication Date",
       tooltip: tooltipDomesticInstrumentPublicationDate,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
       valueTransform: (val) =>
         typeof formatDate === "function" ? formatDate(val) : val,
     },
@@ -407,9 +362,7 @@ export const legalInstrumentConfig = {
       key: "Domestic Legal Provisions",
       label: "Selected Provisions",
       tooltip: tooltipDomesticInstrumentSelectedProvisions,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
   ],
   valueClassMap: {
@@ -439,11 +392,7 @@ export const regionalInstrumentConfig = {
       label: "Abbreviation",
       emptyValueBehavior: { action: "display", fallback: "No title available" },
     },
-    {
-      key: "Title",
-      label: "Title",
-      emptyValueBehavior: { action: "hide" },
-    },
+    { key: "Title", label: "Title", emptyValueBehavior: { action: "hide" } },
     {
       key: "Date",
       label: "Date",
@@ -548,9 +497,7 @@ export const arbitralRuleConfig = {
     {
       key: "In Force From",
       label: "In Force From",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
       valueTransform: (val) =>
         typeof formatDate === "function" ? formatDate(val) : val,
     },
@@ -578,13 +525,7 @@ export const arbitralAwardConfig = {
         fallback: "No institution available",
       },
     },
-    {
-      key: "Source",
-      label: "Source",
-      emptyValueBehavior: {
-        action: "hide",
-      },
-    },
+    { key: "Source", label: "Source", emptyValueBehavior: { action: "hide" } },
     {
       key: "Year",
       label: "Year",
@@ -593,30 +534,22 @@ export const arbitralAwardConfig = {
     {
       key: "Nature of the Award",
       label: "Nature of the Award",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Context",
       label: "Context",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Seat (Town)",
       label: "Seat (Town)",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Award Summary",
       label: "Award Summary",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
   ],
   valueClassMap: {
@@ -664,18 +597,13 @@ export const courtDecisionConfig = {
       key: "Publication Date ISO",
       label: "Publication Date",
       tooltip: tooltipPublicationDate,
-      emptyValueBehavior: {
-        action: "display",
-        fallback: "No date available",
-      },
+      emptyValueBehavior: { action: "display", fallback: "No date available" },
     },
     {
       key: "Date of Judgment",
       label: "Judgment Date",
       tooltip: tooltipJudgmentDate,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Instance",
@@ -690,88 +618,66 @@ export const courtDecisionConfig = {
       key: "Abstract",
       label: "Abstract",
       tooltip: tooltipAbstract,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Relevant Facts",
       label: "Relevant Facts",
       tooltip: tooltipRelevantFacts,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "PIL Provisions",
       label: "PIL Provisions",
       tooltip: tooltipPILProvisions,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Domestic Legal Provisions",
       label: "Domestic Legal Provisions",
       tooltip: tooltipDomesticLegalProvision,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Text of the Relevant Legal Provisions",
       label: "Text of the Relevant Legal Provisions",
       tooltip: tooltipTextRelevantLegalProvision,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Choice of Law Issue",
       label: "Choice of Law Issue",
       tooltip: tooltipChoiceOfLawIssue,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Court's Position",
       label: "Court's Position",
       tooltip: tooltipCourtsPosition,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Quote",
       label: "Quote",
       tooltip: tooltipQuote,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Original Text",
       label: "Full Text",
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Related Questions",
       label: "Related Questions",
       tooltip: tooltipRelatedQuestions,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
     {
       key: "Related Literature",
       label: "Related Literature",
       tooltip: tooltipCourtDecisionRelatedLiterature,
-      emptyValueBehavior: {
-        action: "hide",
-      },
+      emptyValueBehavior: { action: "hide" },
     },
   ],
   valueClassMap: {
@@ -809,7 +715,7 @@ export const learnNavLinks = [
     key: "open-educational-resources",
     path: "/learn/open-educational-resources",
   },
-  { label: "FAQ", key: "faq", path: "/about/team", path: "/learn/faq" },
+  { label: "FAQ", key: "faq", path: "/learn/faq" },
   { label: "Methodology", key: "methodology", path: "/learn/methodology" },
   { label: "Glossary", key: "glossary", path: "/learn/glossary" },
   { label: "Data Sets", key: "data-sets", path: "/learn/data-sets" },

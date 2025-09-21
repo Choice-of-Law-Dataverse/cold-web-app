@@ -3,22 +3,22 @@
     <div class="mx-auto w-full max-w-container">
       <div class="col-span-12">
         <DetailDisplay
-          :loading="loading"
-          :result-data="resultData"
-          :key-label-pairs="keyLabelPairs"
-          :value-class-map="valueClassMap"
-          :formatted-source-table="sourceTable"
-          :formatted-jurisdiction="formattedJurisdiction"
-          :show-header="showHeader"
-          :show-open-link="showOpenLink"
-          :show-suggest-edit="showSuggestEdit"
-          :formatted-theme="formattedTheme"
-          :hide-back-button="hideBackButton"
-          :header-mode="headerMode"
-          :show-notification-banner="showNotificationBanner"
-          :notification-banner-message="notificationBannerMessage"
-          :fallback-message="fallbackMessage"
-          :icon="icon"
+          :loading="props.loading"
+          :result-data="props.resultData"
+          :key-label-pairs="props.keyLabelPairs"
+          :value-class-map="props.valueClassMap"
+          :formatted-source-table="props.sourceTable"
+          :formatted-jurisdiction="props.formattedJurisdiction"
+          :show-header="props.showHeader"
+          :show-open-link="props.showOpenLink"
+          :show-suggest-edit="props.showSuggestEdit"
+          :formatted-theme="props.formattedTheme"
+          :hide-back-button="props.hideBackButton"
+          :header-mode="props.headerMode"
+          :show-notification-banner="props.showNotificationBanner"
+          :notification-banner-message="props.notificationBannerMessage"
+          :fallback-message="props.fallbackMessage"
+          :icon="props.icon"
           @save="$emit('save')"
           @open-save-modal="$emit('open-save-modal')"
           @open-cancel-modal="$emit('open-cancel-modal')"
@@ -36,17 +36,17 @@
 <script setup lang="ts">
 import DetailDisplay from "@/components/ui/BaseDetailDisplay.vue";
 
-const _props = withDefaults(
+const props = withDefaults(
   defineProps<{
     loading: boolean;
-    resultData: any;
-    keyLabelPairs: any[];
+    resultData: Record<string, unknown>;
+    keyLabelPairs: Record<string, unknown>[];
     valueClassMap: Record<string, string>;
     sourceTable: string;
-    formattedJurisdiction?: any[]; //
+    formattedJurisdiction?: Record<string, unknown>[];
     hideBackButton?: boolean;
     showHeader?: boolean;
-    formattedTheme?: any[];
+    formattedTheme?: Record<string, unknown>[];
     headerMode?: string;
     showNotificationBanner?: boolean;
     notificationBannerMessage?: string;
@@ -56,7 +56,13 @@ const _props = withDefaults(
     showSuggestEdit?: boolean;
   }>(),
   {
+    formattedJurisdiction: () => [],
     showHeader: true,
+    formattedTheme: () => [],
+    headerMode: "default",
+    notificationBannerMessage: "",
+    fallbackMessage: "",
+    icon: "",
     showOpenLink: false,
     showSuggestEdit: false,
   },

@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
   try {
     const res = await fetch(url, { method: "HEAD" });
     return res.ok;
-  } catch (e) {
+  } catch {
     return false;
   }
 });

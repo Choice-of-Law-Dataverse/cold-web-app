@@ -33,7 +33,7 @@ if (route.query.links) {
     if (Array.isArray(parsed)) {
       links = parsed.filter((l) => l && l.text && l.to);
     }
-  } catch (e) {
+  } catch {
     // ignore, fallback to default
   }
 }

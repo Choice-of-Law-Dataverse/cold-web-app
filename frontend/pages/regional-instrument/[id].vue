@@ -94,11 +94,10 @@ const route = useRoute();
 const table = ref("Regional Instruments");
 const id = ref(route.params.id);
 
-const {
-  data: regionalInstrument,
-  isLoading: loading,
-  error,
-} = useRecordDetails(table, id);
+const { data: regionalInstrument, isLoading: loading } = useRecordDetails(
+  table,
+  id,
+);
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   regionalInstrument,
   regionalInstrumentConfig,

@@ -6,7 +6,7 @@
     <BaseLegalContent
       :title="displayTitle"
       :anchor-id="anchorId"
-      :class="class"
+      :class="props.class"
       :loading="loading"
       :error="error"
     >

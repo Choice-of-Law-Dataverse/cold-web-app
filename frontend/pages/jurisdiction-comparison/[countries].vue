@@ -79,7 +79,13 @@
 
               <JCQuestions
                 title="Overriding Mandatory Rules"
-                :question-i-ds="['20-MR', '21.1-MR', '21-MR', '22.1-MR', '22-MR']"
+                :question-i-ds="[
+                  '20-MR',
+                  '21.1-MR',
+                  '21-MR',
+                  '22.1-MR',
+                  '22-MR',
+                ]"
               />
 
               <JCQuestions
@@ -124,6 +130,7 @@ import JCOverview from "@/pages/jurisdiction-comparison/JCOverview.vue";
 import JCQuestions from "~/pages/jurisdiction-comparison/JCQuestions.vue";
 import JCStickyFilters from "@/pages/jurisdiction-comparison/JCStickyFilters.vue";
 import { useHead } from "#app";
+import { useRoute } from "vue-router";
 
 const route = useRoute();
 

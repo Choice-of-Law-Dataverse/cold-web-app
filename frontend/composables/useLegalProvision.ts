@@ -4,7 +4,6 @@ import type { TableName } from "~/types/api";
 
 export function useLegalProvision({
   provisionId,
-  textType,
   onHasEnglishTranslationUpdate,
   table = "Domestic Legal Provisions", // default table
 }: {

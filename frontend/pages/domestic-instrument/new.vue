@@ -1,237 +1,241 @@
 <template>
   <div>
     <BaseDetailLayout
-    :loading="false"
-    :result-data="{}"
-    :key-label-pairs="[]"
-    :value-class-map="{}"
-    source-table="Domestic Instrument"
-    :hide-back-button="true"
-    header-mode="new"
-    :show-notification-banner="true"
-    :notification-banner-message="notificationBannerMessage"
-    :icon="'i-material-symbols:warning-outline'"
-    @open-save-modal="openSaveModal"
-    @open-cancel-modal="showCancelModal = true"
-  >
-    <div class="section-gap m-0 p-0">
-      <!-- Jurisdiction (required) -->
-      <UFormGroup size="lg" hint="Required" :error="errors.jurisdiction_link">
-        <template #label>
-          <span class="label">Jurisdiction</span>
-        </template>
-        <SearchFilters
-          v-model="selectedJurisdiction"
-          :options="jurisdictionOptions"
-          class="mt-2 w-full"
-          show-avatars="true"
-          :multiple="false"
-        />
-      </UFormGroup>
-
-      <!-- Official Title (required) -->
-      <UFormGroup
-        size="lg"
-        class="mt-8"
-        :error="errors.official_title"
-        hint="Required"
-      >
-        <template #label>
-          <span class="label flex flex-row items-center">Official Title</span>
-          <InfoPopover :text="tooltipOfficialTitle" />
-        </template>
-        <UInput
-          v-model="officialTitle"
-          class="cold-input mt-2"
-          placeholder="e.g. Bundesgesetz über das Internationale Privatrecht"
-        />
-      </UFormGroup>
-
-      <!-- Name (English) (required) -->
-      <UFormGroup
-        size="lg"
-        class="mt-8"
-        :error="errors.title_en"
-        hint="Required"
-      >
-        <template #label>
-          <span class="label flex flex-row items-center">Name</span>
-          <InfoPopover :text="tooltipDomesticInstrumentTitle" />
-        </template>
-        <UInput
-          v-model="titleEn"
-          class="cold-input mt-2"
-          placeholder="e.g. Swiss Private International Law Act"
-        />
-      </UFormGroup>
-
-      <!-- Entry Into Force (required) -->
-      <UFormGroup
-        size="lg"
-        class="mt-8"
-        hint="Required"
-        :error="errors.entry_into_force"
-      >
-        <template #label>
-          <span class="label flex flex-row items-center">Entry Into Force</span>
-          <InfoPopover :text="tooltipEntryIntoForce" />
-        </template>
-        <UPopover :popper="{ placement: 'bottom-start' }">
-          <UButton
-            icon="i-heroicons-calendar-days-20-solid"
-            :label="format(entryIntoForce, 'dd MMMM yyyy')"
-            class="cold-date-trigger mt-2"
-          />
-          <template #panel="{ close }">
-            <DatePicker v-model="entryIntoForce" is-required @close="close" />
+      :loading="false"
+      :result-data="{}"
+      :key-label-pairs="[]"
+      :value-class-map="{}"
+      source-table="Domestic Instrument"
+      :hide-back-button="true"
+      header-mode="new"
+      :show-notification-banner="true"
+      :notification-banner-message="notificationBannerMessage"
+      :icon="'i-material-symbols:warning-outline'"
+      @open-save-modal="openSaveModal"
+      @open-cancel-modal="showCancelModal = true"
+    >
+      <div class="section-gap m-0 p-0">
+        <!-- Jurisdiction (required) -->
+        <UFormGroup size="lg" hint="Required" :error="errors.jurisdiction_link">
+          <template #label>
+            <span class="label">Jurisdiction</span>
           </template>
-        </UPopover>
-      </UFormGroup>
-
-      <!-- Source (URL) (required) -->
-      <UFormGroup
-        size="lg"
-        class="mt-8"
-        hint="Required"
-        :error="errors.source_url"
-      >
-        <template #label>
-          <span class="label">Source (URL)</span>
-        </template>
-        <UInput
-          v-model="sourceUrl"
-          class="cold-input mt-2"
-          placeholder="https://…"
-        />
-      </UFormGroup>
-
-      <!-- Themes (optional) -->
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label">Themes</span>
-        </template>
-        <UInput v-model="themes" class="cold-input mt-2" />
-      </UFormGroup>
-
-      <!-- Status (optional) -->
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label">Status</span>
-        </template>
-        <UInput v-model="status" class="cold-input mt-2" />
-      </UFormGroup>
-
-      <!-- Publication Date (optional) -->
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label flex flex-row items-center">Publication Date</span>
-          <InfoPopover :text="tooltipDomesticInstrumentPublicationDate" />
-        </template>
-        <UPopover :popper="{ placement: 'bottom-start' }">
-          <UButton
-            icon="i-heroicons-calendar-days-20-solid"
-            :label="
-              publicationDate
-                ? format(publicationDate, 'dd MMMM yyyy')
-                : 'Add date'
-            "
-            class="cold-date-trigger mt-2"
+          <SearchFilters
+            v-model="selectedJurisdiction"
+            :options="jurisdictionOptions"
+            class="mt-2 w-full"
+            show-avatars="true"
+            :multiple="false"
           />
-          <template #panel="{ close }">
-            <DatePicker v-model="publicationDate" @close="close" />
+        </UFormGroup>
+
+        <!-- Official Title (required) -->
+        <UFormGroup
+          size="lg"
+          class="mt-8"
+          :error="errors.official_title"
+          hint="Required"
+        >
+          <template #label>
+            <span class="label flex flex-row items-center">Official Title</span>
+            <InfoPopover :text="tooltipOfficialTitle" />
           </template>
-        </UPopover>
-      </UFormGroup>
+          <UInput
+            v-model="officialTitle"
+            class="cold-input mt-2"
+            placeholder="e.g. Bundesgesetz über das Internationale Privatrecht"
+          />
+        </UFormGroup>
 
-      <!-- Abbreviation (optional) -->
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label flex flex-row items-center">Abbreviation</span>
-          <InfoPopover :text="tooltipAbbreviation" />
-        </template>
-        <UInput v-model="abbreviation" class="cold-input mt-2" />
-      </UFormGroup>
-
-      <!-- Compatible HCCH Principles (optional) -->
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label flex flex-row items-center"
-            >Compatible With the HCCH Principles?</span
-          >
-          <InfoPopover :text="tooltipCompatibleWithHCCH" />
-        </template>
-        <div
-          class="cold-toggle-group mt-2"
-          role="group"
-          aria-label="Compatible with the HCCH Principles"
+        <!-- Name (English) (required) -->
+        <UFormGroup
+          size="lg"
+          class="mt-8"
+          :error="errors.title_en"
+          hint="Required"
         >
-          <UButton
-            class="cold-toggle-btn"
-            :aria-pressed="compatibleHcchPrinciples === 'No'"
-            @click="compatibleHcchPrinciples = 'No'"
-          >
-            No
-          </UButton>
-          <UButton
-            class="cold-toggle-btn"
-            :aria-pressed="compatibleHcchPrinciples === 'Yes'"
-            @click="compatibleHcchPrinciples = 'Yes'"
-          >
-            Yes
-          </UButton>
-        </div>
-      </UFormGroup>
+          <template #label>
+            <span class="label flex flex-row items-center">Name</span>
+            <InfoPopover :text="tooltipDomesticInstrumentTitle" />
+          </template>
+          <UInput
+            v-model="titleEn"
+            class="cold-input mt-2"
+            placeholder="e.g. Swiss Private International Law Act"
+          />
+        </UFormGroup>
 
-      <!-- Compatible UNCITRAL Model Law (optional) -->
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label flex flex-row items-center"
-            >Compatible With the UNCITRAL Model Law?</span
-          >
-          <InfoPopover :text="tooltipCompatibleWithUNCITRAL" />
-        </template>
-        <div
-          class="cold-toggle-group mt-2"
-          role="group"
-          aria-label="Compatible with the UNCITRAL Model Law"
+        <!-- Entry Into Force (required) -->
+        <UFormGroup
+          size="lg"
+          class="mt-8"
+          hint="Required"
+          :error="errors.entry_into_force"
         >
-          <UButton
-            class="cold-toggle-btn"
-            :aria-pressed="compatibleUncitralModelLaw === 'No'"
-            @click="compatibleUncitralModelLaw = 'No'"
-          >
-            No
-          </UButton>
-          <UButton
-            class="cold-toggle-btn"
-            :aria-pressed="compatibleUncitralModelLaw === 'Yes'"
-            @click="compatibleUncitralModelLaw = 'Yes'"
-          >
-            Yes
-          </UButton>
-        </div>
-      </UFormGroup>
-    </div>
-  </BaseDetailLayout>
+          <template #label>
+            <span class="label flex flex-row items-center"
+              >Entry Into Force</span
+            >
+            <InfoPopover :text="tooltipEntryIntoForce" />
+          </template>
+          <UPopover :popper="{ placement: 'bottom-start' }">
+            <UButton
+              icon="i-heroicons-calendar-days-20-solid"
+              :label="format(entryIntoForce, 'dd MMMM yyyy')"
+              class="cold-date-trigger mt-2"
+            />
+            <template #panel="{ close }">
+              <DatePicker v-model="entryIntoForce" is-required @close="close" />
+            </template>
+          </UPopover>
+        </UFormGroup>
 
-  <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
-  <SaveModal
-    v-model="showSaveModal"
-    :email="email"
-    :comments="comments"
-    :token="token"
-    :save-modal-errors="saveModalErrors"
-    :name="titleEn"
-    :specialists="specialists"
-    :date="entryIntoForce"
-    :pdf-file="pdfFile"
-    :link="sourceUrl"
-    @update:email="(val) => (email = val)"
-    @update:comments="(val) => (comments = val)"
-    @update:token="(val) => (token = val)"
-    @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
-    @save="handleNewSave"
-  />
+        <!-- Source (URL) (required) -->
+        <UFormGroup
+          size="lg"
+          class="mt-8"
+          hint="Required"
+          :error="errors.source_url"
+        >
+          <template #label>
+            <span class="label">Source (URL)</span>
+          </template>
+          <UInput
+            v-model="sourceUrl"
+            class="cold-input mt-2"
+            placeholder="https://…"
+          />
+        </UFormGroup>
+
+        <!-- Themes (optional) -->
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label">Themes</span>
+          </template>
+          <UInput v-model="themes" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <!-- Status (optional) -->
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label">Status</span>
+          </template>
+          <UInput v-model="status" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <!-- Publication Date (optional) -->
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label flex flex-row items-center"
+              >Publication Date</span
+            >
+            <InfoPopover :text="tooltipDomesticInstrumentPublicationDate" />
+          </template>
+          <UPopover :popper="{ placement: 'bottom-start' }">
+            <UButton
+              icon="i-heroicons-calendar-days-20-solid"
+              :label="
+                publicationDate
+                  ? format(publicationDate, 'dd MMMM yyyy')
+                  : 'Add date'
+              "
+              class="cold-date-trigger mt-2"
+            />
+            <template #panel="{ close }">
+              <DatePicker v-model="publicationDate" @close="close" />
+            </template>
+          </UPopover>
+        </UFormGroup>
+
+        <!-- Abbreviation (optional) -->
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label flex flex-row items-center">Abbreviation</span>
+            <InfoPopover :text="tooltipAbbreviation" />
+          </template>
+          <UInput v-model="abbreviation" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <!-- Compatible HCCH Principles (optional) -->
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label flex flex-row items-center"
+              >Compatible With the HCCH Principles?</span
+            >
+            <InfoPopover :text="tooltipCompatibleWithHCCH" />
+          </template>
+          <div
+            class="cold-toggle-group mt-2"
+            role="group"
+            aria-label="Compatible with the HCCH Principles"
+          >
+            <UButton
+              class="cold-toggle-btn"
+              :aria-pressed="compatibleHcchPrinciples === 'No'"
+              @click="compatibleHcchPrinciples = 'No'"
+            >
+              No
+            </UButton>
+            <UButton
+              class="cold-toggle-btn"
+              :aria-pressed="compatibleHcchPrinciples === 'Yes'"
+              @click="compatibleHcchPrinciples = 'Yes'"
+            >
+              Yes
+            </UButton>
+          </div>
+        </UFormGroup>
+
+        <!-- Compatible UNCITRAL Model Law (optional) -->
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label flex flex-row items-center"
+              >Compatible With the UNCITRAL Model Law?</span
+            >
+            <InfoPopover :text="tooltipCompatibleWithUNCITRAL" />
+          </template>
+          <div
+            class="cold-toggle-group mt-2"
+            role="group"
+            aria-label="Compatible with the UNCITRAL Model Law"
+          >
+            <UButton
+              class="cold-toggle-btn"
+              :aria-pressed="compatibleUncitralModelLaw === 'No'"
+              @click="compatibleUncitralModelLaw = 'No'"
+            >
+              No
+            </UButton>
+            <UButton
+              class="cold-toggle-btn"
+              :aria-pressed="compatibleUncitralModelLaw === 'Yes'"
+              @click="compatibleUncitralModelLaw = 'Yes'"
+            >
+              Yes
+            </UButton>
+          </div>
+        </UFormGroup>
+      </div>
+    </BaseDetailLayout>
+
+    <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
+    <SaveModal
+      v-model="showSaveModal"
+      :email="email"
+      :comments="comments"
+      :token="token"
+      :save-modal-errors="saveModalErrors"
+      :name="titleEn"
+      :specialists="specialists"
+      :date="entryIntoForce"
+      :pdf-file="pdfFile"
+      :link="sourceUrl"
+      @update:email="(val) => (email = val)"
+      @update:comments="(val) => (comments = val)"
+      @update:token="(val) => (token = val)"
+      @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
+      @save="handleNewSave"
+    />
   </div>
 </template>
 
@@ -255,8 +259,6 @@ import tooltipOfficialTitle from "@/content/info_boxes/domestic_instrument/offic
 import tooltipDomesticInstrumentPublicationDate from "@/content/info_boxes/domestic_instrument/publication_date.md?raw";
 import tooltipDomesticInstrumentTitle from "@/content/info_boxes/domestic_instrument/title.md?raw";
 
-const config = useRuntimeConfig();
-
 // Form data
 const officialTitle = ref("");
 const titleEn = ref("");
@@ -279,7 +281,6 @@ const pdfFile = ref(null);
 const email = ref("");
 const comments = ref("");
 
-const turnstile = ref();
 const token = ref("");
 
 // Toggle buttons write 'Yes'/'No' directly to the refs above
@@ -443,19 +444,6 @@ function handleNewSave() {
       console.error("Submission failed:", err);
     }
   })();
-}
-
-async function onSubmit() {
-  const res = await $fetch("/api/submit", {
-    method: "POST",
-    body: { token /* form fields */ },
-  });
-  if (res.success) {
-    // handle success
-  } else {
-    // handle error
-  }
-  turnstile.value?.reset();
 }
 </script>
 

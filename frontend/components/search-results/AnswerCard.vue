@@ -121,7 +121,6 @@
 
 <script setup>
 import { computed, ref, watch } from "vue";
-import { useRuntimeConfig } from "#imports";
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import { answerCardConfig } from "@/config/cardConfigs";
 import { literatureCache } from "@/utils/literatureCache";
@@ -137,7 +136,6 @@ const props = defineProps({
 });
 
 const config = answerCardConfig;
-const _runtimeConfig = useRuntimeConfig();
 
 // Replace literatureTitles with an array of objects: { id, title }
 const literatureTitles = ref([]);

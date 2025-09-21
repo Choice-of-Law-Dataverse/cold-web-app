@@ -1,151 +1,161 @@
 <template>
   <div>
     <BaseDetailLayout
-    :loading="false"
-    :result-data="{}"
-    :key-label-pairs="[]"
-    :value-class-map="{}"
-    source-table="Literature"
-    :hide-back-button="true"
-    header-mode="new"
-    :show-notification-banner="true"
-    :notification-banner-message="notificationBannerMessage"
-    :icon="'i-material-symbols:warning-outline'"
-    @open-save-modal="openSaveModal"
-    @open-cancel-modal="showCancelModal = true"
-  >
-    <div class="section-gap m-0 p-0">
-      <!-- Jurisdiction (optional) -->
-      <UFormGroup size="lg">
-        <template #label>
-          <span class="label">Jurisdiction</span>
-        </template>
-        <SearchFilters
-          v-model="selectedJurisdiction"
-          :options="jurisdictionOptions"
-          class="mt-2 w-full"
-          show-avatars="true"
-          :multiple="false"
-        />
-      </UFormGroup>
-
-      <!-- Year (required) -->
-      <UFormGroup
-        size="lg"
-        class="mt-8"
-        hint="Required"
-        :error="errors.publication_year"
-      >
-        <template #label>
-          <span class="label">Year</span>
-        </template>
-        <UInput v-model="publicationYear" class="cold-input mt-2" />
-      </UFormGroup>
-
-      <!-- Author(s) (required) -->
-      <UFormGroup size="lg" class="mt-8" hint="Required" :error="errors.author">
-        <template #label>
-          <span class="label">Author</span>
-        </template>
-        <UInput v-model="author" class="cold-input mt-2" />
-      </UFormGroup>
-
-      <!-- Title (required) -->
-      <UFormGroup size="lg" class="mt-8" hint="Required" :error="errors.title">
-        <template #label>
-          <span class="label">Title</span>
-        </template>
-        <UInput v-model="title" class="cold-input mt-2" />
-      </UFormGroup>
-
-      <!-- Publication (optional) -->
-      <UFormGroup size="lg" class="mt-8" :error="errors.publication_title">
-        <template #label>
-          <span class="label">Publication title</span>
-        </template>
-        <UInput v-model="publicationTitle" class="cold-input mt-2" />
-      </UFormGroup>
-
-      <!-- URL (optional) -->
-      <UFormGroup size="lg" class="mt-8" :error="errors.url">
-        <template #label>
-          <span class="label">URL</span>
-        </template>
-        <UInput v-model="url" class="cold-input mt-2" />
-      </UFormGroup>
-
-      <!-- DOI (optional) -->
-      <UFormGroup size="lg" class="mt-8" :error="errors.doi">
-        <template #label>
-          <span class="label">DOI</span>
-        </template>
-        <UInput v-model="doi" class="cold-input mt-2" />
-      </UFormGroup>
-
-      <!-- Date (optional) -->
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label">Publication date</span>
-        </template>
-        <UPopover :popper="{ placement: 'bottom-start' }">
-          <UButton
-            icon="i-heroicons-calendar-days-20-solid"
-            :label="
-              publicationDate
-                ? format(publicationDate, 'dd MMMM yyyy')
-                : 'Add date'
-            "
-            class="cold-date-trigger mt-2"
-          />
-          <template #panel="{ close }">
-            <DatePicker v-model="publicationDate" @close="close" />
+      :loading="false"
+      :result-data="{}"
+      :key-label-pairs="[]"
+      :value-class-map="{}"
+      source-table="Literature"
+      :hide-back-button="true"
+      header-mode="new"
+      :show-notification-banner="true"
+      :notification-banner-message="notificationBannerMessage"
+      :icon="'i-material-symbols:warning-outline'"
+      @open-save-modal="openSaveModal"
+      @open-cancel-modal="showCancelModal = true"
+    >
+      <div class="section-gap m-0 p-0">
+        <!-- Jurisdiction (optional) -->
+        <UFormGroup size="lg">
+          <template #label>
+            <span class="label">Jurisdiction</span>
           </template>
-        </UPopover>
-      </UFormGroup>
+          <SearchFilters
+            v-model="selectedJurisdiction"
+            :options="jurisdictionOptions"
+            class="mt-2 w-full"
+            show-avatars="true"
+            :multiple="false"
+          />
+        </UFormGroup>
 
-      <!-- ISBN (optional) -->
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label">ISBN</span>
-        </template>
-        <UInput v-model="isbn" class="cold-input mt-2" />
-      </UFormGroup>
+        <!-- Year (required) -->
+        <UFormGroup
+          size="lg"
+          class="mt-8"
+          hint="Required"
+          :error="errors.publication_year"
+        >
+          <template #label>
+            <span class="label">Year</span>
+          </template>
+          <UInput v-model="publicationYear" class="cold-input mt-2" />
+        </UFormGroup>
 
-      <!-- ISSN (optional) -->
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label">ISSN</span>
-        </template>
-        <UInput v-model="issn" class="cold-input mt-2" />
-      </UFormGroup>
+        <!-- Author(s) (required) -->
+        <UFormGroup
+          size="lg"
+          class="mt-8"
+          hint="Required"
+          :error="errors.author"
+        >
+          <template #label>
+            <span class="label">Author</span>
+          </template>
+          <UInput v-model="author" class="cold-input mt-2" />
+        </UFormGroup>
 
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label">Theme</span>
-        </template>
-        <UInput v-model="theme" class="cold-input mt-2" />
-      </UFormGroup>
-    </div>
-  </BaseDetailLayout>
+        <!-- Title (required) -->
+        <UFormGroup
+          size="lg"
+          class="mt-8"
+          hint="Required"
+          :error="errors.title"
+        >
+          <template #label>
+            <span class="label">Title</span>
+          </template>
+          <UInput v-model="title" class="cold-input mt-2" />
+        </UFormGroup>
 
-  <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
-  <SaveModal
-    v-model="showSaveModal"
-    :email="email"
-    :comments="comments"
-    :token="token"
-    :save-modal-errors="saveModalErrors"
-    :name="title"
-    :specialists="specialists"
-    :date="publicationDate || null"
-    :pdf-file="pdfFile"
-    :link="url"
-    @update:email="(val) => (email = val)"
-    @update:comments="(val) => (comments = val)"
-    @update:token="(val) => (token = val)"
-    @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
-    @save="handleNewSave"
-  />
+        <!-- Publication (optional) -->
+        <UFormGroup size="lg" class="mt-8" :error="errors.publication_title">
+          <template #label>
+            <span class="label">Publication title</span>
+          </template>
+          <UInput v-model="publicationTitle" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <!-- URL (optional) -->
+        <UFormGroup size="lg" class="mt-8" :error="errors.url">
+          <template #label>
+            <span class="label">URL</span>
+          </template>
+          <UInput v-model="url" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <!-- DOI (optional) -->
+        <UFormGroup size="lg" class="mt-8" :error="errors.doi">
+          <template #label>
+            <span class="label">DOI</span>
+          </template>
+          <UInput v-model="doi" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <!-- Date (optional) -->
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label">Publication date</span>
+          </template>
+          <UPopover :popper="{ placement: 'bottom-start' }">
+            <UButton
+              icon="i-heroicons-calendar-days-20-solid"
+              :label="
+                publicationDate
+                  ? format(publicationDate, 'dd MMMM yyyy')
+                  : 'Add date'
+              "
+              class="cold-date-trigger mt-2"
+            />
+            <template #panel="{ close }">
+              <DatePicker v-model="publicationDate" @close="close" />
+            </template>
+          </UPopover>
+        </UFormGroup>
+
+        <!-- ISBN (optional) -->
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label">ISBN</span>
+          </template>
+          <UInput v-model="isbn" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <!-- ISSN (optional) -->
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label">ISSN</span>
+          </template>
+          <UInput v-model="issn" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label">Theme</span>
+          </template>
+          <UInput v-model="theme" class="cold-input mt-2" />
+        </UFormGroup>
+      </div>
+    </BaseDetailLayout>
+
+    <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
+    <SaveModal
+      v-model="showSaveModal"
+      :email="email"
+      :comments="comments"
+      :token="token"
+      :save-modal-errors="saveModalErrors"
+      :name="title"
+      :specialists="specialists"
+      :date="publicationDate || null"
+      :pdf-file="pdfFile"
+      :link="url"
+      @update:email="(val) => (email = val)"
+      @update:comments="(val) => (comments = val)"
+      @update:token="(val) => (token = val)"
+      @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
+      @save="handleNewSave"
+    />
   </div>
 </template>
 
@@ -159,8 +169,6 @@ import CancelModal from "@/components/ui/CancelModal.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import { format } from "date-fns";
-
-const config = useRuntimeConfig();
 
 // Form fields
 const author = ref("");
@@ -184,7 +192,6 @@ const pdfFile = ref(null);
 const email = ref("");
 const comments = ref("");
 
-const turnstile = ref();
 const token = ref("");
 
 watch(token, () => {});
@@ -326,19 +333,6 @@ function handleNewSave() {
       console.error("Submission failed:", err);
     }
   })();
-}
-
-async function onSubmit() {
-  const res = await $fetch("/api/submit", {
-    method: "POST",
-    body: { token /* form fields */ },
-  });
-  if (res.success) {
-    // handle success
-  } else {
-    // handle error
-  }
-  turnstile.value?.reset();
 }
 </script>
 

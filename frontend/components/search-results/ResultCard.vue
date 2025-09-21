@@ -34,7 +34,7 @@ import { UCard } from "#components";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 
 // Define props
-const _props = defineProps({
+defineProps({
   resultData: {
     type: Object,
     required: false, // Changed: no longer required

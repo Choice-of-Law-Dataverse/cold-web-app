@@ -164,7 +164,6 @@ const date = ref(new Date());
 const email = ref("");
 const comments = ref("");
 const token = ref("");
-const turnstile = ref();
 const errors = ref({});
 const saveModalErrors = ref({});
 const showSaveModal = ref(false);
@@ -282,7 +281,7 @@ async function fetchInstrument() {
     link.value = data["URL"] || "";
     pdfFileName.value = data["PDF"] || "";
     instrumentApiId.value = data["ID"] || null;
-  } catch (err) {
+  } catch {
     // Optionally handle error
   } finally {
     loading.value = false;

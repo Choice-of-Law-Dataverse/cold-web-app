@@ -75,11 +75,7 @@ const route = useRoute();
 const table = ref("Literature");
 const id = ref(route.params.id);
 
-const {
-  data: literature,
-  isLoading: loading,
-  error,
-} = useRecordDetails(table, id);
+const { data: literature, isLoading: loading } = useRecordDetails(table, id);
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   literature,

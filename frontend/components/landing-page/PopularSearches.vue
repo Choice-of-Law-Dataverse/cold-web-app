@@ -38,10 +38,6 @@ const searchSuggestions = ref([
   "Party Autonomy in Switzerland",
 ]);
 
-function _formatQuery(query) {
-  return query.replace(/ /g, "+");
-}
-
 function handleSuggestionClick(suggestion) {
   // Emit an event to update the search input
   eventBus.emit("update-search", suggestion);

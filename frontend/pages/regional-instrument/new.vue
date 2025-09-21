@@ -1,80 +1,84 @@
 <template>
   <div>
     <BaseDetailLayout
-    :loading="false"
-    :result-data="{}"
-    :key-label-pairs="[]"
-    :value-class-map="{}"
-    source-table="Regional Instrument"
-    :hide-back-button="true"
-    header-mode="new"
-    :show-notification-banner="true"
-    :notification-banner-message="notificationBannerMessage"
-    :icon="'i-material-symbols:warning-outline'"
-    @open-save-modal="openSaveModal"
-    @open-cancel-modal="showCancelModal = true"
-  >
-    <!-- Always render this section, even if keyLabelPairs is empty -->
-    <div class="section-gap m-0 p-0">
-      <UFormGroup size="lg" hint="Required" :error="errors.abbreviation">
-        <template #label>
-          <span class="label">Abbreviation</span>
-        </template>
-        <UInput v-model="abbreviation" class="cold-input mt-2" />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label">Title</span>
-        </template>
-        <UInput v-model="title" class="cold-input mt-2" />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label">URL</span>
-        </template>
-        <UInput v-model="url" placeholder="https://…" class="cold-input mt-2" />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label flex flex-row items-center">Date</span>
-          <InfoPopover :text="tooltipRegionalInstrumentDate" />
-        </template>
-        <UPopover :popper="{ placement: 'bottom-start' }">
-          <UButton
-            icon="i-heroicons-calendar-days-20-solid"
-            :label="date ? format(date, 'dd MMMM yyyy') : 'Add date'"
-            class="cold-date-trigger mt-2"
-          />
-
-          <template #panel="{ close }">
-            <DatePicker v-model="date" @close="close" />
+      :loading="false"
+      :result-data="{}"
+      :key-label-pairs="[]"
+      :value-class-map="{}"
+      source-table="Regional Instrument"
+      :hide-back-button="true"
+      header-mode="new"
+      :show-notification-banner="true"
+      :notification-banner-message="notificationBannerMessage"
+      :icon="'i-material-symbols:warning-outline'"
+      @open-save-modal="openSaveModal"
+      @open-cancel-modal="showCancelModal = true"
+    >
+      <!-- Always render this section, even if keyLabelPairs is empty -->
+      <div class="section-gap m-0 p-0">
+        <UFormGroup size="lg" hint="Required" :error="errors.abbreviation">
+          <template #label>
+            <span class="label">Abbreviation</span>
           </template>
-        </UPopover>
-      </UFormGroup>
-    </div>
-  </BaseDetailLayout>
+          <UInput v-model="abbreviation" class="cold-input mt-2" />
+        </UFormGroup>
 
-  <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
-  <SaveModal
-    v-model="showSaveModal"
-    :email="email"
-    :comments="comments"
-    :token="token"
-    :save-modal-errors="saveModalErrors"
-    :name="title"
-    :specialists="specialists"
-    :date="date || null"
-    :pdf-file="pdfFile"
-    :link="url"
-    @update:email="(val) => (email = val)"
-    @update:comments="(val) => (comments = val)"
-    @update:token="(val) => (token = val)"
-    @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
-    @save="handleNewSave"
-  />
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label">Title</span>
+          </template>
+          <UInput v-model="title" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label">URL</span>
+          </template>
+          <UInput
+            v-model="url"
+            placeholder="https://…"
+            class="cold-input mt-2"
+          />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label flex flex-row items-center">Date</span>
+            <InfoPopover :text="tooltipRegionalInstrumentDate" />
+          </template>
+          <UPopover :popper="{ placement: 'bottom-start' }">
+            <UButton
+              icon="i-heroicons-calendar-days-20-solid"
+              :label="date ? format(date, 'dd MMMM yyyy') : 'Add date'"
+              class="cold-date-trigger mt-2"
+            />
+
+            <template #panel="{ close }">
+              <DatePicker v-model="date" @close="close" />
+            </template>
+          </UPopover>
+        </UFormGroup>
+      </div>
+    </BaseDetailLayout>
+
+    <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
+    <SaveModal
+      v-model="showSaveModal"
+      :email="email"
+      :comments="comments"
+      :token="token"
+      :save-modal-errors="saveModalErrors"
+      :name="title"
+      :specialists="specialists"
+      :date="date || null"
+      :pdf-file="pdfFile"
+      :link="url"
+      @update:email="(val) => (email = val)"
+      @update:comments="(val) => (comments = val)"
+      @update:token="(val) => (token = val)"
+      @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
+      @save="handleNewSave"
+    />
   </div>
 </template>
 
@@ -92,8 +96,6 @@ import tooltipRegionalInstrumentDate from "@/content/info_boxes/regional_instrum
 import { format } from "date-fns";
 const date = ref(null);
 
-const config = useRuntimeConfig();
-
 // Form data
 const abbreviation = ref("");
 const title = ref("");
@@ -103,7 +105,6 @@ const pdfFile = ref(null);
 const email = ref("");
 const comments = ref("");
 
-const turnstile = ref();
 const token = ref("");
 
 // Ensure Submit button reactivity when token changes
@@ -124,7 +125,7 @@ const errors = ref({});
 const saveModalErrors = ref({});
 
 const router = useRouter();
-const emit = defineEmits(["close-cancel-modal", "close-save-modal"]);
+defineEmits(["close-cancel-modal", "close-save-modal"]);
 const showSaveModal = ref(false);
 const showCancelModal = ref(false);
 const notificationBannerMessage =
@@ -160,28 +161,8 @@ function openSaveModal() {
   }
 }
 
-function onPdfChange(event) {
-  // Handle different event types - UInput might pass FileList directly or as event.target.files
-  let file = null;
-  if (event instanceof FileList) {
-    file = event[0] || null;
-  } else if (event && event.target && event.target.files) {
-    file = event.target.files[0] || null;
-  } else if (event && event.files) {
-    file = event.files[0] || null;
-  }
-  pdfFile.value = file;
-}
-
 function confirmCancel() {
   router.push("/");
-}
-
-function addSpecialist() {
-  specialists.value.push("");
-}
-function removeSpecialist(idx) {
-  specialists.value.splice(idx, 1);
 }
 
 function handleNewSave() {
@@ -217,20 +198,6 @@ function handleNewSave() {
       console.error("Submission failed:", err);
     }
   })();
-}
-
-async function onSubmit() {
-  const res = await $fetch("/api/submit", {
-    method: "POST",
-    body: { token /* form fields */ },
-  });
-
-  if (res.success) {
-    // handle success
-  } else {
-    // handle error
-  }
-  turnstile.value?.reset();
 }
 </script>
 

@@ -24,11 +24,7 @@ const route = useRoute();
 const table = ref("Arbitral Rules");
 const id = ref(route.params.id);
 
-const {
-  data: arbitralRule,
-  isLoading: loading,
-  error,
-} = useRecordDetails(table, id);
+const { data: arbitralRule, isLoading: loading } = useRecordDetails(table, id);
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   arbitralRule,

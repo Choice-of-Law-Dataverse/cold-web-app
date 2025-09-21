@@ -11,7 +11,6 @@ export function useSourceFetching({
   fetchOupChapter = false,
   fetchPrimarySource = false,
 }) {
-  const _config = useRuntimeConfig();
   const primarySource = ref(null);
   const oupChapterSource = ref(null);
   const loading = ref(false);
@@ -22,12 +21,7 @@ export function useSourceFetching({
 
     const jsonPayload = {
       table: "Literature",
-      filters: [
-        {
-          column: "Jurisdiction",
-          value: jurisdiction,
-        },
-      ],
+      filters: [{ column: "Jurisdiction", value: jurisdiction }],
     };
 
     try {
@@ -62,14 +56,8 @@ export function useSourceFetching({
     const jsonPayload = {
       table: "Literature",
       filters: [
-        {
-          column: "Jurisdiction",
-          value: jurisdiction,
-        },
-        {
-          column: "OUP JD Chapter",
-          value: true,
-        },
+        { column: "Jurisdiction", value: jurisdiction },
+        { column: "OUP JD Chapter", value: true },
       ],
     };
 
@@ -96,11 +84,5 @@ export function useSourceFetching({
     if (fetchPrimarySource) await fetchPrimarySourceData();
   }
 
-  return {
-    primarySource,
-    oupChapterSource,
-    loading,
-    error,
-    fetchAllSources,
-  };
+  return { primarySource, oupChapterSource, loading, error, fetchAllSources };
 }
