@@ -8,45 +8,32 @@ dependencies = [
     "annotated-types==0.7.0",
     "anyio==4.4.0",
     "attrs==24.3.0",
-    "black==24.10.0",
     "blinker==1.8.2",
     "certifi==2024.7.4",
     "charset-normalizer==3.4.1",
     "click==8.1.7",
-    "colorama==0.4.6",
     "dnspython==2.7.0",
     "email-validator==2.2.0",
     "fastapi==0.115.6",
-    "flasgger==0.9.7.1",
-    "flask==3.0.3",
-    "flask-cors==4.0.1",
     "greenlet==3.0.3",
     "h11==0.14.0",
     "httpcore==1.0.5",
     "httpx==0.27.0",
     "idna==3.7",
-    "iniconfig==2.0.0",
     "itsdangerous==2.2.0",
     "jinja2==3.1.4",
     "jsonschema==4.23.0",
     "jsonschema-specifications==2024.10.1",
     "markupsafe==2.1.5",
-    "mistune==3.1.0",
     "mixedbread-ai==2.2.6",
-    "mypy-extensions==1.0.0",
     "numpy==2.0.0",
-    "packaging==24.2",
     "passlib==1.7.4",
-    "pathspec==0.12.1",
-    "platformdirs==4.3.6",
-    "pluggy==1.5.0",
     "psycopg2-binary==2.9.9",
     "pydantic==2.8.2",
     "pydantic-core==2.20.1",
     "pyjwt==2.10.1",
     "pymongo==4.10.1",
     "pyodbc==5.1.0",
-    "pytest==8.3.4",
     "python-dotenv==1.0.1",
     "python-multipart==0.0.20",
     "pyyaml==6.0.2",
@@ -63,8 +50,42 @@ dependencies = [
     "werkzeug==3.0.3",
 ]
 
+[dependency-groups]
+dev = [
+    "colorama>=0.4.6",
+    "iniconfig>=2.0.0",
+    "mypy-extensions>=1.0.0",
+    "packaging>=24.2",
+    "pathspec>=0.12.1",
+    "platformdirs>=4.3.6",
+    "pluggy>=1.5.0",
+    "polyfactory>=2.20.0",
+    "pre-commit>=4.1.0",
+    "pytest-asyncio>=0.26.0",
+    "pytest-mock>=3.14.0",
+    "pytest>=8.3.4",
+    "ruff>=0.9.9",
+    "pyright>=1.1.404",
+]
+
 [tool.uv]
 package = true
 
 [project.scripts]
 serve = "app.main:main"
+
+[tool.ruff.lint]
+select = [
+    "E",  # pycodestyle errors
+    "W",  # pycodestyle warnings
+    "F",  # pyflakes
+    "I",  # isort
+    "B",  # flake8-bugbear
+    "Q",  # flake8-quotes
+    "C4",  # flake8-comprehensions
+    "UP",  # pyupgrade
+]
+isort = { combine-as-imports = true, known-first-party = ["chai"] }
+
+[tool.ruff.lint.flake8-bugbear]
+extend-immutable-calls = ["fastapi.Depends", "fastapi.params.Depends", "fastapi.Query", "fastapi.params.Query"]
