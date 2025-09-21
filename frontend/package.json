@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": "^24.3"
+    "node": "^22.x"
   },
   "scripts": {
     "build": "nuxt build",
@@ -40,7 +40,7 @@
   },
   "devDependencies": {
     "@iconify-json/material-symbols": "^1.2.37",
-    "@types/node": "^24.3.0",
+    "@types/node": "^22.x",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^9.1.2",
