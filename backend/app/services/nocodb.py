@@ -1,17 +1,21 @@
-import requests
 import logging
+from collections.abc import Sequence
+from typing import Any
+
+import requests
+
 
 class NocoDBService:
-    def __init__(self, base_url: str, api_token: str = None):
+    def __init__(self, base_url: str, api_token: str | None = None):
         if not base_url:
             raise ValueError("NocoDB base URL not configured")
-        self.base_url = base_url.rstrip('/')
-        self.headers = {}
+        self.base_url = base_url.rstrip("/")
+        self.headers: dict[str, str] = {}
         if api_token:
             # X nocodb API token header
-            self.headers['xc-token'] = api_token
+            self.headers["xc-token"] = api_token
 
-    def get_row(self, table: str, record_id: str) -> dict:
+    def get_row(self, table: str, record_id: str) -> dict[str, Any]:
         """
         Fetch full record data and metadata for a specific row from NocoDB.
         """
@@ -27,40 +31,47 @@ class NocoDBService:
         logger.debug("NocoDBService.get_row response payload: %s", payload)
         # return full payload directly
         return payload
-    
-    def list_rows(self, table: str, filters: list = None, limit: int = 100) -> list:
+
+    def list_rows(
+        self,
+        table: str,
+        filters: Sequence[Any] | None = None,
+        limit: int = 100,
+    ) -> list[dict[str, Any]]:
         """
         Fetch records for a given table via NocoDB API, applying optional filters and paging through all pages.
         """
         logger = logging.getLogger(__name__)
-        records = []
+        records: list[dict[str, Any]] = []
         offset = 0
         # build where parameter if filters provided
-        where_clauses = []
+        where_clauses: list[str] = []
         if filters:
             for f in filters:
-                col = f.column
-                val = f.value
+                col = getattr(f, "column", None)
+                val = getattr(f, "value", None)
                 # choose operator
-                op = 'ct' if isinstance(val, str) else 'eq'
+                op = "ct" if isinstance(val, str) else "eq"
                 # escape comma or parentheses in val?
-                where_clauses.append(f"({col},{op},{val})")
-        where_param = '~and'.join(where_clauses) if where_clauses else None
+                if col is not None and val is not None:
+                    where_clauses.append(f"({col},{op},{val})")
+        where_param = "~and".join(where_clauses) if where_clauses else None
         while True:
             url = f"{self.base_url}/{table}"
-            params = {'limit': limit, 'offset': offset}
+            params: dict[str, Any] = {"limit": limit, "offset": offset}
             if where_param:
-                params['where'] = where_param
+                params["where"] = where_param
             logger.debug("NocoDBService.list_rows: GET %s with params %s", url, params)
             resp = requests.get(url, headers=self.headers, params=params)
             resp.raise_for_status()
             payload = resp.json()
             # extract batch results
             if isinstance(payload, dict):
-                batch = payload.get('list') or payload.get('data') or []
+                batch_raw = payload.get("list") or payload.get("data") or []
+                batch = batch_raw if isinstance(batch_raw, list) else []
                 # check pageInfo for last page
-                page_info = payload.get('pageInfo', {})
-                is_last = page_info.get('isLastPage', False)
+                page_info = payload.get("pageInfo", {})
+                is_last = page_info.get("isLastPage", False)
             elif isinstance(payload, list):
                 batch = payload
                 is_last = True
@@ -68,7 +79,7 @@ class NocoDBService:
                 break
             if not batch:
                 break
-            records.extend(batch)
+            records.extend([entry for entry in batch if isinstance(entry, dict)])
             if is_last or len(batch) < limit:
                 break
             offset += limit

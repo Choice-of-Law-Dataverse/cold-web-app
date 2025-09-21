@@ -1,21 +1,22 @@
-from fastapi import APIRouter, Request, Form, HTTPException
-from fastapi.responses import HTMLResponse, RedirectResponse
-from typing import Optional, Any, Dict, List, Tuple
 import html
-from datetime import date
 import json
+from datetime import date, datetime
+from typing import Any
+
+from fastapi import APIRouter, Form, HTTPException, Request, UploadFile
+from fastapi.responses import HTMLResponse, RedirectResponse
 
 from app.config import config
-from app.services.suggestions import SuggestionService
-from app.services.moderation_writer import MainDBWriter
 from app.schemas.suggestions import (
+    CaseAnalyzerSuggestion,
     CourtDecisionSuggestion,
     DomesticInstrumentSuggestion,
-    RegionalInstrumentSuggestion,
     InternationalInstrumentSuggestion,
     LiteratureSuggestion,
-    CaseAnalyzerSuggestion,
+    RegionalInstrumentSuggestion,
 )
+from app.services.moderation_writer import MainDBWriter
+from app.services.suggestions import SuggestionService
 
 router = APIRouter(prefix="/moderation", tags=["Moderation"], include_in_schema=False)
 
@@ -28,7 +29,7 @@ def _is_logged_in(request: Request) -> bool:
 
 
 def _category_schema(category: str):
-    mapping: Dict[str, Any] = {
+    mapping: dict[str, Any] = {
         "court-decisions": CourtDecisionSuggestion,
         "domestic-instruments": DomesticInstrumentSuggestion,
         "regional-instruments": RegionalInstrumentSuggestion,
@@ -43,7 +44,7 @@ def _category_schema(category: str):
 def _python_type(t: Any) -> Any:
     """Resolve Optional/Union and containers to their base python types for widget selection."""
     try:
-        from typing import get_origin, get_args, Union
+        from typing import Union, get_args, get_origin
 
         origin = get_origin(t)
         if origin is None:
@@ -166,7 +167,7 @@ def _page(title: str, inner_html: str, show_logout: bool = True) -> HTMLResponse
     return HTMLResponse(html_doc)
 
 
-def _norm_key_map(d: Dict[str, Any]) -> Dict[str, Any]:
+def _norm_key_map(d: dict[str, Any]) -> dict[str, Any]:
     """Return a case- and punctuation-insensitive key map for convenient lookup."""
 
     def norm(s: str) -> str:
@@ -175,7 +176,7 @@ def _norm_key_map(d: Dict[str, Any]) -> Dict[str, Any]:
     return {norm(k): v for k, v in d.items()}
 
 
-def _first(d: Dict[str, Any], *keys: str) -> Any:
+def _first(d: dict[str, Any], *keys: str) -> Any:
     if not d:
         return None
     km = _norm_key_map(d)
@@ -187,8 +188,8 @@ def _first(d: Dict[str, Any], *keys: str) -> Any:
 
 
 def _normalize_case_analyzer_payload(
-    raw: Dict[str, Any], item: Dict[str, Any]
-) -> Dict[str, Any]:
+    raw: dict[str, Any], item: dict[str, Any]
+) -> dict[str, Any]:
     """Flatten and normalize the analyzer payload for read-only display.
     Rules:
     - Prefer *_edited fields.
@@ -200,7 +201,7 @@ def _normalize_case_analyzer_payload(
         * Civil law: courts_position_edited
         * Common law: concat of courts_position_edited, obiter_dicta_edited, dissenting_opinions_edited
     """
-    result: Dict[str, Any] = {}
+    result: dict[str, Any] = {}
     if not isinstance(raw, dict):
         raw = {}
 
@@ -222,11 +223,11 @@ def _normalize_case_analyzer_payload(
 
     # Helpers
     def pref(*names: str) -> Any:
-        edited_first: List[str] = []
-        plain: List[str] = []
+        edited_first: list[str] = []
+        plain: list[str] = []
         for n in names:
             (edited_first if n.endswith("_edited") else plain).append(n)
-        keys: List[str] = []
+        keys: list[str] = []
         keys.extend(edited_first)
         keys.extend(plain)
         return _first(data_obj, *keys)
@@ -298,7 +299,7 @@ def _normalize_case_analyzer_payload(
     is_common_law_raw = pref(
         "is_common_law_edited", "is_common_law", "common_law_edited", "common_law"
     )
-    is_common_law: Optional[bool] = None
+    is_common_law: bool | None = None
     if isinstance(is_common_law_raw, bool):
         is_common_law = is_common_law_raw
     elif isinstance(is_common_law_raw, str):
@@ -320,7 +321,7 @@ def _normalize_case_analyzer_payload(
 
     # Court's Position assembly per rules
     if is_common_law is True:
-        parts: List[str] = []
+        parts: list[str] = []
         cp = pref("courts_position_edited")  # exact key as requested
         if cp:
             parts.append(str(cp).strip())
@@ -347,8 +348,15 @@ def _normalize_case_analyzer_payload(
 # New helpers: overview and detail rendering
 
 
-def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
-    payload: Dict[str, Any] = item.get("payload", {}) or {}
+def _render_overview_item(category: str, model, item: dict[str, Any]) -> str:
+    payload: dict[str, Any] = item.get("payload", {}) or {}
+
+    def format_created(value: Any) -> str:
+        if isinstance(value, (datetime, date)):
+            return value.isoformat()
+        if value is None:
+            return ""
+        return str(value)
 
     def val_to_str(v: Any) -> str:
         if v is None:
@@ -371,9 +379,7 @@ def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
         )
         src = html.escape(str(item.get("source") or ""))
         created = item.get("created_at")
-        created_s = (
-            created.isoformat() if hasattr(created, "isoformat") else str(created or "")
-        )
+        created_s = format_created(created)
         submit_name = (
             normalized.get("username")
             or item.get("username")
@@ -399,7 +405,7 @@ def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
         )
 
     # Default: other categories
-    summary_specs: Dict[str, Dict[str, Any]] = {
+    summary_specs: dict[str, dict[str, Any]] = {
         "court-decisions": {
             "title_keys": ["case_citation", "case_name", "title", "name"],
             "info": [
@@ -440,7 +446,7 @@ def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
         return _first(payload, *keys)
 
     title = first_key(*spec["title_keys"]) or f"Entry #{item['id']}"
-    info_parts: List[Tuple[str, Any]] = []
+    info_parts: list[tuple[str, Any]] = []
     for label, keys in spec.get("info", []):
         info_parts.append((label, first_key(*keys)))
     meta = " | ".join(
@@ -449,9 +455,7 @@ def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
     )
     src = html.escape(str(item.get("source") or ""))
     created = item.get("created_at")
-    created_s = (
-        created.isoformat() if hasattr(created, "isoformat") else str(created or "")
-    )
+    created_s = format_created(created)
     submit_name = item.get("username") or first_key(
         "username", "submitter_name", "name"
     )
@@ -480,8 +484,8 @@ def _render_overview_item(category: str, model, item: Dict[str, Any]) -> str:
     )
 
 
-def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
-    payload: Dict[str, Any] = item.get("payload", {}) or {}
+def _render_detail_entry(category: str, model, item: dict[str, Any]) -> str:
+    payload: dict[str, Any] = item.get("payload", {}) or {}
     if category == "case-analyzer":
         normalized = _normalize_case_analyzer_payload(payload, item)
 
@@ -546,7 +550,7 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
         )
 
     # Default: form-based editing for other categories
-    inputs: List[str] = []
+    inputs: list[str] = []
     # Do not render submitter meta as editable inputs; show read-only in header instead
     _meta_fields = {
         "submitter_email",
@@ -555,7 +559,7 @@ def _render_detail_entry(category: str, model, item: Dict[str, Any]) -> str:
         "source_pdf",
         "attachment",
     }
-    for fname, finfo in getattr(model, "model_fields").items():  # type: ignore[attr-defined]
+    for fname, finfo in model.model_fields.items():  # type: ignore[attr-defined]
         if fname in _meta_fields:
             continue
         val = payload.get(fname)
@@ -690,7 +694,7 @@ def index(request: Request):
     return _page("Suggestions Moderation", content)
 
 
-def _table_key(path_segment: str) -> Optional[str]:
+def _table_key(path_segment: str) -> str | None:
     mapping = {
         "court-decisions": "court_decisions",
         "domestic-instruments": "domestic_instruments",
@@ -776,7 +780,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
         raise HTTPException(
             status_code=404, detail="Suggestion not found or not pending"
         )
-    original_payload: Dict[str, Any] = item["payload"] or {}
+    original_payload: dict[str, Any] = item["payload"] or {}
 
     # Case Analyzer: recompute normalized snapshot and mark finished; no editable inputs expected
     if category == "case-analyzer":
@@ -796,7 +800,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
     model = _category_schema(category)
     if model is None:
         raise HTTPException(status_code=400, detail="Unsupported category")
-    updated_fields: Dict[str, Any] = {}
+    updated_fields: dict[str, Any] = {}
     # Exclude submitter meta from write-back to main DB
     _reserved = {
         "submitter_email",
@@ -805,7 +809,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
         "source_pdf",
         "attachment",
     }
-    for fname, finfo in getattr(model, "model_fields").items():  # type: ignore[attr-defined]
+    for fname, finfo in model.model_fields.items():  # type: ignore[attr-defined]
         if fname in _reserved:
             continue
         raw = form.get(fname)
@@ -814,9 +818,15 @@ async def approve(request: Request, category: str, suggestion_id: int):
         if base_t is bool:
             updated_fields[fname] = "true" if raw in ("true", "on", "1", "yes") else ""
         elif base_t in (list, tuple):
-            updated_fields[fname] = (raw or "").strip()
+            list_value = raw if isinstance(raw, str) else ""
+            updated_fields[fname] = list_value.strip()
         else:
-            updated_fields[fname] = raw if raw is not None else ""
+            if isinstance(raw, UploadFile):
+                updated_fields[fname] = raw.filename or ""
+            elif isinstance(raw, str):
+                updated_fields[fname] = raw
+            else:
+                updated_fields[fname] = "" if raw is None else str(raw)
 
     moderation_note = ""
 
@@ -844,7 +854,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
                 updated_fields["date_year_of_entry_into_force"] = year
             except Exception:
                 pass
-    payload_merged: Dict[str, Any] = {**original_payload, **updated_fields}
+    payload_merged: dict[str, Any] = {**original_payload, **updated_fields}
     # Prepare payload for main DB without submitter meta
     payload_for_writer = {k: v for k, v in payload_merged.items() if k not in _reserved}
     merged_id = writer.insert_record(target_table, payload_for_writer)
