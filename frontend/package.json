@@ -2,6 +2,9 @@
   "name": "nuxt-app",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "^22.x"
+  },
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev",
@@ -37,6 +40,7 @@
   },
   "devDependencies": {
     "@iconify-json/material-symbols": "^1.2.37",
+    "@types/node": "^22.x",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.36.0",
     "eslint-config-prettier": "^9.1.2",

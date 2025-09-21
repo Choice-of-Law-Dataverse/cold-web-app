@@ -1,5 +1,5 @@
 # Base image
-FROM node:18-alpine
+FROM node:22-alpine
 
 # Set working directory
 WORKDIR /app
@@ -17,20 +17,20 @@ ENV API_BASE_URL=$API_BASE_URL \
     NUXT_SITE_URL=$NUXT_SITE_URL \
     NUXT_SITE_NAME=$NUXT_SITE_NAME \
     NUXT_TURNSTILE_SITE_KEY=$NUXT_TURNSTILE_SITE_KEY \
-    NUXT_TURNSTILE_SECRET_KEY=$NUXT_TURNSTILE_SECRET_KEY
+    NUXT_TURNSTILE_SECRET_KEY=$NUXT_TURNSTILE_SECRET_KEY \
+    NODE_OPTIONS="--max_old_space_size=4096"
 
 # Copy the package.json and package-lock.json
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install --legacy-peer-deps && \
-    npm install sass sass-loader sass-embedded-linux-musl-x64 --save-dev  --legacy-peer-deps
+RUN npm ci --legacy-peer-deps --prefer-offline --no-audit
 
 # Copy project files
 COPY . .
 
-# Build the Nuxt app
-RUN npm run build
+# Build the Nuxt app with increased memory limit
+RUN NODE_OPTIONS="--max_old_space_size=4096" npm run build
 
 # Remove dev dependencies for a smaller production image
 RUN npm prune --production
@@ -39,4 +39,4 @@ RUN npm prune --production
 EXPOSE 3000
 
 # Command to run the app in production mode
-CMD ["node", "./.output/server/index.mjs"]
+CMD ["node", "--max_old_space_size=2048", "./.output/server/index.mjs"]
