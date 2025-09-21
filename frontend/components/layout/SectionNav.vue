@@ -1,9 +1,9 @@
 <template>
   <nav>
     <!-- 1) scroll on the wrapper now -->
-    <div class="nav-wrapper relative overflow-x-auto scrollbar-hidden">
+    <div class="nav-wrapper scrollbar-hidden relative overflow-x-auto">
       <!-- 2) make the UL shrink‑wrap -->
-      <ul class="inline-flex items-center space-x-4 list-none relative z-0">
+      <ul class="relative z-0 inline-flex list-none items-center space-x-4">
         <li
           v-for="link in links"
           :key="link.key"
@@ -23,9 +23,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { aboutNavLinks } from '@/config/pageConfigs.js'
+import { computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { aboutNavLinks } from "@/config/pageConfigs.js";
 
 // Accept custom links or use default aboutNavLinks
 const props = defineProps({
@@ -33,21 +33,21 @@ const props = defineProps({
     type: Array,
     default: () => aboutNavLinks,
   },
-})
+});
 
-const links = props.links
-const router = useRouter()
-const route = useRoute()
+const links = props.links;
+const router = useRouter();
+const route = useRoute();
 
 const activeTab = computed(() => {
-  const segment = route.path.split('/').pop()
-  return segment || links[0].key
-})
+  const segment = route.path.split("/").pop();
+  return segment || links[0].key;
+});
 
 // Navigate to the selected link's path
 const setActiveTab = (path) => {
-  router.push(path)
-}
+  router.push(path);
+};
 </script>
 
 <style scoped>
@@ -75,7 +75,7 @@ ul {
 }
 
 ul::before {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 39px;
   left: 0;
@@ -99,7 +99,7 @@ li.active {
 }
 
 li.active::after {
-  content: '';
+  content: "";
   position: absolute !important;
   left: 0;
   bottom: -9px;

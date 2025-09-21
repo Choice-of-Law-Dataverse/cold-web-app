@@ -13,7 +13,7 @@
             viewBox="0 0 24 24"
             height="24"
             fill="none"
-            class="text-cold-purple rotate-180"
+            class="rotate-180 text-cold-purple"
           >
             <path
               d="M9 6l6 6-6 6"
@@ -30,9 +30,9 @@
               <div class="flex items-center justify-center md:justify-between">
                 <h2
                   ref="titleRef"
-                  class="popular-title text-center md:text-left mb-0"
+                  class="popular-title mb-0 text-center md:text-left"
                 >
-                  {{ questionTitle || 'Missing Question' }}
+                  {{ questionTitle || "Missing Question" }}
                 </h2>
               </div>
               <div>
@@ -40,7 +40,7 @@
                   <span
                     v-for="(option, idx) in answers"
                     :key="option"
-                    class="mr-4 cursor-pointer answer-option"
+                    class="answer-option mr-4 cursor-pointer"
                     :class="{ 'selected-answer': selectedAnswer === option }"
                     @click="selectAnswer(option)"
                   >
@@ -48,11 +48,11 @@
                   </span>
                 </h3>
                 <div style="position: relative">
-                  <p class="label mt-6 mb-6 ml-1 regions-scroll">
+                  <p class="label regions-scroll mb-6 ml-1 mt-6">
                     <span
                       v-for="(region, idx) in regions"
                       :key="region"
-                      class="mr-4 region-label"
+                      class="region-label mr-4"
                       :class="{ 'selected-region': selectedRegion === region }"
                       style="cursor: pointer"
                       @click="selectRegion(region)"
@@ -65,15 +65,15 @@
                   <div class="fade-out fade-out-region fade-out-left"></div>
                 </div>
                 <div v-if="selectedAnswer">
-                  <div v-if="isLoading" class="mt-4 copy">
+                  <div v-if="isLoading" class="copy mt-4">
                     Loading jurisdictions...
                   </div>
-                  <div v-else-if="error" class="mt-4 copy">
+                  <div v-else-if="error" class="copy mt-4">
                     Error loading jurisdictions
                   </div>
                   <div
                     v-else-if="countries.length"
-                    class="countries-scroll mt-2 countries-scroll-fade-container"
+                    class="countries-scroll countries-scroll-fade-container mt-2"
                     style="position: relative"
                   >
                     <div class="countries-lines">
@@ -98,7 +98,7 @@
                             :alt="country.code + ' flag'"
                             @error="
                               (e) => {
-                                e.target.style.display = 'none'
+                                e.target.style.display = 'none';
                               }
                             "
                           />
@@ -114,7 +114,7 @@
                       class="fade-out fade-out-countries countries-fade-fixed-left"
                     ></div>
                   </div>
-                  <div v-else class="mt-4 copy">
+                  <div v-else class="copy mt-4">
                     No jurisdictions to be displayed
                   </div>
                 </div>
@@ -146,7 +146,7 @@
         </button>
       </div>
       <!-- Dots navigation -->
-      <div class="dots-outside w-full flex justify-center">
+      <div class="dots-outside flex w-full justify-center">
         <div class="carousel-dots flex justify-center gap-2">
           <button
             v-for="(suf, idx) in suffixes"
@@ -162,65 +162,65 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick, onUnmounted, watch } from 'vue'
-import { useQuestionCountries } from '@/composables/useQuestionCountries'
+import { ref, onMounted, computed, nextTick, onUnmounted, watch } from "vue";
+import { useQuestionCountries } from "@/composables/useQuestionCountries";
 
-const answers = ['Yes', 'No']
+const answers = ["Yes", "No"];
 const regions = [
-  'All',
-  'Asia & Pacific',
-  'Europe',
-  'Arab States',
-  'Africa',
-  'South & Latin America',
-  'North America',
-  'Middle East',
-]
+  "All",
+  "Asia & Pacific",
+  "Europe",
+  "Arab States",
+  "Africa",
+  "South & Latin America",
+  "North America",
+  "Middle East",
+];
 const props = defineProps({
   questionSuffixes: {
     type: Array,
-    default: () => ['_01-P'],
+    default: () => ["_01-P"],
   },
-})
+});
 
-const selectedAnswer = ref('Yes')
-const selectedRegion = ref('All')
-const countriesLines = ref([])
-const titleRef = ref(null)
-const rowsCount = ref(3)
+const selectedAnswer = ref("Yes");
+const selectedRegion = ref("All");
+const countriesLines = ref([]);
+const titleRef = ref(null);
+const rowsCount = ref(3);
 
-const currentIndex = ref(0)
-const suffixes = computed(() => props.questionSuffixes)
-const totalQuestions = computed(() => suffixes.value.length)
-const currentSuffix = computed(() => suffixes.value[currentIndex.value])
+const currentIndex = ref(0);
+const suffixes = computed(() => props.questionSuffixes);
+const totalQuestions = computed(() => suffixes.value.length);
+const currentSuffix = computed(() => suffixes.value[currentIndex.value]);
 
 const {
   data: questionData,
   isLoading,
   error,
-} = useQuestionCountries(currentSuffix, selectedAnswer, selectedRegion)
+} = useQuestionCountries(currentSuffix, selectedAnswer, selectedRegion);
 
-const countries = computed(() => questionData.value?.countries || [])
+const countries = computed(() => questionData.value?.countries || []);
 const questionTitle = computed(
-  () => questionData.value?.questionTitle || 'Missing Question'
-)
+  () => questionData.value?.questionTitle || "Missing Question",
+);
 // Carousel: accept an array of question suffixes to rotate through
 
 const prevQuestion = () => {
   currentIndex.value =
-    (currentIndex.value - 1 + totalQuestions.value) % totalQuestions.value
-}
+    (currentIndex.value - 1 + totalQuestions.value) % totalQuestions.value;
+};
 
 const nextQuestion = () => {
-  currentIndex.value = (currentIndex.value + 1) % totalQuestions.value
-}
+  currentIndex.value = (currentIndex.value + 1) % totalQuestions.value;
+};
 
 function selectAnswer(answer) {
-  selectedAnswer.value = answer
+  selectedAnswer.value = answer;
 }
 
 function selectRegion(region) {
-  selectedRegion.value = region
+  selectedRegion.value = region;
 }
 
 // Watch for countries data changes and update countriesLines
@@ -228,65 +228,68 @@ watch(
   countries,
   async (newCountries) => {
     if (newCountries && newCountries.length > 0) {
-      await nextTick()
-      computeRows()
-      countriesLines.value = splitIntoLines(newCountries, rowsCount.value)
+      await nextTick();
+      computeRows();
+      countriesLines.value = splitIntoLines(newCountries, rowsCount.value);
     } else {
-      countriesLines.value = []
+      countriesLines.value = [];
     }
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 onMounted(() => {
   // compute rows on mount and on resize
-  computeRows()
-  window.addEventListener('resize', computeRows)
-})
+  computeRows();
+  window.addEventListener("resize", computeRows);
+});
 
 // Cleanup resize listener when component unmounts
 onUnmounted(() => {
-  window.removeEventListener('resize', computeRows)
-})
+  window.removeEventListener("resize", computeRows);
+});
 
 function computeRows() {
   // Measure rendered title height to determine how many text lines it takes.
   // If the title occupies 1 line, allow 4 country rows; otherwise keep 3.
-  const el = titleRef.value
+  const el = titleRef.value;
   if (!el) {
-    rowsCount.value = 3
-    return
+    rowsCount.value = 3;
+    return;
   }
   try {
-    const style = getComputedStyle(el)
-    const lineHeight = parseFloat(style.lineHeight)
-    const height = el.offsetHeight
+    const style = getComputedStyle(el);
+    const lineHeight = parseFloat(style.lineHeight);
+    const height = el.offsetHeight;
     if (lineHeight > 0 && height > 0) {
-      const lines = Math.round(height / lineHeight) || 1
-      rowsCount.value = lines <= 1 ? 4 : 3
+      const lines = Math.round(height / lineHeight) || 1;
+      rowsCount.value = lines <= 1 ? 4 : 3;
     } else {
-      rowsCount.value = 3
+      rowsCount.value = 3;
     }
   } catch (err) {
-    rowsCount.value = 3
+    rowsCount.value = 3;
   }
 }
 
 function splitIntoLines(items, rows) {
   // Split already-sorted items into `rows` contiguous rows with equal counts when possible.
-  const n = items.length
-  if (n === 0) return Array.from({ length: rows }, () => [])
-  const base = Math.floor(n / rows)
-  const rem = n % rows
-  const sizes = Array.from({ length: rows }, (_, i) => base + (i < rem ? 1 : 0))
-  const out = []
-  let idx = 0
+  const n = items.length;
+  if (n === 0) return Array.from({ length: rows }, () => []);
+  const base = Math.floor(n / rows);
+  const rem = n % rows;
+  const sizes = Array.from(
+    { length: rows },
+    (_, i) => base + (i < rem ? 1 : 0),
+  );
+  const out = [];
+  let idx = 0;
   for (let i = 0; i < rows; i++) {
-    const size = sizes[i]
-    out.push(items.slice(idx, idx + size))
-    idx += size
+    const size = sizes[i];
+    out.push(items.slice(idx, idx + size));
+    idx += size;
   }
-  return out
+  return out;
 }
 </script>
 
@@ -339,7 +342,7 @@ function splitIntoLines(items, rows) {
 
 /* Spacer to allow final country to clear the fade overlay */
 .countries-lines::after {
-  content: '';
+  content: "";
   flex: 0 0 auto;
   width: calc(var(--fade-width) + var(--scroll-tail-buffer));
   height: 1px;

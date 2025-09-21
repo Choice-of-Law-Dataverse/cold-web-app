@@ -1,25 +1,25 @@
 <template>
   <div
-    class="header-container flex flex-wrap items-center justify-between mt-0.5"
+    class="header-container mt-0.5 flex flex-wrap items-center justify-between"
     :key="formattedJurisdiction + formattedTheme + legalFamily"
   >
     <template v-if="cardType === 'Loading'"> </template>
     <template v-else>
       <!-- Left side of the header: Tags -->
       <div
-        class="tags-container flex flex-wrap items-center overflow-x-auto scrollbar-hidden w-full gap-2"
+        class="tags-container scrollbar-hidden flex w-full flex-wrap items-center gap-2 overflow-x-auto"
       >
         <!-- Display 'Name (from Jurisdiction)' or alternatives -->
         <NuxtLink
           v-for="(jurisdictionString, index) in formattedJurisdiction"
           :key="`jurisdiction-${index}`"
-          class="label-jurisdiction cursor-pointer jurisdiction-label-link"
+          class="label-jurisdiction jurisdiction-label-link cursor-pointer"
           :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString).replace(/%20/g, '+')}`"
         >
           <img
             v-if="!erroredImages[jurisdictionString]"
             :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
-            class="mr-1.5 mb-0.5 h-[9px]"
+            class="mb-0.5 mr-1.5 h-[9px]"
             @error="handleImageError(erroredImages, jurisdictionString)"
           />
           {{ jurisdictionString }}
@@ -65,7 +65,7 @@
                       width="16"
                       height="16"
                       fill="none"
-                      class="text-white rotate-90"
+                      class="rotate-90 text-white"
                     >
                       <path
                         d="M9 6l6 6-6 6"
@@ -86,7 +86,7 @@
             <span
               v-if="
                 ['Arbitral Rule', 'Arbitral Award'].includes(
-                  adjustedSourceTable
+                  adjustedSourceTable,
                 )
               "
               :class="['label', labelColorClass, 'source-table-label-link']"
@@ -98,7 +98,7 @@
               :to="
                 '/search?type=' +
                 encodeURIComponent(
-                  getSourceTablePlural(adjustedSourceTable)
+                  getSourceTablePlural(adjustedSourceTable),
                 ).replace(/%20/g, '+')
               "
               :class="[
@@ -117,7 +117,7 @@
         <NuxtLink
           v-for="(theme, index) in formattedTheme"
           :key="`theme-${index}`"
-          class="label-theme cursor-pointer theme-label-link"
+          class="label-theme theme-label-link cursor-pointer"
           :to="
             '/search?theme=' + encodeURIComponent(theme).replace(/%20/g, '+')
           "
@@ -125,10 +125,10 @@
           {{ theme }}
         </NuxtLink>
 
-        <div class="justify-self-end ml-auto">
+        <div class="ml-auto justify-self-end">
           <template v-if="headerMode === 'new'">
             <NuxtLink
-              class="label flex items-center cursor-pointer pt-0.5"
+              class="label flex cursor-pointer items-center pt-0.5"
               @click="$emit('open-save-modal')"
             >
               Submit your data …
@@ -136,7 +136,7 @@
           </template>
           <template v-else>
             <template v-if="showSuggestEdit">
-              <div class="flex flex-row items-center gap-3 label">
+              <div class="label flex flex-row items-center gap-3">
                 <!-- All actions except the International Instrument Edit link -->
                 <template
                   v-for="(action, index) in suggestEditActions.filter(
@@ -144,7 +144,7 @@
                       !(
                         props.cardType === 'International Instrument' &&
                         a.label === 'Edit'
-                      )
+                      ),
                   )"
                   :key="index"
                 >
@@ -157,7 +157,7 @@
                     {{ action.label }}
                     <UIcon
                       :name="action.icon"
-                      class="inline-block ml-1 text-[1.2em] mb-0.5"
+                      class="mb-0.5 ml-1 inline-block text-[1.2em]"
                     />
                   </a>
                   <NuxtLink
@@ -171,7 +171,7 @@
                     {{ action.label }}
                     <UIcon
                       :name="action.icon"
-                      class="inline-block ml-1 text-[1.2em] mb-0.5"
+                      class="mb-0.5 ml-1 inline-block text-[1.2em]"
                     />
                   </NuxtLink>
                 </template>
@@ -180,7 +180,7 @@
                   v-for="(action, index) in suggestEditActions.filter(
                     (a) =>
                       props.cardType === 'International Instrument' &&
-                      a.label === 'Edit'
+                      a.label === 'Edit',
                   )"
                   :key="'edit-' + index"
                   class="flex items-center"
@@ -192,7 +192,7 @@
                   {{ action.label }}
                   <UIcon
                     :name="action.icon"
-                    class="inline-block ml-1 text-[1.2em] mb-0.5"
+                    class="mb-0.5 ml-1 inline-block text-[1.2em]"
                   />
                 </NuxtLink>
               </div>
@@ -202,7 +202,7 @@
                 Open
                 <UIcon
                   name="i-material-symbols:play-arrow"
-                  class="inline-block -mb-[1px]"
+                  class="-mb-[1px] inline-block"
               /></NuxtLink>
             </template>
           </template>
@@ -214,31 +214,31 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, reactive, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import jurisdictionsData from '@/assets/jurisdictions-data.json'
-import { handleImageError } from '@/utils/handleImageError'
-import { useCheckTarget } from '~/composables/useCheckTarget'
+import { onMounted, ref, computed, reactive, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import jurisdictionsData from "@/assets/jurisdictions-data.json";
+import { handleImageError } from "@/utils/handleImageError";
+import { useCheckTarget } from "~/composables/useCheckTarget";
 
 // removed tooltip content import
-import CiteModal from '@/components/ui/CiteModal.vue'
+import CiteModal from "@/components/ui/CiteModal.vue";
 
-defineEmits(['save', 'open-save-modal', 'open-cancel-modal'])
+defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
-const route = useRoute()
-const router = useRouter()
-const isOpen = ref(false)
-const isSaveOpen = ref(false)
-const isCiteOpen = ref(false)
+const route = useRoute();
+const router = useRouter();
+const isOpen = ref(false);
+const isSaveOpen = ref(false);
+const isCiteOpen = ref(false);
 
 const downloadPDFLink = computed(() => {
-  const segments = route.path.split('/').filter(Boolean) // removes empty parts from path like ['', 'court-decision', 'CD-ARE-1128']
-  const contentType = segments[0] || 'unknown' // e.g., 'court-decision'
-  const id = segments[1] || '' // e.g., 'CD-ARE-1128'
+  const segments = route.path.split("/").filter(Boolean); // removes empty parts from path like ['', 'court-decision', 'CD-ARE-1128']
+  const contentType = segments[0] || "unknown"; // e.g., 'court-decision'
+  const id = segments[1] || ""; // e.g., 'CD-ARE-1128'
   // If your Azure folders always follow the plural of the content type
-  const folder = `${contentType}s`
-  return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`
-})
+  const folder = `${contentType}s`;
+  return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`;
+});
 
 // Props
 const props = defineProps({
@@ -270,304 +270,304 @@ const props = defineProps({
   },
   headerMode: {
     type: String,
-    default: 'default',
+    default: "default",
   },
-})
+});
 
 // Computed property for "jurisdiction" to handle multiple field options and duplicates
 const formattedJurisdiction = computed(() => {
   if (props.formattedJurisdiction.length > 0) {
-    return props.formattedJurisdiction
+    return props.formattedJurisdiction;
   }
   const jurisdictionString =
-    props.resultData['Jurisdiction name'] ||
-    props.resultData['Jurisdiction Names'] ||
-    props.resultData['Name (from Jurisdiction)'] ||
-    props.resultData['Jurisdiction'] ||
-    props.resultData['Jurisdictions'] ||
-    props.resultData['Instrument'] ||
-    ''
+    props.resultData["Jurisdiction name"] ||
+    props.resultData["Jurisdiction Names"] ||
+    props.resultData["Name (from Jurisdiction)"] ||
+    props.resultData["Jurisdiction"] ||
+    props.resultData["Jurisdictions"] ||
+    props.resultData["Instrument"] ||
+    "";
 
   if (!jurisdictionString) {
-    return [] // Return an empty array if no jurisdiction is found
+    return []; // Return an empty array if no jurisdiction is found
   }
 
   // Split by comma, trim each item, and remove duplicates
-  return [...new Set(jurisdictionString.split(',').map((item) => item.trim()))]
-})
+  return [...new Set(jurisdictionString.split(",").map((item) => item.trim()))];
+});
 
 // Display `cardType` if available, or use `resultData.source_table`
 const formattedSourceTable = computed(() => {
-  return props.cardType || props.resultData?.source_table || ''
-})
+  return props.cardType || props.resultData?.source_table || "";
+});
 
 const adjustedSourceTable = computed(() => {
   // Use the result from `formattedSourceTable` and apply label adjustments
   switch (formattedSourceTable.value) {
-    case 'Court Decisions':
-      return 'Court Decision'
-    case 'Answers':
-      return 'Question'
-    case 'Domestic Instrument':
-      return 'Domestic Instrument'
-    case 'Regional Instrument':
-      return 'Regional Instrument'
-    case 'International Instrument':
-      return 'International Instrument'
-    case 'Literature':
-      return 'Literature'
-    case 'Arbitral Rule':
-      return 'Arbitral Rule'
-    case 'Arbitral Award':
-      return 'Arbitral Award'
+    case "Court Decisions":
+      return "Court Decision";
+    case "Answers":
+      return "Question";
+    case "Domestic Instrument":
+      return "Domestic Instrument";
+    case "Regional Instrument":
+      return "Regional Instrument";
+    case "International Instrument":
+      return "International Instrument";
+    case "Literature":
+      return "Literature";
+    case "Arbitral Rule":
+      return "Arbitral Rule";
+    case "Arbitral Award":
+      return "Arbitral Award";
     // Add more adjustments as needed
     default:
-      return formattedSourceTable.value || '' // Fallback if no match
+      return formattedSourceTable.value || ""; // Fallback if no match
   }
-})
+});
 
 const labelColorClass = computed(() => {
   switch (formattedSourceTable.value) {
-    case 'Court Decisions':
-    case 'Court Decision':
-      return 'label-court-decision'
-    case 'Answers':
-    case 'Question':
-      return 'label-question'
-    case 'Domestic Instrument':
-    case 'Regional Instrument':
-    case 'International Instrument':
-      return 'label-instrument'
-    case 'Arbitral Rule':
-    case 'Arbitral Award':
-      return 'label-arbitration'
-    case 'Literature':
-      return 'label-literature'
+    case "Court Decisions":
+    case "Court Decision":
+      return "label-court-decision";
+    case "Answers":
+    case "Question":
+      return "label-question";
+    case "Domestic Instrument":
+    case "Regional Instrument":
+    case "International Instrument":
+      return "label-instrument";
+    case "Arbitral Rule":
+    case "Arbitral Award":
+      return "label-arbitration";
+    case "Literature":
+      return "label-literature";
     default:
-      return '' // No color for unknown labels
+      return ""; // No color for unknown labels
   }
-})
+});
 
 function labelClassForType(label) {
   switch (label) {
-    case 'Court Decision':
-      return 'label-court-decision'
-    case 'Question':
-      return 'label-question'
-    case 'Domestic Instrument':
-    case 'Regional Instrument':
-    case 'International Instrument':
-      return 'label-instrument'
-    case 'Literature':
-      return 'label-literature'
+    case "Court Decision":
+      return "label-court-decision";
+    case "Question":
+      return "label-question";
+    case "Domestic Instrument":
+    case "Regional Instrument":
+    case "International Instrument":
+      return "label-instrument";
+    case "Literature":
+      return "label-literature";
     default:
-      return 'label'
+      return "label";
   }
 }
 
 const formattedTheme = computed(() => {
   if (props.formattedTheme.length > 0) {
-    return props.formattedTheme
+    return props.formattedTheme;
   }
 
   // Handle literature's Themes
-  if (props.cardType === 'Literature' && props.resultData['Themes']) {
-    return props.resultData['Themes'].split(',').map((theme) => theme.trim())
+  if (props.cardType === "Literature" && props.resultData["Themes"]) {
+    return props.resultData["Themes"].split(",").map((theme) => theme.trim());
   }
 
   // Handle other types
   const themes =
-    props.resultData['Title of the Provision'] ?? props.resultData.Themes
+    props.resultData["Title of the Provision"] ?? props.resultData.Themes;
 
-  if (!themes || themes === 'None') {
-    return []
+  if (!themes || themes === "None") {
+    return [];
   }
 
-  return [...new Set(themes.split(',').map((theme) => theme.trim()))]
-})
+  return [...new Set(themes.split(",").map((theme) => theme.trim()))];
+});
 
-const erroredImages = reactive({}) // new reactive object
+const erroredImages = reactive({}); // new reactive object
 
 // Action items in "Suggest Edit" area
 const suggestEditActions = computed(() => {
-  let linkUrl = ''
-  let linkLabel = 'Link'
-  if (props.cardType === 'Literature') {
-    if (props.resultData['Open Access URL']) {
-      linkUrl = props.resultData['Open Access URL']
-      linkLabel = 'Open Access Link'
+  let linkUrl = "";
+  let linkLabel = "Link";
+  if (props.cardType === "Literature") {
+    if (props.resultData["Open Access URL"]) {
+      linkUrl = props.resultData["Open Access URL"];
+      linkLabel = "Open Access Link";
     } else {
-      linkUrl = props.resultData['Url'] || ''
+      linkUrl = props.resultData["Url"] || "";
     }
-  } else if (props.cardType === 'Court Decisions') {
-    linkUrl = props.resultData['Official Source (URL)'] || ''
-  } else if (props.cardType === 'Domestic Instrument') {
-    linkUrl = props.resultData['Source (URL)'] || ''
-  } else if (props.cardType === 'Regional Instrument') {
-    linkUrl = props.resultData['URL'] || ''
-  } else if (props.cardType === 'International Instrument') {
-    linkUrl = props.resultData['URL'] || ''
-  } else if (props.cardType === 'Arbitral Rule') {
-    linkUrl = props.resultData['Official_Source__URL_'] || ''
-  } else if (props.cardType === 'Arbitral Award') {
-    linkUrl = props.resultData['Official_Source__URL_'] || ''
+  } else if (props.cardType === "Court Decisions") {
+    linkUrl = props.resultData["Official Source (URL)"] || "";
+  } else if (props.cardType === "Domestic Instrument") {
+    linkUrl = props.resultData["Source (URL)"] || "";
+  } else if (props.cardType === "Regional Instrument") {
+    linkUrl = props.resultData["URL"] || "";
+  } else if (props.cardType === "International Instrument") {
+    linkUrl = props.resultData["URL"] || "";
+  } else if (props.cardType === "Arbitral Rule") {
+    linkUrl = props.resultData["Official_Source__URL_"] || "";
+  } else if (props.cardType === "Arbitral Award") {
+    linkUrl = props.resultData["Official_Source__URL_"] || "";
   }
-  const actions = []
+  const actions = [];
   if (linkUrl) {
     actions.push({
       label: linkLabel,
-      icon: 'i-material-symbols:open-in-new',
+      icon: "i-material-symbols:open-in-new",
       to: linkUrl,
-    })
+    });
   }
   actions.push({
-    label: 'Cite',
-    icon: 'i-material-symbols:verified-outline',
-  })
+    label: "Cite",
+    icon: "i-material-symbols:verified-outline",
+  });
   if (pdfExists.value) {
     actions.push({
-      label: 'PDF',
-      icon: 'i-material-symbols:arrow-circle-down-outline',
+      label: "PDF",
+      icon: "i-material-symbols:arrow-circle-down-outline",
       to: downloadPDFLink.value,
-    })
+    });
   }
   // Adjust the Edit link for International Instrument page only
-  let editLink = suggestEditLink.value
+  let editLink = suggestEditLink.value;
   actions.push({
-    label: 'Edit',
-    icon: 'i-material-symbols:edit-square-outline',
+    label: "Edit",
+    icon: "i-material-symbols:edit-square-outline",
     to: editLink,
-  })
-  return actions
-})
+  });
+  return actions;
+});
 
 // Methods
 function getLink() {
   // Determine the correct link based on the card type and resultData
   switch (props.cardType) {
-    case 'Answers':
-      return `/question/${props.resultData.id}`
-    case 'Court Decisions':
-      return `/court-decision/${props.resultData.id}`
-    case 'Domestic Instrument':
-      return `/domestic-instrument/${props.resultData.id}`
-    case 'Regional Instrument':
-      return `/regional-instrument/${props.resultData.id}`
-    case 'International Instrument':
-      return `/international-instrument/${props.resultData.id}`
-    case 'Arbitral Rule':
-      return `/arbitral-rule/${props.resultData.id}`
-    case 'Arbitral Award':
-      return `/arbitral-award/${props.resultData.id}`
-    case 'Literature':
-      return `/literature/${props.resultData.id}`
+    case "Answers":
+      return `/question/${props.resultData.id}`;
+    case "Court Decisions":
+      return `/court-decision/${props.resultData.id}`;
+    case "Domestic Instrument":
+      return `/domestic-instrument/${props.resultData.id}`;
+    case "Regional Instrument":
+      return `/regional-instrument/${props.resultData.id}`;
+    case "International Instrument":
+      return `/international-instrument/${props.resultData.id}`;
+    case "Arbitral Rule":
+      return `/arbitral-rule/${props.resultData.id}`;
+    case "Arbitral Award":
+      return `/arbitral-award/${props.resultData.id}`;
+    case "Literature":
+      return `/literature/${props.resultData.id}`;
     default:
-      return '#'
+      return "#";
   }
 }
 
-const { data: pdfExists } = useCheckTarget(downloadPDFLink)
+const { data: pdfExists } = useCheckTarget(downloadPDFLink);
 
-const suggestEditLink = ref('')
-const airtableFormID = 'appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form'
+const suggestEditLink = ref("");
+const airtableFormID = "appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form";
 
 onMounted(() => {
-  const currentURL = window.location.href
-  suggestEditLink.value = `https://airtable.com/${airtableFormID}?prefill_URL=${encodeURIComponent(currentURL)}&hide_URL=true`
-})
+  const currentURL = window.location.href;
+  suggestEditLink.value = `https://airtable.com/${airtableFormID}?prefill_URL=${encodeURIComponent(currentURL)}&hide_URL=true`;
+});
 function getJurisdictionISO(name) {
-  const entry = jurisdictionsData.find((item) => item.name.includes(name))
-  return entry ? entry.alternative[0].toLowerCase() : 'default'
+  const entry = jurisdictionsData.find((item) => item.name.includes(name));
+  return entry ? entry.alternative[0].toLowerCase() : "default";
 }
 
 // Add computed for legalFamily
 const legalFamily = computed(() => {
   if (
     props.resultData &&
-    (props.cardType === 'Jurisdiction' || props.resultData['Legal Family'])
+    (props.cardType === "Jurisdiction" || props.resultData["Legal Family"])
   ) {
-    const value = props.resultData['Legal Family'] || ''
-    if (!value || value === 'N/A') return []
+    const value = props.resultData["Legal Family"] || "";
+    if (!value || value === "N/A") return [];
     return value
-      .split(',')
+      .split(",")
       .map((f) => f.trim())
-      .filter((f) => f)
+      .filter((f) => f);
   }
-  return []
-})
+  return [];
+});
 
 // Pluralize source table label for URL function
 function getSourceTablePlural(label) {
-  if (label === 'Court Decision') return 'Court Decisions'
-  if (label === 'Domestic Instrument') return 'Domestic Instruments'
-  if (label === 'Regional Instrument') return 'Regional Instruments'
-  if (label === 'International Instrument') return 'International Instruments'
-  if (label === 'Question') return 'Questions'
-  if (label === 'Arbitral Rule') return 'Arbitral Rules'
-  if (label === 'Arbitral Award') return 'Arbitral Awards'
-  return label
+  if (label === "Court Decision") return "Court Decisions";
+  if (label === "Domestic Instrument") return "Domestic Instruments";
+  if (label === "Regional Instrument") return "Regional Instruments";
+  if (label === "International Instrument") return "International Instruments";
+  if (label === "Question") return "Questions";
+  if (label === "Arbitral Rule") return "Arbitral Rules";
+  if (label === "Arbitral Award") return "Arbitral Awards";
+  return label;
 }
 
 // Dropdown options for 'new' pages (first is a real placeholder)
 const typeOptions = [
-  { label: 'Change', value: '' },
-  { label: 'Court Decision', value: 'Court Decision' },
-  { label: 'Domestic Instrument', value: 'Domestic Instrument' },
-  { label: 'Regional Instrument', value: 'Regional Instrument' },
-  { label: 'International Instrument', value: 'International Instrument' },
-  { label: 'Literature', value: 'Literature' },
-]
-const selectedType = ref('')
+  { label: "Change", value: "" },
+  { label: "Court Decision", value: "Court Decision" },
+  { label: "Domestic Instrument", value: "Domestic Instrument" },
+  { label: "Regional Instrument", value: "Regional Instrument" },
+  { label: "International Instrument", value: "International Instrument" },
+  { label: "Literature", value: "Literature" },
+];
+const selectedType = ref("");
 
 // Ensure placeholder shows by default in 'new' mode
 onMounted(() => {
-  if (props.headerMode === 'new') {
-    selectedType.value = ''
+  if (props.headerMode === "new") {
+    selectedType.value = "";
   }
-})
+});
 
 // Reset selection on route change to keep placeholder visible by default
 watch(
   () => route.fullPath,
   () => {
-    if (props.headerMode === 'new') {
-      selectedType.value = ''
+    if (props.headerMode === "new") {
+      selectedType.value = "";
     }
-  }
-)
+  },
+);
 
 function typeToNewPath(label) {
   const slug =
-    label === 'Court Decision'
-      ? 'court-decision'
-      : label === 'Domestic Instrument'
-        ? 'domestic-instrument'
-        : label === 'Regional Instrument'
-          ? 'regional-instrument'
-          : label === 'International Instrument'
-            ? 'international-instrument'
-            : label === 'Question'
-              ? 'question'
-              : 'literature'
-  return `/${slug}/new`
+    label === "Court Decision"
+      ? "court-decision"
+      : label === "Domestic Instrument"
+        ? "domestic-instrument"
+        : label === "Regional Instrument"
+          ? "regional-instrument"
+          : label === "International Instrument"
+            ? "international-instrument"
+            : label === "Question"
+              ? "question"
+              : "literature";
+  return `/${slug}/new`;
 }
 
 // Navigate on selection change in 'new' mode
 watch(selectedType, (val, old) => {
-  if (props.headerMode === 'new' && val !== '' && val !== old) {
-    router.push(typeToNewPath(val))
+  if (props.headerMode === "new" && val !== "" && val !== old) {
+    router.push(typeToNewPath(val));
   }
-})
+});
 
 // Ensure USelect internal trigger/value adopt the global .label style
 const selectUiLabel = {
-  base: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
-  wrapper: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
-  input: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
-  trigger: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
-  value: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
-  placeholder: 'new-select-label leading-none !text-[var(--color-cold-purple)]',
-}
+  base: "new-select-label leading-none !text-[var(--color-cold-purple)]",
+  wrapper: "new-select-label leading-none !text-[var(--color-cold-purple)]",
+  input: "new-select-label leading-none !text-[var(--color-cold-purple)]",
+  trigger: "new-select-label leading-none !text-[var(--color-cold-purple)]",
+  value: "new-select-label leading-none !text-[var(--color-cold-purple)]",
+  placeholder: "new-select-label leading-none !text-[var(--color-cold-purple)]",
+};
 </script>
 
 <style scoped>
@@ -682,19 +682,19 @@ a.label-arbitration {
 }
 
 /* Make the dropdown caret white so it blends into white background */
-.no-caret-select :deep([class*='i-heroicons-chevron']) {
+.no-caret-select :deep([class*="i-heroicons-chevron"]) {
   /* Hide built-in chevrons */
   display: none !important;
 }
-.no-caret-select :deep([class*='i-heroicons-chevron']) svg {
+.no-caret-select :deep([class*="i-heroicons-chevron"]) svg {
   display: none !important;
 }
 /* Iconify/Material icons use a class with a colon; escape it */
-.no-caret-select :deep([class*='i-material-symbols\:arrow-drop-down']) {
+.no-caret-select :deep([class*="i-material-symbols\:arrow-drop-down"]) {
   display: none !important;
 }
 /* Up/Down combined chevron variant */
-.no-caret-select :deep([class*='i-heroicons-chevron-up-down']) {
+.no-caret-select :deep([class*="i-heroicons-chevron-up-down"]) {
   display: none !important;
 }
 /* Trailing container color fallback */
@@ -735,8 +735,8 @@ a.label-arbitration {
 /* Make the select as compact as label text to keep header height consistent */
 .no-caret-select :deep(.ui-input),
 .no-caret-select :deep(.u-input),
-.no-caret-select :deep([role='button']),
-.no-caret-select :deep([role='combobox']) {
+.no-caret-select :deep([role="button"]),
+.no-caret-select :deep([role="combobox"]) {
   height: 22px !important;
   min-height: 22px !important;
   padding-top: 0 !important;
@@ -749,7 +749,7 @@ a.label-arbitration {
 }
 
 /* Make the USelect trigger look like a header label/link */
-.no-caret-select.label :deep(button[role='combobox']) {
+.no-caret-select.label :deep(button[role="combobox"]) {
   color: inherit !important;
   font-weight: inherit !important;
   font-size: inherit !important;
@@ -766,20 +766,20 @@ a.label-arbitration {
 /* Ensure inner spans/values also adopt label sizing and casing */
 .no-caret-select.label :deep(.u-input *),
 .no-caret-select.label :deep(.ui-input *),
-.no-caret-select.label :deep(button[role='combobox'] *) {
+.no-caret-select.label :deep(button[role="combobox"] *) {
   font-size: inherit !important;
   text-transform: inherit !important;
 }
 
 /* Hard-apply .label metrics to trigger/value for reliability */
-.no-caret-select :deep(button[role='combobox']) {
+.no-caret-select :deep(button[role="combobox"]) {
   font-size: 12px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
   color: var(--color-cold-purple) !important;
 }
-.no-caret-select :deep(button[role='combobox'] span),
-.no-caret-select :deep(button[role='combobox'] div),
+.no-caret-select :deep(button[role="combobox"] span),
+.no-caret-select :deep(button[role="combobox"] div),
 .no-caret-select :deep(.u-input .u-input-value),
 .no-caret-select :deep(.ui-input .ui-input-value) {
   font-size: 12px !important;
@@ -795,7 +795,7 @@ a.label-arbitration {
 .no-caret-select :deep(.ui-input-wrapper) {
   height: 22px !important;
 }
-.no-caret-select :deep(button[role='combobox']) {
+.no-caret-select :deep(button[role="combobox"]) {
   height: 22px !important;
   min-height: 22px !important;
   padding-top: 0 !important;
@@ -803,12 +803,12 @@ a.label-arbitration {
 }
 
 /* Final authority: enforce 12px uppercase, weight 600, and purple color */
-.new-select-label :deep(button[role='combobox']),
-.new-select-label :deep(button[role='combobox'] *),
+.new-select-label :deep(button[role="combobox"]),
+.new-select-label :deep(button[role="combobox"] *),
 .new-select-label :deep(.u-input .u-input-value),
 .new-select-label :deep(.ui-input .ui-input-value),
-.no-caret-select.new-select-label :deep(button[role='combobox']),
-.no-caret-select.new-select-label :deep(button[role='combobox'] *),
+.no-caret-select.new-select-label :deep(button[role="combobox"]),
+.no-caret-select.new-select-label :deep(button[role="combobox"] *),
 .no-caret-select.new-select-label :deep(.u-input .u-input-value),
 .no-caret-select.new-select-label :deep(.ui-input .ui-input-value) {
   font-size: 12px !important;

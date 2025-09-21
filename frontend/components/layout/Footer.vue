@@ -1,12 +1,12 @@
 <template>
-  <footer class="bg-cold-night text-white px-6 py-12 min-h-[300px] mt-24">
+  <footer class="mt-24 min-h-[300px] bg-cold-night px-6 py-12 text-white">
     <div
-      class="mx-auto max-w-container grid grid-cols-1 md:grid-cols-12 md:gap-6 items-start"
+      class="mx-auto grid max-w-container grid-cols-1 items-start md:grid-cols-12 md:gap-6"
     >
-      <div class="md:col-span-8 flex flex-col gap-3 mt-4">
+      <div class="mt-4 flex flex-col gap-3 md:col-span-8">
         <img
           src="https://choiceoflaw.blob.core.windows.net/assets/cold_flag_footer.svg"
-          class="mb-6 w-25"
+          class="w-25 mb-6"
         />
         <h2 class="!font-bold leading-tight">Choice of Law<br />Dataverse</h2>
         <p class="leading-snug">
@@ -15,12 +15,12 @@
       </div>
       <!-- Footer Links -->
       <div
-        class="md:col-span-4 flex flex-row md:justify-end gap-8 mt-12 md:mt-4 mb-4 md:mb-0 whitespace-nowrap"
+        class="mb-4 mt-12 flex flex-row gap-8 whitespace-nowrap md:col-span-4 md:mb-0 md:mt-4 md:justify-end"
       >
-        <NuxtLink to="/disclaimer" class="!text-white whitespace-nowrap">
+        <NuxtLink to="/disclaimer" class="whitespace-nowrap !text-white">
           Disclaimer
         </NuxtLink>
-        <NuxtLink to="/contact" class="!text-white whitespace-nowrap">
+        <NuxtLink to="/contact" class="whitespace-nowrap !text-white">
           Contact
         </NuxtLink>
       </div>

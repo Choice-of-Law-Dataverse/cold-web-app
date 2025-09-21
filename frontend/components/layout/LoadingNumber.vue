@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-row space-x-4 mb-8 mt-8">
+  <div class="mb-8 mt-8 flex flex-row space-x-4">
     <USkeleton
       v-for="n in 3"
       :key="n"

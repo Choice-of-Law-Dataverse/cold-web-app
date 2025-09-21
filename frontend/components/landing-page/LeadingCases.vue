@@ -19,11 +19,11 @@
               />
               <span class="break-words text-left">
                 {{
-                  decision['Publication Date ISO']
-                    ? formatYear(decision['Publication Date ISO'])
-                    : decision['Date']
+                  decision["Publication Date ISO"]
+                    ? formatYear(decision["Publication Date ISO"])
+                    : decision["Date"]
                 }}:
-                {{ decision['Case Title'] }}
+                {{ decision["Case Title"] }}
               </span>
             </UButton>
           </RouterLink>
@@ -44,15 +44,15 @@
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router'
-import LoadingLandingPageCard from '@/components/layout/LoadingLandingPageCard.vue'
-import ShowMoreLess from '@/components/ui/ShowMoreLess.vue'
-import { useLeadingCases } from '@/composables/useLeadingCases'
-import { formatYear } from '@/utils/format'
+import { RouterLink } from "vue-router";
+import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
+import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
+import { useLeadingCases } from "@/composables/useLeadingCases";
+import { formatYear } from "@/utils/format";
 
-const showAll = ref(false)
+const showAll = ref(false);
 
-const { data: leadingCases, isLoading } = useLeadingCases()
+const { data: leadingCases, isLoading } = useLeadingCases();
 </script>
 
 <style scoped>

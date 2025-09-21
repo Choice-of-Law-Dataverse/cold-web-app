@@ -9,10 +9,10 @@
     sourceTable="Jurisdiction"
   >
     <h1 class="mb-12">
-      Country Report for {{ jurisdictionData?.Name || 'N/A' }}
+      Country Report for {{ jurisdictionData?.Name || "N/A" }}
     </h1>
     <template #related-literature>
-      <section class="section-gap p-0 m-0">
+      <section class="section-gap m-0 p-0">
         <RelatedLiterature
           :literature-id="jurisdictionData?.Literature"
           :valueClassMap="valueClassMap['Related Literature']"
@@ -23,12 +23,12 @@
           "
           :emptyValueBehavior="
             jurisdictionConfig.keyLabelPairs.find(
-              (pair) => pair.key === 'Related Literature'
+              (pair) => pair.key === 'Related Literature',
             )?.emptyValueBehavior
           "
           :tooltip="
             jurisdictionConfig.keyLabelPairs.find(
-              (pair) => pair.key === 'Related Literature'
+              (pair) => pair.key === 'Related Literature',
             )?.tooltip
           "
           mode="id"
@@ -62,7 +62,7 @@
                 jurisdiction: jurisdictionData?.Name || '',
               },
             }"
-            class="no-underline !mb-2"
+            class="!mb-2 no-underline"
           >
             <UButton
               class="link-button"
@@ -73,12 +73,12 @@
               <span class="break-words text-left">
                 <template v-if="courtDecisionCount !== null">
                   See {{ courtDecisionCount }} court decision{{
-                    courtDecisionCount === 1 ? '' : 's'
+                    courtDecisionCount === 1 ? "" : "s"
                   }}
-                  from {{ jurisdictionData?.Name || 'N/A' }}
+                  from {{ jurisdictionData?.Name || "N/A" }}
                 </template>
                 <template v-else>
-                  All court decisions from {{ jurisdictionData?.Name || 'N/A' }}
+                  All court decisions from {{ jurisdictionData?.Name || "N/A" }}
                 </template>
               </span>
             </UButton>
@@ -106,13 +106,13 @@
               <span class="break-words text-left">
                 <template v-if="domesticInstrumentCount !== null">
                   See {{ domesticInstrumentCount }} domestic instrument{{
-                    domesticInstrumentCount === 1 ? '' : 's'
+                    domesticInstrumentCount === 1 ? "" : "s"
                   }}
-                  from {{ jurisdictionData?.Name || 'N/A' }}
+                  from {{ jurisdictionData?.Name || "N/A" }}
                 </template>
                 <template v-else>
                   All domestic instruments from
-                  {{ jurisdictionData?.Name || 'N/A' }}
+                  {{ jurisdictionData?.Name || "N/A" }}
                 </template>
               </span>
             </UButton>
@@ -136,13 +136,13 @@
           <div class="col-span-12">
             <UCard class="cold-ucard">
               <div>
-                <h2 class="mt-2 mb-8">
+                <h2 class="mb-8 mt-2">
                   Questions and Answers
                   {{
-                    jurisdictionData?.Name ? `for ${jurisdictionData.Name}` : ''
+                    jurisdictionData?.Name ? `for ${jurisdictionData.Name}` : ""
                   }}
                 </h2>
-                <div class="flex flex-col py-8 space-y-3 ml-8">
+                <div class="ml-8 flex flex-col space-y-3 py-8">
                   <LoadingBar />
                   <LoadingBar />
                   <LoadingBar />
@@ -157,35 +157,35 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import { computed, watch } from "vue";
+import { useRoute } from "vue-router";
+import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 // import JurisdictionComparison from '@/components/jurisdiction-comparison/JurisdictionComparison.vue'
-import JurisdictionSelector from '@/components/ui/JurisdictionSelector.vue'
-import JurisdictionQuestions from '@/components/content/JurisdictionQuestions.vue'
-import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
-import LoadingBar from '@/components/layout/LoadingBar.vue'
-import { useJurisdiction } from '@/composables/useJurisdictions'
+import JurisdictionSelector from "@/components/ui/JurisdictionSelector.vue";
+import JurisdictionQuestions from "@/components/content/JurisdictionQuestions.vue";
+import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
+import LoadingBar from "@/components/layout/LoadingBar.vue";
+import { useJurisdiction } from "@/composables/useJurisdictions";
 import {
   useDomesticInstrumentsCount,
   useCourtDecisionsCount,
-} from '@/composables/useJurisdictionCounts'
-import { useLiteratures } from '@/composables/useLiteratures'
-import { useSpecialists } from '@/composables/useSpecialists'
-import { jurisdictionConfig } from '@/config/pageConfigs'
-import { useHead } from '#app'
+} from "@/composables/useJurisdictionCounts";
+import { useLiteratures } from "@/composables/useLiteratures";
+import { useSpecialists } from "@/composables/useSpecialists";
+import { jurisdictionConfig } from "@/config/pageConfigs";
+import { useHead } from "#app";
 
-const route = useRoute()
+const route = useRoute();
 
-const { keyLabelPairs, valueClassMap } = jurisdictionConfig
+const { keyLabelPairs, valueClassMap } = jurisdictionConfig;
 
-const compareJurisdiction = ref(null)
+const compareJurisdiction = ref(null);
 
 const {
   isLoading: isJurisdictionLoading,
   data: jurisdictionData,
   error,
-} = useJurisdiction(computed(() => route.params.id))
+} = useJurisdiction(computed(() => route.params.id));
 
 // const {
 //   data: literatures,
@@ -203,21 +203,21 @@ const {
   data: courtDecisionCount,
   isLoading: courtDecisionCountLoading,
   error: courtDecisionCountError,
-} = useCourtDecisionsCount(computed(() => jurisdictionData.value?.Name))
+} = useCourtDecisionsCount(computed(() => jurisdictionData.value?.Name));
 
 const {
   data: domesticInstrumentCount,
   isLoading: domesticInstrumentCountLoading,
   error: domesticInstrumentCountError,
-} = useDomesticInstrumentsCount(computed(() => jurisdictionData.value?.Name))
+} = useDomesticInstrumentsCount(computed(() => jurisdictionData.value?.Name));
 
 // Remove Legal Family from keyLabelPairs for detail display
 const keyLabelPairsWithoutLegalFamily = computed(() =>
-  keyLabelPairs.filter((pair) => pair.key !== 'Legal Family')
-)
+  keyLabelPairs.filter((pair) => pair.key !== "Legal Family"),
+);
 
 // Set compare jurisdiction from query parameter
-compareJurisdiction.value = route.query.c || null
+compareJurisdiction.value = route.query.c || null;
 
 const isLoading = computed(
   () =>
@@ -225,35 +225,35 @@ const isLoading = computed(
     // literatureLoading ||
     // specialistsLoading ||
     courtDecisionCountLoading ||
-    domesticInstrumentCountLoading
-)
+    domesticInstrumentCountLoading,
+);
 
 // Set dynamic page title based on 'Name'
 watch(
   jurisdictionData,
   (newVal) => {
-    if (!newVal) return
-    const name = newVal.Name
+    if (!newVal) return;
+    const name = newVal.Name;
     const pageTitle =
       name && name.trim()
         ? `${name} Country Report — CoLD`
-        : 'Jurisdiction Country Report — CoLD'
+        : "Jurisdiction Country Report — CoLD";
     useHead({
       title: pageTitle,
       link: [
         {
-          rel: 'canonical',
+          rel: "canonical",
           href: `https://cold.global${route.fullPath}`,
         },
       ],
       meta: [
         {
-          name: 'description',
+          name: "description",
           content: pageTitle,
         },
       ],
-    })
+    });
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 </script>

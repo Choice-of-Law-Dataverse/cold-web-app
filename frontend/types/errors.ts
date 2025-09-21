@@ -1,4 +1,4 @@
-import type { ApiRequestBody } from './api'
+import type { ApiRequestBody } from "./api";
 
 /**
  * Create a NotFound error using Nuxt's createError
@@ -8,19 +8,19 @@ export function createNotFoundError(
   method: string,
   body: ApiRequestBody | undefined,
   originalError: unknown,
-  customMessage?: string
+  customMessage?: string,
 ) {
-  const table = body && 'table' in body ? body.table : undefined
-  const id = body && 'id' in body ? body.id : undefined
-  const resource = table ? table : endpoint
-  const itemId = id || 'Item'
-  const finalMessage = customMessage || `${itemId} not found in ${resource}`
+  const table = body && "table" in body ? body.table : undefined;
+  const id = body && "id" in body ? body.id : undefined;
+  const resource = table ? table : endpoint;
+  const itemId = id || "Item";
+  const finalMessage = customMessage || `${itemId} not found in ${resource}`;
 
   return createError({
     statusCode: 404,
     statusMessage: finalMessage,
     data: {
-      name: 'NotFoundError',
+      name: "NotFoundError",
       table,
       id,
       endpoint,
@@ -34,7 +34,7 @@ export function createNotFoundError(
             }
           : originalError,
     },
-  })
+  });
 }
 
 /**
@@ -45,21 +45,21 @@ export function createApiError(
   method: string,
   body: ApiRequestBody | undefined,
   originalError: unknown,
-  customMessage?: string
+  customMessage?: string,
 ) {
-  const table = body && 'table' in body ? body.table : undefined
-  const operation = table ? `fetch ${table}` : `call ${endpoint}`
+  const table = body && "table" in body ? body.table : undefined;
+  const operation = table ? `fetch ${table}` : `call ${endpoint}`;
   const baseErrorMessage =
-    originalError instanceof Error ? originalError.message : 'Unknown error'
+    originalError instanceof Error ? originalError.message : "Unknown error";
 
   const finalMessage =
-    customMessage || `Failed to ${operation}: ${baseErrorMessage}`
+    customMessage || `Failed to ${operation}: ${baseErrorMessage}`;
 
   return createError({
     statusCode: 500,
     statusMessage: finalMessage,
     data: {
-      name: 'ApiError',
+      name: "ApiError",
       table,
       endpoint,
       method,
@@ -72,7 +72,7 @@ export function createApiError(
             }
           : originalError,
     },
-  })
+  });
 }
 
 /**
@@ -80,43 +80,43 @@ export function createApiError(
  * Used when API returns a 404 or indicates resource not found
  */
 export class NotFoundError extends Error {
-  public readonly table?: string
-  public readonly id?: string | number
-  public readonly endpoint: string
-  public readonly method: string
-  public readonly originalError: unknown
-  public readonly body?: ApiRequestBody
+  public readonly table?: string;
+  public readonly id?: string | number;
+  public readonly endpoint: string;
+  public readonly method: string;
+  public readonly originalError: unknown;
+  public readonly body?: ApiRequestBody;
 
   constructor(
     endpoint: string,
     method: string,
     body: ApiRequestBody | undefined,
     originalError: unknown,
-    customMessage?: string
+    customMessage?: string,
   ) {
     // Extract table name from body if available
-    const table = body && 'table' in body ? body.table : undefined
-    const id = body && 'id' in body ? body.id : undefined
+    const table = body && "table" in body ? body.table : undefined;
+    const id = body && "id" in body ? body.id : undefined;
 
     // Create meaningful error message for not found with ID pattern
-    const resource = table ? table : endpoint
-    const itemId = id || 'Item'
-    const finalMessage = customMessage || `${itemId} not found in ${resource}`
+    const resource = table ? table : endpoint;
+    const itemId = id || "Item";
+    const finalMessage = customMessage || `${itemId} not found in ${resource}`;
 
-    super(finalMessage)
+    super(finalMessage);
 
-    this.name = 'NotFoundError'
-    this.table = table
-    this.id = id
-    this.endpoint = endpoint
-    this.method = method
-    this.body = body
-    this.originalError = originalError
+    this.name = "NotFoundError";
+    this.table = table;
+    this.id = id;
+    this.endpoint = endpoint;
+    this.method = method;
+    this.body = body;
+    this.originalError = originalError;
 
     // Maintain proper prototype chain
-    Object.setPrototypeOf(this, NotFoundError.prototype)
+    Object.setPrototypeOf(this, NotFoundError.prototype);
 
-    console.error(this.toJSON())
+    console.error(this.toJSON());
   }
 
   toJSON() {
@@ -136,7 +136,7 @@ export class NotFoundError extends Error {
               stack: this.originalError.stack,
             }
           : this.originalError,
-    }
+    };
   }
 }
 
@@ -145,43 +145,43 @@ export class NotFoundError extends Error {
  * Provides structured error information with context about the API call
  */
 export class ApiError extends Error {
-  public readonly table?: string
-  public readonly endpoint: string
-  public readonly method: string
-  public readonly originalError: unknown
-  public readonly body?: ApiRequestBody
+  public readonly table?: string;
+  public readonly endpoint: string;
+  public readonly method: string;
+  public readonly originalError: unknown;
+  public readonly body?: ApiRequestBody;
 
   constructor(
     endpoint: string,
     method: string,
     body: ApiRequestBody | undefined,
     originalError: unknown,
-    customMessage?: string
+    customMessage?: string,
   ) {
     // Extract table name from body if available
-    const table = body && 'table' in body ? body.table : undefined
+    const table = body && "table" in body ? body.table : undefined;
 
     // Create meaningful error message
-    const operation = table ? `fetch ${table}` : `call ${endpoint}`
+    const operation = table ? `fetch ${table}` : `call ${endpoint}`;
     const baseErrorMessage =
-      originalError instanceof Error ? originalError.message : 'Unknown error'
+      originalError instanceof Error ? originalError.message : "Unknown error";
 
     const finalMessage =
-      customMessage || `Failed to ${operation}: ${baseErrorMessage}`
+      customMessage || `Failed to ${operation}: ${baseErrorMessage}`;
 
-    super(finalMessage)
+    super(finalMessage);
 
-    this.name = 'ApiError'
-    this.table = table
-    this.endpoint = endpoint
-    this.method = method
-    this.body = body
-    this.originalError = originalError
+    this.name = "ApiError";
+    this.table = table;
+    this.endpoint = endpoint;
+    this.method = method;
+    this.body = body;
+    this.originalError = originalError;
 
     // Maintain proper prototype chain
-    Object.setPrototypeOf(this, ApiError.prototype)
+    Object.setPrototypeOf(this, ApiError.prototype);
 
-    console.error(this.toJSON())
+    console.error(this.toJSON());
   }
 
   /**
@@ -203,6 +203,6 @@ export class ApiError extends Error {
               stack: this.originalError.stack,
             }
           : this.originalError,
-    }
+    };
   }
 }

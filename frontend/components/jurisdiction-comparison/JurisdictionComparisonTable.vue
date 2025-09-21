@@ -32,10 +32,10 @@
         "
         :style="{
           backgroundColor: getBackgroundColor(
-            computeMatchStatus(row.Match.answer1, row.Match.answer2)
+            computeMatchStatus(row.Match.answer1, row.Match.answer2),
           ),
         }"
-        class="inline-block w-4 h-4 rounded-full"
+        class="inline-block h-4 w-4 rounded-full"
       ></span>
       <span
         v-else
@@ -83,10 +83,10 @@
             "
             :style="{
               backgroundColor: getBackgroundColor(
-                computeMatchStatus(row.Match.answer1, row.Match.answer2)
+                computeMatchStatus(row.Match.answer1, row.Match.answer2),
               ),
             }"
-            class="inline-block w-4 h-4 rounded-full"
+            class="inline-block h-4 w-4 rounded-full"
           ></span>
           <span
             v-else
@@ -126,25 +126,25 @@ const props = defineProps({
     type: Function,
     required: true,
   },
-})
+});
 
-const emit = defineEmits(['update-rows'])
+const emit = defineEmits(["update-rows"]);
 
 // Example function to update rows (emit changes back to parent)
 function filterRows(newFilteredRows) {
-  emit('update-rows', newFilteredRows)
+  emit("update-rows", newFilteredRows);
 }
 
 function getBackgroundColor(status) {
   switch (status) {
-    case 'green':
-      return 'var(--color-cold-green)'
-    case 'red':
-      return 'var(--color-label-court-decision)'
-    case 'gray':
-      return 'var(--color-cold-gray)'
+    case "green":
+      return "var(--color-cold-green)";
+    case "red":
+      return "var(--color-label-court-decision)";
+    case "gray":
+      return "var(--color-cold-gray)";
     default:
-      return 'transparent'
+      return "transparent";
   }
 }
 </script>

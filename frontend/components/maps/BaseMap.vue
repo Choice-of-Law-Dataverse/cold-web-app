@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed } from "vue";
 
 // Props
 const props = defineProps({
@@ -77,19 +77,19 @@ const props = defineProps({
     type: Number,
     default: 1.0,
   },
-})
+});
 
 // Import the new composables
-const { data: geoJsonData } = useGeoJsonData()
-const { data: coveredCountries } = useCoveredCountries()
+const { data: geoJsonData } = useGeoJsonData();
+const { data: coveredCountries } = useCoveredCountries();
 
 // Data readiness state
 const isDataReady = computed(
   () =>
     geoJsonData.value &&
     coveredCountries.value &&
-    coveredCountries.value.size > 0
-)
+    coveredCountries.value.size > 0,
+);
 
 // Map options computed from props
 const mapOptions = computed(() => {
@@ -99,71 +99,72 @@ const mapOptions = computed(() => {
     attributionControl: false,
     dragging: props.enableDragging,
     doubleClickZoom: props.enableDoubleClickZoom,
-  }
+  };
 
   // Add maxBounds if provided
   if (props.maxBounds) {
-    options.maxBounds = props.maxBounds
-    options.maxBoundsViscosity = props.maxBoundsViscosity
+    options.maxBounds = props.maxBounds;
+    options.maxBoundsViscosity = props.maxBoundsViscosity;
   }
 
-  return options
-})
+  return options;
+});
 
 // Example function for handling GeoJSON features
 const onEachFeature = (feature, layer) => {
-  const isoCode = feature.properties.iso_a3_eh // Get the ISO3 code
-  const countryName = feature.properties.name // Get the country's name
-  const isCovered = coveredCountries.value?.has(isoCode?.toLowerCase()) || false
+  const isoCode = feature.properties.iso_a3_eh; // Get the ISO3 code
+  const countryName = feature.properties.name; // Get the country's name
+  const isCovered =
+    coveredCountries.value?.has(isoCode?.toLowerCase()) || false;
 
   // Default style
   const defaultStyle = {
     fillColor: isCovered
-      ? 'var(--color-cold-purple)'
-      : 'var(--color-cold-gray)',
+      ? "var(--color-cold-purple)"
+      : "var(--color-cold-gray)",
     weight: 0.5,
-    color: 'white',
+    color: "white",
     fillOpacity: 1,
-  }
+  };
 
   // Hover style
   const hoverStyle = {
     ...defaultStyle,
     fillOpacity: 0.8, // 80% alpha on hover
-  }
+  };
 
   // Set default style
-  layer.setStyle(defaultStyle)
+  layer.setStyle(defaultStyle);
 
   // Add hover events
-  layer.on('mouseover', () => {
-    layer.setStyle(hoverStyle)
+  layer.on("mouseover", () => {
+    layer.setStyle(hoverStyle);
 
     // Update the info control
-    const infoControl = document.getElementById('info-control')
+    const infoControl = document.getElementById("info-control");
     if (infoControl) {
       infoControl.innerHTML = `
         <h2>${countryName}</h2>
-        <h2>${isCovered ? 'Data available' : 'No data available'}</h2>
-      `
+        <h2>${isCovered ? "Data available" : "No data available"}</h2>
+      `;
     }
-  })
+  });
 
-  layer.on('mouseout', () => {
-    layer.setStyle(defaultStyle)
+  layer.on("mouseout", () => {
+    layer.setStyle(defaultStyle);
 
     // Reset the info control
-    const infoControl = document.getElementById('info-control')
+    const infoControl = document.getElementById("info-control");
     if (infoControl) {
       infoControl.innerHTML = `
         <h2>Answer Coverage</h2>
-      `
+      `;
     }
-  })
+  });
 
   // Add a click event to navigate to the country-specific URL
-  layer.on('click', () => {
-    navigateTo(`/jurisdiction/${isoCode.toLowerCase()}`)
-  })
-}
+  layer.on("click", () => {
+    navigateTo(`/jurisdiction/${isoCode.toLowerCase()}`);
+  });
+};
 </script>

@@ -34,33 +34,33 @@
 </template>
 
 <script setup lang="ts">
-import DetailDisplay from '@/components/ui/BaseDetailDisplay.vue'
+import DetailDisplay from "@/components/ui/BaseDetailDisplay.vue";
 
 const props = withDefaults(
   defineProps<{
-    loading: boolean
-    resultData: any
-    keyLabelPairs: any[]
-    valueClassMap: Record<string, string>
-    sourceTable: string
-    formattedJurisdiction?: any[] //
-    hideBackButton?: boolean
-    showHeader?: boolean
-    formattedTheme?: any[]
-    headerMode?: string
-    showNotificationBanner?: boolean
-    notificationBannerMessage?: string
-    fallbackMessage?: string
-    icon?: string
-    showOpenLink?: boolean
-    showSuggestEdit?: boolean
+    loading: boolean;
+    resultData: any;
+    keyLabelPairs: any[];
+    valueClassMap: Record<string, string>;
+    sourceTable: string;
+    formattedJurisdiction?: any[]; //
+    hideBackButton?: boolean;
+    showHeader?: boolean;
+    formattedTheme?: any[];
+    headerMode?: string;
+    showNotificationBanner?: boolean;
+    notificationBannerMessage?: string;
+    fallbackMessage?: string;
+    icon?: string;
+    showOpenLink?: boolean;
+    showSuggestEdit?: boolean;
   }>(),
   {
     showHeader: true,
     showOpenLink: false,
     showSuggestEdit: false,
-  }
-)
+  },
+);
 
-defineEmits(['save', 'open-save-modal', 'open-cancel-modal'])
+defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 </script>

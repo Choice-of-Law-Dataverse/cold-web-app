@@ -13,7 +13,7 @@
     :notificationBannerMessage="notificationBannerMessage"
     :icon="'i-material-symbols:warning-outline'"
   >
-    <div class="section-gap p-0 m-0">
+    <div class="section-gap m-0 p-0">
       <!-- Jurisdiction (required) -->
       <UFormGroup size="lg" hint="Required" :error="errors.jurisdiction_link">
         <template #label>
@@ -41,7 +41,7 @@
         </template>
         <UInput
           v-model="officialTitle"
-          class="mt-2 cold-input"
+          class="cold-input mt-2"
           placeholder="e.g. Bundesgesetz über das Internationale Privatrecht"
         />
       </UFormGroup>
@@ -59,7 +59,7 @@
         </template>
         <UInput
           v-model="titleEn"
-          class="mt-2 cold-input"
+          class="cold-input mt-2"
           placeholder="e.g. Swiss Private International Law Act"
         />
       </UFormGroup>
@@ -79,7 +79,7 @@
           <UButton
             icon="i-heroicons-calendar-days-20-solid"
             :label="format(entryIntoForce, 'dd MMMM yyyy')"
-            class="mt-2 cold-date-trigger"
+            class="cold-date-trigger mt-2"
           />
           <template #panel="{ close }">
             <DatePicker v-model="entryIntoForce" is-required @close="close" />
@@ -99,7 +99,7 @@
         </template>
         <UInput
           v-model="sourceUrl"
-          class="mt-2 cold-input"
+          class="cold-input mt-2"
           placeholder="https://…"
         />
       </UFormGroup>
@@ -109,7 +109,7 @@
         <template #label>
           <span class="label">Themes</span>
         </template>
-        <UInput v-model="themes" class="mt-2 cold-input" />
+        <UInput v-model="themes" class="cold-input mt-2" />
       </UFormGroup>
 
       <!-- Status (optional) -->
@@ -117,7 +117,7 @@
         <template #label>
           <span class="label">Status</span>
         </template>
-        <UInput v-model="status" class="mt-2 cold-input" />
+        <UInput v-model="status" class="cold-input mt-2" />
       </UFormGroup>
 
       <!-- Publication Date (optional) -->
@@ -134,7 +134,7 @@
                 ? format(publicationDate, 'dd MMMM yyyy')
                 : 'Add date'
             "
-            class="mt-2 cold-date-trigger"
+            class="cold-date-trigger mt-2"
           />
           <template #panel="{ close }">
             <DatePicker v-model="publicationDate" @close="close" />
@@ -148,7 +148,7 @@
           <span class="label flex flex-row items-center">Abbreviation</span>
           <InfoPopover :text="tooltipAbbreviation" />
         </template>
-        <UInput v-model="abbreviation" class="mt-2 cold-input" />
+        <UInput v-model="abbreviation" class="cold-input mt-2" />
       </UFormGroup>
 
       <!-- Compatible HCCH Principles (optional) -->
@@ -160,7 +160,7 @@
           <InfoPopover :text="tooltipCompatibleWithHCCH" />
         </template>
         <div
-          class="mt-2 cold-toggle-group"
+          class="cold-toggle-group mt-2"
           role="group"
           aria-label="Compatible with the HCCH Principles"
         >
@@ -190,7 +190,7 @@
           <InfoPopover :text="tooltipCompatibleWithUNCITRAL" />
         </template>
         <div
-          class="mt-2 cold-toggle-group"
+          class="cold-toggle-group mt-2"
           role="group"
           aria-label="Compatible with the UNCITRAL Model Law"
         >
@@ -234,119 +234,119 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
-import { useHead, useRouter } from '#imports'
-import { z } from 'zod'
-import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import DatePicker from '@/components/ui/DatePicker.vue'
-import CancelModal from '@/components/ui/CancelModal.vue'
-import SaveModal from '@/components/ui/SaveModal.vue'
-import SearchFilters from '@/components/search-results/SearchFilters.vue'
-import InfoPopover from '~/components/ui/InfoPopover.vue'
-import { format } from 'date-fns'
+import { ref, watch, onMounted } from "vue";
+import { useHead, useRouter } from "#imports";
+import { z } from "zod";
+import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import DatePicker from "@/components/ui/DatePicker.vue";
+import CancelModal from "@/components/ui/CancelModal.vue";
+import SaveModal from "@/components/ui/SaveModal.vue";
+import SearchFilters from "@/components/search-results/SearchFilters.vue";
+import InfoPopover from "~/components/ui/InfoPopover.vue";
+import { format } from "date-fns";
 // Tooltips: match detail page content
-import tooltipAbbreviation from '@/content/info_boxes/domestic_instrument/abbreviation.md?raw'
-import tooltipCompatibleWithHCCH from '@/content/info_boxes/domestic_instrument/compatible_hcch.md?raw'
-import tooltipCompatibleWithUNCITRAL from '@/content/info_boxes/domestic_instrument/compatible_uncitral.md?raw'
-import tooltipEntryIntoForce from '@/content/info_boxes/domestic_instrument/entry_into_force.md?raw'
-import tooltipOfficialTitle from '@/content/info_boxes/domestic_instrument/official_title.md?raw'
-import tooltipDomesticInstrumentPublicationDate from '@/content/info_boxes/domestic_instrument/publication_date.md?raw'
-import tooltipDomesticInstrumentTitle from '@/content/info_boxes/domestic_instrument/title.md?raw'
+import tooltipAbbreviation from "@/content/info_boxes/domestic_instrument/abbreviation.md?raw";
+import tooltipCompatibleWithHCCH from "@/content/info_boxes/domestic_instrument/compatible_hcch.md?raw";
+import tooltipCompatibleWithUNCITRAL from "@/content/info_boxes/domestic_instrument/compatible_uncitral.md?raw";
+import tooltipEntryIntoForce from "@/content/info_boxes/domestic_instrument/entry_into_force.md?raw";
+import tooltipOfficialTitle from "@/content/info_boxes/domestic_instrument/official_title.md?raw";
+import tooltipDomesticInstrumentPublicationDate from "@/content/info_boxes/domestic_instrument/publication_date.md?raw";
+import tooltipDomesticInstrumentTitle from "@/content/info_boxes/domestic_instrument/title.md?raw";
 
-const config = useRuntimeConfig()
+const config = useRuntimeConfig();
 
 // Form data
-const officialTitle = ref('')
-const titleEn = ref('')
+const officialTitle = ref("");
+const titleEn = ref("");
 // Jurisdiction selector
-const selectedJurisdiction = ref([])
-const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
-const entryIntoForce = ref(new Date())
-const sourceUrl = ref('')
+const selectedJurisdiction = ref([]);
+const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
+const entryIntoForce = ref(new Date());
+const sourceUrl = ref("");
 // Optional fields
-const themes = ref('')
-const status = ref('')
-const publicationDate = ref(null)
-const abbreviation = ref('')
-const compatibleHcchPrinciples = ref(undefined)
-const compatibleUncitralModelLaw = ref(undefined)
+const themes = ref("");
+const status = ref("");
+const publicationDate = ref(null);
+const abbreviation = ref("");
+const compatibleHcchPrinciples = ref(undefined);
+const compatibleUncitralModelLaw = ref(undefined);
 
 // For SaveModal parity
-const specialists = ref([''])
-const pdfFile = ref(null)
-const email = ref('')
-const comments = ref('')
+const specialists = ref([""]);
+const pdfFile = ref(null);
+const email = ref("");
+const comments = ref("");
 
-const turnstile = ref()
-const token = ref('')
+const turnstile = ref();
+const token = ref("");
 
 // Toggle buttons write 'Yes'/'No' directly to the refs above
 
-watch(token, () => {})
+watch(token, () => {});
 
 // Load jurisdictions like on Court Decision page
 const loadJurisdictions = async () => {
   try {
     const response = await fetch(`/api/proxy/search/full_table`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
-    })
+      body: JSON.stringify({ table: "Jurisdictions", filters: [] }),
+    });
 
-    if (!response.ok) throw new Error('Failed to load jurisdictions')
+    if (!response.ok) throw new Error("Failed to load jurisdictions");
 
-    const jurisdictionsData = await response.json()
+    const jurisdictionsData = await response.json();
     jurisdictionOptions.value = [
-      { label: 'Select Jurisdiction' },
+      { label: "Select Jurisdiction" },
       ...jurisdictionsData
-        .filter((entry) => entry['Irrelevant?'] === false)
+        .filter((entry) => entry["Irrelevant?"] === false)
         .map((entry) => ({
           label: entry.Name,
-          avatar: entry['Alpha-3 Code']
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+          avatar: entry["Alpha-3 Code"]
+            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry["Alpha-3 Code"].toLowerCase()}.svg`
             : undefined,
         }))
-        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
-    ]
+        .sort((a, b) => (a.label || "").localeCompare(b.label || "")),
+    ];
   } catch (error) {
-    console.error('Error loading jurisdictions:', error)
+    console.error("Error loading jurisdictions:", error);
   }
-}
+};
 
-onMounted(loadJurisdictions)
+onMounted(loadJurisdictions);
 
 // Validation schema
 const formSchema = z.object({
   jurisdiction_link: z
     .string()
-    .min(1, { message: 'Selected jurisdiction is required' }),
+    .min(1, { message: "Selected jurisdiction is required" }),
   official_title: z
     .string()
-    .min(1, { message: 'Official title is required' })
-    .min(3, { message: 'Official title must be at least 3 characters long' }),
+    .min(1, { message: "Official title is required" })
+    .min(3, { message: "Official title must be at least 3 characters long" }),
   title_en: z
     .string()
-    .min(1, { message: 'English title is required' })
-    .min(3, { message: 'English title must be at least 3 characters long' }),
-  entry_into_force: z.date({ required_error: 'Entry into force is required' }),
+    .min(1, { message: "English title is required" })
+    .min(3, { message: "English title must be at least 3 characters long" }),
+  entry_into_force: z.date({ required_error: "Entry into force is required" }),
   source_url: z.string().url({
     message: 'Source link must be a valid URL starting with "https://"',
   }),
-})
+});
 
 // State
-const errors = ref({})
-const saveModalErrors = ref({})
+const errors = ref({});
+const saveModalErrors = ref({});
 
-const router = useRouter()
-const showSaveModal = ref(false)
-const showCancelModal = ref(false)
+const router = useRouter();
+const showSaveModal = ref(false);
+const showCancelModal = ref(false);
 const notificationBannerMessage =
-  'Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.'
+  "Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.";
 
-useHead({ title: 'New Domestic Instrument — CoLD' })
+useHead({ title: "New Domestic Instrument — CoLD" });
 
 function validateForm() {
   try {
@@ -354,35 +354,35 @@ function validateForm() {
       jurisdiction_link:
         (Array.isArray(selectedJurisdiction.value) &&
           selectedJurisdiction.value[0]?.label) ||
-        '',
+        "",
       official_title: officialTitle.value,
       title_en: titleEn.value,
       entry_into_force: entryIntoForce.value,
       source_url: sourceUrl.value,
-    }
-    formSchema.parse(formData)
-    errors.value = {}
-    return true
+    };
+    formSchema.parse(formData);
+    errors.value = {};
+    return true;
   } catch (error) {
     if (error instanceof z.ZodError) {
-      errors.value = {}
+      errors.value = {};
       error.errors.forEach((err) => {
-        errors.value[err.path[0]] = err.message
-      })
+        errors.value[err.path[0]] = err.message;
+      });
     }
-    return false
+    return false;
   }
 }
 
 function openSaveModal() {
-  const isValid = validateForm()
+  const isValid = validateForm();
   if (isValid) {
-    showSaveModal.value = true
+    showSaveModal.value = true;
   }
 }
 
 function confirmCancel() {
-  router.push('/')
+  router.push("/");
 }
 
 function handleNewSave() {
@@ -393,17 +393,17 @@ function handleNewSave() {
       undefined,
     official_title: officialTitle.value,
     title_en: titleEn.value,
-    entry_into_force: format(entryIntoForce.value, 'yyyy-MM-dd'),
+    entry_into_force: format(entryIntoForce.value, "yyyy-MM-dd"),
     source_url: sourceUrl.value,
     themes: themes.value
       ? themes.value
-          .split(',')
+          .split(",")
           .map((t) => t.trim())
           .filter((t) => t)
       : undefined,
     status: status.value || undefined,
     publication_date: publicationDate
-      ? format(publicationDate.value, 'yyyy-MM-dd')
+      ? format(publicationDate.value, "yyyy-MM-dd")
       : undefined,
     abbreviation: abbreviation.value || undefined,
     compatible_hcch_principles:
@@ -417,50 +417,50 @@ function handleNewSave() {
     // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
-  }
+  };
 
-  ;(async () => {
+  (async () => {
     try {
       await $fetch(`/api/proxy/suggestions/domestic-instruments`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: payload,
-      })
-      showSaveModal.value = false
+      });
+      showSaveModal.value = false;
       router.push({
-        path: '/confirmation',
-        query: { message: 'Thanks, we have received your submission.' },
-      })
+        path: "/confirmation",
+        query: { message: "Thanks, we have received your submission." },
+      });
     } catch (err) {
       saveModalErrors.value = {
         general:
-          'There was a problem submitting your suggestion. Please try again.',
-      }
-      console.error('Submission failed:', err)
+          "There was a problem submitting your suggestion. Please try again.",
+      };
+      console.error("Submission failed:", err);
     }
-  })()
+  })();
 }
 
 async function onSubmit() {
-  const res = await $fetch('/api/submit', {
-    method: 'POST',
+  const res = await $fetch("/api/submit", {
+    method: "POST",
     body: { token /* form fields */ },
-  })
+  });
   if (res.success) {
     // handle success
   } else {
     // handle error
   }
-  turnstile.value?.reset()
+  turnstile.value?.reset();
 }
 </script>
 
 <style scoped>
 /* Hide the back button and all right-side card header buttons */
 :deep(.card-header__actions),
-:deep(.card-header [class*='actions']) {
+:deep(.card-header [class*="actions"]) {
   display: none !important;
 }
 </style>

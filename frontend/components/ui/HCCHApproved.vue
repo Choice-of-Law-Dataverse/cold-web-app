@@ -6,7 +6,7 @@
   >
     <UIcon
       name="i-material-symbols:check-circle"
-      class="mr-[0.3em] text-[1.15em] mt-[0.1em]"
+      class="mr-[0.3em] mt-[0.1em] text-[1.15em]"
     />
     HCCH<span class="desktop-only-text">&nbsp;Compliant</span>
   </a>

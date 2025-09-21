@@ -4,17 +4,17 @@
       <div class="col-span-12">
         <UCard class="cold-ucard">
           <div
-            class="popular-searches-container flex flex-col md:flex-row gap-8 items-stretch md:items-center"
+            class="popular-searches-container flex flex-col items-stretch gap-8 md:flex-row md:items-center"
           >
             <h3 class="text-left md:whitespace-nowrap">
               Compare
-              {{ formattedJurisdiction?.Name || 'this jurisdiction' }} with
+              {{ formattedJurisdiction?.Name || "this jurisdiction" }} with
               other jurisdictions
             </h3>
 
             <div
               v-if="availableJurisdictions && availableJurisdictions.length > 0"
-              class="flex flex-col md:flex-row gap-4 md:items-center"
+              class="flex flex-col gap-4 md:flex-row md:items-center"
             >
               <div class="w-full md:w-auto">
                 <JurisdictionSelectMenu
@@ -46,10 +46,10 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from 'vue-router'
-import { computed } from 'vue'
-import JurisdictionSelectMenu from '@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue'
-import { useJurisdictions } from '@/composables/useJurisdictions'
+import { useRoute, useRouter } from "vue-router";
+import { computed } from "vue";
+import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
+import { useJurisdictions } from "@/composables/useJurisdictions";
 
 // Accept processedAnswerData as a prop from parent
 defineProps({
@@ -57,40 +57,40 @@ defineProps({
     type: Object,
     required: true,
   },
-})
+});
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
 // Get all jurisdictions for the selector
-const { data: jurisdictions, isLoading } = useJurisdictions()
+const { data: jurisdictions, isLoading } = useJurisdictions();
 
 // Get the current ISO3 code from the route params
 const currentIso3Code = computed(() => {
-  return route.params.id?.toUpperCase()
-})
+  return route.params.id?.toUpperCase();
+});
 
 // Filter out the current jurisdiction from available options
 const availableJurisdictions = computed(() => {
-  if (!jurisdictions.value || !currentIso3Code.value) return []
+  if (!jurisdictions.value || !currentIso3Code.value) return [];
 
   return jurisdictions.value.filter(
     (jurisdiction) =>
-      jurisdiction.alpha3Code?.toUpperCase() !== currentIso3Code.value
-  )
-})
+      jurisdiction.alpha3Code?.toUpperCase() !== currentIso3Code.value,
+  );
+});
 
 // Handle jurisdiction selection and navigate to comparison page
 const onJurisdictionSelected = (selectedJurisdiction) => {
-  if (!selectedJurisdiction?.alpha3Code || !currentIso3Code.value) return
+  if (!selectedJurisdiction?.alpha3Code || !currentIso3Code.value) return;
 
-  const currentCode = currentIso3Code.value.toLowerCase()
-  const selectedCode = selectedJurisdiction.alpha3Code.toLowerCase()
+  const currentCode = currentIso3Code.value.toLowerCase();
+  const selectedCode = selectedJurisdiction.alpha3Code.toLowerCase();
 
   // Navigate to comparison page with format: current+selected
-  const comparisonUrl = `/jurisdiction-comparison/${currentCode}+${selectedCode}`
-  router.push(comparisonUrl)
-}
+  const comparisonUrl = `/jurisdiction-comparison/${currentCode}+${selectedCode}`;
+  router.push(comparisonUrl);
+};
 </script>
 
 <style scoped>

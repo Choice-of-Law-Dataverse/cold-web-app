@@ -46,7 +46,7 @@
                 >
                   <Icon
                     name="i-material-symbols:add-circle-outline"
-                    class="mr-2 ml-8 text-[20px]"
+                    class="ml-8 mr-2 text-[20px]"
                   />
                   Add
                 </button>
@@ -77,7 +77,7 @@
 
     <!-- Mobile/Tablet Filters Grid -->
     <div class="md:hidden">
-      <h2 class="text-xl font-semibold mb-8">Compare Jurisdictions</h2>
+      <h2 class="mb-8 text-xl font-semibold">Compare Jurisdictions</h2>
       <div class="filters-grid mb-6">
         <div
           v-for="(filter, index) in jurisdictionFilters"
@@ -116,10 +116,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from 'vue'
-import SearchFilters from '@/components/search-results/SearchFilters.vue'
-import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
-import { useJurisdictions } from '@/composables/useJurisdictions'
+import { ref, onMounted, watch } from "vue";
+import SearchFilters from "@/components/search-results/SearchFilters.vue";
+import { useJurisdictionComparison } from "@/composables/useJurisdictionComparison";
+import { useJurisdictions } from "@/composables/useJurisdictions";
 
 // Props for initial countries from URL
 const props = defineProps({
@@ -127,14 +127,14 @@ const props = defineProps({
     type: Array,
     default: () => [],
   },
-})
+});
 
 // Router for URL updates
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
 const { data: jurisdictions, isLoading: loadingJurisdictions } =
-  useJurisdictions()
+  useJurisdictions();
 
 // Use shared jurisdiction comparison state
 const {
@@ -144,21 +144,21 @@ const {
   jurisdictionFilters,
   setInitialFilters,
   showThirdColumn,
-} = useJurisdictionComparison()
+} = useJurisdictionComparison();
 
 // Sticky state for background
-const isSticky = ref(false)
+const isSticky = ref(false);
 
 // Watch for changes in jurisdictions data and initialCountries prop
 watch(
   [() => jurisdictions?.value, () => props.initialCountries],
   ([jurisdictionsData, initialCountries]) => {
     if (jurisdictionsData?.length > 1 && initialCountries?.length > 0) {
-      setInitialFilters(jurisdictionsData, initialCountries)
+      setInitialFilters(jurisdictionsData, initialCountries);
     }
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 // Watch for changes in filter selections and update URL
 watch(
@@ -169,82 +169,82 @@ watch(
     showThirdColumn,
   ],
   () => {
-    const f1 = currentJurisdictionFilter1.value[0]?.alpha3Code?.toLowerCase()
-    const f2 = currentJurisdictionFilter2.value[0]?.alpha3Code?.toLowerCase()
-    const f3 = currentJurisdictionFilter3.value[0]?.alpha3Code?.toLowerCase()
+    const f1 = currentJurisdictionFilter1.value[0]?.alpha3Code?.toLowerCase();
+    const f2 = currentJurisdictionFilter2.value[0]?.alpha3Code?.toLowerCase();
+    const f3 = currentJurisdictionFilter3.value[0]?.alpha3Code?.toLowerCase();
 
     // Require at least two to build URL
     if (f1 && f2) {
-      const parts = [f1, f2]
-      if (showThirdColumn.value && f3) parts.push(f3)
-      const countryCodes = parts.join('+')
-      const currentCountries = route.params.countries
+      const parts = [f1, f2];
+      if (showThirdColumn.value && f3) parts.push(f3);
+      const countryCodes = parts.join("+");
+      const currentCountries = route.params.countries;
       if (currentCountries !== countryCodes) {
-        router.push(`/jurisdiction-comparison/${countryCodes}`)
+        router.push(`/jurisdiction-comparison/${countryCodes}`);
       }
     }
   },
-  { deep: true }
-)
+  { deep: true },
+);
 
 // Initialization
 onMounted(async () => {
   // JavaScript-based sticky implementation
-  const filtersElement = document.querySelector('.jc-fixed-filters')
-  const overviewElement = document.querySelector('.jc-z-top')
+  const filtersElement = document.querySelector(".jc-fixed-filters");
+  const overviewElement = document.querySelector(".jc-z-top");
 
-  if (!filtersElement || !overviewElement) return
+  if (!filtersElement || !overviewElement) return;
 
   // Get the initial position of the filters relative to the Overview title
   const getOverviewTop = () => {
-    const overviewRect = overviewElement.getBoundingClientRect()
-    return overviewRect.top + window.scrollY
-  }
+    const overviewRect = overviewElement.getBoundingClientRect();
+    return overviewRect.top + window.scrollY;
+  };
 
-  let overviewTop = getOverviewTop()
+  let overviewTop = getOverviewTop();
 
   const onScroll = () => {
-    const scrollTop = window.scrollY
+    const scrollTop = window.scrollY;
 
     // Recalculate overview position (in case layout changes)
-    overviewTop = getOverviewTop()
+    overviewTop = getOverviewTop();
 
     // Check if we've scrolled past the Overview title
     if (scrollTop > overviewTop - 80) {
       // 80px offset for better UX
       // Make filters sticky at top of viewport but constrained to container width
-      filtersElement.style.position = 'fixed'
-      filtersElement.style.top = '0'
-      filtersElement.style.left = '0'
-      filtersElement.style.right = '0'
-      filtersElement.style.transform = 'none'
-      filtersElement.style.width = '100%'
-      filtersElement.style.maxWidth = 'var(--container-width, 1200px)'
-      filtersElement.style.margin = '0 auto'
-      filtersElement.style.zIndex = '1000'
-      isSticky.value = true
+      filtersElement.style.position = "fixed";
+      filtersElement.style.top = "0";
+      filtersElement.style.left = "0";
+      filtersElement.style.right = "0";
+      filtersElement.style.transform = "none";
+      filtersElement.style.width = "100%";
+      filtersElement.style.maxWidth = "var(--container-width, 1200px)";
+      filtersElement.style.margin = "0 auto";
+      filtersElement.style.zIndex = "1000";
+      isSticky.value = true;
     } else {
       // Reset to normal flow
-      filtersElement.style.position = 'static'
-      filtersElement.style.top = 'auto'
-      filtersElement.style.left = 'auto'
-      filtersElement.style.right = 'auto'
-      filtersElement.style.transform = 'none'
-      filtersElement.style.width = 'auto'
-      filtersElement.style.maxWidth = 'none'
-      filtersElement.style.margin = ''
-      filtersElement.style.zIndex = 'auto'
-      isSticky.value = false
+      filtersElement.style.position = "static";
+      filtersElement.style.top = "auto";
+      filtersElement.style.left = "auto";
+      filtersElement.style.right = "auto";
+      filtersElement.style.transform = "none";
+      filtersElement.style.width = "auto";
+      filtersElement.style.maxWidth = "none";
+      filtersElement.style.margin = "";
+      filtersElement.style.zIndex = "auto";
+      isSticky.value = false;
     }
-  }
+  };
 
-  window.addEventListener('scroll', onScroll)
-  window.addEventListener('resize', () => {
-    overviewTop = getOverviewTop()
-    onScroll()
-  })
-  onScroll() // Call once to set initial state
-})
+  window.addEventListener("scroll", onScroll);
+  window.addEventListener("resize", () => {
+    overviewTop = getOverviewTop();
+    onScroll();
+  });
+  onScroll(); // Call once to set initial state
+});
 </script>
 
 <style scoped>

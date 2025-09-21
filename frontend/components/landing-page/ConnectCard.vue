@@ -46,7 +46,7 @@ const props = defineProps({
   subtitle: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
   buttonText: {
     type: String,
@@ -59,12 +59,12 @@ const props = defineProps({
   iconName: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
   imageSrc: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
   newTab: {
     type: Boolean,
@@ -74,7 +74,7 @@ const props = defineProps({
     type: String,
     required: false,
   },
-})
+});
 </script>
 
 <style scoped>

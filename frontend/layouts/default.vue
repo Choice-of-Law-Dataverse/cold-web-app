@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-cold-bg min-h-screen flex flex-col">
+  <div class="flex min-h-screen flex-col bg-cold-bg">
     <Nav />
 
-    <main class="flex-1 mt-12">
+    <main class="mt-12 flex-1">
       <ErrorBoundary>
         <NuxtPage />
       </ErrorBoundary>
@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import Nav from '@/components/layout/Nav.vue'
-import Footer from '@/components/layout/Footer.vue'
-import ErrorBoundary from '@/components/ui/ErrorBoundary.vue'
+import Nav from "@/components/layout/Nav.vue";
+import Footer from "@/components/layout/Footer.vue";
+import ErrorBoundary from "@/components/ui/ErrorBoundary.vue";
 </script>

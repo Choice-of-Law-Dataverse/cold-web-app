@@ -27,24 +27,24 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
-import { ref } from 'vue'
-import eventBus from '@/eventBus'
+import { useRouter } from "vue-router";
+import { ref } from "vue";
+import eventBus from "@/eventBus";
 
-const router = useRouter()
+const router = useRouter();
 
-const searchSuggestions = ref(['Arbitration', 'Rules of law', 'Tacit choice'])
+const searchSuggestions = ref(["Arbitration", "Rules of law", "Tacit choice"]);
 
 function formatQuery(query) {
-  return query.replace(/ /g, '+')
+  return query.replace(/ /g, "+");
 }
 
 function handleSuggestionClick(suggestion) {
   // Pass the query with both theme and type=Literature
   router.push({
-    name: 'search',
-    query: { theme: suggestion, type: 'Literature' },
-  })
+    name: "search",
+    query: { theme: suggestion, type: "Literature" },
+  });
 }
 </script>
 

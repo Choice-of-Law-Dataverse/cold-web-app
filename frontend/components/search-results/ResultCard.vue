@@ -4,7 +4,7 @@
       <template #header>
         <template v-if="cardType === 'Loading'">
           <USkeleton
-            class="h-5 mt-0.5 mb-0.5 w-[100px] rounded-none"
+            class="mb-0.5 mt-0.5 h-5 w-[100px] rounded-none"
             style="background-color: var(--color-cold-gray-alpha)"
           />
         </template>
@@ -30,8 +30,8 @@
 </template>
 
 <script setup>
-import { UCard } from '#components'
-import BaseCardHeader from '@/components/ui/BaseCardHeader.vue'
+import { UCard } from "#components";
+import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 
 // Define props
 const props = defineProps({
@@ -54,7 +54,7 @@ const props = defineProps({
     required: false,
     default: () => [],
   },
-})
+});
 </script>
 
 <style scoped>

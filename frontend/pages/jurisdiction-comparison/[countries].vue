@@ -18,7 +18,7 @@
             <JCStickyFilters :initialCountries="validatedCountryCodes" />
 
             <!-- Content area with sufficient height for sticky behavior -->
-            <div class="md:mt-0 relative">
+            <div class="relative md:mt-0">
               <JCOverview
                 :selected-jurisdiction-codes="validatedCountryCodes"
               />
@@ -118,39 +118,39 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import JCOverview from '@/pages/jurisdiction-comparison/JCOverview.vue'
-import JCQuestions from '~/pages/jurisdiction-comparison/JCQuestions.vue'
-import JCStickyFilters from '@/pages/jurisdiction-comparison/JCStickyFilters.vue'
-import { useHead } from '#app'
+import { computed } from "vue";
+import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import JCOverview from "@/pages/jurisdiction-comparison/JCOverview.vue";
+import JCQuestions from "~/pages/jurisdiction-comparison/JCQuestions.vue";
+import JCStickyFilters from "@/pages/jurisdiction-comparison/JCStickyFilters.vue";
+import { useHead } from "#app";
 
-const route = useRoute()
+const route = useRoute();
 
 // Set static page title
 useHead({
-  title: 'Compare Jurisdictions — CoLD',
+  title: "Compare Jurisdictions — CoLD",
   link: [
     {
-      rel: 'canonical',
+      rel: "canonical",
       href: `https://cold.global${route.fullPath}`,
     },
   ],
   meta: [
     {
-      name: 'description',
-      content: 'Compare Jurisdictions — CoLD',
+      name: "description",
+      content: "Compare Jurisdictions — CoLD",
     },
   ],
-})
+});
 
 // Parse and validate country codes from the URL parameter
 const validatedCountryCodes = computed(() => {
-  const countries = route.params.countries
-  if (typeof countries !== 'string') return []
+  const countries = route.params.countries;
+  if (typeof countries !== "string") return [];
   // Split by '+' and convert to uppercase for consistency
-  const codes = countries.split('+').map((code) => code.toUpperCase())
+  const codes = countries.split("+").map((code) => code.toUpperCase());
   // Accept 2 or 3 country codes; otherwise, let defaults apply
-  return codes.length === 2 || codes.length === 3 ? codes : []
-})
+  return codes.length === 2 || codes.length === 3 ? codes : [];
+});
 </script>

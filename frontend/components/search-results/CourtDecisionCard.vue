@@ -1,6 +1,6 @@
 <template>
   <ResultCard :resultData="resultData" cardType="Court Decisions">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
       <!-- Case Title section -->
       <div
         :class="[
@@ -8,11 +8,11 @@
           config.gridConfig.caseTitle.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Case Title') }}</div>
+        <div class="label-key">{{ getLabel("Case Title") }}</div>
         <div
           :class="[
             config.valueClassMap['Case Title'],
-            'text-sm leading-relaxed whitespace-pre-line',
+            'whitespace-pre-line text-sm leading-relaxed',
             (!resultData['Case Title'] || resultData['Case Title'] === 'NA') &&
             config.keyLabelPairs.find((pair) => pair.key === 'Case Title')
               ?.emptyValueBehavior?.action === 'display' &&
@@ -22,7 +22,7 @@
               : '',
           ]"
         >
-          {{ getValue('Case Title') }}
+          {{ getValue("Case Title") }}
         </div>
       </div>
 
@@ -37,14 +37,14 @@
           config.gridConfig.date.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Publication Date ISO') }}</div>
+        <div class="label-key">{{ getLabel("Publication Date ISO") }}</div>
         <div
           :class="[
             config.valueClassMap['Publication Date ISO'],
-            'text-sm leading-relaxed whitespace-pre-line',
+            'whitespace-pre-line text-sm leading-relaxed',
           ]"
         >
-          {{ getValue('Publication Date ISO') }}
+          {{ getValue("Publication Date ISO") }}
         </div>
       </div>
 
@@ -56,14 +56,14 @@
           config.gridConfig.instance.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Instance') }}</div>
+        <div class="label-key">{{ getLabel("Instance") }}</div>
         <div
           :class="[
             config.valueClassMap['Instance'],
-            'text-sm leading-relaxed whitespace-pre-line',
+            'whitespace-pre-line text-sm leading-relaxed',
           ]"
         >
-          {{ getValue('Instance') }}
+          {{ getValue("Instance") }}
         </div>
       </div>
 
@@ -78,14 +78,14 @@
           config.gridConfig.choiceOfLaw.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Choice of Law Issue') }}</div>
+        <div class="label-key">{{ getLabel("Choice of Law Issue") }}</div>
         <div
           :class="[
             config.valueClassMap['Choice of Law Issue'],
-            'text-sm leading-relaxed whitespace-pre-line',
+            'whitespace-pre-line text-sm leading-relaxed',
           ]"
         >
-          {{ getValue('Choice of Law Issue') }}
+          {{ getValue("Choice of Law Issue") }}
         </div>
       </div>
     </div>
@@ -93,55 +93,55 @@
 </template>
 
 <script setup>
-import ResultCard from '@/components/search-results/ResultCard.vue'
-import { courtDecisionCardConfig } from '@/config/cardConfigs'
+import ResultCard from "@/components/search-results/ResultCard.vue";
+import { courtDecisionCardConfig } from "@/config/cardConfigs";
 
 const props = defineProps({
   resultData: {
     type: Object,
     required: true,
   },
-})
+});
 
-const config = courtDecisionCardConfig
+const config = courtDecisionCardConfig;
 
 const getLabel = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
-  return pair?.label || key
-}
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
+  return pair?.label || key;
+};
 
 const getValue = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
-  let value = props.resultData[key]
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
+  let value = props.resultData[key];
 
   // Apply extractYear to 'Publication Date ISO' if a valid value exists
-  if (key === 'Publication Date ISO' && value && value !== 'NA') {
-    value = extractYear(value)
+  if (key === "Publication Date ISO" && value && value !== "NA") {
+    value = extractYear(value);
   }
 
-  if ((!value || value === 'NA') && pair?.emptyValueBehavior) {
-    if (pair.emptyValueBehavior.action === 'display') {
+  if ((!value || value === "NA") && pair?.emptyValueBehavior) {
+    if (pair.emptyValueBehavior.action === "display") {
       if (pair.emptyValueBehavior.getFallback) {
-        return pair.emptyValueBehavior.getFallback(props.resultData)
+        return pair.emptyValueBehavior.getFallback(props.resultData);
       }
-      return pair.emptyValueBehavior.fallback
+      return pair.emptyValueBehavior.fallback;
     }
-    return ''
+    return "";
   }
 
-  return value
-}
+  return value;
+};
 
 const getFallbackClass = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
-  const value = props.resultData[key]
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
+  const value = props.resultData[key];
 
   if (!value && pair?.emptyValueBehavior?.fallbackClass) {
-    return pair.emptyValueBehavior.fallbackClass
+    return pair.emptyValueBehavior.fallbackClass;
   }
 
-  return ''
-}
+  return "";
+};
 </script>
 
 <style scoped>

@@ -4,7 +4,7 @@
       <!-- Header Section -->
       <GridContainer>
         <GridItem>
-          <div class="text-[60px] leading-[68px] font-bold mb-3 md:text-left">
+          <div class="mb-3 text-[60px] font-bold leading-[68px] md:text-left">
             Choice of Law<br />
             Dataverse
           </div>
@@ -12,7 +12,7 @@
 
         <GridItem>
           <h2
-            class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 flex flex-row items-center gap-1"
+            class="mb-6 flex w-full flex-row items-center gap-1 pb-4 pt-4 text-xl font-medium md:text-left"
           >
             <span>
               Navigate private international law issues with precision.
@@ -125,7 +125,7 @@
           />
         </GridItem>
 
-        <GridItem class="flex justify-center mb-4">
+        <GridItem class="mb-4 flex justify-center">
           <ImportantQuestions
             :questionSuffixes="[
               '_01-P',
@@ -183,40 +183,40 @@
 </template>
 
 <script setup>
-import PopularSearches from '@/components/landing-page/PopularSearches.vue'
-import TopLiteratureThemes from '@/components/landing-page/TopLiteratureThemes.vue'
-import JurisdictionMap from '@/components/landing-page/JurisdictionMap.vue'
-import CountrySelectMenu from '@/components/landing-page/TempJurisdictionPicker.vue'
-import PlotCourtDecisionsJurisdiction from '@/components/landing-page/PlotCourtDecisionsJurisdiction.vue'
-import ConnectCard from '@/components/landing-page/ConnectCard.vue'
-import NumberCard from '@/components/landing-page/NumberCard.vue'
-import CompareJurisdictionsCard from '@/components/landing-page/CompareJurisdictionsCard.vue'
-import { externalLinks } from '@/utils/externalLinks'
-import RecentDomesticInstruments from '@/components/landing-page/RecentDomesticInstruments.vue'
-import SuccessfulLegalTransplantations from '@/components/landing-page/SuccessfulLegalTransplantations.vue'
-import LeadingCases from '@/components/landing-page/LeadingCases.vue'
-import { useHead } from '#imports'
-import ImportantQuestions from '~/components/landing-page/ImportantQuestions.vue'
-import GridContainer from '@/components/layout/GridContainer.vue'
-import GridItem from '@/components/layout/GridItem.vue'
-const links = externalLinks
+import PopularSearches from "@/components/landing-page/PopularSearches.vue";
+import TopLiteratureThemes from "@/components/landing-page/TopLiteratureThemes.vue";
+import JurisdictionMap from "@/components/landing-page/JurisdictionMap.vue";
+import CountrySelectMenu from "@/components/landing-page/TempJurisdictionPicker.vue";
+import PlotCourtDecisionsJurisdiction from "@/components/landing-page/PlotCourtDecisionsJurisdiction.vue";
+import ConnectCard from "@/components/landing-page/ConnectCard.vue";
+import NumberCard from "@/components/landing-page/NumberCard.vue";
+import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
+import { externalLinks } from "@/utils/externalLinks";
+import RecentDomesticInstruments from "@/components/landing-page/RecentDomesticInstruments.vue";
+import SuccessfulLegalTransplantations from "@/components/landing-page/SuccessfulLegalTransplantations.vue";
+import LeadingCases from "@/components/landing-page/LeadingCases.vue";
+import { useHead } from "#imports";
+import ImportantQuestions from "~/components/landing-page/ImportantQuestions.vue";
+import GridContainer from "@/components/layout/GridContainer.vue";
+import GridItem from "@/components/layout/GridItem.vue";
+const links = externalLinks;
 
 useHead({
-  title: 'Choice of Law Dataverse — CoLD',
+  title: "Choice of Law Dataverse — CoLD",
   link: [
     {
-      rel: 'canonical',
-      href: 'https://cold.global/',
+      rel: "canonical",
+      href: "https://cold.global/",
     },
   ],
   meta: [
     {
-      name: 'description',
+      name: "description",
       content:
-        'Choice of Law Dataverse — Navigate private international law issues with precision.',
+        "Choice of Law Dataverse — Navigate private international law issues with precision.",
     },
   ],
-})
+});
 </script>
 
 <style scoped>

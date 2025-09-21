@@ -10,8 +10,8 @@
 </template>
 
 <script setup>
-import BaseLegalLink from '@/components/legal/BaseLegalLink.vue'
-import { useLegalState } from '@/composables/useLegalState.js'
+import BaseLegalLink from "@/components/legal/BaseLegalLink.vue";
+import { useLegalState } from "@/composables/useLegalState.js";
 
 defineProps({
   caseId: {
@@ -20,9 +20,9 @@ defineProps({
   },
   class: {
     type: String,
-    default: '',
+    default: "",
   },
-})
+});
 
-const { loading, error } = useLegalState()
+const { loading, error } = useLegalState();
 </script>

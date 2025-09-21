@@ -1,5 +1,5 @@
-import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
-import perfectionist from 'eslint-plugin-perfectionist'
+import { createConfigForNuxt } from "@nuxt/eslint-config/flat";
+import perfectionist from "eslint-plugin-perfectionist";
 
 export default createConfigForNuxt(
   // Your custom configs here
@@ -9,43 +9,43 @@ export default createConfigForNuxt(
     },
     rules: {
       // Perfectionist rules for sorting and organizing code
-      'perfectionist/sort-imports': [
-        'error',
+      "perfectionist/sort-imports": [
+        "error",
         {
-          type: 'alphabetical',
-          order: 'asc',
+          type: "alphabetical",
+          order: "asc",
           ignoreCase: true,
-          newlinesBetween: 'always',
+          newlinesBetween: "always",
           maxLineLength: undefined,
           groups: [
-            'type',
-            ['builtin', 'external'],
-            'internal-type',
-            'internal',
-            ['parent-type', 'sibling-type', 'index-type'],
-            ['parent', 'sibling', 'index'],
-            'object',
-            'unknown',
+            "type",
+            ["builtin", "external"],
+            "internal-type",
+            "internal",
+            ["parent-type", "sibling-type", "index-type"],
+            ["parent", "sibling", "index"],
+            "object",
+            "unknown",
           ],
         },
       ],
-      'perfectionist/sort-named-imports': [
-        'error',
+      "perfectionist/sort-named-imports": [
+        "error",
         {
-          type: 'alphabetical',
-          order: 'asc',
+          type: "alphabetical",
+          order: "asc",
           ignoreCase: true,
         },
       ],
-      'perfectionist/sort-objects': [
-        'error',
+      "perfectionist/sort-objects": [
+        "error",
         {
-          type: 'alphabetical',
-          order: 'asc',
+          type: "alphabetical",
+          order: "asc",
           ignoreCase: true,
           partitionByComment: false,
         },
       ],
     },
-  }
-)
+  },
+);
