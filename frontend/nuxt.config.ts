@@ -25,6 +25,7 @@ export default defineNuxtConfig({
     '@nuxtjs/sitemap',
     '@nuxt/scripts',
     '@nuxtjs/turnstile',
+    '@nuxt/eslint',
   ],
   turnstile: {
     siteKey: process.env.NUXT_TURNSTILE_SITE_KEY,
