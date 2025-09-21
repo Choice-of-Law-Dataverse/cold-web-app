@@ -1,7 +1,12 @@
-import sqlalchemy as sa
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.exc import SQLAlchemyError
+from __future__ import annotations
+
 import time
+from collections.abc import Callable, Iterable
+from typing import Any
+
+import sqlalchemy as sa
+from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.orm import sessionmaker
 
 
 class Database:
@@ -15,19 +20,21 @@ class Database:
         - retry_delay: Delay between retries in seconds.
         """
         self.engine = sa.create_engine(connection_string)
-        self.metadata = sa.MetaData()
+        self.metadata: sa.MetaData | None = sa.MetaData()
         self.max_retries = max_retries
         self.retry_delay = retry_delay
 
+        metadata = self.metadata
+        assert metadata is not None
         try:
-            self.metadata.reflect(bind=self.engine)
+            metadata.reflect(bind=self.engine)
         except SQLAlchemyError as e:
             print(f"Error reflecting metadata: {e}")
             self.metadata = None
 
         self.Session = sessionmaker(bind=self.engine)
 
-    def _retry_on_empty(self, func, *args, **kwargs):
+    def _retry_on_empty(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
         """
         Retry logic to handle cases where the database returns empty results.
 
@@ -38,26 +45,28 @@ class Database:
         Returns:
         - The result from the function or an empty list if retries are exhausted.
         """
-        for attempt in range(self.max_retries):
-            result = func(*args, **kwargs)
-            if result:  # If data is found, return immediately
-                return result
+        last_result: Any = None
+        for _attempt in range(self.max_retries):
+            last_result = func(*args, **kwargs)
+            if last_result:  # If data is found, return immediately
+                return last_result
             time.sleep(self.retry_delay)  # Wait before retrying
-        return result  # Return the final result after all retries
+        return last_result  # Return the final result after all retries
 
     def get_all_entries(self):
-        if not self.metadata:
+        metadata = self.metadata
+        if metadata is None:
             return None
 
-        def fetch_all_entries():
-            all_entries = {}
+        def fetch_all_entries() -> dict[str, list[dict[str, Any]]]:
+            all_entries: dict[str, list[dict[str, Any]]] = {}
             with self.Session() as session:
                 try:
-                    for table_name, table in self.metadata.tables.items():
+                    for table_name, table in metadata.tables.items():
                         query = table.select()
                         result = session.execute(query)
                         columns = result.keys()
-                        entries = [dict(zip(columns, row)) for row in result.fetchall()]
+                        entries = [dict(zip(columns, row, strict=False)) for row in result.fetchall()]
                         all_entries[table_name] = entries
                 except SQLAlchemyError as e:
                     print(f"Error getting all entries: {e}")
@@ -65,23 +74,22 @@ class Database:
 
         return self._retry_on_empty(fetch_all_entries)
 
-    def get_entries_from_tables(self, list_of_tables):
-        if not self.metadata:
+    def get_entries_from_tables(self, list_of_tables: Iterable[str]):
+        metadata = self.metadata
+        if metadata is None:
             return None
 
-        def fetch_entries():
-            entries_from_tables = {}
+        def fetch_entries() -> dict[str, list[dict[str, Any]]]:
+            entries_from_tables: dict[str, list[dict[str, Any]]] = {}
             with self.Session() as session:
                 try:
                     for table_name in list_of_tables:
-                        if table_name in self.metadata.tables:
-                            table = self.metadata.tables[table_name]
+                        if table_name in metadata.tables:
+                            table = metadata.tables[table_name]
                             query = table.select()
                             result = session.execute(query)
                             columns = result.keys()
-                            entries = [
-                                dict(zip(columns, row)) for row in result.fetchall()
-                            ]
+                            entries = [dict(zip(columns, row, strict=False)) for row in result.fetchall()]
                             entries_from_tables[table_name] = entries
                         else:
                             print(f"Table {table_name} does not exist in the database.")
@@ -91,8 +99,9 @@ class Database:
 
         return self._retry_on_empty(fetch_entries)
 
-    def get_entry_by_id(self, table_name, entry_id):
-        if not self.metadata:
+    def get_entry_by_id(self, table_name: str, entry_id: Any):
+        metadata = self.metadata
+        if metadata is None:
             return None
 
         id_columns = {
@@ -109,12 +118,12 @@ class Database:
             "Literature": "ID",
         }
 
-        def fetch_entry():
-            entry = {}
+        def fetch_entry() -> dict[str, Any]:
+            entry: dict[str, Any] = {}
             with self.Session() as session:
                 try:
-                    if table_name in self.metadata.tables:
-                        table = self.metadata.tables[table_name]
+                    if table_name in metadata.tables:
+                        table = metadata.tables[table_name]
                         if table_name in id_columns:
                             id_column = id_columns[table_name]
                             query = table.select().where(table.c[id_column] == entry_id)
@@ -123,16 +132,12 @@ class Database:
                             row = result.fetchone()
                             if row:
                                 columns = result.keys()
-                                entry = dict(zip(columns, row))
+                                entry = dict(zip(columns, row, strict=False))
                             else:
-                                print(
-                                    f"No entry found with id {entry_id} in table {table_name}."
-                                )
+                                print(f"No entry found with id {entry_id} in table {table_name}.")
                                 return {"error": "no entry found with the specified id"}
                         else:
-                            print(
-                                f"Table {table_name} does not have a mapped id column."
-                            )
+                            print(f"Table {table_name} does not have a mapped id column.")
                     else:
                         print(f"Table {table_name} does not exist in the database.")
                 except SQLAlchemyError as e:
@@ -141,8 +146,8 @@ class Database:
 
         return self._retry_on_empty(fetch_entry)
 
-    def execute_query(self, query, params=None):
-        def fetch_query():
+    def execute_query(self, query: str, params: dict[str, Any] | None = None):
+        def fetch_query() -> list[dict[str, Any]] | None:
             with self.Session() as session:
                 try:
                     result = session.execute(sa.text(query), params or {})
@@ -151,7 +156,7 @@ class Database:
                         return []
 
                     columns = result.keys()
-                    results = [dict(zip(columns, row)) for row in rows]
+                    results = [dict(zip(columns, row, strict=False)) for row in rows]
                     return results
 
                 except SQLAlchemyError as e:

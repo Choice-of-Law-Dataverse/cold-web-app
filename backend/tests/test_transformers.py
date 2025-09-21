@@ -4,13 +4,14 @@ Simple test for the transformers module.
 """
 
 import json
-import sys
 import os
+import sys
 
 # Add the current directory to the Python path to import app modules
 sys.path.insert(0, os.path.dirname(__file__))
 
-from app.services.transformers import DataTransformerFactory, AnswersTransformer
+from app.services.transformers import AnswersTransformer, DataTransformerFactory
+
 
 def create_mock_answers_result():
     """Create a mock answers result for testing."""
@@ -80,15 +81,15 @@ def create_mock_answers_result():
 def test_answers_transformer():
     """Test the AnswersTransformer directly."""
     print("=== TESTING ANSWERS TRANSFORMER ===")
-    
+
     mock_result = create_mock_answers_result()
     transformed = AnswersTransformer.transform_to_reference_format(mock_result)
-    
+
     print("Original result keys:", sorted(mock_result.keys()))
     print("Transformed result keys:", sorted(transformed.keys()))
     print("\nTransformed result:")
     print(json.dumps(transformed, indent=2, default=str))
-    
+
     # Check key mappings
     expected_mappings = {
         "source_table": "Answers",
@@ -101,7 +102,7 @@ def test_answers_transformer():
         "Questions Theme Code": "FV",
         "Themes": "Consumer contracts, Employment contracts"
     }
-    
+
     print("\n=== KEY MAPPING VERIFICATION ===")
     for key, expected_value in expected_mappings.items():
         actual_value = transformed.get(key)
@@ -111,22 +112,22 @@ def test_answers_transformer():
 def test_factory():
     """Test the DataTransformerFactory."""
     print("\n=== TESTING DATA TRANSFORMER FACTORY ===")
-    
+
     # Test getting transformer for Answers
     answers_transformer = DataTransformerFactory.get_transformer("Answers")
     print(f"Answers transformer: {answers_transformer}")
-    
+
     # Test getting transformer for non-existent table
     unknown_transformer = DataTransformerFactory.get_transformer("UnknownTable")
     print(f"Unknown table transformer: {unknown_transformer}")
-    
+
     # Test transform_result method
     mock_result = create_mock_answers_result()
-    
+
     # Transform Answers result
     transformed_answers = DataTransformerFactory.transform_result("Answers", mock_result)
     print(f"Transformed Answers result has {len(transformed_answers)} fields")
-    
+
     # Transform unknown table result (should return original)
     mock_unknown = {"source_table": "UnknownTable", "data": "test"}
     transformed_unknown = DataTransformerFactory.transform_result("UnknownTable", mock_unknown)

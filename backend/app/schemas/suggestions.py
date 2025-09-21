@@ -1,14 +1,15 @@
-from typing import Any, Dict, Optional, List
 from datetime import date
-from pydantic import BaseModel, Field, model_validator, EmailStr
+from typing import Any
+
+from pydantic import BaseModel, EmailStr, Field, model_validator
 
 
 class SuggestionPayload(BaseModel):
     # Accept any dict content as the "new data" suggestion from frontend
-    data: Dict[str, Any] = Field(..., description="Arbitrary dictionary provided by the frontend as new data suggestion")
-    source: Optional[str] = Field(None, description="Optional source/context identifier on the frontend")
-    submitter_email: Optional[EmailStr] = Field(None, description="Submitter e-mail address")
-    submitter_comments: Optional[str] = Field(None, description="Submitter comments")
+    data: dict[str, Any] = Field(..., description="Arbitrary dictionary provided by the frontend as new data suggestion")
+    source: str | None = Field(None, description="Optional source/context identifier on the frontend")
+    submitter_email: EmailStr | None = Field(None, description="Submitter e-mail address")
+    submitter_comments: str | None = Field(None, description="Submitter comments")
 
     model_config = {
         "json_schema_extra": {
@@ -43,31 +44,31 @@ class CourtDecisionSuggestion(BaseModel):
     )
 
     # Optional
-    original_text: Optional[str] = Field(None, description="Original Text")
-    english_translation: Optional[str] = Field(None, description="English Translation")
-    case_rank: Optional[str] = Field(None, description="Case Rank")
-    jurisdiction: Optional[str] = Field(None, description="Jurisdiction")
-    abstract: Optional[str] = Field(None, description="Abstract")
-    relevant_facts: Optional[str] = Field(None, description="Relevant Facts")
-    pil_provisions: Optional[str] = Field(None, description="PIL Provisions")
-    choice_of_law_issue: Optional[str] = Field(None, description="Choice of Law Issue")
-    courts_position: Optional[str] = Field(
+    original_text: str | None = Field(None, description="Original Text")
+    english_translation: str | None = Field(None, description="English Translation")
+    case_rank: str | None = Field(None, description="Case Rank")
+    jurisdiction: str | None = Field(None, description="Jurisdiction")
+    abstract: str | None = Field(None, description="Abstract")
+    relevant_facts: str | None = Field(None, description="Relevant Facts")
+    pil_provisions: str | None = Field(None, description="PIL Provisions")
+    choice_of_law_issue: str | None = Field(None, description="Choice of Law Issue")
+    courts_position: str | None = Field(
         None, description="Court's Position"
     )
-    translated_excerpt: Optional[str] = Field(None, description="Translated Excerpt")
-    text_of_relevant_legal_provisions: Optional[str] = Field(None, description="Text of the Relevant Legal Provisions")
-    quote: Optional[str] = None
-    decision_date: Optional[date] = Field(
+    translated_excerpt: str | None = Field(None, description="Translated Excerpt")
+    text_of_relevant_legal_provisions: str | None = Field(None, description="Text of the Relevant Legal Provisions")
+    quote: str | None = None
+    decision_date: date | None = Field(
         None, description="Decision date or other relevant date"
     )
-    case_title: Optional[str] = Field(None, description="Case Title")
-    instance: Optional[str] = Field(None, description="Instance")
-    official_keywords: Optional[str] = Field(None, description="Official Keywords")
-    publication_date_iso: Optional[str] = Field(None, description="Publication Date ISO")
+    case_title: str | None = Field(None, description="Case Title")
+    instance: str | None = Field(None, description="Instance")
+    official_keywords: str | None = Field(None, description="Official Keywords")
+    publication_date_iso: str | None = Field(None, description="Publication Date ISO")
 
     # Submitter metadata
-    submitter_email: Optional[EmailStr] = Field(None, description="Submitter e-mail address")
-    submitter_comments: Optional[str] = Field(None, description="Submitter comments")
+    submitter_email: EmailStr | None = Field(None, description="Submitter e-mail address")
+    submitter_comments: str | None = Field(None, description="Submitter comments")
 
     model_config = {
         "json_schema_extra": {
@@ -102,24 +103,24 @@ class DomesticInstrumentSuggestion(BaseModel):
     )
     entry_into_force: date = Field(..., description="Entry Into Force date")
     # Year of entry into force (automated)
-    date_year_of_entry_into_force: Optional[int] = Field(
+    date_year_of_entry_into_force: int | None = Field(
         None, description="Year of Entry Into Force (auto-derived from entry_into_force)"
     )
 
     # Required: Source URL
-    source_url: Optional[str] = Field(None, description="Source (URL)")
+    source_url: str | None = Field(None, description="Source (URL)")
 
     # Optional
-    themes: Optional[List[str]] = Field(None, description="Themes")
-    status: Optional[str] = Field(None, description="Status")
-    publication_date: Optional[date] = Field(None, description="Publication Date")
-    abbreviation: Optional[str] = Field(None, description="Abbrevation")
-    compatible_hcch_principles: Optional[bool] = Field(None, description="Compatible With the HCCH Principles?")
-    compatible_uncitral_model_law: Optional[bool] = Field(None, description="Compatible With the UNCITRAL Model Law?")
+    themes: list[str] | None = Field(None, description="Themes")
+    status: str | None = Field(None, description="Status")
+    publication_date: date | None = Field(None, description="Publication Date")
+    abbreviation: str | None = Field(None, description="Abbrevation")
+    compatible_hcch_principles: bool | None = Field(None, description="Compatible With the HCCH Principles?")
+    compatible_uncitral_model_law: bool | None = Field(None, description="Compatible With the UNCITRAL Model Law?")
 
     # Submitter metadata
-    submitter_email: Optional[EmailStr] = Field(None, description="Submitter e-mail address")
-    submitter_comments: Optional[str] = Field(None, description="Submitter comments")
+    submitter_email: EmailStr | None = Field(None, description="Submitter e-mail address")
+    submitter_comments: str | None = Field(None, description="Submitter comments")
 
     model_config = {
         "json_schema_extra": {
@@ -153,13 +154,13 @@ class RegionalInstrumentSuggestion(BaseModel):
     abbreviation: str = Field(..., description="Abbreviation")
 
     # Optional
-    title: Optional[str] = Field(None, description="Title")
-    url: Optional[str] = Field(None, description="URL")
-    instrument_date: Optional[date] = Field(None, description="Date")
+    title: str | None = Field(None, description="Title")
+    url: str | None = Field(None, description="URL")
+    instrument_date: date | None = Field(None, description="Date")
 
     # Submitter metadata
-    submitter_email: Optional[EmailStr] = Field(None, description="Submitter e-mail address")
-    submitter_comments: Optional[str] = Field(None, description="Submitter comments")
+    submitter_email: EmailStr | None = Field(None, description="Submitter e-mail address")
+    submitter_comments: str | None = Field(None, description="Submitter comments")
 
     model_config = {
         "json_schema_extra": {
@@ -182,8 +183,8 @@ class InternationalInstrumentSuggestion(BaseModel):
     instrument_date: date = Field(..., description="Date")
 
     # Submitter metadata
-    submitter_email: Optional[EmailStr] = Field(None, description="Submitter e-mail address")
-    submitter_comments: Optional[str] = Field(None, description="Submitter comments")
+    submitter_email: EmailStr | None = Field(None, description="Submitter e-mail address")
+    submitter_comments: str | None = Field(None, description="Submitter comments")
 
     model_config = {
         "json_schema_extra": {
@@ -200,21 +201,21 @@ class InternationalInstrumentSuggestion(BaseModel):
 
 class LiteratureSuggestion(BaseModel):
     # All optional
-    jurisdiction: Optional[str] = Field(None, description="Jurisdiction")
-    publication_year: Optional[int] = Field(None, description="Publication Year")
-    author: Optional[str] = Field(None, description="Author")
-    title: Optional[str] = Field(None, description="Title")
-    publication_title: Optional[str] = Field(None, description="Publication Title")
-    isbn: Optional[str] = Field(None, description="ISBN")
-    issn: Optional[str] = Field(None, description="ISSN")
-    doi: Optional[str] = Field(None, description="DOI")
-    url: Optional[str] = Field(None, description="Url")
-    publication_date: Optional[date] = Field(None, description="Date")
-    theme: Optional[str] = Field(None, description="Theme")
+    jurisdiction: str | None = Field(None, description="Jurisdiction")
+    publication_year: int | None = Field(None, description="Publication Year")
+    author: str | None = Field(None, description="Author")
+    title: str | None = Field(None, description="Title")
+    publication_title: str | None = Field(None, description="Publication Title")
+    isbn: str | None = Field(None, description="ISBN")
+    issn: str | None = Field(None, description="ISSN")
+    doi: str | None = Field(None, description="DOI")
+    url: str | None = Field(None, description="Url")
+    publication_date: date | None = Field(None, description="Date")
+    theme: str | None = Field(None, description="Theme")
 
     # Submitter metadata
-    submitter_email: Optional[EmailStr] = Field(None, description="Submitter e-mail address")
-    submitter_comments: Optional[str] = Field(None, description="Submitter comments")
+    submitter_email: EmailStr | None = Field(None, description="Submitter e-mail address")
+    submitter_comments: str | None = Field(None, description="Submitter comments")
 
     model_config = {
         "json_schema_extra": {
@@ -234,30 +235,30 @@ class LiteratureSuggestion(BaseModel):
 # New: Case Analyzer Suggestions (standalone; no direct DB merge)
 class CaseAnalyzerSuggestion(BaseModel):
     # Meta
-    username: Optional[str] = Field(None, description="Submitter Username")
-    user_email: Optional[str] = Field(None, description="Submitter Email")
-    model: Optional[str] = Field(None, description="Model used to analyze")
+    username: str | None = Field(None, description="Submitter Username")
+    user_email: str | None = Field(None, description="Submitter Email")
+    model: str | None = Field(None, description="Model used to analyze")
 
     # Core case fields
-    case_citation: Optional[str] = Field(None, description="Case Citation")
-    case_title: Optional[str] = Field(None, description="Case Title")
-    court_name: Optional[str] = Field(None, description="Court Name")
-    jurisdiction: Optional[str] = Field(None, description="Jurisdiction")
-    decision_date: Optional[date] = Field(None, description="Decision Date")
-    source_url: Optional[str] = Field(None, description="Source URL")
+    case_citation: str | None = Field(None, description="Case Citation")
+    case_title: str | None = Field(None, description="Case Title")
+    court_name: str | None = Field(None, description="Court Name")
+    jurisdiction: str | None = Field(None, description="Jurisdiction")
+    decision_date: date | None = Field(None, description="Decision Date")
+    source_url: str | None = Field(None, description="Source URL")
 
     # Content
-    is_common_law: Optional[bool] = Field(None, description="Common Law Jurisdiction")
-    ratio_decidendi: Optional[str] = Field(None, description="Ratio Decidendi")
-    obiter_dicta: Optional[str] = Field(None, description="Obiter Dicta")
-    dissenting_opinions: Optional[str] = Field(None, description="Dissenting Opinions")
-    courts_position: Optional[str] = Field(None, description="Court's Position (merged summary)")
+    is_common_law: bool | None = Field(None, description="Common Law Jurisdiction")
+    ratio_decidendi: str | None = Field(None, description="Ratio Decidendi")
+    obiter_dicta: str | None = Field(None, description="Obiter Dicta")
+    dissenting_opinions: str | None = Field(None, description="Dissenting Opinions")
+    courts_position: str | None = Field(None, description="Court's Position (merged summary)")
 
-    relevant_facts: Optional[str] = None
-    legal_provisions: Optional[str] = Field(None, description="Relevant Legal Provisions")
-    choice_of_law_issue: Optional[str] = None
-    abstract: Optional[str] = None
-    notes: Optional[str] = None
+    relevant_facts: str | None = None
+    legal_provisions: str | None = Field(None, description="Relevant Legal Provisions")
+    choice_of_law_issue: str | None = None
+    abstract: str | None = None
+    notes: str | None = None
 
     # Raw material
-    raw_data: Optional[str] = Field(None, description="Original analyzer output (for reference)")
+    raw_data: str | None = Field(None, description="Original analyzer output (for reference)")

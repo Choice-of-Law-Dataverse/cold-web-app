@@ -1,8 +1,9 @@
+from datetime import date, datetime
+from decimal import Decimal
+from typing import Any
+
 import sqlalchemy as sa
 from sqlalchemy.orm import sessionmaker
-from typing import Any, Dict, Iterable, List, Optional
-from datetime import datetime, date
-from decimal import Decimal
 
 from app.config import config
 
@@ -19,7 +20,7 @@ class MainDBWriter:
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
 
     # Mapping from suggestion payload keys (snake_case) to NocoDB column names (Pascal/Title case)
-    COLUMN_MAPPINGS: Dict[str, Dict[str, str]] = {
+    COLUMN_MAPPINGS: dict[str, dict[str, str]] = {
         "Court_Decisions": {
             "case_citation": "Case_Citation",
             "official_source_url": "Official_Source__URL_",
@@ -136,14 +137,14 @@ class MainDBWriter:
                 return val
         return val
 
-    def insert_record(self, table_name: str, data: Dict[str, Any]) -> int:
+    def insert_record(self, table_name: str, data: dict[str, Any]) -> int:
         # Reflect table structure lazily
         table = sa.Table(table_name, self.metadata, autoload_with=self.engine)
         valid_columns = {col.name for col in table.columns}
         # Select mapping for this table if available
         mapping = self.COLUMN_MAPPINGS.get(table_name, {})
 
-        coerced: Dict[str, Any] = {}
+        coerced: dict[str, Any] = {}
         for key, value in data.items():
             db_key = mapping.get(key, key)
             if db_key not in valid_columns:
@@ -176,13 +177,13 @@ class MainDBWriter:
             return int(new_id)
 
     # --- Jurisdictions linking helpers ---
-    def _resolve_jurisdiction_ids(self, raw_value: Any) -> List[int]:
+    def _resolve_jurisdiction_ids(self, raw_value: Any) -> list[int]:
         """Return a list of Jurisdictions.id resolved from user input.
         Accepts: integer id, numeric string id, ISO3 code (Alpha_3_Code), or Name; comma-separated list supported.
         """
         if raw_value is None:
             return []
-        values: List[str]
+        values: list[str]
         if isinstance(raw_value, (list, tuple)):
             values = [str(v) for v in raw_value]
         else:
@@ -192,7 +193,7 @@ class MainDBWriter:
             return []
 
         jur_table = sa.Table("Jurisdictions", self.metadata, autoload_with=self.engine)
-        found: List[int] = []
+        found: list[int] = []
         with self.Session() as session:
             for v in values:
                 # Try numeric id first
@@ -225,7 +226,7 @@ class MainDBWriter:
         table_name: target main table (e.g., 'Court_Decisions')
         jurisdiction_value: input that can be an id, ISO3, Name, or comma-separated values.
         """
-        link_map: Dict[str, Dict[str, str]] = {
+        link_map: dict[str, dict[str, str]] = {
             "Court_Decisions": {
                 "link_table": "_nc_m2m_Jurisdictions_Court_Decisions",
                 "left_key": "Court_Decisions_id",

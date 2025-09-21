@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, Request
-from app.services.landing_page import LandingPageService
+
 from app.auth import verify_jwt_token
+from app.services.landing_page import LandingPageService
 
 # Initialize service
 landing_page_service = LandingPageService()

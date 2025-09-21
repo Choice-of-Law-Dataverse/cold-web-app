@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
+
+from app.auth import verify_jwt_token
 from app.schemas.requests import (
-    FullTextSearchRequest,
     CuratedDetailsRequest,
     FullTableRequest,
+    FullTextSearchRequest,
 )
 from app.services.search import SearchService
-from app.auth import verify_jwt_token
 
 search_service = SearchService()
 
@@ -34,10 +35,7 @@ router = APIRouter(
                         "total_matches": 2,
                         "page": 1,
                         "page_size": 2,
-                        "results": [
-                            {"source_table": "Answers", "id": "CHE_15-TC", "Title": "…"},
-                            {"source_table": "Court Decisions", "id": "CD-GBR-1167", "Title": "…"}
-                        ],
+                        "results": [{"source_table": "Answers", "id": "CHE_15-TC", "Title": "…"}, {"source_table": "Court Decisions", "id": "CD-GBR-1167", "Title": "…"}],
                     }
                 }
             },
@@ -49,8 +47,8 @@ def handle_full_text_search(request: Request, body: FullTextSearchRequest):
     filters = body.filters or []
     page = body.page
     page_size = body.page_size
-    sort_by_date = getattr(body, 'sort_by_date', False)
-    response_type = getattr(body, 'response_type', 'parsed')
+    sort_by_date = getattr(body, "sort_by_date", False)
+    response_type = getattr(body, "response_type", "parsed")
 
     results = search_service.full_text_search(search_string, filters, page, page_size, sort_by_date, response_type=response_type)
     return results
@@ -59,17 +57,11 @@ def handle_full_text_search(request: Request, body: FullTextSearchRequest):
 @router.post(
     "/details",
     summary="Fetch a curated record by CoLD ID including hop-1 relations",
-    description=(
-        "Given a user-facing table and a CoLD ID, returns the canonical record and its first-hop related entries."
-    ),
+    description=("Given a user-facing table and a CoLD ID, returns the canonical record and its first-hop related entries."),
     responses={
         200: {
             "description": "Flattened, mapping-transformed record.",
-            "content": {
-                "application/json": {
-                    "example": {"source_table": "Answers", "id": "CHE_15-TC", "Title": "…", "hop1_relations": {}}
-                }
-            },
+            "content": {"application/json": {"example": {"source_table": "Answers", "id": "CHE_15-TC", "Title": "…", "hop1_relations": {}}}},
         },
         404: {"description": "Record not found."},
     },
@@ -77,7 +69,7 @@ def handle_full_text_search(request: Request, body: FullTextSearchRequest):
 def handle_curated_details_search(request: Request, body: CuratedDetailsRequest):
     table = body.table
     record_id = body.id
-    response_type = getattr(body, 'response_type', 'parsed')
+    response_type = getattr(body, "response_type", "parsed")
 
     results = search_service.curated_details_search(table, record_id, response_type=response_type)
     return results
@@ -86,20 +78,11 @@ def handle_curated_details_search(request: Request, body: CuratedDetailsRequest)
 @router.post(
     "/full_table",
     summary="Return full or filtered table",
-    description=(
-        "Returns all records from the specified table or a filtered subset. "
-        "Filters accept user-facing field names and values (mapping-aware)."
-    ),
+    description=("Returns all records from the specified table or a filtered subset. Filters accept user-facing field names and values (mapping-aware)."),
     responses={
         200: {
             "description": "Array of transformed records from the requested table.",
-            "content": {
-                "application/json": {
-                    "example": [
-                        {"source_table": "Answers", "id": "CHE_15-TC", "Jurisdictions": ["Switzerland"], "Title": "…"}
-                    ]
-                }
-            },
+            "content": {"application/json": {"example": [{"source_table": "Answers", "id": "CHE_15-TC", "Jurisdictions": ["Switzerland"], "Title": "…"}]}},
         },
         400: {"description": "Missing or invalid table parameter."},
         500: {"description": "Server error while querying the table."},
@@ -108,7 +91,7 @@ def handle_curated_details_search(request: Request, body: CuratedDetailsRequest)
 def return_full_table(request: Request, body: FullTableRequest):
     table = body.table
     filters = body.filters or []
-    response_type = getattr(body, 'response_type', 'parsed')
+    response_type = getattr(body, "response_type", "parsed")
 
     if not table:
         raise HTTPException(status_code=400, detail="No table provided")
@@ -119,6 +102,6 @@ def return_full_table(request: Request, body: FullTableRequest):
         else:
             results = search_service.full_table(table, response_type=response_type)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
     return results

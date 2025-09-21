@@ -1,21 +1,20 @@
-from typing import List, Optional, Union, Literal
+from typing import Literal
+
 from pydantic import BaseModel, Field
 
 
 class FTSFilterOption(BaseModel):
     column: str
-    values: Union[List[str], str]
+    values: list[str] | str
 
 
 class FullTextSearchRequest(BaseModel):
-    search_string: Optional[str] = None
-    filters: Optional[List[FTSFilterOption]] = None
+    search_string: str | None = None
+    filters: list[FTSFilterOption] | None = None
     page: int = Field(1, ge=1, description="Page number, must be >= 1")
     page_size: int = Field(50, ge=1, le=100, description="Number of results per page")
-    sort_by_date: Optional[bool] = Field(False, description="Sort results by date descending if True.")
-    response_type: Optional[Literal["parsed", "raw", "both"]] = Field(
-        "parsed", description="Select 'parsed' (default), 'raw', or 'both' for response data."
-    )
+    sort_by_date: bool | None = Field(False, description="Sort results by date descending if True.")
+    response_type: Literal["parsed", "raw", "both"] | None = Field("parsed", description="Select 'parsed' (default), 'raw', or 'both' for response data.")
     model_config = {
         "json_schema_extra": {
             "examples": [
@@ -39,9 +38,7 @@ class FullTextSearchRequest(BaseModel):
 class CuratedDetailsRequest(BaseModel):
     table: str
     id: str
-    response_type: Optional[Literal["parsed", "raw", "both"]] = Field(
-        "parsed", description="Select 'parsed' (default), 'raw', or 'both' for response data."
-    )
+    response_type: Literal["parsed", "raw", "both"] | None = Field("parsed", description="Select 'parsed' (default), 'raw', or 'both' for response data.")
     model_config = {
         "json_schema_extra": {
             "examples": [
@@ -55,20 +52,18 @@ class CuratedDetailsRequest(BaseModel):
     }
 
 
-FilterValue = Union[str, int, bool]
+FilterValue = str | int | bool
 
 
 class FTFilterOption(BaseModel):
     column: str
-    value: Union[FilterValue, List[FilterValue]]
+    value: FilterValue | list[FilterValue]
 
 
 class FullTableRequest(BaseModel):
     table: str
-    filters: Optional[List[FTFilterOption]] = None
-    response_type: Optional[Literal["parsed", "raw", "both"]] = Field(
-        "parsed", description="Select 'parsed' (default), 'raw', or 'both' for response data."
-    )
+    filters: list[FTFilterOption] | None = None
+    response_type: Literal["parsed", "raw", "both"] | None = Field("parsed", description="Select 'parsed' (default), 'raw', or 'both' for response data.")
     model_config = {
         "json_schema_extra": {
             "examples": [

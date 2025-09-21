@@ -9,7 +9,7 @@ class CourtDecisionsTransformer:
     """
     Transformer for converting Court Decisions table data from current NocoDB format
     to the reference format structure.
-    
+
     This class uses the configurable transformer with external mapping rules.
     """
 
@@ -17,10 +17,10 @@ class CourtDecisionsTransformer:
     def transform_to_reference_format(current_result):
         """
         Transform current court decisions format to match the reference format structure.
-        
+
         Args:
             current_result (dict): The current format result from NocoDB
-            
+
         Returns:
             dict: Transformed result matching the reference format
         """

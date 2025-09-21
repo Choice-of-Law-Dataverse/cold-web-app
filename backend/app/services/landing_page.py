@@ -1,5 +1,6 @@
-from app.services.database import Database
 from app.config import config
+from app.services.database import Database
+
 
 class LandingPageService:
     def __init__(self):

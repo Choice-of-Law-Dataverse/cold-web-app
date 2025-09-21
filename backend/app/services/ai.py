@@ -1,5 +1,7 @@
-from app.config import Config
+# ruff: noqa: E501
 import requests
+
+from app.config import Config
 
 
 class GPT:
