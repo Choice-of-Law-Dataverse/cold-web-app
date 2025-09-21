@@ -23,12 +23,12 @@ const props = defineProps({
   navLinks: {
     type: Array,
     default: null,
-    required: false
+    required: false,
   },
   enableHierarchicalNumbering: {
     type: Boolean,
-    default: false
-  }
+    default: false,
+  },
 })
 </script>
 

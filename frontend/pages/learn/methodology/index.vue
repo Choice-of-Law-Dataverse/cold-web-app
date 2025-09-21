@@ -1,5 +1,8 @@
 <template>
-  <ContentPageLayout :navLinks="learnNavLinks" :enableHierarchicalNumbering="true">
+  <ContentPageLayout
+    :navLinks="learnNavLinks"
+    :enableHierarchicalNumbering="true"
+  >
     <ContentDoc path="/methodology_intro" />
     <ContentDoc path="/methodology_questionnaire_intro" />
     <ContentDoc path="/methodology_questionnaire" />

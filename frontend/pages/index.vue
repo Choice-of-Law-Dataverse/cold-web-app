@@ -56,7 +56,7 @@
             :overrideNumber="74"
           />
         </GridItem>
-        
+
         <GridItem :mdCols="4">
           <CompareJurisdictionsCard
             title="Compare Jurisdictions"
@@ -66,7 +66,7 @@
             :detectVisitorRight="true"
           />
         </GridItem>
-        
+
         <GridItem :mdCols="4">
           <NumberCard
             title="Available Arbitral Rules"
@@ -80,7 +80,7 @@
         <GridItem :mdCols="6">
           <PopularSearches />
         </GridItem>
-        
+
         <GridItem :cols="6">
           <TopLiteratureThemes />
         </GridItem>
@@ -93,15 +93,15 @@
             tableName="Domestic Instruments"
           />
         </GridItem>
-        
+
         <GridItem :mdCols="8">
           <RecentDomesticInstruments />
         </GridItem>
-        
+
         <GridItem :mdCols="8">
           <PlotCourtDecisionsJurisdiction />
         </GridItem>
-        
+
         <GridItem :mdCols="4">
           <NumberCard
             title="Available Court Decisions"

@@ -14,7 +14,7 @@ const props = defineProps({
     validator: (value) => {
       const num = Number(value)
       return num >= 1 && num <= 12
-    }
+    },
   },
   mdCols: {
     type: [Number, String],
@@ -23,7 +23,7 @@ const props = defineProps({
       if (value === null) return true
       const num = Number(value)
       return num >= 1 && num <= 12
-    }
+    },
   },
   lgCols: {
     type: [Number, String],
@@ -32,21 +32,21 @@ const props = defineProps({
       if (value === null) return true
       const num = Number(value)
       return num >= 1 && num <= 12
-    }
-  }
+    },
+  },
 })
 
 const columnClasses = computed(() => {
   const classes = [`col-span-${props.cols}`]
-  
+
   if (props.mdCols) {
     classes.push(`md:col-span-${props.mdCols}`)
   }
-  
+
   if (props.lgCols) {
     classes.push(`lg:col-span-${props.lgCols}`)
   }
-  
+
   return classes.join(' ')
 })
 </script>
