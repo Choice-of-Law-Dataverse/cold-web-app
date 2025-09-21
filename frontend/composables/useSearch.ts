@@ -115,17 +115,10 @@ const fetchSearchResults = async ({
   const userHost =
     typeof window !== 'undefined' ? window.location.hostname : 'unknown'
 
-  // Fetch user's IP address
+  // Fetch user's IP address - removed external service call
   body.ip_address = 'Unknown'
 
-  try {
-    const response = await fetch('https://api.ipify.org?format=json')
-    const data = await response.json()
-
-    body.ip_address = data.ip
-  } catch (error) {
-    console.warn('Could not fetch IP address:', error)
-  }
+  // External IP service calls removed for privacy - keeping fallback value
 
   // Fetch detailed user info (browser, platform, etc.)
   const userInfo = {} // await fetchUserInfo()

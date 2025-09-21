@@ -1,7 +1,5 @@
 import re
 
-import requests
-
 from app.config import config
 
 """
@@ -127,12 +125,7 @@ def deduplicate_entries(entries):
 """
 
 
-# Utility function to get location from IP address using an external API
+# Location tracking removed - no longer fetching IP location data
 def get_location(ip_address: str):
-    access_token = config.IPINFO_ACCESS_TOKEN
-    try:
-        response = requests.get(f"http://ipinfo.io/{ip_address}/json?token={access_token}")
-        return response.json()
-    except requests.RequestException as e:
-        print(f"Error getting location: {e}")
-        return None
+    # Return None to maintain API compatibility while removing external IP service calls
+    return None
