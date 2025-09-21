@@ -128,8 +128,8 @@ const citationText = computed(() => {
   // Pick provided prop title when available, else current document.title
   const rawTitle = (props.title && props.title.trim()) || pageTitle.value || "";
   // Remove trailing "— CoLD" or "- CoLD" (with or without surrounding spaces)
-  let raw = rawTitle;
-  const cleaned = raw.replace(/[\s\u00A0]*[\u2014\-][\s\u00A0]*CoLD\s*$/i, "");
+  const raw = rawTitle;
+  const cleaned = raw.replace(/[\s\u00A0]*[\u2014-][\s\u00A0]*CoLD\s*$/i, "");
   // If title ends up being only "CoLD" (or blank), fall back to site name
   const normalized = cleaned.trim();
   const title =
@@ -161,7 +161,7 @@ async function copyToClipboard() {
     }
     copied.value = true;
     setTimeout(() => (copied.value = false), 1500);
-  } catch (e) {
+  } catch (_e) {
     // no-op; keep silent per UX
   } finally {
     copying.value = false;

@@ -1,5 +1,6 @@
 <template>
-  <BaseDetailLayout
+  <div>
+    <BaseDetailLayout
     :loading="isLoading"
     :result-data="courtDecision"
     :key-label-pairs="computedKeyLabelPairs"
@@ -191,6 +192,7 @@
   <UAlert v-if="error" type="error" class="mx-auto mt-4 max-w-container">
     {{ error }}
   </UAlert>
+  </div>
 </template>
 
 <script setup>

@@ -248,7 +248,7 @@ const getLabel = (key) => {
 
 const getValue = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  let value = props.resultData[key];
+  const value = props.resultData[key];
 
   // For key "Answer", split by comma if a string contains commas.
   if (key === "Answer" && typeof value === "string" && value.includes(",")) {

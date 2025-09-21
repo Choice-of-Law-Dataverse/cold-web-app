@@ -1,5 +1,6 @@
 <template>
-  <BaseDetailLayout
+  <div>
+    <BaseDetailLayout
     :loading="false"
     :result-data="{}"
     :key-label-pairs="[]"
@@ -303,6 +304,7 @@
     @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
     @save="handleNewSave"
   />
+  </div>
 </template>
 
 <script setup>

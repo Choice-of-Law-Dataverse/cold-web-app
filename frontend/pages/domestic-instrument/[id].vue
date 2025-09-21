@@ -1,5 +1,6 @@
 <template>
-  <BaseDetailLayout
+  <div>
+    <BaseDetailLayout
     :loading="loading"
     :result-data="processedLegalInstrument"
     :key-label-pairs="computedKeyLabelPairs"
@@ -190,6 +191,7 @@
     </template>
   </BaseDetailLayout>
   <CountryReportLink :processed-answer-data="processedLegalInstrument" />
+  </div>
 </template>
 
 <script setup>

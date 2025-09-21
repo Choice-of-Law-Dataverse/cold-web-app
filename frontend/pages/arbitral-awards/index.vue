@@ -3,10 +3,10 @@
   <!-- Use sourceTable="Loading" so the header stays hidden, yielding a clean blank card. -->
   <BaseDetailLayout
     :loading="loading"
-    :resultData="resultData"
-    :keyLabelPairs="computedKeyLabelPairs"
-    :valueClassMap="valueClassMap"
-    sourceTable="Arbitral Award"
+    :result-data="resultData"
+    :key-label-pairs="computedKeyLabelPairs"
+    :value-class-map="valueClassMap"
+    source-table="Arbitral Award"
   >
     <template #full-width>
       <div class="px-6 py-6">

@@ -132,7 +132,7 @@ const getValue = (key) => {
   return value;
 };
 
-const getFallbackClass = (key) => {
+const _getFallbackClass = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key);
   const value = props.resultData[key];
 

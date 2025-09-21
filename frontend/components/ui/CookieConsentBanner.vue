@@ -47,7 +47,7 @@ onMounted(() => {
     if (localStorage.getItem("cookieConsent") === null) {
       localStorage.setItem("cookieConsent", "false");
     }
-    const consent = localStorage.getItem("cookieConsent");
+    const _consent = localStorage.getItem("cookieConsent");
     const consentDate = localStorage.getItem("cookieConsentDate");
     const consentSet = localStorage.getItem("cookieConsentSet");
     let expired = false;

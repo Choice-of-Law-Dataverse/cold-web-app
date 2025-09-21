@@ -150,8 +150,8 @@ import LoadingCard from "@/components/layout/LoadingCard.vue";
 import InfoPopover from "~/components/ui/InfoPopover.vue";
 
 // Tooltips for Question Page
-import tooltipQuestion from "@/content/info_boxes/question/question.md?raw";
-import tooltipAnswer from "@/content/info_boxes/question/answer.md?raw";
+import _tooltipQuestion from "@/content/info_boxes/question/question.md?raw";
+import _tooltipAnswer from "@/content/info_boxes/question/answer.md?raw";
 
 // Props for reusability across pages
 const props = defineProps({
@@ -188,7 +188,7 @@ const props = defineProps({
   icon: String,
 });
 
-const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
+const _emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
 const route = useRoute();
 const isJurisdictionPage = route.path.startsWith("/jurisdiction/");

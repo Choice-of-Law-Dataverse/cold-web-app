@@ -348,7 +348,7 @@ const labelColorClass = computed(() => {
   }
 });
 
-function labelClassForType(label) {
+function _labelClassForType(label) {
   switch (label) {
     case "Court Decision":
       return "label-court-decision";
@@ -432,7 +432,7 @@ const suggestEditActions = computed(() => {
     });
   }
   // Adjust the Edit link for International Instrument page only
-  let editLink = suggestEditLink.value;
+  const editLink = suggestEditLink.value;
   actions.push({
     label: "Edit",
     icon: "i-material-symbols:edit-square-outline",
