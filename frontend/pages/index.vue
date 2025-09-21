@@ -2,15 +2,15 @@
   <main class="px-6">
     <div class="mx-auto w-full max-w-container">
       <!-- Header Section -->
-      <div class="col-span-12 grid grid-cols-1 md:grid-cols-12 gap-x-6">
-        <div class="col-span-12">
+      <GridContainer>
+        <GridItem>
           <div class="text-[60px] leading-[68px] font-bold mb-3 md:text-left">
             Choice of Law<br />
             Dataverse
           </div>
-        </div>
+        </GridItem>
 
-        <div class="col-span-12">
+        <GridItem>
           <h2
             class="w-full text-xl font-medium mb-6 md:text-left pt-4 pb-4 flex flex-row items-center gap-1"
           >
@@ -22,21 +22,21 @@
               </UButton>
             </span>
           </h2>
-        </div>
+        </GridItem>
 
-        <div class="col-span-12">
+        <GridItem>
           <JurisdictionMap />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12">
+        <GridItem>
           <CountrySelectMenu />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12 md:col-span-8">
+        <GridItem :mdCols="8">
           <SuccessfulLegalTransplantations />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12 md:col-span-4">
+        <GridItem :mdCols="4">
           <ConnectCard
             title="Transnational Standard"
             subtitle="Authoritative Instrument on Choice of Law"
@@ -45,9 +45,9 @@
             imageSrc="https://choiceoflaw.blob.core.windows.net/assets/hcch-logo-circle.svg"
             :newTab="false"
           />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12 md:col-span-4">
+        <GridItem :mdCols="4">
           <NumberCard
             title="Available Arbitral Awards"
             buttonText="See all"
@@ -55,8 +55,9 @@
             tableName="Questions"
             :overrideNumber="74"
           />
-        </div>
-        <div class="col-span-12 md:col-span-4">
+        </GridItem>
+        
+        <GridItem :mdCols="4">
           <CompareJurisdictionsCard
             title="Compare Jurisdictions"
             buttonText="Go to comparison"
@@ -64,8 +65,9 @@
             iso3Right="CAN"
             :detectVisitorRight="true"
           />
-        </div>
-        <div class="col-span-12 md:col-span-4">
+        </GridItem>
+        
+        <GridItem :mdCols="4">
           <NumberCard
             title="Available Arbitral Rules"
             buttonText="See all"
@@ -73,43 +75,47 @@
             tableName="Questions"
             :overrideNumber="37"
           />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12 md:col-span-6">
+        <GridItem :mdCols="6">
           <PopularSearches />
-        </div>
-        <div class="col-span-12 sm:col-span-6">
+        </GridItem>
+        
+        <GridItem :cols="6">
           <TopLiteratureThemes />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12 sm:col-span-4">
+        <GridItem :cols="4">
           <NumberCard
             title="Available Domestic Instruments"
             buttonText="See all"
             buttonLink="/search?type=Domestic+Instruments"
             tableName="Domestic Instruments"
           />
-        </div>
-        <div class="col-span-12 md:col-span-8">
+        </GridItem>
+        
+        <GridItem :mdCols="8">
           <RecentDomesticInstruments />
-        </div>
-        <div class="col-span-12 md:col-span-8">
+        </GridItem>
+        
+        <GridItem :mdCols="8">
           <PlotCourtDecisionsJurisdiction />
-        </div>
-        <div class="col-span-12 md:col-span-4">
+        </GridItem>
+        
+        <GridItem :mdCols="4">
           <NumberCard
             title="Available Court Decisions"
             buttonText="See all"
             buttonLink="/search?type=Court+Decisions"
             tableName="Court Decisions"
           />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12 md:col-span-8">
+        <GridItem :mdCols="8">
           <LeadingCases />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12 md:col-span-4">
+        <GridItem :mdCols="4">
           <ConnectCard
             title="CoLD Case Analyzer"
             buttonText="Analyze Court Cases with AI"
@@ -117,9 +123,9 @@
             iconName="i-material-symbols:chat-outline"
             buttonIcon="i-material-symbols:open-in-new"
           />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12 flex justify-center mb-4">
+        <GridItem class="flex justify-center mb-4">
           <ImportantQuestions
             :questionSuffixes="[
               '_01-P',
@@ -130,9 +136,9 @@
               '_22-MR',
             ]"
           />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12 sm:col-span-6 md:col-span-3">
+        <GridItem :cols="6" :mdCols="3">
           <ConnectCard
             title="CoLD Newsletter"
             buttonText="Subscribe"
@@ -140,9 +146,9 @@
             iconName="i-bi:substack"
             buttonIcon="i-material-symbols:open-in-new"
           />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12 sm:col-span-6 md:col-span-3">
+        <GridItem :cols="6" :mdCols="3">
           <ConnectCard
             title="CoLD on LinkedIn"
             buttonText="Follow Us"
@@ -150,9 +156,9 @@
             iconName="i-mdi:linkedin"
             buttonIcon="i-material-symbols:open-in-new"
           />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12 sm:col-span-6 md:col-span-3">
+        <GridItem :cols="6" :mdCols="3">
           <ConnectCard
             title="Questions, Feedback?"
             buttonText="Contact Us"
@@ -160,9 +166,9 @@
             :newTab="false"
             iconName="i-material-symbols:alternate-email"
           />
-        </div>
+        </GridItem>
 
-        <div class="col-span-12 sm:col-span-6 md:col-span-3">
+        <GridItem :cols="6" :mdCols="3">
           <ConnectCard
             title="Enter new Data"
             buttonText="Submit your data"
@@ -170,8 +176,8 @@
             iconName="i-material-symbols:add-notes"
             :newTab="false"
           />
-        </div>
-      </div>
+        </GridItem>
+      </GridContainer>
     </div>
   </main>
 </template>
@@ -191,6 +197,8 @@ import SuccessfulLegalTransplantations from '@/components/landing-page/Successfu
 import LeadingCases from '@/components/landing-page/LeadingCases.vue'
 import { useHead } from '#imports'
 import ImportantQuestions from '~/components/landing-page/ImportantQuestions.vue'
+import GridContainer from '@/components/layout/GridContainer.vue'
+import GridItem from '@/components/layout/GridItem.vue'
 const links = externalLinks
 
 useHead({
