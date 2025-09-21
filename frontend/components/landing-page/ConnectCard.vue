@@ -14,11 +14,7 @@
           <img :src="imageSrc" alt="" class="h-20 max-w-full" />
         </template>
         <template v-else>
-          <Icon
-            :name="iconName"
-            size="72"
-            class="text-cold-green"
-          />
+          <Icon :name="iconName" size="72" class="text-cold-green" />
         </template>
       </a>
     </div>

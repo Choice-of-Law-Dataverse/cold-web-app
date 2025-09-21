@@ -132,9 +132,7 @@
     />
     <template #fallback>
       <div class="px-6">
-        <div
-          class="mx-auto w-full max-w-container"
-        >
+        <div class="mx-auto w-full max-w-container">
           <div class="col-span-12">
             <UCard class="cold-ucard">
               <div>

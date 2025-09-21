@@ -138,10 +138,9 @@
                           />
                         </svg>
                       </span>
-                      <span
-                        class="mobile-question-text whitespace-pre-line"
-                        >{{ row.question }}</span
-                      >
+                      <span class="mobile-question-text whitespace-pre-line">{{
+                        row.question
+                      }}</span>
                     </div>
                   </div>
 

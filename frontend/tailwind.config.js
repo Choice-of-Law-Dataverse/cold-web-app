@@ -30,7 +30,7 @@ export default {
   theme: {
     extend: {
       maxWidth: {
-        'container': 'var(--container-width)',
+        container: 'var(--container-width)',
       },
       colors: {
         'cold-purple': '#6F4DFA',

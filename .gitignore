@@ -194,3 +194,5 @@ backend/bruno/*
 
 # data
 backend/*.csv
+
+.DS_Store

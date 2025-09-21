@@ -188,11 +188,7 @@
   </BaseDetailLayout>
 
   <!-- Error Alert -->
-  <UAlert
-    v-if="error"
-    type="error"
-    class="mx-auto mt-4 max-w-container"
-  >
+  <UAlert v-if="error" type="error" class="mx-auto mt-4 max-w-container">
     {{ error }}
   </UAlert>
 </template>

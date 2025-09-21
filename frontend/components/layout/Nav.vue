@@ -3,9 +3,7 @@
     class="bg-white border-b border-cold-gray w-full px-6"
     :class="{ 'bg-purple-active': isExpanded }"
   >
-    <div
-      class="mx-auto w-full max-w-container py-6 pt-8"
-    >
+    <div class="mx-auto w-full max-w-container py-6 pt-8">
       <div
         class="flex justify-between items-center space-x-4 sm:space-x-8 relative"
       >
@@ -509,8 +507,6 @@ onUnmounted(() => {
   color: var(--color-cold-purple) !important;
   opacity: 1;
 }
-
-
 
 .search-container {
   position: relative !important; /* New addition */
