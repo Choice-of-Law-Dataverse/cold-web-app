@@ -79,12 +79,7 @@ const {
   data: literature,
   isLoading: loading,
   error,
-} = useRecordDetails(table, id, {
-  // Enable automatic error handling with redirect for not found
-  enableErrorHandling: true,
-  redirectOnNotFound: true,
-  showToast: true,
-})
+} = useRecordDetails(table, id)
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   literature,

@@ -8,6 +8,7 @@ type Options = {
   enableErrorHandling?: boolean
   redirectOnNotFound?: boolean
   showToast?: boolean
+  select?: (data: any) => any
 }
 
 export function useAnswer(

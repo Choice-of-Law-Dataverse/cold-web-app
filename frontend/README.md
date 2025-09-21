@@ -92,17 +92,20 @@ This application features a centralized error handling system that reduces boile
 
 ```vue
 <script setup>
-// Before: 15-20 lines of error handling boilerplate
-// After: 3 lines with automatic error handling
-const { data, isLoading } = useRecordDetails(table, id, {
-  enableErrorHandling: true,
-  redirectOnNotFound: true,
-  showToast: true,
+// Before: 15-20 lines of error handling boilerplate per page
+// After: 1 line with automatic error handling by default
+const { data, isLoading } = useRecordDetails(table, id)
+
+// Optional: Custom error handling if needed
+const { data } = useRecordDetails(table, id, {
+  enableErrorHandling: false,  // Disable if you want manual handling
+  redirectOnNotFound: false,   // Show toast instead of redirect
+  showToast: true,            // Show error notifications
 })
 </script>
 ```
 
-The system leverages TanStack Vue Query and @nuxt/ui toast notifications for optimal developer experience and user experience.
+The system leverages TanStack Vue Query and @nuxt/ui toast notifications for optimal developer experience and user experience. Error handling is enabled by default across all data fetching composables.
 
 # Docker
 

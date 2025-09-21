@@ -123,12 +123,7 @@ const {
   data: answerData,
   isLoading,
   error,
-} = useAnswer(computed(() => route.params.id), {
-  // Enable automatic error handling with redirect for not found
-  enableErrorHandling: true,
-  redirectOnNotFound: true,
-  showToast: true,
-})
+} = useAnswer(computed(() => route.params.id))
 
 const { keyLabelPairs, valueClassMap } = questionConfig
 

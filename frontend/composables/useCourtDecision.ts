@@ -2,11 +2,21 @@ import { computed, type Ref } from 'vue'
 import { formatDate } from '@/utils/format.js'
 import { useRecordDetails } from '@/composables/useRecordDetails'
 
-export function useCourtDecision(courtDecisionId: Ref<string | number>) {
+type Options = {
+  enableErrorHandling?: boolean
+  redirectOnNotFound?: boolean
+  showToast?: boolean
+}
+
+export function useCourtDecision(
+  courtDecisionId: Ref<string | number>,
+  options: Options = {}
+) {
   return useRecordDetails(
     computed(() => 'Court Decisions'),
     courtDecisionId,
     {
+      ...options,
       select: (data) => {
         return {
           ...data,

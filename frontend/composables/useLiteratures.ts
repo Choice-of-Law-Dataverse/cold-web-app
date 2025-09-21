@@ -1,7 +1,16 @@
 import { computed, type Ref } from 'vue'
 import { useRecordDetailsList } from '@/composables/useRecordDetails'
 
-export function useLiteratures(ids: Ref<string>) {
+type Options = {
+  enableErrorHandling?: boolean
+  redirectOnNotFound?: boolean
+  showToast?: boolean
+}
+
+export function useLiteratures(
+  ids: Ref<string>,
+  options: Options = {}
+) {
   const literatureIds = computed(() =>
     ids.value
       ? ids.value
@@ -13,6 +22,7 @@ export function useLiteratures(ids: Ref<string>) {
 
   return useRecordDetailsList(
     computed(() => 'Literature'),
-    literatureIds
+    literatureIds,
+    options
   )
 }

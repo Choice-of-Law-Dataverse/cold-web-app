@@ -1,3 +1,4 @@
+import { type Ref } from 'vue'
 import { useFullTable } from '@/composables/useFullTable'
 
 function convert(record: any) {
@@ -20,8 +21,15 @@ function convert(record: any) {
   }
 }
 
-export function useJurisdictions() {
+type Options = {
+  enableErrorHandling?: boolean
+  redirectOnNotFound?: boolean
+  showToast?: boolean
+}
+
+export function useJurisdictions(options: Options = {}) {
   return useFullTable('Jurisdictions', {
+    ...options,
     select: (data) =>
       data
         .filter((record: any) => record['Irrelevant?'] === false)
@@ -30,8 +38,9 @@ export function useJurisdictions() {
   })
 }
 
-export function useJurisdiction(iso3: Ref<string>) {
+export function useJurisdiction(iso3: Ref<string>, options: Options = {}) {
   return useFullTable('Jurisdictions', {
+    ...options,
     select: (data) => {
       const record = data?.find(
         (r) => r?.['Alpha-3 Code'] === iso3.value.toLocaleUpperCase()

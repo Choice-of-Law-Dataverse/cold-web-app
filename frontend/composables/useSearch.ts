@@ -1,6 +1,7 @@
 import { computed, type Ref } from 'vue'
 import { useInfiniteQuery } from '@tanstack/vue-query'
 import { useApiClient } from '@/composables/useApiClient'
+import { useErrorHandler } from '@/composables/useErrorHandler'
 import type {
   EnhancedSearchRequest,
   SearchParams,
@@ -144,7 +145,22 @@ const fetchSearchResults = async ({
   }
 }
 
-export function useSearch(searchParams: Ref<SearchParams>) {
+type SearchOptions = {
+  enableErrorHandling?: boolean
+  redirectOnNotFound?: boolean
+  showToast?: boolean
+}
+
+export function useSearch(
+  searchParams: Ref<SearchParams>,
+  options: SearchOptions = {
+    enableErrorHandling: true,
+    redirectOnNotFound: false, // Search errors shouldn't redirect
+    showToast: true,
+  }
+) {
+  const { createQueryErrorHandler } = useErrorHandler()
+
   return useInfiniteQuery({
     queryKey: computed(() => ['search', searchParams.value]),
     queryFn: ({ pageParam }) =>
@@ -170,5 +186,11 @@ export function useSearch(searchParams: Ref<SearchParams>) {
 
       return currentPage < totalPages ? currentPage + 1 : undefined
     },
+    onError: options.enableErrorHandling
+      ? createQueryErrorHandler('Search', {
+          redirectOnNotFound: options.redirectOnNotFound,
+          showToast: options.showToast,
+        })
+      : undefined,
   })
 }

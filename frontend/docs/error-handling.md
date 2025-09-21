@@ -25,23 +25,30 @@ const { handleError, handleNotFound, createQueryErrorHandler } = useErrorHandler
 The composable now supports automatic error handling:
 
 ```typescript
-// Basic usage with automatic error handling
+// Default behavior - error handling enabled automatically
+const { data, isLoading, error } = useRecordDetails(table, id)
+
+// Custom behavior if needed
 const { data, isLoading, error } = useRecordDetails(table, id, {
-  enableErrorHandling: true,     // Enable automatic error handling
-  redirectOnNotFound: true,      // Redirect to /error for NotFoundError
-  showToast: true,              // Show toast notifications for other errors
+  enableErrorHandling: false,    // Disable automatic handling
+  redirectOnNotFound: false,     // Show toast instead of redirect
+  showToast: false,             // Don't show any notifications
 })
 ```
 
 ### 3. Enhanced Data Fetching Composables
 
-All data fetching composables (like `useAnswer`) now support error handling options:
+All data fetching composables (like `useAnswer`) now support error handling options but enable it by default:
 
 ```typescript
+// Default behavior - no options needed
+const { data, isLoading, error } = useAnswer(answerId)
+
+// Custom behavior if needed
 const { data, isLoading, error } = useAnswer(answerId, {
-  enableErrorHandling: true,
-  redirectOnNotFound: true,
-  showToast: true,
+  enableErrorHandling: false,  // Disable automatic handling
+  redirectOnNotFound: false,   // Show toast instead of redirect
+  showToast: true,            // Show toast notifications
 })
 ```
 
@@ -76,26 +83,16 @@ watch(data, (newData) => {
 </script>
 ```
 
-### After (New Pattern)
+### After (New Pattern - Default Error Handling)
 
 ```vue
 <script setup>
-// Automatic error handling - 3 lines
-const { data, isLoading, error } = useRecordDetails(table, id, {
-  enableErrorHandling: true,
-  redirectOnNotFound: true,
-  showToast: true,
-})
-
-// Handle empty data as not found (if needed)
-const { handleNotFound } = useErrorHandler()
-watch(data, (newData) => {
-  if (newData && Object.keys(newData).length === 0) {
-    handleNotFound('Resource')
-  }
-}, { immediate: true })
+// Automatic error handling - no options needed
+const { data, isLoading } = useRecordDetails(table, id)
 </script>
 ```
+
+The new system automatically handles errors by default:
 
 ## Error Types and Handling
 
@@ -153,21 +150,21 @@ The system uses @nuxt/ui's toast system for non-critical errors:
 
 ## Best Practices
 
-1. **Use Automatic Handling**: Enable for most pages to reduce boilerplate
-2. **Custom Messages**: Provide meaningful fallback messages for better UX
-3. **Selective Overrides**: Only disable automatic handling when you need custom behavior
-4. **Toast vs Redirect**: Use toasts for recoverable errors, redirects for critical failures
+1. **Use Default Behavior**: Error handling is enabled by default - no options needed
+2. **Custom Messages**: Provide meaningful fallback messages for better UX when needed
+3. **Selective Overrides**: Only pass options when you need custom behavior
+4. **Toast vs Redirect**: Different composables have appropriate defaults (detail pages redirect, lists/search show toasts)
 5. **Error Logging**: All errors are automatically logged for debugging
 
 ## Examples
 
-### Simple Page with Auto-handling
+### Simple Page with Default Auto-handling
 ```vue
 <script setup>
+// No options needed - error handling is automatic
 const { data, isLoading } = useRecordDetails(
   ref('Literature'), 
-  ref(route.params.id),
-  { enableErrorHandling: true }
+  ref(route.params.id)
 )
 </script>
 ```
@@ -177,7 +174,7 @@ const { data, isLoading } = useRecordDetails(
 <script setup>
 const { handleError } = useErrorHandler()
 
-const { data, isLoading } = useRecordDetails(
+const { data, isLoading, error } = useRecordDetails(
   ref('Literature'), 
   ref(route.params.id),
   { enableErrorHandling: false }
