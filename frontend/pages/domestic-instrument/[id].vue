@@ -1,6 +1,5 @@
 <template>
-  <EntityErrorBoundary entity-type="Domestic Instrument">
-    <BaseDetailLayout
+  <BaseDetailLayout
     :loading="loading"
     :resultData="processedLegalInstrument"
     :keyLabelPairs="computedKeyLabelPairs"
@@ -191,14 +190,12 @@
     </template>
   </BaseDetailLayout>
   <CountryReportLink :processedAnswerData="processedLegalInstrument" />
-  </EntityErrorBoundary>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import EntityErrorBoundary from '@/components/ui/EntityErrorBoundary.vue'
 import LegalProvision from '@/components/legal/LegalProvision.vue'
 import InfoPopover from '~/components/ui/InfoPopover.vue'
 import SectionRenderer from '@/components/legal/SectionRenderer.vue'

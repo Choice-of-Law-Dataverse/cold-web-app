@@ -1,66 +1,98 @@
 <template>
   <div>
-    <slot v-if="!error" />
-    <div v-else class="error-boundary">
-      <slot name="fallback" :error="error" :retry="retry">
-        <div class="flex flex-col items-center justify-center min-h-64 p-8 text-center">
-          <div class="mb-4">
-            <Icon name="i-material-symbols:error-outline" class="w-12 h-12 text-red-500" />
-          </div>
-          <h3 class="text-lg font-semibold text-gray-900 mb-2">
-            Something went wrong
-          </h3>
-          <p class="text-gray-600 mb-4">
-            {{ error.message || 'An unexpected error occurred' }}
-          </p>
-          <UButton @click="retry" color="primary" variant="outline">
-            Try Again
-          </UButton>
-        </div>
-      </slot>
+    <!-- For NotFound errors, show the error page -->
+    <div v-if="isNotFoundError" class="entity-not-found">
+      <div
+        class="mx-auto min-h-[50vh] flex flex-col justify-center items-center text-center"
+        style="max-width: var(--container-width); width: 100%"
+      >
+        <h2>{{ error.message || 'Item not found' }}</h2>
+
+        <NuxtLink class="mt-6 cursor-pointer" @click="handleGoBack">
+          Go back
+        </NuxtLink>
+        <NuxtLink class="mt-6 cursor-pointer" @click="handleGoHome">
+          Take me back to Home
+        </NuxtLink>
+      </div>
     </div>
+    <!-- For all other cases (no error or non-NotFound errors), show the normal content -->
+    <slot v-else />
   </div>
 </template>
 
 <script setup>
-import { ref, onErrorCaptured, provide, inject } from 'vue'
+import { ref, computed, onErrorCaptured, provide } from 'vue'
+import { useRouter } from 'vue-router'
 
 const props = defineProps({
   onError: {
     type: Function,
-    default: undefined
-  }
+    default: undefined,
+  },
+  entityType: {
+    type: String,
+    default: 'Entity',
+  },
 })
 
+const router = useRouter()
+const toast = useToast()
+
 const error = ref(null)
+
+// Check if error is a NotFoundError
+const isNotFoundError = computed(() => {
+  return (
+    error.value?.statusCode === 404 ||
+    error.value?.data?.name === 'NotFoundError' ||
+    error.value?.name === 'NotFoundError'
+  )
+})
 
 // Error recovery function
 const retry = () => {
   error.value = null
 }
 
+// Handle navigation actions with error clearing
+const handleGoBack = () => {
+  error.value = null
+  router.back()
+}
+
+const handleGoHome = () => {
+  error.value = null
+  router.push('/')
+}
+
 // Capture errors from child components
 onErrorCaptured((err, instance, info) => {
-  error.value = err
-  
-  // Call custom error handler if provided
-  if (props.onError) {
-    props.onError(err, instance, info)
-  }
-  
-  // Show toast notification
-  const toast = inject('toast', null)
-  if (toast) {
+  // Check if this is a NotFound error
+  const isNotFound =
+    err?.statusCode === 404 ||
+    err?.data?.name === 'NotFoundError' ||
+    err?.name === 'NotFoundError'
+
+  // For NotFound errors, set the error state to show the error page
+  if (isNotFound) {
+    error.value = err
+  } else {
+    // For non-NotFound errors, show toast and keep content visible
     toast.add({
       title: 'Error',
       description: err.message || 'An unexpected error occurred',
       color: 'red',
-      timeout: 5000
+      timeout: 5000,
     })
+    // Don't set error.value so the content remains visible
   }
-  
-  console.error('Error caught by ErrorBoundary:', err, info)
-  
+
+  // Call custom error handler if provided
+  if (props.onError) {
+    props.onError(err, instance, info)
+  }
+
   // Prevent the error from bubbling up
   return false
 })

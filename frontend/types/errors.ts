@@ -13,7 +13,8 @@ export function createNotFoundError(
   const table = body && 'table' in body ? body.table : undefined
   const id = body && 'id' in body ? body.id : undefined
   const resource = table ? table : endpoint
-  const finalMessage = customMessage || `${resource} not found`
+  const itemId = id || 'Item'
+  const finalMessage = customMessage || `${itemId} not found in ${resource}`
 
   return createError({
     statusCode: 404,
@@ -32,7 +33,7 @@ export function createNotFoundError(
               stack: originalError.stack,
             }
           : originalError,
-    }
+    },
   })
 }
 
@@ -70,7 +71,7 @@ export function createApiError(
               stack: originalError.stack,
             }
           : originalError,
-    }
+    },
   })
 }
 
@@ -97,9 +98,10 @@ export class NotFoundError extends Error {
     const table = body && 'table' in body ? body.table : undefined
     const id = body && 'id' in body ? body.id : undefined
 
-    // Create meaningful error message for not found
+    // Create meaningful error message for not found with ID pattern
     const resource = table ? table : endpoint
-    const finalMessage = customMessage || `${resource} not found`
+    const itemId = id || 'Item'
+    const finalMessage = customMessage || `${itemId} not found in ${resource}`
 
     super(finalMessage)
 

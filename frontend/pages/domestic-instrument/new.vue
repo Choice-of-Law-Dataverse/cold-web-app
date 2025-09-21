@@ -154,7 +154,9 @@
       <!-- Compatible HCCH Principles (optional) -->
       <UFormGroup size="lg" class="mt-8">
         <template #label>
-          <span class="label flex flex-row items-center">Compatible With the HCCH Principles?</span>
+          <span class="label flex flex-row items-center"
+            >Compatible With the HCCH Principles?</span
+          >
           <InfoPopover :text="tooltipCompatibleWithHCCH" />
         </template>
         <div
@@ -182,7 +184,9 @@
       <!-- Compatible UNCITRAL Model Law (optional) -->
       <UFormGroup size="lg" class="mt-8">
         <template #label>
-          <span class="label flex flex-row items-center">Compatible With the UNCITRAL Model Law?</span>
+          <span class="label flex flex-row items-center"
+            >Compatible With the UNCITRAL Model Law?</span
+          >
           <InfoPopover :text="tooltipCompatibleWithUNCITRAL" />
         </template>
         <div

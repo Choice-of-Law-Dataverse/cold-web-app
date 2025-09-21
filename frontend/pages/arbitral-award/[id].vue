@@ -1,6 +1,5 @@
 <template>
-  <EntityErrorBoundary entity-type="Arbitral Award">
-    <BaseDetailLayout
+  <BaseDetailLayout
     :loading="loading"
     :resultData="processedArbitralAward"
     :keyLabelPairs="computedKeyLabelPairs"
@@ -10,14 +9,12 @@
     :showSuggestEdit="true"
     sourceTable="Arbitral Award"
   />
-  </EntityErrorBoundary>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import EntityErrorBoundary from '@/components/ui/EntityErrorBoundary.vue'
 import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { arbitralAwardConfig } from '@/config/pageConfigs'
@@ -100,5 +97,4 @@ watch(
   },
   { immediate: true }
 )
-
 </script>

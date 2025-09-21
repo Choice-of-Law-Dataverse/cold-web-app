@@ -1,13 +1,12 @@
 <template>
-  <EntityErrorBoundary entity-type="Regional Instrument">
-    <BaseDetailLayout
-      :loading="loading"
-      :resultData="processedRegionalInstrument"
-      :keyLabelPairs="computedKeyLabelPairs"
-      :valueClassMap="valueClassMap"
-      :showSuggestEdit="true"
-      sourceTable="Regional Instrument"
-    >
+  <BaseDetailLayout
+    :loading="loading"
+    :resultData="processedRegionalInstrument"
+    :keyLabelPairs="computedKeyLabelPairs"
+    :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
+    sourceTable="Regional Instrument"
+  >
     <template #literature>
       <section class="section-gap p-0 m-0">
         <RelatedLiterature
@@ -75,14 +74,12 @@
       </section>
     </template>
   </BaseDetailLayout>
-  </EntityErrorBoundary>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import EntityErrorBoundary from '@/components/ui/EntityErrorBoundary.vue'
 import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { regionalInstrumentConfig } from '@/config/pageConfigs'

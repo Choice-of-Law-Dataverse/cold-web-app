@@ -3,7 +3,9 @@
     <Nav />
 
     <main class="flex-1 mt-12">
-      <NuxtPage />
+      <ErrorBoundary>
+        <NuxtPage />
+      </ErrorBoundary>
     </main>
 
     <Footer />
@@ -13,4 +15,5 @@
 <script setup>
 import Nav from '@/components/layout/Nav.vue'
 import Footer from '@/components/layout/Footer.vue'
+import ErrorBoundary from '@/components/ui/ErrorBoundary.vue'
 </script>

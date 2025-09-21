@@ -1,6 +1,5 @@
 <template>
-  <EntityErrorBoundary entity-type="Question">
-    <BaseDetailLayout
+  <BaseDetailLayout
     :loading="isLoading"
     :resultData="processedAnswerData"
     :keyLabelPairs="keyLabelPairs"
@@ -102,14 +101,12 @@
     </template>
   </BaseDetailLayout>
   <CountryReportLink :processedAnswerData="processedAnswerData ?? {}" />
-  </EntityErrorBoundary>
 </template>
 
 <script setup>
 import { onMounted, nextTick, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import EntityErrorBoundary from '@/components/ui/EntityErrorBoundary.vue'
 import CourtDecisionRenderer from '@/components/legal/CourtDecisionRenderer.vue'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import QuestionSourceList from '@/components/sources/QuestionSourceList.vue'

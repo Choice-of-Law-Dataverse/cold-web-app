@@ -1,21 +1,18 @@
 <template>
-  <EntityErrorBoundary entity-type="Arbitral Rule">
-    <BaseDetailLayout
-      :loading="loading"
-      :resultData="processedArbitralRule"
-      :keyLabelPairs="computedKeyLabelPairs"
-      :valueClassMap="valueClassMap"
-      :showSuggestEdit="true"
-      sourceTable="Arbitral Rule"
-    />
-  </EntityErrorBoundary>
+  <BaseDetailLayout
+    :loading="loading"
+    :resultData="processedArbitralRule"
+    :keyLabelPairs="computedKeyLabelPairs"
+    :valueClassMap="valueClassMap"
+    :showSuggestEdit="true"
+    sourceTable="Arbitral Rule"
+  />
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import EntityErrorBoundary from '@/components/ui/EntityErrorBoundary.vue'
 import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { arbitralRuleConfig } from '@/config/pageConfigs'
@@ -72,5 +69,4 @@ watch(
   },
   { immediate: true }
 )
-
 </script>
