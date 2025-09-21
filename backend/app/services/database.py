@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import time
 from collections.abc import Callable, Iterable
 from typing import Any
@@ -7,6 +8,8 @@ from typing import Any
 import sqlalchemy as sa
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import sessionmaker
+
+logger = logging.getLogger(__name__)
 
 
 class Database:
@@ -28,8 +31,8 @@ class Database:
         assert metadata is not None
         try:
             metadata.reflect(bind=self.engine)
-        except SQLAlchemyError as e:
-            print(f"Error reflecting metadata: {e}")
+        except SQLAlchemyError:
+            logger.exception("Error reflecting metadata")
             self.metadata = None
 
         self.Session = sessionmaker(bind=self.engine)
@@ -68,8 +71,8 @@ class Database:
                         columns = result.keys()
                         entries = [dict(zip(columns, row, strict=False)) for row in result.fetchall()]
                         all_entries[table_name] = entries
-                except SQLAlchemyError as e:
-                    print(f"Error getting all entries: {e}")
+                except SQLAlchemyError:
+                    logger.exception("Error getting all entries")
             return all_entries
 
         return self._retry_on_empty(fetch_all_entries)
@@ -92,9 +95,9 @@ class Database:
                             entries = [dict(zip(columns, row, strict=False)) for row in result.fetchall()]
                             entries_from_tables[table_name] = entries
                         else:
-                            print(f"Table {table_name} does not exist in the database.")
-                except SQLAlchemyError as e:
-                    print(f"Error getting entries from tables: {e}")
+                            logger.warning("Table %s does not exist in the database", table_name.strip())
+                except SQLAlchemyError:
+                    logger.exception("Error getting entries from tables")
             return entries_from_tables
 
         return self._retry_on_empty(fetch_entries)
@@ -134,14 +137,16 @@ class Database:
                                 columns = result.keys()
                                 entry = dict(zip(columns, row, strict=False))
                             else:
-                                print(f"No entry found with id {entry_id} in table {table_name}.")
+                                logger.warning(
+                                    "No entry found with id %s in table %s", str(entry_id).strip(), table_name.strip()
+                                )
                                 return {"error": "no entry found with the specified id"}
                         else:
-                            print(f"Table {table_name} does not have a mapped id column.")
+                            logger.warning("Table %s does not have a mapped id column", table_name.strip())
                     else:
-                        print(f"Table {table_name} does not exist in the database.")
-                except SQLAlchemyError as e:
-                    print(f"Error getting entry by id: {e}")
+                        logger.warning("Table %s does not exist in the database", table_name.strip())
+                except SQLAlchemyError:
+                    logger.exception("Error getting entry by id")
             return entry
 
         return self._retry_on_empty(fetch_entry)
@@ -159,8 +164,8 @@ class Database:
                     results = [dict(zip(columns, row, strict=False)) for row in rows]
                     return results
 
-                except SQLAlchemyError as e:
-                    print(f"Error executing query: {e}")
+                except SQLAlchemyError:
+                    logger.exception("Error executing query")
                     return None
 
         return self._retry_on_empty(fetch_query)

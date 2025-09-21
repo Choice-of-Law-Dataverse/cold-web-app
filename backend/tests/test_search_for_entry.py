@@ -4,6 +4,7 @@
 Test script for the new search_for_entry function integration
 """
 
+import logging
 import os
 import sys
 
@@ -11,6 +12,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from app.services.search import SearchService
+
+logger = logging.getLogger(__name__)
 
 
 def test_search_for_entry_integration():
@@ -31,24 +34,24 @@ def test_search_for_entry_integration():
         table = test_case["table"]
         cold_id = test_case["cold_id"]
 
-        print(f"\nTesting {table} with CoLD_ID: {cold_id}")
+        logger.debug(f"\nTesting {table} with CoLD_ID: {cold_id}")
 
         # Test the updated method
         result = search_service.curated_details_search(table, cold_id)
 
         if "error" in result:
-            print(f"  Error (might be expected if test data doesn't exist): {result['error']}")
+            logger.debug(f"Error (might be expected if test data doesn't exist): {result['error']}")
         else:
-            print(f"  Success! Found record with ID: {result.get('id')}")
-            print(f"  Source table: {result.get('source_table')}")
-            print(f"  Has hop1_relations: {'hop1_relations' in result}")
-            print(f"  Data structure similar to full_text_search: {bool(result.get('source_table') and result.get('id'))}")
+            logger.debug(f"Success! Found record with ID: {result.get('id')}")
+            logger.debug(f"Source table: {result.get('source_table')}")
+            logger.debug(f"Has hop1_relations: {'hop1_relations' in result}")
+            logger.debug(f"Data structure similar to full_text_search: {bool(result.get('source_table') and result.get('id'))}")
             if "hop1_relations" in result:
                 relations = result["hop1_relations"]
                 if isinstance(relations, dict) and relations:
-                    print(f"  Relations found: {list(relations.keys())}")
+                    logger.debug(f"Relations found: {list(relations.keys())}")
                 else:
-                    print("  No relations for this record")
+                    logger.debug("  No relations for this record")
 
 
 def test_data_structure_consistency():
@@ -60,46 +63,46 @@ def test_data_structure_consistency():
     table = "Answers"
     test_id = "CHE_01.1-P"  # Replace with actual test data
 
-    print(f"\nTesting data structure consistency for {table} {test_id}")
+    logger.debug(f"\nTesting data structure consistency for {table} {test_id}")
 
     # Test curated details
     curated_result = search_service.curated_details_search(table, test_id)
 
     if "error" not in curated_result:
-        print("Curated details structure:")
-        print(f"  - source_table: {'source_table' in curated_result}")
-        print(f"  - id: {'id' in curated_result}")
-        print(f"  - hop1_relations: {'hop1_relations' in curated_result}")
-        print(f"  - transformed by DataTransformerFactory: {hasattr(curated_result, 'get')}")
+        logger.debug("Curated details structure:")
+        logger.debug(f"- source_table: {'source_table' in curated_result}")
+        logger.debug(f"- id: {'id' in curated_result}")
+        logger.debug(f"- hop1_relations: {'hop1_relations' in curated_result}")
+        logger.debug(f"- transformed by DataTransformerFactory: {hasattr(curated_result, 'get')}")
 
         # Check if it has similar fields to full text search results
         expected_fields = ["source_table", "id"]
         missing_fields = [field for field in expected_fields if field not in curated_result]
         if missing_fields:
-            print(f"  Missing expected fields: {missing_fields}")
+            logger.debug(f"Missing expected fields: {missing_fields}")
         else:
-            print("  ✅ Has all expected fields for consistency with full_text_search")
+            logger.debug("  ✅ Has all expected fields for consistency with full_text_search")
     else:
-        print(f"  Error in curated details: {curated_result['error']}")
+        logger.debug(f"Error in curated details: {curated_result['error']}")
 
 
 if __name__ == "__main__":
-    print("Testing updated search_for_entry integration...")
+    logger.debug("Testing updated search_for_entry integration...")
 
     try:
         test_search_for_entry_integration()
-        print("\n✅ Basic integration test completed")
+        logger.debug("\n✅ Basic integration test completed")
     except Exception as e:
-        print(f"\n❌ Integration test failed: {e}")
+        logger.debug(f"\n❌ Integration test failed: {e}")
         import traceback
 
         traceback.print_exc()
 
     try:
         test_data_structure_consistency()
-        print("\n✅ Data structure consistency test completed")
+        logger.debug("\n✅ Data structure consistency test completed")
     except Exception as e:
-        print(f"\n❌ Data structure consistency test failed: {e}")
+        logger.debug(f"\n❌ Data structure consistency test failed: {e}")
         import traceback
 
         traceback.print_exc()

@@ -4,6 +4,8 @@ from typing import Any
 
 import requests
 
+logger = logging.getLogger(__name__)
+
 
 class NocoDBService:
     def __init__(self, base_url: str, api_token: str | None = None):
@@ -19,13 +21,12 @@ class NocoDBService:
         """
         Fetch full record data and metadata for a specific row from NocoDB.
         """
-        print(f"Fetching row {record_id} from table {table} in NocoDB")
-        logger = logging.getLogger(__name__)
+        logger.debug("Fetching row %s from table %s in NocoDB", record_id.strip(), table.strip())
         url = f"{self.base_url}/{table}/{record_id}"
         logger.debug("NocoDBService.get_row: GET %s", url)
         logger.debug("NocoDBService headers: %s", self.headers)
         resp = requests.get(url, headers=self.headers)
-        print("Response from nocoDB:", resp.status_code, resp.text)
+        logger.debug("Response from nocoDB: %s %s", resp.status_code, resp.text.strip())
         resp.raise_for_status()
         payload = resp.json()
         logger.debug("NocoDBService.get_row response payload: %s", payload)
@@ -41,7 +42,6 @@ class NocoDBService:
         """
         Fetch records for a given table via NocoDB API, applying optional filters and paging through all pages.
         """
-        logger = logging.getLogger(__name__)
         records: list[dict[str, Any]] = []
         offset = 0
         # build where parameter if filters provided

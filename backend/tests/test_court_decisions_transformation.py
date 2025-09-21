@@ -5,6 +5,7 @@ Test script for Court Decisions transformation.
 """
 
 import json
+import logging
 import os
 import sys
 
@@ -13,6 +14,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from app.services.configurable_transformer import ConfigurableTransformer
 from app.services.transformers import DataTransformerFactory
+
+logger = logging.getLogger(__name__)
 
 
 def create_mock_court_decision_result():
@@ -77,35 +80,35 @@ def load_reference_data():
         with open("app/mapping/court_decisions_reference.json") as f:
             return json.load(f)
     except FileNotFoundError:
-        print("Reference file not found")
+        logger.debug("Reference file not found")
         return None
 
 
 def test_court_decisions_transformation():
     """Test Court Decisions transformation."""
-    print("=== TESTING COURT DECISIONS TRANSFORMATION ===")
+    logger.debug("=== TESTING COURT DECISIONS TRANSFORMATION ===")
 
     mock_result = create_mock_court_decision_result()
 
     # Transform using the factory
     transformed = DataTransformerFactory.transform_result("Court Decisions", mock_result)
 
-    print("Transformed Court Decision:")
-    print(json.dumps(transformed, indent=2, default=str))
+    logger.debug("Transformed Court Decision:")
+    logger.debug(json.dumps(transformed, indent=2, default=str))
 
     # Load reference for comparison
     reference_data = load_reference_data()
     if reference_data and reference_data.get("results"):
         reference_result = reference_data["results"][0]
 
-        print("\n=== FIELD COMPARISON ===")
+        logger.debug("\n=== FIELD COMPARISON ===")
         reference_keys = set(reference_result.keys())
         transformed_keys = set(transformed.keys())
 
-        print(f"Reference keys: {len(reference_keys)}")
-        print(f"Transformed keys: {len(transformed_keys)}")
-        print(f"Missing keys: {reference_keys - transformed_keys}")
-        print(f"Extra keys: {transformed_keys - reference_keys}")
+        logger.debug("Reference keys: %d", len(reference_keys))
+        logger.debug("Transformed keys: %d", len(transformed_keys))
+        logger.debug("Missing keys: %s", reference_keys - transformed_keys)
+        logger.debug("Extra keys: %s", transformed_keys - reference_keys)
 
         # Check specific important mappings
         key_mappings_to_check = [
@@ -121,29 +124,29 @@ def test_court_decisions_transformation():
             "Publication Date ISO",
         ]
 
-        print("\n=== KEY FIELD VERIFICATION ===")
+        logger.debug("\n=== KEY FIELD VERIFICATION ===")
         for key in key_mappings_to_check:
             ref_val = reference_result.get(key)
             trans_val = transformed.get(key)
             status = "✓" if trans_val == ref_val else "✗"
-            print(f"{status} {key}: expected='{ref_val}', actual='{trans_val}'")
+            logger.debug("%s %s: expected='%s', actual='%s'", status, key, ref_val, trans_val)
 
 
 def test_configurable_transformer_direct():
     """Test the configurable transformer directly."""
-    print("\n=== TESTING CONFIGURABLE TRANSFORMER DIRECTLY ===")
+    logger.debug("\n=== TESTING CONFIGURABLE TRANSFORMER DIRECTLY ===")
 
     transformer = ConfigurableTransformer()
     mock_result = create_mock_court_decision_result()
 
     # Check if Court Decisions mapping is loaded
     if transformer.mapping_repo.has_mapping("Court Decisions"):
-        print("✓ Court Decisions mapping found")
+        logger.debug("✓ Court Decisions mapping found")
 
         # Transform
         transformed = transformer.transform("Court Decisions", mock_result)
 
-        print(f"Transformed result has {len(transformed)} fields")
+        logger.debug("Transformed result has %d fields", len(transformed))
 
         # Check some key transformations
         expected_checks = [
@@ -153,19 +156,19 @@ def test_configurable_transformer_direct():
             ("Jurisdictions Alpha-3 Code", "GBR"),
         ]
 
-        print("\n=== SPECIFIC FIELD CHECKS ===")
+        logger.debug("\n=== SPECIFIC FIELD CHECKS ===")
         for field, expected in expected_checks:
             actual = transformed.get(field)
             status = "✓" if actual == expected else "✗"
-            print(f"{status} {field}: {actual}")
+            logger.debug("%s %s: %s", status, field, actual)
 
     else:
-        print("✗ Court Decisions mapping not found")
+        logger.debug("✗ Court Decisions mapping not found")
 
 
 def test_json_extraction():
     """Test JSON extraction for PDF fields."""
-    print("\n=== TESTING JSON EXTRACTION ===")
+    logger.debug("\n=== TESTING JSON EXTRACTION ===")
 
     transformer = ConfigurableTransformer()
 
@@ -188,7 +191,7 @@ def test_json_extraction():
         },
     )
 
-    print(f"JSON extraction result: {transformed.get('Official Source (PDF)')}")
+    logger.debug("JSON extraction result: %s", transformed.get("Official Source (PDF)"))
 
 
 if __name__ == "__main__":
@@ -196,9 +199,9 @@ if __name__ == "__main__":
         test_court_decisions_transformation()
         test_configurable_transformer_direct()
         test_json_extraction()
-        print("\n=== ALL COURT DECISIONS TESTS COMPLETED ===")
+        logger.debug("\n=== ALL COURT DECISIONS TESTS COMPLETED ===")
     except Exception as e:
-        print(f"Test error: {e}")
+        logger.exception("Test error: %s", str(e).strip())
         import traceback
 
         traceback.print_exc()

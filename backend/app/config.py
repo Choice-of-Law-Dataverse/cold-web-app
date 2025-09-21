@@ -15,6 +15,8 @@ class Config:
     MONGODB_CONN_STRING: str | None = os.getenv("MONGODB_CONN_STRING")
     OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY")
     TEST: str | None = os.getenv("TEST")
+    # Logging configuration
+    LOG_LEVEL: str = os.getenv("LOG_LEVEL", "INFO")
     # NocoDB configuration
     NOCODB_BASE_URL: str | None = os.getenv("NOCODB_BASE_URL")
     NOCODB_API_TOKEN: str | None = os.getenv("NOCODB_API_TOKEN")

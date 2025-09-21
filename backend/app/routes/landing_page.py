@@ -7,11 +7,7 @@ from app.services.landing_page import LandingPageService
 landing_page_service = LandingPageService()
 
 # Define router
-router = APIRouter(
-    prefix="/landing-page",
-    tags=["LandingPage"],
-    dependencies=[Depends(verify_jwt_token)],
-)
+router = APIRouter(prefix="/landing-page", tags=["LandingPage"], dependencies=[Depends(verify_jwt_token)])
 
 
 @router.get(

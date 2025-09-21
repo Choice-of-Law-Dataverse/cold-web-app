@@ -421,7 +421,7 @@ class SearchService:
         count_result = self.db.execute_query(count_sql, params)
         total_matches = count_result[0].get("total_matches", 0) if count_result else 0
         # fetch paginated rows
-        print(f"Performing full-text search with params: {params}")
+        logger.debug("Performing full-text search with params: %s", params)
         sql = (
             "SELECT table_name AS source_table, record_id AS id, complete_record AS complete_record, rank, result_date "
             "FROM data_views.search_all("
@@ -435,8 +435,8 @@ class SearchService:
             ")"
         )
         rows = self.db.execute_query(sql, params) or []
-        # print raw SQL rows, serializing dates as strings
-        print("raw SQL results:\n", json.dumps(rows, indent=2, default=str))
+        # log raw SQL rows, serializing dates as strings
+        logger.debug("raw SQL results:\n%s", json.dumps(rows, indent=2, default=str))
         # flatten nested complete_record into top-level
         parsed_results = []
         raw_results = []

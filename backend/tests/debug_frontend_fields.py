@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
+import logging
 import os
 import sys
 
 from app.services.transformers import DataTransformerFactory
+
+logger = logging.getLogger(__name__)
 
 # Add the backend directory to Python path
 backend_dir = os.path.dirname(os.path.abspath(__file__))
@@ -37,18 +40,18 @@ def test_frontend_field_requirements():
         ],
     }
 
-    print("=== Testing Frontend Field Requirements ===")
-    print("Frontend expects these fields:")
-    print("- instrument.ID (for route)")
-    print("- instrument['Jurisdictions Alpha-3 Code'] (for flag)")
-    print("- instrument['Entry Into Force'] or instrument['Date'] (for date)")
-    print("- instrument['Title (in English)'] (for title)")
+    logger.debug("=== Testing Frontend Field Requirements ===")
+    logger.debug("Frontend expects these fields:")
+    logger.debug("- instrument.ID (for route)")
+    logger.debug("- instrument['Jurisdictions Alpha-3 Code'] (for flag)")
+    logger.debug("- instrument['Entry Into Force'] or instrument['Date'] (for date)")
+    logger.debug("- instrument['Title (in English)'] (for title)")
 
     # Transform the record
     transformed = DataTransformerFactory.transform_result("Domestic Instruments", test_record)
 
-    print("\n=== Transformation Results ===")
-    print(f"Transformed keys: {sorted(transformed.keys())}")
+    logger.debug("\n=== Transformation Results ===")
+    logger.debug(f"Transformed keys: {sorted(transformed.keys())}")
 
     # Check each required field
     required_fields = [
@@ -59,31 +62,31 @@ def test_frontend_field_requirements():
         "Title (in English)",
     ]
 
-    print("\n=== Required Field Check ===")
+    logger.debug("\n=== Required Field Check ===")
     for field in required_fields:
         if field in transformed:
-            print(f"✅ {field}: {transformed[field]}")
+            logger.debug(f"✅ {field}: {transformed[field]}")
         else:
-            print(f"❌ {field}: MISSING")
+            logger.debug(f"❌ {field}: MISSING")
 
     # Show all fields for debugging
-    print("\n=== All Transformed Fields ===")
+    logger.debug("\n=== All Transformed Fields ===")
     for key, value in sorted(transformed.items()):
-        print(f"  {key}: {repr(value)}")
+        logger.debug(f"{key}: {repr(value)}")
 
     # Test the sorting logic the frontend uses
-    print("\n=== Sorting Test ===")
+    logger.debug("\n=== Sorting Test ===")
     date_value = transformed.get("Date")
     if date_value:
         try:
             numeric_date = Number(date_value)  # JavaScript Number()
-            print(f"Date '{date_value}' converts to number: {numeric_date}")
+            logger.debug(f"Date '{date_value}' converts to number: {numeric_date}")
         except Exception:
             try:
                 numeric_date = int(date_value)
-                print(f"Date '{date_value}' converts to int: {numeric_date}")
+                logger.debug(f"Date '{date_value}' converts to int: {numeric_date}")
             except Exception:
-                print(f"❌ Date '{date_value}' cannot be converted to number")
+                logger.debug(f"❌ Date '{date_value}' cannot be converted to number")
 
     return transformed
 

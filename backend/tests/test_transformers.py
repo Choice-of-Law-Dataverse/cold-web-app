@@ -4,6 +4,7 @@ Simple test for the transformers module.
 """
 
 import json
+import logging
 import os
 import sys
 
@@ -11,6 +12,8 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 
 from app.services.transformers import AnswersTransformer, DataTransformerFactory
+
+logger = logging.getLogger(__name__)
 
 
 def create_mock_answers_result():
@@ -32,11 +35,7 @@ def create_mock_answers_result():
         "updated_by": "usaf3dew23c77lgf",
         "related_themes": [
             {"id": 4, "Theme": "Consumer contracts", "Created": "2025-03-21T08:57:00"},
-            {
-                "id": 15,
-                "Theme": "Employment contracts",
-                "Created": "2025-03-21T08:57:00",
-            },
+            {"id": 15, "Theme": "Employment contracts", "Created": "2025-03-21T08:57:00"},
         ],
         "More_Information": None,
         "Question_CoLD_ID": "34-FV",
@@ -77,15 +76,15 @@ def create_mock_answers_result():
 
 def test_answers_transformer():
     """Test the AnswersTransformer directly."""
-    print("=== TESTING ANSWERS TRANSFORMER ===")
+    logger.debug("=== TESTING ANSWERS TRANSFORMER ===")
 
     mock_result = create_mock_answers_result()
     transformed = AnswersTransformer.transform_to_reference_format(mock_result)
 
-    print("Original result keys:", sorted(mock_result.keys()))
-    print("Transformed result keys:", sorted(transformed.keys()))
-    print("\nTransformed result:")
-    print(json.dumps(transformed, indent=2, default=str))
+    logger.debug("Original result keys: %s", sorted(mock_result.keys()))
+    logger.debug("Transformed result keys: %s", sorted(transformed.keys()))
+    logger.debug("\nTransformed result:")
+    logger.debug(json.dumps(transformed, indent=2, default=str))
 
     # Check key mappings
     expected_mappings = {
@@ -100,36 +99,36 @@ def test_answers_transformer():
         "Themes": "Consumer contracts, Employment contracts",
     }
 
-    print("\n=== KEY MAPPING VERIFICATION ===")
+    logger.debug("\n=== KEY MAPPING VERIFICATION ===")
     for key, expected_value in expected_mappings.items():
         actual_value = transformed.get(key)
         status = "✓" if actual_value == expected_value else "✗"
-        print(f"{status} {key}: expected='{expected_value}', actual='{actual_value}'")
+        logger.debug("%s %s: expected='%s', actual='%s'", status, key, expected_value, actual_value)
 
 
 def test_factory():
     """Test the DataTransformerFactory."""
-    print("\n=== TESTING DATA TRANSFORMER FACTORY ===")
+    logger.debug("\n=== TESTING DATA TRANSFORMER FACTORY ===")
 
     # Test getting transformer for Answers
     answers_transformer = DataTransformerFactory.get_transformer("Answers")
-    print(f"Answers transformer: {answers_transformer}")
+    logger.debug("Answers transformer: %s", answers_transformer)
 
     # Test getting transformer for non-existent table
     unknown_transformer = DataTransformerFactory.get_transformer("UnknownTable")
-    print(f"Unknown table transformer: {unknown_transformer}")
+    logger.debug("Unknown table transformer: %s", unknown_transformer)
 
     # Test transform_result method
     mock_result = create_mock_answers_result()
 
     # Transform Answers result
     transformed_answers = DataTransformerFactory.transform_result("Answers", mock_result)
-    print(f"Transformed Answers result has {len(transformed_answers)} fields")
+    logger.debug("Transformed Answers result has %d fields", len(transformed_answers))
 
     # Transform unknown table result (should return original)
     mock_unknown = {"source_table": "UnknownTable", "data": "test"}
     transformed_unknown = DataTransformerFactory.transform_result("UnknownTable", mock_unknown)
-    print(f"Unknown table result unchanged: {transformed_unknown == mock_unknown}")
+    logger.debug("Unknown table result unchanged: %s", transformed_unknown == mock_unknown)
 
 
 if __name__ == "__main__":
