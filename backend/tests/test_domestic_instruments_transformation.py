@@ -206,7 +206,7 @@ def test_boolean_mappings():
 
     logger.debug("Boolean mapping results:")
     for key, value in transformed.items():
-        logger.debug(f"  {key}: {value} (type: {type(value).__name__})")
+        logger.debug(f"{key}: {value} (type: {type(value).__name__})")
 
 
 def test_conditional_mappings():
@@ -242,7 +242,7 @@ def test_conditional_mappings():
 
     logger.debug("Conditional mapping results:")
     for key, value in transformed.items():
-        logger.debug(f"  {key}: {value}")
+        logger.debug(f"{key}: {value}")
 
 
 if __name__ == "__main__":

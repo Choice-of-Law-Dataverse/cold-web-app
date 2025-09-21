@@ -1,3 +1,5 @@
+import logging
+
 import uvicorn
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,6 +16,9 @@ from app.routes import (
     suggestions as suggestions_router,
 )
 from app.services.query_logging import log_query
+
+# Configure logging level
+logging.basicConfig(level=getattr(logging, config.LOG_LEVEL.upper()))
 
 app = FastAPI(
     title="CoLD API",

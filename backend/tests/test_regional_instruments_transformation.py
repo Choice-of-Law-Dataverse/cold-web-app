@@ -220,7 +220,7 @@ def test_array_operations():
 
     logger.debug("Array operations results:")
     for key, value in transformed.items():
-        logger.debug(f"  {key}: {value}")
+        logger.debug(f"{key}: {value}")
 
 
 def test_complex_mappings():
@@ -267,7 +267,7 @@ def test_complex_mappings():
 
     logger.debug("Complex mapping results:")
     for key, value in transformed.items():
-        logger.debug(f"  {key}: {value}")
+        logger.debug(f"{key}: {value}")
 
 
 if __name__ == "__main__":

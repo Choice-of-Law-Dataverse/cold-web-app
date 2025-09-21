@@ -40,16 +40,16 @@ def test_search_for_entry_integration():
         result = search_service.curated_details_search(table, cold_id)
 
         if "error" in result:
-            logger.debug(f"  Error (might be expected if test data doesn't exist): {result['error']}")
+            logger.debug(f"Error (might be expected if test data doesn't exist): {result['error']}")
         else:
-            logger.debug(f"  Success! Found record with ID: {result.get('id')}")
-            logger.debug(f"  Source table: {result.get('source_table')}")
-            logger.debug(f"  Has hop1_relations: {'hop1_relations' in result}")
-            logger.debug(f"  Data structure similar to full_text_search: {bool(result.get('source_table') and result.get('id'))}")
+            logger.debug(f"Success! Found record with ID: {result.get('id')}")
+            logger.debug(f"Source table: {result.get('source_table')}")
+            logger.debug(f"Has hop1_relations: {'hop1_relations' in result}")
+            logger.debug(f"Data structure similar to full_text_search: {bool(result.get('source_table') and result.get('id'))}")
             if "hop1_relations" in result:
                 relations = result["hop1_relations"]
                 if isinstance(relations, dict) and relations:
-                    logger.debug(f"  Relations found: {list(relations.keys())}")
+                    logger.debug(f"Relations found: {list(relations.keys())}")
                 else:
                     logger.debug("  No relations for this record")
 
@@ -70,20 +70,20 @@ def test_data_structure_consistency():
 
     if "error" not in curated_result:
         logger.debug("Curated details structure:")
-        logger.debug(f"  - source_table: {'source_table' in curated_result}")
-        logger.debug(f"  - id: {'id' in curated_result}")
-        logger.debug(f"  - hop1_relations: {'hop1_relations' in curated_result}")
-        logger.debug(f"  - transformed by DataTransformerFactory: {hasattr(curated_result, 'get')}")
+        logger.debug(f"- source_table: {'source_table' in curated_result}")
+        logger.debug(f"- id: {'id' in curated_result}")
+        logger.debug(f"- hop1_relations: {'hop1_relations' in curated_result}")
+        logger.debug(f"- transformed by DataTransformerFactory: {hasattr(curated_result, 'get')}")
 
         # Check if it has similar fields to full text search results
         expected_fields = ["source_table", "id"]
         missing_fields = [field for field in expected_fields if field not in curated_result]
         if missing_fields:
-            logger.debug(f"  Missing expected fields: {missing_fields}")
+            logger.debug(f"Missing expected fields: {missing_fields}")
         else:
             logger.debug("  ✅ Has all expected fields for consistency with full_text_search")
     else:
-        logger.debug(f"  Error in curated details: {curated_result['error']}")
+        logger.debug(f"Error in curated details: {curated_result['error']}")
 
 
 if __name__ == "__main__":

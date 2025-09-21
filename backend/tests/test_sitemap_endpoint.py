@@ -56,13 +56,13 @@ def test_sitemap_endpoint():
             if alpha_urls:
                 logger.debug("\nFirst 5 Alpha URLs:")
                 for i, url in enumerate(alpha_urls[:5], 1):
-                    logger.debug(f"  {i}. {url}")
+                    logger.debug(f"{i}. {url}")
 
             beta_urls = beta_data.get("urls", [])
             if beta_urls:
                 logger.debug("\nFirst 5 Beta URLs:")
                 for i, url in enumerate(beta_urls[:5], 1):
-                    logger.debug(f"  {i}. {url}")
+                    logger.debug(f"{i}. {url}")
 
             # Show table breakdown
             tables = data.get("tables_processed", [])

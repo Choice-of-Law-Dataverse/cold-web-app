@@ -137,7 +137,9 @@ class Database:
                                 columns = result.keys()
                                 entry = dict(zip(columns, row, strict=False))
                             else:
-                                logger.warning("No entry found with id %s in table %s", str(entry_id).strip(), table_name.strip())
+                                logger.warning(
+                                    "No entry found with id %s in table %s", str(entry_id).strip(), table_name.strip()
+                                )
                                 return {"error": "no entry found with the specified id"}
                         else:
                             logger.warning("Table %s does not have a mapped id column", table_name.strip())

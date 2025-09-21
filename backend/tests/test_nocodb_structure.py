@@ -4,6 +4,7 @@ Simple test to see what the actual NocoDB API returns for Domestic Instruments
 without needing full backend dependencies.
 """
 
+import logging
 import os
 import sys
 
@@ -58,7 +59,7 @@ def test_nocodb_response():
             # Print full first row for inspection
             logger.debug("Full first row:")
             for key, value in sorted(first_row.items()):
-                logger.debug(f"  {key}: {value} (type: {type(value)})")
+                logger.debug(f"{key}: {value} (type: {type(value)})")
 
         else:
             logger.debug("No rows returned from NocoDB!")
@@ -88,8 +89,8 @@ if __name__ == "__main__":
         logger.debug("\n=== Expected Boolean Fields ===")
         for target, source in reverse_mapping.items():
             if "Compatible" in target or "Compatible" in source:
-                logger.debug(f"  Frontend expects: '{target}'")
-                logger.debug(f"  Maps to backend: '{source}'")
+                logger.debug(f"Frontend expects: '{target}'")
+                logger.debug(f"Maps to backend: '{source}'")
 
         # Get the mapping config directly
         mapping_repo = transformer.mapping_repo
@@ -102,8 +103,8 @@ if __name__ == "__main__":
             logger.debug("\n=== Boolean Mapping Configuration ===")
             for target_field, boolean_config in boolean_mappings.items():
                 source_field = boolean_config.get("source_field")
-                logger.debug(f"  '{target_field}' <- '{source_field}'")
-                logger.debug(f"    Expected in NocoDB data: '{source_field}'")
+                logger.debug(f"'{target_field}' <- '{source_field}'")
+                logger.debug(f"Expected in NocoDB data: '{source_field}'")
 
     except Exception as e:
         logger.debug(f"Error checking mappings: {e}")

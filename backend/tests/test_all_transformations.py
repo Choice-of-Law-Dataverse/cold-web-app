@@ -192,7 +192,7 @@ def run_performance_test():
         total_time += table_time
 
         logger.debug(
-            f"{table_name}: {table_time:.4f}s for {num_iterations} transformations ({(table_time / num_iterations) * 1000:.2f}ms avg)"
+            f"{table_name}: {table_time:.4f}s for {num_iterations} transformations ({(table_time / num_iterations) * 1000:.2f}ms avg)"  # noqa: E501
         )
 
     logger.debug(f"Total time: {total_time:.4f}s")

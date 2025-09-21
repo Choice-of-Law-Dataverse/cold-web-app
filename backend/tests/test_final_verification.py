@@ -43,7 +43,7 @@ def test_boolean_transformation():
     for key, value in transformed.items():
         if "Compatible" in key:
             found_boolean_fields = True
-            logger.debug(f"  {key}: {value} (type: {type(value)})")
+            logger.debug(f"{key}: {value} (type: {type(value)})")
 
     if not found_boolean_fields:
         logger.debug("  ❌ No boolean fields found!")
@@ -59,9 +59,9 @@ def test_boolean_transformation():
     logger.debug("\nExpected field verification:")
     for field in expected_fields:
         if field in transformed:
-            logger.debug(f"  ✅ '{field}': {transformed[field]}")
+            logger.debug(f"✅ '{field}': {transformed[field]}")
         else:
-            logger.debug(f"  ❌ '{field}': MISSING")
+            logger.debug(f"❌ '{field}': MISSING")
 
 
 if __name__ == "__main__":
