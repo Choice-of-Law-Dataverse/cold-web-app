@@ -1,11 +1,11 @@
-import { useQuery, type UseQueriesOptions } from "@tanstack/vue-query";
+import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
 import type { FullTableRequest, TableName } from "~/types/api";
 
 const fetchFullTableData = async (
   table: TableName,
   filters: FullTableRequest["filters"] = [],
-): Promise<any[]> => {
+): Promise<Record<string, unknown>[]> => {
   const { apiClient } = useApiClient();
   const body: FullTableRequest = { table, filters };
 
@@ -14,7 +14,7 @@ const fetchFullTableData = async (
 
 type Options =
   | Partial<{
-      select: (data: any[]) => any[];
+      select: (data: Record<string, unknown>[]) => Record<string, unknown>[];
       filters: FullTableRequest["filters"];
     }>
   | undefined;

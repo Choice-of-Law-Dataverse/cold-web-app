@@ -1,6 +1,6 @@
 export default defineEventHandler(async (event) => {
   const body = await readBody(event);
-  const { token, email } = body;
+  const { token } = body;
 
   const result = await verifyTurnstileToken(token);
 

@@ -5,11 +5,11 @@ export function useLeadingCases() {
   return useFullTable("Court Decisions", {
     select: (data) => {
       return data
-        .filter((entry: any) => entry["Case Rank"] === 10)
+        .filter((entry: Record<string, unknown>) => entry["Case Rank"] === 10)
         .sort(
-          (a: any, b: any) =>
-            Number(formatYear(b["Publication Date ISO"])) -
-            Number(formatYear(a["Publication Date ISO"])),
+          (a: Record<string, unknown>, b: Record<string, unknown>) =>
+            Number(formatYear(b["Publication Date ISO"] as string)) -
+            Number(formatYear(a["Publication Date ISO"] as string)),
         );
     },
     filters: [{ column: "Case Rank", value: 10 }],

@@ -28,7 +28,7 @@ export function useRelatedQuestions(
   const questionLabels = computed(() => {
     return questionList.value.map((qid) => {
       const id = `${jurisdictionCode.value}_${qid}`;
-      const rec = (results.data.value as Record<string, any> | undefined)?.[id];
+      const rec = (results.data.value as Record<string, Record<string, unknown>> | undefined)?.[id];
       return rec?.Question || id;
     });
   });

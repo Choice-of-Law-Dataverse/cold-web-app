@@ -39,7 +39,7 @@ const attrs = {
   "first-day-of-week": 2,
 };
 
-function onDayClick(_: any, event: MouseEvent): void {
+function onDayClick(_: Date, event: MouseEvent): void {
   const target = event.target as HTMLElement;
   target.blur();
 }

@@ -127,16 +127,14 @@ watch(
     }
 
     // Remove undefined values from query
-    Object.keys(query).forEach((key) => {
-      if (query[key] === undefined) {
-        delete query[key];
-      }
-    });
+    const cleanedQuery = Object.fromEntries(
+      Object.entries(query).filter(([_, value]) => value !== undefined)
+    );
 
     // Update URL
     router.replace({
       name: "search",
-      query,
+      query: cleanedQuery,
     });
   },
   { deep: true },

@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/vue-query";
 import { computed, type Ref } from "vue";
 import type { FullTableRequest } from "~/types/api";
 
-const fetchDomesticInstrumentsData = async (filterCompatible: boolean) => {
+const fetchDomesticInstrumentsData = async (_filterCompatible: boolean) => {
   const { apiClient } = useApiClient();
   const body: FullTableRequest = {
     table: "Domestic Instruments",
@@ -13,7 +13,9 @@ const fetchDomesticInstrumentsData = async (filterCompatible: boolean) => {
     body,
   });
 
-  instrumentsData.sort((a: any, b: any) => Number(b.Date) - Number(a.Date));
+  instrumentsData.sort((a: Record<string, unknown>, b: Record<string, unknown>) => 
+    Number(b.Date) - Number(a.Date)
+  );
   return instrumentsData;
 };
 
@@ -32,7 +34,7 @@ export function useDomesticInstruments({
     select: filterCompatible.value
       ? (data) =>
           data.filter(
-            (item: any) => item["Compatible With the HCCH Principles?"],
+            (item: Record<string, unknown>) => item["Compatible With the HCCH Principles?"],
           )
       : undefined,
   });

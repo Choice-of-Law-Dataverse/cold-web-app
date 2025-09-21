@@ -32,7 +32,7 @@ const processAnswerText = (answerText: string) => {
   return answerText;
 };
 
-const buildChildrenMap = (sortedItems: Record<string, any>[]) => {
+const buildChildrenMap = (sortedItems: Record<string, unknown>[]) => {
   const childrenMap: Record<string, string[]> = {};
   sortedItems.forEach((item, idx, arr) => {
     const id = item["CoLD ID"] ?? item.ID;
@@ -73,7 +73,7 @@ const fetchAnswersData = async (jurisdiction: string) => {
 
   // Expect an array of answer rows. We construct the composite key
   // based on either existing 'CoLD ID' or by combining jurisdiction + question ID if needed.
-  const map: Record<string, any> = {};
+  const map: Record<string, Record<string, unknown>> = {};
   if (Array.isArray(data)) {
     for (const row of data) {
       const isoCode =

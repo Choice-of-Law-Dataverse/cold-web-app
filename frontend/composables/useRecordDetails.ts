@@ -10,7 +10,7 @@ const fetchRecordDetails = async (table: TableName, id: string | number) => {
 
 type Options =
   | Partial<{
-      select: (data: any) => any;
+      select: (data: Record<string, unknown>) => Record<string, unknown>;
     }>
   | undefined;
 

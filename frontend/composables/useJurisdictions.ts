@@ -1,6 +1,6 @@
 import { useFullTable } from "@/composables/useFullTable";
 
-function convert(record: any) {
+function convert(record: Record<string, unknown>) {
   return {
     ...record,
     Name: record?.Name || "N/A",
@@ -24,9 +24,11 @@ export function useJurisdictions() {
   return useFullTable("Jurisdictions", {
     select: (data) =>
       data
-        .filter((record: any) => record["Irrelevant?"] === false)
+        .filter((record: Record<string, unknown>) => record["Irrelevant?"] === false)
         .map(convert)
-        .sort((a: any, b: any) => (a.label || "").localeCompare(b.label || "")),
+        .sort((a: Record<string, unknown>, b: Record<string, unknown>) => 
+          ((a.label as string) || "").localeCompare((b.label as string) || "")
+        ),
   });
 }
 

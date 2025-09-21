@@ -1,4 +1,4 @@
-import type { ApiRequestBody, ApiResponse } from "~/types/api";
+import type { ApiRequestBody } from "~/types/api";
 import {
   ApiError,
   NotFoundError,
@@ -13,7 +13,7 @@ import {
 export function useApiClient() {
   const config = useRuntimeConfig();
 
-  const apiClient = async <T = any>(
+  const apiClient = async <T = unknown>(
     endpoint: string,
     options: {
       body?: ApiRequestBody;
@@ -79,9 +79,9 @@ export function useApiClient() {
       const data =
         responseType === "text" ? await response.text() : await response.json();
 
-      if (responseType === "json" && (data as any)?.error) {
+      if (responseType === "json" && (data as { error?: string })?.error) {
         // Check if the error indicates a not found condition
-        const errorMessage = (data as any).error.toLowerCase();
+        const errorMessage = (data as { error: string }).error.toLowerCase();
         if (
           errorMessage.includes("not found") ||
           errorMessage.includes("no entry found")
@@ -90,7 +90,7 @@ export function useApiClient() {
             endpoint,
             method,
             body,
-            new Error((data as any).error),
+            new Error((data as { error: string }).error),
           );
         }
 
@@ -98,7 +98,7 @@ export function useApiClient() {
           endpoint,
           method,
           body,
-          new Error((data as any).error),
+          new Error((data as { error: string }).error),
         );
       }
 

@@ -81,7 +81,7 @@ export interface EnhancedSearchRequest {
   sort_by_date?: boolean;
   ip_address?: string;
   browser_info_navigator?: BrowserInfo;
-  browser_info_hint?: any;
+  browser_info_hint?: Record<string, unknown>;
   hostname?: string;
 }
 
@@ -101,6 +101,7 @@ export interface SearchRequest {
  */
 export interface JurisdictionCountRequest extends SearchRequest {
   // Inherits all SearchRequest properties
+  table?: TableName;
 }
 
 /**
@@ -145,17 +146,17 @@ export type FilterColumn =
  * Search response interface
  */
 export interface SearchResponse {
-  results: any[];
+  results: Record<string, unknown>[];
   totalMatches: number;
 }
 
 /**
  * API response wrapper (generic)
  */
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = unknown> {
   data?: T;
   error?: string;
   total_matches?: number;
-  results?: Record<string, any>;
-  [key: string]: any;
+  results?: Record<string, unknown>;
+  [key: string]: unknown;
 }

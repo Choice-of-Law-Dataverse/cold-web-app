@@ -60,8 +60,8 @@ useHead({
 
 // Minimal props for BaseDetailLayout to render a blank card with the same layout
 const loading = false;
-const resultData = {} as any;
-const computedKeyLabelPairs: any[] = [];
+const resultData = {} as Record<string, unknown>;
+const computedKeyLabelPairs: Record<string, unknown>[] = [];
 const valueClassMap: Record<string, string> = {};
 
 // Columns to display from CSV
