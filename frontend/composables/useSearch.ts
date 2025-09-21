@@ -4,53 +4,8 @@ import { useApiClient } from '@/composables/useApiClient'
 import type {
   EnhancedSearchRequest,
   SearchParams,
-  BrowserInfo,
   SearchResponse,
 } from '~/types/api'
-
-const fetchUserInfo = async () => {
-  const { apiClient } = useApiClient()
-
-  try {
-    // Initial request to get the client hints
-    await apiClient('/user/get_user_info', {
-      method: 'GET',
-    })
-
-    // After getting client hints from the browser, make a second request
-    return await apiClient('/user_info', {
-      method: 'GET',
-    })
-  } catch (error) {
-    console.error('Error fetching user info:', error)
-    return null
-  }
-}
-
-const getBrowserInfo = (): BrowserInfo => {
-  if (typeof window === 'undefined')
-    return {
-      userAgent: '',
-      platform: '',
-      language: '',
-      screenWidth: 0,
-      screenHeight: 0,
-    }
-
-  const userAgent = navigator.userAgent
-  const platform = navigator.platform
-  const language = navigator.language
-  const screenWidth = window.screen.width
-  const screenHeight = window.screen.height
-
-  return {
-    userAgent,
-    platform,
-    language,
-    screenWidth,
-    screenHeight,
-  }
-}
 
 const fetchSearchResults = async ({
   query,
@@ -110,24 +65,6 @@ const fetchSearchResults = async ({
         .map((type) => typeFilterMapping[type] || type),
     })
   }
-
-  // Retrieve hostname safely (client only)
-  const userHost =
-    typeof window !== 'undefined' ? window.location.hostname : 'unknown'
-
-  // Fetch user's IP address - removed external service call
-  body.ip_address = 'Unknown'
-
-  // External IP service calls removed for privacy - keeping fallback value
-
-  // Fetch detailed user info (browser, platform, etc.)
-  const userInfo = {} // await fetchUserInfo()
-  const browserInfo = getBrowserInfo()
-
-  // Add additional data to requestBody
-  body.browser_info_navigator = browserInfo
-  body.browser_info_hint = userInfo || {}
-  body.hostname = userHost
 
   const data = await apiClient('/search/', { body })
 

@@ -8,10 +8,10 @@ export function useLegalProvision({
   onHasEnglishTranslationUpdate,
   table = 'Domestic Legal Provisions', // default table
 }: {
-  provisionId: string,
-  textType: string,
-  onHasEnglishTranslationUpdate?: (hasTranslation: boolean) => void,
-  table?: TableName,
+  provisionId: string
+  textType: string
+  onHasEnglishTranslationUpdate?: (hasTranslation: boolean) => void
+  table?: TableName
 }) {
   const hasEnglishTranslation = ref(false)
   const showEnglish = ref(true)
@@ -36,15 +36,19 @@ export function useLegalProvision({
 
   const content = computed(() => {
     if (!provisionData.value) return ''
-    
+
     return showEnglish.value
       ? (table === 'Regional Legal Provisions'
           ? provisionData.value['Full Text']
-          : provisionData.value['Full Text of the Provision (English Translation)']) ||
-        provisionData.value['Full Text of the Provision (Original Language)'] ||
-        'No content available'
+          : provisionData.value[
+              'Full Text of the Provision (English Translation)'
+            ]) ||
+          provisionData.value[
+            'Full Text of the Provision (Original Language)'
+          ] ||
+          'No content available'
       : provisionData.value['Full Text of the Provision (Original Language)'] ||
-        'No content available'
+          'No content available'
   })
 
   const anchorId = computed(() => {
@@ -61,7 +65,7 @@ export function useLegalProvision({
       if (newData) {
         hasEnglishTranslation.value =
           'Full Text of the Provision (English Translation)' in newData
-        
+
         if (onHasEnglishTranslationUpdate) {
           onHasEnglishTranslationUpdate(hasEnglishTranslation.value)
         }

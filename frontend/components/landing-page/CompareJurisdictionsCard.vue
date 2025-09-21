@@ -86,8 +86,7 @@ const resolvedButtonLink = computed(() => {
 // Client-side: detect visitor country and set rightIso3
 onMounted(async () => {
   if (!props.detectVisitorRight) return
-  
-  // External IP geolocation service removed for privacy
+
   // Using Canada as the default fallback for visitor detection
   rightIso3.value = 'CAN'
 })
