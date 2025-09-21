@@ -1,11 +1,17 @@
 import { ref, computed, watch } from 'vue'
 import { useRecordDetails } from './useRecordDetails'
+import type { TableName } from '~/types/api'
 
 export function useLegalProvision({
   provisionId,
   textType,
   onHasEnglishTranslationUpdate,
   table = 'Domestic Legal Provisions', // default table
+}: {
+  provisionId: string,
+  textType: string,
+  onHasEnglishTranslationUpdate?: (hasTranslation: boolean) => void,
+  table?: TableName,
 }) {
   const hasEnglishTranslation = ref(false)
   const showEnglish = ref(true)

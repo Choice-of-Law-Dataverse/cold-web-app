@@ -167,8 +167,5 @@ onMounted(() => {
   margin-top: 16px; /* default spacing between items */
 }
 
-/* Only the first provision gets larger top margin */
-.base-legal-content.is-first {
-  margin-top: 60px !important; /* larger space for the first item */
-}
+
 </style>
