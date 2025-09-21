@@ -15,13 +15,13 @@ from app.services.transformers import DataTransformerFactory
 
 def test_all_supported_tables():
     """Test all supported table transformations."""
-    print("=== TESTING ALL SUPPORTED TABLES ===")
+    logger.debug("=== TESTING ALL SUPPORTED TABLES ===")
 
     # Get mapping repository
     repo = get_mapping_repository()
     supported_tables = repo.get_supported_tables()
 
-    print(f"Supported tables: {supported_tables}")
+    logger.debug(f"Supported tables: {supported_tables}")
 
     # Test data for each table type
     test_data = {
@@ -75,31 +75,31 @@ def test_all_supported_tables():
 
     for table_name in supported_tables:
         if table_name in test_data:
-            print(f"\n--- Testing {table_name} ---")
+            logger.debug(f"\n--- Testing {table_name} ---")
 
             mock_data = test_data[table_name]
             transformed = DataTransformerFactory.transform_result(table_name, mock_data)
 
-            print(f"Original fields: {len(mock_data)}")
-            print(f"Transformed fields: {len(transformed)}")
-            print(f"ID field: {transformed.get('id', 'NOT FOUND')}")
-            print(f"Source table: {transformed.get('source_table', 'NOT FOUND')}")
+            logger.debug(f"Original fields: {len(mock_data)}")
+            logger.debug(f"Transformed fields: {len(transformed)}")
+            logger.debug(f"ID field: {transformed.get('id', 'NOT FOUND')}")
+            logger.debug(f"Source table: {transformed.get('source_table', 'NOT FOUND')}")
 
             # Check if transformation actually happened
             if len(transformed) > len(mock_data):
-                print("✓ Transformation added fields")
+                logger.debug("✓ Transformation added fields")
             else:
-                print("? Transformation may not have expanded fields")
+                logger.debug("? Transformation may not have expanded fields")
 
 
 def test_factory_fallback():
     """Test factory fallback mechanism."""
-    print("\n=== TESTING FACTORY FALLBACK MECHANISM ===")
+    logger.debug("\n=== TESTING FACTORY FALLBACK MECHANISM ===")
 
     # Test with a table that has explicit transformer
     answers_data = {"source_table": "Answers", "CoLD_ID": "TEST-001", "Answer": "Yes"}
     transformed_answers = DataTransformerFactory.transform_result("Answers", answers_data)
-    print(f"Answers transformation (explicit): {len(transformed_answers)} fields")
+    logger.debug(f"Answers transformation (explicit): {len(transformed_answers)} fields")
 
     # Test with a table that only has configuration
     if get_mapping_repository().has_mapping("Questions"):
@@ -109,46 +109,46 @@ def test_factory_fallback():
             "Question": "Test question?",
         }
         transformed_questions = DataTransformerFactory.transform_result("Questions", questions_data)
-        print(f"Questions transformation (config-only): {len(transformed_questions)} fields")
+        logger.debug(f"Questions transformation (config-only): {len(transformed_questions)} fields")
 
     # Test with completely unknown table
     unknown_data = {"source_table": "Unknown", "id": 123, "data": "test"}
     transformed_unknown = DataTransformerFactory.transform_result("Unknown", unknown_data)
-    print(f"Unknown table (no transformation): {transformed_unknown == unknown_data}")
+    logger.debug(f"Unknown table (no transformation): {transformed_unknown == unknown_data}")
 
 
 def test_mapping_configurations():
     """Test mapping configuration loading and structure."""
-    print("\n=== TESTING MAPPING CONFIGURATIONS ===")
+    logger.debug("\n=== TESTING MAPPING CONFIGURATIONS ===")
 
     repo = get_mapping_repository()
 
     for table_name in repo.get_supported_tables():
         mapping = repo.get_mapping(table_name)
         if mapping is None:
-            print(f"\n--- {table_name} Configuration ---")
-            print("No mapping loaded; skipping.")
+            logger.debug(f"\n--- {table_name} Configuration ---")
+            logger.debug("No mapping loaded; skipping.")
             continue
 
-        print(f"\n--- {table_name} Configuration ---")
-        print(f"Version: {mapping.get('version')}")
-        print(f"Description: {mapping.get('description', 'No description')[:60]}...")
+        logger.debug(f"\n--- {table_name} Configuration ---")
+        logger.debug(f"Version: {mapping.get('version')}")
+        logger.debug(f"Description: {mapping.get('description', 'No description')[:60]}...")
 
         mappings = mapping.get("mappings", {})
-        print(f"Direct mappings: {len(mappings.get('direct_mappings', {}))}")
-        print(f"Conditional mappings: {len(mappings.get('conditional_mappings', {}))}")
-        print(f"Nested mappings: {len(mappings.get('nested_mappings', {}))}")
-        print(f"Complex mappings: {len(mappings.get('complex_mappings', {}))}")
-        print(f"User mappings: {len(mappings.get('user_mappings', {}))}")
-        print(f"Boolean mappings: {len(mappings.get('boolean_mappings', {}))}")
+        logger.debug(f"Direct mappings: {len(mappings.get('direct_mappings', {}))}")
+        logger.debug(f"Conditional mappings: {len(mappings.get('conditional_mappings', {}))}")
+        logger.debug(f"Nested mappings: {len(mappings.get('nested_mappings', {}))}")
+        logger.debug(f"Complex mappings: {len(mappings.get('complex_mappings', {}))}")
+        logger.debug(f"User mappings: {len(mappings.get('user_mappings', {}))}")
+        logger.debug(f"Boolean mappings: {len(mappings.get('boolean_mappings', {}))}")
 
         post_processing = mapping.get("post_processing", {})
-        print(f"Post-processing rules: {len(post_processing)}")
+        logger.debug(f"Post-processing rules: {len(post_processing)}")
 
 
 def run_performance_test():
     """Run a simple performance test."""
-    print("\n=== PERFORMANCE TEST ===")
+    logger.debug("\n=== PERFORMANCE TEST ===")
     import time
 
     # Create test data for all tables
@@ -188,12 +188,12 @@ def run_performance_test():
         table_time = end_time - start_time
         total_time += table_time
 
-        print(
-            f"{table_name}: {table_time:.4f}s for {num_iterations} transformations ({(table_time / num_iterations) * 1000:.2f}ms avg)"  # noqa: E501
+        logger.debug(
+            f"{table_name}: {table_time:.4f}s for {num_iterations} transformations ({(table_time / num_iterations) * 1000:.2f}ms avg)"
         )
 
-    print(f"Total time: {total_time:.4f}s")
-    print(f"Average per transformation: {(total_time / (num_iterations * len(test_datasets))) * 1000:.2f}ms")
+    logger.debug(f"Total time: {total_time:.4f}s")
+    logger.debug(f"Average per transformation: {(total_time / (num_iterations * len(test_datasets))) * 1000:.2f}ms")
 
 
 if __name__ == "__main__":
@@ -202,9 +202,9 @@ if __name__ == "__main__":
         test_factory_fallback()
         test_mapping_configurations()
         run_performance_test()
-        print("\n=== ALL COMPREHENSIVE TESTS COMPLETED ===")
+        logger.debug("\n=== ALL COMPREHENSIVE TESTS COMPLETED ===")
     except Exception as e:
-        print(f"Test error: {e}")
+        logger.debug(f"Test error: {e}")
         import traceback
 
         traceback.print_exc()

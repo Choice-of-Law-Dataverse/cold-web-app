@@ -26,26 +26,26 @@ def test_boolean_transformation():
         "Status": "Active",
     }
 
-    print("=== Testing Boolean Transformation ===")
-    print(f"Input record keys: {sorted(test_record.keys())}")
+    logger.debug("=== Testing Boolean Transformation ===")
+    logger.debug(f"Input record keys: {sorted(test_record.keys())}")
 
     # Apply transformation
     transformed = DataTransformerFactory.transform_result("Domestic Instruments", test_record)
 
-    print(f"Output record keys: {sorted(transformed.keys())}")
+    logger.debug(f"Output record keys: {sorted(transformed.keys())}")
 
     # Check for boolean fields
-    print("\nBoolean fields in transformed record:")
+    logger.debug("\nBoolean fields in transformed record:")
     found_boolean_fields = False
     for key, value in transformed.items():
         if "Compatible" in key:
             found_boolean_fields = True
-            print(f"  {key}: {value} (type: {type(value)})")
+            logger.debug(f"  {key}: {value} (type: {type(value)})")
 
     if not found_boolean_fields:
-        print("  ❌ No boolean fields found!")
+        logger.debug("  ❌ No boolean fields found!")
     else:
-        print("  ✅ Boolean fields found and transformed!")
+        logger.debug("  ✅ Boolean fields found and transformed!")
 
     # Check specific fields we expect
     expected_fields = [
@@ -53,12 +53,12 @@ def test_boolean_transformation():
         "Compatible With the UNCITRAL Model Law",
     ]
 
-    print("\nExpected field verification:")
+    logger.debug("\nExpected field verification:")
     for field in expected_fields:
         if field in transformed:
-            print(f"  ✅ '{field}': {transformed[field]}")
+            logger.debug(f"  ✅ '{field}': {transformed[field]}")
         else:
-            print(f"  ❌ '{field}': MISSING")
+            logger.debug(f"  ❌ '{field}': MISSING")
 
 
 if __name__ == "__main__":

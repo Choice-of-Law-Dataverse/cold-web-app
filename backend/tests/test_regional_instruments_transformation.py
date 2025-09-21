@@ -83,35 +83,35 @@ def load_reference_data():
         with open("app/mapping/regional_instruments_reference.json") as f:
             return json.load(f)
     except FileNotFoundError:
-        print("Reference file not found")
+        logger.debug("Reference file not found")
         return None
 
 
 def test_regional_instruments_transformation():
     """Test Regional Instruments transformation."""
-    print("=== TESTING REGIONAL INSTRUMENTS TRANSFORMATION ===")
+    logger.debug("=== TESTING REGIONAL INSTRUMENTS TRANSFORMATION ===")
 
     mock_result = create_mock_regional_instrument_result()
 
     # Transform using the factory
     transformed = DataTransformerFactory.transform_result("Regional Instruments", mock_result)
 
-    print("Transformed Regional Instrument:")
-    print(json.dumps(transformed, indent=2, default=str))
+    logger.debug("Transformed Regional Instrument:")
+    logger.debug(json.dumps(transformed, indent=2, default=str))
 
     # Load reference for comparison
     reference_data = load_reference_data()
     if reference_data and reference_data.get("results"):
         reference_result = reference_data["results"][0]
 
-        print("\n=== FIELD COMPARISON ===")
+        logger.debug("\n=== FIELD COMPARISON ===")
         reference_keys = set(reference_result.keys())
         transformed_keys = set(transformed.keys())
 
-        print(f"Reference keys: {len(reference_keys)}")
-        print(f"Transformed keys: {len(transformed_keys)}")
-        print(f"Missing keys: {reference_keys - transformed_keys}")
-        print(f"Extra keys: {transformed_keys - reference_keys}")
+        logger.debug(f"Reference keys: {len(reference_keys)}")
+        logger.debug(f"Transformed keys: {len(transformed_keys)}")
+        logger.debug(f"Missing keys: {reference_keys - transformed_keys}")
+        logger.debug(f"Extra keys: {transformed_keys - reference_keys}")
 
         # Check specific important mappings
         key_mappings_to_check = [
@@ -124,29 +124,29 @@ def test_regional_instruments_transformation():
             "Specialists Link",
         ]
 
-        print("\n=== KEY FIELD VERIFICATION ===")
+        logger.debug("\n=== KEY FIELD VERIFICATION ===")
         for key in key_mappings_to_check:
             ref_val = reference_result.get(key)
             trans_val = transformed.get(key)
             status = "✓" if trans_val == ref_val else "✗"
-            print(f"{status} {key}: expected='{ref_val}', actual='{trans_val}'")
+            logger.debug(f"{status} {key}: expected='{ref_val}', actual='{trans_val}'")
 
 
 def test_configurable_transformer_direct():
     """Test the configurable transformer directly."""
-    print("\n=== TESTING CONFIGURABLE TRANSFORMER DIRECTLY ===")
+    logger.debug("\n=== TESTING CONFIGURABLE TRANSFORMER DIRECTLY ===")
 
     transformer = ConfigurableTransformer()
     mock_result = create_mock_regional_instrument_result()
 
     # Check if Regional Instruments mapping is loaded
     if transformer.mapping_repo.has_mapping("Regional Instruments"):
-        print("✓ Regional Instruments mapping found")
+        logger.debug("✓ Regional Instruments mapping found")
 
         # Transform
         transformed = transformer.transform("Regional Instruments", mock_result)
 
-        print(f"Transformed result has {len(transformed)} fields")
+        logger.debug(f"Transformed result has {len(transformed)} fields")
 
         # Check some key transformations
         expected_checks = [
@@ -159,19 +159,19 @@ def test_configurable_transformer_direct():
             ("ID Number", 5),
         ]
 
-        print("\n=== SPECIFIC FIELD CHECKS ===")
+        logger.debug("\n=== SPECIFIC FIELD CHECKS ===")
         for field, expected in expected_checks:
             actual = transformed.get(field)
             status = "✓" if actual == expected else "✗"
-            print(f"{status} {field}: expected='{expected}', actual='{actual}'")
+            logger.debug(f"{status} {field}: expected='{expected}', actual='{actual}'")
 
     else:
-        print("✗ Regional Instruments mapping not found")
+        logger.debug("✗ Regional Instruments mapping not found")
 
 
 def test_array_operations():
     """Test array operations for specialists."""
-    print("\n=== TESTING ARRAY OPERATIONS ===")
+    logger.debug("\n=== TESTING ARRAY OPERATIONS ===")
 
     transformer = ConfigurableTransformer()
 
@@ -215,14 +215,14 @@ def test_array_operations():
         },
     )
 
-    print("Array operations results:")
+    logger.debug("Array operations results:")
     for key, value in transformed.items():
-        print(f"  {key}: {value}")
+        logger.debug(f"  {key}: {value}")
 
 
 def test_complex_mappings():
     """Test complex mappings for array extraction."""
-    print("\n=== TESTING COMPLEX MAPPINGS ===")
+    logger.debug("\n=== TESTING COMPLEX MAPPINGS ===")
 
     transformer = ConfigurableTransformer()
 
@@ -262,9 +262,9 @@ def test_complex_mappings():
         },
     )
 
-    print("Complex mapping results:")
+    logger.debug("Complex mapping results:")
     for key, value in transformed.items():
-        print(f"  {key}: {value}")
+        logger.debug(f"  {key}: {value}")
 
 
 if __name__ == "__main__":
@@ -273,9 +273,9 @@ if __name__ == "__main__":
         test_configurable_transformer_direct()
         test_array_operations()
         test_complex_mappings()
-        print("\n=== ALL REGIONAL INSTRUMENTS TESTS COMPLETED ===")
+        logger.debug("\n=== ALL REGIONAL INSTRUMENTS TESTS COMPLETED ===")
     except Exception as e:
-        print(f"Test error: {e}")
+        logger.debug(f"Test error: {e}")
         import traceback
 
         traceback.print_exc()

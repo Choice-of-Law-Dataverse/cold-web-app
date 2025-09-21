@@ -79,35 +79,35 @@ def load_reference_data():
         with open("app/mapping/domestic_instruments_reference.json") as f:
             return json.load(f)
     except FileNotFoundError:
-        print("Reference file not found")
+        logger.debug("Reference file not found")
         return None
 
 
 def test_domestic_instruments_transformation():
     """Test Domestic Instruments transformation."""
-    print("=== TESTING DOMESTIC INSTRUMENTS TRANSFORMATION ===")
+    logger.debug("=== TESTING DOMESTIC INSTRUMENTS TRANSFORMATION ===")
 
     mock_result = create_mock_domestic_instrument_result()
 
     # Transform using the factory
     transformed = DataTransformerFactory.transform_result("Domestic Instruments", mock_result)
 
-    print("Transformed Domestic Instrument:")
-    print(json.dumps(transformed, indent=2, default=str))
+    logger.debug("Transformed Domestic Instrument:")
+    logger.debug(json.dumps(transformed, indent=2, default=str))
 
     # Load reference for comparison
     reference_data = load_reference_data()
     if reference_data and reference_data.get("results"):
         reference_result = reference_data["results"][0]
 
-        print("\n=== FIELD COMPARISON ===")
+        logger.debug("\n=== FIELD COMPARISON ===")
         reference_keys = set(reference_result.keys())
         transformed_keys = set(transformed.keys())
 
-        print(f"Reference keys: {len(reference_keys)}")
-        print(f"Transformed keys: {len(transformed_keys)}")
-        print(f"Missing keys: {reference_keys - transformed_keys}")
-        print(f"Extra keys: {transformed_keys - reference_keys}")
+        logger.debug(f"Reference keys: {len(reference_keys)}")
+        logger.debug(f"Transformed keys: {len(transformed_keys)}")
+        logger.debug(f"Missing keys: {reference_keys - transformed_keys}")
+        logger.debug(f"Extra keys: {transformed_keys - reference_keys}")
 
         # Check specific important mappings
         key_mappings_to_check = [
@@ -122,29 +122,29 @@ def test_domestic_instruments_transformation():
             "Status",
         ]
 
-        print("\n=== KEY FIELD VERIFICATION ===")
+        logger.debug("\n=== KEY FIELD VERIFICATION ===")
         for key in key_mappings_to_check:
             ref_val = reference_result.get(key)
             trans_val = transformed.get(key)
             status = "✓" if trans_val == ref_val else "✗"
-            print(f"{status} {key}: expected='{ref_val}', actual='{trans_val}'")
+            logger.debug(f"{status} {key}: expected='{ref_val}', actual='{trans_val}'")
 
 
 def test_configurable_transformer_direct():
     """Test the configurable transformer directly."""
-    print("\n=== TESTING CONFIGURABLE TRANSFORMER DIRECTLY ===")
+    logger.debug("\n=== TESTING CONFIGURABLE TRANSFORMER DIRECTLY ===")
 
     transformer = ConfigurableTransformer()
     mock_result = create_mock_domestic_instrument_result()
 
     # Check if Domestic Instruments mapping is loaded
     if transformer.mapping_repo.has_mapping("Domestic Instruments"):
-        print("✓ Domestic Instruments mapping found")
+        logger.debug("✓ Domestic Instruments mapping found")
 
         # Transform
         transformed = transformer.transform("Domestic Instruments", mock_result)
 
-        print(f"Transformed result has {len(transformed)} fields")
+        logger.debug(f"Transformed result has {len(transformed)} fields")
 
         # Check some key transformations
         expected_checks = [
@@ -160,19 +160,19 @@ def test_configurable_transformer_direct():
             ("Status", "In force"),
         ]
 
-        print("\n=== SPECIFIC FIELD CHECKS ===")
+        logger.debug("\n=== SPECIFIC FIELD CHECKS ===")
         for field, expected in expected_checks:
             actual = transformed.get(field)
             status = "✓" if actual == expected else "✗"
-            print(f"{status} {field}: expected='{expected}', actual='{actual}'")
+            logger.debug(f"{status} {field}: expected='{expected}', actual='{actual}'")
 
     else:
-        print("✗ Domestic Instruments mapping not found")
+        logger.debug("✗ Domestic Instruments mapping not found")
 
 
 def test_boolean_mappings():
     """Test boolean field mappings."""
-    print("\n=== TESTING BOOLEAN MAPPINGS ===")
+    logger.debug("\n=== TESTING BOOLEAN MAPPINGS ===")
 
     transformer = ConfigurableTransformer()
 
@@ -201,14 +201,14 @@ def test_boolean_mappings():
         },
     )
 
-    print("Boolean mapping results:")
+    logger.debug("Boolean mapping results:")
     for key, value in transformed.items():
-        print(f"  {key}: {value} (type: {type(value).__name__})")
+        logger.debug(f"  {key}: {value} (type: {type(value).__name__})")
 
 
 def test_conditional_mappings():
     """Test conditional field mappings."""
-    print("\n=== TESTING CONDITIONAL MAPPINGS ===")
+    logger.debug("\n=== TESTING CONDITIONAL MAPPINGS ===")
 
     transformer = ConfigurableTransformer()
 
@@ -237,9 +237,9 @@ def test_conditional_mappings():
         },
     )
 
-    print("Conditional mapping results:")
+    logger.debug("Conditional mapping results:")
     for key, value in transformed.items():
-        print(f"  {key}: {value}")
+        logger.debug(f"  {key}: {value}")
 
 
 if __name__ == "__main__":
@@ -248,9 +248,9 @@ if __name__ == "__main__":
         test_configurable_transformer_direct()
         test_boolean_mappings()
         test_conditional_mappings()
-        print("\n=== ALL DOMESTIC INSTRUMENTS TESTS COMPLETED ===")
+        logger.debug("\n=== ALL DOMESTIC INSTRUMENTS TESTS COMPLETED ===")
     except Exception as e:
-        print(f"Test error: {e}")
+        logger.debug(f"Test error: {e}")
         import traceback
 
         traceback.print_exc()

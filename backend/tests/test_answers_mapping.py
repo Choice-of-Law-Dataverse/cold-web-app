@@ -35,24 +35,24 @@ def test_transformation():
     # Apply transformation using the new transformer
     transformed_result = AnswersTransformer.transform_to_reference_format(current_result)
 
-    print("=== CURRENT RESULT ===")
-    print(json.dumps(current_result, indent=2, default=str))
+    logger.debug("=== CURRENT RESULT ===")
+    logger.debug(json.dumps(current_result, indent=2, default=str))
 
-    print("\n=== REFERENCE RESULT ===")
-    print(json.dumps(reference_result, indent=2, default=str))
+    logger.debug("\n=== REFERENCE RESULT ===")
+    logger.debug(json.dumps(reference_result, indent=2, default=str))
 
-    print("\n=== TRANSFORMED RESULT ===")
-    print(json.dumps(transformed_result, indent=2, default=str))
+    logger.debug("\n=== TRANSFORMED RESULT ===")
+    logger.debug(json.dumps(transformed_result, indent=2, default=str))
 
     # Compare key fields
-    print("\n=== FIELD COMPARISON ===")
+    logger.debug("\n=== FIELD COMPARISON ===")
     reference_keys = set(reference_result.keys())
     transformed_keys = set(transformed_result.keys())
 
-    print(f"Reference keys: {sorted(reference_keys)}")
-    print(f"Transformed keys: {sorted(transformed_keys)}")
-    print(f"Missing keys: {reference_keys - transformed_keys}")
-    print(f"Extra keys: {transformed_keys - reference_keys}")
+    logger.debug(f"Reference keys: {sorted(reference_keys)}")
+    logger.debug(f"Transformed keys: {sorted(transformed_keys)}")
+    logger.debug(f"Missing keys: {reference_keys - transformed_keys}")
+    logger.debug(f"Extra keys: {transformed_keys - reference_keys}")
 
     # Check specific mappings
     mappings_to_check = [
@@ -62,11 +62,11 @@ def test_transformation():
         ("Created", "Created"),
     ]
 
-    print("\n=== SPECIFIC FIELD MAPPINGS ===")
+    logger.debug("\n=== SPECIFIC FIELD MAPPINGS ===")
     for ref_field, trans_field in mappings_to_check:
         ref_val = reference_result.get(ref_field)
         trans_val = transformed_result.get(trans_field)
-        print(f"{ref_field} -> {trans_field}: '{ref_val}' vs '{trans_val}'")
+        logger.debug(f"{ref_field} -> {trans_field}: '{ref_val}' vs '{trans_val}'")
 
 
 def create_mock_result():
@@ -140,8 +140,8 @@ def test_transformation_mock():
         # Apply transformation using the new transformer
         transformed_result = AnswersTransformer.transform_to_reference_format(current_result)
 
-        print("=== TRANSFORMED RESULT ===")
-        print(json.dumps(transformed_result, indent=2, default=str))
+        logger.debug("=== TRANSFORMED RESULT ===")
+        logger.debug(json.dumps(transformed_result, indent=2, default=str))
 
         # Expected reference structure sample
         expected_keys = {
@@ -170,15 +170,15 @@ def test_transformation_mock():
 
         transformed_keys = set(transformed_result.keys())
 
-        print(f"\nExpected keys: {sorted(expected_keys)}")
-        print(f"Transformed keys: {sorted(transformed_keys)}")
-        print(f"Missing keys: {expected_keys - transformed_keys}")
-        print(f"Extra keys: {transformed_keys - expected_keys}")
+        logger.debug(f"\nExpected keys: {sorted(expected_keys)}")
+        logger.debug(f"Transformed keys: {sorted(transformed_keys)}")
+        logger.debug(f"Missing keys: {expected_keys - transformed_keys}")
+        logger.debug(f"Extra keys: {transformed_keys - expected_keys}")
 
         return transformed_result
 
     except Exception as e:
-        print(f"Error during transformation test: {e}")
+        logger.debug(f"Error during transformation test: {e}")
         return None
 
 
@@ -186,5 +186,5 @@ if __name__ == "__main__":
     try:
         test_transformation()
     except Exception as e:
-        print(f"Database connection error, running with mock data: {e}")
+        logger.debug(f"Database connection error, running with mock data: {e}")
         test_transformation_mock()
