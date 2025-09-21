@@ -9,7 +9,7 @@
           <!-- Filter Controls -->
           <div class="flex flex-col sm:flex-row gap-5 w-full">
             <SearchFilters
-              :options="jurisdictions"
+              :options="jurisdictions || []"
               v-model="currentJurisdictionFilter"
               class="w-full lg:w-60 flex-shrink-0"
               :showAvatars="true"
