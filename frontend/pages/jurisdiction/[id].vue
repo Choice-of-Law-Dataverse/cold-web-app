@@ -121,8 +121,7 @@
       </template>
     </template>
   </BaseDetailLayout>
-  <JurisdictionComparisonLink
-    v-if="jurisdictionData"
+  <JurisdictionSelector
     :formattedJurisdiction="jurisdictionData"
   />
   <ClientOnly>
@@ -164,7 +163,7 @@ import { computed, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 // import JurisdictionComparison from '@/components/jurisdiction-comparison/JurisdictionComparison.vue'
-import JurisdictionComparisonLink from '@/components/ui/JurisdictionComparisonLink.vue'
+import JurisdictionSelector from '@/components/ui/JurisdictionSelector.vue'
 import JurisdictionQuestions from '@/components/content/JurisdictionQuestions.vue'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
 import LoadingBar from '@/components/layout/LoadingBar.vue'

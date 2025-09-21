@@ -3,7 +3,7 @@
     searchable
     searchable-placeholder="Search a Jurisdiction..."
     class="w-72 lg:w-96 cold-uselectmenu z-200"
-    placeholder="Pick a Jurisdiction"
+    :placeholder="placeholder"
     :options="countries"
     v-model="selected"
     @change="onSelect"
@@ -86,6 +86,10 @@ const props = defineProps({
   countries: {
     type: Array,
     required: true,
+  },
+  placeholder: {
+    type: String,
+    default: 'Pick a Jurisdiction',
   },
 })
 
