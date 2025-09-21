@@ -25,8 +25,11 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Place executables in the environment at the front of the path
 ENV PATH="/app/.venv/bin:$PATH"
 
+# Add the app directory to Python path
+ENV PYTHONPATH="/app"
+
 # Reset the entrypoint, don't invoke `uv`
 ENTRYPOINT []
 
 # Command to run the app
-CMD ["uv", "run", "serve"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
