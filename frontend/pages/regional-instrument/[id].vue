@@ -89,9 +89,8 @@ import InfoPopover from '~/components/ui/InfoPopover.vue'
 import { useHead } from '#imports'
 
 const route = useRoute()
-const router = useRouter()
 
-// Use TanStack Vue Query for data fetching
+// Use TanStack Vue Query for data fetching with centralized error handling
 const table = ref('Regional Instruments')
 const id = ref(route.params.id)
 
@@ -99,7 +98,12 @@ const {
   data: regionalInstrument,
   isLoading: loading,
   error,
-} = useRecordDetails(table, id)
+} = useRecordDetails(table, id, {
+  // Enable automatic error handling with redirect for not found
+  enableErrorHandling: true,
+  redirectOnNotFound: true,
+  showToast: true,
+})
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   regionalInstrument,
   regionalInstrumentConfig
@@ -140,22 +144,6 @@ watch(
         },
       ],
     })
-  },
-  { immediate: true }
-)
-
-// Handle not found errors
-watch(
-  error,
-  (newError) => {
-    if (newError?.isNotFound) {
-      router.push({
-        path: '/error',
-        query: { message: 'Regional instrument not found' },
-      })
-    } else if (newError) {
-      console.error('Error fetching regional instrument:', newError)
-    }
   },
   { immediate: true }
 )

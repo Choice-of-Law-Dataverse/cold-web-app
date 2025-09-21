@@ -81,6 +81,29 @@ bun run preview
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 
+## Error Handling
+
+This application features a centralized error handling system that reduces boilerplate code and provides consistent user experience. See the detailed documentation:
+
+- [Error Handling Guide](./docs/error-handling.md) - Complete guide on using the centralized error handling system
+- [Code Reduction Summary](./docs/code-reduction-summary.md) - Before/after examples showing reduced boilerplate
+
+### Quick Example
+
+```vue
+<script setup>
+// Before: 15-20 lines of error handling boilerplate
+// After: 3 lines with automatic error handling
+const { data, isLoading } = useRecordDetails(table, id, {
+  enableErrorHandling: true,
+  redirectOnNotFound: true,
+  showToast: true,
+})
+</script>
+```
+
+The system leverages TanStack Vue Query and @nuxt/ui toast notifications for optimal developer experience and user experience.
+
 # Docker
 
 ## Building and Running the Container
