@@ -52,6 +52,7 @@
             title="Available Arbitral Awards"
             buttonText="See all"
             buttonLink="/arbitral-awards"
+            tableName="Questions"
             :overrideNumber="74"
           />
         </div>
@@ -69,6 +70,7 @@
             title="Available Arbitral Rules"
             buttonText="See all"
             buttonLink="/arbitral-rules"
+            tableName="Questions"
             :overrideNumber="37"
           />
         </div>

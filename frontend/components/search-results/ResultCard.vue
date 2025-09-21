@@ -49,6 +49,11 @@ const props = defineProps({
     required: false,
     default: () => [],
   },
+  formattedJurisdiction: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
 })
 </script>
 

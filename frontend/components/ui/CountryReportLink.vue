@@ -43,7 +43,8 @@ import { computed } from 'vue'
 const props = defineProps({
   processedAnswerData: {
     type: Object,
-    required: true,
+    required: false,
+    default: () => ({}),
   },
 })
 
