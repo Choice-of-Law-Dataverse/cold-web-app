@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/vue-query'
 import { useErrorHandler } from '@/composables/useErrorHandler'
+import { watch } from 'vue'
 
 const fetchGeoJsonData = async () => {
   const response = await fetch('/temp_custom.geo.json')
@@ -22,16 +23,27 @@ export function useGeoJsonData(
     showToast: true,
   }
 ) {
-  const { createQueryErrorHandler } = useErrorHandler()
+  const { handleError } = useErrorHandler()
 
-  return useQuery({
+  const queryResult = useQuery({
     queryKey: ['geoJsonData'],
     queryFn: fetchGeoJsonData,
-    onError: options.enableErrorHandling
-      ? createQueryErrorHandler('GeoJSON Data', {
+    throwOnError: false, // Don't throw errors, handle them manually
+  })
+
+  // Watch for errors and handle them reactively when error handling is enabled
+  watch(
+    () => queryResult.error.value,
+    (error) => {
+      if (options.enableErrorHandling && error) {
+        handleError(error, undefined, {
           redirectOnNotFound: options.redirectOnNotFound,
           showToast: options.showToast,
         })
-      : undefined,
-  })
+      }
+    },
+    { immediate: true }
+  )
+
+  return queryResult
 }

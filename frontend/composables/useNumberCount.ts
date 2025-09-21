@@ -1,4 +1,4 @@
-import { computed, type Ref } from 'vue'
+import { computed, watch, type Ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { useApiClient } from '@/composables/useApiClient'
 import { useErrorHandler } from '@/composables/useErrorHandler'
@@ -39,17 +39,28 @@ export function useNumberCount(
     showToast: true,
   }
 ) {
-  const { createQueryErrorHandler } = useErrorHandler()
+  const { handleError } = useErrorHandler()
 
-  return useQuery({
+  const queryResult = useQuery({
     queryKey: ['numberCount', tableName],
     queryFn: () => fetchNumberCount(tableName.value),
     enabled: computed(() => !!tableName.value),
-    onError: options.enableErrorHandling
-      ? createQueryErrorHandler('Number Count', {
+    throwOnError: false, // Don't throw errors, handle them manually
+  })
+
+  // Watch for errors and handle them reactively when error handling is enabled
+  watch(
+    () => queryResult.error.value,
+    (error) => {
+      if (options.enableErrorHandling && error) {
+        handleError(error, undefined, {
           redirectOnNotFound: options.redirectOnNotFound,
           showToast: options.showToast,
         })
-      : undefined,
-  })
+      }
+    },
+    { immediate: true }
+  )
+
+  return queryResult
 }

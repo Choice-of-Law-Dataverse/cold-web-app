@@ -1,6 +1,7 @@
 import { useQuery, type UseQueriesOptions } from '@tanstack/vue-query'
 import { useApiClient } from '@/composables/useApiClient'
 import { useErrorHandler } from '@/composables/useErrorHandler'
+import { watch } from 'vue'
 import type { FullTableRequest, TableName } from '~/types/api'
 
 const fetchFullTableData = async (
@@ -33,17 +34,31 @@ export function useFullTable(
     showToast = true,
   }: Options = {}
 ) {
-  const { createQueryErrorHandler } = useErrorHandler()
+  const { handleError } = useErrorHandler()
 
-  return useQuery({
+  const queryResult = useQuery({
     queryKey: [
       table,
       filters ? filters.map((f) => f.value).join(',') : undefined,
     ],
     queryFn: () => fetchFullTableData(table, filters),
     select,
-    onError: enableErrorHandling
-      ? createQueryErrorHandler(table, { redirectOnNotFound, showToast })
-      : undefined,
+    throwOnError: false, // Don't throw errors, handle them manually
   })
+
+  // Watch for errors and handle them reactively when error handling is enabled
+  watch(
+    () => queryResult.error.value,
+    (error) => {
+      if (enableErrorHandling && error) {
+        handleError(error, undefined, {
+          redirectOnNotFound,
+          showToast,
+        })
+      }
+    },
+    { immediate: true }
+  )
+
+  return queryResult
 }

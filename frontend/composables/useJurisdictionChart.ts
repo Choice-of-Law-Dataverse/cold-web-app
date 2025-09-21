@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/vue-query'
 import { useErrorHandler } from '@/composables/useErrorHandler'
+import { watch } from 'vue'
 
 const fetchJurisdictionChartData = async () => {
   const response = await fetch('count_jurisdictions.json')
@@ -30,16 +31,27 @@ export function useJurisdictionChart(
     showToast: true,
   }
 ) {
-  const { createQueryErrorHandler } = useErrorHandler()
+  const { handleError } = useErrorHandler()
 
-  return useQuery({
+  const queryResult = useQuery({
     queryKey: ['jurisdictionChart'],
     queryFn: fetchJurisdictionChartData,
-    onError: options.enableErrorHandling
-      ? createQueryErrorHandler('Jurisdiction Chart', {
+    throwOnError: false, // Don't throw errors, handle them manually
+  })
+
+  // Watch for errors and handle them reactively when error handling is enabled
+  watch(
+    () => queryResult.error.value,
+    (error) => {
+      if (options.enableErrorHandling && error) {
+        handleError(error, undefined, {
           redirectOnNotFound: options.redirectOnNotFound,
           showToast: options.showToast,
         })
-      : undefined,
-  })
+      }
+    },
+    { immediate: true }
+  )
+
+  return queryResult
 }

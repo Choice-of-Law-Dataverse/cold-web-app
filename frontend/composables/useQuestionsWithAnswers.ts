@@ -1,4 +1,4 @@
-import { computed, type Ref } from 'vue'
+import { computed, watch, type Ref } from 'vue'
 import { useQuery } from '@tanstack/vue-query'
 import { useApiClient } from '@/composables/useApiClient'
 import { useErrorHandler } from '@/composables/useErrorHandler'
@@ -111,7 +111,7 @@ export function useQuestionsWithAnswers(
     showToast: true,
   }
 ) {
-  const { createQueryErrorHandler } = useErrorHandler()
+  const { handleError } = useErrorHandler()
 
   const {
     data: questionsData,
@@ -119,21 +119,32 @@ export function useQuestionsWithAnswers(
     error: questionsError,
   } = useFullTable('Questions', options)
 
+  const answersQuery = useQuery({
+    queryKey: computed(() => ['answers', jurisdiction.value]),
+    queryFn: () => fetchAnswersData(jurisdiction.value),
+    enabled: computed(() => !!jurisdiction.value),
+    throwOnError: false, // Don't throw errors, handle them manually
+  })
+
+  // Watch for errors in answers query
+  watch(
+    () => answersQuery.error.value,
+    (error) => {
+      if (options.enableErrorHandling && error) {
+        handleError(error, undefined, {
+          redirectOnNotFound: options.redirectOnNotFound,
+          showToast: options.showToast,
+        })
+      }
+    },
+    { immediate: true }
+  )
+
   const {
     data: answersData,
     isLoading: answersLoading,
     error: answersError,
-  } = useQuery({
-    queryKey: computed(() => ['answers', jurisdiction.value]),
-    queryFn: () => fetchAnswersData(jurisdiction.value),
-    enabled: computed(() => !!jurisdiction.value),
-    onError: options.enableErrorHandling
-      ? createQueryErrorHandler('Answers', {
-          redirectOnNotFound: options.redirectOnNotFound,
-          showToast: options.showToast,
-        })
-      : undefined,
-  })
+  } = answersQuery
 
   const data = computed(() => {
     if (!questionsData.value || !Array.isArray(questionsData.value)) return []
