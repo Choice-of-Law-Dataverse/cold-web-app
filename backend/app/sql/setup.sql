@@ -737,6 +737,17 @@ questions_cold_agg AS (
     FROM p1q5x3pj29vkrdr."_nc_m2m_Questions_Answers" qa
     JOIN p1q5x3pj29vkrdr."Questions" q ON q.id = qa."Questions_id"
     GROUP BY qa."Answers_id"
+),
+jurisdiction_agg AS (
+    SELECT 
+        ha.id,
+        STRING_AGG(j."Name", ' | ' ORDER BY j."Name") AS "Jurisdictions",
+        STRING_AGG(j."Legal_Family", ' | ' ORDER BY j."Legal_Family") AS "Legal_Families",
+        MIN(j."Alpha_3_Code") AS "Alpha_3_Code"
+    FROM p1q5x3pj29vkrdr."HCCH_Answers" ha
+    JOIN p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Answers" m2m ON m2m."Answers_id" = ha.id
+    JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = m2m."Jurisdictions_id"
+    GROUP BY ha.id
 )
 SELECT 
     ha.id,
@@ -745,6 +756,8 @@ SELECT
     'HCCH Answers' AS "Table_Synonyms",
     COALESCE(ta."Themes", '') AS "Themes",
     COALESCE(iia."International_Instruments", '') AS "International_Instruments",
+    COALESCE(ja."Jurisdictions", '') AS "Jurisdictions",
+    COALESCE(ja."Legal_Families", '') AS "Legal_Families",
     ('HCCH-' || COALESCE(qca."Question_CoLD_ID",'')) AS "CoLD_ID",
     -- sort_date based on Last Modified (YYYY-MM-DD)
     ha."updated_at"::date AS sort_date,
@@ -754,12 +767,14 @@ SELECT
         COALESCE(ha."Position", '') || ' ' ||
         COALESCE(ta."Themes", '') || ' ' ||
         COALESCE(iia."International_Instruments", '') || ' ' ||
+        COALESCE(ja."Jurisdictions", '') || ' ' ||
         COALESCE(('HCCH-' || COALESCE(qca."Question_CoLD_ID",'')), '')
     ) AS document
 FROM p1q5x3pj29vkrdr."HCCH_Answers" ha
 LEFT JOIN themes_agg ta ON ta."HCCH_Answers_id" = ha.id
 LEFT JOIN international_instruments_agg iia ON iia."HCCH_Answers_id" = ha.id
-LEFT JOIN questions_cold_agg qca ON qca."Answers_id" = ha.id;
+LEFT JOIN questions_cold_agg qca ON qca."Answers_id" = ha.id
+LEFT JOIN jurisdiction_agg ja ON ja.id = ha.id;
 
 CREATE INDEX idx_fts_hcch_answers ON data_views.hcch_answers USING GIN(document);
 CREATE UNIQUE INDEX idx_hcch_answers_id ON data_views.hcch_answers(id);
@@ -1090,6 +1105,10 @@ BEGIN
         JOIN data_views.hcch_answers search_view ON search_view.id = ha.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'HCCH Answers' = ANY(filter_tables))
+          AND (filter_jurisdictions IS NULL OR EXISTS (
+               SELECT 1 FROM unnest(filter_jurisdictions) AS jf
+               WHERE search_view."Jurisdictions" ILIKE '%'||jf||'%'
+          ))
           AND (filter_themes IS NULL OR EXISTS (
                SELECT 1 FROM unnest(filter_themes) AS tf
                WHERE search_view."Themes" ILIKE '%'||tf||'%'
