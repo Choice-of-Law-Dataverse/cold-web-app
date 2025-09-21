@@ -34,7 +34,7 @@
         v-if="value && value.trim() && value.trim() !== 'N/A'"
         class="section-gap p-0 m-0"
       >
-        <p class="label mt-12 mb-[-24px]">
+        <p class="label mt-12 mb-[-24px] flex flex-row items-center">
           {{
             computedKeyLabelPairs.find(
               (pair) => pair.key === 'Regional Legal Provisions'

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p class="label mb-1">
+    <p class="label mb-1 flex flex-row items-center">
       {{ sectionLabel }}
       <InfoPopover v-if="sectionTooltip" :text="sectionTooltip" />
     </p>

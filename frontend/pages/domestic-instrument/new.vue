@@ -36,7 +36,7 @@
         hint="Required"
       >
         <template #label>
-          <span class="label">Official Title</span>
+          <span class="label flex flex-row items-center">Official Title</span>
           <InfoPopover :text="tooltipOfficialTitle" />
         </template>
         <UInput
@@ -54,7 +54,7 @@
         hint="Required"
       >
         <template #label>
-          <span class="label">Name</span>
+          <span class="label flex flex-row items-center">Name</span>
           <InfoPopover :text="tooltipDomesticInstrumentTitle" />
         </template>
         <UInput
@@ -72,7 +72,7 @@
         :error="errors.entry_into_force"
       >
         <template #label>
-          <span class="label">Entry Into Force</span>
+          <span class="label flex flex-row items-center">Entry Into Force</span>
           <InfoPopover :text="tooltipEntryIntoForce" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
@@ -123,7 +123,7 @@
       <!-- Publication Date (optional) -->
       <UFormGroup size="lg" class="mt-8">
         <template #label>
-          <span class="label">Publication Date</span>
+          <span class="label flex flex-row items-center">Publication Date</span>
           <InfoPopover :text="tooltipDomesticInstrumentPublicationDate" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
@@ -145,7 +145,7 @@
       <!-- Abbreviation (optional) -->
       <UFormGroup size="lg" class="mt-8">
         <template #label>
-          <span class="label">Abbreviation</span>
+          <span class="label flex flex-row items-center">Abbreviation</span>
           <InfoPopover :text="tooltipAbbreviation" />
         </template>
         <UInput v-model="abbreviation" class="mt-2 cold-input" />
@@ -154,7 +154,7 @@
       <!-- Compatible HCCH Principles (optional) -->
       <UFormGroup size="lg" class="mt-8">
         <template #label>
-          <span class="label">Compatible With the HCCH Principles?</span>
+          <span class="label flex flex-row items-center">Compatible With the HCCH Principles?</span>
           <InfoPopover :text="tooltipCompatibleWithHCCH" />
         </template>
         <div
@@ -182,7 +182,7 @@
       <!-- Compatible UNCITRAL Model Law (optional) -->
       <UFormGroup size="lg" class="mt-8">
         <template #label>
-          <span class="label">Compatible With the UNCITRAL Model Law?</span>
+          <span class="label flex flex-row items-center">Compatible With the UNCITRAL Model Law?</span>
           <InfoPopover :text="tooltipCompatibleWithUNCITRAL" />
         </template>
         <div

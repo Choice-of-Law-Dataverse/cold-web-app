@@ -102,7 +102,7 @@
         "
         class="result-value-small section-gap"
       >
-        <p class="label mt-12">
+        <p class="label mt-12 flex flex-row items-center">
           Compatible with
           <InfoPopover
             v-if="
@@ -150,7 +150,7 @@
         v-if="value && value.trim() && value.trim() !== 'N/A'"
         class="section-gap p-0 m-0"
       >
-        <p class="label mt-12 mb-[-24px]">
+        <p class="label mt-12 mb-[-24px] flex flex-row items-center">
           {{
             computedKeyLabelPairs.find(
               (pair) => pair.key === 'Domestic Legal Provisions'
