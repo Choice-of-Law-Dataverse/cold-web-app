@@ -19,7 +19,7 @@
       </li>
       <ShowMoreLess
         v-if="fullLiteratureList.length > 5"
-        v-model:isExpanded="showAll"
+        v-model:is-expanded="showAll"
         label="related literature"
       />
     </ul>
@@ -37,6 +37,8 @@ import { ref, computed, watch, onMounted } from "vue";
 import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InfoPopover from "~/components/ui/InfoPopover.vue";
+
+import { useApiClient } from "@/composables/useApiClient";
 
 const props = defineProps({
   label: { type: String, default: "Related Literature" },
@@ -116,8 +118,6 @@ const displayedLiterature = computed(() => {
   const arr = fullLiteratureList.value;
   return !showAll.value && arr.length > 5 ? arr.slice(0, 3) : arr;
 });
-
-import { useApiClient } from "@/composables/useApiClient";
 const { apiClient } = useApiClient();
 
 async function fetchLiteratureTitlesById(ids, useJurisdictionsColumn = false) {

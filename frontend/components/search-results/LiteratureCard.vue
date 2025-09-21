@@ -1,5 +1,5 @@
 <template>
-  <ResultCard :resultData="processedResultData" cardType="Literature">
+  <ResultCard :result-data="processedResultData" card-type="Literature">
     <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
       <!-- Title section -->
       <div

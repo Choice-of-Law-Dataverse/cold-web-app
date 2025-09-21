@@ -16,7 +16,7 @@
               <img
                 :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${decision['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
                 class="mr-3 h-5 border border-cold-gray"
-              />
+              >
               <span class="break-words text-left">
                 {{
                   decision["Publication Date ISO"]
@@ -31,11 +31,11 @@
         <div class="mt-8">
           <ShowMoreLess
             v-if="leadingCases.length > 3"
-            :isExpanded="showAll"
+            :is-expanded="showAll"
             label="leading cases"
-            @update:isExpanded="showAll = $event"
-            buttonClass="suggestion-button"
-            iconClass="showmoreless-icon-large"
+            button-class="suggestion-button"
+            icon-class="showmoreless-icon-large"
+            @update:is-expanded="showAll = $event"
           />
         </div>
       </template>

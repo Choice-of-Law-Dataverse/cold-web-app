@@ -1,8 +1,8 @@
 <template>
   <UModal
     :model-value="modelValue"
-    @update:model-value="(v) => $emit('update:modelValue', v)"
     :ui="{ rounded: 'rounded-none' }"
+    @update:model-value="(v) => $emit('update:modelValue', v)"
   >
     <div class="p-6">
       <h2 class="mb-4">Cite This Page</h2>

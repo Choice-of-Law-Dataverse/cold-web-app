@@ -5,7 +5,7 @@
   <div v-else>
     <BaseLegalContent
       :title="displayTitle"
-      :anchorId="anchorId"
+      :anchor-id="anchorId"
       :class="class"
       :loading="loading"
       :error="error"

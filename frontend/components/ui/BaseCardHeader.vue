@@ -1,9 +1,9 @@
 <template>
   <div
-    class="header-container mt-0.5 flex flex-wrap items-center justify-between"
     :key="formattedJurisdiction + formattedTheme + legalFamily"
+    class="header-container mt-0.5 flex flex-wrap items-center justify-between"
   >
-    <template v-if="cardType === 'Loading'"> </template>
+    <template v-if="cardType === 'Loading'"/>
     <template v-else>
       <!-- Left side of the header: Tags -->
       <div
@@ -21,7 +21,7 @@
             :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
             class="mb-0.5 mr-1.5 h-[9px]"
             @error="handleImageError(erroredImages, jurisdictionString)"
-          />
+          >
           {{ jurisdictionString }}
         </NuxtLink>
         <!-- Legal Family next to jurisdiction name -->
@@ -43,8 +43,8 @@
             </span>
             <div class="-ml-2">
               <USelect
-                variant="none"
                 v-model="selectedType"
+                variant="none"
                 :options="typeOptions"
                 value-attribute="value"
                 option-attribute="label"

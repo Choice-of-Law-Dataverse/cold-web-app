@@ -1,14 +1,14 @@
 <template>
   <USelectMenu
+    v-model="selected"
     searchable
     searchable-placeholder="Search a Jurisdiction..."
     class="cold-uselectmenu z-200 w-72 lg:w-96"
     :placeholder="placeholder"
     :options="countries"
-    v-model="selected"
-    @change="onSelect"
     size="xl"
     :loading="isLoading"
+    @change="onSelect"
   >
     <!-- Custom option rendering with avatars -->
     <template #option="{ option }">

@@ -1,11 +1,11 @@
 <template>
   <div class="mb-12">
     <UButton
-      @click="goBack"
       variant="link"
       icon="i-material-symbols:arrow-back"
       :trailing="false"
       class="suggestion-button"
+      @click="goBack"
     >
       Back
     </UButton>

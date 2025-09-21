@@ -4,7 +4,7 @@
     <p class="result-value-small">
       Click bars to see a jurisdiction's decisions
     </p>
-    <div ref="plotlyContainer"></div>
+    <div ref="plotlyContainer"/>
     <div v-if="isLoading" class="loading-state"><LoadingLandingPageCard /></div>
   </UCard>
 </template>

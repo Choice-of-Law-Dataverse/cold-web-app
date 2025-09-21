@@ -35,7 +35,7 @@
                       : 'var(--color-cold-gray)',
               }"
               class="inline-block h-4 w-4 rounded-full"
-            ></span>
+            />
           </template>
           <template v-else>
             <span

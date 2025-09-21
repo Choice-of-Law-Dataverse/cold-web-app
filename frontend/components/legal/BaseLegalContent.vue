@@ -1,8 +1,8 @@
 <template>
   <div
+    ref="rootEl"
     class="base-legal-content"
     :class="{ 'is-first': isFirstProvision }"
-    ref="rootEl"
   >
     <div v-if="error">{{ error }}</div>
     <div v-else>
@@ -51,7 +51,7 @@
           <slot v-if="isOpen" name="header-actions" />
         </div>
 
-        <div class="content-body" :id="`${anchorId}-content`" v-show="isOpen">
+        <div v-show="isOpen" :id="`${anchorId}-content`" class="content-body">
           <slot />
         </div>
       </div>

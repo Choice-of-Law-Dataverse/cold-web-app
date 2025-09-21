@@ -9,11 +9,11 @@
         <div class="select-menu-container">
           <USelectMenu
             :model-value="selectedRegion"
-            @update:modelValue="updateSelectedRegion"
             class="w-60"
             placeholder="Select a Region"
             size="xl"
             :options="regionOptions"
+            @update:model-value="updateSelectedRegion"
           />
         </div>
 

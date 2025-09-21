@@ -1,5 +1,5 @@
 <template>
-  <ResultCard :resultData="processedResultData" cardType="Domestic Instrument">
+  <ResultCard :result-data="processedResultData" card-type="Domestic Instrument">
     <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
       <!-- Title section -->
       <div

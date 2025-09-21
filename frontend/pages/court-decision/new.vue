@@ -1,17 +1,17 @@
 <template>
   <BaseDetailLayout
     :loading="false"
-    :resultData="{}"
-    :keyLabelPairs="[]"
-    :valueClassMap="{}"
-    sourceTable="Court Decision"
-    :hideBackButton="true"
-    headerMode="new"
+    :result-data="{}"
+    :key-label-pairs="[]"
+    :value-class-map="{}"
+    source-table="Court Decision"
+    :hide-back-button="true"
+    header-mode="new"
+    :show-notification-banner="true"
+    :notification-banner-message="notificationBannerMessage"
+    :icon="'i-material-symbols:warning-outline'"
     @open-save-modal="openSaveModal"
     @open-cancel-modal="showCancelModal = true"
-    :showNotificationBanner="true"
-    :notificationBannerMessage="notificationBannerMessage"
-    :icon="'i-material-symbols:warning-outline'"
   >
     <h3 class="mb-12">
       The CoLD Case Analyzer extracts information from court cases
@@ -85,15 +85,15 @@
         >
           <UButton
             class="cold-toggle-btn"
-            @click="copyrightIssues = 'No'"
             :aria-pressed="copyrightIssues === 'No'"
+            @click="copyrightIssues = 'No'"
           >
             No
           </UButton>
           <UButton
             class="cold-toggle-btn"
-            @click="copyrightIssues = 'Yes'"
             :aria-pressed="copyrightIssues === 'Yes'"
+            @click="copyrightIssues = 'Yes'"
           >
             Yes
           </UButton>
@@ -134,10 +134,10 @@
           <span class="label">Jurisdiction</span>
         </template>
         <SearchFilters
-          :options="jurisdictionOptions"
           v-model="selectedJurisdiction"
+          :options="jurisdictionOptions"
           class="mt-2 w-full"
-          showAvatars="true"
+          show-avatars="true"
           :multiple="false"
         />
       </UFormGroup>
@@ -294,13 +294,13 @@
     :email="email"
     :comments="comments"
     :token="token"
-    :saveModalErrors="saveModalErrors"
+    :save-modal-errors="saveModalErrors"
     :name="caseCitation"
     :date="datePublication"
     @update:email="(val) => (email = val)"
     @update:comments="(val) => (comments = val)"
     @update:token="(val) => (token = val)"
-    @update:saveModalErrors="(val) => (saveModalErrors.value = val)"
+    @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
     @save="handleNewSave"
   />
 </template>

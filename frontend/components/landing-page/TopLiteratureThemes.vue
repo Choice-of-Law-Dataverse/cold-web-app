@@ -13,11 +13,11 @@
         <UButton
           v-for="(suggestion, index) in searchSuggestions"
           :key="index"
-          @click="handleSuggestionClick(suggestion)"
           class="suggestion-button"
           variant="link"
           icon="i-material-symbols:arrow-forward"
           trailing
+          @click="handleSuggestionClick(suggestion)"
         >
           <span class="break-words text-left">{{ suggestion }}</span>
         </UButton>

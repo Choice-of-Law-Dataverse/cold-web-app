@@ -1,17 +1,17 @@
 <template>
   <BaseDetailLayout
     :loading="false"
-    :resultData="{}"
-    :keyLabelPairs="[]"
-    :valueClassMap="{}"
-    sourceTable="Literature"
-    :hideBackButton="true"
-    headerMode="new"
+    :result-data="{}"
+    :key-label-pairs="[]"
+    :value-class-map="{}"
+    source-table="Literature"
+    :hide-back-button="true"
+    header-mode="new"
+    :show-notification-banner="true"
+    :notification-banner-message="notificationBannerMessage"
+    :icon="'i-material-symbols:warning-outline'"
     @open-save-modal="openSaveModal"
     @open-cancel-modal="showCancelModal = true"
-    :showNotificationBanner="true"
-    :notificationBannerMessage="notificationBannerMessage"
-    :icon="'i-material-symbols:warning-outline'"
   >
     <div class="section-gap m-0 p-0">
       <!-- Jurisdiction (optional) -->
@@ -20,10 +20,10 @@
           <span class="label">Jurisdiction</span>
         </template>
         <SearchFilters
-          :options="jurisdictionOptions"
           v-model="selectedJurisdiction"
+          :options="jurisdictionOptions"
           class="mt-2 w-full"
-          showAvatars="true"
+          show-avatars="true"
           :multiple="false"
         />
       </UFormGroup>
@@ -133,16 +133,16 @@
     :email="email"
     :comments="comments"
     :token="token"
-    :saveModalErrors="saveModalErrors"
+    :save-modal-errors="saveModalErrors"
     :name="title"
     :specialists="specialists"
     :date="publicationDate || null"
-    :pdfFile="pdfFile"
+    :pdf-file="pdfFile"
     :link="url"
     @update:email="(val) => (email = val)"
     @update:comments="(val) => (comments = val)"
     @update:token="(val) => (token = val)"
-    @update:saveModalErrors="(val) => (saveModalErrors.value = val)"
+    @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
     @save="handleNewSave"
   />
 </template>
@@ -287,7 +287,7 @@ function handleNewSave() {
     url: url.value || undefined,
     doi: doi.value || undefined,
     publication_date:
-      publicationDate && publicationDate.value
+      publicationDate.value && publicationDate.value
         ? format(publicationDate.value, "yyyy-MM-dd")
         : undefined,
     isbn: isbn.value || undefined,

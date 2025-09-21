@@ -1,12 +1,12 @@
 <template>
   <BaseDetailLayout
     :loading="isLoading.value"
-    :resultData="jurisdictionData"
-    :keyLabelPairs="keyLabelPairsWithoutLegalFamily"
-    :valueClassMap="valueClassMap"
-    :formattedJurisdiction="[jurisdictionData?.Name]"
-    :showSuggestEdit="true"
-    sourceTable="Jurisdiction"
+    :result-data="jurisdictionData"
+    :key-label-pairs="keyLabelPairsWithoutLegalFamily"
+    :value-class-map="valueClassMap"
+    :formatted-jurisdiction="[jurisdictionData?.Name]"
+    :show-suggest-edit="true"
+    source-table="Jurisdiction"
   >
     <h1 class="mb-12">
       Country Report for {{ jurisdictionData?.Name || "N/A" }}
@@ -15,13 +15,13 @@
       <section class="section-gap m-0 p-0">
         <RelatedLiterature
           :literature-id="jurisdictionData?.Literature"
-          :valueClassMap="valueClassMap['Related Literature']"
-          :useId="true"
+          :value-class-map="valueClassMap['Related Literature']"
+          :use-id="true"
           :label="
             keyLabelPairs.find((pair) => pair.key === 'Related Literature')
               ?.label || 'Related Literature'
           "
-          :emptyValueBehavior="
+          :empty-value-behavior="
             jurisdictionConfig.keyLabelPairs.find(
               (pair) => pair.key === 'Related Literature',
             )?.emptyValueBehavior
@@ -123,12 +123,12 @@
   </BaseDetailLayout>
   <JurisdictionSelector
     v-if="jurisdictionData"
-    :formattedJurisdiction="jurisdictionData"
+    :formatted-jurisdiction="jurisdictionData"
   />
   <ClientOnly>
     <JurisdictionQuestions
       v-if="jurisdictionData?.Name"
-      :formattedJurisdiction="[jurisdictionData.Name]"
+      :formatted-jurisdiction="[jurisdictionData.Name]"
     />
     <template #fallback>
       <div class="px-6">

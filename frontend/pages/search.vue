@@ -11,11 +11,11 @@
     <!-- Pass searchResults, totalMatches, and loading state -->
     <SearchResults
       v-else
+      v-model:filters="filter"
       :data="{ tables: searchResults }"
       :total-matches="totalMatches"
       :loading="loading"
-      v-model:filters="filter"
-      :canLoadMore="hasNextPage && !isFetchingNextPage"
+      :can-load-more="hasNextPage && !isFetchingNextPage"
       @load-more="loadMoreResults"
     />
   </div>

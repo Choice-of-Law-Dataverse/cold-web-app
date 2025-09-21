@@ -4,7 +4,7 @@
     <span
       v-if="notificationBannerMessage && notificationBannerMessage.length"
       v-html="notificationBannerMessage"
-    ></span>
+    />
     <span v-else-if="jurisdictionName">
       {{ fallbackMessage.replace("{jurisdiction}", jurisdictionName) }}
       <a href="/contact" class="contact-link">Contact us</a> if you want to

@@ -1,5 +1,5 @@
 <template>
-  <ContentPageLayout :navLinks="learnNavLinks">
+  <ContentPageLayout :nav-links="learnNavLinks">
     <ContentDoc path="/open_educational_resources" />
   </ContentPageLayout>
 </template>

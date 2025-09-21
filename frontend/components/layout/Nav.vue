@@ -9,9 +9,9 @@
       >
         <!-- Search Input -->
         <div
+          v-show="!(isMobile && showMenu)"
           class="search-container"
           :class="{ expanded: isExpanded }"
-          v-show="!(isMobile && showMenu)"
         >
           <div class="search-input-row">
             <!-- Collapsed mobile search icon -->
@@ -26,17 +26,13 @@
               <span
                 class="iconify i-material-symbols:search"
                 aria-hidden="true"
-              ></span>
+              />
             </button>
             <UInput
               v-show="!isMobile || isExpanded"
-              size="xl"
               ref="searchInput"
               v-model="searchText"
-              @keyup.enter="emitSearch"
-              @keydown.esc="clearSearch"
-              @focus="expandSearch"
-              @blur="collapseSearch"
+              size="xl"
               class="input-custom-purple placeholder-purple font-semibold"
               :placeholder="searchPlaceholder"
               icon="i-material-symbols:search"
@@ -55,6 +51,10 @@
                   ? 'transparent'
                   : 'var(--color-cold-purple-alpha)',
               }"
+              @keyup.enter="emitSearch"
+              @keydown.esc="clearSearch"
+              @focus="expandSearch"
+              @blur="collapseSearch"
             >
               <template #trailing>
                 <UButton
@@ -69,11 +69,11 @@
                 />
               </template>
             </UInput>
-            <button v-if="!isMobile" @click="emitSearch" class="icon-button">
+            <button v-if="!isMobile" class="icon-button" @click="emitSearch">
               <span
                 class="iconify i-material-symbols:search"
                 aria-hidden="true"
-              ></span>
+              />
             </button>
           </div>
 
@@ -107,7 +107,7 @@
             src="https://choiceoflaw.blob.core.windows.net/assets/cold_beta_logo.svg"
             alt="CoLD Logo"
             class="mb-4 h-12 w-auto"
-          />
+          >
         </NuxtLink>
         <!-- Inline mobile logo for horizontal arrangement -->
         <NuxtLink
@@ -120,7 +120,7 @@
             src="https://choiceoflaw.blob.core.windows.net/assets/cold_beta_logo.svg"
             alt="CoLD Logo"
             class="h-10 w-auto"
-          />
+          >
         </NuxtLink>
 
         <!-- HCCHApproved and Menu/Links Row -->
@@ -153,7 +153,6 @@
               </ULink>
               <button
                 class="close-menu-button ml-2"
-                @click="closeMenu"
                 aria-label="Close menu"
                 style="
                   background: none;
@@ -168,6 +167,7 @@
                   min-height: 2.5rem;
                   z-index: 10;
                 "
+                @click="closeMenu"
               >
                 <span>
                   <UIcon

@@ -1,7 +1,7 @@
 <template>
   <ResultCard
-    :resultData="processedResultData"
-    cardType="International Instrument"
+    :result-data="processedResultData"
+    card-type="International Instrument"
   >
     <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
       <!-- Title section -->

@@ -1,13 +1,13 @@
 <template>
   <BaseDetailLayout
     :loading="loading"
-    :resultData="processedArbitralAward"
-    :keyLabelPairs="computedKeyLabelPairs"
-    :valueClassMap="valueClassMap"
-    :formattedJurisdiction="formattedJurisdictions"
-    :formattedTheme="formattedThemes"
-    :showSuggestEdit="true"
-    sourceTable="Arbitral Award"
+    :result-data="processedArbitralAward"
+    :key-label-pairs="computedKeyLabelPairs"
+    :value-class-map="valueClassMap"
+    :formatted-jurisdiction="formattedJurisdictions"
+    :formatted-theme="formattedThemes"
+    :show-suggest-edit="true"
+    source-table="Arbitral Award"
   />
 </template>
 

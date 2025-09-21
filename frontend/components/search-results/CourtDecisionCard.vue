@@ -1,5 +1,5 @@
 <template>
-  <ResultCard :resultData="resultData" cardType="Court Decisions">
+  <ResultCard :result-data="resultData" card-type="Court Decisions">
     <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
       <!-- Case Title section -->
       <div

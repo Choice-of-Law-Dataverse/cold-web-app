@@ -1,17 +1,17 @@
 <template>
   <BaseDetailLayout
     :loading="false"
-    :resultData="{}"
-    :keyLabelPairs="[]"
-    :valueClassMap="{}"
-    sourceTable="Domestic Instrument"
-    :hideBackButton="true"
-    headerMode="new"
+    :result-data="{}"
+    :key-label-pairs="[]"
+    :value-class-map="{}"
+    source-table="Domestic Instrument"
+    :hide-back-button="true"
+    header-mode="new"
+    :show-notification-banner="true"
+    :notification-banner-message="notificationBannerMessage"
+    :icon="'i-material-symbols:warning-outline'"
     @open-save-modal="openSaveModal"
     @open-cancel-modal="showCancelModal = true"
-    :showNotificationBanner="true"
-    :notificationBannerMessage="notificationBannerMessage"
-    :icon="'i-material-symbols:warning-outline'"
   >
     <div class="section-gap m-0 p-0">
       <!-- Jurisdiction (required) -->
@@ -20,10 +20,10 @@
           <span class="label">Jurisdiction</span>
         </template>
         <SearchFilters
-          :options="jurisdictionOptions"
           v-model="selectedJurisdiction"
+          :options="jurisdictionOptions"
           class="mt-2 w-full"
-          showAvatars="true"
+          show-avatars="true"
           :multiple="false"
         />
       </UFormGroup>
@@ -166,15 +166,15 @@
         >
           <UButton
             class="cold-toggle-btn"
-            @click="compatibleHcchPrinciples = 'No'"
             :aria-pressed="compatibleHcchPrinciples === 'No'"
+            @click="compatibleHcchPrinciples = 'No'"
           >
             No
           </UButton>
           <UButton
             class="cold-toggle-btn"
-            @click="compatibleHcchPrinciples = 'Yes'"
             :aria-pressed="compatibleHcchPrinciples === 'Yes'"
+            @click="compatibleHcchPrinciples = 'Yes'"
           >
             Yes
           </UButton>
@@ -196,15 +196,15 @@
         >
           <UButton
             class="cold-toggle-btn"
-            @click="compatibleUncitralModelLaw = 'No'"
             :aria-pressed="compatibleUncitralModelLaw === 'No'"
+            @click="compatibleUncitralModelLaw = 'No'"
           >
             No
           </UButton>
           <UButton
             class="cold-toggle-btn"
-            @click="compatibleUncitralModelLaw = 'Yes'"
             :aria-pressed="compatibleUncitralModelLaw === 'Yes'"
+            @click="compatibleUncitralModelLaw = 'Yes'"
           >
             Yes
           </UButton>
@@ -219,16 +219,16 @@
     :email="email"
     :comments="comments"
     :token="token"
-    :saveModalErrors="saveModalErrors"
+    :save-modal-errors="saveModalErrors"
     :name="titleEn"
     :specialists="specialists"
     :date="entryIntoForce"
-    :pdfFile="pdfFile"
+    :pdf-file="pdfFile"
     :link="sourceUrl"
     @update:email="(val) => (email = val)"
     @update:comments="(val) => (comments = val)"
     @update:token="(val) => (token = val)"
-    @update:saveModalErrors="(val) => (saveModalErrors.value = val)"
+    @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
     @save="handleNewSave"
   />
 </template>
@@ -402,7 +402,7 @@ function handleNewSave() {
           .filter((t) => t)
       : undefined,
     status: status.value || undefined,
-    publication_date: publicationDate
+    publication_date: publicationDate.value
       ? format(publicationDate.value, "yyyy-MM-dd")
       : undefined,
     abbreviation: abbreviation.value || undefined,

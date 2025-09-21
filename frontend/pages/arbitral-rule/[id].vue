@@ -1,11 +1,11 @@
 <template>
   <BaseDetailLayout
     :loading="loading"
-    :resultData="processedArbitralRule"
-    :keyLabelPairs="computedKeyLabelPairs"
-    :valueClassMap="valueClassMap"
-    :showSuggestEdit="true"
-    sourceTable="Arbitral Rule"
+    :result-data="processedArbitralRule"
+    :key-label-pairs="computedKeyLabelPairs"
+    :value-class-map="valueClassMap"
+    :show-suggest-edit="true"
+    source-table="Arbitral Rule"
   />
 </template>
 

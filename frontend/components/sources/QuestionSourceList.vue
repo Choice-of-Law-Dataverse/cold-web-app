@@ -11,7 +11,7 @@
       >
         <LegalProvisionRenderer
           :value="provision"
-          :fallbackData="fallbackData"
+          :fallback-data="fallbackData"
         />
       </li>
     </template>
@@ -26,9 +26,9 @@
         class="section-gap m-0 p-0"
       >
         <LegalProvisionRenderer
-          skipArticle
+          skip-article
           :value="instrument"
-          :fallbackData="fallbackData"
+          :fallback-data="fallbackData"
         />
       </li>
     </template>

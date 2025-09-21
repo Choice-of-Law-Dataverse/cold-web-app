@@ -9,31 +9,31 @@
           <!-- Filter Controls -->
           <div class="flex w-full flex-col gap-5 sm:flex-row">
             <SearchFilters
-              :options="jurisdictions || []"
               v-model="currentJurisdictionFilter"
+              :options="jurisdictions || []"
               class="w-full flex-shrink-0 lg:w-60"
-              :showAvatars="true"
+              :show-avatars="true"
               :multiple="false"
               :highlight-jurisdictions="true"
               :placeholder="'Jurisdiction'"
             />
             <SearchFilters
-              :options="themeOptions"
               v-model="currentThemeFilter"
+              :options="themeOptions"
               class="w-full flex-shrink-0 lg:w-60"
               :placeholder="'Themes'"
             />
             <SearchFilters
-              :options="typeOptions"
               v-model="currentTypeFilter"
+              :options="typeOptions"
               class="w-full flex-shrink-0 lg:w-60"
               :placeholder="'Types'"
             />
             <UButton
               v-if="hasActiveFilters"
               variant="link"
-              @click="resetFilters"
               class="link-button w-full sm:w-auto"
+              @click="resetFilters"
             >
               Reset
             </UButton>
@@ -78,7 +78,7 @@
                     paddingLeft: '0',
                   }"
                   class="flex-shrink-0 text-right"
-                  @update:modelValue="handleSortChange"
+                  @update:model-value="handleSortChange"
                 >
                   <template #trailing>
                     <UIcon
@@ -119,7 +119,7 @@
               >
                 <component
                   :is="getResultComponent(resultData.source_table)"
-                  :resultData="resultData"
+                  :result-data="resultData"
                 />
               </div>
               <!-- Loading More Indicator -->
@@ -136,11 +136,11 @@
             >
               <UButton
                 native-type="button"
-                @click.prevent="emit('load-more')"
                 class="suggestion-button"
                 variant="link"
                 icon="i-material-symbols:arrow-cool-down"
                 :disabled="props.loading"
+                @click.prevent="emit('load-more')"
               >
                 Load More Results
               </UButton>
@@ -190,6 +190,9 @@ import AnswerCard from "@/components/search-results/AnswerCard.vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import NoSearchResults from "@/components/search-results/NoSearchResults.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
+
+// Data fetching via composable
+import { useJurisdictions } from "@/composables/useJurisdictions";
 
 // Component mapping for different result types
 const resultComponentMap = {
@@ -296,9 +299,6 @@ const updateSelectWidth = () => {
     }
   });
 };
-
-// Data fetching via composable
-import { useJurisdictions } from "@/composables/useJurisdictions";
 const { data: jurisdictions } = useJurisdictions();
 
 // Watchers

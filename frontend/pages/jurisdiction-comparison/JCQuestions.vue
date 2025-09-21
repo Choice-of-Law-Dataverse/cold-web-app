@@ -6,7 +6,6 @@
         <div class="jc-title-row flex items-center" style="grid-column: 1 / -1">
           <button
             v-if="showCaret"
-            @click="isOpen = !isOpen"
             class="accordion-caret mr-2 mt-10"
             style="
               background: none;
@@ -16,6 +15,7 @@
               display: flex;
               align-items: center;
             "
+            @click="isOpen = !isOpen"
           >
             <svg
               :style="{ transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)' }"
@@ -38,7 +38,7 @@
           <h2 class="jc-title-fullwidth mb-6 mt-16">{{ title }}</h2>
         </div>
       </div>
-      <hr class="jc-hr" />
+      <hr class="jc-hr" >
       <div v-show="isOpen">
         <div v-if="isLoading" class="justify-left flex w-full py-8">
           <div class="w-full max-w-xs">
@@ -80,11 +80,10 @@
     <!-- Mobile & Tablet Layout -->
     <div class="md:hidden">
       <div class="mobile-layout">
-        <hr class="jc-hr mb-12 mt-4" />
+        <hr class="jc-hr mb-12 mt-4" >
         <div class="mb-2 mt-4 flex items-center">
           <button
             v-if="showCaret"
-            @click="isOpenMobile = !isOpenMobile"
             class="accordion-caret mr-2"
             style="
               background: none;
@@ -94,6 +93,7 @@
               display: flex;
               align-items: center;
             "
+            @click="isOpenMobile = !isOpenMobile"
           >
             <svg
               :style="{
@@ -148,7 +148,6 @@
                         getFlagUrl(filter.value.value[0].label)
                       "
                       :src="getFlagUrl(filter.value.value[0].label)"
-                      @error="() => (erroredFlags[index] = true)"
                       style="
                         height: 18px;
                         width: auto;
@@ -157,7 +156,8 @@
                         border: 1px solid var(--color-cold-gray);
                       "
                       :alt="filter.value.value[0].label + ' flag'"
-                    />
+                      @error="() => (erroredFlags[index] = true)"
+                    >
                     {{ filter.value.value[0].label }}
                   </template>
                   <template v-else>

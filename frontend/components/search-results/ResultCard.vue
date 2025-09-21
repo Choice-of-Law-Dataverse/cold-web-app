@@ -11,12 +11,12 @@
         <template v-else>
           <BaseCardHeader
             v-if="resultData"
-            :resultData="resultData"
-            :cardType="cardType"
-            :showOpenLink="true"
-            :formattedJurisdiction="formattedJurisdiction"
-            :formattedTheme="formattedTheme"
-            :showSuggestEdit="false"
+            :result-data="resultData"
+            :card-type="cardType"
+            :show-open-link="true"
+            :formatted-jurisdiction="formattedJurisdiction"
+            :formatted-theme="formattedTheme"
+            :show-suggest-edit="false"
           />
         </template>
       </template>

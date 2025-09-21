@@ -38,8 +38,8 @@
               <JurisdictionSelectMenu
                 v-model="selectedJurisdiction"
                 :countries="jurisdictions"
-                @countrySelected="updateComparison"
                 class="cold-uselectmenu w-full md:w-72"
+                @country-selected="updateComparison"
               />
             </div>
 
@@ -52,8 +52,8 @@
                 class="filter-wrapper flex w-full flex-col items-center justify-center sm:w-auto sm:flex-row sm:items-center"
               >
                 <USelectMenu
-                  searchable
                   v-model="selectedTheme"
+                  searchable
                   :options="themeOptions"
                   placeholder="Filter by Theme"
                   class="cold-uselectmenu w-full max-w-full text-center sm:w-auto"
@@ -61,10 +61,10 @@
                 />
                 <UButton
                   v-if="selectedTheme"
-                  @click="resetFilters"
                   size="sm"
                   variant="link"
                   class="suggestion-button"
+                  @click="resetFilters"
                 >
                   Reset
                 </UButton>
@@ -80,13 +80,13 @@
             </div>
           </div>
 
-          <hr class="mt-2" />
+          <hr class="mt-2" >
 
           <!-- Table Always Visible -->
           <JurisdictionComparisonTable
             :rows="filteredRows"
             :columns="columns"
-            :computeMatchStatus="computeMatchStatus"
+            :compute-match-status="computeMatchStatus"
             :loading="loading"
           />
         </UCard>
@@ -103,6 +103,9 @@ import JurisdictionComparisonMatchSummary from "./JurisdictionComparisonMatchSum
 import JurisdictionComparisonTable from "./JurisdictionComparisonTable.vue";
 import JurisdictionSelectMenu from "./JurisdictionSelectMenu.vue";
 import themeOptionsData from "@/assets/themeOptions.json";
+
+// Desired order for the questions
+import questionOrderData from "@/assets/questionOrder.json";
 
 const props = defineProps({
   jurisdiction: {
@@ -153,9 +156,6 @@ const resetFilters = () => {
 
 // Dropdown options for themes
 const themeOptions = themeOptionsData;
-
-// Desired order for the questions
-import questionOrderData from "@/assets/questionOrder.json";
 const questionOrder = questionOrderData;
 
 // Function to toggle the state

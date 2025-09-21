@@ -1,19 +1,19 @@
 <template>
   <BaseDetailLayout
     :loading="loading"
-    :resultData="processedRegionalInstrument"
-    :keyLabelPairs="computedKeyLabelPairs"
-    :valueClassMap="valueClassMap"
-    :showSuggestEdit="true"
-    sourceTable="Regional Instrument"
+    :result-data="processedRegionalInstrument"
+    :key-label-pairs="computedKeyLabelPairs"
+    :value-class-map="valueClassMap"
+    :show-suggest-edit="true"
+    source-table="Regional Instrument"
   >
     <template #literature>
       <section class="section-gap m-0 p-0">
         <RelatedLiterature
           :literature-id="processedRegionalInstrument?.Literature"
-          :valueClassMap="valueClassMap['Literature']"
-          :showLabel="true"
-          :emptyValueBehavior="
+          :value-class-map="valueClassMap['Literature']"
+          :show-label="true"
+          :empty-value-behavior="
             regionalInstrumentConfig.keyLabelPairs.find(
               (pair) => pair.key === 'Literature',
             )?.emptyValueBehavior
@@ -58,16 +58,16 @@
             <LegalProvision
               v-for="(provisionId, index) in value.split(',')"
               :key="index"
-              :provisionId="provisionId"
-              :textType="textType"
-              :instrumentTitle="
+              :provision-id="provisionId"
+              :text-type="textType"
+              :instrument-title="
                 processedRegionalInstrument
                   ? processedRegionalInstrument['Abbreviation'] ||
                     processedRegionalInstrument['Title']
                   : ''
               "
               table="Regional Legal Provisions"
-              @update:hasEnglishTranslation="hasEnglishTranslation = $event"
+              @update:has-english-translation="hasEnglishTranslation = $event"
             />
           </div>
         </div>

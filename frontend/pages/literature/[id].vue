@@ -1,11 +1,11 @@
 <template>
   <BaseDetailLayout
     :loading="loading"
-    :resultData="literature"
-    :keyLabelPairs="computedKeyLabelPairs"
-    :valueClassMap="valueClassMap"
-    :showSuggestEdit="true"
-    sourceTable="Literature"
+    :result-data="literature"
+    :key-label-pairs="computedKeyLabelPairs"
+    :value-class-map="valueClassMap"
+    :show-suggest-edit="true"
+    source-table="Literature"
   >
     <template #publication-title="{ value }">
       <section v-if="value" class="section-gap">

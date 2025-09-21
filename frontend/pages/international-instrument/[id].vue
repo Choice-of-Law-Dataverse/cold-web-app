@@ -1,19 +1,19 @@
 <template>
   <BaseDetailLayout
     :loading="loading"
-    :resultData="processedInternationalInstrument"
-    :keyLabelPairs="computedKeyLabelPairs"
-    :valueClassMap="valueClassMap"
-    :showSuggestEdit="true"
-    sourceTable="International Instrument"
+    :result-data="processedInternationalInstrument"
+    :key-label-pairs="computedKeyLabelPairs"
+    :value-class-map="valueClassMap"
+    :show-suggest-edit="true"
+    source-table="International Instrument"
   >
     <template #literature>
       <section class="section-gap m-0 p-0">
         <RelatedLiterature
           :literature-id="processedInternationalInstrument?.Literature"
-          :valueClassMap="valueClassMap['Literature']"
-          :showLabel="true"
-          :emptyValueBehavior="
+          :value-class-map="valueClassMap['Literature']"
+          :show-label="true"
+          :empty-value-behavior="
             internationalInstrumentConfig.keyLabelPairs.find(
               (pair) => pair.key === 'Literature',
             )?.emptyValueBehavior
@@ -65,7 +65,7 @@
                       processedInternationalInstrument['Title (in English)'])
                   : '')
               "
-              :anchorId="normalizeAnchorId(provision['Title of the Provision'])"
+              :anchor-id="normalizeAnchorId(provision['Title of the Provision'])"
             >
               <template #default>
                 {{ provision["Full Text"] }}

@@ -1,5 +1,5 @@
 <template>
-  <ResultCard :resultData="resultData" cardType="Answers">
+  <ResultCard :result-data="resultData" card-type="Answers">
     <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
       <!-- Question section -->
       <div
@@ -62,11 +62,11 @@
 
       <!-- More Information section -->
       <div
+        v-if="hasMoreInformation"
         :class="[
           config.gridConfig.source.columnSpan,
           config.gridConfig.source.startColumn,
         ]"
-        v-if="hasMoreInformation"
       >
         <div class="label label-key">{{ getLabel("More Information") }}</div>
         <ul class="result-value-small">
@@ -79,17 +79,17 @@
           <template v-if="hasDomesticValue">
             <template v-if="resultData['Domestic Legal Provisions']">
               <LegalProvisionRenderer
-                renderAsLi
+                render-as-li
                 :value="getValue('Domestic Legal Provisions')"
-                :fallbackData="resultData"
+                :fallback-data="resultData"
               />
             </template>
             <template v-else-if="resultData['Domestic Instruments ID']">
               <LegalProvisionRenderer
-                renderAsLi
-                skipArticle
+                render-as-li
+                skip-article
                 :value="getValue('Domestic Instruments ID')"
-                :fallbackData="resultData"
+                :fallback-data="resultData"
               />
             </template>
             <template v-else>

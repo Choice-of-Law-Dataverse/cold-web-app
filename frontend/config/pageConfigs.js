@@ -11,6 +11,66 @@
 import tooltipLiteraturePublisher from "@/content/info_boxes/literature/publisher.md?raw";
 import tooltipLiteratureYear from "@/content/info_boxes/literature/year.md?raw";
 
+// Jurisdiction Page
+// Tooltips for Jurisdiction Page
+import tooltipJurisdictionJurisdictionalDifferentiator from "@/content/info_boxes/jurisdiction/jurisdictional_differentiator.md?raw";
+import tooltipJurisdictionRelatedLiterature from "@/content/info_boxes/jurisdiction/related_literature.md?raw";
+import tooltipJurisdictionSpecialists from "@/content/info_boxes/jurisdiction/specialists.md?raw";
+import tooltipJurisdictionRelatedData from "@/content/info_boxes/jurisdiction/related_data.md?raw";
+
+// Question Page
+// Tooltips for Question Page
+import tooltipQuestion from "@/content/info_boxes/question/question.md?raw";
+import tooltipAnswer from "@/content/info_boxes/question/answer.md?raw";
+import tooltipQuestionRelatedLiterature from "@/content/info_boxes/question/related_literature.md?raw";
+import tooltipSource from "@/content/info_boxes/question/source.md?raw";
+import tooltipOUPBookQuote from "@/content/info_boxes/question/oup_book_quote.md?raw";
+import tooltipRelatedCourtDecisions from "@/content/info_boxes/question/related_court_decisions.md?raw";
+import { formatDate, formatYear } from "@/utils/format";
+
+// Domestic Instrument Page (formerly Legal Instrument Page)
+// Tooltips for Domestic Instrument Page
+import tooltipAbbreviation from "@/content/info_boxes/domestic_instrument/abbreviation.md?raw";
+import tooltipCompatibleWith from "@/content/info_boxes/domestic_instrument/compatible_with.md?raw";
+import tooltipDomesticInstrumentDate from "@/content/info_boxes/domestic_instrument/date.md?raw";
+import tooltipEntryIntoForce from "@/content/info_boxes/domestic_instrument/entry_into_force.md?raw";
+import tooltipOfficialTitle from "@/content/info_boxes/domestic_instrument/official_title.md?raw";
+import tooltipDomesticInstrumentPublicationDate from "@/content/info_boxes/domestic_instrument/publication_date.md?raw";
+import tooltipDomesticInstrumentSelectedProvisions from "@/content/info_boxes/domestic_instrument/selected_provisions.md?raw";
+import tooltipDomesticInstrumentTitle from "@/content/info_boxes/domestic_instrument/title.md?raw";
+
+// Regional Instrument Page
+// Tooltips for Regional Instrument Page
+import tooltipRegionalInstrumentDate from "@/content/info_boxes/regional_instrument/date.md?raw";
+import tooltipRegionalInstrumentRelatedLiterature from "@/content/info_boxes/regional_instrument/related_literature.md?raw";
+import tooltipRegionalInstrumentSelectedProvisions from "@/content/info_boxes/regional_instrument/selected_provisions.md?raw";
+import tooltipRegionalInstrumentSpecialists from "@/content/info_boxes/regional_instrument/specialists.md?raw";
+
+// International Instrument Page
+// Tooltips for International Instrument Page
+import tooltipInternationalInstrumentDate from "@/content/info_boxes/international_instrument/date.md?raw";
+import tooltipInternationalInstrumentRelatedLiterature from "@/content/info_boxes/international_instrument/related_literature.md?raw";
+import tooltipInternationalInstrumentSelectedProvisions from "@/content/info_boxes/international_instrument/selected_provisions.md?raw";
+import tooltipInternationalInstrumentSpecialists from "@/content/info_boxes/international_instrument/specialists.md?raw";
+
+// Court Decision Page
+// Tooltips for Court Decision Page
+import tooltipAbstract from "@/content/info_boxes/court_decision/abstract.md?raw";
+import tooltipCaseCitation from "@/content/info_boxes/court_decision/case_citation.md?raw";
+import tooltipCaseTitle from "@/content/info_boxes/court_decision/case_title.md?raw";
+import tooltipChoiceOfLawIssue from "@/content/info_boxes/court_decision/choice_of_law_issue.md?raw";
+import tooltipCourtsPosition from "@/content/info_boxes/court_decision/courts_position.md?raw";
+import tooltipDomesticLegalProvision from "@/content/info_boxes/court_decision/domestic_legal_provision.md?raw";
+import tooltipInstance from "@/content/info_boxes/court_decision/instance.md?raw";
+import tooltipJudgmentDate from "@/content/info_boxes/court_decision/judgment_date.md?raw";
+import tooltipPILProvisions from "@/content/info_boxes/court_decision/pil_provisions.md?raw";
+import tooltipPublicationDate from "@/content/info_boxes/court_decision/publication_date.md?raw";
+import tooltipQuote from "@/content/info_boxes/court_decision/quote.md?raw";
+import tooltipCourtDecisionRelatedLiterature from "@/content/info_boxes/court_decision/related_literature.md?raw";
+import tooltipRelatedQuestions from "@/content/info_boxes/court_decision/related_questions.md?raw";
+import tooltipRelevantFacts from "@/content/info_boxes/court_decision/relevant_facts.md?raw";
+import tooltipTextRelevantLegalProvision from "@/content/info_boxes/court_decision/text_relevant_legal_provision.md?raw";
+
 export const literatureConfig = {
   keyLabelPairs: [
     {
@@ -86,13 +146,6 @@ export const literatureConfig = {
   },
 };
 
-// Jurisdiction Page
-// Tooltips for Jurisdiction Page
-import tooltipJurisdictionJurisdictionalDifferentiator from "@/content/info_boxes/jurisdiction/jurisdictional_differentiator.md?raw";
-import tooltipJurisdictionRelatedLiterature from "@/content/info_boxes/jurisdiction/related_literature.md?raw";
-import tooltipJurisdictionSpecialists from "@/content/info_boxes/jurisdiction/specialists.md?raw";
-import tooltipJurisdictionRelatedData from "@/content/info_boxes/jurisdiction/related_data.md?raw";
-
 export const jurisdictionConfig = {
   keyLabelPairs: [
     {
@@ -141,16 +194,6 @@ export const jurisdictionConfig = {
     "Related Literature": "result-value-small section-gap",
   },
 };
-
-// Question Page
-// Tooltips for Question Page
-import tooltipQuestion from "@/content/info_boxes/question/question.md?raw";
-import tooltipAnswer from "@/content/info_boxes/question/answer.md?raw";
-import tooltipQuestionRelatedLiterature from "@/content/info_boxes/question/related_literature.md?raw";
-import tooltipSource from "@/content/info_boxes/question/source.md?raw";
-import tooltipOUPBookQuote from "@/content/info_boxes/question/oup_book_quote.md?raw";
-import tooltipRelatedCourtDecisions from "@/content/info_boxes/question/related_court_decisions.md?raw";
-import { formatDate, formatYear } from "@/utils/format";
 
 export const questionConfig = {
   keyLabelPairs: [
@@ -263,17 +306,6 @@ export const questionConfig = {
     "Related Literature": "result-value-small section-gap",
   },
 };
-
-// Domestic Instrument Page (formerly Legal Instrument Page)
-// Tooltips for Domestic Instrument Page
-import tooltipAbbreviation from "@/content/info_boxes/domestic_instrument/abbreviation.md?raw";
-import tooltipCompatibleWith from "@/content/info_boxes/domestic_instrument/compatible_with.md?raw";
-import tooltipDomesticInstrumentDate from "@/content/info_boxes/domestic_instrument/date.md?raw";
-import tooltipEntryIntoForce from "@/content/info_boxes/domestic_instrument/entry_into_force.md?raw";
-import tooltipOfficialTitle from "@/content/info_boxes/domestic_instrument/official_title.md?raw";
-import tooltipDomesticInstrumentPublicationDate from "@/content/info_boxes/domestic_instrument/publication_date.md?raw";
-import tooltipDomesticInstrumentSelectedProvisions from "@/content/info_boxes/domestic_instrument/selected_provisions.md?raw";
-import tooltipDomesticInstrumentTitle from "@/content/info_boxes/domestic_instrument/title.md?raw";
 
 export const legalInstrumentConfig = {
   keyLabelPairs: [
@@ -400,13 +432,6 @@ export const legalInstrumentConfig = {
   },
 };
 
-// Regional Instrument Page
-// Tooltips for Regional Instrument Page
-import tooltipRegionalInstrumentDate from "@/content/info_boxes/regional_instrument/date.md?raw";
-import tooltipRegionalInstrumentRelatedLiterature from "@/content/info_boxes/regional_instrument/related_literature.md?raw";
-import tooltipRegionalInstrumentSelectedProvisions from "@/content/info_boxes/regional_instrument/selected_provisions.md?raw";
-import tooltipRegionalInstrumentSpecialists from "@/content/info_boxes/regional_instrument/specialists.md?raw";
-
 export const regionalInstrumentConfig = {
   keyLabelPairs: [
     {
@@ -457,13 +482,6 @@ export const regionalInstrumentConfig = {
     "Regional Legal Provisions": "result-value-small section-gap",
   },
 };
-
-// International Instrument Page
-// Tooltips for International Instrument Page
-import tooltipInternationalInstrumentDate from "@/content/info_boxes/international_instrument/date.md?raw";
-import tooltipInternationalInstrumentRelatedLiterature from "@/content/info_boxes/international_instrument/related_literature.md?raw";
-import tooltipInternationalInstrumentSelectedProvisions from "@/content/info_boxes/international_instrument/selected_provisions.md?raw";
-import tooltipInternationalInstrumentSpecialists from "@/content/info_boxes/international_instrument/specialists.md?raw";
 
 export const internationalInstrumentConfig = {
   keyLabelPairs: [
@@ -612,24 +630,6 @@ export const arbitralAwardConfig = {
     "Award Summary": "result-value-small section-gap",
   },
 };
-
-// Court Decision Page
-// Tooltips for Court Decision Page
-import tooltipAbstract from "@/content/info_boxes/court_decision/abstract.md?raw";
-import tooltipCaseCitation from "@/content/info_boxes/court_decision/case_citation.md?raw";
-import tooltipCaseTitle from "@/content/info_boxes/court_decision/case_title.md?raw";
-import tooltipChoiceOfLawIssue from "@/content/info_boxes/court_decision/choice_of_law_issue.md?raw";
-import tooltipCourtsPosition from "@/content/info_boxes/court_decision/courts_position.md?raw";
-import tooltipDomesticLegalProvision from "@/content/info_boxes/court_decision/domestic_legal_provision.md?raw";
-import tooltipInstance from "@/content/info_boxes/court_decision/instance.md?raw";
-import tooltipJudgmentDate from "@/content/info_boxes/court_decision/judgment_date.md?raw";
-import tooltipPILProvisions from "@/content/info_boxes/court_decision/pil_provisions.md?raw";
-import tooltipPublicationDate from "@/content/info_boxes/court_decision/publication_date.md?raw";
-import tooltipQuote from "@/content/info_boxes/court_decision/quote.md?raw";
-import tooltipCourtDecisionRelatedLiterature from "@/content/info_boxes/court_decision/related_literature.md?raw";
-import tooltipRelatedQuestions from "@/content/info_boxes/court_decision/related_questions.md?raw";
-import tooltipRelevantFacts from "@/content/info_boxes/court_decision/relevant_facts.md?raw";
-import tooltipTextRelevantLegalProvision from "@/content/info_boxes/court_decision/text_relevant_legal_provision.md?raw";
 
 export const courtDecisionConfig = {
   keyLabelPairs: [

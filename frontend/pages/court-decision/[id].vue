@@ -1,11 +1,11 @@
 <template>
   <BaseDetailLayout
     :loading="isLoading"
-    :resultData="courtDecision"
-    :keyLabelPairs="computedKeyLabelPairs"
-    :valueClassMap="valueClassMap"
-    :showSuggestEdit="true"
-    sourceTable="Court Decisions"
+    :result-data="courtDecision"
+    :key-label-pairs="computedKeyLabelPairs"
+    :value-class-map="valueClassMap"
+    :show-suggest-edit="true"
+    source-table="Court Decisions"
   >
     <!-- Slot for Domestic Legal Provisions -->
     <template #domestic-legal-provisions="{ value }">
@@ -14,12 +14,12 @@
           v-if="value"
           :id="value"
           section="Domestic Legal Provisions"
-          :sectionLabel="
+          :section-label="
             courtDecisionConfig.keyLabelPairs.find(
               (pair) => pair.key === 'Domestic Legal Provisions',
             )?.label
           "
-          :sectionTooltip="
+          :section-tooltip="
             courtDecisionConfig.keyLabelPairs.find(
               (pair) => pair.key === 'Domestic Legal Provisions',
             )?.tooltip
@@ -106,7 +106,7 @@
     <template #related-questions>
       <section class="section-gap m-0 p-0">
         <RelatedQuestions
-          :jurisdictionCode="courtDecision['Jurisdictions Alpha-3 Code'] || ''"
+          :jurisdiction-code="courtDecision['Jurisdictions Alpha-3 Code'] || ''"
           :questions="courtDecision['Questions'] || ''"
           :tooltip="
             computedKeyLabelPairs.find(
@@ -120,8 +120,8 @@
       <section class="section-gap m-0 p-0">
         <RelatedLiterature
           :themes="courtDecision.themes"
-          :valueClassMap="valueClassMap['Related Literature']"
-          :useId="false"
+          :value-class-map="valueClassMap['Related Literature']"
+          :use-id="false"
           :tooltip="
             computedKeyLabelPairs.find(
               (pair) => pair.key === 'Related Literature',

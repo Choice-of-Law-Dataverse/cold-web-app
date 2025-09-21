@@ -19,10 +19,10 @@
           <template v-if="!showThirdColumn">
             <div style="grid-column: 2">
               <SearchFilters
-                :options="jurisdictions"
                 v-model="jurisdictionFilters[0].value.value"
+                :options="jurisdictions"
                 class="jc-search-filter"
-                :showAvatars="true"
+                :show-avatars="true"
                 :multiple="false"
                 :loading="loadingJurisdictions"
               />
@@ -30,19 +30,19 @@
             <div style="grid-column: 3">
               <div class="jc-right-cell">
                 <SearchFilters
-                  :options="jurisdictions"
                   v-model="jurisdictionFilters[1].value.value"
+                  :options="jurisdictions"
                   class="jc-search-filter"
-                  :showAvatars="true"
+                  :show-avatars="true"
                   :multiple="false"
                   :loading="loadingJurisdictions"
                 />
                 <button
                   type="button"
                   class="jc-add-link mb-2"
-                  @click="showThirdColumn = true"
                   aria-label="Add third jurisdiction"
                   title="Add third jurisdiction"
+                  @click="showThirdColumn = true"
                 >
                   <Icon
                     name="i-material-symbols:add-circle-outline"
@@ -62,10 +62,10 @@
               :style="`grid-column: ${index + 2}`"
             >
               <SearchFilters
-                :options="jurisdictions"
                 v-model="filter.value.value"
+                :options="jurisdictions"
                 class="jc-search-filter"
-                :showAvatars="true"
+                :show-avatars="true"
                 :multiple="false"
                 :loading="loadingJurisdictions"
               />
@@ -85,10 +85,10 @@
           class="filter-item"
         >
           <SearchFilters
-            :options="jurisdictions"
             v-model="filter.value.value"
+            :options="jurisdictions"
             class="w-full"
-            :showAvatars="true"
+            :show-avatars="true"
             :multiple="false"
             :loading="loadingJurisdictions"
           />
@@ -97,9 +97,9 @@
             v-if="!showThirdColumn && index === 1"
             type="button"
             class="jc-add-link mt-4"
-            @click="showThirdColumn = true"
             aria-label="Add third jurisdiction"
             title="Add third jurisdiction"
+            @click="showThirdColumn = true"
           >
             <Icon
               name="i-material-symbols:add-circle-outline"
@@ -109,7 +109,7 @@
           </button>
         </div>
 
-        <hr class="jc-hr mt-4" />
+        <hr class="jc-hr mt-4" >
       </div>
     </div>
   </div>

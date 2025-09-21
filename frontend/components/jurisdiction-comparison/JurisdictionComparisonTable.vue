@@ -36,7 +36,7 @@
           ),
         }"
         class="inline-block h-4 w-4 rounded-full"
-      ></span>
+      />
       <span
         v-else
         :style="{ color: 'var(--color-label-court-decision)' }"
@@ -87,7 +87,7 @@
               ),
             }"
             class="inline-block h-4 w-4 rounded-full"
-          ></span>
+          />
           <span
             v-else
             :style="{ color: 'var(--color-label-court-decision)' }"

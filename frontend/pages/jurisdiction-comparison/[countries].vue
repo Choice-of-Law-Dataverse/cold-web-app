@@ -3,11 +3,11 @@
     <!-- Main content in BaseDetailLayout -->
     <BaseDetailLayout
       :loading="false"
-      :resultData="{}"
-      :keyLabelPairs="[]"
-      :valueClassMap="{}"
-      :showHeader="false"
-      sourceTable=""
+      :result-data="{}"
+      :key-label-pairs="[]"
+      :value-class-map="{}"
+      :show-header="false"
+      source-table=""
     >
       <template #full-width>
         <!-- Create a container that ensures proper sticky behavior -->
@@ -15,7 +15,7 @@
           <div class="px-6 py-4 md:pt-8">
             <!-- Sticky filters positioned within BaseDetailLayout -->
             <h1 class="mb-16">Jurisdiction Comparison</h1>
-            <JCStickyFilters :initialCountries="validatedCountryCodes" />
+            <JCStickyFilters :initial-countries="validatedCountryCodes" />
 
             <!-- Content area with sufficient height for sticky behavior -->
             <div class="relative md:mt-0">
@@ -23,13 +23,13 @@
                 :selected-jurisdiction-codes="validatedCountryCodes"
               />
               <JCQuestions
-                :showCaret="false"
+                :show-caret="false"
                 title="Main Questions"
-                :questionIDs="['03-PA', '07-PA', '08-PA', '09-FoC']"
+                :question-i-ds="['03-PA', '07-PA', '08-PA', '09-FoC']"
               />
               <JCQuestions
                 title="Codification"
-                :questionIDs="[
+                :question-i-ds="[
                   '01.1-P',
                   '01.2.1-P',
                   '01.2.2-P',
@@ -45,7 +45,7 @@
 
               <JCQuestions
                 title="Party Autonomy"
-                :questionIDs="[
+                :question-i-ds="[
                   '03-PA',
                   '04-PA',
                   '05.1-PA',
@@ -79,22 +79,22 @@
 
               <JCQuestions
                 title="Overriding Mandatory Rules"
-                :questionIDs="['20-MR', '21.1-MR', '21-MR', '22.1-MR', '22-MR']"
+                :question-i-ds="['20-MR', '21.1-MR', '21-MR', '22.1-MR', '22-MR']"
               />
 
               <JCQuestions
                 title="Public Policy"
-                :questionIDs="['23.1-PP', '23-PP', '24-PP', '25-PP']"
+                :question-i-ds="['23.1-PP', '23-PP', '24-PP', '25-PP']"
               />
 
               <JCQuestions
                 title="Arbitration"
-                :questionIDs="['26-Arb', '27-Arb', '28.1-Arb', '28-Arb']"
+                :question-i-ds="['26-Arb', '27-Arb', '28.1-Arb', '28-Arb']"
               />
 
               <JCQuestions
                 title="Absence of Choice"
-                :questionIDs="[
+                :question-i-ds="[
                   '29-AoC',
                   '30.1-AoC',
                   '30.2-AoC',
@@ -107,7 +107,7 @@
 
               <JCQuestions
                 title="Employment and Consumer Contracts"
-                :questionIDs="['34-FV']"
+                :question-i-ds="['34-FV']"
               />
             </div>
           </div>

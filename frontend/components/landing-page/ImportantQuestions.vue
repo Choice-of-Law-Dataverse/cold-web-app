@@ -5,8 +5,8 @@
         <button
           class="nav-button-outside left"
           aria-label="Previous question"
-          @click="prevQuestion"
           type="button"
+          @click="prevQuestion"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -60,9 +60,9 @@
                       {{ region }}
                     </span>
                   </p>
-                  <div class="fade-out fade-out-region"></div>
+                  <div class="fade-out fade-out-region"/>
                   <!-- left-side fade (mirror of the right-side) -->
-                  <div class="fade-out fade-out-region fade-out-left"></div>
+                  <div class="fade-out fade-out-region fade-out-left"/>
                 </div>
                 <div v-if="selectedAnswer">
                   <div v-if="isLoading" class="copy mt-4">
@@ -78,9 +78,9 @@
                   >
                     <div class="countries-lines">
                       <div
-                        class="countries-line"
                         v-for="(line, li) in countriesLines"
                         :key="li"
+                        class="countries-line"
                       >
                         <a
                           v-for="country in line"
@@ -101,18 +101,18 @@
                                 e.target.style.display = 'none';
                               }
                             "
-                          />
+                          >
                           {{ country.name }}
                         </a>
                       </div>
                     </div>
                     <div
                       class="fade-out fade-out-countries countries-fade-fixed"
-                    ></div>
+                    />
                     <!-- left-side fade for countries -->
                     <div
                       class="fade-out fade-out-countries countries-fade-fixed-left"
-                    ></div>
+                    />
                   </div>
                   <div v-else class="copy mt-4">
                     No jurisdictions to be displayed
@@ -125,8 +125,8 @@
         <button
           class="nav-button-outside right"
           aria-label="Next question"
-          @click="nextQuestion"
           type="button"
+          @click="nextQuestion"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -151,9 +151,9 @@
           <button
             v-for="(suf, idx) in suffixes"
             :key="idx"
-            @click="currentIndex = idx"
             :aria-label="`Go to question ${idx + 1}`"
             :class="['dot', { 'dot-active': currentIndex === idx }]"
+            @click="currentIndex = idx"
           />
         </div>
       </div>

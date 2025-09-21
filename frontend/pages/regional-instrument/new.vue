@@ -1,17 +1,17 @@
 <template>
   <BaseDetailLayout
     :loading="false"
-    :resultData="{}"
-    :keyLabelPairs="[]"
-    :valueClassMap="{}"
-    sourceTable="Regional Instrument"
-    :hideBackButton="true"
-    headerMode="new"
+    :result-data="{}"
+    :key-label-pairs="[]"
+    :value-class-map="{}"
+    source-table="Regional Instrument"
+    :hide-back-button="true"
+    header-mode="new"
+    :show-notification-banner="true"
+    :notification-banner-message="notificationBannerMessage"
+    :icon="'i-material-symbols:warning-outline'"
     @open-save-modal="openSaveModal"
     @open-cancel-modal="showCancelModal = true"
-    :showNotificationBanner="true"
-    :notificationBannerMessage="notificationBannerMessage"
-    :icon="'i-material-symbols:warning-outline'"
   >
     <!-- Always render this section, even if keyLabelPairs is empty -->
     <div class="section-gap m-0 p-0">
@@ -62,16 +62,16 @@
     :email="email"
     :comments="comments"
     :token="token"
-    :saveModalErrors="saveModalErrors"
+    :save-modal-errors="saveModalErrors"
     :name="title"
     :specialists="specialists"
     :date="date || null"
-    :pdfFile="pdfFile"
+    :pdf-file="pdfFile"
     :link="url"
     @update:email="(val) => (email = val)"
     @update:comments="(val) => (comments = val)"
     @update:token="(val) => (token = val)"
-    @update:saveModalErrors="(val) => (saveModalErrors.value = val)"
+    @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
     @save="handleNewSave"
   />
 </template>
@@ -189,7 +189,7 @@ function handleNewSave() {
     url: url.value || undefined,
     attachment: "", // ignored for now
     instrument_date:
-      date && date.value ? format(date.value, "yyyy-MM-dd") : undefined,
+      date.value && date.value ? format(date.value, "yyyy-MM-dd") : undefined,
     // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,

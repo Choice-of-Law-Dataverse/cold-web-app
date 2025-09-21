@@ -7,7 +7,7 @@
       <div class="suggestions w-full md:w-auto">
         <JurisdictionSelectMenu
           :countries="jurisdictions || []"
-          @countrySelected="navigateToCountry"
+          @country-selected="navigateToCountry"
         />
       </div>
     </div>

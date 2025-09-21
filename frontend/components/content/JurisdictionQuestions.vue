@@ -31,7 +31,6 @@
                     <span
                       v-if="row.hasExpand"
                       class="expand-icon mr-1 mt-1 cursor-pointer align-middle"
-                      @click.stop="toggleExpand(row)"
                       :style="{
                         display: 'inline-flex',
                         alignItems: 'center',
@@ -39,6 +38,7 @@
                           ? 'rotate(90deg)'
                           : 'rotate(0deg)',
                       }"
+                      @click.stop="toggleExpand(row)"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -114,12 +114,12 @@
                       <span
                         v-if="row.hasExpand"
                         class="expand-icon-mobile mr-2 cursor-pointer"
-                        @click.stop="toggleExpand(row)"
                         :style="{
                           transform: row.expanded
                             ? 'rotate(90deg)'
                             : 'rotate(0deg)',
                         }"
+                        @click.stop="toggleExpand(row)"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -145,7 +145,7 @@
                   </div>
 
                   <div class="mobile-card-details">
-                    <div class="mobile-card-row" v-if="row.theme">
+                    <div v-if="row.theme" class="mobile-card-row">
                       <div class="mobile-card-themes">
                         <span
                           v-for="theme in typeof row.theme === 'string'
@@ -159,7 +159,7 @@
                       </div>
                     </div>
 
-                    <div class="mobile-card-row" v-if="row.answer">
+                    <div v-if="row.answer" class="mobile-card-row">
                       <div class="mobile-card-answer">
                         <NuxtLink
                           v-if="row.answer"

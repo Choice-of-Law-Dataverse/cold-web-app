@@ -1,9 +1,9 @@
 <template>
   <BaseLegalRenderer
     :items="value"
-    :valueClassMap="valueClassMap"
-    :emptyValueBehavior="emptyValueBehavior"
-    defaultClass="result-value-small"
+    :value-class-map="valueClassMap"
+    :empty-value-behavior="emptyValueBehavior"
+    default-class="result-value-small"
   >
     <template #default="{ item }">
       <NuxtLink :to="generateCourtDecisionLink(item)">

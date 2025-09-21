@@ -19,8 +19,8 @@
               <div class="w-full md:w-auto">
                 <JurisdictionSelectMenu
                   :countries="availableJurisdictions"
-                  @countrySelected="onJurisdictionSelected"
                   placeholder="Pick a jurisdiction to compare..."
+                  @country-selected="onJurisdictionSelected"
                 />
               </div>
             </div>

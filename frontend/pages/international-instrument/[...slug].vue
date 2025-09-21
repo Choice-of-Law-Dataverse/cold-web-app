@@ -2,17 +2,17 @@
   <div v-if="isEditPage">
     <BaseDetailLayout
       :loading="loading"
-      :resultData="{}"
-      :keyLabelPairs="[]"
-      :valueClassMap="{}"
-      sourceTable="International Instrument"
-      :hideBackButton="true"
-      headerMode="new"
+      :result-data="{}"
+      :key-label-pairs="[]"
+      :value-class-map="{}"
+      source-table="International Instrument"
+      :hide-back-button="true"
+      header-mode="new"
+      :show-notification-banner="true"
+      :notification-banner-message="notificationBannerMessage"
+      :icon="'i-material-symbols:warning-outline'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
-      :showNotificationBanner="true"
-      :notificationBannerMessage="notificationBannerMessage"
-      :icon="'i-material-symbols:warning-outline'"
     >
       <div class="section-gap m-0 p-0">
         <UFormGroup size="lg" hint="Required" :error="errors.name">
@@ -46,8 +46,8 @@
               color="red"
               variant="ghost"
               class="ml-2"
-              @click="removeSpecialist(idx)"
               aria-label="Remove specialist"
+              @click="removeSpecialist(idx)"
             />
           </div>
           <template v-for="(specialist, idx) in specialists">
@@ -111,17 +111,17 @@
       :email="email"
       :comments="comments"
       :token="token"
-      :saveModalErrors="saveModalErrors"
+      :save-modal-errors="saveModalErrors"
       :name="name"
       :specialists="specialists"
       :date="date"
-      :pdfFile="pdfFile"
+      :pdf-file="pdfFile"
       :link="link"
-      :instrumentId="instrumentApiId"
+      :instrument-id="instrumentApiId"
       @update:email="(val) => (email = val)"
       @update:comments="(val) => (comments = val)"
       @update:token="(val) => (token = val)"
-      @update:saveModalErrors="(val) => (saveModalErrors.value = val)"
+      @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
       @save="handleEditSave"
     />
   </div>

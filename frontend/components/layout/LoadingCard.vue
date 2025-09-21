@@ -1,5 +1,5 @@
 <template>
-  <ResultCard cardType="Loading" :resultData="{}">
+  <ResultCard card-type="Loading" :result-data="{}">
     <div class="mb-3 mt-4 space-y-3">
       <USkeleton class="h-3 w-[40px] rounded-none bg-cold-gray-alpha" />
       <USkeleton class="h-4 w-[310px] rounded-none bg-cold-gray-alpha" />

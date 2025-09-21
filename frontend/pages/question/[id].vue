@@ -1,11 +1,11 @@
 <template>
   <BaseDetailLayout
     :loading="isLoading"
-    :resultData="processedAnswerData"
-    :keyLabelPairs="keyLabelPairs"
-    :valueClassMap="valueClassMap"
-    :showSuggestEdit="true"
-    :sourceTable="'Question'"
+    :result-data="processedAnswerData"
+    :key-label-pairs="keyLabelPairs"
+    :value-class-map="valueClassMap"
+    :show-suggest-edit="true"
+    :source-table="'Question'"
   >
     <!-- Custom rendering for Legal provision articles -->
     <template #domestic-legal-provisions="{ value }">
@@ -37,10 +37,10 @@
                 : []),
             ].filter(Boolean)
           "
-          :fallbackData="answerData"
-          :valueClassMap="valueClassMap"
-          :fetchOupChapter="true"
-          :fetchPrimarySource="true"
+          :fallback-data="answerData"
+          :value-class-map="valueClassMap"
+          :fetch-oup-chapter="true"
+          :fetch-primary-source="true"
         />
       </section>
     </template>
@@ -66,8 +66,8 @@
         </span>
         <CourtDecisionRenderer
           :value="value"
-          :valueClassMap="valueClassMap['Court Decisions ID']"
-          :emptyValueBehavior="
+          :value-class-map="valueClassMap['Court Decisions ID']"
+          :empty-value-behavior="
             keyLabelPairs.find(
               (pair) => pair.key === 'Domestic Legal Provisions',
             )?.emptyValueBehavior
@@ -80,14 +80,14 @@
       <section class="section-gap">
         <RelatedLiterature
           :themes="processedAnswerData?.Themes"
-          :literatureId="processedAnswerData?.['Jurisdictions Literature ID']"
+          :literature-id="processedAnswerData?.['Jurisdictions Literature ID']"
           :mode="'both'"
-          :valueClassMap="valueClassMap['Related Literature']"
+          :value-class-map="valueClassMap['Related Literature']"
           :label="
             keyLabelPairs.find((pair) => pair.key === 'Related Literature')
               ?.label || 'Related Literature'
           "
-          :emptyValueBehavior="
+          :empty-value-behavior="
             questionConfig.keyLabelPairs.find(
               (pair) => pair.key === 'Related Literature',
             )?.emptyValueBehavior
@@ -100,7 +100,7 @@
       </section>
     </template>
   </BaseDetailLayout>
-  <CountryReportLink :processedAnswerData="processedAnswerData ?? {}" />
+  <CountryReportLink :processed-answer-data="processedAnswerData ?? {}" />
 </template>
 
 <script setup>

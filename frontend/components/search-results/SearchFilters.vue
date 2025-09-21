@@ -1,6 +1,7 @@
 <template>
   <div class="w-full">
     <USelectMenu
+      v-model="internalValue"
       class="cold-uselectmenu w-full"
       :class="{
         'non-all-selected': multiple
@@ -13,13 +14,12 @@
       "
       size="lg"
       :options="options"
-      v-model="internalValue"
       :value-key="'label'"
       searchable
       selected-icon="i-material-symbols:circle"
       :multiple="multiple"
       :loading="loading"
-      loadingIcon="i-material-symbols:progress-activity"
+      loading-icon="i-material-symbols:progress-activity"
       trailing
     >
       <template #option="{ option }">
@@ -186,6 +186,10 @@
 </template>
 
 <script setup>
+import { computed, reactive } from "vue";
+import { handleImageError } from "@/utils/handleImageError";
+import { useCoveredCountries } from "@/composables/useCoveredCountries";
+
 const props = defineProps({
   options: { type: Array, required: true },
   modelValue: { type: Array, default: () => [] },
@@ -197,10 +201,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:modelValue"]);
-
-import { computed, reactive } from "vue";
-import { handleImageError } from "@/utils/handleImageError";
-import { useCoveredCountries } from "@/composables/useCoveredCountries";
 
 // Reactive object for errored avatars
 const erroredAvatars = reactive({});

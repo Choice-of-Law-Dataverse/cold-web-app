@@ -1,11 +1,11 @@
 <template>
   <BaseDetailLayout
     :loading="loading"
-    :resultData="processedLegalInstrument"
-    :keyLabelPairs="computedKeyLabelPairs"
-    :valueClassMap="valueClassMap"
-    :showSuggestEdit="true"
-    sourceTable="Domestic Instrument"
+    :result-data="processedLegalInstrument"
+    :key-label-pairs="computedKeyLabelPairs"
+    :value-class-map="valueClassMap"
+    :show-suggest-edit="true"
+    source-table="Domestic Instrument"
   >
     <!-- Slot for Amended by -->
     <template #amended-by="{ value }">
@@ -14,11 +14,11 @@
           v-if="value"
           :id="value"
           section="Amended by"
-          :sectionLabel="
+          :section-label="
             computedKeyLabelPairs.find((pair) => pair.key === 'Amended by')
               ?.label
           "
-          :sectionTooltip="
+          :section-tooltip="
             computedKeyLabelPairs.find((pair) => pair.key === 'Amended by')
               ?.tooltip
           "
@@ -34,10 +34,10 @@
           v-if="value"
           :id="value"
           section="Amends"
-          :sectionLabel="
+          :section-label="
             computedKeyLabelPairs.find((pair) => pair.key === 'Amends')?.label
           "
-          :sectionTooltip="
+          :section-tooltip="
             computedKeyLabelPairs.find((pair) => pair.key === 'Amends')?.tooltip
           "
           table="Domestic Instruments"
@@ -52,11 +52,11 @@
           v-if="value"
           :id="value"
           section="Replaced by"
-          :sectionLabel="
+          :section-label="
             computedKeyLabelPairs.find((pair) => pair.key === 'Replaced by')
               ?.label
           "
-          :sectionTooltip="
+          :section-tooltip="
             computedKeyLabelPairs.find((pair) => pair.key === 'Replaced by')
               ?.tooltip
           "
@@ -72,10 +72,10 @@
           v-if="value"
           :id="value"
           section="Replaces"
-          :sectionLabel="
+          :section-label="
             computedKeyLabelPairs.find((pair) => pair.key === 'Replaces')?.label
           "
-          :sectionTooltip="
+          :section-tooltip="
             computedKeyLabelPairs.find((pair) => pair.key === 'Replaces')
               ?.tooltip
           "
@@ -174,22 +174,22 @@
             <LegalProvision
               v-for="(provisionId, index) in getSortedProvisionIds(value)"
               :key="index"
-              :provisionId="provisionId"
-              :textType="textType"
-              :instrumentTitle="
+              :provision-id="provisionId"
+              :text-type="textType"
+              :instrument-title="
                 processedLegalInstrument
                   ? processedLegalInstrument['Abbreviation'] ||
                     processedLegalInstrument['Title (in English)']
                   : ''
               "
-              @update:hasEnglishTranslation="hasEnglishTranslation = $event"
+              @update:has-english-translation="hasEnglishTranslation = $event"
             />
           </div>
         </div>
       </section>
     </template>
   </BaseDetailLayout>
-  <CountryReportLink :processedAnswerData="processedLegalInstrument" />
+  <CountryReportLink :processed-answer-data="processedLegalInstrument" />
 </template>
 
 <script setup>

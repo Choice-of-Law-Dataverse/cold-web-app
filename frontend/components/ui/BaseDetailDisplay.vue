@@ -3,8 +3,8 @@
 
   <NotificationBanner
     v-if="showNotificationBanner"
-    :notificationBannerMessage="notificationBannerMessage"
-    :fallbackMessage="fallbackMessage"
+    :notification-banner-message="notificationBannerMessage"
+    :fallback-message="fallbackMessage"
     :icon="icon"
   />
 
@@ -13,10 +13,10 @@
       shouldShowBanner &&
       (props.resultData?.Name || props.resultData?.['Jurisdictions'])
     "
-    :jurisdictionName="
+    :jurisdiction-name="
       props.resultData?.Name || props.resultData?.['Jurisdictions']
     "
-    :fallbackMessage="fallbackMessage"
+    :fallback-message="fallbackMessage"
     :icon="icon"
   />
 
@@ -28,13 +28,13 @@
       <!-- Header section: render only when showHeader is true -->
       <template v-if="showHeader" #header>
         <BaseCardHeader
-          :resultData="resultData"
-          :cardType="formattedSourceTable"
-          :showSuggestEdit="showSuggestEdit"
-          :showOpenLink="showOpenLink"
-          :formattedJurisdiction="formattedJurisdiction"
-          :formattedTheme="formattedTheme"
-          :headerMode="headerMode"
+          :result-data="resultData"
+          :card-type="formattedSourceTable"
+          :show-suggest-edit="showSuggestEdit"
+          :show-open-link="showOpenLink"
+          :formatted-jurisdiction="formattedJurisdiction"
+          :formatted-theme="formattedTheme"
+          :header-mode="headerMode"
           @save="$emit('save')"
           @open-save-modal="$emit('open-save-modal')"
           @open-cancel-modal="$emit('open-cancel-modal')"
@@ -45,7 +45,7 @@
         </BaseCardHeader>
       </template>
 
-      <slot name="full-width"></slot>
+      <slot name="full-width"/>
 
       <!-- Main content -->
       <div class="flex">
@@ -62,7 +62,7 @@
           >
             <!-- Check if it's the special 'Specialist' key -->
             <template v-if="item.key === 'Region'">
-              <slot></slot>
+              <slot/>
             </template>
             <!-- Check for slot first -->
             <template v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]">
@@ -133,7 +133,7 @@
               </div>
             </template>
           </section>
-          <slot name="search-links"></slot>
+          <slot name="search-links"/>
         </div>
       </div>
     </UCard>

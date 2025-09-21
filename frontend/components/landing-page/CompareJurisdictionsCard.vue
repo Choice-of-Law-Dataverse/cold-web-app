@@ -10,7 +10,7 @@
           :alt="`${iso3Left} flag`"
           class="flag-img"
           @error="leftFlagError = true"
-        />
+        >
         <div v-else class="flag-fallback">{{ iso3Left }}</div>
       </div>
 
@@ -21,7 +21,7 @@
           :alt="`${rightIso3} flag`"
           class="flag-img"
           @error="rightFlagError = true"
-        />
+        >
         <div v-else class="flag-fallback">{{ rightIso3 }}</div>
       </div>
     </div>

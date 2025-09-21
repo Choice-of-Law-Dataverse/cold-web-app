@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="hidden md:block">
-      <div class="jc-z-top mt-24"></div>
-      <hr class="jc-hr" />
+      <div class="jc-z-top mt-24"/>
+      <hr class="jc-hr" >
       <div
         class="jc-grid jc-data-row"
         :style="{
@@ -12,7 +12,7 @@
               : '1fr 1fr 1fr',
         }"
       >
-        <div class="jc-col-1 jc-empty"></div>
+        <div class="jc-col-1 jc-empty"/>
         <div
           v-for="index in jurisdictionFilters.length"
           :key="`desktop-data-${index}`"
@@ -41,7 +41,7 @@
                   v-if="
                     lineIndex < getSampleDataForColumn(index - 1).length - 1
                   "
-                />
+                >
               </p>
               <p
                 v-else-if="
@@ -68,7 +68,7 @@
                   v-if="
                     lineIndex < getSampleDataForColumn(index - 1).length - 1
                   "
-                />
+                >
               </p>
               <p
                 v-else-if="
@@ -95,7 +95,7 @@
                   v-if="
                     lineIndex < getSampleDataForColumn(index - 1).length - 1
                   "
-                />
+                >
               </p>
               <p v-else>
                 {{ line }}
@@ -103,7 +103,7 @@
                   v-if="
                     lineIndex < getSampleDataForColumn(index - 1).length - 1
                   "
-                />
+                >
               </p>
             </div>
           </div>
@@ -135,7 +135,6 @@
                     getFlagUrl(filter.value.value[0].label)
                   "
                   :src="getFlagUrl(filter.value.value[0].label)"
-                  @error="() => (erroredFlags[index] = true)"
                   style="
                     height: 18px;
                     width: auto;
@@ -144,7 +143,8 @@
                     border: 1px solid var(--color-cold-gray);
                   "
                   :alt="filter.value.value[0].label + ' flag'"
-                />
+                  @error="() => (erroredFlags[index] = true)"
+                >
                 {{ filter.value.value[0].label }}
               </template>
               <template v-else>
@@ -230,6 +230,9 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useJurisdictionComparison } from "@/composables/useJurisdictionComparison";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useApiClient } from "@/composables/useApiClient";
+
+// --- Flag logic ---
+import { reactive } from "vue";
 
 const { data: jurisdictions } = useJurisdictions();
 
@@ -437,9 +440,6 @@ watch(
   },
   { immediate: true, deep: true },
 );
-
-// --- Flag logic ---
-import { reactive } from "vue";
 const erroredFlags = reactive({});
 function getFlagUrl(label) {
   if (!label || label === "All Jurisdictions") return "";
