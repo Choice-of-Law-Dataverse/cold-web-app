@@ -7,6 +7,9 @@
     </main>
 
     <Footer />
+    
+    <!-- Toast notifications container -->
+    <UNotifications />
   </div>
 </template>
 

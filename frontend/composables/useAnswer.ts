@@ -4,16 +4,30 @@ import {
   useRecordDetailsList,
 } from '@/composables/useRecordDetails'
 
-export function useAnswer(answerId: Ref<string | number>) {
+type Options = {
+  enableErrorHandling?: boolean
+  redirectOnNotFound?: boolean
+  showToast?: boolean
+}
+
+export function useAnswer(
+  answerId: Ref<string | number>,
+  options: Options = {}
+) {
   return useRecordDetails(
     computed(() => 'Answers'),
-    answerId
+    answerId,
+    options
   )
 }
 
-export function useAnswers(answerIds: Ref<(string | number)[]>) {
+export function useAnswers(
+  answerIds: Ref<(string | number)[]>,
+  options: Options = {}
+) {
   return useRecordDetailsList(
     computed(() => 'Answers'),
-    answerIds
+    answerIds,
+    options
   )
 }

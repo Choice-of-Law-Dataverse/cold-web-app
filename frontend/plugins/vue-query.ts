@@ -10,9 +10,22 @@ import {
 } from '@tanstack/vue-query'
 // Nuxt 3 app aliases
 import { defineNuxtPlugin, useState } from '#imports'
+import { ApiError, NotFoundError } from '~/types/errors'
 
 export default defineNuxtPlugin((nuxt) => {
   const vueQueryState = useState<DehydratedState | null>('vue-query')
+
+  // Global error handler for TanStack Query
+  const globalErrorHandler = (error: unknown) => {
+    // Only log unhandled errors globally
+    // Individual components should handle their own errors using useErrorHandler
+    if (error instanceof ApiError || error instanceof NotFoundError) {
+      // These are already logged in their constructors, just pass through
+      return
+    }
+
+    console.error('Unhandled query error:', error)
+  }
 
   // Modify your Vue Query global settings here
   const queryClient = new QueryClient({
@@ -34,10 +47,14 @@ export default defineNuxtPlugin((nuxt) => {
         // Disable background refetching on server
         refetchOnMount: import.meta.server ? false : true,
         refetchInterval: false,
+        // Global error handler for unhandled errors
+        onError: globalErrorHandler,
       },
       mutations: {
         // Retry failed mutations once
         retry: import.meta.server ? 0 : 1,
+        // Global error handler for mutation errors
+        onError: globalErrorHandler,
       },
     },
   })

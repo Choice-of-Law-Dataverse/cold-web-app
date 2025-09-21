@@ -1,6 +1,7 @@
 import { computed, type Ref } from 'vue'
 import { useQuery, useQueries } from '@tanstack/vue-query'
 import { useApiClient } from '@/composables/useApiClient'
+import { useErrorHandler } from '@/composables/useErrorHandler'
 import type { TableName } from '~/types/api'
 
 const fetchRecordDetails = async (table: TableName, id: string | number) => {
@@ -11,27 +12,42 @@ const fetchRecordDetails = async (table: TableName, id: string | number) => {
 type Options =
   | Partial<{
       select: (data: any) => any
+      enableErrorHandling: boolean
+      redirectOnNotFound: boolean
+      showToast: boolean
     }>
   | undefined
 
 export function useRecordDetails(
   table: Ref<TableName>,
   id: Ref<string | number>,
-  { select }: Options = {}
+  {
+    select,
+    enableErrorHandling = true,
+    redirectOnNotFound = true,
+    showToast = true,
+  }: Options = {}
 ) {
+  const { createQueryErrorHandler } = useErrorHandler()
+
   return useQuery({
     queryKey: computed(() => [table.value, id.value]),
     queryFn: () => fetchRecordDetails(table.value, id.value),
     enabled: computed(() => Boolean(table.value && id.value)),
     select,
+    onError: enableErrorHandling
+      ? createQueryErrorHandler(table.value, { redirectOnNotFound, showToast })
+      : undefined,
   })
 }
 
 export function useRecordDetailsList(
   table: Ref<TableName>,
   ids: Ref<Array<string | number>>,
-  { select }: Options = {}
+  { select, enableErrorHandling = true }: Options = {}
 ) {
+  const { createQueryErrorHandler } = useErrorHandler()
+
   const queries = computed(() => {
     const list = ids.value || []
     return list.map((id) => ({
@@ -39,6 +55,12 @@ export function useRecordDetailsList(
       queryFn: () => fetchRecordDetails(table.value, id),
       enabled: Boolean(table.value && id),
       select,
+      onError: enableErrorHandling
+        ? createQueryErrorHandler(table.value, {
+            redirectOnNotFound: false,
+            showToast: true,
+          })
+        : undefined,
     }))
   })
 

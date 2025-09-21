@@ -70,9 +70,8 @@ import { literatureConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
 
 const route = useRoute()
-const router = useRouter()
 
-// Use TanStack Vue Query for data fetching
+// Use TanStack Vue Query for data fetching with centralized error handling
 const table = ref('Literature')
 const id = ref(route.params.id)
 
@@ -80,11 +79,28 @@ const {
   data: literature,
   isLoading: loading,
   error,
-} = useRecordDetails(table, id)
+} = useRecordDetails(table, id, {
+  // Enable automatic error handling with redirect for not found
+  enableErrorHandling: true,
+  redirectOnNotFound: true,
+  showToast: true,
+})
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   literature,
   literatureConfig
+)
+
+// Handle empty data as not found using centralized error handler
+const { handleNotFound } = useErrorHandler()
+watch(
+  literature,
+  (newData) => {
+    if (newData && Object.keys(newData).length === 0) {
+      handleNotFound('Literature')
+    }
+  },
+  { immediate: true }
 )
 
 // Set dynamic page title based on 'Title'
@@ -110,36 +126,6 @@ watch(
         },
       ],
     })
-  },
-  { immediate: true }
-)
-
-// Handle not found errors
-watch(
-  error,
-  (newError) => {
-    if (newError?.isNotFound) {
-      router.push({
-        path: '/error',
-        query: { message: 'Literature not found' },
-      })
-    } else if (newError) {
-      console.error('Error fetching literature:', newError)
-    }
-  },
-  { immediate: true }
-)
-
-// Handle empty data as not found
-watch(
-  literature,
-  (newData) => {
-    if (newData && Object.keys(newData).length === 0) {
-      router.push({
-        path: '/error',
-        query: { message: 'Literature not found' },
-      })
-    }
   },
   { immediate: true }
 )

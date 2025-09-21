@@ -123,7 +123,12 @@ const {
   data: answerData,
   isLoading,
   error,
-} = useAnswer(computed(() => route.params.id))
+} = useAnswer(computed(() => route.params.id), {
+  // Enable automatic error handling with redirect for not found
+  enableErrorHandling: true,
+  redirectOnNotFound: true,
+  showToast: true,
+})
 
 const { keyLabelPairs, valueClassMap } = questionConfig
 
@@ -149,20 +154,6 @@ onMounted(async () => {
     const target = document.getElementById('related-court-decisions')
     if (target) {
       target.scrollIntoView({ behavior: 'smooth' })
-    }
-  }
-})
-
-// Watch for errors and handle them
-watch(error, (newError) => {
-  if (newError) {
-    if (newError.isNotFound) {
-      router.push({
-        path: '/error',
-        query: { message: `${newError.table} not found` },
-      })
-    } else {
-      console.error('Error fetching question:', newError)
     }
   }
 })
