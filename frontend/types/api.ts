@@ -118,16 +118,18 @@ export type ApiRequestBody =
  */
 export type TableName =
   | 'Answers'
-  | 'Questions'
   | 'Court Decisions'
-  | 'Jurisdictions'
   | 'Domestic Instruments'
-  | 'Leading Cases'
-  | 'Literature'
-  | 'Specialists'
-  | 'Regional Instruments'
+  | 'Domestic Legal Provisions'
   | 'International Instruments'
   | 'International Legal Provisions'
+  | 'Jurisdictions'
+  | 'Leading Cases'
+  | 'Literature'
+  | 'Questions'
+  | 'Regional Instruments'
+  | 'Regional Legal Provisions'
+  | 'Specialists'
 
 /**
  * Search filter column names

@@ -34,7 +34,7 @@
         v-if="value && value.trim() && value.trim() !== 'N/A'"
         class="section-gap p-0 m-0"
       >
-        <p class="label mt-12 mb-[-24px]">
+        <p class="label mt-12 mb-[-24px] flex flex-row items-center">
           {{
             computedKeyLabelPairs.find(
               (pair) => pair.key === 'Regional Legal Provisions'
@@ -77,10 +77,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import { useApiFetch } from '@/composables/useApiFetch'
+import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { regionalInstrumentConfig } from '@/config/pageConfigs'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
@@ -90,7 +90,16 @@ import { useHead } from '#imports'
 
 const route = useRoute()
 const router = useRouter()
-const { loading, error, data: regionalInstrument, fetchData } = useApiFetch()
+
+// Use TanStack Vue Query for data fetching
+const table = ref('Regional Instruments')
+const id = ref(route.params.id)
+
+const {
+  data: regionalInstrument,
+  isLoading: loading,
+  error,
+} = useRecordDetails(table, id)
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   regionalInstrument,
   regionalInstrumentConfig
@@ -135,21 +144,19 @@ watch(
   { immediate: true }
 )
 
-onMounted(async () => {
-  try {
-    await fetchData({
-      table: 'Regional Instruments',
-      id: route.params.id,
-    })
-  } catch (err) {
-    if (err.isNotFound) {
+// Handle not found errors
+watch(
+  error,
+  (newError) => {
+    if (newError?.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: `Regional instrument not found` },
+        query: { message: 'Regional instrument not found' },
       })
-    } else {
-      console.error('Error fetching regional instrument:', err)
+    } else if (newError) {
+      console.error('Error fetching regional instrument:', newError)
     }
-  }
-})
+  },
+  { immediate: true }
+)
 </script>

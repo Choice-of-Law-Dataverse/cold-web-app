@@ -40,7 +40,7 @@
         >
           <div class="flex items-center justify-between">
             <div class="flex items-center">
-              <span class="label">Quote</span>
+              <span class="label flex flex-row items-center">Quote</span>
               <InfoPopover
                 v-if="
                   computedKeyLabelPairs.find((pair) => pair.key === 'Quote')

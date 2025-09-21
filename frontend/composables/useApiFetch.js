@@ -1,5 +1,21 @@
 import { ref } from 'vue'
 
+/**
+ * @deprecated This composable has been replaced by useRecordDetails from TanStack Vue Query.
+ * Use useRecordDetails for better caching, error handling, and performance.
+ * 
+ * Migration example:
+ * ```js
+ * // Old:
+ * const { loading, error, data, fetchData } = useApiFetch()
+ * await fetchData({ table: 'Table Name', id: 'some-id' })
+ * 
+ * // New:
+ * const table = ref('Table Name')
+ * const id = ref('some-id')
+ * const { data, isLoading: loading, error } = useRecordDetails(table, id)
+ * ```
+ */
 export function useApiFetch() {
   const loading = ref(true)
   const error = ref(null)

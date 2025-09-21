@@ -1,6 +1,11 @@
 import { ref } from 'vue'
 import { useApiClient } from '@/composables/useApiClient'
 
+/**
+ * @deprecated This composable uses manual data fetching instead of TanStack Vue Query.
+ * Consider using specific TanStack-based composables like useLiteratureByJurisdiction
+ * for better caching, error handling, and performance.
+ */
 export function useSourceFetching({
   jurisdiction,
   fetchOupChapter = false,

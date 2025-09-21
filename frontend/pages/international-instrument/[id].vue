@@ -80,12 +80,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import BaseLegalContent from '@/components/legal/BaseLegalContent.vue'
 import InfoPopover from '~/components/ui/InfoPopover.vue'
-import { useApiFetch } from '@/composables/useApiFetch'
+import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { internationalInstrumentConfig } from '@/config/pageConfigs'
 import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
@@ -97,12 +97,15 @@ const config = useRuntimeConfig()
 const route = useRoute()
 const router = useRouter()
 
+// Use TanStack Vue Query for data fetching
+const table = ref('International Instruments')
+const id = ref(route.params.id)
+
 const {
-  loading,
-  error,
   data: internationalInstrument,
-  fetchData,
-} = useApiFetch()
+  isLoading: loading,
+  error,
+} = useRecordDetails(table, id)
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   internationalInstrument,
   internationalInstrumentConfig
@@ -167,22 +170,19 @@ watch(
   { immediate: true }
 )
 
-onMounted(async () => {
-  try {
-    await fetchData({
-      table: 'International Instruments',
-      id: route.params.id,
-    })
-    // provisions are loaded via vue-query composable
-  } catch (err) {
-    if (err.isNotFound) {
+// Handle not found errors
+watch(
+  error,
+  (newError) => {
+    if (newError?.isNotFound) {
       router.push({
         path: '/error',
-        query: { message: `International instrument not found` },
+        query: { message: 'International instrument not found' },
       })
-    } else {
-      console.error('Error fetching international instrument:', err)
+    } else if (newError) {
+      console.error('Error fetching international instrument:', newError)
     }
-  }
-})
+  },
+  { immediate: true }
+)
 </script>

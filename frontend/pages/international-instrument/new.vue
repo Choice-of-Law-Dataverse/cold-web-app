@@ -75,7 +75,7 @@
       </UFormGroup> -->
       <UFormGroup size="lg" class="mt-8" hint="Required" :error="errors.link">
         <template #label>
-          <span class="label">Link</span>
+          <span class="label flex flex-row items-center">Link</span>
           <InfoPopover :text="tooltipInternationalInstrumentLink" />
         </template>
         <UInput
@@ -91,7 +91,7 @@
         :error="errors.instrument_date"
       >
         <template #label>
-          <span class="label">Date</span>
+          <span class="label flex flex-row items-center">Date</span>
           <InfoPopover :text="tooltipInternationalInstrumentDate" />
         </template>
         <UPopover :popper="{ placement: 'bottom-start' }">
