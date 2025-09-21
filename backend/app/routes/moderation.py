@@ -540,6 +540,7 @@ def _render_detail_entry(category: str, model, item: dict[str, Any]) -> str:
             + comments_block
             + "</div>"
         )
+    meta = f"<div style='color:#555;font-size:12px;margin-bottom:6px'>ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"
     meta = f"<div style='color:#555;font-size:12px;margin-bottom:6px'>ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"  # noqa: E501
     # Safeguard join if any element is None
     inputs_html = "".join(i for i in inputs if isinstance(i, str))

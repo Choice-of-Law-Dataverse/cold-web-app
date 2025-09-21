@@ -191,7 +191,7 @@ def test_json_extraction():
         },
     )
 
-    logger.debug("JSON extraction result: %s", transformed.get('Official Source (PDF)'))
+    logger.debug("JSON extraction result: %s", transformed.get("Official Source (PDF)"))
 
 
 if __name__ == "__main__":

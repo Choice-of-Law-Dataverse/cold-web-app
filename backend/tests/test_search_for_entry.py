@@ -4,6 +4,7 @@
 Test script for the new search_for_entry function integration
 """
 
+import logging
 import os
 import sys
 
@@ -11,6 +12,8 @@ import sys
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from app.services.search import SearchService
+
+logger = logging.getLogger(__name__)
 
 
 def test_search_for_entry_integration():

@@ -88,12 +88,12 @@ def find_problematic_subdict(data):
                 problematic_chars = re.findall(r"[^\x00-\xFF]", value)
                 # problematic_chars = re.findall(r'[\x00-\x08\x0E-\x1F\x7F-\x9F]', value)
                 if problematic_chars:
-                    logger.debug("Problematic subdictionary found under key '%s':", key.strip())
-                    logger.debug(subdict)
-                    logger.debug("Problematic characters:")
+                    logger.warning("Problematic subdictionary found under key '%s':", key.strip())
+                    logger.warning(subdict)
+                    logger.warning("Problematic characters:")
                     for char in problematic_chars:
-                        logger.debug("Character: '%s' (Unicode: U+%04X)", char, ord(char))
-                    logger.debug("=" * 50)
+                        logger.warning("Character: '%s' (Unicode: U+%04X)", char, ord(char))
+                    logger.warning("=" * 50)
                     problematic_dicts.append(subdict)
                     break
 

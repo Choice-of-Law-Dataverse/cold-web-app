@@ -35,11 +35,7 @@ def create_mock_answers_result():
         "updated_by": "usaf3dew23c77lgf",
         "related_themes": [
             {"id": 4, "Theme": "Consumer contracts", "Created": "2025-03-21T08:57:00"},
-            {
-                "id": 15,
-                "Theme": "Employment contracts",
-                "Created": "2025-03-21T08:57:00",
-            },
+            {"id": 15, "Theme": "Employment contracts", "Created": "2025-03-21T08:57:00"},
         ],
         "More_Information": None,
         "Question_CoLD_ID": "34-FV",

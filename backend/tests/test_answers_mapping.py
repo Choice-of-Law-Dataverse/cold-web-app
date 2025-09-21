@@ -4,13 +4,16 @@ Test script to verify the answers mapping transformation.
 """
 
 import json
+import logging
 import os
 import sys
 
+from app.services.transformers import AnswersTransformer
+
+logger = logging.getLogger(__name__)
+
 # Add the current directory to the Python path to import app modules
 sys.path.insert(0, os.path.dirname(__file__))
-
-from app.services.transformers import AnswersTransformer
 
 
 def load_test_data():

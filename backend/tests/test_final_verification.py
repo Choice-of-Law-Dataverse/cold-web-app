@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
+import logging
 import os
 import sys
 
 from app.services.transformers import DataTransformerFactory
+
+logger = logging.getLogger(__name__)
 
 # Add the backend directory to Python path
 backend_dir = os.path.dirname(os.path.abspath(__file__))

@@ -7,20 +7,18 @@ from app.services.landing_page import LandingPageService
 landing_page_service = LandingPageService()
 
 # Define router
-router = APIRouter(
-    prefix="/landing-page",
-    tags=["LandingPage"],
-    dependencies=[Depends(verify_jwt_token)],
-)
+router = APIRouter(prefix="/landing-page", tags=["LandingPage"], dependencies=[Depends(verify_jwt_token)])
 
 
 @router.get(
     "/jurisdictions",
     summary="Jurisdictions with data availability",
     description=("Returns ISO Alpha-3 codes and a has_data flag (1/0) depending on whether non-'No data' answers exist."),
+    description=("Returns ISO Alpha-3 codes and a has_data flag (1/0) depending on whether non-'No data' answers exist."),
     responses={
         200: {
             "description": "Array of jurisdictions and availability flag.",
+            "content": {"application/json": {"example": [{"code": "CHE", "has_data": 1}]}},
             "content": {"application/json": {"example": [{"code": "CHE", "has_data": 1}]}},
         }
     },

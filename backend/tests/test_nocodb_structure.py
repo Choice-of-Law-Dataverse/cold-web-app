@@ -11,6 +11,8 @@ import sys
 backend_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, backend_dir)
 
+logger = logging.getLogger(__name__)
+
 
 def test_nocodb_response():
     """Check what NocoDB actually returns."""

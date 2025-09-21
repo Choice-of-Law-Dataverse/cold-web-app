@@ -4,6 +4,7 @@ Test script for Domestic Instruments transformation.
 """
 
 import json
+import logging
 import os
 import sys
 
@@ -12,6 +13,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from app.services.configurable_transformer import ConfigurableTransformer
 from app.services.transformers import DataTransformerFactory
+
+logger = logging.getLogger(__name__)
 
 
 def create_mock_domestic_instrument_result():

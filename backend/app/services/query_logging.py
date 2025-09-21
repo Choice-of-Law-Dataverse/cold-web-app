@@ -52,7 +52,8 @@ async def log_query(request: Request, call_next: Callable) -> Response:
     }
 
     collection.insert_one(log_data)
-    print("Logged query:", log_data)
+
+    logger.debug("Logged query: %s", log_data)
 
     response = await call_next(request)
     return response

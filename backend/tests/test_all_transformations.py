@@ -3,6 +3,7 @@
 Comprehensive test script for all table transformations.
 """
 
+import logging
 import os
 import sys
 
@@ -11,6 +12,8 @@ sys.path.insert(0, os.path.dirname(__file__))
 
 from app.services.mapping_repository import get_mapping_repository
 from app.services.transformers import DataTransformerFactory
+
+logger = logging.getLogger(__name__)
 
 
 def test_all_supported_tables():

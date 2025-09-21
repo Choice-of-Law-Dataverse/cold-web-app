@@ -10,9 +10,7 @@ router = APIRouter(prefix="/user", tags=["User"], dependencies=[Depends(verify_j
 def get_user_info():
     # We can return a JSONResponse with headers
     response = JSONResponse({"message": "Send Client Hints"})
-    response.headers["Accept-CH"] = (
-        "Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version, Sec-CH-UA-Model, Sec-CH-UA, Sec-CH-UA-Mobile"
-    )
+    response.headers["Accept-CH"] = "Sec-CH-UA-Platform, Sec-CH-UA-Platform-Version, Sec-CH-UA-Model, Sec-CH-UA, Sec-CH-UA-Mobile"
     return response
 
 

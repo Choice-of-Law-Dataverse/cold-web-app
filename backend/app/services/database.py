@@ -31,8 +31,8 @@ class Database:
         assert metadata is not None
         try:
             metadata.reflect(bind=self.engine)
-        except SQLAlchemyError as e:
-            logger.exception("Error reflecting metadata: %s", str(e).strip())
+        except SQLAlchemyError:
+            logger.exception("Error reflecting metadata")
             self.metadata = None
 
         self.Session = sessionmaker(bind=self.engine)
@@ -71,8 +71,8 @@ class Database:
                         columns = result.keys()
                         entries = [dict(zip(columns, row, strict=False)) for row in result.fetchall()]
                         all_entries[table_name] = entries
-                except SQLAlchemyError as e:
-                    logger.exception("Error getting all entries: %s", str(e).strip())
+                except SQLAlchemyError:
+                    logger.exception("Error getting all entries")
             return all_entries
 
         return self._retry_on_empty(fetch_all_entries)
@@ -96,8 +96,8 @@ class Database:
                             entries_from_tables[table_name] = entries
                         else:
                             logger.warning("Table %s does not exist in the database", table_name.strip())
-                except SQLAlchemyError as e:
-                    logger.exception("Error getting entries from tables: %s", str(e).strip())
+                except SQLAlchemyError:
+                    logger.exception("Error getting entries from tables")
             return entries_from_tables
 
         return self._retry_on_empty(fetch_entries)
@@ -143,8 +143,8 @@ class Database:
                             logger.warning("Table %s does not have a mapped id column", table_name.strip())
                     else:
                         logger.warning("Table %s does not exist in the database", table_name.strip())
-                except SQLAlchemyError as e:
-                    logger.exception("Error getting entry by id: %s", str(e).strip())
+                except SQLAlchemyError:
+                    logger.exception("Error getting entry by id")
             return entry
 
         return self._retry_on_empty(fetch_entry)
@@ -162,8 +162,8 @@ class Database:
                     results = [dict(zip(columns, row, strict=False)) for row in rows]
                     return results
 
-                except SQLAlchemyError as e:
-                    logger.exception("Error executing query: %s", str(e).strip())
+                except SQLAlchemyError:
+                    logger.exception("Error executing query")
                     return None
 
         return self._retry_on_empty(fetch_query)
