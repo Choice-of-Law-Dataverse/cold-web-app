@@ -1,7 +1,5 @@
 import re
 
-from app.config import config
-
 """
 =======================DATA HANDLING===========================
 """
@@ -118,14 +116,3 @@ def deduplicate_entries(entries):
             seen.add(key)
             deduped_entries.append(entry)
     return deduped_entries
-
-
-"""
-=========================QUERY LOGGING=======================
-"""
-
-
-# Location tracking removed - no longer fetching IP location data
-def get_location(ip_address: str):
-    # Return None to maintain API compatibility while removing external IP service calls
-    return None
