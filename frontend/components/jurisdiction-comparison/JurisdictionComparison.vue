@@ -17,8 +17,7 @@
               v-else
               name="i-material-symbols:cancel-outline"
               size="24"
-              style="color: var(--color-cold-purple)"
-              class="cursor-pointer"
+              class="cursor-pointer text-cold-purple"
               @click="toggleInfo"
             />
           </div>
@@ -81,7 +80,7 @@
             </div>
           </div>
 
-          <hr style="margin-top: 8px" />
+          <hr class="mt-2" />
 
           <!-- Table Always Visible -->
           <JurisdictionComparisonTable

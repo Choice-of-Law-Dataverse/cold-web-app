@@ -69,8 +69,7 @@
                         ? row.theme.split(',')
                         : []"
                       :key="theme.trim()"
-                      class="label-theme"
-                      style="margin-right: 12px"
+                      class="label-theme mr-3"
                     >
                       {{ theme.trim() }}
                     </span>

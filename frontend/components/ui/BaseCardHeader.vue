@@ -19,8 +19,7 @@
           <img
             v-if="!erroredImages[jurisdictionString]"
             :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
-            style="height: 9px"
-            class="mr-1.5 mb-0.5"
+            class="mr-1.5 mb-0.5 h-[9px]"
             @error="handleImageError(erroredImages, jurisdictionString)"
           />
           {{ jurisdictionString }}
@@ -66,7 +65,7 @@
                       width="16"
                       height="16"
                       fill="none"
-                      style="color: white; transform: rotate(90deg)"
+                      class="text-white rotate-90"
                     >
                       <path
                         d="M9 6l6 6-6 6"

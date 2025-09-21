@@ -1,5 +1,5 @@
 <template>
-  <div style="margin-bottom: 48px">
+  <div class="mb-12">
     <UButton
       @click="goBack"
       variant="link"

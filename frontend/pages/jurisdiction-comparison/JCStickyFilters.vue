@@ -12,7 +12,7 @@
         >
           <div style="grid-column: 1">
             <h2 v-show="!isSticky" class="mb-1">Overview</h2>
-            <div v-show="isSticky" style="visibility: hidden; height: 1.5em" />
+            <div v-show="isSticky" class="invisible h-6" />
           </div>
 
           <!-- Two jurisdictions: align with columns 2 and 3 -->
