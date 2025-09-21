@@ -74,9 +74,7 @@ class DummySearchService:
                 "response_type": response_type,
             }
         else:
-            return {
-                "error": "this table either does not exist or has not been implemented in this route"
-            }
+            return {"error": "this table either does not exist or has not been implemented in this route"}
 
     def full_table(self, table, response_type: str = "parsed"):
         return {"dummy": "full_table", "table": table, "response_type": response_type}
@@ -145,10 +143,7 @@ def test_curated_details_search_invalid():
     assert response.status_code == 200
     json_data = response.json()
     assert "error" in json_data
-    assert (
-        json_data["error"]
-        == "this table either does not exist or has not been implemented in this route"
-    )
+    assert json_data["error"] == "this table either does not exist or has not been implemented in this route"
 
 
 def test_full_table_without_filters():
@@ -226,10 +221,7 @@ def test_service_curated_details_search_valid(dummy_service):
 def test_service_curated_details_search_invalid(dummy_service):
     result = dummy_service.curated_details_search("InvalidTable", "TEST_ID")
     assert "error" in result
-    assert (
-        result["error"]
-        == "this table either does not exist or has not been implemented in this route"
-    )
+    assert result["error"] == "this table either does not exist or has not been implemented in this route"
 
 
 def test_service_full_table(dummy_service):

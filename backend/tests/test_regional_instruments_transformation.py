@@ -23,7 +23,7 @@ def create_mock_regional_instrument_result():
         "result_date": None,
         "URL": None,
         "Date": None,
-        "Title": "Regulation (EC) No 593/2008 of the European Parliament and of the Council of 17 June 2008 on the law applicable to contractual obligations",
+        "Title": "Regulation (EC) No 593/2008 of the European Parliament and of the Council of 17 June 2008 on the law applicable to contractual obligations",  # noqa: E501
         "CoLD_ID": "RI-Rom-5",
         "Created": "2025-02-18T11:59:00",
         "nc_order": 1,
@@ -47,7 +47,7 @@ def create_mock_regional_instrument_result():
                 "ncRecordId": "rec9NgsWJL9wKaBbM",
                 "updated_at": None,
                 "updated_by": None,
-                "ncRecordHash": "ac79439c82c39f868684446e54f30e559dcb57c3"
+                "ncRecordHash": "ac79439c82c39f868684446e54f30e559dcb57c3",
             },
             {
                 "id": 16,
@@ -59,7 +59,7 @@ def create_mock_regional_instrument_result():
                 "ncRecordId": "recrC4s7HWnDfVFqT",
                 "updated_at": None,
                 "updated_by": None,
-                "ncRecordHash": "53c5330aa02dacec12e1e3a89d3aca5269fd7621"
+                "ncRecordHash": "53c5330aa02dacec12e1e3a89d3aca5269fd7621",
             },
             {
                 "id": 6,
@@ -71,10 +71,11 @@ def create_mock_regional_instrument_result():
                 "ncRecordId": "rec4O4ZiKrVlfKOoi",
                 "updated_at": "2025-07-25T14:17:50",
                 "updated_by": "usgiwnmibb0sw46o",
-                "ncRecordHash": "cea9dcedd3ad71246dddb0ea22a8efb47e5f5b0d"
-            }
-        ]
+                "ncRecordHash": "cea9dcedd3ad71246dddb0ea22a8efb47e5f5b0d",
+            },
+        ],
     }
+
 
 def load_reference_data():
     """Load the reference data for comparison."""
@@ -84,6 +85,7 @@ def load_reference_data():
     except FileNotFoundError:
         print("Reference file not found")
         return None
+
 
 def test_regional_instruments_transformation():
     """Test Regional Instruments transformation."""
@@ -119,7 +121,7 @@ def test_regional_instruments_transformation():
             "Abbreviation",
             "ID Number",
             "Specialists",
-            "Specialists Link"
+            "Specialists Link",
         ]
 
         print("\n=== KEY FIELD VERIFICATION ===")
@@ -128,6 +130,7 @@ def test_regional_instruments_transformation():
             trans_val = transformed.get(key)
             status = "✓" if trans_val == ref_val else "✗"
             print(f"{status} {key}: expected='{ref_val}', actual='{trans_val}'")
+
 
 def test_configurable_transformer_direct():
     """Test the configurable transformer directly."""
@@ -148,9 +151,12 @@ def test_configurable_transformer_direct():
         # Check some key transformations
         expected_checks = [
             ("id", "RI-Rom-5"),
-            ("Title", "Regulation (EC) No 593/2008 of the European Parliament and of the Council of 17 June 2008 on the law applicable to contractual obligations"),
+            (
+                "Title",
+                "Regulation (EC) No 593/2008 of the European Parliament and of the Council of 17 June 2008 on the law applicable to contractual obligations",  # noqa: E501
+            ),
             ("Abbreviation", "Rome I"),
-            ("ID Number", 5)
+            ("ID Number", 5),
         ]
 
         print("\n=== SPECIFIC FIELD CHECKS ===")
@@ -161,6 +167,7 @@ def test_configurable_transformer_direct():
 
     else:
         print("✗ Regional Instruments mapping not found")
+
 
 def test_array_operations():
     """Test array operations for specialists."""
@@ -174,18 +181,18 @@ def test_array_operations():
             {
                 "id": 3,
                 "Specialist": "Thomas Kadner Graziano",
-                "ncRecordId": "rec9NgsWJL9wKaBbM"
+                "ncRecordId": "rec9NgsWJL9wKaBbM",
             },
             {
                 "id": 16,
                 "Specialist": "Geert Van Calster",
-                "ncRecordId": "recrC4s7HWnDfVFqT"
+                "ncRecordId": "recrC4s7HWnDfVFqT",
             },
             {
                 "id": 6,
                 "Specialist": "Francisco Garcimartín Alférez",
-                "ncRecordId": "rec4O4ZiKrVlfKOoi"
-            }
+                "ncRecordId": "rec4O4ZiKrVlfKOoi",
+            },
         ]
     }
 
@@ -198,19 +205,20 @@ def test_array_operations():
             "Specialists": {
                 "operation": "join",
                 "field": "Specialist",
-                "separator": ","
+                "separator": ",",
             },
             "Specialists Link": {
                 "operation": "join",
                 "field": "ncRecordId",
-                "separator": ","
-            }
-        }
+                "separator": ",",
+            },
+        },
     )
 
     print("Array operations results:")
     for key, value in transformed.items():
         print(f"  {key}: {value}")
+
 
 def test_complex_mappings():
     """Test complex mappings for array extraction."""
@@ -222,12 +230,12 @@ def test_complex_mappings():
     test_data = {
         "Literature_Link": [
             {"id": 283, "ncRecordId": "recABC123"},
-            {"id": 49, "ncRecordId": "recDEF456"}
+            {"id": 49, "ncRecordId": "recDEF456"},
         ],
         "Regional_Legal_Provisions_Link": [
             {"id": 1, "ncRecordId": "recXYZ789"},
-            {"id": 2, "ncRecordId": "recPQR012"}
-        ]
+            {"id": 2, "ncRecordId": "recPQR012"},
+        ],
     }
 
     # Apply complex mapping
@@ -239,24 +247,25 @@ def test_complex_mappings():
             "Literature": {
                 "source_field": "Literature_Link",
                 "type": "array_extract",
-                "operation": "join_ids"
+                "operation": "join_ids",
             },
             "Literature Link": {
                 "source_field": "Literature_Link",
                 "type": "array_extract",
-                "operation": "join_record_ids"
+                "operation": "join_record_ids",
             },
             "Regional Legal Provisions": {
                 "source_field": "Regional_Legal_Provisions_Link",
                 "type": "array_extract",
-                "operation": "join_display_values"
-            }
-        }
+                "operation": "join_display_values",
+            },
+        },
     )
 
     print("Complex mapping results:")
     for key, value in transformed.items():
         print(f"  {key}: {value}")
+
 
 if __name__ == "__main__":
     try:
@@ -268,4 +277,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Test error: {e}")
         import traceback
+
         traceback.print_exc()

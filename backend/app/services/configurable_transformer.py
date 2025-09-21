@@ -86,13 +86,23 @@ class ConfigurableTransformer:
 
         return transformed
 
-    def _apply_direct_mappings(self, source_data: dict[str, Any], transformed: dict[str, Any], direct_mappings: dict[str, str]):
+    def _apply_direct_mappings(
+        self,
+        source_data: dict[str, Any],
+        transformed: dict[str, Any],
+        direct_mappings: dict[str, str],
+    ):
         """Apply direct field mappings."""
         for target_field, source_field in direct_mappings.items():
             if source_field in source_data:
                 transformed[target_field] = source_data[source_field]
 
-    def _apply_conditional_mappings(self, source_data: dict[str, Any], transformed: dict[str, Any], conditional_mappings: dict[str, dict[str, str]]):
+    def _apply_conditional_mappings(
+        self,
+        source_data: dict[str, Any],
+        transformed: dict[str, Any],
+        conditional_mappings: dict[str, dict[str, str]],
+    ):
         """Apply conditional field mappings with fallbacks."""
         for target_field, condition_config in conditional_mappings.items():
             primary_field = condition_config.get("primary")
@@ -103,7 +113,12 @@ class ConfigurableTransformer:
             elif fallback_field and fallback_field in source_data:
                 transformed[target_field] = source_data[fallback_field]
 
-    def _apply_nested_mappings(self, source_data: dict[str, Any], transformed: dict[str, Any], nested_mappings: dict[str, dict[str, Any]]):
+    def _apply_nested_mappings(
+        self,
+        source_data: dict[str, Any],
+        transformed: dict[str, Any],
+        nested_mappings: dict[str, dict[str, Any]],
+    ):
         """Apply nested field mappings for related data."""
         for _mapping_name, mapping_config in nested_mappings.items():
             source_array_name = mapping_config.get("source_array")
@@ -120,7 +135,11 @@ class ConfigurableTransformer:
                         return None
                 return cur
 
-            source_array = source_data.get(source_array_name) if source_array_name in source_data else _resolve_path(source_data, source_array_name)
+            source_array = (
+                source_data.get(source_array_name)
+                if source_array_name in source_data
+                else _resolve_path(source_data, source_array_name)
+            )
             if not isinstance(source_array, list) or not source_array:
                 continue
 
@@ -171,7 +190,12 @@ class ConfigurableTransformer:
                     # Handle truthy/falsy values
                     transformed[target_field] = true_value if source_value else false_value
 
-    def _apply_array_operations(self, source_array: list[dict[str, Any]], transformed: dict[str, Any], array_operations: dict[str, dict[str, str]]):
+    def _apply_array_operations(
+        self,
+        source_array: list[dict[str, Any]],
+        transformed: dict[str, Any],
+        array_operations: dict[str, dict[str, str]],
+    ):
         """Apply operations on arrays of data."""
         for target_field, operation_config in array_operations.items():
             operation = operation_config.get("operation")
@@ -183,7 +207,12 @@ class ConfigurableTransformer:
                 if values:
                     transformed[target_field] = separator.join(str(v) for v in values)
 
-    def _apply_complex_mappings(self, source_data: dict[str, Any], transformed: dict[str, Any], complex_mappings: dict[str, dict[str, str]]):
+    def _apply_complex_mappings(
+        self,
+        source_data: dict[str, Any],
+        transformed: dict[str, Any],
+        complex_mappings: dict[str, dict[str, str]],
+    ):
         """Apply complex field mappings like JSON extraction."""
         for target_field, mapping_config in complex_mappings.items():
             source_field = mapping_config.get("source_field")
@@ -253,7 +282,12 @@ class ConfigurableTransformer:
                     logger.warning(f"Error processing array extraction for {target_field}: {e}")
                     transformed[target_field] = source_value
 
-    def _apply_user_mappings(self, source_data: dict[str, Any], transformed: dict[str, Any], user_mappings: dict[str, dict[str, Any]]):
+    def _apply_user_mappings(
+        self,
+        source_data: dict[str, Any],
+        transformed: dict[str, Any],
+        user_mappings: dict[str, dict[str, Any]],
+    ):
         """Apply user field mappings for extracting user information."""
         for _mapping_name, mapping_config in user_mappings.items():
             source_field = mapping_config.get("source_field")

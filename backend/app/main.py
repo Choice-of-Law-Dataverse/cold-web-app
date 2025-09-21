@@ -30,7 +30,7 @@ app = FastAPI(
 
     Authentication:
     - All endpoints (except the root) require a Bearer JWT in the `Authorization` header: `Authorization: Bearer <token>`.
-    """,
+    """,  # noqa: E501
     contact={
         "name": "CoLD Team",
         "url": "https://choice-of-law-dataverse.org/",

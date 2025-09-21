@@ -1,3 +1,4 @@
+# ruff: noqa: E501
 import html
 import json
 from datetime import date, datetime
@@ -72,31 +73,15 @@ def _render_input(name: str, value: Any, field_info) -> str:
 
     # Choose widget by type
     if base_t is bool:
-        checked = (
-            " checked"
-            if (
-                value is True
-                or (isinstance(value, str) and value.lower() in {"true", "1", "yes"})
-            )
-            else ""
-        )
+        checked = " checked" if (value is True or (isinstance(value, str) and value.lower() in {"true", "1", "yes"})) else ""
         return f"<label><input type='checkbox' name='{html.escape(name)}' value='true'{checked}/> {html.escape(label)}</label>"
     if base_t in (date,):
-        return (
-            f"<label>{html.escape(label)} "
-            f"<input type='date' name='{html.escape(name)}' value='{safe_val}'/></label>"
-        )
+        return f"<label>{html.escape(label)} <input type='date' name='{html.escape(name)}' value='{safe_val}'/></label>"
     if base_t in (int, float):
-        return (
-            f"<label>{html.escape(label)} "
-            f"<input type='number' step='any' name='{html.escape(name)}' value='{safe_val}'/></label>"
-        )
+        return f"<label>{html.escape(label)} <input type='number' step='any' name='{html.escape(name)}' value='{safe_val}'/></label>"
     # For lists, accept comma-separated text
     if base_t in (list, tuple):
-        return (
-            f"<label>{html.escape(label)} "
-            f"<input type='text' name='{html.escape(name)}' value='{safe_val}' placeholder='Comma-separated values'/></label>"
-        )
+        return f"<label>{html.escape(label)} <input type='text' name='{html.escape(name)}' value='{safe_val}' placeholder='Comma-separated values'/></label>"
     # Default to text input; use textarea for likely long text fields
     longish = any(
         k in name
@@ -113,15 +98,9 @@ def _render_input(name: str, value: Any, field_info) -> str:
         ]
     ) or (isinstance(value, str) and len(value) > 180)
     if longish:
-        return (
-            f"<label>{html.escape(label)}<br/>"
-            f"<textarea name='{html.escape(name)}' rows='4'>{safe_val}</textarea></label>"
-        )
+        return f"<label>{html.escape(label)}<br/><textarea name='{html.escape(name)}' rows='4'>{safe_val}</textarea></label>"
     # Fallback: standard text input
-    return (
-        f"<label>{html.escape(label)} "
-        f"<input type='text' name='{html.escape(name)}' value='{safe_val}'/></label>"
-    )
+    return f"<label>{html.escape(label)} <input type='text' name='{html.escape(name)}' value='{safe_val}'/></label>"
 
 
 def _page(title: str, inner_html: str, show_logout: bool = True) -> HTMLResponse:
@@ -187,9 +166,7 @@ def _first(d: dict[str, Any], *keys: str) -> Any:
     return None
 
 
-def _normalize_case_analyzer_payload(
-    raw: dict[str, Any], item: dict[str, Any]
-) -> dict[str, Any]:
+def _normalize_case_analyzer_payload(raw: dict[str, Any], item: dict[str, Any]) -> dict[str, Any]:
     """Flatten and normalize the analyzer payload for read-only display.
     Rules:
     - Prefer *_edited fields.
@@ -266,9 +243,7 @@ def _normalize_case_analyzer_payload(
     result["jurisdiction_type"] = jurisdiction_type
 
     # Sections and themes
-    result["choice_of_law_sections"] = last_item(
-        pref("col_section_edited", "col_section")
-    )
+    result["choice_of_law_sections"] = last_item(pref("col_section_edited", "col_section"))
     theme_val = last_item(pref("classification_edited", "classification"))
     # If list item is dict or list, stringify
     if isinstance(theme_val, (list, dict)):
@@ -279,12 +254,8 @@ def _normalize_case_analyzer_payload(
     result["theme"] = theme_val
 
     # Abstract and facts
-    result["abstract"] = pref(
-        "abstract_edited", "abstract", "summary_edited", "summary"
-    )
-    result["relevant_facts"] = pref(
-        "relevant_facts_edited", "relevant_facts", "facts_edited", "facts"
-    )
+    result["abstract"] = pref("abstract_edited", "abstract", "summary_edited", "summary")
+    result["relevant_facts"] = pref("relevant_facts_edited", "relevant_facts", "facts_edited", "facts")
 
     # PIL/CoL
     result["pil_provisions"] = pref("pil_provisions_edited", "pil_provisions")
@@ -296,9 +267,7 @@ def _normalize_case_analyzer_payload(
     )
 
     # Determine common vs civil law for Court's Position assembly
-    is_common_law_raw = pref(
-        "is_common_law_edited", "is_common_law", "common_law_edited", "common_law"
-    )
+    is_common_law_raw = pref("is_common_law_edited", "is_common_law", "common_law_edited", "common_law")
     is_common_law: bool | None = None
     if isinstance(is_common_law_raw, bool):
         is_common_law = is_common_law_raw
@@ -374,22 +343,12 @@ def _render_overview_item(category: str, model, item: dict[str, Any]) -> str:
             ("Theme", normalized.get("theme")),
             ("Date", normalized.get("date")),
         ]
-        meta = " | ".join(
-            f"{html.escape(k)}: {html.escape(val_to_str(v))}" for k, v in parts
-        )
+        meta = " | ".join(f"{html.escape(k)}: {html.escape(val_to_str(v))}" for k, v in parts)
         src = html.escape(str(item.get("source") or ""))
         created = item.get("created_at")
         created_s = format_created(created)
-        submit_name = (
-            normalized.get("username")
-            or item.get("username")
-            or payload.get("username")
-        )
-        submit_email = (
-            normalized.get("user_email")
-            or item.get("user_email")
-            or payload.get("user_email")
-        )
+        submit_name = normalized.get("username") or item.get("username") or payload.get("username")
+        submit_email = normalized.get("user_email") or item.get("user_email") or payload.get("user_email")
         byline = (
             f"<div style='color:#555;font-size:12px;margin-top:2px'>By: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}</div>"
             if (submit_name or submit_email)
@@ -449,19 +408,12 @@ def _render_overview_item(category: str, model, item: dict[str, Any]) -> str:
     info_parts: list[tuple[str, Any]] = []
     for label, keys in spec.get("info", []):
         info_parts.append((label, first_key(*keys)))
-    meta = " | ".join(
-        f"{html.escape(label)}: {html.escape(val_to_str(val))}"
-        for label, val in info_parts
-    )
+    meta = " | ".join(f"{html.escape(label)}: {html.escape(val_to_str(val))}" for label, val in info_parts)
     src = html.escape(str(item.get("source") or ""))
     created = item.get("created_at")
     created_s = format_created(created)
-    submit_name = item.get("username") or first_key(
-        "username", "submitter_name", "name"
-    )
-    submit_email = item.get("user_email") or first_key(
-        "user_email", "email", "submitter_email"
-    )
+    submit_name = item.get("username") or first_key("username", "submitter_name", "name")
+    submit_email = item.get("user_email") or first_key("user_email", "email", "submitter_email")
     submit_comments = first_key("submitter_comments", "comments", "note")
     comments_snippet = ""
     if isinstance(submit_comments, str) and submit_comments.strip():
@@ -491,11 +443,7 @@ def _render_detail_entry(category: str, model, item: dict[str, Any]) -> str:
 
         def show(key: str) -> str:
             val = normalized.get(key)
-            text = (
-                "NA"
-                if val is None or (isinstance(val, str) and val.strip() == "")
-                else str(val)
-            )
+            text = "NA" if val is None or (isinstance(val, str) and val.strip() == "") else str(val)
             return html.escape(text)
 
         ordered_rows = [
@@ -515,28 +463,16 @@ def _render_detail_entry(category: str, model, item: dict[str, Any]) -> str:
             ("Court's Position", show("courts_position")),
         ]
         rows_html = [
-            f"<div style='margin:4px 0'><strong>{html.escape(label)}:</strong> {value}</div>"
-            for label, value in ordered_rows
+            f"<div style='margin:4px 0'><strong>{html.escape(label)}:</strong> {value}</div>" for label, value in ordered_rows
         ]
-        submit_name = (
-            normalized.get("username")
-            or item.get("username")
-            or payload.get("username")
-        )
-        submit_email = (
-            normalized.get("user_email")
-            or item.get("user_email")
-            or payload.get("user_email")
-        )
+        submit_name = normalized.get("username") or item.get("username") or payload.get("username")
+        submit_email = normalized.get("user_email") or item.get("user_email") or payload.get("user_email")
         by_meta = (
             f" — By: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}"
             if (submit_name or submit_email)
             else ""
         )
-        meta = (
-            f"<div style='color:#555;font-size:12px;margin-bottom:6px'>"
-            f"ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"
-        )
+        meta = f"<div style='color:#555;font-size:12px;margin-bottom:6px'>ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"
         buttons = (
             f"<form method='post' action='/moderation/{category}/{item['id']}/approve'>"
             f"<div style='margin-top:8px'>"
@@ -545,8 +481,10 @@ def _render_detail_entry(category: str, model, item: dict[str, Any]) -> str:
             f"</div></form>"
         )
         return (
-            f"<div style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>"
-            f"{meta}" + "".join(rows_html) + buttons + "</div>"
+            f"<div style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>{meta}"
+            + "".join(rows_html)
+            + buttons
+            + "</div>"
         )
 
     # Default: form-based editing for other categories
@@ -569,32 +507,21 @@ def _render_detail_entry(category: str, model, item: dict[str, Any]) -> str:
             rendered = _render_input(fname, val, finfo)
         except Exception:
             # Fallback to a simple text input if rendering fails
-            safe_label = html.escape(
-                finfo.description or fname.replace("_", " ").title()
-            )
+            safe_label = html.escape(finfo.description or fname.replace("_", " ").title())
             safe_name = html.escape(fname)
             safe_val = html.escape("" if val is None else str(val))
             rendered = f"<label>{safe_label} <input type='text' name='{safe_name}' value='{safe_val}'/></label>"
         inputs.append(rendered)
     # Moderation note field removed per request
-    buttons = (
-        f"<div style='margin-top:8px'>"
-        f"<button type='submit' style='padding:6px 12px'>Approve</button>"
-        f"<button type='submit' formaction='/moderation/{category}/{item['id']}/reject' style='padding:6px 12px;margin-left:8px'>Reject</button>"
-        f"</div>"
-    )
-    submit_name = item.get("username") or _first(
-        payload, "username", "submitter_name", "name"
-    )
-    submit_email = item.get("user_email") or _first(
-        payload, "user_email", "email", "submitter_email"
-    )
+    buttons = f"<div style='margin-top:8px'><button type='submit' style='padding:6px 12px'>Approve</button><button type='submit' formaction='/moderation/{category}/{item['id']}/reject' style='padding:6px 12px;margin-left:8px'>Reject</button></div>"
+    submit_name = item.get("username") or _first(payload, "username", "submitter_name", "name")
+    submit_email = item.get("user_email") or _first(payload, "user_email", "email", "submitter_email")
     submit_comments = _first(payload, "submitter_comments", "comments", "note")
     comments_snippet = ""
     if isinstance(submit_comments, str) and submit_comments.strip():
         comments_snippet = f" — Comments: {html.escape(submit_comments.strip())}"
     by_meta = (
-        f" — Submitted by: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}{comments_snippet}"
+        f" — Submitted by: {html.escape(str(submit_name or ''))} — E-Mail: {html.escape(str(submit_email or ''))}{comments_snippet}"  # noqa: E501
         if (submit_name or submit_email or submit_comments)
         else ""
     )
@@ -608,30 +535,16 @@ def _render_detail_entry(category: str, model, item: dict[str, Any]) -> str:
             comments_block = f"<div><strong>Comments:</strong> {c}</div>"
         submit_block = (
             "<div style='background:#F8F7FF;border:1px solid #EAE7FF;padding:8px;border-radius:6px;margin:8px 0'>"
-            + (
-                f"<div><strong>Submitted by:</strong> {html.escape(str(submit_name or ''))}</div>"
-                if submit_name
-                else ""
-            )
-            + (
-                f"<div><strong>E-Mail:</strong> {html.escape(str(submit_email or ''))}</div>"
-                if submit_email
-                else ""
-            )
+            + (f"<div><strong>Submitted by:</strong> {html.escape(str(submit_name or ''))}</div>" if submit_name else "")
+            + (f"<div><strong>E-Mail:</strong> {html.escape(str(submit_email or ''))}</div>" if submit_email else "")
             + comments_block
             + "</div>"
         )
-    meta = (
-        f"<div style='color:#555;font-size:12px;margin-bottom:6px'>"
-        f"ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"
-    )
+    meta = f"<div style='color:#555;font-size:12px;margin-bottom:6px'>ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"  # noqa: E501
     # Safeguard join if any element is None
     inputs_html = "".join(i for i in inputs if isinstance(i, str))
     return (
-        f"<div style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>"
-        f"{meta}"
-        f"{submit_block}"
-        f"<form method='post' action='/moderation/{category}/{item['id']}/approve'>"
+        f"<div style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>{meta}{submit_block}<form method='post' action='/moderation/{category}/{item['id']}/approve'>"  # noqa: E501
         + inputs_html
         + buttons
         + "</form></div>"
@@ -657,13 +570,8 @@ def login_form(request: Request):
 @router.post("/login")
 def login(request: Request, username: str = Form(...), password: str = Form(...)):
     if not config.MODERATION_USERNAME or not config.MODERATION_PASSWORD:
-        raise HTTPException(
-            status_code=500, detail="Moderation credentials not configured"
-        )
-    if (
-        username == config.MODERATION_USERNAME
-        and password == config.MODERATION_PASSWORD
-    ):
+        raise HTTPException(status_code=500, detail="Moderation credentials not configured")
+    if username == config.MODERATION_USERNAME and password == config.MODERATION_PASSWORD:
         request.session["moderator"] = username
         return RedirectResponse(url="/moderation", status_code=302)
     return HTMLResponse("Invalid credentials", status_code=401)
@@ -725,12 +633,7 @@ def list_pending(request: Request, category: str):
     # Overview list with key info and link to detail view
     entries = "".join(_render_overview_item(category, model, i) for i in items)
     empty_state = "<p>No pending suggestions.</p>" if not entries else ""
-    content = (
-        f"<h3>Pending suggestions: {html.escape(category)}</h3>"
-        f"<ul class='plain'>{entries}</ul>"
-        f"{empty_state}"
-        f"<p><a href='/moderation'>Back</a></p>"
-    )
+    content = f"<h3>Pending suggestions: {html.escape(category)}</h3><ul class='plain'>{entries}</ul>{empty_state}<p><a href='/moderation'>Back</a></p>"  # noqa: E501
     return _page(f"Pending - {category}", content)
 
 
@@ -748,19 +651,13 @@ def view_entry(request: Request, category: str, suggestion_id: int):
     items = service.list_pending(table)
     item = next((i for i in items if i["id"] == suggestion_id), None)
     if not item:
-        raise HTTPException(
-            status_code=404, detail="Suggestion not found or not pending"
-        )
+        raise HTTPException(status_code=404, detail="Suggestion not found or not pending")
     model = _category_schema(category)
     if model is None:
         raise HTTPException(status_code=404)
 
     detail_html = _render_detail_entry(category, model, item)
-    content = (
-        f"<h3>{html.escape(category.title())} — Entry #{suggestion_id}</h3>"
-        f"{detail_html}"
-        f"<p><a href='/moderation/{html.escape(category)}'>Back to list</a></p>"
-    )
+    content = f"<h3>{html.escape(category.title())} — Entry #{suggestion_id}</h3>{detail_html}<p><a href='/moderation/{html.escape(category)}'>Back to list</a></p>"  # noqa: E501
     return _page(f"Detail - {category} #{suggestion_id}", content)
 
 
@@ -777,9 +674,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
     items = service.list_pending(table)
     item = next((i for i in items if i["id"] == suggestion_id), None)
     if not item:
-        raise HTTPException(
-            status_code=404, detail="Suggestion not found or not pending"
-        )
+        raise HTTPException(status_code=404, detail="Suggestion not found or not pending")
     original_payload: dict[str, Any] = item["payload"] or {}
 
     # Case Analyzer: recompute normalized snapshot and mark finished; no editable inputs expected
@@ -845,9 +740,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
         raise HTTPException(status_code=400, detail="Unsupported category")
     # Small normalization: for Domestic Instruments, auto-derive year text if missing
     if target_table == "Domestic_Instruments":
-        if (
-            not updated_fields.get("date_year_of_entry_into_force")
-        ) and updated_fields.get("entry_into_force"):
+        if (not updated_fields.get("date_year_of_entry_into_force")) and updated_fields.get("entry_into_force"):
             try:
                 # Keep as string; writer will coerce types as needed
                 year = str(updated_fields["entry_into_force"])[:4]
@@ -861,9 +754,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
     for key in ("jurisdiction", "jurisdiction_link"):
         if key in payload_for_writer and payload_for_writer.get(key):
             try:
-                writer.link_jurisdictions(
-                    target_table, merged_id, payload_for_writer.get(key)
-                )
+                writer.link_jurisdictions(target_table, merged_id, payload_for_writer.get(key))
             except Exception:
                 pass
     service.mark_status(

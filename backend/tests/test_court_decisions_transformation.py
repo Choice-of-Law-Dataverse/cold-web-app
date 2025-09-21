@@ -61,7 +61,11 @@ def create_mock_court_decision_result():
                 "North_South_Divide": "Global North",
             }
         ],
-        "related_themes": [{"id": 1, "Theme": "Party autonomy", "Created": "2025-03-21T08:57:00"}, {"id": 2, "Theme": "Rules of law", "Created": "2025-03-21T08:57:00"}, {"id": 3, "Theme": "Freedom of choice", "Created": "2025-03-21T08:57:00"}],
+        "related_themes": [
+            {"id": 1, "Theme": "Party autonomy", "Created": "2025-03-21T08:57:00"},
+            {"id": 2, "Theme": "Rules of law", "Created": "2025-03-21T08:57:00"},
+            {"id": 3, "Theme": "Freedom of choice", "Created": "2025-03-21T08:57:00"},
+        ],
         "Jurisdictions_Alpha_3_Code": "GBR",
         "Text_of_the_Relevant_Legal_Provisions": "Preamble UK Contracts (Applicable Law) Act 1990...",
     }
@@ -104,7 +108,18 @@ def test_court_decisions_transformation():
         print(f"Extra keys: {transformed_keys - reference_keys}")
 
         # Check specific important mappings
-        key_mappings_to_check = ["id", "ID", "Case Citation", "Case Title", "Jurisdictions", "Jurisdictions Alpha-3 Code", "Region (from Jurisdictions)", "Themes", "Official Source (URL)", "Publication Date ISO"]
+        key_mappings_to_check = [
+            "id",
+            "ID",
+            "Case Citation",
+            "Case Title",
+            "Jurisdictions",
+            "Jurisdictions Alpha-3 Code",
+            "Region (from Jurisdictions)",
+            "Themes",
+            "Official Source (URL)",
+            "Publication Date ISO",
+        ]
 
         print("\n=== KEY FIELD VERIFICATION ===")
         for key in key_mappings_to_check:
@@ -131,7 +146,12 @@ def test_configurable_transformer_direct():
         print(f"Transformed result has {len(transformed)} fields")
 
         # Check some key transformations
-        expected_checks = [("id", "CD-GBR-1167"), ("Case Citation", "Halpern v Halpern (Nos 1 and 2) [2007] EWCA Civ 291"), ("Jurisdictions", "United Kingdom"), ("Jurisdictions Alpha-3 Code", "GBR")]
+        expected_checks = [
+            ("id", "CD-GBR-1167"),
+            ("Case Citation", "Halpern v Halpern (Nos 1 and 2) [2007] EWCA Civ 291"),
+            ("Jurisdictions", "United Kingdom"),
+            ("Jurisdictions Alpha-3 Code", "GBR"),
+        ]
 
         print("\n=== SPECIFIC FIELD CHECKS ===")
         for field, expected in expected_checks:
@@ -150,11 +170,23 @@ def test_json_extraction():
     transformer = ConfigurableTransformer()
 
     # Test data with JSON PDF field
-    test_data = {"Official_Source__PDF_": '[{"id":"at62votknyfmgei1","url":"https://example.com/file.pdf","title":"test.pdf","mimetype":"application/pdf","size":185262}]'}
+    test_data = {
+        "Official_Source__PDF_": '[{"id":"at62votknyfmgei1","url":"https://example.com/file.pdf","title":"test.pdf","mimetype":"application/pdf","size":185262}]'
+    }
 
     # Apply complex mapping
     transformed = {}
-    transformer._apply_complex_mappings(test_data, transformed, {"Official Source (PDF)": {"source_field": "Official_Source__PDF_", "type": "json_extract", "operation": "first_item_as_airtable_format"}})
+    transformer._apply_complex_mappings(
+        test_data,
+        transformed,
+        {
+            "Official Source (PDF)": {
+                "source_field": "Official_Source__PDF_",
+                "type": "json_extract",
+                "operation": "first_item_as_airtable_format",
+            }
+        },
+    )
 
     print(f"JSON extraction result: {transformed.get('Official Source (PDF)')}")
 

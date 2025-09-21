@@ -102,9 +102,7 @@ def debug_filtering_process():
             if source_column == column and column.endswith("?"):
                 source_column_without_q = column[:-1]
                 source_column = reverse_mapping.get(source_column_without_q, column)
-                print(
-                    f"    After '?' removal: '{source_column_without_q}' -> '{source_column}'"
-                )
+                print(f"    After '?' removal: '{source_column_without_q}' -> '{source_column}'")
 
             print(f"    Final source column: '{source_column}'")
 
@@ -139,9 +137,7 @@ def debug_filtering_process():
                     print(f"    ✅ Value match: {cell} == {value}")
             else:
                 print(f"    ❌ Unsupported filter type: {type(value)}")
-                raise ValueError(
-                    f"Unsupported filter type for column {column}: {value}"
-                )
+                raise ValueError(f"Unsupported filter type for column {column}: {value}")
 
         if match:
             print(f"  ✅ Row {i + 1} MATCHES")
@@ -152,9 +148,7 @@ def debug_filtering_process():
     print("\n=== Final Results ===")
     print(f"Matching rows: {len(results)}")
     for i, result in enumerate(results):
-        print(
-            f"  Result {i + 1}: {result.get('CoLD ID')} - {result.get('Title (in English)')}"
-        )
+        print(f"  Result {i + 1}: {result.get('CoLD ID')} - {result.get('Title (in English)')}")
 
     return results
 

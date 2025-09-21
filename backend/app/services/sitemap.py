@@ -15,7 +15,7 @@ class SitemapService:
             "Regional_Instruments": "regional-instrument",
             "International_Instruments": "international-instrument",
             "Court_Decisions": "court-decision",
-            "Domestic_Instruments": "domestic-instrument"
+            "Domestic_Instruments": "domestic-instrument",
         }
 
     def get_all_frontend_urls(self):
@@ -29,20 +29,19 @@ class SitemapService:
             try:
                 ids = self._get_table_ids(table_name)
                 for id_val in ids:
-                    entries.append({
-                        "loc": f"/{prefix}/{id_val}",
-                        "lastmod": date.today().isoformat()
-                    })
+                    entries.append(
+                        {
+                            "loc": f"/{prefix}/{id_val}",
+                            "lastmod": date.today().isoformat(),
+                        }
+                    )
             except Exception as e:
                 print(f"Error processing table {table_name}: {e}")
         # Static entries from frontend/pages
         try:
             static_paths = self._get_static_paths()
             for route in static_paths:
-                entries.append({
-                    "loc": route,
-                    "lastmod": date.today().isoformat()
-                })
+                entries.append({"loc": route, "lastmod": date.today().isoformat()})
         except Exception as e:
             print(f"Error scanning static pages: {e}")
         return entries
@@ -52,10 +51,7 @@ class SitemapService:
         Retrieve all non-null IDs from the given NocoDB table.
         """
         try:
-            query = (
-                f'SELECT id FROM "{config.NOCODB_POSTGRES_SCHEMA}"."{table_name}" '
-                'WHERE id IS NOT NULL ORDER BY id'
-            )
+            query = f'SELECT id FROM "{config.NOCODB_POSTGRES_SCHEMA}"."{table_name}" WHERE id IS NOT NULL ORDER BY id'
             result = self.db.execute_query(query)
             ids = []
             for row in result or []:
@@ -88,4 +84,3 @@ class SitemapService:
                 route = route[:-1]
             paths.append(route or "/")
         return sorted(set(paths))
-

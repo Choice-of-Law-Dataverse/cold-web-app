@@ -31,16 +31,12 @@ def create_mock_answers_result():
         "updated_at": "2025-06-16T13:32:55",
         "updated_by": "usaf3dew23c77lgf",
         "related_themes": [
-            {
-                "id": 4,
-                "Theme": "Consumer contracts",
-                "Created": "2025-03-21T08:57:00"
-            },
+            {"id": 4, "Theme": "Consumer contracts", "Created": "2025-03-21T08:57:00"},
             {
                 "id": 15,
                 "Theme": "Employment contracts",
-                "Created": "2025-03-21T08:57:00"
-            }
+                "Created": "2025-03-21T08:57:00",
+            },
         ],
         "More_Information": None,
         "Question_CoLD_ID": "34-FV",
@@ -48,14 +44,14 @@ def create_mock_answers_result():
             {
                 "id": 30,
                 "Created": "2023-11-27T13:03:00",
-                "Question": "Is further guidance on applicable law in international contracts providing protection to weaker parties necessary?",
+                "Question": "Is further guidance on applicable law in international contracts providing protection to weaker parties necessary?",  # noqa: E501
                 "nc_order": 1,
                 "Theme_Code": "Rev",
                 "created_at": "2025-06-10T15:08:37",
                 "ncRecordId": "rec0XQRyxFGp9he5X",
                 "Primary_Theme": "FV",
                 "Question_Number": "34",
-                "Answering_Options": "Yes, No, No strong opinions"
+                "Answering_Options": "Yes, No, No strong opinions",
             }
         ],
         "Interesting_Answer": 0,
@@ -72,11 +68,12 @@ def create_mock_answers_result():
                 "Irrelevant_": True,
                 "Alpha_3_Code": "ABW",
                 "Legal_Family": None,
-                "North_South_Divide": "Global South"
+                "North_South_Divide": "Global South",
             }
         ],
-        "Jurisdictions_Alpha_3_Code": "ABW"
+        "Jurisdictions_Alpha_3_Code": "ABW",
     }
+
 
 def test_answers_transformer():
     """Test the AnswersTransformer directly."""
@@ -98,9 +95,9 @@ def test_answers_transformer():
         "Answer": "No data",
         "Jurisdictions": "Aruba",
         "Jurisdictions Alpha-3 code": "ABW",
-        "Question": "Is further guidance on applicable law in international contracts providing protection to weaker parties necessary?",
+        "Question": "Is further guidance on applicable law in international contracts providing protection to weaker parties necessary?",  # noqa: E501
         "Questions Theme Code": "FV",
-        "Themes": "Consumer contracts, Employment contracts"
+        "Themes": "Consumer contracts, Employment contracts",
     }
 
     print("\n=== KEY MAPPING VERIFICATION ===")
@@ -108,6 +105,7 @@ def test_answers_transformer():
         actual_value = transformed.get(key)
         status = "✓" if actual_value == expected_value else "✗"
         print(f"{status} {key}: expected='{expected_value}', actual='{actual_value}'")
+
 
 def test_factory():
     """Test the DataTransformerFactory."""
@@ -132,6 +130,7 @@ def test_factory():
     mock_unknown = {"source_table": "UnknownTable", "data": "test"}
     transformed_unknown = DataTransformerFactory.transform_result("UnknownTable", mock_unknown)
     print(f"Unknown table result unchanged: {transformed_unknown == mock_unknown}")
+
 
 if __name__ == "__main__":
     test_answers_transformer()

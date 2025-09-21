@@ -30,9 +30,7 @@ def test_boolean_transformation():
     print(f"Input record keys: {sorted(test_record.keys())}")
 
     # Apply transformation
-    transformed = DataTransformerFactory.transform_result(
-        "Domestic Instruments", test_record
-    )
+    transformed = DataTransformerFactory.transform_result("Domestic Instruments", test_record)
 
     print(f"Output record keys: {sorted(transformed.keys())}")
 

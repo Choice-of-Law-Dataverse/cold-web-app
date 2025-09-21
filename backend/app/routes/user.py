@@ -3,9 +3,7 @@ from fastapi.responses import JSONResponse
 
 from app.auth import verify_jwt_token
 
-router = APIRouter(
-    prefix="/user", tags=["User"], dependencies=[Depends(verify_jwt_token)]
-)
+router = APIRouter(prefix="/user", tags=["User"], dependencies=[Depends(verify_jwt_token)])
 
 
 @router.get("/get_user_info")
@@ -23,9 +21,7 @@ def user_info(request: Request):
     brand = request.headers.get("Sec-CH-UA", "Unknown")
     mobile = request.headers.get("Sec-CH-UA-Mobile", "Unknown")
     platform = request.headers.get("Sec-CH-UA-Platform", "Unknown Platform")
-    platform_version = request.headers.get(
-        "Sec-CH-UA-Platform-Version", "Unknown Version"
-    )
+    platform_version = request.headers.get("Sec-CH-UA-Platform-Version", "Unknown Version")
     model = request.headers.get("Sec-CH-UA-Model", "Unknown Model")
 
     return {

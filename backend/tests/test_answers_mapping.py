@@ -23,6 +23,7 @@ def load_test_data():
 
     return current_data, reference_data
 
+
 def test_transformation():
     """Test the transformation logic."""
     current_data, reference_data = load_test_data()
@@ -67,6 +68,7 @@ def test_transformation():
         trans_val = transformed_result.get(trans_field)
         print(f"{ref_field} -> {trans_field}: '{ref_val}' vs '{trans_val}'")
 
+
 def create_mock_result():
     """Create a mock result for testing without requiring database connection."""
     return {
@@ -85,16 +87,12 @@ def create_mock_result():
         "updated_at": "2025-06-16T13:32:55",
         "updated_by": "usaf3dew23c77lgf",
         "related_themes": [
-            {
-                "id": 4,
-                "Theme": "Consumer contracts",
-                "Created": "2025-03-21T08:57:00"
-            },
+            {"id": 4, "Theme": "Consumer contracts", "Created": "2025-03-21T08:57:00"},
             {
                 "id": 15,
                 "Theme": "Employment contracts",
-                "Created": "2025-03-21T08:57:00"
-            }
+                "Created": "2025-03-21T08:57:00",
+            },
         ],
         "More_Information": None,
         "Question_CoLD_ID": "34-FV",
@@ -102,14 +100,14 @@ def create_mock_result():
             {
                 "id": 30,
                 "Created": "2023-11-27T13:03:00",
-                "Question": "Is further guidance on applicable law in international contracts providing protection to weaker parties necessary?",
+                "Question": "Is further guidance on applicable law in international contracts providing protection to weaker parties necessary?",  # noqa: E501
                 "nc_order": 1,
                 "Theme_Code": "Rev",
                 "created_at": "2025-06-10T15:08:37",
                 "ncRecordId": "rec0XQRyxFGp9he5X",
                 "Primary_Theme": "FV",
                 "Question_Number": "34",
-                "Answering_Options": "Yes, No, No strong opinions"
+                "Answering_Options": "Yes, No, No strong opinions",
             }
         ],
         "Interesting_Answer": 0,
@@ -126,11 +124,12 @@ def create_mock_result():
                 "Irrelevant_": True,
                 "Alpha_3_Code": "ABW",
                 "Legal_Family": None,
-                "North_South_Divide": "Global South"
+                "North_South_Divide": "Global South",
             }
         ],
-        "Jurisdictions_Alpha_3_Code": "ABW"
+        "Jurisdictions_Alpha_3_Code": "ABW",
     }
+
 
 def test_transformation_mock():
     """Test the transformation logic with mock data."""
@@ -146,11 +145,27 @@ def test_transformation_mock():
 
         # Expected reference structure sample
         expected_keys = {
-            "source_table", "id", "rank", "sort_date", "ID", "Question Link",
-            "Jurisdictions Link", "Question", "Questions Theme Code",
-            "Jurisdictions Alpha-3 code", "Jurisdictions", "Answer", "Record ID",
-            "Created", "Themes", "Last Modified", "Jurisdictions Region",
-            "Jurisdictions Irrelevant", "Number", "Last Modified By.id", "Created By.id"
+            "source_table",
+            "id",
+            "rank",
+            "sort_date",
+            "ID",
+            "Question Link",
+            "Jurisdictions Link",
+            "Question",
+            "Questions Theme Code",
+            "Jurisdictions Alpha-3 code",
+            "Jurisdictions",
+            "Answer",
+            "Record ID",
+            "Created",
+            "Themes",
+            "Last Modified",
+            "Jurisdictions Region",
+            "Jurisdictions Irrelevant",
+            "Number",
+            "Last Modified By.id",
+            "Created By.id",
         }
 
         transformed_keys = set(transformed_result.keys())
@@ -165,6 +180,7 @@ def test_transformation_mock():
     except Exception as e:
         print(f"Error during transformation test: {e}")
         return None
+
 
 if __name__ == "__main__":
     try:

@@ -92,6 +92,7 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n❌ Integration test failed: {e}")
         import traceback
+
         traceback.print_exc()
 
     try:
@@ -100,4 +101,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"\n❌ Data structure consistency test failed: {e}")
         import traceback
+
         traceback.print_exc()
