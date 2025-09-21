@@ -191,8 +191,7 @@
   <UAlert
     v-if="error"
     type="error"
-    class="mx-auto mt-4"
-    style="max-width: var(--container-width)"
+    class="mx-auto mt-4 max-w-container"
   >
     {{ error }}
   </UAlert>

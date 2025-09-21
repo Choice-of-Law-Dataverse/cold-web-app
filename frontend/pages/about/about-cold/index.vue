@@ -1,6 +1,6 @@
 <template>
   <main class="px-6">
-    <div class="mx-auto w-full" style="max-width: var(--container-width)">
+    <div class="mx-auto w-full max-w-container">
       <UCard class="cold-ucard">
         <SectionNav />
         <!-- Main Content -->

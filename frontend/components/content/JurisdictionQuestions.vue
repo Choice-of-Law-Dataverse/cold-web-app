@@ -1,6 +1,6 @@
 <template>
   <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
+    <div class="mx-auto w-full max-w-container">
       <div class="col-span-12">
         <UCard class="cold-ucard">
           <div>

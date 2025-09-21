@@ -1,8 +1,7 @@
 <template>
   <footer class="bg-cold-night text-white px-6 py-12 min-h-[300px] mt-24">
     <div
-      class="mx-auto grid grid-cols-1 md:grid-cols-12 md:gap-6 items-start"
-      style="max-width: var(--container-width)"
+      class="mx-auto max-w-container grid grid-cols-1 md:grid-cols-12 md:gap-6 items-start"
     >
       <div class="md:col-span-8 flex flex-col gap-3 mt-4">
         <img

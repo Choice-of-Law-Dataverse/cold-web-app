@@ -4,8 +4,7 @@
     :class="{ 'bg-purple-active': isExpanded }"
   >
     <div
-      class="mx-auto py-6 pt-8"
-      style="max-width: var(--container-width); width: 100%"
+      class="mx-auto w-full max-w-container py-6 pt-8"
     >
       <div
         class="flex justify-between items-center space-x-4 sm:space-x-8 relative"
@@ -510,14 +509,7 @@ onUnmounted(() => {
   opacity: 1;
 }
 
-.inner-content {
-  max-width: var(--container-width);
-  margin: 0 auto;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+
 
 .search-container {
   position: relative !important; /* New addition */

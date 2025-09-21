@@ -18,10 +18,4 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
-.main-content {
-  max-width: var(--container-width);
-  margin: 0 auto;
-  width: 100%;
-}
-</style>
+

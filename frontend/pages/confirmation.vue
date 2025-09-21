@@ -1,8 +1,7 @@
 <template>
   <main class="flex-1 mt-12 px-6">
     <div
-      class="mx-auto min-h-[50vh] flex flex-col justify-center items-center text-center"
-      style="max-width: var(--container-width); width: 100%"
+      class="mx-auto w-full max-w-container min-h-[50vh] flex flex-col justify-center items-center text-center"
     >
       <h2>{{ confirmationMessage }}</h2>
 
