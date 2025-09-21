@@ -24,7 +24,10 @@ export function useLegalProvision({
     data: provisionData,
     isLoading: loading,
     error,
-  } = useRecordDetails(tableRef, idRef)
+  } = useRecordDetails(tableRef, idRef, {
+    redirectOnNotFound: false, // Component should show toast, not redirect
+    showToast: true,
+  })
 
   // Computed properties derived from the fetched data
   const title = computed(() => {

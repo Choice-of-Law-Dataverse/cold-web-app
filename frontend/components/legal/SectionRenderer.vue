@@ -60,7 +60,11 @@ function parseIdParts(id) {
 
 const { data: record, isLoading } = useRecordDetails(
   computed(() => props.table),
-  instrumentTitleId
+  instrumentTitleId,
+  {
+    redirectOnNotFound: false, // Component should show toast, not redirect
+    showToast: true,
+  }
 )
 
 const displayTitle = computed(() => {
