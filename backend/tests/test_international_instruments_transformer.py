@@ -30,12 +30,12 @@ class TestInternationalInstrumentsTransformer:
             "updated_by": {
                 "id": "usr456",
                 "email": "admin@example.org",
-                "name": "Admin User"
+                "name": "Admin User",
             },
             "created_by": {
                 "id": "usr789",
                 "email": "creator@example.org",
-                "name": "Creator User"
+                "name": "Creator User",
             },
             "Entry_Into_Force": "2023-02-01",
             "Publication_Date": "2023-01-20",
@@ -48,37 +48,19 @@ class TestInternationalInstrumentsTransformer:
             "Relevant_Provisions": "Article 5, Section 2",
             "Full_Text_of_the_Provisions": "The parties agree to reduce emissions...",
             "related_specialists": [
-                {
-                    "Specialist": "Dr. Jane Climate",
-                    "ncRecordId": "spec001"
-                },
-                {
-                    "Specialist": "Prof. John Environment",
-                    "ncRecordId": "spec002"
-                }
+                {"Specialist": "Dr. Jane Climate", "ncRecordId": "spec001"},
+                {"Specialist": "Prof. John Environment", "ncRecordId": "spec002"},
             ],
             "Literature_Link": [
-                {
-                    "id": "lit001",
-                    "ncRecordId": "lit_rec001"
-                },
-                {
-                    "id": "lit002",
-                    "ncRecordId": "lit_rec002"
-                }
+                {"id": "lit001", "ncRecordId": "lit_rec001"},
+                {"id": "lit002", "ncRecordId": "lit_rec002"},
             ],
             "International_Legal_Provisions_Link": [
-                {
-                    "display_value": "Climate Provision A",
-                    "ncRecordId": "prov001"
-                },
-                {
-                    "display_value": "Environmental Provision B",
-                    "ncRecordId": "prov002"
-                }
+                {"display_value": "Climate Provision A", "ncRecordId": "prov001"},
+                {"display_value": "Environmental Provision B", "ncRecordId": "prov002"},
             ],
             "source_table": "International Instruments",
-            "rank": 1.5
+            "rank": 1.5,
         }
 
     def test_basic_field_mapping(self):
@@ -183,7 +165,7 @@ class TestInternationalInstrumentsTransformer:
             "CoLD_ID": "II002",
             "Title": "Minimal Agreement",
             "ncRecordId": "rec789",
-            "source_table": "International Instruments"
+            "source_table": "International Instruments",
         }
 
         result = self.transformer.transform(minimal_data)
@@ -234,14 +216,40 @@ class TestInternationalInstrumentsTransformer:
 
         # Verify all major field categories are represented
         expected_fields = [
-            "source_table", "id", "rank", "ID", "ID Number", "Title", "Abbreviation",
-            "Date", "Status", "URL", "Attachment", "Record ID", "Created", "Last Modified",
-            "Entry Into Force", "Publication Date", "Relevant Provisions",
-            "Full Text of the Provisions", "Title (in English)", "Source (URL)", "Source (PDF)",
-            "Specialists", "Specialists Link", "Literature", "Literature Link",
-            "International Legal Provisions", "International Legal Provisions Link",
-            "Last Modified By.id", "Last Modified By.email", "Last Modified By.name",
-            "Created By.id", "Created By.email", "Created By.name", "sort_date"
+            "source_table",
+            "id",
+            "rank",
+            "ID",
+            "ID Number",
+            "Title",
+            "Abbreviation",
+            "Date",
+            "Status",
+            "URL",
+            "Attachment",
+            "Record ID",
+            "Created",
+            "Last Modified",
+            "Entry Into Force",
+            "Publication Date",
+            "Relevant Provisions",
+            "Full Text of the Provisions",
+            "Title (in English)",
+            "Source (URL)",
+            "Source (PDF)",
+            "Specialists",
+            "Specialists Link",
+            "Literature",
+            "Literature Link",
+            "International Legal Provisions",
+            "International Legal Provisions Link",
+            "Last Modified By.id",
+            "Last Modified By.email",
+            "Last Modified By.name",
+            "Created By.id",
+            "Created By.email",
+            "Created By.name",
+            "sort_date",
         ]
 
         for field in expected_fields:

@@ -45,9 +45,7 @@ def test_frontend_field_requirements():
     print("- instrument['Title (in English)'] (for title)")
 
     # Transform the record
-    transformed = DataTransformerFactory.transform_result(
-        "Domestic Instruments", test_record
-    )
+    transformed = DataTransformerFactory.transform_result("Domestic Instruments", test_record)
 
     print("\n=== Transformation Results ===")
     print(f"Transformed keys: {sorted(transformed.keys())}")

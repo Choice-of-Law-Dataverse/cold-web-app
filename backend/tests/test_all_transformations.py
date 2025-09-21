@@ -30,25 +30,47 @@ def test_all_supported_tables():
             "CoLD_ID": "ABW_34-FV",
             "Answer": "No data",
             "related_jurisdictions": [{"Name": "Aruba", "Alpha_3_Code": "ABW", "ncRecordId": "rec123"}],
-            "related_questions": [{"Question": "Test question", "Primary_Theme": "FV", "Question_Number": "34"}],
-            "related_themes": [{"Theme": "Consumer contracts"}, {"Theme": "Employment contracts"}]
+            "related_questions": [
+                {
+                    "Question": "Test question",
+                    "Primary_Theme": "FV",
+                    "Question_Number": "34",
+                }
+            ],
+            "related_themes": [
+                {"Theme": "Consumer contracts"},
+                {"Theme": "Employment contracts"},
+            ],
         },
         "Court Decisions": {
             "source_table": "Court Decisions",
             "CoLD_ID": "CD-GBR-1167",
             "Case_Citation": "Test v Test [2007] EWCA Civ 291",
             "Case_Title": "Test v Test",
-            "related_jurisdictions": [{"Name": "United Kingdom", "Alpha_3_Code": "GBR", "ncRecordId": "rec456"}],
-            "related_themes": [{"Theme": "Party autonomy"}, {"Theme": "Rules of law"}]
+            "related_jurisdictions": [
+                {
+                    "Name": "United Kingdom",
+                    "Alpha_3_Code": "GBR",
+                    "ncRecordId": "rec456",
+                }
+            ],
+            "related_themes": [{"Theme": "Party autonomy"}, {"Theme": "Rules of law"}],
         },
         "Domestic Instruments": {
             "source_table": "Domestic Instruments",
             "CoLD_ID": "DI-TCD-29",
             "Title__in_English_": "Test Law",
             "Status": "In force",
-            "related_jurisdictions": [{"Name": "Chad", "Alpha_3_Code": "TCD", "Type": "State", "ncRecordId": "rec789"}],
-            "Compatible_With_the_HCCH_Principles_": False
-        }
+            "related_jurisdictions": [
+                {
+                    "Name": "Chad",
+                    "Alpha_3_Code": "TCD",
+                    "Type": "State",
+                    "ncRecordId": "rec789",
+                }
+            ],
+            "Compatible_With_the_HCCH_Principles_": False,
+        },
     }
 
     for table_name in supported_tables:
@@ -69,6 +91,7 @@ def test_all_supported_tables():
             else:
                 print("? Transformation may not have expanded fields")
 
+
 def test_factory_fallback():
     """Test factory fallback mechanism."""
     print("\n=== TESTING FACTORY FALLBACK MECHANISM ===")
@@ -80,7 +103,11 @@ def test_factory_fallback():
 
     # Test with a table that only has configuration
     if get_mapping_repository().has_mapping("Questions"):
-        questions_data = {"source_table": "Questions", "CoLD_ID": "Q-001", "Question": "Test question?"}
+        questions_data = {
+            "source_table": "Questions",
+            "CoLD_ID": "Q-001",
+            "Question": "Test question?",
+        }
         transformed_questions = DataTransformerFactory.transform_result("Questions", questions_data)
         print(f"Questions transformation (config-only): {len(transformed_questions)} fields")
 
@@ -88,6 +115,7 @@ def test_factory_fallback():
     unknown_data = {"source_table": "Unknown", "id": 123, "data": "test"}
     transformed_unknown = DataTransformerFactory.transform_result("Unknown", unknown_data)
     print(f"Unknown table (no transformation): {transformed_unknown == unknown_data}")
+
 
 def test_mapping_configurations():
     """Test mapping configuration loading and structure."""
@@ -117,6 +145,7 @@ def test_mapping_configurations():
         post_processing = mapping.get("post_processing", {})
         print(f"Post-processing rules: {len(post_processing)}")
 
+
 def run_performance_test():
     """Run a simple performance test."""
     print("\n=== PERFORMANCE TEST ===")
@@ -130,20 +159,20 @@ def run_performance_test():
             "Answer": "Test answer",
             "related_jurisdictions": [{"Name": "Test Country", "Alpha_3_Code": "TST"}],
             "related_questions": [{"Question": "Test?", "Primary_Theme": "T"}],
-            "related_themes": [{"Theme": "Test theme"}]
+            "related_themes": [{"Theme": "Test theme"}],
         },
         "Court Decisions": {
             "source_table": "Court Decisions",
             "CoLD_ID": "CD-TST-001",
             "Case_Citation": "Test v Test",
-            "related_jurisdictions": [{"Name": "Test Country", "Alpha_3_Code": "TST"}]
+            "related_jurisdictions": [{"Name": "Test Country", "Alpha_3_Code": "TST"}],
         },
         "Domestic Instruments": {
             "source_table": "Domestic Instruments",
             "CoLD_ID": "DI-TST-001",
             "Title__in_English_": "Test Law",
-            "related_jurisdictions": [{"Name": "Test Country", "Alpha_3_Code": "TST", "Type": "State"}]
-        }
+            "related_jurisdictions": [{"Name": "Test Country", "Alpha_3_Code": "TST", "Type": "State"}],
+        },
     }
 
     num_iterations = 100
@@ -159,10 +188,13 @@ def run_performance_test():
         table_time = end_time - start_time
         total_time += table_time
 
-        print(f"{table_name}: {table_time:.4f}s for {num_iterations} transformations ({(table_time/num_iterations)*1000:.2f}ms avg)")
+        print(
+            f"{table_name}: {table_time:.4f}s for {num_iterations} transformations ({(table_time / num_iterations) * 1000:.2f}ms avg)"  # noqa: E501
+        )
 
     print(f"Total time: {total_time:.4f}s")
-    print(f"Average per transformation: {(total_time/(num_iterations*len(test_datasets)))*1000:.2f}ms")
+    print(f"Average per transformation: {(total_time / (num_iterations * len(test_datasets))) * 1000:.2f}ms")
+
 
 if __name__ == "__main__":
     try:
@@ -174,4 +206,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Test error: {e}")
         import traceback
+
         traceback.print_exc()

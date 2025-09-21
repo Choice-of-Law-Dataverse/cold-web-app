@@ -176,7 +176,9 @@
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
-          <span class="label flex flex-row items-center">Choice of Law Issue</span>
+          <span class="label flex flex-row items-center"
+            >Choice of Law Issue</span
+          >
           <InfoPopover :text="tooltipChoiceofLawIssue" />
         </template>
         <UTextarea
@@ -200,7 +202,9 @@
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
-          <span class="label flex flex-row items-center">Translated Excerpt</span>
+          <span class="label flex flex-row items-center"
+            >Translated Excerpt</span
+          >
         </template>
         <UTextarea
           v-model="caseTranslatedExcerpt"
@@ -211,7 +215,9 @@
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
-          <span class="label flex flex-row items-center">Text of the Relevant Legal Provisions</span>
+          <span class="label flex flex-row items-center"
+            >Text of the Relevant Legal Provisions</span
+          >
         </template>
         <UTextarea
           v-model="caseTextofRelevantLegalProvisions"
@@ -269,7 +275,9 @@
 
       <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
         <template #label>
-          <span class="label flex flex-row items-center">Official Keywords</span>
+          <span class="label flex flex-row items-center"
+            >Official Keywords</span
+          >
         </template>
         <UTextarea
           v-model="caseOfficialKeywords"

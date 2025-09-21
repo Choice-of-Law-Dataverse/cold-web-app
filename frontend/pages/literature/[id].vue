@@ -10,7 +10,7 @@
     <template #publication-title="{ value }">
       <section v-if="value" class="section-gap">
         <div>
-          <span class="label flex flex-row items-center mb-0.5" >
+          <span class="label flex flex-row items-center mb-0.5">
             {{
               computedKeyLabelPairs.find(
                 (pair) => pair.key === 'Publication Title'

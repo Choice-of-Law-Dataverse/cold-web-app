@@ -3,12 +3,14 @@
 Simple test to see what the actual NocoDB API returns for Domestic Instruments
 without needing full backend dependencies.
 """
+
 import os
 import sys
 
 # Add the backend directory to Python path
 backend_dir = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, backend_dir)
+
 
 def test_nocodb_response():
     """Check what NocoDB actually returns."""
@@ -18,6 +20,7 @@ def test_nocodb_response():
         from unittest.mock import Mock
 
         import app.config as config_module
+
         config_module.config = Mock()
         config_module.config.NOCODB_BASE_URL = "your-nocodb-url"
         config_module.config.NOCODB_API_TOKEN = "your-token"
@@ -27,7 +30,7 @@ def test_nocodb_response():
         # Create NocoDBService instance
         nocodb = NocoDBService(
             base_url=config_module.config.NOCODB_BASE_URL,
-            api_token=config_module.config.NOCODB_API_TOKEN
+            api_token=config_module.config.NOCODB_API_TOKEN,
         )
 
         print("=== Testing NocoDB Response ===")
@@ -64,7 +67,9 @@ def test_nocodb_response():
     except Exception as e:
         print(f"Error: {e}")
         import traceback
+
         traceback.print_exc()
+
 
 if __name__ == "__main__":
     print("This test requires real NocoDB credentials.")

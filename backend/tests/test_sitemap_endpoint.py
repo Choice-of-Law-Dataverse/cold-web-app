@@ -11,7 +11,7 @@ import requests
 
 # Configuration
 API_BASE_URL = "https://cold-backend-beta.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/api/v1"
-JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzb21lLWZpeGVkLXVzZXIiLCJyb2xlIjoiYWRtaW4ifQ.3_fkTu5wVfv5OIAxY2S4xzEFSaPWRAyYdGXOppUQ8eg"
+JWT_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzb21lLWZpeGVkLXVzZXIiLCJyb2xlIjoiYWRtaW4ifQ.3_fkTu5wVfv5OIAxY2S4xzEFSaPWRAyYdGXOppUQ8eg"  # noqa: E501
 
 
 def test_sitemap_endpoint():
@@ -40,15 +40,11 @@ def test_sitemap_endpoint():
 
             # Show alpha environment data
             alpha_data = data.get("alpha", {})
-            print(
-                f"Alpha URLs ({alpha_data.get('base_url', 'N/A')}): {alpha_data.get('total_count', 0)}"
-            )
+            print(f"Alpha URLs ({alpha_data.get('base_url', 'N/A')}): {alpha_data.get('total_count', 0)}")
 
             # Show beta environment data
             beta_data = data.get("beta", {})
-            print(
-                f"Beta URLs ({beta_data.get('base_url', 'N/A')}): {beta_data.get('total_count', 0)}"
-            )
+            print(f"Beta URLs ({beta_data.get('base_url', 'N/A')}): {beta_data.get('total_count', 0)}")
 
             print(f"Tables processed: {len(data.get('tables_processed', []))}")
 

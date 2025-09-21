@@ -1,9 +1,5 @@
 import re
 
-import requests
-
-from app.config import config
-
 """
 =======================DATA HANDLING===========================
 """
@@ -120,19 +116,3 @@ def deduplicate_entries(entries):
             seen.add(key)
             deduped_entries.append(entry)
     return deduped_entries
-
-
-"""
-=========================QUERY LOGGING=======================
-"""
-
-
-# Utility function to get location from IP address using an external API
-def get_location(ip_address: str):
-    access_token = config.IPINFO_ACCESS_TOKEN
-    try:
-        response = requests.get(f"http://ipinfo.io/{ip_address}/json?token={access_token}")
-        return response.json()
-    except requests.RequestException as e:
-        print(f"Error getting location: {e}")
-        return None

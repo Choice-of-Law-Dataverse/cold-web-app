@@ -33,16 +33,12 @@ def create_mock_answers_result():
         "updated_at": "2025-06-16T13:32:55",
         "updated_by": "usaf3dew23c77lgf",
         "related_themes": [
-            {
-                "id": 4,
-                "Theme": "Consumer contracts",
-                "Created": "2025-03-21T08:57:00"
-            },
+            {"id": 4, "Theme": "Consumer contracts", "Created": "2025-03-21T08:57:00"},
             {
                 "id": 15,
                 "Theme": "Employment contracts",
-                "Created": "2025-03-21T08:57:00"
-            }
+                "Created": "2025-03-21T08:57:00",
+            },
         ],
         "More_Information": None,
         "Question_CoLD_ID": "34-FV",
@@ -50,14 +46,14 @@ def create_mock_answers_result():
             {
                 "id": 30,
                 "Created": "2023-11-27T13:03:00",
-                "Question": "Is further guidance on applicable law in international contracts providing protection to weaker parties necessary?",
+                "Question": "Is further guidance on applicable law in international contracts providing protection to weaker parties necessary?",  # noqa: E501
                 "nc_order": 1,
                 "Theme_Code": "Rev",
                 "created_at": "2025-06-10T15:08:37",
                 "ncRecordId": "rec0XQRyxFGp9he5X",
                 "Primary_Theme": "FV",
                 "Question_Number": "34",
-                "Answering_Options": "Yes, No, No strong opinions"
+                "Answering_Options": "Yes, No, No strong opinions",
             }
         ],
         "Interesting_Answer": 0,
@@ -74,11 +70,12 @@ def create_mock_answers_result():
                 "Irrelevant_": True,
                 "Alpha_3_Code": "ABW",
                 "Legal_Family": None,
-                "North_South_Divide": "Global South"
+                "North_South_Divide": "Global South",
             }
         ],
-        "Jurisdictions_Alpha_3_Code": "ABW"
+        "Jurisdictions_Alpha_3_Code": "ABW",
     }
+
 
 def test_mapping_repository():
     """Test the mapping repository functionality."""
@@ -99,6 +96,7 @@ def test_mapping_repository():
         print(f"Direct mappings count: {len(answers_mapping.get('mappings', {}).get('direct_mappings', {}))}")
     else:
         print("No Answers mapping found")
+
 
 def test_configurable_transformer():
     """Test the configurable transformer."""
@@ -121,10 +119,10 @@ def test_configurable_transformer():
         "Answer": "No data",
         "Jurisdictions": "Aruba",
         "Jurisdictions Alpha-3 code": "ABW",
-        "Question": "Is further guidance on applicable law in international contracts providing protection to weaker parties necessary?",
+        "Question": "Is further guidance on applicable law in international contracts providing protection to weaker parties necessary?",  # noqa: E501
         "Questions Theme Code": "FV",
         "Themes": "Consumer contracts, Employment contracts",
-        "Jurisdictions Irrelevant": "Yes"
+        "Jurisdictions Irrelevant": "Yes",
     }
 
     print("\n=== VERIFICATION ===")
@@ -132,6 +130,7 @@ def test_configurable_transformer():
         actual_value = transformed.get(key)
         status = "✓" if actual_value == expected_value else "✗"
         print(f"{status} {key}: expected='{expected_value}', actual='{actual_value}'")
+
 
 def test_legacy_transformer():
     """Test the legacy transformer using the new system."""
@@ -144,6 +143,7 @@ def test_legacy_transformer():
 
     print("Legacy transformer result (configuration-driven):")
     print(json.dumps(transformed, indent=2, default=str))
+
 
 def test_factory():
     """Test the DataTransformerFactory."""
@@ -158,14 +158,11 @@ def test_factory():
     print(json.dumps(transformed, indent=2, default=str))
 
     # Test unknown table (should fall back to configurable transformer)
-    mock_unknown = {
-        "source_table": "UnknownTable",
-        "data": "test",
-        "id": 123
-    }
+    mock_unknown = {"source_table": "UnknownTable", "data": "test", "id": 123}
 
     unknown_transformed = DataTransformerFactory.transform_result("UnknownTable", mock_unknown)
     print(f"\nUnknown table transformation (should be unchanged): {unknown_transformed == mock_unknown}")
+
 
 def test_performance_comparison():
     """Compare performance between old and new approaches."""
@@ -183,7 +180,8 @@ def test_performance_comparison():
     config_time = time.time() - start_time
 
     print(f"Configurable transformer: {config_time:.4f}s for {num_iterations} transformations")
-    print(f"Average per transformation: {(config_time/num_iterations)*1000:.2f}ms")
+    print(f"Average per transformation: {(config_time / num_iterations) * 1000:.2f}ms")
+
 
 if __name__ == "__main__":
     try:
@@ -196,4 +194,5 @@ if __name__ == "__main__":
     except Exception as e:
         print(f"Test error: {e}")
         import traceback
+
         traceback.print_exc()

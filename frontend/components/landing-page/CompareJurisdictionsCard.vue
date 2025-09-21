@@ -86,30 +86,9 @@ const resolvedButtonLink = computed(() => {
 // Client-side: detect visitor country and set rightIso3
 onMounted(async () => {
   if (!props.detectVisitorRight) return
-  try {
-    const res = await fetch('https://ipapi.co/json/')
-    if (!res.ok) {
-      rightIso3.value = 'CAN'
-      return
-    }
-    const data = await res.json()
-    // Prefer ISO3 if available; fallback to ISO2 -> ISO3 minimal conversion if needed
-    let iso3 = (data.country_code_iso3 || '').toUpperCase()
-    if (!iso3 && data.country) {
-      // Some providers might use 'country' like 'US' - map a few common ones; otherwise keep fallback
-      const iso2 = String(data.country).toUpperCase()
-      const quickMap = { US: 'USA', GB: 'GBR' }
-      iso3 = quickMap[iso2] || ''
-    }
-    // If Switzerland is detected, fallback to Canada per requirement
-    if (iso3 === 'CHE') {
-      iso3 = 'CAN'
-    }
-    rightIso3.value = iso3 && iso3.length === 3 ? iso3 : 'CAN'
-  } catch (_) {
-    // fallback to Canada if detection fails
-    rightIso3.value = 'CAN'
-  }
+
+  // Using Canada as the default fallback for visitor detection
+  rightIso3.value = 'CAN'
 })
 </script>
 

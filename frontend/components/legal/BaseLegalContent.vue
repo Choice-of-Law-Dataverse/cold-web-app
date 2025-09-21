@@ -166,6 +166,4 @@ onMounted(() => {
 .base-legal-content {
   margin-top: 16px; /* default spacing between items */
 }
-
-
 </style>

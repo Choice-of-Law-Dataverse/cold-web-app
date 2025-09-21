@@ -6,7 +6,10 @@ from pydantic import BaseModel, EmailStr, Field, model_validator
 
 class SuggestionPayload(BaseModel):
     # Accept any dict content as the "new data" suggestion from frontend
-    data: dict[str, Any] = Field(..., description="Arbitrary dictionary provided by the frontend as new data suggestion")
+    data: dict[str, Any] = Field(
+        ...,
+        description="Arbitrary dictionary provided by the frontend as new data suggestion",
+    )
     source: str | None = Field(None, description="Optional source/context identifier on the frontend")
     submitter_email: EmailStr | None = Field(None, description="Submitter e-mail address")
     submitter_comments: str | None = Field(None, description="Submitter comments")
@@ -15,7 +18,12 @@ class SuggestionPayload(BaseModel):
         "json_schema_extra": {
             "examples": [
                 {
-                    "data": {"table": "Answers", "id": "CHE_15-TC", "field": "Summary", "value": "Proposed correction"},
+                    "data": {
+                        "table": "Answers",
+                        "id": "CHE_15-TC",
+                        "field": "Summary",
+                        "value": "Proposed correction",
+                    },
                     "source": "detail-view",
                     "submitter_email": "user@example.com",
                     "submitter_comments": "Found a typo in the field value.",
@@ -32,16 +40,13 @@ class SuggestionResponse(BaseModel):
 
 # Typed suggestion schemas
 
+
 class CourtDecisionSuggestion(BaseModel):
     # Required
     case_citation: str = Field(..., description="Case Citation")
     date_publication: date = Field(..., description="Date [of Publication]")
-    official_source_url: str = Field(
-        ..., description="Official Source (URL)"
-    )
-    copyright_issues: str = Field(
-        ..., description="Copyright issues (description or flag)"
-    )
+    official_source_url: str = Field(..., description="Official Source (URL)")
+    copyright_issues: str = Field(..., description="Copyright issues (description or flag)")
 
     # Optional
     original_text: str | None = Field(None, description="Original Text")
@@ -52,15 +57,11 @@ class CourtDecisionSuggestion(BaseModel):
     relevant_facts: str | None = Field(None, description="Relevant Facts")
     pil_provisions: str | None = Field(None, description="PIL Provisions")
     choice_of_law_issue: str | None = Field(None, description="Choice of Law Issue")
-    courts_position: str | None = Field(
-        None, description="Court's Position"
-    )
+    courts_position: str | None = Field(None, description="Court's Position")
     translated_excerpt: str | None = Field(None, description="Translated Excerpt")
     text_of_relevant_legal_provisions: str | None = Field(None, description="Text of the Relevant Legal Provisions")
     quote: str | None = None
-    decision_date: date | None = Field(
-        None, description="Decision date or other relevant date"
-    )
+    decision_date: date | None = Field(None, description="Decision date or other relevant date")
     case_title: str | None = Field(None, description="Case Title")
     instance: str | None = Field(None, description="Instance")
     official_keywords: str | None = Field(None, description="Official Keywords")
@@ -96,15 +97,15 @@ class DomesticInstrumentSuggestion(BaseModel):
     # Required
     jurisdiction_link: str = Field(..., description="Jurisdiction Link")
     official_title: str = Field(
-        ..., description="Official Title [e.g. Bundesgesetz über das Internationale Privatrecht/Loi sur le droit international privé]"
+        ...,
+        description="Official Title [e.g. Bundesgesetz über das Internationale Privatrecht/Loi sur le droit international privé]",  # noqa: E501
     )
-    title_en: str = Field(
-        ..., description="Title (in English) [include demonym before the title]"
-    )
+    title_en: str = Field(..., description="Title (in English) [include demonym before the title]")
     entry_into_force: date = Field(..., description="Entry Into Force date")
     # Year of entry into force (automated)
     date_year_of_entry_into_force: int | None = Field(
-        None, description="Year of Entry Into Force (auto-derived from entry_into_force)"
+        None,
+        description="Year of Entry Into Force (auto-derived from entry_into_force)",
     )
 
     # Required: Source URL
@@ -143,9 +144,7 @@ class DomesticInstrumentSuggestion(BaseModel):
             raise ValueError("source_url is required")
         # auto-derive year if missing
         if self.entry_into_force and not self.date_year_of_entry_into_force:
-            object.__setattr__(
-                self, "date_year_of_entry_into_force", self.entry_into_force.year
-            )
+            object.__setattr__(self, "date_year_of_entry_into_force", self.entry_into_force.year)
         return self
 
 

@@ -21,9 +21,7 @@ class SuggestionService:
         # Prefer dedicated connection string for suggestions DB
         conn = config.SUGGESTIONS_SQL_CONN_STRING or config.SQL_CONN_STRING
         if not conn:
-            raise RuntimeError(
-                "No SQL connection string configured for suggestions storage"
-            )
+            raise RuntimeError("No SQL connection string configured for suggestions storage")
 
         self.engine = sa.create_engine(conn)
         # Use default schema (search_path) of the provided connection
@@ -254,9 +252,7 @@ class SuggestionService:
                 query = sa.select(*cols)
                 if created_col is not None:
                     query = query.order_by(created_col.desc())
-                query = query.limit(
-                    limit * 5
-                )  # read more since we'll filter client-side
+                query = query.limit(limit * 5)  # read more since we'll filter client-side
                 rows = session.execute(query).mappings().all()
 
                 results: list[dict] = []
@@ -269,16 +265,10 @@ class SuggestionService:
                         payload = raw_data
                     else:
                         try:
-                            payload = (
-                                _json.loads(raw_data) if raw_data is not None else {}
-                            )
+                            payload = _json.loads(raw_data) if raw_data is not None else {}
                         except Exception:
                             payload = {}
-                    status = (
-                        payload.get("moderation_status")
-                        if isinstance(payload, dict)
-                        else None
-                    )
+                    status = payload.get("moderation_status") if isinstance(payload, dict) else None
                     if status in {"approved", "rejected"}:
                         continue
                     results.append(
@@ -286,19 +276,11 @@ class SuggestionService:
                             "id": r["id"],
                             "created_at": r.get("created_at"),
                             "payload": payload,
-                            "source": r.get("source")
-                            if source_col is not None
-                            else None,
-                            "username": r.get("username")
-                            if username_col is not None
-                            else None,
-                            "user_email": r.get("user_email")
-                            if user_email_col is not None
-                            else None,
+                            "source": r.get("source") if source_col is not None else None,
+                            "username": r.get("username") if username_col is not None else None,
+                            "user_email": r.get("user_email") if user_email_col is not None else None,
                             "model": r.get("model") if model_col is not None else None,
-                            "case_citation": r.get("case_citation")
-                            if citation_col is not None
-                            else None,
+                            "case_citation": r.get("case_citation") if citation_col is not None else None,
                         }
                     )
                 return results[:limit]
@@ -341,11 +323,7 @@ class SuggestionService:
             if table == "case_analyzer":
                 import json as _json
 
-                sel = (
-                    sa.select(target.c.data)
-                    .where(target.c.id == suggestion_id)
-                    .limit(1)
-                )
+                sel = sa.select(target.c.data).where(target.c.id == suggestion_id).limit(1)
                 row = session.execute(sel).first()
                 current: dict[str, Any]
                 if row and isinstance(row[0], dict):
@@ -361,11 +339,7 @@ class SuggestionService:
                 if merged_id is not None:
                     current["merged_record_id"] = int(merged_id)
                 new_val = _json.dumps(self._to_jsonable(current))
-                upd = (
-                    sa.update(target)
-                    .where(target.c.id == suggestion_id)
-                    .values(data=new_val)
-                )
+                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val)
                 session.execute(upd)
                 session.commit()
                 return
@@ -392,27 +366,19 @@ class SuggestionService:
                 True,
             )
             if merged_id is not None:
-                merged_id_json = sa.func.to_jsonb(
-                    sa.cast(sa.literal(merged_id), sa.Integer)
-                )
+                merged_id_json = sa.func.to_jsonb(sa.cast(sa.literal(merged_id), sa.Integer))
                 update_expr = sa.func.jsonb_set(
                     update_expr,
                     "{merged_record_id}",
                     merged_id_json,
                     True,
                 )
-            stmt = (
-                sa.update(target)
-                .where(target.c.id == suggestion_id)
-                .values(payload=update_expr)
-            )
+            stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=update_expr)
             session.execute(stmt)
             session.commit()
 
     # New: update the entire payload for a specific suggestion (used to persist edited fields)
-    def update_payload(
-        self, table: str, suggestion_id: int, payload: dict[str, Any]
-    ) -> None:
+    def update_payload(self, table: str, suggestion_id: int, payload: dict[str, Any]) -> None:
         target = self.tables.get(table)
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
@@ -420,11 +386,7 @@ class SuggestionService:
             if table == "case_analyzer":
                 import json as _json
 
-                sel = (
-                    sa.select(target.c.data)
-                    .where(target.c.id == suggestion_id)
-                    .limit(1)
-                )
+                sel = sa.select(target.c.data).where(target.c.id == suggestion_id).limit(1)
                 row = session.execute(sel).first()
                 current: dict[str, Any]
                 if row and isinstance(row[0], dict):
@@ -436,19 +398,11 @@ class SuggestionService:
                         current = {}
                 merged = {**current, **payload}
                 new_val = _json.dumps(self._to_jsonable(merged))
-                upd = (
-                    sa.update(target)
-                    .where(target.c.id == suggestion_id)
-                    .values(data=new_val)
-                )
+                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val)
                 session.execute(upd)
                 session.commit()
                 return
 
-            stmt = (
-                sa.update(target)
-                .where(target.c.id == suggestion_id)
-                .values(payload=self._to_jsonable(payload))
-            )
+            stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=self._to_jsonable(payload))
             session.execute(stmt)
             session.commit()

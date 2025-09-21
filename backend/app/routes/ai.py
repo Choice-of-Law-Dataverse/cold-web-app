@@ -12,17 +12,11 @@ router = APIRouter(prefix="/ai", tags=["AI"], dependencies=[Depends(verify_jwt_t
 @router.post(
     "/classify_query",
     summary="Classify a free-text user query into a predefined category",
-    description=(
-        "Uses an external model to classify the user's query into one of the predefined CoLD categories."
-    ),
+    description=("Uses an external model to classify the user's query into one of the predefined CoLD categories."),
     responses={
         200: {
             "description": "Classification result",
-            "content": {
-                "application/json": {
-                    "example": "Party autonomy (concept)"
-                }
-            },
+            "content": {"application/json": {"example": "Party autonomy (concept)"}},
         },
         502: {"description": "Upstream AI service error."},
     },

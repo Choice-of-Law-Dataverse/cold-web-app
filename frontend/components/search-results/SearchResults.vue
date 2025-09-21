@@ -94,7 +94,7 @@
               </span>
             </template>
             <!-- Loading placeholder to maintain space -->
-            <span v-else class="opacity-0" style="height: 1.5rem;">
+            <span v-else class="opacity-0" style="height: 1.5rem">
               <!-- Invisible placeholder to maintain layout -->
             </span>
           </span>

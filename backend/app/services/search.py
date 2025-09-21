@@ -177,19 +177,27 @@ class SearchService:
                     arr_sql = f"{alias}.{self._quote_ident(arr_name)}"
                     # EXISTS over jsonb array
                     if isinstance(v, str):
-                        or_parts.append(f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE elem->>{self._quote_json_key(field_name)} ILIKE '%' || :{p_name} || '%')")
+                        or_parts.append(
+                            f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE elem->>{self._quote_json_key(field_name)} ILIKE '%' || :{p_name} || '%')"  # noqa: E501
+                        )
                         params[p_name] = v
                     elif isinstance(v, bool):
                         # Compare boolean by casting text to boolean
-                        or_parts.append(f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE (elem->>{self._quote_json_key(field_name)})::boolean = :{p_name})")
+                        or_parts.append(
+                            f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE (elem->>{self._quote_json_key(field_name)})::boolean = :{p_name})"  # noqa: E501
+                        )
                         params[p_name] = v
                     elif isinstance(v, (int, float)):
                         # numeric compare: cast to numeric where possible
-                        or_parts.append(f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE (elem->>{self._quote_json_key(field_name)})::numeric = :{p_name})")
+                        or_parts.append(
+                            f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE (elem->>{self._quote_json_key(field_name)})::numeric = :{p_name})"  # noqa: E501
+                        )
                         params[p_name] = v
                     else:
                         # fallback to text match
-                        or_parts.append(f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE elem->>{self._quote_json_key(field_name)} = :{p_name})")
+                        or_parts.append(
+                            f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE elem->>{self._quote_json_key(field_name)} = :{p_name})"  # noqa: E501
+                        )
                         params[p_name] = str(v)
                 else:
                     col_sql = f"{alias}.{self._quote_ident(source_path)}"
@@ -334,7 +342,12 @@ class SearchService:
                     results.append(transformed)
             return results
         except Exception as e:
-            logger.error("Error querying filtered table %s with filters %s: %s", table, filters, e)
+            logger.error(
+                "Error querying filtered table %s with filters %s: %s",
+                table,
+                filters,
+                e,
+            )
             return []
 
     """
@@ -368,7 +381,15 @@ class SearchService:
                     tables.extend(values)
         return tables, jurisdictions, themes
 
-    def full_text_search(self, search_string, filters=None, page=1, page_size=50, sort_by_date=False, response_type: str = "parsed"):
+    def full_text_search(
+        self,
+        search_string,
+        filters=None,
+        page=1,
+        page_size=50,
+        sort_by_date=False,
+        response_type: str = "parsed",
+    ):
         """
         Perform full-text search via data_views.search_all and return correct total_matches
         along with full record data from NocoDB.

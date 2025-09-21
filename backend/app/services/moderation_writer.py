@@ -152,7 +152,11 @@ class MainDBWriter:
                 continue
             col = table.c[db_key]
             # Treat empty string as NULL for non-text columns
-            if isinstance(col.type, (sa.Integer, sa.Numeric, sa.Date, sa.Boolean)) and isinstance(value, str) and value.strip() == "":
+            if (
+                isinstance(col.type, (sa.Integer, sa.Numeric, sa.Date, sa.Boolean))
+                and isinstance(value, str)
+                and value.strip() == ""
+            ):
                 coerced[db_key] = None
                 continue
             # Coerce based on actual column type
