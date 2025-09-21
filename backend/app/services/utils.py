@@ -1,4 +1,7 @@
+import logging
 import re
+
+logger = logging.getLogger(__name__)
 
 """
 =======================DATA HANDLING===========================
@@ -85,12 +88,12 @@ def find_problematic_subdict(data):
                 problematic_chars = re.findall(r"[^\x00-\xFF]", value)
                 # problematic_chars = re.findall(r'[\x00-\x08\x0E-\x1F\x7F-\x9F]', value)
                 if problematic_chars:
-                    print(f"Problematic subdictionary found under key '{key}':")
-                    print(subdict)
-                    print("Problematic characters:")
+                    logger.debug("Problematic subdictionary found under key '%s':", key.strip())
+                    logger.debug(subdict)
+                    logger.debug("Problematic characters:")
                     for char in problematic_chars:
-                        print(f"Character: '{char}' (Unicode: U+{ord(char):04X})")
-                    print("=" * 50)
+                        logger.debug("Character: '%s' (Unicode: U+%04X)", char, ord(char))
+                    logger.debug("=" * 50)
                     problematic_dicts.append(subdict)
                     break
 

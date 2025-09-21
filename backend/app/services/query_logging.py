@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Callable
 from datetime import UTC, datetime
 
@@ -6,6 +7,8 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
 from app.config import config
+
+logger = logging.getLogger(__name__)
 
 client = MongoClient(config.MONGODB_CONN_STRING, server_api=ServerApi("1"))
 db = client["query_logs"]
@@ -50,7 +53,6 @@ async def log_query(request: Request, call_next: Callable) -> Response:
 
     collection.insert_one(log_data)
     print("Logged query:", log_data)
-    # print("Query was not logged")
 
     response = await call_next(request)
     return response

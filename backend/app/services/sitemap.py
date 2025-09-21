@@ -1,8 +1,11 @@
+import logging
 from datetime import date
 from pathlib import Path
 
 from app.config import config
 from app.services.database import Database
+
+logger = logging.getLogger(__name__)
 
 
 class SitemapService:
@@ -36,14 +39,14 @@ class SitemapService:
                         }
                     )
             except Exception as e:
-                print(f"Error processing table {table_name}: {e}")
+                logger.warning("Error processing table %s: %s", table_name.strip(), str(e).strip())
         # Static entries from frontend/pages
         try:
             static_paths = self._get_static_paths()
             for route in static_paths:
                 entries.append({"loc": route, "lastmod": date.today().isoformat()})
         except Exception as e:
-            print(f"Error scanning static pages: {e}")
+            logger.warning("Error scanning static pages: %s", str(e).strip())
         return entries
 
     def _get_table_ids(self, table_name):
@@ -59,7 +62,7 @@ class SitemapService:
                     ids.append(row["id"])
             return ids
         except Exception as e:
-            print(f"Error getting IDs from table {table_name}: {e}")
+            logger.warning("Error getting IDs from table %s: %s", table_name.strip(), str(e).strip())
             return []
 
     def _get_static_paths(self):
