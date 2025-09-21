@@ -3,21 +3,19 @@
     <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
       <div class="col-span-12">
         <UCard class="cold-ucard">
-          <div class="popular-searches-container flex flex-col gap-8">
-            <!-- Title Section -->
-            <div>
-              <h3 class="text-left md:whitespace-nowrap">
-                Compare
-                {{ formattedJurisdiction?.Name || 'this jurisdiction' }} with
-                other jurisdictions
-              </h3>
-            </div>
-            
-            <!-- Jurisdiction Selector -->
-            <div v-if="availableJurisdictions && availableJurisdictions.length > 0" class="flex flex-col md:flex-row gap-4 md:items-center">
-              <span class="text-sm text-gray-600 md:whitespace-nowrap">
-                Select a jurisdiction to compare:
-              </span>
+          <div
+            class="popular-searches-container flex flex-col md:flex-row gap-8 items-stretch md:items-center"
+          >
+            <h3 class="text-left md:whitespace-nowrap">
+              Compare
+              {{ formattedJurisdiction?.Name || 'this jurisdiction' }} with
+              other jurisdictions
+            </h3>
+
+            <div
+              v-if="availableJurisdictions && availableJurisdictions.length > 0"
+              class="flex flex-col md:flex-row gap-4 md:items-center"
+            >
               <div class="w-full md:w-auto">
                 <JurisdictionSelectMenu
                   :countries="availableJurisdictions"
@@ -26,15 +24,19 @@
                 />
               </div>
             </div>
-            
+
             <!-- Loading state -->
             <div v-else-if="isLoading" class="flex items-center gap-2">
-              <span class="text-sm text-gray-600">Loading jurisdictions...</span>
+              <span class="text-sm text-gray-600"
+                >Loading jurisdictions...</span
+              >
             </div>
-            
+
             <!-- Error/No data state -->
             <div v-else class="flex items-center gap-2">
-              <span class="text-sm text-gray-500">Jurisdictions unavailable (API connection required)</span>
+              <span class="text-sm text-gray-500"
+                >Jurisdictions unavailable (API connection required)</span
+              >
             </div>
           </div>
         </UCard>
@@ -71,19 +73,20 @@ const currentIso3Code = computed(() => {
 // Filter out the current jurisdiction from available options
 const availableJurisdictions = computed(() => {
   if (!jurisdictions.value || !currentIso3Code.value) return []
-  
+
   return jurisdictions.value.filter(
-    jurisdiction => jurisdiction.alpha3Code?.toUpperCase() !== currentIso3Code.value
+    (jurisdiction) =>
+      jurisdiction.alpha3Code?.toUpperCase() !== currentIso3Code.value
   )
 })
 
 // Handle jurisdiction selection and navigate to comparison page
 const onJurisdictionSelected = (selectedJurisdiction) => {
   if (!selectedJurisdiction?.alpha3Code || !currentIso3Code.value) return
-  
+
   const currentCode = currentIso3Code.value.toLowerCase()
   const selectedCode = selectedJurisdiction.alpha3Code.toLowerCase()
-  
+
   // Navigate to comparison page with format: current+selected
   const comparisonUrl = `/jurisdiction-comparison/${currentCode}+${selectedCode}`
   router.push(comparisonUrl)

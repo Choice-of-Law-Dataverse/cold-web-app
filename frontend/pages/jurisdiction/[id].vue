@@ -121,8 +121,9 @@
       </template>
     </template>
   </BaseDetailLayout>
-  <JurisdictionSelector
-    :formattedJurisdiction="jurisdictionData"
+  <JurisdictionSelector 
+    v-if="jurisdictionData" 
+    :formattedJurisdiction="jurisdictionData" 
   />
   <ClientOnly>
     <JurisdictionQuestions
