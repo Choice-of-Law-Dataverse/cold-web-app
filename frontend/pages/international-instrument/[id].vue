@@ -81,7 +81,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import BaseLegalContent from '@/components/legal/BaseLegalContent.vue'
 import InfoPopover from '~/components/ui/InfoPopover.vue'
@@ -95,7 +95,6 @@ import { useHead } from '#imports'
 
 const config = useRuntimeConfig()
 const route = useRoute()
-const router = useRouter()
 
 // Use TanStack Vue Query for data fetching
 const table = ref('International Instruments')
@@ -166,22 +165,6 @@ watch(
         },
       ],
     })
-  },
-  { immediate: true }
-)
-
-// Handle not found errors
-watch(
-  error,
-  (newError) => {
-    if (newError?.isNotFound) {
-      router.push({
-        path: '/error',
-        query: { message: 'International instrument not found' },
-      })
-    } else if (newError) {
-      console.error('Error fetching international instrument:', newError)
-    }
   },
   { immediate: true }
 )

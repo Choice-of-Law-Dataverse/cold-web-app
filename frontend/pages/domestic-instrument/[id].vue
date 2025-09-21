@@ -194,7 +194,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import LegalProvision from '@/components/legal/LegalProvision.vue'
 import InfoPopover from '~/components/ui/InfoPopover.vue'
@@ -207,7 +207,6 @@ import { legalInstrumentConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
 
 const route = useRoute()
-const router = useRouter()
 const textType = ref('Full Text of the Provision (English Translation)')
 const hasEnglishTranslation = ref(false)
 
@@ -263,22 +262,6 @@ watch(
         },
       ],
     })
-  },
-  { immediate: true }
-)
-
-// Handle not found errors
-watch(
-  error,
-  (newError) => {
-    if (newError?.isNotFound) {
-      router.push({
-        path: '/error',
-        query: { message: 'Domestic instrument not found' },
-      })
-    } else if (newError) {
-      console.error('Error fetching legal instrument:', newError)
-    }
   },
   { immediate: true }
 )

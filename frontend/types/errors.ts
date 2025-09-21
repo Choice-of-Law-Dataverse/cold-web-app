@@ -1,6 +1,81 @@
 import type { ApiRequestBody } from './api'
 
 /**
+ * Create a NotFound error using Nuxt's createError
+ */
+export function createNotFoundError(
+  endpoint: string,
+  method: string,
+  body: ApiRequestBody | undefined,
+  originalError: unknown,
+  customMessage?: string
+) {
+  const table = body && 'table' in body ? body.table : undefined
+  const id = body && 'id' in body ? body.id : undefined
+  const resource = table ? table : endpoint
+  const itemId = id || 'Item'
+  const finalMessage = customMessage || `${itemId} not found in ${resource}`
+
+  return createError({
+    statusCode: 404,
+    statusMessage: finalMessage,
+    data: {
+      name: 'NotFoundError',
+      table,
+      id,
+      endpoint,
+      method,
+      originalError:
+        originalError instanceof Error
+          ? {
+              name: originalError.name,
+              message: originalError.message,
+              stack: originalError.stack,
+            }
+          : originalError,
+    },
+  })
+}
+
+/**
+ * Create an API error using Nuxt's createError
+ */
+export function createApiError(
+  endpoint: string,
+  method: string,
+  body: ApiRequestBody | undefined,
+  originalError: unknown,
+  customMessage?: string
+) {
+  const table = body && 'table' in body ? body.table : undefined
+  const operation = table ? `fetch ${table}` : `call ${endpoint}`
+  const baseErrorMessage =
+    originalError instanceof Error ? originalError.message : 'Unknown error'
+
+  const finalMessage =
+    customMessage || `Failed to ${operation}: ${baseErrorMessage}`
+
+  return createError({
+    statusCode: 500,
+    statusMessage: finalMessage,
+    data: {
+      name: 'ApiError',
+      table,
+      endpoint,
+      method,
+      originalError:
+        originalError instanceof Error
+          ? {
+              name: originalError.name,
+              message: originalError.message,
+              stack: originalError.stack,
+            }
+          : originalError,
+    },
+  })
+}
+
+/**
  * Custom error class for "not found" errors
  * Used when API returns a 404 or indicates resource not found
  */
@@ -23,9 +98,10 @@ export class NotFoundError extends Error {
     const table = body && 'table' in body ? body.table : undefined
     const id = body && 'id' in body ? body.id : undefined
 
-    // Create meaningful error message for not found
+    // Create meaningful error message for not found with ID pattern
     const resource = table ? table : endpoint
-    const finalMessage = customMessage || `${resource} not found`
+    const itemId = id || 'Item'
+    const finalMessage = customMessage || `${itemId} not found in ${resource}`
 
     super(finalMessage)
 

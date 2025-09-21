@@ -161,7 +161,7 @@
 
 <script setup>
 import { computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 // import JurisdictionComparison from '@/components/jurisdiction-comparison/JurisdictionComparison.vue'
 import JurisdictionComparisonLink from '@/components/ui/JurisdictionComparisonLink.vue'
@@ -179,7 +179,6 @@ import { jurisdictionConfig } from '@/config/pageConfigs'
 import { useHead } from '#app'
 
 const route = useRoute()
-const router = useRouter()
 
 const { keyLabelPairs, valueClassMap } = jurisdictionConfig
 
@@ -259,28 +258,5 @@ watch(
     })
   },
   { immediate: true }
-)
-
-// Handle errors from any of the queries
-watch(
-  [
-    error,
-    domesticInstrumentCountError,
-    courtDecisionCountError,
-    //literatureError, specialistsError
-  ],
-  (errors) => {
-    const firstError = errors.filter(Boolean)?.[0]
-    if (firstError) {
-      if (firstError.message === 'no entry found with the specified id') {
-        router.push({
-          path: '/error',
-          query: { message: 'Jurisdiction not found' },
-        })
-      } else {
-        console.error('Error fetching data:', firstError)
-      }
-    }
-  }
 )
 </script>

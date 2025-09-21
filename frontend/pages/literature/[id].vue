@@ -61,7 +61,7 @@
 
 <script setup>
 import { ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
@@ -70,7 +70,6 @@ import { literatureConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
 
 const route = useRoute()
-const router = useRouter()
 
 // Use TanStack Vue Query for data fetching
 const table = ref('Literature')
@@ -110,36 +109,6 @@ watch(
         },
       ],
     })
-  },
-  { immediate: true }
-)
-
-// Handle not found errors
-watch(
-  error,
-  (newError) => {
-    if (newError?.isNotFound) {
-      router.push({
-        path: '/error',
-        query: { message: 'Literature not found' },
-      })
-    } else if (newError) {
-      console.error('Error fetching literature:', newError)
-    }
-  },
-  { immediate: true }
-)
-
-// Handle empty data as not found
-watch(
-  literature,
-  (newData) => {
-    if (newData && Object.keys(newData).length === 0) {
-      router.push({
-        path: '/error',
-        query: { message: 'Literature not found' },
-      })
-    }
   },
   { immediate: true }
 )

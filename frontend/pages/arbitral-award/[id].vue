@@ -13,7 +13,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
 import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
@@ -21,7 +21,6 @@ import { arbitralAwardConfig } from '@/config/pageConfigs'
 import { useHead } from '#imports'
 
 const route = useRoute()
-const router = useRouter()
 
 // Use TanStack Vue Query for data fetching
 const table = ref('Arbitral Awards')
@@ -98,22 +97,4 @@ watch(
   },
   { immediate: true }
 )
-
-// Handle not found errors
-watch(
-  error,
-  (newError) => {
-    if (newError?.isNotFound) {
-      router.push({
-        path: '/error',
-        query: { message: 'Arbitral award not found' },
-      })
-    } else if (newError) {
-      console.error('Error fetching arbitral award:', newError)
-    }
-  },
-  { immediate: true }
-)
 </script>
-
-<style scoped></style>
