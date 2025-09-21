@@ -43,53 +43,59 @@
           <span
             class="text-right md:text-left w-full md:w-auto whitespace-nowrap result-value-small flex items-center gap-2 results-margin-fix"
           >
-            <template v-if="props.totalMatches > 1">
-              <span class="mr-[-2px]">
-                {{ formattedTotalMatches }} results sorted by
+            <template v-if="!loading">
+              <template v-if="props.totalMatches > 1">
+                <span class="mr-[-2px]">
+                  {{ formattedTotalMatches }} results sorted by
+                </span>
+                <!-- Hidden Measurement Element -->
+                <span
+                  ref="measureRef"
+                  class="absolute opacity-0 pointer-events-none select-none font-inherit text-base"
+                  style="
+                    position: absolute;
+                    left: -9999px;
+                    top: 0;
+                    white-space: pre;
+                  "
+                  aria-hidden="true"
+                >
+                  {{ selectValue }}
+                </span>
+                <!-- Sort Selector -->
+                <USelect
+                  ref="selectRef"
+                  variant="none"
+                  :options="['relevance', 'date']"
+                  :model-value="selectValue"
+                  :style="{
+                    color: 'var(--color-cold-purple)',
+                    width: selectWidth,
+                    textAlign: 'right',
+                    minWidth: 'unset',
+                    maxWidth: 'none',
+                    marginLeft: '0',
+                    paddingLeft: '0',
+                  }"
+                  class="flex-shrink-0 text-right"
+                  @update:modelValue="handleSortChange"
+                >
+                  <template #trailing>
+                    <UIcon
+                      name="i-material-symbols:keyboard-arrow-down"
+                      class="w-5 h-5"
+                      style="color: var(--color-cold-purple)"
+                    />
+                  </template>
+                </USelect>
+              </template>
+              <span v-else style="margin-right: 0; padding-right: 0">
+                {{ formattedTotalMatches }} {{ resultLabel }}
               </span>
-              <!-- Hidden Measurement Element -->
-              <span
-                ref="measureRef"
-                class="absolute opacity-0 pointer-events-none select-none font-inherit text-base"
-                style="
-                  position: absolute;
-                  left: -9999px;
-                  top: 0;
-                  white-space: pre;
-                "
-                aria-hidden="true"
-              >
-                {{ selectValue }}
-              </span>
-              <!-- Sort Selector -->
-              <USelect
-                ref="selectRef"
-                variant="none"
-                :options="['relevance', 'date']"
-                :model-value="selectValue"
-                :style="{
-                  color: 'var(--color-cold-purple)',
-                  width: selectWidth,
-                  textAlign: 'right',
-                  minWidth: 'unset',
-                  maxWidth: 'none',
-                  marginLeft: '0',
-                  paddingLeft: '0',
-                }"
-                class="flex-shrink-0 text-right"
-                @update:modelValue="handleSortChange"
-              >
-                <template #trailing>
-                  <UIcon
-                    name="i-material-symbols:keyboard-arrow-down"
-                    class="w-5 h-5"
-                    style="color: var(--color-cold-purple)"
-                  />
-                </template>
-              </USelect>
             </template>
-            <span v-else style="margin-right: 0; padding-right: 0">
-              {{ formattedTotalMatches }} {{ resultLabel }}
+            <!-- Loading placeholder to maintain space -->
+            <span v-else class="opacity-0" style="height: 1.5rem;">
+              <!-- Invisible placeholder to maintain layout -->
             </span>
           </span>
         </div>
@@ -97,7 +103,9 @@
         <!-- Results Content -->
         <div class="results-content mt-4">
           <!-- Loading State -->
-          <LoadingCard v-if="loading && !allResults.length" />
+          <div v-if="loading && !allResults.length" class="results-grid">
+            <LoadingCard v-for="n in 6" :key="`loading-${n}`" />
+          </div>
 
           <!-- No Results State -->
           <NoSearchResults v-else-if="!loading && !allResults.length" />
