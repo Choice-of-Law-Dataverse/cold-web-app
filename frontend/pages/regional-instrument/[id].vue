@@ -1,12 +1,13 @@
 <template>
-  <BaseDetailLayout
-    :loading="loading"
-    :resultData="processedRegionalInstrument"
-    :keyLabelPairs="computedKeyLabelPairs"
-    :valueClassMap="valueClassMap"
-    :showSuggestEdit="true"
-    sourceTable="Regional Instrument"
-  >
+  <EntityErrorBoundary entity-type="Regional Instrument">
+    <BaseDetailLayout
+      :loading="loading"
+      :resultData="processedRegionalInstrument"
+      :keyLabelPairs="computedKeyLabelPairs"
+      :valueClassMap="valueClassMap"
+      :showSuggestEdit="true"
+      sourceTable="Regional Instrument"
+    >
     <template #literature>
       <section class="section-gap p-0 m-0">
         <RelatedLiterature
@@ -74,12 +75,14 @@
       </section>
     </template>
   </BaseDetailLayout>
+  </EntityErrorBoundary>
 </template>
 
 <script setup>
 import { ref, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import EntityErrorBoundary from '@/components/ui/EntityErrorBoundary.vue'
 import { useRecordDetails } from '@/composables/useRecordDetails'
 import { useDetailDisplay } from '@/composables/useDetailDisplay'
 import { regionalInstrumentConfig } from '@/config/pageConfigs'
@@ -89,7 +92,6 @@ import InfoPopover from '~/components/ui/InfoPopover.vue'
 import { useHead } from '#imports'
 
 const route = useRoute()
-const router = useRouter()
 
 // Use TanStack Vue Query for data fetching
 const table = ref('Regional Instruments')
@@ -140,22 +142,6 @@ watch(
         },
       ],
     })
-  },
-  { immediate: true }
-)
-
-// Handle not found errors
-watch(
-  error,
-  (newError) => {
-    if (newError?.isNotFound) {
-      router.push({
-        path: '/error',
-        query: { message: 'Regional instrument not found' },
-      })
-    } else if (newError) {
-      console.error('Error fetching regional instrument:', newError)
-    }
   },
   { immediate: true }
 )

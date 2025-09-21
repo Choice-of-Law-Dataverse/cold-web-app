@@ -34,10 +34,14 @@ export default defineNuxtPlugin((nuxt) => {
         // Disable background refetching on server
         refetchOnMount: import.meta.server ? false : true,
         refetchInterval: false,
+        // Throw errors instead of returning them in state
+        throwOnError: true,
       },
       mutations: {
         // Retry failed mutations once
         retry: import.meta.server ? 0 : 1,
+        // Throw errors for mutations too
+        throwOnError: true,
       },
     },
   })

@@ -1,5 +1,5 @@
 import type { ApiRequestBody, ApiResponse } from '~/types/api'
-import { ApiError, NotFoundError } from '~/types/errors'
+import { ApiError, NotFoundError, createApiError, createNotFoundError } from '~/types/errors'
 
 /**
  * Shared API client hook for TanStack Query composables
@@ -55,7 +55,7 @@ export function useApiClient() {
 
       if (!response.ok) {
         if (response.status === 404) {
-          throw new NotFoundError(
+          throw createNotFoundError(
             endpoint,
             method,
             body,
@@ -63,7 +63,7 @@ export function useApiClient() {
           )
         }
 
-        throw new ApiError(
+        throw createApiError(
           endpoint,
           method,
           body,
@@ -81,7 +81,7 @@ export function useApiClient() {
           errorMessage.includes('not found') ||
           errorMessage.includes('no entry found')
         ) {
-          throw new NotFoundError(
+          throw createNotFoundError(
             endpoint,
             method,
             body,
@@ -89,7 +89,7 @@ export function useApiClient() {
           )
         }
 
-        throw new ApiError(
+        throw createApiError(
           endpoint,
           method,
           body,
@@ -104,7 +104,7 @@ export function useApiClient() {
       }
 
       if (err instanceof Error && err.name === 'AbortError') {
-        throw new ApiError(
+        throw createApiError(
           endpoint,
           method,
           body,
@@ -113,7 +113,7 @@ export function useApiClient() {
         )
       }
 
-      throw new ApiError(endpoint, method, body, err)
+      throw createApiError(endpoint, method, body, err)
     } finally {
       clearTimeout(timeoutId)
     }

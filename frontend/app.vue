@@ -1,12 +1,21 @@
 <template>
-  <NuxtLayout>
-    <NuxtPage />
-    <CookieConsentBanner />
-  </NuxtLayout>
+  <ErrorBoundary>
+    <NuxtLayout>
+      <NuxtPage />
+      <CookieConsentBanner />
+    </NuxtLayout>
+    <NotificationContainer
+      v-if="$toast && $toast.notifications"
+      :notifications="$toast.notifications.value || $toast.notifications"
+      @remove="$toast.remove"
+    />
+  </ErrorBoundary>
 </template>
 
 <script setup>
 import CookieConsentBanner from '@/components/ui/CookieConsentBanner.vue'
+import ErrorBoundary from '@/components/ui/ErrorBoundary.vue'
+import NotificationContainer from '@/components/ui/NotificationContainer.vue'
 
 useSeoMeta({
   description: 'Choice of Law Dataverse',
