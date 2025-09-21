@@ -1,5 +1,6 @@
 <template>
-  <BaseDetailLayout
+  <div>
+    <BaseDetailLayout
     :loading="isLoading.value"
     :result-data="jurisdictionData"
     :key-label-pairs="keyLabelPairsWithoutLegalFamily"
@@ -154,6 +155,7 @@
       </div>
     </template>
   </ClientOnly>
+  </div>
 </template>
 
 <script setup>

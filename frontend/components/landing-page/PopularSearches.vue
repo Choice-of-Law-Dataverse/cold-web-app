@@ -38,7 +38,7 @@ const searchSuggestions = ref([
   "Party Autonomy in Switzerland",
 ]);
 
-function formatQuery(query) {
+function _formatQuery(query) {
   return query.replace(/ /g, "+");
 }
 

@@ -11,7 +11,7 @@ export function useSourceFetching({
   fetchOupChapter = false,
   fetchPrimarySource = false,
 }) {
-  const config = useRuntimeConfig();
+  const _config = useRuntimeConfig();
   const primarySource = ref(null);
   const oupChapterSource = ref(null);
   const loading = ref(false);

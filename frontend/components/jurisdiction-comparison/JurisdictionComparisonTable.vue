@@ -109,7 +109,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+const _props = defineProps({
   rows: {
     type: Array,
     required: true,
@@ -131,7 +131,7 @@ const props = defineProps({
 const emit = defineEmits(["update-rows"]);
 
 // Example function to update rows (emit changes back to parent)
-function filterRows(newFilteredRows) {
+function _filterRows(newFilteredRows) {
   emit("update-rows", newFilteredRows);
 }
 

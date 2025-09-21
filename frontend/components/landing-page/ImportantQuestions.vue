@@ -38,7 +38,7 @@
               <div>
                 <h3 class="mt-4">
                   <span
-                    v-for="(option, idx) in answers"
+                    v-for="option in answers"
                     :key="option"
                     class="answer-option mr-4 cursor-pointer"
                     :class="{ 'selected-answer': selectedAnswer === option }"
@@ -50,7 +50,7 @@
                 <div style="position: relative">
                   <p class="label regions-scroll mb-6 ml-1 mt-6">
                     <span
-                      v-for="(region, idx) in regions"
+                      v-for="region in regions"
                       :key="region"
                       class="region-label mr-4"
                       :class="{ 'selected-region': selectedRegion === region }"
@@ -267,7 +267,7 @@ function computeRows() {
     } else {
       rowsCount.value = 3;
     }
-  } catch (err) {
+  } catch {
     rowsCount.value = 3;
   }
 }

@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, watch } from "vue";
 import {
   generateLegalProvisionLink,
   parseLegalProvisionLink,
@@ -108,7 +108,7 @@ const instrumentIds = computed(() => {
 });
 
 // Fetch full records via composable (Domestic Instruments), pick titles locally
-const { dataMap: recordMap, isLoading } = useRecordDetailsList(
+const { dataMap: recordMap, isLoading: _isLoading } = useRecordDetailsList(
   computed(() => "Domestic Instruments"),
   instrumentIds,
 );

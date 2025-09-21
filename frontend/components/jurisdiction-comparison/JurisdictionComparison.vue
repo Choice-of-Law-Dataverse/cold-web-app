@@ -123,7 +123,7 @@ const props = defineProps({
 });
 
 const router = useRouter(); // Access the router to update the query parameters
-const { data: jurisdictions, isLoading: jurisdictionsLoading } =
+const { data: jurisdictions, isLoading: _jurisdictionsLoading } =
   useJurisdictions();
 const loading = ref(true);
 const rows = ref([]);
@@ -136,7 +136,7 @@ const columns = ref([
   { key: "Answer", label: props.jurisdiction || "Answer", class: "label" },
 ]);
 
-const config = useRuntimeConfig();
+const _config = useRuntimeConfig();
 
 // Computed filtered rows
 const filteredRows = computed(() => {
@@ -163,7 +163,7 @@ function toggleInfo() {
   showInfo.value = !showInfo.value;
 }
 
-async function fetchData(url, payload) {
+async function _fetchData(url, payload) {
   try {
     const response = await fetch(url, {
       method: "POST",

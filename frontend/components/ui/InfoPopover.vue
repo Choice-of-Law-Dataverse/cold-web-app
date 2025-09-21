@@ -22,7 +22,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+const _props = defineProps({
   text: {
     type: String,
     required: true,

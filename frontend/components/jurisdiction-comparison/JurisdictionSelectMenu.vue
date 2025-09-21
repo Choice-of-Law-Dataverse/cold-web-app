@@ -82,7 +82,7 @@ import { handleImageError } from "@/utils/handleImageError";
 import { useCoveredCountries } from "@/composables/useCoveredCountries";
 
 // Props for the country options
-const props = defineProps({
+const _props = defineProps({
   countries: {
     type: Array,
     required: true,
@@ -103,7 +103,10 @@ const isCovered = (alpha3Code) => {
 // Emit selection back to the parent
 const emit = defineEmits(["countrySelected"]);
 
-const selected = defineModel(); // v-model integration
+const selected = defineModel({
+  type: String,
+  default: null
+}); // v-model integration
 
 // Reactive object for errored avatars
 const erroredAvatars = reactive({});

@@ -280,7 +280,7 @@ function updateSuggestions() {
     .split(/\s+/)
     .filter((word) => word.length >= 3);
 
-  let filtered = jurisdictionsData
+  const filtered = jurisdictionsData
     .filter((item) =>
       words.some(
         (word) =>

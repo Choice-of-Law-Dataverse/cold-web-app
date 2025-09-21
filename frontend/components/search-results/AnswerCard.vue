@@ -137,7 +137,7 @@ const props = defineProps({
 });
 
 const config = answerCardConfig;
-const runtimeConfig = useRuntimeConfig();
+const _runtimeConfig = useRuntimeConfig();
 
 // Replace literatureTitles with an array of objects: { id, title }
 const literatureTitles = ref([]);

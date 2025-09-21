@@ -1,5 +1,6 @@
 <template>
-  <BaseDetailLayout
+  <div>
+    <BaseDetailLayout
     :loading="isLoading"
     :result-data="processedAnswerData"
     :key-label-pairs="keyLabelPairs"
@@ -101,6 +102,7 @@
     </template>
   </BaseDetailLayout>
   <CountryReportLink :processed-answer-data="processedAnswerData ?? {}" />
+  </div>
 </template>
 
 <script setup>

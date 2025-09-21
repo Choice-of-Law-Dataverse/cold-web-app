@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import DetailDisplay from "@/components/ui/BaseDetailDisplay.vue";
 
-const props = withDefaults(
+const _props = withDefaults(
   defineProps<{
     loading: boolean;
     resultData: any;

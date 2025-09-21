@@ -227,8 +227,8 @@ defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
 const route = useRoute();
 const router = useRouter();
-const isOpen = ref(false);
-const isSaveOpen = ref(false);
+const _isOpen = ref(false);
+const _isSaveOpen = ref(false);
 const isCiteOpen = ref(false);
 
 const downloadPDFLink = computed(() => {

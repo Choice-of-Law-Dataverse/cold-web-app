@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+const _props = defineProps({
   title: {
     type: String,
     required: true,
@@ -73,6 +73,7 @@ const props = defineProps({
   buttonIcon: {
     type: String,
     required: false,
+    default: '',
   },
 });
 </script>

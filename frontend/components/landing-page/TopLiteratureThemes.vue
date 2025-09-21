@@ -29,13 +29,13 @@
 <script setup>
 import { useRouter } from "vue-router";
 import { ref } from "vue";
-import eventBus from "@/eventBus";
+import _eventBus from "@/eventBus";
 
 const router = useRouter();
 
 const searchSuggestions = ref(["Arbitration", "Rules of law", "Tacit choice"]);
 
-function formatQuery(query) {
+function _formatQuery(query) {
   return query.replace(/ /g, "+");
 }
 

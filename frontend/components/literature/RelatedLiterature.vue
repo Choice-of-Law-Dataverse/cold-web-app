@@ -58,7 +58,7 @@ const props = defineProps({
   },
 });
 
-const config = useRuntimeConfig();
+const _config = useRuntimeConfig();
 const showAll = ref(false);
 const loadingTitles = ref(false);
 const loading = ref(false);
@@ -95,7 +95,7 @@ const hasRelatedLiterature = computed(() => {
   return false;
 });
 
-const displayedTitles = computed(() => {
+const _displayedTitles = computed(() => {
   const arr = literatureTitles.value;
   return !showAll.value && arr.length > 5 ? arr.slice(0, 3) : arr;
 });

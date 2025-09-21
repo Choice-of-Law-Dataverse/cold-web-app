@@ -50,7 +50,7 @@
 </template>
 
 <script>
-const config = useRuntimeConfig();
+const _config = useRuntimeConfig();
 
 export default {
   props: {
