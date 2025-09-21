@@ -1,5 +1,5 @@
-from datetime import datetime, timezone
-from typing import Callable
+from collections.abc import Callable
+from datetime import UTC, datetime
 
 from fastapi import Request, Response
 from pymongo.mongo_client import MongoClient
@@ -7,7 +7,6 @@ from pymongo.server_api import ServerApi
 
 from app.config import config
 from app.services.utils import get_location
-
 
 client = MongoClient(config.MONGODB_CONN_STRING, server_api=ServerApi("1"))
 db = client["query_logs"]
@@ -46,7 +45,7 @@ async def log_query(request: Request, call_next: Callable) -> Response:
     location = get_location(ip_address)
 
     log_data = {
-        "timestamp": datetime.now(timezone.utc),
+        "timestamp": datetime.now(UTC),
         "ip_address": ip_address,
         "location": location,
         "user_agent": user_agent,

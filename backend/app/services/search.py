@@ -1,11 +1,12 @@
 import json
-from typing import Any, Dict, List, Tuple
-from app.config import config
-from app.services.database import Database
-from app.services.transformers import DataTransformerFactory
-from app.services.configurable_transformer import get_configurable_transformer
-from app.services.mapping_repository import get_mapping_repository
 import logging
+from typing import Any
+
+from app.config import config
+from app.services.configurable_transformer import get_configurable_transformer
+from app.services.database import Database
+from app.services.mapping_repository import get_mapping_repository
+from app.services.transformers import DataTransformerFactory
 
 # logger for this module
 logger = logging.getLogger(__name__)
@@ -105,19 +106,19 @@ class SearchService:
         Otherwise, return value unchanged.
         """
         mapping_conf = self.mapping_repo.get_mapping(table) or {}
-        bool_maps = ((mapping_conf.get('mappings') or {}).get('boolean_mappings') or {})
+        bool_maps = (mapping_conf.get("mappings") or {}).get("boolean_mappings") or {}
         bm = bool_maps.get(column)
         if not bm:
             # also check nested boolean mappings (inside nested_mappings)
-            nested = ((mapping_conf.get('mappings') or {}).get('nested_mappings') or {})
+            nested = (mapping_conf.get("mappings") or {}).get("nested_mappings") or {}
             for _k, nm in nested.items():
-                nbm = (nm or {}).get('boolean_mappings') or {}
+                nbm = (nm or {}).get("boolean_mappings") or {}
                 if column in nbm:
                     bm = nbm[column]
                     break
         if bm:
-            true_val = bm.get('true_value')
-            false_val = bm.get('false_value')
+            true_val = bm.get("true_value")
+            false_val = bm.get("false_value")
             if isinstance(user_value, str):
                 if true_val is not None and user_value == true_val:
                     return True
@@ -128,7 +129,7 @@ class SearchService:
                 return user_value
         return user_value
 
-    def _build_filter_sql(self, table: str, alias: str, filters) -> Tuple[str, Dict[str, Any]]:
+    def _build_filter_sql(self, table: str, alias: str, filters) -> tuple[str, dict[str, Any]]:
         """
         Build SQL WHERE clause and params from user-faced filters using reverse mapping,
         including nested array JSONB access for paths like related_array.Field.
@@ -140,12 +141,12 @@ class SearchService:
 
         reverse_mapping = self.configurable_transformer.get_reverse_field_mapping(table) or {}
 
-        clauses: List[str] = []
-        params: Dict[str, Any] = {}
+        clauses: list[str] = []
+        params: dict[str, Any] = {}
 
         def normalize_column(col: str) -> str:
             # Support columns ending with '?' by stripping it if needed
-            if col not in reverse_mapping and col.endswith('?'):
+            if col not in reverse_mapping and col.endswith("?"):
                 alt = col[:-1]
                 if alt in reverse_mapping:
                     return alt
@@ -153,10 +154,8 @@ class SearchService:
 
         for i, f in enumerate(filters):
             # Support both pydantic model with attributes and plain dicts
-            col = getattr(f, 'column', None) if hasattr(f, 'column') else f.get('column')
-            raw_val = (
-                getattr(f, 'value', None) if hasattr(f, 'value') else f.get('value')
-            )
+            col = getattr(f, "column", None) if hasattr(f, "column") else f.get("column")
+            raw_val = getattr(f, "value", None) if hasattr(f, "value") else f.get("value")
             if col is None:
                 continue
 
@@ -169,36 +168,28 @@ class SearchService:
                 conv_values = [self._prepare_boolean_value(table, col, raw_val)]
 
             # Build OR for multiple values
-            or_parts: List[str] = []
+            or_parts: list[str] = []
             for j, v in enumerate(conv_values):
                 p_name = f"p_{i}_{j}"
                 # Nested path: e.g., related_jurisdictions.Name
-                if '.' in source_path:
-                    arr_name, field_name = source_path.split('.', 1)
+                if "." in source_path:
+                    arr_name, field_name = source_path.split(".", 1)
                     arr_sql = f"{alias}.{self._quote_ident(arr_name)}"
                     # EXISTS over jsonb array
                     if isinstance(v, str):
-                        or_parts.append(
-                            f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE elem->>{self._quote_json_key(field_name)} ILIKE '%' || :{p_name} || '%')"
-                        )
+                        or_parts.append(f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE elem->>{self._quote_json_key(field_name)} ILIKE '%' || :{p_name} || '%')")
                         params[p_name] = v
                     elif isinstance(v, bool):
                         # Compare boolean by casting text to boolean
-                        or_parts.append(
-                            f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE (elem->>{self._quote_json_key(field_name)})::boolean = :{p_name})"
-                        )
+                        or_parts.append(f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE (elem->>{self._quote_json_key(field_name)})::boolean = :{p_name})")
                         params[p_name] = v
                     elif isinstance(v, (int, float)):
                         # numeric compare: cast to numeric where possible
-                        or_parts.append(
-                            f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE (elem->>{self._quote_json_key(field_name)})::numeric = :{p_name})"
-                        )
+                        or_parts.append(f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE (elem->>{self._quote_json_key(field_name)})::numeric = :{p_name})")
                         params[p_name] = v
                     else:
                         # fallback to text match
-                        or_parts.append(
-                            f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE elem->>{self._quote_json_key(field_name)} = :{p_name})"
-                        )
+                        or_parts.append(f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem WHERE elem->>{self._quote_json_key(field_name)} = :{p_name})")
                         params[p_name] = str(v)
                 else:
                     col_sql = f"{alias}.{self._quote_ident(source_path)}"
@@ -217,12 +208,12 @@ class SearchService:
                         params[p_name] = json.dumps(v)
 
             if or_parts:
-                clauses.append('(' + ' OR '.join(or_parts) + ')')
+                clauses.append("(" + " OR ".join(or_parts) + ")")
 
-        where_sql = (' WHERE ' + ' AND '.join(clauses)) if clauses else ''
+        where_sql = (" WHERE " + " AND ".join(clauses)) if clauses else ""
         return where_sql, params
 
-    def curated_details_search(self, table, cold_id, response_type: str = 'parsed'):
+    def curated_details_search(self, table, cold_id, response_type: str = "parsed"):
         """
         Fetch a single record by table and CoLD_ID using the new search_for_entry SQL function.
         Returns the complete record along with hop-1 (directly related) entries, transformed
@@ -233,25 +224,22 @@ class SearchService:
             SELECT found_table, record_id, complete_record, hop1_relations
             FROM data_views.search_for_entry(:table_name, :cold_id)
             """
-            params = {
-                "table_name": table,
-                "cold_id": cold_id
-            }
-            
+            params = {"table_name": table, "cold_id": cold_id}
+
             results = self.db.execute_query(sql, params)
-            
+
             if not results:
                 logger.warning("No record found for table %s with CoLD_ID %s", table, cold_id)
                 return {"error": f"No record found for {cold_id} in table {table}"}
-            
+
             result = results[0]
-            
+
             # Extract the data from the SQL result
             found_table = result.get("found_table")
             record_id = result.get("record_id")
             complete_record = result.get("complete_record") or {}
             hop1_relations = result.get("hop1_relations") or {}
-            
+
             # Flatten nested complete_record into top-level (similar to full text search)
             flat_record = {
                 "source_table": found_table,
@@ -259,16 +247,16 @@ class SearchService:
                 "cold_id": cold_id,
                 "hop1_relations": hop1_relations,
             }
-            
+
             # Add all fields from complete_record, avoiding id collision
             for key, value in complete_record.items():
                 if key == "id":
                     continue
                 flat_record[key] = value
-            
+
             # Apply transformation using the appropriate transformer (similar to full_text_search)
             transformed_record = DataTransformerFactory.transform_result(found_table, flat_record)
-            
+
             raw_payload = {
                 "found_table": found_table,
                 "record_id": record_id,
@@ -276,17 +264,17 @@ class SearchService:
                 "hop1_relations": hop1_relations,
             }
 
-            if response_type == 'raw':
+            if response_type == "raw":
                 return raw_payload
-            if response_type == 'both':
+            if response_type == "both":
                 return {"parsed": transformed_record, "raw": raw_payload}
             return transformed_record
-            
+
         except Exception as e:
             logger.error("Error fetching record %s from table %s: %s", cold_id, table, e)
             return {"error": f"Could not fetch record {cold_id} from table {table}: {str(e)}"}
 
-    def full_table(self, table, response_type: str = 'parsed'):
+    def full_table(self, table, response_type: str = "parsed"):
         """
         Fetch all records from a table directly via SQL (data_views.*_complete) and transform.
         """
@@ -295,10 +283,10 @@ class SearchService:
             sql = f"SELECT c.id AS record_id, to_jsonb(c.*) AS complete_record FROM {view} c"
             rows = self.db.execute_query(sql, {}) or []
 
-            if response_type == 'raw':
+            if response_type == "raw":
                 return [row.get("complete_record") or {} for row in rows]
 
-            results: List[Dict[str, Any]] = []
+            results: list[dict[str, Any]] = []
             for row in rows:
                 complete = row.get("complete_record") or {}
                 # Flatten: start with metadata, then merge complete_record fields
@@ -308,7 +296,7 @@ class SearchService:
                         continue
                     flat[k] = v
                 transformed = DataTransformerFactory.transform_result(table, flat)
-                if response_type == 'both':
+                if response_type == "both":
                     results.append({"parsed": transformed, "raw": complete})
                 else:
                     results.append(transformed)
@@ -317,21 +305,21 @@ class SearchService:
             logger.error("Error querying full table %s: %s", table, e)
             return []
 
-    def filtered_table(self, table, filters, response_type: str = 'parsed'):
+    def filtered_table(self, table, filters, response_type: str = "parsed"):
         """
         Fetch and filter records from a table using SQL with mapping-aware filters, then transform.
         """
         try:
             view = self._complete_view_for_table(table)
-            alias = 'c'
+            alias = "c"
             where_sql, params = self._build_filter_sql(table, alias, filters)
             sql = f"SELECT {alias}.id AS record_id, to_jsonb({alias}.*) AS complete_record FROM {view} {alias}{where_sql}"
             rows = self.db.execute_query(sql, params) or []
 
-            if response_type == 'raw':
+            if response_type == "raw":
                 return [row.get("complete_record") or {} for row in rows]
 
-            results: List[Dict[str, Any]] = []
+            results: list[dict[str, Any]] = []
             for row in rows:
                 complete = row.get("complete_record") or {}
                 flat = {"source_table": table, "id": row.get("record_id")}
@@ -340,7 +328,7 @@ class SearchService:
                         continue
                     flat[k] = v
                 transformed = DataTransformerFactory.transform_result(table, flat)
-                if response_type == 'both':
+                if response_type == "both":
                     results.append({"parsed": transformed, "raw": complete})
                 else:
                     results.append(transformed)
@@ -363,11 +351,7 @@ class SearchService:
         for filter_item in filters:
             column = filter_item.column
             raw_values = filter_item.values
-            values = (
-                raw_values
-                if isinstance(raw_values, list)
-                else [raw_values] if raw_values is not None else []
-            )
+            values = raw_values if isinstance(raw_values, list) else [raw_values] if raw_values is not None else []
 
             if column and values:
                 col_lower = column.lower()
@@ -384,11 +368,13 @@ class SearchService:
                     tables.extend(values)
         return tables, jurisdictions, themes
 
-    def full_text_search(self, search_string, filters=[], page=1, page_size=50, sort_by_date=False, response_type: str = 'parsed'):
+    def full_text_search(self, search_string, filters=None, page=1, page_size=50, sort_by_date=False, response_type: str = "parsed"):
         """
         Perform full-text search via data_views.search_all and return correct total_matches
         along with full record data from NocoDB.
         """
+        if filters is None:
+            filters = []
         tables, jurisdictions, themes = self._extract_filters(filters)
         params = {
             "search_term": search_string,
@@ -427,7 +413,7 @@ class SearchService:
             "sort_by_date := CAST(:sort_by_date AS boolean)"
             ")"
         )
-        rows = self.db.execute_query(sql, params)
+        rows = self.db.execute_query(sql, params) or []
         # print raw SQL rows, serializing dates as strings
         print("raw SQL results:\n", json.dumps(rows, indent=2, default=str))
         # flatten nested complete_record into top-level
@@ -435,7 +421,7 @@ class SearchService:
         raw_results = []
         for row in rows:
             complete = row.get("complete_record") or {}
-            if response_type in ('parsed', 'both'):
+            if response_type in ("parsed", "both"):
                 flat = {
                     "source_table": row.get("source_table"),
                     "id": row.get("id"),
@@ -451,16 +437,18 @@ class SearchService:
                 flat = DataTransformerFactory.transform_result(table_name, flat)
                 parsed_results.append(flat)
 
-            if response_type in ('raw', 'both'):
-                raw_results.append({
-                    "source_table": row.get("source_table"),
-                    "id": row.get("id"),
-                    "rank": row.get("rank"),
-                    "result_date": row.get("result_date"),
-                    "complete_record": complete,
-                })
-        
-        if response_type == 'raw':
+            if response_type in ("raw", "both"):
+                raw_results.append(
+                    {
+                        "source_table": row.get("source_table"),
+                        "id": row.get("id"),
+                        "rank": row.get("rank"),
+                        "result_date": row.get("result_date"),
+                        "complete_record": complete,
+                    }
+                )
+
+        if response_type == "raw":
             return {
                 "test": config.TEST,
                 "total_matches": total_matches,
@@ -468,10 +456,8 @@ class SearchService:
                 "page_size": page_size,
                 "results": raw_results,
             }
-        if response_type == 'both':
-            combined = [
-                {"parsed": p, "raw": r} for p, r in zip(parsed_results, raw_results)
-            ]
+        if response_type == "both":
+            combined = [{"parsed": p, "raw": r} for p, r in zip(parsed_results, raw_results, strict=False)]
             return {
                 "test": config.TEST,
                 "total_matches": total_matches,
@@ -479,7 +465,7 @@ class SearchService:
                 "page_size": page_size,
                 "results": combined,
             }
-        
+
         return {
             "test": config.TEST,
             "total_matches": total_matches,

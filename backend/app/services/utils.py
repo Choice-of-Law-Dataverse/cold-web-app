@@ -1,5 +1,7 @@
 import re
+
 import requests
+
 from app.config import config
 
 """
@@ -8,7 +10,7 @@ from app.config import config
 
 
 def list_to_dict(lst):
-    return {i: item for i, item in enumerate(lst)}
+    return dict(enumerate(lst))
 
 
 def parse_results(obj):
@@ -55,15 +57,13 @@ def flatten_and_transform_data(data):
                 items.extend(flatten_json(v, new_key, sep=sep).items())
             elif isinstance(v, list):
                 for i, item in enumerate(v):
-                    items.extend(
-                        flatten_json({f"{new_key}{sep}{i}": item}, "", sep=sep).items()
-                    )
+                    items.extend(flatten_json({f"{new_key}{sep}{i}": item}, "", sep=sep).items())
             else:
                 items.append((new_key, v))
         return dict(items)
 
     for table_name, table_data in data["tables"].items():
-        for result_key, result_data in table_data["results"].items():
+        for _result_key, result_data in table_data["results"].items():
             flattened_result = flatten_json(result_data)
             flattened_result["table"] = table_name
             flattened_data.append(flattened_result)
@@ -101,6 +101,7 @@ def find_problematic_subdict(data):
     check_and_collect(data)
     return problematic_dicts
 
+
 def deduplicate_entries(entries):
     """
     Remove duplicate entries from a list where duplicates have the same 'id' and 'source_table'.
@@ -120,6 +121,7 @@ def deduplicate_entries(entries):
             deduped_entries.append(entry)
     return deduped_entries
 
+
 """
 =========================QUERY LOGGING=======================
 """
@@ -129,9 +131,7 @@ def deduplicate_entries(entries):
 def get_location(ip_address: str):
     access_token = config.IPINFO_ACCESS_TOKEN
     try:
-        response = requests.get(
-            f"http://ipinfo.io/{ip_address}/json?token={access_token}"
-        )
+        response = requests.get(f"http://ipinfo.io/{ip_address}/json?token={access_token}")
         return response.json()
     except requests.RequestException as e:
         print(f"Error getting location: {e}")

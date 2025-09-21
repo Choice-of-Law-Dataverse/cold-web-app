@@ -4,15 +4,16 @@ Test script for the configuration-driven transformer system.
 """
 
 import json
-import sys
 import os
+import sys
 
 # Add the current directory to the Python path to import app modules
 sys.path.insert(0, os.path.dirname(__file__))
 
 from app.services.configurable_transformer import ConfigurableTransformer
 from app.services.mapping_repository import MappingRepository
-from app.services.transformers import DataTransformerFactory, AnswersTransformer
+from app.services.transformers import AnswersTransformer, DataTransformerFactory
+
 
 def create_mock_answers_result():
     """Create a mock answers result for testing."""
@@ -82,16 +83,16 @@ def create_mock_answers_result():
 def test_mapping_repository():
     """Test the mapping repository functionality."""
     print("=== TESTING MAPPING REPOSITORY ===")
-    
+
     # Test loading mappings
     repo = MappingRepository()
-    
+
     print(f"Supported tables: {repo.get_supported_tables()}")
     print(f"Has Answers mapping: {repo.has_mapping('Answers')}")
     print(f"Has Unknown mapping: {repo.has_mapping('Unknown')}")
-    
+
     # Get Answers mapping
-    answers_mapping = repo.get_mapping('Answers')
+    answers_mapping = repo.get_mapping("Answers")
     if answers_mapping:
         print(f"Answers mapping version: {answers_mapping.get('version')}")
         print(f"Answers mapping description: {answers_mapping.get('description')}")
@@ -102,16 +103,16 @@ def test_mapping_repository():
 def test_configurable_transformer():
     """Test the configurable transformer."""
     print("\n=== TESTING CONFIGURABLE TRANSFORMER ===")
-    
+
     transformer = ConfigurableTransformer()
     mock_result = create_mock_answers_result()
-    
+
     # Transform using configuration
     transformed = transformer.transform("Answers", mock_result)
-    
+
     print("Configuration-driven transformation result:")
     print(json.dumps(transformed, indent=2, default=str))
-    
+
     # Verify key mappings
     expected_mappings = {
         "source_table": "Answers",
@@ -125,7 +126,7 @@ def test_configurable_transformer():
         "Themes": "Consumer contracts, Employment contracts",
         "Jurisdictions Irrelevant": "Yes"
     }
-    
+
     print("\n=== VERIFICATION ===")
     for key, expected_value in expected_mappings.items():
         actual_value = transformed.get(key)
@@ -135,34 +136,34 @@ def test_configurable_transformer():
 def test_legacy_transformer():
     """Test the legacy transformer using the new system."""
     print("\n=== TESTING LEGACY TRANSFORMER (NEW SYSTEM) ===")
-    
+
     mock_result = create_mock_answers_result()
-    
+
     # Transform using legacy transformer (now powered by configuration)
     transformed = AnswersTransformer.transform_to_reference_format(mock_result)
-    
+
     print("Legacy transformer result (configuration-driven):")
     print(json.dumps(transformed, indent=2, default=str))
 
 def test_factory():
     """Test the DataTransformerFactory."""
     print("\n=== TESTING DATA TRANSFORMER FACTORY ===")
-    
+
     mock_result = create_mock_answers_result()
-    
+
     # Test factory transformation
     transformed = DataTransformerFactory.transform_result("Answers", mock_result)
-    
+
     print("Factory transformation result:")
     print(json.dumps(transformed, indent=2, default=str))
-    
+
     # Test unknown table (should fall back to configurable transformer)
     mock_unknown = {
         "source_table": "UnknownTable",
         "data": "test",
         "id": 123
     }
-    
+
     unknown_transformed = DataTransformerFactory.transform_result("UnknownTable", mock_unknown)
     print(f"\nUnknown table transformation (should be unchanged): {unknown_transformed == mock_unknown}")
 
@@ -170,17 +171,17 @@ def test_performance_comparison():
     """Compare performance between old and new approaches."""
     print("\n=== PERFORMANCE COMPARISON ===")
     import time
-    
+
     mock_result = create_mock_answers_result()
     num_iterations = 1000
-    
+
     # Test configurable transformer performance
     transformer = ConfigurableTransformer()
     start_time = time.time()
     for _ in range(num_iterations):
         transformer.transform("Answers", mock_result)
     config_time = time.time() - start_time
-    
+
     print(f"Configurable transformer: {config_time:.4f}s for {num_iterations} transformations")
     print(f"Average per transformation: {(config_time/num_iterations)*1000:.2f}ms")
 

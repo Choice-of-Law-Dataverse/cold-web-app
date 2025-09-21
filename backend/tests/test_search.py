@@ -3,13 +3,13 @@
 import sys
 from pathlib import Path
 
-
 import pytest
 from fastapi.testclient import TestClient
 
+from app.auth import verify_jwt_token
+
 # Import the FastAPI app, JWT dependency, and the search routes
 from app.main import app
-from app.auth import verify_jwt_token
 from app.routes import search as search_routes
 
 # Ensure the project root is in sys.path so we can import the app package.

@@ -1,9 +1,10 @@
-import sqlalchemy as sa
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.dialects.postgresql import JSONB
-from typing import Optional, Dict, Any
 from datetime import date, datetime
 from decimal import Decimal
+from typing import Any
+
+import sqlalchemy as sa
+from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.orm import sessionmaker
 
 try:
     import jwt  # type: ignore
@@ -29,7 +30,7 @@ class SuggestionService:
         self.metadata = sa.MetaData()
 
         # Define per-type suggestion tables with JSONB payloads
-        self.tables: Dict[str, sa.Table] = {
+        self.tables: dict[str, sa.Table] = {
             "generic": sa.Table(
                 "suggestions_generic",
                 self.metadata,
@@ -145,7 +146,7 @@ class SuggestionService:
         self.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
 
-    def _get_token_sub(self, authorization: Optional[str]) -> Optional[str]:
+    def _get_token_sub(self, authorization: str | None) -> str | None:
         if not authorization:
             return None
         try:
@@ -176,13 +177,13 @@ class SuggestionService:
 
     def save_suggestion(
         self,
-        payload: Dict[str, Any],
+        payload: dict[str, Any],
         *,
         table: str = "generic",
-        client_ip: Optional[str] = None,
-        user_agent: Optional[str] = None,
-        source: Optional[str] = None,
-        authorization: Optional[str] = None,
+        client_ip: str | None = None,
+        user_agent: str | None = None,
+        source: str | None = None,
+        authorization: str | None = None,
     ) -> int:
         token_sub = self._get_token_sub(authorization)
         target = self.tables.get(table)
@@ -193,7 +194,7 @@ class SuggestionService:
             safe_payload = self._to_jsonable(payload)
             # Case analyzer table stores JSON in 'data' column
             if table == "case_analyzer":
-                values: Dict[str, Any] = {"data": safe_payload}
+                values: dict[str, Any] = {"data": safe_payload}
                 if hasattr(target.c, "client_ip"):
                     values["client_ip"] = client_ip
                 if hasattr(target.c, "user_agent"):
@@ -313,7 +314,7 @@ class SuggestionService:
                 .where(
                     sa.or_(
                         ~target.c.payload.has_key("moderation_status"),  # type: ignore[attr-defined]
-                        target.c.payload["moderation_status"].astext is None,
+                        target.c.payload["moderation_status"].astext.is_(None),
                     )
                 )
                 .order_by(target.c.created_at.desc())
@@ -328,8 +329,8 @@ class SuggestionService:
         suggestion_id: int,
         status: str,
         moderator: str,
-        note: Optional[str] = None,
-        merged_id: Optional[int] = None,
+        note: str | None = None,
+        merged_id: int | None = None,
     ) -> None:
         if status not in {"approved", "rejected"}:
             raise ValueError("status must be 'approved' or 'rejected'")
@@ -341,12 +342,12 @@ class SuggestionService:
                 import json as _json
 
                 sel = (
-                    sa.select(getattr(target.c, "data"))
+                    sa.select(target.c.data)
                     .where(target.c.id == suggestion_id)
                     .limit(1)
                 )
                 row = session.execute(sel).first()
-                current: Dict[str, Any]
+                current: dict[str, Any]
                 if row and isinstance(row[0], dict):
                     current = dict(row[0])
                 else:
@@ -410,7 +411,7 @@ class SuggestionService:
 
     # New: update the entire payload for a specific suggestion (used to persist edited fields)
     def update_payload(
-        self, table: str, suggestion_id: int, payload: Dict[str, Any]
+        self, table: str, suggestion_id: int, payload: dict[str, Any]
     ) -> None:
         target = self.tables.get(table)
         if target is None:
@@ -420,12 +421,12 @@ class SuggestionService:
                 import json as _json
 
                 sel = (
-                    sa.select(getattr(target.c, "data"))
+                    sa.select(target.c.data)
                     .where(target.c.id == suggestion_id)
                     .limit(1)
                 )
                 row = session.execute(sel).first()
-                current: Dict[str, Any]
+                current: dict[str, Any]
                 if row and isinstance(row[0], dict):
                     current = dict(row[0])
                 else:

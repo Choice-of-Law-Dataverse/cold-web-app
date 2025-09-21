@@ -1,14 +1,14 @@
-from fastapi import APIRouter, Depends, Request, Header, HTTPException, status
-from typing import Optional
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+
 from app.auth import verify_jwt_token
 from app.schemas.suggestions import (
-    SuggestionPayload,
-    SuggestionResponse,
     CourtDecisionSuggestion,
     DomesticInstrumentSuggestion,
-    RegionalInstrumentSuggestion,
     InternationalInstrumentSuggestion,
     LiteratureSuggestion,
+    RegionalInstrumentSuggestion,
+    SuggestionPayload,
+    SuggestionResponse,
 )
 from app.services.suggestions import SuggestionService
 
@@ -24,9 +24,7 @@ service = SuggestionService()
 @router.post(
     "/",
     summary="Submit a new data suggestion",
-    description=(
-        "Accepts arbitrary dictionaries from the frontend and stores them in a separate Postgres table."
-    ),
+    description=("Accepts arbitrary dictionaries from the frontend and stores them in a separate Postgres table."),
     response_model=SuggestionResponse,
     status_code=status.HTTP_201_CREATED,
 )
@@ -51,7 +49,7 @@ async def submit_suggestion(
         )
         return SuggestionResponse(id=new_id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.post(
@@ -64,7 +62,7 @@ async def submit_court_decision(
     body: CourtDecisionSuggestion,
     request: Request,
     authorization: str = Header(None),
-    source: Optional[str] = Header(None),
+    source: str | None = Header(None),
 ):
     try:
         payload = {"category": "court_decision", **body.model_dump()}
@@ -78,7 +76,7 @@ async def submit_court_decision(
         )
         return SuggestionResponse(id=new_id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.post(
@@ -91,7 +89,7 @@ async def submit_domestic_instrument(
     body: DomesticInstrumentSuggestion,
     request: Request,
     authorization: str = Header(None),
-    source: Optional[str] = Header(None),
+    source: str | None = Header(None),
 ):
     try:
         payload = {"category": "domestic_instrument", **body.model_dump()}
@@ -105,7 +103,7 @@ async def submit_domestic_instrument(
         )
         return SuggestionResponse(id=new_id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.post(
@@ -118,7 +116,7 @@ async def submit_regional_instrument(
     body: RegionalInstrumentSuggestion,
     request: Request,
     authorization: str = Header(None),
-    source: Optional[str] = Header(None),
+    source: str | None = Header(None),
 ):
     try:
         payload = {"category": "regional_instrument", **body.model_dump()}
@@ -132,7 +130,7 @@ async def submit_regional_instrument(
         )
         return SuggestionResponse(id=new_id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.post(
@@ -145,7 +143,7 @@ async def submit_international_instrument(
     body: InternationalInstrumentSuggestion,
     request: Request,
     authorization: str = Header(None),
-    source: Optional[str] = Header(None),
+    source: str | None = Header(None),
 ):
     try:
         payload = {"category": "international_instrument", **body.model_dump()}
@@ -159,7 +157,7 @@ async def submit_international_instrument(
         )
         return SuggestionResponse(id=new_id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e
 
 
 @router.post(
@@ -172,7 +170,7 @@ async def submit_literature(
     body: LiteratureSuggestion,
     request: Request,
     authorization: str = Header(None),
-    source: Optional[str] = Header(None),
+    source: str | None = Header(None),
 ):
     try:
         payload = {"category": "literature", **body.model_dump()}
@@ -186,4 +184,4 @@ async def submit_literature(
         )
         return SuggestionResponse(id=new_id)
     except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+        raise HTTPException(status_code=500, detail=str(e)) from e

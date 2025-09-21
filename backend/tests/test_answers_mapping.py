@@ -4,62 +4,63 @@ Test script to verify the answers mapping transformation.
 """
 
 import json
-import sys
 import os
+import sys
 
 # Add the current directory to the Python path to import app modules
 sys.path.insert(0, os.path.dirname(__file__))
 
 from app.services.transformers import AnswersTransformer
 
+
 def load_test_data():
     """Load test data from the mapping files."""
-    with open('app/mapping/answers_current.json', 'r') as f:
+    with open("app/mapping/answers_current.json") as f:
         current_data = json.load(f)
-    
-    with open('app/mapping/answers_reference.json', 'r') as f:
+
+    with open("app/mapping/answers_reference.json") as f:
         reference_data = json.load(f)
-    
+
     return current_data, reference_data
 
 def test_transformation():
     """Test the transformation logic."""
     current_data, reference_data = load_test_data()
-    
+
     # Get the first result from current data
-    current_result = current_data['results'][0]
-    reference_result = reference_data['results'][0]
-    
+    current_result = current_data["results"][0]
+    reference_result = reference_data["results"][0]
+
     # Apply transformation using the new transformer
     transformed_result = AnswersTransformer.transform_to_reference_format(current_result)
-    
+
     print("=== CURRENT RESULT ===")
     print(json.dumps(current_result, indent=2, default=str))
-    
+
     print("\n=== REFERENCE RESULT ===")
     print(json.dumps(reference_result, indent=2, default=str))
-    
+
     print("\n=== TRANSFORMED RESULT ===")
     print(json.dumps(transformed_result, indent=2, default=str))
-    
+
     # Compare key fields
     print("\n=== FIELD COMPARISON ===")
     reference_keys = set(reference_result.keys())
     transformed_keys = set(transformed_result.keys())
-    
+
     print(f"Reference keys: {sorted(reference_keys)}")
     print(f"Transformed keys: {sorted(transformed_keys)}")
     print(f"Missing keys: {reference_keys - transformed_keys}")
     print(f"Extra keys: {transformed_keys - reference_keys}")
-    
+
     # Check specific mappings
     mappings_to_check = [
-        ('id', 'ID'),
-        ('source_table', 'source_table'),
-        ('Answer', 'Answer'),
-        ('Created', 'Created'),
+        ("id", "ID"),
+        ("source_table", "source_table"),
+        ("Answer", "Answer"),
+        ("Created", "Created"),
     ]
-    
+
     print("\n=== SPECIFIC FIELD MAPPINGS ===")
     for ref_field, trans_field in mappings_to_check:
         ref_val = reference_result.get(ref_field)
@@ -136,31 +137,31 @@ def test_transformation_mock():
     try:
         # Get mock data
         current_result = create_mock_result()
-        
+
         # Apply transformation using the new transformer
         transformed_result = AnswersTransformer.transform_to_reference_format(current_result)
-        
+
         print("=== TRANSFORMED RESULT ===")
         print(json.dumps(transformed_result, indent=2, default=str))
-        
+
         # Expected reference structure sample
         expected_keys = {
-            "source_table", "id", "rank", "sort_date", "ID", "Question Link", 
-            "Jurisdictions Link", "Question", "Questions Theme Code", 
+            "source_table", "id", "rank", "sort_date", "ID", "Question Link",
+            "Jurisdictions Link", "Question", "Questions Theme Code",
             "Jurisdictions Alpha-3 code", "Jurisdictions", "Answer", "Record ID",
-            "Created", "Themes", "Last Modified", "Jurisdictions Region", 
+            "Created", "Themes", "Last Modified", "Jurisdictions Region",
             "Jurisdictions Irrelevant", "Number", "Last Modified By.id", "Created By.id"
         }
-        
+
         transformed_keys = set(transformed_result.keys())
-        
+
         print(f"\nExpected keys: {sorted(expected_keys)}")
         print(f"Transformed keys: {sorted(transformed_keys)}")
         print(f"Missing keys: {expected_keys - transformed_keys}")
         print(f"Extra keys: {transformed_keys - expected_keys}")
-        
+
         return transformed_result
-        
+
     except Exception as e:
         print(f"Error during transformation test: {e}")
         return None

@@ -1,7 +1,8 @@
-from app.config import config
-from app.services.database import Database
 from datetime import date
 from pathlib import Path
+
+from app.config import config
+from app.services.database import Database
 
 
 class SitemapService:
@@ -58,33 +59,33 @@ class SitemapService:
             result = self.db.execute_query(query)
             ids = []
             for row in result or []:
-                if 'id' in row and row['id']:
-                    ids.append(row['id'])
+                if "id" in row and row["id"]:
+                    ids.append(row["id"])
             return ids
         except Exception as e:
             print(f"Error getting IDs from table {table_name}: {e}")
             return []
-    
+
     def _get_static_paths(self):
         """
         Scan the frontend/pages directory to generate static route paths.
         """
         paths = []
         project_root = Path(__file__).resolve().parents[4]
-        pages_dir = project_root / 'frontend' / 'pages'
-        for vue_file in pages_dir.rglob('*.vue'):
-            parts = vue_file.relative_to(pages_dir).with_suffix('').parts
+        pages_dir = project_root / "frontend" / "pages"
+        for vue_file in pages_dir.rglob("*.vue"):
+            parts = vue_file.relative_to(pages_dir).with_suffix("").parts
             # Skip dynamic routes
-            if any(part.startswith('[') for part in parts):
+            if any(part.startswith("[") for part in parts):
                 continue
             # Build route
-            if parts[-1] == 'index':
-                route = '/' + '/'.join(parts[:-1])
+            if parts[-1] == "index":
+                route = "/" + "/".join(parts[:-1])
             else:
-                route = '/' + '/'.join(parts)
+                route = "/" + "/".join(parts)
             # Normalize
-            if route.endswith('/') and route != '/':
+            if route.endswith("/") and route != "/":
                 route = route[:-1]
-            paths.append(route or '/')
+            paths.append(route or "/")
         return sorted(set(paths))
-    
+

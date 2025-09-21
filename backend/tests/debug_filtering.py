@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
+import json
 import os
 import sys
-import json
+
 from app.services.configurable_transformer import get_configurable_transformer
 
 # Add the backend directory to Python path

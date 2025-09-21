@@ -1,13 +1,19 @@
-from fastapi import FastAPI, APIRouter
+import uvicorn
+from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from starlette.middleware.sessions import SessionMiddleware
-import uvicorn
 
-from app.routes import ai, search, submarine, sitemap, landing_page
-from app.services.query_logging import log_query
 from app.config import config
-from app.routes import suggestions as suggestions_router
-from app.routes import moderation as moderation_router
+from app.routes import (
+    ai,
+    landing_page,
+    moderation as moderation_router,
+    search,
+    sitemap,
+    submarine,
+    suggestions as suggestions_router,
+)
+from app.services.query_logging import log_query
 
 app = FastAPI(
     title="CoLD API",

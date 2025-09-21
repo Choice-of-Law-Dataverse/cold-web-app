@@ -4,9 +4,10 @@ Simple test script for the sitemap endpoint.
 This script demonstrates how to use the sitemap API endpoint.
 """
 
-import requests
 import json
 import sys
+
+import requests
 
 # Configuration
 API_BASE_URL = "https://cold-backend-beta.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/api/v1"
@@ -25,6 +26,7 @@ def test_sitemap_endpoint():
     print(f"Testing endpoint: {url}")
     print(f"Using JWT token: {JWT_TOKEN[:50]}...")
 
+    response: requests.Response | None = None
     try:
         response = requests.get(url, headers=headers, timeout=30)
 
@@ -84,7 +86,8 @@ def test_sitemap_endpoint():
         return False
     except json.JSONDecodeError as e:
         print(f"\n❌ JSON decode error: {e}")
-        print(f"Response text: {response.text}")
+        response_text = response.text if response is not None else ""
+        print(f"Response text: {response_text}")
         return False
 
 

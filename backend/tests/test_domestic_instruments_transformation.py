@@ -4,14 +4,15 @@ Test script for Domestic Instruments transformation.
 """
 
 import json
-import sys
 import os
+import sys
 
 # Add the current directory to the Python path to import app modules
 sys.path.insert(0, os.path.dirname(__file__))
 
-from app.services.transformers import DataTransformerFactory
 from app.services.configurable_transformer import ConfigurableTransformer
+from app.services.transformers import DataTransformerFactory
+
 
 def create_mock_domestic_instrument_result():
     """Create a mock domestic instrument result for testing."""
@@ -74,7 +75,7 @@ def create_mock_domestic_instrument_result():
 def load_reference_data():
     """Load the reference data for comparison."""
     try:
-        with open('app/mapping/domestic_instruments_reference.json', 'r') as f:
+        with open("app/mapping/domestic_instruments_reference.json") as f:
             return json.load(f)
     except FileNotFoundError:
         print("Reference file not found")
@@ -83,42 +84,42 @@ def load_reference_data():
 def test_domestic_instruments_transformation():
     """Test Domestic Instruments transformation."""
     print("=== TESTING DOMESTIC INSTRUMENTS TRANSFORMATION ===")
-    
+
     mock_result = create_mock_domestic_instrument_result()
-    
+
     # Transform using the factory
     transformed = DataTransformerFactory.transform_result("Domestic Instruments", mock_result)
-    
+
     print("Transformed Domestic Instrument:")
     print(json.dumps(transformed, indent=2, default=str))
-    
+
     # Load reference for comparison
     reference_data = load_reference_data()
-    if reference_data and reference_data.get('results'):
-        reference_result = reference_data['results'][0]
-        
+    if reference_data and reference_data.get("results"):
+        reference_result = reference_data["results"][0]
+
         print("\n=== FIELD COMPARISON ===")
         reference_keys = set(reference_result.keys())
         transformed_keys = set(transformed.keys())
-        
+
         print(f"Reference keys: {len(reference_keys)}")
         print(f"Transformed keys: {len(transformed_keys)}")
         print(f"Missing keys: {reference_keys - transformed_keys}")
         print(f"Extra keys: {transformed_keys - reference_keys}")
-        
+
         # Check specific important mappings
         key_mappings_to_check = [
-            'id',
-            'ID',
-            'Title (in English)',
-            'Jurisdictions',
-            'Jurisdictions Alpha-3 Code',
-            'Type (from Jurisdictions)',
-            'Relevant Provisions',
-            'Date',
-            'Status'
+            "id",
+            "ID",
+            "Title (in English)",
+            "Jurisdictions",
+            "Jurisdictions Alpha-3 Code",
+            "Type (from Jurisdictions)",
+            "Relevant Provisions",
+            "Date",
+            "Status"
         ]
-        
+
         print("\n=== KEY FIELD VERIFICATION ===")
         for key in key_mappings_to_check:
             ref_val = reference_result.get(key)
@@ -129,19 +130,19 @@ def test_domestic_instruments_transformation():
 def test_configurable_transformer_direct():
     """Test the configurable transformer directly."""
     print("\n=== TESTING CONFIGURABLE TRANSFORMER DIRECTLY ===")
-    
+
     transformer = ConfigurableTransformer()
     mock_result = create_mock_domestic_instrument_result()
-    
+
     # Check if Domestic Instruments mapping is loaded
     if transformer.mapping_repo.has_mapping("Domestic Instruments"):
         print("✓ Domestic Instruments mapping found")
-        
+
         # Transform
         transformed = transformer.transform("Domestic Instruments", mock_result)
-        
+
         print(f"Transformed result has {len(transformed)} fields")
-        
+
         # Check some key transformations
         expected_checks = [
             ("id", "DI-TCD-29"),
@@ -152,33 +153,33 @@ def test_configurable_transformer_direct():
             ("Date", "1967"),
             ("Status", "In force")
         ]
-        
+
         print("\n=== SPECIFIC FIELD CHECKS ===")
         for field, expected in expected_checks:
             actual = transformed.get(field)
             status = "✓" if actual == expected else "✗"
             print(f"{status} {field}: expected='{expected}', actual='{actual}'")
-            
+
     else:
         print("✗ Domestic Instruments mapping not found")
 
 def test_boolean_mappings():
     """Test boolean field mappings."""
     print("\n=== TESTING BOOLEAN MAPPINGS ===")
-    
+
     transformer = ConfigurableTransformer()
-    
+
     # Test data with boolean fields
     test_data = {
         "Compatible_With_the_HCCH_Principles_": False,
         "Compatible_With_the_UNCITRAL_Model_Law_": None
     }
-    
+
     # Apply boolean mapping
     transformed = {}
     transformer._apply_boolean_mappings(
-        test_data, 
-        transformed, 
+        test_data,
+        transformed,
         {
             "Compatible With the HCCH Principles": {
                 "source_field": "Compatible_With_the_HCCH_Principles_",
@@ -192,7 +193,7 @@ def test_boolean_mappings():
             }
         }
     )
-    
+
     print("Boolean mapping results:")
     for key, value in transformed.items():
         print(f"  {key}: {value} (type: {type(value).__name__})")
@@ -200,9 +201,9 @@ def test_boolean_mappings():
 def test_conditional_mappings():
     """Test conditional field mappings."""
     print("\n=== TESTING CONDITIONAL MAPPINGS ===")
-    
+
     transformer = ConfigurableTransformer()
-    
+
     # Test data with conditional fields
     test_data = {
         "Title__in_English_": "Chadian Law on the Reform of Judicial Organisation",
@@ -210,12 +211,12 @@ def test_conditional_mappings():
         "Source__URL_": None,
         "Official_Source_URL": "https://example.com/law.pdf"
     }
-    
+
     # Apply conditional mapping
     transformed = {}
     transformer._apply_conditional_mappings(
-        test_data, 
-        transformed, 
+        test_data,
+        transformed,
         {
             "Title (in English)": {
                 "primary": "Title__in_English_",
@@ -227,7 +228,7 @@ def test_conditional_mappings():
             }
         }
     )
-    
+
     print("Conditional mapping results:")
     for key, value in transformed.items():
         print(f"  {key}: {value}")

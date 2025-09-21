@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+
 from app.auth import verify_jwt_token
 from app.schemas.requests import ClassifyQueryRequest
 from app.services.ai import GPT
