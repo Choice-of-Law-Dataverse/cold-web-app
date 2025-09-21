@@ -87,7 +87,7 @@
             </div>
           </div>
           <div>
-            <span style="white-space: pre-line">
+            <span class="whitespace-pre-line">
               {{
                 showEnglishQuote &&
                 courtDecision.hasEnglishQuoteTranslation &&

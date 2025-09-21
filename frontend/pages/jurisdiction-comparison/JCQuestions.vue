@@ -24,7 +24,7 @@
               width="16"
               height="16"
               fill="none"
-              style="color: var(--color-cold-purple)"
+              class="text-cold-purple"
             >
               <path
                 d="M9 6l6 6-6 6"
@@ -104,7 +104,7 @@
               width="16"
               height="16"
               fill="none"
-              style="color: var(--color-cold-purple)"
+              class="text-cold-purple"
             >
               <path
                 d="M9 6l6 6-6 6"

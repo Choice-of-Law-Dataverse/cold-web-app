@@ -57,7 +57,7 @@
                         />
                       </svg>
                     </span>
-                    <span class="question-text" style="white-space: pre-line">{{
+                    <span class="question-text whitespace-pre-line">{{
                       row.question
                     }}</span>
                   </div>
@@ -140,8 +140,7 @@
                         </svg>
                       </span>
                       <span
-                        class="mobile-question-text"
-                        style="white-space: pre-line"
+                        class="mobile-question-text whitespace-pre-line"
                         >{{ row.question }}</span
                       >
                     </div>

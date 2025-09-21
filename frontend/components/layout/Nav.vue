@@ -61,7 +61,8 @@
               <template #trailing>
                 <UButton
                   v-show="isExpanded"
-                  style="opacity: 1; color: var(--color-cold-night) !important"
+                  style="opacity: 1"
+                  class="!text-cold-night"
                   variant="link"
                   icon="i-material-symbols:close"
                   :padded="false"

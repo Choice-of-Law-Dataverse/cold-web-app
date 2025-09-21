@@ -13,7 +13,8 @@
             viewBox="0 0 24 24"
             height="24"
             fill="none"
-            style="transform: rotate(180deg); color: var(--color-cold-purple)"
+            style="transform: rotate(180deg)"
+            class="text-cold-purple"
           >
             <path
               d="M9 6l6 6-6 6"
@@ -133,7 +134,7 @@
             viewBox="0 0 24 24"
             height="24"
             fill="none"
-            style="color: var(--color-cold-purple)"
+            class="text-cold-purple"
           >
             <path
               d="M9 6l6 6-6 6"

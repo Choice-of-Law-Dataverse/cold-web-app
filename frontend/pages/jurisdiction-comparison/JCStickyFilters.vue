@@ -46,8 +46,7 @@
                 >
                   <Icon
                     name="i-material-symbols:add-circle-outline"
-                    style="font-size: 20px"
-                    class="mr-2 ml-8"
+                    class="mr-2 ml-8 text-[20px]"
                   />
                   Add
                 </button>
@@ -104,8 +103,7 @@
           >
             <Icon
               name="i-material-symbols:add-circle-outline"
-              style="font-size: 20px"
-              class="mr-2"
+              class="mr-2 text-[20px]"
             />
             Add Jurisdiction
           </button>

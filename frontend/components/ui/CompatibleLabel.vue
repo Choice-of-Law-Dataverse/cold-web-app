@@ -1,7 +1,6 @@
 <template>
   <span
-    class="label-question"
-    style="display: inline-flex; width: 126px; align-items: center"
+    class="label-question inline-flex w-[126px] items-center"
   >
     <UIcon name="i-material-symbols:balance" class="icon-fixed mr-2" />
     {{ label }}
