@@ -1,7 +1,7 @@
 import { computed } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
-import type { FullTableRequest } from "~/types/api";
+import type { FullTableRequest, QuestionItem, AnswerItem, QuestionWithAnswer } from "~/types/api";
 import { useFullTable } from "@/composables/useFullTable";
 
 const buildCompositeId = (
@@ -32,23 +32,23 @@ const processAnswerText = (answerText: string) => {
   return answerText;
 };
 
-const buildChildrenMap = (sortedItems: Record<string, unknown>[]) => {
+const buildChildrenMap = (sortedItems: QuestionItem[]) => {
   const childrenMap: Record<string, string[]> = {};
   sortedItems.forEach((item, idx, arr) => {
     const id = item["CoLD ID"] ?? item.ID;
     const level = typeof id === "string" ? id.match(/\./g)?.length || 0 : 0;
-    let parentId = null;
+    let parentId: string | null = null;
     if (level > 0) {
       for (let j = idx - 1; j >= 0; j--) {
-        const prevId = arr[j].ID;
-        const prevLevel = prevId.match(/\./g)?.length || 0;
+        const prevId = arr[j]["CoLD ID"] ?? arr[j].ID;
+        const prevLevel = typeof prevId === "string" ? prevId.match(/\./g)?.length || 0 : 0;
         if (prevLevel === level - 1) {
-          parentId = prevId;
+          parentId = prevId as string;
           break;
         }
       }
     }
-    if (parentId) {
+    if (parentId && typeof id === "string") {
       if (!childrenMap[parentId]) childrenMap[parentId] = [];
       childrenMap[parentId].push(id);
     }
@@ -73,25 +73,25 @@ const fetchAnswersData = async (jurisdiction: string) => {
 
   // Expect an array of answer rows. We construct the composite key
   // based on either existing 'CoLD ID' or by combining jurisdiction + question ID if needed.
-  const map: Record<string, Record<string, unknown>> = {};
+  const map: Record<string, string> = {};
   if (Array.isArray(data)) {
-    for (const row of data) {
+    for (const row of data as AnswerItem[]) {
       const isoCode =
-        row["Jurisdictions Alpha-3 code"] ||
-        row["Jurisdictions Alpha-3 Code"] ||
+        (row["Jurisdictions Alpha-3 code"] as string) ||
+        (row["Jurisdictions Alpha-3 Code"] as string) ||
         jurisdiction;
       const rawQuestionId =
         row["Question ID"] || row["QuestionID"] || row["CoLD ID"] || row.ID;
       const rawColdId = row["CoLD ID"] || row["Answer ID"] || rawQuestionId;
-      const answerValue = row.Answer || row["Answer"] || "";
+      const answerValue = (row.Answer || row["Answer"] || "") as string;
 
-      const compositeId = buildCompositeId(isoCode, rawColdId, rawQuestionId);
+      const compositeId = buildCompositeId(isoCode, rawColdId as string, rawQuestionId as string);
 
       // Store under composite ID
       if (compositeId) map[compositeId] = answerValue;
       // Also store under base ID (without jurisdiction) for any legacy lookups
-      if (rawQuestionId && !map[rawQuestionId])
-        map[rawQuestionId] = answerValue;
+      if (rawQuestionId && !map[rawQuestionId as string])
+        map[rawQuestionId as string] = answerValue;
     }
   }
   return map;
@@ -114,25 +114,25 @@ export function useQuestionsWithAnswers(jurisdiction: Ref<string>) {
     enabled: computed(() => !!jurisdiction.value),
   });
 
-  const data = computed(() => {
+  const data = computed((): QuestionWithAnswer[] => {
     if (!questionsData.value || !Array.isArray(questionsData.value)) return [];
 
-    const sorted = questionsData.value.slice().sort((a, b) => {
-      const aId = a["CoLD ID"] ?? a.ID ?? "";
-      const bId = b["CoLD ID"] ?? b.ID ?? "";
+    const sorted = (questionsData.value as QuestionItem[]).slice().sort((a, b) => {
+      const aId = (a["CoLD ID"] ?? a.ID ?? "") as string;
+      const bId = (b["CoLD ID"] ?? b.ID ?? "") as string;
       return aId.localeCompare(bId);
     });
 
     const childrenMap = buildChildrenMap(sorted);
 
-    return sorted.map((item, idx, arr) => {
-      const id = item["CoLD ID"] ?? item.ID;
+    return sorted.map((item, idx, arr): QuestionWithAnswer => {
+      const id = (item["CoLD ID"] ?? item.ID) as string;
       const level = typeof id === "string" ? id.match(/\./g)?.length || 0 : 0;
-      let parentId = null;
+      let parentId: string | null = null;
       if (level > 0) {
         for (let j = idx - 1; j >= 0; j--) {
-          const prevId = arr[j]["CoLD ID"] ?? arr[j].ID;
-          const prevLevel = prevId.match(/\./g)?.length || 0;
+          const prevId = (arr[j]["CoLD ID"] ?? arr[j].ID) as string;
+          const prevLevel = typeof prevId === "string" ? prevId.match(/\./g)?.length || 0 : 0;
           if (prevLevel === level - 1) {
             parentId = prevId;
             break;
@@ -142,7 +142,7 @@ export function useQuestionsWithAnswers(jurisdiction: Ref<string>) {
       const hasExpand = !!childrenMap[id];
 
       const iso3 = jurisdiction?.value?.toUpperCase();
-      const baseId = item["CoLD ID"] ?? item.ID;
+      const baseId = (item["CoLD ID"] ?? item.ID) as string;
       const answerId = iso3 ? `${iso3}_${baseId}` : baseId;
       const answerText = answersData?.value?.[answerId] || "";
       const answerDisplay = processAnswerText(answerText);

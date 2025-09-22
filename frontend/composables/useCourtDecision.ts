@@ -7,7 +7,7 @@ export function useCourtDecision(courtDecisionId: Ref<string | number>) {
     computed(() => "Court Decisions"),
     courtDecisionId,
     {
-      select: (data) => {
+      select: (data: Record<string, unknown>) => {
         return {
           ...data,
           "Case Title":
@@ -19,11 +19,11 @@ export function useCourtDecision(courtDecisionId: Ref<string | number>) {
           "Case Citation": data["Case Citation"],
           Questions: data["Questions"],
           "Jurisdictions Alpha-3 Code": data["Jurisdictions Alpha-3 Code"],
-          "Publication Date ISO": formatDate(data["Publication Date ISO"]),
-          "Date of Judgment": formatDate(data["Date of Judgment"]),
+          "Publication Date ISO": formatDate(data["Publication Date ISO"] as string),
+          "Date of Judgment": formatDate(data["Date of Judgment"] as string),
           hasEnglishQuoteTranslation:
             data["Translated Excerpt"] &&
-            data["Translated Excerpt"].trim() !== "",
+            (data["Translated Excerpt"] as string).trim() !== "",
         };
       },
     },

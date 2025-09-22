@@ -9,10 +9,15 @@ const fetchDomesticInstrumentsData = async (_filterCompatible: boolean) => {
     table: "Domestic Instruments",
   };
 
-  const instrumentsData = await apiClient("/search/full_table", {
+  const data = await apiClient("/search/full_table", {
     body,
   });
 
+  if (!Array.isArray(data)) {
+    return [];
+  }
+
+  const instrumentsData = data as Record<string, unknown>[];
   instrumentsData.sort((a: Record<string, unknown>, b: Record<string, unknown>) => 
     Number(b.Date) - Number(a.Date)
   );
@@ -32,7 +37,7 @@ export function useDomesticInstruments({
     ),
     queryFn: () => fetchDomesticInstrumentsData(filterCompatible.value),
     select: filterCompatible.value
-      ? (data) =>
+      ? (data: Record<string, unknown>[]) =>
           data.filter(
             (item: Record<string, unknown>) => item["Compatible With the HCCH Principles?"],
           )

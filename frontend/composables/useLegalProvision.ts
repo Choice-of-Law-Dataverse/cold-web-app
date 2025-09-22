@@ -28,31 +28,33 @@ export function useLegalProvision({
   // Computed properties derived from the fetched data
   const title = computed(() => {
     if (!provisionData.value) return "";
+    const data = provisionData.value as Record<string, unknown>;
     return table === "Regional Legal Provisions"
-      ? provisionData.value["Title of the Provision"] || "Unknown Article"
-      : provisionData.value.Article || "Unknown Article";
+      ? (data["Title of the Provision"] as string) || "Unknown Article"
+      : (data.Article as string) || "Unknown Article";
   });
 
   const content = computed(() => {
     if (!provisionData.value) return "";
+    const data = provisionData.value as Record<string, unknown>;
 
     return showEnglish.value
       ? (table === "Regional Legal Provisions"
-          ? provisionData.value["Full Text"]
-          : provisionData.value[
+          ? (data["Full Text"] as string)
+          : (data[
               "Full Text of the Provision (English Translation)"
-            ]) ||
-          provisionData.value[
+            ] as string)) ||
+          (data[
             "Full Text of the Provision (Original Language)"
-          ] ||
+          ] as string) ||
           "No content available"
-      : provisionData.value["Full Text of the Provision (Original Language)"] ||
+      : (data["Full Text of the Provision (Original Language)"] as string) ||
           "No content available";
   });
 
   const anchorId = computed(() => {
     const articleNumber = title.value
-      ? title.value.replace(/\s+/g, "")
+      ? (title.value as string).replace(/\s+/g, "")
       : provisionId.replace(/\s+/g, "");
     return articleNumber;
   });

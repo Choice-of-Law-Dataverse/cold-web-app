@@ -95,7 +95,7 @@
 <script setup>
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import { courtDecisionCardConfig } from "@/config/cardConfigs";
-import { extractYear } from "@/utils/dateUtils";
+import { extractYear } from "@/utils/format";
 
 const props = defineProps({
   resultData: {

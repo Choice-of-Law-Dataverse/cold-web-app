@@ -26,8 +26,7 @@ import { ref, onMounted, watch, computed, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import SearchResults from "@/components/search-results/SearchResults.vue";
 import { useSearch } from "@/composables/useSearch";
-import { useHead } from "#imports";
-import { useSeoMeta } from "nuxt-seo";
+import { useHead, useSeoMeta  } from "#imports";
 
 // Block a page from being indexed (https://nuxtseo.com/learn/controlling-crawlers#quick-implementation-guide)
 useSeoMeta({

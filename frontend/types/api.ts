@@ -2,6 +2,39 @@
 export { ApiError } from "./errors";
 
 /**
+ * Question item data structure as returned from API
+ */
+export interface QuestionItem {
+  "CoLD ID"?: string;
+  ID?: string;
+  Question: string;
+  Themes?: string;
+  [key: string]: unknown;
+}
+
+/**
+ * Answer item data structure as returned from API  
+ */
+export interface AnswerItem {
+  [key: string]: string | unknown;
+}
+
+/**
+ * Processed question with answer data
+ */
+export interface QuestionWithAnswer {
+  id: string;
+  question: string;
+  theme?: string;
+  answer: string;
+  answerLink: string;
+  level: number;
+  hasExpand: boolean;
+  expanded: boolean;
+  parentId: string | null;
+}
+
+/**
  * Base interface for table-based requests
  */
 export interface BaseTableRequest {
