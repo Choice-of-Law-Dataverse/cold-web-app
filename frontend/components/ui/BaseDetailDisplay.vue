@@ -191,9 +191,19 @@ const props = defineProps({
     default: "default",
   },
   showNotificationBanner: Boolean,
-  notificationBannerMessage: String,
-  fallbackMessage: String,
-  icon: String,
+  notificationBannerMessage: {
+    type: String,
+    default: "",
+  },
+  fallbackMessage: {
+    type: String,
+    default: "",
+  },
+  icon: {
+    type: String,
+    required: false,
+    default: ""
+  }
 });
 
 defineEmits(["save", "open-save-modal", "open-cancel-modal"]);

@@ -26,9 +26,18 @@ export function useRelatedQuestions(
   );
 
   const questionLabels = computed(() => {
+    // Create a mapping object from the array data using compositeIds as keys
+    const dataMap = compositeIds.value.reduce((acc, id, index) => {
+      const record = results.data.value?.[index];
+      if (record) {
+        acc[id] = record;
+      }
+      return acc;
+    }, {} as Record<string, Record<string, unknown>>);
+
     return questionList.value.map((qid) => {
       const id = `${jurisdictionCode.value}_${qid}`;
-      const rec = (results.data.value as Record<string, Record<string, unknown>> | undefined)?.[id];
+      const rec = dataMap[id];
       return rec?.Question || id;
     });
   });

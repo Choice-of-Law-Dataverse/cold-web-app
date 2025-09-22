@@ -3,8 +3,9 @@
     <UIcon :name="icon" size="18" class="icon-adjust" />
     <span
       v-if="notificationBannerMessage && notificationBannerMessage.length"
-      v-html="notificationBannerMessage"
-    />
+    >
+      {{ notificationBannerMessage }}
+    </span>
     <span v-else-if="jurisdictionName">
       {{ fallbackMessage.replace("{jurisdiction}", jurisdictionName) }}
       <a href="/contact" class="contact-link">Contact us</a> if you want to
@@ -19,6 +20,7 @@ defineProps({
   jurisdictionName: {
     type: String,
     required: false,
+    default: "",
   },
   notificationBannerMessage: {
     type: String,

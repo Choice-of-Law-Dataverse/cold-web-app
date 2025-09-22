@@ -89,15 +89,15 @@ const props = defineProps({
   name: { type: String, required: true },
   specialists: { type: Array, required: true },
   date: { type: [String, Date], required: true },
-  pdfFile: { type: [Object, null], required: false },
+  pdfFile: { type: [Object, null], required: false, default: null },
   instrumentId: {
     type: [String, Number],
     default: null,
   },
   link: { type: String, required: false, default: "" },
   // New preferred keys for contact info
-  submitter_email: { type: String, required: false, default: undefined },
-  submitter_comments: { type: String, required: false, default: undefined },
+  submitterEmail: { type: String, required: false, default: undefined },
+  submitterComments: { type: String, required: false, default: undefined },
 });
 const emit = defineEmits([
   "update:modelValue",
@@ -108,13 +108,13 @@ const emit = defineEmits([
   "update:token",
   "update:saveModalErrors",
   "update:link",
-  "save",
+  "save", 'update:submitterEmail', 'update:submitterComments',
 ]);
 
 const modelValueProxy = ref(props.modelValue);
 // Prefer new keys if provided, fallback to legacy
-const emailProxy = ref(props.submitter_email ?? props.email);
-const commentsProxy = ref(props.submitter_comments ?? props.comments);
+const emailProxy = ref(props.submitterEmail ?? props.email);
+const commentsProxy = ref(props.submitterComments ?? props.comments);
 const tokenProxy = ref(props.token);
 const saveModalErrorsProxy = ref({ ...props.saveModalErrors });
 const linkProxy = ref(props.link);
@@ -130,24 +130,24 @@ watch(modelValueProxy, (val) => {
 });
 
 watch(
-  () => [props.submitter_email, props.email],
+  () => [props.submitterEmail, props.email],
   ([newEmail, legacyEmail]) => {
     emailProxy.value = newEmail ?? legacyEmail;
   },
 );
 watch(emailProxy, (val) => {
-  emit("update:submitter_email", val);
+  emit("update:submitterEmail", val);
   emit("update:email", val);
 });
 
 watch(
-  () => [props.submitter_comments, props.comments],
+  () => [props.submitterComments, props.comments],
   ([newVal, legacyVal]) => {
     commentsProxy.value = newVal ?? legacyVal;
   },
 );
 watch(commentsProxy, (val) => {
-  emit("update:submitter_comments", val);
+  emit("update:submitterComments", val);
   emit("update:comments", val);
 });
 
@@ -183,18 +183,18 @@ watch(linkProxy, (val) => {
 
 // Validation schema for SaveModal
 const saveModalSchema = z.object({
-  submitter_email: z
+  submitterEmail: z
     .string()
     .min(1, { message: "Email is required" })
     .email({ message: "Please enter a valid email address" }),
-  submitter_comments: z.string().optional(),
+  submitterComments: z.string().optional(),
 });
 
 function validateSaveModal() {
   try {
     const modalData = {
-      submitter_email: emailProxy.value,
-      submitter_comments: commentsProxy.value,
+      submitterEmail: emailProxy.value,
+      submitterComments: commentsProxy.value,
     };
     saveModalSchema.parse(modalData);
     saveModalErrorsProxy.value = {};
@@ -227,24 +227,24 @@ watch(modelValueProxy, (val) => {
 });
 
 watch(
-  () => [props.submitter_email, props.email],
+  () => [props.submitterEmail, props.email],
   ([newEmail, legacyEmail]) => {
     emailProxy.value = newEmail ?? legacyEmail;
   },
 );
 watch(emailProxy, (val) => {
-  emit("update:submitter_email", val);
+  emit("update:submitterEmail", val);
   emit("update:email", val);
 });
 
 watch(
-  () => [props.submitter_comments, props.comments],
+  () => [props.submitterComments, props.comments],
   ([newVal, legacyVal]) => {
     commentsProxy.value = newVal ?? legacyVal;
   },
 );
 watch(commentsProxy, (val) => {
-  emit("update:submitter_comments", val);
+  emit("update:submitterComments", val);
   emit("update:comments", val);
 });
 

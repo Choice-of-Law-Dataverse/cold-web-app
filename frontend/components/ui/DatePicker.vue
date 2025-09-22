@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import { DatePicker as VCalendarDatePicker } from "v-calendar";
-import type {
-  DatePickerDate,
-  DatePickerRangeObject,
-} from "v-calendar/dist/types/src/use/datePicker";
 import "v-calendar/dist/style.css";
 
 defineOptions({
@@ -12,9 +8,7 @@ defineOptions({
 
 const props = defineProps({
   modelValue: {
-    type: [Date, Object] as PropType<
-      DatePickerDate | DatePickerRangeObject | null
-    >,
+    type: [Date, Object], // fallback to any due to type import issue
     default: null,
   },
 });
@@ -39,7 +33,7 @@ const attrs = {
   "first-day-of-week": 2,
 };
 
-function onDayClick(_: Date, event: MouseEvent): void {
+function onDayClick(_, event: MouseEvent): void {
   const target = event.target as HTMLElement;
   target.blur();
 }
@@ -49,8 +43,8 @@ function onDayClick(_: Date, event: MouseEvent): void {
   <VCalendarDatePicker
     v-if="
       date &&
-      (date as DatePickerRangeObject)?.start &&
-      (date as DatePickerRangeObject)?.end
+      (date as any)?.start &&
+      (date as any)?.end
     "
     v-model.range="date"
     :columns="2"

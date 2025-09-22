@@ -33,15 +33,14 @@ export function useJurisdictions() {
 }
 
 export function useJurisdiction(iso3: Ref<string>) {
-  return useFullTable("Jurisdictions", {
-    select: (data) => {
-      const record = data?.find(
+  const result = useFullTable("Jurisdictions")
+
+  const data = result.data?.value?.find(
         (r) => r?.["Alpha-3 Code"] === iso3.value.toLocaleUpperCase(),
-      );
+      )
 
-      if (!record) return null;
-
-      return convert(record);
-    },
-  });
+  return {
+    ...result,
+    data: ref(convert(data || {})) as Ref<Record<string, unknown> | undefined>,
+  }
 }

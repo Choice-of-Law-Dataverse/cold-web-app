@@ -86,14 +86,6 @@ export default defineNuxtConfig({
     optimizeDeps: {
       include: ["plotly.js-dist-min"],
     },
-    // Fix legacy JS bug (https://stackoverflow.com/a/79054778/22393957)
-    css: {
-      preprocessorOptions: {
-        scss: {
-          api: "modern",
-        },
-      },
-    },
   },
   app: {
     head: {

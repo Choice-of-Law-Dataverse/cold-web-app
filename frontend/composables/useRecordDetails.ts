@@ -3,42 +3,42 @@ import { useQuery, useQueries } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
 import type { TableName } from "~/types/api";
 
-const fetchRecordDetails = async (table: TableName, id: string | number) => {
+async function fetchRecordDetails<T>(table: TableName, id: string | number) {
   const { apiClient } = useApiClient();
-  return await apiClient("/search/details", { body: { table, id } });
+  return await apiClient<T>("/search/details", { body: { table, id } });
 };
 
-type Options =
+type Options<T> =
   | Partial<{
-      select: (data: Record<string, unknown>) => Record<string, unknown>;
+      select: (data: T) => T;
     }>
   | undefined;
 
-export function useRecordDetails(
+export function useRecordDetails<T = Record<string, unknown>>(
   table: Ref<TableName>,
   id: Ref<string | number>,
-  { select }: Options = {},
+  { select }: Options<T> = {},
 ) {
   return useQuery({
     queryKey: computed(() => [table.value, id.value]),
-    queryFn: () => fetchRecordDetails(table.value, id.value),
+    queryFn: () => fetchRecordDetails<T>(table.value, id.value),
     enabled: computed(() => Boolean(table.value && id.value)),
     select,
   });
 }
 
-export function useRecordDetailsList(
+export function useRecordDetailsList<T = Record<string, unknown>>(
   table: Ref<TableName>,
   ids: Ref<Array<string | number>>,
-  { select }: Options = {},
+  { select }: Options<T> = {},
 ) {
   const queries = computed(() => {
     const list = ids.value || [];
     return list.map((id) => ({
       queryKey: [table.value, id],
-      queryFn: () => fetchRecordDetails(table.value, id),
+      queryFn: () => fetchRecordDetails<T>(table.value, id),
       enabled: Boolean(table.value && id),
-      select,
+      ...(select && { select }),
     }));
   });
 

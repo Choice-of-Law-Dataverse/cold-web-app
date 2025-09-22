@@ -66,7 +66,10 @@ const fetchSearchResults = async ({
     });
   }
 
-  const data = await apiClient("/search/", { body });
+  const data = await apiClient<{
+    results: Record<string, unknown>[];
+    total_matches?: number;
+  }>("/search/", { body });
 
   return {
     results: Object.values(data.results),

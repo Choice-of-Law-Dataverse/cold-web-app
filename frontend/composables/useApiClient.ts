@@ -13,7 +13,7 @@ import {
 export function useApiClient() {
   const config = useRuntimeConfig();
 
-  const apiClient = async <T = unknown>(
+  const apiClient = async <T = Record<string, unknown>>(
     endpoint: string,
     options: {
       body?: ApiRequestBody;
