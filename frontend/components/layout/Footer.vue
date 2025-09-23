@@ -6,7 +6,7 @@
       <div class="mt-4 flex flex-col gap-3 md:col-span-8">
         <img
           src="https://choiceoflaw.blob.core.windows.net/assets/cold_flag_footer.svg"
-          class="w-25 mb-6"
+          class="w-25 mb-6 max-w-[100px]"
         >
         <h2 class="!font-bold leading-tight">Choice of Law<br >Dataverse</h2>
         <p class="leading-snug">
