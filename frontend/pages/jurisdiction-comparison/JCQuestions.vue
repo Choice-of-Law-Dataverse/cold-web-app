@@ -196,7 +196,7 @@ import { useJurisdictions } from "@/composables/useJurisdictions";
 interface Props {
   showCaret?: boolean;
   title?: string;
-  questionIDs?: unknown[];
+  questionIDs?: string[];
 }
 
 const props = withDefaults(defineProps<Props>(), {

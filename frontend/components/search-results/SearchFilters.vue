@@ -185,22 +185,33 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, reactive } from "vue";
 import { handleImageError } from "@/utils/handleImageError";
 import { useCoveredCountries } from "@/composables/useCoveredCountries";
 
-const props = defineProps({
-  options: { type: Array, required: true },
-  modelValue: { type: Array, default: () => [] },
-  showAvatars: { type: Boolean, default: false },
-  multiple: { type: Boolean, default: true },
-  loading: { type: Boolean, default: false },
-  highlightJurisdictions: { type: Boolean, default: false },
-  placeholder: { type: String, default: "" },
+interface Props {
+  options: Record<string, unknown>[];
+  modelValue?: Record<string, unknown>[];
+  showAvatars?: boolean;
+  multiple?: boolean;
+  loading?: boolean;
+  highlightJurisdictions?: boolean;
+  placeholder?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: () => [],
+  showAvatars: false,
+  multiple: true,
+  loading: false,
+  highlightJurisdictions: false,
+  placeholder: "",
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits<{
+  "update:modelValue": [value: Record<string, unknown>[]];
+}>();
 
 // Reactive object for errored avatars
 const erroredAvatars = reactive({});

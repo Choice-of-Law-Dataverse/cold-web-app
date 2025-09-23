@@ -6,14 +6,19 @@ defineOptions({
   inheritAttrs: false,
 });
 
-const props = defineProps({
-  modelValue: {
-    type: [Date, Object], // fallback to any due to type import issue
-    default: null,
-  },
+interface Props {
+  modelValue?: Date | Record<string, unknown> | null;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  modelValue: null,
 });
 
-const emit = defineEmits(["update:modelValue", "update:model-value", "close"]);
+const emit = defineEmits<{
+  "update:modelValue": [value: Date | Record<string, unknown> | null];
+  "update:model-value": [value: Date | Record<string, unknown> | null];
+  close: [];
+}>();
 
 const date = computed({
   get: () => props.modelValue,

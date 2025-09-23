@@ -82,7 +82,7 @@ import { handleImageError } from "@/utils/handleImageError";
 import { useCoveredCountries } from "@/composables/useCoveredCountries";
 
 interface Props {
-  countries: unknown[];
+  countries: Record<string, unknown>[];
   placeholder?: string;
 }
 

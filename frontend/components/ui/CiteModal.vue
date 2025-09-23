@@ -31,16 +31,24 @@
   </UModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useRoute } from "vue-router";
 
-const props = defineProps({
-  modelValue: { type: Boolean, default: false },
+interface Props {
+  modelValue?: boolean;
   // Optional override if you want to pass a known title directly
-  title: { type: String, default: "" },
+  title?: string;
+}
+
+withDefaults(defineProps<Props>(), {
+  modelValue: false,
+  title: "",
 });
-defineEmits(["update:modelValue"]);
+
+defineEmits<{
+  "update:modelValue": [value: boolean];
+}>();
 
 const route = useRoute();
 

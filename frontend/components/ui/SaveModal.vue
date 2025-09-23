@@ -81,13 +81,13 @@ import { ref, watch } from "vue";
 import { z } from "zod";
 
 interface Props {
+  specialists: Record<string, unknown>[];
+  name: string;
   modelValue: boolean;
   email: string;
   comments: string;
   token: string;
   saveModalErrors: Record<string, unknown>;
-  name: string;
-  specialists: unknown[];
   date: string | Date;
   pdfFile?: File | null;
   instrumentId?: string | number | null;
