@@ -5,5 +5,5 @@
 </template>
 
 <script setup>
-import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
+import ContentPageLayout from '@/components/layout/ContentPageLayout.vue'
 </script>

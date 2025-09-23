@@ -1,19 +1,19 @@
-import { computed, type Ref } from "vue";
+import { computed, type Ref } from 'vue'
 import {
   useRecordDetails,
   useRecordDetailsList,
-} from "@/composables/useRecordDetails";
+} from '@/composables/useRecordDetails'
 
 export function useAnswer(answerId: Ref<string | number>) {
   return useRecordDetails(
-    computed(() => "Answers"),
-    answerId,
-  );
+    computed(() => 'Answers'),
+    answerId
+  )
 }
 
 export function useAnswers(answerIds: Ref<(string | number)[]>) {
   return useRecordDetailsList(
-    computed(() => "Answers"),
-    answerIds,
-  );
+    computed(() => 'Answers'),
+    answerIds
+  )
 }

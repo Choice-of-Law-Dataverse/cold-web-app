@@ -188,10 +188,10 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from "vue";
-import LoadingBar from "@/components/layout/LoadingBar.vue";
-import { useJurisdictionComparison } from "@/composables/useJurisdictionComparison";
-import { useJurisdictions } from "@/composables/useJurisdictions";
+import { ref, computed, onMounted, watch } from 'vue'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
+import { useJurisdictionComparison } from '@/composables/useJurisdictionComparison'
+import { useJurisdictions } from '@/composables/useJurisdictions'
 
 const props = defineProps({
   showCaret: {
@@ -200,136 +200,136 @@ const props = defineProps({
   },
   title: {
     type: String,
-    default: "Please Set Title",
+    default: 'Please Set Title',
   },
   questionIDs: {
     type: Array,
     required: false,
     default: () => [],
   },
-});
+})
 
 // Accordion state
-const isOpen = ref(false);
-const isOpenMobile = ref(false);
-const hasBeenOpened = ref(false);
+const isOpen = ref(false)
+const isOpenMobile = ref(false)
+const hasBeenOpened = ref(false)
 
 // Always force open if showCaret is false
 watch(
   () => props.showCaret,
   (val) => {
     if (!val) {
-      isOpen.value = true;
-      isOpenMobile.value = true;
-      hasBeenOpened.value = true;
+      isOpen.value = true
+      isOpenMobile.value = true
+      hasBeenOpened.value = true
     }
   },
-  { immediate: true },
-);
+  { immediate: true }
+)
 
 // Track when accordion is opened for the first time
 watch([isOpen, isOpenMobile], ([desktop, mobile]) => {
   if ((desktop || mobile) && !hasBeenOpened.value) {
-    hasBeenOpened.value = true;
+    hasBeenOpened.value = true
     // Start loading data when first opened
-    loadAccordionData();
+    loadAccordionData()
   }
-});
+})
 
-const { data: jurisdictions } = useJurisdictions();
+const { data: jurisdictions } = useJurisdictions()
 
 // Use shared jurisdiction comparison state
-const { jurisdictionFilters } = useJurisdictionComparison();
+const { jurisdictionFilters } = useJurisdictionComparison()
 
 // Track errored flag images
-const erroredFlags = ref({});
+const erroredFlags = ref({})
 
 // Flag URL helper function
 const getFlagUrl = (label) => {
-  if (!label || label === "All Jurisdictions") return "";
-  const found = jurisdictions.value.find((j) => j.label === label);
-  if (found?.avatar) return found.avatar;
-  return `https://choiceoflaw.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`;
-};
+  if (!label || label === 'All Jurisdictions') return ''
+  const found = jurisdictions.value.find((j) => j.label === label)
+  if (found?.avatar) return found.avatar
+  return `https://choiceoflaw.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`
+}
 
 // Questions state
-const questionLabels = ref([]);
-const loadingQuestions = ref(false); // Start as false, only set to true when actually loading
+const questionLabels = ref([])
+const loadingQuestions = ref(false) // Start as false, only set to true when actually loading
 
 // Answers state
-const answersData = ref({});
-const loadingAnswers = ref(false);
+const answersData = ref({})
+const loadingAnswers = ref(false)
 
 // Combined loading state - only load when accordion has been opened
 const isLoading = computed(
-  () => hasBeenOpened.value && (loadingQuestions.value || loadingAnswers.value),
-);
+  () => hasBeenOpened.value && (loadingQuestions.value || loadingAnswers.value)
+)
 
 // Fetch questions with improved error handling
 const fetchQuestions = async () => {
-  if (!hasBeenOpened.value) return; // Don't fetch if accordion hasn't been opened
+  if (!hasBeenOpened.value) return // Don't fetch if accordion hasn't been opened
 
   try {
     const promises = props.questionIDs.map(async (id) => {
       try {
         const response = await fetch(`/api/proxy/search/full_table`, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            table: "Questions",
-            filters: [{ column: "ID", value: id }],
+            table: 'Questions',
+            filters: [{ column: 'ID', value: id }],
           }),
-        });
+        })
 
-        if (!response.ok) return id;
+        if (!response.ok) return id
 
-        const data = await response.json();
-        return data[0]?.Question || id;
+        const data = await response.json()
+        return data[0]?.Question || id
       } catch {
-        return id;
+        return id
       }
-    });
+    })
 
-    questionLabels.value = await Promise.all(promises);
+    questionLabels.value = await Promise.all(promises)
   } catch (error) {
-    console.error("Error fetching questions:", error);
-    questionLabels.value = props.questionIDs;
+    console.error('Error fetching questions:', error)
+    questionLabels.value = props.questionIDs
   }
   // Note: Don't set loadingQuestions to false here - let loadAccordionData handle it
-};
+}
 
 // Fetch answer data with caching
 const fetchAnswerData = async (id) => {
   if (!id || answersData.value[id] !== undefined) {
-    return answersData.value[id];
+    return answersData.value[id]
   }
 
   try {
     const response = await fetch(`/api/proxy/search/details`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ table: "Answers", id }),
-    });
+      body: JSON.stringify({ table: 'Answers', id }),
+    })
 
     if (!response.ok) {
-      answersData.value[id] = null;
-      return null;
+      answersData.value[id] = null
+      return null
     }
 
-    const data = await response.json();
-    const answer = data?.Answer || null;
-    answersData.value[id] = answer;
-    return answer;
+    const data = await response.json()
+    const answer = data?.Answer || null
+    answersData.value[id] = answer
+    return answer
   } catch (error) {
-    console.error(`Error fetching answer for ${id}:`, error);
-    answersData.value[id] = null;
-    return null;
+    console.error(`Error fetching answer for ${id}:`, error)
+    answersData.value[id] = null
+    return null
   }
-};
+}
 
 // Fetch all answers for current jurisdictions and questions
 const fetchAllAnswers = async () => {
@@ -338,87 +338,87 @@ const fetchAllAnswers = async () => {
     !jurisdictionFilters.value.length ||
     !props.questionIDs.length
   )
-    return;
+    return
 
   const promises = jurisdictionFilters.value.flatMap((filter) => {
-    const alpha3Code = filter.value.value[0]?.alpha3Code?.toUpperCase();
-    if (!alpha3Code) return [];
+    const alpha3Code = filter.value.value[0]?.alpha3Code?.toUpperCase()
+    if (!alpha3Code) return []
 
     return props.questionIDs.map((questionID) =>
-      fetchAnswerData(`${alpha3Code}_${questionID}`),
-    );
-  });
+      fetchAnswerData(`${alpha3Code}_${questionID}`)
+    )
+  })
 
-  await Promise.all(promises);
+  await Promise.all(promises)
   // Note: Don't set loadingAnswers to false here - let loadAccordionData handle it
-};
+}
 
 // Load accordion data when opened
 const loadAccordionData = async () => {
   // Set loading state for both questions and answers
-  loadingQuestions.value = true;
-  loadingAnswers.value = true;
+  loadingQuestions.value = true
+  loadingAnswers.value = true
 
   try {
     // Load jurisdictions and questions in parallel
-    await Promise.all([fetchQuestions()]);
+    await Promise.all([fetchQuestions()])
     // Then load answers (which depends on jurisdictions being loaded)
-    await fetchAllAnswers();
+    await fetchAllAnswers()
   } finally {
     // Ensure loading states are cleared even if there's an error
-    loadingQuestions.value = false;
-    loadingAnswers.value = false;
+    loadingQuestions.value = false
+    loadingAnswers.value = false
   }
-};
+}
 
 // Watch for changes and refetch data (only if accordion has been opened)
 watch(
   [jurisdictionFilters, () => props.questionIDs],
   async () => {
     if (hasBeenOpened.value) {
-      loadingAnswers.value = true;
+      loadingAnswers.value = true
       try {
-        await fetchAllAnswers();
+        await fetchAllAnswers()
       } finally {
-        loadingAnswers.value = false;
+        loadingAnswers.value = false
       }
     }
   },
-  { deep: true },
-);
+  { deep: true }
+)
 
 // Computed answer data
 const sampleData = computed(() => {
-  if (!hasBeenOpened.value) return []; // Return empty array if not opened yet
+  if (!hasBeenOpened.value) return [] // Return empty array if not opened yet
 
   return jurisdictionFilters.value.map((filter) => {
-    const alpha3Code = filter.value.value[0]?.alpha3Code?.toUpperCase();
+    const alpha3Code = filter.value.value[0]?.alpha3Code?.toUpperCase()
 
     return props.questionIDs.map((questionID) => {
-      if (!alpha3Code) return questionID;
+      if (!alpha3Code) return questionID
 
-      const id = `${alpha3Code}_${questionID}`;
-      const answer = answersData.value[id];
+      const id = `${alpha3Code}_${questionID}`
+      const answer = answersData.value[id]
 
       if (answer !== undefined) {
         return answer !== null
           ? answer
-          : `No answer available for ${questionID}`;
+          : `No answer available for ${questionID}`
       }
 
-      return questionID;
-    });
-  });
-});
+      return questionID
+    })
+  })
+})
 
 // Initialization - only load jurisdictions initially, not questions/answers
 onMounted(async () => {
   // If showCaret is false, immediately load data since accordion should be open
   if (!props.showCaret) {
-    hasBeenOpened.value = true;
-    await loadAccordionData();
+    hasBeenOpened.value = true
+    await loadAccordionData()
   }
-});
+})
 </script>
 
 <style scoped>

@@ -11,7 +11,7 @@
           config.gridConfig.title.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel("Title (in English)") }}</div>
+        <div class="label-key">{{ getLabel('Title (in English)') }}</div>
         <div
           :class="[
             config.valueClassMap['Title (in English)'],
@@ -19,13 +19,13 @@
             (!processedResultData['Title (in English)'] ||
               processedResultData['Title (in English)'] === 'NA') &&
             config.keyLabelPairs.find(
-              (pair) => pair.key === 'Title (in English)',
+              (pair) => pair.key === 'Title (in English)'
             )?.emptyValueBehavior?.action === 'display'
               ? 'text-gray-300'
               : '',
           ]"
         >
-          {{ getValue("Title (in English)") }}
+          {{ getValue('Title (in English)') }}
         </div>
       </div>
 
@@ -41,14 +41,14 @@
           config.gridConfig.date.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel("Date") }}</div>
+        <div class="label-key">{{ getLabel('Date') }}</div>
         <div
           :class="[
             config.valueClassMap['Date'],
             'whitespace-pre-line text-sm leading-relaxed',
           ]"
         >
-          {{ getValue("Date") }}
+          {{ getValue('Date') }}
         </div>
       </div>
 
@@ -64,14 +64,14 @@
           config.gridConfig.abbreviation.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel("Abbreviation") }}</div>
+        <div class="label-key">{{ getLabel('Abbreviation') }}</div>
         <div
           :class="[
             config.valueClassMap['Abbreviation'],
             'whitespace-pre-line text-sm leading-relaxed',
           ]"
         >
-          {{ getValue("Abbreviation") }}
+          {{ getValue('Abbreviation') }}
         </div>
       </div>
     </div>
@@ -79,43 +79,43 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import ResultCard from "@/components/search-results/ResultCard.vue";
-import { legislationCardConfig } from "@/config/cardConfigs";
+import { computed } from 'vue'
+import ResultCard from '@/components/search-results/ResultCard.vue'
+import { legislationCardConfig } from '@/config/cardConfigs'
 
 const props = defineProps({
   resultData: {
     type: Object,
     required: true,
   },
-});
+})
 
-const config = legislationCardConfig;
+const config = legislationCardConfig
 
 // Process the result data using the config's processData function
 const processedResultData = computed(() => {
-  return config.processData(props.resultData);
-});
+  return config.processData(props.resultData)
+})
 
 // Helper functions to get labels and values with fallbacks
 const getLabel = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  return pair?.label || key;
-};
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
+  return pair?.label || key
+}
 
 const getValue = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  const value = processedResultData.value?.[key];
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
+  const value = processedResultData.value?.[key]
 
   if (!value && pair?.emptyValueBehavior) {
-    if (pair.emptyValueBehavior.action === "display") {
-      return pair.emptyValueBehavior.fallback;
+    if (pair.emptyValueBehavior.action === 'display') {
+      return pair.emptyValueBehavior.fallback
     }
-    return "";
+    return ''
   }
 
-  return value;
-};
+  return value
+}
 </script>
 
 <style scoped>

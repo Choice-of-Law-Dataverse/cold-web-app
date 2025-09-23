@@ -18,35 +18,35 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch } from 'vue'
 
 const props = defineProps({
   modelValue: {
     type: Boolean,
     required: true,
   },
-});
-const emit = defineEmits(["update:modelValue", "confirm-cancel"]);
+})
+const emit = defineEmits(['update:modelValue', 'confirm-cancel'])
 
-const modelValueProxy = ref(props.modelValue);
+const modelValueProxy = ref(props.modelValue)
 
 watch(
   () => props.modelValue,
   (val) => {
-    modelValueProxy.value = val;
-  },
-);
+    modelValueProxy.value = val
+  }
+)
 
 watch(modelValueProxy, (val) => {
-  emit("update:modelValue", val);
-});
+  emit('update:modelValue', val)
+})
 
 function closeModal() {
-  modelValueProxy.value = false;
+  modelValueProxy.value = false
 }
 
 function onDiscard() {
-  emit("confirm-cancel");
-  closeModal();
+  emit('confirm-cancel')
+  closeModal()
 }
 </script>

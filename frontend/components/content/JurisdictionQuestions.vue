@@ -185,27 +185,27 @@
 </template>
 
 <script setup>
-import { ref, computed, useAttrs } from "vue";
-import { useRoute } from "vue-router";
-import { useQuestionsWithAnswers } from "@/composables/useQuestionsWithAnswers";
-import LoadingBar from "@/components/layout/LoadingBar.vue";
+import { ref, computed, useAttrs } from 'vue'
+import { useRoute } from 'vue-router'
+import { useQuestionsWithAnswers } from '@/composables/useQuestionsWithAnswers'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
 
-const route = useRoute();
+const route = useRoute()
 
 const {
   data: questionWithAnswersData,
   loading,
   answersLoading,
-} = useQuestionsWithAnswers(computed(() => route?.params?.id));
+} = useQuestionsWithAnswers(computed(() => route?.params?.id))
 
-const attrs = useAttrs();
+const attrs = useAttrs()
 const jurisdictionName = computed(() => {
-  const name = attrs.formattedJurisdiction?.[0] || "";
-  return name ? `for ${name}` : "";
-});
+  const name = attrs.formattedJurisdiction?.[0] || ''
+  return name ? `for ${name}` : ''
+})
 
 // Track expanded state for each row by ID
-const expandedRows = ref(new Set());
+const expandedRows = ref(new Set())
 
 // Create rows with computed expanded state
 const rows = computed(() => {
@@ -213,63 +213,63 @@ const rows = computed(() => {
     !questionWithAnswersData.value ||
     !Array.isArray(questionWithAnswersData.value)
   ) {
-    return [];
+    return []
   }
   return questionWithAnswersData.value.map((row) => ({
     ...row,
     expanded: expandedRows.value.has(row.id),
-  }));
-});
+  }))
+})
 
 const columns = [
-  { key: "question", label: "Question" },
-  { key: "theme", label: "Theme" },
-  { key: "answer", label: "Answer" },
-];
+  { key: 'question', label: 'Question' },
+  { key: 'theme', label: 'Theme' },
+  { key: 'answer', label: 'Answer' },
+]
 
 const visibleRows = computed(() => {
-  const result = [];
-  const parentExpanded = {};
+  const result = []
+  const parentExpanded = {}
 
   for (const row of rows.value) {
     // Always show top-level rows
     if (row.level === 0) {
-      result.push(row);
-      parentExpanded[row.id] = row.expanded;
+      result.push(row)
+      parentExpanded[row.id] = row.expanded
     } else {
       // Show child if its parent is expanded
       if (parentExpanded[row.parentId]) {
-        result.push(row);
-        parentExpanded[row.id] = row.expanded;
+        result.push(row)
+        parentExpanded[row.id] = row.expanded
       }
     }
   }
-  return result;
-});
+  return result
+})
 
 function toggleExpand(row) {
-  const newExpandedRows = new Set(expandedRows.value);
+  const newExpandedRows = new Set(expandedRows.value)
 
   if (newExpandedRows.has(row.id)) {
     // Collapse this row and all descendants
-    newExpandedRows.delete(row.id);
-    collapseDescendants(row.id, newExpandedRows);
+    newExpandedRows.delete(row.id)
+    collapseDescendants(row.id, newExpandedRows)
   } else {
     // Expand this row
-    newExpandedRows.add(row.id);
+    newExpandedRows.add(row.id)
   }
 
-  expandedRows.value = newExpandedRows;
+  expandedRows.value = newExpandedRows
 }
 
 function collapseDescendants(parentId, expandedSet) {
-  if (!rows.value) return;
+  if (!rows.value) return
 
   for (const child of rows.value) {
     if (child.parentId === parentId) {
       if (child.hasExpand) {
-        expandedSet.delete(child.id);
-        collapseDescendants(child.id, expandedSet);
+        expandedSet.delete(child.id)
+        collapseDescendants(child.id, expandedSet)
       }
     }
   }
@@ -311,10 +311,10 @@ function collapseDescendants(parentId, expandedSet) {
   min-height: 80px !important;
 }
 
-.table-full-width-wrapper tr[aria-expanded="true"],
+.table-full-width-wrapper tr[aria-expanded='true'],
 .table-full-width-wrapper tr.is-expanded,
 .table-full-width-wrapper tr.expanded,
-.table-full-width-wrapper tr[aria-selected="true"],
+.table-full-width-wrapper tr[aria-selected='true'],
 .table-full-width-wrapper .bg-gray-50,
 .table-full-width-wrapper .bg-gray-100,
 .table-full-width-wrapper .bg-gray-200 {

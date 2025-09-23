@@ -27,19 +27,19 @@
 </template>
 
 <script setup>
-import { useRouter } from "vue-router";
-import { ref } from "vue";
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
 
-const router = useRouter();
+const router = useRouter()
 
-const searchSuggestions = ref(["Arbitration", "Rules of law", "Tacit choice"]);
+const searchSuggestions = ref(['Arbitration', 'Rules of law', 'Tacit choice'])
 
 function handleSuggestionClick(suggestion) {
   // Pass the query with both theme and type=Literature
   router.push({
-    name: "search",
-    query: { theme: suggestion, type: "Literature" },
-  });
+    name: 'search',
+    query: { theme: suggestion, type: 'Literature' },
+  })
 }
 </script>
 

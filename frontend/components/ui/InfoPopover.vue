@@ -29,9 +29,9 @@ defineProps({
   },
   placement: {
     type: String,
-    default: "top",
+    default: 'top',
   },
-});
+})
 </script>
 
 <style scoped>

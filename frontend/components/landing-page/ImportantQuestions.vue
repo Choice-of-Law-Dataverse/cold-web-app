@@ -32,7 +32,7 @@
                   ref="titleRef"
                   class="popular-title mb-0 text-center md:text-left"
                 >
-                  {{ questionTitle || "Missing Question" }}
+                  {{ questionTitle || 'Missing Question' }}
                 </h2>
               </div>
               <div>
@@ -98,7 +98,7 @@
                             :alt="country.code + ' flag'"
                             @error="
                               (e) => {
-                                e.target.style.display = 'none';
+                                e.target.style.display = 'none'
                               }
                             "
                           >
@@ -162,65 +162,65 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, nextTick, onUnmounted, watch } from "vue";
-import { useQuestionCountries } from "@/composables/useQuestionCountries";
+import { ref, onMounted, computed, nextTick, onUnmounted, watch } from 'vue'
+import { useQuestionCountries } from '@/composables/useQuestionCountries'
 
-const answers = ["Yes", "No"];
+const answers = ['Yes', 'No']
 const regions = [
-  "All",
-  "Asia & Pacific",
-  "Europe",
-  "Arab States",
-  "Africa",
-  "South & Latin America",
-  "North America",
-  "Middle East",
-];
+  'All',
+  'Asia & Pacific',
+  'Europe',
+  'Arab States',
+  'Africa',
+  'South & Latin America',
+  'North America',
+  'Middle East',
+]
 const props = defineProps({
   questionSuffixes: {
     type: Array,
-    default: () => ["_01-P"],
+    default: () => ['_01-P'],
   },
-});
+})
 
-const selectedAnswer = ref("Yes");
-const selectedRegion = ref("All");
-const countriesLines = ref([]);
-const titleRef = ref(null);
-const rowsCount = ref(3);
+const selectedAnswer = ref('Yes')
+const selectedRegion = ref('All')
+const countriesLines = ref([])
+const titleRef = ref(null)
+const rowsCount = ref(3)
 
-const currentIndex = ref(0);
-const suffixes = computed(() => props.questionSuffixes);
-const totalQuestions = computed(() => suffixes.value.length);
-const currentSuffix = computed(() => suffixes.value[currentIndex.value]);
+const currentIndex = ref(0)
+const suffixes = computed(() => props.questionSuffixes)
+const totalQuestions = computed(() => suffixes.value.length)
+const currentSuffix = computed(() => suffixes.value[currentIndex.value])
 
 const {
   data: questionData,
   isLoading,
   error,
-} = useQuestionCountries(currentSuffix, selectedAnswer, selectedRegion);
+} = useQuestionCountries(currentSuffix, selectedAnswer, selectedRegion)
 
-const countries = computed(() => questionData.value?.countries || []);
+const countries = computed(() => questionData.value?.countries || [])
 const questionTitle = computed(
-  () => questionData.value?.questionTitle || "Missing Question",
-);
+  () => questionData.value?.questionTitle || 'Missing Question'
+)
 // Carousel: accept an array of question suffixes to rotate through
 
 const prevQuestion = () => {
   currentIndex.value =
-    (currentIndex.value - 1 + totalQuestions.value) % totalQuestions.value;
-};
+    (currentIndex.value - 1 + totalQuestions.value) % totalQuestions.value
+}
 
 const nextQuestion = () => {
-  currentIndex.value = (currentIndex.value + 1) % totalQuestions.value;
-};
+  currentIndex.value = (currentIndex.value + 1) % totalQuestions.value
+}
 
 function selectAnswer(answer) {
-  selectedAnswer.value = answer;
+  selectedAnswer.value = answer
 }
 
 function selectRegion(region) {
-  selectedRegion.value = region;
+  selectedRegion.value = region
 }
 
 // Watch for countries data changes and update countriesLines
@@ -228,68 +228,65 @@ watch(
   countries,
   async (newCountries) => {
     if (newCountries && newCountries.length > 0) {
-      await nextTick();
-      computeRows();
-      countriesLines.value = splitIntoLines(newCountries, rowsCount.value);
+      await nextTick()
+      computeRows()
+      countriesLines.value = splitIntoLines(newCountries, rowsCount.value)
     } else {
-      countriesLines.value = [];
+      countriesLines.value = []
     }
   },
-  { immediate: true },
-);
+  { immediate: true }
+)
 
 onMounted(() => {
   // compute rows on mount and on resize
-  computeRows();
-  window.addEventListener("resize", computeRows);
-});
+  computeRows()
+  window.addEventListener('resize', computeRows)
+})
 
 // Cleanup resize listener when component unmounts
 onUnmounted(() => {
-  window.removeEventListener("resize", computeRows);
-});
+  window.removeEventListener('resize', computeRows)
+})
 
 function computeRows() {
   // Measure rendered title height to determine how many text lines it takes.
   // If the title occupies 1 line, allow 4 country rows; otherwise keep 3.
-  const el = titleRef.value;
+  const el = titleRef.value
   if (!el) {
-    rowsCount.value = 3;
-    return;
+    rowsCount.value = 3
+    return
   }
   try {
-    const style = getComputedStyle(el);
-    const lineHeight = parseFloat(style.lineHeight);
-    const height = el.offsetHeight;
+    const style = getComputedStyle(el)
+    const lineHeight = parseFloat(style.lineHeight)
+    const height = el.offsetHeight
     if (lineHeight > 0 && height > 0) {
-      const lines = Math.round(height / lineHeight) || 1;
-      rowsCount.value = lines <= 1 ? 4 : 3;
+      const lines = Math.round(height / lineHeight) || 1
+      rowsCount.value = lines <= 1 ? 4 : 3
     } else {
-      rowsCount.value = 3;
+      rowsCount.value = 3
     }
   } catch {
-    rowsCount.value = 3;
+    rowsCount.value = 3
   }
 }
 
 function splitIntoLines(items, rows) {
   // Split already-sorted items into `rows` contiguous rows with equal counts when possible.
-  const n = items.length;
-  if (n === 0) return Array.from({ length: rows }, () => []);
-  const base = Math.floor(n / rows);
-  const rem = n % rows;
-  const sizes = Array.from(
-    { length: rows },
-    (_, i) => base + (i < rem ? 1 : 0),
-  );
-  const out = [];
-  let idx = 0;
+  const n = items.length
+  if (n === 0) return Array.from({ length: rows }, () => [])
+  const base = Math.floor(n / rows)
+  const rem = n % rows
+  const sizes = Array.from({ length: rows }, (_, i) => base + (i < rem ? 1 : 0))
+  const out = []
+  let idx = 0
   for (let i = 0; i < rows; i++) {
-    const size = sizes[i];
-    out.push(items.slice(idx, idx + size));
-    idx += size;
+    const size = sizes[i]
+    out.push(items.slice(idx, idx + size))
+    idx += size
   }
-  return out;
+  return out
 }
 </script>
 
@@ -342,7 +339,7 @@ function splitIntoLines(items, rows) {
 
 /* Spacer to allow final country to clear the fade overlay */
 .countries-lines::after {
-  content: "";
+  content: '';
   flex: 0 0 auto;
   width: calc(var(--fade-width) + var(--scroll-tail-buffer));
   height: 1px;

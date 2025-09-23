@@ -12,12 +12,12 @@
                   :to="comparisonUrl"
                 >
                   Compare
-                  {{ formattedJurisdiction?.Name || "this jurisdiction" }} with
+                  {{ formattedJurisdiction?.Name || 'this jurisdiction' }} with
                   other jurisdictions
                 </NuxtLink>
                 <span v-else>
                   Compare
-                  {{ formattedJurisdiction?.Name || "this jurisdiction" }} with
+                  {{ formattedJurisdiction?.Name || 'this jurisdiction' }} with
                   other jurisdictions
                 </span>
               </h3>
@@ -30,8 +30,8 @@
 </template>
 
 <script setup>
-import { useRoute } from "vue-router";
-import { computed } from "vue";
+import { useRoute } from 'vue-router'
+import { computed } from 'vue'
 
 // Accept processedAnswerData as a prop from parent
 defineProps({
@@ -39,30 +39,30 @@ defineProps({
     type: Object,
     required: true,
   },
-});
+})
 
-const route = useRoute();
+const route = useRoute()
 
 // Get the ISO3 code from the route params
 const iso3Code = computed(() => {
-  return route.params.id?.toUpperCase();
-});
+  return route.params.id?.toUpperCase()
+})
 
 // Computed property to choose a fixed second jurisdiction code
 // Use 'ago' by default; if current is 'ago', use 'arg'
 const secondJurisdictionCode = computed(() => {
-  const current = iso3Code.value?.toLowerCase();
-  return current === "ago" ? "arg" : "ago";
-});
+  const current = iso3Code.value?.toLowerCase()
+  return current === 'ago' ? 'arg' : 'ago'
+})
 
 // Computed property for the complete comparison URL
 const comparisonUrl = computed(() => {
-  if (!iso3Code.value) return "#";
+  if (!iso3Code.value) return '#'
 
-  const codes = [iso3Code.value.toLowerCase(), secondJurisdictionCode.value];
+  const codes = [iso3Code.value.toLowerCase(), secondJurisdictionCode.value]
 
-  return `/jurisdiction-comparison/${codes.join("+")}`;
-});
+  return `/jurisdiction-comparison/${codes.join('+')}`
+})
 </script>
 
 <style scoped>

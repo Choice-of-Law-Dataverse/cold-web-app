@@ -183,40 +183,40 @@
 </template>
 
 <script setup>
-import PopularSearches from "@/components/landing-page/PopularSearches.vue";
-import TopLiteratureThemes from "@/components/landing-page/TopLiteratureThemes.vue";
-import JurisdictionMap from "@/components/landing-page/JurisdictionMap.vue";
-import CountrySelectMenu from "@/components/landing-page/TempJurisdictionPicker.vue";
-import PlotCourtDecisionsJurisdiction from "@/components/landing-page/PlotCourtDecisionsJurisdiction.vue";
-import ConnectCard from "@/components/landing-page/ConnectCard.vue";
-import NumberCard from "@/components/landing-page/NumberCard.vue";
-import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
-import { externalLinks } from "@/utils/externalLinks";
-import RecentDomesticInstruments from "@/components/landing-page/RecentDomesticInstruments.vue";
-import SuccessfulLegalTransplantations from "@/components/landing-page/SuccessfulLegalTransplantations.vue";
-import LeadingCases from "@/components/landing-page/LeadingCases.vue";
-import { useHead } from "#imports";
-import ImportantQuestions from "~/components/landing-page/ImportantQuestions.vue";
-import GridContainer from "@/components/layout/GridContainer.vue";
-import GridItem from "@/components/layout/GridItem.vue";
-const links = externalLinks;
+import PopularSearches from '@/components/landing-page/PopularSearches.vue'
+import TopLiteratureThemes from '@/components/landing-page/TopLiteratureThemes.vue'
+import JurisdictionMap from '@/components/landing-page/JurisdictionMap.vue'
+import CountrySelectMenu from '@/components/landing-page/TempJurisdictionPicker.vue'
+import PlotCourtDecisionsJurisdiction from '@/components/landing-page/PlotCourtDecisionsJurisdiction.vue'
+import ConnectCard from '@/components/landing-page/ConnectCard.vue'
+import NumberCard from '@/components/landing-page/NumberCard.vue'
+import CompareJurisdictionsCard from '@/components/landing-page/CompareJurisdictionsCard.vue'
+import { externalLinks } from '@/utils/externalLinks'
+import RecentDomesticInstruments from '@/components/landing-page/RecentDomesticInstruments.vue'
+import SuccessfulLegalTransplantations from '@/components/landing-page/SuccessfulLegalTransplantations.vue'
+import LeadingCases from '@/components/landing-page/LeadingCases.vue'
+import { useHead } from '#imports'
+import ImportantQuestions from '~/components/landing-page/ImportantQuestions.vue'
+import GridContainer from '@/components/layout/GridContainer.vue'
+import GridItem from '@/components/layout/GridItem.vue'
+const links = externalLinks
 
 useHead({
-  title: "Choice of Law Dataverse — CoLD",
+  title: 'Choice of Law Dataverse — CoLD',
   link: [
     {
-      rel: "canonical",
-      href: "https://cold.global/",
+      rel: 'canonical',
+      href: 'https://cold.global/',
     },
   ],
   meta: [
     {
-      name: "description",
+      name: 'description',
       content:
-        "Choice of Law Dataverse — Navigate private international law issues with precision.",
+        'Choice of Law Dataverse — Navigate private international law issues with precision.',
     },
   ],
-});
+})
 </script>
 
 <style scoped>

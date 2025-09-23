@@ -16,5 +16,5 @@
 </template>
 
 <script setup>
-import BaseMap from "./BaseMap.vue";
+import BaseMap from './BaseMap.vue'
 </script>

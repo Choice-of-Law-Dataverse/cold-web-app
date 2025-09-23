@@ -19,11 +19,11 @@
 </template>
 
 <script setup>
-import Nav from "@/components/layout/Nav.vue";
-import Footer from "@/components/layout/Footer.vue";
-import { useRoute } from "vue-router";
+import Nav from '@/components/layout/Nav.vue'
+import Footer from '@/components/layout/Footer.vue'
+import { useRoute } from 'vue-router'
 
-const route = useRoute();
+const route = useRoute()
 const errorMessage =
-  route.query.message || "Sorry, we can’t find the page you’re looking for.";
+  route.query.message || 'Sorry, we can’t find the page you’re looking for.'
 </script>

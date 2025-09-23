@@ -24,9 +24,9 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import { useNumberCount } from "~/composables/useNumberCount";
-import LoadingNumber from "@/components/layout/LoadingNumber.vue";
+import { computed } from 'vue'
+import { useNumberCount } from '~/composables/useNumberCount'
+import LoadingNumber from '@/components/layout/LoadingNumber.vue'
 const props = defineProps({
   title: { type: String, required: true },
   buttonText: { type: String, required: true },
@@ -34,7 +34,7 @@ const props = defineProps({
   tableName: { type: String, required: true },
   // Optional manual override; when provided, the API will not be called
   overrideNumber: { type: [Number, String], required: false, default: null },
-});
+})
 
 // Use the composable for data fetching
 const {
@@ -42,8 +42,8 @@ const {
   isLoading: loading,
   error,
 } = useNumberCount(
-  computed(() => (props.overrideNumber ? undefined : props.tableName)),
-);
+  computed(() => (props.overrideNumber ? undefined : props.tableName))
+)
 </script>
 
 <style scoped>

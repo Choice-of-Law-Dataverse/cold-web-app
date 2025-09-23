@@ -9,5 +9,5 @@
 </template>
 
 <script setup>
-import ResultCard from "@/components/search-results/ResultCard.vue";
+import ResultCard from '@/components/search-results/ResultCard.vue'
 </script>

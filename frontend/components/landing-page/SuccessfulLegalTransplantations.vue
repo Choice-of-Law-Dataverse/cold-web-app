@@ -21,11 +21,11 @@
               >
               <span class="break-words text-left">
                 {{
-                  instrument["Entry Into Force"]
-                    ? formatYear(instrument["Entry Into Force"])
-                    : instrument["Date"]
+                  instrument['Entry Into Force']
+                    ? formatYear(instrument['Entry Into Force'])
+                    : instrument['Date']
                 }}:
-                {{ instrument["Title (in English)"] }}
+                {{ instrument['Title (in English)'] }}
               </span>
             </UButton>
           </RouterLink>
@@ -36,14 +36,14 @@
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
-import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
-import { useDomesticInstruments } from "@/composables/useDomesticInstruments";
-import { formatYear } from "@/utils/format";
+import { RouterLink } from 'vue-router'
+import LoadingLandingPageCard from '@/components/layout/LoadingLandingPageCard.vue'
+import { useDomesticInstruments } from '@/composables/useDomesticInstruments'
+import { formatYear } from '@/utils/format'
 
 const { data: domesticInstruments, isLoading } = useDomesticInstruments({
   filterCompatible: true,
-});
+})
 </script>
 
 <style scoped>

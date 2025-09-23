@@ -10,6 +10,6 @@
 </template>
 
 <script setup>
-import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
-import { learnNavLinks } from "@/config/pageConfigs.js";
+import ContentPageLayout from '@/components/layout/ContentPageLayout.vue'
+import { learnNavLinks } from '@/config/pageConfigs.js'
 </script>

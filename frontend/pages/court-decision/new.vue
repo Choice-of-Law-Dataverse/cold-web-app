@@ -316,117 +316,117 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
-import { useHead, useRouter } from "#imports";
-import { z } from "zod";
-import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import DatePicker from "@/components/ui/DatePicker.vue";
-import CancelModal from "@/components/ui/CancelModal.vue";
-import SaveModal from "@/components/ui/SaveModal.vue";
-import SearchFilters from "@/components/search-results/SearchFilters.vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
-import { format } from "date-fns";
+import { ref, watch, onMounted } from 'vue'
+import { useHead, useRouter } from '#imports'
+import { z } from 'zod'
+import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import DatePicker from '@/components/ui/DatePicker.vue'
+import CancelModal from '@/components/ui/CancelModal.vue'
+import SaveModal from '@/components/ui/SaveModal.vue'
+import SearchFilters from '@/components/search-results/SearchFilters.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
+import { format } from 'date-fns'
 
-import tooltipAbstract from "@/content/info_boxes/court_decision/abstract.md?raw";
-import tooltipCaseCitation from "@/content/info_boxes/court_decision/case_citation.md?raw";
-import tooltipCaseTitle from "@/content/info_boxes/court_decision/case_title.md?raw";
-import tooltipChoiceofLawIssue from "@/content/info_boxes/court_decision/choice_of_law_issue.md?raw";
-import tooltipCourtsPosition from "@/content/info_boxes/court_decision/courts_position.md?raw";
-import tooltipInstance from "@/content/info_boxes/court_decision/instance.md?raw";
-import tooltipJudgmentDate from "@/content/info_boxes/court_decision/judgment_date.md?raw";
-import tooltipPILProvisions from "@/content/info_boxes/court_decision/pil_provisions.md?raw";
-import tooltipPublicationDate from "@/content/info_boxes/court_decision/publication_date.md?raw";
-import tooltipQuote from "@/content/info_boxes/court_decision/quote.md?raw";
-import tooltipRelevantFacts from "@/content/info_boxes/court_decision/relevant_facts.md?raw";
+import tooltipAbstract from '@/content/info_boxes/court_decision/abstract.md?raw'
+import tooltipCaseCitation from '@/content/info_boxes/court_decision/case_citation.md?raw'
+import tooltipCaseTitle from '@/content/info_boxes/court_decision/case_title.md?raw'
+import tooltipChoiceofLawIssue from '@/content/info_boxes/court_decision/choice_of_law_issue.md?raw'
+import tooltipCourtsPosition from '@/content/info_boxes/court_decision/courts_position.md?raw'
+import tooltipInstance from '@/content/info_boxes/court_decision/instance.md?raw'
+import tooltipJudgmentDate from '@/content/info_boxes/court_decision/judgment_date.md?raw'
+import tooltipPILProvisions from '@/content/info_boxes/court_decision/pil_provisions.md?raw'
+import tooltipPublicationDate from '@/content/info_boxes/court_decision/publication_date.md?raw'
+import tooltipQuote from '@/content/info_boxes/court_decision/quote.md?raw'
+import tooltipRelevantFacts from '@/content/info_boxes/court_decision/relevant_facts.md?raw'
 
 // Form data
-const caseCitation = ref("");
-const caseTitle = ref("");
+const caseCitation = ref('')
+const caseTitle = ref('')
 // Newly added fields used by multi-line inputs
-const caseFullText = ref("");
-const caseEnglishTranslation = ref("");
-const caseRank = ref("");
-const caseAbstract = ref("");
-const caseRelevantFacts = ref("");
-const casePILProvisions = ref("");
-const caseChoiceofLawIssue = ref("");
-const caseCourtsPosition = ref("");
-const caseTranslatedExcerpt = ref("");
-const caseTextofRelevantLegalProvisions = ref("");
-const caseQuote = ref("");
-const caseInstance = ref("");
-const caseOfficialKeywords = ref("");
-const officialSourceUrl = ref("");
-const copyrightIssues = ref("No");
-const datePublication = ref(new Date());
-const dateJudgment = ref(null);
+const caseFullText = ref('')
+const caseEnglishTranslation = ref('')
+const caseRank = ref('')
+const caseAbstract = ref('')
+const caseRelevantFacts = ref('')
+const casePILProvisions = ref('')
+const caseChoiceofLawIssue = ref('')
+const caseCourtsPosition = ref('')
+const caseTranslatedExcerpt = ref('')
+const caseTextofRelevantLegalProvisions = ref('')
+const caseQuote = ref('')
+const caseInstance = ref('')
+const caseOfficialKeywords = ref('')
+const officialSourceUrl = ref('')
+const copyrightIssues = ref('No')
+const datePublication = ref(new Date())
+const dateJudgment = ref(null)
 
-const email = ref("");
-const comments = ref("");
+const email = ref('')
+const comments = ref('')
 
-const token = ref("");
+const token = ref('')
 
 // Ensure Submit button reactivity when token changes
-watch(token, () => {});
+watch(token, () => {})
 // Jurisdiction select state and options (reuse SearchResults strategy)
-const selectedJurisdiction = ref([]);
-const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
+const selectedJurisdiction = ref([])
+const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
 
 const loadJurisdictions = async () => {
   try {
     const response = await fetch(`/api/proxy/search/full_table`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ table: "Jurisdictions", filters: [] }),
-    });
+      body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
+    })
 
-    if (!response.ok) throw new Error("Failed to load jurisdictions");
+    if (!response.ok) throw new Error('Failed to load jurisdictions')
 
-    const jurisdictionsData = await response.json();
+    const jurisdictionsData = await response.json()
     jurisdictionOptions.value = [
-      { label: "Select Jurisdiction" },
+      { label: 'Select Jurisdiction' },
       ...jurisdictionsData
-        .filter((entry) => entry["Irrelevant?"] === false)
+        .filter((entry) => entry['Irrelevant?'] === false)
         .map((entry) => ({
           label: entry.Name,
-          avatar: entry["Alpha-3 Code"]
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry["Alpha-3 Code"].toLowerCase()}.svg`
+          avatar: entry['Alpha-3 Code']
+            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
             : undefined,
         }))
-        .sort((a, b) => (a.label || "").localeCompare(b.label || "")),
-    ];
+        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
+    ]
   } catch (error) {
-    console.error("Error loading jurisdictions:", error);
+    console.error('Error loading jurisdictions:', error)
   }
-};
+}
 
-onMounted(loadJurisdictions);
+onMounted(loadJurisdictions)
 // Toggle buttons will set this directly (No/Yes)
 
 // Validation schema
 const formSchema = z.object({
   case_citation: z
     .string()
-    .min(1, { message: "Case citation is required" })
-    .min(3, { message: "Case citation must be at least 3 characters long" }),
+    .min(1, { message: 'Case citation is required' })
+    .min(3, { message: 'Case citation must be at least 3 characters long' }),
   official_source_url: z.string().url({
     message: 'Link must be a valid URL. It must start with "https://"',
   }),
-});
+})
 
 // Form validation state
-const errors = ref({});
-const saveModalErrors = ref({});
+const errors = ref({})
+const saveModalErrors = ref({})
 
-const router = useRouter();
-const showSaveModal = ref(false);
-const showCancelModal = ref(false);
+const router = useRouter()
+const showSaveModal = ref(false)
+const showCancelModal = ref(false)
 const notificationBannerMessage =
-  "Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.";
+  'Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.'
 
-useHead({ title: "New Court Decision — CoLD" });
+useHead({ title: 'New Court Decision — CoLD' })
 
 function validateForm() {
   try {
@@ -455,36 +455,36 @@ function validateForm() {
       case_title: caseTitle.value,
       instance: caseInstance.value,
       official_keywords: caseOfficialKeywords.value,
-    };
-    formSchema.parse(formData);
-    errors.value = {};
-    return true;
+    }
+    formSchema.parse(formData)
+    errors.value = {}
+    return true
   } catch (error) {
     if (error instanceof z.ZodError) {
-      errors.value = {};
+      errors.value = {}
       error.errors.forEach((err) => {
-        errors.value[err.path[0]] = err.message;
-      });
+        errors.value[err.path[0]] = err.message
+      })
     }
-    return false;
+    return false
   }
 }
 
 function openSaveModal() {
-  const isValid = validateForm();
+  const isValid = validateForm()
   if (isValid) {
-    showSaveModal.value = true;
+    showSaveModal.value = true
   }
 }
 
 function confirmCancel() {
-  router.push("/");
+  router.push('/')
 }
 
 function handleNewSave() {
   const payload = {
     case_citation: caseCitation.value,
-    date_publication: format(datePublication.value, "yyyy-MM-dd"),
+    date_publication: format(datePublication.value, 'yyyy-MM-dd'),
     official_source_url: officialSourceUrl.value,
     copyright_issues: copyrightIssues.value,
     original_text: caseFullText.value,
@@ -503,7 +503,7 @@ function handleNewSave() {
     text_of_relevant_legal_provisions: caseTextofRelevantLegalProvisions.value,
     quote: caseQuote.value,
     decision_date: dateJudgment.value
-      ? format(dateJudgment.value, "yyyy-MM-dd")
+      ? format(dateJudgment.value, 'yyyy-MM-dd')
       : undefined,
     case_title: caseTitle.value,
     instance: caseInstance.value,
@@ -511,32 +511,32 @@ function handleNewSave() {
     // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
-  };
+  }
 
   // Explicitly log the exact payload we send
-  (async () => {
+  ;(async () => {
     try {
       await $fetch(`/api/proxy/suggestions/court-decisions`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: payload,
-      });
+      })
 
-      showSaveModal.value = false;
+      showSaveModal.value = false
       router.push({
-        path: "/confirmation",
-        query: { message: "Thanks, we have received your submission." },
-      });
+        path: '/confirmation',
+        query: { message: 'Thanks, we have received your submission.' },
+      })
     } catch (err) {
       saveModalErrors.value = {
         general:
-          "There was a problem submitting your suggestion. Please try again.",
-      };
-      console.error("Submission failed:", err);
+          'There was a problem submitting your suggestion. Please try again.',
+      }
+      console.error('Submission failed:', err)
     }
-  })();
+  })()
 }
 </script>
 
@@ -545,7 +545,7 @@ function handleNewSave() {
 :deep(.card-header__actions) {
   display: none !important;
 }
-:deep(.card-header [class*="actions"]) {
+:deep(.card-header [class*='actions']) {
   display: none !important;
 }
 

@@ -102,7 +102,7 @@
                     <li
                       v-for="(line, i) in getDisplayValue(
                         item,
-                        resultData?.[item.key],
+                        resultData?.[item.key]
                       )"
                       :key="i"
                       :class="
@@ -141,13 +141,13 @@
 </template>
 
 <script setup>
-import { useRoute } from "vue-router";
-import { useCoveredCountries } from "@/composables/useCoveredCountries";
-import BackButton from "@/components/ui/BackButton.vue";
-import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
-import NotificationBanner from "@/components/ui/NotificationBanner.vue";
-import LoadingCard from "@/components/layout/LoadingCard.vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
+import { useRoute } from 'vue-router'
+import { useCoveredCountries } from '@/composables/useCoveredCountries'
+import BackButton from '@/components/ui/BackButton.vue'
+import BaseCardHeader from '@/components/ui/BaseCardHeader.vue'
+import NotificationBanner from '@/components/ui/NotificationBanner.vue'
+import LoadingCard from '@/components/layout/LoadingCard.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
 
 // Props for reusability across pages
 const props = defineProps({
@@ -166,7 +166,7 @@ const props = defineProps({
   },
   formattedSourceTable: {
     type: String,
-    default: "",
+    default: '',
   }, // Receive the hard-coded value from [id].vue
   showHeader: {
     type: Boolean,
@@ -188,51 +188,49 @@ const props = defineProps({
   },
   headerMode: {
     type: String,
-    default: "default",
+    default: 'default',
   },
   showNotificationBanner: Boolean,
   notificationBannerMessage: {
     type: String,
-    default: "",
+    default: '',
   },
   fallbackMessage: {
     type: String,
-    default: "",
+    default: '',
   },
   icon: {
     type: String,
     required: false,
-    default: ""
-  }
-});
+    default: '',
+  },
+})
 
-defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
+defineEmits(['save', 'open-save-modal', 'open-cancel-modal'])
 
-const route = useRoute();
-const isJurisdictionPage = route.path.startsWith("/jurisdiction/");
-const isQuestionPage = route.path.startsWith("/question/");
-const jurisdictionCode = ref(null);
-const { data: coveredCountriesSet } = useCoveredCountries();
-const shouldShowBanner = ref(false);
+const route = useRoute()
+const isJurisdictionPage = route.path.startsWith('/jurisdiction/')
+const isQuestionPage = route.path.startsWith('/question/')
+const jurisdictionCode = ref(null)
+const { data: coveredCountriesSet } = useCoveredCountries()
+const shouldShowBanner = ref(false)
 
 watch(
   () => props.resultData,
   (newData) => {
-    if (!newData) return;
+    if (!newData) return
 
     const rawJurisdiction = isJurisdictionPage
       ? route.params.id
       : isQuestionPage
-        ? newData["Jurisdictions Alpha-3 code"] || newData.JurisdictionCode
-        : null;
+        ? newData['Jurisdictions Alpha-3 code'] || newData.JurisdictionCode
+        : null
 
     jurisdictionCode.value =
-      typeof rawJurisdiction === "string"
-        ? rawJurisdiction.toLowerCase()
-        : null;
+      typeof rawJurisdiction === 'string' ? rawJurisdiction.toLowerCase() : null
   },
-  { immediate: true },
-);
+  { immediate: true }
+)
 
 // Reactively update banner display once everything is ready
 watchEffect(() => {
@@ -242,70 +240,70 @@ watchEffect(() => {
     coveredCountriesSet.value
   ) {
     shouldShowBanner.value = !coveredCountriesSet.value.has(
-      jurisdictionCode.value,
-    );
+      jurisdictionCode.value
+    )
   }
-});
+})
 
 // Add these new functions
 const shouldDisplayValue = (item, value) => {
-  if (!item.emptyValueBehavior) return true;
+  if (!item.emptyValueBehavior) return true
   // If a positive display condition is provided, honor it first using the full result data
   if (
     item.emptyValueBehavior.shouldDisplay &&
     !item.emptyValueBehavior.shouldDisplay(props.resultData)
   ) {
-    return false;
+    return false
   }
   if (
     item.emptyValueBehavior.shouldHide &&
     item.emptyValueBehavior.shouldHide(props.resultData)
   ) {
-    return false;
+    return false
   }
   if (
-    item.emptyValueBehavior.action === "hide" &&
-    (!value || value === "NA" || value === "N/A")
+    item.emptyValueBehavior.action === 'hide' &&
+    (!value || value === 'NA' || value === 'N/A')
   ) {
-    return false;
+    return false
   }
-  return true;
-};
+  return true
+}
 
 const getDisplayValue = (item, value) => {
   // Use valueTransform if present
   if (item.valueTransform) {
-    return item.valueTransform(value);
+    return item.valueTransform(value)
   }
   // For "Answer" and "Specialists", split by comma if a string contains commas.
   if (
-    (item.key === "Answer" || item.key === "Specialists") &&
-    typeof value === "string" &&
-    value.includes(",")
+    (item.key === 'Answer' || item.key === 'Specialists') &&
+    typeof value === 'string' &&
+    value.includes(',')
   ) {
-    return value.split(",").map((part) => part.trim());
+    return value.split(',').map((part) => part.trim())
   }
   // Treat empty arrays as empty for fallback logic
   if (
     Array.isArray(value) &&
     value.length === 0 &&
     item.emptyValueBehavior &&
-    item.emptyValueBehavior.action === "display"
+    item.emptyValueBehavior.action === 'display'
   ) {
-    return item.emptyValueBehavior.fallback || "N/A";
+    return item.emptyValueBehavior.fallback || 'N/A'
   }
-  if (!item.emptyValueBehavior) return value || "N/A";
+  if (!item.emptyValueBehavior) return value || 'N/A'
   if (
-    (!value || value === "NA") &&
-    item.emptyValueBehavior.action === "display"
+    (!value || value === 'NA') &&
+    item.emptyValueBehavior.action === 'display'
   ) {
     if (item.emptyValueBehavior.getFallback) {
-      return item.emptyValueBehavior.getFallback(props.resultData);
+      return item.emptyValueBehavior.getFallback(props.resultData)
     }
-    return item.emptyValueBehavior.fallback || "N/A";
+    return item.emptyValueBehavior.fallback || 'N/A'
   }
-  return value;
-};
+  return value
+}
 </script>
 
 <style scoped>

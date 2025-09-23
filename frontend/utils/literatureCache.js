@@ -1,1 +1,1 @@
-export const literatureCache = {};
+export const literatureCache = {}

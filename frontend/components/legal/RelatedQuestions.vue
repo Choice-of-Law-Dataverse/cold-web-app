@@ -5,7 +5,7 @@
     <ul v-if="questionList.length">
       <li v-for="(q, idx) in questionList" :key="idx">
         <NuxtLink :to="`/question/${jurisdictionCode}_${q}`">
-          {{ questionLabels[idx] || jurisdictionCode + "_" + q }}
+          {{ questionLabels[idx] || jurisdictionCode + '_' + q }}
         </NuxtLink>
       </li>
     </ul>
@@ -15,32 +15,32 @@
 </template>
 
 <script setup>
-import { computed, toRefs } from "vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
-import { useRelatedQuestions } from "@/composables/useRelatedQuestions";
+import { computed, toRefs } from 'vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
+import { useRelatedQuestions } from '@/composables/useRelatedQuestions'
 
 const props = defineProps({
-  label: { type: String, default: "Related Questions" },
-  jurisdictionCode: { type: String, default: "" },
-  questions: { type: String, default: "" },
-  emptyValueBehavior: { type: Object, default: () => ({ action: "hide" }) },
-  tooltip: { type: String, default: "" },
-});
+  label: { type: String, default: 'Related Questions' },
+  jurisdictionCode: { type: String, default: '' },
+  questions: { type: String, default: '' },
+  emptyValueBehavior: { type: Object, default: () => ({ action: 'hide' }) },
+  tooltip: { type: String, default: '' },
+})
 
-const { jurisdictionCode, questions, emptyValueBehavior } = toRefs(props);
+const { jurisdictionCode, questions, emptyValueBehavior } = toRefs(props)
 
 const { questionList, questionLabels, isLoading } = useRelatedQuestions(
   jurisdictionCode,
-  questions,
-);
+  questions
+)
 
 const shouldDisplay = computed(() => {
   if (
-    emptyValueBehavior.value?.action === "hide" &&
+    emptyValueBehavior.value?.action === 'hide' &&
     questionList.value.length === 0
   ) {
-    return false;
+    return false
   }
-  return true;
-});
+  return true
+})
 </script>

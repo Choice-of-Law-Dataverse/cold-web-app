@@ -8,7 +8,7 @@
           config.gridConfig.title.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel("Title") }}</div>
+        <div class="label-key">{{ getLabel('Title') }}</div>
         <div
           :class="[
             config.valueClassMap.Title,
@@ -21,7 +21,7 @@
               : '',
           ]"
         >
-          {{ getValue("Title") }}
+          {{ getValue('Title') }}
         </div>
       </div>
 
@@ -35,7 +35,7 @@
         <div class="grid grid-cols-2 gap-4">
           <!-- Author -->
           <div>
-            <div class="label-key">{{ getLabel("Author") }}</div>
+            <div class="label-key">{{ getLabel('Author') }}</div>
             <div
               :class="[
                 config.valueClassMap.Author,
@@ -48,12 +48,12 @@
                   : '',
               ]"
             >
-              {{ getValue("Author") }}
+              {{ getValue('Author') }}
             </div>
           </div>
           <!-- Year -->
           <div>
-            <div class="label-key">{{ getLabel("Publication Year") }}</div>
+            <div class="label-key">{{ getLabel('Publication Year') }}</div>
             <div
               :class="[
                 config.valueClassMap['Publication Year'],
@@ -61,13 +61,13 @@
                 (!processedResultData['Publication Year'] ||
                   processedResultData['Publication Year'] === 'NA') &&
                 config.keyLabelPairs.find(
-                  (pair) => pair.key === 'Publication Year',
+                  (pair) => pair.key === 'Publication Year'
                 )?.emptyValueBehavior?.action === 'display'
                   ? 'text-gray-300'
                   : '',
               ]"
             >
-              {{ getValue("Publication Year") }}
+              {{ getValue('Publication Year') }}
             </div>
           </div>
         </div>
@@ -80,7 +80,7 @@
               processedResultData['Publication Title']
             "
           >
-            <div class="label-key">{{ getLabel("Publication Title") }}</div>
+            <div class="label-key">{{ getLabel('Publication Title') }}</div>
             <div
               :class="[
                 config.valueClassMap['Publication Title'],
@@ -88,13 +88,13 @@
                 (!processedResultData['Publication Title'] ||
                   processedResultData['Publication Title'] === 'NA') &&
                 config.keyLabelPairs.find(
-                  (pair) => pair.key === 'Publication Title',
+                  (pair) => pair.key === 'Publication Title'
                 )?.emptyValueBehavior?.action === 'display'
                   ? 'text-gray-300'
                   : '',
               ]"
             >
-              {{ getValue("Publication Title") }}
+              {{ getValue('Publication Title') }}
             </div>
           </template>
           <template
@@ -102,7 +102,7 @@
               shouldDisplay('Publisher') && processedResultData['Publisher']
             "
           >
-            <div class="label-key">{{ getLabel("Publisher") }}</div>
+            <div class="label-key">{{ getLabel('Publisher') }}</div>
             <div
               :class="[
                 config.valueClassMap['Publisher'],
@@ -115,7 +115,7 @@
                   : '',
               ]"
             >
-              {{ getValue("Publisher") }}
+              {{ getValue('Publisher') }}
             </div>
           </template>
         </div>
@@ -125,49 +125,49 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
-import ResultCard from "@/components/search-results/ResultCard.vue";
-import { literatureCardConfig } from "@/config/cardConfigs";
+import { computed } from 'vue'
+import ResultCard from '@/components/search-results/ResultCard.vue'
+import { literatureCardConfig } from '@/config/cardConfigs'
 
 const props = defineProps({
   resultData: {
     type: Object,
     required: true,
   },
-});
+})
 
-const config = literatureCardConfig;
+const config = literatureCardConfig
 
 // Process the result data using the config's processData function
 const processedResultData = computed(() => {
-  return config.processData(props.resultData);
-});
+  return config.processData(props.resultData)
+})
 
 // Helper functions to get labels and values with fallbacks
 const getLabel = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  return pair?.label || key;
-};
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
+  return pair?.label || key
+}
 
 const shouldDisplay = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  if (!pair?.emptyValueBehavior?.shouldDisplay) return true;
-  return pair.emptyValueBehavior.shouldDisplay(processedResultData.value);
-};
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
+  if (!pair?.emptyValueBehavior?.shouldDisplay) return true
+  return pair.emptyValueBehavior.shouldDisplay(processedResultData.value)
+}
 
 const getValue = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  const value = processedResultData.value?.[key];
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
+  const value = processedResultData.value?.[key]
 
   if (!value && pair?.emptyValueBehavior) {
-    if (pair.emptyValueBehavior.action === "display") {
-      return pair.emptyValueBehavior.fallback;
+    if (pair.emptyValueBehavior.action === 'display') {
+      return pair.emptyValueBehavior.fallback
     }
-    return "";
+    return ''
   }
 
-  return value;
-};
+  return value
+}
 </script>
 
 <style scoped>

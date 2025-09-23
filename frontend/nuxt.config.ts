@@ -1,13 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: "2024-04-03",
+  compatibilityDate: '2024-04-03',
   devtools: { enabled: true },
   ssr: true, // Ensure SSR is enabled
   $production: {
     scripts: {
       registry: {
         plausibleAnalytics: {
-          domain: "cold.global",
+          domain: 'cold.global',
         },
       },
     },
@@ -16,19 +16,19 @@ export default defineNuxtConfig({
     typeCheck: true,
   },
   modules: [
-    "@nuxt/ui",
-    "@nuxtjs/tailwindcss",
-    "@nuxt/fonts",
-    "@nuxtjs/leaflet",
-    "@nuxt/icon",
-    "@nuxt/content",
-    "nuxt-purgecss",
-    "nuxt-plotly",
-    "@nuxtjs/robots",
-    "@nuxtjs/sitemap",
-    "@nuxt/scripts",
-    "@nuxtjs/turnstile",
-    "@nuxt/eslint",
+    '@nuxt/ui',
+    '@nuxtjs/tailwindcss',
+    '@nuxt/fonts',
+    '@nuxtjs/leaflet',
+    '@nuxt/icon',
+    '@nuxt/content',
+    'nuxt-purgecss',
+    'nuxt-plotly',
+    '@nuxtjs/robots',
+    '@nuxtjs/sitemap',
+    '@nuxt/scripts',
+    '@nuxtjs/turnstile',
+    '@nuxt/eslint',
   ],
   turnstile: {
     siteKey: process.env.NUXT_TURNSTILE_SITE_KEY,
@@ -46,12 +46,12 @@ export default defineNuxtConfig({
   },
   robots: {
     robotsTxt: true,
-    sitemap: ["/sitemap.txt"],
+    sitemap: ['/sitemap.txt'],
     groups: [
       {
         // Alpha: Allow nothing, disallow everything
         allow: [],
-        disallow: ["/"],
+        disallow: ['/'],
 
         // Beta and Live: Disallow search, new and edit. Allow everything else
         // allow: ['/'],
@@ -76,27 +76,27 @@ export default defineNuxtConfig({
     },
   },
   colorMode: {
-    preference: "light",
+    preference: 'light',
   },
-  css: ["@/assets/styles.scss", "tailwindcss/tailwind.css"], // Tailwind last
+  css: ['@/assets/styles.scss', 'tailwindcss/tailwind.css'], // Tailwind last
   tailwindcss: {
-    configPath: "./tailwind.config.js",
+    configPath: './tailwind.config.js',
   },
   vite: {
     optimizeDeps: {
-      include: ["plotly.js-dist-min"],
+      include: ['plotly.js-dist-min'],
     },
   },
   app: {
     head: {
-      title: "CoLD",
+      title: 'CoLD',
       meta: [
-        { name: "viewport", content: "width=device-width, initial-scale=1" },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' },
       ],
     },
   },
   imports: {
-    dirs: ["utils"],
-    presets: ["vue"],
+    dirs: ['utils'],
+    presets: ['vue'],
   },
-});
+})

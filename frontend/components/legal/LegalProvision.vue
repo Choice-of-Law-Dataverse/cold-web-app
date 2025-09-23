@@ -48,20 +48,20 @@
 </template>
 
 <script setup>
-import { computed, watch, onMounted, ref } from "vue";
-import { useLegalProvision } from "@/composables/useLegalProvision";
-import BaseLegalContent from "@/components/legal/BaseLegalContent.vue";
-import LoadingBar from "@/components/layout/LoadingBar.vue";
+import { computed, watch, onMounted, ref } from 'vue'
+import { useLegalProvision } from '@/composables/useLegalProvision'
+import BaseLegalContent from '@/components/legal/BaseLegalContent.vue'
+import LoadingBar from '@/components/layout/LoadingBar.vue'
 
 const props = defineProps({
   provisionId: { type: String, required: true },
-  class: { type: String, default: "" },
+  class: { type: String, default: '' },
   textType: { type: String, required: true },
-  instrumentTitle: { type: String, default: "" },
-  table: { type: String, default: "Domestic Legal Provisions" }, // add this line
-});
+  instrumentTitle: { type: String, default: '' },
+  table: { type: String, default: 'Domestic Legal Provisions' }, // add this line
+})
 
-const emit = defineEmits(["update:hasEnglishTranslation"]);
+const emit = defineEmits(['update:hasEnglishTranslation'])
 
 const {
   title,
@@ -77,49 +77,49 @@ const {
   provisionId: props.provisionId,
   textType: props.textType,
   onHasEnglishTranslationUpdate: (value) =>
-    emit("update:hasEnglishTranslation", value),
+    emit('update:hasEnglishTranslation', value),
   table: props.table, // pass the table prop
-});
+})
 
 // New reactive property for the English title
-const englishTitle = ref("");
+const englishTitle = ref('')
 
 // Watch the content and update englishTitle if the key exists
 watch(
   content,
   (newVal) => {
-    if (newVal && typeof newVal === "object" && newVal["Title (in English)"]) {
-      englishTitle.value = newVal["Title (in English)"];
+    if (newVal && typeof newVal === 'object' && newVal['Title (in English)']) {
+      englishTitle.value = newVal['Title (in English)']
     }
   },
-  { immediate: true },
-);
+  { immediate: true }
+)
 
 // Update displayTitle to include englishTitle and instrumentTitle if available
 const displayTitle = computed(() => {
-  if (loading.value) return "Loading...";
-  if (error.value) return "Error";
-  const baseTitle = title.value || props.provisionId;
+  if (loading.value) return 'Loading...'
+  if (error.value) return 'Error'
+  const baseTitle = title.value || props.provisionId
   let fullTitle = englishTitle.value
     ? `${baseTitle} - ${englishTitle.value}`
-    : baseTitle;
+    : baseTitle
   if (props.instrumentTitle) {
-    fullTitle += `, ${props.instrumentTitle}`;
+    fullTitle += `, ${props.instrumentTitle}`
   }
-  return fullTitle;
-});
+  return fullTitle
+})
 
 // Fetch provision details when component is mounted
 onMounted(() => {
-  fetchProvisionDetails();
-});
+  fetchProvisionDetails()
+})
 
 watch(
   () => props.textType,
   () => {
-    fetchProvisionDetails();
-  },
-);
+    fetchProvisionDetails()
+  }
+)
 
-watch(showEnglish, updateContent);
+watch(showEnglish, updateContent)
 </script>

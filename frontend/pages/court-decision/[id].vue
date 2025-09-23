@@ -17,12 +17,12 @@
             section="Domestic Legal Provisions"
             :section-label="
               courtDecisionConfig.keyLabelPairs.find(
-                (pair) => pair.key === 'Domestic Legal Provisions',
+                (pair) => pair.key === 'Domestic Legal Provisions'
               )?.label
             "
             :section-tooltip="
               courtDecisionConfig.keyLabelPairs.find(
-                (pair) => pair.key === 'Domestic Legal Provisions',
+                (pair) => pair.key === 'Domestic Legal Provisions'
               )?.tooltip
             "
             table="Domestic Instruments"
@@ -92,11 +92,11 @@
                 {{
                   showEnglishQuote &&
                   courtDecision.hasEnglishQuoteTranslation &&
-                  courtDecision["Quote"] &&
-                  courtDecision["Quote"].trim() !== ""
-                    ? courtDecision["Translated Excerpt"]
-                    : courtDecision["Quote"] ||
-                      courtDecision["Translated Excerpt"]
+                  courtDecision['Quote'] &&
+                  courtDecision['Quote'].trim() !== ''
+                    ? courtDecision['Translated Excerpt']
+                    : courtDecision['Quote'] ||
+                      courtDecision['Translated Excerpt']
                 }}
               </span>
             </div>
@@ -113,7 +113,7 @@
             :questions="courtDecision['Questions'] || ''"
             :tooltip="
               computedKeyLabelPairs.find(
-                (pair) => pair.key === 'Related Questions',
+                (pair) => pair.key === 'Related Questions'
               )?.tooltip
             "
           />
@@ -127,7 +127,7 @@
             :use-id="false"
             :tooltip="
               computedKeyLabelPairs.find(
-                (pair) => pair.key === 'Related Literature',
+                (pair) => pair.key === 'Related Literature'
               )?.tooltip
             "
           />
@@ -144,8 +144,8 @@
             <span class="label">
               {{
                 computedKeyLabelPairs.find(
-                  (pair) => pair.key === "Original Text",
-                )?.label || "Full Text"
+                  (pair) => pair.key === 'Original Text'
+                )?.label || 'Full Text'
               }}
             </span>
           </div>
@@ -202,79 +202,79 @@
 </template>
 
 <script setup>
-import { computed, watch, ref } from "vue";
-import { useRoute } from "vue-router";
-import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
-import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
-import ProvisionRenderer from "@/components/legal/SectionRenderer.vue";
-import { useCourtDecision } from "@/composables/useCourtDecision";
-import { useDetailDisplay } from "@/composables/useDetailDisplay";
-import { courtDecisionConfig } from "@/config/pageConfigs";
-import { useHead } from "#imports";
+import { computed, watch, ref } from 'vue'
+import { useRoute } from 'vue-router'
+import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
+import RelatedQuestions from '@/components/legal/RelatedQuestions.vue'
+import InfoPopover from '~/components/ui/InfoPopover.vue'
+import ProvisionRenderer from '@/components/legal/SectionRenderer.vue'
+import { useCourtDecision } from '@/composables/useCourtDecision'
+import { useDetailDisplay } from '@/composables/useDetailDisplay'
+import { courtDecisionConfig } from '@/config/pageConfigs'
+import { useHead } from '#imports'
 
 defineProps({
   iconClass: {
     type: String,
-    default: "text-base translate-y-[3px] mt-2 ml-[-12px]",
+    default: 'text-base translate-y-[3px] mt-2 ml-[-12px]',
   },
-});
+})
 
-const route = useRoute();
+const route = useRoute()
 
 const { data: courtDecision, isLoading } = useCourtDecision(
-  computed(() => route.params.id),
-);
+  computed(() => route.params.id)
+)
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   courtDecision,
-  courtDecisionConfig,
-);
+  courtDecisionConfig
+)
 
-const showEnglishQuote = ref(true);
+const showEnglishQuote = ref(true)
 
 // For Full Text show more/less
-const showFullText = ref(false);
+const showFullText = ref(false)
 
 // PDF download link logic (same as BaseCardHeader.vue)
 const downloadPDFLink = computed(() => {
-  const segments = route.path.split("/").filter(Boolean);
-  const contentType = segments[0] || "unknown";
-  const id = segments[1] || "";
-  const folder = `${contentType}s`;
-  return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`;
-});
+  const segments = route.path.split('/').filter(Boolean)
+  const contentType = segments[0] || 'unknown'
+  const id = segments[1] || ''
+  const folder = `${contentType}s`
+  return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`
+})
 
 // Set dynamic page title based on Case Title or Citation
 watch(
   courtDecision,
   (newVal) => {
-    if (!newVal) return;
-    const caseTitle = newVal["Case Title"];
-    const citation = newVal["Case Citation"];
+    if (!newVal) return
+    const caseTitle = newVal['Case Title']
+    const citation = newVal['Case Citation']
     const pageTitle =
-      caseTitle && caseTitle.trim() && caseTitle !== "Not found"
+      caseTitle && caseTitle.trim() && caseTitle !== 'Not found'
         ? `${caseTitle} — CoLD`
         : citation && citation.trim()
           ? `${citation} — CoLD`
-          : "Court Decision — CoLD";
+          : 'Court Decision — CoLD'
     useHead({
       title: pageTitle,
       link: [
         {
-          rel: "canonical",
+          rel: 'canonical',
           href: `https://cold.global${route.fullPath}`,
         },
       ],
       meta: [
         {
-          name: "description",
+          name: 'description',
           content: pageTitle,
         },
       ],
-    });
+    })
   },
-  { immediate: true },
-);
+  { immediate: true }
+)
 </script>

@@ -160,100 +160,100 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
-import { useHead, useRouter } from "#imports";
-import { z } from "zod";
-import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import DatePicker from "@/components/ui/DatePicker.vue";
-import CancelModal from "@/components/ui/CancelModal.vue";
-import SaveModal from "@/components/ui/SaveModal.vue";
-import SearchFilters from "@/components/search-results/SearchFilters.vue";
-import { format } from "date-fns";
+import { ref, watch, onMounted } from 'vue'
+import { useHead, useRouter } from '#imports'
+import { z } from 'zod'
+import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import DatePicker from '@/components/ui/DatePicker.vue'
+import CancelModal from '@/components/ui/CancelModal.vue'
+import SaveModal from '@/components/ui/SaveModal.vue'
+import SearchFilters from '@/components/search-results/SearchFilters.vue'
+import { format } from 'date-fns'
 
 // Form fields
-const author = ref("");
-const title = ref("");
-const publicationTitle = ref("");
-const publicationYear = ref("");
-const url = ref("");
-const doi = ref("");
-const publicationDate = ref(null);
-const isbn = ref("");
-const issn = ref("");
-const theme = ref("");
+const author = ref('')
+const title = ref('')
+const publicationTitle = ref('')
+const publicationYear = ref('')
+const url = ref('')
+const doi = ref('')
+const publicationDate = ref(null)
+const isbn = ref('')
+const issn = ref('')
+const theme = ref('')
 
 // Jurisdiction selector
-const selectedJurisdiction = ref([]);
-const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
+const selectedJurisdiction = ref([])
+const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
 
 // For SaveModal parity
-const specialists = ref([""]);
-const pdfFile = ref(null);
-const email = ref("");
-const comments = ref("");
+const specialists = ref([''])
+const pdfFile = ref(null)
+const email = ref('')
+const comments = ref('')
 
-const token = ref("");
+const token = ref('')
 
-watch(token, () => {});
+watch(token, () => {})
 
 // Load jurisdictions similar to other pages
 const loadJurisdictions = async () => {
   try {
     const response = await fetch(`/api/proxy/search/full_table`, {
-      method: "POST",
+      method: 'POST',
       headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ table: "Jurisdictions", filters: [] }),
-    });
+      body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
+    })
 
-    if (!response.ok) throw new Error("Failed to load jurisdictions");
+    if (!response.ok) throw new Error('Failed to load jurisdictions')
 
-    const jurisdictionsData = await response.json();
+    const jurisdictionsData = await response.json()
     jurisdictionOptions.value = [
-      { label: "Select Jurisdiction" },
+      { label: 'Select Jurisdiction' },
       ...jurisdictionsData
-        .filter((entry) => entry["Irrelevant?"] === false)
+        .filter((entry) => entry['Irrelevant?'] === false)
         .map((entry) => ({
           label: entry.Name,
-          avatar: entry["Alpha-3 Code"]
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry["Alpha-3 Code"].toLowerCase()}.svg`
+          avatar: entry['Alpha-3 Code']
+            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
             : undefined,
         }))
-        .sort((a, b) => (a.label || "").localeCompare(b.label || "")),
-    ];
+        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
+    ]
   } catch (error) {
-    console.error("Error loading jurisdictions:", error);
+    console.error('Error loading jurisdictions:', error)
   }
-};
+}
 
-onMounted(loadJurisdictions);
+onMounted(loadJurisdictions)
 
 // Validation (required fields only)
 const formSchema = z.object({
   author: z
     .string()
-    .min(1, { message: "Author is required" })
-    .min(3, { message: "Author must be at least 3 characters long" }),
+    .min(1, { message: 'Author is required' })
+    .min(3, { message: 'Author must be at least 3 characters long' }),
   title: z
     .string()
-    .min(1, { message: "Title is required" })
-    .min(3, { message: "Title must be at least 3 characters long" }),
+    .min(1, { message: 'Title is required' })
+    .min(3, { message: 'Title must be at least 3 characters long' }),
   publication_year: z
     .string()
-    .regex(/^\d{4}$/u, { message: "Year must be 4 digits (e.g., 2024)" }),
-});
+    .regex(/^\d{4}$/u, { message: 'Year must be 4 digits (e.g., 2024)' }),
+})
 
-const errors = ref({});
-const saveModalErrors = ref({});
+const errors = ref({})
+const saveModalErrors = ref({})
 
-const router = useRouter();
-const showSaveModal = ref(false);
-const showCancelModal = ref(false);
+const router = useRouter()
+const showSaveModal = ref(false)
+const showCancelModal = ref(false)
 const notificationBannerMessage =
-  "Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.";
+  'Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.'
 
-useHead({ title: "New Literature — CoLD" });
+useHead({ title: 'New Literature — CoLD' })
 
 function validateForm() {
   try {
@@ -261,30 +261,30 @@ function validateForm() {
       author: author.value,
       title: title.value,
       publication_year: publicationYear.value,
-    };
-    formSchema.parse(formData);
-    errors.value = {};
-    return true;
+    }
+    formSchema.parse(formData)
+    errors.value = {}
+    return true
   } catch (error) {
     if (error instanceof z.ZodError) {
-      errors.value = {};
+      errors.value = {}
       error.errors.forEach((err) => {
-        errors.value[err.path[0]] = err.message;
-      });
+        errors.value[err.path[0]] = err.message
+      })
     }
-    return false;
+    return false
   }
 }
 
 function openSaveModal() {
-  const isValid = validateForm();
+  const isValid = validateForm()
   if (isValid) {
-    showSaveModal.value = true;
+    showSaveModal.value = true
   }
 }
 
 function confirmCancel() {
-  router.push("/");
+  router.push('/')
 }
 
 function handleNewSave() {
@@ -297,7 +297,7 @@ function handleNewSave() {
     doi: doi.value || undefined,
     publication_date:
       publicationDate.value && publicationDate.value
-        ? format(publicationDate.value, "yyyy-MM-dd")
+        ? format(publicationDate.value, 'yyyy-MM-dd')
         : undefined,
     isbn: isbn.value || undefined,
     issn: issn.value || undefined,
@@ -309,37 +309,37 @@ function handleNewSave() {
     // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
-  };
+  }
 
-  (async () => {
+  ;(async () => {
     try {
       await $fetch(`/api/proxy/suggestions/literature`, {
-        method: "POST",
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: payload,
-      });
-      showSaveModal.value = false;
+      })
+      showSaveModal.value = false
       router.push({
-        path: "/confirmation",
-        query: { message: "Thanks, we have received your submission." },
-      });
+        path: '/confirmation',
+        query: { message: 'Thanks, we have received your submission.' },
+      })
     } catch (err) {
       saveModalErrors.value = {
         general:
-          "There was a problem submitting your suggestion. Please try again.",
-      };
-      console.error("Submission failed:", err);
+          'There was a problem submitting your suggestion. Please try again.',
+      }
+      console.error('Submission failed:', err)
     }
-  })();
+  })()
 }
 </script>
 
 <style scoped>
 /* Hide the back button and all right-side card header buttons */
 :deep(.card-header__actions),
-:deep(.card-header [class*="actions"]) {
+:deep(.card-header [class*='actions']) {
   display: none !important;
 }
 </style>

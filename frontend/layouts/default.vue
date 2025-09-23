@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import Nav from "@/components/layout/Nav.vue";
-import Footer from "@/components/layout/Footer.vue";
-import ErrorBoundary from "@/components/ui/ErrorBoundary.vue";
+import Nav from '@/components/layout/Nav.vue'
+import Footer from '@/components/layout/Footer.vue'
+import ErrorBoundary from '@/components/ui/ErrorBoundary.vue'
 </script>

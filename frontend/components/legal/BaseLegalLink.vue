@@ -19,7 +19,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed } from 'vue'
 
 const props = defineProps({
   to: {
@@ -28,11 +28,11 @@ const props = defineProps({
   },
   class: {
     type: String,
-    default: "",
+    default: '',
   },
   baseClass: {
     type: String,
-    default: "result-value-small",
+    default: 'result-value-small',
   },
   loading: {
     type: Boolean,
@@ -42,7 +42,7 @@ const props = defineProps({
     type: String,
     default: null,
   },
-});
+})
 
-const customClass = computed(() => props.class || "");
+const customClass = computed(() => props.class || '')
 </script>

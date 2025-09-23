@@ -173,39 +173,39 @@
 </template>
 
 <script setup>
-import { computed, ref, watch, onMounted, nextTick } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useSearchFilters } from "@/composables/useSearchFilters";
-import importedThemeOptions from "@/assets/themeOptions.json";
-import importedTypeOptions from "@/assets/typeOptions.json";
+import { computed, ref, watch, onMounted, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useSearchFilters } from '@/composables/useSearchFilters'
+import importedThemeOptions from '@/assets/themeOptions.json'
+import importedTypeOptions from '@/assets/typeOptions.json'
 
 // Component imports
-import ResultCard from "@/components/search-results/ResultCard.vue";
-import LegislationCard from "@/components/search-results/LegislationCard.vue";
-import RegionalInstrumentCard from "@/components/search-results/RegionalInstrumentCard.vue";
-import InternationalInstrumentCard from "@/components/search-results/InternationalInstrumentCard.vue";
-import LiteratureCard from "@/components/search-results/LiteratureCard.vue";
-import CourtDecisionCard from "@/components/search-results/CourtDecisionCard.vue";
-import AnswerCard from "@/components/search-results/AnswerCard.vue";
-import SearchFilters from "@/components/search-results/SearchFilters.vue";
-import NoSearchResults from "@/components/search-results/NoSearchResults.vue";
-import LoadingCard from "@/components/layout/LoadingCard.vue";
+import ResultCard from '@/components/search-results/ResultCard.vue'
+import LegislationCard from '@/components/search-results/LegislationCard.vue'
+import RegionalInstrumentCard from '@/components/search-results/RegionalInstrumentCard.vue'
+import InternationalInstrumentCard from '@/components/search-results/InternationalInstrumentCard.vue'
+import LiteratureCard from '@/components/search-results/LiteratureCard.vue'
+import CourtDecisionCard from '@/components/search-results/CourtDecisionCard.vue'
+import AnswerCard from '@/components/search-results/AnswerCard.vue'
+import SearchFilters from '@/components/search-results/SearchFilters.vue'
+import NoSearchResults from '@/components/search-results/NoSearchResults.vue'
+import LoadingCard from '@/components/layout/LoadingCard.vue'
 
 // Data fetching via composable
-import { useJurisdictions } from "@/composables/useJurisdictions";
+import { useJurisdictions } from '@/composables/useJurisdictions'
 
 // Component mapping for different result types
 const resultComponentMap = {
-  "Domestic Instruments": LegislationCard,
-  "Regional Instruments": RegionalInstrumentCard,
-  "International Instruments": InternationalInstrumentCard,
-  "Court Decisions": CourtDecisionCard,
+  'Domestic Instruments': LegislationCard,
+  'Regional Instruments': RegionalInstrumentCard,
+  'International Instruments': InternationalInstrumentCard,
+  'Court Decisions': CourtDecisionCard,
   Answers: AnswerCard,
   Literature: LiteratureCard,
-};
+}
 
 const getResultComponent = (source_table) =>
-  resultComponentMap[source_table] || ResultCard;
+  resultComponentMap[source_table] || ResultCard
 
 // Props and emits
 const props = defineProps({
@@ -229,13 +229,13 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-});
+})
 
-const emit = defineEmits(["update:filters", "load-more"]);
+const emit = defineEmits(['update:filters', 'load-more'])
 
 // Router setup
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
 
 // Initialize search filters
 const {
@@ -247,86 +247,86 @@ const {
   buildFilterObject,
   resetFilters: resetFilterValues,
   syncFiltersFromQuery,
-} = useSearchFilters(route.query);
+} = useSearchFilters(route.query)
 
 // UI state
-const selectWidth = ref("auto");
-const measureRef = ref(null);
+const selectWidth = ref('auto')
+const measureRef = ref(null)
 
 // Filter options
-const themeOptions = importedThemeOptions;
-const typeOptions = importedTypeOptions;
+const themeOptions = importedThemeOptions
+const typeOptions = importedTypeOptions
 
 // Computed values
 const allResults = computed(() => {
-  if (!props.data?.tables) return [];
-  return Object.values(props.data.tables);
-});
+  if (!props.data?.tables) return []
+  return Object.values(props.data.tables)
+})
 
 const formattedTotalMatches = computed(() =>
-  props.totalMatches.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "’"),
-);
+  props.totalMatches.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '’')
+)
 const resultLabel = computed(() =>
-  props.totalMatches === 1 ? "result" : "results",
-);
+  props.totalMatches === 1 ? 'result' : 'results'
+)
 
 // Methods
 const updateFilters = async (filters) => {
-  emit("update:filters", filters);
+  emit('update:filters', filters)
   await router.push({
     path: route.path,
     query: { ...filters },
-  });
-};
+  })
+}
 
 const handleSortChange = async (val) => {
-  const sortValue = val || "relevance";
-  selectValue.value = sortValue;
+  const sortValue = val || 'relevance'
+  selectValue.value = sortValue
   // Only update the sortBy parameter without triggering other filter updates
-  emit("update:filters", { ...props.filters, sortBy: sortValue });
-  updateSelectWidth();
-};
+  emit('update:filters', { ...props.filters, sortBy: sortValue })
+  updateSelectWidth()
+}
 
 const resetFilters = async () => {
-  resetFilterValues();
-  await updateFilters({ sortBy: route.query.sortBy || "relevance" });
-};
+  resetFilterValues()
+  await updateFilters({ sortBy: route.query.sortBy || 'relevance' })
+}
 
 const updateSelectWidth = () => {
   nextTick(() => {
     if (measureRef.value) {
-      selectWidth.value = measureRef.value.offsetWidth + 36 + "px";
+      selectWidth.value = measureRef.value.offsetWidth + 36 + 'px'
     }
-  });
-};
-const { data: jurisdictions } = useJurisdictions();
+  })
+}
+const { data: jurisdictions } = useJurisdictions()
 
 // Watchers
 watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
   async ([jurisdiction, theme, type]) => {
-    if (!jurisdiction && !theme && !type) return;
+    if (!jurisdiction && !theme && !type) return
     await updateFilters(
-      buildFilterObject(jurisdiction, theme, type, selectValue.value),
-    );
+      buildFilterObject(jurisdiction, theme, type, selectValue.value)
+    )
   },
-  { deep: true },
-);
+  { deep: true }
+)
 
 watch(
   () => route.query,
   () => {
-    syncFiltersFromQuery(route.query);
-    updateSelectWidth();
+    syncFiltersFromQuery(route.query)
+    updateSelectWidth()
   },
-  { immediate: true },
-);
+  { immediate: true }
+)
 
 // Initialization
 onMounted(async () => {
-  syncFiltersFromQuery(route.query);
-  updateSelectWidth();
-});
+  syncFiltersFromQuery(route.query)
+  updateSelectWidth()
+})
 </script>
 
 <style scoped>

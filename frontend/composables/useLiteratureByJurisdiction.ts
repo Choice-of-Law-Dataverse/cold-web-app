@@ -1,12 +1,12 @@
-import { useFullTable } from "@/composables/useFullTable";
+import { useFullTable } from '@/composables/useFullTable'
 
 export function useLiteratureByJurisdiction(jurisdiction: Ref<string>) {
-  return useFullTable("Literature", {
+  return useFullTable('Literature', {
     filters: [
       {
-        column: "Jurisdiction",
+        column: 'Jurisdiction',
         value: jurisdiction.value,
       },
     ],
-  });
+  })
 }

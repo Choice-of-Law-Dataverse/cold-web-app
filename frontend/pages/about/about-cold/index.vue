@@ -5,18 +5,18 @@
 </template>
 
 <script setup>
-import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
-import { onMounted, nextTick } from "vue";
-import { useRoute } from "vue-router";
+import ContentPageLayout from '@/components/layout/ContentPageLayout.vue'
+import { onMounted, nextTick } from 'vue'
+import { useRoute } from 'vue-router'
 
 onMounted(async () => {
-  const route = useRoute();
+  const route = useRoute()
   if (route.hash) {
-    await nextTick();
-    const el = document.querySelector(route.hash);
+    await nextTick()
+    const el = document.querySelector(route.hash)
     if (el) {
-      el.scrollIntoView({ behavior: "auto" });
+      el.scrollIntoView({ behavior: 'auto' })
     }
   }
-});
+})
 </script>

@@ -3,17 +3,17 @@
 </template>
 
 <script setup>
-import { onMounted } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 // Initialize router and route
-const router = useRouter();
-const route = useRoute();
+const router = useRouter()
+const route = useRoute()
 
 // Redirect to OpenEducationalResources if we're on the base learn page
 onMounted(() => {
-  if (route.path === "/learn") {
-    router.replace("/learn/open-educational-resources");
+  if (route.path === '/learn') {
+    router.replace('/learn/open-educational-resources')
   }
-});
+})
 </script>

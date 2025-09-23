@@ -96,16 +96,16 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from "vue";
-import { useRouter } from "vue-router";
-import { useJurisdictions } from "@/composables/useJurisdictions";
-import JurisdictionComparisonMatchSummary from "./JurisdictionComparisonMatchSummary.vue";
-import JurisdictionComparisonTable from "./JurisdictionComparisonTable.vue";
-import JurisdictionSelectMenu from "./JurisdictionSelectMenu.vue";
-import themeOptionsData from "@/assets/themeOptions.json";
+import { ref, watch, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
+import { useJurisdictions } from '@/composables/useJurisdictions'
+import JurisdictionComparisonMatchSummary from './JurisdictionComparisonMatchSummary.vue'
+import JurisdictionComparisonTable from './JurisdictionComparisonTable.vue'
+import JurisdictionSelectMenu from './JurisdictionSelectMenu.vue'
+import themeOptionsData from '@/assets/themeOptions.json'
 
 // Desired order for the questions
-import questionOrderData from "@/assets/questionOrder.json";
+import questionOrderData from '@/assets/questionOrder.json'
 
 const props = defineProps({
   jurisdiction: {
@@ -118,212 +118,212 @@ const props = defineProps({
   },
   cardType: {
     type: String,
-    default: "", // use an empty string or a proper default value
+    default: '', // use an empty string or a proper default value
   },
-});
+})
 
-const router = useRouter(); // Access the router to update the query parameters
-const { data: jurisdictions } = useJurisdictions();
-const loading = ref(true);
-const rows = ref([]);
-const selectedJurisdiction = ref(null); // Selected jurisdiction for comparison
-const selectedTheme = ref(null); // Selected theme for filtering
-const showInfo = ref(false); // Reactive state to toggle the JurisdictionComparisonInfo component
+const router = useRouter() // Access the router to update the query parameters
+const { data: jurisdictions } = useJurisdictions()
+const loading = ref(true)
+const rows = ref([])
+const selectedJurisdiction = ref(null) // Selected jurisdiction for comparison
+const selectedTheme = ref(null) // Selected theme for filtering
+const showInfo = ref(false) // Reactive state to toggle the JurisdictionComparisonInfo component
 const columns = ref([
-  { key: "Themes", label: "Theme", class: "label" },
-  { key: "Question", label: "Question", class: "label" },
-  { key: "Answer", label: props.jurisdiction || "Answer", class: "label" },
-]);
+  { key: 'Themes', label: 'Theme', class: 'label' },
+  { key: 'Question', label: 'Question', class: 'label' },
+  { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
+])
 
 // Computed filtered rows
 const filteredRows = computed(() => {
   if (!selectedTheme.value) {
-    return rows.value;
+    return rows.value
   }
 
   return rows.value.filter((row) =>
-    row.Themes.includes(selectedTheme.value.value),
-  );
-});
+    row.Themes.includes(selectedTheme.value.value)
+  )
+})
 
 // Reset filter button action
 const resetFilters = () => {
-  selectedTheme.value = null;
-};
+  selectedTheme.value = null
+}
 
 // Dropdown options for themes
-const themeOptions = themeOptionsData;
-const questionOrder = questionOrderData;
+const themeOptions = themeOptionsData
+const questionOrder = questionOrderData
 
 // Function to toggle the state
 function toggleInfo() {
-  showInfo.value = !showInfo.value;
+  showInfo.value = !showInfo.value
 }
 
 async function fetchFilteredTableData(filters) {
   const payload = {
-    table: "Answers",
+    table: 'Answers',
     filters: filters,
-  };
+  }
 
   try {
-    const { useApiClient } = await import("@/composables/useApiClient");
-    const { apiClient } = useApiClient();
-    const data = await apiClient("/search/full_table", { body: payload });
+    const { useApiClient } = await import('@/composables/useApiClient')
+    const { apiClient } = useApiClient()
+    const data = await apiClient('/search/full_table', { body: payload })
 
     return data.map((item) => ({
       ...item,
       ID: item.ID,
-    }));
+    }))
   } catch (error) {
-    console.error("Error fetching filtered table data:", error);
-    return []; // Fallback to empty data
+    console.error('Error fetching filtered table data:', error)
+    return [] // Fallback to empty data
   }
 }
 
 async function fetchTableData(jurisdiction) {
-  loading.value = true;
+  loading.value = true
   try {
     const data = await fetchFilteredTableData([
-      { column: "Jurisdictions", value: jurisdiction },
-    ]);
+      { column: 'Jurisdictions', value: jurisdiction },
+    ])
 
     rows.value = data.sort(
       (a, b) =>
-        questionOrder.indexOf(a.Question) - questionOrder.indexOf(b.Question),
-    );
+        questionOrder.indexOf(a.Question) - questionOrder.indexOf(b.Question)
+    )
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 
 onMounted(async () => {
-  const compareQuery = router.currentRoute.value.query.c;
+  const compareQuery = router.currentRoute.value.query.c
   if (compareQuery) {
-    await syncCompareJurisdiction(compareQuery); // Sync the dropdown
-    const jurisdiction = selectedJurisdiction.value;
+    await syncCompareJurisdiction(compareQuery) // Sync the dropdown
+    const jurisdiction = selectedJurisdiction.value
     if (jurisdiction) {
-      updateComparison(jurisdiction); // Update the table
+      updateComparison(jurisdiction) // Update the table
     }
   }
 
   // If a primary jurisdiction is set via props, load its data
   if (props.jurisdiction) {
-    fetchTableData(props.jurisdiction);
+    fetchTableData(props.jurisdiction)
   }
-});
+})
 
 // Add selected jurisdiction as a column
 async function updateComparison(jurisdiction) {
-  if (!jurisdiction) return;
+  if (!jurisdiction) return
 
-  loading.value = true;
+  loading.value = true
   try {
     const jurisdictionData = await fetchFilteredTableData([
-      { column: "Jurisdictions", value: jurisdiction.label },
-    ]);
+      { column: 'Jurisdictions', value: jurisdiction.label },
+    ])
 
-    updateColumns(jurisdiction);
-    updateRows(jurisdictionData, jurisdiction);
+    updateColumns(jurisdiction)
+    updateRows(jurisdictionData, jurisdiction)
   } finally {
-    loading.value = false;
+    loading.value = false
   }
 }
 
 function updateColumns(jurisdiction) {
-  const secondColumnKey = `Answer_${jurisdiction.label}`;
+  const secondColumnKey = `Answer_${jurisdiction.label}`
   columns.value = [
-    { key: "Themes", label: "Theme", class: "label" },
-    { key: "Question", label: "Question", class: "label" },
-    { key: "Answer", label: props.jurisdiction || "Answer", class: "label" },
-    { key: secondColumnKey, label: jurisdiction.label, class: "label" },
-    { key: "Match", label: "", class: "match-column" },
-  ];
+    { key: 'Themes', label: 'Theme', class: 'label' },
+    { key: 'Question', label: 'Question', class: 'label' },
+    { key: 'Answer', label: props.jurisdiction || 'Answer', class: 'label' },
+    { key: secondColumnKey, label: jurisdiction.label, class: 'label' },
+    { key: 'Match', label: '', class: 'match-column' },
+  ]
 }
 
 function updateRows(jurisdictionData, jurisdiction) {
-  const secondColumnKey = `Answer_${jurisdiction.label}`;
+  const secondColumnKey = `Answer_${jurisdiction.label}`
   rows.value = rows.value.map((row) => {
     const match = jurisdictionData.find(
-      (item) => item.Question === row.Question,
-    );
+      (item) => item.Question === row.Question
+    )
     return {
       ...row,
-      [secondColumnKey]: match?.Answer || "N/A",
+      [secondColumnKey]: match?.Answer || 'N/A',
       [`${secondColumnKey}_ID`]: match?.ID || null,
-      Match: { answer1: row.Answer, answer2: match?.Answer || "N/A" },
-    };
-  });
+      Match: { answer1: row.Answer, answer2: match?.Answer || 'N/A' },
+    }
+  })
 }
 
 // Watch when the user changes the selected jurisdiction
 watch(selectedJurisdiction, (newJurisdiction) => {
   if (newJurisdiction) {
-    updateRouterQuery(newJurisdiction.value); // Fetch ISO3 and update query
-    updateComparison(newJurisdiction); // Fetch new comparison data
+    updateRouterQuery(newJurisdiction.value) // Fetch ISO3 and update query
+    updateComparison(newJurisdiction) // Fetch new comparison data
   }
-});
+})
 
 // Watch for URL query updates to sync the dropdown
 watch(
   () => router.currentRoute.value.query.c,
   async (newCompare) => {
     if (newCompare) {
-      await syncCompareJurisdiction(newCompare); // Sync dropdown
-      const jurisdiction = selectedJurisdiction.value;
+      await syncCompareJurisdiction(newCompare) // Sync dropdown
+      const jurisdiction = selectedJurisdiction.value
       if (jurisdiction) {
-        updateComparison(jurisdiction); // Update table data
+        updateComparison(jurisdiction) // Update table data
       }
     }
   },
-  { immediate: true },
-);
+  { immediate: true }
+)
 
 async function updateRouterQuery(jurisdiction) {
   try {
     const response = await fetch(
-      `https://restcountries.com/v3.1/name/${jurisdiction}?fields=cca3`,
-    );
-    const data = await response.json();
+      `https://restcountries.com/v3.1/name/${jurisdiction}?fields=cca3`
+    )
+    const data = await response.json()
 
     if (data && data[0] && data[0].cca3) {
-      const isoCode = data[0].cca3.toLowerCase(); // Convert ISO3 code to lowercase
+      const isoCode = data[0].cca3.toLowerCase() // Convert ISO3 code to lowercase
       router.replace({
         query: {
           ...router.currentRoute.value.query,
           c: isoCode, // Update query with ISO3 code
         },
-      });
+      })
     } else {
-      console.error(`ISO3 code not found for jurisdiction: ${jurisdiction}`);
+      console.error(`ISO3 code not found for jurisdiction: ${jurisdiction}`)
     }
   } catch (error) {
-    console.error("Error fetching ISO3 code:", error);
+    console.error('Error fetching ISO3 code:', error)
   }
 }
 
 async function syncCompareJurisdiction(compare) {
-  const isoCode = compare.toUpperCase(); // Ensure ISO3 code is uppercase
+  const isoCode = compare.toUpperCase() // Ensure ISO3 code is uppercase
   try {
     // Fetch full name using ISO3 code
     const response = await fetch(
-      `https://restcountries.com/v3.1/alpha/${isoCode}?fields=name`,
-    );
-    const data = await response.json();
+      `https://restcountries.com/v3.1/alpha/${isoCode}?fields=name`
+    )
+    const data = await response.json()
 
     if (data && data.name?.common) {
-      const fullName = data.name.common;
-      const option = jurisdictions.value?.find((opt) => opt.label === fullName);
+      const fullName = data.name.common
+      const option = jurisdictions.value?.find((opt) => opt.label === fullName)
       if (option) {
-        selectedJurisdiction.value = option; // Update dropdown selection
+        selectedJurisdiction.value = option // Update dropdown selection
       } else {
-        console.warn(`Jurisdiction not found in dropdown for: ${fullName}`);
+        console.warn(`Jurisdiction not found in dropdown for: ${fullName}`)
       }
     } else {
-      console.error(`Full name not found for ISO3 code: ${compare}`);
+      console.error(`Full name not found for ISO3 code: ${compare}`)
     }
   } catch (error) {
-    console.error("Error syncing compare jurisdiction:", error);
+    console.error('Error syncing compare jurisdiction:', error)
   }
 }
 
@@ -331,35 +331,35 @@ async function syncCompareJurisdiction(compare) {
 const matchCounts = computed(() => {
   return filteredRows.value.reduce(
     (counts, row) => {
-      const match = row.Match;
+      const match = row.Match
       if (match) {
-        const status = computeMatchStatus(match.answer1, match.answer2);
-        counts[status] = (counts[status] || 0) + 1;
+        const status = computeMatchStatus(match.answer1, match.answer2)
+        counts[status] = (counts[status] || 0) + 1
       }
-      return counts;
+      return counts
     },
-    { green: 0, red: 0, "red-x": 0, gray: 0 },
-  );
-});
+    { green: 0, red: 0, 'red-x': 0, gray: 0 }
+  )
+})
 
 function computeMatchStatus(answer1, answer2) {
-  const grayCases = ["Unclear", "Information is not available yet", "No data"];
+  const grayCases = ['Unclear', 'Information is not available yet', 'No data']
 
-  if (grayCases.includes(answer1) || grayCases.includes(answer2)) return "gray";
-  if (answer1 === answer2 && answer1 !== "No") return "green";
-  if (answer1 === "No" && answer2 === "No") return "red";
+  if (grayCases.includes(answer1) || grayCases.includes(answer2)) return 'gray'
+  if (answer1 === answer2 && answer1 !== 'No') return 'green'
+  if (answer1 === 'No' && answer2 === 'No') return 'red'
   if (
-    (answer1 === "Yes" && answer2 === "No") ||
-    (answer1 === "No" && answer2 === "Yes")
+    (answer1 === 'Yes' && answer2 === 'No') ||
+    (answer1 === 'No' && answer2 === 'Yes')
   )
-    return "red-x";
+    return 'red-x'
 
-  return "gray";
+  return 'gray'
 }
 </script>
 
 <style scoped>
-::v-deep(.z-20.group.w-full [role="option"]) {
+::v-deep(.z-20.group.w-full [role='option']) {
   line-height: 2 !important; /* Make the line height larger */
 }
 

@@ -65,13 +65,13 @@ export default {
     return {
       category: null, // Will be dynamically set based on searchText
       definition: null,
-    };
+    }
   },
   watch: {
     // Watch for changes in searchPerformed and trigger classifyQuery when true
     searchPerformed(newVal) {
       if (newVal) {
-        this.classifyQuery(this.searchText); // Only run this when searchPerformed is true
+        this.classifyQuery(this.searchText) // Only run this when searchPerformed is true
       }
     },
   },
@@ -79,83 +79,83 @@ export default {
     async classifyQuery(query) {
       try {
         // Step 1: Call classify_query API to classify the search query
-        const { useApiClient } = await import("@/composables/useApiClient");
-        const { apiClient } = useApiClient();
-        const category = await apiClient("/classify_query", {
+        const { useApiClient } = await import('@/composables/useApiClient')
+        const { apiClient } = useApiClient()
+        const category = await apiClient('/classify_query', {
           body: { query },
-          responseType: "text",
-        });
-        this.category = category;
+          responseType: 'text',
+        })
+        this.category = category
 
         // Process the category to fetch relevant data
-        this.processCategory();
+        this.processCategory()
       } catch (error) {
-        console.error("Error classifying query:", error);
+        console.error('Error classifying query:', error)
       }
     },
     processCategory() {
       if (!this.category) {
-        console.error("Category not set.");
-        return;
+        console.error('Category not set.')
+        return
       }
 
       // Step 2: Split the category into the term and table
-      const term = this.category.split(" (")[0];
-      const tableType = this.category.match(/\(([^)]+)\)/);
+      const term = this.category.split(' (')[0]
+      const tableType = this.category.match(/\(([^)]+)\)/)
 
       if (!tableType) {
-        console.error("Invalid category format.");
-        return;
+        console.error('Invalid category format.')
+        return
       }
 
-      const type = tableType[1];
-      let table = "";
+      const type = tableType[1]
+      let table = ''
 
-      if (type === "concept") {
-        table = "Concepts";
-      } else if (type === "principle") {
-        table = "HCCH Principles themes";
+      if (type === 'concept') {
+        table = 'Concepts'
+      } else if (type === 'principle') {
+        table = 'HCCH Principles themes'
       }
 
       // Step 3: Make the API call with the term and table
-      this.fetchData(term, table);
+      this.fetchData(term, table)
     },
 
     async fetchData(term, table) {
       try {
-        const { useApiClient } = await import("@/composables/useApiClient");
-        const { apiClient } = useApiClient();
-        const data = await apiClient("/search/full_table", { body: { table } });
+        const { useApiClient } = await import('@/composables/useApiClient')
+        const { apiClient } = useApiClient()
+        const data = await apiClient('/search/full_table', { body: { table } })
 
         // Step 4: Find the entry with the appropriate matching key
-        let matchedEntry;
-        if (table === "HCCH Principles themes") {
+        let matchedEntry
+        if (table === 'HCCH Principles themes') {
           // For "HCCH Principles themes", match against the "Theme" key
           matchedEntry = data.find(
-            (entry) => entry.Theme && entry.Theme.includes(term),
-          );
+            (entry) => entry.Theme && entry.Theme.includes(term)
+          )
         } else {
           // For other tables, match against the "Keywords" key
           matchedEntry = data.find(
-            (entry) => entry.Keywords && entry.Keywords.includes(term),
-          );
+            (entry) => entry.Keywords && entry.Keywords.includes(term)
+          )
         }
 
         if (matchedEntry) {
-          if (table === "HCCH Principles themes") {
+          if (table === 'HCCH Principles themes') {
             this.definition =
-              matchedEntry["Full text"] || "No full text found for this term.";
+              matchedEntry['Full text'] || 'No full text found for this term.'
           } else {
             this.definition =
-              matchedEntry.Definition || "No definition found for this term.";
+              matchedEntry.Definition || 'No definition found for this term.'
           }
         } else {
-          this.definition = "No matching entry found for this term.";
+          this.definition = 'No matching entry found for this term.'
         }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error('Error fetching data:', error)
       }
     },
   },
-};
+}
 </script>

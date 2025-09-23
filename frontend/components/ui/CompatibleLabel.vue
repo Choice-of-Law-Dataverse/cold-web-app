@@ -9,9 +9,9 @@
 defineProps({
   label: {
     type: String,
-    default: "Your fav Law",
+    default: 'Your fav Law',
   },
-});
+})
 </script>
 
 <style scoped>

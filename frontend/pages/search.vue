@@ -22,31 +22,31 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed, nextTick } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import SearchResults from "@/components/search-results/SearchResults.vue";
-import { useSearch } from "@/composables/useSearch";
-import { useHead, useSeoMeta  } from "#imports";
+import { ref, onMounted, watch, computed, nextTick } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import SearchResults from '@/components/search-results/SearchResults.vue'
+import { useSearch } from '@/composables/useSearch'
+import { useHead, useSeoMeta } from '#imports'
 
 // Block a page from being indexed (https://nuxtseo.com/learn/controlling-crawlers#quick-implementation-guide)
 useSeoMeta({
-  robots: "noindex, follow",
-});
+  robots: 'noindex, follow',
+})
 
-const route = useRoute();
-const router = useRouter();
-const searchQuery = ref(route.query.q || ""); // Holds the search query from the URL
+const route = useRoute()
+const router = useRouter()
+const searchQuery = ref(route.query.q || '') // Holds the search query from the URL
 
 const filter = ref({
   jurisdiction: route.query.jurisdiction,
-  sortBy: route.query.sortBy || "relevance", // Add sortBy to filter state
+  sortBy: route.query.sortBy || 'relevance', // Add sortBy to filter state
   theme: route.query.theme,
   type: route.query.type,
-});
+})
 
-const searchText = ref(route.query.q || ""); // Initialize searchText from query
+const searchText = ref(route.query.q || '') // Initialize searchText from query
 
-const isInitialized = ref(false);
+const isInitialized = ref(false)
 
 const searchParams = computed(() => {
   if (!isInitialized.value) {
@@ -54,9 +54,9 @@ const searchParams = computed(() => {
     return {
       filters: {},
       pageSize: 10,
-      query: "",
+      query: '',
       enabledOverride: false,
-    };
+    }
   }
 
   return {
@@ -64,8 +64,8 @@ const searchParams = computed(() => {
     pageSize: 10,
     query: searchQuery.value,
     enabledOverride: true,
-  };
-});
+  }
+})
 
 const {
   data: searchData,
@@ -74,26 +74,26 @@ const {
   fetchNextPage,
   hasNextPage,
   isFetchingNextPage,
-} = useSearch(searchParams);
+} = useSearch(searchParams)
 
 // Computed values for search results and total matches
 const searchResults = computed(() => {
-  if (!searchData.value?.pages) return [];
-  return searchData.value.pages.flatMap((page) => page.results);
-});
+  if (!searchData.value?.pages) return []
+  return searchData.value.pages.flatMap((page) => page.results)
+})
 
 const totalMatches = computed(() => {
-  return searchData.value?.pages?.[0]?.totalMatches || 0;
-});
+  return searchData.value?.pages?.[0]?.totalMatches || 0
+})
 
 // Create computed values for template
-const loading = computed(() => isLoading.value || isFetchingNextPage.value);
-const apiError = computed(() => error.value?.message || null);
+const loading = computed(() => isLoading.value || isFetchingNextPage.value)
+const apiError = computed(() => error.value?.message || null)
 
 // Keep searchText in sync with searchQuery
 watch(searchQuery, (newQuery) => {
-  searchText.value = newQuery || "";
-});
+  searchText.value = newQuery || ''
+})
 
 // Set dynamic page title based on search string
 watch(
@@ -101,83 +101,83 @@ watch(
   (newQuery) => {
     useHead({
       title:
-        newQuery && newQuery.trim() ? `${newQuery} — CoLD` : "Search — CoLD",
-    });
+        newQuery && newQuery.trim() ? `${newQuery} — CoLD` : 'Search — CoLD',
+    })
   },
-  { immediate: true },
-);
+  { immediate: true }
+)
 
 // Watch for changes in filter and fetch results
 watch(
   filter,
   (newFilters, oldFilters) => {
-    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return; // Avoid redundant updates
+    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return // Avoid redundant updates
 
     const query = {
       ...route.query, // Retain existing query parameters
       jurisdiction: newFilters.jurisdiction,
       theme: newFilters.theme,
       type: newFilters.type,
-    };
+    }
 
     // Remove `q` if searchText is empty
     if (!searchText.value.trim()) {
-      delete query.q;
+      delete query.q
     }
 
     // Remove undefined values from query
     const cleanedQuery = Object.fromEntries(
       Object.entries(query).filter(([_, value]) => value !== undefined)
-    );
+    )
 
     // Update URL
     router.replace({
-      name: "search",
+      name: 'search',
       query: cleanedQuery,
-    });
+    })
   },
-  { deep: true },
-);
+  { deep: true }
+)
 
 // Watch for URL query updates to sync the dropdowns
 watch(
   () => route.query, // Watch the entire query object
   (newQuery) => {
     // Update searchQuery and filters based on the URL
-    searchQuery.value = newQuery.q || "";
+    searchQuery.value = newQuery.q || ''
 
     // Only update filters if they exist in the URL
-    const newFilters = {};
-    if (newQuery.jurisdiction) newFilters.jurisdiction = newQuery.jurisdiction;
-    if (newQuery.theme) newFilters.theme = newQuery.theme;
-    if (newQuery.type) newFilters.type = newQuery.type;
+    const newFilters = {}
+    if (newQuery.jurisdiction) newFilters.jurisdiction = newQuery.jurisdiction
+    if (newQuery.theme) newFilters.theme = newQuery.theme
+    if (newQuery.type) newFilters.type = newQuery.type
 
     // Only update if the filters have actually changed
     if (JSON.stringify(newFilters) !== JSON.stringify(filter.value)) {
-      filter.value = newFilters;
+      filter.value = newFilters
     }
 
     // Mark as initialized after first URL processing
     if (!isInitialized.value) {
       // Use nextTick to ensure all reactive updates are complete
       nextTick(() => {
-        isInitialized.value = true;
-      });
+        isInitialized.value = true
+      })
     }
   },
-  { deep: true, immediate: true }, // Add immediate to handle initial URL
-);
+  { deep: true, immediate: true } // Add immediate to handle initial URL
+)
 
 function loadMoreResults() {
   if (hasNextPage.value && !isFetchingNextPage.value) {
-    fetchNextPage();
+    fetchNextPage()
   }
 }
 
 onMounted(() => {
   // Initialize search text from query
-  searchText.value = route.query.q || "";
-});
+  searchText.value = route.query.q || ''
+})
 </script>
 
 <style scoped>

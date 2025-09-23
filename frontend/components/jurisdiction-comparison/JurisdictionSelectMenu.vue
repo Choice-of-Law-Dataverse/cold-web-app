@@ -77,9 +77,9 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
-import { handleImageError } from "@/utils/handleImageError";
-import { useCoveredCountries } from "@/composables/useCoveredCountries";
+import { reactive } from 'vue'
+import { handleImageError } from '@/utils/handleImageError'
+import { useCoveredCountries } from '@/composables/useCoveredCountries'
 
 defineProps({
   countries: {
@@ -88,29 +88,29 @@ defineProps({
   },
   placeholder: {
     type: String,
-    default: "Pick a Jurisdiction",
+    default: 'Pick a Jurisdiction',
   },
-});
+})
 
-const { data: coveredCountries, isLoading } = useCoveredCountries();
+const { data: coveredCountries, isLoading } = useCoveredCountries()
 
 // Check if a country is covered
 const isCovered = (alpha3Code) => {
-  if (!coveredCountries.value || !alpha3Code) return false;
-  return coveredCountries.value.has(alpha3Code.toLowerCase());
-};
+  if (!coveredCountries.value || !alpha3Code) return false
+  return coveredCountries.value.has(alpha3Code.toLowerCase())
+}
 // Emit selection back to the parent
-const emit = defineEmits(["countrySelected"]);
+const emit = defineEmits(['countrySelected'])
 
 const selected = defineModel({
   type: String,
   default: null,
-}); // v-model integration
+}) // v-model integration
 
 // Reactive object for errored avatars
-const erroredAvatars = reactive({});
+const erroredAvatars = reactive({})
 
 const onSelect = (value) => {
-  emit("countrySelected", value); // Emit the selected value
-};
+  emit('countrySelected', value) // Emit the selected value
+}
 </script>
