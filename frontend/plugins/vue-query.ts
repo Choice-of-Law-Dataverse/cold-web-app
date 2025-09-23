@@ -1,18 +1,18 @@
 import type {
   DehydratedState,
   VueQueryPluginOptions,
-} from '@tanstack/vue-query'
+} from "@tanstack/vue-query";
 import {
   VueQueryPlugin,
   QueryClient,
   hydrate,
   dehydrate,
-} from '@tanstack/vue-query'
+} from "@tanstack/vue-query";
 // Nuxt 3 app aliases
-import { defineNuxtPlugin, useState } from '#imports'
+import { defineNuxtPlugin, useState } from "#imports";
 
 export default defineNuxtPlugin((nuxt) => {
-  const vueQueryState = useState<DehydratedState | null>('vue-query')
+  const vueQueryState = useState<DehydratedState | null>("vue-query");
 
   // Modify your Vue Query global settings here
   const queryClient = new QueryClient({
@@ -28,7 +28,7 @@ export default defineNuxtPlugin((nuxt) => {
         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
         // Only refetch on window focus in production and on client
         refetchOnWindowFocus:
-          !import.meta.server && process.env.NODE_ENV === 'production',
+          !import.meta.server && process.env.NODE_ENV === "production",
         // Don't refetch on reconnect by default to avoid unnecessary requests
         refetchOnReconnect: false,
         // Disable background refetching on server
@@ -44,22 +44,22 @@ export default defineNuxtPlugin((nuxt) => {
         throwOnError: true,
       },
     },
-  })
+  });
 
   const options: VueQueryPluginOptions = {
     queryClient,
     enableDevtoolsV6Plugin: true,
-  }
+  };
 
-  nuxt.vueApp.use(VueQueryPlugin, options)
+  nuxt.vueApp.use(VueQueryPlugin, options);
 
   if (import.meta.server) {
-    nuxt.hooks.hook('app:rendered', () => {
-      vueQueryState.value = dehydrate(queryClient)
-    })
+    nuxt.hooks.hook("app:rendered", () => {
+      vueQueryState.value = dehydrate(queryClient);
+    });
   }
 
   if (import.meta.client) {
-    hydrate(queryClient, vueQueryState.value)
+    hydrate(queryClient, vueQueryState.value);
   }
-})
+});

@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-cold-bg min-h-screen flex flex-col">
+  <div class="flex min-h-screen flex-col bg-cold-bg">
     <!-- Navigation Bar -->
     <Nav />
 
     <!-- Main Content Area -->
-    <main class="flex-1 mt-12 px-6">
+    <main class="mt-12 flex-1 px-6">
       <div
-        class="mx-auto w-full max-w-container min-h-[50vh] flex flex-col justify-center items-center text-center"
+        class="mx-auto flex min-h-[50vh] w-full max-w-container flex-col items-center justify-center text-center"
       >
         <h2>{{ errorMessage }}</h2>
 
@@ -19,11 +19,11 @@
 </template>
 
 <script setup>
-import Nav from '@/components/layout/Nav.vue'
-import Footer from '@/components/layout/Footer.vue'
-import { useRoute } from 'vue-router'
+import Nav from "@/components/layout/Nav.vue";
+import Footer from "@/components/layout/Footer.vue";
+import { useRoute } from "vue-router";
 
-const route = useRoute()
+const route = useRoute();
 const errorMessage =
-  route.query.message || 'Sorry, we can’t find the page you’re looking for.'
+  route.query.message || "Sorry, we can’t find the page you’re looking for.";
 </script>

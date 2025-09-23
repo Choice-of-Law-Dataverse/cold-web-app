@@ -6,7 +6,7 @@
         <SectionNav v-else />
         <!-- Main Content -->
         <div
-          class="main-content prose -space-y-10 flex flex-col gap-12 px-6 w-full"
+          class="main-content prose flex w-full flex-col gap-12 -space-y-10 px-6"
           :class="{ 'hierarchical-numbering': enableHierarchicalNumbering }"
         >
           <slot />
@@ -17,9 +17,9 @@
 </template>
 
 <script setup>
-import SectionNav from '@/components/layout/SectionNav.vue'
+import SectionNav from "@/components/layout/SectionNav.vue";
 
-const props = defineProps({
+defineProps({
   navLinks: {
     type: Array,
     default: null,
@@ -29,7 +29,7 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-})
+});
 </script>
 
 <style scoped>
@@ -61,7 +61,7 @@ const props = defineProps({
   }
 
   ::v-deep(ol > li::before) {
-    content: counter(list-counter) '. ';
+    content: counter(list-counter) ". ";
     font-weight: bold;
   }
 
@@ -76,7 +76,7 @@ const props = defineProps({
   }
 
   ::v-deep(ol ol > li::before) {
-    content: counter(list-counter) '.' counter(sub-list-counter) '. ';
+    content: counter(list-counter) "." counter(sub-list-counter) ". ";
     font-weight: bold;
   }
 
@@ -91,8 +91,8 @@ const props = defineProps({
   }
 
   ::v-deep(ol ol ol > li::before) {
-    content: counter(list-counter) '.' counter(sub-list-counter) '.'
-      counter(sub-sub-list-counter) '. ';
+    content: counter(list-counter) "." counter(sub-list-counter) "."
+      counter(sub-sub-list-counter) ". ";
     font-weight: bold;
   }
 
@@ -107,8 +107,8 @@ const props = defineProps({
   }
 
   ::v-deep(ol ol ol ol > li::before) {
-    content: counter(list-counter) '.' counter(sub-list-counter) '.'
-      counter(sub-sub-list-counter) '.' counter(sub-sub-sub-list-counter) '. ';
+    content: counter(list-counter) "." counter(sub-list-counter) "."
+      counter(sub-sub-list-counter) "." counter(sub-sub-sub-list-counter) ". ";
     font-weight: bold;
   }
 }

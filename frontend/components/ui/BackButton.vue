@@ -1,11 +1,11 @@
 <template>
   <div class="mb-12">
     <UButton
-      @click="goBack"
       variant="link"
       icon="i-material-symbols:arrow-back"
       :trailing="false"
       class="suggestion-button"
+      @click="goBack"
     >
       Back
     </UButton>
@@ -13,11 +13,11 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { useRouter } from "vue-router";
 
-const router = useRouter()
+const router = useRouter();
 
 function goBack() {
-  router.back() // Takes the user to the previous page
+  router.back(); // Takes the user to the previous page
 }
 </script>

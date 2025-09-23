@@ -1,7 +1,7 @@
 <template>
   <UCard class="cold-ucard-info">
     <div
-      class="main-content prose -space-y-10 flex flex-col gap-12 px-6 w-full"
+      class="main-content prose flex w-full flex-col gap-12 -space-y-10 px-6"
     >
       <p class="result-value-small">
         <ContentDoc path="/jurisdiction_comparison_info" />

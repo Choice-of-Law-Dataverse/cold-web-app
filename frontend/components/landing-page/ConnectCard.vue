@@ -11,7 +11,7 @@
         :rel="newTab ? 'noopener noreferrer' : ''"
       >
         <template v-if="imageSrc">
-          <img :src="imageSrc" alt="" class="h-20 max-w-full" />
+          <img :src="imageSrc" alt="" class="h-20 max-w-full" >
         </template>
         <template v-else>
           <Icon :name="iconName" size="72" class="text-cold-green" />
@@ -38,7 +38,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   title: {
     type: String,
     required: true,
@@ -46,7 +46,7 @@ const props = defineProps({
   subtitle: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
   buttonText: {
     type: String,
@@ -59,12 +59,12 @@ const props = defineProps({
   iconName: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
   imageSrc: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
   newTab: {
     type: Boolean,
@@ -73,8 +73,9 @@ const props = defineProps({
   buttonIcon: {
     type: String,
     required: false,
+    default: "",
   },
-})
+});
 </script>
 
 <style scoped>

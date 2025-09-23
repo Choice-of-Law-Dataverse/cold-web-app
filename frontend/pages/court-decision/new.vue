@@ -1,428 +1,432 @@
 <template>
-  <BaseDetailLayout
-    :loading="false"
-    :resultData="{}"
-    :keyLabelPairs="[]"
-    :valueClassMap="{}"
-    sourceTable="Court Decision"
-    :hideBackButton="true"
-    headerMode="new"
-    @open-save-modal="openSaveModal"
-    @open-cancel-modal="showCancelModal = true"
-    :showNotificationBanner="true"
-    :notificationBannerMessage="notificationBannerMessage"
-    :icon="'i-material-symbols:warning-outline'"
-  >
-    <h3 class="mb-12">
-      The CoLD Case Analyzer extracts information from court cases
-      <NuxtLink
-        to="https://case-analyzer.cold.global/"
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        Open the Case Analyzer now
-        <UIcon
-          name="i-material-symbols:open-in-new"
-          class="relative top-[2px]"
-        />
-      </NuxtLink>
-    </h3>
-    <div class="section-gap p-0 m-0">
-      <UFormGroup size="lg" hint="Required" :error="errors.case_citation">
-        <template #label>
-          <span class="label flex flex-row items-center">Case citation</span>
-          <InfoPopover :text="tooltipCaseCitation" />
-        </template>
-        <UInput v-model="caseCitation" class="mt-2 cold-input" />
-      </UFormGroup>
-
-      <UFormGroup size="lg" hint="Required" class="mt-8">
-        <template #label>
-          <span class="label flex flex-row items-center">Publication Date</span>
-          <InfoPopover :text="tooltipPublicationDate" />
-        </template>
-        <UPopover :popper="{ placement: 'bottom-start' }">
-          <UButton
-            icon="i-heroicons-calendar-days-20-solid"
-            :label="format(datePublication, 'dd MMMM yyyy')"
-            class="mt-2 cold-date-trigger"
-          />
-          <template #panel="{ close }">
-            <DatePicker v-model="datePublication" is-required @close="close" />
-          </template>
-        </UPopover>
-      </UFormGroup>
-
-      <UFormGroup
-        size="lg"
-        hint="Required"
-        class="mt-8"
-        :error="errors.official_source_url"
-      >
-        <template #label>
-          <span class="label">Official source (URL)</span>
-        </template>
-        <UInput
-          v-model="officialSourceUrl"
-          placeholder="https://…"
-          class="mt-2 cold-input"
-        />
-      </UFormGroup>
-
-      <UFormGroup
-        size="lg"
-        class="mt-8"
-        hint="Required"
-        :error="errors.copyright_issues"
-      >
-        <template #label>
-          <span class="label">Copyright issues</span>
-        </template>
-        <div
-          class="mt-2 cold-toggle-group"
-          role="group"
-          aria-label="Copyright issues"
+  <div>
+    <BaseDetailLayout
+      :loading="false"
+      :result-data="{}"
+      :key-label-pairs="[]"
+      :value-class-map="{}"
+      source-table="Court Decision"
+      :hide-back-button="true"
+      header-mode="new"
+      :show-notification-banner="true"
+      :notification-banner-message="notificationBannerMessage"
+      :icon="'i-material-symbols:warning-outline'"
+      @open-save-modal="openSaveModal"
+      @open-cancel-modal="showCancelModal = true"
+    >
+      <h3 class="mb-12">
+        The CoLD Case Analyzer extracts information from court cases
+        <NuxtLink
+          to="https://case-analyzer.cold.global/"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <UButton
-            class="cold-toggle-btn"
-            @click="copyrightIssues = 'No'"
-            :aria-pressed="copyrightIssues === 'No'"
-          >
-            No
-          </UButton>
-          <UButton
-            class="cold-toggle-btn"
-            @click="copyrightIssues = 'Yes'"
-            :aria-pressed="copyrightIssues === 'Yes'"
-          >
-            Yes
-          </UButton>
-        </div>
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label">Full Text</span>
-        </template>
-        <UTextarea
-          v-model="caseFullText"
-          class="mt-2 cold-input resize-y min-h-[140px]"
-          :rows="6"
-        />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label">English Translation of Full Text</span>
-        </template>
-        <UTextarea
-          v-model="caseEnglishTranslation"
-          class="mt-2 cold-input resize-y min-h-[140px]"
-          :rows="6"
-        />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label">Case Rank</span>
-        </template>
-        <UInput v-model="caseRank" class="mt-2 cold-input" />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label">Jurisdiction</span>
-        </template>
-        <SearchFilters
-          :options="jurisdictionOptions"
-          v-model="selectedJurisdiction"
-          class="mt-2 w-full"
-          showAvatars="true"
-          :multiple="false"
-        />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label flex flex-row items-center">Abstract</span>
-          <InfoPopover :text="tooltipAbstract" />
-        </template>
-        <UTextarea
-          v-model="caseAbstract"
-          class="mt-2 cold-input resize-y min-h-[140px]"
-          :rows="6"
-        />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label flex flex-row items-center">Relevant Facts</span>
-          <InfoPopover :text="tooltipRelevantFacts" />
-        </template>
-        <UTextarea
-          v-model="caseRelevantFacts"
-          class="mt-2 cold-input resize-y min-h-[140px]"
-          :rows="6"
-        />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label flex flex-row items-center">PIL Provisions</span>
-          <InfoPopover :text="tooltipPILProvisions" />
-        </template>
-        <UInput v-model="casePILProvisions" class="mt-2 cold-input" />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label flex flex-row items-center"
-            >Choice of Law Issue</span
-          >
-          <InfoPopover :text="tooltipChoiceofLawIssue" />
-        </template>
-        <UTextarea
-          v-model="caseChoiceofLawIssue"
-          class="mt-2 cold-input resize-y min-h-[140px]"
-          :rows="6"
-        />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label flex flex-row items-center">Court's Position</span>
-          <InfoPopover :text="tooltipCourtsPosition" />
-        </template>
-        <UTextarea
-          v-model="caseCourtsPosition"
-          class="mt-2 cold-input resize-y min-h-[140px]"
-          :rows="6"
-        />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label flex flex-row items-center"
-            >Translated Excerpt</span
-          >
-        </template>
-        <UTextarea
-          v-model="caseTranslatedExcerpt"
-          class="mt-2 cold-input resize-y min-h-[140px]"
-          :rows="6"
-        />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label flex flex-row items-center"
-            >Text of the Relevant Legal Provisions</span
-          >
-        </template>
-        <UTextarea
-          v-model="caseTextofRelevantLegalProvisions"
-          class="mt-2 cold-input resize-y min-h-[140px]"
-          :rows="6"
-        />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label flex flex-row items-center">Quote</span>
-          <InfoPopover :text="tooltipQuote" />
-        </template>
-        <UTextarea
-          v-model="caseQuote"
-          class="mt-2 cold-input resize-y min-h-[140px]"
-          :rows="6"
-        />
-      </UFormGroup>
-
-      <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label flex flex-row items-center">Judgment Date</span>
-          <InfoPopover :text="tooltipJudgmentDate" />
-        </template>
-        <UPopover :popper="{ placement: 'bottom-start' }">
-          <UButton
-            icon="i-heroicons-calendar-days-20-solid"
-            :label="
-              dateJudgment ? format(dateJudgment, 'dd MMMM yyyy') : 'Add date'
-            "
-            class="mt-2 cold-date-trigger"
+          Open the Case Analyzer now
+          <UIcon
+            name="i-material-symbols:open-in-new"
+            class="relative top-[2px]"
           />
-          <template #panel="{ close }">
-            <DatePicker v-model="dateJudgment" @close="close" />
+        </NuxtLink>
+      </h3>
+      <div class="section-gap m-0 p-0">
+        <UFormGroup size="lg" hint="Required" :error="errors.case_citation">
+          <template #label>
+            <span class="label flex flex-row items-center">Case citation</span>
+            <InfoPopover :text="tooltipCaseCitation" />
           </template>
-        </UPopover>
-      </UFormGroup>
+          <UInput v-model="caseCitation" class="cold-input mt-2" />
+        </UFormGroup>
 
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label flex flex-row items-center">Case Title</span>
-          <InfoPopover :text="tooltipCaseTitle" />
-        </template>
-        <UInput v-model="caseTitle" class="mt-2 cold-input" />
-      </UFormGroup>
+        <UFormGroup size="lg" hint="Required" class="mt-8">
+          <template #label>
+            <span class="label flex flex-row items-center"
+              >Publication Date</span
+            >
+            <InfoPopover :text="tooltipPublicationDate" />
+          </template>
+          <UPopover :popper="{ placement: 'bottom-start' }">
+            <UButton
+              icon="i-heroicons-calendar-days-20-solid"
+              :label="format(datePublication, 'dd MMMM yyyy')"
+              class="cold-date-trigger mt-2"
+            />
+            <template #panel="{ close }">
+              <DatePicker
+                v-model="datePublication"
+                is-required
+                @close="close"
+              />
+            </template>
+          </UPopover>
+        </UFormGroup>
 
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label flex flex-row items-center">Instance</span>
-          <InfoPopover :text="tooltipInstance" />
-        </template>
-        <UInput v-model="caseInstance" class="mt-2 cold-input" />
-      </UFormGroup>
+        <UFormGroup
+          size="lg"
+          hint="Required"
+          class="mt-8"
+          :error="errors.official_source_url"
+        >
+          <template #label>
+            <span class="label">Official source (URL)</span>
+          </template>
+          <UInput
+            v-model="officialSourceUrl"
+            placeholder="https://…"
+            class="cold-input mt-2"
+          />
+        </UFormGroup>
 
-      <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-        <template #label>
-          <span class="label flex flex-row items-center"
-            >Official Keywords</span
+        <UFormGroup
+          size="lg"
+          class="mt-8"
+          hint="Required"
+          :error="errors.copyright_issues"
+        >
+          <template #label>
+            <span class="label">Copyright issues</span>
+          </template>
+          <div
+            class="cold-toggle-group mt-2"
+            role="group"
+            aria-label="Copyright issues"
           >
-        </template>
-        <UTextarea
-          v-model="caseOfficialKeywords"
-          class="mt-2 cold-input resize-y min-h-[140px]"
-          :rows="6"
-        />
-      </UFormGroup>
-    </div>
-  </BaseDetailLayout>
+            <UButton
+              class="cold-toggle-btn"
+              :aria-pressed="copyrightIssues === 'No'"
+              @click="copyrightIssues = 'No'"
+            >
+              No
+            </UButton>
+            <UButton
+              class="cold-toggle-btn"
+              :aria-pressed="copyrightIssues === 'Yes'"
+              @click="copyrightIssues = 'Yes'"
+            >
+              Yes
+            </UButton>
+          </div>
+        </UFormGroup>
 
-  <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
-  <SaveModal
-    v-model="showSaveModal"
-    :email="email"
-    :comments="comments"
-    :token="token"
-    :saveModalErrors="saveModalErrors"
-    :name="caseCitation"
-    :date="datePublication"
-    @update:email="(val) => (email = val)"
-    @update:comments="(val) => (comments = val)"
-    @update:token="(val) => (token = val)"
-    @update:saveModalErrors="(val) => (saveModalErrors.value = val)"
-    @save="handleNewSave"
-  />
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label">Full Text</span>
+          </template>
+          <UTextarea
+            v-model="caseFullText"
+            class="cold-input mt-2 min-h-[140px] resize-y"
+            :rows="6"
+          />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label">English Translation of Full Text</span>
+          </template>
+          <UTextarea
+            v-model="caseEnglishTranslation"
+            class="cold-input mt-2 min-h-[140px] resize-y"
+            :rows="6"
+          />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label">Case Rank</span>
+          </template>
+          <UInput v-model="caseRank" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label">Jurisdiction</span>
+          </template>
+          <SearchFilters
+            v-model="selectedJurisdiction"
+            :options="jurisdictionOptions"
+            class="mt-2 w-full"
+            show-avatars="true"
+            :multiple="false"
+          />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label flex flex-row items-center">Abstract</span>
+            <InfoPopover :text="tooltipAbstract" />
+          </template>
+          <UTextarea
+            v-model="caseAbstract"
+            class="cold-input mt-2 min-h-[140px] resize-y"
+            :rows="6"
+          />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label flex flex-row items-center">Relevant Facts</span>
+            <InfoPopover :text="tooltipRelevantFacts" />
+          </template>
+          <UTextarea
+            v-model="caseRelevantFacts"
+            class="cold-input mt-2 min-h-[140px] resize-y"
+            :rows="6"
+          />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label flex flex-row items-center">PIL Provisions</span>
+            <InfoPopover :text="tooltipPILProvisions" />
+          </template>
+          <UInput v-model="casePILProvisions" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label flex flex-row items-center"
+              >Choice of Law Issue</span
+            >
+            <InfoPopover :text="tooltipChoiceofLawIssue" />
+          </template>
+          <UTextarea
+            v-model="caseChoiceofLawIssue"
+            class="cold-input mt-2 min-h-[140px] resize-y"
+            :rows="6"
+          />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label flex flex-row items-center"
+              >Court's Position</span
+            >
+            <InfoPopover :text="tooltipCourtsPosition" />
+          </template>
+          <UTextarea
+            v-model="caseCourtsPosition"
+            class="cold-input mt-2 min-h-[140px] resize-y"
+            :rows="6"
+          />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label flex flex-row items-center"
+              >Translated Excerpt</span
+            >
+          </template>
+          <UTextarea
+            v-model="caseTranslatedExcerpt"
+            class="cold-input mt-2 min-h-[140px] resize-y"
+            :rows="6"
+          />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label flex flex-row items-center"
+              >Text of the Relevant Legal Provisions</span
+            >
+          </template>
+          <UTextarea
+            v-model="caseTextofRelevantLegalProvisions"
+            class="cold-input mt-2 min-h-[140px] resize-y"
+            :rows="6"
+          />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label flex flex-row items-center">Quote</span>
+            <InfoPopover :text="tooltipQuote" />
+          </template>
+          <UTextarea
+            v-model="caseQuote"
+            class="cold-input mt-2 min-h-[140px] resize-y"
+            :rows="6"
+          />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8">
+          <template #label>
+            <span class="label flex flex-row items-center">Judgment Date</span>
+            <InfoPopover :text="tooltipJudgmentDate" />
+          </template>
+          <UPopover :popper="{ placement: 'bottom-start' }">
+            <UButton
+              icon="i-heroicons-calendar-days-20-solid"
+              :label="
+                dateJudgment ? format(dateJudgment, 'dd MMMM yyyy') : 'Add date'
+              "
+              class="cold-date-trigger mt-2"
+            />
+            <template #panel="{ close }">
+              <DatePicker v-model="dateJudgment" @close="close" />
+            </template>
+          </UPopover>
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label flex flex-row items-center">Case Title</span>
+            <InfoPopover :text="tooltipCaseTitle" />
+          </template>
+          <UInput v-model="caseTitle" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label flex flex-row items-center">Instance</span>
+            <InfoPopover :text="tooltipInstance" />
+          </template>
+          <UInput v-model="caseInstance" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+          <template #label>
+            <span class="label flex flex-row items-center"
+              >Official Keywords</span
+            >
+          </template>
+          <UTextarea
+            v-model="caseOfficialKeywords"
+            class="cold-input mt-2 min-h-[140px] resize-y"
+            :rows="6"
+          />
+        </UFormGroup>
+      </div>
+    </BaseDetailLayout>
+
+    <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
+    <SaveModal
+      v-model="showSaveModal"
+      :email="email"
+      :comments="comments"
+      :token="token"
+      :save-modal-errors="saveModalErrors"
+      :name="caseCitation"
+      :date="datePublication"
+      @update:email="(val) => (email = val)"
+      @update:comments="(val) => (comments = val)"
+      @update:token="(val) => (token = val)"
+      @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
+      @save="handleNewSave"
+    />
+  </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue'
-import { useHead, useRouter } from '#imports'
-import { z } from 'zod'
-import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import DatePicker from '@/components/ui/DatePicker.vue'
-import CancelModal from '@/components/ui/CancelModal.vue'
-import SaveModal from '@/components/ui/SaveModal.vue'
-import SearchFilters from '@/components/search-results/SearchFilters.vue'
-import InfoPopover from '~/components/ui/InfoPopover.vue'
-import { format } from 'date-fns'
+import { ref, watch, onMounted } from "vue";
+import { useHead, useRouter } from "#imports";
+import { z } from "zod";
+import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import DatePicker from "@/components/ui/DatePicker.vue";
+import CancelModal from "@/components/ui/CancelModal.vue";
+import SaveModal from "@/components/ui/SaveModal.vue";
+import SearchFilters from "@/components/search-results/SearchFilters.vue";
+import InfoPopover from "~/components/ui/InfoPopover.vue";
+import { format } from "date-fns";
 
-import tooltipAbstract from '@/content/info_boxes/court_decision/abstract.md?raw'
-import tooltipCaseCitation from '@/content/info_boxes/court_decision/case_citation.md?raw'
-import tooltipCaseTitle from '@/content/info_boxes/court_decision/case_title.md?raw'
-import tooltipChoiceofLawIssue from '@/content/info_boxes/court_decision/choice_of_law_issue.md?raw'
-import tooltipCourtsPosition from '@/content/info_boxes/court_decision/courts_position.md?raw'
-import tooltipInstance from '@/content/info_boxes/court_decision/instance.md?raw'
-import tooltipJudgmentDate from '@/content/info_boxes/court_decision/judgment_date.md?raw'
-import tooltipPILProvisions from '@/content/info_boxes/court_decision/pil_provisions.md?raw'
-import tooltipPublicationDate from '@/content/info_boxes/court_decision/publication_date.md?raw'
-import tooltipQuote from '@/content/info_boxes/court_decision/quote.md?raw'
-import tooltipRelevantFacts from '@/content/info_boxes/court_decision/relevant_facts.md?raw'
-
-const config = useRuntimeConfig()
+import tooltipAbstract from "@/content/info_boxes/court_decision/abstract.md?raw";
+import tooltipCaseCitation from "@/content/info_boxes/court_decision/case_citation.md?raw";
+import tooltipCaseTitle from "@/content/info_boxes/court_decision/case_title.md?raw";
+import tooltipChoiceofLawIssue from "@/content/info_boxes/court_decision/choice_of_law_issue.md?raw";
+import tooltipCourtsPosition from "@/content/info_boxes/court_decision/courts_position.md?raw";
+import tooltipInstance from "@/content/info_boxes/court_decision/instance.md?raw";
+import tooltipJudgmentDate from "@/content/info_boxes/court_decision/judgment_date.md?raw";
+import tooltipPILProvisions from "@/content/info_boxes/court_decision/pil_provisions.md?raw";
+import tooltipPublicationDate from "@/content/info_boxes/court_decision/publication_date.md?raw";
+import tooltipQuote from "@/content/info_boxes/court_decision/quote.md?raw";
+import tooltipRelevantFacts from "@/content/info_boxes/court_decision/relevant_facts.md?raw";
 
 // Form data
-const caseCitation = ref('')
-const caseTitle = ref('')
+const caseCitation = ref("");
+const caseTitle = ref("");
 // Newly added fields used by multi-line inputs
-const caseFullText = ref('')
-const caseEnglishTranslation = ref('')
-const caseRank = ref('')
-const caseAbstract = ref('')
-const caseRelevantFacts = ref('')
-const casePILProvisions = ref('')
-const caseChoiceofLawIssue = ref('')
-const caseCourtsPosition = ref('')
-const caseTranslatedExcerpt = ref('')
-const caseTextofRelevantLegalProvisions = ref('')
-const caseQuote = ref('')
-const caseInstance = ref('')
-const caseOfficialKeywords = ref('')
-const officialSourceUrl = ref('')
-const copyrightIssues = ref('No')
-const datePublication = ref(new Date())
-const dateJudgment = ref(null)
+const caseFullText = ref("");
+const caseEnglishTranslation = ref("");
+const caseRank = ref("");
+const caseAbstract = ref("");
+const caseRelevantFacts = ref("");
+const casePILProvisions = ref("");
+const caseChoiceofLawIssue = ref("");
+const caseCourtsPosition = ref("");
+const caseTranslatedExcerpt = ref("");
+const caseTextofRelevantLegalProvisions = ref("");
+const caseQuote = ref("");
+const caseInstance = ref("");
+const caseOfficialKeywords = ref("");
+const officialSourceUrl = ref("");
+const copyrightIssues = ref("No");
+const datePublication = ref(new Date());
+const dateJudgment = ref(null);
 
-// Required by SaveModal (kept for parity with other pages)
-const specialists = ref([''])
-const pdfFile = ref(null)
-const email = ref('')
-const comments = ref('')
+const email = ref("");
+const comments = ref("");
 
-const turnstile = ref()
-const token = ref('')
+const token = ref("");
 
 // Ensure Submit button reactivity when token changes
-watch(token, () => {})
+watch(token, () => {});
 // Jurisdiction select state and options (reuse SearchResults strategy)
-const selectedJurisdiction = ref([])
-const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
+const selectedJurisdiction = ref([]);
+const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
 
 const loadJurisdictions = async () => {
   try {
     const response = await fetch(`/api/proxy/search/full_table`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
-    })
+      body: JSON.stringify({ table: "Jurisdictions", filters: [] }),
+    });
 
-    if (!response.ok) throw new Error('Failed to load jurisdictions')
+    if (!response.ok) throw new Error("Failed to load jurisdictions");
 
-    const jurisdictionsData = await response.json()
+    const jurisdictionsData = await response.json();
     jurisdictionOptions.value = [
-      { label: 'Select Jurisdiction' },
+      { label: "Select Jurisdiction" },
       ...jurisdictionsData
-        .filter((entry) => entry['Irrelevant?'] === false)
+        .filter((entry) => entry["Irrelevant?"] === false)
         .map((entry) => ({
           label: entry.Name,
-          avatar: entry['Alpha-3 Code']
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry['Alpha-3 Code'].toLowerCase()}.svg`
+          avatar: entry["Alpha-3 Code"]
+            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry["Alpha-3 Code"].toLowerCase()}.svg`
             : undefined,
         }))
-        .sort((a, b) => (a.label || '').localeCompare(b.label || '')),
-    ]
+        .sort((a, b) => (a.label || "").localeCompare(b.label || "")),
+    ];
   } catch (error) {
-    console.error('Error loading jurisdictions:', error)
+    console.error("Error loading jurisdictions:", error);
   }
-}
+};
 
-onMounted(loadJurisdictions)
+onMounted(loadJurisdictions);
 // Toggle buttons will set this directly (No/Yes)
 
 // Validation schema
 const formSchema = z.object({
   case_citation: z
     .string()
-    .min(1, { message: 'Case citation is required' })
-    .min(3, { message: 'Case citation must be at least 3 characters long' }),
+    .min(1, { message: "Case citation is required" })
+    .min(3, { message: "Case citation must be at least 3 characters long" }),
   official_source_url: z.string().url({
     message: 'Link must be a valid URL. It must start with "https://"',
   }),
-})
+});
 
 // Form validation state
-const errors = ref({})
-const saveModalErrors = ref({})
+const errors = ref({});
+const saveModalErrors = ref({});
 
-const router = useRouter()
-const showSaveModal = ref(false)
-const showCancelModal = ref(false)
+const router = useRouter();
+const showSaveModal = ref(false);
+const showCancelModal = ref(false);
 const notificationBannerMessage =
-  'Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.'
+  "Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.";
 
-useHead({ title: 'New Court Decision — CoLD' })
+useHead({ title: "New Court Decision — CoLD" });
 
 function validateForm() {
   try {
@@ -451,36 +455,36 @@ function validateForm() {
       case_title: caseTitle.value,
       instance: caseInstance.value,
       official_keywords: caseOfficialKeywords.value,
-    }
-    formSchema.parse(formData)
-    errors.value = {}
-    return true
+    };
+    formSchema.parse(formData);
+    errors.value = {};
+    return true;
   } catch (error) {
     if (error instanceof z.ZodError) {
-      errors.value = {}
+      errors.value = {};
       error.errors.forEach((err) => {
-        errors.value[err.path[0]] = err.message
-      })
+        errors.value[err.path[0]] = err.message;
+      });
     }
-    return false
+    return false;
   }
 }
 
 function openSaveModal() {
-  const isValid = validateForm()
+  const isValid = validateForm();
   if (isValid) {
-    showSaveModal.value = true
+    showSaveModal.value = true;
   }
 }
 
 function confirmCancel() {
-  router.push('/')
+  router.push("/");
 }
 
 function handleNewSave() {
   const payload = {
     case_citation: caseCitation.value,
-    date_publication: format(datePublication.value, 'yyyy-MM-dd'),
+    date_publication: format(datePublication.value, "yyyy-MM-dd"),
     official_source_url: officialSourceUrl.value,
     copyright_issues: copyrightIssues.value,
     original_text: caseFullText.value,
@@ -499,7 +503,7 @@ function handleNewSave() {
     text_of_relevant_legal_provisions: caseTextofRelevantLegalProvisions.value,
     quote: caseQuote.value,
     decision_date: dateJudgment.value
-      ? format(dateJudgment.value, 'yyyy-MM-dd')
+      ? format(dateJudgment.value, "yyyy-MM-dd")
       : undefined,
     case_title: caseTitle.value,
     instance: caseInstance.value,
@@ -507,49 +511,32 @@ function handleNewSave() {
     // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
-  }
+  };
 
   // Explicitly log the exact payload we send
-  ;(async () => {
+  (async () => {
     try {
-      await $fetch(
-        `      await $fetch(` / api / proxy / suggestions / court -
-          decisions`, {`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: payload,
-        }
-      )
+      await $fetch(`/api/proxy/suggestions/court-decisions`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: payload,
+      });
 
-      showSaveModal.value = false
+      showSaveModal.value = false;
       router.push({
-        path: '/confirmation',
-        query: { message: 'Thanks, we have received your submission.' },
-      })
+        path: "/confirmation",
+        query: { message: "Thanks, we have received your submission." },
+      });
     } catch (err) {
       saveModalErrors.value = {
         general:
-          'There was a problem submitting your suggestion. Please try again.',
-      }
-      console.error('Submission failed:', err)
+          "There was a problem submitting your suggestion. Please try again.",
+      };
+      console.error("Submission failed:", err);
     }
-  })()
-}
-
-async function onSubmit() {
-  const res = await $fetch('/api/submit', {
-    method: 'POST',
-    body: { token /* form fields */ },
-  })
-  if (res.success) {
-    // handle success
-  } else {
-    // handle error
-  }
-  turnstile.value?.reset()
+  })();
 }
 </script>
 
@@ -558,7 +545,7 @@ async function onSubmit() {
 :deep(.card-header__actions) {
   display: none !important;
 }
-:deep(.card-header [class*='actions']) {
+:deep(.card-header [class*="actions"]) {
   display: none !important;
 }
 

@@ -1,34 +1,34 @@
-import { useQuery, type UseQueriesOptions } from '@tanstack/vue-query'
-import { useApiClient } from '@/composables/useApiClient'
-import type { FullTableRequest, TableName } from '~/types/api'
+import { useQuery } from "@tanstack/vue-query";
+import { useApiClient } from "@/composables/useApiClient";
+import type { FullTableRequest, TableName } from "~/types/api";
 
-const fetchFullTableData = async (
+async function fetchFullTableData<T>(
   table: TableName,
-  filters: FullTableRequest['filters'] = []
-): Promise<any[]> => {
-  const { apiClient } = useApiClient()
-  const body: FullTableRequest = { table, filters }
+  filters: FullTableRequest["filters"] = [],
+): Promise<T[]> {
+  const { apiClient } = useApiClient();
+  const body: FullTableRequest = { table, filters };
 
-  return await apiClient('/search/full_table', { body })
+  return await apiClient("/search/full_table", { body });
 }
 
-type Options =
+type Options<T> =
   | Partial<{
-      select: (data: any[]) => any[]
-      filters: FullTableRequest['filters']
+      select: (data: T[]) => T[];
+      filters: FullTableRequest["filters"];
     }>
-  | undefined
+  | undefined;
 
-export function useFullTable(
+export function useFullTable<T = Record<string, unknown>>(
   table: TableName,
-  { select, filters }: Options = {}
+  { select, filters }: Options<T> = {},
 ) {
   return useQuery({
     queryKey: [
       table,
-      filters ? filters.map((f) => f.value).join(',') : undefined,
+      filters ? filters.map((f) => f.value).join(",") : undefined,
     ],
-    queryFn: () => fetchFullTableData(table, filters),
+    queryFn: () => fetchFullTableData<T>(table, filters),
     select,
-  })
+  });
 }

@@ -1,6 +1,6 @@
 <template>
-  <ResultCard cardType="Loading" :resultData="{}">
-    <div class="space-y-3 mt-4 mb-3">
+  <ResultCard card-type="Loading" :result-data="{}">
+    <div class="mb-3 mt-4 space-y-3">
       <USkeleton class="h-3 w-[40px] rounded-none bg-cold-gray-alpha" />
       <USkeleton class="h-4 w-[310px] rounded-none bg-cold-gray-alpha" />
       <USkeleton class="h-4 w-[280px] rounded-none bg-cold-gray-alpha" />
@@ -9,5 +9,5 @@
 </template>
 
 <script setup>
-import ResultCard from '@/components/search-results/ResultCard.vue'
+import ResultCard from "@/components/search-results/ResultCard.vue";
 </script>

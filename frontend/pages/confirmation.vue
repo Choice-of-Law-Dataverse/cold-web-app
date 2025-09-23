@@ -1,7 +1,7 @@
 <template>
-  <main class="flex-1 mt-12 px-6">
+  <main class="mt-12 flex-1 px-6">
     <div
-      class="mx-auto w-full max-w-container min-h-[50vh] flex flex-col justify-center items-center text-center"
+      class="mx-auto flex min-h-[50vh] w-full max-w-container flex-col items-center justify-center text-center"
     >
       <h2>{{ confirmationMessage }}</h2>
 
@@ -15,25 +15,25 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
-import { useHead } from '#imports'
+import { useRoute } from "vue-router";
+import { useHead } from "#imports";
 
 useHead({
-  title: 'Confirmed — CoLD',
-})
+  title: "Confirmed — CoLD",
+});
 
-const route = useRoute()
+const route = useRoute();
 const confirmationMessage =
-  route.query.message || 'We have received your submission.'
+  route.query.message || "We have received your submission.";
 
-let links = [{ text: 'Take me back to Home', to: '/' }]
+let links = [{ text: "Take me back to Home", to: "/" }];
 if (route.query.links) {
   try {
-    const parsed = JSON.parse(route.query.links)
+    const parsed = JSON.parse(route.query.links);
     if (Array.isArray(parsed)) {
-      links = parsed.filter((l) => l && l.text && l.to)
+      links = parsed.filter((l) => l && l.text && l.to);
     }
-  } catch (e) {
+  } catch {
     // ignore, fallback to default
   }
 }
@@ -41,6 +41,6 @@ if (route.query.links) {
 
 <script>
 export default {
-  layout: 'default',
-}
+  layout: "default",
+};
 </script>

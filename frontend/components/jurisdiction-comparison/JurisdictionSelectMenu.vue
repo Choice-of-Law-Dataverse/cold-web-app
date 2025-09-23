@@ -1,14 +1,14 @@
 <template>
   <USelectMenu
+    v-model="selected"
     searchable
     searchable-placeholder="Search a Jurisdiction..."
-    class="w-72 lg:w-96 cold-uselectmenu z-200"
+    class="cold-uselectmenu z-200 w-72 lg:w-96"
     :placeholder="placeholder"
     :options="countries"
-    v-model="selected"
-    @change="onSelect"
     size="xl"
     :loading="isLoading"
+    @change="onSelect"
   >
     <!-- Custom option rendering with avatars -->
     <template #option="{ option }">
@@ -44,7 +44,7 @@
     <template #label>
       <div
         v-if="selected"
-        class="flex items-center w-full overflow-hidden whitespace-nowrap"
+        class="flex w-full items-center overflow-hidden whitespace-nowrap"
       >
         <template v-if="selected?.avatar && !erroredAvatars?.[selected?.label]">
           <UAvatar
@@ -77,38 +77,40 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
-import { handleImageError } from '@/utils/handleImageError'
-import { useCoveredCountries } from '@/composables/useCoveredCountries'
+import { reactive } from "vue";
+import { handleImageError } from "@/utils/handleImageError";
+import { useCoveredCountries } from "@/composables/useCoveredCountries";
 
-// Props for the country options
-const props = defineProps({
+defineProps({
   countries: {
     type: Array,
     required: true,
   },
   placeholder: {
     type: String,
-    default: 'Pick a Jurisdiction',
+    default: "Pick a Jurisdiction",
   },
-})
+});
 
-const { data: coveredCountries, isLoading } = useCoveredCountries()
+const { data: coveredCountries, isLoading } = useCoveredCountries();
 
 // Check if a country is covered
 const isCovered = (alpha3Code) => {
-  if (!coveredCountries.value || !alpha3Code) return false
-  return coveredCountries.value.has(alpha3Code.toLowerCase())
-}
+  if (!coveredCountries.value || !alpha3Code) return false;
+  return coveredCountries.value.has(alpha3Code.toLowerCase());
+};
 // Emit selection back to the parent
-const emit = defineEmits(['countrySelected'])
+const emit = defineEmits(["countrySelected"]);
 
-const selected = defineModel() // v-model integration
+const selected = defineModel({
+  type: String,
+  default: null,
+}); // v-model integration
 
 // Reactive object for errored avatars
-const erroredAvatars = reactive({})
+const erroredAvatars = reactive({});
 
 const onSelect = (value) => {
-  emit('countrySelected', value) // Emit the selected value
-}
+  emit("countrySelected", value); // Emit the selected value
+};
 </script>

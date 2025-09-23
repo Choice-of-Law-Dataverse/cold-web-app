@@ -13,11 +13,11 @@
         <UButton
           v-for="(suggestion, index) in searchSuggestions"
           :key="index"
-          @click="handleSuggestionClick(suggestion)"
           class="suggestion-button"
           variant="link"
           icon="i-material-symbols:arrow-forward"
           trailing
+          @click="handleSuggestionClick(suggestion)"
         >
           <span class="break-words text-left">{{ suggestion }}</span>
         </UButton>
@@ -27,24 +27,19 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
-import { ref } from 'vue'
-import eventBus from '@/eventBus'
+import { useRouter } from "vue-router";
+import { ref } from "vue";
 
-const router = useRouter()
+const router = useRouter();
 
-const searchSuggestions = ref(['Arbitration', 'Rules of law', 'Tacit choice'])
-
-function formatQuery(query) {
-  return query.replace(/ /g, '+')
-}
+const searchSuggestions = ref(["Arbitration", "Rules of law", "Tacit choice"]);
 
 function handleSuggestionClick(suggestion) {
   // Pass the query with both theme and type=Literature
   router.push({
-    name: 'search',
-    query: { theme: suggestion, type: 'Literature' },
-  })
+    name: "search",
+    query: { theme: suggestion, type: "Literature" },
+  });
 }
 </script>
 

@@ -30,36 +30,36 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from 'vue-router'
-import { computed } from 'vue'
-import jurisdictionsData from '@/assets/jurisdictions-data.json'
+import { useRoute, useRouter } from "vue-router";
+import { computed } from "vue";
+import jurisdictionsData from "@/assets/jurisdictions-data.json";
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 
 const jurisdictionFilter = computed(() => {
   // Add a space after each comma for display
   return route.query.jurisdiction
-    ? String(route.query.jurisdiction).replace(/,/g, ', ')
-    : null
-})
+    ? String(route.query.jurisdiction).replace(/,/g, ", ")
+    : null;
+});
 
 const queryContainsJurisdiction = computed(() => {
-  const q = (route.query.q || '').toLowerCase()
-  if (!q) return false
-  const words = q.split(/\s+/)
+  const q = (route.query.q || "").toLowerCase();
+  if (!q) return false;
+  const words = q.split(/\s+/);
   // Flatten all names and denonyms from jurisdictionsData
   const jurisdictionTerms = jurisdictionsData
     .flatMap((j) => [...(j.name || []), ...(j.alternative || [])])
-    .flatMap((term) => term.split(',').map((t) => t.trim().toLowerCase()))
+    .flatMap((term) => term.split(",").map((t) => t.trim().toLowerCase()));
   // Check if any word in the query matches a jurisdiction term
-  return words.some((word) => jurisdictionTerms.includes(word))
-})
+  return words.some((word) => jurisdictionTerms.includes(word));
+});
 
 function removeJurisdictionFilter() {
-  const newQuery = { ...route.query }
-  delete newQuery.jurisdiction
-  router.replace({ path: route.path, query: newQuery })
+  const newQuery = { ...route.query };
+  delete newQuery.jurisdiction;
+  router.replace({ path: route.path, query: newQuery });
 }
 </script>
 

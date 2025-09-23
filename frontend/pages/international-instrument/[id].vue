@@ -1,21 +1,21 @@
 <template>
   <BaseDetailLayout
     :loading="loading"
-    :resultData="processedInternationalInstrument"
-    :keyLabelPairs="computedKeyLabelPairs"
-    :valueClassMap="valueClassMap"
-    :showSuggestEdit="true"
-    sourceTable="International Instrument"
+    :result-data="processedInternationalInstrument"
+    :key-label-pairs="computedKeyLabelPairs"
+    :value-class-map="valueClassMap"
+    :show-suggest-edit="true"
+    source-table="International Instrument"
   >
     <template #literature>
-      <section class="section-gap p-0 m-0">
+      <section class="section-gap m-0 p-0">
         <RelatedLiterature
           :literature-id="processedInternationalInstrument?.Literature"
-          :valueClassMap="valueClassMap['Literature']"
-          :showLabel="true"
-          :emptyValueBehavior="
+          :value-class-map="valueClassMap['Literature']"
+          :show-label="true"
+          :empty-value-behavior="
             internationalInstrumentConfig.keyLabelPairs.find(
-              (pair) => pair.key === 'Literature'
+              (pair) => pair.key === 'Literature',
             )?.emptyValueBehavior
           "
           :tooltip="
@@ -28,22 +28,22 @@
     </template>
 
     <template #selected-provisions>
-      <section class="section-gap p-0 m-0">
-        <p class="label mt-12 mb-[-24px]">
+      <section class="section-gap m-0 p-0">
+        <p class="label mb-[-24px] mt-12">
           {{
             computedKeyLabelPairs.find(
-              (pair) => pair.key === 'Selected Provisions'
-            )?.label || 'Selected Provisions'
+              (pair) => pair.key === "Selected Provisions",
+            )?.label || "Selected Provisions"
           }}
           <InfoPopover
             v-if="
               computedKeyLabelPairs.find(
-                (pair) => pair.key === 'Selected Provisions'
+                (pair) => pair.key === 'Selected Provisions',
               )?.tooltip
             "
             :text="
               computedKeyLabelPairs.find(
-                (pair) => pair.key === 'Selected Provisions'
+                (pair) => pair.key === 'Selected Provisions',
               )?.tooltip
             "
           />
@@ -65,10 +65,12 @@
                       processedInternationalInstrument['Title (in English)'])
                   : '')
               "
-              :anchorId="normalizeAnchorId(provision['Title of the Provision'])"
+              :anchor-id="
+                normalizeAnchorId(provision['Title of the Provision'])
+              "
             >
               <template #default>
-                {{ provision['Full Text'] }}
+                {{ provision["Full Text"] }}
               </template>
             </BaseLegalContent>
           </div>
@@ -80,92 +82,92 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import BaseLegalContent from '@/components/legal/BaseLegalContent.vue'
-import InfoPopover from '~/components/ui/InfoPopover.vue'
-import { useRecordDetails } from '@/composables/useRecordDetails'
-import { useDetailDisplay } from '@/composables/useDetailDisplay'
-import { internationalInstrumentConfig } from '@/config/pageConfigs'
-import RelatedLiterature from '@/components/literature/RelatedLiterature.vue'
-import LoadingBar from '@/components/layout/LoadingBar.vue'
-import { useInternationalLegalProvisions } from '@/composables/useInternationalLegalProvisions'
-import { useHead } from '#imports'
+import { ref, computed, watch } from "vue";
+import { useRoute } from "vue-router";
+import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import BaseLegalContent from "@/components/legal/BaseLegalContent.vue";
+import InfoPopover from "~/components/ui/InfoPopover.vue";
+import { useRecordDetails } from "@/composables/useRecordDetails";
+import { useDetailDisplay } from "@/composables/useDetailDisplay";
+import { internationalInstrumentConfig } from "@/config/pageConfigs";
+import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
+import LoadingBar from "@/components/layout/LoadingBar.vue";
+import { useInternationalLegalProvisions } from "@/composables/useInternationalLegalProvisions";
+import { useHead } from "#imports";
 
-const config = useRuntimeConfig()
-const route = useRoute()
+const route = useRoute();
 
 // Use TanStack Vue Query for data fetching
-const table = ref('International Instruments')
-const id = ref(route.params.id)
+const table = ref("International Instruments");
+const id = ref(route.params.id);
 
-const {
-  data: internationalInstrument,
-  isLoading: loading,
-  error,
-} = useRecordDetails(table, id)
+const { data: internationalInstrument, isLoading: loading } = useRecordDetails(
+  table,
+  id,
+);
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   internationalInstrument,
-  internationalInstrumentConfig
-)
+  internationalInstrumentConfig,
+);
 
 const processedInternationalInstrument = computed(() => {
-  if (!internationalInstrument.value) return null
+  if (!internationalInstrument.value) return null;
   return {
     ...internationalInstrument.value,
-    'Title (in English)':
-      internationalInstrument.value['Title (in English)'] ||
-      internationalInstrument.value['Name'],
-    Date: internationalInstrument.value['Date'],
+    "Title (in English)":
+      internationalInstrument.value["Title (in English)"] ||
+      internationalInstrument.value["Name"],
+    Date: internationalInstrument.value["Date"],
     URL:
-      internationalInstrument.value['URL'] ||
-      internationalInstrument.value['Link'],
-  }
-})
+      internationalInstrument.value["URL"] ||
+      internationalInstrument.value["Link"],
+  };
+});
 
 // Provisions via composable
 const {
   data: provisions,
   isLoading: provisionsLoading,
   error: provisionsError,
-} = useInternationalLegalProvisions()
+} = useInternationalLegalProvisions();
 
 function normalizeAnchorId(str) {
-  if (!str) return ''
+  if (!str) return "";
   // Remove accents/circumflexes, replace whitespace with dash, lowercase
   return str
-    .normalize('NFD')
-    .replace(/\p{Diacritic}/gu, '')
-    .replace(/\s+/g, '-')
-    .replace(/[^a-zA-Z0-9\-_]/g, '')
-    .toLowerCase()
+    .normalize("NFD")
+    .replace(/\p{Diacritic}/gu, "")
+    .replace(/\s+/g, "-")
+    .replace(/[^a-zA-Z0-9\-_]/g, "")
+    .toLowerCase();
 }
 
 // Set dynamic page title based on 'Name'
 watch(
   internationalInstrument,
   (newVal) => {
-    if (!newVal) return
-    const name = newVal['Name']
+    if (!newVal) return;
+    const name = newVal["Name"];
     const pageTitle =
-      name && name.trim() ? `${name} — CoLD` : 'International Instrument — CoLD'
+      name && name.trim()
+        ? `${name} — CoLD`
+        : "International Instrument — CoLD";
     useHead({
       title: pageTitle,
       link: [
         {
-          rel: 'canonical',
+          rel: "canonical",
           href: `https://cold.global${route.fullPath}`,
         },
       ],
       meta: [
         {
-          name: 'description',
+          name: "description",
           content: pageTitle,
         },
       ],
-    })
+    });
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 </script>

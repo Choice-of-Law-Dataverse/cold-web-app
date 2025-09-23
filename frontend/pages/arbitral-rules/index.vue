@@ -3,10 +3,10 @@
   <!-- Use sourceTable="Loading" so the header stays hidden, yielding a clean blank card. -->
   <BaseDetailLayout
     :loading="loading"
-    :resultData="resultData"
-    :keyLabelPairs="computedKeyLabelPairs"
-    :valueClassMap="valueClassMap"
-    sourceTable="Arbitral Rule"
+    :result-data="resultData"
+    :key-label-pairs="computedKeyLabelPairs"
+    :value-class-map="valueClassMap"
+    source-table="Arbitral Rule"
   >
     <template #full-width>
       <div class="px-6 py-6">
@@ -21,19 +21,19 @@
             </template>
             <template #inForceFrom-data="{ row }">
               <span class="result-value-small">{{
-                formatDate(row.inForceFrom) || ''
+                formatDate(row.inForceFrom) || ""
               }}</span>
             </template>
             <template #open-data="{ row }">
               <NuxtLink
                 v-if="row.coldId"
                 :to="`/arbitral-rule/${row.coldId}`"
-                class="label font-semibold result-value-small"
+                class="label result-value-small font-semibold"
               >
                 Open
                 <UIcon
                   name="i-material-symbols:play-arrow"
-                  class="inline-block -mb-[1px]"
+                  class="-mb-[1px] inline-block"
                 />
               </NuxtLink>
               <span v-else class="text-gray-300">—</span>
@@ -46,137 +46,137 @@
 </template>
 
 <script setup lang="ts">
-import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import { ref, onMounted } from 'vue'
-import { formatDate } from '@/utils/format'
+import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import { ref, onMounted } from "vue";
+import { formatDate } from "@/utils/format";
 // Using static CSV downloaded from NocoDB because API does not provide arbitral rules
-import csvRaw from './all-arbitral-rules.csv?raw'
+import csvRaw from "./all-arbitral-rules.csv?raw";
 
 useHead({
-  title: 'Arbitral Rules — CoLD',
-})
+  title: "Arbitral Rules — CoLD",
+});
 
 // Minimal props for BaseDetailLayout to render a blank card with the same layout
-const loading = false
-const resultData = {} as any
-const computedKeyLabelPairs: any[] = []
-const valueClassMap: Record<string, string> = {}
+const loading = false;
+const resultData = {} as Record<string, unknown>;
+const computedKeyLabelPairs: Record<string, unknown>[] = [];
+const valueClassMap: Record<string, string> = {};
 
 // Columns to display from CSV
 const columns = [
-  { key: 'setofRules', label: 'Set of Rules', sortable: true },
-  { key: 'inForceFrom', label: 'In Force From', sortable: true },
-  { key: 'open', label: '' },
-]
+  { key: "setofRules", label: "Set of Rules", sortable: true },
+  { key: "inForceFrom", label: "In Force From", sortable: true },
+  { key: "open", label: "" },
+];
 
 type Row = {
-  setofRules: string
-  inForceFrom: string
-}
+  setofRules: string;
+  inForceFrom: string;
+};
 
 function parseCSV(text: string): string[][] {
-  const rows: string[][] = []
-  let row: string[] = []
-  let field = ''
-  let inQuotes = false
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = "";
+  let inQuotes = false;
 
   for (let i = 0; i < text.length; i++) {
-    const char = text[i]
+    const char = text[i];
     if (inQuotes) {
       if (char === '"') {
-        const next = text[i + 1]
+        const next = text[i + 1];
         if (next === '"') {
-          field += '"'
-          i++ // skip the escaped quote
+          field += '"';
+          i++; // skip the escaped quote
         } else {
-          inQuotes = false
+          inQuotes = false;
         }
       } else {
-        field += char
+        field += char;
       }
     } else {
       if (char === '"') {
-        inQuotes = true
-      } else if (char === ',') {
-        row.push(field)
-        field = ''
-      } else if (char === '\n') {
-        row.push(field)
-        rows.push(row)
-        row = []
-        field = ''
-      } else if (char === '\r') {
+        inQuotes = true;
+      } else if (char === ",") {
+        row.push(field);
+        field = "";
+      } else if (char === "\n") {
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = "";
+      } else if (char === "\r") {
         // ignore
       } else {
-        field += char
+        field += char;
       }
     }
   }
   // push last field/row if any
   if (field.length > 0 || row.length > 0) {
-    row.push(field)
-    rows.push(row)
+    row.push(field);
+    rows.push(row);
   }
-  return rows
+  return rows;
 }
 
-const csvRows = parseCSV(csvRaw)
-const header = csvRows[0] || []
-const idxSet = header.indexOf('Set of Rules')
-const idxinForceFrom = header.indexOf('In Force From')
-const idxColdId = header.indexOf('CoLD ID')
+const csvRows = parseCSV(csvRaw);
+const header = csvRows[0] || [];
+const idxSet = header.indexOf("Set of Rules");
+const idxinForceFrom = header.indexOf("In Force From");
+const idxColdId = header.indexOf("CoLD ID");
 
 const rows: Row[] = (csvRows.slice(1) || [])
   .map((r) => {
     const get = (idx: number) =>
-      idx >= 0 && r[idx] != null ? String(r[idx]).trim() : ''
-    const sanitize = (v: string) => (v === 'NA' ? '' : v)
+      idx >= 0 && r[idx] != null ? String(r[idx]).trim() : "";
+    const sanitize = (v: string) => (v === "NA" ? "" : v);
     return {
       setofRules: sanitize(get(idxSet)),
       inForceFrom: sanitize(get(idxinForceFrom)),
       coldId: sanitize(get(idxColdId)),
-    }
+    };
   })
-  .filter((r) => r.setofRules || r.inForceFrom || r.coldId)
+  .filter((r) => r.setofRules || r.inForceFrom || r.coldId);
 
 // Dynamically size the first column (Set of Rules) to the longest string
-const setColWidth = ref<string>('125px')
+const setColWidth = ref<string>("125px");
 
 function computeSetOfRulesColumnWidth() {
-  if (typeof window === 'undefined') return
+  if (typeof window === "undefined") return;
   try {
     // Create a temp element to capture the font used by result-value-small
-    const temp = document.createElement('span')
-    temp.className = 'result-value-small'
-    temp.style.visibility = 'hidden'
-    temp.style.position = 'absolute'
-    temp.style.whiteSpace = 'nowrap'
-    document.body.appendChild(temp)
-    const cs = getComputedStyle(temp)
-    document.body.removeChild(temp)
+    const temp = document.createElement("span");
+    temp.className = "result-value-small";
+    temp.style.visibility = "hidden";
+    temp.style.position = "absolute";
+    temp.style.whiteSpace = "nowrap";
+    document.body.appendChild(temp);
+    const cs = getComputedStyle(temp);
+    document.body.removeChild(temp);
 
-    const canvas = document.createElement('canvas')
-    const ctx = canvas.getContext('2d')
-    if (!ctx) return
-    ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    ctx.font = `${cs.fontWeight} ${cs.fontSize} ${cs.fontFamily}`;
 
-    let max = 0
+    let max = 0;
     for (const r of rows) {
-      const text = r.setofRules || ''
-      const m = ctx.measureText(text)
-      max = Math.max(max, m.width)
+      const text = r.setofRules || "";
+      const m = ctx.measureText(text);
+      max = Math.max(max, m.width);
     }
     // Add padding/gutter allowance and a small buffer
-    const px = Math.ceil(max + 28)
-    setColWidth.value = `${px}px`
-  } catch (_) {
-    setColWidth.value = '225px'
+    const px = Math.ceil(max + 28);
+    setColWidth.value = `${px}px`;
+  } catch {
+    setColWidth.value = "225px";
   }
 }
 
 onMounted(() => {
-  computeSetOfRulesColumnWidth()
-})
+  computeSetOfRulesColumnWidth();
+});
 </script>
 
 <style scoped>

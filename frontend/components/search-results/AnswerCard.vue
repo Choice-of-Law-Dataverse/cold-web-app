@@ -1,6 +1,6 @@
 <template>
-  <ResultCard :resultData="resultData" cardType="Answers">
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+  <ResultCard :result-data="resultData" card-type="Answers">
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
       <!-- Question section -->
       <div
         :class="[
@@ -8,11 +8,11 @@
           config.gridConfig.question.startColumn,
         ]"
       >
-        <div class="label label-key">{{ getLabel('Question') }}</div>
+        <div class="label label-key">{{ getLabel("Question") }}</div>
         <div
           :class="computeTextClasses('Question', config.valueClassMap.Question)"
         >
-          {{ getValue('Question') }}
+          {{ getValue("Question") }}
         </div>
       </div>
 
@@ -23,12 +23,12 @@
           config.gridConfig.answer.startColumn,
         ]"
       >
-        <div class="label label-key">{{ getLabel('Answer') }}</div>
+        <div class="label label-key">{{ getLabel("Answer") }}</div>
         <div
           :class="
             computeTextClasses(
               'Answer',
-              config.getAnswerClass(resultData.Answer)
+              config.getAnswerClass(resultData.Answer),
             )
           "
         >
@@ -40,7 +40,7 @@
             </ul>
           </template>
           <template v-else>
-            {{ getValue('Answer') }}
+            {{ getValue("Answer") }}
           </template>
         </div>
 
@@ -51,7 +51,7 @@
             :class="
               computeTextClasses(
                 resultData['Last Modified'] ? 'Last Modified' : 'Created',
-                config.valueClassMap['Last Modified']
+                config.valueClassMap['Last Modified'],
               )
             "
           >
@@ -62,34 +62,34 @@
 
       <!-- More Information section -->
       <div
+        v-if="hasMoreInformation"
         :class="[
           config.gridConfig.source.columnSpan,
           config.gridConfig.source.startColumn,
         ]"
-        v-if="hasMoreInformation"
       >
-        <div class="label label-key">{{ getLabel('More Information') }}</div>
+        <div class="label label-key">{{ getLabel("More Information") }}</div>
         <ul class="result-value-small">
           <li v-if="resultData['More Information']">
-            {{ getValue('More Information') }}
+            {{ getValue("More Information") }}
           </li>
           <li v-else-if="resultData['OUP Book Quote']">
-            {{ getValue('OUP Book Quote') }}
+            {{ getValue("OUP Book Quote") }}
           </li>
           <template v-if="hasDomesticValue">
             <template v-if="resultData['Domestic Legal Provisions']">
               <LegalProvisionRenderer
-                renderAsLi
+                render-as-li
                 :value="getValue('Domestic Legal Provisions')"
-                :fallbackData="resultData"
+                :fallback-data="resultData"
               />
             </template>
             <template v-else-if="resultData['Domestic Instruments ID']">
               <LegalProvisionRenderer
-                renderAsLi
-                skipArticle
+                render-as-li
+                skip-article
                 :value="getValue('Domestic Instruments ID')"
-                :fallbackData="resultData"
+                :fallback-data="resultData"
               />
             </template>
             <template v-else>
@@ -120,161 +120,159 @@
 </template>
 
 <script setup>
-import { computed, ref, watch } from 'vue'
-import { useRuntimeConfig } from '#imports'
-import ResultCard from '@/components/search-results/ResultCard.vue'
-import { answerCardConfig } from '@/config/cardConfigs'
-import { literatureCache } from '@/utils/literatureCache'
-import LoadingBar from '@/components/layout/LoadingBar.vue'
-import LegalProvisionRenderer from '@/components/legal/LegalProvisionRenderer.vue'
-import { formatYear } from '@/utils/format'
+import { computed, ref, watch } from "vue";
+import ResultCard from "@/components/search-results/ResultCard.vue";
+import { answerCardConfig } from "@/config/cardConfigs";
+import { literatureCache } from "@/utils/literatureCache";
+import LoadingBar from "@/components/layout/LoadingBar.vue";
+import LegalProvisionRenderer from "@/components/legal/LegalProvisionRenderer.vue";
+import { formatYear } from "@/utils/format";
 
 const props = defineProps({
   resultData: {
     type: Object,
     required: true,
   },
-})
+});
 
-const config = answerCardConfig
-const runtimeConfig = useRuntimeConfig()
+const config = answerCardConfig;
 
 // Replace literatureTitles with an array of objects: { id, title }
-const literatureTitles = ref([])
+const literatureTitles = ref([]);
 
 // Updated function to fetch literature titles for a comma‑separated list of IDs,
 // returns objects with id and title.
 async function fetchLiteratureTitles(idStr) {
-  const ids = idStr.split(',').map((id) => id.trim())
+  const ids = idStr.split(",").map((id) => id.trim());
   const promises = ids.map(async (id) => {
-    if (literatureCache[id]) return { id, title: literatureCache[id] }
+    if (literatureCache[id]) return { id, title: literatureCache[id] };
     try {
       const response = await fetch(`/api/proxy/search/details`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ table: 'Literature', id }),
-      })
-      if (!response.ok) throw new Error('Failed to fetch literature title')
-      const data = await response.json()
-      const title = data['Title']
-      const finalTitle = title && title !== 'NA' ? title : id
-      literatureCache[id] = finalTitle
-      return { id, title: finalTitle }
+        body: JSON.stringify({ table: "Literature", id }),
+      });
+      if (!response.ok) throw new Error("Failed to fetch literature title");
+      const data = await response.json();
+      const title = data["Title"];
+      const finalTitle = title && title !== "NA" ? title : id;
+      literatureCache[id] = finalTitle;
+      return { id, title: finalTitle };
     } catch (err) {
-      console.error('Error fetching literature title:', err)
-      return { id, title: id }
+      console.error("Error fetching literature title:", err);
+      return { id, title: id };
     }
-  })
-  literatureTitles.value = await Promise.all(promises)
+  });
+  literatureTitles.value = await Promise.all(promises);
 }
 
 watch(
-  () => props.resultData['Literature'],
+  () => props.resultData["Literature"],
   (newId) => {
-    if (newId) fetchLiteratureTitles(newId)
+    if (newId) fetchLiteratureTitles(newId);
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 const domesticValue = computed(() => {
-  if (props.resultData['Domestic Legal Provisions'] != null) {
-    return getValue('Domestic Legal Provisions')
-  } else if (props.resultData['Domestic Instruments ID'] != null) {
-    return getValue('Domestic Instruments ID')
-  } else if (props.resultData['Literature'] != null) {
-    return literatureTitles.value
+  if (props.resultData["Domestic Legal Provisions"] != null) {
+    return getValue("Domestic Legal Provisions");
+  } else if (props.resultData["Domestic Instruments ID"] != null) {
+    return getValue("Domestic Instruments ID");
+  } else if (props.resultData["Literature"] != null) {
+    return literatureTitles.value;
   } else {
-    return ''
+    return "";
   }
-})
+});
 
 const isLoadingLiterature = computed(() => {
   return (
-    props.resultData['Literature'] != null &&
+    props.resultData["Literature"] != null &&
     (!literatureTitles.value ||
       literatureTitles.value.length === 0 ||
       literatureTitles.value.includes(null))
-  )
-})
+  );
+});
 
 // Computed property to display the number of related cases
 const relatedCasesCount = computed(() => {
-  const links = props.resultData['Court Decisions Link']
-  if (!links) return 0
-  return links.split(',').filter((link) => link.trim() !== '').length
-})
+  const links = props.resultData["Court Decisions Link"];
+  if (!links) return 0;
+  return links.split(",").filter((link) => link.trim() !== "").length;
+});
 
 // Updated computed property for the related court decisions link
 const relatedDecisionsLink = computed(() => {
-  const id = props.resultData['id']
-  return `question/${id}#related-court-decisions`
-})
+  const id = props.resultData["id"];
+  return `question/${id}#related-court-decisions`;
+});
 
 // New computed property to conditionally show domesticValue bullet
 const hasDomesticValue = computed(() => {
   return (
-    props.resultData['Domestic Legal Provisions'] ||
-    props.resultData['Domestic Instruments ID'] ||
-    props.resultData['Literature']
-  )
-})
+    props.resultData["Domestic Legal Provisions"] ||
+    props.resultData["Domestic Instruments ID"] ||
+    props.resultData["Literature"]
+  );
+});
 
 // Update hasMoreInformation to include OUP Book Quote fallback
 const hasMoreInformation = computed(() => {
   return (
-    (props.resultData['More Information'] &&
-      props.resultData['More Information'] !== '') ||
-    (props.resultData['OUP Book Quote'] &&
-      props.resultData['OUP Book Quote'] !== '') ||
+    (props.resultData["More Information"] &&
+      props.resultData["More Information"] !== "") ||
+    (props.resultData["OUP Book Quote"] &&
+      props.resultData["OUP Book Quote"] !== "") ||
     hasDomesticValue.value ||
     relatedCasesCount.value > 0
-  )
-})
+  );
+});
 
 // Last updated value (year only), prefers Last Modified then falls back to Created
 const lastUpdatedDisplay = computed(() => {
-  const raw = props.resultData['Last Modified'] || props.resultData['Created']
-  const y = formatYear(raw)
-  return y ? String(y) : ''
-})
+  const raw = props.resultData["Last Modified"] || props.resultData["Created"];
+  const y = formatYear(raw);
+  return y ? String(y) : "";
+});
 
 // Helper functions to get labels and values with fallbacks
 const getLabel = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
-  return pair?.label || key
-}
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
+  return pair?.label || key;
+};
 
 const getValue = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
-  let value = props.resultData[key]
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
+  const value = props.resultData[key];
 
   // For key "Answer", split by comma if a string contains commas.
-  if (key === 'Answer' && typeof value === 'string' && value.includes(',')) {
-    return value.split(',').map((part) => part.trim())
+  if (key === "Answer" && typeof value === "string" && value.includes(",")) {
+    return value.split(",").map((part) => part.trim());
   }
 
   if (!value && pair?.emptyValueBehavior) {
-    if (pair.emptyValueBehavior.action === 'display') {
-      return pair.emptyValueBehavior.fallback
+    if (pair.emptyValueBehavior.action === "display") {
+      return pair.emptyValueBehavior.fallback;
     }
-    return ''
+    return "";
   }
 
-  return value
-}
+  return value;
+};
 
 // New helper to compute text classes for a field
 const computeTextClasses = (key, baseClass) => {
-  const pair = config.keyLabelPairs.find((p) => p.key === key)
-  const isEmpty = !props.resultData[key] || props.resultData[key] === 'NA'
+  const pair = config.keyLabelPairs.find((p) => p.key === key);
+  const isEmpty = !props.resultData[key] || props.resultData[key] === "NA";
   const emptyClass =
-    isEmpty && pair?.emptyValueBehavior?.action === 'display'
-      ? 'text-gray-300'
-      : ''
-  return [baseClass, 'text-sm leading-relaxed whitespace-pre-line', emptyClass]
-}
+    isEmpty && pair?.emptyValueBehavior?.action === "display"
+      ? "text-gray-300"
+      : "";
+  return [baseClass, "text-sm leading-relaxed whitespace-pre-line", emptyClass];
+};
 </script>
 
 <style scoped>

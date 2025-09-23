@@ -34,8 +34,8 @@
                       ? 'var(--color-label-court-decision)'
                       : 'var(--color-cold-gray)',
               }"
-              class="inline-block w-4 h-4 rounded-full"
-            ></span>
+              class="inline-block h-4 w-4 rounded-full"
+            />
           </template>
           <template v-else>
             <span
@@ -74,19 +74,19 @@ defineProps({
     type: Object,
     required: true,
   },
-})
+});
 
 // Function to return tooltip text based on status and count
-function getTooltipText(status, count) {
+function getTooltipText(status) {
   switch (status) {
-    case 'green':
-      return `Positive Match`
-    case 'red':
-      return `Negative Match`
-    case 'red-x':
-      return `Mismatch`
+    case "green":
+      return `Positive Match`;
+    case "red":
+      return `Negative Match`;
+    case "red-x":
+      return `Mismatch`;
     default:
-      return `Not Applicable`
+      return `Not Applicable`;
   }
 }
 </script>

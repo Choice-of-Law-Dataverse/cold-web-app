@@ -10,7 +10,7 @@
           :alt="`${iso3Left} flag`"
           class="flag-img"
           @error="leftFlagError = true"
-        />
+        >
         <div v-else class="flag-fallback">{{ iso3Left }}</div>
       </div>
 
@@ -21,7 +21,7 @@
           :alt="`${rightIso3} flag`"
           class="flag-img"
           @error="rightFlagError = true"
-        />
+        >
         <div v-else class="flag-fallback">{{ rightIso3 }}</div>
       </div>
     </div>
@@ -47,11 +47,11 @@
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted } from "vue";
 
 const props = defineProps({
-  title: { type: String, default: 'Compare Jurisdictions' },
-  buttonText: { type: String, default: 'Go to comparison' },
+  title: { type: String, default: "Compare Jurisdictions" },
+  buttonText: { type: String, default: "Go to comparison" },
   // Optional: allow overriding the link completely
   buttonLink: { type: String, default: null },
   // ISO3 codes, e.g., 'USA', 'DEU'
@@ -59,37 +59,37 @@ const props = defineProps({
   iso3Right: { type: String, required: true },
   // If true, the right flag/code will be set to the visitor's country (client-side only)
   detectVisitorRight: { type: Boolean, default: false },
-})
+});
 
-const upperLeft = computed(() => (props.iso3Left || '').toUpperCase())
+const upperLeft = computed(() => (props.iso3Left || "").toUpperCase());
 // Right ISO3 can be overridden by visitor detection
-const rightIso3 = ref((props.iso3Right || '').toUpperCase())
+const rightIso3 = ref((props.iso3Right || "").toUpperCase());
 
 const leftFlagUrl = computed(
   () =>
-    `https://choiceoflaw.blob.core.windows.net/assets/flags/${upperLeft.value.toLowerCase()}.svg`
-)
+    `https://choiceoflaw.blob.core.windows.net/assets/flags/${upperLeft.value.toLowerCase()}.svg`,
+);
 const rightFlagUrl = computed(
   () =>
-    `https://choiceoflaw.blob.core.windows.net/assets/flags/${rightIso3.value.toLowerCase()}.svg`
-)
+    `https://choiceoflaw.blob.core.windows.net/assets/flags/${rightIso3.value.toLowerCase()}.svg`,
+);
 
-const leftFlagError = ref(false)
-const rightFlagError = ref(false)
+const leftFlagError = ref(false);
+const rightFlagError = ref(false);
 
 const resolvedButtonLink = computed(() => {
-  if (props.buttonLink) return props.buttonLink
-  if (!upperLeft.value || !rightIso3.value) return '#'
-  return `/jurisdiction-comparison/${upperLeft.value}+${rightIso3.value}`
-})
+  if (props.buttonLink) return props.buttonLink;
+  if (!upperLeft.value || !rightIso3.value) return "#";
+  return `/jurisdiction-comparison/${upperLeft.value}+${rightIso3.value}`;
+});
 
 // Client-side: detect visitor country and set rightIso3
 onMounted(async () => {
-  if (!props.detectVisitorRight) return
+  if (!props.detectVisitorRight) return;
 
   // Using Canada as the default fallback for visitor detection
-  rightIso3.value = 'CAN'
-})
+  rightIso3.value = "CAN";
+});
 </script>
 
 <style scoped>

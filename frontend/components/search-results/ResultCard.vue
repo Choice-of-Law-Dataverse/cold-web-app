@@ -4,19 +4,19 @@
       <template #header>
         <template v-if="cardType === 'Loading'">
           <USkeleton
-            class="h-5 mt-0.5 mb-0.5 w-[100px] rounded-none"
+            class="mb-0.5 mt-0.5 h-5 w-[100px] rounded-none"
             style="background-color: var(--color-cold-gray-alpha)"
           />
         </template>
         <template v-else>
           <BaseCardHeader
             v-if="resultData"
-            :resultData="resultData"
-            :cardType="cardType"
-            :showOpenLink="true"
-            :formattedJurisdiction="formattedJurisdiction"
-            :formattedTheme="formattedTheme"
-            :showSuggestEdit="false"
+            :result-data="resultData"
+            :card-type="cardType"
+            :show-open-link="true"
+            :formatted-jurisdiction="formattedJurisdiction"
+            :formatted-theme="formattedTheme"
+            :show-suggest-edit="false"
           />
         </template>
       </template>
@@ -30,11 +30,11 @@
 </template>
 
 <script setup>
-import { UCard } from '#components'
-import BaseCardHeader from '@/components/ui/BaseCardHeader.vue'
+import { UCard } from "#components";
+import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 
 // Define props
-const props = defineProps({
+defineProps({
   resultData: {
     type: Object,
     required: false, // Changed: no longer required
@@ -54,7 +54,7 @@ const props = defineProps({
     required: false,
     default: () => [],
   },
-})
+});
 </script>
 
 <style scoped>

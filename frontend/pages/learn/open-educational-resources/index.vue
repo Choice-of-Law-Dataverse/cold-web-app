@@ -1,10 +1,10 @@
 <template>
-  <ContentPageLayout :navLinks="learnNavLinks">
+  <ContentPageLayout :nav-links="learnNavLinks">
     <ContentDoc path="/open_educational_resources" />
   </ContentPageLayout>
 </template>
 
 <script setup>
-import ContentPageLayout from '@/components/layout/ContentPageLayout.vue'
-import { learnNavLinks } from '@/config/pageConfigs.js'
+import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
+import { learnNavLinks } from "@/config/pageConfigs.js";
 </script>

@@ -11,7 +11,11 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "start": "nuxt start"
+    "start": "nuxt start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "dependencies": {
     "@nuxt/content": "^2.13.4",
@@ -40,16 +44,18 @@
   },
   "devDependencies": {
     "@iconify-json/material-symbols": "^1.2.37",
+    "@nuxt/eslint": "^1.9.0",
     "@types/node": "^22.x",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.36.0",
-    "eslint-config-prettier": "^9.1.2",
-    "eslint-plugin-prettier": "^5.5.4",
-    "eslint-plugin-vue": "^9.33.0",
+    "eslint-plugin-perfectionist": "^4.15.0",
     "nuxt-purgecss": "^2.0.0",
     "postcss": "^8.5.6",
     "prettier": "^3.6.2",
+    "prettier-plugin-tailwindcss": "^0.6.14",
     "sass-embedded": "^1.93.0",
-    "tailwindcss": "^3.4.17"
+    "tailwindcss": "^3.4.17",
+    "typescript": "^5.9.2",
+    "vue-tsc": "^3.0.7"
   }
 }

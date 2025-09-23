@@ -1,53 +1,53 @@
-import { computed, type Ref } from 'vue'
-import { useQuery, useQueries } from '@tanstack/vue-query'
-import { useApiClient } from '@/composables/useApiClient'
-import type { TableName } from '~/types/api'
+import { computed, type Ref } from "vue";
+import { useQuery, useQueries } from "@tanstack/vue-query";
+import { useApiClient } from "@/composables/useApiClient";
+import type { TableName } from "~/types/api";
 
-const fetchRecordDetails = async (table: TableName, id: string | number) => {
-  const { apiClient } = useApiClient()
-  return await apiClient('/search/details', { body: { table, id } })
+async function fetchRecordDetails<T>(table: TableName, id: string | number) {
+  const { apiClient } = useApiClient();
+  return await apiClient<T>("/search/details", { body: { table, id } });
 }
 
-type Options =
+type Options<T> =
   | Partial<{
-      select: (data: any) => any
+      select: (data: T) => T;
     }>
-  | undefined
+  | undefined;
 
-export function useRecordDetails(
+export function useRecordDetails<T = Record<string, unknown>>(
   table: Ref<TableName>,
   id: Ref<string | number>,
-  { select }: Options = {}
+  { select }: Options<T> = {},
 ) {
   return useQuery({
     queryKey: computed(() => [table.value, id.value]),
-    queryFn: () => fetchRecordDetails(table.value, id.value),
+    queryFn: () => fetchRecordDetails<T>(table.value, id.value),
     enabled: computed(() => Boolean(table.value && id.value)),
     select,
-  })
+  });
 }
 
-export function useRecordDetailsList(
+export function useRecordDetailsList<T = Record<string, unknown>>(
   table: Ref<TableName>,
   ids: Ref<Array<string | number>>,
-  { select }: Options = {}
+  { select }: Options<T> = {},
 ) {
   const queries = computed(() => {
-    const list = ids.value || []
+    const list = ids.value || [];
     return list.map((id) => ({
       queryKey: [table.value, id],
-      queryFn: () => fetchRecordDetails(table.value, id),
+      queryFn: () => fetchRecordDetails<T>(table.value, id),
       enabled: Boolean(table.value && id),
-      select,
-    }))
-  })
+      ...(select && { select }),
+    }));
+  });
 
-  const results = useQueries({ queries })
+  const results = useQueries({ queries });
 
-  const data = computed(() => results.value.map((r) => r.data))
-  const isLoading = computed(() => results.value.some((r) => r.isLoading))
-  const hasError = computed(() => results.value.some((r) => r.isError))
-  const error = computed(() => results.value.find((r) => r.isError)?.error)
+  const data = computed(() => results.value.map((r) => r.data));
+  const isLoading = computed(() => results.value.some((r) => r.isLoading));
+  const hasError = computed(() => results.value.some((r) => r.isError));
+  const error = computed(() => results.value.find((r) => r.isError)?.error);
 
-  return { data, isLoading, hasError, error }
+  return { data, isLoading, hasError, error };
 }

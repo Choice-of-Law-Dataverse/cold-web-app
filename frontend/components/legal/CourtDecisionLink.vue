@@ -1,7 +1,7 @@
 <template>
   <BaseLegalLink
     :to="`/court-decision/${caseId}`"
-    :class="class"
+    :class="props.class"
     :loading="loading"
     :error="error"
   >
@@ -10,19 +10,19 @@
 </template>
 
 <script setup>
-import BaseLegalLink from '@/components/legal/BaseLegalLink.vue'
-import { useLegalState } from '@/composables/useLegalState.js'
+import BaseLegalLink from "@/components/legal/BaseLegalLink.vue";
+import { useLegalState } from "@/composables/useLegalState.js";
 
-defineProps({
+const props = defineProps({
   caseId: {
     type: String,
     required: true,
   },
   class: {
     type: String,
-    default: '',
+    default: "",
   },
-})
+});
 
-const { loading, error } = useLegalState()
+const { loading, error } = useLegalState();
 </script>

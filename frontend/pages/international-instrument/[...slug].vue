@@ -2,19 +2,19 @@
   <div v-if="isEditPage">
     <BaseDetailLayout
       :loading="loading"
-      :resultData="{}"
-      :keyLabelPairs="[]"
-      :valueClassMap="{}"
-      sourceTable="International Instrument"
-      :hideBackButton="true"
-      headerMode="new"
+      :result-data="{}"
+      :key-label-pairs="[]"
+      :value-class-map="{}"
+      source-table="International Instrument"
+      :hide-back-button="true"
+      header-mode="new"
+      :show-notification-banner="true"
+      :notification-banner-message="notificationBannerMessage"
+      :icon="'i-material-symbols:warning-outline'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
-      :showNotificationBanner="true"
-      :notificationBannerMessage="notificationBannerMessage"
-      :icon="'i-material-symbols:warning-outline'"
     >
-      <div class="section-gap p-0 m-0">
+      <div class="section-gap m-0 p-0">
         <UFormGroup size="lg" hint="Required" :error="errors.name">
           <template #label>
             <span class="label">Name</span>
@@ -33,7 +33,7 @@
           <div
             v-for="(specialist, idx) in specialists"
             :key="idx"
-            class="flex items-center mt-2"
+            class="mt-2 flex items-center"
           >
             <UInput
               v-model="specialists[idx]"
@@ -46,8 +46,8 @@
               color="red"
               variant="ghost"
               class="ml-2"
-              @click="removeSpecialist(idx)"
               aria-label="Remove specialist"
+              @click="removeSpecialist(idx)"
             />
           </div>
           <template v-for="(specialist, idx) in specialists">
@@ -111,17 +111,17 @@
       :email="email"
       :comments="comments"
       :token="token"
-      :saveModalErrors="saveModalErrors"
+      :save-modal-errors="saveModalErrors"
       :name="name"
       :specialists="specialists"
       :date="date"
-      :pdfFile="pdfFile"
+      :pdf-file="pdfFile"
       :link="link"
-      :instrumentId="instrumentApiId"
+      :instrument-id="instrumentApiId"
       @update:email="(val) => (email = val)"
       @update:comments="(val) => (comments = val)"
       @update:token="(val) => (token = val)"
-      @update:saveModalErrors="(val) => (saveModalErrors.value = val)"
+      @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
       @save="handleEditSave"
     />
   </div>
@@ -129,62 +129,61 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { z } from 'zod'
-import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import InfoPopover from '~/components/ui/InfoPopover.vue'
-import DatePicker from '@/components/ui/DatePicker.vue'
-import CancelModal from '@/components/ui/CancelModal.vue'
-import SaveModal from '@/components/ui/SaveModal.vue'
-import tooltipInternationalInstrumentSpecialist from '@/content/info_boxes/international_instrument/specialists.md?raw'
-import tooltipInternationalInstrumentDate from '@/content/info_boxes/international_instrument/date.md?raw'
-import tooltipInternationalInstrumentLink from '@/content/info_boxes/international_instrument/link.md?raw'
-import { format, parseISO } from 'date-fns'
-import { useHead } from '#imports'
+import { ref, computed, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { z } from "zod";
+import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import InfoPopover from "~/components/ui/InfoPopover.vue";
+import DatePicker from "@/components/ui/DatePicker.vue";
+import CancelModal from "@/components/ui/CancelModal.vue";
+import SaveModal from "@/components/ui/SaveModal.vue";
+import tooltipInternationalInstrumentSpecialist from "@/content/info_boxes/international_instrument/specialists.md?raw";
+import tooltipInternationalInstrumentDate from "@/content/info_boxes/international_instrument/date.md?raw";
+import tooltipInternationalInstrumentLink from "@/content/info_boxes/international_instrument/link.md?raw";
+import { format, parseISO } from "date-fns";
+import { useHead } from "#imports";
 
-const route = useRoute()
-const router = useRouter()
+const route = useRoute();
+const router = useRouter();
 const isEditPage = computed(() => {
-  const slug = route.params.slug
-  return Array.isArray(slug) && slug.length === 2 && slug[1] === 'edit'
-})
+  const slug = route.params.slug;
+  return Array.isArray(slug) && slug.length === 2 && slug[1] === "edit";
+});
 const instrumentId = computed(() => {
-  const slug = route.params.slug
-  return Array.isArray(slug) ? slug[0] : null
-})
+  const slug = route.params.slug;
+  return Array.isArray(slug) ? slug[0] : null;
+});
 
-const loading = ref(true)
-const name = ref('')
-const link = ref('')
-const specialists = ref([''])
-const pdfFile = ref(null)
-const pdfFileName = ref('')
-const date = ref(new Date())
-const email = ref('')
-const comments = ref('')
-const token = ref('')
-const turnstile = ref()
-const errors = ref({})
-const saveModalErrors = ref({})
-const showSaveModal = ref(false)
-const showCancelModal = ref(false)
+const loading = ref(true);
+const name = ref("");
+const link = ref("");
+const specialists = ref([""]);
+const pdfFile = ref(null);
+const pdfFileName = ref("");
+const date = ref(new Date());
+const email = ref("");
+const comments = ref("");
+const token = ref("");
+const errors = ref({});
+const saveModalErrors = ref({});
+const showSaveModal = ref(false);
+const showCancelModal = ref(false);
 const notificationBannerMessage =
-  'Please back up your data when working here. Closing or reloading this window will delete everything. Data is only saved after you submit.'
-const instrumentApiId = ref(null)
+  "Please back up your data when working here. Closing or reloading this window will delete everything. Data is only saved after you submit.";
+const instrumentApiId = ref(null);
 
 const formSchema = z.object({
   name: z
     .string()
-    .min(1, { message: 'Name is required' })
-    .min(3, { message: 'Name must be at least 3 characters long' }),
+    .min(1, { message: "Name is required" })
+    .min(3, { message: "Name must be at least 3 characters long" }),
   specialists: z.array(z.string()).optional(),
   link: z
     .string()
     .url({ message: 'Link must be a valid URL. It must start with "https://"' })
     .optional()
-    .or(z.literal('')),
-})
+    .or(z.literal("")),
+});
 
 function validateForm() {
   try {
@@ -192,100 +191,100 @@ function validateForm() {
       name: name.value,
       specialists: specialists.value,
       link: link.value,
-    }
-    formSchema.parse(formData)
-    errors.value = {}
-    return true
+    };
+    formSchema.parse(formData);
+    errors.value = {};
+    return true;
   } catch (error) {
     if (error instanceof z.ZodError) {
-      errors.value = {}
+      errors.value = {};
       error.errors.forEach((err) => {
-        errors.value[err.path[0]] = err.message
-      })
+        errors.value[err.path[0]] = err.message;
+      });
     }
-    return false
+    return false;
   }
 }
 
 function openSaveModal() {
-  const isValid = validateForm()
+  const isValid = validateForm();
   if (isValid) {
-    showSaveModal.value = true
+    showSaveModal.value = true;
   }
 }
 
 function onPdfChange(event) {
-  let file = null
+  let file = null;
   if (event instanceof FileList) {
-    file = event[0] || null
+    file = event[0] || null;
   } else if (event && event.target && event.target.files) {
-    file = event.target.files[0] || null
+    file = event.target.files[0] || null;
   } else if (event && event.files) {
-    file = event.files[0] || null
+    file = event.files[0] || null;
   }
-  pdfFile.value = file
-  pdfFileName.value = file ? file.name : ''
+  pdfFile.value = file;
+  pdfFileName.value = file ? file.name : "";
 }
 
 function addSpecialist() {
-  specialists.value.push('')
+  specialists.value.push("");
 }
 function removeSpecialist(idx) {
-  specialists.value.splice(idx, 1)
+  specialists.value.splice(idx, 1);
 }
 
 function confirmCancel() {
   if (isEditPage.value && instrumentId.value) {
-    router.push(`/international-instrument/${instrumentId.value}`)
+    router.push(`/international-instrument/${instrumentId.value}`);
   } else {
-    router.push('/')
+    router.push("/");
   }
 }
 
 function handleEditSave() {
-  showSaveModal.value = false
+  showSaveModal.value = false;
   router.replace({
-    path: '/confirmation',
+    path: "/confirmation",
     query: {
-      message: 'Thanks, we have received your edit suggestions.',
+      message: "Thanks, we have received your edit suggestions.",
     },
-  })
+  });
 }
 
 // Fetch and prefill data
 async function fetchInstrument() {
-  loading.value = true
+  loading.value = true;
   try {
     if (!instrumentId.value) {
-      loading.value = false
-      return
+      loading.value = false;
+      return;
     }
 
     const response = await fetch(`/api/proxy/search/details`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        table: 'International Instruments',
+        table: "International Instruments",
         id: instrumentId.value,
       }),
-    })
-    const responseText = await response.text()
-    if (!response.ok) throw new Error('Failed to fetch instrument')
-    const data = JSON.parse(responseText)
-    name.value = data['Name'] || data['Title (in English)'] || ''
-    specialists.value = data['Specialists']
-      ? data['Specialists'].split(',').map((s) => s.trim())
-      : ['']
-    date.value = data['Date'] ? parseISO(data['Date']) : new Date()
-    link.value = data['URL'] || ''
-    pdfFileName.value = data['PDF'] || ''
-    instrumentApiId.value = data['ID'] || null
-  } catch (err) {
+    });
+    const responseText = await response.text();
+    if (!response.ok) throw new Error("Failed to fetch instrument");
+    const data = JSON.parse(responseText);
+    name.value = data["Name"] || data["Title (in English)"] || "";
+    specialists.value = data["Specialists"]
+      ? data["Specialists"].split(",").map((s) => s.trim())
+      : [""];
+    date.value = data["Date"] ? parseISO(data["Date"]) : new Date();
+    link.value = data["URL"] || "";
+    pdfFileName.value = data["PDF"] || "";
+    instrumentApiId.value = data["ID"] || null;
+  } catch {
     // Optionally handle error
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
@@ -293,11 +292,11 @@ watch(
   [isEditPage, instrumentId],
   ([edit, id]) => {
     if (edit && id) {
-      fetchInstrument()
+      fetchInstrument();
     }
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 watch(
   [isEditPage, name],
@@ -306,31 +305,31 @@ watch(
       const pageTitle =
         currentName && currentName.trim()
           ? `Edit ${currentName} — CoLD`
-          : 'Edit International Instrument — CoLD'
+          : "Edit International Instrument — CoLD";
       useHead({
         title: pageTitle,
         link: [
           {
-            rel: 'canonical',
+            rel: "canonical",
             href: `https://cold.global${route.fullPath}`,
           },
         ],
         meta: [
           {
-            name: 'description',
+            name: "description",
             content: pageTitle,
           },
         ],
-      })
+      });
     }
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 </script>
 
 <style scoped>
 :deep(.card-header__actions),
-:deep(.card-header [class*='actions']) {
+:deep(.card-header [class*="actions"]) {
   display: none !important;
 }
 </style>
