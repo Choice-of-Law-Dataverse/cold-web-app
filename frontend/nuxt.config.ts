@@ -23,7 +23,6 @@ export default defineNuxtConfig({
     "@nuxt/icon",
     "@nuxt/content",
     "nuxt-purgecss",
-    "nuxt-plotly",
     "@nuxtjs/robots",
     "@nuxtjs/sitemap",
     "@nuxt/scripts",
@@ -83,9 +82,7 @@ export default defineNuxtConfig({
     configPath: "./tailwind.config.js",
   },
   vite: {
-    optimizeDeps: {
-      include: ["plotly.js-dist-min"],
-    },
+    // Remove plotly from optimizeDeps since we're dynamically importing it
   },
   app: {
     head: {

@@ -37,7 +37,7 @@
     "mitt": "^3.0.1",
     "nuxt": "^3.19.2",
     "nuxt-gtag": "^3.0.3",
-    "nuxt-plotly": "^1.0.14",
+    "plotly.js-dist-min": "^3.1.0",
     "v-calendar": "^3.1.2",
     "vue": "^3.5.21",
     "zod": "^3.25.76"

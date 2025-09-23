@@ -99,7 +99,7 @@
         </GridItem>
 
         <GridItem :md-cols="8">
-          <PlotCourtDecisionsJurisdiction />
+          <ClientOnlyPlotCourtDecisions />
         </GridItem>
 
         <GridItem :md-cols="4">
@@ -187,7 +187,6 @@ import PopularSearches from "@/components/landing-page/PopularSearches.vue";
 import TopLiteratureThemes from "@/components/landing-page/TopLiteratureThemes.vue";
 import JurisdictionMap from "@/components/landing-page/JurisdictionMap.vue";
 import CountrySelectMenu from "@/components/landing-page/TempJurisdictionPicker.vue";
-import PlotCourtDecisionsJurisdiction from "@/components/landing-page/PlotCourtDecisionsJurisdiction.vue";
 import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
@@ -197,6 +196,10 @@ import SuccessfulLegalTransplantations from "@/components/landing-page/Successfu
 import LeadingCases from "@/components/landing-page/LeadingCases.vue";
 import { useHead } from "#imports";
 import ImportantQuestions from "~/components/landing-page/ImportantQuestions.vue";
+
+const PlotCourtDecisionsJurisdiction = defineAsyncComponent(() => 
+  import("@/components/landing-page/PlotCourtDecisionsJurisdiction.vue")
+);
 import GridContainer from "@/components/layout/GridContainer.vue";
 import GridItem from "@/components/layout/GridItem.vue";
 const links = externalLinks;
