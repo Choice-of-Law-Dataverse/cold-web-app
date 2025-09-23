@@ -36,30 +36,29 @@ const props = defineProps({
   },
 })
 
+const excludedValues = new Set(['na', 'not found', 'n/a'])
+
 // Compute unique IDs and fetch titles via composable
 const decisionIds = computed(() => {
   const items = Array.isArray(props.value) ? props.value : [props.value]
-  const s = new Set(items.filter(Boolean))
-  return Array.from(s)
+  const filtered = items.filter(Boolean)
+  const unique = [...new Set(filtered)]
+  return unique
 })
 
 const { data: decisions } = useRecordDetailsList(
   computed(() => 'Court Decisions'),
-  decisionIds
+  decisionIds,
 )
 
 const caseTitles = computed(() => {
   const map = {}
-  decisionIds.value.forEach((id) => {
-    const rec = decisions.value?.[id] || {}
-    const titleCandidate = rec['Case Title']
-    const finalTitle =
-      titleCandidate &&
-      titleCandidate !== 'NA' &&
-      titleCandidate !== 'Not found'
-        ? titleCandidate
-        : rec['Case Citation'] || String(id)
-    map[id] = finalTitle
+  if (!decisions.value) return map
+  
+  decisions.value.forEach((rec) => {
+    if (!rec) return
+    const options = [rec['Case Title'], rec['Case Citation'], rec.id]
+    map[rec.id] = options.filter(t => t && !excludedValues.has(t.toLowerCase()))[0]
   })
   return map
 })
