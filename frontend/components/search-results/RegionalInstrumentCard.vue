@@ -11,7 +11,7 @@
           config.gridConfig.abbreviation.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Abbreviation') }}</div>
+        <div class="label-key">{{ getLabel("Abbreviation") }}</div>
         <div
           :class="[
             config.valueClassMap['Abbreviation'],
@@ -24,7 +24,7 @@
               : '',
           ]"
         >
-          {{ getValue('Abbreviation') }}
+          {{ getValue("Abbreviation") }}
         </div>
       </div>
 
@@ -36,9 +36,9 @@
             config.gridConfig.date.startColumn,
           ]"
         >
-          <div class="label-key">{{ getLabel('Date') }}</div>
+          <div class="label-key">{{ getLabel("Date") }}</div>
           <div :class="[config.valueClassMap['Date']]">
-            {{ format.formatDate(getValue('Date')) }}
+            {{ format.formatDate(getValue("Date")) }}
           </div>
         </div>
       </template>
@@ -51,7 +51,7 @@
             config.gridConfig.title.startColumn,
           ]"
         >
-          <div class="label-key">{{ getLabel('Title') }}</div>
+          <div class="label-key">{{ getLabel("Title") }}</div>
           <div
             :class="[
               config.valueClassMap['Title'],
@@ -64,7 +64,7 @@
                 : '',
             ]"
           >
-            {{ getValue('Title') }}
+            {{ getValue("Title") }}
           </div>
         </div>
       </template>
@@ -73,49 +73,49 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import ResultCard from '@/components/search-results/ResultCard.vue'
-import { regionalInstrumentCardConfig } from '@/config/cardConfigs'
-import * as format from '@/utils/format'
+import { computed } from "vue";
+import ResultCard from "@/components/search-results/ResultCard.vue";
+import { regionalInstrumentCardConfig } from "@/config/cardConfigs";
+import * as format from "@/utils/format";
 
 const props = defineProps({
   resultData: {
     type: Object,
     required: true,
   },
-})
+});
 
-const config = regionalInstrumentCardConfig
+const config = regionalInstrumentCardConfig;
 
 const processedResultData = computed(() => {
   // If you have a processData function for regional instruments, use it here
-  return props.resultData
-})
+  return props.resultData;
+});
 
 const getLabel = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
-  return pair?.label || key
-}
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
+  return pair?.label || key;
+};
 
 const getValue = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
-  const value = processedResultData.value?.[key]
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
+  const value = processedResultData.value?.[key];
   if (!value && pair?.emptyValueBehavior) {
-    if (pair.emptyValueBehavior.action === 'display') {
-      return pair.emptyValueBehavior.fallback
+    if (pair.emptyValueBehavior.action === "display") {
+      return pair.emptyValueBehavior.fallback;
     }
-    return ''
+    return "";
   }
-  return value
-}
+  return value;
+};
 
 const shouldDisplay = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
   return (
-    pair?.emptyValueBehavior?.action === 'display' ||
+    pair?.emptyValueBehavior?.action === "display" ||
     processedResultData.value?.[key]
-  )
-}
+  );
+};
 </script>
 
 <style scoped>

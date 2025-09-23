@@ -21,7 +21,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed } from "vue";
 
 const props = defineProps({
   items: {
@@ -30,11 +30,11 @@ const props = defineProps({
   },
   valueClassMap: {
     type: String,
-    default: '',
+    default: "",
   },
   defaultClass: {
     type: String,
-    default: 'result-value',
+    default: "result-value",
   },
   isList: {
     type: Boolean,
@@ -43,22 +43,22 @@ const props = defineProps({
   emptyValueBehavior: {
     type: Object,
     default: () => ({
-      action: 'display',
-      fallback: 'N/A',
+      action: "display",
+      fallback: "N/A",
     }),
   },
-})
+});
 
 const hasContent = computed(() => {
   if (Array.isArray(props.items)) {
-    return props.items.length > 0
+    return props.items.length > 0;
   }
-  return props.items && props.items.trim()
-})
+  return props.items && props.items.trim();
+});
 
 const displayValue = computed(() => {
-  if (hasContent.value) return null
-  if (props.emptyValueBehavior.action === 'hide') return null
-  return props.emptyValueBehavior.fallback
-})
+  if (hasContent.value) return null;
+  if (props.emptyValueBehavior.action === "hide") return null;
+  return props.emptyValueBehavior.fallback;
+});
 </script>

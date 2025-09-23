@@ -50,105 +50,105 @@
 </template>
 
 <script setup lang="ts">
-import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
+import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 // Using static CSV downloaded from NocoDB because API does not provide arbitral awards
-import csvRaw from './all-arbitral-awards.csv?raw'
+import csvRaw from "./all-arbitral-awards.csv?raw";
 
 useHead({
-  title: 'Arbitral Awards — CoLD',
-})
+  title: "Arbitral Awards — CoLD",
+});
 
 // Minimal props for BaseDetailLayout to render a blank card with the same layout
-const loading = false
-const resultData = {} as Record<string, unknown>
-const computedKeyLabelPairs: Record<string, unknown>[] = []
-const valueClassMap: Record<string, string> = {}
+const loading = false;
+const resultData = {} as Record<string, unknown>;
+const computedKeyLabelPairs: Record<string, unknown>[] = [];
+const valueClassMap: Record<string, string> = {};
 
 // Columns to display from CSV
 const columns = [
-  { key: 'caseNumber', label: 'Case Number', sortable: true },
-  { key: 'year', label: 'Year', sortable: true },
-  { key: 'seatTown', label: 'Seat (Town)', sortable: true },
-  { key: 'source', label: 'Source', sortable: false },
-  { key: 'open', label: '' },
-]
+  { key: "caseNumber", label: "Case Number", sortable: true },
+  { key: "year", label: "Year", sortable: true },
+  { key: "seatTown", label: "Seat (Town)", sortable: true },
+  { key: "source", label: "Source", sortable: false },
+  { key: "open", label: "" },
+];
 
 type Row = {
-  caseNumber: string
-  year: string
-  seatTown: string
-  source: string
-  coldId: string
-}
+  caseNumber: string;
+  year: string;
+  seatTown: string;
+  source: string;
+  coldId: string;
+};
 
 function parseCSV(text: string): string[][] {
-  const rows: string[][] = []
-  let row: string[] = []
-  let field = ''
-  let inQuotes = false
+  const rows: string[][] = [];
+  let row: string[] = [];
+  let field = "";
+  let inQuotes = false;
 
   for (let i = 0; i < text.length; i++) {
-    const char = text[i]
+    const char = text[i];
     if (inQuotes) {
       if (char === '"') {
-        const next = text[i + 1]
+        const next = text[i + 1];
         if (next === '"') {
-          field += '"'
-          i++ // skip the escaped quote
+          field += '"';
+          i++; // skip the escaped quote
         } else {
-          inQuotes = false
+          inQuotes = false;
         }
       } else {
-        field += char
+        field += char;
       }
     } else {
       if (char === '"') {
-        inQuotes = true
-      } else if (char === ',') {
-        row.push(field)
-        field = ''
-      } else if (char === '\n') {
-        row.push(field)
-        rows.push(row)
-        row = []
-        field = ''
-      } else if (char === '\r') {
+        inQuotes = true;
+      } else if (char === ",") {
+        row.push(field);
+        field = "";
+      } else if (char === "\n") {
+        row.push(field);
+        rows.push(row);
+        row = [];
+        field = "";
+      } else if (char === "\r") {
         // ignore
       } else {
-        field += char
+        field += char;
       }
     }
   }
   // push last field/row if any
   if (field.length > 0 || row.length > 0) {
-    row.push(field)
-    rows.push(row)
+    row.push(field);
+    rows.push(row);
   }
-  return rows
+  return rows;
 }
 
-const csvRows = parseCSV(csvRaw)
-const header = csvRows[0] || []
-const idxCase = header.indexOf('Case Number')
-const idxYear = header.indexOf('Year')
-const idxSeat = header.indexOf('Seat (Town)')
-const idxSource = header.indexOf('Source')
-const idxColdId = header.indexOf('CoLD ID')
+const csvRows = parseCSV(csvRaw);
+const header = csvRows[0] || [];
+const idxCase = header.indexOf("Case Number");
+const idxYear = header.indexOf("Year");
+const idxSeat = header.indexOf("Seat (Town)");
+const idxSource = header.indexOf("Source");
+const idxColdId = header.indexOf("CoLD ID");
 
 const rows: Row[] = (csvRows.slice(1) || [])
   .map((r) => {
     const get = (idx: number) =>
-      idx >= 0 && r[idx] != null ? String(r[idx]).trim() : ''
-    const sanitize = (v: string) => (v === 'NA' ? '' : v)
+      idx >= 0 && r[idx] != null ? String(r[idx]).trim() : "";
+    const sanitize = (v: string) => (v === "NA" ? "" : v);
     return {
       caseNumber: sanitize(get(idxCase)),
       year: sanitize(get(idxYear)),
       seatTown: sanitize(get(idxSeat)),
       source: sanitize(get(idxSource)),
       coldId: sanitize(get(idxColdId)),
-    }
+    };
   })
-  .filter((r) => r.caseNumber || r.year || r.seatTown || r.source || r.coldId)
+  .filter((r) => r.caseNumber || r.year || r.seatTown || r.source || r.coldId);
 </script>
 
 <style scoped>

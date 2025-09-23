@@ -30,8 +30,8 @@
 </template>
 
 <script setup>
-import { UCard } from '#components'
-import BaseCardHeader from '@/components/ui/BaseCardHeader.vue'
+import { UCard } from "#components";
+import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 
 // Define props
 defineProps({
@@ -54,7 +54,7 @@ defineProps({
     required: false,
     default: () => [],
   },
-})
+});
 </script>
 
 <style scoped>

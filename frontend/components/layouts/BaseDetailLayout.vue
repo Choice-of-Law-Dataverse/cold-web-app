@@ -34,39 +34,39 @@
 </template>
 
 <script setup lang="ts">
-import DetailDisplay from '@/components/ui/BaseDetailDisplay.vue'
+import DetailDisplay from "@/components/ui/BaseDetailDisplay.vue";
 
 const props = withDefaults(
   defineProps<{
-    loading: boolean
-    resultData: Record<string, unknown>
-    keyLabelPairs: Record<string, unknown>[]
-    valueClassMap: Record<string, string>
-    sourceTable: string
-    formattedJurisdiction?: Record<string, unknown>[]
-    hideBackButton?: boolean
-    showHeader?: boolean
-    formattedTheme?: Record<string, unknown>[]
-    headerMode?: string
-    showNotificationBanner?: boolean
-    notificationBannerMessage?: string
-    fallbackMessage?: string
-    icon?: string
-    showOpenLink?: boolean
-    showSuggestEdit?: boolean
+    loading: boolean;
+    resultData: Record<string, unknown>;
+    keyLabelPairs: Record<string, unknown>[];
+    valueClassMap: Record<string, string>;
+    sourceTable: string;
+    formattedJurisdiction?: Record<string, unknown>[];
+    hideBackButton?: boolean;
+    showHeader?: boolean;
+    formattedTheme?: Record<string, unknown>[];
+    headerMode?: string;
+    showNotificationBanner?: boolean;
+    notificationBannerMessage?: string;
+    fallbackMessage?: string;
+    icon?: string;
+    showOpenLink?: boolean;
+    showSuggestEdit?: boolean;
   }>(),
   {
     formattedJurisdiction: () => [],
     showHeader: true,
     formattedTheme: () => [],
-    headerMode: 'default',
-    notificationBannerMessage: '',
-    fallbackMessage: '',
-    icon: '',
+    headerMode: "default",
+    notificationBannerMessage: "",
+    fallbackMessage: "",
+    icon: "",
     showOpenLink: false,
     showSuggestEdit: false,
-  }
-)
+  },
+);
 
-defineEmits(['save', 'open-save-modal', 'open-cancel-modal'])
+defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 </script>

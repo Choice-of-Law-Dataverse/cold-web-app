@@ -112,12 +112,12 @@
             <InfoPopover
               v-if="
                 computedKeyLabelPairs.find(
-                  (pair) => pair.key === 'Compatibility'
+                  (pair) => pair.key === 'Compatibility',
                 )?.tooltip
               "
               :text="
                 computedKeyLabelPairs.find(
-                  (pair) => pair.key === 'Compatibility'
+                  (pair) => pair.key === 'Compatibility',
                 )?.tooltip
               "
             />
@@ -160,18 +160,18 @@
           <p class="label mb-[-24px] mt-12 flex flex-row items-center">
             {{
               computedKeyLabelPairs.find(
-                (pair) => pair.key === 'Domestic Legal Provisions'
-              )?.label || 'Selected Provisions'
+                (pair) => pair.key === "Domestic Legal Provisions",
+              )?.label || "Selected Provisions"
             }}
             <InfoPopover
               v-if="
                 computedKeyLabelPairs.find(
-                  (pair) => pair.key === 'Domestic Legal Provisions'
+                  (pair) => pair.key === 'Domestic Legal Provisions',
                 )?.tooltip
               "
               :text="
                 computedKeyLabelPairs.find(
-                  (pair) => pair.key === 'Domestic Legal Provisions'
+                  (pair) => pair.key === 'Domestic Legal Provisions',
                 )?.tooltip
               "
             />
@@ -201,77 +201,77 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import BaseDetailLayout from '@/components/layouts/BaseDetailLayout.vue'
-import LegalProvision from '@/components/legal/LegalProvision.vue'
-import InfoPopover from '~/components/ui/InfoPopover.vue'
-import SectionRenderer from '@/components/legal/SectionRenderer.vue'
-import CompatibleLabel from '@/components/ui/CompatibleLabel.vue'
-import CountryReportLink from '@/components/ui/CountryReportLink.vue'
-import { useRecordDetails } from '@/composables/useRecordDetails'
-import { useDetailDisplay } from '@/composables/useDetailDisplay'
-import { legalInstrumentConfig } from '@/config/pageConfigs'
-import { useHead } from '#imports'
+import { ref, computed, watch } from "vue";
+import { useRoute } from "vue-router";
+import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import LegalProvision from "@/components/legal/LegalProvision.vue";
+import InfoPopover from "~/components/ui/InfoPopover.vue";
+import SectionRenderer from "@/components/legal/SectionRenderer.vue";
+import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
+import CountryReportLink from "@/components/ui/CountryReportLink.vue";
+import { useRecordDetails } from "@/composables/useRecordDetails";
+import { useDetailDisplay } from "@/composables/useDetailDisplay";
+import { legalInstrumentConfig } from "@/config/pageConfigs";
+import { useHead } from "#imports";
 
-const route = useRoute()
-const textType = ref('Full Text of the Provision (English Translation)')
-const hasEnglishTranslation = ref(false)
+const route = useRoute();
+const textType = ref("Full Text of the Provision (English Translation)");
+const hasEnglishTranslation = ref(false);
 
 // Use TanStack Vue Query for data fetching
-const table = ref('Domestic Instruments')
-const id = ref(route.params.id)
+const table = ref("Domestic Instruments");
+const id = ref(route.params.id);
 
 const { data: legalInstrument, isLoading: loading } = useRecordDetails(
   table,
-  id
-)
+  id,
+);
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   legalInstrument,
-  legalInstrumentConfig
-)
+  legalInstrumentConfig,
+);
 
 const processedLegalInstrument = computed(() => {
   if (!legalInstrument.value) {
-    return null
+    return null;
   }
   return {
     ...legalInstrument.value,
-    'Title (in English)':
-      legalInstrument.value['Title (in English)'] ||
-      legalInstrument.value['Official Title'],
-  }
-})
+    "Title (in English)":
+      legalInstrument.value["Title (in English)"] ||
+      legalInstrument.value["Official Title"],
+  };
+});
 
 // Set dynamic page title based on 'Title (in English)'
 watch(
   processedLegalInstrument,
   (newVal) => {
-    if (!newVal) return
-    const titleEn = newVal['Title (in English)']
+    if (!newVal) return;
+    const titleEn = newVal["Title (in English)"];
     const pageTitle =
       titleEn && titleEn.trim()
         ? `${titleEn} — CoLD`
-        : 'Domestic Instrument — CoLD'
+        : "Domestic Instrument — CoLD";
     useHead({
       title: pageTitle,
       link: [
         {
-          rel: 'canonical',
+          rel: "canonical",
           href: `https://cold.global${route.fullPath}`,
         },
       ],
       meta: [
         {
-          name: 'description',
+          name: "description",
           content: pageTitle,
         },
       ],
-    })
+    });
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 /**
  * Returns provision IDs sorted by their "Ranking (Display Order)" value.
@@ -282,101 +282,102 @@ watch(
  *  - If the ranking field is absent or unparsable, we fall back to the original order.
  */
 function getSortedProvisionIds(rawValue) {
-  if (!rawValue) return []
+  if (!rawValue) return [];
   const ids = rawValue
-    .split(',')
+    .split(",")
     .map((s) => s.trim())
-    .filter(Boolean)
+    .filter(Boolean);
 
-  const rankingRaw = processedLegalInstrument.value?.['Ranking (Display Order)']
-  if (!rankingRaw) return ids
+  const rankingRaw =
+    processedLegalInstrument.value?.["Ranking (Display Order)"];
+  if (!rankingRaw) return ids;
 
   // Try a few parsing strategies
-  let rankingMap = {}
+  let rankingMap = {};
   try {
-    if (typeof rankingRaw === 'string') {
+    if (typeof rankingRaw === "string") {
       // Strategy 0: Simple numeric CSV (e.g. "2,1,3") aligned by index to ids
       if (
-        typeof rankingRaw === 'string' &&
+        typeof rankingRaw === "string" &&
         /^(\s*\d+\s*)([,;]\s*\d+\s*)*$/.test(rankingRaw.trim())
       ) {
-        const nums = rankingRaw.split(/[,;]+/).map((n) => Number(n.trim()))
+        const nums = rankingRaw.split(/[,;]+/).map((n) => Number(n.trim()));
         if (nums.length === ids.length) {
           ids.forEach((pid, idx) => {
-            const r = nums[idx]
-            if (!isNaN(r)) rankingMap[pid] = r
-          })
+            const r = nums[idx];
+            if (!isNaN(r)) rankingMap[pid] = r;
+          });
         }
       }
 
       // Try JSON first
       if (
-        rankingRaw.trim().startsWith('{') ||
-        rankingRaw.trim().startsWith('[')
+        rankingRaw.trim().startsWith("{") ||
+        rankingRaw.trim().startsWith("[")
       ) {
-        const parsed = JSON.parse(rankingRaw)
+        const parsed = JSON.parse(rankingRaw);
         if (Array.isArray(parsed)) {
           // If array, assume it is in order already
           parsed.forEach((pid, idx) => {
-            if (typeof pid === 'string') rankingMap[pid] = idx + 1
-          })
-        } else if (parsed && typeof parsed === 'object') {
+            if (typeof pid === "string") rankingMap[pid] = idx + 1;
+          });
+        } else if (parsed && typeof parsed === "object") {
           rankingMap = Object.fromEntries(
             Object.entries(parsed).map(([k, v]) => {
               // Accept either key=provisionId, value=rank OR key=rank, value=provisionId
               if (ids.includes(k) && !isNaN(Number(v))) {
-                return [k, Number(v)]
+                return [k, Number(v)];
               }
               if (ids.includes(String(v)) && !isNaN(Number(k))) {
-                return [String(v), Number(k)]
+                return [String(v), Number(k)];
               }
-              return [k, Number(v)] // fallback
-            })
-          )
+              return [k, Number(v)]; // fallback
+            }),
+          );
         }
       } else {
         // Handle simple delimited patterns: "provA:1,provB:2" or "1:provA,2:provB"
         rankingRaw.split(/[,;]+/).forEach((pair) => {
-          const [a, b] = pair.split(':').map((s) => s && s.trim())
-          if (!a || !b) return
+          const [a, b] = pair.split(":").map((s) => s && s.trim());
+          if (!a || !b) return;
           if (ids.includes(a) && !isNaN(Number(b))) {
-            rankingMap[a] = Number(b)
+            rankingMap[a] = Number(b);
           } else if (ids.includes(b) && !isNaN(Number(a))) {
-            rankingMap[b] = Number(a)
+            rankingMap[b] = Number(a);
           }
-        })
+        });
       }
     } else if (Array.isArray(rankingRaw)) {
       rankingRaw.forEach((pid, idx) => {
-        if (typeof pid === 'string') rankingMap[pid] = idx + 1
-      })
-    } else if (rankingRaw && typeof rankingRaw === 'object') {
+        if (typeof pid === "string") rankingMap[pid] = idx + 1;
+      });
+    } else if (rankingRaw && typeof rankingRaw === "object") {
       rankingMap = Object.fromEntries(
         Object.entries(rankingRaw).map(([k, v]) => {
-          if (ids.includes(k) && !isNaN(Number(v))) return [k, Number(v)]
+          if (ids.includes(k) && !isNaN(Number(v))) return [k, Number(v)];
           if (ids.includes(String(v)) && !isNaN(Number(k)))
-            return [String(v), Number(k)]
-          return [k, Number(v)]
-        })
-      )
+            return [String(v), Number(k)];
+          return [k, Number(v)];
+        }),
+      );
     }
   } catch (e) {
-    console.warn('Failed to parse Ranking (Display Order):', e)
+    console.warn("Failed to parse Ranking (Display Order):", e);
   }
 
   // If we got no usable ranking numbers, keep original order
   const hasNumbers = Object.values(rankingMap).some(
-    (n) => typeof n === 'number' && !isNaN(n)
-  )
-  if (!hasNumbers) return ids
+    (n) => typeof n === "number" && !isNaN(n),
+  );
+  if (!hasNumbers) return ids;
 
   return [...ids].sort((a, b) => {
-    const ra = rankingMap[a]
-    const rb = rankingMap[b]
-    if (ra == null && rb == null) return 0
-    if (ra == null) return 1 // unranked go last
-    if (rb == null) return -1
-    return ra - rb
-  })
+    const ra = rankingMap[a];
+    const rb = rankingMap[b];
+    if (ra == null && rb == null) return 0;
+    if (ra == null) return 1; // unranked go last
+    if (rb == null) return -1;
+    return ra - rb;
+  });
 }
 </script>

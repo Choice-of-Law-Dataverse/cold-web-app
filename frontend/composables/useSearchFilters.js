@@ -1,20 +1,20 @@
-import { ref, computed } from 'vue'
+import { ref, computed } from "vue";
 
 export const useSearchFilters = (initialFilters = {}) => {
-  const currentJurisdictionFilter = ref([])
-  const currentThemeFilter = ref([])
-  const currentTypeFilter = ref([])
-  const selectValue = ref(initialFilters.sortBy || 'relevance')
+  const currentJurisdictionFilter = ref([]);
+  const currentThemeFilter = ref([]);
+  const currentTypeFilter = ref([]);
+  const selectValue = ref(initialFilters.sortBy || "relevance");
 
   const hasActiveFilters = computed(
     () =>
       currentJurisdictionFilter.value.length > 0 ||
       currentThemeFilter.value.length > 0 ||
-      currentTypeFilter.value.length > 0
-  )
+      currentTypeFilter.value.length > 0,
+  );
 
   const parseQueryParam = (param) =>
-    param ? param.split(',').filter(Boolean) : []
+    param ? param.split(",").filter(Boolean) : [];
 
   const buildFilterObject = (jurisdiction, theme, type, sort) => ({
     jurisdiction:
@@ -22,47 +22,47 @@ export const useSearchFilters = (initialFilters = {}) => {
         ? jurisdiction
             .filter(
               (item) =>
-                item !== 'All Jurisdictions' &&
-                item.label !== 'All Jurisdictions'
+                item !== "All Jurisdictions" &&
+                item.label !== "All Jurisdictions",
             )
             .map((item) => item?.label || item)
-            .join(',')
+            .join(",")
         : undefined,
-    theme: theme.length > 0 ? theme.join(',') : undefined,
-    type: type.length > 0 ? type.join(',') : undefined,
-    sortBy: sort || 'relevance',
-  })
+    theme: theme.length > 0 ? theme.join(",") : undefined,
+    type: type.length > 0 ? type.join(",") : undefined,
+    sortBy: sort || "relevance",
+  });
 
   const resetFilters = () => {
-    currentJurisdictionFilter.value = []
-    currentThemeFilter.value = []
-    currentTypeFilter.value = []
-  }
+    currentJurisdictionFilter.value = [];
+    currentThemeFilter.value = [];
+    currentTypeFilter.value = [];
+  };
 
   const syncFiltersFromQuery = (query) => {
-    const { sortBy, jurisdiction, theme, type } = query
+    const { sortBy, jurisdiction, theme, type } = query;
 
     if (sortBy && sortBy !== selectValue.value) {
-      selectValue.value = sortBy
+      selectValue.value = sortBy;
     }
 
-    const newJurisdiction = parseQueryParam(jurisdiction)
-    const newTheme = parseQueryParam(theme)
-    const newType = parseQueryParam(type)
+    const newJurisdiction = parseQueryParam(jurisdiction);
+    const newTheme = parseQueryParam(theme);
+    const newType = parseQueryParam(type);
 
     if (
       JSON.stringify(newJurisdiction) !==
       JSON.stringify(currentJurisdictionFilter.value)
     ) {
-      currentJurisdictionFilter.value = newJurisdiction
+      currentJurisdictionFilter.value = newJurisdiction;
     }
     if (JSON.stringify(newTheme) !== JSON.stringify(currentThemeFilter.value)) {
-      currentThemeFilter.value = newTheme
+      currentThemeFilter.value = newTheme;
     }
     if (JSON.stringify(newType) !== JSON.stringify(currentTypeFilter.value)) {
-      currentTypeFilter.value = newType
+      currentTypeFilter.value = newType;
     }
-  }
+  };
 
   return {
     currentJurisdictionFilter,
@@ -73,5 +73,5 @@ export const useSearchFilters = (initialFilters = {}) => {
     buildFilterObject,
     resetFilters,
     syncFiltersFromQuery,
-  }
-}
+  };
+};

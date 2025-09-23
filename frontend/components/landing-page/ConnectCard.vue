@@ -46,7 +46,7 @@ defineProps({
   subtitle: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
   buttonText: {
     type: String,
@@ -59,12 +59,12 @@ defineProps({
   iconName: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
   imageSrc: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
   newTab: {
     type: Boolean,
@@ -73,9 +73,9 @@ defineProps({
   buttonIcon: {
     type: String,
     required: false,
-    default: '',
+    default: "",
   },
-})
+});
 </script>
 
 <style scoped>

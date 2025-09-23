@@ -17,7 +17,7 @@
 </template>
 
 <script setup>
-import SectionNav from '@/components/layout/SectionNav.vue'
+import SectionNav from "@/components/layout/SectionNav.vue";
 
 defineProps({
   navLinks: {
@@ -29,7 +29,7 @@ defineProps({
     type: Boolean,
     default: false,
   },
-})
+});
 </script>
 
 <style scoped>
@@ -61,7 +61,7 @@ defineProps({
   }
 
   ::v-deep(ol > li::before) {
-    content: counter(list-counter) '. ';
+    content: counter(list-counter) ". ";
     font-weight: bold;
   }
 
@@ -76,7 +76,7 @@ defineProps({
   }
 
   ::v-deep(ol ol > li::before) {
-    content: counter(list-counter) '.' counter(sub-list-counter) '. ';
+    content: counter(list-counter) "." counter(sub-list-counter) ". ";
     font-weight: bold;
   }
 
@@ -91,8 +91,8 @@ defineProps({
   }
 
   ::v-deep(ol ol ol > li::before) {
-    content: counter(list-counter) '.' counter(sub-list-counter) '.'
-      counter(sub-sub-list-counter) '. ';
+    content: counter(list-counter) "." counter(sub-list-counter) "."
+      counter(sub-sub-list-counter) ". ";
     font-weight: bold;
   }
 
@@ -107,8 +107,8 @@ defineProps({
   }
 
   ::v-deep(ol ol ol ol > li::before) {
-    content: counter(list-counter) '.' counter(sub-list-counter) '.'
-      counter(sub-sub-list-counter) '.' counter(sub-sub-sub-list-counter) '. ';
+    content: counter(list-counter) "." counter(sub-list-counter) "."
+      counter(sub-sub-list-counter) "." counter(sub-sub-sub-list-counter) ". ";
     font-weight: bold;
   }
 }

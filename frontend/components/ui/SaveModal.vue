@@ -77,8 +77,8 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
-import { z } from 'zod'
+import { ref, watch } from "vue";
+import { z } from "zod";
 
 const props = defineProps({
   modelValue: { type: Boolean, required: true },
@@ -94,179 +94,179 @@ const props = defineProps({
     type: [String, Number],
     default: null,
   },
-  link: { type: String, required: false, default: '' },
+  link: { type: String, required: false, default: "" },
   // New preferred keys for contact info
   submitterEmail: { type: String, required: false, default: undefined },
   submitterComments: { type: String, required: false, default: undefined },
-})
+});
 const emit = defineEmits([
-  'update:modelValue',
-  'update:email',
-  'update:comments',
-  'update:submitter_email',
-  'update:submitter_comments',
-  'update:token',
-  'update:saveModalErrors',
-  'update:link',
-  'save',
-  'update:submitterEmail',
-  'update:submitterComments',
-])
+  "update:modelValue",
+  "update:email",
+  "update:comments",
+  "update:submitter_email",
+  "update:submitter_comments",
+  "update:token",
+  "update:saveModalErrors",
+  "update:link",
+  "save",
+  "update:submitterEmail",
+  "update:submitterComments",
+]);
 
-const modelValueProxy = ref(props.modelValue)
+const modelValueProxy = ref(props.modelValue);
 // Prefer new keys if provided, fallback to legacy
-const emailProxy = ref(props.submitterEmail ?? props.email)
-const commentsProxy = ref(props.submitterComments ?? props.comments)
-const tokenProxy = ref(props.token)
-const saveModalErrorsProxy = ref({ ...props.saveModalErrors })
-const linkProxy = ref(props.link)
+const emailProxy = ref(props.submitterEmail ?? props.email);
+const commentsProxy = ref(props.submitterComments ?? props.comments);
+const tokenProxy = ref(props.token);
+const saveModalErrorsProxy = ref({ ...props.saveModalErrors });
+const linkProxy = ref(props.link);
 
 watch(
   () => props.modelValue,
   (val) => {
-    modelValueProxy.value = val
-  }
-)
+    modelValueProxy.value = val;
+  },
+);
 watch(modelValueProxy, (val) => {
-  emit('update:modelValue', val)
-})
+  emit("update:modelValue", val);
+});
 
 watch(
   () => [props.submitterEmail, props.email],
   ([newEmail, legacyEmail]) => {
-    emailProxy.value = newEmail ?? legacyEmail
-  }
-)
+    emailProxy.value = newEmail ?? legacyEmail;
+  },
+);
 watch(emailProxy, (val) => {
-  emit('update:submitterEmail', val)
-  emit('update:email', val)
-})
+  emit("update:submitterEmail", val);
+  emit("update:email", val);
+});
 
 watch(
   () => [props.submitterComments, props.comments],
   ([newVal, legacyVal]) => {
-    commentsProxy.value = newVal ?? legacyVal
-  }
-)
+    commentsProxy.value = newVal ?? legacyVal;
+  },
+);
 watch(commentsProxy, (val) => {
-  emit('update:submitterComments', val)
-  emit('update:comments', val)
-})
+  emit("update:submitterComments", val);
+  emit("update:comments", val);
+});
 
 watch(
   () => props.token,
   (val) => {
-    tokenProxy.value = val
-  }
-)
+    tokenProxy.value = val;
+  },
+);
 watch(tokenProxy, (val) => {
-  emit('update:token', val)
-})
+  emit("update:token", val);
+});
 
 watch(
   () => props.saveModalErrors,
   (val) => {
-    saveModalErrorsProxy.value = { ...val }
-  }
-)
+    saveModalErrorsProxy.value = { ...val };
+  },
+);
 watch(saveModalErrorsProxy, (val) => {
-  emit('update:saveModalErrors', val)
-})
+  emit("update:saveModalErrors", val);
+});
 
 watch(
   () => props.link,
   (val) => {
-    linkProxy.value = val
-  }
-)
+    linkProxy.value = val;
+  },
+);
 watch(linkProxy, (val) => {
-  emit('update:link', val)
-})
+  emit("update:link", val);
+});
 
 // Validation schema for SaveModal
 const saveModalSchema = z.object({
   submitterEmail: z
     .string()
-    .min(1, { message: 'Email is required' })
-    .email({ message: 'Please enter a valid email address' }),
+    .min(1, { message: "Email is required" })
+    .email({ message: "Please enter a valid email address" }),
   submitterComments: z.string().optional(),
-})
+});
 
 function validateSaveModal() {
   try {
     const modalData = {
       submitterEmail: emailProxy.value,
       submitterComments: commentsProxy.value,
-    }
-    saveModalSchema.parse(modalData)
-    saveModalErrorsProxy.value = {}
-    return true
+    };
+    saveModalSchema.parse(modalData);
+    saveModalErrorsProxy.value = {};
+    return true;
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errors = {}
+      const errors = {};
       error.errors.forEach((err) => {
-        errors[err.path[0]] = err.message
-      })
-      saveModalErrorsProxy.value = errors
+        errors[err.path[0]] = err.message;
+      });
+      saveModalErrorsProxy.value = errors;
     }
-    return false
+    return false;
   }
 }
 
 function onSave() {
   // Delegate submission to parent (new.vue). Validation was already performed here.
-  emit('save')
+  emit("save");
 }
 
 watch(
   () => props.modelValue,
   (val) => {
-    modelValueProxy.value = val
-  }
-)
+    modelValueProxy.value = val;
+  },
+);
 watch(modelValueProxy, (val) => {
-  emit('update:modelValue', val)
-})
+  emit("update:modelValue", val);
+});
 
 watch(
   () => [props.submitterEmail, props.email],
   ([newEmail, legacyEmail]) => {
-    emailProxy.value = newEmail ?? legacyEmail
-  }
-)
+    emailProxy.value = newEmail ?? legacyEmail;
+  },
+);
 watch(emailProxy, (val) => {
-  emit('update:submitterEmail', val)
-  emit('update:email', val)
-})
+  emit("update:submitterEmail", val);
+  emit("update:email", val);
+});
 
 watch(
   () => [props.submitterComments, props.comments],
   ([newVal, legacyVal]) => {
-    commentsProxy.value = newVal ?? legacyVal
-  }
-)
+    commentsProxy.value = newVal ?? legacyVal;
+  },
+);
 watch(commentsProxy, (val) => {
-  emit('update:submitterComments', val)
-  emit('update:comments', val)
-})
+  emit("update:submitterComments", val);
+  emit("update:comments", val);
+});
 
 watch(
   () => props.token,
   (val) => {
-    tokenProxy.value = val
-  }
-)
+    tokenProxy.value = val;
+  },
+);
 watch(tokenProxy, (val) => {
-  emit('update:token', val)
-})
+  emit("update:token", val);
+});
 
 function closeModal() {
-  modelValueProxy.value = false
+  modelValueProxy.value = false;
 }
 function handleSubmit() {
   if (validateSaveModal()) {
-    onSave()
-    closeModal()
+    onSave();
+    closeModal();
   }
 }
 </script>

@@ -27,26 +27,26 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
-import { ref } from 'vue'
-import eventBus from '@/eventBus'
+import { useRouter } from "vue-router";
+import { ref } from "vue";
+import eventBus from "@/eventBus";
 
-const router = useRouter()
+const router = useRouter();
 
 const searchSuggestions = ref([
-  'Tacit Choice in Argentina',
-  'Party Autonomy in Switzerland',
-])
+  "Tacit Choice in Argentina",
+  "Party Autonomy in Switzerland",
+]);
 
 function handleSuggestionClick(suggestion) {
   // Emit an event to update the search input
-  eventBus.emit('update-search', suggestion)
+  eventBus.emit("update-search", suggestion);
 
   // Pass the query directly with spaces
   router.push({
-    name: 'search',
+    name: "search",
     query: { q: suggestion },
-  })
+  });
 }
 </script>
 

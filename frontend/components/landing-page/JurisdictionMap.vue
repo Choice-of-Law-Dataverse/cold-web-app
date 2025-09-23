@@ -72,37 +72,37 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref } from "vue";
 
-import MapAfrica from '@/components/maps/MapAfrica.vue'
-import MapAllRegions from '@/components/maps/MapAllRegions.vue'
-import MapArabStates from '@/components/maps/MapArabStates.vue'
-import MapAsiaPacific from '@/components/maps/MapAsiaPacific.vue'
-import MapEurope from '@/components/maps/MapEurope.vue'
-import MapMiddleEast from '@/components/maps/MapMiddleEast.vue'
-import MapNorthAmerica from '@/components/maps/MapNorthAmerica.vue'
-import MapSouthLatinAmerica from '@/components/maps/MapSouthLatinAmerica.vue'
+import MapAfrica from "@/components/maps/MapAfrica.vue";
+import MapAllRegions from "@/components/maps/MapAllRegions.vue";
+import MapArabStates from "@/components/maps/MapArabStates.vue";
+import MapAsiaPacific from "@/components/maps/MapAsiaPacific.vue";
+import MapEurope from "@/components/maps/MapEurope.vue";
+import MapMiddleEast from "@/components/maps/MapMiddleEast.vue";
+import MapNorthAmerica from "@/components/maps/MapNorthAmerica.vue";
+import MapSouthLatinAmerica from "@/components/maps/MapSouthLatinAmerica.vue";
 
 // Reactive property to track the selected region
-const selectedRegion = ref('All Regions')
+const selectedRegion = ref("All Regions");
 
 const updateSelectedRegion = (option) => {
-  selectedRegion.value = option.value // Extract the `value` field
-}
+  selectedRegion.value = option.value; // Extract the `value` field
+};
 
 // Options for the USelectMenu
 const regionOptions = [
-  { label: 'All Regions', value: 'All Regions' },
-  { label: 'Africa', value: 'Africa' },
-  { label: 'Arab States', value: 'Arab States' },
-  { label: 'Asia & Pacific', value: 'Asia & Pacific' },
-  { label: 'Europe', value: 'Europe' },
-  { label: 'Middle East', value: 'Middle East' },
-  { label: 'North America', value: 'North America' },
-  { label: 'South & Latin America', value: 'South & Latin America' },
-]
+  { label: "All Regions", value: "All Regions" },
+  { label: "Africa", value: "Africa" },
+  { label: "Arab States", value: "Arab States" },
+  { label: "Asia & Pacific", value: "Asia & Pacific" },
+  { label: "Europe", value: "Europe" },
+  { label: "Middle East", value: "Middle East" },
+  { label: "North America", value: "North America" },
+  { label: "South & Latin America", value: "South & Latin America" },
+];
 
-const isDisclaimerVisible = ref(false)
+const isDisclaimerVisible = ref(false);
 </script>
 
 <style scoped>

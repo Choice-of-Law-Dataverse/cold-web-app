@@ -11,7 +11,7 @@
           config.gridConfig.name.startColumn,
         ]"
       >
-        <div class="label-key">{{ getLabel('Name') }}</div>
+        <div class="label-key">{{ getLabel("Name") }}</div>
         <div
           :class="[
             config.valueClassMap['Name'],
@@ -24,7 +24,7 @@
               : '',
           ]"
         >
-          {{ getValue('Name') }}
+          {{ getValue("Name") }}
         </div>
       </div>
 
@@ -36,9 +36,9 @@
             config.gridConfig.date.startColumn,
           ]"
         >
-          <div class="label-key">{{ getLabel('Date') }}</div>
+          <div class="label-key">{{ getLabel("Date") }}</div>
           <div :class="[config.valueClassMap['Date']]">
-            {{ format.formatDate(getValue('Date')) }}
+            {{ format.formatDate(getValue("Date")) }}
           </div>
         </div>
       </template>
@@ -47,49 +47,49 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import ResultCard from '@/components/search-results/ResultCard.vue'
-import { internationalInstrumentCardConfig } from '@/config/cardConfigs'
-import * as format from '@/utils/format.js'
+import { computed } from "vue";
+import ResultCard from "@/components/search-results/ResultCard.vue";
+import { internationalInstrumentCardConfig } from "@/config/cardConfigs";
+import * as format from "@/utils/format.js";
 
 const props = defineProps({
   resultData: {
     type: Object,
     required: true,
   },
-})
+});
 
-const config = internationalInstrumentCardConfig
+const config = internationalInstrumentCardConfig;
 
 const processedResultData = computed(() => {
   // If you have a processData function for international instruments, use it here
-  return props.resultData
-})
+  return props.resultData;
+});
 
 const getLabel = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
-  return pair?.label || key
-}
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
+  return pair?.label || key;
+};
 
 const getValue = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
-  const value = processedResultData.value?.[key]
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
+  const value = processedResultData.value?.[key];
   if (!value && pair?.emptyValueBehavior) {
-    if (pair.emptyValueBehavior.action === 'display') {
-      return pair.emptyValueBehavior.fallback
+    if (pair.emptyValueBehavior.action === "display") {
+      return pair.emptyValueBehavior.fallback;
     }
-    return ''
+    return "";
   }
-  return value
-}
+  return value;
+};
 
 const shouldDisplay = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key)
+  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
   return (
-    pair?.emptyValueBehavior?.action === 'display' ||
+    pair?.emptyValueBehavior?.action === "display" ||
     processedResultData.value?.[key]
-  )
-}
+  );
+};
 </script>
 
 <style scoped>

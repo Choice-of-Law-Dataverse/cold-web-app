@@ -60,13 +60,13 @@
 </template>
 
 <script setup>
-import { computed, nextTick, onMounted, ref } from 'vue'
+import { computed, nextTick, onMounted, ref } from "vue";
 
 const props = defineProps({
   title: {
     type: String,
     required: false,
-    default: 'Loading...',
+    default: "Loading...",
   },
   anchorId: {
     type: String,
@@ -74,7 +74,7 @@ const props = defineProps({
   },
   class: {
     type: String,
-    default: '',
+    default: "",
   },
   loading: {
     type: Boolean,
@@ -84,54 +84,54 @@ const props = defineProps({
     type: String,
     default: null,
   },
-})
+});
 
-const customClass = computed(() => props.class || '')
-const displayTitle = computed(() => (props.loading ? '' : props.title || ''))
+const customClass = computed(() => props.class || "");
+const displayTitle = computed(() => (props.loading ? "" : props.title || ""));
 
 // Collapsible state (hidden by default)
-const isOpen = ref(false)
+const isOpen = ref(false);
 const toggleOpen = () => {
-  isOpen.value = !isOpen.value
-}
+  isOpen.value = !isOpen.value;
+};
 
 // Open content when clicking the title (preserve anchor navigation)
 const onTitleClick = () => {
-  isOpen.value = true
-}
+  isOpen.value = true;
+};
 
 // Determine if this is the first provision instance in the container
-const rootEl = ref(null)
-const isFirstProvision = ref(false)
+const rootEl = ref(null);
+const isFirstProvision = ref(false);
 const evaluateIsFirst = () => {
-  const el = rootEl.value
-  const parent = el?.parentElement
+  const el = rootEl.value;
+  const parent = el?.parentElement;
   if (!el || !parent) {
-    isFirstProvision.value = false
-    return
+    isFirstProvision.value = false;
+    return;
   }
   // Find the first BaseLegalContent under the same parent in DOM order
-  const firstBase = parent.querySelector('.base-legal-content')
-  isFirstProvision.value = firstBase === el
-}
+  const firstBase = parent.querySelector(".base-legal-content");
+  isFirstProvision.value = firstBase === el;
+};
 
 const scrollToAnchor = async () => {
-  const hash = window.location.hash.slice(1) // Remove the # symbol
+  const hash = window.location.hash.slice(1); // Remove the # symbol
   if (hash === props.anchorId) {
     // If navigated directly via hash, auto-expand for visibility
-    isOpen.value = true
-    await nextTick()
-    const anchorElement = document.getElementById(hash)
+    isOpen.value = true;
+    await nextTick();
+    const anchorElement = document.getElementById(hash);
     if (anchorElement) {
-      anchorElement.scrollIntoView({ behavior: 'smooth' })
+      anchorElement.scrollIntoView({ behavior: "smooth" });
     }
   }
-}
+};
 
 onMounted(() => {
-  evaluateIsFirst()
-  scrollToAnchor()
-})
+  evaluateIsFirst();
+  scrollToAnchor();
+});
 </script>
 
 <style scoped>

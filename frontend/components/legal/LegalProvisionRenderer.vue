@@ -38,18 +38,18 @@
 </template>
 
 <script setup>
-import { computed, watch } from 'vue'
+import { computed, watch } from "vue";
 import {
   generateLegalProvisionLink,
   parseLegalProvisionLink,
-} from '@/utils/legal'
-import { useRecordDetailsList } from '@/composables/useRecordDetails'
-import LoadingBar from '@/components/layout/LoadingBar.vue'
+} from "@/utils/legal";
+import { useRecordDetailsList } from "@/composables/useRecordDetails";
+import LoadingBar from "@/components/layout/LoadingBar.vue";
 
 const props = defineProps({
   value: {
     type: String,
-    default: '',
+    default: "",
   },
   fallbackData: {
     type: Object,
@@ -69,66 +69,66 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-})
+});
 
 // Compute provision items from props (unchanged logic)
 const provisionItems = computed(() => {
   if (props.value && props.value.trim()) {
-    return props.value.split(',')
+    return props.value.split(",");
   }
   if (
-    props.fallbackData['Legislation-ID'] &&
-    props.fallbackData['Legislation-ID'].trim()
+    props.fallbackData["Legislation-ID"] &&
+    props.fallbackData["Legislation-ID"].trim()
   ) {
-    return props.fallbackData['Legislation-ID'].split(',')
+    return props.fallbackData["Legislation-ID"].split(",");
   }
   if (
-    props.fallbackData['More information'] &&
-    props.fallbackData['More information'].trim()
+    props.fallbackData["More information"] &&
+    props.fallbackData["More information"].trim()
   ) {
-    return [props.fallbackData['More information'].replace(/\n/g, ' ').trim()]
+    return [props.fallbackData["More information"].replace(/\n/g, " ").trim()];
   }
-  return []
-})
+  return [];
+});
 
 // Parse each provision into instrumentId and articleId using parseLegalProvisionLink
 const processedProvisions = computed(() =>
   provisionItems.value.map((item) => {
-    const { instrumentId, articleId } = parseLegalProvisionLink(item)
-    return { raw: item.trim(), instrumentId, articleId }
-  })
-)
+    const { instrumentId, articleId } = parseLegalProvisionLink(item);
+    return { raw: item.trim(), instrumentId, articleId };
+  }),
+);
 
 // Build a list of unique instrument IDs to fetch titles for
 const instrumentIds = computed(() => {
   const unique = new Set(
-    processedProvisions.value.map((p) => p.instrumentId).filter(Boolean)
-  )
-  return Array.from(unique)
-})
+    processedProvisions.value.map((p) => p.instrumentId).filter(Boolean),
+  );
+  return Array.from(unique);
+});
 
 // Fetch full records via composable (Domestic Instruments), pick titles locally
 const { dataMap: recordMap } = useRecordDetailsList(
-  computed(() => 'Domestic Instruments'),
-  instrumentIds
-)
+  computed(() => "Domestic Instruments"),
+  instrumentIds,
+);
 
 const instrumentTitles = computed(() => {
-  const map = {}
+  const map = {};
   instrumentIds.value.forEach((id) => {
-    const rec = recordMap?.value?.[id] || {}
+    const rec = recordMap?.value?.[id] || {};
     const title =
-      rec['Abbreviation'] ||
-      rec['Title (in English)'] ||
-      rec['Title'] ||
-      String(id)
-    map[id] = title
-  })
-  return map
-})
+      rec["Abbreviation"] ||
+      rec["Title (in English)"] ||
+      rec["Title"] ||
+      String(id);
+    map[id] = title;
+  });
+  return map;
+});
 
 const formatArticle = (article) =>
-  article ? article.replace(/(Art\.)(\d+)/, '$1 $2') : ''
+  article ? article.replace(/(Art\.)(\d+)/, "$1 $2") : "";
 
 // Trigger initial computation of IDs
 watch(
@@ -136,8 +136,8 @@ watch(
   () => {
     /* IDs are computed reactively; useRecordDetailsList handles fetching */
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 </script>
 
 <style scoped>

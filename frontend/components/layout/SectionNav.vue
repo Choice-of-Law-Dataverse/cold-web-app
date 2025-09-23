@@ -23,9 +23,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import { aboutNavLinks } from '@/config/pageConfigs.js'
+import { computed } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { aboutNavLinks } from "@/config/pageConfigs.js";
 
 // Accept custom links or use default aboutNavLinks
 const props = defineProps({
@@ -33,21 +33,21 @@ const props = defineProps({
     type: Array,
     default: () => aboutNavLinks,
   },
-})
+});
 
-const links = props.links
-const router = useRouter()
-const route = useRoute()
+const links = props.links;
+const router = useRouter();
+const route = useRoute();
 
 const activeTab = computed(() => {
-  const segment = route.path.split('/').pop()
-  return segment || links[0].key
-})
+  const segment = route.path.split("/").pop();
+  return segment || links[0].key;
+});
 
 // Navigate to the selected link's path
 const setActiveTab = (path) => {
-  router.push(path)
-}
+  router.push(path);
+};
 </script>
 
 <style scoped>
@@ -75,7 +75,7 @@ ul {
 }
 
 ul::before {
-  content: '';
+  content: "";
   position: absolute;
   bottom: 39px;
   left: 0;
@@ -99,7 +99,7 @@ li.active {
 }
 
 li.active::after {
-  content: '';
+  content: "";
   position: absolute !important;
   left: 0;
   bottom: -9px;

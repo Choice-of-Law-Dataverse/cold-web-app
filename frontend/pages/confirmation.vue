@@ -15,23 +15,23 @@
 </template>
 
 <script setup>
-import { useRoute } from 'vue-router'
-import { useHead } from '#imports'
+import { useRoute } from "vue-router";
+import { useHead } from "#imports";
 
 useHead({
-  title: 'Confirmed — CoLD',
-})
+  title: "Confirmed — CoLD",
+});
 
-const route = useRoute()
+const route = useRoute();
 const confirmationMessage =
-  route.query.message || 'We have received your submission.'
+  route.query.message || "We have received your submission.";
 
-let links = [{ text: 'Take me back to Home', to: '/' }]
+let links = [{ text: "Take me back to Home", to: "/" }];
 if (route.query.links) {
   try {
-    const parsed = JSON.parse(route.query.links)
+    const parsed = JSON.parse(route.query.links);
     if (Array.isArray(parsed)) {
-      links = parsed.filter((l) => l && l.text && l.to)
+      links = parsed.filter((l) => l && l.text && l.to);
     }
   } catch {
     // ignore, fallback to default
@@ -41,6 +41,6 @@ if (route.query.links) {
 
 <script>
 export default {
-  layout: 'default',
-}
+  layout: "default",
+};
 </script>

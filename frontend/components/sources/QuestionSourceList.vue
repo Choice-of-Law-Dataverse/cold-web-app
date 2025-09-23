@@ -62,11 +62,11 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import LegalProvisionRenderer from '@/components/legal/LegalProvisionRenderer.vue'
-import LoadingBar from '@/components/layout/LoadingBar.vue'
-import { useLiteratures } from '@/composables/useLiteratures'
-import { useLiteratureByJurisdiction } from '@/composables/useLiteratureByJurisdiction'
+import { ref, computed } from "vue";
+import LegalProvisionRenderer from "@/components/legal/LegalProvisionRenderer.vue";
+import LoadingBar from "@/components/layout/LoadingBar.vue";
+import { useLiteratures } from "@/composables/useLiteratures";
+import { useLiteratureByJurisdiction } from "@/composables/useLiteratureByJurisdiction";
 
 const props = defineProps({
   sources: {
@@ -83,7 +83,7 @@ const props = defineProps({
   },
   valueClass: {
     type: String,
-    default: 'result-value-small',
+    default: "result-value-small",
   },
   noLinkList: {
     type: Array,
@@ -97,31 +97,31 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-})
+});
 
-const primarySource = ref([])
-const oupChapterSource = ref(null)
+const primarySource = ref([]);
+const oupChapterSource = ref(null);
 
 const { data: literaturesByJurisdiction, isLoading } =
   useLiteratureByJurisdiction(
-    computed(() => props.fallbackData['Jurisdictions'] || null)
-  )
+    computed(() => props.fallbackData["Jurisdictions"] || null),
+  );
 
 watch(
   () => literaturesByJurisdiction,
   (newVal) => {
     newVal.value?.forEach((item) => {
-      if (item['OUP JD Chapter'] && props.fetchOupChapter) {
-        oupChapterSource.value = { title: item.Title, id: item.ID }
+      if (item["OUP JD Chapter"] && props.fetchOupChapter) {
+        oupChapterSource.value = { title: item.Title, id: item.ID };
       } else {
-        primarySource.value.push({ title: item.Title, id: item.ID })
+        primarySource.value.push({ title: item.Title, id: item.ID });
       }
-    })
+    });
   },
-  { immediate: true }
-)
+  { immediate: true },
+);
 
 const { data: literatures, isLoading: literaturesLoading } = useLiteratures(
-  computed(() => props.fallbackData['Jurisdictions'] || null)
-)
+  computed(() => props.fallbackData["Jurisdictions"] || null),
+);
 </script>

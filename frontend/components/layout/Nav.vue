@@ -185,210 +185,210 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
-import HCCHApproved from '../ui/HCCHApproved.vue'
-import eventBus from '@/eventBus'
-import jurisdictionsData from '@/assets/jurisdictions-data.json'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import HCCHApproved from "../ui/HCCHApproved.vue";
+import eventBus from "@/eventBus";
+import jurisdictionsData from "@/assets/jurisdictions-data.json";
 // import your section‐nav configs:
-import { aboutNavLinks, learnNavLinks } from '@/config/pageConfigs.js'
+import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
 
-const router = useRouter()
-const route = useRoute()
+const router = useRouter();
+const route = useRoute();
 
 // helper to pull off “/about” or “/learn”
 // from the first child‐link’s path
-const basePath = (arr) => `/${arr[0].path.split('/')[1]}`
+const basePath = (arr) => `/${arr[0].path.split("/")[1]}`;
 
 const links = [
-  { label: 'About', to: basePath(aboutNavLinks) },
-  { label: 'Learn', to: basePath(learnNavLinks) },
-  { label: 'Contact', to: '/contact' },
-]
+  { label: "About", to: basePath(aboutNavLinks) },
+  { label: "Learn", to: basePath(learnNavLinks) },
+  { label: "Contact", to: "/contact" },
+];
 
-const showMenu = ref(false)
+const showMenu = ref(false);
 
 function openMenu() {
-  showMenu.value = true
+  showMenu.value = true;
   // On mobile hide / collapse search state when menu opens
   if (isMobile.value) {
-    isExpanded.value = false
-    isSearchFocused.value = false
-    showSuggestions.value = false
+    isExpanded.value = false;
+    isSearchFocused.value = false;
+    showSuggestions.value = false;
   }
   // Add click-away listener
-  document.addEventListener('mousedown', handleClickAway)
+  document.addEventListener("mousedown", handleClickAway);
 }
 
 function closeMenu() {
-  showMenu.value = false
+  showMenu.value = false;
   // Remove click-away listener
-  document.removeEventListener('mousedown', handleClickAway)
+  document.removeEventListener("mousedown", handleClickAway);
 }
 
 function handleClickAway(e) {
   // Only close if menu is open
-  if (!showMenu.value) return
+  if (!showMenu.value) return;
   // Find the nav element
-  const nav = document.querySelector('nav')
+  const nav = document.querySelector("nav");
   if (nav && !nav.contains(e.target)) {
-    closeMenu()
+    closeMenu();
   }
 }
 
 // Click-away handler for menu
 function handleClickOutsideMenu(event) {
   // Only close if menu is open
-  if (!showMenu.value) return
+  if (!showMenu.value) return;
   // Find the menu button and menu container
-  const nav = document.querySelector('nav')
+  const nav = document.querySelector("nav");
   // If click is outside nav, close menu
   if (nav && !nav.contains(event.target)) {
-    closeMenu()
+    closeMenu();
   }
 }
 
 onMounted(() => {
-  document.addEventListener('mousedown', handleClickOutsideMenu)
-})
+  document.addEventListener("mousedown", handleClickOutsideMenu);
+});
 
 onUnmounted(() => {
-  document.removeEventListener('mousedown', handleClickOutsideMenu)
-})
+  document.removeEventListener("mousedown", handleClickOutsideMenu);
+});
 
 // Reactive state
-const searchText = ref('')
-const isExpanded = ref(false) // Track if the input is expanded
-const isSmallScreen = ref(false)
-const isMobile = ref(false)
-const suggestions = ref([]) // Add suggestions state
-const showSuggestions = ref(false) // Add visibility state for suggestions
-const isSearchFocused = ref(false)
+const searchText = ref("");
+const isExpanded = ref(false); // Track if the input is expanded
+const isSmallScreen = ref(false);
+const isMobile = ref(false);
+const suggestions = ref([]); // Add suggestions state
+const showSuggestions = ref(false); // Add visibility state for suggestions
+const isSearchFocused = ref(false);
 
-const searchInput = ref(null)
+const searchInput = ref(null);
 
 // Add function to update suggestions
 function updateSuggestions() {
   if (!searchText.value || searchText.value.trim().length < 3) {
-    suggestions.value = []
-    showSuggestions.value = false
-    return
+    suggestions.value = [];
+    showSuggestions.value = false;
+    return;
   }
   // Only keep words with length >= 3
   const words = searchText.value
     .toLowerCase()
     .split(/\s+/)
-    .filter((word) => word.length >= 3)
+    .filter((word) => word.length >= 3);
 
   const filtered = jurisdictionsData
     .filter((item) =>
       words.some(
         (word) =>
           item.name[0].toLowerCase().includes(word) ||
-          item.alternative.some((adj) => adj.toLowerCase().includes(word))
-      )
+          item.alternative.some((adj) => adj.toLowerCase().includes(word)),
+      ),
     )
-    .map((item) => item.name[0])
+    .map((item) => item.name[0]);
 
-  suggestions.value = filtered.slice(0, 5)
-  showSuggestions.value = suggestions.value.length > 0
+  suggestions.value = filtered.slice(0, 5);
+  showSuggestions.value = suggestions.value.length > 0;
 }
 
 // Add function to handle suggestion click
 function handleSuggestionClick(selected) {
-  const record = jurisdictionsData.find((item) => item.name[0] === selected)
+  const record = jurisdictionsData.find((item) => item.name[0] === selected);
   const keywords = record
     ? [
         record.name[0].toLowerCase().trim(),
         ...record.alternative.map((a) => a.toLowerCase().trim()),
       ]
-    : [selected.toLowerCase().trim()]
+    : [selected.toLowerCase().trim()];
 
   const remainingWords = searchText.value
     .split(/\s+/)
     .map((word) => word.trim())
     .filter(
       (word) =>
-        !keywords.some((keyword) => keyword.includes(word.toLowerCase()))
-    )
+        !keywords.some((keyword) => keyword.includes(word.toLowerCase())),
+    );
 
-  const newSearchText = remainingWords.join(' ')
-  searchText.value = newSearchText
+  const newSearchText = remainingWords.join(" ");
+  searchText.value = newSearchText;
 
   // Explicitly manage search state after suggestion click
-  isExpanded.value = false
-  isSearchFocused.value = false // Add this to correctly update focus state
-  showSuggestions.value = false // This was already here
+  isExpanded.value = false;
+  isSearchFocused.value = false; // Add this to correctly update focus state
+  showSuggestions.value = false; // This was already here
 
-  const query = { ...route.query }
+  const query = { ...route.query };
   if (newSearchText.trim()) {
-    query.q = newSearchText.trim()
+    query.q = newSearchText.trim();
   } else {
-    delete query.q
+    delete query.q;
   }
-  query.jurisdiction = selected
+  query.jurisdiction = selected;
   router.push({
-    name: 'search',
+    name: "search",
     query,
-  })
+  });
 
   // Blur the input after navigation and state changes
   nextTick().then(() => {
-    const inputEl = searchInput.value?.$el.querySelector('input')
+    const inputEl = searchInput.value?.$el.querySelector("input");
     if (inputEl) {
-      inputEl.blur() // This blur will call collapseSearch, but relevant states are already set.
+      inputEl.blur(); // This blur will call collapseSearch, but relevant states are already set.
     }
-  })
+  });
 }
 
 // Watch search text for suggestions
 watch(searchText, () => {
-  updateSuggestions()
-})
+  updateSuggestions();
+});
 
 function emitSearch() {
-  const query = { ...route.query } // Retain existing query parameters (filters)
+  const query = { ...route.query }; // Retain existing query parameters (filters)
 
   if (searchText.value.trim()) {
     // Update the search query if there's input
-    query.q = searchText.value.trim()
+    query.q = searchText.value.trim();
   } else {
     // Remove the search query (q) if the input is empty
-    delete query.q
+    delete query.q;
   }
 
   // Push the updated query to the router
   router.push({
-    name: 'search',
+    name: "search",
     query,
-  })
-  collapseSearch() // Shrink search field after search
+  });
+  collapseSearch(); // Shrink search field after search
   nextTick().then(() => {
-    const inputEl = searchInput.value?.$el.querySelector('input')
+    const inputEl = searchInput.value?.$el.querySelector("input");
     if (inputEl) {
-      inputEl.blur()
+      inputEl.blur();
     }
-  })
+  });
 }
 
 function expandSearch() {
-  isExpanded.value = true
-  isSearchFocused.value = true
+  isExpanded.value = true;
+  isSearchFocused.value = true;
   // Suggestions will be updated by the watcher on searchText or if updateSuggestions is called
 }
 
 function handleSearchIconClick() {
   if (isMobile.value && !isExpanded.value) {
-    expandSearch()
+    expandSearch();
     nextTick(() => {
-      const inputEl = searchInput.value?.$el.querySelector('input')
-      if (inputEl) inputEl.focus()
-    })
+      const inputEl = searchInput.value?.$el.querySelector("input");
+      if (inputEl) inputEl.focus();
+    });
   }
 }
 
 function collapseSearch() {
-  isExpanded.value = false // Visual shrink can be immediate
+  isExpanded.value = false; // Visual shrink can be immediate
 
   // Delay setting isSearchFocused to false to allow click event on suggestions
   // to be processed by handleSuggestionClick.
@@ -397,93 +397,93 @@ function collapseSearch() {
     // handleSuggestionClick was not called (or did not set isSearchFocused to false).
     // This implies the blur was to an element outside the suggestions.
     if (isSearchFocused.value) {
-      isSearchFocused.value = false
-      showSuggestions.value = false // Ensure suggestions are hidden
+      isSearchFocused.value = false;
+      showSuggestions.value = false; // Ensure suggestions are hidden
     }
     // If isSearchFocused was already set to false (e.g., by handleSuggestionClick),
     // this 'if' block is skipped.
     // As a safeguard, ensure showSuggestions is false if isSearchFocused is false.
     else if (!isSearchFocused.value && showSuggestions.value) {
-      showSuggestions.value = false
+      showSuggestions.value = false;
     }
-  }, 200) // Original delay
+  }, 200); // Original delay
 }
 
 const clearSearch = async () => {
-  searchText.value = ''
-  collapseSearch()
-  await nextTick()
-  const inputEl = searchInput.value?.$el.querySelector('input')
+  searchText.value = "";
+  collapseSearch();
+  await nextTick();
+  const inputEl = searchInput.value?.$el.querySelector("input");
   if (inputEl) {
-    inputEl.blur()
+    inputEl.blur();
   }
-}
+};
 
 // Dynamically update the placeholder
 const searchPlaceholder = computed(() =>
-  isSmallScreen.value ? 'Search' : 'Search'
-)
+  isSmallScreen.value ? "Search" : "Search",
+);
 
 // Check screen size
 function checkScreenSize() {
-  const width = window.innerWidth
-  isSmallScreen.value = width < 640 // Tailwind's `sm` breakpoint
-  isMobile.value = width < 640
+  const width = window.innerWidth;
+  isSmallScreen.value = width < 640; // Tailwind's `sm` breakpoint
+  isMobile.value = width < 640;
 }
 
 // Listen for events from PopularSearches.vue
 const updateSearchFromEvent = (query) => {
-  searchText.value = query // Update the search input field
-}
+  searchText.value = query; // Update the search input field
+};
 
 function handleGlobalKeydown(e) {
   // Only trigger if not already typing in an input or textarea
   if (
-    e.key === 's' &&
-    !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName)
+    e.key === "s" &&
+    !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
   ) {
-    e.preventDefault() // Prevent default browser actions
-    expandSearch()
+    e.preventDefault(); // Prevent default browser actions
+    expandSearch();
     nextTick(() => {
-      const inputEl = searchInput.value?.$el.querySelector('input')
+      const inputEl = searchInput.value?.$el.querySelector("input");
       if (inputEl) {
-        inputEl.focus()
+        inputEl.focus();
       }
-    })
+    });
   }
 }
 
 onMounted(() => {
-  window.addEventListener('keydown', handleGlobalKeydown)
-})
+  window.addEventListener("keydown", handleGlobalKeydown);
+});
 
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleGlobalKeydown)
-})
+  window.removeEventListener("keydown", handleGlobalKeydown);
+});
 
 // Lifecycle hooks
 onMounted(() => {
   // Initialize screen size
-  checkScreenSize()
+  checkScreenSize();
 
   // Add resize event listener
-  window.addEventListener('resize', checkScreenSize)
+  window.addEventListener("resize", checkScreenSize);
 
   // Initialize search text from query
   if (route.query.q) {
-    searchText.value = route.query.q
+    searchText.value = route.query.q;
   }
 
   // Listen for events from PopularSearches.vue
-  eventBus.on('update-search', updateSearchFromEvent)
-})
+  eventBus.on("update-search", updateSearchFromEvent);
+});
 
 onUnmounted(() => {
   // Clean up event listeners
-  window.removeEventListener('resize', checkScreenSize)
-  eventBus.off('update-search', updateSearchFromEvent)
-  document.removeEventListener('mousedown', handleClickAway)
-})
+  window.removeEventListener("resize", checkScreenSize);
+  eventBus.off("update-search", updateSearchFromEvent);
+  document.removeEventListener("mousedown", handleClickAway);
+});
 </script>
 
 <style scoped>

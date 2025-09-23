@@ -13,20 +13,20 @@
                 >
                   Country report for
                   {{
-                    processedAnswerData?.Jurisdictions || 'this jurisdiction'
+                    processedAnswerData?.Jurisdictions || "this jurisdiction"
                   }}
                 </NuxtLink>
                 <span v-else>
                   Country report for
                   {{
-                    processedAnswerData?.Jurisdictions || 'this jurisdiction'
+                    processedAnswerData?.Jurisdictions || "this jurisdiction"
                   }}
                 </span>
               </h3>
               <span class="result-value-small">
                 The country report provides detailed information, answers, and
                 more on
-                {{ processedAnswerData?.Jurisdictions || 'this jurisdiction' }}
+                {{ processedAnswerData?.Jurisdictions || "this jurisdiction" }}
               </span>
             </div>
           </div>
@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed } from "vue";
 
 // Accept processedAnswerData as a prop from parent
 const props = defineProps({
@@ -46,15 +46,15 @@ const props = defineProps({
     required: false,
     default: () => ({}),
   },
-})
+});
 
 // Computed property to handle different property name variations
 const jurisdictionCode = computed(() => {
   return (
-    props.processedAnswerData?.['Jurisdictions Alpha-3 code'] ||
-    props.processedAnswerData?.['Jurisdictions Alpha-3 Code']
-  )
-})
+    props.processedAnswerData?.["Jurisdictions Alpha-3 code"] ||
+    props.processedAnswerData?.["Jurisdictions Alpha-3 Code"]
+  );
+});
 </script>
 
 <style scoped>
