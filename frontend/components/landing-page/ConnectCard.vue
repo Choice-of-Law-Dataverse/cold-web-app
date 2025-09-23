@@ -37,44 +37,24 @@
   </UCard>
 </template>
 
-<script setup>
-defineProps({
-  title: {
-    type: String,
-    required: true,
-  },
-  subtitle: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  buttonText: {
-    type: String,
-    required: true,
-  },
-  buttonLink: {
-    type: String,
-    required: true,
-  },
-  iconName: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  imageSrc: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  newTab: {
-    type: Boolean,
-    default: true,
-  },
-  buttonIcon: {
-    type: String,
-    required: false,
-    default: "",
-  },
+<script setup lang="ts">
+interface Props {
+  title: string;
+  subtitle?: string;
+  buttonText: string;
+  buttonLink: string;
+  iconName?: string;
+  imageSrc?: string;
+  newTab?: boolean;
+  buttonIcon?: string;
+}
+
+withDefaults(defineProps<Props>(), {
+  subtitle: "",
+  iconName: "",
+  imageSrc: "",
+  newTab: true,
+  buttonIcon: "",
 });
 </script>
 

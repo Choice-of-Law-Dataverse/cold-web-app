@@ -76,42 +76,48 @@
   </UModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from "vue";
 import { z } from "zod";
 
-const props = defineProps({
-  modelValue: { type: Boolean, required: true },
-  email: { type: String, required: true },
-  comments: { type: String, required: true },
-  token: { type: String, required: true },
-  saveModalErrors: { type: Object, required: true },
-  name: { type: String, required: true },
-  specialists: { type: Array, required: true },
-  date: { type: [String, Date], required: true },
-  pdfFile: { type: [Object, null], required: false, default: null },
-  instrumentId: {
-    type: [String, Number],
-    default: null,
-  },
-  link: { type: String, required: false, default: "" },
+interface Props {
+  modelValue: boolean;
+  email: string;
+  comments: string;
+  token: string;
+  saveModalErrors: Record<string, unknown>;
+  name: string;
+  specialists: unknown[];
+  date: string | Date;
+  pdfFile?: File | null;
+  instrumentId?: string | number | null;
+  link?: string;
   // New preferred keys for contact info
-  submitterEmail: { type: String, required: false, default: undefined },
-  submitterComments: { type: String, required: false, default: undefined },
+  submitterEmail?: string;
+  submitterComments?: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  pdfFile: null,
+  instrumentId: null,
+  link: "",
+  submitterEmail: undefined,
+  submitterComments: undefined,
 });
-const emit = defineEmits([
-  "update:modelValue",
-  "update:email",
-  "update:comments",
-  "update:submitter_email",
-  "update:submitter_comments",
-  "update:token",
-  "update:saveModalErrors",
-  "update:link",
-  "save",
-  "update:submitterEmail",
-  "update:submitterComments",
-]);
+
+const emit = defineEmits<{
+  "update:modelValue": [value: boolean];
+  "update:email": [value: string];
+  "update:comments": [value: string];
+  "update:submitter_email": [value: string];
+  "update:submitter_comments": [value: string];
+  "update:token": [value: string];
+  "update:saveModalErrors": [value: Record<string, unknown>];
+  "update:link": [value: string];
+  "save": [];
+  "update:submitterEmail": [value: string];
+  "update:submitterComments": [value: string];
+}>();
 
 const modelValueProxy = ref(props.modelValue);
 // Prefer new keys if provided, fallback to legacy
