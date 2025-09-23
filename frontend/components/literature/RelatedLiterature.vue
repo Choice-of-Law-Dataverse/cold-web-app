@@ -13,7 +13,7 @@
         :key="item.id"
         :class="valueClassMap"
       >
-        <NuxtLink :to="`/literature/L-${item.id}`">
+        <NuxtLink :to="`/literature/${item.id}`">
           {{ item.title }}
         </NuxtLink>
       </li>
