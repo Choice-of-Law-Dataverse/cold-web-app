@@ -1,6 +1,6 @@
 <template>
   <ClientOnly>
-    <LazyPlotCourtDecisionsJurisdiction />
+    <PlotCourtDecisionsJurisdiction />
     <template #fallback>
       <UCard class="cold-ucard">
         <h2 class="popular-title">Court Decisions by Jurisdiction</h2>
