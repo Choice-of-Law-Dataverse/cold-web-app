@@ -48,17 +48,19 @@ const decisionIds = computed(() => {
 
 const { data: decisions } = useRecordDetailsList(
   computed(() => 'Court Decisions'),
-  decisionIds,
+  decisionIds
 )
 
 const caseTitles = computed(() => {
   const map = {}
   if (!decisions.value) return map
-  
+
   decisions.value.forEach((rec) => {
     if (!rec) return
     const options = [rec['Case Title'], rec['Case Citation'], rec.id]
-    map[rec.id] = options.filter(t => t && !excludedValues.has(t.toLowerCase()))[0]
+    map[rec.id] = options.filter(
+      (t) => t && !excludedValues.has(t.toLowerCase())
+    )[0]
   })
   return map
 })

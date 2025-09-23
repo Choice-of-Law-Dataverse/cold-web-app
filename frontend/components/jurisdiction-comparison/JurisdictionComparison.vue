@@ -103,8 +103,6 @@ import JurisdictionComparisonMatchSummary from './JurisdictionComparisonMatchSum
 import JurisdictionComparisonTable from './JurisdictionComparisonTable.vue'
 import JurisdictionSelectMenu from './JurisdictionSelectMenu.vue'
 import themeOptionsData from '@/assets/themeOptions.json'
-
-// Desired order for the questions
 import questionOrderData from '@/assets/questionOrder.json'
 
 const props = defineProps({

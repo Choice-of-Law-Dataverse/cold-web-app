@@ -7,7 +7,7 @@ export function useCourtDecision(courtDecisionId: Ref<string | number>) {
     computed(() => 'Court Decisions'),
     courtDecisionId,
     {
-      select: (data: Record<string, unknown>) => {
+      select: (data) => {
         return {
           ...data,
           'Case Title':

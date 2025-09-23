@@ -171,8 +171,7 @@ function handleNewSave() {
     title: title.value || undefined,
     url: url.value || undefined,
     attachment: '', // ignored for now
-    instrument_date:
-      date.value && date.value ? format(date.value, 'yyyy-MM-dd') : undefined,
+    instrument_date: date.value ? format(date.value, 'yyyy-MM-dd') : undefined,
     // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
