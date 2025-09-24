@@ -8,11 +8,11 @@
       :show-suggest-edit="true"
       source-table="Arbitral Rule"
     />
-    
+
     <!-- Handle SEO meta tags -->
-    <PageSeoMeta 
-      :title-candidates="[arbitralRule?.['Set of Rules'] as string]" 
-      fallback="Arbitral Rule" 
+    <PageSeoMeta
+      :title-candidates="[arbitralRule?.['Set of Rules'] as string]"
+      fallback="Arbitral Rule"
     />
   </div>
 </template>
@@ -24,8 +24,8 @@ import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { arbitralRuleConfig } from "@/config/pageConfigs";
-import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
-import type { TableName } from "~/types/api";
+import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import type { TableName } from "@/types/api";
 
 interface ArbitralRuleRecord {
   "Set of Rules"?: string;
@@ -39,7 +39,8 @@ const route = useRoute();
 const table = ref<TableName>("Arbitral Rules");
 const id = ref(route.params.id as string);
 
-const { data: arbitralRule, isLoading: loading } = useRecordDetails<ArbitralRuleRecord>(table, id);
+const { data: arbitralRule, isLoading: loading } =
+  useRecordDetails<ArbitralRuleRecord>(table, id);
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   arbitralRule,

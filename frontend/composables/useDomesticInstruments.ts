@@ -1,7 +1,7 @@
 import { useApiClient } from "@/composables/useApiClient";
 import { useQuery } from "@tanstack/vue-query";
 import { computed, type Ref } from "vue";
-import type { FullTableRequest } from "~/types/api";
+import type { FullTableRequest } from "@/types/api";
 
 const fetchDomesticInstrumentsData = async (_filterCompatible: boolean) => {
   const { apiClient } = useApiClient();

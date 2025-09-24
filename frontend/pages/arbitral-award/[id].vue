@@ -1,25 +1,26 @@
 <template>
   <div>
-  <BaseDetailLayout
-    :loading="loading"
-    :result-data="processedArbitralAward || {}"
-    :key-label-pairs="computedKeyLabelPairs"
-    :value-class-map="valueClassMap"
-    :formatted-jurisdiction="formattedJurisdictions || []"
-    :formatted-theme="formattedThemes || []"
-    :show-suggest-edit="true"
-    source-table="Arbitral Award"
-  />
-  
-  <!-- Handle SEO meta tags -->
-  <PageSeoMeta 
-    :title-candidates="[
-      processedArbitralAward?.['Case Number'] && String(processedArbitralAward['Case Number']).trim() 
-        ? `Case Number ${processedArbitralAward['Case Number']}`
-        : null
-    ]" 
-    fallback="Arbitral Award" 
-  />
+    <BaseDetailLayout
+      :loading="loading"
+      :result-data="processedArbitralAward || {}"
+      :key-label-pairs="computedKeyLabelPairs"
+      :value-class-map="valueClassMap"
+      :formatted-jurisdiction="formattedJurisdictions || []"
+      :formatted-theme="formattedThemes || []"
+      :show-suggest-edit="true"
+      source-table="Arbitral Award"
+    />
+
+    <!-- Handle SEO meta tags -->
+    <PageSeoMeta
+      :title-candidates="[
+        processedArbitralAward?.['Case Number'] &&
+        String(processedArbitralAward['Case Number']).trim()
+          ? `Case Number ${processedArbitralAward['Case Number']}`
+          : null,
+      ]"
+      fallback="Arbitral Award"
+    />
   </div>
 </template>
 
@@ -30,8 +31,8 @@ import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { arbitralAwardConfig } from "@/config/pageConfigs";
-import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
-import type { TableName } from "~/types/api";
+import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import type { TableName } from "@/types/api";
 
 interface ArbitralAwardRecord {
   "Case Number"?: string;
@@ -44,7 +45,8 @@ const route = useRoute();
 const table = ref<TableName>("Arbitral Awards");
 const id = ref(route.params.id as string);
 
-const { data: arbitralAward, isLoading: loading } = useRecordDetails<ArbitralAwardRecord>(table, id);
+const { data: arbitralAward, isLoading: loading } =
+  useRecordDetails<ArbitralAwardRecord>(table, id);
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   arbitralAward,
@@ -77,7 +79,7 @@ const formattedJurisdictions = computed(() => {
     .map((j) => j?.Name)
     .filter((n) => n && String(n).trim())
     .map((n) => String(n).trim());
-  return [...new Set(names)].map(name => ({ Name: name }));
+  return [...new Set(names)].map((name) => ({ Name: name }));
 });
 
 // Themes for header labels
@@ -88,6 +90,6 @@ const formattedThemes = computed(() => {
     .map((t) => t?.Theme)
     .filter((n) => n && String(n).trim())
     .map((n) => String(n).trim());
-  return [...new Set(themes)].map(theme => ({ Theme: theme }));
+  return [...new Set(themes)].map((theme) => ({ Theme: theme }));
 });
 </script>

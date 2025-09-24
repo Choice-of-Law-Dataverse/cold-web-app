@@ -1,12 +1,12 @@
 <template>
-  <div style="display: none;">
+  <div style="display: none">
     <!-- This component only handles SEO meta tags, no visible content -->
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
-import { useSeoMeta, useHead, useRoute } from '#imports';
+import { computed } from "vue";
+import { useSeoMeta, useHead, useRoute } from "#imports";
 
 interface Props {
   titleCandidates: (string | null | undefined)[];
@@ -24,7 +24,7 @@ const pageTitle = computed(() => {
   // Filter out null/undefined/empty values and trim whitespace
   const validParts = props.titleCandidates
     .filter((part): part is string => Boolean(part?.trim()))
-    .map(part => part.trim());
+    .map((part) => part.trim());
 
   // If we have valid parts, join them with the fallback and "CoLD"
   if (validParts.length > 0) {

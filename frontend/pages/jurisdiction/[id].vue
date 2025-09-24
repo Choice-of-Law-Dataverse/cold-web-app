@@ -5,7 +5,7 @@
       :result-data="jurisdictionData || {}"
       :key-label-pairs="keyLabelPairsWithoutLegalFamily"
       :value-class-map="valueClassMap"
-      :formatted-jurisdiction="[{ Name: (jurisdictionData as Record<string, unknown>)?.Name as string || '' }]"
+      :formatted-jurisdiction="[jurisdictionData?.Name as {}]"
       :show-suggest-edit="true"
       source-table="Jurisdiction"
     >
@@ -15,7 +15,10 @@
       <template #related-literature>
         <section class="section-gap m-0 p-0">
           <RelatedLiterature
-            :literature-id="(jurisdictionData as Record<string, unknown>)?.Literature as string || ''"
+            :literature-id="
+              ((jurisdictionData)
+                ?.Literature as string) || ''
+            "
             :value-class-map="valueClassMap['Related Literature']"
             :use-id="true"
             :label="
@@ -60,7 +63,9 @@
                 name: 'search',
                 query: {
                   type: 'Court Decisions',
-                  jurisdiction: (jurisdictionData as Record<string, unknown>)?.Name as string || '',
+                  jurisdiction:
+                    ((jurisdictionData)
+                      ?.Name as string) || '',
                 },
               }"
               class="!mb-2 no-underline"
@@ -95,7 +100,9 @@
                 name: 'search',
                 query: {
                   type: 'Domestic Instruments',
-                  jurisdiction: (jurisdictionData as Record<string, unknown>)?.Name as string || '',
+                  jurisdiction:
+                    ((jurisdictionData)
+                      ?.Name as string) || '',
                 },
               }"
               class="no-underline"
@@ -159,11 +166,13 @@
         </div>
       </template>
     </ClientOnly>
-    
+
     <!-- Handle SEO meta tags -->
-    <PageSeoMeta 
-      :title-candidates="[(jurisdictionData as Record<string, unknown>)?.Name as string]" 
-      fallback="Country Report" 
+    <PageSeoMeta
+      :title-candidates="[
+        (jurisdictionData)?.Name as string,
+      ]"
+      fallback="Country Report"
     />
   </div>
 </template>
@@ -177,7 +186,7 @@ import JurisdictionSelector from "@/components/ui/JurisdictionSelector.vue";
 import JurisdictionQuestions from "@/components/content/JurisdictionQuestions.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
-import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
+import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useJurisdiction } from "@/composables/useJurisdictions";
 import {
   useDomesticInstrumentsCount,
@@ -195,12 +204,20 @@ const { isLoading: isJurisdictionLoading, data: jurisdictionData } =
   useJurisdiction(computed(() => route.params.id as string));
 
 const { data: courtDecisionCount, isLoading: courtDecisionCountLoading } =
-  useCourtDecisionsCount(computed(() => (jurisdictionData.value as Record<string, unknown>)?.Name as string));
+  useCourtDecisionsCount(
+    computed(
+      () => (jurisdictionData.value)?.Name as string,
+    ),
+  );
 
 const {
   data: domesticInstrumentCount,
   isLoading: domesticInstrumentCountLoading,
-} = useDomesticInstrumentsCount(computed(() => (jurisdictionData.value as Record<string, unknown>)?.Name as string));
+} = useDomesticInstrumentsCount(
+  computed(
+    () => (jurisdictionData.value)?.Name as string,
+  ),
+);
 
 // Remove Legal Family from keyLabelPairs for detail display
 const keyLabelPairsWithoutLegalFamily = computed(() =>

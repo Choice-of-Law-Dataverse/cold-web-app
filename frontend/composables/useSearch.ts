@@ -5,7 +5,7 @@ import type {
   EnhancedSearchRequest,
   SearchParams,
   SearchResponse,
-} from "~/types/api";
+} from "@/types/api";
 
 const fetchSearchResults = async ({
   query,

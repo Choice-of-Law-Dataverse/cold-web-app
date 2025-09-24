@@ -1,6 +1,6 @@
 import { ref, computed, watch } from "vue";
 import { useRecordDetails } from "./useRecordDetails";
-import type { TableName } from "~/types/api";
+import type { TableName } from "@/types/api";
 
 export function useLegalProvision({
   provisionId,

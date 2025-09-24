@@ -10,9 +10,12 @@
  *    like "Ranking (Display Order)": "provA:1,provB:2" OR "1:provA,2:provB" OR JSON array/object.
  *  - If the ranking field is absent or unparsable, we fall back to the original order.
  */
-export function getSortedProvisionIds(rawValue: string, rankingData?: unknown): string[] {
+export function getSortedProvisionIds(
+  rawValue: string,
+  rankingData?: unknown,
+): string[] {
   if (!rawValue) return [];
-  
+
   const ids = rawValue
     .split(",")
     .map((s) => s.trim())
@@ -22,7 +25,7 @@ export function getSortedProvisionIds(rawValue: string, rankingData?: unknown): 
 
   // Try a few parsing strategies
   let rankingMap: Record<string, number> = {};
-  
+
   try {
     if (typeof rankingData === "string") {
       // Strategy 0: Simple numeric CSV (e.g. "2,1,3") aligned by index to ids

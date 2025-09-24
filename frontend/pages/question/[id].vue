@@ -12,7 +12,10 @@
       <template #domestic-legal-provisions="{ value }">
         <section class="section-gap">
           <span class="label flex flex-row items-center">
-            {{ keyLabelLookup.get("Domestic Legal Provisions")?.label || "Source fallback" }}
+            {{
+              keyLabelLookup.get("Domestic Legal Provisions")?.label ||
+              "Source fallback"
+            }}
             <InfoPopover
               v-if="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
               :text="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
@@ -38,7 +41,10 @@
       <template #court-decisions-id="{ value }">
         <section id="related-court-decisions" class="section-gap">
           <span class="label flex flex-row items-center">
-            {{ keyLabelLookup.get("Court Decisions ID")?.label || "Related Court Decisions" }}
+            {{
+              keyLabelLookup.get("Court Decisions ID")?.label ||
+              "Related Court Decisions"
+            }}
             <InfoPopover
               v-if="keyLabelLookup.get('Court Decisions ID')?.tooltip"
               :text="keyLabelLookup.get('Court Decisions ID')?.tooltip"
@@ -48,7 +54,8 @@
             :value="value"
             :value-class-map="valueClassMap['Court Decisions ID']"
             :empty-value-behavior="
-              keyLabelLookup.get('Domestic Legal Provisions')?.emptyValueBehavior
+              keyLabelLookup.get('Domestic Legal Provisions')
+                ?.emptyValueBehavior
             "
           />
         </section>
@@ -58,10 +65,15 @@
         <section class="section-gap">
           <RelatedLiterature
             :themes="processedAnswerData?.Themes"
-            :literature-id="processedAnswerData?.['Jurisdictions Literature ID']"
+            :literature-id="
+              processedAnswerData?.['Jurisdictions Literature ID']
+            "
             :mode="'both'"
             :value-class-map="valueClassMap['Related Literature']"
-            :label="keyLabelLookup.get('Related Literature')?.label || 'Related Literature'"
+            :label="
+              keyLabelLookup.get('Related Literature')?.label ||
+              'Related Literature'
+            "
             :empty-value-behavior="
               questionConfig.keyLabelPairs.find(
                 (pair) => pair.key === 'Related Literature',
@@ -73,14 +85,14 @@
       </template>
     </BaseDetailLayout>
     <CountryReportLink :processed-answer-data="processedAnswerData ?? {}" />
-    
+
     <!-- Handle SEO meta tags -->
-    <PageSeoMeta 
+    <PageSeoMeta
       :title-candidates="[
         processedAnswerData?.Jurisdictions as string,
-        processedAnswerData?.Question as string
-      ]" 
-      fallback="Question" 
+        processedAnswerData?.Question as string,
+      ]"
+      fallback="Question"
     />
   </div>
 </template>
@@ -93,8 +105,8 @@ import CourtDecisionRenderer from "@/components/legal/CourtDecisionRenderer.vue"
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";
 import CountryReportLink from "@/components/ui/CountryReportLink.vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
-import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
+import InfoPopover from "@/components/ui/InfoPopover.vue";
+import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useAnswer } from "@/composables/useAnswer";
 import { questionConfig } from "@/config/pageConfigs";
 
@@ -102,9 +114,9 @@ interface AnswerData {
   Question?: string;
   Jurisdictions?: string;
   Themes?: string;
-  'Jurisdictions Literature ID'?: string;
-  'Domestic Legal Provisions'?: string;
-  'Court Decisions ID'?: string | string[];
+  "Jurisdictions Literature ID"?: string;
+  "Domestic Legal Provisions"?: string;
+  "Court Decisions ID"?: string | string[];
   [key: string]: unknown;
 }
 
@@ -119,7 +131,7 @@ const { keyLabelPairs, valueClassMap } = questionConfig;
 // Create lookup map for better performance
 const keyLabelLookup = computed(() => {
   const map = new Map();
-  keyLabelPairs.forEach(pair => {
+  keyLabelPairs.forEach((pair) => {
     map.set(pair.key, pair);
   });
   return map;
@@ -128,15 +140,17 @@ const keyLabelLookup = computed(() => {
 // Preprocess data to handle custom rendering cases
 const processedAnswerData = computed(() => {
   if (!answerData.value) return null;
-  
+
   const courtDecisionsId = answerData.value["Court Decisions ID"];
-  
+
   return {
     ...answerData.value,
-    "Domestic Legal Provisions": (answerData.value["Domestic Legal Provisions"] as string) || "",
-    "Court Decisions ID": typeof courtDecisionsId === 'string'
-      ? courtDecisionsId.split(",").map((caseId: string) => caseId.trim())
-      : [],
+    "Domestic Legal Provisions":
+      (answerData.value["Domestic Legal Provisions"] as string) || "",
+    "Court Decisions ID":
+      typeof courtDecisionsId === "string"
+        ? courtDecisionsId.split(",").map((caseId: string) => caseId.trim())
+        : [],
   } as AnswerData;
 });
 

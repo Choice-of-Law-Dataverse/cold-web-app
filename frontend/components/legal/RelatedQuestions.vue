@@ -16,7 +16,7 @@
 
 <script setup>
 import { computed, toRefs } from "vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
+import InfoPopover from "@/components/ui/InfoPopover.vue";
 import { useRelatedQuestions } from "@/composables/useRelatedQuestions";
 
 const props = defineProps({

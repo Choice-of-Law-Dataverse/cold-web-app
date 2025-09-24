@@ -133,7 +133,7 @@ import { ref, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
+import InfoPopover from "@/components/ui/InfoPopover.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";

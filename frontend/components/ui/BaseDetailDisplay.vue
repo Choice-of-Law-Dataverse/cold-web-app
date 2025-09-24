@@ -147,7 +147,7 @@ import BackButton from "@/components/ui/BackButton.vue";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
+import InfoPopover from "@/components/ui/InfoPopover.vue";
 
 // Props for reusability across pages
 const props = defineProps({

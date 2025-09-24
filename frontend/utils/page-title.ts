@@ -4,11 +4,14 @@
  * @param fallback - Fallback title to use if no valid title parts are provided
  * @returns Formatted page title with "CoLD" suffix
  */
-export function generatePageTitle(titleParts: (string | null | undefined)[], fallback: string): string {
+export function generatePageTitle(
+  titleParts: (string | null | undefined)[],
+  fallback: string,
+): string {
   // Filter out null/undefined/empty values and trim whitespace
   const validParts = titleParts
     .filter((part): part is string => Boolean(part?.trim()))
-    .map(part => part.trim());
+    .map((part) => part.trim());
 
   // If we have valid parts, join them with the fallback and "CoLD"
   if (validParts.length > 0) {

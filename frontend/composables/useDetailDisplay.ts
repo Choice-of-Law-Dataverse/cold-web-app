@@ -16,7 +16,7 @@ interface Config {
 
 export function useDetailDisplay(
   data: Ref<Record<string, unknown> | null | undefined>,
-  config: Config
+  config: Config,
 ) {
   const computedKeyLabelPairs = computed(() => {
     return config.keyLabelPairs.map((pair) => ({

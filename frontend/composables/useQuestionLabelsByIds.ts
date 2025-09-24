@@ -1,7 +1,7 @@
 import { computed, type Ref } from "vue";
 import { useQueries } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
-import type { FullTableRequest } from "~/types/api";
+import type { FullTableRequest } from "@/types/api";
 
 const fetchQuestionLabel = async (id: string | number) => {
   const { apiClient } = useApiClient();

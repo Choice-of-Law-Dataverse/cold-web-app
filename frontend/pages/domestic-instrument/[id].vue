@@ -90,7 +90,10 @@
           class="section-gap m-0 p-0"
         >
           <p class="label mb-[-24px] mt-12 flex flex-row items-center">
-            {{ keyLabelLookup.get("Domestic Legal Provisions")?.label || "Selected Provisions" }}
+            {{
+              keyLabelLookup.get("Domestic Legal Provisions")?.label ||
+              "Selected Provisions"
+            }}
             <InfoPopover
               v-if="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
               :text="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
@@ -99,7 +102,9 @@
           <div :class="valueClassMap['Domestic Legal Provisions']">
             <div v-if="value && value.trim()">
               <LegalProvision
-                v-for="(provisionId, index) in getSortedProvisionIdsForInstrument(value)"
+                v-for="(
+                  provisionId, index
+                ) in getSortedProvisionIdsForInstrument(value)"
                 :key="index"
                 :provision-id="provisionId"
                 :text-type="textType"
@@ -116,12 +121,16 @@
         </section>
       </template>
     </BaseDetailLayout>
-    <CountryReportLink :processed-answer-data="processedLegalInstrument || {}" />
-    
+    <CountryReportLink
+      :processed-answer-data="processedLegalInstrument || {}"
+    />
+
     <!-- Handle SEO meta tags -->
-    <PageSeoMeta 
-      :title-candidates="[processedLegalInstrument?.['Title (in English)'] as string]" 
-      fallback="Domestic Instrument" 
+    <PageSeoMeta
+      :title-candidates="[
+        processedLegalInstrument?.['Title (in English)'] as string,
+      ]"
+      fallback="Domestic Instrument"
     />
   </div>
 </template>
@@ -131,21 +140,21 @@ import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
+import InfoPopover from "@/components/ui/InfoPopover.vue";
 import SectionRenderer from "@/components/legal/SectionRenderer.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
 import CountryReportLink from "@/components/ui/CountryReportLink.vue";
-import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
+import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { legalInstrumentConfig } from "@/config/pageConfigs";
 import { getSortedProvisionIds } from "@/utils/provision-sorting";
-import type { TableName } from "~/types/api";
+import type { TableName } from "@/types/api";
 
 interface LegalInstrumentRecord {
   "Title (in English)"?: string;
   "Official Title"?: string;
-  "Abbreviation"?: string;
+  Abbreviation?: string;
   "Compatible With the UNCITRAL Model Law?"?: boolean | string;
   "Compatible With the HCCH Principles?"?: boolean | string;
   "Ranking (Display Order)"?: string;
@@ -160,10 +169,8 @@ const hasEnglishTranslation = ref(false);
 const table = ref<TableName>("Domestic Instruments");
 const id = ref(route.params.id as string);
 
-const { data: legalInstrument, isLoading: loading } = useRecordDetails<LegalInstrumentRecord>(
-  table,
-  id,
-);
+const { data: legalInstrument, isLoading: loading } =
+  useRecordDetails<LegalInstrumentRecord>(table, id);
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   legalInstrument,
@@ -173,7 +180,7 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
 // Create lookup map for better performance
 const keyLabelLookup = computed(() => {
   const map = new Map();
-  computedKeyLabelPairs.value.forEach(pair => {
+  computedKeyLabelPairs.value.forEach((pair) => {
     map.set(pair.key, pair);
   });
   return map;
@@ -191,24 +198,28 @@ const processedLegalInstrument = computed(() => {
   };
 });
 
-// Helper function to check compatibility 
+// Helper function to check compatibility
 const isCompatible = (field: string): boolean => {
   if (!processedLegalInstrument.value) return false;
-  const value = (processedLegalInstrument.value as Record<string, unknown>)[field];
-  return value === true || value === 'true';
+  const value = (processedLegalInstrument.value as Record<string, unknown>)[
+    field
+  ];
+  return value === true || value === "true";
 };
 
 // Computed for compatibility display
 const showCompatibility = computed(() => {
-  return isCompatible('Compatible With the UNCITRAL Model Law?') || 
-         isCompatible('Compatible With the HCCH Principles?');
+  return (
+    isCompatible("Compatible With the UNCITRAL Model Law?") ||
+    isCompatible("Compatible With the HCCH Principles?")
+  );
 });
 
 // Simplified sorting function wrapper
 const getSortedProvisionIdsForInstrument = (rawValue: string): string[] => {
   return getSortedProvisionIds(
-    rawValue, 
-    processedLegalInstrument.value?.["Ranking (Display Order)"]
+    rawValue,
+    processedLegalInstrument.value?.["Ranking (Display Order)"],
   );
 };
 </script>

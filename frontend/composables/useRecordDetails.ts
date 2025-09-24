@@ -1,7 +1,7 @@
 import { computed, type Ref } from "vue";
 import { useQuery, useQueries } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
-import type { TableName } from "~/types/api";
+import type { TableName } from "@/types/api";
 
 async function fetchRecordDetails<T>(table: TableName, id: string | number) {
   const { apiClient } = useApiClient();

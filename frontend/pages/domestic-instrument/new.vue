@@ -248,7 +248,7 @@ import DatePicker from "@/components/ui/DatePicker.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
+import InfoPopover from "@/components/ui/InfoPopover.vue";
 import { format } from "date-fns";
 // Tooltips: match detail page content
 import tooltipAbbreviation from "@/content/info_boxes/domestic_instrument/abbreviation.md?raw";

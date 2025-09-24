@@ -19,7 +19,7 @@ import { ref, watch, computed } from "vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { NuxtLink } from "#components";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
+import InfoPopover from "@/components/ui/InfoPopover.vue";
 
 const props = defineProps({
   id: {

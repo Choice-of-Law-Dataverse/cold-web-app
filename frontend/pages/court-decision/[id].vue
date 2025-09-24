@@ -15,8 +15,12 @@
             v-if="value"
             :id="value"
             section="Domestic Legal Provisions"
-            :section-label="keyLabelLookup.get('Domestic Legal Provisions')?.label"
-            :section-tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+            :section-label="
+              keyLabelLookup.get('Domestic Legal Provisions')?.label
+            "
+            :section-tooltip="
+              keyLabelLookup.get('Domestic Legal Provisions')?.tooltip
+            "
             table="Domestic Instruments"
             class="mb-8"
           />
@@ -42,9 +46,14 @@
               </div>
               <div
                 v-if="
-                  (courtDecision as Record<string, unknown>).hasEnglishQuoteTranslation &&
+                  (courtDecision as Record<string, unknown>)
+                    .hasEnglishQuoteTranslation &&
                   (courtDecision as Record<string, unknown>)['Quote'] &&
-                  ((courtDecision as Record<string, unknown>)['Quote'] as string)?.trim() !== ''
+                  (
+                    (courtDecision as Record<string, unknown>)[
+                      'Quote'
+                    ] as string
+                  )?.trim() !== ''
                 "
                 class="flex items-center gap-1"
               >
@@ -94,21 +103,26 @@
         <section class="section-gap m-0 p-0">
           <RelatedQuestions
             :jurisdiction-code="
-              (courtDecision as Record<string, unknown>)?.['Jurisdictions Alpha-3 Code'] as string || ''
+              ((courtDecision as Record<string, unknown>)?.[
+                'Jurisdictions Alpha-3 Code'
+              ] as string) || ''
             "
-            :questions="(courtDecision as Record<string, unknown>)?.['Questions'] as string || ''"
-            :tooltip="
-              computedKeyLabelPairs.find(
-                (pair) => pair.key === 'Related Questions',
-              )?.tooltip
+            :questions="
+              ((courtDecision as Record<string, unknown>)?.[
+                'Questions'
+              ] as string) || ''
             "
+            :tooltip="keyLabelLookup.get('Related Questions')?.tooltip"
           />
         </section>
       </template>
       <template #related-literature>
         <section class="section-gap m-0 p-0">
           <RelatedLiterature
-            :themes="(courtDecision as Record<string, unknown>)?.themes as string || ''"
+            :themes="
+              ((courtDecision as Record<string, unknown>)?.themes as string) ||
+              ''
+            "
             :value-class-map="valueClassMap['Related Literature']"
             :use-id="false"
             :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
@@ -176,16 +190,20 @@
     <UAlert v-if="error" type="error" class="mx-auto mt-4 max-w-container">
       {{ error }}
     </UAlert>
-    
+
     <!-- Handle SEO meta tags -->
-    <PageSeoMeta 
+    <PageSeoMeta
       :title-candidates="[
-        (courtDecision as Record<string, unknown>)?.['Case Title'] as string !== 'Not found' 
-          ? (courtDecision as Record<string, unknown>)?.['Case Title'] as string
+        ((courtDecision as Record<string, unknown>)?.[
+          'Case Title'
+        ] as string) !== 'Not found'
+          ? ((courtDecision as Record<string, unknown>)?.[
+              'Case Title'
+            ] as string)
           : null,
-        (courtDecision as Record<string, unknown>)?.['Case Citation'] as string
-      ]" 
-      fallback="Court Decision" 
+        (courtDecision as Record<string, unknown>)?.['Case Citation'] as string,
+      ]"
+      fallback="Court Decision"
     />
   </div>
 </template>
@@ -196,9 +214,9 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
+import InfoPopover from "@/components/ui/InfoPopover.vue";
 import ProvisionRenderer from "@/components/legal/SectionRenderer.vue";
-import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
+import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useCourtDecision } from "@/composables/useCourtDecision";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { courtDecisionConfig } from "@/config/pageConfigs";
@@ -212,9 +230,11 @@ defineProps({
 
 const route = useRoute();
 
-const { data: courtDecision, isLoading, error } = useCourtDecision(
-  computed(() => route.params.id as string),
-);
+const {
+  data: courtDecision,
+  isLoading,
+  error,
+} = useCourtDecision(computed(() => route.params.id as string));
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   courtDecision,
@@ -226,10 +246,9 @@ const showEnglishQuote = ref(true);
 // For Full Text show more/less
 const showFullText = ref(false);
 
-// Create lookup map for keyLabelPairs to avoid repetitive find operations
 const keyLabelLookup = computed(() => {
   const map = new Map();
-  courtDecisionConfig.keyLabelPairs.forEach(pair => {
+  courtDecisionConfig.keyLabelPairs.forEach((pair) => {
     map.set(pair.key, pair);
   });
   return map;

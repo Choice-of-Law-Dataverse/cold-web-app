@@ -6,7 +6,7 @@ import type {
   QuestionItem,
   AnswerItem,
   QuestionWithAnswer,
-} from "~/types/api";
+} from "@/types/api";
 import { useFullTable } from "@/composables/useFullTable";
 
 const buildCompositeId = (
