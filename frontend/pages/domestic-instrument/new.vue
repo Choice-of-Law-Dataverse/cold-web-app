@@ -37,8 +37,10 @@
           hint="Required"
         >
           <template #label>
-            <span class="label flex flex-row items-center">Official Title</span>
-            <InfoPopover :text="tooltipOfficialTitle" />
+            <span class="label flex flex-row items-center">
+              Official Title
+              <InfoPopover :text="tooltipOfficialTitle" />
+            </span>
           </template>
           <UInput
             v-model="officialTitle"
@@ -55,8 +57,10 @@
           hint="Required"
         >
           <template #label>
-            <span class="label flex flex-row items-center">Name</span>
-            <InfoPopover :text="tooltipDomesticInstrumentTitle" />
+            <span class="label flex flex-row items-center">
+              Name
+              <InfoPopover :text="tooltipDomesticInstrumentTitle" />
+            </span>
           </template>
           <UInput
             v-model="titleEn"
@@ -73,10 +77,10 @@
           :error="errors.entry_into_force"
         >
           <template #label>
-            <span class="label flex flex-row items-center"
-              >Entry Into Force</span
-            >
-            <InfoPopover :text="tooltipEntryIntoForce" />
+            <span class="label flex flex-row items-center">
+              Entry Into Force
+              <InfoPopover :text="tooltipEntryIntoForce" />
+            </span>
           </template>
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton
@@ -126,10 +130,10 @@
         <!-- Publication Date (optional) -->
         <UFormGroup size="lg" class="mt-8">
           <template #label>
-            <span class="label flex flex-row items-center"
-              >Publication Date</span
-            >
-            <InfoPopover :text="tooltipDomesticInstrumentPublicationDate" />
+            <span class="label flex flex-row items-center">
+              Publication Date
+              <InfoPopover :text="tooltipDomesticInstrumentPublicationDate" />
+            </span>
           </template>
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton
@@ -150,8 +154,10 @@
         <!-- Abbreviation (optional) -->
         <UFormGroup size="lg" class="mt-8">
           <template #label>
-            <span class="label flex flex-row items-center">Abbreviation</span>
-            <InfoPopover :text="tooltipAbbreviation" />
+            <span class="label flex flex-row items-center">
+              Abbreviation
+              <InfoPopover :text="tooltipAbbreviation" />
+            </span>
           </template>
           <UInput v-model="abbreviation" class="cold-input mt-2" />
         </UFormGroup>
@@ -159,10 +165,10 @@
         <!-- Compatible HCCH Principles (optional) -->
         <UFormGroup size="lg" class="mt-8">
           <template #label>
-            <span class="label flex flex-row items-center"
-              >Compatible With the HCCH Principles?</span
-            >
-            <InfoPopover :text="tooltipCompatibleWithHCCH" />
+            <span class="label flex flex-row items-center">
+              Compatible With the HCCH Principles?
+              <InfoPopover :text="tooltipCompatibleWithHCCH" />
+            </span>
           </template>
           <div
             class="cold-toggle-group mt-2"
@@ -189,10 +195,10 @@
         <!-- Compatible UNCITRAL Model Law (optional) -->
         <UFormGroup size="lg" class="mt-8">
           <template #label>
-            <span class="label flex flex-row items-center"
-              >Compatible With the UNCITRAL Model Law?</span
-            >
-            <InfoPopover :text="tooltipCompatibleWithUNCITRAL" />
+            <span class="label flex flex-row items-center">
+              Compatible With the UNCITRAL Model Law?
+              <InfoPopover :text="tooltipCompatibleWithUNCITRAL" />
+            </span>
           </template>
           <div
             class="cold-toggle-group mt-2"

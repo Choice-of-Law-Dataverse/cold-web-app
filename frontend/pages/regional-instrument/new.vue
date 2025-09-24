@@ -43,8 +43,10 @@
 
         <UFormGroup size="lg" class="mt-8">
           <template #label>
-            <span class="label flex flex-row items-center">Date</span>
-            <InfoPopover :text="tooltipRegionalInstrumentDate" />
+            <span class="label flex flex-row items-center">
+              Date
+              <InfoPopover :text="tooltipRegionalInstrumentDate" />
+            </span>
           </template>
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton
