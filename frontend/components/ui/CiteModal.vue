@@ -2,7 +2,7 @@
   <UModal
     :model-value="modelValue"
     :ui="{ rounded: 'rounded-none' }"
-    @update:model-value="(v) => $emit('update:modelValue', v)"
+    @update:model-value="(v) => emit('update:modelValue', v)"
   >
     <div class="p-6">
       <h2 class="mb-4">Cite This Page</h2>
@@ -40,7 +40,7 @@ const props = defineProps({
   // Optional override if you want to pass a known title directly
   title: { type: String, default: "" },
 });
-defineEmits(["update:modelValue"]);
+const emit = defineEmits(["update:modelValue"]);
 
 const route = useRoute();
 
