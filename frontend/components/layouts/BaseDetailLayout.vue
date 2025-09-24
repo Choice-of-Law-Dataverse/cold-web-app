@@ -19,9 +19,9 @@
           :notification-banner-message="props.notificationBannerMessage"
           :fallback-message="props.fallbackMessage"
           :icon="props.icon"
-          @save="$emit('save')"
-          @open-save-modal="$emit('open-save-modal')"
-          @open-cancel-modal="$emit('open-cancel-modal')"
+          @save="emit('save')"
+          @open-save-modal="emit('open-save-modal')"
+          @open-cancel-modal="emit('open-cancel-modal')"
         >
           <slot />
           <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
@@ -68,5 +68,5 @@ const props = withDefaults(
   },
 );
 
-defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
+const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 </script>

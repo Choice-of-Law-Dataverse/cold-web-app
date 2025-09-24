@@ -129,7 +129,7 @@
           <template v-if="headerMode === 'new'">
             <NuxtLink
               class="label flex cursor-pointer items-center pt-0.5"
-              @click="$emit('open-save-modal')"
+              @click="emit('open-save-modal')"
             >
               Submit your data …
             </NuxtLink>
@@ -223,7 +223,7 @@ import { useCheckTarget } from "~/composables/useCheckTarget";
 // removed tooltip content import
 import CiteModal from "@/components/ui/CiteModal.vue";
 
-defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
+const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
 const route = useRoute();
 const router = useRouter();
