@@ -15,10 +15,7 @@
       <template #related-literature>
         <section class="section-gap m-0 p-0">
           <RelatedLiterature
-            :literature-id="
-              ((jurisdictionData)
-                ?.Literature as string) || ''
-            "
+            :literature-id="(jurisdictionData?.Literature as string) || ''"
             :value-class-map="valueClassMap['Related Literature']"
             :use-id="true"
             :label="
@@ -63,9 +60,7 @@
                 name: 'search',
                 query: {
                   type: 'Court Decisions',
-                  jurisdiction:
-                    ((jurisdictionData)
-                      ?.Name as string) || '',
+                  jurisdiction: (jurisdictionData?.Name as string) || '',
                 },
               }"
               class="!mb-2 no-underline"
@@ -100,9 +95,7 @@
                 name: 'search',
                 query: {
                   type: 'Domestic Instruments',
-                  jurisdiction:
-                    ((jurisdictionData)
-                      ?.Name as string) || '',
+                  jurisdiction: (jurisdictionData?.Name as string) || '',
                 },
               }"
               class="no-underline"
@@ -169,9 +162,7 @@
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[
-        (jurisdictionData)?.Name as string,
-      ]"
+      :title-candidates="[jurisdictionData?.Name as string]"
       fallback="Country Report"
     />
   </div>
@@ -205,18 +196,14 @@ const { isLoading: isJurisdictionLoading, data: jurisdictionData } =
 
 const { data: courtDecisionCount, isLoading: courtDecisionCountLoading } =
   useCourtDecisionsCount(
-    computed(
-      () => (jurisdictionData.value)?.Name as string,
-    ),
+    computed(() => jurisdictionData.value?.Name as string),
   );
 
 const {
   data: domesticInstrumentCount,
   isLoading: domesticInstrumentCountLoading,
 } = useDomesticInstrumentsCount(
-  computed(
-    () => (jurisdictionData.value)?.Name as string,
-  ),
+  computed(() => jurisdictionData.value?.Name as string),
 );
 
 // Remove Legal Family from keyLabelPairs for detail display

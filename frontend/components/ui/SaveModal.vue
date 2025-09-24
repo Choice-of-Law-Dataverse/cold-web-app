@@ -88,7 +88,7 @@ const props = defineProps({
   saveModalErrors: { type: Object, required: true },
   name: { type: String, required: true },
   specialists: { type: Array, required: true },
-  date: { type: [String, Date], required: true },
+  date: { type: [String, Date], required: false, default: null },
   pdfFile: { type: [Object, null], required: false, default: null },
   instrumentId: {
     type: [String, Number],
