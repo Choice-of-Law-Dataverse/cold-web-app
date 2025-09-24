@@ -10,7 +10,7 @@
     <template #literature>
       <section class="section-gap m-0 p-0">
         <RelatedLiterature
-          :literature-id="processedInternationalInstrument?.Literature"
+          :literature-id="(processedInternationalInstrument?.Literature as string) || ''"
           :value-class-map="valueClassMap['Literature']"
           :show-label="true"
           :empty-value-behavior="
@@ -53,7 +53,7 @@
             <LoadingBar class="!mt-8" />
           </div>
           <div v-else-if="provisionsError">{{ provisionsError }}</div>
-          <div v-else-if="provisions.length">
+          <div v-else-if="provisions && provisions.length">
             <BaseLegalContent
               v-for="(provision, index) in provisions"
               :key="index"
@@ -66,7 +66,7 @@
                   : '')
               "
               :anchor-id="
-                normalizeAnchorId(provision['Title of the Provision'])
+                normalizeAnchorId(String(provision['Title of the Provision'] || ''))
               "
             >
               <template #default>
@@ -127,6 +127,8 @@ const processedInternationalInstrument = computed(() => {
     URL:
       internationalInstrument.value["URL"] ||
       internationalInstrument.value["Link"],
+    Literature: (internationalInstrument.value as Record<string, unknown>)["Literature"],
+    Abbreviation: (internationalInstrument.value as Record<string, unknown>)["Abbreviation"],
   };
 });
 
@@ -137,7 +139,7 @@ const {
   error: provisionsError,
 } = useInternationalLegalProvisions();
 
-function normalizeAnchorId(str) {
+function normalizeAnchorId(str: string): string {
   if (!str) return "";
   // Remove accents/circumflexes, replace whitespace with dash, lowercase
   return str

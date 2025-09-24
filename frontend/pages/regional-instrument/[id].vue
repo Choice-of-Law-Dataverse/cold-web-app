@@ -10,7 +10,7 @@
     <template #literature>
       <section class="section-gap m-0 p-0">
         <RelatedLiterature
-          :literature-id="processedRegionalInstrument?.Literature"
+          :literature-id="(processedRegionalInstrument?.Literature as string) || ''"
           :value-class-map="valueClassMap['Literature']"
           :show-label="true"
           :empty-value-behavior="
@@ -62,8 +62,8 @@
               :text-type="textType"
               :instrument-title="
                 processedRegionalInstrument
-                  ? processedRegionalInstrument['Abbreviation'] ||
-                    processedRegionalInstrument['Title']
+                  ? (processedRegionalInstrument['Abbreviation'] as string) ||
+                    (processedRegionalInstrument['Title'] as string)
                   : ''
               "
               table="Regional Legal Provisions"
@@ -121,8 +121,8 @@ const processedRegionalInstrument = computed(() => {
       regionalInstrument.value["Name"],
     Date: regionalInstrument.value["Date"],
     URL: regionalInstrument.value["URL"] || regionalInstrument.value["Link"],
-    Title: (regionalInstrument.value as any)["Title"],
-    Literature: (regionalInstrument.value as any)["Literature"],
+    Title: (regionalInstrument.value as Record<string, unknown>)["Title"],
+    Literature: (regionalInstrument.value as Record<string, unknown>)["Literature"],
   };
 });
 

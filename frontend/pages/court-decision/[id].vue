@@ -42,9 +42,9 @@
               </div>
               <div
                 v-if="
-                  courtDecision.hasEnglishQuoteTranslation &&
-                  courtDecision['Quote'] &&
-                  courtDecision['Quote'].trim() !== ''
+                  (courtDecision as Record<string, unknown>).hasEnglishQuoteTranslation &&
+                  (courtDecision as Record<string, unknown>)['Quote'] &&
+                  ((courtDecision as Record<string, unknown>)['Quote'] as string)?.trim() !== ''
                 "
                 class="flex items-center gap-1"
               >
@@ -77,12 +77,12 @@
               <span class="whitespace-pre-line">
                 {{
                   showEnglishQuote &&
-                  courtDecision.hasEnglishQuoteTranslation &&
-                  courtDecision["Quote"] &&
-                  courtDecision["Quote"].trim() !== ""
-                    ? courtDecision["Translated Excerpt"]
-                    : courtDecision["Quote"] ||
-                      courtDecision["Translated Excerpt"]
+                  (courtDecision as any).hasEnglishQuoteTranslation &&
+                  (courtDecision as any)["Quote"] &&
+                  (courtDecision as any)["Quote"]?.trim() !== ""
+                    ? (courtDecision as any)["Translated Excerpt"]
+                    : (courtDecision as any)["Quote"] ||
+                      (courtDecision as any)["Translated Excerpt"]
                 }}
               </span>
             </div>
@@ -94,9 +94,9 @@
         <section class="section-gap m-0 p-0">
           <RelatedQuestions
             :jurisdiction-code="
-              courtDecision['Jurisdictions Alpha-3 Code'] || ''
+              (courtDecision as Record<string, unknown>)?.['Jurisdictions Alpha-3 Code'] as string || ''
             "
-            :questions="courtDecision['Questions'] || ''"
+            :questions="(courtDecision as Record<string, unknown>)?.['Questions'] as string || ''"
             :tooltip="
               computedKeyLabelPairs.find(
                 (pair) => pair.key === 'Related Questions',
@@ -108,7 +108,7 @@
       <template #related-literature>
         <section class="section-gap m-0 p-0">
           <RelatedLiterature
-            :themes="courtDecision.themes"
+            :themes="(courtDecision as Record<string, unknown>)?.themes as string || ''"
             :value-class-map="valueClassMap['Related Literature']"
             :use-id="false"
             :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
@@ -236,8 +236,9 @@ const downloadPDFLink = computed(() => {
 // Simplify page title generation with computed property
 const pageTitle = computed(() => {
   if (!courtDecision.value) return "Court Decision — CoLD";
-  const caseTitle = (courtDecision.value as any)["Case Title"];
-  const citation = (courtDecision.value as any)["Case Citation"];
+  const data = courtDecision.value as Record<string, unknown>;
+  const caseTitle = data["Case Title"] as string;
+  const citation = data["Case Citation"] as string;
   
   if (caseTitle?.trim() && caseTitle !== "Not found") {
     return `${caseTitle} — CoLD`;

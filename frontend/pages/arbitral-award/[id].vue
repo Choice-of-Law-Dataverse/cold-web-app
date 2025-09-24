@@ -4,8 +4,8 @@
     :result-data="processedArbitralAward || {}"
     :key-label-pairs="computedKeyLabelPairs"
     :value-class-map="valueClassMap"
-    :formatted-jurisdiction="formattedJurisdictions"
-    :formatted-theme="formattedThemes"
+    :formatted-jurisdiction="formattedJurisdictions || []"
+    :formatted-theme="formattedThemes || []"
     :show-suggest-edit="true"
     source-table="Arbitral Award"
   />
@@ -65,7 +65,7 @@ const formattedJurisdictions = computed(() => {
     .map((j) => j?.Name)
     .filter((n) => n && String(n).trim())
     .map((n) => String(n).trim());
-  return [...new Set(names)];
+  return [...new Set(names)].map(name => ({ Name: name }));
 });
 
 // Themes for header labels
@@ -76,7 +76,7 @@ const formattedThemes = computed(() => {
     .map((t) => t?.Theme)
     .filter((n) => n && String(n).trim())
     .map((n) => String(n).trim());
-  return [...new Set(themes)];
+  return [...new Set(themes)].map(theme => ({ Theme: theme }));
 });
 
 // Simplify page title generation with computed property

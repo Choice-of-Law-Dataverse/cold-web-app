@@ -5,7 +5,7 @@
       :result-data="jurisdictionData || {}"
       :key-label-pairs="keyLabelPairsWithoutLegalFamily"
       :value-class-map="valueClassMap"
-      :formatted-jurisdiction="[jurisdictionData?.Name]"
+      :formatted-jurisdiction="[{ Name: (jurisdictionData as Record<string, unknown>)?.Name as string || '' }]"
       :show-suggest-edit="true"
       source-table="Jurisdiction"
     >
@@ -15,7 +15,7 @@
       <template #related-literature>
         <section class="section-gap m-0 p-0">
           <RelatedLiterature
-            :literature-id="jurisdictionData?.Literature"
+            :literature-id="(jurisdictionData as Record<string, unknown>)?.Literature as string || ''"
             :value-class-map="valueClassMap['Related Literature']"
             :use-id="true"
             :label="
@@ -60,7 +60,7 @@
                 name: 'search',
                 query: {
                   type: 'Court Decisions',
-                  jurisdiction: jurisdictionData?.Name || '',
+                  jurisdiction: (jurisdictionData as Record<string, unknown>)?.Name as string || '',
                 },
               }"
               class="!mb-2 no-underline"
@@ -95,7 +95,7 @@
                 name: 'search',
                 query: {
                   type: 'Domestic Instruments',
-                  jurisdiction: jurisdictionData?.Name || '',
+                  jurisdiction: (jurisdictionData as Record<string, unknown>)?.Name as string || '',
                 },
               }"
               class="no-underline"
@@ -189,12 +189,12 @@ const { isLoading: isJurisdictionLoading, data: jurisdictionData } =
   useJurisdiction(computed(() => route.params.id as string));
 
 const { data: courtDecisionCount, isLoading: courtDecisionCountLoading } =
-  useCourtDecisionsCount(computed(() => (jurisdictionData.value as any)?.Name as string));
+  useCourtDecisionsCount(computed(() => (jurisdictionData.value as Record<string, unknown>)?.Name as string));
 
 const {
   data: domesticInstrumentCount,
   isLoading: domesticInstrumentCountLoading,
-} = useDomesticInstrumentsCount(computed(() => (jurisdictionData.value as any)?.Name as string));
+} = useDomesticInstrumentsCount(computed(() => (jurisdictionData.value as Record<string, unknown>)?.Name as string));
 
 // Remove Legal Family from keyLabelPairs for detail display
 const keyLabelPairsWithoutLegalFamily = computed(() =>
@@ -216,7 +216,7 @@ const isLoading = computed(
 // Simplify page title generation with computed property
 const pageTitle = computed(() => {
   if (!jurisdictionData.value) return "Jurisdiction Country Report — CoLD";
-  const name = (jurisdictionData.value as any)?.Name;
+  const name = (jurisdictionData.value as Record<string, unknown>)?.Name as string;
   return name?.trim()
     ? `${name} Country Report — CoLD`
     : "Jurisdiction Country Report — CoLD";
