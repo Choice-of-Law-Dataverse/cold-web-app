@@ -1,14 +1,15 @@
 <template>
-  <main class="container mx-auto px-4 py-12">
-    <div class="text-center mb-12">
-      <h1 class="text-4xl font-bold text-cold-purple mb-4">Submit New Data</h1>
-      <p class="text-lg text-cold-night-alpha max-w-3xl mx-auto">
-        Choose the type of data you want to submit to the Choice of Law Dataverse. 
-        Your contributions help build the most comprehensive resource for private international law.
+  <div>
+    <div class="mb-12 text-center">
+      <h1 class="mb-4 text-4xl font-bold text-cold-purple">Submit New Data</h1>
+      <p class="mx-auto max-w-3xl text-lg text-cold-night-alpha">
+        Choose the type of data you want to submit to the Choice of Law
+        Dataverse. Your contributions help build the most comprehensive resource
+        for private international law.
       </p>
     </div>
 
-    <GridContainer class="max-w-6xl mx-auto">
+    <GridContainer class="mx-auto max-w-6xl gap-y-6">
       <GridItem :cols="6" :md-cols="4">
         <ConnectCard
           title="Court Decision"
@@ -76,13 +77,14 @@
       </GridItem>
     </GridContainer>
 
-    <div class="text-center mt-12">
-      <p class="text-sm text-cold-night-alpha max-w-2xl mx-auto">
-        Please ensure you have the necessary rights and permissions before submitting any content. 
-        All submissions are subject to review and may be edited for clarity and consistency.
+    <div class="mt-12 text-center">
+      <p class="mx-auto max-w-2xl text-sm text-cold-night-alpha">
+        Please ensure you have the necessary rights and permissions before
+        submitting any content. All submissions are subject to review and may be
+        edited for clarity and consistency.
       </p>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup>
@@ -96,9 +98,10 @@ useHead({
   meta: [
     {
       name: "description",
-      content: "Submit new data to the Choice of Law Dataverse. Add court decisions, legal instruments, and academic literature to help build the most comprehensive private international law resource."
-    }
-  ]
+      content:
+        "Submit new data to the Choice of Law Dataverse. Add court decisions, legal instruments, and academic literature to help build the most comprehensive private international law resource.",
+    },
+  ],
 });
 </script>
 

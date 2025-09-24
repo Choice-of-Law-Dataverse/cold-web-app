@@ -5,7 +5,16 @@
       {{ subtitle }}
     </p>
     <div class="icon-container">
+      <NuxtLink v-if="isRelativeLink" :to="buttonLink">
+        <template v-if="imageSrc">
+          <img :src="imageSrc" alt="" class="h-20 max-w-full" >
+        </template>
+        <template v-else>
+          <Icon :name="iconName" size="72" class="text-cold-green" />
+        </template>
+      </NuxtLink>
       <a
+        v-else
         :href="buttonLink"
         :target="newTab ? '_blank' : '_self'"
         :rel="newTab ? 'noopener noreferrer' : ''"
@@ -19,7 +28,18 @@
       </a>
     </div>
     <div class="link-container">
+      <NuxtLink v-if="isRelativeLink" :to="buttonLink">
+        <UButton
+          class="suggestion-button"
+          variant="link"
+          :icon="buttonIcon"
+          trailing
+        >
+          {{ buttonText }}
+        </UButton>
+      </NuxtLink>
       <a
+        v-else
         :href="buttonLink"
         :target="newTab ? '_blank' : '_self'"
         :rel="newTab ? 'noopener noreferrer' : ''"
@@ -38,7 +58,9 @@
 </template>
 
 <script setup>
-defineProps({
+import { computed } from "vue";
+
+const props = defineProps({
   title: {
     type: String,
     required: true,
@@ -75,6 +97,15 @@ defineProps({
     required: false,
     default: "",
   },
+});
+
+// Check if the link is relative (internal) or absolute (external)
+const isRelativeLink = computed(() => {
+  return (
+    props.buttonLink.startsWith("/") ||
+    (!props.buttonLink.includes("://") &&
+      !props.buttonLink.startsWith("mailto:"))
+  );
 });
 </script>
 
