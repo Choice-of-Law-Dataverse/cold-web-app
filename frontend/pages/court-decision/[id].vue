@@ -223,7 +223,7 @@ defineProps({
 
 const route = useRoute();
 
-const { data: courtDecision, isLoading } = useCourtDecision(
+const { data: courtDecision, isLoading, error } = useCourtDecision(
   computed(() => route.params.id),
 );
 

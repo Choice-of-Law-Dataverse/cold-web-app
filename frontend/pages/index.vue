@@ -187,7 +187,6 @@ import PopularSearches from "@/components/landing-page/PopularSearches.vue";
 import TopLiteratureThemes from "@/components/landing-page/TopLiteratureThemes.vue";
 import JurisdictionMap from "@/components/landing-page/JurisdictionMap.vue";
 import CountrySelectMenu from "@/components/landing-page/TempJurisdictionPicker.vue";
-import PlotCourtDecisionsJurisdiction from "@/components/landing-page/PlotCourtDecisionsJurisdiction.vue";
 import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
@@ -199,6 +198,8 @@ import { useHead } from "#imports";
 import ImportantQuestions from "~/components/landing-page/ImportantQuestions.vue";
 import GridContainer from "@/components/layout/GridContainer.vue";
 import GridItem from "@/components/layout/GridItem.vue";
+import PlotCourtDecisionsJurisdiction from "@/components/landing-page/PlotCourtDecisionsJurisdiction.vue";
+
 const links = externalLinks;
 
 useHead({
