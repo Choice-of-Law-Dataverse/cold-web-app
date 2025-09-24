@@ -2,7 +2,7 @@
   <div>
     <BaseDetailLayout
       :loading="isLoading"
-      :result-data="processedAnswerData"
+      :result-data="processedAnswerData || {}"
       :key-label-pairs="keyLabelPairs"
       :value-class-map="valueClassMap"
       :show-suggest-edit="true"
@@ -12,22 +12,10 @@
       <template #domestic-legal-provisions="{ value }">
         <section class="section-gap">
           <span class="label flex flex-row items-center">
-            {{
-              keyLabelPairs.find(
-                (pair) => pair.key === "Domestic Legal Provisions",
-              )?.label || "Source fallback"
-            }}
+            {{ keyLabelLookup.get("Domestic Legal Provisions")?.label || "Source fallback" }}
             <InfoPopover
-              v-if="
-                keyLabelPairs.find(
-                  (pair) => pair.key === 'Domestic Legal Provisions',
-                )?.tooltip
-              "
-              :text="
-                keyLabelPairs.find(
-                  (pair) => pair.key === 'Domestic Legal Provisions',
-                )?.tooltip
-              "
+              v-if="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+              :text="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
             />
           </span>
           <QuestionSourceList
@@ -50,28 +38,17 @@
       <template #court-decisions-id="{ value }">
         <section id="related-court-decisions" class="section-gap">
           <span class="label flex flex-row items-center">
-            {{
-              keyLabelPairs.find((pair) => pair.key === "Court Decisions ID")
-                ?.label || "Related Court Decisions"
-            }}
+            {{ keyLabelLookup.get("Court Decisions ID")?.label || "Related Court Decisions" }}
             <InfoPopover
-              v-if="
-                keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
-                  ?.tooltip
-              "
-              :text="
-                keyLabelPairs.find((pair) => pair.key === 'Court Decisions ID')
-                  ?.tooltip
-              "
+              v-if="keyLabelLookup.get('Court Decisions ID')?.tooltip"
+              :text="keyLabelLookup.get('Court Decisions ID')?.tooltip"
             />
           </span>
           <CourtDecisionRenderer
             :value="value"
             :value-class-map="valueClassMap['Court Decisions ID']"
             :empty-value-behavior="
-              keyLabelPairs.find(
-                (pair) => pair.key === 'Domestic Legal Provisions',
-              )?.emptyValueBehavior
+              keyLabelLookup.get('Domestic Legal Provisions')?.emptyValueBehavior
             "
           />
         </section>
@@ -81,24 +58,16 @@
         <section class="section-gap">
           <RelatedLiterature
             :themes="processedAnswerData?.Themes"
-            :literature-id="
-              processedAnswerData?.['Jurisdictions Literature ID']
-            "
+            :literature-id="processedAnswerData?.['Jurisdictions Literature ID']"
             :mode="'both'"
             :value-class-map="valueClassMap['Related Literature']"
-            :label="
-              keyLabelPairs.find((pair) => pair.key === 'Related Literature')
-                ?.label || 'Related Literature'
-            "
+            :label="keyLabelLookup.get('Related Literature')?.label || 'Related Literature'"
             :empty-value-behavior="
               questionConfig.keyLabelPairs.find(
                 (pair) => pair.key === 'Related Literature',
               )?.emptyValueBehavior
             "
-            :tooltip="
-              keyLabelPairs.find((pair) => pair.key === 'Related Literature')
-                ?.tooltip
-            "
+            :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
           />
         </section>
       </template>
@@ -107,8 +76,8 @@
   </div>
 </template>
 
-<script setup>
-import { onMounted, nextTick, watch } from "vue";
+<script setup lang="ts">
+import { computed, onMounted, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import CourtDecisionRenderer from "@/components/legal/CourtDecisionRenderer.vue";
@@ -118,29 +87,86 @@ import CountryReportLink from "@/components/ui/CountryReportLink.vue";
 import InfoPopover from "~/components/ui/InfoPopover.vue";
 import { useAnswer } from "@/composables/useAnswer";
 import { questionConfig } from "@/config/pageConfigs";
-import { useHead } from "#imports";
+import { useSeoMeta } from "#imports";
+
+interface AnswerData {
+  Question?: string;
+  Jurisdictions?: string;
+  Themes?: string;
+  'Jurisdictions Literature ID'?: string;
+  'Domestic Legal Provisions'?: string;
+  'Court Decisions ID'?: string | string[];
+  [key: string]: unknown;
+}
 
 const route = useRoute();
 
 const { data: answerData, isLoading } = useAnswer(
-  computed(() => route.params.id),
+  computed(() => route.params.id as string),
 );
 
 const { keyLabelPairs, valueClassMap } = questionConfig;
 
+// Create lookup map for better performance
+const keyLabelLookup = computed(() => {
+  const map = new Map();
+  keyLabelPairs.forEach(pair => {
+    map.set(pair.key, pair);
+  });
+  return map;
+});
+
 // Preprocess data to handle custom rendering cases
 const processedAnswerData = computed(() => {
   if (!answerData.value) return null;
+  
+  const courtDecisionsId = answerData.value["Court Decisions ID"];
+  
   return {
     ...answerData.value,
-    "Domestic Legal Provisions":
-      answerData.value["Domestic Legal Provisions"] || "",
-    "Court Decisions ID": answerData.value["Court Decisions ID"]
-      ? answerData.value["Court Decisions ID"]
-          .split(",")
-          .map((caseId) => caseId.trim())
+    "Domestic Legal Provisions": (answerData.value["Domestic Legal Provisions"] as string) || "",
+    "Court Decisions ID": typeof courtDecisionsId === 'string'
+      ? courtDecisionsId.split(",").map((caseId: string) => caseId.trim())
       : [],
-  };
+  } as AnswerData;
+});
+
+// Simplify page title generation
+const pageTitle = computed(() => {
+  if (!answerData.value) return "CoLD";
+  
+  const question = answerData.value.Question || "";
+  const jurisdictions = answerData.value.Jurisdictions || "";
+  
+  if (question && jurisdictions) {
+    return `${jurisdictions}: ${question} — CoLD`;
+  } else if (question) {
+    return `${question} — CoLD`;
+  } else if (jurisdictions) {
+    return `${jurisdictions} — CoLD`;
+  }
+  
+  return "CoLD";
+});
+
+// Use useSeoMeta for better performance
+useSeoMeta({
+  title: pageTitle,
+  description: pageTitle,
+  ogTitle: pageTitle,
+  ogDescription: pageTitle,
+  twitterTitle: pageTitle,
+  twitterDescription: pageTitle,
+});
+
+// Canonical URL
+useHead({
+  link: [
+    {
+      rel: "canonical",
+      href: `https://cold.global${route.fullPath}`,
+    },
+  ],
 });
 
 onMounted(async () => {
@@ -153,38 +179,4 @@ onMounted(async () => {
     }
   }
 });
-
-// Set dynamic page title: 'Jurisdictions: Question — CoLD'
-watch(
-  answerData,
-  (newVal) => {
-    if (!newVal) return;
-    const question = newVal["Question"] || "";
-    const jurisdictions = newVal["Jurisdictions"] || "";
-    let pageTitle = "CoLD";
-    if (question && jurisdictions) {
-      pageTitle = `${jurisdictions}: ${question} — CoLD`;
-    } else if (question) {
-      pageTitle = `${question} — CoLD`;
-    } else if (jurisdictions) {
-      pageTitle = `${jurisdictions} — CoLD`;
-    }
-    useHead({
-      title: pageTitle,
-      link: [
-        {
-          rel: "canonical",
-          href: `https://cold.global${route.fullPath}`,
-        },
-      ],
-      meta: [
-        {
-          name: "description",
-          content: pageTitle,
-        },
-      ],
-    });
-  },
-  { immediate: true },
-);
 </script>
