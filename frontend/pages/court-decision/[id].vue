@@ -2,7 +2,7 @@
   <div>
     <BaseDetailLayout
       :loading="isLoading"
-      :result-data="courtDecision"
+      :result-data="courtDecision || {}"
       :key-label-pairs="computedKeyLabelPairs"
       :value-class-map="valueClassMap"
       :show-suggest-edit="true"
@@ -15,16 +15,8 @@
             v-if="value"
             :id="value"
             section="Domestic Legal Provisions"
-            :section-label="
-              courtDecisionConfig.keyLabelPairs.find(
-                (pair) => pair.key === 'Domestic Legal Provisions',
-              )?.label
-            "
-            :section-tooltip="
-              courtDecisionConfig.keyLabelPairs.find(
-                (pair) => pair.key === 'Domestic Legal Provisions',
-              )?.tooltip
-            "
+            :section-label="keyLabelLookup.get('Domestic Legal Provisions')?.label"
+            :section-tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
             table="Domestic Instruments"
             class="mb-8"
           />
@@ -43,14 +35,8 @@
               <div class="flex items-center">
                 <span class="label flex flex-row items-center">Quote</span>
                 <InfoPopover
-                  v-if="
-                    computedKeyLabelPairs.find((pair) => pair.key === 'Quote')
-                      ?.tooltip
-                  "
-                  :text="
-                    computedKeyLabelPairs.find((pair) => pair.key === 'Quote')
-                      ?.tooltip
-                  "
+                  v-if="keyLabelLookup.get('Quote')?.tooltip"
+                  :text="keyLabelLookup.get('Quote')?.tooltip"
                   class="ml-[-8px]"
                 />
               </div>
@@ -125,11 +111,7 @@
             :themes="courtDecision.themes"
             :value-class-map="valueClassMap['Related Literature']"
             :use-id="false"
-            :tooltip="
-              computedKeyLabelPairs.find(
-                (pair) => pair.key === 'Related Literature',
-              )?.tooltip
-            "
+            :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
           />
         </section>
       </template>
@@ -142,11 +124,7 @@
         >
           <div class="mb-2 mt-12 flex items-center">
             <span class="label">
-              {{
-                computedKeyLabelPairs.find(
-                  (pair) => pair.key === "Original Text",
-                )?.label || "Full Text"
-              }}
+              {{ keyLabelLookup.get("Original Text")?.label || "Full Text" }}
             </span>
           </div>
           <div :class="valueClassMap['Original Text']">
@@ -201,8 +179,8 @@
   </div>
 </template>
 
-<script setup>
-import { computed, watch, ref } from "vue";
+<script setup lang="ts">
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
@@ -212,7 +190,7 @@ import ProvisionRenderer from "@/components/legal/SectionRenderer.vue";
 import { useCourtDecision } from "@/composables/useCourtDecision";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { courtDecisionConfig } from "@/config/pageConfigs";
-import { useHead } from "#imports";
+import { useSeoMeta } from "#imports";
 
 defineProps({
   iconClass: {
@@ -224,7 +202,7 @@ defineProps({
 const route = useRoute();
 
 const { data: courtDecision, isLoading, error } = useCourtDecision(
-  computed(() => route.params.id),
+  computed(() => route.params.id as string),
 );
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
@@ -237,6 +215,15 @@ const showEnglishQuote = ref(true);
 // For Full Text show more/less
 const showFullText = ref(false);
 
+// Create lookup map for keyLabelPairs to avoid repetitive find operations
+const keyLabelLookup = computed(() => {
+  const map = new Map();
+  courtDecisionConfig.keyLabelPairs.forEach(pair => {
+    map.set(pair.key, pair);
+  });
+  return map;
+});
+
 // PDF download link logic (same as BaseCardHeader.vue)
 const downloadPDFLink = computed(() => {
   const segments = route.path.split("/").filter(Boolean);
@@ -246,35 +233,37 @@ const downloadPDFLink = computed(() => {
   return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`;
 });
 
-// Set dynamic page title based on Case Title or Citation
-watch(
-  courtDecision,
-  (newVal) => {
-    if (!newVal) return;
-    const caseTitle = newVal["Case Title"];
-    const citation = newVal["Case Citation"];
-    const pageTitle =
-      caseTitle && caseTitle.trim() && caseTitle !== "Not found"
-        ? `${caseTitle} — CoLD`
-        : citation && citation.trim()
-          ? `${citation} — CoLD`
-          : "Court Decision — CoLD";
-    useHead({
-      title: pageTitle,
-      link: [
-        {
-          rel: "canonical",
-          href: `https://cold.global${route.fullPath}`,
-        },
-      ],
-      meta: [
-        {
-          name: "description",
-          content: pageTitle,
-        },
-      ],
-    });
-  },
-  { immediate: true },
-);
+// Simplify page title generation with computed property
+const pageTitle = computed(() => {
+  if (!courtDecision.value) return "Court Decision — CoLD";
+  const caseTitle = (courtDecision.value as any)["Case Title"];
+  const citation = (courtDecision.value as any)["Case Citation"];
+  
+  if (caseTitle?.trim() && caseTitle !== "Not found") {
+    return `${caseTitle} — CoLD`;
+  } else if (citation?.trim()) {
+    return `${citation} — CoLD`;
+  }
+  return "Court Decision — CoLD";
+});
+
+// Use useSeoMeta for better performance
+useSeoMeta({
+  title: pageTitle,
+  description: pageTitle,
+  ogTitle: pageTitle,
+  ogDescription: pageTitle,
+  twitterTitle: pageTitle,
+  twitterDescription: pageTitle,
+});
+
+// Canonical URL
+useHead({
+  link: [
+    {
+      rel: "canonical",
+      href: `https://cold.global${route.fullPath}`,
+    },
+  ],
+});
 </script>

@@ -2,7 +2,7 @@
   <div>
     <BaseDetailLayout
       :loading="isLoading.value"
-      :result-data="jurisdictionData"
+      :result-data="jurisdictionData || {}"
       :key-label-pairs="keyLabelPairsWithoutLegalFamily"
       :value-class-map="valueClassMap"
       :formatted-jurisdiction="[jurisdictionData?.Name]"
@@ -162,8 +162,8 @@
   </div>
 </template>
 
-<script setup>
-import { computed, watch } from "vue";
+<script setup lang="ts">
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 // import JurisdictionComparison from '@/components/jurisdiction-comparison/JurisdictionComparison.vue'
@@ -177,24 +177,24 @@ import {
   useCourtDecisionsCount,
 } from "@/composables/useJurisdictionCounts";
 import { jurisdictionConfig } from "@/config/pageConfigs";
-import { useHead } from "#app";
+import { useSeoMeta } from "#app";
 
 const route = useRoute();
 
 const { keyLabelPairs, valueClassMap } = jurisdictionConfig;
 
-const compareJurisdiction = ref(null);
+const compareJurisdiction = ref<string | null>(null);
 
 const { isLoading: isJurisdictionLoading, data: jurisdictionData } =
-  useJurisdiction(computed(() => route.params.id));
+  useJurisdiction(computed(() => route.params.id as string));
 
 const { data: courtDecisionCount, isLoading: courtDecisionCountLoading } =
-  useCourtDecisionsCount(computed(() => jurisdictionData.value?.Name));
+  useCourtDecisionsCount(computed(() => (jurisdictionData.value as any)?.Name as string));
 
 const {
   data: domesticInstrumentCount,
   isLoading: domesticInstrumentCountLoading,
-} = useDomesticInstrumentsCount(computed(() => jurisdictionData.value?.Name));
+} = useDomesticInstrumentsCount(computed(() => (jurisdictionData.value as any)?.Name as string));
 
 // Remove Legal Family from keyLabelPairs for detail display
 const keyLabelPairsWithoutLegalFamily = computed(() =>
@@ -202,7 +202,7 @@ const keyLabelPairsWithoutLegalFamily = computed(() =>
 );
 
 // Set compare jurisdiction from query parameter
-compareJurisdiction.value = route.query.c || null;
+compareJurisdiction.value = (route.query.c as string) || null;
 
 const isLoading = computed(
   () =>
@@ -213,32 +213,32 @@ const isLoading = computed(
     domesticInstrumentCountLoading,
 );
 
-// Set dynamic page title based on 'Name'
-watch(
-  jurisdictionData,
-  (newVal) => {
-    if (!newVal) return;
-    const name = newVal.Name;
-    const pageTitle =
-      name && name.trim()
-        ? `${name} Country Report — CoLD`
-        : "Jurisdiction Country Report — CoLD";
-    useHead({
-      title: pageTitle,
-      link: [
-        {
-          rel: "canonical",
-          href: `https://cold.global${route.fullPath}`,
-        },
-      ],
-      meta: [
-        {
-          name: "description",
-          content: pageTitle,
-        },
-      ],
-    });
-  },
-  { immediate: true },
-);
+// Simplify page title generation with computed property
+const pageTitle = computed(() => {
+  if (!jurisdictionData.value) return "Jurisdiction Country Report — CoLD";
+  const name = (jurisdictionData.value as any)?.Name;
+  return name?.trim()
+    ? `${name} Country Report — CoLD`
+    : "Jurisdiction Country Report — CoLD";
+});
+
+// Use useSeoMeta for better performance
+useSeoMeta({
+  title: pageTitle,
+  description: pageTitle,
+  ogTitle: pageTitle,
+  ogDescription: pageTitle,
+  twitterTitle: pageTitle,
+  twitterDescription: pageTitle,
+});
+
+// Canonical URL
+useHead({
+  link: [
+    {
+      rel: "canonical",
+      href: `https://cold.global${route.fullPath}`,
+    },
+  ],
+});
 </script>

@@ -1,7 +1,7 @@
 <template>
   <BaseDetailLayout
     :loading="loading"
-    :result-data="processedArbitralAward"
+    :result-data="processedArbitralAward || {}"
     :key-label-pairs="computedKeyLabelPairs"
     :value-class-map="valueClassMap"
     :formatted-jurisdiction="formattedJurisdictions"
@@ -11,22 +11,28 @@
   />
 </template>
 
-<script setup>
-import { ref, computed, watch } from "vue";
+<script setup lang="ts">
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { arbitralAwardConfig } from "@/config/pageConfigs";
-import { useHead } from "#imports";
+import { useSeoMeta } from "#imports";
+import type { TableName } from "~/types/api";
+
+interface ArbitralAwardRecord {
+  "Case Number"?: string;
+  [key: string]: unknown;
+}
 
 const route = useRoute();
 
-// Use TanStack Vue Query for data fetching
-const table = ref("Arbitral Awards");
-const id = ref(route.params.id);
+// Use TanStack Vue Query for data fetching - no need for refs with static values
+const table = ref<TableName>("Arbitral Awards");
+const id = ref(route.params.id as string);
 
-const { data: arbitralAward, isLoading: loading } = useRecordDetails(table, id);
+const { data: arbitralAward, isLoading: loading } = useRecordDetails<ArbitralAwardRecord>(table, id);
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   arbitralAward,
@@ -73,24 +79,29 @@ const formattedThemes = computed(() => {
   return [...new Set(themes)];
 });
 
-// Dynamic page title based on Title
-watch(
-  processedArbitralAward,
-  (newVal) => {
-    if (!newVal) return;
-    const title = newVal["Case Number"];
-    const pageTitle =
-      title && String(title).trim()
-        ? `Arbitral Award Case Number ${title} — CoLD`
-        : "Arbitral Award — CoLD";
-    useHead({
-      title: pageTitle,
-      link: [
-        { rel: "canonical", href: `https://cold.global${route.fullPath}` },
-      ],
-      meta: [{ name: "description", content: pageTitle }],
-    });
-  },
-  { immediate: true },
-);
+// Simplify page title generation with computed property
+const pageTitle = computed(() => {
+  if (!processedArbitralAward.value) return "Arbitral Award — CoLD";
+  const title = processedArbitralAward.value["Case Number"];
+  return title && String(title).trim()
+    ? `Arbitral Award Case Number ${title} — CoLD`
+    : "Arbitral Award — CoLD";
+});
+
+// Use useSeoMeta for better performance
+useSeoMeta({
+  title: pageTitle,
+  description: pageTitle,
+  ogTitle: pageTitle,
+  ogDescription: pageTitle,
+  twitterTitle: pageTitle,
+  twitterDescription: pageTitle,
+});
+
+// Canonical URL
+useHead({
+  link: [
+    { rel: "canonical", href: `https://cold.global${route.fullPath}` },
+  ],
+});
 </script>

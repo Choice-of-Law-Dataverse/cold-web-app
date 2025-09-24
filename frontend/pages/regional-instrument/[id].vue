@@ -1,7 +1,7 @@
 <template>
   <BaseDetailLayout
     :loading="loading"
-    :result-data="processedRegionalInstrument"
+    :result-data="processedRegionalInstrument || {}"
     :key-label-pairs="computedKeyLabelPairs"
     :value-class-map="valueClassMap"
     :show-suggest-edit="true"
@@ -76,8 +76,8 @@
   </BaseDetailLayout>
 </template>
 
-<script setup>
-import { ref, computed, watch } from "vue";
+<script setup lang="ts">
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
@@ -86,15 +86,24 @@ import { regionalInstrumentConfig } from "@/config/pageConfigs";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import InfoPopover from "~/components/ui/InfoPopover.vue";
-import { useHead } from "#imports";
+import { useSeoMeta } from "#imports";
+import type { TableName } from "~/types/api";
+
+interface RegionalInstrumentRecord {
+  Abbreviation?: string;
+  "Official Title"?: string;
+  [key: string]: unknown;
+}
 
 const route = useRoute();
+const textType = ref("Full Text of the Provision (English Translation)");
+const hasEnglishTranslation = ref(false);
 
-// Use TanStack Vue Query for data fetching
-const table = ref("Regional Instruments");
-const id = ref(route.params.id);
+// Use TanStack Vue Query for data fetching - no need for refs with static values
+const table = ref<TableName>("Regional Instruments");
+const id = ref(route.params.id as string);
 
-const { data: regionalInstrument, isLoading: loading } = useRecordDetails(
+const { data: regionalInstrument, isLoading: loading } = useRecordDetails<RegionalInstrumentRecord>(
   table,
   id,
 );
@@ -112,33 +121,35 @@ const processedRegionalInstrument = computed(() => {
       regionalInstrument.value["Name"],
     Date: regionalInstrument.value["Date"],
     URL: regionalInstrument.value["URL"] || regionalInstrument.value["Link"],
+    Title: (regionalInstrument.value as any)["Title"],
+    Literature: (regionalInstrument.value as any)["Literature"],
   };
 });
 
-// Set dynamic page title based on 'Abbreviation'
-watch(
-  processedRegionalInstrument,
-  (newVal) => {
-    if (!newVal) return;
-    const abbr = newVal["Abbreviation"];
-    const pageTitle =
-      abbr && abbr.trim() ? `${abbr} — CoLD` : "Regional Instrument — CoLD";
-    useHead({
-      title: pageTitle,
-      link: [
-        {
-          rel: "canonical",
-          href: `https://cold.global${route.fullPath}`,
-        },
-      ],
-      meta: [
-        {
-          name: "description",
-          content: pageTitle,
-        },
-      ],
-    });
-  },
-  { immediate: true },
-);
+// Simplify page title generation with computed property
+const pageTitle = computed(() => {
+  if (!processedRegionalInstrument.value) return "Regional Instrument — CoLD";
+  const abbr = processedRegionalInstrument.value["Abbreviation"];
+  return abbr?.trim() ? `${abbr} — CoLD` : "Regional Instrument — CoLD";
+});
+
+// Use useSeoMeta for better performance
+useSeoMeta({
+  title: pageTitle,
+  description: pageTitle,
+  ogTitle: pageTitle,
+  ogDescription: pageTitle,
+  twitterTitle: pageTitle,
+  twitterDescription: pageTitle,
+});
+
+// Canonical URL
+useHead({
+  link: [
+    {
+      rel: "canonical",
+      href: `https://cold.global${route.fullPath}`,
+    },
+  ],
+});
 </script>

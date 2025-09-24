@@ -1,7 +1,7 @@
 <template>
   <BaseDetailLayout
     :loading="loading"
-    :result-data="processedInternationalInstrument"
+    :result-data="processedInternationalInstrument || {}"
     :key-label-pairs="computedKeyLabelPairs"
     :value-class-map="valueClassMap"
     :show-suggest-edit="true"
@@ -81,8 +81,8 @@
   </BaseDetailLayout>
 </template>
 
-<script setup>
-import { ref, computed, watch } from "vue";
+<script setup lang="ts">
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import BaseLegalContent from "@/components/legal/BaseLegalContent.vue";
@@ -93,15 +93,21 @@ import { internationalInstrumentConfig } from "@/config/pageConfigs";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useInternationalLegalProvisions } from "@/composables/useInternationalLegalProvisions";
-import { useHead } from "#imports";
+import { useSeoMeta } from "#imports";
+import type { TableName } from "~/types/api";
+
+interface InternationalInstrumentRecord {
+  Name?: string;  
+  [key: string]: unknown;
+}
 
 const route = useRoute();
 
-// Use TanStack Vue Query for data fetching
-const table = ref("International Instruments");
-const id = ref(route.params.id);
+// Use TanStack Vue Query for data fetching - no need for refs with static values
+const table = ref<TableName>("International Instruments");
+const id = ref(route.params.id as string);
 
-const { data: internationalInstrument, isLoading: loading } = useRecordDetails(
+const { data: internationalInstrument, isLoading: loading } = useRecordDetails<InternationalInstrumentRecord>(
   table,
   id,
 );
@@ -142,32 +148,32 @@ function normalizeAnchorId(str) {
     .toLowerCase();
 }
 
-// Set dynamic page title based on 'Name'
-watch(
-  internationalInstrument,
-  (newVal) => {
-    if (!newVal) return;
-    const name = newVal["Name"];
-    const pageTitle =
-      name && name.trim()
-        ? `${name} — CoLD`
-        : "International Instrument — CoLD";
-    useHead({
-      title: pageTitle,
-      link: [
-        {
-          rel: "canonical",
-          href: `https://cold.global${route.fullPath}`,
-        },
-      ],
-      meta: [
-        {
-          name: "description",
-          content: pageTitle,
-        },
-      ],
-    });
-  },
-  { immediate: true },
-);
+// Simplify page title generation with computed property
+const pageTitle = computed(() => {
+  if (!internationalInstrument.value) return "International Instrument — CoLD";
+  const name = internationalInstrument.value["Name"];
+  return name?.trim()
+    ? `${name} — CoLD`
+    : "International Instrument — CoLD";
+});
+
+// Use useSeoMeta for better performance
+useSeoMeta({
+  title: pageTitle,
+  description: pageTitle,
+  ogTitle: pageTitle,
+  ogDescription: pageTitle,
+  twitterTitle: pageTitle,
+  twitterDescription: pageTitle,
+});
+
+// Canonical URL
+useHead({
+  link: [
+    {
+      rel: "canonical",
+      href: `https://cold.global${route.fullPath}`,
+    },
+  ],
+});
 </script>
