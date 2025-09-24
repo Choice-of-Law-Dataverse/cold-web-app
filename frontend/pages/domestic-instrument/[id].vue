@@ -133,6 +133,7 @@ import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { legalInstrumentConfig } from "@/config/pageConfigs";
 import { useSeoMeta } from "#imports";
+import { generatePageTitle } from "~/utils/page-title";
 import { getSortedProvisionIds } from "@/utils/provision-sorting";
 import type { TableName } from "~/types/api";
 
@@ -185,11 +186,10 @@ const processedLegalInstrument = computed(() => {
   };
 });
 
-// Simplify page title generation
+// Simplify page title generation with helper function
 const pageTitle = computed(() => {
-  if (!processedLegalInstrument.value) return "Domestic Instrument — CoLD";
-  const titleEn = processedLegalInstrument.value["Title (in English)"];
-  return titleEn?.trim() ? `${titleEn} — CoLD` : "Domestic Instrument — CoLD";
+  const titleEn = processedLegalInstrument.value?.["Title (in English)"] as string;
+  return generatePageTitle([titleEn], "Domestic Instrument");
 });
 
 // Use useSeoMeta for better performance

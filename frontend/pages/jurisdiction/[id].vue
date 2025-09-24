@@ -178,6 +178,7 @@ import {
 } from "@/composables/useJurisdictionCounts";
 import { jurisdictionConfig } from "@/config/pageConfigs";
 import { useSeoMeta } from "#app";
+import { generatePageTitle } from "~/utils/page-title";
 
 const route = useRoute();
 
@@ -213,13 +214,10 @@ const isLoading = computed(
     domesticInstrumentCountLoading,
 );
 
-// Simplify page title generation with computed property
+// Simplify page title generation with helper function
 const pageTitle = computed(() => {
-  if (!jurisdictionData.value) return "Jurisdiction Country Report — CoLD";
   const name = (jurisdictionData.value as Record<string, unknown>)?.Name as string;
-  return name?.trim()
-    ? `${name} Country Report — CoLD`
-    : "Jurisdiction Country Report — CoLD";
+  return generatePageTitle([name], "Country Report");
 });
 
 // Use useSeoMeta for better performance

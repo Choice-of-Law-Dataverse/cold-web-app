@@ -47,6 +47,7 @@ import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import InfoPopover from "~/components/ui/InfoPopover.vue";
 import { literatureConfig } from "@/config/pageConfigs";
 import { useSeoMeta } from "#imports";
+import { generatePageTitle } from "~/utils/page-title";
 import type { TableName } from "~/types/api";
 
 interface LiteratureRecord {
@@ -76,11 +77,10 @@ const keyLabelLookup = computed(() => {
   return map;
 });
 
-// Simplify page title generation with computed property
+// Simplify page title generation with helper function
 const pageTitle = computed(() => {
-  if (!literature.value) return "Literature — CoLD";
-  const title = literature.value.Title;
-  return title?.trim() ? `${title} — CoLD` : "Literature — CoLD";
+  const title = literature.value?.Title as string;
+  return generatePageTitle([title], "Literature");
 });
 
 // Use useSeoMeta instead of watch + useHead for better performance

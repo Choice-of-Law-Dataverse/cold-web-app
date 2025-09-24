@@ -94,6 +94,7 @@ import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useInternationalLegalProvisions } from "@/composables/useInternationalLegalProvisions";
 import { useSeoMeta } from "#imports";
+import { generatePageTitle } from "~/utils/page-title";
 import type { TableName } from "~/types/api";
 
 interface InternationalInstrumentRecord {
@@ -150,13 +151,10 @@ function normalizeAnchorId(str: string): string {
     .toLowerCase();
 }
 
-// Simplify page title generation with computed property
+// Simplify page title generation with helper function
 const pageTitle = computed(() => {
-  if (!internationalInstrument.value) return "International Instrument — CoLD";
-  const name = internationalInstrument.value["Name"];
-  return name?.trim()
-    ? `${name} — CoLD`
-    : "International Instrument — CoLD";
+  const name = internationalInstrument.value?.["Name"] as string;
+  return generatePageTitle([name], "International Instrument");
 });
 
 // Use useSeoMeta for better performance

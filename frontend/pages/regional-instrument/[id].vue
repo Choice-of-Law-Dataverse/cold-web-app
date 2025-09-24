@@ -87,6 +87,7 @@ import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import InfoPopover from "~/components/ui/InfoPopover.vue";
 import { useSeoMeta } from "#imports";
+import { generatePageTitle } from "~/utils/page-title";
 import type { TableName } from "~/types/api";
 
 interface RegionalInstrumentRecord {
@@ -126,11 +127,10 @@ const processedRegionalInstrument = computed(() => {
   };
 });
 
-// Simplify page title generation with computed property
+// Simplify page title generation with helper function
 const pageTitle = computed(() => {
-  if (!processedRegionalInstrument.value) return "Regional Instrument — CoLD";
-  const abbr = processedRegionalInstrument.value["Abbreviation"];
-  return abbr?.trim() ? `${abbr} — CoLD` : "Regional Instrument — CoLD";
+  const abbr = processedRegionalInstrument.value?.["Abbreviation"] as string;
+  return generatePageTitle([abbr], "Regional Instrument");
 });
 
 // Use useSeoMeta for better performance

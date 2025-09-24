@@ -191,6 +191,7 @@ import { useCourtDecision } from "@/composables/useCourtDecision";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { courtDecisionConfig } from "@/config/pageConfigs";
 import { useSeoMeta } from "#imports";
+import { generatePageTitle } from "~/utils/page-title";
 
 defineProps({
   iconClass: {
@@ -233,19 +234,17 @@ const downloadPDFLink = computed(() => {
   return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`;
 });
 
-// Simplify page title generation with computed property
+// Simplify page title generation with helper function
 const pageTitle = computed(() => {
-  if (!courtDecision.value) return "Court Decision — CoLD";
+  if (!courtDecision.value) return generatePageTitle([], "Court Decision");
   const data = courtDecision.value as Record<string, unknown>;
   const caseTitle = data["Case Title"] as string;
   const citation = data["Case Citation"] as string;
   
-  if (caseTitle?.trim() && caseTitle !== "Not found") {
-    return `${caseTitle} — CoLD`;
-  } else if (citation?.trim()) {
-    return `${citation} — CoLD`;
-  }
-  return "Court Decision — CoLD";
+  // Filter out "Not found" values and prioritize case title over citation
+  const validCaseTitle = caseTitle?.trim() && caseTitle !== "Not found" ? caseTitle : null;
+  
+  return generatePageTitle([validCaseTitle, citation], "Court Decision");
 });
 
 // Use useSeoMeta for better performance
