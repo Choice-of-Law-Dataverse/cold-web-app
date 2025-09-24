@@ -31,18 +31,20 @@
       <div class="section-gap m-0 p-0">
         <UFormGroup size="lg" hint="Required" :error="errors.case_citation">
           <template #label>
-            <span class="label flex flex-row items-center">Case citation</span>
-            <InfoPopover :text="tooltipCaseCitation" />
+            <span class="label flex flex-row items-center">
+              Case citation
+              <InfoPopover :text="tooltipCaseCitation" />
+            </span>
           </template>
           <UInput v-model="caseCitation" class="cold-input mt-2" />
         </UFormGroup>
 
         <UFormGroup size="lg" hint="Required" class="mt-8">
           <template #label>
-            <span class="label flex flex-row items-center"
-              >Publication Date</span
-            >
-            <InfoPopover :text="tooltipPublicationDate" />
+            <span class="label flex flex-row items-center">
+              Publication Date
+              <InfoPopover :text="tooltipPublicationDate" />
+            </span>
           </template>
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton
@@ -151,8 +153,10 @@
 
         <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
           <template #label>
-            <span class="label flex flex-row items-center">Abstract</span>
-            <InfoPopover :text="tooltipAbstract" />
+            <span class="label flex flex-row items-center">
+              Abstract
+              <InfoPopover :text="tooltipAbstract" />
+            </span>
           </template>
           <UTextarea
             v-model="caseAbstract"
@@ -163,8 +167,10 @@
 
         <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
           <template #label>
-            <span class="label flex flex-row items-center">Relevant Facts</span>
-            <InfoPopover :text="tooltipRelevantFacts" />
+            <span class="label flex flex-row items-center">
+              Relevant Facts
+              <InfoPopover :text="tooltipRelevantFacts" />
+            </span>
           </template>
           <UTextarea
             v-model="caseRelevantFacts"
@@ -175,18 +181,20 @@
 
         <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
           <template #label>
-            <span class="label flex flex-row items-center">PIL Provisions</span>
-            <InfoPopover :text="tooltipPILProvisions" />
+            <span class="label flex flex-row items-center">
+              PIL Provisions
+              <InfoPopover :text="tooltipPILProvisions" />
+            </span>
           </template>
           <UInput v-model="casePILProvisions" class="cold-input mt-2" />
         </UFormGroup>
 
         <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
           <template #label>
-            <span class="label flex flex-row items-center"
-              >Choice of Law Issue</span
-            >
-            <InfoPopover :text="tooltipChoiceofLawIssue" />
+            <span class="label flex flex-row items-center">
+              Choice of Law Issue
+              <InfoPopover :text="tooltipChoiceofLawIssue" />
+            </span>
           </template>
           <UTextarea
             v-model="caseChoiceofLawIssue"
@@ -197,10 +205,10 @@
 
         <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
           <template #label>
-            <span class="label flex flex-row items-center"
-              >Court's Position</span
-            >
-            <InfoPopover :text="tooltipCourtsPosition" />
+            <span class="label flex flex-row items-center">
+              Court's Position
+              <InfoPopover :text="tooltipCourtsPosition" />
+            </span>
           </template>
           <UTextarea
             v-model="caseCourtsPosition"
@@ -237,8 +245,10 @@
 
         <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
           <template #label>
-            <span class="label flex flex-row items-center">Quote</span>
-            <InfoPopover :text="tooltipQuote" />
+            <span class="label flex flex-row items-center">
+              Quote
+              <InfoPopover :text="tooltipQuote" />
+            </span>
           </template>
           <UTextarea
             v-model="caseQuote"
@@ -249,8 +259,10 @@
 
         <UFormGroup size="lg" class="mt-8">
           <template #label>
-            <span class="label flex flex-row items-center">Judgment Date</span>
-            <InfoPopover :text="tooltipJudgmentDate" />
+            <span class="label flex flex-row items-center">
+              Judgment Date
+              <InfoPopover :text="tooltipJudgmentDate" />
+            </span>
           </template>
           <UPopover :popper="{ placement: 'bottom-start' }">
             <UButton
@@ -268,16 +280,20 @@
 
         <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
           <template #label>
-            <span class="label flex flex-row items-center">Case Title</span>
-            <InfoPopover :text="tooltipCaseTitle" />
+            <span class="label flex flex-row items-center">
+              Case Title
+              <InfoPopover :text="tooltipCaseTitle" />
+            </span>
           </template>
           <UInput v-model="caseTitle" class="cold-input mt-2" />
         </UFormGroup>
 
         <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
           <template #label>
-            <span class="label flex flex-row items-center">Instance</span>
-            <InfoPopover :text="tooltipInstance" />
+            <span class="label flex flex-row items-center">
+              Instance
+              <InfoPopover :text="tooltipInstance" />
+            </span>
           </template>
           <UInput v-model="caseInstance" class="cold-input mt-2" />
         </UFormGroup>
