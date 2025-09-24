@@ -187,22 +187,26 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed, onMounted, watch } from "vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useJurisdictionComparison } from "@/composables/useJurisdictionComparison";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 
-interface Props {
-  showCaret?: boolean;
-  title?: string;
-  questionIDs?: string[];
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  showCaret: true,
-  title: "Please Set Title",
-  questionIDs: () => [],
+const props = defineProps({
+  showCaret: {
+    type: Boolean,
+    default: true,
+  },
+  title: {
+    type: String,
+    default: "Please Set Title",
+  },
+  questionIDs: {
+    type: Array,
+    required: false,
+    default: () => [],
+  },
 });
 
 // Accordion state

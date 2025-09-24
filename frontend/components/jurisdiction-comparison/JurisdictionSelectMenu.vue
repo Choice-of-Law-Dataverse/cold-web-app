@@ -76,34 +76,34 @@
   </USelectMenu>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { reactive } from "vue";
 import { handleImageError } from "@/utils/handleImageError";
 import { useCoveredCountries } from "@/composables/useCoveredCountries";
 
-interface Props {
-  countries: Record<string, unknown>[];
-  placeholder?: string;
-}
-
-withDefaults(defineProps<Props>(), {
-  placeholder: "Pick a Jurisdiction",
+defineProps({
+  countries: {
+    type: Array,
+    required: true,
+  },
+  placeholder: {
+    type: String,
+    default: "Pick a Jurisdiction",
+  },
 });
 
 const { data: coveredCountries, isLoading } = useCoveredCountries();
 
 // Check if a country is covered
-const isCovered = (alpha3Code: string) => {
+const isCovered = (alpha3Code) => {
   if (!coveredCountries.value || !alpha3Code) return false;
   return coveredCountries.value.has(alpha3Code.toLowerCase());
 };
-
 // Emit selection back to the parent
-const emit = defineEmits<{
-  countrySelected: [country: unknown];
-}>();
+const emit = defineEmits(["countrySelected"]);
 
-const selected = defineModel<string | null>({
+const selected = defineModel({
+  type: String,
   default: null,
 }); // v-model integration
 

@@ -172,7 +172,7 @@
   </main>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed, ref, watch, onMounted, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useSearchFilters } from "@/composables/useSearchFilters";
@@ -208,25 +208,30 @@ const getResultComponent = (source_table) =>
   resultComponentMap[source_table] || ResultCard;
 
 // Props and emits
-interface Props {
-  data?: Record<string, unknown>;
-  filters: Record<string, unknown>;
-  totalMatches?: number;
-  loading?: boolean;
-  canLoadMore?: boolean;
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  data: () => ({ tables: {} }),
-  totalMatches: 0,
-  loading: false,
-  canLoadMore: false,
+const props = defineProps({
+  data: {
+    type: Object,
+    default: () => ({ tables: {} }),
+  },
+  filters: {
+    type: Object,
+    required: true,
+  },
+  totalMatches: {
+    type: Number,
+    default: 0,
+  },
+  loading: {
+    type: Boolean,
+    default: false,
+  },
+  canLoadMore: {
+    type: Boolean,
+    default: false,
+  },
 });
 
-const emit = defineEmits<{
-  "update:filters": [filters: Record<string, unknown>];
-  "load-more": [];
-}>();
+const emit = defineEmits(["update:filters", "load-more"]);
 
 // Router setup
 const route = useRoute();

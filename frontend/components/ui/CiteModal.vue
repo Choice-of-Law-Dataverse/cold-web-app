@@ -2,7 +2,7 @@
   <UModal
     :model-value="modelValue"
     :ui="{ rounded: 'rounded-none' }"
-    @update:model-value="(v) => $emit('update:modelValue', v)"
+    @update:model-value="(v) => emit('update:modelValue', v)"
   >
     <div class="p-6">
       <h2 class="mb-4">Cite This Page</h2>
@@ -31,24 +31,16 @@
   </UModal>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useRoute } from "vue-router";
 
-interface Props {
-  modelValue?: boolean;
+const props = defineProps({
+  modelValue: { type: Boolean, default: false },
   // Optional override if you want to pass a known title directly
-  title?: string;
-}
-
-withDefaults(defineProps<Props>(), {
-  modelValue: false,
-  title: "",
+  title: { type: String, default: "" },
 });
-
-defineEmits<{
-  "update:modelValue": [value: boolean];
-}>();
+const emit = defineEmits(["update:modelValue"]);
 
 const route = useRoute();
 

@@ -140,7 +140,7 @@
   </template>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { useRoute } from "vue-router";
 import { useCoveredCountries } from "@/composables/useCoveredCountries";
 import BackButton from "@/components/ui/BackButton.vue";
@@ -149,50 +149,64 @@ import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 import InfoPopover from "~/components/ui/InfoPopover.vue";
 
-interface Props {
-  loading?: boolean;
-  resultData?: Record<string, unknown>;
-  keyLabelPairs?: Record<string, unknown>[];
-  valueClassMap?: Record<string, string>;
-  formattedSourceTable?: string;
-  showHeader?: boolean;
-  showOpenLink?: boolean;
-  showSuggestEdit?: boolean;
-  formattedJurisdiction?: Record<string, unknown>[];
-  formattedTheme?: Record<string, unknown>[];
-  hideBackButton?: boolean;
-  headerMode?: string;
-  showNotificationBanner?: boolean;
-  notificationBannerMessage?: string;
-  fallbackMessage?: string;
-  icon?: string;
-}
-
 // Props for reusability across pages
-const props = withDefaults(defineProps<Props>(), {
-  loading: false,
-  resultData: () => ({}),
-  keyLabelPairs: () => [],
-  valueClassMap: () => ({}),
-  formattedSourceTable: "",
-  showHeader: true,
-  showOpenLink: false,
-  showSuggestEdit: false,
-  formattedJurisdiction: () => [],
-  formattedTheme: () => [],
-  hideBackButton: false,
-  headerMode: "default",
-  showNotificationBanner: false,
-  notificationBannerMessage: "",
-  fallbackMessage: "",
-  icon: "",
+const props = defineProps({
+  loading: Boolean,
+  resultData: {
+    type: Object,
+    default: () => ({}),
+  },
+  keyLabelPairs: {
+    type: Array,
+    default: () => [],
+  },
+  valueClassMap: {
+    type: Object,
+    default: () => ({}),
+  },
+  formattedSourceTable: {
+    type: String,
+    default: "",
+  }, // Receive the hard-coded value from [id].vue
+  showHeader: {
+    type: Boolean,
+    default: true, // Default to true so headers are shown unless explicitly disabled
+  },
+  showOpenLink: {
+    type: Boolean,
+    default: false,
+  },
+  showSuggestEdit: {
+    type: Boolean,
+    default: false,
+  },
+  formattedJurisdiction: { type: Array, required: false, default: () => [] },
+  formattedTheme: { type: Array, required: false, default: () => [] },
+  hideBackButton: {
+    type: Boolean,
+    default: false,
+  },
+  headerMode: {
+    type: String,
+    default: "default",
+  },
+  showNotificationBanner: Boolean,
+  notificationBannerMessage: {
+    type: String,
+    default: "",
+  },
+  fallbackMessage: {
+    type: String,
+    default: "",
+  },
+  icon: {
+    type: String,
+    required: false,
+    default: "",
+  },
 });
 
-const emit = defineEmits<{
-  save: [];
-  "open-save-modal": [];
-  "open-cancel-modal": [];
-}>();
+const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
 const route = useRoute();
 const isJurisdictionPage = route.path.startsWith("/jurisdiction/");

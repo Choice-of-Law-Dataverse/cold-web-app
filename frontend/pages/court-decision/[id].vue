@@ -201,7 +201,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup>
 import { computed, watch, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
@@ -214,12 +214,11 @@ import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { courtDecisionConfig } from "@/config/pageConfigs";
 import { useHead } from "#imports";
 
-interface Props {
-  iconClass?: string;
-}
-
-withDefaults(defineProps<Props>(), {
-  iconClass: "text-base translate-y-[3px] mt-2 ml-[-12px]",
+defineProps({
+  iconClass: {
+    type: String,
+    default: "text-base translate-y-[3px] mt-2 ml-[-12px]",
+  },
 });
 
 const route = useRoute();
