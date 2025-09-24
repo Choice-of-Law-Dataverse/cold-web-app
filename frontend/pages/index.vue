@@ -172,7 +172,7 @@
           <ConnectCard
             title="Enter new Data"
             button-text="Submit your data"
-            button-link="/court-decision/new"
+            button-link="/submit"
             icon-name="i-material-symbols:add-notes"
             :new-tab="false"
           />
