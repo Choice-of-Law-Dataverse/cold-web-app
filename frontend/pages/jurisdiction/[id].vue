@@ -159,6 +159,12 @@
         </div>
       </template>
     </ClientOnly>
+    
+    <!-- Handle SEO meta tags -->
+    <PageSeoMeta 
+      :title-candidates="[(jurisdictionData as Record<string, unknown>)?.Name as string]" 
+      fallback="Country Report" 
+    />
   </div>
 </template>
 
@@ -171,14 +177,13 @@ import JurisdictionSelector from "@/components/ui/JurisdictionSelector.vue";
 import JurisdictionQuestions from "@/components/content/JurisdictionQuestions.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
+import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
 import { useJurisdiction } from "@/composables/useJurisdictions";
 import {
   useDomesticInstrumentsCount,
   useCourtDecisionsCount,
 } from "@/composables/useJurisdictionCounts";
 import { jurisdictionConfig } from "@/config/pageConfigs";
-import { useSeoMeta } from "#app";
-import { generatePageTitle } from "~/utils/page-title";
 
 const route = useRoute();
 
@@ -213,30 +218,4 @@ const isLoading = computed(
     courtDecisionCountLoading ||
     domesticInstrumentCountLoading,
 );
-
-// Simplify page title generation with helper function
-const pageTitle = computed(() => {
-  const name = (jurisdictionData.value as Record<string, unknown>)?.Name as string;
-  return generatePageTitle([name], "Country Report");
-});
-
-// Use useSeoMeta for better performance
-useSeoMeta({
-  title: pageTitle,
-  description: pageTitle,
-  ogTitle: pageTitle,
-  ogDescription: pageTitle,
-  twitterTitle: pageTitle,
-  twitterDescription: pageTitle,
-});
-
-// Canonical URL
-useHead({
-  link: [
-    {
-      rel: "canonical",
-      href: `https://cold.global${route.fullPath}`,
-    },
-  ],
-});
 </script>

@@ -176,6 +176,17 @@
     <UAlert v-if="error" type="error" class="mx-auto mt-4 max-w-container">
       {{ error }}
     </UAlert>
+    
+    <!-- Handle SEO meta tags -->
+    <PageSeoMeta 
+      :title-candidates="[
+        (courtDecision as Record<string, unknown>)?.['Case Title'] as string !== 'Not found' 
+          ? (courtDecision as Record<string, unknown>)?.['Case Title'] as string
+          : null,
+        (courtDecision as Record<string, unknown>)?.['Case Citation'] as string
+      ]" 
+      fallback="Court Decision" 
+    />
   </div>
 </template>
 
@@ -187,11 +198,10 @@ import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
 import InfoPopover from "~/components/ui/InfoPopover.vue";
 import ProvisionRenderer from "@/components/legal/SectionRenderer.vue";
+import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
 import { useCourtDecision } from "@/composables/useCourtDecision";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { courtDecisionConfig } from "@/config/pageConfigs";
-import { useSeoMeta } from "#imports";
-import { generatePageTitle } from "~/utils/page-title";
 
 defineProps({
   iconClass: {
@@ -232,38 +242,5 @@ const downloadPDFLink = computed(() => {
   const id = segments[1] || "";
   const folder = `${contentType}s`;
   return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`;
-});
-
-// Simplify page title generation with helper function
-const pageTitle = computed(() => {
-  if (!courtDecision.value) return generatePageTitle([], "Court Decision");
-  const data = courtDecision.value as Record<string, unknown>;
-  const caseTitle = data["Case Title"] as string;
-  const citation = data["Case Citation"] as string;
-  
-  // Filter out "Not found" values and prioritize case title over citation
-  const validCaseTitle = caseTitle?.trim() && caseTitle !== "Not found" ? caseTitle : null;
-  
-  return generatePageTitle([validCaseTitle, citation], "Court Decision");
-});
-
-// Use useSeoMeta for better performance
-useSeoMeta({
-  title: pageTitle,
-  description: pageTitle,
-  ogTitle: pageTitle,
-  ogDescription: pageTitle,
-  twitterTitle: pageTitle,
-  twitterDescription: pageTitle,
-});
-
-// Canonical URL
-useHead({
-  link: [
-    {
-      rel: "canonical",
-      href: `https://cold.global${route.fullPath}`,
-    },
-  ],
 });
 </script>

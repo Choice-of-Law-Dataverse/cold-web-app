@@ -1,4 +1,5 @@
 <template>
+  <div>
   <BaseDetailLayout
     :loading="loading"
     :result-data="processedArbitralAward || {}"
@@ -9,6 +10,17 @@
     :show-suggest-edit="true"
     source-table="Arbitral Award"
   />
+  
+  <!-- Handle SEO meta tags -->
+  <PageSeoMeta 
+    :title-candidates="[
+      processedArbitralAward?.['Case Number'] && String(processedArbitralAward['Case Number']).trim() 
+        ? `Case Number ${processedArbitralAward['Case Number']}`
+        : null
+    ]" 
+    fallback="Arbitral Award" 
+  />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -18,8 +30,7 @@ import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { arbitralAwardConfig } from "@/config/pageConfigs";
-import { useSeoMeta } from "#imports";
-import { generatePageTitle } from "~/utils/page-title";
+import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
 import type { TableName } from "~/types/api";
 
 interface ArbitralAwardRecord {
@@ -78,29 +89,5 @@ const formattedThemes = computed(() => {
     .filter((n) => n && String(n).trim())
     .map((n) => String(n).trim());
   return [...new Set(themes)].map(theme => ({ Theme: theme }));
-});
-
-// Simplify page title generation with helper function
-const pageTitle = computed(() => {
-  const caseNumber = processedArbitralAward.value?.["Case Number"];
-  const title = caseNumber && String(caseNumber).trim() ? `Case Number ${caseNumber}` : null;
-  return generatePageTitle([title], "Arbitral Award");
-});
-
-// Use useSeoMeta for better performance
-useSeoMeta({
-  title: pageTitle,
-  description: pageTitle,
-  ogTitle: pageTitle,
-  ogDescription: pageTitle,
-  twitterTitle: pageTitle,
-  twitterDescription: pageTitle,
-});
-
-// Canonical URL
-useHead({
-  link: [
-    { rel: "canonical", href: `https://cold.global${route.fullPath}` },
-  ],
 });
 </script>

@@ -117,6 +117,12 @@
       </template>
     </BaseDetailLayout>
     <CountryReportLink :processed-answer-data="processedLegalInstrument || {}" />
+    
+    <!-- Handle SEO meta tags -->
+    <PageSeoMeta 
+      :title-candidates="[processedLegalInstrument?.['Title (in English)'] as string]" 
+      fallback="Domestic Instrument" 
+    />
   </div>
 </template>
 
@@ -129,11 +135,10 @@ import InfoPopover from "~/components/ui/InfoPopover.vue";
 import SectionRenderer from "@/components/legal/SectionRenderer.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
 import CountryReportLink from "@/components/ui/CountryReportLink.vue";
+import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { legalInstrumentConfig } from "@/config/pageConfigs";
-import { useSeoMeta } from "#imports";
-import { generatePageTitle } from "~/utils/page-title";
 import { getSortedProvisionIds } from "@/utils/provision-sorting";
 import type { TableName } from "~/types/api";
 
@@ -184,32 +189,6 @@ const processedLegalInstrument = computed(() => {
       legalInstrument.value["Title (in English)"] ||
       legalInstrument.value["Official Title"],
   };
-});
-
-// Simplify page title generation with helper function
-const pageTitle = computed(() => {
-  const titleEn = processedLegalInstrument.value?.["Title (in English)"] as string;
-  return generatePageTitle([titleEn], "Domestic Instrument");
-});
-
-// Use useSeoMeta for better performance
-useSeoMeta({
-  title: pageTitle,
-  description: pageTitle,
-  ogTitle: pageTitle,
-  ogDescription: pageTitle,
-  twitterTitle: pageTitle,
-  twitterDescription: pageTitle,
-});
-
-// Canonical URL
-useHead({
-  link: [
-    {
-      rel: "canonical",
-      href: `https://cold.global${route.fullPath}`,
-    },
-  ],
 });
 
 // Helper function to check compatibility 

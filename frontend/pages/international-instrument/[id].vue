@@ -1,4 +1,5 @@
 <template>
+  <div>
   <BaseDetailLayout
     :loading="loading"
     :result-data="processedInternationalInstrument || {}"
@@ -79,6 +80,13 @@
       </section>
     </template>
   </BaseDetailLayout>
+  
+  <!-- Handle SEO meta tags -->
+  <PageSeoMeta 
+    :title-candidates="[internationalInstrument?.['Name'] as string]" 
+    fallback="International Instrument" 
+  />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -93,8 +101,7 @@ import { internationalInstrumentConfig } from "@/config/pageConfigs";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useInternationalLegalProvisions } from "@/composables/useInternationalLegalProvisions";
-import { useSeoMeta } from "#imports";
-import { generatePageTitle } from "~/utils/page-title";
+import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
 import type { TableName } from "~/types/api";
 
 interface InternationalInstrumentRecord {
@@ -150,30 +157,4 @@ function normalizeAnchorId(str: string): string {
     .replace(/[^a-zA-Z0-9\-_]/g, "")
     .toLowerCase();
 }
-
-// Simplify page title generation with helper function
-const pageTitle = computed(() => {
-  const name = internationalInstrument.value?.["Name"] as string;
-  return generatePageTitle([name], "International Instrument");
-});
-
-// Use useSeoMeta for better performance
-useSeoMeta({
-  title: pageTitle,
-  description: pageTitle,
-  ogTitle: pageTitle,
-  ogDescription: pageTitle,
-  twitterTitle: pageTitle,
-  twitterDescription: pageTitle,
-});
-
-// Canonical URL
-useHead({
-  link: [
-    {
-      rel: "canonical",
-      href: `https://cold.global${route.fullPath}`,
-    },
-  ],
-});
 </script>

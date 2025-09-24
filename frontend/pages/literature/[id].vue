@@ -1,4 +1,5 @@
 <template>
+  <div>
   <BaseDetailLayout
     :loading="loading"
     :result-data="literature || {}"
@@ -36,6 +37,13 @@
       </section>
     </template>
   </BaseDetailLayout>
+  
+  <!-- Handle SEO meta tags -->
+  <PageSeoMeta 
+    :title-candidates="[literature?.Title as string]" 
+    fallback="Literature" 
+  />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -45,9 +53,8 @@ import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import InfoPopover from "~/components/ui/InfoPopover.vue";
+import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
 import { literatureConfig } from "@/config/pageConfigs";
-import { useSeoMeta } from "#imports";
-import { generatePageTitle } from "~/utils/page-title";
 import type { TableName } from "~/types/api";
 
 interface LiteratureRecord {
@@ -75,31 +82,5 @@ const keyLabelLookup = computed(() => {
     map.set(pair.key, pair);
   });
   return map;
-});
-
-// Simplify page title generation with helper function
-const pageTitle = computed(() => {
-  const title = literature.value?.Title as string;
-  return generatePageTitle([title], "Literature");
-});
-
-// Use useSeoMeta instead of watch + useHead for better performance
-useSeoMeta({
-  title: pageTitle,
-  description: pageTitle,
-  ogTitle: pageTitle,
-  ogDescription: pageTitle,
-  twitterTitle: pageTitle,
-  twitterDescription: pageTitle,
-});
-
-// Canonical URL
-useHead({
-  link: [
-    {
-      rel: "canonical",
-      href: `https://cold.global${route.fullPath}`,
-    },
-  ],
 });
 </script>

@@ -1,4 +1,5 @@
 <template>
+  <div>
   <BaseDetailLayout
     :loading="loading"
     :result-data="processedRegionalInstrument || {}"
@@ -74,6 +75,13 @@
       </section>
     </template>
   </BaseDetailLayout>
+  
+  <!-- Handle SEO meta tags -->
+  <PageSeoMeta 
+    :title-candidates="[processedRegionalInstrument?.['Abbreviation'] as string]" 
+    fallback="Regional Instrument" 
+  />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -86,8 +94,7 @@ import { regionalInstrumentConfig } from "@/config/pageConfigs";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import InfoPopover from "~/components/ui/InfoPopover.vue";
-import { useSeoMeta } from "#imports";
-import { generatePageTitle } from "~/utils/page-title";
+import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
 import type { TableName } from "~/types/api";
 
 interface RegionalInstrumentRecord {
@@ -125,31 +132,5 @@ const processedRegionalInstrument = computed(() => {
     Title: (regionalInstrument.value as Record<string, unknown>)["Title"],
     Literature: (regionalInstrument.value as Record<string, unknown>)["Literature"],
   };
-});
-
-// Simplify page title generation with helper function
-const pageTitle = computed(() => {
-  const abbr = processedRegionalInstrument.value?.["Abbreviation"] as string;
-  return generatePageTitle([abbr], "Regional Instrument");
-});
-
-// Use useSeoMeta for better performance
-useSeoMeta({
-  title: pageTitle,
-  description: pageTitle,
-  ogTitle: pageTitle,
-  ogDescription: pageTitle,
-  twitterTitle: pageTitle,
-  twitterDescription: pageTitle,
-});
-
-// Canonical URL
-useHead({
-  link: [
-    {
-      rel: "canonical",
-      href: `https://cold.global${route.fullPath}`,
-    },
-  ],
 });
 </script>
