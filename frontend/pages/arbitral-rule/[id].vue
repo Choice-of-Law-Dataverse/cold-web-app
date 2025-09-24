@@ -1,12 +1,20 @@
 <template>
-  <BaseDetailLayout
-    :loading="loading"
-    :result-data="processedArbitralRule || {}"
-    :key-label-pairs="computedKeyLabelPairs"
-    :value-class-map="valueClassMap"
-    :show-suggest-edit="true"
-    source-table="Arbitral Rule"
-  />
+  <div>
+    <BaseDetailLayout
+      :loading="loading"
+      :result-data="processedArbitralRule || {}"
+      :key-label-pairs="computedKeyLabelPairs"
+      :value-class-map="valueClassMap"
+      :show-suggest-edit="true"
+      source-table="Arbitral Rule"
+    />
+    
+    <!-- Handle SEO meta tags -->
+    <PageSeoMeta 
+      :title-candidates="[arbitralRule?.['Set of Rules'] as string]" 
+      fallback="Arbitral Rule" 
+    />
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -16,7 +24,7 @@ import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { arbitralRuleConfig } from "@/config/pageConfigs";
-import { useSeoMeta } from "#imports";
+import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
 import type { TableName } from "~/types/api";
 
 interface ArbitralRuleRecord {
@@ -52,31 +60,5 @@ const processedArbitralRule = computed(() => {
           .join(", ")
       : undefined,
   };
-});
-
-// Simplify page title generation
-const pageTitle = computed(() => {
-  if (!arbitralRule.value) return "Arbitral Rule — CoLD";
-  const title = arbitralRule.value["Set of Rules"];
-  return title && String(title).trim()
-    ? `${title} — CoLD`
-    : "Arbitral Rule — CoLD";
-});
-
-// Use useSeoMeta for better performance
-useSeoMeta({
-  title: pageTitle,
-  description: pageTitle,
-  ogTitle: pageTitle,
-  ogDescription: pageTitle,
-  twitterTitle: pageTitle,
-  twitterDescription: pageTitle,
-});
-
-// Canonical URL
-useHead({
-  link: [
-    { rel: "canonical", href: `https://cold.global${route.fullPath}` },
-  ],
 });
 </script>

@@ -73,6 +73,15 @@
       </template>
     </BaseDetailLayout>
     <CountryReportLink :processed-answer-data="processedAnswerData ?? {}" />
+    
+    <!-- Handle SEO meta tags -->
+    <PageSeoMeta 
+      :title-candidates="[
+        processedAnswerData?.Jurisdictions as string,
+        processedAnswerData?.Question as string
+      ]" 
+      fallback="Question" 
+    />
   </div>
 </template>
 
@@ -85,9 +94,9 @@ import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";
 import CountryReportLink from "@/components/ui/CountryReportLink.vue";
 import InfoPopover from "~/components/ui/InfoPopover.vue";
+import PageSeoMeta from "~/components/seo/PageSeoMeta.vue";
 import { useAnswer } from "@/composables/useAnswer";
 import { questionConfig } from "@/config/pageConfigs";
-import { useSeoMeta } from "#imports";
 
 interface AnswerData {
   Question?: string;
@@ -129,44 +138,6 @@ const processedAnswerData = computed(() => {
       ? courtDecisionsId.split(",").map((caseId: string) => caseId.trim())
       : [],
   } as AnswerData;
-});
-
-// Simplify page title generation
-const pageTitle = computed(() => {
-  if (!answerData.value) return "CoLD";
-  
-  const question = answerData.value.Question || "";
-  const jurisdictions = answerData.value.Jurisdictions || "";
-  
-  if (question && jurisdictions) {
-    return `${jurisdictions}: ${question} — CoLD`;
-  } else if (question) {
-    return `${question} — CoLD`;
-  } else if (jurisdictions) {
-    return `${jurisdictions} — CoLD`;
-  }
-  
-  return "CoLD";
-});
-
-// Use useSeoMeta for better performance
-useSeoMeta({
-  title: pageTitle,
-  description: pageTitle,
-  ogTitle: pageTitle,
-  ogDescription: pageTitle,
-  twitterTitle: pageTitle,
-  twitterDescription: pageTitle,
-});
-
-// Canonical URL
-useHead({
-  link: [
-    {
-      rel: "canonical",
-      href: `https://cold.global${route.fullPath}`,
-    },
-  ],
 });
 
 onMounted(async () => {

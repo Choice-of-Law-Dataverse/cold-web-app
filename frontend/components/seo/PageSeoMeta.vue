@@ -18,6 +18,7 @@ const route = useRoute();
 
 /**
  * Generate consistent page title from candidates and fallback
+ * This computed will reactively update when titleCandidates change (e.g., when async data loads)
  */
 const pageTitle = computed(() => {
   // Filter out null/undefined/empty values and trim whitespace
@@ -34,7 +35,7 @@ const pageTitle = computed(() => {
   return [props.fallback, "CoLD"].join(" — ");
 });
 
-// Handle SEO meta tags
+// Handle SEO meta tags reactively - will update when pageTitle changes
 useSeoMeta({
   title: pageTitle,
   description: pageTitle,
