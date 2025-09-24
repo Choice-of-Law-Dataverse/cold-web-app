@@ -3,7 +3,7 @@ const fetchJurisdictionChartData = async () => {
   const response = await fetch("count_jurisdictions.json");
   const data = await response.json();
 
-  // Transform the JSON data for Plotly
+  // Transform the JSON data for Plot
   const xValues = data.map((item: Record<string, unknown>) => item.n); // Extract 'n' values
   const yValues = data.map(
     (item: Record<string, unknown>) => item.jurisdiction,

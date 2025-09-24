@@ -99,7 +99,7 @@
         </GridItem>
 
         <GridItem :md-cols="8">
-          <ClientOnlyPlotCourtDecisions />
+          <PlotCourtDecisionsJurisdiction />
         </GridItem>
 
         <GridItem :md-cols="4">
@@ -196,12 +196,10 @@ import SuccessfulLegalTransplantations from "@/components/landing-page/Successfu
 import LeadingCases from "@/components/landing-page/LeadingCases.vue";
 import { useHead } from "#imports";
 import ImportantQuestions from "~/components/landing-page/ImportantQuestions.vue";
-
-const PlotCourtDecisionsJurisdiction = defineAsyncComponent(() => 
-  import("@/components/landing-page/PlotCourtDecisionsJurisdiction.vue")
-);
 import GridContainer from "@/components/layout/GridContainer.vue";
 import GridItem from "@/components/layout/GridItem.vue";
+import PlotCourtDecisionsJurisdiction from "@/components/landing-page/PlotCourtDecisionsJurisdiction.vue";
+
 const links = externalLinks;
 
 useHead({

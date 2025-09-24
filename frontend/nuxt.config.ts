@@ -81,9 +81,6 @@ export default defineNuxtConfig({
   tailwindcss: {
     configPath: "./tailwind.config.js",
   },
-  vite: {
-    // Remove plotly from optimizeDeps since we're dynamically importing it
-  },
   app: {
     head: {
       title: "CoLD",
