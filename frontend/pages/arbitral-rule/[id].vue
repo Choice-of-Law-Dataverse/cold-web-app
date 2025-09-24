@@ -1,30 +1,46 @@
 <template>
-  <BaseDetailLayout
-    :loading="loading"
-    :result-data="processedArbitralRule"
-    :key-label-pairs="computedKeyLabelPairs"
-    :value-class-map="valueClassMap"
-    :show-suggest-edit="true"
-    source-table="Arbitral Rule"
-  />
+  <div>
+    <BaseDetailLayout
+      :loading="loading"
+      :result-data="processedArbitralRule || {}"
+      :key-label-pairs="computedKeyLabelPairs"
+      :value-class-map="valueClassMap"
+      :show-suggest-edit="true"
+      source-table="Arbitral Rule"
+    />
+
+    <!-- Handle SEO meta tags -->
+    <PageSeoMeta
+      :title-candidates="[arbitralRule?.['Set of Rules'] as string]"
+      fallback="Arbitral Rule"
+    />
+  </div>
 </template>
 
-<script setup>
-import { ref, computed, watch } from "vue";
+<script setup lang="ts">
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { arbitralRuleConfig } from "@/config/pageConfigs";
-import { useHead } from "#imports";
+import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import type { TableName } from "@/types/api";
+
+interface ArbitralRuleRecord {
+  "Set of Rules"?: string;
+  related_arbitral_institutions?: Array<{ Institution?: string }>;
+  [key: string]: unknown;
+}
 
 const route = useRoute();
 
-// Use TanStack Vue Query for data fetching
-const table = ref("Arbitral Rules");
-const id = ref(route.params.id);
+// Use TanStack Vue Query for data fetching - no need for refs with static values
+const table = ref<TableName>("Arbitral Rules");
+const id = ref(route.params.id as string);
 
-const { data: arbitralRule, isLoading: loading } = useRecordDetails(table, id);
+const { data: arbitralRule, isLoading: loading } =
+  useRecordDetails<ArbitralRuleRecord>(table, id);
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   arbitralRule,
@@ -46,25 +62,4 @@ const processedArbitralRule = computed(() => {
       : undefined,
   };
 });
-
-// Dynamic page title based on Set_of_Rules
-watch(
-  arbitralRule,
-  (newVal) => {
-    if (!newVal) return;
-    const title = newVal["Set of Rules"];
-    const pageTitle =
-      title && String(title).trim()
-        ? `${title} — CoLD`
-        : "Arbitral Rule — CoLD";
-    useHead({
-      title: pageTitle,
-      link: [
-        { rel: "canonical", href: `https://cold.global${route.fullPath}` },
-      ],
-      meta: [{ name: "description", content: pageTitle }],
-    });
-  },
-  { immediate: true },
-);
 </script>

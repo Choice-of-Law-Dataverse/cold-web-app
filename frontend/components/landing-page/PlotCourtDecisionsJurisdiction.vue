@@ -4,15 +4,15 @@
     <p class="result-value-small">
       Click bars to see a jurisdiction's decisions
     </p>
-    
+
     <div v-if="isLoading" class="loading-state">
       <LoadingLandingPageCard />
     </div>
-    
+
     <div v-else-if="data && chartData.length > 0" class="chart-container">
       <div class="chart-bars">
-        <div 
-          v-for="(item, index) in chartData" 
+        <div
+          v-for="(item, index) in chartData"
           :key="index"
           class="bar-row"
           @click="handleBarClick(item.url)"
@@ -21,8 +21,8 @@
         >
           <div class="bar-label">{{ item.jurisdiction }}</div>
           <div class="bar-container">
-            <div 
-              class="bar" 
+            <div
+              class="bar"
               :class="{ 'bar-hovered': hoveredIndex === index }"
               :style="{ width: item.percentage + '%' }"
             >
@@ -47,15 +47,15 @@ const hoveredIndex = ref(-1);
 // Process the data for our simple chart
 const chartData = computed(() => {
   if (!data.value) return [];
-  
+
   const { xValues, yValues, links } = data.value;
   const maxValue = Math.max(...xValues);
-  
+
   return xValues.map((count, index) => ({
     jurisdiction: yValues[index],
     count,
     percentage: (count / maxValue) * 100,
-    url: links[index]
+    url: links[index],
   }));
 });
 
@@ -141,11 +141,11 @@ function handleBarHover(index, isHovering) {
     min-width: 120px;
     font-size: 0.8rem;
   }
-  
+
   .bar-container {
     height: 28px;
   }
-  
+
   .bar-value {
     font-size: 0.8rem;
     padding-right: 0.5rem;

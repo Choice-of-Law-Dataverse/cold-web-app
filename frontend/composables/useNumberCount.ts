@@ -1,7 +1,7 @@
 import { computed } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
-import type { SearchRequest, TableName } from "~/types/api";
+import type { SearchRequest, TableName } from "@/types/api";
 
 const fetchNumberCount = async (tableName: TableName) => {
   if (!tableName) {

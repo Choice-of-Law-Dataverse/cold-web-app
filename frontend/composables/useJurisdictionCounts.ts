@@ -1,6 +1,6 @@
 import { computed, type Ref } from "vue";
 import { useSearch } from "~/composables/useSearch";
-import type { SearchParams } from "~/types/api";
+import type { SearchParams } from "@/types/api";
 
 export const useCourtDecisionsCount = (
   jurisdictionId: Ref<string | undefined>,

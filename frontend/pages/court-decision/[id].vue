@@ -2,7 +2,7 @@
   <div>
     <BaseDetailLayout
       :loading="isLoading"
-      :result-data="courtDecision"
+      :result-data="courtDecision || {}"
       :key-label-pairs="computedKeyLabelPairs"
       :value-class-map="valueClassMap"
       :show-suggest-edit="true"
@@ -16,14 +16,10 @@
             :id="value"
             section="Domestic Legal Provisions"
             :section-label="
-              courtDecisionConfig.keyLabelPairs.find(
-                (pair) => pair.key === 'Domestic Legal Provisions',
-              )?.label
+              keyLabelLookup.get('Domestic Legal Provisions')?.label
             "
             :section-tooltip="
-              courtDecisionConfig.keyLabelPairs.find(
-                (pair) => pair.key === 'Domestic Legal Provisions',
-              )?.tooltip
+              keyLabelLookup.get('Domestic Legal Provisions')?.tooltip
             "
             table="Domestic Instruments"
             class="mb-8"
@@ -43,22 +39,21 @@
               <div class="flex items-center">
                 <span class="label flex flex-row items-center">Quote</span>
                 <InfoPopover
-                  v-if="
-                    computedKeyLabelPairs.find((pair) => pair.key === 'Quote')
-                      ?.tooltip
-                  "
-                  :text="
-                    computedKeyLabelPairs.find((pair) => pair.key === 'Quote')
-                      ?.tooltip
-                  "
+                  v-if="keyLabelLookup.get('Quote')?.tooltip"
+                  :text="keyLabelLookup.get('Quote')?.tooltip"
                   class="ml-[-8px]"
                 />
               </div>
               <div
                 v-if="
-                  courtDecision.hasEnglishQuoteTranslation &&
-                  courtDecision['Quote'] &&
-                  courtDecision['Quote'].trim() !== ''
+                  (courtDecision as Record<string, unknown>)
+                    .hasEnglishQuoteTranslation &&
+                  (courtDecision as Record<string, unknown>)['Quote'] &&
+                  (
+                    (courtDecision as Record<string, unknown>)[
+                      'Quote'
+                    ] as string
+                  )?.trim() !== ''
                 "
                 class="flex items-center gap-1"
               >
@@ -91,12 +86,12 @@
               <span class="whitespace-pre-line">
                 {{
                   showEnglishQuote &&
-                  courtDecision.hasEnglishQuoteTranslation &&
-                  courtDecision["Quote"] &&
-                  courtDecision["Quote"].trim() !== ""
-                    ? courtDecision["Translated Excerpt"]
-                    : courtDecision["Quote"] ||
-                      courtDecision["Translated Excerpt"]
+                  (courtDecision as any).hasEnglishQuoteTranslation &&
+                  (courtDecision as any)["Quote"] &&
+                  (courtDecision as any)["Quote"]?.trim() !== ""
+                    ? (courtDecision as any)["Translated Excerpt"]
+                    : (courtDecision as any)["Quote"] ||
+                      (courtDecision as any)["Translated Excerpt"]
                 }}
               </span>
             </div>
@@ -108,28 +103,29 @@
         <section class="section-gap m-0 p-0">
           <RelatedQuestions
             :jurisdiction-code="
-              courtDecision['Jurisdictions Alpha-3 Code'] || ''
+              ((courtDecision as Record<string, unknown>)?.[
+                'Jurisdictions Alpha-3 Code'
+              ] as string) || ''
             "
-            :questions="courtDecision['Questions'] || ''"
-            :tooltip="
-              computedKeyLabelPairs.find(
-                (pair) => pair.key === 'Related Questions',
-              )?.tooltip
+            :questions="
+              ((courtDecision as Record<string, unknown>)?.[
+                'Questions'
+              ] as string) || ''
             "
+            :tooltip="keyLabelLookup.get('Related Questions')?.tooltip"
           />
         </section>
       </template>
       <template #related-literature>
         <section class="section-gap m-0 p-0">
           <RelatedLiterature
-            :themes="courtDecision.themes"
+            :themes="
+              ((courtDecision as Record<string, unknown>)?.themes as string) ||
+              ''
+            "
             :value-class-map="valueClassMap['Related Literature']"
             :use-id="false"
-            :tooltip="
-              computedKeyLabelPairs.find(
-                (pair) => pair.key === 'Related Literature',
-              )?.tooltip
-            "
+            :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
           />
         </section>
       </template>
@@ -142,11 +138,7 @@
         >
           <div class="mb-2 mt-12 flex items-center">
             <span class="label">
-              {{
-                computedKeyLabelPairs.find(
-                  (pair) => pair.key === "Original Text",
-                )?.label || "Full Text"
-              }}
+              {{ keyLabelLookup.get("Original Text")?.label || "Full Text" }}
             </span>
           </div>
           <div :class="valueClassMap['Original Text']">
@@ -198,21 +190,36 @@
     <UAlert v-if="error" type="error" class="mx-auto mt-4 max-w-container">
       {{ error }}
     </UAlert>
+
+    <!-- Handle SEO meta tags -->
+    <PageSeoMeta
+      :title-candidates="[
+        ((courtDecision as Record<string, unknown>)?.[
+          'Case Title'
+        ] as string) !== 'Not found'
+          ? ((courtDecision as Record<string, unknown>)?.[
+              'Case Title'
+            ] as string)
+          : null,
+        (courtDecision as Record<string, unknown>)?.['Case Citation'] as string,
+      ]"
+      fallback="Court Decision"
+    />
   </div>
 </template>
 
-<script setup>
-import { computed, watch, ref } from "vue";
+<script setup lang="ts">
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
+import InfoPopover from "@/components/ui/InfoPopover.vue";
 import ProvisionRenderer from "@/components/legal/SectionRenderer.vue";
+import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useCourtDecision } from "@/composables/useCourtDecision";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { courtDecisionConfig } from "@/config/pageConfigs";
-import { useHead } from "#imports";
 
 defineProps({
   iconClass: {
@@ -223,9 +230,11 @@ defineProps({
 
 const route = useRoute();
 
-const { data: courtDecision, isLoading, error } = useCourtDecision(
-  computed(() => route.params.id),
-);
+const {
+  data: courtDecision,
+  isLoading,
+  error,
+} = useCourtDecision(computed(() => route.params.id as string));
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   courtDecision,
@@ -237,6 +246,14 @@ const showEnglishQuote = ref(true);
 // For Full Text show more/less
 const showFullText = ref(false);
 
+const keyLabelLookup = computed(() => {
+  const map = new Map();
+  courtDecisionConfig.keyLabelPairs.forEach((pair) => {
+    map.set(pair.key, pair);
+  });
+  return map;
+});
+
 // PDF download link logic (same as BaseCardHeader.vue)
 const downloadPDFLink = computed(() => {
   const segments = route.path.split("/").filter(Boolean);
@@ -245,36 +262,4 @@ const downloadPDFLink = computed(() => {
   const folder = `${contentType}s`;
   return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`;
 });
-
-// Set dynamic page title based on Case Title or Citation
-watch(
-  courtDecision,
-  (newVal) => {
-    if (!newVal) return;
-    const caseTitle = newVal["Case Title"];
-    const citation = newVal["Case Citation"];
-    const pageTitle =
-      caseTitle && caseTitle.trim() && caseTitle !== "Not found"
-        ? `${caseTitle} — CoLD`
-        : citation && citation.trim()
-          ? `${citation} — CoLD`
-          : "Court Decision — CoLD";
-    useHead({
-      title: pageTitle,
-      link: [
-        {
-          rel: "canonical",
-          href: `https://cold.global${route.fullPath}`,
-        },
-      ],
-      meta: [
-        {
-          name: "description",
-          content: pageTitle,
-        },
-      ],
-    });
-  },
-  { immediate: true },
-);
 </script>

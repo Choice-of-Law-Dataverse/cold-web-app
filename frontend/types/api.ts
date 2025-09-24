@@ -152,6 +152,8 @@ export type ApiRequestBody =
  */
 export type TableName =
   | "Answers"
+  | "Arbitral Awards"
+  | "Arbitral Rules"
   | "Court Decisions"
   | "Domestic Instruments"
   | "Domestic Legal Provisions"

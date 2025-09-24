@@ -195,7 +195,7 @@ import RecentDomesticInstruments from "@/components/landing-page/RecentDomesticI
 import SuccessfulLegalTransplantations from "@/components/landing-page/SuccessfulLegalTransplantations.vue";
 import LeadingCases from "@/components/landing-page/LeadingCases.vue";
 import { useHead } from "#imports";
-import ImportantQuestions from "~/components/landing-page/ImportantQuestions.vue";
+import ImportantQuestions from "@/components/landing-page/ImportantQuestions.vue";
 import GridContainer from "@/components/layout/GridContainer.vue";
 import GridItem from "@/components/layout/GridItem.vue";
 import PlotCourtDecisionsJurisdiction from "@/components/landing-page/PlotCourtDecisionsJurisdiction.vue";

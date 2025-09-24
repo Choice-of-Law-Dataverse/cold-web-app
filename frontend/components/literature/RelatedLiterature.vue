@@ -36,7 +36,7 @@
 import { ref, computed, watch, onMounted } from "vue";
 import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
-import InfoPopover from "~/components/ui/InfoPopover.vue";
+import InfoPopover from "@/components/ui/InfoPopover.vue";
 
 import { useApiClient } from "@/composables/useApiClient";
 

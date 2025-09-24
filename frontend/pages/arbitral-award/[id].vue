@@ -1,32 +1,52 @@
 <template>
-  <BaseDetailLayout
-    :loading="loading"
-    :result-data="processedArbitralAward"
-    :key-label-pairs="computedKeyLabelPairs"
-    :value-class-map="valueClassMap"
-    :formatted-jurisdiction="formattedJurisdictions"
-    :formatted-theme="formattedThemes"
-    :show-suggest-edit="true"
-    source-table="Arbitral Award"
-  />
+  <div>
+    <BaseDetailLayout
+      :loading="loading"
+      :result-data="processedArbitralAward || {}"
+      :key-label-pairs="computedKeyLabelPairs"
+      :value-class-map="valueClassMap"
+      :formatted-jurisdiction="formattedJurisdictions || []"
+      :formatted-theme="formattedThemes || []"
+      :show-suggest-edit="true"
+      source-table="Arbitral Award"
+    />
+
+    <!-- Handle SEO meta tags -->
+    <PageSeoMeta
+      :title-candidates="[
+        processedArbitralAward?.['Case Number'] &&
+        String(processedArbitralAward['Case Number']).trim()
+          ? `Case Number ${processedArbitralAward['Case Number']}`
+          : null,
+      ]"
+      fallback="Arbitral Award"
+    />
+  </div>
 </template>
 
-<script setup>
-import { ref, computed, watch } from "vue";
+<script setup lang="ts">
+import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { arbitralAwardConfig } from "@/config/pageConfigs";
-import { useHead } from "#imports";
+import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import type { TableName } from "@/types/api";
+
+interface ArbitralAwardRecord {
+  "Case Number"?: string;
+  [key: string]: unknown;
+}
 
 const route = useRoute();
 
-// Use TanStack Vue Query for data fetching
-const table = ref("Arbitral Awards");
-const id = ref(route.params.id);
+// Use TanStack Vue Query for data fetching - no need for refs with static values
+const table = ref<TableName>("Arbitral Awards");
+const id = ref(route.params.id as string);
 
-const { data: arbitralAward, isLoading: loading } = useRecordDetails(table, id);
+const { data: arbitralAward, isLoading: loading } =
+  useRecordDetails<ArbitralAwardRecord>(table, id);
 
 const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   arbitralAward,
@@ -59,7 +79,7 @@ const formattedJurisdictions = computed(() => {
     .map((j) => j?.Name)
     .filter((n) => n && String(n).trim())
     .map((n) => String(n).trim());
-  return [...new Set(names)];
+  return [...new Set(names)].map((name) => ({ Name: name }));
 });
 
 // Themes for header labels
@@ -70,27 +90,6 @@ const formattedThemes = computed(() => {
     .map((t) => t?.Theme)
     .filter((n) => n && String(n).trim())
     .map((n) => String(n).trim());
-  return [...new Set(themes)];
+  return [...new Set(themes)].map((theme) => ({ Theme: theme }));
 });
-
-// Dynamic page title based on Title
-watch(
-  processedArbitralAward,
-  (newVal) => {
-    if (!newVal) return;
-    const title = newVal["Case Number"];
-    const pageTitle =
-      title && String(title).trim()
-        ? `Arbitral Award Case Number ${title} — CoLD`
-        : "Arbitral Award — CoLD";
-    useHead({
-      title: pageTitle,
-      link: [
-        { rel: "canonical", href: `https://cold.global${route.fullPath}` },
-      ],
-      meta: [{ name: "description", content: pageTitle }],
-    });
-  },
-  { immediate: true },
-);
 </script>

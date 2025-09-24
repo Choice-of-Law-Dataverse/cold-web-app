@@ -1,7 +1,7 @@
 import { computed } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
-import type { FullTableRequest } from "~/types/api";
+import type { FullTableRequest } from "@/types/api";
 
 const fetchQuestionCountries = async ({
   suffix,

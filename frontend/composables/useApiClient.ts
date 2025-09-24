@@ -1,10 +1,10 @@
-import type { ApiRequestBody } from "~/types/api";
+import type { ApiRequestBody } from "@/types/api";
 import {
   ApiError,
   NotFoundError,
   createApiError,
   createNotFoundError,
-} from "~/types/errors";
+} from "@/types/errors";
 
 /**
  * Shared API client hook for TanStack Query composables

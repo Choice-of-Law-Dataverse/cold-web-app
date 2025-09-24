@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
-import type { FullTableRequest, TableName } from "~/types/api";
+import type { FullTableRequest, TableName } from "@/types/api";
 
 async function fetchFullTableData<T>(
   table: TableName,
