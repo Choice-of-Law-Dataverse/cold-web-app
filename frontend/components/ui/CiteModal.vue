@@ -1,3 +1,4 @@
+<!-- eslint-disable vue/no-v-html -->
 <template>
   <UModal
     :model-value="modelValue"
@@ -6,9 +7,11 @@
   >
     <div class="p-6">
       <h2 class="mb-4">Cite This Page</h2>
-      <p class="result-value-small-citation break-words leading-relaxed">
-        {{ citationText }}
-      </p>
+      <!-- eslint-disable-next-line vue/no-v-html -->
+      <p
+        class="result-value-small-citation break-words leading-relaxed"
+        v-html="citationTextDisplay"
+      />
       <div class="mt-2">
         <NuxtLink
           :to="route.fullPath"
@@ -37,7 +40,6 @@ import { useRoute } from "vue-router";
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
-  // Optional override if you want to pass a known title directly
   title: { type: String, default: "" },
 });
 const emit = defineEmits(["update:modelValue"]);
@@ -51,11 +53,9 @@ const copied = ref(false);
 const copying = ref(false);
 
 onMounted(() => {
-  // Safely access browser APIs on client
   pageTitle.value = typeof document !== "undefined" ? document.title || "" : "";
   currentURL.value = typeof window !== "undefined" ? window.location.href : "";
 
-  // Observe <title> changes so we react if another component updates it later
   if (
     typeof window !== "undefined" &&
     typeof MutationObserver !== "undefined"
@@ -102,7 +102,6 @@ function slugToPageType(slug) {
     case "question":
       return "Question";
     default: {
-      // Generic title-case fallback
       if (!slug) return "Page";
       return slug
         .split("-")
@@ -117,40 +116,66 @@ const pageType = computed(() => {
   return slugToPageType(segments[0] || "");
 });
 
-const year = computed(() => new Date().getFullYear());
-const monthYear = computed(() => {
+const accessDate = computed(() => {
   const d = new Date();
+  const day = d.getDate();
   const month = d.toLocaleString("en-US", { month: "long" });
-  return `${month} ${d.getFullYear()}`;
+  const year = d.getFullYear();
+  return `${day} ${month} ${year}`;
+});
+
+const getTitle = (rawTitle, pageType) => {
+  const tokens = rawTitle
+    .split("—")
+    .map((s) => s.trim())
+    .filter((t) => t !== pageType);
+
+  let title = "";
+  switch (pageType) {
+    case "Question":
+      title = `'${tokens[1]}'  — ${tokens[0]}`;
+      break;
+    case "Literature":
+      title = `'${tokens[0]}'`;
+      break;
+    default:
+      title = tokens[0];
+  }
+  return `${title} — ${pageType}`;
+};
+
+const citationTextDisplay = computed(() => {
+  const rawTitle = (props.title && props.title.trim()) || pageTitle.value || "";
+  const title = getTitle(rawTitle, pageType.value);
+  const url = currentURL.value;
+  return `${title}, <em>Choice of Law Dataverse</em>, &lt;${url}&gt; accessed ${accessDate.value}.`;
 });
 
 const citationText = computed(() => {
-  // Pick provided prop title when available, else current document.title
   const rawTitle = (props.title && props.title.trim()) || pageTitle.value || "";
-  // Remove trailing "— CoLD" or "- CoLD" (with or without surrounding spaces)
-  const raw = rawTitle;
-  const cleaned = raw.replace(/[\s\u00A0]*[\u2014-][\s\u00A0]*CoLD\s*$/i, "");
-  // If title ends up being only "CoLD" (or blank), fall back to site name
-  const normalized = cleaned.trim();
-  const title =
-    normalized && !/^CoLD$/i.test(normalized)
-      ? normalized
-      : "Choice of Law Dataverse";
+  const title = getTitle(rawTitle, pageType.value);
   const url = currentURL.value;
-  return `${title}. Choice of Law Dataverse (${year.value}). ${pageType.value} (${monthYear.value}). Licensed under CC BY-SA. Available at: ${url}`;
+  return `${title}, Choice of Law Dataverse, <${url}> accessed ${accessDate.value}.`;
 });
 
 async function copyToClipboard() {
   if (copying.value) return;
   copying.value = true;
-  const text = citationText.value;
+  const htmlText = citationTextDisplay.value;
+  const plainText = citationText.value;
+
   try {
-    if (navigator?.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
+    if (navigator?.clipboard?.write) {
+      const clipboardItem = new ClipboardItem({
+        "text/html": new Blob([htmlText], { type: "text/html" }),
+        "text/plain": new Blob([plainText], { type: "text/plain" }),
+      });
+      await navigator.clipboard.write([clipboardItem]);
+    } else if (navigator?.clipboard?.writeText) {
+      await navigator.clipboard.writeText(plainText);
     } else {
-      // Fallback
       const ta = document.createElement("textarea");
-      ta.value = text;
+      ta.value = plainText;
       ta.setAttribute("readonly", "");
       ta.style.position = "absolute";
       ta.style.left = "-9999px";
@@ -162,7 +187,7 @@ async function copyToClipboard() {
     copied.value = true;
     setTimeout(() => (copied.value = false), 1500);
   } catch {
-    // no-op; keep silent per UX
+    // Silent fail
   } finally {
     copying.value = false;
   }
