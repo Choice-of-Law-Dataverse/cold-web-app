@@ -451,6 +451,7 @@ function splitIntoLines(items, rows) {
   align-items: center;
   /* remove horizontal padding to avoid causing overflow */
   padding: 0;
+  overflow: hidden; /* prevent navigation buttons from causing page-wide overflow */
 }
 .card-container {
   position: relative;
@@ -588,6 +589,24 @@ function splitIntoLines(items, rows) {
   }
   .nav-button-outside svg {
     height: 20px;
+  }
+}
+/* Extra small screens - further reduce button offset to prevent overflow */
+@media (max-width: 375px) {
+  .nav-button-outside.left {
+    left: -8px;
+  }
+  .nav-button-outside.right {
+    right: -8px;
+  }
+}
+/* For very narrow screens, consider hiding nav buttons or moving them inside */
+@media (max-width: 320px) {
+  .nav-button-outside.left {
+    left: 0;
+  }
+  .nav-button-outside.right {
+    right: 0;
   }
 }
 </style>

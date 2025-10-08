@@ -12,6 +12,13 @@
   );
 }
 
+// Prevent horizontal overflow on the entire page
+html,
+body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
 // Centered container
 .container {
   max-width: var(--container-width); /* Matches 12-column layout */

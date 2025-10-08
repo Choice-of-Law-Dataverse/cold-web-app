@@ -224,4 +224,9 @@ useHead({
 h2 {
   font-weight: 500 !important;
 }
+
+/* Prevent horizontal overflow on landing page */
+main.px-6 {
+  overflow-x: hidden;
+}
 </style>
