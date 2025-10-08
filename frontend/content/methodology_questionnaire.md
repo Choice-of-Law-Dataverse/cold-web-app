@@ -7,10 +7,8 @@ title: Methodology — CoLD
 ### Preamble
 
 1. Is there a [codification](/learn/glossary#pil-codification) on choice of law?
-
    1. Are these rules part of a private international law instrument?
    1. Are these rules a consequence of a recent [law reform](/learn/glossary#revision-legal-reform)?
-
       1. If a [codification of private international law](/learn/glossary#pil-codification) exists, is any [revision](/learn/glossary#revision-legal-reform) of these rules under discussion?
       1. Could the HCCH Principles be expected to play a model role in this regard?
       1. If a revision is not under discussion, could the HCCH Principles be expected to play any role in **interpreting**, **supplementing** or **developing** rules of private international law?
@@ -25,7 +23,6 @@ title: Methodology — CoLD
 1. Are the parties allowed to choose different laws for **different parts or aspects** of the contract? (See also [Dépeçage](/learn/glossary#dpeage))
 1. Are the parties allowed to choose the applicable law with respect **[to only one part or aspect](/learn/glossary#partial-choice)** of their contract?
 1. Are the parties allowed to make or [modify](/learn/glossary#modification-of-a-choice-of-law-clause) a choice of law at any time?
-
    1. May an internal [modification](/learn/glossary#modification-of-a-choice-of-law-clause) of the agreement on the applicable law **after the conclusion of the contract** be valid even if a specific form is requested for the original choice?
    1. May a choice of law or [modification](/learn/glossary#modification-of-a-choice-of-law-clause) made after the conclusion of the contract have an **impact on the rights of third parties**?
 
