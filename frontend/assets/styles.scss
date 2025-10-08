@@ -32,7 +32,7 @@
 // Fonts -----------------------------------------------
 
 body {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
   color: var(--color-cold-night) !important;
 }
 
@@ -246,7 +246,7 @@ li::marker {
 
 .result-value-small-citation {
   @extend .result-value-small;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: "IBM Plex Mono", monospace;
   font-size: 12px !important;
   background-color: var(--color-cold-gray-alpha);
   padding: 0.8em 1em 0.8em 1em;
@@ -289,7 +289,7 @@ li::marker {
   position: absolute;
   z-index: 1000;
   background: white;
-  font-family: 'Inter', Arial, sans-serif;
+  font-family: "Inter", Arial, sans-serif;
   padding-right: 12px;
   padding-bottom: 6px;
 }
@@ -313,56 +313,56 @@ li::marker {
 }
 
 /* In case the trigger is rendered as a div/combobox instead of button */
-.cold-uselectmenu [role='combobox'],
-.cold-uselectmenu [data-headlessui-state][role='combobox'] {
+.cold-uselectmenu [role="combobox"],
+.cold-uselectmenu [data-headlessui-state][role="combobox"] {
   width: 100% !important;
 }
 
 // Popper Style
-ul[role='listbox'][data-headlessui-state] {
+ul[role="listbox"][data-headlessui-state] {
   border-radius: 0 !important;
   box-shadow: none !important;
   border: 1px solid var(--color-cold-gray) !important;
   padding: 0 !important;
 }
 
-ul[role='listbox'] input[role='combobox'][data-headlessui-state='open'] {
+ul[role="listbox"] input[role="combobox"][data-headlessui-state="open"] {
   margin-bottom: 0 !important;
 }
 
-ul[role='listbox'] li {
+ul[role="listbox"] li {
   margin: 0 !important;
   padding-top: 0.75rem !important;
   padding-bottom: 0.75rem !important;
 }
 
 // Popper Selected Icon
-ul[role='listbox'] li[aria-selected='true'] .iconify {
+ul[role="listbox"] li[aria-selected="true"] .iconify {
   color: var(--color-cold-purple) !important;
   width: 1rem !important;
 }
 
 // Popper Input Size
-ul[role='listbox'] input {
+ul[role="listbox"] input {
   padding-top: 1rem !important;
   padding-bottom: 1rem !important;
   border-color: var(--color-cold-gray) !important;
 }
 
 // Popper Hover
-ul[role='listbox'] li:hover {
+ul[role="listbox"] li:hover {
   background-color: var(--color-cold-purple-alpha) !important;
 }
 
-ul[role='listbox'] li[data-headlessui-state='selected'] {
+ul[role="listbox"] li[data-headlessui-state="selected"] {
   background-color: var(--color-cold-purple-alpha) !important;
 }
 
-ul[role='listbox'] li[aria-selected='true'],
-ul[role='listbox'] li[data-headlessui-state='active'],
-ul[role='listbox'] li[data-headlessui-state='active']:hover,
-ul[role='listbox'] li[data-headlessui-state='selected'],
-ul[role='listbox'] li[data-headlessui-state='selected']:hover {
+ul[role="listbox"] li[aria-selected="true"],
+ul[role="listbox"] li[data-headlessui-state="active"],
+ul[role="listbox"] li[data-headlessui-state="active"]:hover,
+ul[role="listbox"] li[data-headlessui-state="selected"],
+ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
   background-color: var(--color-cold-purple-alpha) !important;
   border-radius: 0 !important;
 }
@@ -467,7 +467,7 @@ select.cold-input:focus {
 // Disabled state
 .cold-input[disabled],
 .cold-input:disabled,
-.cold-input[aria-disabled='true'],
+.cold-input[aria-disabled="true"],
 input.cold-input[disabled],
 textarea.cold-input[disabled],
 select.cold-input[disabled] {
@@ -477,7 +477,7 @@ select.cold-input[disabled] {
 }
 .cold-input :is(input, textarea, select)[disabled],
 .cold-input :is(input, textarea, select):disabled,
-.cold-input :is(input, textarea, select)[aria-disabled='true'] {
+.cold-input :is(input, textarea, select)[aria-disabled="true"] {
   color: var(--color-cold-night-alpha) !important;
   cursor: not-allowed !important;
 }
@@ -553,7 +553,7 @@ button.cold-date-trigger {
 /* Ensure icons inside the trigger inherit the text color */
 .cold-date-trigger .iconify,
 .cold-date-trigger svg,
-.cold-date-trigger [class*='icon'] {
+.cold-date-trigger [class*="icon"] {
   color: var(--color-cold-purple) !important;
   fill: currentColor !important;
 }
@@ -573,7 +573,7 @@ button.cold-date-trigger {
 /* Disabled state */
 .cold-date-trigger[disabled],
 .cold-date-trigger:disabled,
-.cold-date-trigger[aria-disabled='true'] {
+.cold-date-trigger[aria-disabled="true"] {
   background-color: var(--color-cold-gray-alpha) !important;
   color: var(--color-cold-night-alpha) !important;
   cursor: not-allowed !important;
@@ -603,7 +603,7 @@ button.cold-toggle-btn {
 }
 
 /* Active state (selected) */
-.cold-toggle-btn[aria-pressed='true'] {
+.cold-toggle-btn[aria-pressed="true"] {
   background-color: var(--color-cold-purple) !important;
   color: #ffffff !important;
 }
@@ -611,7 +611,7 @@ button.cold-toggle-btn {
 /* Disabled state */
 .cold-toggle-btn[disabled],
 .cold-toggle-btn:disabled,
-.cold-toggle-btn[aria-disabled='true'] {
+.cold-toggle-btn[aria-disabled="true"] {
   background-color: var(--color-cold-gray-alpha) !important;
   color: var(--color-cold-night-alpha) !important;
   cursor: not-allowed !important;
