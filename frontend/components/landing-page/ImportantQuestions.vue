@@ -451,7 +451,6 @@ function splitIntoLines(items, rows) {
   align-items: center;
   /* remove horizontal padding to avoid causing overflow */
   padding: 0;
-  overflow: hidden; /* prevent navigation buttons from causing page-wide overflow */
 }
 .card-container {
   position: relative;
@@ -557,6 +556,10 @@ function splitIntoLines(items, rows) {
     padding: 0 1rem; /* tighter side padding */
     overflow-x: hidden; /* prevent any accidental horizontal scroll from nav buttons */
   }
+  .card-container {
+    /* On mobile, reduce max-width to account for wrapper padding and button space */
+    max-width: clamp(300px, 100%, 820px);
+  }
   .card-inner {
     height: 300px; /* keep overall look while allowing a bit more breathing room */
   }
@@ -591,22 +594,16 @@ function splitIntoLines(items, rows) {
     height: 20px;
   }
 }
-/* Extra small screens - further reduce button offset to prevent overflow */
+/* For very small screens, move buttons inside to prevent overflow */
 @media (max-width: 375px) {
+  .important-questions-wrapper {
+    padding: 0 0.5rem; /* reduce padding even more */
+  }
   .nav-button-outside.left {
-    left: -8px;
+    left: 4px; /* move buttons inside the card */
   }
   .nav-button-outside.right {
-    right: -8px;
-  }
-}
-/* For very narrow screens, consider hiding nav buttons or moving them inside */
-@media (max-width: 320px) {
-  .nav-button-outside.left {
-    left: 0;
-  }
-  .nav-button-outside.right {
-    right: 0;
+    right: 4px; /* move buttons inside the card */
   }
 }
 </style>

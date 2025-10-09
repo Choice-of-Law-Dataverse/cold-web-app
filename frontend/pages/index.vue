@@ -225,8 +225,11 @@ h2 {
   font-weight: 500 !important;
 }
 
-/* Prevent horizontal overflow on landing page */
-main.px-6 {
-  overflow-x: hidden;
+/* Reduce padding on very small screens to prevent overflow */
+@media (max-width: 480px) {
+  main.px-6 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
 }
 </style>

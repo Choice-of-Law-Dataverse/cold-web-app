@@ -3,6 +3,7 @@
     <div>
       <!-- Map Container -->
       <div
+        class="map-container"
         style="height: 600px; width: 100%; margin-top: 0px; position: relative"
       >
         <!-- Dropdown for selecting region -->
@@ -113,6 +114,11 @@ const isDisclaimerVisible = ref(false);
   left: 0;
   width: 100%;
   height: 100%;
+}
+
+/* Prevent map from causing horizontal overflow */
+.map-container {
+  overflow: hidden;
 }
 
 .select-menu-container {
