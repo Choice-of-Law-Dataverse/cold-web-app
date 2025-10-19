@@ -77,15 +77,15 @@
           />
         </GridItem>
 
-        <GridItem :md-cols="6">
+        <GridItem :cols="12" :md-cols="4">
           <PopularSearches />
         </GridItem>
 
-        <GridItem :cols="6">
+        <GridItem :cols="12" :md-cols="4">
           <TopLiteratureThemes />
         </GridItem>
 
-        <GridItem :cols="4">
+        <GridItem :cols="12" :md-cols="4">
           <NumberCard
             title="Available Domestic Instruments"
             button-text="See all"
@@ -223,5 +223,13 @@ useHead({
 <style scoped>
 h2 {
   font-weight: 500 !important;
+}
+
+/* Reduce padding on very small screens to prevent overflow */
+@media (max-width: 480px) {
+  main.px-6 {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+  }
 }
 </style>

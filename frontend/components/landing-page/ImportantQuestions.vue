@@ -556,6 +556,10 @@ function splitIntoLines(items, rows) {
     padding: 0 1rem; /* tighter side padding */
     overflow-x: hidden; /* prevent any accidental horizontal scroll from nav buttons */
   }
+  .card-container {
+    /* On mobile, reduce max-width to account for wrapper padding and button space */
+    max-width: clamp(300px, 100%, 820px);
+  }
   .card-inner {
     height: 300px; /* keep overall look while allowing a bit more breathing room */
   }
@@ -588,6 +592,18 @@ function splitIntoLines(items, rows) {
   }
   .nav-button-outside svg {
     height: 20px;
+  }
+}
+/* For very small screens, move buttons inside to prevent overflow */
+@media (max-width: 375px) {
+  .important-questions-wrapper {
+    padding: 0 0.5rem; /* reduce padding even more */
+  }
+  .nav-button-outside.left {
+    left: 4px; /* move buttons inside the card */
+  }
+  .nav-button-outside.right {
+    right: 4px; /* move buttons inside the card */
   }
 }
 </style>
