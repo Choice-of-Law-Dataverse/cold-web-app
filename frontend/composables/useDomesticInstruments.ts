@@ -37,12 +37,14 @@ export function useDomesticInstruments({
         : ["domesticInstruments"],
     ),
     queryFn: () => fetchDomesticInstrumentsData(filterCompatible.value),
-    select: filterCompatible.value
-      ? (data: Record<string, unknown>[]) =>
-          data.filter(
-            (item: Record<string, unknown>) =>
-              item["Compatible With the HCCH Principles?"],
-          )
-      : undefined,
+    select: (data: Record<string, unknown>[]) => {
+      if (filterCompatible.value) {
+        return data.filter(
+          (item: Record<string, unknown>) =>
+            item["Compatible With the HCCH Principles"],
+        );
+      }
+      return data;
+    },
   });
 }
