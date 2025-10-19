@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard">
+  <UCard class="cold-ucard flex h-full w-full flex-col">
     <div class="popular-searches-container flex flex-col gap-8 md:flex-row">
       <h2 class="popular-title text-left md:whitespace-nowrap">
         Recent Domestic Instruments

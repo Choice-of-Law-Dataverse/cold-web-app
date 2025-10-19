@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard">
+  <UCard class="cold-ucard flex h-full w-full flex-col">
     <h2 class="popular-title">Leading Cases</h2>
     <p class="result-value-small">Court decisions ranked highly in CoLD</p>
     <div>

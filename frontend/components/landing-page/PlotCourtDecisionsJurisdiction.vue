@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard">
+  <UCard class="cold-ucard flex h-full w-full flex-col">
     <h2 class="popular-title">Court Decisions by Jurisdiction</h2>
     <p class="result-value-small">
       Click bars to see a jurisdiction's decisions

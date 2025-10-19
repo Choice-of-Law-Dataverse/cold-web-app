@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard">
+  <UCard class="cold-ucard flex h-full w-full flex-col">
     <h2 class="popular-title">Successful Legal Transplantations</h2>
     <p class="result-value-small">
       Domestic Instruments compatible with the HCCH Principles
@@ -10,7 +10,7 @@
       </div>
       <template v-else>
         <div
-          v-for="(instrument, index) in domesticInstruments.slice(0, 7)"
+          v-for="(instrument, index) in domesticInstruments.slice(0, 9)"
           :key="index"
         >
           <RouterLink :to="`/domestic-instrument/${instrument.ID}`">
@@ -36,13 +36,15 @@
 </template>
 
 <script setup>
+import { ref } from "vue";
 import { RouterLink } from "vue-router";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
 import { useDomesticInstruments } from "@/composables/useDomesticInstruments";
 import { formatYear } from "@/utils/format";
 
+const filterCompatible = ref(true);
 const { data: domesticInstruments, isLoading } = useDomesticInstruments({
-  filterCompatible: true,
+  filterCompatible,
 });
 </script>
 

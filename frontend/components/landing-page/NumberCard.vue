@@ -1,14 +1,16 @@
 <template>
-  <UCard class="cold-ucard">
+  <UCard class="cold-ucard h-full">
     <h2 class="popular-title">{{ title }}</h2>
     <div class="number-container">
-      <span v-if="!loading && !error">{{
-        number ?? props.overrideNumber ?? 0
-      }}</span>
+      <span v-if="!loading && !error">
+        <UButton class="suggestion-button" variant="link" trailing>{{
+          number ?? props.overrideNumber ?? 0
+        }}</UButton></span
+      >
       <span v-else-if="loading"><LoadingNumber /></span>
       <span v-else>Error</span>
     </div>
-    <div class="link-container">
+    <!-- <div class="link-container">
       <a :href="buttonLink">
         <UButton
           class="suggestion-button"
@@ -19,7 +21,7 @@
           {{ buttonText }}
         </UButton>
       </a>
-    </div>
+    </div> -->
   </UCard>
 </template>
 
@@ -54,11 +56,9 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 90px;
-  font-weight: 700;
 }
-.link-container {
-  display: flex;
-  justify-content: center;
+.number-container button {
+  font-size: 72px !important;
+  font-weight: 700 !important;
 }
 </style>
