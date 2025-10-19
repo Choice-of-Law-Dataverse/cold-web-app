@@ -1,7 +1,9 @@
 <template>
   <div v-if="shouldDisplay" class="mt-12">
-    <span v-if="label" class="label">{{ label }}</span>
-    <InfoPopover v-if="tooltip" :text="tooltip" />
+    <span v-if="label" class="label mb-1 flex flex-row items-center"
+      >{{ label }}
+      <InfoPopover v-if="tooltip" :text="tooltip" />
+    </span>
     <ul v-if="questionList.length">
       <li v-for="(q, idx) in questionList" :key="idx">
         <NuxtLink :to="`/question/${jurisdictionCode}_${q}`">
