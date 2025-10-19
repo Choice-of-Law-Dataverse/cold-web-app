@@ -28,16 +28,6 @@
             </UButton>
           </RouterLink>
         </div>
-        <div class="mt-8">
-          <ShowMoreLess
-            v-if="leadingCases.length > 3"
-            :is-expanded="showAll"
-            label="leading cases"
-            button-class="suggestion-button"
-            icon-class="showmoreless-icon-large"
-            @update:is-expanded="showAll = $event"
-          />
-        </div>
       </template>
     </div>
   </UCard>
@@ -46,11 +36,8 @@
 <script setup>
 import { RouterLink } from "vue-router";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
-import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import { useLeadingCases } from "@/composables/useLeadingCases";
 import { formatYear } from "@/utils/format";
-
-const showAll = ref(false);
 
 const { data: leadingCases, isLoading } = useLeadingCases();
 </script>
