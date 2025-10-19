@@ -12,33 +12,6 @@
   );
 }
 
-// Centered container
-.container {
-  max-width: var(--container-width); /* Matches 12-column layout */
-  margin: 0 auto; /* Centers the container */
-  padding: 0 var(--gutter-width); /* Adds responsive padding */
-  display: grid; /* Use grid for flexible layouts */
-  grid-template-columns: repeat(12, 1fr); /* 12-column grid */
-  gap: var(--gutter-width); /* Gutter spacing between columns */
-}
-
-/* Ensure all containers respect viewport width on mobile */
-@media (max-width: 768px) {
-  * {
-    min-width: 0; /* Allow flex/grid children to shrink below content size */
-  }
-  
-  .max-w-container {
-    max-width: 100% !important;
-  }
-}
-
-// Utility classes for column spans: Loop to generate col-span-1 to col-span-12
-@for $i from 1 through 12 {
-  .col-span-#{$i} {
-    grid-column: span #{$i} / span #{$i};
-  }
-}
 
 // Fonts -----------------------------------------------
 
@@ -380,15 +353,13 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
 
 // CoLD Card
 .cold-ucard {
-  margin-bottom: 24px;
+      overflow-x: hidden;
+  // margin-bottom: 24px;
+      margin-left: 1px;
+    margin-right: 1px;
 }
 
-/* Prevent cards from causing horizontal overflow on mobile */
-@media (max-width: 768px) {
-  .cold-ucard {
-    overflow-x: hidden;
-  }
-}
+
 
 .cold-ucard-info {
   @extend .cold-ucard;

@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard">
+  <UCard class="cold-ucard flex h-full w-full flex-col">
     <h2 class="popular-title">Successful Legal Transplantations</h2>
     <p class="result-value-small">
       Domestic Instruments compatible with the HCCH Principles

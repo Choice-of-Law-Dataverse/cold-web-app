@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard">
+  <UCard class="cold-ucard h-full w-full">
     <div class="popular-searches-container flex flex-col gap-8">
       <!-- Title Section -->
       <div>

@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard">
+  <UCard class="cold-ucard h-full w-full">
     <h2 class="popular-title">{{ title }}</h2>
 
     <div class="flags-row">

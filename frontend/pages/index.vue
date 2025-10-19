@@ -1,8 +1,8 @@
 <template>
-  <main class="px-4 md:px-6">
-    <div class="mx-auto w-full max-w-container">
+  <main class="px-6">
+    <div class="mx-auto w-full max-w-container overflow-x-hidden">
       <!-- Header Section -->
-      <div class="grid grid-cols-1 gap-3 md:grid-cols-12 md:gap-6">
+      <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
         <div class="col-span-12">
           <div class="mb-3 text-[60px] font-bold leading-[68px] md:text-left">
             Choice of Law<br >
@@ -32,42 +32,39 @@
           <JurisdictionMap />
         </div>
 
-        <div class="col-span-6 md:col-span-3">
-          <NumberCard
-            title="Available Court Decisions"
-            button-text="See all"
-            button-link="/search?type=Court+Decisions"
-            table-name="Court Decisions"
-          />
-        </div>
+        <!-- Number Cards Grid -->
+        <div class="col-span-12">
+          <div class="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-6">
+            <NumberCard
+              title="Available Court Decisions"
+              button-text="See all"
+              button-link="/search?type=Court+Decisions"
+              table-name="Court Decisions"
+            />
 
-        <div class="col-span-6 md:col-span-3">
-          <NumberCard
-            title="Available Domestic Instruments"
-            button-text="See all"
-            button-link="/search?type=Domestic+Instruments"
-            table-name="Domestic Instruments"
-          />
-        </div>
+            <NumberCard
+              title="Available Domestic Instruments"
+              button-text="See all"
+              button-link="/search?type=Domestic+Instruments"
+              table-name="Domestic Instruments"
+            />
 
-        <div class="col-span-6 md:col-span-3">
-          <NumberCard
-            title="Available Arbitral Awards"
-            button-text="See all"
-            button-link="/arbitral-awards"
-            table-name="Questions"
-            :override-number="74"
-          />
-        </div>
+            <NumberCard
+              title="Available Arbitral Awards"
+              button-text="See all"
+              button-link="/arbitral-awards"
+              table-name="Questions"
+              :override-number="74"
+            />
 
-        <div class="col-span-6 md:col-span-3">
-          <NumberCard
-            title="Available Arbitral Rules"
-            button-text="See all"
-            button-link="/arbitral-rules"
-            table-name="Questions"
-            :override-number="37"
-          />
+            <NumberCard
+              title="Available Arbitral Rules"
+              button-text="See all"
+              button-link="/arbitral-rules"
+              table-name="Questions"
+              :override-number="37"
+            />
+          </div>
         </div>
 
         <div class="col-span-12 md:col-span-6">
@@ -90,19 +87,19 @@
           />
         </div>
 
-        <div class="col-span-12 md:col-span-8">
+        <div class="col-span-12 flex md:col-span-8">
           <RecentDomesticInstruments />
         </div>
 
-        <div class="col-span-12 md:col-span-4">
+        <div class="col-span-12 flex md:col-span-4">
           <PopularSearches />
         </div>
 
-        <div class="col-span-12 md:col-span-8">
+        <div class="col-span-12 flex md:col-span-8">
           <SuccessfulLegalTransplantations />
         </div>
 
-        <div class="col-span-12 md:col-span-4">
+        <div class="col-span-12 flex md:col-span-4">
           <ConnectCard
             title="Transnational Standard"
             subtitle="Authoritative Instrument on Choice of Law"
@@ -113,11 +110,11 @@
           />
         </div>
 
-        <div class="col-span-12 md:col-span-8">
+        <div class="col-span-12 flex md:col-span-8">
           <PlotCourtDecisionsJurisdiction />
         </div>
 
-        <div class="col-span-12 md:col-span-4">
+        <div class="col-span-12 flex md:col-span-4">
           <CompareJurisdictionsCard
             title="Compare Jurisdictions"
             button-text="Go to comparison"
@@ -127,11 +124,12 @@
           />
         </div>
 
-        <div class="col-span-12 md:col-span-8">
+        <!-- 8/4 Column Pair 4 -->
+        <div class="col-span-12 flex md:col-span-8">
           <LeadingCases />
         </div>
 
-        <div class="col-span-12 md:col-span-4">
+        <div class="col-span-12 flex md:col-span-4">
           <TopLiteratureThemes />
         </div>
 
