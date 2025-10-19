@@ -74,10 +74,10 @@
               :text="keyLabelLookup.get('Compatibility')?.tooltip"
             />
           </p>
-          <span v-if="isCompatible('Compatible With the UNCITRAL Model Law?')">
+          <span v-if="isCompatible('Compatible With the UNCITRAL Model Law')">
             <CompatibleLabel label="UNCITRAL Model Law" />
           </span>
-          <span v-if="isCompatible('Compatible With the HCCH Principles?')">
+          <span v-if="isCompatible('Compatible With the HCCH Principles')">
             <CompatibleLabel label="HCCH Principles" />
           </span>
         </div>
@@ -155,8 +155,8 @@ interface LegalInstrumentRecord {
   "Title (in English)"?: string;
   "Official Title"?: string;
   Abbreviation?: string;
-  "Compatible With the UNCITRAL Model Law?"?: boolean | string;
-  "Compatible With the HCCH Principles?"?: boolean | string;
+  "Compatible With the UNCITRAL Model Law"?: boolean | string;
+  "Compatible With the HCCH Principles"?: boolean | string;
   "Ranking (Display Order)"?: string;
   [key: string]: unknown;
 }
@@ -210,8 +210,8 @@ const isCompatible = (field: string): boolean => {
 // Computed for compatibility display
 const showCompatibility = computed(() => {
   return (
-    isCompatible("Compatible With the UNCITRAL Model Law?") ||
-    isCompatible("Compatible With the HCCH Principles?")
+    isCompatible("Compatible With the UNCITRAL Model Law") ||
+    isCompatible("Compatible With the HCCH Principles")
   );
 });
 

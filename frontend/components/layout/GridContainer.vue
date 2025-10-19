@@ -1,5 +1,7 @@
 <template>
-  <div class="col-span-12 grid grid-cols-1 gap-x-6 md:grid-cols-12 grid-container-mobile">
+  <div
+    class="grid-container-mobile col-span-12 grid grid-cols-1 gap-x-6 md:grid-cols-12"
+  >
     <slot />
   </div>
 </template>

@@ -3,14 +3,10 @@
     <h2 class="popular-title">{{ title }}</h2>
     <div class="number-container">
       <span v-if="!loading && !error">
-                <UButton
-          class="suggestion-button" 
-          variant="link"
-
-          trailing
-        >{{
-        number ?? props.overrideNumber ?? 0
-      }}</UButton></span>
+        <UButton class="suggestion-button" variant="link" trailing>{{
+          number ?? props.overrideNumber ?? 0
+        }}</UButton></span
+      >
       <span v-else-if="loading"><LoadingNumber /></span>
       <span v-else>Error</span>
     </div>
@@ -56,11 +52,10 @@ const {
 h2 {
   text-align: center;
 }
-.number-container{
+.number-container {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 .number-container button {
   font-size: 72px !important;
