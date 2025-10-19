@@ -77,15 +77,15 @@
           />
         </GridItem>
 
-        <GridItem :md-cols="6">
+        <GridItem :cols="12" :md-cols="4">
           <PopularSearches />
         </GridItem>
 
-        <GridItem :cols="6">
+        <GridItem :cols="12" :md-cols="4">
           <TopLiteratureThemes />
         </GridItem>
 
-        <GridItem :cols="4">
+        <GridItem :cols="12" :md-cols="4">
           <NumberCard
             title="Available Domestic Instruments"
             button-text="See all"
