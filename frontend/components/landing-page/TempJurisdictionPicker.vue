@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard">
+  <UCard class="cold-ucard overflow-visible">
     <div
       class="popular-searches-container flex flex-col gap-6 md:flex-row md:items-center"
     >
@@ -32,6 +32,7 @@ const navigateToCountry = async (country) =>
 .popular-searches-container {
   display: flex;
   flex-wrap: wrap;
+  position: relative; /* Ensure proper positioning context for dropdown */
 }
 
 .popular-title {
@@ -41,5 +42,6 @@ const navigateToCountry = async (country) =>
 .suggestions {
   display: flex;
   flex-wrap: wrap;
+  position: relative; /* Additional positioning context for the dropdown */
 }
 </style>
