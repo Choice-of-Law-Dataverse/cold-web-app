@@ -1,5 +1,5 @@
 <template>
-  <main class="px-6">
+  <div class="px-6">
     <div class="mx-auto w-full max-w-container">
       <div class="col-span-12">
         <!-- Filters and Results Header -->
@@ -169,7 +169,7 @@
         </div>
       </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup>

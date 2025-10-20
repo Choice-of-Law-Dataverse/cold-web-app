@@ -1,5 +1,5 @@
 <template>
-  <main class="px-6">
+  <div class="px-6">
     <div class="mx-auto w-full max-w-container">
       <UCard class="cold-ucard">
         <SectionNav v-if="navLinks" :links="navLinks" />
@@ -13,7 +13,7 @@
         </div>
       </UCard>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup>

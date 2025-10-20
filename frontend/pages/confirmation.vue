@@ -1,5 +1,5 @@
 <template>
-  <main class="mt-12 flex-1 px-6">
+  <div class="mt-12 flex-1 px-6">
     <div
       class="mx-auto flex min-h-[50vh] w-full max-w-container flex-col items-center justify-center text-center"
     >
@@ -11,7 +11,7 @@
         </NuxtLink>
       </div>
     </div>
-  </main>
+  </div>
 </template>
 
 <script setup>
