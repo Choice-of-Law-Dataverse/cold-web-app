@@ -3,9 +3,11 @@
     <Nav />
 
     <main class="mt-12 flex-1 px-6">
-      <ErrorBoundary>
-        <NuxtPage />
-      </ErrorBoundary>
+      <div class="flex flex-col gap-6">
+        <ErrorBoundary>
+          <NuxtPage />
+        </ErrorBoundary>
+      </div>
     </main>
 
     <Footer />
