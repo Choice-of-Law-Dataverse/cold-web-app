@@ -1,5 +1,5 @@
 <template>
-  <div class="px-6">
+  <div>
     <div class="mx-auto w-full max-w-container">
       <div class="col-span-12">
         <UCard class="cold-ucard">

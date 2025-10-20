@@ -2,7 +2,7 @@
   <div class="flex min-h-screen flex-col bg-cold-bg">
     <Nav />
 
-    <main class="mt-12 flex-1">
+    <main class="mt-12 flex-1 px-6">
       <ErrorBoundary>
         <NuxtPage />
       </ErrorBoundary>

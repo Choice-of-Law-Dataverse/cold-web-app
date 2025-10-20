@@ -1,5 +1,5 @@
 <template>
-  <div class="px-6">
+  <div>
     <div class="mx-auto w-full max-w-container overflow-x-hidden">
       <!-- Header Section -->
       <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
