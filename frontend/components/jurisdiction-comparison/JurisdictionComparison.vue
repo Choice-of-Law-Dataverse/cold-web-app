@@ -1,28 +1,25 @@
 <template>
-  <div>
-    <div class="mx-auto w-full max-w-container">
-      <div class="col-span-12">
-        <UCard class="cold-ucard relative">
-          <!-- Help/Cancel Icon -->
-          <div class="absolute right-5 top-5">
-            <Icon
-              v-if="!showInfo"
-              name="i-material-symbols:help-outline"
-              size="24"
-              style="color: var(--color-cold-purple)"
-              class="cursor-pointer"
-              @click="toggleInfo"
-            />
-            <Icon
-              v-else
-              name="i-material-symbols:cancel-outline"
-              size="24"
-              class="cursor-pointer text-cold-purple"
-              @click="toggleInfo"
-            />
-          </div>
+  <UCard class="cold-ucard relative">
+    <!-- Help/Cancel Icon -->
+    <div class="absolute right-5 top-5">
+      <Icon
+        v-if="!showInfo"
+        name="i-material-symbols:help-outline"
+        size="24"
+        style="color: var(--color-cold-purple)"
+        class="cursor-pointer"
+        @click="toggleInfo"
+      />
+      <Icon
+        v-else
+        name="i-material-symbols:cancel-outline"
+        size="24"
+        class="cursor-pointer text-cold-purple"
+        @click="toggleInfo"
+      />
+    </div>
 
-          <!-- Conditional Rendering -->
+    <!-- Conditional Rendering -->
           <div v-if="showInfo">
             <!-- JurisdictionComparisonInfo Component -->
             <JurisdictionComparisonInfo />
@@ -90,9 +87,6 @@
             :loading="loading"
           />
         </UCard>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup>

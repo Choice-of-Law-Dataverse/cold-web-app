@@ -1,12 +1,9 @@
 <template>
-  <div>
-    <div class="mx-auto w-full max-w-container">
-      <div class="col-span-12">
-        <UCard class="cold-ucard">
-          <div>
-            <h2 class="mb-8 mt-2">
-              Questions and Answers {{ jurisdictionName }}
-            </h2>
+  <UCard class="cold-ucard">
+    <div>
+      <h2 class="mb-8 mt-2">
+        Questions and Answers {{ jurisdictionName }}
+      </h2>
             <!-- Desktop Table View -->
             <div class="table-full-width-wrapper hidden md:block">
               <UTable
@@ -179,9 +176,6 @@
             </div>
           </div>
         </UCard>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup>

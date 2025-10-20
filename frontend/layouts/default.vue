@@ -3,10 +3,12 @@
     <Nav />
 
     <main class="mt-12 flex-1 px-6">
-      <div class="flex flex-col gap-6">
-        <ErrorBoundary>
-          <NuxtPage />
-        </ErrorBoundary>
+      <div class="mx-auto w-full max-w-container">
+        <div class="flex flex-col gap-6">
+          <ErrorBoundary>
+            <NuxtPage />
+          </ErrorBoundary>
+        </div>
       </div>
     </main>
 
