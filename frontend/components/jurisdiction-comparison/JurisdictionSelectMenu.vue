@@ -4,7 +4,7 @@
     searchable
     searchable-placeholder="Search a Jurisdiction..."
     class="cold-uselectmenu z-200 w-72 lg:w-96"
-    :ui-menu="{ container: 'z-[2050] group' }"
+    :ui-menu="{ container: 'z-[2050] group', height: 'max-h-96' }"
     :placeholder="placeholder"
     :options="countries"
     size="xl"
