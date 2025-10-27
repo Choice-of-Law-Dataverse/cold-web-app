@@ -1,3 +1,4 @@
+import { computed } from "vue";
 import { useFullTable } from "@/composables/useFullTable";
 
 function convert(record: Record<string, unknown>) {
@@ -37,12 +38,27 @@ export function useJurisdictions() {
 export function useJurisdiction(iso3: Ref<string>) {
   const result = useFullTable("Jurisdictions");
 
-  const data = result.data?.value?.find(
-    (r) => r?.["Alpha-3 Code"] === iso3.value.toLocaleUpperCase(),
-  );
+  const data = computed<Record<string, unknown> | undefined>(() => {
+    const isoValue = iso3.value;
+    const records = result.data?.value;
+
+    if (!isoValue || !records) {
+      return undefined;
+    }
+
+    const iso3Code = isoValue.toLocaleUpperCase();
+
+    const match = records.find(
+      (r) =>
+        typeof r?.["Alpha-3 Code"] === "string" &&
+        (r["Alpha-3 Code"] as string).toLocaleUpperCase() === iso3Code,
+    );
+
+    return match ? convert(match) : undefined;
+  });
 
   return {
     ...result,
-    data: ref(convert(data || {})) as Ref<Record<string, unknown> | undefined>,
+    data,
   };
 }
