@@ -1,8 +1,8 @@
 <template>
-  <ul class="result-value-small section-gap m-0 list-none p-0">
+  <div class="prose flex flex-col gap-2">
     <!-- Domestic Legal Provision bullet point -->
     <template v-if="fallbackData && fallbackData['Domestic Legal Provisions']">
-      <li
+      <div
         v-for="(provision, index) in fallbackData[
           'Domestic Legal Provisions'
         ].split(',')"
@@ -13,12 +13,12 @@
           :value="provision"
           :fallback-data="fallbackData"
         />
-      </li>
+      </div>
     </template>
     <template
       v-else-if="fallbackData && fallbackData['Domestic Instruments ID']"
     >
-      <li
+      <div
         v-for="(instrument, index) in fallbackData[
           'Domestic Instruments ID'
         ].split(',')"
@@ -30,35 +30,35 @@
           :value="instrument"
           :fallback-data="fallbackData"
         />
-      </li>
+      </div>
     </template>
     <!-- Updated OUP Chapter bullet point -->
     <template v-if="fallbackData && fallbackData['Literature']">
       <template v-if="literatures?.length">
-        <li
+        <div
           v-for="(item, index) in literatures"
           :key="index"
           class="section-gap m-0 p-0"
         >
           <a :href="`/literature/L-${item.id}`">{{ item.title }}</a>
-        </li>
+        </div>
       </template>
-      <li v-else-if="literaturesLoading" class="section-gap m-0 p-0">
+      <div v-else-if="literaturesLoading" class="section-gap m-0 p-0">
         <LoadingBar class="pt-[9px]" />
-      </li>
+      </div>
     </template>
     <template v-else>
-      <li v-if="isLoading" class="section-gap m-0 p-0">
+      <div v-if="isLoading" class="section-gap m-0 p-0">
         <LoadingBar class="pt-[9px]" />
-      </li>
-      <li v-else-if="oupChapterSource" class="section-gap m-0 p-0">
+      </div>
+      <div v-else-if="oupChapterSource" class="section-gap m-0 p-0">
         <a :href="`/literature/L-${oupChapterSource.id}`">{{
           oupChapterSource.title
         }}</a>
-      </li>
+      </div>
       <!-- If not loading and no OUP chapter, hide section (render nothing) -->
     </template>
-  </ul>
+  </div>
 </template>
 
 <script setup>

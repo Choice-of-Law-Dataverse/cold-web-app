@@ -1,19 +1,15 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto w-full max-w-container">
-      <UCard class="cold-ucard">
-        <SectionNav v-if="navLinks" :links="navLinks" />
-        <SectionNav v-else />
-        <!-- Main Content -->
-        <div
-          class="main-content prose flex w-full flex-col gap-12 -space-y-10 px-6"
-          :class="{ 'hierarchical-numbering': enableHierarchicalNumbering }"
-        >
-          <slot />
-        </div>
-      </UCard>
+  <UCard class="cold-ucard">
+    <SectionNav v-if="navLinks" :links="navLinks" />
+    <SectionNav v-else />
+    <!-- Main Content -->
+    <div
+      class="main-content prose flex w-full flex-col gap-12 -space-y-10 px-6"
+      :class="{ 'hierarchical-numbering': enableHierarchicalNumbering }"
+    >
+      <slot />
     </div>
-  </main>
+  </UCard>
 </template>
 
 <script setup>

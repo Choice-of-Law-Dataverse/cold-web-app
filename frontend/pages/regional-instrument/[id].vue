@@ -28,39 +28,39 @@
       <!-- Slot for Legal provisions -->
       <template #regional-legal-provisions="{ value }">
         <!-- Only render if value exists and is not "N/A" -->
-        <section
+        <div
           v-if="value && value.trim() && value.trim() !== 'N/A'"
-          class="section-gap m-0 p-0"
+          class="flex flex-col md:w-full md:flex-row md:gap-6"
         >
-          <p class="label mb-[-24px] mt-12 flex flex-row items-center">
-            {{
-              keyLabelLookup.get("Regional Legal Provisions")?.label ||
-              "Selected Provisions"
-            }}
-            <InfoPopover
-              v-if="keyLabelLookup.get('Regional Legal Provisions')?.tooltip"
-              :text="keyLabelLookup.get('Regional Legal Provisions')?.tooltip"
-            />
-          </p>
-          <div :class="valueClassMap['Regional Legal Provisions']">
-            <div v-if="value && value.trim()">
-              <LegalProvision
-                v-for="(provisionId, index) in value.split(',')"
-                :key="index"
-                :provision-id="provisionId"
-                :text-type="textType"
-                :instrument-title="
-                  processedRegionalInstrument
-                    ? (processedRegionalInstrument['Abbreviation'] as string) ||
-                      (processedRegionalInstrument['Title'] as string)
-                    : ''
-                "
-                table="Regional Legal Provisions"
-                @update:has-english-translation="hasEnglishTranslation = $event"
+          <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
+            <span class="flex items-center">
+              {{
+                keyLabelLookup.get("Regional Legal Provisions")?.label ||
+                "Selected Provisions"
+              }}
+              <InfoPopover
+                v-if="keyLabelLookup.get('Regional Legal Provisions')?.tooltip"
+                :text="keyLabelLookup.get('Regional Legal Provisions')?.tooltip"
               />
-            </div>
+            </span>
+          </h4>
+          <div class="provisions-container md:flex-1">
+            <LegalProvision
+              v-for="(provisionId, index) in value.split(',')"
+              :key="index"
+              :provision-id="provisionId"
+              :text-type="textType"
+              :instrument-title="
+                processedRegionalInstrument
+                  ? (processedRegionalInstrument['Abbreviation'] as string) ||
+                    (processedRegionalInstrument['Title'] as string)
+                  : ''
+              "
+              table="Regional Legal Provisions"
+              @update:has-english-translation="hasEnglishTranslation = $event"
+            />
           </div>
-        </section>
+        </div>
       </template>
     </BaseDetailLayout>
 
@@ -139,3 +139,10 @@ const processedRegionalInstrument = computed(() => {
   };
 });
 </script>
+
+<style scoped>
+/* Remove the extra spacer from BaseLegalContent when provisions are in a two-column layout */
+.provisions-container :deep(.base-legal-content .no-margin > div:first-child) {
+  display: none;
+}
+</style>

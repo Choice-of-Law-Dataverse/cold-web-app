@@ -1,15 +1,15 @@
 <template>
   <div>
     <div v-if="hasContent">
-      <ul v-if="isList">
-        <li
+      <div v-if="isList" class="flex flex-col gap-1">
+        <div
           v-for="(item, index) in items"
           :key="index"
           :class="valueClassMap || defaultClass"
         >
           <slot :item="item" />
-        </li>
-      </ul>
+        </div>
+      </div>
       <div v-else :class="valueClassMap || defaultClass">
         <slot :item="items[0]" />
       </div>

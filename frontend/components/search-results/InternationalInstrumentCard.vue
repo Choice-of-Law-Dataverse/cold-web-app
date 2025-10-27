@@ -3,19 +3,16 @@
     :result-data="processedResultData"
     card-type="International Instrument"
   >
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
+    <div class="flex flex-col gap-0">
       <!-- Title section -->
-      <div
-        :class="[
-          config.gridConfig.name.columnSpan,
-          config.gridConfig.name.startColumn,
-        ]"
-      >
-        <div class="label-key">{{ getLabel("Name") }}</div>
+      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
+          {{ getLabel("Name") }}
+        </div>
         <div
           :class="[
             config.valueClassMap['Name'],
-            'whitespace-pre-line text-sm leading-relaxed',
+            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
             (!processedResultData['Name'] ||
               processedResultData['Name'] === 'NA') &&
             config.keyLabelPairs.find((pair) => pair.key === 'Name')
@@ -30,14 +27,11 @@
 
       <!-- Date section -->
       <template v-if="shouldDisplay('Date')">
-        <div
-          :class="[
-            config.gridConfig.date.columnSpan,
-            config.gridConfig.date.startColumn,
-          ]"
-        >
-          <div class="label-key">{{ getLabel("Date") }}</div>
-          <div :class="[config.valueClassMap['Date']]">
+        <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+          <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
+            {{ getLabel("Date") }}
+          </div>
+          <div :class="[config.valueClassMap['Date'], 'md:flex-1']">
             {{ format.formatDate(getValue("Date")) }}
           </div>
         </div>

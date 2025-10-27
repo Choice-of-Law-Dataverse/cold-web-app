@@ -172,10 +172,10 @@ export const jurisdictionConfig = {
     },
   ],
   valueClassMap: {
-    "Jurisdiction Summary": "result-value-small section-gap",
-    "Jurisdictional Differentiator": "result-value-small section-gap",
-    Specialists: "result-value-small section-gap",
-    "Related Literature": "result-value-small section-gap",
+    "Jurisdiction Summary": "prose mb-4",
+    "Jurisdictional Differentiator": "prose mb-4",
+    Specialists: "prose mb-1",
+    "Related Literature": "prose mb-4",
   },
 };
 

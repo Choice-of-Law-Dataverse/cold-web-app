@@ -12,7 +12,6 @@
   );
 }
 
-
 // Fonts -----------------------------------------------
 
 body {
@@ -114,8 +113,8 @@ li::marker {
 
 // Labels
 .label {
-  font-size: 12px !important;
-  font-weight: 700 !important;
+  font-size: 0.725rem;
+  font-weight: 500;
   text-transform: uppercase;
   margin-right: 12px;
   color: var(--color-cold-night);
@@ -209,7 +208,7 @@ li::marker {
   @extend .result-value;
   font-size: 28px !important;
   line-height: 34px !important;
-  margin-top: 6px !important;
+  // margin-top: 6px !important;
   margin-bottom: 24px !important;
 }
 
@@ -353,13 +352,11 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
 
 // CoLD Card
 .cold-ucard {
-      overflow-x: hidden;
+  overflow-x: hidden;
   // margin-bottom: 24px;
-      margin-left: 1px;
-    margin-right: 1px;
+  margin-left: 1px;
+  margin-right: 1px;
 }
-
-
 
 .cold-ucard-info {
   @extend .cold-ucard;
@@ -374,7 +371,7 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
 
 // Consistent vertical gap between page sections
 .section-gap {
-  margin-bottom: 1.5rem; // 24px, adjust as needed for your design
+  margin-bottom: 1rem; // 16px, adjusted for better spacing
 }
 
 // Jurisdiction Comparison Horizontal Lines

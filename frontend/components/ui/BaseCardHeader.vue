@@ -82,10 +82,10 @@
           </div>
           <!-- In other modes, keep the clickable label linking to search -->
           <template v-else>
-            <!-- Remove link functionality for Arbitral Rule and Arbitral Award -->
+            <!-- Remove link functionality for Arbitral Rule, Arbitral Award, and Jurisdiction -->
             <span
               v-if="
-                ['Arbitral Rule', 'Arbitral Award'].includes(
+                ['Arbitral Rule', 'Arbitral Award', 'Jurisdiction'].includes(
                   adjustedSourceTable,
                 )
               "
@@ -318,6 +318,8 @@ const adjustedSourceTable = computed(() => {
       return "Arbitral Rule";
     case "Arbitral Award":
       return "Arbitral Award";
+    case "Jurisdiction":
+      return "Jurisdiction";
     // Add more adjustments as needed
     default:
       return formattedSourceTable.value || ""; // Fallback if no match
@@ -341,6 +343,8 @@ const labelColorClass = computed(() => {
       return "label-arbitration";
     case "Literature":
       return "label-literature";
+    case "Jurisdiction":
+      return "label-jurisdiction";
     default:
       return ""; // No color for unknown labels
   }

@@ -1,187 +1,175 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto w-full max-w-container">
-      <div class="col-span-12">
-        <UCard class="cold-ucard">
-          <div>
-            <h2 class="mb-8 mt-2">
-              Questions and Answers {{ jurisdictionName }}
-            </h2>
-            <!-- Desktop Table View -->
-            <div class="table-full-width-wrapper hidden md:block">
-              <UTable
-                :rows="visibleRows"
-                :columns="columns"
-                :loading="loading || answersLoading"
-                :progress="{ color: 'primary', animation: 'carousel' }"
+  <UCard class="cold-ucard">
+    <div>
+      <h2 class="mb-8 mt-2">Questions and Answers {{ jurisdictionName }}</h2>
+      <!-- Desktop Table View -->
+      <div class="table-full-width-wrapper hidden md:block">
+        <UTable
+          :rows="visibleRows"
+          :columns="columns"
+          :loading="loading || answersLoading"
+          :progress="{ color: 'primary', animation: 'carousel' }"
+        >
+          <template #loading-state>
+            <div class="ml-8 flex flex-col space-y-3 py-8">
+              <LoadingBar />
+              <LoadingBar />
+              <LoadingBar />
+            </div>
+          </template>
+          <template #question-data="{ row }">
+            <div
+              class="result-value-small question-indent"
+              :style="{ '--indent': `${row.level * 2}em` }"
+              style="display: flex; align-items: flex-start"
+            >
+              <span
+                v-if="row.hasExpand"
+                class="expand-icon mr-1 mt-1 cursor-pointer align-middle"
+                :style="{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  transform: row.expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                }"
+                @click.stop="toggleExpand(row)"
               >
-                <template #loading-state>
-                  <div class="ml-8 flex flex-col space-y-3 py-8">
-                    <LoadingBar />
-                    <LoadingBar />
-                    <LoadingBar />
-                  </div>
-                </template>
-                <template #question-data="{ row }">
-                  <div
-                    class="result-value-small question-indent"
-                    :style="{ '--indent': `${row.level * 2}em` }"
-                    style="display: flex; align-items: flex-start"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="16"
+                  height="16"
+                  fill="none"
+                  style="color: var(--color-cold-purple)"
+                >
+                  <path
+                    d="M9 6l6 6-6 6"
+                    stroke="currentColor"
+                    stroke-width="3"
+                    stroke-linecap="square"
+                    stroke-linejoin="square"
+                  />
+                </svg>
+              </span>
+              <span class="question-text whitespace-pre-line">{{
+                row.question
+              }}</span>
+            </div>
+          </template>
+          <template #theme-data="{ row }">
+            <div style="text-align: right">
+              <span
+                v-for="theme in typeof row.theme === 'string'
+                  ? row.theme.split(',')
+                  : []"
+                :key="theme.trim()"
+                class="label-theme mr-3"
+              >
+                {{ theme.trim() }}
+              </span>
+            </div>
+          </template>
+          <template #answer-data="{ row }">
+            <div style="text-align: right">
+              <NuxtLink
+                v-if="row.answer"
+                :to="row.answerLink"
+                class="result-value-small answer-link"
+              >
+                {{ row.answer }}
+              </NuxtLink>
+              <span v-else class="result-value-small">
+                {{ row.answer }}
+              </span>
+            </div>
+          </template>
+        </UTable>
+      </div>
+
+      <!-- Mobile Card View -->
+      <div class="mobile-cards-wrapper block md:hidden">
+        <div
+          v-if="loading || answersLoading"
+          class="flex flex-col space-y-3 py-8"
+        >
+          <LoadingBar />
+          <LoadingBar />
+          <LoadingBar />
+        </div>
+        <div v-else class="space-y-4">
+          <div
+            v-for="row in visibleRows"
+            :key="row.id"
+            class="mobile-card"
+            :style="{ '--indent': `${row.level * 1}em` }"
+          >
+            <div class="mobile-card-question">
+              <div class="flex items-start">
+                <span
+                  v-if="row.hasExpand"
+                  class="expand-icon-mobile mr-2 cursor-pointer"
+                  :style="{
+                    transform: row.expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                  }"
+                  @click.stop="toggleExpand(row)"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    style="color: var(--color-cold-purple)"
                   >
-                    <span
-                      v-if="row.hasExpand"
-                      class="expand-icon mr-1 mt-1 cursor-pointer align-middle"
-                      :style="{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        transform: row.expanded
-                          ? 'rotate(90deg)'
-                          : 'rotate(0deg)',
-                      }"
-                      @click.stop="toggleExpand(row)"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        width="16"
-                        height="16"
-                        fill="none"
-                        style="color: var(--color-cold-purple)"
-                      >
-                        <path
-                          d="M9 6l6 6-6 6"
-                          stroke="currentColor"
-                          stroke-width="3"
-                          stroke-linecap="square"
-                          stroke-linejoin="square"
-                        />
-                      </svg>
-                    </span>
-                    <span class="question-text whitespace-pre-line">{{
-                      row.question
-                    }}</span>
-                  </div>
-                </template>
-                <template #theme-data="{ row }">
-                  <div style="text-align: right">
-                    <span
-                      v-for="theme in typeof row.theme === 'string'
-                        ? row.theme.split(',')
-                        : []"
-                      :key="theme.trim()"
-                      class="label-theme mr-3"
-                    >
-                      {{ theme.trim() }}
-                    </span>
-                  </div>
-                </template>
-                <template #answer-data="{ row }">
-                  <div style="text-align: right">
-                    <NuxtLink
-                      v-if="row.answer"
-                      :to="row.answerLink"
-                      class="result-value-small answer-link"
-                    >
-                      {{ row.answer }}
-                    </NuxtLink>
-                    <span v-else class="result-value-small">
-                      {{ row.answer }}
-                    </span>
-                  </div>
-                </template>
-              </UTable>
+                    <path
+                      d="M9 6l6 6-6 6"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="square"
+                      stroke-linejoin="square"
+                    />
+                  </svg>
+                </span>
+                <span class="mobile-question-text whitespace-pre-line">{{
+                  row.question
+                }}</span>
+              </div>
             </div>
 
-            <!-- Mobile Card View -->
-            <div class="mobile-cards-wrapper block md:hidden">
-              <div
-                v-if="loading || answersLoading"
-                class="flex flex-col space-y-3 py-8"
-              >
-                <LoadingBar />
-                <LoadingBar />
-                <LoadingBar />
+            <div class="mobile-card-details">
+              <div v-if="row.theme" class="mobile-card-row">
+                <div class="mobile-card-themes">
+                  <span
+                    v-for="theme in typeof row.theme === 'string'
+                      ? row.theme.split(',')
+                      : []"
+                    :key="theme.trim()"
+                    class="label-theme"
+                  >
+                    {{ theme.trim() }}
+                  </span>
+                </div>
               </div>
-              <div v-else class="space-y-4">
-                <div
-                  v-for="row in visibleRows"
-                  :key="row.id"
-                  class="mobile-card"
-                  :style="{ '--indent': `${row.level * 1}em` }"
-                >
-                  <div class="mobile-card-question">
-                    <div class="flex items-start">
-                      <span
-                        v-if="row.hasExpand"
-                        class="expand-icon-mobile mr-2 cursor-pointer"
-                        :style="{
-                          transform: row.expanded
-                            ? 'rotate(90deg)'
-                            : 'rotate(0deg)',
-                        }"
-                        @click.stop="toggleExpand(row)"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          viewBox="0 0 24 24"
-                          width="16"
-                          height="16"
-                          fill="none"
-                          style="color: var(--color-cold-purple)"
-                        >
-                          <path
-                            d="M9 6l6 6-6 6"
-                            stroke="currentColor"
-                            stroke-width="3"
-                            stroke-linecap="square"
-                            stroke-linejoin="square"
-                          />
-                        </svg>
-                      </span>
-                      <span class="mobile-question-text whitespace-pre-line">{{
-                        row.question
-                      }}</span>
-                    </div>
-                  </div>
 
-                  <div class="mobile-card-details">
-                    <div v-if="row.theme" class="mobile-card-row">
-                      <div class="mobile-card-themes">
-                        <span
-                          v-for="theme in typeof row.theme === 'string'
-                            ? row.theme.split(',')
-                            : []"
-                          :key="theme.trim()"
-                          class="label-theme"
-                        >
-                          {{ theme.trim() }}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div v-if="row.answer" class="mobile-card-row">
-                      <div class="mobile-card-answer">
-                        <NuxtLink
-                          v-if="row.answer"
-                          :to="row.answerLink"
-                          class="result-value-small answer-link"
-                        >
-                          {{ row.answer }}
-                        </NuxtLink>
-                        <span v-else class="result-value-small">
-                          {{ row.answer }}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
+              <div v-if="row.answer" class="mobile-card-row">
+                <div class="mobile-card-answer">
+                  <NuxtLink
+                    v-if="row.answer"
+                    :to="row.answerLink"
+                    class="result-value-small answer-link"
+                  >
+                    {{ row.answer }}
+                  </NuxtLink>
+                  <span v-else class="result-value-small">
+                    {{ row.answer }}
+                  </span>
                 </div>
               </div>
             </div>
           </div>
-        </UCard>
+        </div>
       </div>
     </div>
-  </main>
+  </UCard>
 </template>
 
 <script setup>

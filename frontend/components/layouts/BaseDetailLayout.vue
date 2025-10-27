@@ -1,35 +1,29 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto w-full max-w-container">
-      <div class="col-span-12">
-        <DetailDisplay
-          :loading="props.loading"
-          :result-data="props.resultData"
-          :key-label-pairs="props.keyLabelPairs"
-          :value-class-map="props.valueClassMap"
-          :formatted-source-table="props.sourceTable"
-          :formatted-jurisdiction="props.formattedJurisdiction"
-          :show-header="props.showHeader"
-          :show-open-link="props.showOpenLink"
-          :show-suggest-edit="props.showSuggestEdit"
-          :formatted-theme="props.formattedTheme"
-          :header-mode="props.headerMode"
-          :show-notification-banner="props.showNotificationBanner"
-          :notification-banner-message="props.notificationBannerMessage"
-          :fallback-message="props.fallbackMessage"
-          :icon="props.icon"
-          @save="emit('save')"
-          @open-save-modal="emit('open-save-modal')"
-          @open-cancel-modal="emit('open-cancel-modal')"
-        >
-          <slot />
-          <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
-            <slot :name="name" v-bind="slotData" />
-          </template>
-        </DetailDisplay>
-      </div>
-    </div>
-  </main>
+  <DetailDisplay
+    :loading="props.loading"
+    :result-data="props.resultData"
+    :key-label-pairs="props.keyLabelPairs"
+    :value-class-map="props.valueClassMap"
+    :formatted-source-table="props.sourceTable"
+    :formatted-jurisdiction="props.formattedJurisdiction"
+    :show-header="props.showHeader"
+    :show-open-link="props.showOpenLink"
+    :show-suggest-edit="props.showSuggestEdit"
+    :formatted-theme="props.formattedTheme"
+    :header-mode="props.headerMode"
+    :show-notification-banner="props.showNotificationBanner"
+    :notification-banner-message="props.notificationBannerMessage"
+    :fallback-message="props.fallbackMessage"
+    :icon="props.icon"
+    @save="emit('save')"
+    @open-save-modal="emit('open-save-modal')"
+    @open-cancel-modal="emit('open-cancel-modal')"
+  >
+    <slot />
+    <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
+      <slot :name="name" v-bind="slotData" />
+    </template>
+  </DetailDisplay>
 </template>
 
 <script setup lang="ts">

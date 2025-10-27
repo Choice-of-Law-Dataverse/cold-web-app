@@ -10,77 +10,93 @@
     >
       <!-- Custom rendering for Legal provision articles -->
       <template #domestic-legal-provisions="{ value }">
-        <section class="section-gap">
-          <span class="label flex flex-row items-center">
-            {{
-              keyLabelLookup.get("Domestic Legal Provisions")?.label ||
-              "Source fallback"
-            }}
-            <InfoPopover
-              v-if="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
-              :text="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+        <section class="flex flex-col md:flex-row md:items-start md:gap-6">
+          <h4 class="label mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
+            <span class="flex items-center">
+              {{
+                keyLabelLookup.get("Domestic Legal Provisions")?.label ||
+                "Source fallback"
+              }}
+              <InfoPopover
+                v-if="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+                :text="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+              />
+            </span>
+          </h4>
+          <div class="md:flex-1">
+            <QuestionSourceList
+              :sources="
+                [
+                  ...(value || answerData?.['Domestic Legal Provisions']
+                    ? [value || answerData?.['Domestic Legal Provisions']]
+                    : []),
+                ].filter(Boolean)
+              "
+              :fallback-data="answerData"
+              :value-class-map="valueClassMap"
+              :fetch-oup-chapter="true"
+              :fetch-primary-source="true"
             />
-          </span>
-          <QuestionSourceList
-            :sources="
-              [
-                ...(value || answerData?.['Domestic Legal Provisions']
-                  ? [value || answerData?.['Domestic Legal Provisions']]
-                  : []),
-              ].filter(Boolean)
-            "
-            :fallback-data="answerData"
-            :value-class-map="valueClassMap"
-            :fetch-oup-chapter="true"
-            :fetch-primary-source="true"
-          />
+          </div>
         </section>
       </template>
 
       <!-- Custom rendering for Court Decisions ID -->
       <template #court-decisions-id="{ value }">
-        <section id="related-court-decisions" class="section-gap">
-          <span class="label flex flex-row items-center">
-            {{
-              keyLabelLookup.get("Court Decisions ID")?.label ||
-              "Related Court Decisions"
-            }}
-            <InfoPopover
-              v-if="keyLabelLookup.get('Court Decisions ID')?.tooltip"
-              :text="keyLabelLookup.get('Court Decisions ID')?.tooltip"
+        <section
+          id="related-court-decisions"
+          class="flex flex-col md:flex-row md:items-start md:gap-6"
+        >
+          <h4 class="label mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
+            <span class="flex items-center">
+              {{
+                keyLabelLookup.get("Court Decisions ID")?.label ||
+                "Related Court Decisions"
+              }}
+              <InfoPopover
+                v-if="keyLabelLookup.get('Court Decisions ID')?.tooltip"
+                :text="keyLabelLookup.get('Court Decisions ID')?.tooltip"
+              />
+            </span>
+          </h4>
+          <div class="md:flex-1">
+            <CourtDecisionRenderer
+              :value="value"
+              :value-class-map="valueClassMap['Court Decisions ID']"
+              :empty-value-behavior="
+                keyLabelLookup.get('Domestic Legal Provisions')
+                  ?.emptyValueBehavior
+              "
             />
-          </span>
-          <CourtDecisionRenderer
-            :value="value"
-            :value-class-map="valueClassMap['Court Decisions ID']"
-            :empty-value-behavior="
-              keyLabelLookup.get('Domestic Legal Provisions')
-                ?.emptyValueBehavior
-            "
-          />
+          </div>
         </section>
       </template>
 
       <template #related-literature>
-        <section class="section-gap">
-          <RelatedLiterature
-            :themes="processedAnswerData?.Themes"
-            :literature-id="
-              processedAnswerData?.['Jurisdictions Literature ID']
-            "
-            :mode="'both'"
-            :value-class-map="valueClassMap['Related Literature']"
-            :label="
-              keyLabelLookup.get('Related Literature')?.label ||
-              'Related Literature'
-            "
-            :empty-value-behavior="
-              questionConfig.keyLabelPairs.find(
-                (pair) => pair.key === 'Related Literature',
-              )?.emptyValueBehavior
-            "
-            :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
-          />
+        <section class="flex flex-col md:flex-row md:items-start md:gap-6">
+          <div class="md:w-48 md:flex-shrink-0">
+            <!-- Empty div to maintain column alignment -->
+          </div>
+          <div class="md:flex-1">
+            <RelatedLiterature
+              :themes="processedAnswerData?.Themes"
+              :literature-id="
+                processedAnswerData?.['Jurisdictions Literature ID']
+              "
+              :mode="'both'"
+              :value-class-map="valueClassMap['Related Literature']"
+              :label="
+                keyLabelLookup.get('Related Literature')?.label ||
+                'Related Literature'
+              "
+              :empty-value-behavior="
+                questionConfig.keyLabelPairs.find(
+                  (pair) => pair.key === 'Related Literature',
+                )?.emptyValueBehavior
+              "
+              :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
+            />
+          </div>
         </section>
       </template>
     </BaseDetailLayout>

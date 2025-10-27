@@ -3,19 +3,16 @@
     :result-data="processedResultData"
     card-type="Regional Instrument"
   >
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
+    <div class="flex flex-col gap-0">
       <!-- Abbreviation section -->
-      <div
-        :class="[
-          config.gridConfig.abbreviation.columnSpan,
-          config.gridConfig.abbreviation.startColumn,
-        ]"
-      >
-        <div class="label-key">{{ getLabel("Abbreviation") }}</div>
+      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
+          {{ getLabel("Abbreviation") }}
+        </div>
         <div
           :class="[
             config.valueClassMap['Abbreviation'],
-            'whitespace-pre-line text-sm leading-relaxed',
+            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
             (!processedResultData['Abbreviation'] ||
               processedResultData['Abbreviation'] === 'NA') &&
             config.keyLabelPairs.find((pair) => pair.key === 'Abbreviation')
@@ -30,14 +27,11 @@
 
       <!-- Date section -->
       <template v-if="shouldDisplay('Date')">
-        <div
-          :class="[
-            config.gridConfig.date.columnSpan,
-            config.gridConfig.date.startColumn,
-          ]"
-        >
-          <div class="label-key">{{ getLabel("Date") }}</div>
-          <div :class="[config.valueClassMap['Date']]">
+        <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+          <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
+            {{ getLabel("Date") }}
+          </div>
+          <div :class="[config.valueClassMap['Date'], 'md:flex-1']">
             {{ format.formatDate(getValue("Date")) }}
           </div>
         </div>
@@ -45,17 +39,14 @@
 
       <!-- Title section -->
       <template v-if="shouldDisplay('Title')">
-        <div
-          :class="[
-            config.gridConfig.title.columnSpan,
-            config.gridConfig.title.startColumn,
-          ]"
-        >
-          <div class="label-key">{{ getLabel("Title") }}</div>
+        <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+          <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
+            {{ getLabel("Title") }}
+          </div>
           <div
             :class="[
               config.valueClassMap['Title'],
-              'whitespace-pre-line text-sm leading-relaxed',
+              'whitespace-pre-line text-sm leading-relaxed md:flex-1',
               (!processedResultData['Title'] ||
                 processedResultData['Title'] === 'NA') &&
               config.keyLabelPairs.find((pair) => pair.key === 'Title')
