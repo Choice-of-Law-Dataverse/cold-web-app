@@ -1,6 +1,4 @@
 <template>
-  <BackButton v-if="!hideBackButton" />
-
   <NotificationBanner
     v-if="showNotificationBanner"
     :notification-banner-message="notificationBannerMessage"
@@ -143,7 +141,6 @@
 <script setup>
 import { useRoute } from "vue-router";
 import { useCoveredCountries } from "@/composables/useCoveredCountries";
-import BackButton from "@/components/ui/BackButton.vue";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
@@ -182,10 +179,6 @@ const props = defineProps({
   },
   formattedJurisdiction: { type: Array, required: false, default: () => [] },
   formattedTheme: { type: Array, required: false, default: () => [] },
-  hideBackButton: {
-    type: Boolean,
-    default: false,
-  },
   headerMode: {
     type: String,
     default: "default",
