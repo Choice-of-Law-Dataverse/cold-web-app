@@ -1,7 +1,7 @@
 <template>
-  <UCard class="cold-ucard">
+  <UCard class="cold-ucard overflow-visible">
     <div
-      class="popular-searches-container flex flex-col items-stretch gap-8 md:flex-row md:items-center"
+      class="flex flex-col items-stretch gap-8 md:flex-row md:items-center"
     >
       <h3 class="text-left md:whitespace-nowrap">
         Compare
@@ -90,5 +90,11 @@ const onJurisdictionSelected = (selectedJurisdiction) => {
 <style scoped>
 h3 {
   color: var(--color-cold-purple) !important;
+}
+
+/* Ensure proper positioning context for the dropdown */
+.flex.flex-col.gap-4 {
+  position: relative;
+  z-index: 10;
 }
 </style>

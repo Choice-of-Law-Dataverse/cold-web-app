@@ -3,25 +3,15 @@
     <h2 class="popular-title">{{ title }}</h2>
     <div class="number-container">
       <span v-if="!loading && !error">
-        <UButton class="suggestion-button" variant="link" trailing>{{
-          number ?? props.overrideNumber ?? 0
-        }}</UButton></span
-      >
+        <NuxtLink :to="buttonLink">
+          <UButton class="suggestion-button" variant="link" trailing>{{
+            number ?? props.overrideNumber ?? 0
+          }}</UButton>
+        </NuxtLink>
+      </span>
       <span v-else-if="loading"><LoadingNumber /></span>
       <span v-else>Error</span>
     </div>
-    <!-- <div class="link-container">
-      <a :href="buttonLink">
-        <UButton
-          class="suggestion-button"
-          variant="link"
-          icon="i-material-symbols:arrow-forward"
-          trailing
-        >
-          {{ buttonText }}
-        </UButton>
-      </a>
-    </div> -->
   </UCard>
 </template>
 

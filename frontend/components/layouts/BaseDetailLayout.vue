@@ -38,7 +38,6 @@ const props = withDefaults(
     valueClassMap: Record<string, string>;
     sourceTable: string;
     formattedJurisdiction?: Record<string, unknown>[];
-    hideBackButton?: boolean;
     showHeader?: boolean;
     formattedTheme?: Record<string, unknown>[];
     headerMode?: string;

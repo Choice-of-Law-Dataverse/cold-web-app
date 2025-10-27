@@ -65,12 +65,7 @@
               }"
               class="!mb-2 no-underline"
             >
-              <UButton
-                class="link-button"
-                variant="link"
-                icon="i-material-symbols:arrow-forward"
-                trailing
-              >
+              <UButton class="link-button" variant="link">
                 <span class="break-words text-left">
                   <template v-if="courtDecisionCount !== null">
                     See {{ courtDecisionCount }} court decision{{
@@ -100,12 +95,7 @@
               }"
               class="no-underline"
             >
-              <UButton
-                class="link-button"
-                variant="link"
-                icon="i-material-symbols:arrow-forward"
-                trailing
-              >
+              <UButton class="link-button" variant="link">
                 <span class="break-words text-left">
                   <template v-if="domesticInstrumentCount !== null">
                     See {{ domesticInstrumentCount }} domestic instrument{{

@@ -11,7 +11,7 @@
           v-for="(decision, index) in leadingCases?.slice(0, 3)"
           :key="index"
         >
-          <RouterLink :to="`/court-decision/${decision.ID}`">
+          <NuxtLink :to="`/court-decision/${decision.ID}`">
             <UButton class="suggestion-button mt-8" variant="link">
               <img
                 :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${decision['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
@@ -26,7 +26,7 @@
                 {{ decision["Case Title"] }}
               </span>
             </UButton>
-          </RouterLink>
+          </NuxtLink>
         </div>
       </template>
     </div>
@@ -34,8 +34,8 @@
 </template>
 
 <script setup>
-import { RouterLink } from "vue-router";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
+
 import { useLeadingCases } from "@/composables/useLeadingCases";
 import { formatYear } from "@/utils/format";
 

@@ -6,7 +6,6 @@
       :key-label-pairs="[]"
       :value-class-map="{}"
       source-table="Court Decision"
-      :hide-back-button="true"
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"
