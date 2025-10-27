@@ -1,18 +1,13 @@
 <template>
   <ResultCard :result-data="resultData" card-type="Court Decisions">
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
+    <div class="flex flex-col gap-0">
       <!-- Case Title section -->
-      <div
-        :class="[
-          config.gridConfig.caseTitle.columnSpan,
-          config.gridConfig.caseTitle.startColumn,
-        ]"
-      >
-        <div class="label-key">{{ getLabel("Case Title") }}</div>
+      <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
+        <div class="label-key md:w-48 md:flex-shrink-0">{{ getLabel("Case Title") }}</div>
         <div
           :class="[
             config.valueClassMap['Case Title'],
-            'whitespace-pre-line text-sm leading-relaxed',
+            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
             (!resultData['Case Title'] || resultData['Case Title'] === 'NA') &&
             config.keyLabelPairs.find((pair) => pair.key === 'Case Title')
               ?.emptyValueBehavior?.action === 'display' &&
@@ -32,16 +27,13 @@
           resultData['Publication Date ISO'] &&
           resultData['Publication Date ISO'] !== 'NA'
         "
-        :class="[
-          config.gridConfig.date.columnSpan,
-          config.gridConfig.date.startColumn,
-        ]"
+        class="flex flex-col md:flex-row md:gap-6 md:items-start"
       >
-        <div class="label-key">{{ getLabel("Publication Date ISO") }}</div>
+        <div class="label-key md:w-48 md:flex-shrink-0">{{ getLabel("Publication Date ISO") }}</div>
         <div
           :class="[
             config.valueClassMap['Publication Date ISO'],
-            'whitespace-pre-line text-sm leading-relaxed',
+            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
           ]"
         >
           {{ getValue("Publication Date ISO") }}
@@ -51,16 +43,13 @@
       <!-- Instance section -->
       <div
         v-if="resultData['Instance'] && resultData['Instance'] !== 'NA'"
-        :class="[
-          config.gridConfig.instance.columnSpan,
-          config.gridConfig.instance.startColumn,
-        ]"
+        class="flex flex-col md:flex-row md:gap-6 md:items-start"
       >
-        <div class="label-key">{{ getLabel("Instance") }}</div>
+        <div class="label-key md:w-48 md:flex-shrink-0">{{ getLabel("Instance") }}</div>
         <div
           :class="[
             config.valueClassMap['Instance'],
-            'whitespace-pre-line text-sm leading-relaxed',
+            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
           ]"
         >
           {{ getValue("Instance") }}
@@ -73,16 +62,13 @@
           resultData['Choice of Law Issue'] &&
           resultData['Choice of Law Issue'] !== 'NA'
         "
-        :class="[
-          config.gridConfig.choiceOfLaw.columnSpan,
-          config.gridConfig.choiceOfLaw.startColumn,
-        ]"
+        class="flex flex-col md:flex-row md:gap-6 md:items-start"
       >
-        <div class="label-key">{{ getLabel("Choice of Law Issue") }}</div>
+        <div class="label-key md:w-48 md:flex-shrink-0">{{ getLabel("Choice of Law Issue") }}</div>
         <div
           :class="[
             config.valueClassMap['Choice of Law Issue'],
-            'whitespace-pre-line text-sm leading-relaxed',
+            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
           ]"
         >
           {{ getValue("Choice of Law Issue") }}

@@ -1,10 +1,10 @@
 <template>
   <!-- Filters and Results Header -->
   <div
-    class="filters-header !mb-2 ml-[-1px] mt-[-24px] flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+    class="filters-header !mb-2 ml-[-1px] mt-[-24px] flex flex-col gap-4"
   >
     <!-- Filter Controls -->
-    <div class="flex w-full flex-col gap-5 sm:flex-row">
+    <div class="flex w-full flex-col gap-5 sm:flex-row flex-wrap">
       <SearchFilters
         v-model="currentJurisdictionFilter"
         :options="jurisdictions || []"
@@ -37,8 +37,8 @@
     </div>
 
     <!-- Results Count and Sort -->
-    <span
-      class="result-value-small results-margin-fix flex w-full items-center gap-2 whitespace-nowrap text-right md:w-auto md:text-left"
+    <div
+      class="result-value-small results-margin-fix flex w-full gap-2 whitespace-nowrap items-center"
     >
       <template v-if="!loading">
         <template v-if="props.totalMatches > 1">
@@ -84,11 +84,7 @@
           {{ formattedTotalMatches }} {{ resultLabel }}
         </span>
       </template>
-      <!-- Loading placeholder to maintain space -->
-      <span v-else class="h-6 opacity-0">
-        <!-- Invisible placeholder to maintain layout -->
-      </span>
-    </span>
+    </div>
   </div>
 
   <!-- Results Content -->

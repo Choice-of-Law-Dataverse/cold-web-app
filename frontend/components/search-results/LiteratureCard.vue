@@ -1,18 +1,15 @@
 <template>
   <ResultCard :result-data="processedResultData" card-type="Literature">
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
+    <div class="flex flex-col gap-0">
       <!-- Title section -->
-      <div
-        :class="[
-          config.gridConfig.title.columnSpan,
-          config.gridConfig.title.startColumn,
-        ]"
-      >
-        <div class="label-key">{{ getLabel("Title") }}</div>
+      <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
+        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+          {{ getLabel("Title") }}
+        </div>
         <div
           :class="[
             config.valueClassMap.Title,
-            'whitespace-pre-line text-sm leading-relaxed',
+            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
             (!processedResultData.Title ||
               processedResultData.Title === 'NA') &&
             config.keyLabelPairs.find((pair) => pair.key === 'Title')
@@ -25,101 +22,104 @@
         </div>
       </div>
 
-      <!-- Author and Year section -->
-      <div
-        :class="[
-          config.gridConfig.authorYear.columnSpan,
-          config.gridConfig.authorYear.startColumn,
-        ]"
-      >
-        <div class="grid grid-cols-2 gap-4">
-          <!-- Author -->
-          <div>
-            <div class="label-key">{{ getLabel("Author") }}</div>
-            <div
-              :class="[
-                config.valueClassMap.Author,
-                'whitespace-pre-line text-sm leading-relaxed',
-                (!processedResultData.Author ||
-                  processedResultData.Author === 'NA') &&
-                config.keyLabelPairs.find((pair) => pair.key === 'Author')
-                  ?.emptyValueBehavior?.action === 'display'
-                  ? 'text-gray-300'
-                  : '',
-              ]"
-            >
-              {{ getValue("Author") }}
-            </div>
-          </div>
-          <!-- Year -->
-          <div>
-            <div class="label-key">{{ getLabel("Publication Year") }}</div>
-            <div
-              :class="[
-                config.valueClassMap['Publication Year'],
-                'whitespace-pre-line text-sm leading-relaxed',
-                (!processedResultData['Publication Year'] ||
-                  processedResultData['Publication Year'] === 'NA') &&
-                config.keyLabelPairs.find(
-                  (pair) => pair.key === 'Publication Year',
-                )?.emptyValueBehavior?.action === 'display'
-                  ? 'text-gray-300'
-                  : '',
-              ]"
-            >
-              {{ getValue("Publication Year") }}
-            </div>
-          </div>
+      <!-- Author section -->
+      <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
+        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+          {{ getLabel("Author") }}
         </div>
-
-        <!-- Publication section -->
-        <div class="mt-4">
-          <template
-            v-if="
-              shouldDisplay('Publication Title') &&
-              processedResultData['Publication Title']
-            "
-          >
-            <div class="label-key">{{ getLabel("Publication Title") }}</div>
-            <div
-              :class="[
-                config.valueClassMap['Publication Title'],
-                'whitespace-pre-line text-sm leading-relaxed',
-                (!processedResultData['Publication Title'] ||
-                  processedResultData['Publication Title'] === 'NA') &&
-                config.keyLabelPairs.find(
-                  (pair) => pair.key === 'Publication Title',
-                )?.emptyValueBehavior?.action === 'display'
-                  ? 'text-gray-300'
-                  : '',
-              ]"
-            >
-              {{ getValue("Publication Title") }}
-            </div>
-          </template>
-          <template
-            v-else-if="
-              shouldDisplay('Publisher') && processedResultData['Publisher']
-            "
-          >
-            <div class="label-key">{{ getLabel("Publisher") }}</div>
-            <div
-              :class="[
-                config.valueClassMap['Publisher'],
-                'whitespace-pre-line text-sm leading-relaxed',
-                (!processedResultData['Publisher'] ||
-                  processedResultData['Publisher'] === 'NA') &&
-                config.keyLabelPairs.find((pair) => pair.key === 'Publisher')
-                  ?.emptyValueBehavior?.action === 'display'
-                  ? 'text-gray-300'
-                  : '',
-              ]"
-            >
-              {{ getValue("Publisher") }}
-            </div>
-          </template>
+        <div
+          :class="[
+            config.valueClassMap.Author,
+            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+            (!processedResultData.Author ||
+              processedResultData.Author === 'NA') &&
+            config.keyLabelPairs.find((pair) => pair.key === 'Author')
+              ?.emptyValueBehavior?.action === 'display'
+              ? 'text-gray-300'
+              : '',
+          ]"
+        >
+          {{ getValue("Author") }}
         </div>
       </div>
+
+      <!-- Publication Year section -->
+      <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
+        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+          {{ getLabel("Publication Year") }}
+        </div>
+        <div
+          :class="[
+            config.valueClassMap['Publication Year'],
+            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+            (!processedResultData['Publication Year'] ||
+              processedResultData['Publication Year'] === 'NA') &&
+            config.keyLabelPairs.find(
+              (pair) => pair.key === 'Publication Year',
+            )?.emptyValueBehavior?.action === 'display'
+              ? 'text-gray-300'
+              : '',
+          ]"
+        >
+          {{ getValue("Publication Year") }}
+        </div>
+      </div>
+
+      <!-- Publication Title section -->
+      <template
+        v-if="
+          shouldDisplay('Publication Title') &&
+          processedResultData['Publication Title']
+        "
+      >
+        <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
+          <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+            {{ getLabel("Publication Title") }}
+          </div>
+          <div
+            :class="[
+              config.valueClassMap['Publication Title'],
+              'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+              (!processedResultData['Publication Title'] ||
+                processedResultData['Publication Title'] === 'NA') &&
+              config.keyLabelPairs.find(
+                (pair) => pair.key === 'Publication Title',
+              )?.emptyValueBehavior?.action === 'display'
+                ? 'text-gray-300'
+                : '',
+            ]"
+          >
+            {{ getValue("Publication Title") }}
+          </div>
+        </div>
+      </template>
+
+      <!-- Publisher section -->
+      <template
+        v-else-if="
+          shouldDisplay('Publisher') && processedResultData['Publisher']
+        "
+      >
+        <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
+          <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+            {{ getLabel("Publisher") }}
+          </div>
+          <div
+            :class="[
+              config.valueClassMap['Publisher'],
+              'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+              (!processedResultData['Publisher'] ||
+                processedResultData['Publisher'] === 'NA') &&
+              config.keyLabelPairs.find((pair) => pair.key === 'Publisher')
+                ?.emptyValueBehavior?.action === 'display'
+                ? 'text-gray-300'
+                : '',
+            ]"
+          >
+            {{ getValue("Publisher") }}
+          </div>
+        </div>
+      </template>
     </div>
   </ResultCard>
 </template>

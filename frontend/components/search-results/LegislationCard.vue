@@ -3,19 +3,16 @@
     :result-data="processedResultData"
     card-type="Domestic Instrument"
   >
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
+    <div class="flex flex-col gap-0">
       <!-- Title section -->
-      <div
-        :class="[
-          config.gridConfig.title.columnSpan,
-          config.gridConfig.title.startColumn,
-        ]"
-      >
-        <div class="label-key">{{ getLabel("Title (in English)") }}</div>
+      <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
+        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+          {{ getLabel("Title (in English)") }}
+        </div>
         <div
           :class="[
             config.valueClassMap['Title (in English)'],
-            'whitespace-pre-line text-sm leading-relaxed',
+            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
             (!processedResultData['Title (in English)'] ||
               processedResultData['Title (in English)'] === 'NA') &&
             config.keyLabelPairs.find(
@@ -36,16 +33,15 @@
           processedResultData['Date'] &&
           processedResultData['Date'] !== 'NA'
         "
-        :class="[
-          config.gridConfig.date.columnSpan,
-          config.gridConfig.date.startColumn,
-        ]"
+        class="flex flex-col md:flex-row md:gap-6 md:items-start"
       >
-        <div class="label-key">{{ getLabel("Date") }}</div>
+        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+          {{ getLabel("Date") }}
+        </div>
         <div
           :class="[
             config.valueClassMap['Date'],
-            'whitespace-pre-line text-sm leading-relaxed',
+            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
           ]"
         >
           {{ getValue("Date") }}
@@ -59,16 +55,15 @@
           processedResultData['Abbreviation'] &&
           processedResultData['Abbreviation'] !== 'NA'
         "
-        :class="[
-          config.gridConfig.abbreviation.columnSpan,
-          config.gridConfig.abbreviation.startColumn,
-        ]"
+        class="flex flex-col md:flex-row md:gap-6 md:items-start"
       >
-        <div class="label-key">{{ getLabel("Abbreviation") }}</div>
+        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+          {{ getLabel("Abbreviation") }}
+        </div>
         <div
           :class="[
             config.valueClassMap['Abbreviation'],
-            'whitespace-pre-line text-sm leading-relaxed',
+            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
           ]"
         >
           {{ getValue("Abbreviation") }}
