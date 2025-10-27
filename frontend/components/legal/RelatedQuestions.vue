@@ -1,8 +1,10 @@
 <template>
   <div v-if="shouldDisplay">
-    <h4 v-if="label" class="label flex flex-row items-center"
-      >{{ label }}
+    <h4 v-if="label" class="label ">
+      <span class="flex flex-row items-center">
+      {{ label }}
       <InfoPopover v-if="tooltip" :text="tooltip" />
+      </span>
     </h4>
     <ul v-if="questionList.length">
       <li v-for="(q, idx) in questionList" :key="idx">

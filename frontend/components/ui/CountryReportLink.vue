@@ -1,33 +1,28 @@
 <template>
   <UCard class="cold-ucard">
     <div class="flex flex-col gap-8">
-            <!-- Title Section -->
-            <div>
-              <h3 class="mb-1 text-left md:whitespace-nowrap">
-                <NuxtLink
-                  v-if="jurisdictionCode"
-                  :to="`/jurisdiction/${jurisdictionCode.toLowerCase()}`"
-                >
-                  Country report for
-                  {{
-                    processedAnswerData?.Jurisdictions || "this jurisdiction"
-                  }}
-                </NuxtLink>
-                <span v-else>
-                  Country report for
-                  {{
-                    processedAnswerData?.Jurisdictions || "this jurisdiction"
-                  }}
-                </span>
-              </h3>
-              <span class="result-value-small">
-                The country report provides detailed information, answers, and
-                more on
-                {{ processedAnswerData?.Jurisdictions || "this jurisdiction" }}
-              </span>
-            </div>
-          </div>
-        </UCard>
+      <!-- Title Section -->
+      <div>
+        <h3 class="mb-1 text-left md:whitespace-nowrap">
+          <NuxtLink
+            v-if="jurisdictionCode"
+            :to="`/jurisdiction/${jurisdictionCode.toLowerCase()}`"
+          >
+            Country report for
+            {{ processedAnswerData?.Jurisdictions || "this jurisdiction" }}
+          </NuxtLink>
+          <span v-else>
+            Country report for
+            {{ processedAnswerData?.Jurisdictions || "this jurisdiction" }}
+          </span>
+        </h3>
+        <span class="result-value-small">
+          The country report provides detailed information, answers, and more on
+          {{ processedAnswerData?.Jurisdictions || "this jurisdiction" }}
+        </span>
+      </div>
+    </div>
+  </UCard>
 </template>
 
 <script setup>

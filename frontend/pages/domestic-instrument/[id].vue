@@ -66,14 +66,7 @@
       </template>
       <!-- Slot for Compatibility section -->
       <template #compatibility>
-        <div v-if="showCompatibility" class="result-value-small section-gap">
-          <p class="label mt-12 flex flex-row items-center">
-            Compatible with
-            <InfoPopover
-              v-if="keyLabelLookup.get('Compatibility')?.tooltip"
-              :text="keyLabelLookup.get('Compatibility')?.tooltip"
-            />
-          </p>
+        <div v-if="showCompatibility" class="result-value-small">
           <span v-if="isCompatible('Compatible With the UNCITRAL Model Law')">
             <CompatibleLabel label="UNCITRAL Model Law" />
           </span>
@@ -89,34 +82,34 @@
           v-if="value && value.trim() && value.trim() !== 'N/A'"
           class="section-gap m-0 p-0"
         >
-          <p class="label mb-[-24px] mt-12 flex flex-row items-center">
-            {{
-              keyLabelLookup.get("Domestic Legal Provisions")?.label ||
-              "Selected Provisions"
-            }}
-            <InfoPopover
-              v-if="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
-              :text="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
-            />
-          </p>
-          <div :class="valueClassMap['Domestic Legal Provisions']">
-            <div v-if="value && value.trim()">
-              <LegalProvision
-                v-for="(
-                  provisionId, index
-                ) in getSortedProvisionIdsForInstrument(value)"
-                :key="index"
-                :provision-id="provisionId"
-                :text-type="textType"
-                :instrument-title="
-                  processedLegalInstrument
-                    ? processedLegalInstrument['Abbreviation'] ||
-                      processedLegalInstrument['Title (in English)']
-                    : ''
-                "
-                @update:has-english-translation="hasEnglishTranslation = $event"
+          <h4 class="label mb-[-24px]">
+            <span class="flex flex-row items-center">
+              {{
+                keyLabelLookup.get("Domestic Legal Provisions")?.label ||
+                "Selected Provisions"
+              }}
+              <InfoPopover
+                v-if="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+                :text="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
               />
-            </div>
+            </span>
+          </h4>
+          <div class="md:flex-1">
+            <LegalProvision
+              v-for="(provisionId, index) in getSortedProvisionIdsForInstrument(
+                value,
+              )"
+              :key="index"
+              :provision-id="provisionId"
+              :text-type="textType"
+              :instrument-title="
+                processedLegalInstrument
+                  ? processedLegalInstrument['Abbreviation'] ||
+                    processedLegalInstrument['Title (in English)']
+                  : ''
+              "
+              @update:has-english-translation="hasEnglishTranslation = $event"
+            />
           </div>
         </section>
       </template>

@@ -1,26 +1,26 @@
 <template>
   <UCard class="cold-ucard">
     <div class="flex flex-col gap-8">
-            <!-- Title Section -->
-            <div>
-              <h3 class="text-left md:whitespace-nowrap">
-                <NuxtLink
-                  v-if="formattedJurisdiction?.Name && iso3Code"
-                  :to="comparisonUrl"
-                >
-                  Compare
-                  {{ formattedJurisdiction?.Name || "this jurisdiction" }} with
-                  other jurisdictions
-                </NuxtLink>
-                <span v-else>
-                  Compare
-                  {{ formattedJurisdiction?.Name || "this jurisdiction" }} with
-                  other jurisdictions
-                </span>
-              </h3>
-            </div>
-          </div>
-        </UCard>
+      <!-- Title Section -->
+      <div>
+        <h3 class="text-left md:whitespace-nowrap">
+          <NuxtLink
+            v-if="formattedJurisdiction?.Name && iso3Code"
+            :to="comparisonUrl"
+          >
+            Compare
+            {{ formattedJurisdiction?.Name || "this jurisdiction" }} with other
+            jurisdictions
+          </NuxtLink>
+          <span v-else>
+            Compare
+            {{ formattedJurisdiction?.Name || "this jurisdiction" }} with other
+            jurisdictions
+          </span>
+        </h3>
+      </div>
+    </div>
+  </UCard>
 </template>
 
 <script setup>

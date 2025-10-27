@@ -47,23 +47,26 @@
 
       <!-- Main content -->
       <div class="flex">
-        <div
-          class="main-content flex w-full flex-col gap-0 px-6 py-8"
-        >
+        <div class="main-content flex w-full flex-col gap-0 px-6 py-8">
           <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
           <slot />
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
           <section
             v-for="(item, index) in keyLabelPairs"
             :key="index"
-            class="section-gap m-0 flex flex-col p-0"
+            class="section-gap m-0 flex flex-col p-0 md:flex-row md:gap-6"
           >
             <!-- Check if it's the special 'Specialist' key -->
             <template v-if="item.key === 'Region'">
               <slot />
             </template>
             <!-- Check for slot first -->
-            <template v-if="resultData?.[item.key] && $slots[item.key.replace(/ /g, '-').toLowerCase()]">
+            <template
+              v-if="
+                resultData?.[item.key] &&
+                $slots[item.key.replace(/ /g, '-').toLowerCase()]
+              "
+            >
               <slot
                 :name="item.key.replace(/ /g, '-').toLowerCase()"
                 :value="resultData?.[item.key]"
@@ -74,60 +77,68 @@
               <!-- Conditionally render the label and value container -->
               <div
                 v-if="shouldDisplayValue(item, resultData?.[item.key])"
+                class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6"
               >
                 <!-- Conditionally render the label -->
-                <h4 class="label label-key flex items-center">
-                  {{ item.label }}
-                  <!-- Add this line to support header-actions slot for each section -->
-                  <slot
-                    :name="item.key + '-header-actions'"
-                    :value="resultData?.[item.key]"
-                  />
-                  <!-- Render InfoPopover if tooltip is defined in config -->
-                  <template v-if="item.tooltip">
-                    <InfoPopover :text="item.tooltip" />
-                  </template>
+                <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
+                  <span class="flex items-center">
+                    {{ item.label }}
+                    <!-- Add this line to support header-actions slot for each section -->
+                    <slot
+                      :name="item.key + '-header-actions'"
+                      :value="resultData?.[item.key]"
+                    />
+                    <!-- Render InfoPopover if tooltip is defined in config -->
+                    <template v-if="item.tooltip">
+                      <InfoPopover :text="item.tooltip" />
+                    </template>
+                  </span>
                 </h4>
-                <!-- Conditionally render bullet list if Answer or Specialists is an array -->
-                <template
-                  v-if="
-                    (item.key === 'Answer' || item.key === 'Specialists') && 
-                    Array.isArray(getDisplayValue(item, resultData?.[item.key]))
-                  "
-                >
-                  <ul>
-                    <li
-                      v-for="(line, i) in getDisplayValue(
-                        item,
-                        resultData?.[item.key],
-                      )"
-                      :key="i"
-                      :class="
-                        props.valueClassMap[item.key] ||
-                        'whitespace-pre-line leading-relaxed'
-                      "
-                    >
-                      {{ line }}
-                    </li>
-                  </ul>
-                </template>
-                <template v-else>
-                  <p
-                    :class="[
-                      props.valueClassMap[item.key] ||
-                        'whitespace-pre-line leading-relaxed',
-                      (!resultData?.[item.key] ||
-                        resultData?.[item.key] === 'NA') &&
-                      item.emptyValueBehavior?.action === 'display' &&
-                      !item.emptyValueBehavior?.getFallback
-                        ? 'text-gray-300'
-                        : '',
-                      'prose'
-                    ]"
+                <div class="md:flex-1">
+                  <!-- Conditionally render bullet list if Answer or Specialists is an array -->
+                  <template
+                    v-if="
+                      (item.key === 'Answer' || item.key === 'Specialists') &&
+                      Array.isArray(
+                        getDisplayValue(item, resultData?.[item.key]),
+                      )
+                    "
                   >
-                    {{ getDisplayValue(item, resultData?.[item.key]) }}
-                  </p>
-                </template>
+                    <div class="mt-0 flex flex-col gap-2">
+                      <div
+                        v-for="(line, i) in getDisplayValue(
+                          item,
+                          resultData?.[item.key],
+                        )"
+                        :key="i"
+                        :class="
+                          props.valueClassMap[item.key] ||
+                          'whitespace-pre-line leading-relaxed'
+                        "
+                      >
+                        {{ line }}
+                      </div>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <p
+                      :class="[
+                        props.valueClassMap[item.key] ||
+                          'whitespace-pre-line leading-relaxed',
+                        (!resultData?.[item.key] ||
+                          resultData?.[item.key] === 'NA') &&
+                        item.emptyValueBehavior?.action === 'display' &&
+                        !item.emptyValueBehavior?.getFallback
+                          ? 'text-gray-300'
+                          : '',
+                        'prose',
+                        'mt-0',
+                      ]"
+                    >
+                      {{ getDisplayValue(item, resultData?.[item.key]) }}
+                    </p>
+                  </template>
+                </div>
               </div>
             </template>
           </section>
@@ -324,6 +335,9 @@ const getDisplayValue = (item, value) => {
 .label-key span {
   display: inline-flex;
   align-items: center;
+}
+
+.label-key span :deep(svg) {
   margin-top: -1px;
   color: var(--color-cold-purple);
   font-size: 1.1em;

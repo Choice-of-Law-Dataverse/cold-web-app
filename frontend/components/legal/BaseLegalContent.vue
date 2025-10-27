@@ -7,52 +7,69 @@
     <div v-if="error">{{ error }}</div>
     <div v-else>
       <div :id="anchorId" :class="['legal-content', customClass]">
-        <div class="no-margin mb-4 flex items-center justify-between">
-          <div class="flex min-w-0 flex-1 items-center gap-2">
-            <!-- Caret toggle button -->
-            <button
-              type="button"
-              class="rounded py-1 pl-[0.025rem] pr-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
-              :aria-controls="`${anchorId}-content`"
-              :aria-expanded="isOpen.toString()"
-              aria-label="Toggle content"
-              @click="toggleOpen"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                width="16"
-                height="16"
-                fill="none"
-                :style="{
-                  color: 'var(--color-cold-purple)',
-                  transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-                }"
-              >
-                <path
-                  d="M9 6l6 6-6 6"
-                  stroke="currentColor"
-                  stroke-width="3"
-                  stroke-linecap="square"
-                  stroke-linejoin="square"
-                />
-              </svg>
-            </button>
+        <div
+          class="no-margin mb-4 flex flex-col md:flex-row md:items-start md:gap-6"
+        >
+          <!-- Empty spacer on the left to maintain column alignment -->
+          <div class="hidden md:block md:w-48 md:flex-shrink-0" />
 
-            <!-- Title / anchor link -->
-            <a
-              :href="`#${anchorId}`"
-              class="label-key-provision-article anchor min-w-0 flex-1"
-              @click="onTitleClick"
+          <!-- Content wrapper on the right -->
+          <div class="md:flex-1">
+            <div class="flex items-center justify-between gap-2">
+              <!-- Title and toggle button together -->
+              <div class="flex min-w-0 flex-1 items-center gap-2">
+                <a
+                  :href="`#${anchorId}`"
+                  class="label-key-provision-article anchor min-w-0 flex-1"
+                  @click="onTitleClick"
+                >
+                  {{ displayTitle }}
+                </a>
+
+                <!-- Caret toggle button with label -->
+                <button
+                  type="button"
+                  class="flex flex-shrink-0 items-center gap-1 rounded py-1 pl-[0.025rem] pr-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
+                  :aria-controls="`${anchorId}-content`"
+                  :aria-expanded="isOpen.toString()"
+                  :aria-label="isOpen ? 'Collapse content' : 'Expand content'"
+                  @click="toggleOpen"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    :style="{
+                      color: 'var(--color-cold-purple)',
+                      transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+                    }"
+                  >
+                    <path
+                      d="M9 6l6 6-6 6"
+                      stroke="currentColor"
+                      stroke-width="3"
+                      stroke-linecap="square"
+                      stroke-linejoin="square"
+                    />
+                  </svg>
+                </button>
+              </div>
+
+              <div v-if="isOpen" class="flex justify-end">
+                <slot name="header-actions" />
+              </div>
+            </div>
+
+            <div
+              v-show="isOpen"
+              :id="`${anchorId}-content`"
+              class="content-body prose"
             >
-              {{ displayTitle }}
-            </a>
+              <slot />
+            </div>
           </div>
-          <slot v-if="isOpen" name="header-actions" />
-        </div>
-
-        <div v-show="isOpen" :id="`${anchorId}-content`" class="content-body">
-          <slot />
         </div>
       </div>
     </div>
@@ -97,7 +114,7 @@ const toggleOpen = () => {
 
 // Open content when clicking the title (preserve anchor navigation)
 const onTitleClick = () => {
-  isOpen.value = true;
+  isOpen.value = !isOpen.value;
 };
 
 // Determine if this is the first provision instance in the container

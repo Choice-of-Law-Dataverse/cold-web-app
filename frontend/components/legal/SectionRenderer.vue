@@ -1,8 +1,10 @@
 <template>
   <div>
-    <p class="label mb-1 flex flex-row items-center">
+    <p class="label ">
+      <span class="flex flex-row items-center">
       {{ sectionLabel }}
       <InfoPopover v-if="sectionTooltip" :text="sectionTooltip" />
+      </span> 
     </p>
     <span v-if="!isLoading">
       <NuxtLink v-if="displayTitle && id" :to="generateInstrumentLink(id)">{{

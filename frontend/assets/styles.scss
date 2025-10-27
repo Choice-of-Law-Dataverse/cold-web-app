@@ -12,7 +12,6 @@
   );
 }
 
-
 // Fonts -----------------------------------------------
 
 body {
@@ -353,13 +352,11 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
 
 // CoLD Card
 .cold-ucard {
-      overflow-x: hidden;
+  overflow-x: hidden;
   // margin-bottom: 24px;
-      margin-left: 1px;
-    margin-right: 1px;
+  margin-left: 1px;
+  margin-right: 1px;
 }
-
-
 
 .cold-ucard-info {
   @extend .cold-ucard;
