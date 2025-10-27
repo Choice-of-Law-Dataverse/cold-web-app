@@ -6,7 +6,6 @@
       :key-label-pairs="[]"
       :value-class-map="{}"
       source-table="Domestic Instrument"
-      :hide-back-button="true"
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"

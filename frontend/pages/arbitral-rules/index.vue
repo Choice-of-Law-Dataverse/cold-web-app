@@ -14,13 +14,33 @@
         <div class="rules-table" :style="{ '--set-col-width': setColWidth }">
           <UTable :columns="columns" :rows="rows">
             <template #setofRules-data="{ row }">
+              <NuxtLink
+                v-if="row.coldId"
+                :to="`/arbitral-rule/${row.coldId}`"
+                class="table-row-link"
+              >
+                <span
+                  class="result-value-small block truncate whitespace-nowrap"
+                  >{{ row.setofRules }}</span
+                >
+              </NuxtLink>
               <span
+                v-else
                 class="result-value-small block truncate whitespace-nowrap"
                 >{{ row.setofRules }}</span
               >
             </template>
             <template #inForceFrom-data="{ row }">
-              <span class="result-value-small">{{
+              <NuxtLink
+                v-if="row.coldId"
+                :to="`/arbitral-rule/${row.coldId}`"
+                class="table-row-link"
+              >
+                <span class="result-value-small">{{
+                  formatDate(row.inForceFrom) || ""
+                }}</span>
+              </NuxtLink>
+              <span v-else class="result-value-small">{{
                 formatDate(row.inForceFrom) || ""
               }}</span>
             </template>
@@ -28,12 +48,11 @@
               <NuxtLink
                 v-if="row.coldId"
                 :to="`/arbitral-rule/${row.coldId}`"
-                class="label result-value-small font-semibold"
+                class="table-row-link arrow-cell"
               >
-                Open
                 <UIcon
-                  name="i-material-symbols:play-arrow"
-                  class="-mb-[1px] inline-block"
+                  name="i-material-symbols:arrow-forward"
+                  class="arrow-icon"
                 />
               </NuxtLink>
               <span v-else class="text-gray-300">—</span>
@@ -215,7 +234,7 @@ onMounted(() => {
 
 .rules-table :deep(th:last-child),
 .rules-table :deep(td:last-child) {
-  padding-right: 0 !important; /* no gutter after last column */
+  padding-right: 16px !important; /* Add padding to prevent animation cutoff */
   text-align: right !important; /* align Open column to the right */
 }
 
@@ -237,6 +256,17 @@ onMounted(() => {
 /* Remove top padding from the first column (Set of Rules) to avoid visual offset */
 .rules-table :deep(tbody td:first-child) {
   padding-top: 10px !important;
+}
+
+/* Row hover effects */
+.rules-table :deep(tbody tr:hover) {
+  background-color: rgba(0, 0, 0, 0.02);
+  cursor: pointer;
+}
+
+/* Trigger arrow bounce animation on row hover */
+.rules-table :deep(tbody tr:hover .arrow-icon) {
+  animation: bounce-right 0.4s ease-out;
 }
 
 /* Style header titles to visually resemble `.label` without breaking sorting */

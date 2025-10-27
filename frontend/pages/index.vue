@@ -17,9 +17,9 @@
             <span>
               Navigate private international law issues with precision.
 
-              <UButton class="suggestion-button" to="/about" variant="link">
+              <NuxtLink class="suggestion-button" to="/about" variant="link">
                 <span>Read more </span>
-              </UButton>
+              </NuxtLink>
             </span>
           </h2>
         </div>

@@ -13,7 +13,6 @@
           :show-open-link="props.showOpenLink"
           :show-suggest-edit="props.showSuggestEdit"
           :formatted-theme="props.formattedTheme"
-          :hide-back-button="props.hideBackButton"
           :header-mode="props.headerMode"
           :show-notification-banner="props.showNotificationBanner"
           :notification-banner-message="props.notificationBannerMessage"
@@ -44,7 +43,6 @@ const props = withDefaults(
     valueClassMap: Record<string, string>;
     sourceTable: string;
     formattedJurisdiction?: Record<string, unknown>[];
-    hideBackButton?: boolean;
     showHeader?: boolean;
     formattedTheme?: Record<string, unknown>[];
     headerMode?: string;

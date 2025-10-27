@@ -2,47 +2,36 @@
   <UCard class="cold-ucard h-full w-full">
     <h2 class="popular-title">{{ title }}</h2>
 
-    <div class="flags-row">
-      <div class="flag-cell">
-        <img
-          v-if="!leftFlagError"
-          :src="leftFlagUrl"
-          :alt="`${iso3Left} flag`"
-          class="flag-img"
-          @error="leftFlagError = true"
-        >
-        <div v-else class="flag-fallback">{{ iso3Left }}</div>
+    <NuxtLink :to="resolvedButtonLink" class="no-underline">
+      <div class="flags-row">
+        <div class="flag-cell">
+          <img
+            v-if="!leftFlagError"
+            :src="leftFlagUrl"
+            :alt="`${iso3Left} flag`"
+            class="flag-img"
+            @error="leftFlagError = true"
+          >
+          <div v-else class="flag-fallback">{{ iso3Left }}</div>
+        </div>
+
+        <div class="flag-cell">
+          <img
+            v-if="!rightFlagError"
+            :src="rightFlagUrl"
+            :alt="`${rightIso3} flag`"
+            class="flag-img"
+            @error="rightFlagError = true"
+          >
+          <div v-else class="flag-fallback">{{ rightIso3 }}</div>
+        </div>
       </div>
 
-      <div class="flag-cell">
-        <img
-          v-if="!rightFlagError"
-          :src="rightFlagUrl"
-          :alt="`${rightIso3} flag`"
-          class="flag-img"
-          @error="rightFlagError = true"
-        >
-        <div v-else class="flag-fallback">{{ rightIso3 }}</div>
+      <div class="codes-row">
+        <div class="code">{{ iso3Left }}</div>
+        <div class="code">{{ rightIso3 }}</div>
       </div>
-    </div>
-
-    <div class="codes-row">
-      <div class="code">{{ iso3Left }}</div>
-      <div class="code">{{ rightIso3 }}</div>
-    </div>
-
-    <div class="link-container">
-      <a :href="resolvedButtonLink">
-        <UButton
-          class="suggestion-button"
-          variant="link"
-          icon="i-material-symbols:arrow-forward"
-          trailing
-        >
-          {{ buttonText }}
-        </UButton>
-      </a>
-    </div>
+    </NuxtLink>
   </UCard>
 </template>
 

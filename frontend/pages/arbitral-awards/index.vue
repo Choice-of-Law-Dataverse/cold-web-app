@@ -14,30 +14,61 @@
         <div class="awards-table">
           <UTable :columns="columns" :rows="rows">
             <template #caseNumber-data="{ row }">
+              <NuxtLink
+                v-if="row.coldId"
+                :to="`/arbitral-award/${row.coldId}`"
+                class="table-row-link"
+              >
+                <span
+                  class="result-value-small block truncate whitespace-nowrap"
+                  >{{ row.caseNumber }}</span
+                >
+              </NuxtLink>
               <span
+                v-else
                 class="result-value-small block truncate whitespace-nowrap"
                 >{{ row.caseNumber }}</span
               >
             </template>
             <template #year-data="{ row }">
-              <span class="result-value-small">{{ row.year }}</span>
+              <NuxtLink
+                v-if="row.coldId"
+                :to="`/arbitral-award/${row.coldId}`"
+                class="table-row-link"
+              >
+                <span class="result-value-small">{{ row.year }}</span>
+              </NuxtLink>
+              <span v-else class="result-value-small">{{ row.year }}</span>
             </template>
             <template #seatTown-data="{ row }">
-              <span class="result-value-small">{{ row.seatTown }}</span>
+              <NuxtLink
+                v-if="row.coldId"
+                :to="`/arbitral-award/${row.coldId}`"
+                class="table-row-link"
+              >
+                <span class="result-value-small">{{ row.seatTown }}</span>
+              </NuxtLink>
+              <span v-else class="result-value-small">{{ row.seatTown }}</span>
             </template>
             <template #source-data="{ row }">
-              <span class="result-value-small">{{ row.source }}</span>
+              <NuxtLink
+                v-if="row.coldId"
+                :to="`/arbitral-award/${row.coldId}`"
+                class="table-row-link"
+              >
+                <span class="result-value-small">{{ row.source }}</span>
+              </NuxtLink>
+              <span v-else class="result-value-small">{{ row.source }}</span>
             </template>
             <template #open-data="{ row }">
               <NuxtLink
                 v-if="row.coldId"
                 :to="`/arbitral-award/${row.coldId}`"
-                class="label result-value-small font-semibold"
+                class="table-row-link arrow-cell"
               >
-                Open
                 <UIcon
-                  name="i-material-symbols:play-arrow"
-                  class="-mb-[1px] inline-block"
+                  name="i-material-symbols:arrow-forward"
+                  class="arrow-icon"
                 />
               </NuxtLink>
               <span v-else class="text-gray-300">—</span>
@@ -179,7 +210,7 @@ const rows: Row[] = (csvRows.slice(1) || [])
 
 .awards-table :deep(th:last-child),
 .awards-table :deep(td:last-child) {
-  padding-right: 0 !important; /* no gutter after last column */
+  padding-right: 16px !important; /* Add padding to prevent animation cutoff */
   text-align: right !important; /* align Open column to the right */
 }
 
@@ -201,6 +232,17 @@ const rows: Row[] = (csvRows.slice(1) || [])
 /* Remove top padding from the first column (Case Number) to avoid visual offset */
 .awards-table :deep(tbody td:first-child) {
   padding-top: 10px !important;
+}
+
+/* Row hover effects */
+.awards-table :deep(tbody tr:hover) {
+  background-color: rgba(0, 0, 0, 0.02);
+  cursor: pointer;
+}
+
+/* Trigger arrow bounce animation on row hover */
+.awards-table :deep(tbody tr:hover .arrow-icon) {
+  animation: bounce-right 0.4s ease-out;
 }
 
 /* Style header titles to visually resemble `.label` without breaking sorting */

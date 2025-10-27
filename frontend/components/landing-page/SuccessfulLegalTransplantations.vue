@@ -13,7 +13,7 @@
           v-for="(instrument, index) in domesticInstruments.slice(0, 9)"
           :key="index"
         >
-          <RouterLink :to="`/domestic-instrument/${instrument.ID}`">
+          <NuxtLink :to="`/domestic-instrument/${instrument.ID}`">
             <UButton class="suggestion-button mt-6" variant="link">
               <img
                 :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
@@ -28,7 +28,7 @@
                 {{ instrument["Title (in English)"] }}
               </span>
             </UButton>
-          </RouterLink>
+          </NuxtLink>
         </div>
       </template>
     </div>
@@ -37,7 +37,6 @@
 
 <script setup>
 import { ref } from "vue";
-import { RouterLink } from "vue-router";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
 import { useDomesticInstruments } from "@/composables/useDomesticInstruments";
 import { formatYear } from "@/utils/format";
