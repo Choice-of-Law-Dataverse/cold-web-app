@@ -478,10 +478,6 @@ function splitIntoLines(items, rows) {
   flex-direction: column;
   overflow: hidden;
 }
-. {
-  flex: 1 1 auto; /* allow inner container to grow and scroll */
-  overflow: auto;
-}
 
 /* Ensure the UCard fills the container width so the component doesn't shrink/expand
    based on its internal content */
