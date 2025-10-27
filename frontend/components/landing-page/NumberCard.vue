@@ -3,11 +3,11 @@
     <h2 class="popular-title">{{ title }}</h2>
     <div class="number-container">
       <span v-if="!loading && !error">
-        <RouterLink :to="buttonLink">
+        <NuxtLink :to="buttonLink">
           <UButton class="suggestion-button" variant="link" trailing>{{
             number ?? props.overrideNumber ?? 0
           }}</UButton>
-        </RouterLink>
+        </NuxtLink>
       </span>
       <span v-else-if="loading"><LoadingNumber /></span>
       <span v-else>Error</span>

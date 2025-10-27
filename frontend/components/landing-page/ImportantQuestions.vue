@@ -25,7 +25,7 @@
           </svg>
         </button>
         <UCard class="cold-ucard">
-          <div class="popular-searches-container flex flex-col gap-8">
+          <div class="flex flex-col gap-8">
             <div>
               <div class="flex items-center justify-center md:justify-between">
                 <h2
@@ -478,7 +478,7 @@ function splitIntoLines(items, rows) {
   flex-direction: column;
   overflow: hidden;
 }
-.popular-searches-container {
+. {
   flex: 1 1 auto; /* allow inner container to grow and scroll */
   overflow: auto;
 }

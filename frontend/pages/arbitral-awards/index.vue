@@ -35,10 +35,6 @@
                 class="label result-value-small font-semibold"
               >
                 Open
-                <UIcon
-                  name="i-material-symbols:play-arrow"
-                  class="-mb-[1px] inline-block"
-                />
               </NuxtLink>
               <span v-else class="text-gray-300">—</span>
             </template>
