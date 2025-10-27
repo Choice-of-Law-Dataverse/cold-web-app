@@ -48,7 +48,7 @@
       <!-- Main content -->
       <div class="flex">
         <div
-          class="main-content prose flex w-full flex-col gap-4 px-6 py-8"
+          class="main-content flex w-full flex-col gap-0 px-6 py-8"
         >
           <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
           <slot />
@@ -63,7 +63,7 @@
               <slot />
             </template>
             <!-- Check for slot first -->
-            <template v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]">
+            <template v-if="resultData?.[item.key] && $slots[item.key.replace(/ /g, '-').toLowerCase()]">
               <slot
                 :name="item.key.replace(/ /g, '-').toLowerCase()"
                 :value="resultData?.[item.key]"
@@ -74,10 +74,9 @@
               <!-- Conditionally render the label and value container -->
               <div
                 v-if="shouldDisplayValue(item, resultData?.[item.key])"
-                class="mb-4"
               >
                 <!-- Conditionally render the label -->
-                <p class="label label-key mb-1.5 flex items-center">
+                <h4 class="label label-key flex items-center">
                   {{ item.label }}
                   <!-- Add this line to support header-actions slot for each section -->
                   <slot
@@ -88,11 +87,11 @@
                   <template v-if="item.tooltip">
                     <InfoPopover :text="item.tooltip" />
                   </template>
-                </p>
+                </h4>
                 <!-- Conditionally render bullet list if Answer or Specialists is an array -->
                 <template
                   v-if="
-                    (item.key === 'Answer' || item.key === 'Specialists') &&
+                    (item.key === 'Answer' || item.key === 'Specialists') && 
                     Array.isArray(getDisplayValue(item, resultData?.[item.key]))
                   "
                 >
@@ -123,6 +122,7 @@
                       !item.emptyValueBehavior?.getFallback
                         ? 'text-gray-300'
                         : '',
+                      'prose'
                     ]"
                   >
                     {{ getDisplayValue(item, resultData?.[item.key]) }}

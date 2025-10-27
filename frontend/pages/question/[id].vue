@@ -10,8 +10,8 @@
     >
       <!-- Custom rendering for Legal provision articles -->
       <template #domestic-legal-provisions="{ value }">
-        <section class="section-gap">
-          <span class="label flex flex-row items-center">
+        <section>
+          <h4 class="label flex flex-row items-center">
             {{
               keyLabelLookup.get("Domestic Legal Provisions")?.label ||
               "Source fallback"
@@ -20,7 +20,7 @@
               v-if="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
               :text="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
             />
-          </span>
+          </h4>
           <QuestionSourceList
             :sources="
               [
@@ -39,8 +39,8 @@
 
       <!-- Custom rendering for Court Decisions ID -->
       <template #court-decisions-id="{ value }">
-        <section id="related-court-decisions" class="section-gap">
-          <span class="label flex flex-row items-center">
+        <section id="related-court-decisions">
+          <h4 class="label flex flex-row items-center">
             {{
               keyLabelLookup.get("Court Decisions ID")?.label ||
               "Related Court Decisions"
@@ -49,7 +49,7 @@
               v-if="keyLabelLookup.get('Court Decisions ID')?.tooltip"
               :text="keyLabelLookup.get('Court Decisions ID')?.tooltip"
             />
-          </span>
+          </h4>
           <CourtDecisionRenderer
             :value="value"
             :value-class-map="valueClassMap['Court Decisions ID']"
@@ -62,7 +62,7 @@
       </template>
 
       <template #related-literature>
-        <section class="section-gap">
+        <section>
           <RelatedLiterature
             :themes="processedAnswerData?.Themes"
             :literature-id="

@@ -1,9 +1,9 @@
 <template>
-  <div v-if="shouldShowSection" class="mt-12">
-    <span v-if="showLabel" class="label flex flex-row items-center">
+  <div v-if="shouldShowSection">
+    <h4 v-if="showLabel" class="label flex flex-row items-center">
       {{ label }}
       <InfoPopover v-if="tooltip" :text="tooltip" />
-    </span>
+    </h4>
     <ul v-if="loadingTitles || loading">
       <LoadingBar class="ml-[-22px] pt-[11px]" />
     </ul>

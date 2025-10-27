@@ -46,7 +46,7 @@
             (domesticInstrumentCount !== 0 && domesticInstrumentCount !== null)
           "
         >
-          <span class="label !mb-4 !mt-0.5">Related Data</span>
+          
 
           <template
             v-if="courtDecisionCountLoading || domesticInstrumentCountLoading"
@@ -54,6 +54,8 @@
             <LoadingBar />
           </template>
           <template v-else>
+            <h4 class="label">Related Data</h4>
+            <p class="prose">
             <NuxtLink
               v-if="courtDecisionCount !== 0 && courtDecisionCount !== null"
               :to="{
@@ -110,6 +112,7 @@
                 </span>
               </UButton>
             </NuxtLink>
+            </p>
           </template>
         </template>
       </template>
