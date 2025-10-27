@@ -2,8 +2,10 @@
   <ResultCard :result-data="resultData" card-type="Court Decisions">
     <div class="flex flex-col gap-0">
       <!-- Case Title section -->
-      <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
-        <div class="label-key md:w-48 md:flex-shrink-0">{{ getLabel("Case Title") }}</div>
+      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+        <div class="label-key md:w-48 md:flex-shrink-0">
+          {{ getLabel("Case Title") }}
+        </div>
         <div
           :class="[
             config.valueClassMap['Case Title'],
@@ -27,9 +29,11 @@
           resultData['Publication Date ISO'] &&
           resultData['Publication Date ISO'] !== 'NA'
         "
-        class="flex flex-col md:flex-row md:gap-6 md:items-start"
+        class="flex flex-col md:flex-row md:items-start md:gap-6"
       >
-        <div class="label-key md:w-48 md:flex-shrink-0">{{ getLabel("Publication Date ISO") }}</div>
+        <div class="label-key md:w-48 md:flex-shrink-0">
+          {{ getLabel("Publication Date ISO") }}
+        </div>
         <div
           :class="[
             config.valueClassMap['Publication Date ISO'],
@@ -43,9 +47,11 @@
       <!-- Instance section -->
       <div
         v-if="resultData['Instance'] && resultData['Instance'] !== 'NA'"
-        class="flex flex-col md:flex-row md:gap-6 md:items-start"
+        class="flex flex-col md:flex-row md:items-start md:gap-6"
       >
-        <div class="label-key md:w-48 md:flex-shrink-0">{{ getLabel("Instance") }}</div>
+        <div class="label-key md:w-48 md:flex-shrink-0">
+          {{ getLabel("Instance") }}
+        </div>
         <div
           :class="[
             config.valueClassMap['Instance'],
@@ -62,9 +68,11 @@
           resultData['Choice of Law Issue'] &&
           resultData['Choice of Law Issue'] !== 'NA'
         "
-        class="flex flex-col md:flex-row md:gap-6 md:items-start"
+        class="flex flex-col md:flex-row md:items-start md:gap-6"
       >
-        <div class="label-key md:w-48 md:flex-shrink-0">{{ getLabel("Choice of Law Issue") }}</div>
+        <div class="label-key md:w-48 md:flex-shrink-0">
+          {{ getLabel("Choice of Law Issue") }}
+        </div>
         <div
           :class="[
             config.valueClassMap['Choice of Law Issue'],

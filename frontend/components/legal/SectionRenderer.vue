@@ -1,11 +1,11 @@
 <template>
   <div>
-    <p class="label ">
+    <h4 class="label">
       <span class="flex flex-row items-center">
-      {{ sectionLabel }}
-      <InfoPopover v-if="sectionTooltip" :text="sectionTooltip" />
-      </span> 
-    </p>
+        {{ sectionLabel }}
+        <InfoPopover v-if="sectionTooltip" :text="sectionTooltip" />
+      </span>
+    </h4>
     <span v-if="!isLoading">
       <NuxtLink v-if="displayTitle && id" :to="generateInstrumentLink(id)">{{
         displayTitle

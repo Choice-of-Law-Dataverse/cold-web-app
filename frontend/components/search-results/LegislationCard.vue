@@ -5,8 +5,8 @@
   >
     <div class="flex flex-col gap-0">
       <!-- Title section -->
-      <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
-        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
           {{ getLabel("Title (in English)") }}
         </div>
         <div
@@ -33,9 +33,9 @@
           processedResultData['Date'] &&
           processedResultData['Date'] !== 'NA'
         "
-        class="flex flex-col md:flex-row md:gap-6 md:items-start"
+        class="flex flex-col md:flex-row md:items-start md:gap-6"
       >
-        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
           {{ getLabel("Date") }}
         </div>
         <div
@@ -55,9 +55,9 @@
           processedResultData['Abbreviation'] &&
           processedResultData['Abbreviation'] !== 'NA'
         "
-        class="flex flex-col md:flex-row md:gap-6 md:items-start"
+        class="flex flex-col md:flex-row md:items-start md:gap-6"
       >
-        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
           {{ getLabel("Abbreviation") }}
         </div>
         <div

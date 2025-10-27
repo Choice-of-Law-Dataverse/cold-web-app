@@ -2,8 +2,8 @@
   <ResultCard :result-data="processedResultData" card-type="Literature">
     <div class="flex flex-col gap-0">
       <!-- Title section -->
-      <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
-        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
           {{ getLabel("Title") }}
         </div>
         <div
@@ -23,8 +23,8 @@
       </div>
 
       <!-- Author section -->
-      <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
-        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
           {{ getLabel("Author") }}
         </div>
         <div
@@ -44,8 +44,8 @@
       </div>
 
       <!-- Publication Year section -->
-      <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
-        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
           {{ getLabel("Publication Year") }}
         </div>
         <div
@@ -54,9 +54,8 @@
             'whitespace-pre-line text-sm leading-relaxed md:flex-1',
             (!processedResultData['Publication Year'] ||
               processedResultData['Publication Year'] === 'NA') &&
-            config.keyLabelPairs.find(
-              (pair) => pair.key === 'Publication Year',
-            )?.emptyValueBehavior?.action === 'display'
+            config.keyLabelPairs.find((pair) => pair.key === 'Publication Year')
+              ?.emptyValueBehavior?.action === 'display'
               ? 'text-gray-300'
               : '',
           ]"
@@ -72,8 +71,8 @@
           processedResultData['Publication Title']
         "
       >
-        <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
-          <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+        <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+          <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
             {{ getLabel("Publication Title") }}
           </div>
           <div
@@ -100,8 +99,8 @@
           shouldDisplay('Publisher') && processedResultData['Publisher']
         "
       >
-        <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
-          <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+        <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+          <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
             {{ getLabel("Publisher") }}
           </div>
           <div

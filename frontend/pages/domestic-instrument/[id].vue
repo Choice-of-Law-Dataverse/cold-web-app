@@ -65,25 +65,49 @@
         </div>
       </template>
       <!-- Slot for Compatibility section -->
-      <template #compatibility>
-        <div v-if="showCompatibility" class="result-value-small">
-          <span v-if="isCompatible('Compatible With the UNCITRAL Model Law')">
-            <CompatibleLabel label="UNCITRAL Model Law" />
-          </span>
-          <span v-if="isCompatible('Compatible With the HCCH Principles')">
-            <CompatibleLabel label="HCCH Principles" />
-          </span>
+      <template #compatibility="{ value }">
+        <div
+          v-if="
+            value &&
+            (isCompatible('Compatible With the UNCITRAL Model Law') ||
+              isCompatible('Compatible With the HCCH Principles'))
+          "
+          class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6"
+        >
+          <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
+            <span class="flex items-center">
+              {{
+                keyLabelLookup.get("Compatibility")?.label || "Compatible with"
+              }}
+              <InfoPopover
+                v-if="keyLabelLookup.get('Compatibility')?.tooltip"
+                :text="keyLabelLookup.get('Compatibility')?.tooltip"
+              />
+            </span>
+          </h4>
+          <div class="md:flex-1">
+            <div class="result-value-small flex gap-2">
+              <CompatibleLabel
+                v-if="isCompatible('Compatible With the UNCITRAL Model Law')"
+                label="UNCITRAL Model Law"
+              />
+              <CompatibleLabel
+                v-if="isCompatible('Compatible With the HCCH Principles')"
+                label="HCCH Principles"
+              />
+            </div>
+          </div>
         </div>
       </template>
       <!-- Slot for Legal provisions -->
       <template #domestic-legal-provisions="{ value }">
         <!-- Only render if value exists and is not "N/A" -->
-        <section
+        <div
           v-if="value && value.trim() && value.trim() !== 'N/A'"
-          class="section-gap m-0 p-0"
+          class="flex flex-col md:w-full md:flex-row md:gap-6"
         >
-          <h4 class="label mb-[-24px]">
-            <span class="flex flex-row items-center">
+          <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
+            <span class="flex items-center">
               {{
                 keyLabelLookup.get("Domestic Legal Provisions")?.label ||
                 "Selected Provisions"
@@ -94,7 +118,7 @@
               />
             </span>
           </h4>
-          <div class="md:flex-1">
+          <div class="provisions-container md:flex-1">
             <LegalProvision
               v-for="(provisionId, index) in getSortedProvisionIdsForInstrument(
                 value,
@@ -111,7 +135,7 @@
               @update:has-english-translation="hasEnglishTranslation = $event"
             />
           </div>
-        </section>
+        </div>
       </template>
     </BaseDetailLayout>
     <CountryReportLink
@@ -183,15 +207,22 @@ const processedLegalInstrument = computed(() => {
   if (!legalInstrument.value) {
     return null;
   }
+
+  // Check if any compatibility fields exist
+  const hasCompatibility =
+    legalInstrument.value["Compatible With the UNCITRAL Model Law"] === true ||
+    legalInstrument.value["Compatible With the HCCH Principles"] === true;
+
   return {
     ...legalInstrument.value,
     "Title (in English)":
       legalInstrument.value["Title (in English)"] ||
       legalInstrument.value["Official Title"],
+    // Add Compatibility field so the slot will render
+    Compatibility: hasCompatibility ? true : undefined,
   };
 });
 
-// Helper function to check compatibility
 const isCompatible = (field: string): boolean => {
   if (!processedLegalInstrument.value) return false;
   const value = (processedLegalInstrument.value as Record<string, unknown>)[
@@ -200,15 +231,6 @@ const isCompatible = (field: string): boolean => {
   return value === true || value === "true";
 };
 
-// Computed for compatibility display
-const showCompatibility = computed(() => {
-  return (
-    isCompatible("Compatible With the UNCITRAL Model Law") ||
-    isCompatible("Compatible With the HCCH Principles")
-  );
-});
-
-// Simplified sorting function wrapper
 const getSortedProvisionIdsForInstrument = (rawValue: string): string[] => {
   return getSortedProvisionIds(
     rawValue,
@@ -216,3 +238,10 @@ const getSortedProvisionIdsForInstrument = (rawValue: string): string[] => {
   );
 };
 </script>
+
+<style scoped>
+/* Remove the extra spacer from BaseLegalContent when provisions are in a two-column layout */
+.provisions-container :deep(.base-legal-content .no-margin > div:first-child) {
+  display: none;
+}
+</style>

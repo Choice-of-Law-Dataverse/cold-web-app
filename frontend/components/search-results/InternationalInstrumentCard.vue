@@ -5,8 +5,8 @@
   >
     <div class="flex flex-col gap-0">
       <!-- Title section -->
-      <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
-        <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
           {{ getLabel("Name") }}
         </div>
         <div
@@ -27,8 +27,8 @@
 
       <!-- Date section -->
       <template v-if="shouldDisplay('Date')">
-        <div class="flex flex-col md:flex-row md:gap-6 md:items-start">
-          <div class="label-key md:w-48 md:flex-shrink-0 mt-0 md:mt-1">
+        <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+          <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
             {{ getLabel("Date") }}
           </div>
           <div :class="[config.valueClassMap['Date'], 'md:flex-1']">
@@ -39,7 +39,6 @@
     </div>
   </ResultCard>
 </template>
-
 
 <script setup>
 import { computed } from "vue";

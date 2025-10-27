@@ -26,18 +26,20 @@
       </template>
 
       <template #selected-provisions>
-        <section class="section-gap m-0 p-0">
-          <p class="label mb-[-24px] mt-12">
-            {{
-              keyLabelLookup.get("Selected Provisions")?.label ||
-              "Selected Provisions"
-            }}
-            <InfoPopover
-              v-if="keyLabelLookup.get('Selected Provisions')?.tooltip"
-              :text="keyLabelLookup.get('Selected Provisions')?.tooltip"
-            />
-          </p>
-          <div :class="valueClassMap['Selected Provisions']">
+        <div class="flex flex-col md:w-full md:flex-row md:gap-6">
+          <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
+            <span class="flex items-center">
+              {{
+                keyLabelLookup.get("Selected Provisions")?.label ||
+                "Selected Provisions"
+              }}
+              <InfoPopover
+                v-if="keyLabelLookup.get('Selected Provisions')?.tooltip"
+                :text="keyLabelLookup.get('Selected Provisions')?.tooltip"
+              />
+            </span>
+          </h4>
+          <div class="provisions-container md:flex-1">
             <div v-if="provisionsLoading">
               <LoadingBar class="!mt-8" />
             </div>
@@ -67,7 +69,7 @@
             </div>
             <div v-else>No provisions found.</div>
           </div>
-        </section>
+        </div>
       </template>
     </BaseDetailLayout>
 
@@ -165,3 +167,10 @@ function normalizeAnchorId(str: string): string {
     .toLowerCase();
 }
 </script>
+
+<style scoped>
+/* Remove the extra spacer from BaseLegalContent when provisions are in a two-column layout */
+.provisions-container :deep(.base-legal-content .no-margin > div:first-child) {
+  display: none;
+}
+</style>

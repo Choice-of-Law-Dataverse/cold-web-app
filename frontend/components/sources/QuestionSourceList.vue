@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col gap-2 prose">
+  <div class="prose flex flex-col gap-2">
     <!-- Domestic Legal Provision bullet point -->
     <template v-if="fallbackData && fallbackData['Domestic Legal Provisions']">
       <div
@@ -13,7 +13,7 @@
           :value="provision"
           :fallback-data="fallbackData"
         />
-    </div>
+      </div>
     </template>
     <template
       v-else-if="fallbackData && fallbackData['Domestic Instruments ID']"

@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="hasContent">
-      <div v-if="isList" class="flex flex-col gap-2">
+      <div v-if="isList" class="flex flex-col gap-1">
         <div
           v-for="(item, index) in items"
           :key="index"

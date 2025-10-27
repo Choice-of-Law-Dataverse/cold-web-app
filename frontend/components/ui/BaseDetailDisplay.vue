@@ -111,10 +111,7 @@
                           resultData?.[item.key],
                         )"
                         :key="i"
-                        :class="
-                          props.valueClassMap[item.key] ||
-                          'whitespace-pre-line leading-relaxed'
-                        "
+                        :class="props.valueClassMap[item.key] || 'prose'"
                       >
                         {{ line }}
                       </div>
