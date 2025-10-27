@@ -198,12 +198,12 @@
               </div>
             </template>
             <template v-else-if="showOpenLink">
-              <NuxtLink :to="getLink()" class="label">
-                Open
+              <div class="arrow-container">
                 <UIcon
-                  name="i-material-symbols:play-arrow"
-                  class="-mb-[1px] inline-block"
-              /></NuxtLink>
+                  name="i-material-symbols:arrow-forward"
+                  class="arrow-icon"
+                />
+              </div>
             </template>
           </template>
         </div>
@@ -423,30 +423,6 @@ const suggestEditActions = computed(() => {
 });
 
 // Methods
-function getLink() {
-  // Determine the correct link based on the card type and resultData
-  switch (props.cardType) {
-    case "Answers":
-      return `/question/${props.resultData.id}`;
-    case "Court Decisions":
-      return `/court-decision/${props.resultData.id}`;
-    case "Domestic Instrument":
-      return `/domestic-instrument/${props.resultData.id}`;
-    case "Regional Instrument":
-      return `/regional-instrument/${props.resultData.id}`;
-    case "International Instrument":
-      return `/international-instrument/${props.resultData.id}`;
-    case "Arbitral Rule":
-      return `/arbitral-rule/${props.resultData.id}`;
-    case "Arbitral Award":
-      return `/arbitral-award/${props.resultData.id}`;
-    case "Literature":
-      return `/literature/${props.resultData.id}`;
-    default:
-      return "#";
-  }
-}
-
 const { data: pdfExists } = useCheckTarget(downloadPDFLink);
 
 const suggestEditLink = ref("");
@@ -796,5 +772,19 @@ a.label-arbitration {
   text-transform: uppercase !important;
   font-weight: 600 !important;
   color: var(--color-cold-purple) !important;
+}
+
+/* Arrow container styling */
+.arrow-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+}
+
+.arrow-icon {
+  font-size: 1.5rem;
+  color: var(--color-cold-purple);
+  transition: transform 0.3s ease;
 }
 </style>

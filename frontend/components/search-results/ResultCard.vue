@@ -1,14 +1,12 @@
 <template>
-  <div class="col-span-12">
-    <UCard class="cold-ucard">
-      <template #header>
-        <template v-if="cardType === 'Loading'">
-          <USkeleton
-            class="mb-0.5 mt-0.5 h-5 w-[100px] rounded-none"
-            style="background-color: var(--color-cold-gray-alpha)"
-          />
-        </template>
-        <template v-else>
+  <div class="result-card-container col-span-12">
+    <NuxtLink
+      v-if="cardType !== 'Loading'"
+      :to="getCardLink()"
+      class="card-link-wrapper"
+    >
+      <UCard class="cold-ucard">
+        <template #header>
           <BaseCardHeader
             v-if="resultData"
             :result-data="resultData"
@@ -19,9 +17,20 @@
             :show-suggest-edit="false"
           />
         </template>
-      </template>
 
-      <!-- Card content -->
+        <!-- Card content -->
+        <div>
+          <slot />
+        </div>
+      </UCard>
+    </NuxtLink>
+    <UCard v-else class="cold-ucard">
+      <template #header>
+        <USkeleton
+          class="mb-0.5 mt-0.5 h-5 w-[100px] rounded-none"
+          style="background-color: var(--color-cold-gray-alpha)"
+        />
+      </template>
       <div>
         <slot />
       </div>
@@ -34,7 +43,7 @@ import { UCard } from "#components";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 
 // Define props
-defineProps({
+const props = defineProps({
   resultData: {
     type: Object,
     required: false, // Changed: no longer required
@@ -55,11 +64,59 @@ defineProps({
     default: () => [],
   },
 });
+
+// Function to determine the card link
+function getCardLink() {
+  switch (props.cardType) {
+    case "Answers":
+      return `/question/${props.resultData.id}`;
+    case "Court Decisions":
+      return `/court-decision/${props.resultData.id}`;
+    case "Domestic Instrument":
+      return `/domestic-instrument/${props.resultData.id}`;
+    case "Regional Instrument":
+      return `/regional-instrument/${props.resultData.id}`;
+    case "International Instrument":
+      return `/international-instrument/${props.resultData.id}`;
+    case "Arbitral Rule":
+      return `/arbitral-rule/${props.resultData.id}`;
+    case "Arbitral Award":
+      return `/arbitral-award/${props.resultData.id}`;
+    case "Literature":
+      return `/literature/${props.resultData.id}`;
+    default:
+      return "#";
+  }
+}
 </script>
 
 <style scoped>
+.result-card-container {
+  position: relative;
+}
+
+.card-link-wrapper {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
 .cold-ucard {
   margin-bottom: 24px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.card-link-wrapper:hover .cold-ucard {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Trigger arrow bounce animation on card hover */
+.card-link-wrapper:hover :deep(.arrow-icon) {
+  animation: bounce-right 0.4s ease-out;
 }
 
 .cold-ucard ::v-deep(.px-4) {
