@@ -48,7 +48,7 @@
       <!-- Main content -->
       <div class="flex">
         <div
-          class="main-content prose flex w-full flex-col gap-8 -space-y-10 px-6 py-8"
+          class="main-content prose flex w-full flex-col gap-4 px-6 py-8"
         >
           <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
           <slot />
@@ -74,10 +74,10 @@
               <!-- Conditionally render the label and value container -->
               <div
                 v-if="shouldDisplayValue(item, resultData?.[item.key])"
-                class="mb-6"
+                class="mb-4"
               >
                 <!-- Conditionally render the label -->
-                <p class="label label-key mb-2.5 flex items-center">
+                <p class="label label-key mb-1.5 flex items-center">
                   {{ item.label }}
                   <!-- Add this line to support header-actions slot for each section -->
                   <slot

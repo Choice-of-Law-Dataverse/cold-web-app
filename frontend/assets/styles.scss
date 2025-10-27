@@ -114,8 +114,8 @@ li::marker {
 
 // Labels
 .label {
-  font-size: 12px !important;
-  font-weight: 700 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
   text-transform: uppercase;
   margin-right: 12px;
   color: var(--color-cold-night);
@@ -374,7 +374,7 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
 
 // Consistent vertical gap between page sections
 .section-gap {
-  margin-bottom: 1.5rem; // 24px, adjust as needed for your design
+  margin-bottom: 1rem; // 16px, adjusted for better spacing
 }
 
 // Jurisdiction Comparison Horizontal Lines

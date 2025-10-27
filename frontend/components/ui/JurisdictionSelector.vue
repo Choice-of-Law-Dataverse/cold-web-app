@@ -1,8 +1,5 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto" style="max-width: var(--container-width); width: 100%">
-      <div class="col-span-12">
-        <UCard class="cold-ucard overflow-visible">
+  <UCard class="cold-ucard overflow-visible">
           <div
             class="flex flex-col items-stretch gap-8 md:flex-row md:items-center"
           >
@@ -40,9 +37,6 @@
             </div>
           </div>
         </UCard>
-      </div>
-    </div>
-  </main>
 </template>
 
 <script setup>

@@ -1,9 +1,6 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto w-full max-w-container">
-      <div class="col-span-12">
-        <UCard class="cold-ucard">
-          <div class="flex flex-col gap-8">
+  <UCard class="cold-ucard">
+    <div class="flex flex-col gap-8">
             <!-- Title Section -->
             <div>
               <h3 class="mb-1 text-left md:whitespace-nowrap">
@@ -31,9 +28,6 @@
             </div>
           </div>
         </UCard>
-      </div>
-    </div>
-  </main>
 </template>
 
 <script setup>

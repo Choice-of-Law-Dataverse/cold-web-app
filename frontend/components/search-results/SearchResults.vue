@@ -1,11 +1,8 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto w-full max-w-container">
-      <div class="col-span-12">
-        <!-- Filters and Results Header -->
-        <div
-          class="filters-header !mb-2 ml-[-1px] mt-[-24px] flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
-        >
+  <!-- Filters and Results Header -->
+  <div
+    class="filters-header !mb-2 ml-[-1px] mt-[-24px] flex flex-col gap-4 md:flex-row md:items-center md:justify-between"
+  >
           <!-- Filter Controls -->
           <div class="flex w-full flex-col gap-5 sm:flex-row">
             <SearchFilters
@@ -167,9 +164,6 @@
             </div>
           </template>
         </div>
-      </div>
-    </div>
-  </main>
 </template>
 
 <script setup>

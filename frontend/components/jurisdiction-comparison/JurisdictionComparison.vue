@@ -1,8 +1,5 @@
 <template>
-  <main class="px-6">
-    <div class="mx-auto w-full max-w-container">
-      <div class="col-span-12">
-        <UCard class="cold-ucard relative">
+  <UCard class="cold-ucard relative">
           <!-- Help/Cancel Icon -->
           <div class="absolute right-5 top-5">
             <Icon
@@ -90,9 +87,6 @@
             :loading="loading"
           />
         </UCard>
-      </div>
-    </div>
-  </main>
 </template>
 
 <script setup>
