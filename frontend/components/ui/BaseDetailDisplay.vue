@@ -75,68 +75,59 @@
             <!-- If no slot, use default display -->
             <template v-else>
               <!-- Conditionally render the label and value container -->
-              <div
+              <TwoColumnLayout
                 v-if="shouldDisplayValue(item, resultData?.[item.key])"
-                class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6"
+                :label="item.label"
+                :tooltip="item.tooltip"
               >
-                <!-- Conditionally render the label -->
-                <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-                  <span class="flex items-center">
-                    {{ item.label }}
-                    <!-- Add this line to support header-actions slot for each section -->
-                    <slot
-                      :name="item.key + '-header-actions'"
-                      :value="resultData?.[item.key]"
-                    />
-                    <!-- Render InfoPopover if tooltip is defined in config -->
-                    <template v-if="item.tooltip">
-                      <InfoPopover :text="item.tooltip" />
-                    </template>
-                  </span>
-                </h4>
-                <div class="md:flex-1">
-                  <!-- Conditionally render bullet list if Answer or Specialists is an array -->
-                  <template
-                    v-if="
-                      (item.key === 'Answer' || item.key === 'Specialists') &&
-                      Array.isArray(
-                        getDisplayValue(item, resultData?.[item.key]),
-                      )
-                    "
-                  >
-                    <div class="mt-0 flex flex-col gap-2">
-                      <div
-                        v-for="(line, i) in getDisplayValue(
-                          item,
-                          resultData?.[item.key],
-                        )"
-                        :key="i"
-                        :class="props.valueClassMap[item.key] || 'prose'"
-                      >
-                        {{ line }}
-                      </div>
-                    </div>
-                  </template>
-                  <template v-else>
-                    <p
-                      :class="[
-                        props.valueClassMap[item.key] ||
-                          'whitespace-pre-line leading-relaxed',
-                        (!resultData?.[item.key] ||
-                          resultData?.[item.key] === 'NA') &&
-                        item.emptyValueBehavior?.action === 'display' &&
-                        !item.emptyValueBehavior?.getFallback
-                          ? 'text-gray-300'
-                          : '',
-                        'prose',
-                        'mt-0',
-                      ]"
+                <template #label-actions>
+                  <slot
+                    :name="item.key + '-header-actions'"
+                    :value="resultData?.[item.key]"
+                  />
+                </template>
+
+                <!-- Conditionally render bullet list if Answer or Specialists is an array -->
+                <template
+                  v-if="
+                    (item.key === 'Answer' || item.key === 'Specialists') &&
+                    Array.isArray(
+                      getDisplayValue(item, resultData?.[item.key]),
+                    )
+                  "
+                >
+                  <div class="mt-0 flex flex-col gap-2">
+                    <div
+                      v-for="(line, i) in getDisplayValue(
+                        item,
+                        resultData?.[item.key],
+                      )"
+                      :key="i"
+                      :class="props.valueClassMap[item.key] || 'prose'"
                     >
-                      {{ getDisplayValue(item, resultData?.[item.key]) }}
-                    </p>
-                  </template>
-                </div>
-              </div>
+                      {{ line }}
+                    </div>
+                  </div>
+                </template>
+                <template v-else>
+                  <p
+                    :class="[
+                      props.valueClassMap[item.key] ||
+                        'whitespace-pre-line leading-relaxed',
+                      (!resultData?.[item.key] ||
+                        resultData?.[item.key] === 'NA') &&
+                      item.emptyValueBehavior?.action === 'display' &&
+                      !item.emptyValueBehavior?.getFallback
+                        ? 'text-gray-300'
+                        : '',
+                      'prose',
+                      'mt-0',
+                    ]"
+                  >
+                    {{ getDisplayValue(item, resultData?.[item.key]) }}
+                  </p>
+                </template>
+              </TwoColumnLayout>
             </template>
           </section>
           <slot name="search-links" />
@@ -152,7 +143,7 @@ import { useCoveredCountries } from "@/composables/useCoveredCountries";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
-import InfoPopover from "@/components/ui/InfoPopover.vue";
+import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
 
 // Props for reusability across pages
 const props = defineProps({
