@@ -6,20 +6,24 @@
         <div class="label-key md:w-48 md:flex-shrink-0">
           {{ getLabel("Case Title") }}
         </div>
-        <div
-          :class="[
-            config.valueClassMap['Case Title'],
-            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
-            (!resultData['Case Title'] || resultData['Case Title'] === 'NA') &&
-            config.keyLabelPairs.find((pair) => pair.key === 'Case Title')
-              ?.emptyValueBehavior?.action === 'display' &&
-            !config.keyLabelPairs.find((pair) => pair.key === 'Case Title')
-              ?.emptyValueBehavior?.getFallback
-              ? 'text-gray-300'
-              : '',
-          ]"
-        >
-          {{ getValue("Case Title") }}
+        <div class="flex items-start justify-between gap-4 md:flex-1">
+          <div
+            :class="[
+              config.valueClassMap['Case Title'],
+              'whitespace-pre-line text-sm leading-relaxed flex-1',
+              (!resultData['Case Title'] || resultData['Case Title'] === 'NA') &&
+              config.keyLabelPairs.find((pair) => pair.key === 'Case Title')
+                ?.emptyValueBehavior?.action === 'display' &&
+              !config.keyLabelPairs.find((pair) => pair.key === 'Case Title')
+                ?.emptyValueBehavior?.getFallback
+                ? 'text-gray-300'
+                : '',
+            ]"
+          >
+            {{ getValue("Case Title") }}
+          </div>
+          
+          <PdfLink :record-id="resultData.id" folder-name="court-decisions" />
         </div>
       </div>
 
@@ -88,6 +92,7 @@
 
 <script setup>
 import ResultCard from "@/components/search-results/ResultCard.vue";
+import PdfLink from "@/components/ui/PdfLink.vue";
 import { courtDecisionCardConfig } from "@/config/cardConfigs";
 import { extractYear } from "@/utils/format";
 
