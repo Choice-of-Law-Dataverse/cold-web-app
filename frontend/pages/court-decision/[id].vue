@@ -86,7 +86,7 @@
                 </span>
               </div>
               <div>
-                <span class="whitespace-pre-line prose">
+                <p class="prose mt-0 whitespace-pre-line">
                   {{
                     showEnglishQuote &&
                     (courtDecision as any).hasEnglishQuoteTranslation &&
@@ -96,7 +96,7 @@
                       : (courtDecision as any)["Quote"] ||
                         (courtDecision as any)["Translated Excerpt"]
                   }}
-                </span>
+                </p>
               </div>
             </div>
           </div>
@@ -165,31 +165,31 @@
             <!-- Content column -->
             <div class="md:flex-1">
               <div :class="valueClassMap['Original Text']">
-                <span v-if="!showFullText && value.length > 400">
-                  {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
-                  <div>
-                    <NuxtLink
-                      class="ml-2 cursor-pointer"
-                      @click="showFullText = true"
-                    >
-                      <Icon name="material-symbols:add" :class="iconClass" />
-                      Show more
-                    </NuxtLink>
-                  </div>
-                </span>
-                <span v-else>
-                  {{ value }}
-                  <div>
-                    <NuxtLink
-                      v-if="value.length > 400"
-                      class="ml-2 cursor-pointer"
-                      @click="showFullText = false"
-                    >
-                      <Icon name="material-symbols:remove" :class="iconClass" />
-                      Show less
-                    </NuxtLink>
-                  </div>
-                </span>
+                <div v-if="!showFullText && value.length > 400">
+                  <p class="prose mt-0">
+                    {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
+                  </p>
+                  <NuxtLink
+                    class="ml-2 cursor-pointer"
+                    @click="showFullText = true"
+                  >
+                    <Icon name="material-symbols:add" :class="iconClass" />
+                    Show more
+                  </NuxtLink>
+                </div>
+                <div v-else>
+                  <p class="prose mt-0">
+                    {{ value }}
+                  </p>
+                  <NuxtLink
+                    v-if="value.length > 400"
+                    class="ml-2 cursor-pointer"
+                    @click="showFullText = false"
+                  >
+                    <Icon name="material-symbols:remove" :class="iconClass" />
+                    Show less
+                  </NuxtLink>
+                </div>
               </div>
             </div>
           </div>
