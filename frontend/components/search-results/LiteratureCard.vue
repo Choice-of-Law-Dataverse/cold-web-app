@@ -2,14 +2,11 @@
   <ResultCard :result-data="processedResultData" card-type="Literature">
     <div class="flex flex-col gap-0">
       <!-- Title section -->
-      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("Title") }}
-        </div>
+      <TwoColumnLayout :label="getLabel('Title')">
         <div
           :class="[
             config.valueClassMap.Title,
-            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+            'whitespace-pre-line text-sm leading-relaxed',
             (!processedResultData.Title ||
               processedResultData.Title === 'NA') &&
             config.keyLabelPairs.find((pair) => pair.key === 'Title')
@@ -20,17 +17,14 @@
         >
           {{ getValue("Title") }}
         </div>
-      </div>
+      </TwoColumnLayout>
 
       <!-- Author section -->
-      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("Author") }}
-        </div>
+      <TwoColumnLayout :label="getLabel('Author')">
         <div
           :class="[
             config.valueClassMap.Author,
-            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+            'whitespace-pre-line text-sm leading-relaxed',
             (!processedResultData.Author ||
               processedResultData.Author === 'NA') &&
             config.keyLabelPairs.find((pair) => pair.key === 'Author')
@@ -41,17 +35,14 @@
         >
           {{ getValue("Author") }}
         </div>
-      </div>
+      </TwoColumnLayout>
 
       <!-- Publication Year section -->
-      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("Publication Year") }}
-        </div>
+      <TwoColumnLayout :label="getLabel('Publication Year')">
         <div
           :class="[
             config.valueClassMap['Publication Year'],
-            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+            'whitespace-pre-line text-sm leading-relaxed',
             (!processedResultData['Publication Year'] ||
               processedResultData['Publication Year'] === 'NA') &&
             config.keyLabelPairs.find((pair) => pair.key === 'Publication Year')
@@ -62,7 +53,7 @@
         >
           {{ getValue("Publication Year") }}
         </div>
-      </div>
+      </TwoColumnLayout>
 
       <!-- Publication Title section -->
       <template
@@ -71,14 +62,11 @@
           processedResultData['Publication Title']
         "
       >
-        <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-          <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-            {{ getLabel("Publication Title") }}
-          </div>
+        <TwoColumnLayout :label="getLabel('Publication Title')">
           <div
             :class="[
               config.valueClassMap['Publication Title'],
-              'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+              'whitespace-pre-line text-sm leading-relaxed',
               (!processedResultData['Publication Title'] ||
                 processedResultData['Publication Title'] === 'NA') &&
               config.keyLabelPairs.find(
@@ -90,7 +78,7 @@
           >
             {{ getValue("Publication Title") }}
           </div>
-        </div>
+        </TwoColumnLayout>
       </template>
 
       <!-- Publisher section -->
@@ -99,14 +87,11 @@
           shouldDisplay('Publisher') && processedResultData['Publisher']
         "
       >
-        <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-          <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-            {{ getLabel("Publisher") }}
-          </div>
+        <TwoColumnLayout :label="getLabel('Publisher')">
           <div
             :class="[
               config.valueClassMap['Publisher'],
-              'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+              'whitespace-pre-line text-sm leading-relaxed',
               (!processedResultData['Publisher'] ||
                 processedResultData['Publisher'] === 'NA') &&
               config.keyLabelPairs.find((pair) => pair.key === 'Publisher')
@@ -117,7 +102,7 @@
           >
             {{ getValue("Publisher") }}
           </div>
-        </div>
+        </TwoColumnLayout>
       </template>
     </div>
   </ResultCard>
@@ -126,6 +111,7 @@
 <script setup>
 import { computed } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
+import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
 import { literatureCardConfig } from "@/config/cardConfigs";
 
 const props = defineProps({
@@ -180,11 +166,5 @@ const getValue = (key) => {
 .grid-item {
   display: flex;
   flex-direction: column;
-}
-
-.label-key {
-  @extend .label;
-  padding: 0;
-  margin-top: 12px;
 }
 </style>

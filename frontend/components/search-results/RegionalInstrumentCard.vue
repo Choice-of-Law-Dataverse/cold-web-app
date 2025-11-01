@@ -5,11 +5,8 @@
   >
     <div class="flex flex-col gap-0">
       <!-- Abbreviation section -->
-      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("Abbreviation") }}
-        </div>
-        <div class="flex items-start justify-between gap-4 md:flex-1">
+      <TwoColumnLayout :label="getLabel('Abbreviation')">
+        <div class="flex items-start justify-between gap-4">
           <div
             :class="[
               config.valueClassMap['Abbreviation'],
@@ -30,42 +27,32 @@
             folder-name="regional-instruments"
           />
         </div>
-      </div>
+      </TwoColumnLayout>
 
       <!-- Date section -->
-      <template v-if="shouldDisplay('Date')">
-        <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-          <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-            {{ getLabel("Date") }}
-          </div>
-          <div :class="[config.valueClassMap['Date'], 'md:flex-1']">
-            {{ format.formatDate(getValue("Date")) }}
-          </div>
+      <TwoColumnLayout v-if="shouldDisplay('Date')" :label="getLabel('Date')">
+        <div :class="config.valueClassMap['Date']">
+          {{ format.formatDate(getValue("Date")) }}
         </div>
-      </template>
+      </TwoColumnLayout>
 
       <!-- Title section -->
-      <template v-if="shouldDisplay('Title')">
-        <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-          <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-            {{ getLabel("Title") }}
-          </div>
-          <div
-            :class="[
-              config.valueClassMap['Title'],
-              'whitespace-pre-line text-sm leading-relaxed md:flex-1',
-              (!processedResultData['Title'] ||
-                processedResultData['Title'] === 'NA') &&
-              config.keyLabelPairs.find((pair) => pair.key === 'Title')
-                ?.emptyValueBehavior?.action === 'display'
-                ? 'text-gray-300'
-                : '',
-            ]"
-          >
-            {{ getValue("Title") }}
-          </div>
+      <TwoColumnLayout v-if="shouldDisplay('Title')" :label="getLabel('Title')">
+        <div
+          :class="[
+            config.valueClassMap['Title'],
+            'whitespace-pre-line text-sm leading-relaxed',
+            (!processedResultData['Title'] ||
+              processedResultData['Title'] === 'NA') &&
+            config.keyLabelPairs.find((pair) => pair.key === 'Title')
+              ?.emptyValueBehavior?.action === 'display'
+              ? 'text-gray-300'
+              : '',
+          ]"
+        >
+          {{ getValue("Title") }}
         </div>
-      </template>
+      </TwoColumnLayout>
     </div>
   </ResultCard>
 </template>
@@ -74,6 +61,7 @@
 import { computed } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
+import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
 import { regionalInstrumentCardConfig } from "@/config/cardConfigs";
 import * as format from "@/utils/format";
 
@@ -128,11 +116,5 @@ const shouldDisplay = (key) => {
 .grid-item {
   display: flex;
   flex-direction: column;
-}
-
-.label-key {
-  @extend .label;
-  padding: 0;
-  margin-top: 12px;
 }
 </style>

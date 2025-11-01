@@ -2,125 +2,102 @@
   <ResultCard :result-data="resultData" card-type="Answers">
     <div class="flex flex-col gap-0">
       <!-- Question section -->
-      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("Question") }}
-        </div>
+      <TwoColumnLayout :label="getLabel('Question')">
         <div
-          :class="[
-            computeTextClasses('Question', config.valueClassMap.Question),
-            'md:flex-1',
-          ]"
+          :class="computeTextClasses('Question', config.valueClassMap.Question)"
         >
           {{ getValue("Question") }}
         </div>
-      </div>
+      </TwoColumnLayout>
 
       <!-- Answer section -->
-      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("Answer") }}
-        </div>
-        <div class="md:flex-1">
-          <div
-            :class="
-              computeTextClasses(
-                'Answer',
-                config.getAnswerClass(resultData.Answer),
-              )
-            "
-          >
-            <template v-if="Array.isArray(getValue('Answer'))">
-              <div class="flex flex-col gap-2">
-                <div v-for="(line, i) in getValue('Answer')" :key="i">
-                  {{ line }}
-                </div>
+      <TwoColumnLayout :label="getLabel('Answer')">
+        <div
+          :class="
+            computeTextClasses(
+              'Answer',
+              config.getAnswerClass(resultData.Answer),
+            )
+          "
+        >
+          <template v-if="Array.isArray(getValue('Answer'))">
+            <div class="flex flex-col gap-2">
+              <div v-for="(line, i) in getValue('Answer')" :key="i">
+                {{ line }}
               </div>
-            </template>
-            <template v-else>
-              {{ getValue("Answer") }}
-            </template>
-          </div>
+            </div>
+          </template>
+          <template v-else>
+            {{ getValue("Answer") }}
+          </template>
         </div>
-      </div>
+      </TwoColumnLayout>
 
       <!-- Last Modified section -->
-      <div
-        v-if="lastUpdatedDisplay"
-        class="flex flex-col md:flex-row md:items-start md:gap-6"
-      >
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          Last Updated
-        </div>
+      <TwoColumnLayout v-if="lastUpdatedDisplay" label="Last Updated">
         <div
-          :class="[
+          :class="
             computeTextClasses(
               resultData['Last Modified'] ? 'Last Modified' : 'Created',
               config.valueClassMap['Last Modified'],
-            ),
-            'md:flex-1',
-          ]"
+            )
+          "
         >
           {{ lastUpdatedDisplay }}
         </div>
-      </div>
+      </TwoColumnLayout>
 
       <!-- More Information section -->
-      <div
+      <TwoColumnLayout
         v-if="hasMoreInformation"
-        class="flex flex-col md:flex-row md:items-start md:gap-6"
+        :label="getLabel('More Information')"
       >
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("More Information") }}
-        </div>
-        <div class="md:flex-1">
-          <div class="prose mb-2 flex flex-col gap-2">
-            <div v-if="resultData['More Information']">
-              {{ getValue("More Information") }}
-            </div>
-            <div v-else-if="resultData['OUP Book Quote']">
-              {{ getValue("OUP Book Quote") }}
-            </div>
-            <template v-if="hasDomesticValue">
-              <template v-if="resultData['Domestic Legal Provisions']">
-                <LegalProvisionRenderer
-                  render-as-li
-                  :value="getValue('Domestic Legal Provisions')"
-                  :fallback-data="resultData"
-                />
-              </template>
-              <template v-else-if="resultData['Domestic Instruments ID']">
-                <LegalProvisionRenderer
-                  render-as-li
-                  skip-article
-                  :value="getValue('Domestic Instruments ID')"
-                  :fallback-data="resultData"
-                />
-              </template>
+        <div class="prose mb-2 flex flex-col gap-2">
+          <div v-if="resultData['More Information']">
+            {{ getValue("More Information") }}
+          </div>
+          <div v-else-if="resultData['OUP Book Quote']">
+            {{ getValue("OUP Book Quote") }}
+          </div>
+          <template v-if="hasDomesticValue">
+            <template v-if="resultData['Domestic Legal Provisions']">
+              <LegalProvisionRenderer
+                render-as-li
+                :value="getValue('Domestic Legal Provisions')"
+                :fallback-data="resultData"
+              />
+            </template>
+            <template v-else-if="resultData['Domestic Instruments ID']">
+              <LegalProvisionRenderer
+                render-as-li
+                skip-article
+                :value="getValue('Domestic Instruments ID')"
+                :fallback-data="resultData"
+              />
+            </template>
+            <template v-else>
+              <div v-if="isLoadingLiterature">
+                <LoadingBar class="pt-[11px]" />
+              </div>
               <template v-else>
-                <div v-if="isLoadingLiterature">
-                  <LoadingBar class="pt-[11px]" />
-                </div>
-                <template v-else>
-                  <template v-if="Array.isArray(domesticValue)">
-                    <div v-for="(item, index) in domesticValue" :key="index">
-                      <a :href="`/literature/L-${item.id}`">{{ item.title }}</a>
-                    </div>
-                  </template>
-                  <div v-else>
-                    {{ domesticValue }}
+                <template v-if="Array.isArray(domesticValue)">
+                  <div v-for="(item, index) in domesticValue" :key="index">
+                    <a :href="`/literature/L-${item.id}`">{{ item.title }}</a>
                   </div>
                 </template>
+                <div v-else>
+                  {{ domesticValue }}
+                </div>
               </template>
             </template>
-            <div v-if="relatedCasesCount">
-              <a :href="relatedDecisionsLink">
-                {{ relatedCasesCount }} related court decisions
-              </a>
-            </div>
+          </template>
+          <div v-if="relatedCasesCount">
+            <a :href="relatedDecisionsLink">
+              {{ relatedCasesCount }} related court decisions
+            </a>
           </div>
         </div>
-      </div>
+      </TwoColumnLayout>
     </div>
   </ResultCard>
 </template>
@@ -128,6 +105,7 @@
 <script setup>
 import { computed, ref, watch } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
+import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
 import { answerCardConfig } from "@/config/cardConfigs";
 import { literatureCache } from "@/utils/literatureCache";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
@@ -292,11 +270,6 @@ const computeTextClasses = (key, baseClass) => {
 .grid-item {
   display: flex;
   flex-direction: column;
-}
-
-.label-key {
-  padding: 0;
-  margin-top: 12px;
 }
 
 .result-value-small li {
