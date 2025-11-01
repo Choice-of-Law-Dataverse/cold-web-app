@@ -10,21 +10,16 @@
     >
       <!-- Slot for Domestic Legal Provisions -->
       <template #domestic-legal-provisions="{ value }">
-        <div :class="valueClassMap['Domestic Legal Provisions']">
-          <ProvisionRenderer
-            v-if="value"
-            :id="value"
-            section="Domestic Legal Provisions"
-            :section-label="
-              keyLabelLookup.get('Domestic Legal Provisions')?.label
-            "
-            :section-tooltip="
-              keyLabelLookup.get('Domestic Legal Provisions')?.tooltip
-            "
-            table="Domestic Instruments"
-            class="mb-8"
-          />
-        </div>
+        <TwoColumnLayout
+          v-if="value"
+          :label="
+            keyLabelLookup.get('Domestic Legal Provisions')?.label ||
+            'Domestic Legal Provisions'
+          "
+          :tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+        >
+          <InstrumentLink :id="value" table="Domestic Instruments" />
+        </TwoColumnLayout>
       </template>
       <!-- Custom rendering for Quote section -->
       <template #quote>
@@ -191,7 +186,7 @@ import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
-import ProvisionRenderer from "@/components/legal/SectionRenderer.vue";
+import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useCourtDecision } from "@/composables/useCourtDecision";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
@@ -218,8 +213,6 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
 );
 
 const showEnglishQuote = ref(true);
-
-// For Full Text show more/less
 const showFullText = ref(false);
 
 const keyLabelLookup = computed(() => {

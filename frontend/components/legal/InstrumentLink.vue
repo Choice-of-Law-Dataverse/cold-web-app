@@ -1,19 +1,11 @@
 <template>
-  <div>
-    <h4 class="label">
-      <span class="flex flex-row items-center">
-        {{ sectionLabel }}
-        <InfoPopover v-if="sectionTooltip" :text="sectionTooltip" />
-      </span>
-    </h4>
-    <span v-if="!isLoading">
-      <NuxtLink v-if="displayTitle && id" :to="generateInstrumentLink(id)">{{
-        displayTitle
-      }}</NuxtLink>
-      <span v-else>{{ id }}</span>
-    </span>
-    <LoadingBar v-else />
-  </div>
+  <span v-if="!isLoading">
+    <NuxtLink v-if="displayTitle && id" :to="generateInstrumentLink(id)">{{
+      displayTitle
+    }}</NuxtLink>
+    <span v-else>{{ id }}</span>
+  </span>
+  <LoadingBar v-else />
 </template>
 
 <script setup>
@@ -21,24 +13,11 @@ import { ref, watch, computed } from "vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { NuxtLink } from "#components";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
-import InfoPopover from "@/components/ui/InfoPopover.vue";
 
 const props = defineProps({
   id: {
     type: String,
     required: true,
-  },
-  section: {
-    type: String,
-    default: "Amended by",
-  },
-  sectionLabel: {
-    type: String,
-    required: true,
-  },
-  sectionTooltip: {
-    type: String,
-    default: "",
   },
   table: {
     type: String,
