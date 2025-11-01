@@ -9,19 +9,26 @@
         <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
           {{ getLabel("Name") }}
         </div>
-        <div
-          :class="[
-            config.valueClassMap['Name'],
-            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
-            (!processedResultData['Name'] ||
-              processedResultData['Name'] === 'NA') &&
-            config.keyLabelPairs.find((pair) => pair.key === 'Name')
-              ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-300'
-              : '',
-          ]"
-        >
-          {{ getValue("Name") }}
+        <div class="flex items-start justify-between gap-4 md:flex-1">
+          <div
+            :class="[
+              config.valueClassMap['Name'],
+              'flex-1 whitespace-pre-line text-sm leading-relaxed',
+              (!processedResultData['Name'] ||
+                processedResultData['Name'] === 'NA') &&
+              config.keyLabelPairs.find((pair) => pair.key === 'Name')
+                ?.emptyValueBehavior?.action === 'display'
+                ? 'text-gray-300'
+                : '',
+            ]"
+          >
+            {{ getValue("Name") }}
+          </div>
+
+          <PdfLink
+            :record-id="resultData.id"
+            folder-name="international-instruments"
+          />
         </div>
       </div>
 
@@ -43,6 +50,7 @@
 <script setup>
 import { computed } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
+import PdfLink from "@/components/ui/PdfLink.vue";
 import { internationalInstrumentCardConfig } from "@/config/cardConfigs";
 import * as format from "@/utils/format.js";
 
