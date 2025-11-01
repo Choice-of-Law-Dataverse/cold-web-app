@@ -10,32 +10,22 @@
     >
       <template #publication-title="{ value }">
         <section v-if="value" class="section-gap">
-          <div>
-            <span class="label mb-0.5 flex flex-row items-center">
-              {{
-                keyLabelLookup.get("Publication Title")?.label || "Publication"
-              }}
-              <InfoPopover
-                v-if="keyLabelLookup.get('Publication Title')?.tooltip"
-                :text="keyLabelLookup.get('Publication Title')?.tooltip"
-              />
-            </span>
+          <TwoColumnLayout
+            :label="keyLabelLookup.get('Publication Title')?.label || 'Publication'"
+            :tooltip="keyLabelLookup.get('Publication Title')?.tooltip"
+          >
             <span class="result-value-small">{{ value }}</span>
-          </div>
+          </TwoColumnLayout>
         </section>
       </template>
       <template #publisher="{ value }">
         <section v-if="value" class="section-gap">
-          <div>
-            <span class="label mb-0.5 flex flex-row items-center">
-              {{ keyLabelLookup.get("Publisher")?.label || "Publisher" }}
-              <InfoPopover
-                v-if="keyLabelLookup.get('Publisher')?.tooltip"
-                :text="keyLabelLookup.get('Publisher')?.tooltip"
-              />
-            </span>
+          <TwoColumnLayout
+            :label="keyLabelLookup.get('Publisher')?.label || 'Publisher'"
+            :tooltip="keyLabelLookup.get('Publisher')?.tooltip"
+          >
             <span class="result-value-small">{{ value }}</span>
-          </div>
+          </TwoColumnLayout>
         </section>
       </template>
     </BaseDetailLayout>
@@ -54,7 +44,7 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
-import InfoPopover from "@/components/ui/InfoPopover.vue";
+import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { literatureConfig } from "@/config/pageConfigs";
 import type { TableName } from "@/types/api";
