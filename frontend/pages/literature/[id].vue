@@ -10,24 +10,24 @@
     >
       <template #publication-title="{ value }">
         <section v-if="value" class="section-gap">
-          <TwoColumnLayout
+          <DetailRow
             :label="
               keyLabelLookup.get('Publication Title')?.label || 'Publication'
             "
             :tooltip="keyLabelLookup.get('Publication Title')?.tooltip"
           >
             <span class="result-value-small">{{ value }}</span>
-          </TwoColumnLayout>
+          </DetailRow>
         </section>
       </template>
       <template #publisher="{ value }">
         <section v-if="value" class="section-gap">
-          <TwoColumnLayout
+          <DetailRow
             :label="keyLabelLookup.get('Publisher')?.label || 'Publisher'"
             :tooltip="keyLabelLookup.get('Publisher')?.tooltip"
           >
             <span class="result-value-small">{{ value }}</span>
-          </TwoColumnLayout>
+          </DetailRow>
         </section>
       </template>
     </BaseDetailLayout>
@@ -45,7 +45,7 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { literatureConfig } from "@/config/pageConfigs";
 import type { TableName } from "@/types/api";

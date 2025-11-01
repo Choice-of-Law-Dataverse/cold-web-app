@@ -5,7 +5,7 @@
   >
     <div class="flex flex-col gap-0">
       <!-- Title section -->
-      <TwoColumnLayout :label="getLabel('Title (in English)')">
+      <DetailRow :label="getLabel('Title (in English)')">
         <div class="flex items-start justify-between gap-4">
           <div
             :class="[
@@ -28,10 +28,10 @@
             folder-name="domestic-instruments"
           />
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
 
       <!-- Date section -->
-      <TwoColumnLayout
+      <DetailRow
         v-if="
           processedResultData &&
           processedResultData['Date'] &&
@@ -47,10 +47,10 @@
         >
           {{ getValue("Date") }}
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
 
       <!-- Abbreviation section -->
-      <TwoColumnLayout
+      <DetailRow
         v-if="
           processedResultData &&
           processedResultData['Abbreviation'] &&
@@ -66,7 +66,7 @@
         >
           {{ getValue("Abbreviation") }}
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
     </div>
   </ResultCard>
 </template>
@@ -75,7 +75,7 @@
 import { computed } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import { legislationCardConfig } from "@/config/cardConfigs";
 
 const props = defineProps({

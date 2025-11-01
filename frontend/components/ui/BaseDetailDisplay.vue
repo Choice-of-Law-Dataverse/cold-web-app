@@ -75,7 +75,7 @@
             <!-- If no slot, use default display -->
             <template v-else>
               <!-- Conditionally render the label and value container -->
-              <TwoColumnLayout
+              <DetailRow
                 v-if="shouldDisplayValue(item, resultData?.[item.key])"
                 :label="item.label"
                 :tooltip="item.tooltip"
@@ -125,7 +125,7 @@
                     {{ getDisplayValue(item, resultData?.[item.key]) }}
                   </p>
                 </template>
-              </TwoColumnLayout>
+              </DetailRow>
             </template>
           </section>
           <slot name="search-links" />
@@ -141,7 +141,7 @@ import { useCoveredCountries } from "@/composables/useCoveredCountries";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 
 const props = defineProps({
   loading: Boolean,

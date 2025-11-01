@@ -10,7 +10,7 @@
     >
       <!-- Custom rendering for Legal provision articles -->
       <template #domestic-legal-provisions="{ value }">
-        <TwoColumnLayout
+        <DetailRow
           :label="
             keyLabelLookup.get('Domestic Legal Provisions')?.label ||
             'Source fallback'
@@ -30,12 +30,12 @@
             :fetch-oup-chapter="true"
             :fetch-primary-source="true"
           />
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
 
       <!-- Custom rendering for Court Decisions ID -->
       <template #court-decisions-id="{ value }">
-        <TwoColumnLayout
+        <DetailRow
           id="related-court-decisions"
           :label="
             keyLabelLookup.get('Court Decisions ID')?.label ||
@@ -51,11 +51,11 @@
                 ?.emptyValueBehavior
             "
           />
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
 
       <template #related-literature>
-        <TwoColumnLayout
+        <DetailRow
           :label="
             keyLabelLookup.get('Related Literature')?.label ||
             'Related Literature'
@@ -76,7 +76,7 @@
               )?.emptyValueBehavior
             "
           />
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
     </BaseDetailLayout>
     <CountryReportLink :processed-answer-data="processedAnswerData ?? {}" />
@@ -96,7 +96,7 @@
 import { computed, onMounted, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import CourtDecisionRenderer from "@/components/legal/CourtDecisionRenderer.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";

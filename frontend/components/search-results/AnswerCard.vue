@@ -2,16 +2,16 @@
   <ResultCard :result-data="resultData" card-type="Answers">
     <div class="flex flex-col gap-0">
       <!-- Question section -->
-      <TwoColumnLayout :label="getLabel('Question')">
+      <DetailRow :label="getLabel('Question')">
         <div
           :class="computeTextClasses('Question', config.valueClassMap.Question)"
         >
           {{ getValue("Question") }}
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
 
       <!-- Answer section -->
-      <TwoColumnLayout :label="getLabel('Answer')">
+      <DetailRow :label="getLabel('Answer')">
         <div
           :class="
             computeTextClasses(
@@ -31,10 +31,10 @@
             {{ getValue("Answer") }}
           </template>
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
 
       <!-- Last Modified section -->
-      <TwoColumnLayout v-if="lastUpdatedDisplay" label="Last Updated">
+      <DetailRow v-if="lastUpdatedDisplay" label="Last Updated">
         <div
           :class="
             computeTextClasses(
@@ -45,10 +45,10 @@
         >
           {{ lastUpdatedDisplay }}
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
 
       <!-- More Information section -->
-      <TwoColumnLayout
+      <DetailRow
         v-if="hasMoreInformation"
         :label="getLabel('More Information')"
       >
@@ -97,7 +97,7 @@
             </a>
           </div>
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
     </div>
   </ResultCard>
 </template>
@@ -105,7 +105,7 @@
 <script setup>
 import { computed, ref, watch } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import { answerCardConfig } from "@/config/cardConfigs";
 import { literatureCache } from "@/utils/literatureCache";
 import LoadingBar from "@/components/layout/LoadingBar.vue";

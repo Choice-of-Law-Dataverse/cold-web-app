@@ -10,47 +10,47 @@
     >
       <!-- Slot for Amended by -->
       <template #amended-by="{ value }">
-        <TwoColumnLayout
+        <DetailRow
           v-if="value"
           :label="keyLabelLookup.get('Amended by')?.label || 'Amended by'"
           :tooltip="keyLabelLookup.get('Amended by')?.tooltip"
         >
           <InstrumentLink :id="value" table="Domestic Instruments" />
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
       <!-- Slot for Amends -->
       <template #amends="{ value }">
-        <TwoColumnLayout
+        <DetailRow
           v-if="value"
           :label="keyLabelLookup.get('Amends')?.label || 'Amends'"
           :tooltip="keyLabelLookup.get('Amends')?.tooltip"
         >
           <InstrumentLink :id="value" table="Domestic Instruments" />
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
       <!-- Slot for Replaced by -->
       <template #replaced-by="{ value }">
-        <TwoColumnLayout
+        <DetailRow
           v-if="value"
           :label="keyLabelLookup.get('Replaced by')?.label || 'Replaced by'"
           :tooltip="keyLabelLookup.get('Replaced by')?.tooltip"
         >
           <InstrumentLink :id="value" table="Domestic Instruments" />
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
       <!-- Slot for Replaces -->
       <template #replaces="{ value }">
-        <TwoColumnLayout
+        <DetailRow
           v-if="value"
           :label="keyLabelLookup.get('Replaces')?.label || 'Replaces'"
           :tooltip="keyLabelLookup.get('Replaces')?.tooltip"
         >
           <InstrumentLink :id="value" table="Domestic Instruments" />
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
       <!-- Slot for Compatibility section -->
       <template #compatibility="{ value }">
-        <TwoColumnLayout
+        <DetailRow
           v-if="
             value &&
             (isCompatible('Compatible With the UNCITRAL Model Law') ||
@@ -71,12 +71,12 @@
               label="HCCH Principles"
             />
           </div>
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
       <!-- Slot for Legal provisions -->
       <template #domestic-legal-provisions="{ value }">
         <!-- Only render if value exists and is not "N/A" -->
-        <TwoColumnLayout
+        <DetailRow
           v-if="value && value.trim() && value.trim() !== 'N/A'"
           :label="
             keyLabelLookup.get('Domestic Legal Provisions')?.label ||
@@ -101,7 +101,7 @@
               @update:has-english-translation="hasEnglishTranslation = $event"
             />
           </div>
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
     </BaseDetailLayout>
     <CountryReportLink
@@ -122,7 +122,7 @@
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";

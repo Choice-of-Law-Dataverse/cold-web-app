@@ -2,7 +2,7 @@
   <ResultCard :result-data="processedResultData" card-type="Literature">
     <div class="flex flex-col gap-0">
       <!-- Title section -->
-      <TwoColumnLayout :label="getLabel('Title')">
+      <DetailRow :label="getLabel('Title')">
         <div
           :class="[
             config.valueClassMap.Title,
@@ -17,10 +17,10 @@
         >
           {{ getValue("Title") }}
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
 
       <!-- Author section -->
-      <TwoColumnLayout :label="getLabel('Author')">
+      <DetailRow :label="getLabel('Author')">
         <div
           :class="[
             config.valueClassMap.Author,
@@ -35,10 +35,10 @@
         >
           {{ getValue("Author") }}
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
 
       <!-- Publication Year section -->
-      <TwoColumnLayout :label="getLabel('Publication Year')">
+      <DetailRow :label="getLabel('Publication Year')">
         <div
           :class="[
             config.valueClassMap['Publication Year'],
@@ -53,7 +53,7 @@
         >
           {{ getValue("Publication Year") }}
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
 
       <!-- Publication Title section -->
       <template
@@ -62,7 +62,7 @@
           processedResultData['Publication Title']
         "
       >
-        <TwoColumnLayout :label="getLabel('Publication Title')">
+        <DetailRow :label="getLabel('Publication Title')">
           <div
             :class="[
               config.valueClassMap['Publication Title'],
@@ -78,7 +78,7 @@
           >
             {{ getValue("Publication Title") }}
           </div>
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
 
       <!-- Publisher section -->
@@ -87,7 +87,7 @@
           shouldDisplay('Publisher') && processedResultData['Publisher']
         "
       >
-        <TwoColumnLayout :label="getLabel('Publisher')">
+        <DetailRow :label="getLabel('Publisher')">
           <div
             :class="[
               config.valueClassMap['Publisher'],
@@ -102,7 +102,7 @@
           >
             {{ getValue("Publisher") }}
           </div>
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
     </div>
   </ResultCard>
@@ -111,7 +111,7 @@
 <script setup>
 import { computed } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import { literatureCardConfig } from "@/config/cardConfigs";
 
 const props = defineProps({

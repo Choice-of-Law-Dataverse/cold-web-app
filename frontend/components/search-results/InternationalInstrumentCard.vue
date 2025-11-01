@@ -5,7 +5,7 @@
   >
     <div class="flex flex-col gap-0">
       <!-- Title section -->
-      <TwoColumnLayout :label="getLabel('Name')">
+      <DetailRow :label="getLabel('Name')">
         <div class="flex items-start justify-between gap-4">
           <div
             :class="[
@@ -27,14 +27,14 @@
             folder-name="international-instruments"
           />
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
 
       <!-- Date section -->
-      <TwoColumnLayout v-if="shouldDisplay('Date')" :label="getLabel('Date')">
+      <DetailRow v-if="shouldDisplay('Date')" :label="getLabel('Date')">
         <div :class="config.valueClassMap['Date']">
           {{ format.formatDate(getValue("Date")) }}
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
     </div>
   </ResultCard>
 </template>
@@ -43,7 +43,7 @@
 import { computed } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import { internationalInstrumentCardConfig } from "@/config/cardConfigs";
 import * as format from "@/utils/format.js";
 

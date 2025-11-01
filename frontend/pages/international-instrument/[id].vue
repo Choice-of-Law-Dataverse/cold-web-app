@@ -9,7 +9,7 @@
       source-table="International Instrument"
     >
       <template #literature>
-        <TwoColumnLayout
+        <DetailRow
           :label="keyLabelLookup.get('Literature')?.label || 'Literature'"
           :tooltip="keyLabelLookup.get('Literature')?.tooltip"
         >
@@ -24,11 +24,11 @@
             "
             mode="id"
           />
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
 
       <template #selected-provisions>
-        <TwoColumnLayout
+        <DetailRow
           :label="
             keyLabelLookup.get('Selected Provisions')?.label ||
             'Selected Provisions'
@@ -65,7 +65,7 @@
             </div>
             <div v-else>No provisions found.</div>
           </div>
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
     </BaseDetailLayout>
 
@@ -81,7 +81,7 @@
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import BaseLegalContent from "@/components/legal/BaseLegalContent.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";

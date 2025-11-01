@@ -2,7 +2,7 @@
   <ResultCard :result-data="resultData" card-type="Court Decisions">
     <div class="flex flex-col gap-0">
       <!-- Case Title section -->
-      <TwoColumnLayout :label="getLabel('Case Title')">
+      <DetailRow :label="getLabel('Case Title')">
         <div class="flex items-start justify-between gap-4">
           <div
             :class="[
@@ -23,10 +23,10 @@
 
           <PdfLink :record-id="resultData.id" folder-name="court-decisions" />
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
 
       <!-- Date section -->
-      <TwoColumnLayout
+      <DetailRow
         v-if="
           resultData['Publication Date ISO'] &&
           resultData['Publication Date ISO'] !== 'NA'
@@ -41,10 +41,10 @@
         >
           {{ getValue("Publication Date ISO") }}
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
 
       <!-- Instance section -->
-      <TwoColumnLayout
+      <DetailRow
         v-if="resultData['Instance'] && resultData['Instance'] !== 'NA'"
         :label="getLabel('Instance')"
       >
@@ -56,10 +56,10 @@
         >
           {{ getValue("Instance") }}
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
 
       <!-- Choice of Law Issue section -->
-      <TwoColumnLayout
+      <DetailRow
         v-if="
           resultData['Choice of Law Issue'] &&
           resultData['Choice of Law Issue'] !== 'NA'
@@ -74,7 +74,7 @@
         >
           {{ getValue("Choice of Law Issue") }}
         </div>
-      </TwoColumnLayout>
+      </DetailRow>
     </div>
   </ResultCard>
 </template>
@@ -82,7 +82,7 @@
 <script setup>
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import { courtDecisionCardConfig } from "@/config/cardConfigs";
 import { extractYear } from "@/utils/format";
 

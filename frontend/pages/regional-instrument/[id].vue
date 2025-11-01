@@ -9,7 +9,7 @@
       source-table="Regional Instrument"
     >
       <template #literature>
-        <TwoColumnLayout
+        <DetailRow
           :label="keyLabelLookup.get('Literature')?.label || 'Literature'"
           :tooltip="keyLabelLookup.get('Literature')?.tooltip"
         >
@@ -24,13 +24,13 @@
             "
             mode="id"
           />
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
 
       <!-- Slot for Legal provisions -->
       <template #regional-legal-provisions="{ value }">
         <!-- Only render if value exists and is not "N/A" -->
-        <TwoColumnLayout
+        <DetailRow
           v-if="value && value.trim() && value.trim() !== 'N/A'"
           :label="
             keyLabelLookup.get('Regional Legal Provisions')?.label ||
@@ -54,7 +54,7 @@
               @update:has-english-translation="hasEnglishTranslation = $event"
             />
           </div>
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
     </BaseDetailLayout>
 
@@ -72,7 +72,7 @@
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { regionalInstrumentConfig } from "@/config/pageConfigs";

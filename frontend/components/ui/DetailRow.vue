@@ -1,6 +1,5 @@
 <template>
   <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-    <!-- Left column: Label with optional info popover -->
     <div class="label-key md:w-48 md:flex-shrink-0">
       <span class="flex items-center">
         {{ label }}
@@ -9,7 +8,6 @@
       </span>
     </div>
 
-    <!-- Right column: Content slot -->
     <div class="md:flex-1">
       <slot />
     </div>

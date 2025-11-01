@@ -13,7 +13,7 @@
         Country Report for {{ jurisdictionData?.Name || "N/A" }}
       </h1>
       <template #related-literature>
-        <TwoColumnLayout
+        <DetailRow
           :label="
             keyLabelPairs.find((pair) => pair.key === 'Related Literature')
               ?.label || 'Related Literature'
@@ -36,7 +36,7 @@
             "
             mode="id"
           />
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
 
       <template #search-links>
@@ -54,7 +54,7 @@
             <LoadingBar />
           </template>
           <template v-else>
-            <TwoColumnLayout label="Related Data">
+            <DetailRow label="Related Data">
               <div class="flex flex-col gap-2">
                 <NuxtLink
                   v-if="courtDecisionCount !== 0 && courtDecisionCount !== null"
@@ -113,7 +113,7 @@
                   </UButton>
                 </NuxtLink>
               </div>
-            </TwoColumnLayout>
+            </DetailRow>
           </template>
         </template>
       </template>
@@ -165,7 +165,7 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import JurisdictionSelector from "@/components/ui/JurisdictionSelector.vue";
 import JurisdictionQuestions from "@/components/content/JurisdictionQuestions.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";

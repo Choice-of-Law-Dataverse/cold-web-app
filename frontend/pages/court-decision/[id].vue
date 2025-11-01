@@ -9,7 +9,7 @@
       source-table="Court Decisions"
     >
       <template #domestic-legal-provisions="{ value }">
-        <TwoColumnLayout
+        <DetailRow
           v-if="value"
           :label="
             keyLabelLookup.get('Domestic Legal Provisions')?.label ||
@@ -18,11 +18,11 @@
           :tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
         >
           <InstrumentLink :id="value" table="Domestic Instruments" />
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
 
       <template #quote>
-        <TwoColumnLayout
+        <DetailRow
           v-if="
             courtDecision &&
             (courtDecision['Quote'] || courtDecision['Translated Excerpt'])
@@ -80,7 +80,7 @@
               </p>
             </div>
           </div>
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
       <!-- Custom rendering for Related Questions section -->
       <template #related-questions>
@@ -101,7 +101,7 @@
         </section>
       </template>
       <template #related-literature>
-        <TwoColumnLayout
+        <DetailRow
           label="Related Literature"
           :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
         >
@@ -114,11 +114,11 @@
             :use-id="false"
             :show-label="false"
           />
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
 
       <template #original-text="{ value }">
-        <TwoColumnLayout
+        <DetailRow
           v-if="value && value.trim() !== ''"
           :label="keyLabelLookup.get('Original Text')?.label || 'Full Text'"
         >
@@ -150,7 +150,7 @@
               </NuxtLink>
             </div>
           </div>
-        </TwoColumnLayout>
+        </DetailRow>
       </template>
     </BaseDetailLayout>
 
@@ -178,7 +178,7 @@
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
