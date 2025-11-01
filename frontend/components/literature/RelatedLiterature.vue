@@ -4,29 +4,25 @@
       {{ label }}
       <InfoPopover v-if="tooltip" :text="tooltip" />
     </h4>
-    <ul v-if="loadingTitles || loading">
+    <div v-if="loadingTitles || loading">
       <LoadingBar class="ml-[-22px] pt-[11px]" />
-    </ul>
-    <ul v-else-if="displayedLiterature.length">
-      <li
-        v-for="item in displayedLiterature"
-        :key="item.id"
-        :class="valueClassMap"
-      >
+    </div>
+    <div
+      v-else-if="displayedLiterature.length"
+      class="result-value-small flex flex-col gap-1"
+    >
+      <div v-for="item in displayedLiterature" :key="item.id">
         <NuxtLink :to="`/literature/${item.id}`">
           {{ item.title }}
         </NuxtLink>
-      </li>
+      </div>
       <ShowMoreLess
         v-if="fullLiteratureList.length > 5"
         v-model:is-expanded="showAll"
         label="related literature"
       />
-    </ul>
-    <p
-      v-else-if="emptyValueBehavior.action === 'display'"
-      :class="valueClassMap"
-    >
+    </div>
+    <p v-else-if="emptyValueBehavior.action === 'display'">
       {{ emptyValueBehavior.fallback }}
     </p>
   </div>

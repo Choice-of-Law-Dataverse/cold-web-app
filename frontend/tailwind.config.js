@@ -51,6 +51,10 @@ export default {
         "cold-gray-alpha": "#E2E8F080", // 50% alpha
         "cold-dark-gray": "#F1F3F7",
 
+        "cold-slate": "#64748B",
+        "cold-teal": "#0891B2",
+        "cold-charcoal": "#6B7280",
+
         "label-question": "#FFA8FB",
         "label-question-alpha": "#FFA8FB1A", // 10% alpha
 
@@ -92,6 +96,10 @@ export default {
           "--color-cold-gray": theme("colors.cold-gray"),
           "--color-cold-gray-alpha": theme("colors.cold-gray-alpha"),
           "--cold-dark-gray": theme("colors.cold-dark-gray"),
+
+          "--color-cold-slate": theme("colors.cold-slate"),
+          "--color-cold-teal": theme("colors.cold-teal"),
+          "--color-cold-charcoal": theme("colors.cold-charcoal"),
 
           "--color-label-question": theme("colors.label-question"),
           "--color-label-question-alpha": theme("colors.label-question-alpha"),

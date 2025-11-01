@@ -10,18 +10,30 @@
     >
       <template #literature>
         <section class="section-gap m-0 p-0">
-          <RelatedLiterature
-            :literature-id="
-              (processedRegionalInstrument?.Literature as string) || ''
-            "
-            :value-class-map="valueClassMap['Literature']"
-            :show-label="true"
-            :empty-value-behavior="
-              keyLabelLookup.get('Literature')?.emptyValueBehavior
-            "
-            :tooltip="keyLabelLookup.get('Literature')?.tooltip"
-            mode="id"
-          />
+          <div class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6">
+            <div class="label label-key mt-0 md:w-48 md:flex-shrink-0">
+              <span class="flex items-center">
+                {{ keyLabelLookup.get('Literature')?.label || 'Literature' }}
+                <InfoPopover
+                  v-if="keyLabelLookup.get('Literature')?.tooltip"
+                  :text="keyLabelLookup.get('Literature')?.tooltip"
+                />
+              </span>
+            </div>
+            <div class="md:flex-1">
+              <RelatedLiterature
+                :literature-id="
+                  (processedRegionalInstrument?.Literature as string) || ''
+                "
+                :value-class-map="valueClassMap['Literature']"
+                :show-label="false"
+                :empty-value-behavior="
+                  keyLabelLookup.get('Literature')?.emptyValueBehavior
+                "
+                mode="id"
+              />
+            </div>
+          </div>
         </section>
       </template>
 

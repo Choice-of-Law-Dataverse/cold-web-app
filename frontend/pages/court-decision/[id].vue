@@ -34,16 +34,20 @@
               courtDecision &&
               (courtDecision['Quote'] || courtDecision['Translated Excerpt'])
             "
+            class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6"
           >
-            <div class="flex items-center justify-between">
-              <div class="flex items-center">
-                <span class="label flex flex-row items-center">Quote</span>
+            <!-- Label column -->
+            <div class="label label-key mt-0 md:w-48 md:flex-shrink-0">
+              <span class="flex items-center">
+                Quote
                 <InfoPopover
                   v-if="keyLabelLookup.get('Quote')?.tooltip"
                   :text="keyLabelLookup.get('Quote')?.tooltip"
-                  class="ml-[-8px]"
                 />
-              </div>
+              </span>
+            </div>
+            <!-- Content column -->
+            <div class="md:flex-1">
               <div
                 v-if="
                   (courtDecision as Record<string, unknown>)
@@ -55,7 +59,7 @@
                     ] as string
                   )?.trim() !== ''
                 "
-                class="flex items-center gap-1"
+                class="mb-2 flex items-center gap-1"
               >
                 <span
                   class="label-key-provision-toggle mr-[-0px]"
@@ -81,19 +85,19 @@
                   English
                 </span>
               </div>
-            </div>
-            <div>
-              <span class="whitespace-pre-line">
-                {{
-                  showEnglishQuote &&
-                  (courtDecision as any).hasEnglishQuoteTranslation &&
-                  (courtDecision as any)["Quote"] &&
-                  (courtDecision as any)["Quote"]?.trim() !== ""
-                    ? (courtDecision as any)["Translated Excerpt"]
-                    : (courtDecision as any)["Quote"] ||
-                      (courtDecision as any)["Translated Excerpt"]
-                }}
-              </span>
+              <div>
+                <p class="prose mt-0 whitespace-pre-line">
+                  {{
+                    showEnglishQuote &&
+                    (courtDecision as any).hasEnglishQuoteTranslation &&
+                    (courtDecision as any)["Quote"] &&
+                    (courtDecision as any)["Quote"]?.trim() !== ""
+                      ? (courtDecision as any)["Translated Excerpt"]
+                      : (courtDecision as any)["Quote"] ||
+                        (courtDecision as any)["Translated Excerpt"]
+                  }}
+                </p>
+              </div>
             </div>
           </div>
         </section>
@@ -118,15 +122,30 @@
       </template>
       <template #related-literature>
         <section class="section-gap m-0 p-0">
-          <RelatedLiterature
-            :themes="
-              ((courtDecision as Record<string, unknown>)?.themes as string) ||
-              ''
-            "
-            :value-class-map="valueClassMap['Related Literature']"
-            :use-id="false"
-            :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
-          />
+          <div class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6">
+            <!-- Label column -->
+            <div class="label label-key mt-0 md:w-48 md:flex-shrink-0">
+              <span class="flex items-center">
+                Related Literature
+                <InfoPopover
+                  v-if="keyLabelLookup.get('Related Literature')?.tooltip"
+                  :text="keyLabelLookup.get('Related Literature')?.tooltip"
+                />
+              </span>
+            </div>
+            <!-- Content column -->
+            <div class="md:flex-1">
+              <RelatedLiterature
+                :themes="
+                  ((courtDecision as Record<string, unknown>)?.themes as string) ||
+                  ''
+                "
+                :value-class-map="valueClassMap['Related Literature']"
+                :use-id="false"
+                :show-label="false"
+              />
+            </div>
+          </div>
         </section>
       </template>
 
@@ -136,50 +155,42 @@
           v-if="value && value.trim() !== ''"
           class="section-gap m-0 p-0"
         >
-          <div class="mb-2 mt-12 flex items-center">
-            <span class="label">
-              {{ keyLabelLookup.get("Original Text")?.label || "Full Text" }}
-            </span>
-          </div>
-          <div :class="valueClassMap['Original Text']">
-            <span v-if="!showFullText && value.length > 400">
-              {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
-              <div>
-                <NuxtLink
-                  class="ml-2 cursor-pointer"
-                  @click="showFullText = true"
-                >
-                  <Icon name="material-symbols:add" :class="iconClass" />
-                  Show entire full text
-                </NuxtLink>
+          <div class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6">
+            <!-- Label column -->
+            <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
+              <span class="flex items-center">
+                {{ keyLabelLookup.get("Original Text")?.label || "Full Text" }}
+              </span>
+            </h4>
+            <!-- Content column -->
+            <div class="md:flex-1">
+              <div :class="valueClassMap['Original Text']">
+                <div v-if="!showFullText && value.length > 400">
+                  <p class="prose mt-0">
+                    {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
+                  </p>
+                  <NuxtLink
+                    class="ml-2 cursor-pointer"
+                    @click="showFullText = true"
+                  >
+                    <Icon name="material-symbols:add" :class="iconClass" />
+                    Show more
+                  </NuxtLink>
+                </div>
+                <div v-else>
+                  <p class="prose mt-0">
+                    {{ value }}
+                  </p>
+                  <NuxtLink
+                    v-if="value.length > 400"
+                    class="ml-2 cursor-pointer"
+                    @click="showFullText = false"
+                  >
+                    <Icon name="material-symbols:remove" :class="iconClass" />
+                    Show less
+                  </NuxtLink>
+                </div>
               </div>
-            </span>
-            <span v-else>
-              {{ value }}
-              <div>
-                <NuxtLink
-                  v-if="value.length > 400"
-                  class="ml-2 cursor-pointer"
-                  @click="showFullText = false"
-                >
-                  <Icon name="material-symbols:remove" :class="iconClass" />
-                  Show less
-                </NuxtLink>
-              </div>
-            </span>
-            <div>
-              <a
-                class="ml-2"
-                :href="downloadPDFLink"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <Icon
-                  name="i-material-symbols:arrow-circle-down-outline"
-                  :class="iconClass"
-                />
-                <span class="ml-1">Download the case as a PDF</span>
-              </a>
             </div>
           </div>
         </section>
@@ -252,14 +263,5 @@ const keyLabelLookup = computed(() => {
     map.set(pair.key, pair);
   });
   return map;
-});
-
-// PDF download link logic (same as BaseCardHeader.vue)
-const downloadPDFLink = computed(() => {
-  const segments = route.path.split("/").filter(Boolean);
-  const contentType = segments[0] || "unknown";
-  const id = segments[1] || "";
-  const folder = `${contentType}s`;
-  return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`;
 });
 </script>

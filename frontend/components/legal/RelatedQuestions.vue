@@ -6,13 +6,16 @@
         <InfoPopover v-if="tooltip" :text="tooltip" />
       </span>
     </h4>
-    <ul v-if="questionList.length">
-      <li v-for="(q, idx) in questionList" :key="idx">
+    <div
+      v-if="questionList.length"
+      class="result-value-small flex flex-col gap-1"
+    >
+      <div v-for="(q, idx) in questionList" :key="idx">
         <NuxtLink :to="`/question/${jurisdictionCode}_${q}`">
           {{ questionLabels[idx] || jurisdictionCode + "_" + q }}
         </NuxtLink>
-      </li>
-    </ul>
+      </div>
+    </div>
     <span v-else-if="isLoading">Loading related questions...</span>
     <span v-else>No related questions.</span>
   </div>

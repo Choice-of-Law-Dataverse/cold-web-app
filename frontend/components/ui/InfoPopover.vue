@@ -36,11 +36,11 @@ defineProps({
 
 <style scoped>
 .icon {
-  color: var(--color-cold-purple);
+  color: var(--color-cold-teal);
 }
 
 .content {
-  background-color: var(--color-cold-night);
+  background-color: var(--color-cold-teal);
   color: white;
   text-transform: none;
 }

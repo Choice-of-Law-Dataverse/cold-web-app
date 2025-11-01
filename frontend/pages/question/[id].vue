@@ -74,8 +74,17 @@
 
       <template #related-literature>
         <section class="flex flex-col md:flex-row md:items-start md:gap-6">
-          <div class="md:w-48 md:flex-shrink-0">
-            <!-- Empty div to maintain column alignment -->
+          <div class="label label-key mt-0 md:w-48 md:flex-shrink-0">
+            <span class="flex items-center">
+              {{
+                keyLabelLookup.get('Related Literature')?.label ||
+                'Related Literature'
+              }}
+              <InfoPopover
+                v-if="keyLabelLookup.get('Related Literature')?.tooltip"
+                :text="keyLabelLookup.get('Related Literature')?.tooltip"
+              />
+            </span>
           </div>
           <div class="md:flex-1">
             <RelatedLiterature
@@ -85,16 +94,12 @@
               "
               :mode="'both'"
               :value-class-map="valueClassMap['Related Literature']"
-              :label="
-                keyLabelLookup.get('Related Literature')?.label ||
-                'Related Literature'
-              "
+              :show-label="false"
               :empty-value-behavior="
                 questionConfig.keyLabelPairs.find(
                   (pair) => pair.key === 'Related Literature',
                 )?.emptyValueBehavior
               "
-              :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
             />
           </div>
         </section>

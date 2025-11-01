@@ -14,26 +14,42 @@
       </h1>
       <template #related-literature>
         <section class="section-gap m-0 p-0">
-          <RelatedLiterature
-            :literature-id="(jurisdictionData?.Literature as string) || ''"
-            :value-class-map="valueClassMap['Related Literature']"
-            :use-id="true"
-            :label="
-              keyLabelPairs.find((pair) => pair.key === 'Related Literature')
-                ?.label || 'Related Literature'
-            "
-            :empty-value-behavior="
-              jurisdictionConfig.keyLabelPairs.find(
-                (pair) => pair.key === 'Related Literature',
-              )?.emptyValueBehavior
-            "
-            :tooltip="
-              jurisdictionConfig.keyLabelPairs.find(
-                (pair) => pair.key === 'Related Literature',
-              )?.tooltip
-            "
-            mode="id"
-          />
+          <div class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6">
+            <div class="label label-key mt-0 md:w-48 md:flex-shrink-0">
+              <span class="flex items-center">
+                {{
+                  keyLabelPairs.find((pair) => pair.key === 'Related Literature')
+                    ?.label || 'Related Literature'
+                }}
+                <InfoPopover
+                  v-if="
+                    jurisdictionConfig.keyLabelPairs.find(
+                      (pair) => pair.key === 'Related Literature',
+                    )?.tooltip
+                  "
+                  :text="
+                    jurisdictionConfig.keyLabelPairs.find(
+                      (pair) => pair.key === 'Related Literature',
+                    )?.tooltip
+                  "
+                />
+              </span>
+            </div>
+            <div class="md:flex-1">
+              <RelatedLiterature
+                :literature-id="(jurisdictionData?.Literature as string) || ''"
+                :value-class-map="valueClassMap['Related Literature']"
+                :use-id="true"
+                :show-label="false"
+                :empty-value-behavior="
+                  jurisdictionConfig.keyLabelPairs.find(
+                    (pair) => pair.key === 'Related Literature',
+                  )?.emptyValueBehavior
+                "
+                mode="id"
+              />
+            </div>
+          </div>
         </section>
       </template>
 

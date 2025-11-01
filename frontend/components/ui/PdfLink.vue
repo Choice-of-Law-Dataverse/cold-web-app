@@ -4,7 +4,7 @@
       :href="pdfUrl"
       target="_blank"
       rel="noopener noreferrer"
-      class="inline-flex items-center gap-1 px-6 text-sm"
+      class="inline-flex items-center gap-1 text-sm"
       style="color: var(--color-cold-purple)"
       aria-label="Download PDF for record"
       @click.stop
