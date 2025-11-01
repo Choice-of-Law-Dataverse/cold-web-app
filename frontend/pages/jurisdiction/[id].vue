@@ -13,44 +13,30 @@
         Country Report for {{ jurisdictionData?.Name || "N/A" }}
       </h1>
       <template #related-literature>
-        <section class="section-gap m-0 p-0">
-          <div class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6">
-            <div class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-              <span class="flex items-center">
-                {{
-                  keyLabelPairs.find((pair) => pair.key === 'Related Literature')
-                    ?.label || 'Related Literature'
-                }}
-                <InfoPopover
-                  v-if="
-                    jurisdictionConfig.keyLabelPairs.find(
-                      (pair) => pair.key === 'Related Literature',
-                    )?.tooltip
-                  "
-                  :text="
-                    jurisdictionConfig.keyLabelPairs.find(
-                      (pair) => pair.key === 'Related Literature',
-                    )?.tooltip
-                  "
-                />
-              </span>
-            </div>
-            <div class="md:flex-1">
-              <RelatedLiterature
-                :literature-id="(jurisdictionData?.Literature as string) || ''"
-                :value-class-map="valueClassMap['Related Literature']"
-                :use-id="true"
-                :show-label="false"
-                :empty-value-behavior="
-                  jurisdictionConfig.keyLabelPairs.find(
-                    (pair) => pair.key === 'Related Literature',
-                  )?.emptyValueBehavior
-                "
-                mode="id"
-              />
-            </div>
-          </div>
-        </section>
+        <TwoColumnLayout
+          :label="
+            keyLabelPairs.find((pair) => pair.key === 'Related Literature')
+              ?.label || 'Related Literature'
+          "
+          :tooltip="
+            jurisdictionConfig.keyLabelPairs.find(
+              (pair) => pair.key === 'Related Literature',
+            )?.tooltip
+          "
+        >
+          <RelatedLiterature
+            :literature-id="(jurisdictionData?.Literature as string) || ''"
+            :value-class-map="valueClassMap['Related Literature']"
+            :use-id="true"
+            :show-label="false"
+            :empty-value-behavior="
+              jurisdictionConfig.keyLabelPairs.find(
+                (pair) => pair.key === 'Related Literature',
+              )?.emptyValueBehavior
+            "
+            mode="id"
+          />
+        </TwoColumnLayout>
       </template>
 
       <template #search-links>
@@ -68,14 +54,8 @@
             <LoadingBar />
           </template>
           <template v-else>
-            <div
-              class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6"
-            >
-              <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-                <span class="flex items-center"> Related Data </span>
-              </h4>
-
-              <div class="flex flex-col gap-2 md:flex-1">
+            <TwoColumnLayout label="Related Data">
+              <div class="flex flex-col gap-2">
                 <NuxtLink
                   v-if="courtDecisionCount !== 0 && courtDecisionCount !== null"
                   :to="{
@@ -133,7 +113,7 @@
                   </UButton>
                 </NuxtLink>
               </div>
-            </div>
+            </TwoColumnLayout>
           </template>
         </template>
       </template>
@@ -186,6 +166,7 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
 // import JurisdictionComparison from '@/components/jurisdiction-comparison/JurisdictionComparison.vue'
 import JurisdictionSelector from "@/components/ui/JurisdictionSelector.vue";
 import JurisdictionQuestions from "@/components/content/JurisdictionQuestions.vue";

@@ -9,49 +9,33 @@
       source-table="International Instrument"
     >
       <template #literature>
-        <section class="section-gap m-0 p-0">
-          <div class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6">
-            <div class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-              <span class="flex items-center">
-                {{ keyLabelLookup.get('Literature')?.label || 'Literature' }}
-                <InfoPopover
-                  v-if="keyLabelLookup.get('Literature')?.tooltip"
-                  :text="keyLabelLookup.get('Literature')?.tooltip"
-                />
-              </span>
-            </div>
-            <div class="md:flex-1">
-              <RelatedLiterature
-                :literature-id="
-                  (processedInternationalInstrument?.Literature as string) || ''
-                "
-                :value-class-map="valueClassMap['Literature']"
-                :show-label="false"
-                :empty-value-behavior="
-                  keyLabelLookup.get('Literature')?.emptyValueBehavior
-                "
-                mode="id"
-              />
-            </div>
-          </div>
-        </section>
+        <TwoColumnLayout
+          :label="keyLabelLookup.get('Literature')?.label || 'Literature'"
+          :tooltip="keyLabelLookup.get('Literature')?.tooltip"
+        >
+          <RelatedLiterature
+            :literature-id="
+              (processedInternationalInstrument?.Literature as string) || ''
+            "
+            :value-class-map="valueClassMap['Literature']"
+            :show-label="false"
+            :empty-value-behavior="
+              keyLabelLookup.get('Literature')?.emptyValueBehavior
+            "
+            mode="id"
+          />
+        </TwoColumnLayout>
       </template>
 
       <template #selected-provisions>
-        <div class="flex flex-col md:w-full md:flex-row md:gap-6">
-          <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-            <span class="flex items-center">
-              {{
-                keyLabelLookup.get("Selected Provisions")?.label ||
-                "Selected Provisions"
-              }}
-              <InfoPopover
-                v-if="keyLabelLookup.get('Selected Provisions')?.tooltip"
-                :text="keyLabelLookup.get('Selected Provisions')?.tooltip"
-              />
-            </span>
-          </h4>
-          <div class="provisions-container md:flex-1">
+        <TwoColumnLayout
+          :label="
+            keyLabelLookup.get('Selected Provisions')?.label ||
+            'Selected Provisions'
+          "
+          :tooltip="keyLabelLookup.get('Selected Provisions')?.tooltip"
+        >
+          <div class="provisions-container">
             <div v-if="provisionsLoading">
               <LoadingBar class="!mt-8" />
             </div>
@@ -81,7 +65,7 @@
             </div>
             <div v-else>No provisions found.</div>
           </div>
-        </div>
+        </TwoColumnLayout>
       </template>
     </BaseDetailLayout>
 
@@ -97,8 +81,8 @@
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
 import BaseLegalContent from "@/components/legal/BaseLegalContent.vue";
-import InfoPopover from "@/components/ui/InfoPopover.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { internationalInstrumentConfig } from "@/config/pageConfigs";

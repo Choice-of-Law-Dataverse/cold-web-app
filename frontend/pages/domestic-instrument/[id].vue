@@ -66,59 +66,39 @@
       </template>
       <!-- Slot for Compatibility section -->
       <template #compatibility="{ value }">
-        <div
+        <TwoColumnLayout
           v-if="
             value &&
             (isCompatible('Compatible With the UNCITRAL Model Law') ||
               isCompatible('Compatible With the HCCH Principles'))
           "
-          class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6"
+          :label="keyLabelLookup.get('Compatibility')?.label || 'Compatible with'"
+          :tooltip="keyLabelLookup.get('Compatibility')?.tooltip"
         >
-          <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-            <span class="flex items-center">
-              {{
-                keyLabelLookup.get("Compatibility")?.label || "Compatible with"
-              }}
-              <InfoPopover
-                v-if="keyLabelLookup.get('Compatibility')?.tooltip"
-                :text="keyLabelLookup.get('Compatibility')?.tooltip"
-              />
-            </span>
-          </h4>
-          <div class="md:flex-1">
-            <div class="result-value-small flex gap-2">
-              <CompatibleLabel
-                v-if="isCompatible('Compatible With the UNCITRAL Model Law')"
-                label="UNCITRAL Model Law"
-              />
-              <CompatibleLabel
-                v-if="isCompatible('Compatible With the HCCH Principles')"
-                label="HCCH Principles"
-              />
-            </div>
+          <div class="result-value-small flex gap-2">
+            <CompatibleLabel
+              v-if="isCompatible('Compatible With the UNCITRAL Model Law')"
+              label="UNCITRAL Model Law"
+            />
+            <CompatibleLabel
+              v-if="isCompatible('Compatible With the HCCH Principles')"
+              label="HCCH Principles"
+            />
           </div>
-        </div>
+        </TwoColumnLayout>
       </template>
       <!-- Slot for Legal provisions -->
       <template #domestic-legal-provisions="{ value }">
         <!-- Only render if value exists and is not "N/A" -->
-        <div
+        <TwoColumnLayout
           v-if="value && value.trim() && value.trim() !== 'N/A'"
-          class="flex flex-col md:w-full md:flex-row md:gap-6"
+          :label="
+            keyLabelLookup.get('Domestic Legal Provisions')?.label ||
+            'Selected Provisions'
+          "
+          :tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
         >
-          <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-            <span class="flex items-center">
-              {{
-                keyLabelLookup.get("Domestic Legal Provisions")?.label ||
-                "Selected Provisions"
-              }}
-              <InfoPopover
-                v-if="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
-                :text="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
-              />
-            </span>
-          </h4>
-          <div class="provisions-container md:flex-1">
+          <div class="provisions-container">
             <LegalProvision
               v-for="(provisionId, index) in getSortedProvisionIdsForInstrument(
                 value,
@@ -135,7 +115,7 @@
               @update:has-english-translation="hasEnglishTranslation = $event"
             />
           </div>
-        </div>
+        </TwoColumnLayout>
       </template>
     </BaseDetailLayout>
     <CountryReportLink
@@ -156,8 +136,8 @@
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
-import InfoPopover from "@/components/ui/InfoPopover.vue";
 import SectionRenderer from "@/components/legal/SectionRenderer.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
 import CountryReportLink from "@/components/ui/CountryReportLink.vue";
