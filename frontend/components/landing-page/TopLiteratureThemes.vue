@@ -1,7 +1,6 @@
 <template>
   <UCard class="cold-ucard h-full w-full">
     <div class="flex flex-col gap-8">
-      <!-- Title Section -->
       <div>
         <h2 class="popular-title text-left md:whitespace-nowrap">
           Top Literature Themes
@@ -30,7 +29,6 @@ const router = useRouter();
 const searchSuggestions = ref(["Arbitration", "Rules of law", "Tacit choice"]);
 
 function handleSuggestionClick(suggestion) {
-  // Pass the query with both theme and type=Literature
   router.push({
     name: "search",
     query: { theme: suggestion, type: "Literature" },

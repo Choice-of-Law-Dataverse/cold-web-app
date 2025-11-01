@@ -219,8 +219,6 @@ import { useRoute, useRouter } from "vue-router";
 import jurisdictionsData from "@/assets/jurisdictions-data.json";
 import { handleImageError } from "@/utils/handleImageError";
 import { useCheckTarget } from "~/composables/useCheckTarget";
-
-// removed tooltip content import
 import CiteModal from "@/components/ui/CiteModal.vue";
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
@@ -230,15 +228,13 @@ const router = useRouter();
 const isCiteOpen = ref(false);
 
 const downloadPDFLink = computed(() => {
-  const segments = route.path.split("/").filter(Boolean); // removes empty parts from path like ['', 'court-decision', 'CD-ARE-1128']
-  const contentType = segments[0] || "unknown"; // e.g., 'court-decision'
-  const id = segments[1] || ""; // e.g., 'CD-ARE-1128'
-  // If your Azure folders always follow the plural of the content type
+  const segments = route.path.split("/").filter(Boolean);
+  const contentType = segments[0] || "unknown";
+  const id = segments[1] || "";
   const folder = `${contentType}s`;
   return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`;
 });
 
-// Props
 const props = defineProps({
   resultData: {
     type: Object,
@@ -272,7 +268,6 @@ const props = defineProps({
   },
 });
 
-// Computed property for "jurisdiction" to handle multiple field options and duplicates
 const formattedJurisdiction = computed(() => {
   if (props.formattedJurisdiction.length > 0) {
     return props.formattedJurisdiction;
@@ -287,20 +282,17 @@ const formattedJurisdiction = computed(() => {
     "";
 
   if (!jurisdictionString) {
-    return []; // Return an empty array if no jurisdiction is found
+    return [];
   }
 
-  // Split by comma, trim each item, and remove duplicates
   return [...new Set(jurisdictionString.split(",").map((item) => item.trim()))];
 });
 
-// Display `cardType` if available, or use `resultData.source_table`
 const formattedSourceTable = computed(() => {
   return props.cardType || props.resultData?.source_table || "";
 });
 
 const adjustedSourceTable = computed(() => {
-  // Use the result from `formattedSourceTable` and apply label adjustments
   switch (formattedSourceTable.value) {
     case "Court Decisions":
       return "Court Decision";
@@ -320,9 +312,8 @@ const adjustedSourceTable = computed(() => {
       return "Arbitral Award";
     case "Jurisdiction":
       return "Jurisdiction";
-    // Add more adjustments as needed
     default:
-      return formattedSourceTable.value || ""; // Fallback if no match
+      return formattedSourceTable.value || "";
   }
 });
 
@@ -346,7 +337,7 @@ const labelColorClass = computed(() => {
     case "Jurisdiction":
       return "label-jurisdiction";
     default:
-      return ""; // No color for unknown labels
+      return "";
   }
 });
 
@@ -355,12 +346,10 @@ const formattedTheme = computed(() => {
     return props.formattedTheme;
   }
 
-  // Handle literature's Themes
   if (props.cardType === "Literature" && props.resultData["Themes"]) {
     return props.resultData["Themes"].split(",").map((theme) => theme.trim());
   }
 
-  // Handle other types
   const themes =
     props.resultData["Title of the Provision"] ?? props.resultData.Themes;
 
@@ -371,9 +360,8 @@ const formattedTheme = computed(() => {
   return [...new Set(themes.split(",").map((theme) => theme.trim()))];
 });
 
-const erroredImages = reactive({}); // new reactive object
+const erroredImages = reactive({});
 
-// Action items in "Suggest Edit" area
 const suggestEditActions = computed(() => {
   let linkUrl = "";
   let linkLabel = "Link";
@@ -416,7 +404,6 @@ const suggestEditActions = computed(() => {
       to: downloadPDFLink.value,
     });
   }
-  // Adjust the Edit link for International Instrument page only
   const editLink = suggestEditLink.value;
   actions.push({
     label: "Edit",
@@ -426,7 +413,6 @@ const suggestEditActions = computed(() => {
   return actions;
 });
 
-// Methods
 const { data: pdfExists } = useCheckTarget(downloadPDFLink);
 
 const suggestEditLink = ref("");
@@ -441,7 +427,6 @@ function getJurisdictionISO(name) {
   return entry ? entry.alternative[0].toLowerCase() : "default";
 }
 
-// Add computed for legalFamily
 const legalFamily = computed(() => {
   if (
     props.resultData &&
@@ -457,7 +442,6 @@ const legalFamily = computed(() => {
   return [];
 });
 
-// Pluralize source table label for URL function
 function getSourceTablePlural(label) {
   if (label === "Court Decision") return "Court Decisions";
   if (label === "Domestic Instrument") return "Domestic Instruments";
@@ -469,7 +453,6 @@ function getSourceTablePlural(label) {
   return label;
 }
 
-// Dropdown options for 'new' pages (first is a real placeholder)
 const typeOptions = [
   { label: "Change", value: "" },
   { label: "Court Decision", value: "Court Decision" },
@@ -480,14 +463,12 @@ const typeOptions = [
 ];
 const selectedType = ref("");
 
-// Ensure placeholder shows by default in 'new' mode
 onMounted(() => {
   if (props.headerMode === "new") {
     selectedType.value = "";
   }
 });
 
-// Reset selection on route change to keep placeholder visible by default
 watch(
   () => route.fullPath,
   () => {
@@ -513,14 +494,12 @@ function typeToNewPath(label) {
   return `/${slug}/new`;
 }
 
-// Navigate on selection change in 'new' mode
 watch(selectedType, (val, old) => {
   if (props.headerMode === "new" && val !== "" && val !== old) {
     router.push(typeToNewPath(val));
   }
 });
 
-// Ensure USelect internal trigger/value adopt the global .label style
 const selectUiLabel = {
   base: "new-select-label leading-none !text-[var(--color-cold-purple)]",
   wrapper: "new-select-label leading-none !text-[var(--color-cold-purple)]",
@@ -536,64 +515,58 @@ const selectUiLabel = {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  position: relative; /* Ensure fade-out positions correctly */
+  position: relative;
 }
 
-/* Ensure horizontal scrolling for tags without a visible scrollbar */
 .tags-container {
   overflow-x: auto;
   white-space: nowrap;
-  flex-grow: 1; /* Ensures it takes up available space */
+  flex-grow: 1;
 }
 
 .fade-out-container {
   position: relative;
-  flex-shrink: 0; /* Prevent it from shrinking */
-  width: 50px; /* Match the width of the fade effect */
-  margin-left: -50px; /* Align the fade-out right before the "Open" link */
-  z-index: 1; /* Ensures it appears above the scrolling content */
+  flex-shrink: 0;
+  width: 50px;
+  margin-left: -50px;
+  z-index: 1;
 }
 
-/* Fade-out effect */
 .fade-out {
   position: absolute;
   top: 0;
-  right: 50px; /* Default: Positioned just before the right-aligned link */
+  right: 50px;
   width: 60px;
   height: 100%;
   background: linear-gradient(to left, white, transparent);
   pointer-events: none;
-  z-index: 10; /* Ensure it's above the scrolling tags */
+  z-index: 10;
 }
 
-/* Adjust position when only one of the links is shown */
 .fade-out.open-link-true {
-  right: 50px; /* Positioned before "Open" */
+  right: 50px;
 }
 
 .fade-out.suggest-edit-true {
-  right: 266px; /* Positioned before icons */
+  right: 266px;
 }
 
-/* Ensures the fade-out is always correctly positioned */
 .fade-out.open-link-false.suggest-edit-false {
-  right: 0; /* Positioned at the edge of the container */
+  right: 0;
 }
 
-/* Right-aligned open link */
 .open-link {
-  flex-shrink: 0; /* Prevent shrinking */
+  flex-shrink: 0;
   position: relative;
-  z-index: 20; /* Ensure it's above the fade-out */
+  z-index: 20;
 }
 
-/* Hide the scrollbar for a cleaner look */
 .scrollbar-hidden::-webkit-scrollbar {
-  display: none; /* For Chrome, Safari, and Edge */
+  display: none;
 }
 .scrollbar-hidden {
-  -ms-overflow-style: none; /* IE and Edge */
-  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 .gray-link {
@@ -604,7 +577,6 @@ a {
   font-weight: 600 !important;
 }
 
-/* Preserve label color for clickable jurisdiction links */
 .jurisdiction-label-link {
   color: var(--color-cold-night) !important;
   font-weight: 700 !important;
@@ -619,7 +591,6 @@ a {
   font-weight: 700 !important;
 }
 
-/* Ensure NuxtLink.label-court-decision, etc. use the correct color even as a link */
 .label-court-decision,
 a.label-court-decision {
   color: var(--color-label-court-decision) !important;
@@ -642,29 +613,26 @@ a.label-arbitration {
   color: var(--color-label-arbitration) !important;
 }
 
-/* Make the dropdown caret white so it blends into white background */
 .no-caret-select :deep([class*="i-heroicons-chevron"]) {
-  /* Hide built-in chevrons */
   display: none !important;
 }
 .no-caret-select :deep([class*="i-heroicons-chevron"]) svg {
   display: none !important;
 }
-/* Iconify/Material icons use a class with a colon; escape it */
+
 .no-caret-select :deep([class*="i-material-symbols\:arrow-drop-down"]) {
   display: none !important;
 }
-/* Up/Down combined chevron variant */
+
 .no-caret-select :deep([class*="i-heroicons-chevron-up-down"]) {
   display: none !important;
 }
-/* Trailing container color fallback */
+
 .no-caret-select :deep(.ui-input-trailing),
 .no-caret-select :deep(.u-input-trailing) {
   color: inherit !important;
 }
 
-/* Align custom caret visually with input text */
 .no-caret-select :deep(.u-input-trailing),
 .no-caret-select :deep(.ui-input-trailing) {
   display: inline-flex !important;
@@ -674,13 +642,10 @@ a.label-arbitration {
 .custom-caret {
   display: inline-flex;
   align-items: center;
-  margin-left: 0.25rem; /* slight spacing from text */
-  pointer-events: none; /* do not block input interactions */
+  margin-left: 0.25rem;
+  pointer-events: none;
 }
 
-/* Keep select interactive without overlay */
-
-/* If USelect renders a native <select>, remove the default browser arrow */
 .no-caret-select :deep(select) {
   -webkit-appearance: none !important;
   -moz-appearance: none !important;
@@ -688,12 +653,11 @@ a.label-arbitration {
   background-image: none !important;
   background: none !important;
 }
-/* IE/Edge old */
+
 .no-caret-select :deep(select::-ms-expand) {
   display: none !important;
 }
 
-/* Make the select as compact as label text to keep header height consistent */
 .no-caret-select :deep(.ui-input),
 .no-caret-select :deep(.u-input),
 .no-caret-select :deep([role="button"]),
@@ -709,7 +673,6 @@ a.label-arbitration {
   height: 22px !important;
 }
 
-/* Make the USelect trigger look like a header label/link */
 .no-caret-select.label :deep(button[role="combobox"]) {
   color: inherit !important;
   font-weight: inherit !important;
@@ -724,7 +687,6 @@ a.label-arbitration {
   text-transform: inherit !important;
 }
 
-/* Ensure inner spans/values also adopt label sizing and casing */
 .no-caret-select.label :deep(.u-input *),
 .no-caret-select.label :deep(.ui-input *),
 .no-caret-select.label :deep(button[role="combobox"] *) {
@@ -732,7 +694,6 @@ a.label-arbitration {
   text-transform: inherit !important;
 }
 
-/* Hard-apply .label metrics to trigger/value for reliability */
 .no-caret-select :deep(button[role="combobox"]) {
   font-size: 12px !important;
   font-weight: 700 !important;
@@ -749,7 +710,6 @@ a.label-arbitration {
   color: var(--color-cold-purple) !important;
 }
 
-/* Nuxt UI select specific wrappers */
 .no-caret-select :deep(.u-select),
 .no-caret-select :deep(.ui-select),
 .no-caret-select :deep(.u-input-wrapper),
@@ -763,7 +723,6 @@ a.label-arbitration {
   padding-bottom: 0 !important;
 }
 
-/* Final authority: enforce 12px uppercase, weight 600, and purple color */
 .new-select-label :deep(button[role="combobox"]),
 .new-select-label :deep(button[role="combobox"] *),
 .new-select-label :deep(.u-input .u-input-value),
@@ -778,7 +737,6 @@ a.label-arbitration {
   color: var(--color-cold-purple) !important;
 }
 
-/* Arrow container styling */
 .arrow-container {
   display: flex;
   align-items: center;

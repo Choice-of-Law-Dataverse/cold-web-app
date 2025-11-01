@@ -26,7 +26,6 @@ export function useRelatedQuestions(
   );
 
   const questionLabels = computed(() => {
-    // Create a mapping object from the array data using compositeIds as keys
     const dataMap = compositeIds.value.reduce(
       (acc, id, index) => {
         const record = results.data.value?.[index];

@@ -63,22 +63,20 @@ export default {
   },
   data() {
     return {
-      category: null, // Will be dynamically set based on searchText
+      category: null,
       definition: null,
     };
   },
   watch: {
-    // Watch for changes in searchPerformed and trigger classifyQuery when true
     searchPerformed(newVal) {
       if (newVal) {
-        this.classifyQuery(this.searchText); // Only run this when searchPerformed is true
+        this.classifyQuery(this.searchText);
       }
     },
   },
   methods: {
     async classifyQuery(query) {
       try {
-        // Step 1: Call classify_query API to classify the search query
         const { useApiClient } = await import("@/composables/useApiClient");
         const { apiClient } = useApiClient();
         const category = await apiClient("/classify_query", {
@@ -87,7 +85,6 @@ export default {
         });
         this.category = category;
 
-        // Process the category to fetch relevant data
         this.processCategory();
       } catch (error) {
         console.error("Error classifying query:", error);
@@ -99,7 +96,6 @@ export default {
         return;
       }
 
-      // Step 2: Split the category into the term and table
       const term = this.category.split(" (")[0];
       const tableType = this.category.match(/\(([^)]+)\)/);
 
@@ -117,7 +113,6 @@ export default {
         table = "HCCH Principles themes";
       }
 
-      // Step 3: Make the API call with the term and table
       this.fetchData(term, table);
     },
 
@@ -127,15 +122,12 @@ export default {
         const { apiClient } = useApiClient();
         const data = await apiClient("/search/full_table", { body: { table } });
 
-        // Step 4: Find the entry with the appropriate matching key
         let matchedEntry;
         if (table === "HCCH Principles themes") {
-          // For "HCCH Principles themes", match against the "Theme" key
           matchedEntry = data.find(
             (entry) => entry.Theme && entry.Theme.includes(term),
           );
         } else {
-          // For other tables, match against the "Keywords" key
           matchedEntry = data.find(
             (entry) => entry.Keywords && entry.Keywords.includes(term),
           );

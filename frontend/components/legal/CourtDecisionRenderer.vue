@@ -38,7 +38,6 @@ const props = defineProps({
 
 const excludedValues = new Set(["na", "not found", "n/a"]);
 
-// Compute unique IDs and fetch titles via composable
 const decisionIds = computed(() => {
   const items = Array.isArray(props.value) ? props.value : [props.value];
   const filtered = items.filter(Boolean);
@@ -65,7 +64,6 @@ const caseTitles = computed(() => {
   return map;
 });
 
-// Helper to generate the link URL for a court decision.
 function generateCourtDecisionLink(caseId) {
   return `/court-decision/${caseId}`;
 }

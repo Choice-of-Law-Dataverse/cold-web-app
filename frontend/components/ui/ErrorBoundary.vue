@@ -42,7 +42,6 @@ const toast = useToast();
 
 const error = ref(null);
 
-// Check if error is a NotFoundError
 const isNotFoundError = computed(() => {
   return (
     error.value?.statusCode === 404 ||
@@ -51,12 +50,10 @@ const isNotFoundError = computed(() => {
   );
 });
 
-// Error recovery function
 const retry = () => {
   error.value = null;
 };
 
-// Handle navigation actions with error clearing
 const handleGoBack = () => {
   error.value = null;
   router.back();
@@ -67,37 +64,29 @@ const handleGoHome = () => {
   router.push("/");
 };
 
-// Capture errors from child components
 onErrorCaptured((err, instance, info) => {
-  // Check if this is a NotFound error
   const isNotFound =
     err?.statusCode === 404 ||
     err?.data?.name === "NotFoundError" ||
     err?.name === "NotFoundError";
 
-  // For NotFound errors, set the error state to show the error page
   if (isNotFound) {
     error.value = err;
   } else {
-    // For non-NotFound errors, show toast and keep content visible
     toast.add({
       title: "Error",
       description: err.message || "An unexpected error occurred",
       color: "red",
       timeout: 5000,
     });
-    // Don't set error.value so the content remains visible
   }
 
-  // Call custom error handler if provided
   if (props.onError) {
     props.onError(err, instance, info);
   }
 
-  // Prevent the error from bubbling up
   return false;
 });
 
-// Provide retry function to child components
 provide("errorBoundary", { retry });
 </script>

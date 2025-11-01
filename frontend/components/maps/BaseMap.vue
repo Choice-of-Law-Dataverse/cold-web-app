@@ -40,7 +40,6 @@ import { navigateTo } from "#app";
 import { useGeoJsonData } from "@/composables/useGeoJsonData";
 import { useCoveredCountries } from "@/composables/useCoveredCountries";
 
-// Props
 const props = defineProps({
   zoom: {
     type: Number,
@@ -83,11 +82,9 @@ const props = defineProps({
   },
 });
 
-// Import the new composables
 const { data: geoJsonData } = useGeoJsonData();
 const { data: coveredCountries } = useCoveredCountries();
 
-// Data readiness state
 const isDataReady = computed(
   () =>
     geoJsonData.value &&
@@ -95,7 +92,6 @@ const isDataReady = computed(
     coveredCountries.value.size > 0,
 );
 
-// Map options computed from props
 const mapOptions = computed(() => {
   const options = {
     zoomControl: props.enableZoomControl,
@@ -105,7 +101,6 @@ const mapOptions = computed(() => {
     doubleClickZoom: props.enableDoubleClickZoom,
   };
 
-  // Add maxBounds if provided
   if (props.maxBounds) {
     options.maxBounds = props.maxBounds;
     options.maxBoundsViscosity = props.maxBoundsViscosity;
@@ -114,14 +109,12 @@ const mapOptions = computed(() => {
   return options;
 });
 
-// Example function for handling GeoJSON features
 const onEachFeature = (feature, layer) => {
-  const isoCode = feature.properties.iso_a3_eh; // Get the ISO3 code
-  const countryName = feature.properties.name; // Get the country's name
+  const isoCode = feature.properties.iso_a3_eh;
+  const countryName = feature.properties.name;
   const isCovered =
     coveredCountries.value?.has(isoCode?.toLowerCase()) || false;
 
-  // Default style
   const defaultStyle = {
     fillColor: isCovered
       ? "var(--color-cold-purple)"
@@ -131,20 +124,16 @@ const onEachFeature = (feature, layer) => {
     fillOpacity: 1,
   };
 
-  // Hover style
   const hoverStyle = {
     ...defaultStyle,
-    fillOpacity: 0.8, // 80% alpha on hover
+    fillOpacity: 0.8,
   };
 
-  // Set default style
   layer.setStyle(defaultStyle);
 
-  // Add hover events
   layer.on("mouseover", () => {
     layer.setStyle(hoverStyle);
 
-    // Update the info control
     const infoControl = document.getElementById("info-control");
     if (infoControl) {
       infoControl.innerHTML = `
@@ -157,7 +146,6 @@ const onEachFeature = (feature, layer) => {
   layer.on("mouseout", () => {
     layer.setStyle(defaultStyle);
 
-    // Reset the info control
     const infoControl = document.getElementById("info-control");
     if (infoControl) {
       infoControl.innerHTML = `
@@ -166,7 +154,6 @@ const onEachFeature = (feature, layer) => {
     }
   });
 
-  // Add a click event to navigate to the country-specific URL
   layer.on("click", () => {
     navigateTo(`/jurisdiction/${isoCode.toLowerCase()}`);
   });

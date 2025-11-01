@@ -133,7 +133,6 @@ export interface SearchRequest {
  * Request body for jurisdiction count queries
  */
 export interface JurisdictionCountRequest extends SearchRequest {
-  // Inherits all SearchRequest properties
   table?: TableName;
 }
 
@@ -175,7 +174,7 @@ export type FilterColumn =
   | "themes"
   | "tables"
   | "type"
-  | string; // Allow other column names
+  | string;
 
 /**
  * Search response interface

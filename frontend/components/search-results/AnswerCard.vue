@@ -121,11 +121,8 @@ const props = defineProps({
 
 const config = answerCardConfig;
 
-// Replace literatureTitles with an array of objects: { id, title }
 const literatureTitles = ref([]);
 
-// Updated function to fetch literature titles for a comma‑separated list of IDs,
-// returns objects with id and title.
 async function fetchLiteratureTitles(idStr) {
   const ids = idStr.split(",").map((id) => id.trim());
   const promises = ids.map(async (id) => {
@@ -181,20 +178,17 @@ const isLoadingLiterature = computed(() => {
   );
 });
 
-// Computed property to display the number of related cases
 const relatedCasesCount = computed(() => {
   const links = props.resultData["Court Decisions Link"];
   if (!links) return 0;
   return links.split(",").filter((link) => link.trim() !== "").length;
 });
 
-// Updated computed property for the related court decisions link
 const relatedDecisionsLink = computed(() => {
   const id = props.resultData["id"];
   return `question/${id}#related-court-decisions`;
 });
 
-// New computed property to conditionally show domesticValue bullet
 const hasDomesticValue = computed(() => {
   return (
     props.resultData["Domestic Legal Provisions"] ||
@@ -203,7 +197,6 @@ const hasDomesticValue = computed(() => {
   );
 });
 
-// Update hasMoreInformation to include OUP Book Quote fallback
 const hasMoreInformation = computed(() => {
   return (
     (props.resultData["More Information"] &&
@@ -215,14 +208,12 @@ const hasMoreInformation = computed(() => {
   );
 });
 
-// Last updated value (year only), prefers Last Modified then falls back to Created
 const lastUpdatedDisplay = computed(() => {
   const raw = props.resultData["Last Modified"] || props.resultData["Created"];
   const y = formatYear(raw);
   return y ? String(y) : "";
 });
 
-// Helper functions to get labels and values with fallbacks
 const getLabel = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key);
   return pair?.label || key;
@@ -232,7 +223,6 @@ const getValue = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key);
   const value = props.resultData[key];
 
-  // For key "Answer", split by comma if a string contains commas.
   if (key === "Answer" && typeof value === "string" && value.includes(",")) {
     return value.split(",").map((part) => part.trim());
   }
@@ -247,7 +237,6 @@ const getValue = (key) => {
   return value;
 };
 
-// New helper to compute text classes for a field
 const computeTextClasses = (key, baseClass) => {
   const pair = config.keyLabelPairs.find((p) => p.key === key);
   const isEmpty = !props.resultData[key] || props.resultData[key] === "NA";

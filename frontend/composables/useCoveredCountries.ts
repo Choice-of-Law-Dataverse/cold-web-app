@@ -8,8 +8,8 @@ const fetchCoveredCountries = async (): Promise<Set<string>> => {
   const text = await response.text();
   const countries = text
     .split("\n")
-    .map((line) => line.trim().toLowerCase()) // Convert to lowercase for consistent comparison
-    .filter((line) => line.length > 0); // Filter out empty lines
+    .map((line) => line.trim().toLowerCase())
+    .filter((line) => line.length > 0);
 
   return new Set(countries);
 };

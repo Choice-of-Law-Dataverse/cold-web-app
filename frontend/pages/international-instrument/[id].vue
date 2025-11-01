@@ -99,7 +99,6 @@ interface InternationalInstrumentRecord {
 
 const route = useRoute();
 
-// Use TanStack Vue Query for data fetching - no need for refs with static values
 const table = ref<TableName>("International Instruments");
 const id = ref(route.params.id as string);
 
@@ -110,7 +109,6 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   internationalInstrumentConfig,
 );
 
-// Create lookup map for better performance
 const keyLabelLookup = computed(() => {
   const map = new Map();
   computedKeyLabelPairs.value.forEach((pair: { key: string }) => {
@@ -145,7 +143,6 @@ const processedInternationalInstrument = computed(() => {
   };
 });
 
-// Provisions via composable
 const {
   data: provisions,
   isLoading: provisionsLoading,
@@ -154,7 +151,6 @@ const {
 
 function normalizeAnchorId(str: string): string {
   if (!str) return "";
-  // Remove accents/circumflexes, replace whitespace with dash, lowercase
   return str
     .normalize("NFD")
     .replace(/\p{Diacritic}/gu, "")
@@ -163,10 +159,3 @@ function normalizeAnchorId(str: string): string {
     .toLowerCase();
 }
 </script>
-
-<style scoped>
-/* Remove the extra spacer from BaseLegalContent when provisions are in a two-column layout */
-.provisions-container :deep(.base-legal-content .no-margin > div:first-child) {
-  display: none;
-}
-</style>

@@ -1,6 +1,4 @@
 <template>
-  <!-- Use the shared detail layout to match spacing, container width, and card styling. -->
-  <!-- Use sourceTable="Loading" so the header stays hidden, yielding a clean blank card. -->
   <BaseDetailLayout
     :loading="loading"
     :result-data="resultData"
@@ -82,20 +80,17 @@
 
 <script setup lang="ts">
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-// Using static CSV downloaded from NocoDB because API does not provide arbitral awards
 import csvRaw from "./all-arbitral-awards.csv?raw";
 
 useHead({
   title: "Arbitral Awards — CoLD",
 });
 
-// Minimal props for BaseDetailLayout to render a blank card with the same layout
 const loading = false;
 const resultData = {} as Record<string, unknown>;
 const computedKeyLabelPairs: Record<string, unknown>[] = [];
 const valueClassMap: Record<string, string> = {};
 
-// Columns to display from CSV
 const columns = [
   { key: "caseNumber", label: "Case Number", sortable: true },
   { key: "year", label: "Year", sortable: true },
@@ -143,14 +138,11 @@ function parseCSV(text: string): string[][] {
         rows.push(row);
         row = [];
         field = "";
-      } else if (char === "\r") {
-        // ignore
-      } else {
+      } else if (char !== "\r") {
         field += char;
       }
     }
   }
-  // push last field/row if any
   if (field.length > 0 || row.length > 0) {
     row.push(field);
     rows.push(row);

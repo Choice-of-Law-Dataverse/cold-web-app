@@ -97,7 +97,6 @@ import tooltipRegionalInstrumentDate from "@/content/info_boxes/regional_instrum
 import { format } from "date-fns";
 const date = ref(null);
 
-// Form data
 const abbreviation = ref("");
 const title = ref("");
 const url = ref("");
@@ -108,12 +107,8 @@ const comments = ref("");
 
 const token = ref("");
 
-// Ensure Submit button reactivity when token changes
-watch(token, () => {
-  // This will trigger reactivity for the Submit button
-});
+watch(token, () => {});
 
-// Validation schema
 const formSchema = z.object({
   abbreviation: z
     .string()
@@ -121,7 +116,6 @@ const formSchema = z.object({
     .min(3, { message: "Abbreviation must be at least 3 characters long" }),
 });
 
-// Form validation state
 const errors = ref({});
 const saveModalErrors = ref({});
 
@@ -173,12 +167,10 @@ function handleNewSave() {
     url: url.value || undefined,
     attachment: "", // ignored for now
     instrument_date: date.value ? format(date.value, "yyyy-MM-dd") : undefined,
-    // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
   };
 
-  // Explicitly log the exact payload we send
   (async () => {
     try {
       const { useApiClient } = await import("@/composables/useApiClient");

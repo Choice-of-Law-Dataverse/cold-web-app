@@ -35,7 +35,6 @@ interface ArbitralRuleRecord {
 
 const route = useRoute();
 
-// Use TanStack Vue Query for data fetching - no need for refs with static values
 const table = ref<TableName>("Arbitral Rules");
 const id = ref(route.params.id as string);
 
@@ -51,7 +50,6 @@ const processedArbitralRule = computed(() => {
   if (!arbitralRule.value) return null;
   return {
     ...arbitralRule.value,
-    // Derive flat display field from nested related_arbitral_institutions
     "Arbitral Institution": Array.isArray(
       arbitralRule.value?.related_arbitral_institutions,
     )

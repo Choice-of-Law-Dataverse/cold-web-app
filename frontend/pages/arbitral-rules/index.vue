@@ -1,6 +1,4 @@
 <template>
-  <!-- Use the shared detail layout to match spacing, container width, and card styling. -->
-  <!-- Use sourceTable="Loading" so the header stays hidden, yielding a clean blank card. -->
   <BaseDetailLayout
     :loading="loading"
     :result-data="resultData"
@@ -68,20 +66,17 @@
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { ref, onMounted } from "vue";
 import { formatDate } from "@/utils/format";
-// Using static CSV downloaded from NocoDB because API does not provide arbitral rules
 import csvRaw from "./all-arbitral-rules.csv?raw";
 
 useHead({
   title: "Arbitral Rules — CoLD",
 });
 
-// Minimal props for BaseDetailLayout to render a blank card with the same layout
 const loading = false;
 const resultData = {} as Record<string, unknown>;
 const computedKeyLabelPairs: Record<string, unknown>[] = [];
 const valueClassMap: Record<string, string> = {};
 
-// Columns to display from CSV
 const columns = [
   { key: "setofRules", label: "Set of Rules", sortable: true },
   { key: "inForceFrom", label: "In Force From", sortable: true },
@@ -124,14 +119,11 @@ function parseCSV(text: string): string[][] {
         rows.push(row);
         row = [];
         field = "";
-      } else if (char === "\r") {
-        // ignore
-      } else {
+      } else if (char !== "\r") {
         field += char;
       }
     }
   }
-  // push last field/row if any
   if (field.length > 0 || row.length > 0) {
     row.push(field);
     rows.push(row);
@@ -158,13 +150,11 @@ const rows: Row[] = (csvRows.slice(1) || [])
   })
   .filter((r) => r.setofRules || r.inForceFrom || r.coldId);
 
-// Dynamically size the first column (Set of Rules) to the longest string
 const setColWidth = ref<string>("125px");
 
 function computeSetOfRulesColumnWidth() {
   if (typeof window === "undefined") return;
   try {
-    // Create a temp element to capture the font used by result-value-small
     const temp = document.createElement("span");
     temp.className = "result-value-small";
     temp.style.visibility = "hidden";
@@ -185,7 +175,6 @@ function computeSetOfRulesColumnWidth() {
       const m = ctx.measureText(text);
       max = Math.max(max, m.width);
     }
-    // Add padding/gutter allowance and a small buffer
     const px = Math.ceil(max + 28);
     setColWidth.value = `${px}px`;
   } catch {

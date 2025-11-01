@@ -250,7 +250,6 @@ function handleEditSave() {
   });
 }
 
-// Fetch and prefill data
 async function fetchInstrument() {
   loading.value = true;
   try {
@@ -281,7 +280,7 @@ async function fetchInstrument() {
     pdfFileName.value = data["PDF"] || "";
     instrumentApiId.value = data["ID"] || null;
   } catch {
-    // Optionally handle error
+    // noop
   } finally {
     loading.value = false;
   }

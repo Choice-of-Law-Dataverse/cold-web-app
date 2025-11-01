@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Main content in BaseDetailLayout -->
     <BaseDetailLayout
       :loading="false"
       :result-data="{}"
@@ -10,14 +9,11 @@
       source-table=""
     >
       <template #full-width>
-        <!-- Create a container that ensures proper sticky behavior -->
         <div class="relative min-h-screen">
           <div class="px-6 py-4 md:pt-8">
-            <!-- Sticky filters positioned within BaseDetailLayout -->
             <h1 class="mb-16">Jurisdiction Comparison</h1>
             <JCStickyFilters :initial-countries="validatedCountryCodes" />
 
-            <!-- Content area with sufficient height for sticky behavior -->
             <div class="relative md:mt-0">
               <JCOverview
                 :selected-jurisdiction-codes="validatedCountryCodes"
@@ -134,7 +130,6 @@ import { useRoute } from "vue-router";
 
 const route = useRoute();
 
-// Set static page title
 useHead({
   title: "Compare Jurisdictions — CoLD",
   link: [
@@ -151,13 +146,10 @@ useHead({
   ],
 });
 
-// Parse and validate country codes from the URL parameter
 const validatedCountryCodes = computed(() => {
   const countries = route.params.countries;
   if (typeof countries !== "string") return [];
-  // Split by '+' and convert to uppercase for consistency
   const codes = countries.split("+").map((code) => code.toUpperCase());
-  // Accept 2 or 3 country codes; otherwise, let defaults apply
   return codes.length === 2 || codes.length === 3 ? codes : [];
 });
 </script>

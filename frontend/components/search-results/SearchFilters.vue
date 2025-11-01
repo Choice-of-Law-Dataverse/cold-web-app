@@ -202,30 +202,25 @@ const props = defineProps({
 
 const emit = defineEmits(["update:modelValue"]);
 
-// Reactive object for errored avatars
 const erroredAvatars = reactive({});
 
 const { data: coveredCountries } = useCoveredCountries();
 
-// Check if a country is covered (only apply to options with alpha3Code)
 const isCovered = (alpha3Code) => {
   if (!props.highlightJurisdictions) {
     return true;
   } else {
-    // When highlighting jurisdictions, use same logic as JurisdictionSelectMenu
-    if (!alpha3Code) return true; // If no alpha3Code, show normally (not a jurisdiction)
-    if (!coveredCountries.value) return true; // If no coverage data, show normally
+    if (!alpha3Code) return true;
+    if (!coveredCountries.value) return true;
     return coveredCountries.value.has(alpha3Code.toLowerCase());
   }
 };
 
 const isObjectOptions = computed(() => typeof props.options?.[0] === "object");
 
-// computed wrapper to ensure selected options are the option objects from props.options
 const internalValue = computed({
   get() {
     if (!props.multiple) {
-      // Single selection mode - return single value or null
       if (props.modelValue?.length === 0) return null;
       const item = props.modelValue?.[0];
       if (!isObjectOptions.value) {
@@ -237,7 +232,6 @@ const internalValue = computed({
       return props.options.find((o) => o.label === item) || item;
     }
 
-    // Multiple selection mode - return array
     if (!isObjectOptions.value) {
       return props.modelValue;
     }
@@ -250,11 +244,9 @@ const internalValue = computed({
   },
   set(newValue) {
     if (!props.multiple) {
-      // Single selection mode
       if (!newValue) {
         emit("update:modelValue", []);
       } else {
-        // If the selected value corresponds to the first "All…" option, clear selection
         const firstLabel = isObjectOptions.value
           ? props.options?.[0]?.label
           : props.options?.[0];
@@ -278,9 +270,7 @@ const internalValue = computed({
       return;
     }
 
-    // Multiple selection mode
     if (!isObjectOptions.value) {
-      // If first option (All…) is present in selection, clear to empty (reset)
       const firstLabel = props.options?.[0];
       if (
         firstLabel &&
@@ -292,8 +282,6 @@ const internalValue = computed({
       }
       emit("update:modelValue", newValue);
     } else {
-      // Object option case
-      // Detect if selection contains the first option whose label starts with All…
       const firstLabel = props.options?.[0]?.label;
       const containsAll = newValue.some((val) => {
         const lbl = typeof val === "object" ? val.label : val;

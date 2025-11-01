@@ -41,7 +41,6 @@ interface ArbitralAwardRecord {
 
 const route = useRoute();
 
-// Use TanStack Vue Query for data fetching - no need for refs with static values
 const table = ref<TableName>("Arbitral Awards");
 const id = ref(route.params.id as string);
 
@@ -61,7 +60,6 @@ const processedArbitralAward = computed(() => {
   return {
     ...raw,
     Title: derivedTitle,
-    // Flatten potential nested institutions like in rules
     "Arbitral Institution": Array.isArray(raw?.related_arbitral_institutions)
       ? raw.related_arbitral_institutions
           .map((inst) => inst?.Institution)
@@ -71,7 +69,6 @@ const processedArbitralAward = computed(() => {
   };
 });
 
-// Jurisdictions for header labels
 const formattedJurisdictions = computed(() => {
   const list = arbitralAward.value?.related_jurisdictions;
   if (!Array.isArray(list)) return [];
@@ -82,7 +79,6 @@ const formattedJurisdictions = computed(() => {
   return [...new Set(names)].map((name) => ({ Name: name }));
 });
 
-// Themes for header labels
 const formattedThemes = computed(() => {
   const list = arbitralAward.value?.related_themes;
   if (!Array.isArray(list)) return [];

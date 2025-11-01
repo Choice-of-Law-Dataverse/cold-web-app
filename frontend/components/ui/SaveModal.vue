@@ -95,7 +95,6 @@ const props = defineProps({
     default: null,
   },
   link: { type: String, required: false, default: "" },
-  // New preferred keys for contact info
   submitterEmail: { type: String, required: false, default: undefined },
   submitterComments: { type: String, required: false, default: undefined },
 });
@@ -114,7 +113,6 @@ const emit = defineEmits([
 ]);
 
 const modelValueProxy = ref(props.modelValue);
-// Prefer new keys if provided, fallback to legacy
 const emailProxy = ref(props.submitterEmail ?? props.email);
 const commentsProxy = ref(props.submitterComments ?? props.comments);
 const tokenProxy = ref(props.token);
@@ -183,7 +181,6 @@ watch(linkProxy, (val) => {
   emit("update:link", val);
 });
 
-// Validation schema for SaveModal
 const saveModalSchema = z.object({
   submitterEmail: z
     .string()
@@ -214,7 +211,6 @@ function validateSaveModal() {
 }
 
 function onSave() {
-  // Delegate submission to parent (new.vue). Validation was already performed here.
   emit("save");
 }
 

@@ -169,7 +169,6 @@ import SaveModal from "@/components/ui/SaveModal.vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import { format } from "date-fns";
 
-// Form fields
 const author = ref("");
 const title = ref("");
 const publicationTitle = ref("");
@@ -181,11 +180,9 @@ const isbn = ref("");
 const issn = ref("");
 const theme = ref("");
 
-// Jurisdiction selector
 const selectedJurisdiction = ref([]);
 const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
 
-// For SaveModal parity
 const specialists = ref([""]);
 const pdfFile = ref(null);
 const email = ref("");
@@ -195,7 +192,6 @@ const token = ref("");
 
 watch(token, () => {});
 
-// Load jurisdictions similar to other pages
 const loadJurisdictions = async () => {
   try {
     const response = await fetch(`/api/proxy/search/full_table`, {
@@ -228,7 +224,6 @@ const loadJurisdictions = async () => {
 
 onMounted(loadJurisdictions);
 
-// Validation (required fields only)
 const formSchema = z.object({
   author: z
     .string()
@@ -305,7 +300,6 @@ function handleNewSave() {
         selectedJurisdiction.value[0]?.label) ||
       undefined,
     theme: theme.value || undefined,
-    // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
   };
@@ -336,7 +330,6 @@ function handleNewSave() {
 </script>
 
 <style scoped>
-/* Hide the back button and all right-side card header buttons */
 :deep(.card-header__actions),
 :deep(.card-header [class*="actions"]) {
   display: none !important;

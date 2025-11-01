@@ -41,17 +41,13 @@ import { computed, ref, onMounted } from "vue";
 const props = defineProps({
   title: { type: String, default: "Compare Jurisdictions" },
   buttonText: { type: String, default: "Go to comparison" },
-  // Optional: allow overriding the link completely
   buttonLink: { type: String, default: null },
-  // ISO3 codes, e.g., 'USA', 'DEU'
   iso3Left: { type: String, required: true },
   iso3Right: { type: String, required: true },
-  // If true, the right flag/code will be set to the visitor's country (client-side only)
   detectVisitorRight: { type: Boolean, default: false },
 });
 
 const upperLeft = computed(() => (props.iso3Left || "").toUpperCase());
-// Right ISO3 can be overridden by visitor detection
 const rightIso3 = ref((props.iso3Right || "").toUpperCase());
 
 const leftFlagUrl = computed(
@@ -72,11 +68,9 @@ const resolvedButtonLink = computed(() => {
   return `/jurisdiction-comparison/${upperLeft.value}+${rightIso3.value}`;
 });
 
-// Client-side: detect visitor country and set rightIso3
 onMounted(async () => {
   if (!props.detectVisitorRight) return;
 
-  // Using Canada as the default fallback for visitor detection
   rightIso3.value = "CAN";
 });
 </script>

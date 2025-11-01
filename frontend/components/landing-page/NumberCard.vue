@@ -24,11 +24,9 @@ const props = defineProps({
   buttonText: { type: String, required: true },
   buttonLink: { type: String, required: true },
   tableName: { type: String, required: true },
-  // Optional manual override; when provided, the API will not be called
   overrideNumber: { type: [Number, String], required: false, default: null },
 });
 
-// Use the composable for data fetching
 const {
   data: number,
   isLoading: loading,

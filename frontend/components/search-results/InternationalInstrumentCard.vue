@@ -57,7 +57,6 @@ const props = defineProps({
 const config = internationalInstrumentCardConfig;
 
 const processedResultData = computed(() => {
-  // If you have a processData function for international instruments, use it here
   return props.resultData;
 });
 

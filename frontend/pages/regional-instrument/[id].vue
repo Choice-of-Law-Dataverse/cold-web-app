@@ -91,7 +91,6 @@ const route = useRoute();
 const textType = ref("Full Text of the Provision (English Translation)");
 const hasEnglishTranslation = ref(false);
 
-// Use TanStack Vue Query for data fetching - no need for refs with static values
 const table = ref<TableName>("Regional Instruments");
 const id = ref(route.params.id as string);
 
@@ -102,7 +101,6 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   regionalInstrumentConfig,
 );
 
-// Create lookup map for better performance
 const keyLabelLookup = computed(() => {
   const map = new Map();
   computedKeyLabelPairs.value.forEach((pair: { key: string }) => {
@@ -133,10 +131,3 @@ const processedRegionalInstrument = computed(() => {
   };
 });
 </script>
-
-<style scoped>
-/* Remove the extra spacer from BaseLegalContent when provisions are in a two-column layout */
-.provisions-container :deep(.base-legal-content .no-margin > div:first-child) {
-  display: none;
-}
-</style>

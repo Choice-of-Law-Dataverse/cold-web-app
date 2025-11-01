@@ -14,8 +14,6 @@ const buildCompositeId = (
   rawColdId: string,
   rawQuestionId: string,
 ) => {
-  // If rawColdId already contains a jurisdiction prefix (ABC_), keep it.
-  // Otherwise, build a composite with jurisdiction if available.
   if (rawColdId && /^[A-Z]{3}_/.test(rawColdId)) {
     return rawColdId;
   } else if (jurisdiction && rawColdId) {
@@ -77,8 +75,6 @@ const fetchAnswersData = async (jurisdiction: string) => {
 
   const data = await apiClient("/search/full_table", { body });
 
-  // Expect an array of answer rows. We construct the composite key
-  // based on either existing 'CoLD ID' or by combining jurisdiction + question ID if needed.
   const map: Record<string, string> = {};
   if (Array.isArray(data)) {
     for (const row of data as AnswerItem[]) {
@@ -97,9 +93,7 @@ const fetchAnswersData = async (jurisdiction: string) => {
         rawQuestionId as string,
       );
 
-      // Store under composite ID
       if (compositeId) map[compositeId] = answerValue;
-      // Also store under base ID (without jurisdiction) for any legacy lookups
       if (rawQuestionId && !map[rawQuestionId as string])
         map[rawQuestionId as string] = answerValue;
     }

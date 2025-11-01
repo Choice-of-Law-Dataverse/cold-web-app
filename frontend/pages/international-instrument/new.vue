@@ -13,7 +13,6 @@
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
-      <!-- Always render this section, even if keyLabelPairs is empty -->
       <div class="section-gap m-0 p-0">
         <UFormGroup size="lg" hint="Required" :error="errors.name">
           <template #label>
@@ -21,58 +20,7 @@
           </template>
           <UInput v-model="name" class="cold-input mt-2" />
         </UFormGroup>
-        <UFormGroup size="lg" class="mt-8">
-          <!-- <template #label>
-          <span class="label">Specialists</span>
-          <InfoPopover :text="tooltipInternationalInstrumentSpecialist" />
-        </template>
-        <div
-          v-for="(specialist, idx) in specialists"
-          :key="idx"
-          class="flex items-center mt-2"
-        >
-          <UInput
-            v-model="specialists[idx]"
-            placeholder="Specialist’s name"
-            class="flex-1"
-          />
-          <UButton
-            v-if="idx > 0"
-            icon="i-heroicons-x-mark"
-            color="red"
-            variant="ghost"
-            class="ml-2"
-            @click="removeSpecialist(idx)"
-            aria-label="Remove specialist"
-          />
-        </div>
-        <template v-for="(specialist, idx) in specialists">
-          <div
-            v-if="specialists[idx] && idx === specialists.length - 1"
-            :key="'add-btn-' + idx"
-          >
-            <UButton
-              class="mt-2"
-              color="primary"
-              variant="soft"
-              icon="i-heroicons-plus"
-              @click="addSpecialist"
-              >Add another specialist</UButton
-            >
-          </div> 
-        </template> -->
-        </UFormGroup>
-        <!-- <UFormGroup size="lg" class="mt-8">
-        <template #label>
-          <span class="label">PDF</span>
-          <InfoPopover :text="tooltipInternationalInstrumentSpecialist" />
-        </template>
-        <UInput
-          type="file"
-          icon="i-material-symbols:upload-file"
-          @change="onPdfChange"
-        />
-      </UFormGroup> -->
+        <UFormGroup size="lg" class="mt-8" />
         <UFormGroup size="lg" class="mt-8" hint="Required" :error="errors.link">
           <template #label>
             <span class="label flex flex-row items-center">
@@ -149,7 +97,6 @@ import tooltipInternationalInstrumentLink from "@/content/info_boxes/internation
 import { format } from "date-fns";
 const date = ref(new Date());
 
-// Form data
 const name = ref("");
 const link = ref("");
 const specialists = ref([""]);
@@ -159,12 +106,8 @@ const comments = ref("");
 
 const token = ref("");
 
-// Ensure Submit button reactivity when token changes
-watch(token, () => {
-  // This will trigger reactivity for the Submit button
-});
+watch(token, () => {});
 
-// Validation schema
 const formSchema = z.object({
   name: z
     .string()
@@ -177,7 +120,6 @@ const formSchema = z.object({
   instrument_date: z.date({ required_error: "Date is required" }),
 });
 
-// Form validation state
 const errors = ref({});
 const saveModalErrors = ref({});
 
@@ -230,12 +172,10 @@ function handleNewSave() {
     attachment: "", // ignored for now
     instrument_date:
       date.value && date.value ? format(date.value, "yyyy-MM-dd") : undefined,
-    // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
   };
 
-  // Explicitly log the exact payload we send
   (async () => {
     try {
       const { useApiClient } = await import("@/composables/useApiClient");
@@ -261,7 +201,6 @@ function handleNewSave() {
 </script>
 
 <style scoped>
-/* Hide the back button and all right-side card header buttons */
 :deep(.card-header__actions),
 :deep(.card-header [class*="actions"]) {
   display: none !important;

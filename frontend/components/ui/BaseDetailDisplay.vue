@@ -91,9 +91,7 @@
                 <template
                   v-if="
                     (item.key === 'Answer' || item.key === 'Specialists') &&
-                    Array.isArray(
-                      getDisplayValue(item, resultData?.[item.key]),
-                    )
+                    Array.isArray(getDisplayValue(item, resultData?.[item.key]))
                   "
                 >
                   <div class="mt-0 flex flex-col gap-2">
@@ -145,7 +143,6 @@ import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
 
-// Props for reusability across pages
 const props = defineProps({
   loading: Boolean,
   resultData: {
@@ -163,10 +160,10 @@ const props = defineProps({
   formattedSourceTable: {
     type: String,
     default: "",
-  }, // Receive the hard-coded value from [id].vue
+  },
   showHeader: {
     type: Boolean,
-    default: true, // Default to true so headers are shown unless explicitly disabled
+    default: true,
   },
   showOpenLink: {
     type: Boolean,
@@ -226,7 +223,6 @@ watch(
   { immediate: true },
 );
 
-// Reactively update banner display once everything is ready
 watchEffect(() => {
   if (
     (isJurisdictionPage || isQuestionPage) &&
@@ -239,10 +235,8 @@ watchEffect(() => {
   }
 });
 
-// Add these new functions
 const shouldDisplayValue = (item, value) => {
   if (!item.emptyValueBehavior) return true;
-  // If a positive display condition is provided, honor it first using the full result data
   if (
     item.emptyValueBehavior.shouldDisplay &&
     !item.emptyValueBehavior.shouldDisplay(props.resultData)
@@ -265,11 +259,9 @@ const shouldDisplayValue = (item, value) => {
 };
 
 const getDisplayValue = (item, value) => {
-  // Use valueTransform if present
   if (item.valueTransform) {
     return item.valueTransform(value);
   }
-  // For "Answer" and "Specialists", split by comma if a string contains commas.
   if (
     (item.key === "Answer" || item.key === "Specialists") &&
     typeof value === "string" &&
@@ -277,7 +269,6 @@ const getDisplayValue = (item, value) => {
   ) {
     return value.split(",").map((part) => part.trim());
   }
-  // Treat empty arrays as empty for fallback logic
   if (
     Array.isArray(value) &&
     value.length === 0 &&

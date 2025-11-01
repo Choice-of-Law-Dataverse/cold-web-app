@@ -76,7 +76,6 @@ defineProps({
   },
 });
 
-// Function to return tooltip text based on status and count
 function getTooltipText(status) {
   switch (status) {
     case "green":

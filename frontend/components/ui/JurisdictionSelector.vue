@@ -41,7 +41,6 @@ import { computed } from "vue";
 import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 
-// Accept processedAnswerData as a prop from parent
 defineProps({
   formattedJurisdiction: {
     type: Object,
@@ -52,15 +51,12 @@ defineProps({
 const route = useRoute();
 const router = useRouter();
 
-// Get all jurisdictions for the selector
 const { data: jurisdictions, isLoading } = useJurisdictions();
 
-// Get the current ISO3 code from the route params
 const currentIso3Code = computed(() => {
   return route.params.id?.toUpperCase();
 });
 
-// Filter out the current jurisdiction from available options
 const availableJurisdictions = computed(() => {
   if (!jurisdictions.value || !currentIso3Code.value) return [];
 
@@ -70,14 +66,12 @@ const availableJurisdictions = computed(() => {
   );
 });
 
-// Handle jurisdiction selection and navigate to comparison page
 const onJurisdictionSelected = (selectedJurisdiction) => {
   if (!selectedJurisdiction?.alpha3Code || !currentIso3Code.value) return;
 
   const currentCode = currentIso3Code.value.toLowerCase();
   const selectedCode = selectedJurisdiction.alpha3Code.toLowerCase();
 
-  // Navigate to comparison page with format: current+selected
   const comparisonUrl = `/jurisdiction-comparison/${currentCode}+${selectedCode}`;
   router.push(comparisonUrl);
 };
@@ -88,7 +82,6 @@ h3 {
   color: var(--color-cold-purple) !important;
 }
 
-/* Ensure proper positioning context for the dropdown */
 .flex.flex-col.gap-4 {
   position: relative;
   z-index: 10;

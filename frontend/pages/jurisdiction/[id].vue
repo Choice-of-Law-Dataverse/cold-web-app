@@ -154,7 +154,6 @@
       </template>
     </ClientOnly>
 
-    <!-- Handle SEO meta tags -->
     <PageSeoMeta
       :title-candidates="[jurisdictionData?.Name as string]"
       fallback="Country Report"
@@ -167,7 +166,6 @@ import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import TwoColumnLayout from "@/components/ui/TwoColumnLayout.vue";
-// import JurisdictionComparison from '@/components/jurisdiction-comparison/JurisdictionComparison.vue'
 import JurisdictionSelector from "@/components/ui/JurisdictionSelector.vue";
 import JurisdictionQuestions from "@/components/content/JurisdictionQuestions.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
@@ -201,19 +199,15 @@ const {
   computed(() => jurisdictionData.value?.Name as string),
 );
 
-// Remove Legal Family from keyLabelPairs for detail display
 const keyLabelPairsWithoutLegalFamily = computed(() =>
   keyLabelPairs.filter((pair) => pair.key !== "Legal Family"),
 );
 
-// Set compare jurisdiction from query parameter
 compareJurisdiction.value = (route.query.c as string) || null;
 
 const isLoading = computed(
   () =>
     isJurisdictionLoading ||
-    // literatureLoading ||
-    // specialistsLoading ||
     courtDecisionCountLoading ||
     domesticInstrumentCountLoading,
 );

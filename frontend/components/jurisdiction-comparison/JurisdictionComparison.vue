@@ -110,24 +110,23 @@ const props = defineProps({
   },
   cardType: {
     type: String,
-    default: "", // use an empty string or a proper default value
+    default: "",
   },
 });
 
-const router = useRouter(); // Access the router to update the query parameters
+const router = useRouter();
 const { data: jurisdictions } = useJurisdictions();
 const loading = ref(true);
 const rows = ref([]);
-const selectedJurisdiction = ref(null); // Selected jurisdiction for comparison
-const selectedTheme = ref(null); // Selected theme for filtering
-const showInfo = ref(false); // Reactive state to toggle the JurisdictionComparisonInfo component
+const selectedJurisdiction = ref(null);
+const selectedTheme = ref(null);
+const showInfo = ref(false);
 const columns = ref([
   { key: "Themes", label: "Theme", class: "label" },
   { key: "Question", label: "Question", class: "label" },
   { key: "Answer", label: props.jurisdiction || "Answer", class: "label" },
 ]);
 
-// Computed filtered rows
 const filteredRows = computed(() => {
   if (!selectedTheme.value) {
     return rows.value;
@@ -138,16 +137,13 @@ const filteredRows = computed(() => {
   );
 });
 
-// Reset filter button action
 const resetFilters = () => {
   selectedTheme.value = null;
 };
 
-// Dropdown options for themes
 const themeOptions = themeOptionsData;
 const questionOrder = questionOrderData;
 
-// Function to toggle the state
 function toggleInfo() {
   showInfo.value = !showInfo.value;
 }
@@ -169,7 +165,7 @@ async function fetchFilteredTableData(filters) {
     }));
   } catch (error) {
     console.error("Error fetching filtered table data:", error);
-    return []; // Fallback to empty data
+    return [];
   }
 }
 
@@ -192,20 +188,18 @@ async function fetchTableData(jurisdiction) {
 onMounted(async () => {
   const compareQuery = router.currentRoute.value.query.c;
   if (compareQuery) {
-    await syncCompareJurisdiction(compareQuery); // Sync the dropdown
+    await syncCompareJurisdiction(compareQuery);
     const jurisdiction = selectedJurisdiction.value;
     if (jurisdiction) {
-      updateComparison(jurisdiction); // Update the table
+      updateComparison(jurisdiction);
     }
   }
 
-  // If a primary jurisdiction is set via props, load its data
   if (props.jurisdiction) {
     fetchTableData(props.jurisdiction);
   }
 });
 
-// Add selected jurisdiction as a column
 async function updateComparison(jurisdiction) {
   if (!jurisdiction) return;
 
@@ -248,23 +242,21 @@ function updateRows(jurisdictionData, jurisdiction) {
   });
 }
 
-// Watch when the user changes the selected jurisdiction
 watch(selectedJurisdiction, (newJurisdiction) => {
   if (newJurisdiction) {
-    updateRouterQuery(newJurisdiction.value); // Fetch ISO3 and update query
-    updateComparison(newJurisdiction); // Fetch new comparison data
+    updateRouterQuery(newJurisdiction.value);
+    updateComparison(newJurisdiction);
   }
 });
 
-// Watch for URL query updates to sync the dropdown
 watch(
   () => router.currentRoute.value.query.c,
   async (newCompare) => {
     if (newCompare) {
-      await syncCompareJurisdiction(newCompare); // Sync dropdown
+      await syncCompareJurisdiction(newCompare);
       const jurisdiction = selectedJurisdiction.value;
       if (jurisdiction) {
-        updateComparison(jurisdiction); // Update table data
+        updateComparison(jurisdiction);
       }
     }
   },
@@ -279,11 +271,11 @@ async function updateRouterQuery(jurisdiction) {
     const data = await response.json();
 
     if (data && data[0] && data[0].cca3) {
-      const isoCode = data[0].cca3.toLowerCase(); // Convert ISO3 code to lowercase
+      const isoCode = data[0].cca3.toLowerCase();
       router.replace({
         query: {
           ...router.currentRoute.value.query,
-          c: isoCode, // Update query with ISO3 code
+          c: isoCode,
         },
       });
     } else {
@@ -295,9 +287,8 @@ async function updateRouterQuery(jurisdiction) {
 }
 
 async function syncCompareJurisdiction(compare) {
-  const isoCode = compare.toUpperCase(); // Ensure ISO3 code is uppercase
+  const isoCode = compare.toUpperCase();
   try {
-    // Fetch full name using ISO3 code
     const response = await fetch(
       `https://restcountries.com/v3.1/alpha/${isoCode}?fields=name`,
     );
@@ -307,7 +298,7 @@ async function syncCompareJurisdiction(compare) {
       const fullName = data.name.common;
       const option = jurisdictions.value?.find((opt) => opt.label === fullName);
       if (option) {
-        selectedJurisdiction.value = option; // Update dropdown selection
+        selectedJurisdiction.value = option;
       } else {
         console.warn(`Jurisdiction not found in dropdown for: ${fullName}`);
       }
@@ -319,7 +310,6 @@ async function syncCompareJurisdiction(compare) {
   }
 }
 
-// Computed property to calculate match counts dynamically
 const matchCounts = computed(() => {
   return filteredRows.value.reduce(
     (counts, row) => {
@@ -352,7 +342,7 @@ function computeMatchStatus(answer1, answer2) {
 
 <style scoped>
 ::v-deep(.z-20.group.w-full [role="option"]) {
-  line-height: 2 !important; /* Make the line height larger */
+  line-height: 2 !important;
 }
 
 ::v-deep(.cold-uselectmenu span.block.truncate) {
@@ -388,57 +378,54 @@ function computeMatchStatus(answer1, answer2) {
 
 .filter-wrapper {
   margin-bottom: 6px;
-  display: flex; /* Group the dropdown and reset button */
+  display: flex;
   align-items: center;
-  gap: 8px; /* Space between the dropdown and reset button */
+  gap: 8px;
 }
 
 .match-summary {
-  margin-left: auto; /* Push the MatchSummary component to the far right */
+  margin-left: auto;
   margin-right: 24px;
-  margin-bottom: 6px; /* Vertical alignment with Filter by Theme */
+  margin-bottom: 6px;
   text-align: right;
 }
 
 ::v-deep(thead th:nth-child(1)),
 ::v-deep(tbody td:nth-child(1)) {
-  width: 200px !important; /* Set fixed width */
-  max-width: 200px !important; /* Prevent expansion */
-  white-space: normal; /* Allow text wrapping */
+  width: 200px !important;
+  max-width: 200px !important;
+  white-space: normal;
 }
 
 ::v-deep(thead th:nth-child(2)),
 ::v-deep(tbody td:nth-child(2)) {
-  width: 800px !important; /* Set fixed width */
-  max-width: 800px !important; /* Prevent expansion */
-  white-space: normal; /* Allow text wrapping */
+  width: 800px !important;
+  max-width: 800px !important;
+  white-space: normal;
 }
 
 ::v-deep(thead th:nth-child(3)),
 ::v-deep(tbody td:nth-child(3)) {
-  width: 150px !important; /* Set fixed width */
-  max-width: 150px !important; /* Prevent expansion */
-  white-space: normal; /* Allow text wrapping */
+  width: 150px !important;
+  max-width: 150px !important;
+  white-space: normal;
 }
 
 ::v-deep(thead th:nth-child(4)),
 ::v-deep(tbody td:nth-child(4)) {
-  width: 150px !important; /* Set fixed width */
-  max-width: 150px !important; /* Prevent expansion */
-  white-space: normal; /* Allow text wrapping */
+  width: 150px !important;
+  max-width: 150px !important;
+  white-space: normal;
 }
 
-/* Set the row height for all table rows */
 .cold-ucard ::v-deep(tbody tr) {
-  height: 74px; /* Ensure all rows are 74px high */
+  height: 74px;
 }
 
-/* Set the row height for all header rows */
 .cold-ucard ::v-deep(thead tr) {
-  height: 52px; /* Set the header row height */
+  height: 52px;
 }
 
-/* Target deep child classes inside UCard to remove padding */
 .cold-ucard ::v-deep(.sm\:p-6) {
   padding: 0 !important;
 }
@@ -451,13 +438,12 @@ function computeMatchStatus(answer1, answer2) {
   padding: 0 !important;
 }
 
-/* Ensure the table spans the full width of the card */
 .cold-ucard {
-  padding: 0; /* Remove padding from UCard */
+  padding: 0;
 }
 
 .table-wrapper {
-  width: 100%; /* Ensure the table spans the full width of the wrapper */
-  overflow-x: auto; /* Handle horizontal scrolling if needed */
+  width: 100%;
+  overflow-x: auto;
 }
 </style>

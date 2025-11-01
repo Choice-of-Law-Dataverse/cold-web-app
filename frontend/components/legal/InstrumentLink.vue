@@ -30,7 +30,6 @@ const instrumentTitleId = ref("");
 const articlePart = ref("");
 
 function parseIdParts(id) {
-  // Split at first whitespace
   const match = String(id).match(/^(\S+)\s+(.+)$/);
   if (match) {
     return { instrumentId: match[1], article: match[2] };
@@ -45,9 +44,7 @@ const { data: record, isLoading } = useRecordDetails(
 );
 
 const displayTitle = computed(() => {
-  // If loading instrumentTitle, show nothing (handled by LoadingBar)
   if (isLoading.value) return "";
-  // Compose display: article part (if any), then instrument title (if any)
   let result = "";
   if (articlePart.value) {
     result += articlePart.value;
@@ -64,7 +61,6 @@ const displayTitle = computed(() => {
     if (result) result += ", ";
     result += derivedTitle;
   }
-  // Fallback: if nothing, show id
   return result || props.id;
 });
 
@@ -72,7 +68,6 @@ watch(
   () => props.id,
   (newId) => {
     title.value = null;
-    // compute the instrument id used for fetching the title
     articlePart.value = "";
     const { instrumentId, article } = parseIdParts(newId);
     articlePart.value = article;
@@ -86,11 +81,8 @@ function generateInstrumentLink(instrumentId) {
   if (base.endsWith("s")) {
     base = base.slice(0, -1);
   }
-  // Handle whitespace after the ID: replace first whitespace after ID with #, remove all further whitespaces
   let idStr = String(instrumentId);
-  // Replace the first whitespace after the ID with #
   idStr = idStr.replace(/\s+/, "#");
-  // Remove all further whitespaces after the first #
   const hashIndex = idStr.indexOf("#");
   if (hashIndex !== -1) {
     const before = idStr.slice(0, hashIndex + 1);

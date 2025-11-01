@@ -56,7 +56,9 @@
             (isCompatible('Compatible With the UNCITRAL Model Law') ||
               isCompatible('Compatible With the HCCH Principles'))
           "
-          :label="keyLabelLookup.get('Compatibility')?.label || 'Compatible with'"
+          :label="
+            keyLabelLookup.get('Compatibility')?.label || 'Compatible with'
+          "
           :tooltip="keyLabelLookup.get('Compatibility')?.tooltip"
         >
           <div class="result-value-small flex gap-2">
@@ -198,10 +200,3 @@ const getSortedProvisionIdsForInstrument = (rawValue: string): string[] => {
   );
 };
 </script>
-
-<style scoped>
-/* Remove the extra spacer from BaseLegalContent when provisions are in a two-column layout */
-.provisions-container :deep(.base-legal-content .no-margin > div:first-child) {
-  display: none;
-}
-</style>

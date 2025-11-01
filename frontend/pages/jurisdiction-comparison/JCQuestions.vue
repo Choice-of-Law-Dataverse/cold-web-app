@@ -209,12 +209,10 @@ const props = defineProps({
   },
 });
 
-// Accordion state
 const isOpen = ref(false);
 const isOpenMobile = ref(false);
 const hasBeenOpened = ref(false);
 
-// Always force open if showCaret is false
 watch(
   () => props.showCaret,
   (val) => {
@@ -227,24 +225,19 @@ watch(
   { immediate: true },
 );
 
-// Track when accordion is opened for the first time
 watch([isOpen, isOpenMobile], ([desktop, mobile]) => {
   if ((desktop || mobile) && !hasBeenOpened.value) {
     hasBeenOpened.value = true;
-    // Start loading data when first opened
     loadAccordionData();
   }
 });
 
 const { data: jurisdictions } = useJurisdictions();
 
-// Use shared jurisdiction comparison state
 const { jurisdictionFilters } = useJurisdictionComparison();
 
-// Track errored flag images
 const erroredFlags = ref({});
 
-// Flag URL helper function
 const getFlagUrl = (label) => {
   if (!label || label === "All Jurisdictions") return "";
   const found = jurisdictions.value.find((j) => j.label === label);
@@ -252,22 +245,18 @@ const getFlagUrl = (label) => {
   return `https://choiceoflaw.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`;
 };
 
-// Questions state
 const questionLabels = ref([]);
-const loadingQuestions = ref(false); // Start as false, only set to true when actually loading
+const loadingQuestions = ref(false);
 
-// Answers state
 const answersData = ref({});
 const loadingAnswers = ref(false);
 
-// Combined loading state - only load when accordion has been opened
 const isLoading = computed(
   () => hasBeenOpened.value && (loadingQuestions.value || loadingAnswers.value),
 );
 
-// Fetch questions with improved error handling
 const fetchQuestions = async () => {
-  if (!hasBeenOpened.value) return; // Don't fetch if accordion hasn't been opened
+  if (!hasBeenOpened.value) return;
 
   try {
     const promises = props.questionIDs.map(async (id) => {
@@ -300,7 +289,6 @@ const fetchQuestions = async () => {
   // Note: Don't set loadingQuestions to false here - let loadAccordionData handle it
 };
 
-// Fetch answer data with caching
 const fetchAnswerData = async (id) => {
   if (!id || answersData.value[id] !== undefined) {
     return answersData.value[id];
@@ -331,7 +319,6 @@ const fetchAnswerData = async (id) => {
   }
 };
 
-// Fetch all answers for current jurisdictions and questions
 const fetchAllAnswers = async () => {
   if (
     !hasBeenOpened.value ||
@@ -353,25 +340,19 @@ const fetchAllAnswers = async () => {
   // Note: Don't set loadingAnswers to false here - let loadAccordionData handle it
 };
 
-// Load accordion data when opened
 const loadAccordionData = async () => {
-  // Set loading state for both questions and answers
   loadingQuestions.value = true;
   loadingAnswers.value = true;
 
   try {
-    // Load jurisdictions and questions in parallel
     await Promise.all([fetchQuestions()]);
-    // Then load answers (which depends on jurisdictions being loaded)
     await fetchAllAnswers();
   } finally {
-    // Ensure loading states are cleared even if there's an error
     loadingQuestions.value = false;
     loadingAnswers.value = false;
   }
 };
 
-// Watch for changes and refetch data (only if accordion has been opened)
 watch(
   [jurisdictionFilters, () => props.questionIDs],
   async () => {
@@ -387,9 +368,8 @@ watch(
   { deep: true },
 );
 
-// Computed answer data
 const sampleData = computed(() => {
-  if (!hasBeenOpened.value) return []; // Return empty array if not opened yet
+  if (!hasBeenOpened.value) return [];
 
   return jurisdictionFilters.value.map((filter) => {
     const alpha3Code = filter.value.value[0]?.alpha3Code?.toUpperCase();
@@ -411,9 +391,7 @@ const sampleData = computed(() => {
   });
 });
 
-// Initialization - only load jurisdictions initially, not questions/answers
 onMounted(async () => {
-  // If showCaret is false, immediately load data since accordion should be open
   if (!props.showCaret) {
     hasBeenOpened.value = true;
     await loadAccordionData();
@@ -422,7 +400,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-/* Loading components */
 .mobile-loading-wrapper {
   max-width: 200px !important;
   width: 100% !important;
@@ -437,26 +414,23 @@ onMounted(async () => {
   width: 100% !important;
 }
 
-/* Grid layouts */
 .jc-grid {
   display: grid;
   grid-template-columns: 1.5fr 1fr 1fr 1fr;
   align-items: start;
-  gap: 0 0.25rem; /* tighter horizontal gap */
+  gap: 0 0.25rem;
 }
 
 .jc-table-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr; /* question + 2 answers by default */
-  gap: 0 0.25rem; /* tighter horizontal gap */
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 0 0.25rem;
   width: 100%;
 }
 
 .jc-table-grid.cols-3 {
-  grid-template-columns: 1fr 1fr 1fr 1fr; /* question + 3 answers */
+  grid-template-columns: 1fr 1fr 1fr 1fr;
 }
-
-/* Spacing controlled by grid gaps */
 
 .jc-table-row {
   display: contents;
@@ -478,7 +452,6 @@ onMounted(async () => {
   font-weight: 400;
 }
 
-/* Mobile layout */
 .mobile-layout {
   padding: 0.25rem;
 }
@@ -514,7 +487,6 @@ onMounted(async () => {
   line-height: 1.6em;
 }
 
-/* Utility classes */
 .result-value-medium {
   font-weight: 400 !important;
   margin-top: 32px !important;
@@ -524,12 +496,10 @@ onMounted(async () => {
   grid-column: 1 / -1 !important;
 }
 
-/* Component-specific styles */
 .jc-search-filter :deep(.cold-uselectmenu) {
   width: 270px !important;
 }
 
-/* Scrollbar styles */
 .jc-mobile-filters-container,
 .jc-mobile-data-container {
   display: flex;

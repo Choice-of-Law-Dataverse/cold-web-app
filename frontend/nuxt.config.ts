@@ -1,8 +1,7 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
-  ssr: true, // Ensure SSR is enabled
+  ssr: true,
   $production: {
     scripts: {
       registry: {
@@ -31,7 +30,7 @@ export default defineNuxtConfig({
   ],
   turnstile: {
     siteKey: process.env.NUXT_TURNSTILE_SITE_KEY,
-    addValidateEndpoint: true, // adds server-side validate endpoint
+    addValidateEndpoint: true,
   },
   runtimeConfig: {
     turnstile: {
@@ -48,25 +47,16 @@ export default defineNuxtConfig({
     sitemap: ["/sitemap.txt"],
     groups: [
       {
-        // Alpha: Allow nothing, disallow everything
         allow: [],
         disallow: ["/"],
-
-        // Beta and Live: Disallow search, new and edit. Allow everything else
-        // allow: ['/'],
-        // disallow: ['/search', '*/new', '*/edit'],
       },
     ],
   },
   purgecss: {
-    enabled: false, // Disable for the time being
-    rejected: true, // Enable logging of rejected (removed) selectors
-    content: [
-      // Add paths
-    ],
-    safelist: [
-      // Add styles to keep
-    ],
+    enabled: false,
+    rejected: true,
+    content: [],
+    safelist: [],
   },
   content: {
     documentDriven: false,
@@ -77,7 +67,7 @@ export default defineNuxtConfig({
   colorMode: {
     preference: "light",
   },
-  css: ["@/assets/styles.scss", "tailwindcss/tailwind.css"], // Tailwind last
+  css: ["@/assets/styles.scss", "tailwindcss/tailwind.css"],
   tailwindcss: {
     configPath: "./tailwind.config.js",
   },

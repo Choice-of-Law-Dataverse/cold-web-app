@@ -204,7 +204,6 @@ const countries = computed(() => questionData.value?.countries || []);
 const questionTitle = computed(
   () => questionData.value?.questionTitle || "Missing Question",
 );
-// Carousel: accept an array of question suffixes to rotate through
 
 const prevQuestion = () => {
   currentIndex.value =
@@ -223,7 +222,6 @@ function selectRegion(region) {
   selectedRegion.value = region;
 }
 
-// Watch for countries data changes and update countriesLines
 watch(
   countries,
   async (newCountries) => {
@@ -239,12 +237,10 @@ watch(
 );
 
 onMounted(() => {
-  // compute rows on mount and on resize
   computeRows();
   window.addEventListener("resize", computeRows);
 });
 
-// Cleanup resize listener when component unmounts
 onUnmounted(() => {
   window.removeEventListener("resize", computeRows);
 });
@@ -273,7 +269,6 @@ function computeRows() {
 }
 
 function splitIntoLines(items, rows) {
-  // Split already-sorted items into `rows` contiguous rows with equal counts when possible.
   const n = items.length;
   if (n === 0) return Array.from({ length: rows }, () => []);
   const base = Math.floor(n / rows);

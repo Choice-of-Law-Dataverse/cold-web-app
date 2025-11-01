@@ -121,8 +121,6 @@
         :detect-visitor-right="true"
       />
     </div>
-
-    <!-- 8/4 Column Pair 4 -->
     <div class="col-span-12 flex md:col-span-8">
       <LeadingCases />
     </div>

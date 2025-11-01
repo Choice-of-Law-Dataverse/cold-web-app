@@ -8,7 +8,6 @@
       :show-suggest-edit="true"
       source-table="Court Decisions"
     >
-      <!-- Slot for Domestic Legal Provisions -->
       <template #domestic-legal-provisions="{ value }">
         <TwoColumnLayout
           v-if="value"
@@ -21,7 +20,7 @@
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </TwoColumnLayout>
       </template>
-      <!-- Custom rendering for Quote section -->
+
       <template #quote>
         <TwoColumnLayout
           v-if="
@@ -38,9 +37,7 @@
                   .hasEnglishQuoteTranslation &&
                 (courtDecision as Record<string, unknown>)['Quote'] &&
                 (
-                  (courtDecision as Record<string, unknown>)[
-                    'Quote'
-                  ] as string
+                  (courtDecision as Record<string, unknown>)['Quote'] as string
                 )?.trim() !== ''
               "
               class="mb-2 flex items-center gap-1"
@@ -120,7 +117,6 @@
         </TwoColumnLayout>
       </template>
 
-      <!-- Custom rendering for Full Text (Original Text) section -->
       <template #original-text="{ value }">
         <TwoColumnLayout
           v-if="value && value.trim() !== ''"
@@ -129,7 +125,8 @@
           <div :class="valueClassMap['Original Text']">
             <div v-if="!showFullText && value.length > 400">
               <p class="prose mt-0">
-                {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
+                {{ value.slice(0, 400)
+                }}<span v-if="value.length > 400">…</span>
               </p>
               <NuxtLink
                 class="ml-2 cursor-pointer"
@@ -157,12 +154,10 @@
       </template>
     </BaseDetailLayout>
 
-    <!-- Error Alert -->
     <UAlert v-if="error" type="error" class="mx-auto mt-4 max-w-container">
       {{ error }}
     </UAlert>
 
-    <!-- Handle SEO meta tags -->
     <PageSeoMeta
       :title-candidates="[
         ((courtDecision as Record<string, unknown>)?.[

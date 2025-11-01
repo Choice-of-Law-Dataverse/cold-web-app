@@ -8,16 +8,13 @@ export function generatePageTitle(
   titleParts: (string | null | undefined)[],
   fallback: string,
 ): string {
-  // Filter out null/undefined/empty values and trim whitespace
   const validParts = titleParts
     .filter((part): part is string => Boolean(part?.trim()))
     .map((part) => part.trim());
 
-  // If we have valid parts, join them with the fallback and "CoLD"
   if (validParts.length > 0) {
     return [...validParts, fallback, "CoLD"].join(" — ");
   }
 
-  // Otherwise use just the fallback and "CoLD"
   return [fallback, "CoLD"].join(" — ");
 }

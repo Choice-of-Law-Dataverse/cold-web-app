@@ -123,7 +123,6 @@ const { data: answerData, isLoading } = useAnswer(
 
 const { keyLabelPairs, valueClassMap } = questionConfig;
 
-// Create lookup map for better performance
 const keyLabelLookup = computed(() => {
   const map = new Map();
   keyLabelPairs.forEach((pair) => {
@@ -132,7 +131,6 @@ const keyLabelLookup = computed(() => {
   return map;
 });
 
-// Preprocess data to handle custom rendering cases
 const processedAnswerData = computed(() => {
   if (!answerData.value) return null;
 
@@ -150,7 +148,6 @@ const processedAnswerData = computed(() => {
 });
 
 onMounted(async () => {
-  // Wait for the DOM to update then scroll if the hash is present
   await nextTick();
   if (window.location.hash === "#related-court-decisions") {
     const target = document.getElementById("related-court-decisions");

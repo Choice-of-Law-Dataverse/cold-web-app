@@ -31,7 +31,6 @@ export function useApiClient() {
       ...otherOptions
     } = options;
 
-    // Create an AbortController for timeout
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), timeout);
 
@@ -51,7 +50,6 @@ export function useApiClient() {
 
       let url = proxiedPath;
       if (typeof window === "undefined") {
-        // SSR context - need absolute URL
         const baseUrl = config.public.siteUrl;
         url = `${baseUrl}${proxiedPath}`;
       }
@@ -80,7 +78,6 @@ export function useApiClient() {
         responseType === "text" ? await response.text() : await response.json();
 
       if (responseType === "json" && (data as { error?: string })?.error) {
-        // Check if the error indicates a not found condition
         const errorMessage = (data as { error: string }).error.toLowerCase();
         if (
           errorMessage.includes("not found") ||
@@ -105,7 +102,7 @@ export function useApiClient() {
       return data;
     } catch (err) {
       if (err instanceof ApiError || err instanceof NotFoundError) {
-        throw err; // Re-throw custom errors as-is
+        throw err;
       }
 
       if (err instanceof Error && err.name === "AbortError") {

@@ -104,7 +104,6 @@ const getValue = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key);
   let value = props.resultData[key];
 
-  // Apply extractYear to 'Publication Date ISO' if a valid value exists
   if (key === "Publication Date ISO" && value && value !== "NA") {
     value = extractYear(value);
   }

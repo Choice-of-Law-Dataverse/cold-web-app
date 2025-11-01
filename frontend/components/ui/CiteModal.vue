@@ -187,7 +187,7 @@ async function copyToClipboard() {
     copied.value = true;
     setTimeout(() => (copied.value = false), 1500);
   } catch {
-    // Silent fail
+    // noop
   } finally {
     copying.value = false;
   }

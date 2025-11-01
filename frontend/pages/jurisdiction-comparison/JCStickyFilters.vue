@@ -122,7 +122,6 @@ import { useJurisdictionComparison } from "@/composables/useJurisdictionComparis
 import { useJurisdictions } from "@/composables/useJurisdictions";
 import { useRoute, useRouter } from "vue-router";
 
-// Props for initial countries from URL
 const props = defineProps({
   initialCountries: {
     type: Array,
@@ -130,14 +129,12 @@ const props = defineProps({
   },
 });
 
-// Router for URL updates
 const router = useRouter();
 const route = useRoute();
 
 const { data: jurisdictions, isLoading: loadingJurisdictions } =
   useJurisdictions();
 
-// Use shared jurisdiction comparison state
 const {
   currentJurisdictionFilter1,
   currentJurisdictionFilter2,
@@ -147,10 +144,8 @@ const {
   showThirdColumn,
 } = useJurisdictionComparison();
 
-// Sticky state for background
 const isSticky = ref(false);
 
-// Watch for changes in jurisdictions data and initialCountries prop
 watch(
   [() => jurisdictions?.value, () => props.initialCountries],
   ([jurisdictionsData, initialCountries]) => {
@@ -161,7 +156,6 @@ watch(
   { immediate: true },
 );
 
-// Watch for changes in filter selections and update URL
 watch(
   [
     currentJurisdictionFilter1,
@@ -174,7 +168,6 @@ watch(
     const f2 = currentJurisdictionFilter2.value[0]?.alpha3Code?.toLowerCase();
     const f3 = currentJurisdictionFilter3.value[0]?.alpha3Code?.toLowerCase();
 
-    // Require at least two to build URL
     if (f1 && f2) {
       const parts = [f1, f2];
       if (showThirdColumn.value && f3) parts.push(f3);
@@ -188,15 +181,12 @@ watch(
   { deep: true },
 );
 
-// Initialization
 onMounted(async () => {
-  // JavaScript-based sticky implementation
   const filtersElement = document.querySelector(".jc-fixed-filters");
   const overviewElement = document.querySelector(".jc-z-top");
 
   if (!filtersElement || !overviewElement) return;
 
-  // Get the initial position of the filters relative to the Overview title
   const getOverviewTop = () => {
     const overviewRect = overviewElement.getBoundingClientRect();
     return overviewRect.top + window.scrollY;
@@ -207,13 +197,9 @@ onMounted(async () => {
   const onScroll = () => {
     const scrollTop = window.scrollY;
 
-    // Recalculate overview position (in case layout changes)
     overviewTop = getOverviewTop();
 
-    // Check if we've scrolled past the Overview title
     if (scrollTop > overviewTop - 80) {
-      // 80px offset for better UX
-      // Make filters sticky at top of viewport but constrained to container width
       filtersElement.style.position = "fixed";
       filtersElement.style.top = "0";
       filtersElement.style.left = "0";
@@ -225,7 +211,6 @@ onMounted(async () => {
       filtersElement.style.zIndex = "1000";
       isSticky.value = true;
     } else {
-      // Reset to normal flow
       filtersElement.style.position = "static";
       filtersElement.style.top = "auto";
       filtersElement.style.left = "auto";
@@ -244,7 +229,7 @@ onMounted(async () => {
     overviewTop = getOverviewTop();
     onScroll();
   });
-  onScroll(); // Call once to set initial state
+  onScroll();
 });
 </script>
 

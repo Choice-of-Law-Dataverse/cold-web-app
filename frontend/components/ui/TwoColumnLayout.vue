@@ -1,7 +1,7 @@
 <template>
   <div class="flex flex-col md:flex-row md:items-start md:gap-6">
     <!-- Left column: Label with optional info popover -->
-    <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
+    <div class="label-key md:w-48 md:flex-shrink-0">
       <span class="flex items-center">
         {{ label }}
         <slot name="label-actions" />

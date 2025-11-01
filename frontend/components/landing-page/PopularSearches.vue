@@ -33,10 +33,8 @@ const searchSuggestions = ref([
 ]);
 
 function handleSuggestionClick(suggestion) {
-  // Emit an event to update the search input
   eventBus.emit("update-search", suggestion);
 
-  // Pass the query directly with spaces
   router.push({
     name: "search",
     query: { q: suggestion },

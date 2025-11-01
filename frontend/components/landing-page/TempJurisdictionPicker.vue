@@ -21,19 +21,18 @@ const router = useRouter();
 
 const { data: jurisdictions } = useJurisdictions();
 
-// Navigate to country route
 const navigateToCountry = async (country) =>
   router.push(`/jurisdiction/${country.alpha3Code.toLowerCase()}`);
 </script>
 
 <style scoped>
 .popular-title {
-  white-space: nowrap; /* Prevents title from wrapping */
+  white-space: nowrap;
 }
 
 .suggestions {
   display: flex;
   flex-wrap: wrap;
-  position: relative; /* Additional positioning context for the dropdown */
+  position: relative;
 }
 </style>

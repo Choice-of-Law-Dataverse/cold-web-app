@@ -5,7 +5,7 @@ import type { TableName } from "@/types/api";
 export function useLegalProvision({
   provisionId,
   onHasEnglishTranslationUpdate,
-  table = "Domestic Legal Provisions", // default table
+  table = "Domestic Legal Provisions",
 }: {
   provisionId: string;
   textType: string;
@@ -15,7 +15,6 @@ export function useLegalProvision({
   const hasEnglishTranslation = ref(false);
   const showEnglish = ref(true);
 
-  // Use TanStack Vue Query for data fetching
   const tableRef = ref(table);
   const idRef = ref(provisionId);
 
@@ -25,7 +24,6 @@ export function useLegalProvision({
     error,
   } = useRecordDetails(tableRef, idRef);
 
-  // Computed properties derived from the fetched data
   const title = computed(() => {
     if (!provisionData.value) return "";
     const data = provisionData.value as Record<string, unknown>;
@@ -57,7 +55,6 @@ export function useLegalProvision({
     return articleNumber;
   });
 
-  // Watch for data changes to update hasEnglishTranslation
   watch(
     provisionData,
     (newData) => {
@@ -73,10 +70,7 @@ export function useLegalProvision({
     { immediate: true },
   );
 
-  function updateContent() {
-    // This function now triggers a reactivity update by changing showEnglish
-    // The computed content will automatically update
-  }
+  function updateContent() {}
 
   // For backwards compatibility, provide a fetchProvisionDetails function
   function fetchProvisionDetails() {

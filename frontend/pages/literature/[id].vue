@@ -11,7 +11,9 @@
       <template #publication-title="{ value }">
         <section v-if="value" class="section-gap">
           <TwoColumnLayout
-            :label="keyLabelLookup.get('Publication Title')?.label || 'Publication'"
+            :label="
+              keyLabelLookup.get('Publication Title')?.label || 'Publication'
+            "
             :tooltip="keyLabelLookup.get('Publication Title')?.tooltip"
           >
             <span class="result-value-small">{{ value }}</span>
@@ -30,7 +32,6 @@
       </template>
     </BaseDetailLayout>
 
-    <!-- Handle SEO meta tags -->
     <PageSeoMeta
       :title-candidates="[literature?.Title as string]"
       fallback="Literature"
@@ -56,7 +57,6 @@ interface LiteratureRecord {
 
 const route = useRoute();
 
-// Use TanStack Vue Query for data fetching - no need for refs with static values
 const table = ref<TableName>("Literature");
 const id = ref(route.params.id as string);
 

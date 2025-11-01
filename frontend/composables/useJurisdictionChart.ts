@@ -3,12 +3,11 @@ const fetchJurisdictionChartData = async () => {
   const response = await fetch("count_jurisdictions.json");
   const data = await response.json();
 
-  // Transform the JSON data for Plot
-  const xValues = data.map((item: Record<string, unknown>) => item.n); // Extract 'n' values
+  const xValues = data.map((item: Record<string, unknown>) => item.n);
   const yValues = data.map(
     (item: Record<string, unknown>) => item.jurisdiction,
-  ); // Extract 'Jurisdiction.Names'
-  const links = data.map((item: Record<string, unknown>) => item.url); // Extract URLs
+  );
+  const links = data.map((item: Record<string, unknown>) => item.url);
 
   return {
     xValues,

@@ -234,23 +234,18 @@ import { useJurisdictions } from "@/composables/useJurisdictions";
 
 const { data: jurisdictions } = useJurisdictions();
 
-// Use shared jurisdiction comparison state
 const { jurisdictionFilters, selectedJurisdictionCodes } =
   useJurisdictionComparison();
 
-// Reactive state for legal families
 const legalFamilies = ref({});
 const loadingLegalFamily = ref({});
 
-// Reactive state for court decisions count
 const courtDecisionsCounts = ref({});
 const loadingCourtDecisions = ref({});
 
-// Reactive state for domestic instruments count
 const domesticInstrumentsCounts = ref({});
 const loadingDomesticInstruments = ref({});
 
-// Function to fetch legal family for a jurisdiction
 const fetchLegalFamily = async (iso3Code) => {
   if (!iso3Code || legalFamilies.value[iso3Code]) return;
 
@@ -279,7 +274,6 @@ const fetchLegalFamily = async (iso3Code) => {
   }
 };
 
-// Generic function to fetch data count for a jurisdiction by table type
 const fetchDataCount = async (jurisdictionName, tableType) => {
   const countsRef =
     tableType === "Court Decisions"
@@ -317,13 +311,11 @@ const fetchDataCount = async (jurisdictionName, tableType) => {
   }
 };
 
-// Wrapper functions for specific data types
 const fetchCourtDecisions = (jurisdictionName) =>
   fetchDataCount(jurisdictionName, "Court Decisions");
 const fetchDomesticInstruments = (jurisdictionName) =>
   fetchDataCount(jurisdictionName, "Domestic Instruments");
 
-// Helper function to get jurisdiction name for a given column index
 const getJurisdictionName = (columnIndex) => {
   if (columnIndex >= 0 && columnIndex < jurisdictionFilters.value.length) {
     const filter = jurisdictionFilters.value[columnIndex];
@@ -332,20 +324,16 @@ const getJurisdictionName = (columnIndex) => {
   return null;
 };
 
-// Dynamic sample data based on selected jurisdictions
 const getSampleDataForColumn = (columnIndex) => {
   const codes = selectedJurisdictionCodes.value;
   const iso3Code = codes[columnIndex];
 
-  // Get jurisdiction name from filters
   const filter = jurisdictionFilters.value[columnIndex];
   const jurisdictionName = filter?.value?.value?.[0]?.label;
 
-  // Check if we have a valid jurisdiction selected (not empty and not "All Jurisdictions")
   const hasValidJurisdiction =
     jurisdictionName && jurisdictionName !== "All Jurisdictions";
 
-  // Fetch legal family if we have an ISO3 code
   if (
     iso3Code &&
     !legalFamilies.value[iso3Code] &&
@@ -354,7 +342,6 @@ const getSampleDataForColumn = (columnIndex) => {
     fetchLegalFamily(iso3Code);
   }
 
-  // Fetch court decisions if we have a jurisdiction name
   if (
     hasValidJurisdiction &&
     courtDecisionsCounts.value[jurisdictionName] === undefined &&
@@ -363,7 +350,6 @@ const getSampleDataForColumn = (columnIndex) => {
     fetchCourtDecisions(jurisdictionName);
   }
 
-  // Fetch domestic instruments if we have a jurisdiction name
   if (
     hasValidJurisdiction &&
     domesticInstrumentsCounts.value[jurisdictionName] === undefined &&
@@ -372,14 +358,12 @@ const getSampleDataForColumn = (columnIndex) => {
     fetchDomesticInstruments(jurisdictionName);
   }
 
-  // Determine legal family display
   const legalFamily =
     hasValidJurisdiction && iso3Code
       ? legalFamilies.value[iso3Code] ||
         (loadingLegalFamily.value[iso3Code] ? "Loading…" : "Loading…")
       : "Loading…";
 
-  // Determine court decisions count display
   const courtDecisionsCount = hasValidJurisdiction
     ? courtDecisionsCounts.value[jurisdictionName] !== undefined
       ? `${courtDecisionsCounts.value[jurisdictionName]} court decisions`
@@ -388,7 +372,6 @@ const getSampleDataForColumn = (columnIndex) => {
         : "Loading…"
     : "Loading…";
 
-  // Determine domestic instruments count display
   const domesticInstrumentsCount = hasValidJurisdiction
     ? domesticInstrumentsCounts.value[jurisdictionName] !== undefined
       ? `${domesticInstrumentsCounts.value[jurisdictionName]} domestic instrument${domesticInstrumentsCounts.value[jurisdictionName] === 1 ? "" : "s"}`
@@ -397,15 +380,9 @@ const getSampleDataForColumn = (columnIndex) => {
         : "Loading…"
     : "Loading…";
 
-  return [
-    legalFamily,
-    courtDecisionsCount,
-    domesticInstrumentsCount,
-    // '0 arbitration laws', // To Do: Add arbitration laws
-  ];
+  return [legalFamily, courtDecisionsCount, domesticInstrumentsCount];
 };
 
-// Watch for changes in selected jurisdiction codes to fetch legal families
 watch(
   selectedJurisdictionCodes,
   (newCodes, oldCodes) => {
@@ -418,7 +395,6 @@ watch(
   { immediate: true },
 );
 
-// Watch for changes in jurisdiction filters to fetch court decisions
 watch(
   jurisdictionFilters,
   (newFilters, oldFilters) => {
@@ -441,23 +417,19 @@ watch(
 const erroredFlags = reactive({});
 function getFlagUrl(label) {
   if (!label || label === "All Jurisdictions") return "";
-  // Use Alpha-3 code if available in jurisdictions
   const found = jurisdictions.value.find((j) => j.label === label);
   if (found && found.avatar) return found.avatar;
-  // Fallback: try to use label as ISO code (lowercase)
   return `https://choiceoflaw.blob.core.windows.net/assets/flags/${label.toLowerCase()}.svg`;
 }
 </script>
 
 <style scoped>
-/* Desktop Grid Layout */
-
 .jc-grid,
 .jc-data-row {
   display: grid;
   grid-template-columns: 1fr repeat(2, 1fr);
   align-items: start;
-  gap: 0 0.25rem; /* tighter horizontal gap */
+  gap: 0 0.25rem;
 }
 
 .jc-overview-row {
@@ -473,31 +445,27 @@ function getFlagUrl(label) {
 
 .jc-col-1 {
   grid-column: 1;
-  min-width: 0; /* Ensure column can shrink but maintains grid layout */
+  min-width: 0;
 }
 .jc-col-2 {
-  /* Pull second jurisdiction column left to reduce visual gap */
-  /* Removed forced negative margin; spacing controlled by grid gaps */
   grid-column: 2;
-  min-width: 0; /* Ensure column can shrink but maintains grid layout */
+  min-width: 0;
 }
 .jc-col-3 {
   grid-column: 3;
-  min-width: 0; /* Ensure column can shrink but maintains grid layout */
+  min-width: 0;
 }
 .jc-col-4 {
   grid-column: 4;
   min-width: 0;
 }
 
-/* Ensure consistent spacing for data items */
 .jc-col-2 > .result-value-medium,
 .jc-col-3 > .result-value-medium,
 .jc-col-4 > .result-value-medium {
-  min-height: 200px; /* Ensure minimum height for consistent layout */
+  min-height: 200px;
 }
 
-/* Shared scrollbar styles */
 .jc-mobile-filters-container,
 .jc-mobile-data-container {
   display: flex;
@@ -513,12 +481,10 @@ function getFlagUrl(label) {
   height: 6px;
 }
 
-/* Mobile & Tablet Layout */
 .mobile-layout {
   padding: 0.25rem;
 }
 
-/* Filters grid for mobile */
 .filters-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -536,7 +502,6 @@ function getFlagUrl(label) {
   flex-direction: column;
 }
 
-/* Data cards for mobile */
 .data-cards {
   display: grid;
   grid-template-columns: 1fr;
@@ -575,13 +540,11 @@ function getFlagUrl(label) {
   font-weight: 500 !important;
 }
 
-/* Move link arrow down a bit */
 .arrow-icon-lower {
   position: relative;
   top: 3px;
 }
 
-/* Search filter styling */
 .jc-search-filter {
   width: 240px;
   max-width: 100%;
@@ -592,13 +555,11 @@ function getFlagUrl(label) {
   max-width: 240px !important;
 }
 
-/* Highest z-index for Overview heading */
 .jc-z-top {
   position: relative;
   pointer-events: none;
 }
 
-/* Mobile LoadingBar constraint - force it to stay within bounds */
 .mobile-loading-wrapper {
   max-width: 200px !important;
   width: 100% !important;

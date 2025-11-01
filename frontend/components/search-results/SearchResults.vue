@@ -155,7 +155,6 @@ import { useSearchFilters } from "@/composables/useSearchFilters";
 import importedThemeOptions from "@/assets/themeOptions.json";
 import importedTypeOptions from "@/assets/typeOptions.json";
 
-// Component imports
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import LegislationCard from "@/components/search-results/LegislationCard.vue";
 import RegionalInstrumentCard from "@/components/search-results/RegionalInstrumentCard.vue";
@@ -167,10 +166,8 @@ import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import NoSearchResults from "@/components/search-results/NoSearchResults.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 
-// Data fetching via composable
 import { useJurisdictions } from "@/composables/useJurisdictions";
 
-// Component mapping for different result types
 const resultComponentMap = {
   "Domestic Instruments": LegislationCard,
   "Regional Instruments": RegionalInstrumentCard,
@@ -183,7 +180,6 @@ const resultComponentMap = {
 const getResultComponent = (source_table) =>
   resultComponentMap[source_table] || ResultCard;
 
-// Props and emits
 const props = defineProps({
   data: {
     type: Object,
@@ -209,11 +205,9 @@ const props = defineProps({
 
 const emit = defineEmits(["update:filters", "load-more"]);
 
-// Router setup
 const route = useRoute();
 const router = useRouter();
 
-// Initialize search filters
 const {
   currentJurisdictionFilter,
   currentThemeFilter,
@@ -225,15 +219,12 @@ const {
   syncFiltersFromQuery,
 } = useSearchFilters(route.query);
 
-// UI state
 const selectWidth = ref("auto");
 const measureRef = ref(null);
 
-// Filter options
 const themeOptions = importedThemeOptions;
 const typeOptions = importedTypeOptions;
 
-// Computed values
 const allResults = computed(() => {
   if (!props.data?.tables) return [];
   return Object.values(props.data.tables);
@@ -246,7 +237,6 @@ const resultLabel = computed(() =>
   props.totalMatches === 1 ? "result" : "results",
 );
 
-// Methods
 const updateFilters = async (filters) => {
   emit("update:filters", filters);
   await router.push({
@@ -258,7 +248,6 @@ const updateFilters = async (filters) => {
 const handleSortChange = async (val) => {
   const sortValue = val || "relevance";
   selectValue.value = sortValue;
-  // Only update the sortBy parameter without triggering other filter updates
   emit("update:filters", { ...props.filters, sortBy: sortValue });
   updateSelectWidth();
 };
@@ -277,7 +266,6 @@ const updateSelectWidth = () => {
 };
 const { data: jurisdictions } = useJurisdictions();
 
-// Watchers
 watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
   async ([jurisdiction, theme, type]) => {
@@ -298,7 +286,6 @@ watch(
   { immediate: true },
 );
 
-// Initialization
 onMounted(async () => {
   syncFiltersFromQuery(route.query);
   updateSelectWidth();
@@ -308,14 +295,14 @@ onMounted(async () => {
 <style scoped>
 .filters-header {
   display: flex;
-  align-items: center; /* Vertically align items */
-  justify-content: space-between; /* Space between SearchFilters and h2 */
+  align-items: center;
+  justify-content: space-between;
   padding-bottom: 12px;
 }
 
 .filters-header h2 {
-  margin: 0; /* Remove default margin for better alignment */
-  padding-bottom: 0; /* Override inline padding if needed */
+  margin: 0;
+  padding-bottom: 0;
 }
 
 .result-value-small {

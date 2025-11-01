@@ -75,7 +75,6 @@ const props = defineProps({
 const config = regionalInstrumentCardConfig;
 
 const processedResultData = computed(() => {
-  // If you have a processData function for regional instruments, use it here
   return props.resultData;
 });
 

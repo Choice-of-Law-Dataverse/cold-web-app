@@ -123,12 +123,10 @@ const props = defineProps({
 
 const config = literatureCardConfig;
 
-// Process the result data using the config's processData function
 const processedResultData = computed(() => {
   return config.processData(props.resultData);
 });
 
-// Helper functions to get labels and values with fallbacks
 const getLabel = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key);
   return pair?.label || key;
