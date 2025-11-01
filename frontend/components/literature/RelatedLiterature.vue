@@ -4,11 +4,11 @@
       {{ label }}
       <InfoPopover v-if="tooltip" :text="tooltip" />
     </h4>
-    <ul v-if="loadingTitles || loading">
+    <div v-if="loadingTitles || loading">
       <LoadingBar class="ml-[-22px] pt-[11px]" />
-    </ul>
-    <ul v-else-if="displayedLiterature.length">
-      <li
+    </div>
+    <div v-else-if="displayedLiterature.length" class="flex flex-col gap-1">
+      <div
         v-for="item in displayedLiterature"
         :key="item.id"
         :class="valueClassMap"
@@ -16,13 +16,13 @@
         <NuxtLink :to="`/literature/${item.id}`">
           {{ item.title }}
         </NuxtLink>
-      </li>
+      </div>
       <ShowMoreLess
         v-if="fullLiteratureList.length > 5"
         v-model:is-expanded="showAll"
         label="related literature"
       />
-    </ul>
+    </div>
     <p
       v-else-if="emptyValueBehavior.action === 'display'"
       :class="valueClassMap"
