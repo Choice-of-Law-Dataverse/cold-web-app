@@ -354,10 +354,8 @@ import tooltipPublicationDate from "@/content/info_boxes/court_decision/publicat
 import tooltipQuote from "@/content/info_boxes/court_decision/quote.md?raw";
 import tooltipRelevantFacts from "@/content/info_boxes/court_decision/relevant_facts.md?raw";
 
-// Form data
 const caseCitation = ref("");
 const caseTitle = ref("");
-// Newly added fields used by multi-line inputs
 const caseFullText = ref("");
 const caseEnglishTranslation = ref("");
 const caseRank = ref("");
@@ -381,9 +379,7 @@ const comments = ref("");
 
 const token = ref("");
 
-// Ensure Submit button reactivity when token changes
 watch(token, () => {});
-// Jurisdiction select state and options (reuse SearchResults strategy)
 const selectedJurisdiction = ref([]);
 const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
 
@@ -418,9 +414,6 @@ const loadJurisdictions = async () => {
 };
 
 onMounted(loadJurisdictions);
-// Toggle buttons will set this directly (No/Yes)
-
-// Validation schema
 const formSchema = z.object({
   case_citation: z
     .string()
@@ -431,7 +424,6 @@ const formSchema = z.object({
   }),
 });
 
-// Form validation state
 const errors = ref({});
 const saveModalErrors = ref({});
 
@@ -523,12 +515,10 @@ function handleNewSave() {
     case_title: caseTitle.value,
     instance: caseInstance.value,
     official_keywords: caseOfficialKeywords.value,
-    // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
   };
 
-  // Explicitly log the exact payload we send
   (async () => {
     try {
       await $fetch(`/api/proxy/suggestions/court-decisions`, {
@@ -556,7 +546,6 @@ function handleNewSave() {
 </script>
 
 <style scoped>
-/* Hide the back button and all right-side card header buttons */
 :deep(.card-header__actions) {
   display: none !important;
 }
@@ -564,7 +553,6 @@ function handleNewSave() {
   display: none !important;
 }
 
-/* Only make links inside h3 purple */
 h3 a {
   color: var(--color-cold-purple) !important;
 }

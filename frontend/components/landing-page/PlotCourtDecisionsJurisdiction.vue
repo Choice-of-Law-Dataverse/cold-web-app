@@ -44,7 +44,6 @@ import { navigateTo } from "#app";
 const { data, isLoading } = useJurisdictionChart();
 const hoveredIndex = ref(-1);
 
-// Process the data for our simple chart
 const chartData = computed(() => {
   if (!data.value) return [];
 
@@ -59,14 +58,12 @@ const chartData = computed(() => {
   }));
 });
 
-// Handle bar click navigation
 function handleBarClick(url) {
   if (url) {
     navigateTo(url);
   }
 }
 
-// Handle bar hover effects
 function handleBarHover(index, isHovering) {
   hoveredIndex.value = isHovering ? index : -1;
 }

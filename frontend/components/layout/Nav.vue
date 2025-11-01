@@ -190,14 +190,11 @@ import { useRouter, useRoute } from "vue-router";
 import HCCHApproved from "../ui/HCCHApproved.vue";
 import eventBus from "@/eventBus";
 import jurisdictionsData from "@/assets/jurisdictions-data.json";
-// import your section‐nav configs:
 import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
 
 const router = useRouter();
 const route = useRoute();
 
-// helper to pull off “/about” or “/learn”
-// from the first child‐link’s path
 const basePath = (arr) => `/${arr[0].path.split("/")[1]}`;
 
 const links = [
@@ -210,39 +207,30 @@ const showMenu = ref(false);
 
 function openMenu() {
   showMenu.value = true;
-  // On mobile hide / collapse search state when menu opens
   if (isMobile.value) {
     isExpanded.value = false;
     isSearchFocused.value = false;
     showSuggestions.value = false;
   }
-  // Add click-away listener
   document.addEventListener("mousedown", handleClickAway);
 }
 
 function closeMenu() {
   showMenu.value = false;
-  // Remove click-away listener
   document.removeEventListener("mousedown", handleClickAway);
 }
 
 function handleClickAway(e) {
-  // Only close if menu is open
   if (!showMenu.value) return;
-  // Find the nav element
   const nav = document.querySelector("nav");
   if (nav && !nav.contains(e.target)) {
     closeMenu();
   }
 }
 
-// Click-away handler for menu
 function handleClickOutsideMenu(event) {
-  // Only close if menu is open
   if (!showMenu.value) return;
-  // Find the menu button and menu container
   const nav = document.querySelector("nav");
-  // If click is outside nav, close menu
   if (nav && !nav.contains(event.target)) {
     closeMenu();
   }
@@ -256,25 +244,22 @@ onUnmounted(() => {
   document.removeEventListener("mousedown", handleClickOutsideMenu);
 });
 
-// Reactive state
 const searchText = ref("");
-const isExpanded = ref(false); // Track if the input is expanded
+const isExpanded = ref(false);
 const isSmallScreen = ref(false);
 const isMobile = ref(false);
-const suggestions = ref([]); // Add suggestions state
-const showSuggestions = ref(false); // Add visibility state for suggestions
+const suggestions = ref([]);
+const showSuggestions = ref(false);
 const isSearchFocused = ref(false);
 
 const searchInput = ref(null);
 
-// Add function to update suggestions
 function updateSuggestions() {
   if (!searchText.value || searchText.value.trim().length < 3) {
     suggestions.value = [];
     showSuggestions.value = false;
     return;
   }
-  // Only keep words with length >= 3
   const words = searchText.value
     .toLowerCase()
     .split(/\s+/)
@@ -294,7 +279,6 @@ function updateSuggestions() {
   showSuggestions.value = suggestions.value.length > 0;
 }
 
-// Add function to handle suggestion click
 function handleSuggestionClick(selected) {
   const record = jurisdictionsData.find((item) => item.name[0] === selected);
   const keywords = record
@@ -315,10 +299,9 @@ function handleSuggestionClick(selected) {
   const newSearchText = remainingWords.join(" ");
   searchText.value = newSearchText;
 
-  // Explicitly manage search state after suggestion click
   isExpanded.value = false;
-  isSearchFocused.value = false; // Add this to correctly update focus state
-  showSuggestions.value = false; // This was already here
+  isSearchFocused.value = false;
+  showSuggestions.value = false;
 
   const query = { ...route.query };
   if (newSearchText.trim()) {
@@ -332,37 +315,32 @@ function handleSuggestionClick(selected) {
     query,
   });
 
-  // Blur the input after navigation and state changes
   nextTick().then(() => {
     const inputEl = searchInput.value?.$el.querySelector("input");
     if (inputEl) {
-      inputEl.blur(); // This blur will call collapseSearch, but relevant states are already set.
+      inputEl.blur();
     }
   });
 }
 
-// Watch search text for suggestions
 watch(searchText, () => {
   updateSuggestions();
 });
 
 function emitSearch() {
-  const query = { ...route.query }; // Retain existing query parameters (filters)
+  const query = { ...route.query };
 
   if (searchText.value.trim()) {
-    // Update the search query if there's input
     query.q = searchText.value.trim();
   } else {
-    // Remove the search query (q) if the input is empty
     delete query.q;
   }
 
-  // Push the updated query to the router
   router.push({
     name: "search",
     query,
   });
-  collapseSearch(); // Shrink search field after search
+  collapseSearch();
   nextTick().then(() => {
     const inputEl = searchInput.value?.$el.querySelector("input");
     if (inputEl) {
@@ -374,7 +352,6 @@ function emitSearch() {
 function expandSearch() {
   isExpanded.value = true;
   isSearchFocused.value = true;
-  // Suggestions will be updated by the watcher on searchText or if updateSuggestions is called
 }
 
 function handleSearchIconClick() {
@@ -388,25 +365,17 @@ function handleSearchIconClick() {
 }
 
 function collapseSearch() {
-  isExpanded.value = false; // Visual shrink can be immediate
+  isExpanded.value = false;
 
-  // Delay setting isSearchFocused to false to allow click event on suggestions
-  // to be processed by handleSuggestionClick.
+  // Delay closing suggestions to allow click handlers to complete
   setTimeout(() => {
-    // If isSearchFocused is still true at this point, it means that
-    // handleSuggestionClick was not called (or did not set isSearchFocused to false).
-    // This implies the blur was to an element outside the suggestions.
     if (isSearchFocused.value) {
       isSearchFocused.value = false;
-      showSuggestions.value = false; // Ensure suggestions are hidden
-    }
-    // If isSearchFocused was already set to false (e.g., by handleSuggestionClick),
-    // this 'if' block is skipped.
-    // As a safeguard, ensure showSuggestions is false if isSearchFocused is false.
-    else if (!isSearchFocused.value && showSuggestions.value) {
+      showSuggestions.value = false;
+    } else if (!isSearchFocused.value && showSuggestions.value) {
       showSuggestions.value = false;
     }
-  }, 200); // Original delay
+  }, 200);
 }
 
 const clearSearch = async () => {
@@ -419,30 +388,26 @@ const clearSearch = async () => {
   }
 };
 
-// Dynamically update the placeholder
 const searchPlaceholder = computed(() =>
   isSmallScreen.value ? "Search" : "Search",
 );
 
-// Check screen size
 function checkScreenSize() {
   const width = window.innerWidth;
-  isSmallScreen.value = width < 640; // Tailwind's `sm` breakpoint
+  isSmallScreen.value = width < 640;
   isMobile.value = width < 640;
 }
 
-// Listen for events from PopularSearches.vue
 const updateSearchFromEvent = (query) => {
-  searchText.value = query; // Update the search input field
+  searchText.value = query;
 };
 
 function handleGlobalKeydown(e) {
-  // Only trigger if not already typing in an input or textarea
   if (
     e.key === "s" &&
     !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
   ) {
-    e.preventDefault(); // Prevent default browser actions
+    e.preventDefault();
     expandSearch();
     nextTick(() => {
       const inputEl = searchInput.value?.$el.querySelector("input");
@@ -461,25 +426,19 @@ onUnmounted(() => {
   window.removeEventListener("keydown", handleGlobalKeydown);
 });
 
-// Lifecycle hooks
 onMounted(() => {
-  // Initialize screen size
   checkScreenSize();
 
-  // Add resize event listener
   window.addEventListener("resize", checkScreenSize);
 
-  // Initialize search text from query
   if (route.query.q) {
     searchText.value = route.query.q;
   }
 
-  // Listen for events from PopularSearches.vue
   eventBus.on("update-search", updateSearchFromEvent);
 });
 
 onUnmounted(() => {
-  // Clean up event listeners
   window.removeEventListener("resize", checkScreenSize);
   eventBus.off("update-search", updateSearchFromEvent);
   document.removeEventListener("mousedown", handleClickAway);
@@ -491,13 +450,11 @@ onUnmounted(() => {
   color: var(--color-cold-purple) !important;
 }
 
-/* Only hide the default left search icon */
 .input-custom-purple ::v-deep(.u-input__icon) {
   color: white !important;
   opacity: 0 !important;
 }
 
-/* Ensure the clear button icon is visible */
 .input-custom-purple ::v-deep(.u-button .iconify) {
   opacity: 1 !important;
   color: var(--color-cold-purple) !important;
@@ -509,14 +466,13 @@ onUnmounted(() => {
 }
 
 .search-container {
-  position: relative !important; /* New addition */
+  position: relative !important;
   width: calc(var(--column-width) * 3 + var(--gutter-width) * 2);
   transition: none !important;
 }
 
-/* When expanded, span across available space */
 .search-container.expanded {
-  width: 100%; /* Expand to full width */
+  width: 100%;
   padding-bottom: 0.625rem;
 }
 
@@ -527,24 +483,24 @@ onUnmounted(() => {
 }
 
 .input-custom-purple {
-  width: 100%; /* Ensures the input spans the container width */
+  width: 100%;
 }
 
 .icon-button {
   position: absolute;
-  left: 10px; /* Adjust based on the right padding of input */
+  left: 10px;
   top: 50%;
-  transform: translateY(-39%); /* Center vertically */
+  transform: translateY(-39%);
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--color-cold-purple); /* Match icon color */
+  color: var(--color-cold-purple);
   padding: 0;
   padding-left: 4px;
 }
 
 .icon-button .iconify {
-  font-size: 1.5rem; /* Adjust icon size */
+  font-size: 1.5rem;
 }
 
 a {
@@ -553,8 +509,8 @@ a {
 }
 
 :deep(.custom-nav-links) {
-  color: var(--color-cold-night) !important; /* Apply custom color */
-  text-decoration: none !important; /* Remove underline */
+  color: var(--color-cold-night) !important;
+  text-decoration: none !important;
   font-weight: 600 !important;
 }
 
@@ -569,10 +525,9 @@ a {
   background-color: var(--color-cold-purple-alpha) !important;
 }
 
-/* Outer container now spans the full browser width */
 .suggestions {
   position: absolute;
-  top: 100%; /* Adjust vertical offset as needed */
+  top: 100%;
   left: 50%;
   transform: translateX(-50%);
   width: 100vw;
@@ -580,10 +535,9 @@ a {
   background-color: var(--color-cold-purple-fake-alpha);
 }
 
-/* Inner container now uses full width */
 .suggestions-inner {
   width: 100%;
-  padding: 0 1.5rem; /* Optional padding */
+  padding: 0 1.5rem;
   box-sizing: border-box;
 }
 
@@ -610,11 +564,10 @@ nav {
   max-height: 7rem;
 }
 
-/* Mobile layout adjustments */
 @media (max-width: 639px) {
   .mobile-inline-logo {
     flex: 0 0 auto;
-    margin-left: 0.3rem !important; /* tighten space after search icon */
+    margin-left: 0.3rem !important;
     margin-right: 0.5rem !important;
     padding-bottom: 0.75rem;
   }
@@ -624,26 +577,26 @@ nav {
   .search-container {
     flex: 0 0 auto;
   }
-  /* Push HCCHApproved further right */
+
   .mobile-nav-group .hcch-approved {
-    margin-left: 0; /* reset so it doesn't jump to far edge */
+    margin-left: 0;
   }
-  /* Decrease spacing between HCCHApproved and Menu */
+
   .mobile-nav-group > * + * {
-    margin-left: 0rem !important; /* override tailwind space-x-4 */
+    margin-left: 0rem !important;
   }
-  /* Shift open menu links to the right */
+
   .mobile-menu-links {
-    margin-left: 3rem; /* prevent pushing content off screen */
+    margin-left: 3rem;
     margin-top: 0.4rem;
     width: 100%;
     display: flex;
   }
-  /* Space only between link items (anchors), not before close button */
+
   .mobile-menu-links a:not(:last-of-type) {
-    margin-right: 1.1rem; /* desired spacing between About, Learn, Contact */
+    margin-right: 1.1rem;
   }
-  /* Keep close button aligned to the far right */
+
   .mobile-menu-links .close-menu-button {
     margin-left: auto !important;
   }
@@ -653,9 +606,8 @@ nav {
   }
 }
 
-/* Mobile collapsed search icon styles */
 .collapsed-search-icon {
-  display: none; /* hidden on desktop */
+  display: none;
   background: none;
   border: none;
   cursor: pointer;
@@ -674,7 +626,7 @@ nav {
     width: 3rem;
   }
   .collapsed-search-icon .iconify {
-    font-size: 1.5rem; /* bigger icon */
+    font-size: 1.5rem;
   }
   .search-container:not(.expanded) :deep(.u-input) {
     display: none !important;
@@ -686,10 +638,4 @@ nav {
     width: auto;
   }
 }
-
-/* .suggestion-hint {
-  font-size: 0.875rem;
-  color: var(--color-cold-gray);
-  font-style: italic;
-} */
 </style>

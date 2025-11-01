@@ -1,4 +1,3 @@
-// server/api/check-pdf-exists.ts
 export default defineEventHandler(async (event) => {
   const { url } = getQuery(event);
 

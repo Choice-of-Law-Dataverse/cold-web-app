@@ -22,14 +22,12 @@ const fetchSearchResults = async ({
     filters: [],
   };
 
-  // Add sort_by_date if needed
   if (filters.sortBy === "date") {
     body.sort_by_date = true;
   } else {
     body.sort_by_date = false;
   }
 
-  // Add "Jurisdictions" filter if defined
   if (filters.jurisdiction) {
     body.filters.push({
       column: "jurisdictions",
@@ -37,7 +35,6 @@ const fetchSearchResults = async ({
     });
   }
 
-  // Add "Themes" filter if defined
   if (filters.theme) {
     body.filters.push({
       column: "themes",
@@ -45,7 +42,6 @@ const fetchSearchResults = async ({
     });
   }
 
-  // Set up mapping: Filter options have different wording to table names
   const typeFilterMapping: Record<string, string> = {
     Questions: "Answers",
     "Court Decisions": "Court Decisions",
@@ -56,7 +52,6 @@ const fetchSearchResults = async ({
     Literature: "Literature",
   };
 
-  // Add "Type" filter if defined
   if (filters.type) {
     body.filters.push({
       column: "tables",

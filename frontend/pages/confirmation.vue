@@ -34,7 +34,7 @@ if (route.query.links) {
       links = parsed.filter((l) => l && l.text && l.to);
     }
   } catch {
-    // ignore, fallback to default
+    // noop
   }
 }
 </script>

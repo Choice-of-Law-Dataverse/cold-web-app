@@ -5,11 +5,8 @@
   >
     <div class="flex flex-col gap-0">
       <!-- Title section -->
-      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("Name") }}
-        </div>
-        <div class="flex items-start justify-between gap-4 md:flex-1">
+      <DetailRow :label="getLabel('Name')">
+        <div class="flex items-start justify-between gap-4">
           <div
             :class="[
               config.valueClassMap['Name'],
@@ -30,19 +27,14 @@
             folder-name="international-instruments"
           />
         </div>
-      </div>
+      </DetailRow>
 
       <!-- Date section -->
-      <template v-if="shouldDisplay('Date')">
-        <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-          <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-            {{ getLabel("Date") }}
-          </div>
-          <div :class="[config.valueClassMap['Date'], 'md:flex-1']">
-            {{ format.formatDate(getValue("Date")) }}
-          </div>
+      <DetailRow v-if="shouldDisplay('Date')" :label="getLabel('Date')">
+        <div :class="config.valueClassMap['Date']">
+          {{ format.formatDate(getValue("Date")) }}
         </div>
-      </template>
+      </DetailRow>
     </div>
   </ResultCard>
 </template>
@@ -51,6 +43,7 @@
 import { computed } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import { internationalInstrumentCardConfig } from "@/config/cardConfigs";
 import * as format from "@/utils/format.js";
 
@@ -64,7 +57,6 @@ const props = defineProps({
 const config = internationalInstrumentCardConfig;
 
 const processedResultData = computed(() => {
-  // If you have a processData function for international instruments, use it here
   return props.resultData;
 });
 
@@ -105,11 +97,5 @@ const shouldDisplay = (key) => {
 .grid-item {
   display: flex;
   flex-direction: column;
-}
-
-.label-key {
-  @extend .label;
-  padding: 0;
-  margin-top: 12px;
 }
 </style>

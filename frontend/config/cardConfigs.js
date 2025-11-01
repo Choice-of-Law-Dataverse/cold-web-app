@@ -6,7 +6,6 @@
  * - gridConfig: Object defining the grid layout for the card
  */
 
-// Question Card
 export const answerCardConfig = {
   keyLabelPairs: [
     {
@@ -65,7 +64,7 @@ export const answerCardConfig = {
   ],
   valueClassMap: {
     Question: "result-value-medium",
-    Answer: "result-value-large", // This will be overridden by getAnswerClass for Yes/No answers
+    Answer: "result-value-large",
     "Last Modified": "result-value-small",
     "More Information": "result-value-small",
   },
@@ -94,7 +93,6 @@ export const answerCardConfig = {
   },
 };
 
-// Court Decision Card
 export const courtDecisionCardConfig = {
   keyLabelPairs: [
     {
@@ -161,7 +159,6 @@ export const courtDecisionCardConfig = {
   },
 };
 
-// Domestic Instrument Card (formerly Legal Instrument Card)
 export const legislationCardConfig = {
   keyLabelPairs: [
     {
@@ -210,7 +207,7 @@ export const legislationCardConfig = {
     if (!data) return null;
     return {
       ...data,
-      Themes: data["Domestic Legal Provisions Themes"], // Map "Themes name" to "Themes"
+      Themes: data["Domestic Legal Provisions Themes"],
     };
   },
 };
@@ -361,7 +358,7 @@ export const literatureCardConfig = {
     if (!data) return null;
     return {
       ...data,
-      Themes: data["Themes"], // Map "Themes name" to "Themes"
+      Themes: data["Themes"],
     };
   },
 };

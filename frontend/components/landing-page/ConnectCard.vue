@@ -99,7 +99,6 @@ const props = defineProps({
   },
 });
 
-// Check if the link is relative (internal) or absolute (external)
 const isRelativeLink = computed(() => {
   return (
     props.buttonLink.startsWith("/") ||

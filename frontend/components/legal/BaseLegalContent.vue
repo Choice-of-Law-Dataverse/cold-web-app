@@ -5,71 +5,57 @@
     :class="{ 'is-first': isFirstProvision }"
   >
     <div v-if="error">{{ error }}</div>
-    <div v-else>
-      <div :id="anchorId" :class="['legal-content', customClass]">
-        <div
-          class="no-margin mb-4 flex flex-col md:flex-row md:items-start md:gap-6"
-        >
-          <!-- Empty spacer on the left to maintain column alignment -->
-          <div class="hidden md:block md:w-48 md:flex-shrink-0" />
+    <div v-else :id="anchorId" :class="['legal-content', customClass]">
+      <div class="mb-4 flex flex-col">
+        <div class="flex items-start justify-between gap-2">
+          <a
+            :href="`#${anchorId}`"
+            class="label-key-provision-article anchor min-w-0 flex-1"
+            @click="toggleOpen"
+          >
+            {{ displayTitle }}
+          </a>
 
-          <!-- Content wrapper on the right -->
-          <div class="md:flex-1">
-            <div class="flex items-center justify-between gap-2">
-              <!-- Title and toggle button together -->
-              <div class="flex min-w-0 flex-1 items-center gap-2">
-                <a
-                  :href="`#${anchorId}`"
-                  class="label-key-provision-article anchor min-w-0 flex-1"
-                  @click="onTitleClick"
-                >
-                  {{ displayTitle }}
-                </a>
-
-                <!-- Caret toggle button with label -->
-                <button
-                  type="button"
-                  class="flex flex-shrink-0 items-center gap-1 rounded py-1 pl-[0.025rem] pr-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300"
-                  :aria-controls="`${anchorId}-content`"
-                  :aria-expanded="isOpen.toString()"
-                  :aria-label="isOpen ? 'Collapse content' : 'Expand content'"
-                  @click="toggleOpen"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                    width="16"
-                    height="16"
-                    fill="none"
-                    :style="{
-                      color: 'var(--color-cold-purple)',
-                      transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-                    }"
-                  >
-                    <path
-                      d="M9 6l6 6-6 6"
-                      stroke="currentColor"
-                      stroke-width="3"
-                      stroke-linecap="square"
-                      stroke-linejoin="square"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <div v-if="isOpen" class="flex justify-end">
-                <slot name="header-actions" />
-              </div>
-            </div>
-
-            <div
-              v-show="isOpen"
-              :id="`${anchorId}-content`"
-              class="content-body prose"
+          <button
+            type="button"
+            :aria-controls="`${anchorId}-content`"
+            :aria-expanded="isOpen.toString()"
+            :aria-label="isOpen ? 'Collapse content' : 'Expand content'"
+            class="flex-shrink-0"
+            @click="toggleOpen"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              width="16"
+              height="16"
+              fill="none"
+              :style="{
+                color: 'var(--color-cold-teal)',
+                transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+              }"
             >
-              <slot />
-            </div>
-          </div>
+              <path
+                d="M9 6l6 6-6 6"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="square"
+                stroke-linejoin="square"
+              />
+            </svg>
+          </button>
+        </div>
+
+        <div v-if="isOpen" class="mt-2 flex justify-end">
+          <slot name="header-actions" />
+        </div>
+
+        <div
+          v-show="isOpen"
+          :id="`${anchorId}-content`"
+          class="content-body prose"
+        >
+          <slot />
         </div>
       </div>
     </div>
@@ -106,18 +92,11 @@ const props = defineProps({
 const customClass = computed(() => props.class || "");
 const displayTitle = computed(() => (props.loading ? "" : props.title || ""));
 
-// Collapsible state (hidden by default)
 const isOpen = ref(false);
 const toggleOpen = () => {
   isOpen.value = !isOpen.value;
 };
 
-// Open content when clicking the title (preserve anchor navigation)
-const onTitleClick = () => {
-  isOpen.value = !isOpen.value;
-};
-
-// Determine if this is the first provision instance in the container
 const rootEl = ref(null);
 const isFirstProvision = ref(false);
 const evaluateIsFirst = () => {
@@ -127,13 +106,12 @@ const evaluateIsFirst = () => {
     isFirstProvision.value = false;
     return;
   }
-  // Find the first BaseLegalContent under the same parent in DOM order
   const firstBase = parent.querySelector(".base-legal-content");
   isFirstProvision.value = firstBase === el;
 };
 
 const scrollToAnchor = async () => {
-  const hash = window.location.hash.slice(1); // Remove the # symbol
+  const hash = window.location.hash.slice(1);
   if (hash === props.anchorId) {
     // If navigated directly via hash, auto-expand for visibility
     isOpen.value = true;
@@ -152,14 +130,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.label-key-content {
-  margin-top: 50px;
-}
-
-.no-margin .label-key-content {
-  margin-top: 0;
-}
-
 .anchor {
   text-decoration: none;
   color: var(--color-cold-night) !important;
@@ -167,7 +137,7 @@ onMounted(() => {
   margin-top: 50px;
 }
 
-.no-margin .anchor {
+.base-legal-content.is-first .anchor {
   margin-top: 0;
 }
 

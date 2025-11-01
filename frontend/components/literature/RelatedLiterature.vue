@@ -42,8 +42,8 @@ const props = defineProps({
   themes: { type: String, default: "" },
   valueClassMap: { type: String, default: "result-value-small" },
   literatureId: { type: String, default: "" },
-  useId: { type: Boolean, default: false }, // deprecated, kept for backward compatibility
-  mode: { type: String, default: "themes" }, // 'id' | 'themes' | 'both'
+  useId: { type: Boolean, default: false },
+  mode: { type: String, default: "themes" },
   showLabel: { type: Boolean, default: true },
   emptyValueBehavior: {
     type: Object,
@@ -162,22 +162,17 @@ async function fetchRelatedLiterature(themes) {
 }
 
 async function fetchBoth() {
-  // Fetch by ID (using Jurisdictions Literature ID column)
   const ids = literatureIds.value;
   await fetchLiteratureTitlesById(ids, true);
-  // Fetch by themes
   await fetchRelatedLiterature(props.themes);
-  // Merge and deduplicate by id
   const idSet = new Set();
   const merged = [];
-  // Add ID-based first
   ids.forEach((id, i) => {
     if (id && literatureTitles.value[i] && !idSet.has(id)) {
       merged.push({ id, title: literatureTitles.value[i] });
       idSet.add(id);
     }
   });
-  // Add theme-based, skipping duplicates
   literatureList.value.forEach((item) => {
     if (item.id && !idSet.has(item.id)) {
       merged.push(item);

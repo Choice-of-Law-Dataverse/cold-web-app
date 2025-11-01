@@ -58,7 +58,7 @@ const props = defineProps({
   class: { type: String, default: "" },
   textType: { type: String, required: true },
   instrumentTitle: { type: String, default: "" },
-  table: { type: String, default: "Domestic Legal Provisions" }, // add this line
+  table: { type: String, default: "Domestic Legal Provisions" },
 });
 
 const emit = defineEmits(["update:hasEnglishTranslation"]);
@@ -78,13 +78,11 @@ const {
   textType: props.textType,
   onHasEnglishTranslationUpdate: (value) =>
     emit("update:hasEnglishTranslation", value),
-  table: props.table, // pass the table prop
+  table: props.table,
 });
 
-// New reactive property for the English title
 const englishTitle = ref("");
 
-// Watch the content and update englishTitle if the key exists
 watch(
   content,
   (newVal) => {
@@ -95,7 +93,6 @@ watch(
   { immediate: true },
 );
 
-// Update displayTitle to include englishTitle and instrumentTitle if available
 const displayTitle = computed(() => {
   if (loading.value) return "Loading...";
   if (error.value) return "Error";
@@ -109,7 +106,6 @@ const displayTitle = computed(() => {
   return fullTitle;
 });
 
-// Fetch provision details when component is mounted
 onMounted(() => {
   fetchProvisionDetails();
 });

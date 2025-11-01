@@ -2,11 +2,8 @@
   <ResultCard :result-data="resultData" card-type="Court Decisions">
     <div class="flex flex-col gap-0">
       <!-- Case Title section -->
-      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-        <div class="label-key md:w-48 md:flex-shrink-0">
-          {{ getLabel("Case Title") }}
-        </div>
-        <div class="flex items-start justify-between gap-4 md:flex-1">
+      <DetailRow :label="getLabel('Case Title')">
+        <div class="flex items-start justify-between gap-4">
           <div
             :class="[
               config.valueClassMap['Case Title'],
@@ -26,67 +23,58 @@
 
           <PdfLink :record-id="resultData.id" folder-name="court-decisions" />
         </div>
-      </div>
+      </DetailRow>
 
       <!-- Date section -->
-      <div
+      <DetailRow
         v-if="
           resultData['Publication Date ISO'] &&
           resultData['Publication Date ISO'] !== 'NA'
         "
-        class="flex flex-col md:flex-row md:items-start md:gap-6"
+        :label="getLabel('Publication Date ISO')"
       >
-        <div class="label-key md:w-48 md:flex-shrink-0">
-          {{ getLabel("Publication Date ISO") }}
-        </div>
         <div
           :class="[
             config.valueClassMap['Publication Date ISO'],
-            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+            'whitespace-pre-line text-sm leading-relaxed',
           ]"
         >
           {{ getValue("Publication Date ISO") }}
         </div>
-      </div>
+      </DetailRow>
 
       <!-- Instance section -->
-      <div
+      <DetailRow
         v-if="resultData['Instance'] && resultData['Instance'] !== 'NA'"
-        class="flex flex-col md:flex-row md:items-start md:gap-6"
+        :label="getLabel('Instance')"
       >
-        <div class="label-key md:w-48 md:flex-shrink-0">
-          {{ getLabel("Instance") }}
-        </div>
         <div
           :class="[
             config.valueClassMap['Instance'],
-            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+            'whitespace-pre-line text-sm leading-relaxed',
           ]"
         >
           {{ getValue("Instance") }}
         </div>
-      </div>
+      </DetailRow>
 
       <!-- Choice of Law Issue section -->
-      <div
+      <DetailRow
         v-if="
           resultData['Choice of Law Issue'] &&
           resultData['Choice of Law Issue'] !== 'NA'
         "
-        class="flex flex-col md:flex-row md:items-start md:gap-6"
+        :label="getLabel('Choice of Law Issue')"
       >
-        <div class="label-key md:w-48 md:flex-shrink-0">
-          {{ getLabel("Choice of Law Issue") }}
-        </div>
         <div
           :class="[
             config.valueClassMap['Choice of Law Issue'],
-            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+            'whitespace-pre-line text-sm leading-relaxed',
           ]"
         >
           {{ getValue("Choice of Law Issue") }}
         </div>
-      </div>
+      </DetailRow>
     </div>
   </ResultCard>
 </template>
@@ -94,6 +82,7 @@
 <script setup>
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import { courtDecisionCardConfig } from "@/config/cardConfigs";
 import { extractYear } from "@/utils/format";
 
@@ -115,7 +104,6 @@ const getValue = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key);
   let value = props.resultData[key];
 
-  // Apply extractYear to 'Publication Date ISO' if a valid value exists
   if (key === "Publication Date ISO" && value && value !== "NA") {
     value = extractYear(value);
   }
@@ -145,11 +133,5 @@ const getValue = (key) => {
 .grid-item {
   display: flex;
   flex-direction: column;
-}
-
-.label-key {
-  @extend .label;
-  padding: 0;
-  margin-top: 12px;
 }
 </style>

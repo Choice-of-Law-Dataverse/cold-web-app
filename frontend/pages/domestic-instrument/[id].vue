@@ -10,115 +10,81 @@
     >
       <!-- Slot for Amended by -->
       <template #amended-by="{ value }">
-        <div :class="valueClassMap['Amended by']">
-          <SectionRenderer
-            v-if="value"
-            :id="value"
-            section="Amended by"
-            :section-label="keyLabelLookup.get('Amended by')?.label"
-            :section-tooltip="keyLabelLookup.get('Amended by')?.tooltip"
-            table="Domestic Instruments"
-            class="mb-8"
-          />
-        </div>
+        <DetailRow
+          v-if="value"
+          :label="keyLabelLookup.get('Amended by')?.label || 'Amended by'"
+          :tooltip="keyLabelLookup.get('Amended by')?.tooltip"
+        >
+          <InstrumentLink :id="value" table="Domestic Instruments" />
+        </DetailRow>
       </template>
       <!-- Slot for Amends -->
       <template #amends="{ value }">
-        <div :class="valueClassMap['Amends']">
-          <SectionRenderer
-            v-if="value"
-            :id="value"
-            section="Amends"
-            :section-label="keyLabelLookup.get('Amends')?.label"
-            :section-tooltip="keyLabelLookup.get('Amends')?.tooltip"
-            table="Domestic Instruments"
-            class="mb-8"
-          />
-        </div>
+        <DetailRow
+          v-if="value"
+          :label="keyLabelLookup.get('Amends')?.label || 'Amends'"
+          :tooltip="keyLabelLookup.get('Amends')?.tooltip"
+        >
+          <InstrumentLink :id="value" table="Domestic Instruments" />
+        </DetailRow>
       </template>
       <!-- Slot for Replaced by -->
       <template #replaced-by="{ value }">
-        <div :class="valueClassMap['Replaced by']">
-          <SectionRenderer
-            v-if="value"
-            :id="value"
-            section="Replaced by"
-            :section-label="keyLabelLookup.get('Replaced by')?.label"
-            :section-tooltip="keyLabelLookup.get('Replaced by')?.tooltip"
-            table="Domestic Instruments"
-            class="mb-8"
-          />
-        </div>
+        <DetailRow
+          v-if="value"
+          :label="keyLabelLookup.get('Replaced by')?.label || 'Replaced by'"
+          :tooltip="keyLabelLookup.get('Replaced by')?.tooltip"
+        >
+          <InstrumentLink :id="value" table="Domestic Instruments" />
+        </DetailRow>
       </template>
       <!-- Slot for Replaces -->
       <template #replaces="{ value }">
-        <div :class="valueClassMap['Replaces']">
-          <SectionRenderer
-            v-if="value"
-            :id="value"
-            section="Replaces"
-            :section-label="keyLabelLookup.get('Replaces')?.label"
-            :section-tooltip="keyLabelLookup.get('Replaces')?.tooltip"
-            table="Domestic Instruments"
-            class="mb-8"
-          />
-        </div>
+        <DetailRow
+          v-if="value"
+          :label="keyLabelLookup.get('Replaces')?.label || 'Replaces'"
+          :tooltip="keyLabelLookup.get('Replaces')?.tooltip"
+        >
+          <InstrumentLink :id="value" table="Domestic Instruments" />
+        </DetailRow>
       </template>
       <!-- Slot for Compatibility section -->
       <template #compatibility="{ value }">
-        <div
+        <DetailRow
           v-if="
             value &&
             (isCompatible('Compatible With the UNCITRAL Model Law') ||
               isCompatible('Compatible With the HCCH Principles'))
           "
-          class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6"
+          :label="
+            keyLabelLookup.get('Compatibility')?.label || 'Compatible with'
+          "
+          :tooltip="keyLabelLookup.get('Compatibility')?.tooltip"
         >
-          <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-            <span class="flex items-center">
-              {{
-                keyLabelLookup.get("Compatibility")?.label || "Compatible with"
-              }}
-              <InfoPopover
-                v-if="keyLabelLookup.get('Compatibility')?.tooltip"
-                :text="keyLabelLookup.get('Compatibility')?.tooltip"
-              />
-            </span>
-          </h4>
-          <div class="md:flex-1">
-            <div class="result-value-small flex gap-2">
-              <CompatibleLabel
-                v-if="isCompatible('Compatible With the UNCITRAL Model Law')"
-                label="UNCITRAL Model Law"
-              />
-              <CompatibleLabel
-                v-if="isCompatible('Compatible With the HCCH Principles')"
-                label="HCCH Principles"
-              />
-            </div>
+          <div class="result-value-small flex gap-2">
+            <CompatibleLabel
+              v-if="isCompatible('Compatible With the UNCITRAL Model Law')"
+              label="UNCITRAL Model Law"
+            />
+            <CompatibleLabel
+              v-if="isCompatible('Compatible With the HCCH Principles')"
+              label="HCCH Principles"
+            />
           </div>
-        </div>
+        </DetailRow>
       </template>
       <!-- Slot for Legal provisions -->
       <template #domestic-legal-provisions="{ value }">
         <!-- Only render if value exists and is not "N/A" -->
-        <div
+        <DetailRow
           v-if="value && value.trim() && value.trim() !== 'N/A'"
-          class="flex flex-col md:w-full md:flex-row md:gap-6"
+          :label="
+            keyLabelLookup.get('Domestic Legal Provisions')?.label ||
+            'Selected Provisions'
+          "
+          :tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
         >
-          <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-            <span class="flex items-center">
-              {{
-                keyLabelLookup.get("Domestic Legal Provisions")?.label ||
-                "Selected Provisions"
-              }}
-              <InfoPopover
-                v-if="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
-                :text="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
-              />
-            </span>
-          </h4>
-          <div class="provisions-container md:flex-1">
+          <div class="provisions-container">
             <LegalProvision
               v-for="(provisionId, index) in getSortedProvisionIdsForInstrument(
                 value,
@@ -135,7 +101,7 @@
               @update:has-english-translation="hasEnglishTranslation = $event"
             />
           </div>
-        </div>
+        </DetailRow>
       </template>
     </BaseDetailLayout>
     <CountryReportLink
@@ -156,9 +122,9 @@
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
-import InfoPopover from "@/components/ui/InfoPopover.vue";
-import SectionRenderer from "@/components/legal/SectionRenderer.vue";
+import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
 import CountryReportLink from "@/components/ui/CountryReportLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
@@ -182,7 +148,6 @@ const route = useRoute();
 const textType = ref("Full Text of the Provision (English Translation)");
 const hasEnglishTranslation = ref(false);
 
-// Use TanStack Vue Query for data fetching - no need for refs with static values
 const table = ref<TableName>("Domestic Instruments");
 const id = ref(route.params.id as string);
 
@@ -194,7 +159,6 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   legalInstrumentConfig,
 );
 
-// Create lookup map for better performance
 const keyLabelLookup = computed(() => {
   const map = new Map();
   computedKeyLabelPairs.value.forEach((pair) => {
@@ -208,7 +172,6 @@ const processedLegalInstrument = computed(() => {
     return null;
   }
 
-  // Check if any compatibility fields exist
   const hasCompatibility =
     legalInstrument.value["Compatible With the UNCITRAL Model Law"] === true ||
     legalInstrument.value["Compatible With the HCCH Principles"] === true;
@@ -218,7 +181,6 @@ const processedLegalInstrument = computed(() => {
     "Title (in English)":
       legalInstrument.value["Title (in English)"] ||
       legalInstrument.value["Official Title"],
-    // Add Compatibility field so the slot will render
     Compatibility: hasCompatibility ? true : undefined,
   };
 });
@@ -238,10 +200,3 @@ const getSortedProvisionIdsForInstrument = (rawValue: string): string[] => {
   );
 };
 </script>
-
-<style scoped>
-/* Remove the extra spacer from BaseLegalContent when provisions are in a two-column layout */
-.provisions-container :deep(.base-legal-content .no-margin > div:first-child) {
-  display: none;
-}
-</style>

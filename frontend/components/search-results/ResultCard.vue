@@ -42,11 +42,10 @@
 import { UCard } from "#components";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 
-// Define props
 const props = defineProps({
   resultData: {
     type: Object,
-    required: false, // Changed: no longer required
+    required: false,
     default: () => ({}),
   },
   cardType: {
@@ -65,7 +64,6 @@ const props = defineProps({
   },
 });
 
-// Function to determine the card link
 function getCardLink() {
   switch (props.cardType) {
     case "Answers":

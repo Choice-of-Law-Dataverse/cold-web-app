@@ -28,19 +28,16 @@ const fetchQuestionCountries = async ({
 
   const data = await apiClient("/search/full_table", { body });
 
-  // Ensure we only keep rows whose ID actually ends with the requested suffix
   const dataWithSuffix = Array.isArray(data)
     ? data.filter(
         (item) => typeof item.ID === "string" && item.ID.endsWith(suffix),
       )
     : [];
 
-  // Enforce exact match on the Answer field (API may do substring matching)
   const exactAnswerMatches = dataWithSuffix.filter(
     (item) => typeof item.Answer === "string" && item.Answer === answer,
   );
 
-  // Extract question title from an exact-answer match if available, otherwise fall back
   let questionTitle = "";
   if (
     exactAnswerMatches.length > 0 &&
@@ -54,19 +51,16 @@ const fetchQuestionCountries = async ({
     questionTitle = dataWithSuffix[0].Question;
   }
 
-  // Start from exact-answer matches so "No" does not match "No Data"
   let filtered = exactAnswerMatches.filter(
     (item) => item["Jurisdictions Irrelevant"] !== "Yes",
   );
 
-  // Apply region filter if not 'All'
   if (region && region !== "All") {
     filtered = filtered.filter(
       (item) => item["Jurisdictions Region"] === region,
     );
   }
 
-  // Map to objects with name and code, then sort by name
   const countries = filtered
     .map((item) => ({
       name: item.Jurisdictions,

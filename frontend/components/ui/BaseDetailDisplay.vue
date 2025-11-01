@@ -75,68 +75,57 @@
             <!-- If no slot, use default display -->
             <template v-else>
               <!-- Conditionally render the label and value container -->
-              <div
+              <DetailRow
                 v-if="shouldDisplayValue(item, resultData?.[item.key])"
-                class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6"
+                :label="item.label"
+                :tooltip="item.tooltip"
               >
-                <!-- Conditionally render the label -->
-                <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-                  <span class="flex items-center">
-                    {{ item.label }}
-                    <!-- Add this line to support header-actions slot for each section -->
-                    <slot
-                      :name="item.key + '-header-actions'"
-                      :value="resultData?.[item.key]"
-                    />
-                    <!-- Render InfoPopover if tooltip is defined in config -->
-                    <template v-if="item.tooltip">
-                      <InfoPopover :text="item.tooltip" />
-                    </template>
-                  </span>
-                </h4>
-                <div class="md:flex-1">
-                  <!-- Conditionally render bullet list if Answer or Specialists is an array -->
-                  <template
-                    v-if="
-                      (item.key === 'Answer' || item.key === 'Specialists') &&
-                      Array.isArray(
-                        getDisplayValue(item, resultData?.[item.key]),
-                      )
-                    "
-                  >
-                    <div class="mt-0 flex flex-col gap-2">
-                      <div
-                        v-for="(line, i) in getDisplayValue(
-                          item,
-                          resultData?.[item.key],
-                        )"
-                        :key="i"
-                        :class="props.valueClassMap[item.key] || 'prose'"
-                      >
-                        {{ line }}
-                      </div>
-                    </div>
-                  </template>
-                  <template v-else>
-                    <p
-                      :class="[
-                        props.valueClassMap[item.key] ||
-                          'whitespace-pre-line leading-relaxed',
-                        (!resultData?.[item.key] ||
-                          resultData?.[item.key] === 'NA') &&
-                        item.emptyValueBehavior?.action === 'display' &&
-                        !item.emptyValueBehavior?.getFallback
-                          ? 'text-gray-300'
-                          : '',
-                        'prose',
-                        'mt-0',
-                      ]"
+                <template #label-actions>
+                  <slot
+                    :name="item.key + '-header-actions'"
+                    :value="resultData?.[item.key]"
+                  />
+                </template>
+
+                <!-- Conditionally render bullet list if Answer or Specialists is an array -->
+                <template
+                  v-if="
+                    (item.key === 'Answer' || item.key === 'Specialists') &&
+                    Array.isArray(getDisplayValue(item, resultData?.[item.key]))
+                  "
+                >
+                  <div class="mt-0 flex flex-col gap-2">
+                    <div
+                      v-for="(line, i) in getDisplayValue(
+                        item,
+                        resultData?.[item.key],
+                      )"
+                      :key="i"
+                      :class="props.valueClassMap[item.key] || 'prose'"
                     >
-                      {{ getDisplayValue(item, resultData?.[item.key]) }}
-                    </p>
-                  </template>
-                </div>
-              </div>
+                      {{ line }}
+                    </div>
+                  </div>
+                </template>
+                <template v-else>
+                  <p
+                    :class="[
+                      props.valueClassMap[item.key] ||
+                        'whitespace-pre-line leading-relaxed',
+                      (!resultData?.[item.key] ||
+                        resultData?.[item.key] === 'NA') &&
+                      item.emptyValueBehavior?.action === 'display' &&
+                      !item.emptyValueBehavior?.getFallback
+                        ? 'text-gray-300'
+                        : '',
+                      'prose',
+                      'mt-0',
+                    ]"
+                  >
+                    {{ getDisplayValue(item, resultData?.[item.key]) }}
+                  </p>
+                </template>
+              </DetailRow>
             </template>
           </section>
           <slot name="search-links" />
@@ -152,9 +141,8 @@ import { useCoveredCountries } from "@/composables/useCoveredCountries";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
-import InfoPopover from "@/components/ui/InfoPopover.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 
-// Props for reusability across pages
 const props = defineProps({
   loading: Boolean,
   resultData: {
@@ -172,10 +160,10 @@ const props = defineProps({
   formattedSourceTable: {
     type: String,
     default: "",
-  }, // Receive the hard-coded value from [id].vue
+  },
   showHeader: {
     type: Boolean,
-    default: true, // Default to true so headers are shown unless explicitly disabled
+    default: true,
   },
   showOpenLink: {
     type: Boolean,
@@ -235,7 +223,6 @@ watch(
   { immediate: true },
 );
 
-// Reactively update banner display once everything is ready
 watchEffect(() => {
   if (
     (isJurisdictionPage || isQuestionPage) &&
@@ -248,10 +235,8 @@ watchEffect(() => {
   }
 });
 
-// Add these new functions
 const shouldDisplayValue = (item, value) => {
   if (!item.emptyValueBehavior) return true;
-  // If a positive display condition is provided, honor it first using the full result data
   if (
     item.emptyValueBehavior.shouldDisplay &&
     !item.emptyValueBehavior.shouldDisplay(props.resultData)
@@ -274,11 +259,9 @@ const shouldDisplayValue = (item, value) => {
 };
 
 const getDisplayValue = (item, value) => {
-  // Use valueTransform if present
   if (item.valueTransform) {
     return item.valueTransform(value);
   }
-  // For "Answer" and "Specialists", split by comma if a string contains commas.
   if (
     (item.key === "Answer" || item.key === "Specialists") &&
     typeof value === "string" &&
@@ -286,7 +269,6 @@ const getDisplayValue = (item, value) => {
   ) {
     return value.split(",").map((part) => part.trim());
   }
-  // Treat empty arrays as empty for fallback logic
   if (
     Array.isArray(value) &&
     value.length === 0 &&

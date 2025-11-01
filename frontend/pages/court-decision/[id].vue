@@ -8,99 +8,79 @@
       :show-suggest-edit="true"
       source-table="Court Decisions"
     >
-      <!-- Slot for Domestic Legal Provisions -->
       <template #domestic-legal-provisions="{ value }">
-        <div :class="valueClassMap['Domestic Legal Provisions']">
-          <ProvisionRenderer
-            v-if="value"
-            :id="value"
-            section="Domestic Legal Provisions"
-            :section-label="
-              keyLabelLookup.get('Domestic Legal Provisions')?.label
-            "
-            :section-tooltip="
-              keyLabelLookup.get('Domestic Legal Provisions')?.tooltip
-            "
-            table="Domestic Instruments"
-            class="mb-8"
-          />
-        </div>
+        <DetailRow
+          v-if="value"
+          :label="
+            keyLabelLookup.get('Domestic Legal Provisions')?.label ||
+            'Domestic Legal Provisions'
+          "
+          :tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+        >
+          <InstrumentLink :id="value" table="Domestic Instruments" />
+        </DetailRow>
       </template>
-      <!-- Custom rendering for Quote section -->
+
       <template #quote>
-        <section class="section-gap m-0 p-0">
-          <div
-            v-if="
-              courtDecision &&
-              (courtDecision['Quote'] || courtDecision['Translated Excerpt'])
-            "
-            class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6"
-          >
-            <!-- Label column -->
-            <div class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-              <span class="flex items-center">
-                Quote
-                <InfoPopover
-                  v-if="keyLabelLookup.get('Quote')?.tooltip"
-                  :text="keyLabelLookup.get('Quote')?.tooltip"
-                />
+        <DetailRow
+          v-if="
+            courtDecision &&
+            (courtDecision['Quote'] || courtDecision['Translated Excerpt'])
+          "
+          label="Quote"
+          :tooltip="keyLabelLookup.get('Quote')?.tooltip"
+        >
+          <div>
+            <div
+              v-if="
+                (courtDecision as Record<string, unknown>)
+                  .hasEnglishQuoteTranslation &&
+                (courtDecision as Record<string, unknown>)['Quote'] &&
+                (
+                  (courtDecision as Record<string, unknown>)['Quote'] as string
+                )?.trim() !== ''
+              "
+              class="mb-2 flex items-center gap-1"
+            >
+              <span
+                class="label-key-provision-toggle mr-[-0px]"
+                :class="{
+                  'opacity-25': showEnglishQuote,
+                  'opacity-100': !showEnglishQuote,
+                }"
+              >
+                Original
+              </span>
+              <UToggle
+                v-model="showEnglishQuote"
+                size="2xs"
+                class="bg-[var(--color-cold-gray)]"
+              />
+              <span
+                class="label-key-provision-toggle"
+                :class="{
+                  'opacity-25': !showEnglishQuote,
+                  'opacity-100': showEnglishQuote,
+                }"
+              >
+                English
               </span>
             </div>
-            <!-- Content column -->
-            <div class="md:flex-1">
-              <div
-                v-if="
-                  (courtDecision as Record<string, unknown>)
-                    .hasEnglishQuoteTranslation &&
-                  (courtDecision as Record<string, unknown>)['Quote'] &&
-                  (
-                    (courtDecision as Record<string, unknown>)[
-                      'Quote'
-                    ] as string
-                  )?.trim() !== ''
-                "
-                class="mb-2 flex items-center gap-1"
-              >
-                <span
-                  class="label-key-provision-toggle mr-[-0px]"
-                  :class="{
-                    'opacity-25': showEnglishQuote,
-                    'opacity-100': !showEnglishQuote,
-                  }"
-                >
-                  Original
-                </span>
-                <UToggle
-                  v-model="showEnglishQuote"
-                  size="2xs"
-                  class="bg-[var(--color-cold-gray)]"
-                />
-                <span
-                  class="label-key-provision-toggle"
-                  :class="{
-                    'opacity-25': !showEnglishQuote,
-                    'opacity-100': showEnglishQuote,
-                  }"
-                >
-                  English
-                </span>
-              </div>
-              <div>
-                <p class="prose mt-0 whitespace-pre-line">
-                  {{
-                    showEnglishQuote &&
-                    (courtDecision as any).hasEnglishQuoteTranslation &&
-                    (courtDecision as any)["Quote"] &&
-                    (courtDecision as any)["Quote"]?.trim() !== ""
-                      ? (courtDecision as any)["Translated Excerpt"]
-                      : (courtDecision as any)["Quote"] ||
-                        (courtDecision as any)["Translated Excerpt"]
-                  }}
-                </p>
-              </div>
+            <div>
+              <p class="prose mt-0 whitespace-pre-line">
+                {{
+                  showEnglishQuote &&
+                  (courtDecision as any).hasEnglishQuoteTranslation &&
+                  (courtDecision as any)["Quote"] &&
+                  (courtDecision as any)["Quote"]?.trim() !== ""
+                    ? (courtDecision as any)["Translated Excerpt"]
+                    : (courtDecision as any)["Quote"] ||
+                      (courtDecision as any)["Translated Excerpt"]
+                }}
+              </p>
             </div>
           </div>
-        </section>
+        </DetailRow>
       </template>
       <!-- Custom rendering for Related Questions section -->
       <template #related-questions>
@@ -121,88 +101,63 @@
         </section>
       </template>
       <template #related-literature>
-        <section class="section-gap m-0 p-0">
-          <div class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6">
-            <!-- Label column -->
-            <div class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-              <span class="flex items-center">
-                Related Literature
-                <InfoPopover
-                  v-if="keyLabelLookup.get('Related Literature')?.tooltip"
-                  :text="keyLabelLookup.get('Related Literature')?.tooltip"
-                />
-              </span>
-            </div>
-            <!-- Content column -->
-            <div class="md:flex-1">
-              <RelatedLiterature
-                :themes="
-                  ((courtDecision as Record<string, unknown>)?.themes as string) ||
-                  ''
-                "
-                :value-class-map="valueClassMap['Related Literature']"
-                :use-id="false"
-                :show-label="false"
-              />
-            </div>
-          </div>
-        </section>
+        <DetailRow
+          label="Related Literature"
+          :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
+        >
+          <RelatedLiterature
+            :themes="
+              ((courtDecision as Record<string, unknown>)?.themes as string) ||
+              ''
+            "
+            :value-class-map="valueClassMap['Related Literature']"
+            :use-id="false"
+            :show-label="false"
+          />
+        </DetailRow>
       </template>
 
-      <!-- Custom rendering for Full Text (Original Text) section -->
       <template #original-text="{ value }">
-        <section
+        <DetailRow
           v-if="value && value.trim() !== ''"
-          class="section-gap m-0 p-0"
+          :label="keyLabelLookup.get('Original Text')?.label || 'Full Text'"
         >
-          <div class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6">
-            <!-- Label column -->
-            <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-              <span class="flex items-center">
-                {{ keyLabelLookup.get("Original Text")?.label || "Full Text" }}
-              </span>
-            </h4>
-            <!-- Content column -->
-            <div class="md:flex-1">
-              <div :class="valueClassMap['Original Text']">
-                <div v-if="!showFullText && value.length > 400">
-                  <p class="prose mt-0">
-                    {{ value.slice(0, 400) }}<span v-if="value.length > 400">…</span>
-                  </p>
-                  <NuxtLink
-                    class="ml-2 cursor-pointer"
-                    @click="showFullText = true"
-                  >
-                    <Icon name="material-symbols:add" :class="iconClass" />
-                    Show more
-                  </NuxtLink>
-                </div>
-                <div v-else>
-                  <p class="prose mt-0">
-                    {{ value }}
-                  </p>
-                  <NuxtLink
-                    v-if="value.length > 400"
-                    class="ml-2 cursor-pointer"
-                    @click="showFullText = false"
-                  >
-                    <Icon name="material-symbols:remove" :class="iconClass" />
-                    Show less
-                  </NuxtLink>
-                </div>
-              </div>
+          <div :class="valueClassMap['Original Text']">
+            <div v-if="!showFullText && value.length > 400">
+              <p class="prose mt-0">
+                {{ value.slice(0, 400)
+                }}<span v-if="value.length > 400">…</span>
+              </p>
+              <NuxtLink
+                class="ml-2 cursor-pointer"
+                @click="showFullText = true"
+              >
+                <Icon name="material-symbols:add" :class="iconClass" />
+                Show more
+              </NuxtLink>
+            </div>
+            <div v-else>
+              <p class="prose mt-0">
+                {{ value }}
+              </p>
+              <NuxtLink
+                v-if="value.length > 400"
+                class="ml-2 cursor-pointer"
+                @click="showFullText = false"
+              >
+                <Icon name="material-symbols:remove" :class="iconClass" />
+                Show less
+              </NuxtLink>
             </div>
           </div>
-        </section>
+        </DetailRow>
       </template>
     </BaseDetailLayout>
 
-    <!-- Error Alert -->
     <UAlert v-if="error" type="error" class="mx-auto mt-4 max-w-container">
       {{ error }}
     </UAlert>
 
-    <!-- Handle SEO meta tags -->
     <PageSeoMeta
       :title-candidates="[
         ((courtDecision as Record<string, unknown>)?.[
@@ -223,10 +178,10 @@
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
-import InfoPopover from "@/components/ui/InfoPopover.vue";
-import ProvisionRenderer from "@/components/legal/SectionRenderer.vue";
+import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useCourtDecision } from "@/composables/useCourtDecision";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
@@ -253,8 +208,6 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
 );
 
 const showEnglishQuote = ref(true);
-
-// For Full Text show more/less
 const showFullText = ref(false);
 
 const keyLabelLookup = computed(() => {

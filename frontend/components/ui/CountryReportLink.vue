@@ -28,7 +28,6 @@
 <script setup>
 import { computed } from "vue";
 
-// Accept processedAnswerData as a prop from parent
 const props = defineProps({
   processedAnswerData: {
     type: Object,
@@ -37,7 +36,6 @@ const props = defineProps({
   },
 });
 
-// Computed property to handle different property name variations
 const jurisdictionCode = computed(() => {
   return (
     props.processedAnswerData?.["Jurisdictions Alpha-3 code"] ||
@@ -50,8 +48,4 @@ const jurisdictionCode = computed(() => {
 h3 {
   color: var(--color-cold-purple) !important;
 }
-
-/* :deep(span.result-value-small) {
-  margin-top: 24px !important;
-} */
 </style>

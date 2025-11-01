@@ -1,7 +1,6 @@
 <template>
   <UCard class="cold-ucard">
     <div class="flex flex-col gap-8">
-      <!-- Title Section -->
       <div>
         <h3 class="text-left md:whitespace-nowrap">
           <NuxtLink
@@ -27,7 +26,6 @@
 import { useRoute } from "vue-router";
 import { computed } from "vue";
 
-// Accept processedAnswerData as a prop from parent
 defineProps({
   formattedJurisdiction: {
     type: Object,
@@ -37,19 +35,15 @@ defineProps({
 
 const route = useRoute();
 
-// Get the ISO3 code from the route params
 const iso3Code = computed(() => {
   return route.params.id?.toUpperCase();
 });
 
-// Computed property to choose a fixed second jurisdiction code
-// Use 'ago' by default; if current is 'ago', use 'arg'
 const secondJurisdictionCode = computed(() => {
   const current = iso3Code.value?.toLowerCase();
   return current === "ago" ? "arg" : "ago";
 });
 
-// Computed property for the complete comparison URL
 const comparisonUrl = computed(() => {
   if (!iso3Code.value) return "#";
 

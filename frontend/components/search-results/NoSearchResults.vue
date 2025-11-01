@@ -38,7 +38,6 @@ const route = useRoute();
 const router = useRouter();
 
 const jurisdictionFilter = computed(() => {
-  // Add a space after each comma for display
   return route.query.jurisdiction
     ? String(route.query.jurisdiction).replace(/,/g, ", ")
     : null;
@@ -48,11 +47,9 @@ const queryContainsJurisdiction = computed(() => {
   const q = (route.query.q || "").toLowerCase();
   if (!q) return false;
   const words = q.split(/\s+/);
-  // Flatten all names and denonyms from jurisdictionsData
   const jurisdictionTerms = jurisdictionsData
     .flatMap((j) => [...(j.name || []), ...(j.alternative || [])])
     .flatMap((term) => term.split(",").map((t) => t.trim().toLowerCase()));
-  // Check if any word in the query matches a jurisdiction term
   return words.some((word) => jurisdictionTerms.includes(word));
 });
 

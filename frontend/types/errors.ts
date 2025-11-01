@@ -94,11 +94,9 @@ export class NotFoundError extends Error {
     originalError: unknown,
     customMessage?: string,
   ) {
-    // Extract table name from body if available
     const table = body && "table" in body ? body.table : undefined;
     const id = body && "id" in body ? body.id : undefined;
 
-    // Create meaningful error message for not found with ID pattern
     const resource = table ? table : endpoint;
     const itemId = id || "Item";
     const finalMessage = customMessage || `${itemId} not found in ${resource}`;
@@ -113,7 +111,6 @@ export class NotFoundError extends Error {
     this.body = body;
     this.originalError = originalError;
 
-    // Maintain proper prototype chain
     Object.setPrototypeOf(this, NotFoundError.prototype);
 
     console.error(this.toJSON());
@@ -158,10 +155,8 @@ export class ApiError extends Error {
     originalError: unknown,
     customMessage?: string,
   ) {
-    // Extract table name from body if available
     const table = body && "table" in body ? body.table : undefined;
 
-    // Create meaningful error message
     const operation = table ? `fetch ${table}` : `call ${endpoint}`;
     const baseErrorMessage =
       originalError instanceof Error ? originalError.message : "Unknown error";
@@ -178,7 +173,6 @@ export class ApiError extends Error {
     this.body = body;
     this.originalError = originalError;
 
-    // Maintain proper prototype chain
     Object.setPrototypeOf(this, ApiError.prototype);
 
     console.error(this.toJSON());

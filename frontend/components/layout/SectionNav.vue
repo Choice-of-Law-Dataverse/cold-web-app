@@ -1,8 +1,6 @@
 <template>
   <nav>
-    <!-- 1) scroll on the wrapper now -->
     <div class="nav-wrapper scrollbar-hidden relative overflow-x-auto">
-      <!-- 2) make the UL shrink‑wrap -->
       <ul class="relative z-0 inline-flex list-none items-center space-x-4">
         <li
           v-for="link in links"
@@ -27,7 +25,6 @@ import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { aboutNavLinks } from "@/config/pageConfigs.js";
 
-// Accept custom links or use default aboutNavLinks
 const props = defineProps({
   links: {
     type: Array,
@@ -44,7 +41,6 @@ const activeTab = computed(() => {
   return segment || links[0].key;
 });
 
-// Navigate to the selected link's path
 const setActiveTab = (path) => {
   router.push(path);
 };
@@ -55,7 +51,7 @@ const setActiveTab = (path) => {
   position: relative !important;
   z-index: 0 !important;
   margin-bottom: -1.5em;
-  /* scrolling lives here now */
+
   overflow-x: auto;
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -65,10 +61,9 @@ const setActiveTab = (path) => {
 }
 
 ul {
-  /* shrink‑wrap when content is big, stretch to full width when content is small */
   display: inline-flex;
   width: max-content;
-  min-width: 100%; /* ← add this */
+  min-width: 100%;
   white-space: nowrap;
   position: relative;
   border-bottom: 0 solid var(--color-cold-gray);

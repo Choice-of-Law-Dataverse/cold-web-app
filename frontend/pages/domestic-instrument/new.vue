@@ -14,7 +14,6 @@
       @open-cancel-modal="showCancelModal = true"
     >
       <div class="section-gap m-0 p-0">
-        <!-- Jurisdiction (required) -->
         <UFormGroup size="lg" hint="Required" :error="errors.jurisdiction_link">
           <template #label>
             <span class="label">Jurisdiction</span>
@@ -28,7 +27,6 @@
           />
         </UFormGroup>
 
-        <!-- Official Title (required) -->
         <UFormGroup
           size="lg"
           class="mt-8"
@@ -48,7 +46,6 @@
           />
         </UFormGroup>
 
-        <!-- Name (English) (required) -->
         <UFormGroup
           size="lg"
           class="mt-8"
@@ -68,7 +65,6 @@
           />
         </UFormGroup>
 
-        <!-- Entry Into Force (required) -->
         <UFormGroup
           size="lg"
           class="mt-8"
@@ -93,7 +89,6 @@
           </UPopover>
         </UFormGroup>
 
-        <!-- Source (URL) (required) -->
         <UFormGroup
           size="lg"
           class="mt-8"
@@ -110,7 +105,6 @@
           />
         </UFormGroup>
 
-        <!-- Themes (optional) -->
         <UFormGroup size="lg" class="mt-8">
           <template #label>
             <span class="label">Themes</span>
@@ -118,7 +112,6 @@
           <UInput v-model="themes" class="cold-input mt-2" />
         </UFormGroup>
 
-        <!-- Status (optional) -->
         <UFormGroup size="lg" class="mt-8">
           <template #label>
             <span class="label">Status</span>
@@ -126,7 +119,6 @@
           <UInput v-model="status" class="cold-input mt-2" />
         </UFormGroup>
 
-        <!-- Publication Date (optional) -->
         <UFormGroup size="lg" class="mt-8">
           <template #label>
             <span class="label flex flex-row items-center">
@@ -150,7 +142,6 @@
           </UPopover>
         </UFormGroup>
 
-        <!-- Abbreviation (optional) -->
         <UFormGroup size="lg" class="mt-8">
           <template #label>
             <span class="label flex flex-row items-center">
@@ -161,7 +152,6 @@
           <UInput v-model="abbreviation" class="cold-input mt-2" />
         </UFormGroup>
 
-        <!-- Compatible HCCH Principles (optional) -->
         <UFormGroup size="lg" class="mt-8">
           <template #label>
             <span class="label flex flex-row items-center">
@@ -191,7 +181,6 @@
           </div>
         </UFormGroup>
 
-        <!-- Compatible UNCITRAL Model Law (optional) -->
         <UFormGroup size="lg" class="mt-8">
           <template #label>
             <span class="label flex flex-row items-center">
@@ -255,7 +244,6 @@ import SaveModal from "@/components/ui/SaveModal.vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
 import { format } from "date-fns";
-// Tooltips: match detail page content
 import tooltipAbbreviation from "@/content/info_boxes/domestic_instrument/abbreviation.md?raw";
 import tooltipCompatibleWithHCCH from "@/content/info_boxes/domestic_instrument/compatible_hcch.md?raw";
 import tooltipCompatibleWithUNCITRAL from "@/content/info_boxes/domestic_instrument/compatible_uncitral.md?raw";
@@ -264,15 +252,12 @@ import tooltipOfficialTitle from "@/content/info_boxes/domestic_instrument/offic
 import tooltipDomesticInstrumentPublicationDate from "@/content/info_boxes/domestic_instrument/publication_date.md?raw";
 import tooltipDomesticInstrumentTitle from "@/content/info_boxes/domestic_instrument/title.md?raw";
 
-// Form data
 const officialTitle = ref("");
 const titleEn = ref("");
-// Jurisdiction selector
 const selectedJurisdiction = ref([]);
 const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
 const entryIntoForce = ref(new Date());
 const sourceUrl = ref("");
-// Optional fields
 const themes = ref("");
 const status = ref("");
 const publicationDate = ref(null);
@@ -280,7 +265,6 @@ const abbreviation = ref("");
 const compatibleHcchPrinciples = ref(undefined);
 const compatibleUncitralModelLaw = ref(undefined);
 
-// For SaveModal parity
 const specialists = ref([""]);
 const pdfFile = ref(null);
 const email = ref("");
@@ -288,11 +272,8 @@ const comments = ref("");
 
 const token = ref("");
 
-// Toggle buttons write 'Yes'/'No' directly to the refs above
-
 watch(token, () => {});
 
-// Load jurisdictions like on Court Decision page
 const loadJurisdictions = async () => {
   try {
     const response = await fetch(`/api/proxy/search/full_table`, {
@@ -325,7 +306,6 @@ const loadJurisdictions = async () => {
 
 onMounted(loadJurisdictions);
 
-// Validation schema
 const formSchema = z.object({
   jurisdiction_link: z
     .string()
@@ -344,7 +324,6 @@ const formSchema = z.object({
   }),
 });
 
-// State
 const errors = ref({});
 const saveModalErrors = ref({});
 
@@ -422,7 +401,6 @@ function handleNewSave() {
       compatibleUncitralModelLaw.value !== undefined
         ? compatibleUncitralModelLaw.value
         : undefined,
-    // Submitter metadata from SaveModal
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
   };
@@ -453,7 +431,6 @@ function handleNewSave() {
 </script>
 
 <style scoped>
-/* Hide the back button and all right-side card header buttons */
 :deep(.card-header__actions),
 :deep(.card-header [class*="actions"]) {
   display: none !important;

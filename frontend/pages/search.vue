@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- Show error message if there's an API error -->
     <div v-if="apiError" class="error-message">
       <p>
         We're sorry, but we encountered an error while processing your search.
@@ -8,7 +7,6 @@
       </p>
       <p class="error-details">{{ apiError }}</p>
     </div>
-    <!-- Pass searchResults, totalMatches, and loading state -->
     <SearchResults
       v-else
       v-model:filters="filter"
@@ -28,29 +26,27 @@ import SearchResults from "@/components/search-results/SearchResults.vue";
 import { useSearch } from "@/composables/useSearch";
 import { useHead, useSeoMeta } from "#imports";
 
-// Block a page from being indexed (https://nuxtseo.com/learn/controlling-crawlers#quick-implementation-guide)
 useSeoMeta({
   robots: "noindex, follow",
 });
 
 const route = useRoute();
 const router = useRouter();
-const searchQuery = ref(route.query.q || ""); // Holds the search query from the URL
+const searchQuery = ref(route.query.q || "");
 
 const filter = ref({
   jurisdiction: route.query.jurisdiction,
-  sortBy: route.query.sortBy || "relevance", // Add sortBy to filter state
+  sortBy: route.query.sortBy || "relevance",
   theme: route.query.theme,
   type: route.query.type,
 });
 
-const searchText = ref(route.query.q || ""); // Initialize searchText from query
+const searchText = ref(route.query.q || "");
 
 const isInitialized = ref(false);
 
 const searchParams = computed(() => {
   if (!isInitialized.value) {
-    // Return empty params while not initialized to prevent queries
     return {
       filters: {},
       pageSize: 10,
@@ -76,7 +72,6 @@ const {
   isFetchingNextPage,
 } = useSearch(searchParams);
 
-// Computed values for search results and total matches
 const searchResults = computed(() => {
   if (!searchData.value?.pages) return [];
   return searchData.value.pages.flatMap((page) => page.results);
@@ -86,16 +81,13 @@ const totalMatches = computed(() => {
   return searchData.value?.pages?.[0]?.totalMatches || 0;
 });
 
-// Create computed values for template
 const loading = computed(() => isLoading.value || isFetchingNextPage.value);
 const apiError = computed(() => error.value?.message || null);
 
-// Keep searchText in sync with searchQuery
 watch(searchQuery, (newQuery) => {
   searchText.value = newQuery || "";
 });
 
-// Set dynamic page title based on search string
 watch(
   searchQuery,
   (newQuery) => {
@@ -107,30 +99,26 @@ watch(
   { immediate: true },
 );
 
-// Watch for changes in filter and fetch results
 watch(
   filter,
   (newFilters, oldFilters) => {
     if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return; // Avoid redundant updates
 
     const query = {
-      ...route.query, // Retain existing query parameters
+      ...route.query,
       jurisdiction: newFilters.jurisdiction,
       theme: newFilters.theme,
       type: newFilters.type,
     };
 
-    // Remove `q` if searchText is empty
     if (!searchText.value.trim()) {
       delete query.q;
     }
 
-    // Remove undefined values from query
     const cleanedQuery = Object.fromEntries(
       Object.entries(query).filter(([_, value]) => value !== undefined),
     );
 
-    // Update URL
     router.replace({
       name: "search",
       query: cleanedQuery,
@@ -139,33 +127,27 @@ watch(
   { deep: true },
 );
 
-// Watch for URL query updates to sync the dropdowns
 watch(
-  () => route.query, // Watch the entire query object
+  () => route.query,
   (newQuery) => {
-    // Update searchQuery and filters based on the URL
     searchQuery.value = newQuery.q || "";
 
-    // Only update filters if they exist in the URL
     const newFilters = {};
     if (newQuery.jurisdiction) newFilters.jurisdiction = newQuery.jurisdiction;
     if (newQuery.theme) newFilters.theme = newQuery.theme;
     if (newQuery.type) newFilters.type = newQuery.type;
 
-    // Only update if the filters have actually changed
     if (JSON.stringify(newFilters) !== JSON.stringify(filter.value)) {
       filter.value = newFilters;
     }
 
-    // Mark as initialized after first URL processing
     if (!isInitialized.value) {
-      // Use nextTick to ensure all reactive updates are complete
       nextTick(() => {
         isInitialized.value = true;
       });
     }
   },
-  { deep: true, immediate: true }, // Add immediate to handle initial URL
+  { deep: true, immediate: true },
 );
 
 function loadMoreResults() {
@@ -175,7 +157,6 @@ function loadMoreResults() {
 }
 
 onMounted(() => {
-  // Initialize search text from query
   searchText.value = route.query.q || "";
 });
 </script>

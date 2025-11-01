@@ -34,21 +34,21 @@ export default {
       },
       colors: {
         "cold-purple": "#6F4DFA",
-        "cold-purple-alpha": "#6F4DFA0D", // 5% alpha
-        "cold-purple-alpha-25": "#6F4DFA40", // 25% alpha
-        "cold-purple-fake-alpha": "#f3f2fa", // 100% alpha but same color as cold-purple-alpha
+        "cold-purple-alpha": "#6F4DFA0D",
+        "cold-purple-alpha-25": "#6F4DFA40",
+        "cold-purple-fake-alpha": "#f3f2fa",
         "cold-green": "#4DFAB2",
-        "cold-green-alpha": "#4DFAB280", // 50% alpha
-        "cold-green-alpha-10": "#4DFAB21A", // 10% alpha
+        "cold-green-alpha": "#4DFAB280",
+        "cold-green-alpha-10": "#4DFAB21A",
         "cold-cream": "#FFF0D9",
         "cold-night": "#0F0035",
-        "cold-night-alpha": "#0F003580", // 50% alpha; https://gist.github.com/lopspower/03fb1cc0ac9f32ef38f4
-        "cold-night-alpha-25": "#0F003540", // 25% alpha
+        "cold-night-alpha": "#0F003580",
+        "cold-night-alpha-25": "#0F003540",
         "cold-black": "#262626",
 
         "cold-bg": "#FAFAFA",
         "cold-gray": "#E2E8F0",
-        "cold-gray-alpha": "#E2E8F080", // 50% alpha
+        "cold-gray-alpha": "#E2E8F080",
         "cold-dark-gray": "#F1F3F7",
 
         "cold-slate": "#64748B",
@@ -56,19 +56,19 @@ export default {
         "cold-charcoal": "#6B7280",
 
         "label-question": "#FFA8FB",
-        "label-question-alpha": "#FFA8FB1A", // 10% alpha
+        "label-question-alpha": "#FFA8FB1A",
 
         "label-court-decision": "#FF7167",
-        "label-court-decision-alpha": "#FF71671A", // 10% alpha
+        "label-court-decision-alpha": "#FF71671A",
 
         "label-instrument": "#FF9D00",
-        "label-instrument-alpha": "#FF9D001A", // 10% alpha
+        "label-instrument-alpha": "#FF9D001A",
 
         "label-literature": "#4DC3FA",
-        "label-literature-alpha": "#4DC3FA1A", // 10% alpha
+        "label-literature-alpha": "#4DC3FA1A",
 
         "label-arbitration": "#01B9A7",
-        "label-arbitration-alpha": "#01B9A71A", // 10% alpha
+        "label-arbitration-alpha": "#01B9A71A",
       },
     },
   },
@@ -76,7 +76,6 @@ export default {
     require("@tailwindcss/forms"),
     require("@tailwindcss/aspect-ratio"),
     function ({ addBase, theme }) {
-      // Generate CSS variables for colors
       addBase({
         ":root": {
           "--color-cold-purple": theme("colors.cold-purple"),

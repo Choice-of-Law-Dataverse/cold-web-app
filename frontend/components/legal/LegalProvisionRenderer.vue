@@ -59,19 +59,16 @@ const props = defineProps({
     type: Object,
     default: () => ({}),
   },
-  // New prop to control article display
   skipArticle: {
     type: Boolean,
     default: false,
   },
-  // New prop to control whether to render with <li> wrapper
   renderAsLi: {
     type: Boolean,
     default: false,
   },
 });
 
-// Compute provision items from props (unchanged logic)
 const provisionItems = computed(() => {
   if (props.value && props.value.trim()) {
     return props.value.split(",");
@@ -91,7 +88,6 @@ const provisionItems = computed(() => {
   return [];
 });
 
-// Parse each provision into instrumentId and articleId using parseLegalProvisionLink
 const processedProvisions = computed(() =>
   provisionItems.value.map((item) => {
     const { instrumentId, articleId } = parseLegalProvisionLink(item);
@@ -99,7 +95,6 @@ const processedProvisions = computed(() =>
   }),
 );
 
-// Build a list of unique instrument IDs to fetch titles for
 const instrumentIds = computed(() => {
   const unique = new Set(
     processedProvisions.value.map((p) => p.instrumentId).filter(Boolean),
@@ -107,7 +102,6 @@ const instrumentIds = computed(() => {
   return Array.from(unique);
 });
 
-// Fetch full records via composable (Domestic Instruments), pick titles locally
 const { dataMap: recordMap } = useRecordDetailsList(
   computed(() => "Domestic Instruments"),
   instrumentIds,
@@ -129,8 +123,6 @@ const instrumentTitles = computed(() => {
 
 const formatArticle = (article) =>
   article ? article.replace(/(Art\.)(\d+)/, "$1 $2") : "";
-
-// Trigger initial computation of IDs
 watch(
   processedProvisions,
   () => {
@@ -141,9 +133,8 @@ watch(
 </script>
 
 <style scoped>
-/* Only apply bullet styling when renderAsLi is true */
 li {
-  list-style-type: disc; /* Forces bullet points */
-  margin-left: 20px; /* Ensures proper indentation */
+  list-style-type: disc;
+  margin-left: 20px;
 }
 </style>

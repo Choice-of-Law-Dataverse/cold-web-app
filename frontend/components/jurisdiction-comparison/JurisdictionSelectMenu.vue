@@ -95,23 +95,20 @@ defineProps({
 
 const { data: coveredCountries, isLoading } = useCoveredCountries();
 
-// Check if a country is covered
 const isCovered = (alpha3Code) => {
   if (!coveredCountries.value || !alpha3Code) return false;
   return coveredCountries.value.has(alpha3Code.toLowerCase());
 };
-// Emit selection back to the parent
 const emit = defineEmits(["countrySelected"]);
 
 const selected = defineModel({
   type: String,
   default: null,
-}); // v-model integration
+});
 
-// Reactive object for errored avatars
 const erroredAvatars = reactive({});
 
 const onSelect = (value) => {
-  emit("countrySelected", value); // Emit the selected value
+  emit("countrySelected", value);
 };
 </script>

@@ -5,11 +5,8 @@
   >
     <div class="flex flex-col gap-0">
       <!-- Title section -->
-      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("Title (in English)") }}
-        </div>
-        <div class="flex items-start justify-between gap-4 md:flex-1">
+      <DetailRow :label="getLabel('Title (in English)')">
+        <div class="flex items-start justify-between gap-4">
           <div
             :class="[
               config.valueClassMap['Title (in English)'],
@@ -31,51 +28,45 @@
             folder-name="domestic-instruments"
           />
         </div>
-      </div>
+      </DetailRow>
 
       <!-- Date section -->
-      <div
+      <DetailRow
         v-if="
           processedResultData &&
           processedResultData['Date'] &&
           processedResultData['Date'] !== 'NA'
         "
-        class="flex flex-col md:flex-row md:items-start md:gap-6"
+        :label="getLabel('Date')"
       >
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("Date") }}
-        </div>
         <div
           :class="[
             config.valueClassMap['Date'],
-            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+            'whitespace-pre-line text-sm leading-relaxed',
           ]"
         >
           {{ getValue("Date") }}
         </div>
-      </div>
+      </DetailRow>
 
       <!-- Abbreviation section -->
-      <div
+      <DetailRow
         v-if="
           processedResultData &&
           processedResultData['Abbreviation'] &&
           processedResultData['Abbreviation'] !== 'NA'
         "
-        class="flex flex-col md:flex-row md:items-start md:gap-6"
+        :label="getLabel('Abbreviation')"
       >
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("Abbreviation") }}
-        </div>
         <div
           :class="[
             config.valueClassMap['Abbreviation'],
-            'whitespace-pre-line text-sm leading-relaxed md:flex-1',
+            'whitespace-pre-line text-sm leading-relaxed',
           ]"
         >
           {{ getValue("Abbreviation") }}
         </div>
-      </div>
+      </DetailRow>
     </div>
   </ResultCard>
 </template>
@@ -84,6 +75,7 @@
 import { computed } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import { legislationCardConfig } from "@/config/cardConfigs";
 
 const props = defineProps({
@@ -95,12 +87,10 @@ const props = defineProps({
 
 const config = legislationCardConfig;
 
-// Process the result data using the config's processData function
 const processedResultData = computed(() => {
   return config.processData(props.resultData);
 });
 
-// Helper functions to get labels and values with fallbacks
 const getLabel = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key);
   return pair?.label || key;
@@ -132,11 +122,5 @@ const getValue = (key) => {
 .grid-item {
   display: flex;
   flex-direction: column;
-}
-
-.label-key {
-  @extend .label;
-  padding: 0;
-  margin-top: 12px;
 }
 </style>

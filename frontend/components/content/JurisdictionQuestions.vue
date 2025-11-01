@@ -192,10 +192,8 @@ const jurisdictionName = computed(() => {
   return name ? `for ${name}` : "";
 });
 
-// Track expanded state for each row by ID
 const expandedRows = ref(new Set());
 
-// Create rows with computed expanded state
 const rows = computed(() => {
   if (
     !questionWithAnswersData.value ||
@@ -220,12 +218,10 @@ const visibleRows = computed(() => {
   const parentExpanded = {};
 
   for (const row of rows.value) {
-    // Always show top-level rows
     if (row.level === 0) {
       result.push(row);
       parentExpanded[row.id] = row.expanded;
     } else {
-      // Show child if its parent is expanded
       if (parentExpanded[row.parentId]) {
         result.push(row);
         parentExpanded[row.id] = row.expanded;
@@ -239,11 +235,9 @@ function toggleExpand(row) {
   const newExpandedRows = new Set(expandedRows.value);
 
   if (newExpandedRows.has(row.id)) {
-    // Collapse this row and all descendants
     newExpandedRows.delete(row.id);
     collapseDescendants(row.id, newExpandedRows);
   } else {
-    // Expand this row
     newExpandedRows.add(row.id);
   }
 

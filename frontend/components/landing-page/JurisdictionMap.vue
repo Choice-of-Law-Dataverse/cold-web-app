@@ -84,14 +84,12 @@ import MapMiddleEast from "@/components/maps/MapMiddleEast.vue";
 import MapNorthAmerica from "@/components/maps/MapNorthAmerica.vue";
 import MapSouthLatinAmerica from "@/components/maps/MapSouthLatinAmerica.vue";
 
-// Reactive property to track the selected region
 const selectedRegion = ref("All Regions");
 
 const updateSelectedRegion = (option) => {
-  selectedRegion.value = option.value; // Extract the `value` field
+  selectedRegion.value = option.value;
 };
 
-// Options for the USelectMenu
 const regionOptions = [
   { label: "All Regions", value: "All Regions" },
   { label: "Africa", value: "Africa" },
@@ -107,7 +105,6 @@ const isDisclaimerVisible = ref(false);
 </script>
 
 <style scoped>
-/* Ensure maps occupy the same space */
 .map-wrapper {
   position: absolute;
   top: 0;
@@ -116,20 +113,18 @@ const isDisclaimerVisible = ref(false);
   height: 100%;
 }
 
-/* Prevent map from causing horizontal overflow */
 .map-container {
   overflow: hidden;
 }
 
 .select-menu-container {
   position: absolute;
-  top: 32px; /* Adjust as needed */
-  right: 12px; /* Adjust as needed */
-  z-index: 2000; /* Ensure it appears above the map */
+  top: 32px;
+  right: 12px;
+  z-index: 2000;
 }
 
-/* Ensure the dropdown menu appears correctly */
 .select-menu-container .u-select-menu-dropdown {
-  z-index: 2001; /* Higher than the container for the dropdown */
+  z-index: 2001;
 }
 </style>

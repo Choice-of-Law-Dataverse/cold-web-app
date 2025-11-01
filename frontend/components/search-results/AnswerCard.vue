@@ -2,125 +2,102 @@
   <ResultCard :result-data="resultData" card-type="Answers">
     <div class="flex flex-col gap-0">
       <!-- Question section -->
-      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("Question") }}
-        </div>
+      <DetailRow :label="getLabel('Question')">
         <div
-          :class="[
-            computeTextClasses('Question', config.valueClassMap.Question),
-            'md:flex-1',
-          ]"
+          :class="computeTextClasses('Question', config.valueClassMap.Question)"
         >
           {{ getValue("Question") }}
         </div>
-      </div>
+      </DetailRow>
 
       <!-- Answer section -->
-      <div class="flex flex-col md:flex-row md:items-start md:gap-6">
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("Answer") }}
-        </div>
-        <div class="md:flex-1">
-          <div
-            :class="
-              computeTextClasses(
-                'Answer',
-                config.getAnswerClass(resultData.Answer),
-              )
-            "
-          >
-            <template v-if="Array.isArray(getValue('Answer'))">
-              <div class="flex flex-col gap-2">
-                <div v-for="(line, i) in getValue('Answer')" :key="i">
-                  {{ line }}
-                </div>
+      <DetailRow :label="getLabel('Answer')">
+        <div
+          :class="
+            computeTextClasses(
+              'Answer',
+              config.getAnswerClass(resultData.Answer),
+            )
+          "
+        >
+          <template v-if="Array.isArray(getValue('Answer'))">
+            <div class="flex flex-col gap-2">
+              <div v-for="(line, i) in getValue('Answer')" :key="i">
+                {{ line }}
               </div>
-            </template>
-            <template v-else>
-              {{ getValue("Answer") }}
-            </template>
-          </div>
+            </div>
+          </template>
+          <template v-else>
+            {{ getValue("Answer") }}
+          </template>
         </div>
-      </div>
+      </DetailRow>
 
       <!-- Last Modified section -->
-      <div
-        v-if="lastUpdatedDisplay"
-        class="flex flex-col md:flex-row md:items-start md:gap-6"
-      >
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          Last Updated
-        </div>
+      <DetailRow v-if="lastUpdatedDisplay" label="Last Updated">
         <div
-          :class="[
+          :class="
             computeTextClasses(
               resultData['Last Modified'] ? 'Last Modified' : 'Created',
               config.valueClassMap['Last Modified'],
-            ),
-            'md:flex-1',
-          ]"
+            )
+          "
         >
           {{ lastUpdatedDisplay }}
         </div>
-      </div>
+      </DetailRow>
 
       <!-- More Information section -->
-      <div
+      <DetailRow
         v-if="hasMoreInformation"
-        class="flex flex-col md:flex-row md:items-start md:gap-6"
+        :label="getLabel('More Information')"
       >
-        <div class="label-key mt-0 md:mt-1 md:w-48 md:flex-shrink-0">
-          {{ getLabel("More Information") }}
-        </div>
-        <div class="md:flex-1">
-          <div class="prose mb-2 flex flex-col gap-2">
-            <div v-if="resultData['More Information']">
-              {{ getValue("More Information") }}
-            </div>
-            <div v-else-if="resultData['OUP Book Quote']">
-              {{ getValue("OUP Book Quote") }}
-            </div>
-            <template v-if="hasDomesticValue">
-              <template v-if="resultData['Domestic Legal Provisions']">
-                <LegalProvisionRenderer
-                  render-as-li
-                  :value="getValue('Domestic Legal Provisions')"
-                  :fallback-data="resultData"
-                />
-              </template>
-              <template v-else-if="resultData['Domestic Instruments ID']">
-                <LegalProvisionRenderer
-                  render-as-li
-                  skip-article
-                  :value="getValue('Domestic Instruments ID')"
-                  :fallback-data="resultData"
-                />
-              </template>
+        <div class="prose mb-2 flex flex-col gap-2">
+          <div v-if="resultData['More Information']">
+            {{ getValue("More Information") }}
+          </div>
+          <div v-else-if="resultData['OUP Book Quote']">
+            {{ getValue("OUP Book Quote") }}
+          </div>
+          <template v-if="hasDomesticValue">
+            <template v-if="resultData['Domestic Legal Provisions']">
+              <LegalProvisionRenderer
+                render-as-li
+                :value="getValue('Domestic Legal Provisions')"
+                :fallback-data="resultData"
+              />
+            </template>
+            <template v-else-if="resultData['Domestic Instruments ID']">
+              <LegalProvisionRenderer
+                render-as-li
+                skip-article
+                :value="getValue('Domestic Instruments ID')"
+                :fallback-data="resultData"
+              />
+            </template>
+            <template v-else>
+              <div v-if="isLoadingLiterature">
+                <LoadingBar class="pt-[11px]" />
+              </div>
               <template v-else>
-                <div v-if="isLoadingLiterature">
-                  <LoadingBar class="pt-[11px]" />
-                </div>
-                <template v-else>
-                  <template v-if="Array.isArray(domesticValue)">
-                    <div v-for="(item, index) in domesticValue" :key="index">
-                      <a :href="`/literature/L-${item.id}`">{{ item.title }}</a>
-                    </div>
-                  </template>
-                  <div v-else>
-                    {{ domesticValue }}
+                <template v-if="Array.isArray(domesticValue)">
+                  <div v-for="(item, index) in domesticValue" :key="index">
+                    <a :href="`/literature/L-${item.id}`">{{ item.title }}</a>
                   </div>
                 </template>
+                <div v-else>
+                  {{ domesticValue }}
+                </div>
               </template>
             </template>
-            <div v-if="relatedCasesCount">
-              <a :href="relatedDecisionsLink">
-                {{ relatedCasesCount }} related court decisions
-              </a>
-            </div>
+          </template>
+          <div v-if="relatedCasesCount">
+            <a :href="relatedDecisionsLink">
+              {{ relatedCasesCount }} related court decisions
+            </a>
           </div>
         </div>
-      </div>
+      </DetailRow>
     </div>
   </ResultCard>
 </template>
@@ -128,6 +105,7 @@
 <script setup>
 import { computed, ref, watch } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import { answerCardConfig } from "@/config/cardConfigs";
 import { literatureCache } from "@/utils/literatureCache";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
@@ -143,11 +121,8 @@ const props = defineProps({
 
 const config = answerCardConfig;
 
-// Replace literatureTitles with an array of objects: { id, title }
 const literatureTitles = ref([]);
 
-// Updated function to fetch literature titles for a comma‑separated list of IDs,
-// returns objects with id and title.
 async function fetchLiteratureTitles(idStr) {
   const ids = idStr.split(",").map((id) => id.trim());
   const promises = ids.map(async (id) => {
@@ -203,20 +178,17 @@ const isLoadingLiterature = computed(() => {
   );
 });
 
-// Computed property to display the number of related cases
 const relatedCasesCount = computed(() => {
   const links = props.resultData["Court Decisions Link"];
   if (!links) return 0;
   return links.split(",").filter((link) => link.trim() !== "").length;
 });
 
-// Updated computed property for the related court decisions link
 const relatedDecisionsLink = computed(() => {
   const id = props.resultData["id"];
   return `question/${id}#related-court-decisions`;
 });
 
-// New computed property to conditionally show domesticValue bullet
 const hasDomesticValue = computed(() => {
   return (
     props.resultData["Domestic Legal Provisions"] ||
@@ -225,7 +197,6 @@ const hasDomesticValue = computed(() => {
   );
 });
 
-// Update hasMoreInformation to include OUP Book Quote fallback
 const hasMoreInformation = computed(() => {
   return (
     (props.resultData["More Information"] &&
@@ -237,14 +208,12 @@ const hasMoreInformation = computed(() => {
   );
 });
 
-// Last updated value (year only), prefers Last Modified then falls back to Created
 const lastUpdatedDisplay = computed(() => {
   const raw = props.resultData["Last Modified"] || props.resultData["Created"];
   const y = formatYear(raw);
   return y ? String(y) : "";
 });
 
-// Helper functions to get labels and values with fallbacks
 const getLabel = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key);
   return pair?.label || key;
@@ -254,7 +223,6 @@ const getValue = (key) => {
   const pair = config.keyLabelPairs.find((pair) => pair.key === key);
   const value = props.resultData[key];
 
-  // For key "Answer", split by comma if a string contains commas.
   if (key === "Answer" && typeof value === "string" && value.includes(",")) {
     return value.split(",").map((part) => part.trim());
   }
@@ -269,7 +237,6 @@ const getValue = (key) => {
   return value;
 };
 
-// New helper to compute text classes for a field
 const computeTextClasses = (key, baseClass) => {
   const pair = config.keyLabelPairs.find((p) => p.key === key);
   const isEmpty = !props.resultData[key] || props.resultData[key] === "NA";
@@ -292,11 +259,6 @@ const computeTextClasses = (key, baseClass) => {
 .grid-item {
   display: flex;
   flex-direction: column;
-}
-
-.label-key {
-  padding: 0;
-  margin-top: 12px;
 }
 
 .result-value-small li {

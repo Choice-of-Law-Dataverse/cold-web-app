@@ -9,54 +9,36 @@
       source-table="Regional Instrument"
     >
       <template #literature>
-        <section class="section-gap m-0 p-0">
-          <div class="flex flex-col md:w-full md:flex-row md:items-start md:gap-6">
-            <div class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-              <span class="flex items-center">
-                {{ keyLabelLookup.get('Literature')?.label || 'Literature' }}
-                <InfoPopover
-                  v-if="keyLabelLookup.get('Literature')?.tooltip"
-                  :text="keyLabelLookup.get('Literature')?.tooltip"
-                />
-              </span>
-            </div>
-            <div class="md:flex-1">
-              <RelatedLiterature
-                :literature-id="
-                  (processedRegionalInstrument?.Literature as string) || ''
-                "
-                :value-class-map="valueClassMap['Literature']"
-                :show-label="false"
-                :empty-value-behavior="
-                  keyLabelLookup.get('Literature')?.emptyValueBehavior
-                "
-                mode="id"
-              />
-            </div>
-          </div>
-        </section>
+        <DetailRow
+          :label="keyLabelLookup.get('Literature')?.label || 'Literature'"
+          :tooltip="keyLabelLookup.get('Literature')?.tooltip"
+        >
+          <RelatedLiterature
+            :literature-id="
+              (processedRegionalInstrument?.Literature as string) || ''
+            "
+            :value-class-map="valueClassMap['Literature']"
+            :show-label="false"
+            :empty-value-behavior="
+              keyLabelLookup.get('Literature')?.emptyValueBehavior
+            "
+            mode="id"
+          />
+        </DetailRow>
       </template>
 
       <!-- Slot for Legal provisions -->
       <template #regional-legal-provisions="{ value }">
         <!-- Only render if value exists and is not "N/A" -->
-        <div
+        <DetailRow
           v-if="value && value.trim() && value.trim() !== 'N/A'"
-          class="flex flex-col md:w-full md:flex-row md:gap-6"
+          :label="
+            keyLabelLookup.get('Regional Legal Provisions')?.label ||
+            'Selected Provisions'
+          "
+          :tooltip="keyLabelLookup.get('Regional Legal Provisions')?.tooltip"
         >
-          <h4 class="label label-key mt-0 md:w-48 md:flex-shrink-0">
-            <span class="flex items-center">
-              {{
-                keyLabelLookup.get("Regional Legal Provisions")?.label ||
-                "Selected Provisions"
-              }}
-              <InfoPopover
-                v-if="keyLabelLookup.get('Regional Legal Provisions')?.tooltip"
-                :text="keyLabelLookup.get('Regional Legal Provisions')?.tooltip"
-              />
-            </span>
-          </h4>
-          <div class="provisions-container md:flex-1">
+          <div class="provisions-container">
             <LegalProvision
               v-for="(provisionId, index) in value.split(',')"
               :key="index"
@@ -72,7 +54,7 @@
               @update:has-english-translation="hasEnglishTranslation = $event"
             />
           </div>
-        </div>
+        </DetailRow>
       </template>
     </BaseDetailLayout>
 
@@ -90,12 +72,12 @@
 import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import DetailRow from "@/components/ui/DetailRow.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { regionalInstrumentConfig } from "@/config/pageConfigs";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
-import InfoPopover from "@/components/ui/InfoPopover.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import type { TableName } from "@/types/api";
 
@@ -109,7 +91,6 @@ const route = useRoute();
 const textType = ref("Full Text of the Provision (English Translation)");
 const hasEnglishTranslation = ref(false);
 
-// Use TanStack Vue Query for data fetching - no need for refs with static values
 const table = ref<TableName>("Regional Instruments");
 const id = ref(route.params.id as string);
 
@@ -120,7 +101,6 @@ const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
   regionalInstrumentConfig,
 );
 
-// Create lookup map for better performance
 const keyLabelLookup = computed(() => {
   const map = new Map();
   computedKeyLabelPairs.value.forEach((pair: { key: string }) => {
@@ -151,10 +131,3 @@ const processedRegionalInstrument = computed(() => {
   };
 });
 </script>
-
-<style scoped>
-/* Remove the extra spacer from BaseLegalContent when provisions are in a two-column layout */
-.provisions-container :deep(.base-legal-content .no-margin > div:first-child) {
-  display: none;
-}
-</style>
