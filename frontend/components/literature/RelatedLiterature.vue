@@ -7,12 +7,11 @@
     <div v-if="loadingTitles || loading">
       <LoadingBar class="ml-[-22px] pt-[11px]" />
     </div>
-    <div v-else-if="displayedLiterature.length" class="flex flex-col gap-1">
-      <div
-        v-for="item in displayedLiterature"
-        :key="item.id"
-        :class="valueClassMap"
-      >
+    <div
+      v-else-if="displayedLiterature.length"
+      class="result-value-small flex flex-col gap-1"
+    >
+      <div v-for="item in displayedLiterature" :key="item.id">
         <NuxtLink :to="`/literature/${item.id}`">
           {{ item.title }}
         </NuxtLink>
@@ -23,10 +22,7 @@
         label="related literature"
       />
     </div>
-    <p
-      v-else-if="emptyValueBehavior.action === 'display'"
-      :class="valueClassMap"
-    >
+    <p v-else-if="emptyValueBehavior.action === 'display'">
       {{ emptyValueBehavior.fallback }}
     </p>
   </div>

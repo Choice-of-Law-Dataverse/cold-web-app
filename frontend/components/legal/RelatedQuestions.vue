@@ -6,7 +6,10 @@
         <InfoPopover v-if="tooltip" :text="tooltip" />
       </span>
     </h4>
-    <div v-if="questionList.length" class="flex flex-col gap-1">
+    <div
+      v-if="questionList.length"
+      class="result-value-small flex flex-col gap-1"
+    >
       <div v-for="(q, idx) in questionList" :key="idx">
         <NuxtLink :to="`/question/${jurisdictionCode}_${q}`">
           {{ questionLabels[idx] || jurisdictionCode + "_" + q }}

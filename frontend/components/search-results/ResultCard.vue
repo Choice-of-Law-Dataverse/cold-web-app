@@ -118,5 +118,4 @@ function getCardLink() {
 .card-link-wrapper:hover :deep(.arrow-icon) {
   animation: bounce-right 0.4s ease-out;
 }
-
 </style>
