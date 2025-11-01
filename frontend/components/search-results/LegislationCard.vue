@@ -13,7 +13,7 @@
           <div
             :class="[
               config.valueClassMap['Title (in English)'],
-              'whitespace-pre-line text-sm leading-relaxed flex-1',
+              'flex-1 whitespace-pre-line text-sm leading-relaxed',
               (!processedResultData['Title (in English)'] ||
                 processedResultData['Title (in English)'] === 'NA') &&
               config.keyLabelPairs.find(
@@ -25,8 +25,11 @@
           >
             {{ getValue("Title (in English)") }}
           </div>
-          
-          <PdfLink :record-id="resultData.id" folder-name="domestic-instruments" />
+
+          <PdfLink
+            :record-id="resultData.id"
+            folder-name="domestic-instruments"
+          />
         </div>
       </div>
 

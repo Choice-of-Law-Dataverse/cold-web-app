@@ -6,12 +6,10 @@
       rel="noopener noreferrer"
       class="inline-flex items-center gap-1 px-6 text-sm"
       style="color: var(--color-cold-purple)"
+      aria-label="Download PDF for record"
       @click.stop
     >
-      <UIcon
-        name="i-material-symbols:picture-as-pdf-outline"
-        class="h-4 w-4"
-      />
+      <UIcon name="i-material-symbols:picture-as-pdf-outline" class="h-4 w-4" />
       <span>PDF</span>
     </a>
   </div>

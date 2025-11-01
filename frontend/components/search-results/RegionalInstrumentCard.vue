@@ -13,7 +13,7 @@
           <div
             :class="[
               config.valueClassMap['Abbreviation'],
-              'whitespace-pre-line text-sm leading-relaxed flex-1',
+              'flex-1 whitespace-pre-line text-sm leading-relaxed',
               (!processedResultData['Abbreviation'] ||
                 processedResultData['Abbreviation'] === 'NA') &&
               config.keyLabelPairs.find((pair) => pair.key === 'Abbreviation')
@@ -24,8 +24,11 @@
           >
             {{ getValue("Abbreviation") }}
           </div>
-          
-          <PdfLink :record-id="resultData.id" folder-name="regional-instruments" />
+
+          <PdfLink
+            :record-id="resultData.id"
+            folder-name="regional-instruments"
+          />
         </div>
       </div>
 

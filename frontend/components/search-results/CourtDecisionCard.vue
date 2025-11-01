@@ -10,8 +10,9 @@
           <div
             :class="[
               config.valueClassMap['Case Title'],
-              'whitespace-pre-line text-sm leading-relaxed flex-1',
-              (!resultData['Case Title'] || resultData['Case Title'] === 'NA') &&
+              'flex-1 whitespace-pre-line text-sm leading-relaxed',
+              (!resultData['Case Title'] ||
+                resultData['Case Title'] === 'NA') &&
               config.keyLabelPairs.find((pair) => pair.key === 'Case Title')
                 ?.emptyValueBehavior?.action === 'display' &&
               !config.keyLabelPairs.find((pair) => pair.key === 'Case Title')
@@ -22,7 +23,7 @@
           >
             {{ getValue("Case Title") }}
           </div>
-          
+
           <PdfLink :record-id="resultData.id" folder-name="court-decisions" />
         </div>
       </div>
