@@ -1,32 +1,15 @@
 <template>
-  <div v-if="shouldShowSection">
-    <div v-if="isLoading">
-      <LoadingBar class="ml-[-22px] pt-[11px]" />
-    </div>
-    <div
-      v-else-if="displayedLiterature.length"
-      class="result-value-small flex flex-col gap-1"
-    >
-      <div v-for="item in displayedLiterature" :key="item.id">
-        <NuxtLink :to="`/literature/${item.id}`">
-          {{ item.title }}
-        </NuxtLink>
-      </div>
-      <ShowMoreLess
-        v-if="fullLiteratureList.length > 5"
-        v-model:is-expanded="showAll"
-      />
-    </div>
-    <p v-else-if="emptyValueBehavior.action === 'display'">
-      {{ emptyValueBehavior.fallback }}
-    </p>
-  </div>
+  <RelatedItemsList
+    :items="fullLiteratureList"
+    :is-loading="isLoading"
+    base-path="/literature"
+    :empty-value-behavior="emptyValueBehavior"
+  />
 </template>
 
 <script setup>
-import { ref, computed, toRefs } from "vue";
-import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
-import LoadingBar from "@/components/layout/LoadingBar.vue";
+import { computed, toRefs } from "vue";
+import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import { useLiteratures } from "@/composables/useLiteratures";
 import { useLiteratureByTheme } from "@/composables/useLiteratureByTheme";
 import { useLiteratureByJurisdiction } from "@/composables/useLiteratureByJurisdiction";
@@ -46,16 +29,14 @@ const props = defineProps({
   emptyValueBehavior: {
     type: Object,
     default: () => ({
-      action: "display",
+      action: "hide",
       fallback: "No related literature available",
     }),
   },
 });
 
-const showAll = ref(false);
 const { themes, literatureId, jurisdiction, mode } = toRefs(props);
 
-// Mode 'id'
 const { data: literatureFromIds, isLoading: loadingIds } = useLiteratures(
   computed(() =>
     mode.value === "id" || mode.value === "both" ? literatureId.value : "",
@@ -72,7 +53,6 @@ const literatureTitles = computed(() => {
     .filter((item) => item.title);
 });
 
-// Mode 'themes'
 const { data: literatureFromThemes, isLoading: loadingThemes } =
   useLiteratureByTheme(
     computed(() =>
@@ -82,7 +62,6 @@ const { data: literatureFromThemes, isLoading: loadingThemes } =
     ),
   );
 
-// Mode 'jurisdiction'
 const { data: literatureFromJurisdiction, isLoading: loadingJurisdiction } =
   useLiteratureByJurisdiction(
     computed(() =>
@@ -92,7 +71,6 @@ const { data: literatureFromJurisdiction, isLoading: loadingJurisdiction } =
     ),
   );
 
-// Merged for 'both' mode
 const mergedLiterature = computed(() => {
   const idSet = new Set();
   const merged = [];
@@ -159,22 +137,5 @@ const isLoading = computed(() => {
     default:
       return false;
   }
-});
-
-const hasRelatedLiterature = computed(
-  () => fullLiteratureList.value.length > 0,
-);
-
-const shouldShowSection = computed(
-  () =>
-    isLoading.value ||
-    hasRelatedLiterature.value ||
-    (!hasRelatedLiterature.value &&
-      props.emptyValueBehavior.action === "display"),
-);
-
-const displayedLiterature = computed(() => {
-  const arr = fullLiteratureList.value;
-  return !showAll.value && arr.length >= 5 ? arr.slice(0, 5) : arr;
 });
 </script>
