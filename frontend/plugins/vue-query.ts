@@ -40,7 +40,7 @@ export default defineNuxtPlugin((nuxt) => {
     },
   });
 
-  if (import.meta.server && process.env.NODE_ENV !== "production") {
+  if (process.env.NODE_ENV !== "production") {
     window.__TANSTACK_QUERY_CLIENT__ = queryClient;
   }
 
