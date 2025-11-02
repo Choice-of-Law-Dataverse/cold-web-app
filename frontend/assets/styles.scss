@@ -253,6 +253,11 @@ li::marker {
   font-weight: 400 !important; // Regular
 }
 
+.link-button-night {
+  @extend .link-button;
+  color: var(--color-cold-night) !important;
+}
+
 .showmoreless-icon-large {
   font-size: 1.4rem !important;
   transform: translateY(4px) !important;
