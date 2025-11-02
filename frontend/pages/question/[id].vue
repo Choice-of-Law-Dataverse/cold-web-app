@@ -18,13 +18,7 @@
           :tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
         >
           <QuestionSourceList
-            :sources="
-              [
-                ...(value || answerData?.['Domestic Legal Provisions']
-                  ? [value || answerData?.['Domestic Legal Provisions']]
-                  : []),
-              ].filter(Boolean)
-            "
+            :sources="[value || answerData?.['Domestic Legal Provisions']].filter(Boolean)"
             :fallback-data="answerData"
             :value-class-map="valueClassMap"
             :fetch-oup-chapter="true"
@@ -67,9 +61,9 @@
             :literature-id="
               processedAnswerData?.['Jurisdictions Literature ID']
             "
+            :jurisdiction="processedAnswerData?.Jurisdictions"
             :mode="'both'"
             :value-class-map="valueClassMap['Related Literature']"
-            :show-label="false"
             :empty-value-behavior="
               questionConfig.keyLabelPairs.find(
                 (pair) => pair.key === 'Related Literature',

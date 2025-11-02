@@ -28,13 +28,13 @@
             :literature-id="(jurisdictionData?.Literature as string) || ''"
             :value-class-map="valueClassMap['Related Literature']"
             :use-id="true"
-            :show-label="false"
+            :jurisdiction="jurisdictionData?.Name as string"
             :empty-value-behavior="
               jurisdictionConfig.keyLabelPairs.find(
                 (pair) => pair.key === 'Related Literature',
               )?.emptyValueBehavior
             "
-            mode="id"
+            :mode="'both'"
           />
         </DetailRow>
       </template>

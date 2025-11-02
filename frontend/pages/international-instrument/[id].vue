@@ -18,7 +18,6 @@
               (processedInternationalInstrument?.Literature as string) || ''
             "
             :value-class-map="valueClassMap['Literature']"
-            :show-label="false"
             :empty-value-behavior="
               keyLabelLookup.get('Literature')?.emptyValueBehavior
             "

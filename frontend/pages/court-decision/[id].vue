@@ -112,7 +112,6 @@
             "
             :value-class-map="valueClassMap['Related Literature']"
             :use-id="false"
-            :show-label="false"
           />
         </DetailRow>
       </template>

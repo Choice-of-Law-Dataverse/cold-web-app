@@ -56,13 +56,17 @@
           oupChapterSource.title
         }}</a>
       </div>
-      <!-- If not loading and no OUP chapter, hide section (render nothing) -->
+    </template>
+
+    <!-- Fallback message when no sources available -->
+    <template v-if="!hasAnySources && !isLoading && !literaturesLoading">
+      <p>No source available</p>
     </template>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import LegalProvisionRenderer from "@/components/legal/LegalProvisionRenderer.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useLiteratures } from "@/composables/useLiteratures";
@@ -124,4 +128,16 @@ watch(
 const { data: literatures, isLoading: literaturesLoading } = useLiteratures(
   computed(() => props.fallbackData["Jurisdictions"] || null),
 );
+
+// Computed to check if any sources exist
+const hasAnySources = computed(() => {
+  return !!(
+    (props.fallbackData && props.fallbackData["Domestic Legal Provisions"]) ||
+    (props.fallbackData && props.fallbackData["Domestic Instruments ID"]) ||
+    (props.fallbackData &&
+      props.fallbackData["Literature"] &&
+      literatures.value?.length) ||
+    oupChapterSource.value
+  );
+});
 </script>
