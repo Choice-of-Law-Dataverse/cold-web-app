@@ -1,5 +1,6 @@
 import { computed, type Ref } from "vue";
 import { useRecordDetailsList } from "@/composables/useRecordDetails";
+import type { TableName } from "@/types/api";
 
 export function useLiteratures(ids: Ref<string>) {
   const literatureIds = computed(() =>
@@ -11,8 +12,7 @@ export function useLiteratures(ids: Ref<string>) {
       : [],
   );
 
-  return useRecordDetailsList(
-    computed(() => "Literature"),
-    literatureIds,
-  );
+  const table = computed<TableName>(() => "Literature");
+
+  return useRecordDetailsList(table, literatureIds);
 }
