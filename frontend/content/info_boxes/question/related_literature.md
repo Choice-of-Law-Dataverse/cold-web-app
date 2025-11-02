@@ -1,1 +1,1 @@
-Literature associated with the answer, the country or the theme
+Literature associated with the answer, the country, and the theme
