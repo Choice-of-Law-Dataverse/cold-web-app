@@ -12,33 +12,6 @@
       <h1 class="mb-12">
         Country Report for {{ jurisdictionData?.Name || "N/A" }}
       </h1>
-      <template #related-literature>
-        <DetailRow
-          :label="
-            keyLabelPairs.find((pair) => pair.key === 'Related Literature')
-              ?.label || 'Related Literature'
-          "
-          :tooltip="
-            jurisdictionConfig.keyLabelPairs.find(
-              (pair) => pair.key === 'Related Literature',
-            )?.tooltip
-          "
-        >
-          <RelatedLiterature
-            :literature-id="(jurisdictionData?.Literature as string) || ''"
-            :value-class-map="valueClassMap['Related Literature']"
-            :use-id="true"
-            :jurisdiction="jurisdictionData?.Name as string"
-            :empty-value-behavior="
-              jurisdictionConfig.keyLabelPairs.find(
-                (pair) => pair.key === 'Related Literature',
-              )?.emptyValueBehavior
-            "
-            :mode="'both'"
-          />
-        </DetailRow>
-      </template>
-
       <template #search-links>
         <template
           v-if="
@@ -54,66 +27,99 @@
             <LoadingBar />
           </template>
           <template v-else>
-            <DetailRow label="Related Data">
-              <div class="flex flex-col gap-2">
-                <NuxtLink
-                  v-if="courtDecisionCount !== 0 && courtDecisionCount !== null"
-                  :to="{
-                    name: 'search',
-                    query: {
-                      type: 'Court Decisions',
-                      jurisdiction: (jurisdictionData?.Name as string) || '',
-                    },
-                  }"
-                  class="!mb-2 no-underline"
-                >
-                  <UButton class="link-button" variant="link">
-                    <span class="break-words text-left">
-                      <template v-if="courtDecisionCount !== null">
-                        See {{ courtDecisionCount }} court decision{{
-                          courtDecisionCount === 1 ? "" : "s"
-                        }}
-                        from {{ jurisdictionData?.Name || "N/A" }}
-                      </template>
-                      <template v-else>
-                        All court decisions from
-                        {{ jurisdictionData?.Name || "N/A" }}
-                      </template>
-                    </span>
-                  </UButton>
-                </NuxtLink>
+            <div class="mt-4 flex flex-col gap-4">
+              <DetailRow label="Related Data">
+                <div class="flex flex-col gap-2">
+                  <NuxtLink
+                    v-if="
+                      courtDecisionCount !== 0 && courtDecisionCount !== null
+                    "
+                    :to="{
+                      name: 'search',
+                      query: {
+                        type: 'Court Decisions',
+                        jurisdiction: (jurisdictionData?.Name as string) || '',
+                      },
+                    }"
+                    class="!mb-2 no-underline"
+                  >
+                    <UButton class="link-button" variant="link">
+                      <span class="break-words text-left">
+                        <template v-if="courtDecisionCount !== null">
+                          See {{ courtDecisionCount }} court decision{{
+                            courtDecisionCount === 1 ? "" : "s"
+                          }}
+                          from {{ jurisdictionData?.Name || "N/A" }}
+                        </template>
+                        <template v-else>
+                          All court decisions from
+                          {{ jurisdictionData?.Name || "N/A" }}
+                        </template>
+                      </span>
+                    </UButton>
+                  </NuxtLink>
 
-                <NuxtLink
-                  v-if="
-                    domesticInstrumentCount !== 0 &&
-                    domesticInstrumentCount !== null
+                  <NuxtLink
+                    v-if="
+                      domesticInstrumentCount !== 0 &&
+                      domesticInstrumentCount !== null
+                    "
+                    :to="{
+                      name: 'search',
+                      query: {
+                        type: 'Domestic Instruments',
+                        jurisdiction: (jurisdictionData?.Name as string) || '',
+                      },
+                    }"
+                    class="no-underline"
+                  >
+                    <UButton class="link-button" variant="link">
+                      <span class="break-words text-left">
+                        <template v-if="domesticInstrumentCount !== null">
+                          See {{ domesticInstrumentCount }} domestic
+                          instrument{{
+                            domesticInstrumentCount === 1 ? "" : "s"
+                          }}
+                          from {{ jurisdictionData?.Name || "N/A" }}
+                        </template>
+                        <template v-else>
+                          All domestic instruments from
+                          {{ jurisdictionData?.Name || "N/A" }}
+                        </template>
+                      </span>
+                    </UButton>
+                  </NuxtLink>
+                </div>
+              </DetailRow>
+
+              <DetailRow
+                :label="
+                  keyLabelPairs.find(
+                    (pair) => pair.key === 'Related Literature',
+                  )?.label || 'Related Literature'
+                "
+                :tooltip="
+                  jurisdictionConfig.keyLabelPairs.find(
+                    (pair) => pair.key === 'Related Literature',
+                  )?.tooltip
+                "
+              >
+                <RelatedLiterature
+                  :literature-id="
+                    (jurisdictionData?.Literature as string) || ''
                   "
-                  :to="{
-                    name: 'search',
-                    query: {
-                      type: 'Domestic Instruments',
-                      jurisdiction: (jurisdictionData?.Name as string) || '',
-                    },
-                  }"
-                  class="no-underline"
-                >
-                  <UButton class="link-button" variant="link">
-                    <span class="break-words text-left">
-                      <template v-if="domesticInstrumentCount !== null">
-                        See {{ domesticInstrumentCount }} domestic instrument{{
-                          domesticInstrumentCount === 1 ? "" : "s"
-                        }}
-                        from {{ jurisdictionData?.Name || "N/A" }}
-                      </template>
-                      <template v-else>
-                        All domestic instruments from
-                        {{ jurisdictionData?.Name || "N/A" }}
-                      </template>
-                    </span>
-                  </UButton>
-                </NuxtLink>
-              </div>
-            </DetailRow>
+                  :value-class-map="valueClassMap['Related Literature']"
+                  :use-id="true"
+                  :jurisdiction="jurisdictionData?.Name as string"
+                  :empty-value-behavior="
+                    jurisdictionConfig.keyLabelPairs.find(
+                      (pair) => pair.key === 'Related Literature',
+                    )?.emptyValueBehavior
+                  "
+                  :mode="'both'"
+                />
+              </DetailRow>
+            </div>
           </template>
         </template>
       </template>

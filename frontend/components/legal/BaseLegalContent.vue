@@ -134,7 +134,6 @@ onMounted(() => {
   text-decoration: none;
   color: var(--color-cold-night) !important;
   display: block;
-  margin-top: 50px;
 }
 
 .base-legal-content.is-first .anchor {

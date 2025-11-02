@@ -18,7 +18,11 @@
           :tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
         >
           <QuestionSourceList
-            :sources="[value || answerData?.['Domestic Legal Provisions']].filter(Boolean)"
+            :sources="
+              [value || answerData?.['Domestic Legal Provisions']].filter(
+                Boolean,
+              )
+            "
             :fallback-data="answerData"
             :value-class-map="valueClassMap"
             :fetch-oup-chapter="true"
