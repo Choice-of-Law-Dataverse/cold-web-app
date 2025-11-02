@@ -36,6 +36,12 @@ const fullItemsList = computed(() => {
       id: item?.id,
       title: item?.["Case Title"] || item?.["Case Citation"] || "Untitled",
     }))
-    .filter((item) => item.id && item.title && item.title !== "Untitled" && item.title !== "NA");
+    .filter(
+      (item) =>
+        item.id &&
+        item.title &&
+        item.title !== "Untitled" &&
+        item.title !== "NA",
+    );
 });
 </script>

@@ -33,8 +33,15 @@ const fullItemsList = computed(() => {
   return domesticInstruments.value
     .map((item) => ({
       id: item?.id,
-      title: item?.["Title (in English)"] || item?.["Abbreviation"] || "Untitled",
+      title:
+        item?.["Title (in English)"] || item?.["Abbreviation"] || "Untitled",
     }))
-    .filter((item) => item.id && item.title && item.title !== "Untitled" && item.title !== "NA");
+    .filter(
+      (item) =>
+        item.id &&
+        item.title &&
+        item.title !== "Untitled" &&
+        item.title !== "NA",
+    );
 });
 </script>

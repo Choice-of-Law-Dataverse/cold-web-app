@@ -2,7 +2,9 @@ import { computed, type Ref } from "vue";
 import { useSearch } from "~/composables/useSearch";
 import type { SearchParams } from "@/types/api";
 
-export function useDomesticInstrumentsByJurisdiction(jurisdiction: Ref<string>) {
+export function useDomesticInstrumentsByJurisdiction(
+  jurisdiction: Ref<string>,
+) {
   const searchParams = computed<SearchParams>(() => ({
     filters: {
       jurisdiction: jurisdiction.value || "",

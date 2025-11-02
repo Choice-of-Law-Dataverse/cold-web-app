@@ -83,22 +83,21 @@
         </DetailRow>
       </template>
       <!-- Custom rendering for Related Questions section -->
-      <template #related-questions>
-        <section class="section-gap m-0 p-0">
+      <template #related-questions="{ value }">
+        <DetailRow
+          v-if="value"
+          label="Related Questions"
+          :tooltip="keyLabelLookup.get('Related Questions')?.tooltip"
+        >
           <RelatedQuestions
             :jurisdiction-code="
               ((courtDecision as Record<string, unknown>)?.[
                 'Jurisdictions Alpha-3 Code'
               ] as string) || ''
             "
-            :questions="
-              ((courtDecision as Record<string, unknown>)?.[
-                'Questions'
-              ] as string) || ''
-            "
-            :tooltip="keyLabelLookup.get('Related Questions')?.tooltip"
+            :questions="value"
           />
-        </section>
+        </DetailRow>
       </template>
       <template #related-literature>
         <DetailRow
@@ -110,8 +109,11 @@
               ((courtDecision as Record<string, unknown>)?.themes as string) ||
               ''
             "
-            :value-class-map="valueClassMap['Related Literature']"
-            :use-id="false"
+            :mode="'themes'"
+            :empty-value-behavior="{
+              action: 'display',
+              fallback: 'No related literature available',
+            }"
           />
         </DetailRow>
       </template>
@@ -151,6 +153,8 @@
           </div>
         </DetailRow>
       </template>
+
+      <template #search-links />
     </BaseDetailLayout>
 
     <UAlert v-if="error" type="error" class="mx-auto mt-4 max-w-container">

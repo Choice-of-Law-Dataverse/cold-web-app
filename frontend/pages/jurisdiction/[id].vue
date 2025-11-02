@@ -14,8 +14,7 @@
       </h1>
       <template #search-links>
         <div class="mt-4 flex flex-col gap-4">
-
-                    <DetailRow label="Domestic Instruments">
+          <DetailRow label="Domestic Instruments">
             <RelatedDomesticInstruments
               :jurisdiction="jurisdictionData?.Name as string"
               :empty-value-behavior="{
@@ -34,13 +33,10 @@
             />
           </DetailRow>
 
-
-
           <DetailRow
             :label="
-              keyLabelPairs.find(
-                (pair) => pair.key === 'Related Literature',
-              )?.label || 'Related Literature'
+              keyLabelPairs.find((pair) => pair.key === 'Related Literature')
+                ?.label || 'Related Literature'
             "
             :tooltip="
               jurisdictionConfig.keyLabelPairs.find(
@@ -49,9 +45,7 @@
             "
           >
             <RelatedLiterature
-              :literature-id="
-                (jurisdictionData?.Literature as string) || ''
-              "
+              :literature-id="(jurisdictionData?.Literature as string) || ''"
               :value-class-map="valueClassMap['Related Literature']"
               :use-id="true"
               :jurisdiction="jurisdictionData?.Name as string"
