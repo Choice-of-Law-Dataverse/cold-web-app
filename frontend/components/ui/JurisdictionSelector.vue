@@ -78,10 +78,6 @@ const onJurisdictionSelected = (selectedJurisdiction) => {
 </script>
 
 <style scoped>
-h3 {
-  color: var(--color-cold-purple) !important;
-}
-
 .flex.flex-col.gap-4 {
   position: relative;
   z-index: 10;

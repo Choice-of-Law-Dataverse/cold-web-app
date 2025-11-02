@@ -1,7 +1,7 @@
 <template>
   <div v-if="shouldShowSection">
     <div v-if="isLoading">
-      <LoadingBar class="ml-[-22px] pt-[11px]" />
+      <LoadingBar />
     </div>
     <div
       v-else-if="displayedItems.length"

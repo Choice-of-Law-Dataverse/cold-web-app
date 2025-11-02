@@ -1,6 +1,6 @@
 <template>
   <UCard class="cold-ucard">
-    <div>
+    <div class="overflow-hidden">
       <h2 class="mb-8 mt-2">Questions and Answers {{ jurisdictionName }}</h2>
       <!-- Desktop Table View -->
       <div class="table-full-width-wrapper hidden md:block">
@@ -24,12 +24,12 @@
               style="display: flex; align-items: flex-start"
             >
               <span
-                v-if="row.hasExpand"
                 class="expand-icon mr-1 mt-1 cursor-pointer align-middle"
                 :style="{
                   display: 'inline-flex',
                   alignItems: 'center',
                   transform: row.expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                  visibility: row.hasExpand ? 'visible' : 'hidden',
                 }"
                 @click.stop="toggleExpand(row)"
               >
@@ -39,7 +39,7 @@
                   width="16"
                   height="16"
                   fill="none"
-                  style="color: var(--color-cold-purple)"
+                  style="color: var(--color-cold-teal)"
                 >
                   <path
                     d="M9 6l6 6-6 6"
@@ -62,13 +62,13 @@
                   ? row.theme.split(',')
                   : []"
                 :key="theme.trim()"
-                class="label-theme mr-3"
+                class="label-theme"
               >
                 {{ theme.trim() }}
               </span>
             </div>
           </template>
-          <template #answer-data="{ row }">
+                    <template #answer-data="{ row }">
             <div style="text-align: right">
               <NuxtLink
                 v-if="row.answer"
@@ -118,7 +118,7 @@
                     width="16"
                     height="16"
                     fill="none"
-                    style="color: var(--color-cold-purple)"
+                    style="color: var(--color-cold-teal)"
                   >
                     <path
                       d="M9 6l6 6-6 6"
