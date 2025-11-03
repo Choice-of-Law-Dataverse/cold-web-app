@@ -1,208 +1,141 @@
 <template>
-  <div v-if="shouldShowSection">
-    <h4 v-if="showLabel" class="label flex flex-row items-center">
-      {{ label }}
-      <InfoPopover v-if="tooltip" :text="tooltip" />
-    </h4>
-    <div v-if="loadingTitles || loading">
-      <LoadingBar class="ml-[-22px] pt-[11px]" />
-    </div>
-    <div
-      v-else-if="displayedLiterature.length"
-      class="result-value-small flex flex-col gap-1"
-    >
-      <div v-for="item in displayedLiterature" :key="item.id">
-        <NuxtLink :to="`/literature/${item.id}`">
-          {{ item.title }}
-        </NuxtLink>
-      </div>
-      <ShowMoreLess
-        v-if="fullLiteratureList.length > 5"
-        v-model:is-expanded="showAll"
-        label="related literature"
-      />
-    </div>
-    <p v-else-if="emptyValueBehavior.action === 'display'">
-      {{ emptyValueBehavior.fallback }}
-    </p>
-  </div>
+  <RelatedItemsList
+    :items="fullLiteratureList"
+    :is-loading="isLoading"
+    base-path="/literature"
+    :empty-value-behavior="emptyValueBehavior"
+  />
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from "vue";
-import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
-import LoadingBar from "@/components/layout/LoadingBar.vue";
-import InfoPopover from "@/components/ui/InfoPopover.vue";
-
-import { useApiClient } from "@/composables/useApiClient";
+import { computed, toRefs } from "vue";
+import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import { useLiteratures } from "@/composables/useLiteratures";
+import { useLiteratureByTheme } from "@/composables/useLiteratureByTheme";
+import { useLiteratureByJurisdiction } from "@/composables/useLiteratureByJurisdiction";
 
 const props = defineProps({
   label: { type: String, default: "Related Literature" },
   tooltip: { type: String, default: "" },
   themes: { type: String, default: "" },
-  valueClassMap: { type: String, default: "result-value-small" },
+  jurisdiction: { type: String, default: "" },
   literatureId: { type: String, default: "" },
-  useId: { type: Boolean, default: false },
-  mode: { type: String, default: "themes" },
-  showLabel: { type: Boolean, default: true },
+  mode: {
+    type: String,
+    default: "themes",
+    validator: (value) =>
+      ["themes", "id", "both", "jurisdiction"].includes(value),
+  },
   emptyValueBehavior: {
     type: Object,
     default: () => ({
-      action: "display",
+      action: "hide",
       fallback: "No related literature available",
     }),
   },
 });
 
-const showAll = ref(false);
-const loadingTitles = ref(false);
-const loading = ref(false);
-const literatureTitles = ref([]);
-const literatureList = ref([]);
-const mergedLiterature = ref([]);
+const { themes, literatureId, jurisdiction, mode } = toRefs(props);
 
-const splitAndTrim = (val) =>
-  Array.isArray(val)
-    ? val
-    : val
-      ? val.split(",").map((item) => item.trim())
-      : [];
-
-const literatureIds = computed(() => splitAndTrim(props.literatureId));
-
-const shouldShowSection = computed(
-  () =>
-    loadingTitles.value ||
-    loading.value ||
-    hasRelatedLiterature.value ||
-    (!hasRelatedLiterature.value &&
-      props.emptyValueBehavior.action === "display"),
+const { data: literatureFromIds, isLoading: loadingIds } = useLiteratures(
+  computed(() =>
+    mode.value === "id" || mode.value === "both" ? literatureId.value : "",
+  ),
 );
 
-const hasRelatedLiterature = computed(() => {
-  if (props.mode === "id") {
-    return literatureTitles.value.some((title) => title && title.trim());
-  } else if (props.mode === "themes") {
-    return literatureList.value.length > 0;
-  } else if (props.mode === "both") {
-    return mergedLiterature.value.length > 0;
-  }
-  return false;
+const literatureTitles = computed(() => {
+  if (!literatureFromIds.value) return [];
+  return literatureFromIds.value
+    .map((item) => ({
+      id: item?.id,
+      title: item?.Title,
+    }))
+    .filter((item) => item.title);
 });
 
-const fullLiteratureList = computed(() => {
-  if (props.mode === "id") {
-    return literatureTitles.value.map((title, i) => ({
-      id: literatureIds.value[i],
-      title,
-    }));
-  } else if (props.mode === "themes") {
-    return literatureList.value;
-  } else if (props.mode === "both") {
-    return mergedLiterature.value;
-  }
-  return [];
-});
-
-const displayedLiterature = computed(() => {
-  const arr = fullLiteratureList.value;
-  return !showAll.value && arr.length > 5 ? arr.slice(0, 3) : arr;
-});
-const { apiClient } = useApiClient();
-
-async function fetchLiteratureTitlesById(ids, useJurisdictionsColumn = false) {
-  if (!ids.length) return [];
-  loadingTitles.value = true;
-  const titles = await Promise.all(
-    ids.map(async (id) => {
-      try {
-        const data = await apiClient("/search/details", {
-          body: {
-            table: "Literature",
-            id,
-            column: useJurisdictionsColumn
-              ? "Jurisdictions Literature ID"
-              : undefined,
-          },
-        });
-        return data?.Title ? data.Title : data[id]?.Title || "";
-      } catch {
-        return "";
-      }
-    }),
+const { data: literatureFromThemes, isLoading: loadingThemes } =
+  useLiteratureByTheme(
+    computed(() =>
+      mode.value === "themes" || mode.value === "both"
+        ? themes.value
+        : undefined,
+    ),
   );
-  literatureTitles.value = titles;
-  loadingTitles.value = false;
-}
 
-async function fetchRelatedLiterature(themes) {
-  if (!themes) return;
-  loading.value = true;
-  try {
-    const data = await apiClient("/search/", {
-      body: {
-        filters: [
-          { column: "tables", values: ["Literature"] },
-          { column: "themes", values: themes.split(",").map((t) => t.trim()) },
-        ],
-        page_size: 100,
-      },
-    });
-    literatureList.value = Array.isArray(data.results)
-      ? data.results.map((item) => ({
-          title: item.Title || item.title || "Untitled",
-          id: item.id,
-        }))
-      : [];
-  } catch {
-    literatureList.value = [];
-  } finally {
-    loading.value = false;
-  }
-}
+const { data: literatureFromJurisdiction, isLoading: loadingJurisdiction } =
+  useLiteratureByJurisdiction(
+    computed(() =>
+      mode.value === "jurisdiction" || mode.value === "both"
+        ? jurisdiction.value
+        : "",
+    ),
+  );
 
-async function fetchBoth() {
-  const ids = literatureIds.value;
-  await fetchLiteratureTitlesById(ids, true);
-  await fetchRelatedLiterature(props.themes);
+const mergedLiterature = computed(() => {
   const idSet = new Set();
   const merged = [];
-  ids.forEach((id, i) => {
-    if (id && literatureTitles.value[i] && !idSet.has(id)) {
-      merged.push({ id, title: literatureTitles.value[i] });
-      idSet.add(id);
-    }
-  });
-  literatureList.value.forEach((item) => {
+
+  literatureTitles.value.forEach((item) => {
     if (item.id && !idSet.has(item.id)) {
       merged.push(item);
       idSet.add(item.id);
     }
   });
-  mergedLiterature.value = merged;
-}
 
-watch(
-  () => [props.literatureId, props.themes, props.mode],
-  async ([newIds, newThemes, newMode]) => {
-    if (newMode === "id") {
-      await fetchLiteratureTitlesById(splitAndTrim(newIds));
-    } else if (newMode === "themes") {
-      if (newThemes) await fetchRelatedLiterature(newThemes);
-    } else if (newMode === "both") {
-      await fetchBoth();
+  (literatureFromJurisdiction.value || []).forEach((item) => {
+    if (item.id && !idSet.has(item.id)) {
+      merged.push({
+        id: item?.id,
+        title: item?.Title,
+      });
+      idSet.add(item.id);
     }
-  },
-  { immediate: true },
-);
+  });
 
-onMounted(() => {
-  if (props.mode === "id") {
-    fetchLiteratureTitlesById(literatureIds.value);
-  } else if (props.mode === "themes") {
-    if (props.themes) fetchRelatedLiterature(props.themes);
-  } else if (props.mode === "both") {
-    fetchBoth();
+  (literatureFromThemes.value || []).forEach((item) => {
+    if (item.id && !idSet.has(item.id)) {
+      merged.push(item);
+      idSet.add(item.id);
+    }
+  });
+
+  return merged;
+});
+
+const fullLiteratureList = computed(() => {
+  switch (mode.value) {
+    case "id":
+      return literatureTitles.value;
+    case "themes":
+      return literatureFromThemes.value || [];
+    case "jurisdiction":
+      return (literatureFromJurisdiction.value || [])
+        .map((item) => ({
+          id: item?.id,
+          title: item?.Title,
+        }))
+        .filter((item) => item.title);
+    case "both":
+      return mergedLiterature.value;
+    default:
+      return [];
+  }
+});
+
+const isLoading = computed(() => {
+  switch (mode.value) {
+    case "id":
+      return loadingIds.value;
+    case "themes":
+      return loadingThemes.value;
+    case "jurisdiction":
+      return loadingJurisdiction.value;
+    case "both":
+      return (
+        loadingIds.value || loadingThemes.value || loadingJurisdiction.value
+      );
+    default:
+      return false;
   }
 });
 </script>

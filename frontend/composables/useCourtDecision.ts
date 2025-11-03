@@ -18,6 +18,7 @@ export function useCourtDecision(courtDecisionId: Ref<string | number>) {
           themes: data["Themes"] || "",
           "Case Citation": data["Case Citation"],
           Questions: data["Questions"],
+          "Related Questions": data["Questions"],
           "Jurisdictions Alpha-3 Code": data["Jurisdictions Alpha-3 Code"],
           "Publication Date ISO": formatDate(
             data["Publication Date ISO"] as string,

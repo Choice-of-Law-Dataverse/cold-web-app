@@ -102,7 +102,7 @@ const instrumentIds = computed(() => {
   return Array.from(unique);
 });
 
-const { dataMap: recordMap } = useRecordDetailsList(
+const { data: recordMap } = useRecordDetailsList(
   computed(() => "Domestic Instruments"),
   instrumentIds,
 );
@@ -110,7 +110,7 @@ const { dataMap: recordMap } = useRecordDetailsList(
 const instrumentTitles = computed(() => {
   const map = {};
   instrumentIds.value.forEach((id) => {
-    const rec = recordMap?.value?.[id] || {};
+    const rec = recordMap?.value?.find((r) => r?.id === id) || {};
     const title =
       rec["Abbreviation"] ||
       rec["Title (in English)"] ||

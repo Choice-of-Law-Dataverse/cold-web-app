@@ -34,6 +34,13 @@ const props = defineProps({
     type: String,
     default: "",
   },
+  emptyValueBehavior: {
+    type: Object,
+    default: () => ({
+      action: "display",
+      fallback: "N/A",
+    }),
+  },
 });
 
 const excludedValues = new Set(["na", "not found", "n/a"]);

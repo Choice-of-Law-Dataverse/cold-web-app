@@ -12,110 +12,52 @@
       <h1 class="mb-12">
         Country Report for {{ jurisdictionData?.Name || "N/A" }}
       </h1>
-      <template #related-literature>
-        <DetailRow
-          :label="
-            keyLabelPairs.find((pair) => pair.key === 'Related Literature')
-              ?.label || 'Related Literature'
-          "
-          :tooltip="
-            jurisdictionConfig.keyLabelPairs.find(
-              (pair) => pair.key === 'Related Literature',
-            )?.tooltip
-          "
-        >
-          <RelatedLiterature
-            :literature-id="(jurisdictionData?.Literature as string) || ''"
-            :value-class-map="valueClassMap['Related Literature']"
-            :use-id="true"
-            :show-label="false"
-            :empty-value-behavior="
+      <template #search-links>
+        <div class="mt-4 flex flex-col gap-4">
+          <DetailRow label="Domestic Instruments">
+            <RelatedDomesticInstruments
+              :jurisdiction="jurisdictionData?.Name as string"
+              :empty-value-behavior="{
+                action: 'display',
+                fallback: 'No domestic instruments available',
+              }"
+            />
+          </DetailRow>
+          <DetailRow label="Court Decisions">
+            <RelatedCourtDecisions
+              :jurisdiction="jurisdictionData?.Name as string"
+              :empty-value-behavior="{
+                action: 'display',
+                fallback: 'No court decisions available',
+              }"
+            />
+          </DetailRow>
+
+          <DetailRow
+            :label="
+              keyLabelPairs.find((pair) => pair.key === 'Related Literature')
+                ?.label || 'Related Literature'
+            "
+            :tooltip="
               jurisdictionConfig.keyLabelPairs.find(
                 (pair) => pair.key === 'Related Literature',
-              )?.emptyValueBehavior
+              )?.tooltip
             "
-            mode="id"
-          />
-        </DetailRow>
-      </template>
-
-      <template #search-links>
-        <template
-          v-if="
-            courtDecisionCountLoading ||
-            domesticInstrumentCountLoading ||
-            (courtDecisionCount !== 0 && courtDecisionCount !== null) ||
-            (domesticInstrumentCount !== 0 && domesticInstrumentCount !== null)
-          "
-        >
-          <template
-            v-if="courtDecisionCountLoading || domesticInstrumentCountLoading"
           >
-            <LoadingBar />
-          </template>
-          <template v-else>
-            <DetailRow label="Related Data">
-              <div class="flex flex-col gap-2">
-                <NuxtLink
-                  v-if="courtDecisionCount !== 0 && courtDecisionCount !== null"
-                  :to="{
-                    name: 'search',
-                    query: {
-                      type: 'Court Decisions',
-                      jurisdiction: (jurisdictionData?.Name as string) || '',
-                    },
-                  }"
-                  class="!mb-2 no-underline"
-                >
-                  <UButton class="link-button" variant="link">
-                    <span class="break-words text-left">
-                      <template v-if="courtDecisionCount !== null">
-                        See {{ courtDecisionCount }} court decision{{
-                          courtDecisionCount === 1 ? "" : "s"
-                        }}
-                        from {{ jurisdictionData?.Name || "N/A" }}
-                      </template>
-                      <template v-else>
-                        All court decisions from
-                        {{ jurisdictionData?.Name || "N/A" }}
-                      </template>
-                    </span>
-                  </UButton>
-                </NuxtLink>
-
-                <NuxtLink
-                  v-if="
-                    domesticInstrumentCount !== 0 &&
-                    domesticInstrumentCount !== null
-                  "
-                  :to="{
-                    name: 'search',
-                    query: {
-                      type: 'Domestic Instruments',
-                      jurisdiction: (jurisdictionData?.Name as string) || '',
-                    },
-                  }"
-                  class="no-underline"
-                >
-                  <UButton class="link-button" variant="link">
-                    <span class="break-words text-left">
-                      <template v-if="domesticInstrumentCount !== null">
-                        See {{ domesticInstrumentCount }} domestic instrument{{
-                          domesticInstrumentCount === 1 ? "" : "s"
-                        }}
-                        from {{ jurisdictionData?.Name || "N/A" }}
-                      </template>
-                      <template v-else>
-                        All domestic instruments from
-                        {{ jurisdictionData?.Name || "N/A" }}
-                      </template>
-                    </span>
-                  </UButton>
-                </NuxtLink>
-              </div>
-            </DetailRow>
-          </template>
-        </template>
+            <RelatedLiterature
+              :literature-id="(jurisdictionData?.Literature as string) || ''"
+              :value-class-map="valueClassMap['Related Literature']"
+              :use-id="true"
+              :jurisdiction="jurisdictionData?.Name as string"
+              :empty-value-behavior="
+                jurisdictionConfig.keyLabelPairs.find(
+                  (pair) => pair.key === 'Related Literature',
+                )?.emptyValueBehavior
+              "
+              :mode="'both'"
+            />
+          </DetailRow>
+        </div>
       </template>
     </BaseDetailLayout>
     <JurisdictionSelector
@@ -169,13 +111,11 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import JurisdictionSelector from "@/components/ui/JurisdictionSelector.vue";
 import JurisdictionQuestions from "@/components/content/JurisdictionQuestions.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
+import RelatedCourtDecisions from "@/components/sources/RelatedCourtDecisions.vue";
+import RelatedDomesticInstruments from "@/components/sources/RelatedDomesticInstruments.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useJurisdiction } from "@/composables/useJurisdictions";
-import {
-  useDomesticInstrumentsCount,
-  useCourtDecisionsCount,
-} from "@/composables/useJurisdictionCounts";
 import { jurisdictionConfig } from "@/config/pageConfigs";
 
 const route = useRoute();
@@ -187,28 +127,11 @@ const compareJurisdiction = ref<string | null>(null);
 const { isLoading: isJurisdictionLoading, data: jurisdictionData } =
   useJurisdiction(computed(() => route.params.id as string));
 
-const { data: courtDecisionCount, isLoading: courtDecisionCountLoading } =
-  useCourtDecisionsCount(
-    computed(() => jurisdictionData.value?.Name as string),
-  );
-
-const {
-  data: domesticInstrumentCount,
-  isLoading: domesticInstrumentCountLoading,
-} = useDomesticInstrumentsCount(
-  computed(() => jurisdictionData.value?.Name as string),
-);
-
 const keyLabelPairsWithoutLegalFamily = computed(() =>
   keyLabelPairs.filter((pair) => pair.key !== "Legal Family"),
 );
 
 compareJurisdiction.value = (route.query.c as string) || null;
 
-const isLoading = computed(
-  () =>
-    isJurisdictionLoading ||
-    courtDecisionCountLoading ||
-    domesticInstrumentCountLoading,
-);
+const isLoading = computed(() => isJurisdictionLoading);
 </script>

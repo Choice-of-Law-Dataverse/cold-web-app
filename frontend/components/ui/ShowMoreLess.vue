@@ -1,21 +1,21 @@
 <template>
   <div class="mt-[-2px] list-none">
-    <NuxtLink
+    <button
       v-if="!isExpanded"
-      :class="[buttonClass, 'cursor-pointer']"
+      :class="['link-button-night', 'cursor-pointer']"
       @click.prevent="emit('update:isExpanded', true)"
     >
       <Icon name="material-symbols:add" :class="iconClass" />
       Show more {{ label }}
-    </NuxtLink>
-    <NuxtLink
+    </button>
+    <button
       v-else
-      :class="[buttonClass, 'cursor-pointer']"
+      :class="['link-button-night', 'cursor-pointer']"
       @click="emit('update:isExpanded', false)"
     >
       <Icon name="material-symbols:remove" :class="iconClass" />
       Show less {{ label }}
-    </NuxtLink>
+    </button>
   </div>
 </template>
 
@@ -31,7 +31,7 @@ defineProps({
   },
   buttonClass: {
     type: String,
-    default: "link-button",
+    default: "link-button-night",
   },
   iconClass: {
     type: String,

@@ -7,7 +7,7 @@
     <div v-if="error">{{ error }}</div>
     <div v-else :id="anchorId" :class="['legal-content', customClass]">
       <div class="mb-4 flex flex-col">
-        <div class="flex items-start justify-between gap-2">
+        <div class="flex items-center justify-between gap-2">
           <a
             :href="`#${anchorId}`"
             class="label-key-provision-article anchor min-w-0 flex-1"
@@ -134,7 +134,6 @@ onMounted(() => {
   text-decoration: none;
   color: var(--color-cold-night) !important;
   display: block;
-  margin-top: 50px;
 }
 
 .base-legal-content.is-first .anchor {

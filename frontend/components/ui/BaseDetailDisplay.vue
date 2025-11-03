@@ -63,8 +63,8 @@
             <!-- Check for slot first -->
             <template
               v-if="
-                resultData?.[item.key] &&
-                $slots[item.key.replace(/ /g, '-').toLowerCase()]
+                $slots[item.key.replace(/ /g, '-').toLowerCase()] &&
+                shouldDisplayValue(item, resultData?.[item.key])
               "
             >
               <slot

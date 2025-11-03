@@ -116,7 +116,6 @@ li::marker {
   font-size: 0.725rem;
   font-weight: 500;
   text-transform: uppercase;
-  margin-right: 12px;
   color: var(--color-cold-night);
 }
 
@@ -127,6 +126,7 @@ li::marker {
 
 .label-key-provision-article {
   @extend .label-key;
+  font-size: 14px !important;
   text-transform: none;
 }
 
@@ -251,6 +251,11 @@ li::marker {
   @extend .suggestion-button;
   font-size: 14px !important;
   font-weight: 400 !important; // Regular
+}
+
+.link-button-night {
+  @extend .link-button;
+  color: var(--color-cold-night) !important;
 }
 
 .showmoreless-icon-large {

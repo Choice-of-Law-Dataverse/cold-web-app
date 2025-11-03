@@ -10,6 +10,12 @@ import {
 } from "@tanstack/vue-query";
 import { defineNuxtPlugin, useState } from "#imports";
 
+declare global {
+  interface Window {
+    __TANSTACK_QUERY_CLIENT__: import("@tanstack/query-core").QueryClient;
+  }
+}
+
 export default defineNuxtPlugin((nuxt) => {
   const vueQueryState = useState<DehydratedState | null>("vue-query");
 
@@ -33,6 +39,10 @@ export default defineNuxtPlugin((nuxt) => {
       },
     },
   });
+
+  if (process.env.NODE_ENV !== "production") {
+    window.__TANSTACK_QUERY_CLIENT__ = queryClient;
+  }
 
   const options: VueQueryPluginOptions = {
     queryClient,
