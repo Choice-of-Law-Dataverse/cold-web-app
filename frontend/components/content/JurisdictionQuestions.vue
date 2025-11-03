@@ -24,7 +24,7 @@
               style="display: flex; align-items: flex-start"
             >
               <span
-                class="expand-icon mr-1 mt-1 cursor-pointer align-middle"
+                class="expand-icon px-1 cursor-pointer align-middle"
                 :style="{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -62,7 +62,7 @@
                   ? row.theme.split(',')
                   : []"
                 :key="theme.trim()"
-                class="label-theme"
+                class="label-theme mx-1"
               >
                 {{ theme.trim() }}
               </span>
@@ -106,7 +106,7 @@
               <div class="flex items-start">
                 <span
                   v-if="row.hasExpand"
-                  class="expand-icon-mobile mr-2 cursor-pointer"
+                  class="expand-icon-mobile px-1 cursor-pointer"
                   :style="{
                     transform: row.expanded ? 'rotate(90deg)' : 'rotate(0deg)',
                   }"
