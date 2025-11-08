@@ -1,5 +1,12 @@
 <template>
   <div class="no-results mt-12">
+    <div class="icon-container">
+      <UIcon
+        name="i-material-symbols:search-off"
+        class="no-results-icon"
+        size="72"
+      />
+    </div>
     <h2>Sorry, there are no results for your search.</h2>
   </div>
 
@@ -19,14 +26,29 @@
     </div>
   </div>
 
-  <div class="no-results mt-4">
-    <h2>
+  <div class="submit-card mt-8">
+    <div class="icon-container">
+      <NuxtLink to="/submit">
+        <UIcon
+          name="i-material-symbols:add-notes"
+          class="submit-icon"
+          size="72"
+        />
+      </NuxtLink>
+    </div>
+    <h2 class="card-title">Enter new Data</h2>
+    <p class="card-description">
       Would you like to suggest a court decision, a legal instrument, a
       literature entry, or other information to be included in our
-      systematization? Please consider submitting
-      <NuxtLink to="/submit" class="suggestion-link">new data</NuxtLink> to help
-      us build the Choice of Law Dataverse.
-    </h2>
+      systematization?
+    </p>
+    <div class="link-container">
+      <NuxtLink to="/submit">
+        <UButton class="suggestion-button" variant="link">
+          Submit your data
+        </UButton>
+      </NuxtLink>
+    </div>
   </div>
 </template>
 
@@ -71,13 +93,48 @@ function removeJurisdictionFilter() {
   font-weight: 600 !important;
 }
 
-.suggestion-link {
-  color: var(--color-cold-purple);
-  text-decoration: underline;
-  font-weight: 600 !important;
+.icon-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 32px 0;
 }
 
-.suggestion-link:hover {
-  opacity: 0.8;
+.no-results-icon {
+  color: #9ca3af;
+}
+
+.submit-card {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.submit-icon {
+  color: var(--color-cold-green);
+  transition: transform 0.2s ease;
+}
+
+.submit-icon:hover {
+  transform: scale(1.1);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.card-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #4b5563;
+  margin-bottom: 1.5rem;
+}
+
+.link-container {
+  display: flex;
+  justify-content: center;
 }
 </style>
