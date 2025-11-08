@@ -1,8 +1,7 @@
 """Tests for database and HTTP connection managers."""
 
 import pytest
-import sqlalchemy as sa
-from sqlalchemy.pool import NullPool, QueuePool
+from sqlalchemy.pool import QueuePool
 
 from app.services.db_manager import DatabaseManager, SuggestionsDBManager
 from app.services.http_session_manager import HTTPSessionManager

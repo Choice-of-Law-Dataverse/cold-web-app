@@ -1,13 +1,9 @@
 import { computed, type Ref } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
+import type { JurisdictionCount, TableName } from "@/types/api";
 
-interface JurisdictionCount {
-  jurisdiction: string;
-  n: number;
-}
-
-async function fetchCountByJurisdiction(tableName: string, limit?: number) {
+async function fetchCountByJurisdiction(tableName: TableName, limit?: number) {
   const { apiClient } = useApiClient();
   const params = new URLSearchParams({ table: tableName });
   if (limit) {
@@ -20,7 +16,7 @@ async function fetchCountByJurisdiction(tableName: string, limit?: number) {
 }
 
 export function useCountByJurisdiction(
-  tableName: Ref<string>,
+  tableName: Ref<TableName>,
   limit?: Ref<number | undefined>,
 ) {
   return useQuery({

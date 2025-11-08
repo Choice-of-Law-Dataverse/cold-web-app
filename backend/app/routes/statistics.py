@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Query, Request
+from fastapi import APIRouter, Depends, Query, Request
 
 from app.auth import verify_jwt_token
 from app.schemas.responses import JurisdictionCount
@@ -12,11 +12,50 @@ router = APIRouter(prefix="/statistics", tags=["Statistics"], dependencies=[Depe
 
 
 @router.get(
+    "/jurisdictions-with-answer-percentage",
+    summary="Get all jurisdictions with answer data percentage",
+    description=(
+        "Returns all jurisdictions with their complete data plus the percentage of answers "
+        "that contain data (not 'no data'). Percentage is calculated per jurisdiction."
+    ),
+    responses={
+        200: {
+            "description": "Array of jurisdictions with all fields plus answer_coverage.",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "id": 1,
+                            "Name": "United Kingdom",
+                            "Alpha_3_Code": "GBR",
+                            "Legal_Family": "Common Law",
+                            "Answer_Coverage": 67.33,
+                        },
+                        {
+                            "id": 2,
+                            "Name": "Australia",
+                            "Alpha_3_Code": "AUS",
+                            "Legal_Family": "Common Law",
+                            "Answer_Coverage": 85.5,
+                        },
+                    ]
+                }
+            },
+        },
+    },
+)
+def get_jurisdictions_with_answer_coverage(request: Request):
+    """Returns all jurisdictions with percentage of answers containing data."""
+
+    return statistics_service.get_jurisdictions_with_answer_coverage()
+
+
+@router.get(
     "/count-by-jurisdiction",
     summary="Count records by jurisdiction for a specific table",
     description=(
         "Returns count of rows grouped by jurisdiction for the specified table. "
-        "Supported tables: Court_Decisions, Domestic_Instruments, Literature."
+        "Supported tables: Court Decisions, Domestic Instruments, Literature."
     ),
     response_model=list[JurisdictionCount],
     responses={
@@ -36,11 +75,9 @@ router = APIRouter(prefix="/statistics", tags=["Statistics"], dependencies=[Depe
 )
 def count_by_jurisdiction(
     request: Request,
-    table: str = Query(..., description="Table name (e.g., 'Court_Decisions', 'Domestic_Instruments', 'Literature')"),
+    table: str = Query(..., description="Table name (e.g., 'Court Decisions', 'Domestic Instruments', 'Literature')"),
     limit: int | None = Query(None, ge=1, description="Optional limit on number of results to return"),
 ) -> list[JurisdictionCount]:
     """Returns count of rows grouped by jurisdiction for the specified table."""
-    results = statistics_service.count_by_jurisdiction(table, limit)
-    if not results and table not in ["Court_Decisions", "Domestic_Instruments", "Literature"]:
-        raise HTTPException(status_code=400, detail=f"Invalid table name: {table}")
-    return results
+
+    return statistics_service.count_by_jurisdiction(table, limit)

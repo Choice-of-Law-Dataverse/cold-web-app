@@ -4,15 +4,15 @@ Verification script to test database connection management.
 This script verifies that the singleton managers work correctly.
 """
 
-import sys
 import os
+import sys
 
 # Add backend to path
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from app.services.db_manager import db_manager, suggestions_db_manager
-from app.services.http_session_manager import http_session_manager
 from app.services.database import Database
+from app.services.db_manager import db_manager
+from app.services.http_session_manager import http_session_manager
 
 
 def test_database_manager_singleton():
