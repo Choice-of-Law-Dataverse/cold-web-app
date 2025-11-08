@@ -25,10 +25,10 @@ class LandingPageService:
     def count_by_jurisdiction(self, table_name: str):
         """
         Returns count of rows grouped by jurisdiction for the specified table.
-        
+
         Args:
             table_name: The table name (e.g., 'Court_Decisions', 'Domestic_Instruments')
-        
+
         Returns:
             List of dicts with jurisdiction name and count, ordered by count descending.
         """
@@ -38,13 +38,13 @@ class LandingPageService:
             "Domestic_Instruments": "_nc_m2m_Jurisdictions_Domestic_Instruments",
             "Literature": "_nc_m2m_Jurisdictions_Literature",
         }
-        
+
         if table_name not in link_table_map:
             return []
-        
+
         link_table = link_table_map[table_name]
         table_id_column = f"{table_name}_id"
-        
+
         query = f"""
         SELECT j."Name" AS jurisdiction,
                COUNT(DISTINCT m."{table_id_column}") AS n

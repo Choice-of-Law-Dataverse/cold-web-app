@@ -55,6 +55,10 @@ def count_by_jurisdiction(
 ):
     """Returns count of rows grouped by jurisdiction for the specified table."""
     results = landing_page_service.count_by_jurisdiction(table)
-    if results is None or (isinstance(results, list) and len(results) == 0 and table not in ["Court_Decisions", "Domestic_Instruments", "Literature"]):
+    if results is None or (
+        isinstance(results, list)
+        and len(results) == 0
+        and table not in ["Court_Decisions", "Domestic_Instruments", "Literature"]
+    ):
         raise HTTPException(status_code=400, detail=f"Invalid table name: {table}")
     return results
