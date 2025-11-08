@@ -107,7 +107,7 @@
             src="https://choiceoflaw.blob.core.windows.net/assets/cold_beta_logo.svg"
             alt="CoLD Logo"
             class="mb-4 h-12 w-auto"
-          >
+          />
         </NuxtLink>
         <!-- Inline mobile logo for horizontal arrangement -->
         <NuxtLink
@@ -120,7 +120,7 @@
             src="https://choiceoflaw.blob.core.windows.net/assets/cold_beta_logo.svg"
             alt="CoLD Logo"
             class="h-10 w-auto"
-          >
+          />
         </NuxtLink>
 
         <!-- HCCHApproved and Menu/Links Row -->
@@ -129,6 +129,7 @@
           class="mobile-nav-group flex items-center space-x-4"
         >
           <HCCHApproved v-if="!showMenu" class="hcch-approved" />
+          <OpenScienceBadge v-if="!showMenu" class="open-science-badge" />
           <template v-if="!showMenu">
             <button class="menu-button custom-nav-links" @click="openMenu">
               Menu
@@ -188,6 +189,7 @@
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import HCCHApproved from "../ui/HCCHApproved.vue";
+import OpenScienceBadge from "../ui/OpenScienceBadge.vue";
 import eventBus from "@/eventBus";
 import jurisdictionsData from "@/assets/jurisdictions-data.json";
 import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
