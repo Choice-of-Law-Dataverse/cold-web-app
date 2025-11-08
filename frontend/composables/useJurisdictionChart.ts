@@ -3,7 +3,8 @@ import { useCountByJurisdiction } from "@/composables/useCountByJurisdiction";
 
 export function useJurisdictionChart() {
   const tableName = ref("Court_Decisions");
-  const { data: rawData, isLoading, error } = useCountByJurisdiction(tableName);
+  const limit = ref(5);
+  const { data: rawData, isLoading, error } = useCountByJurisdiction(tableName, limit);
 
   const data = computed(() => {
     if (!rawData.value) return null;
