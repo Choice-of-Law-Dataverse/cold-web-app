@@ -1,8 +1,9 @@
 import { computed, ref } from "vue";
 import { useCountByJurisdiction } from "@/composables/useCountByJurisdiction";
+import type { TableName } from "@/types/api";
 
 export function useJurisdictionChart() {
-  const tableName = ref("Court_Decisions");
+  const tableName = ref("Court Decisions" as TableName);
   const limit = ref(6);
   const {
     data: rawData,

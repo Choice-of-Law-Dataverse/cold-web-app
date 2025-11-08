@@ -110,7 +110,7 @@ function handleBarHover(index, isHovering) {
 
 .bar {
   height: 100%;
-  background: var(--color-cold-green, #10b981);
+  background: var(--color-cold-teal, #14b8a6);
   transition: all 0.3s ease;
   display: flex;
   align-items: center;
@@ -121,7 +121,7 @@ function handleBarHover(index, isHovering) {
 }
 
 .bar-hovered {
-  background: var(--color-cold-green-alpha, #059669);
+  background: var(--color-cold-green, #10b981);
   transform: scaleY(1.05);
 }
 
