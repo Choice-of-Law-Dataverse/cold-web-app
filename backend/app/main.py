@@ -16,6 +16,8 @@ from app.routes import (
     submarine,
     suggestions as suggestions_router,
 )
+from app.services.db_manager import db_manager, suggestions_db_manager
+from app.services.http_session_manager import http_session_manager
 from app.services.query_logging import log_query
 
 # Configure logging level
@@ -79,6 +81,65 @@ app = FastAPI(
     docs_url="/api/v1/docs",
     redoc_url="/api/v1/redoc",
 )
+
+
+@app.on_event("startup")
+async def startup_event():
+    """Initialize connection pools on application startup."""
+    logger = logging.getLogger(__name__)
+    logger.info("Initializing connection pools...")
+
+    # Initialize main database connection pool
+    if config.SQL_CONN_STRING:
+        db_manager.initialize(
+            connection_string=config.SQL_CONN_STRING,
+            pool_size=5,
+            max_overflow=10,
+            pool_recycle=3600,
+            pool_pre_ping=True,
+        )
+        logger.info("Main database connection pool initialized")
+    else:
+        logger.warning("SQL_CONN_STRING not configured, database operations will fail")
+
+    # Initialize suggestions database connection pool
+    suggestions_conn = config.SUGGESTIONS_SQL_CONN_STRING or config.SQL_CONN_STRING
+    if suggestions_conn:
+        suggestions_db_manager.initialize(
+            connection_string=suggestions_conn,
+            pool_size=3,
+            max_overflow=5,
+            pool_recycle=3600,
+            pool_pre_ping=True,
+        )
+        logger.info("Suggestions database connection pool initialized")
+
+    # Initialize HTTP session manager for NocoDB API calls
+    http_session_manager.initialize(
+        pool_connections=10,
+        pool_maxsize=20,
+        max_retries=3,
+    )
+    logger.info("HTTP session manager initialized")
+
+    logger.info("All connection pools initialized successfully")
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """Cleanup connection pools on application shutdown."""
+    logger = logging.getLogger(__name__)
+    logger.info("Shutting down connection pools...")
+
+    # Dispose database connection pools
+    db_manager.dispose()
+    suggestions_db_manager.dispose()
+
+    # Close HTTP session
+    http_session_manager.close()
+
+    logger.info("All connection pools shut down successfully")
+
 
 origins = ["*"]
 

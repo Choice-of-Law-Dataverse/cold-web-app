@@ -7,22 +7,27 @@ from typing import Any
 
 import sqlalchemy as sa
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import sessionmaker
+
+from app.services.db_manager import db_manager
 
 logger = logging.getLogger(__name__)
 
 
 class Database:
-    def __init__(self, connection_string, max_retries=3, retry_delay=0.5):
+    def __init__(self, connection_string=None, max_retries=3, retry_delay=0.5):
         """
-        Initialize the database module.
+        Initialize the database module using the singleton DatabaseManager.
 
         Parameters:
-        - connection_string: Database connection string.
+        - connection_string: Database connection string (deprecated, uses singleton manager).
         - max_retries: Maximum number of retries for fetching data.
         - retry_delay: Delay between retries in seconds.
         """
-        self.engine = sa.create_engine(connection_string)
+        # Use the singleton database manager
+        if not db_manager.is_initialized and connection_string:
+            db_manager.initialize(connection_string)
+
+        self.engine = db_manager.get_engine()
         self.metadata: sa.MetaData | None = sa.MetaData()
         self.max_retries = max_retries
         self.retry_delay = retry_delay
@@ -34,8 +39,6 @@ class Database:
         except SQLAlchemyError:
             logger.exception("Error reflecting metadata")
             self.metadata = None
-
-        self.Session = sessionmaker(bind=self.engine)
 
     def _retry_on_empty(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
         """
@@ -63,7 +66,7 @@ class Database:
 
         def fetch_all_entries() -> dict[str, list[dict[str, Any]]]:
             all_entries: dict[str, list[dict[str, Any]]] = {}
-            with self.Session() as session:
+            with db_manager.get_session() as session:
                 try:
                     for table_name, table in metadata.tables.items():
                         query = table.select()
@@ -84,7 +87,7 @@ class Database:
 
         def fetch_entries() -> dict[str, list[dict[str, Any]]]:
             entries_from_tables: dict[str, list[dict[str, Any]]] = {}
-            with self.Session() as session:
+            with db_manager.get_session() as session:
                 try:
                     for table_name in list_of_tables:
                         if table_name in metadata.tables:
@@ -123,7 +126,7 @@ class Database:
 
         def fetch_entry() -> dict[str, Any]:
             entry: dict[str, Any] = {}
-            with self.Session() as session:
+            with db_manager.get_session() as session:
                 try:
                     if table_name in metadata.tables:
                         table = metadata.tables[table_name]
@@ -153,7 +156,7 @@ class Database:
 
     def execute_query(self, query: str, params: dict[str, Any] | None = None):
         def fetch_query() -> list[dict[str, Any]] | None:
-            with self.Session() as session:
+            with db_manager.get_session() as session:
                 try:
                     result = session.execute(sa.text(query), params or {})
                     rows = result.fetchall()

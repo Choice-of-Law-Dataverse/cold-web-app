@@ -2,7 +2,7 @@ import logging
 from collections.abc import Sequence
 from typing import Any
 
-import requests
+from app.services.http_session_manager import http_session_manager
 
 logger = logging.getLogger(__name__)
 
@@ -16,6 +16,8 @@ class NocoDBService:
         if api_token:
             # X nocodb API token header
             self.headers["xc-token"] = api_token
+        # Use singleton HTTP session manager for connection pooling
+        self.session = http_session_manager.get_session()
 
     def get_row(self, table: str, record_id: str) -> dict[str, Any]:
         """
@@ -25,7 +27,7 @@ class NocoDBService:
         url = f"{self.base_url}/{table}/{record_id}"
         logger.debug("NocoDBService.get_row: GET %s", url)
         logger.debug("NocoDBService headers: %s", self.headers)
-        resp = requests.get(url, headers=self.headers)
+        resp = self.session.get(url, headers=self.headers)
         logger.debug("Response from nocoDB: %s %s", resp.status_code, resp.text.strip())
         resp.raise_for_status()
         payload = resp.json()
@@ -62,7 +64,7 @@ class NocoDBService:
             if where_param:
                 params["where"] = where_param
             logger.debug("NocoDBService.list_rows: GET %s with params %s", url, params)
-            resp = requests.get(url, headers=self.headers, params=params)
+            resp = self.session.get(url, headers=self.headers, params=params)
             resp.raise_for_status()
             payload = resp.json()
             # extract batch results
