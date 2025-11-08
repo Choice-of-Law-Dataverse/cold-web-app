@@ -1,7 +1,5 @@
 """Tests for Database class with singleton manager integration."""
 
-import pytest
-from sqlalchemy.exc import SQLAlchemyError
 
 from app.services.database import Database
 from app.services.db_manager import db_manager
@@ -83,7 +81,7 @@ class TestDatabaseWithManager:
 
     def test_metadata_reflection_with_manager(self):
         """Test that metadata reflection works with the manager."""
-        db = Database(connection_string="sqlite:///:memory:")
+        Database(connection_string="sqlite:///:memory:")
 
         # Create a table
         with db_manager.get_session() as session:
