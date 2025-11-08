@@ -20,10 +20,11 @@
   color: var(--color-cold-night);
   background-color: var(--color-cold-purple-alpha);
   border: 1px solid var(--color-cold-night);
+  padding: 0.375rem 0.75rem;
 }
 @media (max-width: 639px) {
   .label-open-science {
-    padding-right: 9px !important;
+    padding: 0.375rem 0.5rem;
   }
   .desktop-only-text {
     display: none;
