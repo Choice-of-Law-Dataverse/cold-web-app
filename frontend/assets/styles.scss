@@ -652,57 +652,32 @@ button.cold-toggle-btn {
 
 // Print styles -----------------------------------------------
 @media print {
-  // Hide navigation, headers, and interactive elements
+  // Hide navigation, header chrome, and interactive elements
   header,
   nav,
-  .header-container .label,
-  .link-button,
+  .header-container,
   button,
   .no-print,
   [class*="UButton"],
   [class*="u-button"],
-  footer {
-    display: none !important;
-  }
-
-  // Hide action buttons in BaseCardHeader
-  .label.flex.flex-row.items-center.gap-3 {
+  footer,
+  .arrow-container,
+  .arrow-icon {
     display: none !important;
   }
 
   // Ensure content is visible and properly formatted
   body,
-  main,
-  .content,
-  article {
+  main {
     width: 100%;
     max-width: 100%;
     margin: 0;
     padding: 0;
-  }
-
-  // Remove backgrounds and shadows
-  * {
     background: white !important;
-    box-shadow: none !important;
   }
 
-  // Ensure text is black for printing
-  p,
-  span,
-  div,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6 {
-    color: black !important;
-  }
-
-  // Preserve links but remove interactions
+  // Preserve links but make them readable
   a {
-    color: black !important;
     text-decoration: underline !important;
   }
 
@@ -717,11 +692,5 @@ button.cold-toggle-btn {
   figure,
   img {
     page-break-inside: avoid;
-  }
-
-  // Show URLs for external links
-  a[href^="http"]:after {
-    content: " (" attr(href) ")";
-    font-size: 0.8em;
   }
 }

@@ -161,10 +161,22 @@
                     />
                   </a>
                   <a
-                    v-else-if="action.label === 'Export'"
+                    v-else-if="action.label === 'BibTeX'"
                     href="#"
                     class="flex items-center"
-                    @click.prevent="isExportOpen = true"
+                    @click.prevent="exportBibTeX"
+                  >
+                    {{ action.label }}
+                    <UIcon
+                      :name="action.icon"
+                      class="mb-0.5 ml-1 inline-block text-[1.2em]"
+                    />
+                  </a>
+                  <a
+                    v-else-if="action.label === 'Print'"
+                    href="#"
+                    class="flex items-center"
+                    @click.prevent="printPage"
                   >
                     {{ action.label }}
                     <UIcon
@@ -223,11 +235,6 @@
     </template>
   </div>
   <CiteModal v-model="isCiteOpen" />
-  <ExportModal
-    v-model="isExportOpen"
-    :result-data="resultData"
-    :page-type="adjustedSourceTable"
-  />
 </template>
 
 <script setup>
@@ -238,14 +245,12 @@ import { handleImageError } from "@/utils/handleImageError";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
 import { useCheckTarget } from "~/composables/useCheckTarget";
 import CiteModal from "@/components/ui/CiteModal.vue";
-import ExportModal from "@/components/ui/ExportModal.vue";
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
 const route = useRoute();
 const router = useRouter();
 const isCiteOpen = ref(false);
-const isExportOpen = ref(false);
 
 const downloadPDFLink = computed(() => {
   const segments = route.path.split("/").filter(Boolean);
@@ -417,9 +422,17 @@ const suggestEditActions = computed(() => {
     label: "Cite",
     icon: "i-material-symbols:verified-outline",
   });
+  // Add BibTeX button only for Literature
+  if (props.cardType === "Literature") {
+    actions.push({
+      label: "BibTeX",
+      icon: "i-material-symbols:download-outline",
+    });
+  }
+  // Add Print button
   actions.push({
-    label: "Export",
-    icon: "i-material-symbols:download-outline",
+    label: "Print",
+    icon: "i-material-symbols:print-outline",
   });
   if (pdfExists.value) {
     actions.push({
@@ -523,6 +536,99 @@ watch(selectedType, (val, old) => {
     router.push(typeToNewPath(val));
   }
 });
+
+// Export functions
+function generateBibTeX() {
+  const data = props.resultData;
+  const authors = data.Authors || data.Author || "";
+  const title = data.Title || "";
+  const year = data.Year || data["Publication Year"] || "";
+  const journal = data["Publication Title"] || data.Journal || "";
+  const volume = data.Volume || "";
+  const pages = data.Pages || "";
+  const publisher = data.Publisher || "";
+  const doi = data.DOI || "";
+  const url = data.Url || data.URL || "";
+
+  // Generate citation key from first author's last name and year
+  let citationKey = "cold_literature";
+  if (authors && year) {
+    const firstAuthor = authors.split(",")[0].trim().split(" ").pop();
+    // Clean the author name for use in citation key
+    const cleanAuthor = firstAuthor
+      .replace(/[^a-zA-Z]/g, "")
+      .toLowerCase();
+    citationKey = `${cleanAuthor}${year}`;
+  } else if (title && year) {
+    // Fallback to first word of title + year
+    const firstWord = title
+      .split(" ")[0]
+      .replace(/[^a-zA-Z]/g, "")
+      .toLowerCase();
+    citationKey = `${firstWord}${year}`;
+  }
+
+  // Escape special BibTeX characters in strings
+  const escape = (str) =>
+    str.replace(/[{}\\]/g, (char) => `\\${char}`).replace(/%/g, "\\%");
+
+  let bibtex = `@article{${citationKey},\n`;
+  if (authors) bibtex += `  author = {${escape(authors)}},\n`;
+  if (title) bibtex += `  title = {${escape(title)}},\n`;
+  if (journal) bibtex += `  journal = {${escape(journal)}},\n`;
+  if (year) bibtex += `  year = {${year}},\n`;
+  if (volume) bibtex += `  volume = {${volume}},\n`;
+  if (pages) bibtex += `  pages = {${pages}},\n`;
+  if (publisher) bibtex += `  publisher = {${escape(publisher)}},\n`;
+  if (doi) bibtex += `  doi = {${doi}},\n`;
+  if (url) bibtex += `  url = {${url}},\n`;
+  bibtex += "}";
+
+  return bibtex;
+}
+
+function sanitizeFilename(filename) {
+  return filename
+    .replace(/[<>:"/\\|?*]/g, "") // Remove invalid characters
+    .replace(/\s+/g, "_") // Replace spaces with underscores
+    .substring(0, 200); // Limit length
+}
+
+function downloadFile(content, filename, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function exportBibTeX() {
+  const bibtex = generateBibTeX();
+  const rawTitle = props.resultData.Title || "literature";
+  const filename = `${sanitizeFilename(rawTitle)}.bib`;
+  downloadFile(bibtex, filename, "application/x-bibtex");
+}
+
+// Keep JSON export function but don't expose button
+function exportJSON() {
+  const json = JSON.stringify(props.resultData, null, 2);
+  const title =
+    props.resultData.Title ||
+    props.resultData["Case Title"] ||
+    props.resultData.Name ||
+    props.resultData["Case Citation"] ||
+    "export";
+  const filename = `${sanitizeFilename(title)}.json`;
+  downloadFile(json, filename, "application/json");
+}
+
+function printPage() {
+  window.print();
+}
 
 const selectUiLabel = {
   base: "new-select-label leading-none !text-[var(--color-cold-purple)]",
