@@ -2,94 +2,97 @@
   <UCard class="cold-ucard h-full w-full">
     <h2 class="popular-title">{{ title }}</h2>
 
-    <NuxtLink :to="resolvedButtonLink" class="no-underline">
-      <div class="flags-row">
-        <div class="flag-cell">
-          <img
-            v-if="!leftFlagError"
-            :src="leftFlagUrl"
-            :alt="`${iso3Left} flag`"
-            class="flag-img"
-            @error="leftFlagError = true"
-          >
-          <div v-else class="flag-fallback">{{ iso3Left }}</div>
+    <div
+      v-for="(comparison, index) in comparisons"
+      :key="index"
+      class="comparison-row"
+    >
+      <NuxtLink
+        :to="`/jurisdiction-comparison/${comparison.left}+${comparison.right}`"
+        class="no-underline"
+      >
+        <div class="flags-row">
+          <div class="flag-cell">
+            <img
+              v-if="!flagErrors[`${index}-left`]"
+              :src="getFlagUrl(comparison.left)"
+              :alt="`${comparison.left} flag`"
+              class="flag-img"
+              @error="flagErrors[`${index}-left`] = true"
+            >
+            <div v-else class="flag-fallback">{{ comparison.left }}</div>
+          </div>
+
+          <div class="vs-divider">vs</div>
+
+          <div class="flag-cell">
+            <img
+              v-if="!flagErrors[`${index}-right`]"
+              :src="getFlagUrl(comparison.right)"
+              :alt="`${comparison.right} flag`"
+              class="flag-img"
+              @error="flagErrors[`${index}-right`] = true"
+            >
+            <div v-else class="flag-fallback">{{ comparison.right }}</div>
+          </div>
         </div>
 
-        <div class="flag-cell">
-          <img
-            v-if="!rightFlagError"
-            :src="rightFlagUrl"
-            :alt="`${rightIso3} flag`"
-            class="flag-img"
-            @error="rightFlagError = true"
-          >
-          <div v-else class="flag-fallback">{{ rightIso3 }}</div>
+        <div class="codes-row">
+          <div class="code">{{ comparison.left }}</div>
+          <div class="code">{{ comparison.right }}</div>
         </div>
-      </div>
-
-      <div class="codes-row">
-        <div class="code">{{ iso3Left }}</div>
-        <div class="code">{{ rightIso3 }}</div>
-      </div>
-    </NuxtLink>
+      </NuxtLink>
+    </div>
   </UCard>
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { ref } from "vue";
 
-const props = defineProps({
+defineProps({
   title: { type: String, default: "Compare Jurisdictions" },
-  buttonText: { type: String, default: "Go to comparison" },
-  buttonLink: { type: String, default: null },
-  iso3Left: { type: String, required: true },
-  iso3Right: { type: String, required: true },
-  detectVisitorRight: { type: Boolean, default: false },
+  comparisons: {
+    type: Array,
+    required: true,
+    validator: (value) => value.every((comp) => comp.left && comp.right),
+  },
 });
 
-const upperLeft = computed(() => (props.iso3Left || "").toUpperCase());
-const rightIso3 = ref((props.iso3Right || "").toUpperCase());
+const flagErrors = ref({});
 
-const leftFlagUrl = computed(
-  () =>
-    `https://choiceoflaw.blob.core.windows.net/assets/flags/${upperLeft.value.toLowerCase()}.svg`,
-);
-const rightFlagUrl = computed(
-  () =>
-    `https://choiceoflaw.blob.core.windows.net/assets/flags/${rightIso3.value.toLowerCase()}.svg`,
-);
-
-const leftFlagError = ref(false);
-const rightFlagError = ref(false);
-
-const resolvedButtonLink = computed(() => {
-  if (props.buttonLink) return props.buttonLink;
-  if (!upperLeft.value || !rightIso3.value) return "#";
-  return `/jurisdiction-comparison/${upperLeft.value}+${rightIso3.value}`;
-});
-
-onMounted(async () => {
-  if (!props.detectVisitorRight) return;
-
-  rightIso3.value = "CAN";
-});
+const getFlagUrl = (iso3) => {
+  return `https://choiceoflaw.blob.core.windows.net/assets/flags/${iso3.toLowerCase()}.svg`;
+};
 </script>
 
 <style scoped>
 h2 {
   text-align: center;
 }
+.comparison-row {
+  margin-bottom: 24px;
+}
+.comparison-row:last-child {
+  margin-bottom: 0;
+}
 .flags-row {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
   gap: 12px;
-  margin-top: 28px;
+  margin-top: 16px;
   margin-bottom: 12px;
 }
 .flag-cell {
   display: flex;
   justify-content: center;
+}
+.vs-divider {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-cold-gray);
+  text-transform: uppercase;
+  padding: 0 8px;
 }
 .flag-img {
   height: 48px;
@@ -120,10 +123,5 @@ h2 {
   font-size: 20px;
   font-weight: 600;
   letter-spacing: 0.5px;
-}
-.link-container {
-  margin-top: 18px;
-  display: flex;
-  justify-content: center;
 }
 </style>

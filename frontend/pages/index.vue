@@ -115,10 +115,11 @@
     <div class="col-span-12 flex md:col-span-4">
       <CompareJurisdictionsCard
         title="Compare Jurisdictions"
-        button-text="Go to comparison"
-        iso3-left="CHE"
-        iso3-right="CAN"
-        :detect-visitor-right="true"
+        :comparisons="[
+          { left: 'CHE', right: 'CAN' },
+          { left: 'BRA', right: 'MOZ' },
+          { left: 'EUR', right: 'GBR' },
+        ]"
       />
     </div>
     <div class="col-span-12 flex md:col-span-8">
