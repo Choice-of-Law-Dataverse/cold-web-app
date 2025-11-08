@@ -10,7 +10,7 @@
 
     <div class="col-span-12">
       <div
-        class="mb-6 flex w-full flex-row items-center justify-between gap-2 pb-4 pt-4"
+        class="mb-6 flex w-full flex-col justify-between gap-2 pb-4 pt-4 sm:flex-row sm:items-center"
       >
         <h2 class="text-xl font-medium md:text-left">
           <span>
