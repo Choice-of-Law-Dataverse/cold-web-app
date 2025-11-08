@@ -21,10 +21,11 @@
 
   <div class="no-results mt-4">
     <h2>
-      If you think something is wrong, please
-      <UButton class="suggestion-button" variant="link" to="/contact">
-        <span>contact us</span> </UButton
-      >.
+      Would you like to suggest a court decision, a legal instrument, a
+      literature entry, or other information to be included in our
+      systematization? Please consider submitting
+      <NuxtLink to="/submit" class="suggestion-link">new data</NuxtLink> to help
+      us build the Choice of Law Dataverse.
     </h2>
   </div>
 </template>
@@ -68,5 +69,15 @@ function removeJurisdictionFilter() {
 
 .suggestion-button {
   font-weight: 600 !important;
+}
+
+.suggestion-link {
+  color: var(--color-cold-purple);
+  text-decoration: underline;
+  font-weight: 600 !important;
+}
+
+.suggestion-link:hover {
+  opacity: 0.8;
 }
 </style>
