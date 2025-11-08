@@ -1,6 +1,6 @@
 <template>
-  <a
-    href="/about/endorsements"
+  <NuxtLink
+    to="/about/endorsements"
     class="label-question"
     style="display: inline-flex; text-decoration: none"
   >
@@ -9,7 +9,7 @@
       class="mr-[0.3em] mt-[0.1em] text-[1.15em]"
     />
     HCCH<span class="desktop-only-text">&nbsp;Compliant</span>
-  </a>
+  </NuxtLink>
 </template>
 
 <style scoped>
