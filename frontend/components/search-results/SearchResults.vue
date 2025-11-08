@@ -22,6 +22,7 @@
         v-model="currentTypeFilter"
         :options="typeOptions"
         class="w-full flex-shrink-0 lg:w-60"
+        :multiple="false"
         :placeholder="'Types'"
       />
       <UButton
