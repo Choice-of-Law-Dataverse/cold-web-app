@@ -45,10 +45,8 @@
                 :key="index"
                 :title="
                   provision['Title of the Provision'] +
-                  (processedInternationalInstrument
-                    ? ', ' +
-                      (processedInternationalInstrument['Abbreviation'] ||
-                        processedInternationalInstrument['Title (in English)'])
+                  (processedInternationalInstrument?.['Abbreviation']
+                    ? ', ' + processedInternationalInstrument['Abbreviation']
                     : '')
                 "
                 :anchor-id="
