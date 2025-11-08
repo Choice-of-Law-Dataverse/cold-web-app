@@ -113,20 +113,35 @@ function generateBibTeX() {
   const url = data.Url || data.URL || "";
 
   // Generate citation key from first author's last name and year
-  let citationKey = "unknown";
+  let citationKey = "cold_literature";
   if (authors && year) {
     const firstAuthor = authors.split(",")[0].trim().split(" ").pop();
-    citationKey = `${firstAuthor}${year}`;
+    // Clean the author name for use in citation key
+    const cleanAuthor = firstAuthor
+      .replace(/[^a-zA-Z]/g, "")
+      .toLowerCase();
+    citationKey = `${cleanAuthor}${year}`;
+  } else if (title && year) {
+    // Fallback to first word of title + year
+    const firstWord = title
+      .split(" ")[0]
+      .replace(/[^a-zA-Z]/g, "")
+      .toLowerCase();
+    citationKey = `${firstWord}${year}`;
   }
 
+  // Escape special BibTeX characters in strings
+  const escape = (str) =>
+    str.replace(/[{}\\]/g, (char) => `\\${char}`).replace(/%/g, "\\%");
+
   let bibtex = `@article{${citationKey},\n`;
-  if (authors) bibtex += `  author = {${authors}},\n`;
-  if (title) bibtex += `  title = {${title}},\n`;
-  if (journal) bibtex += `  journal = {${journal}},\n`;
+  if (authors) bibtex += `  author = {${escape(authors)}},\n`;
+  if (title) bibtex += `  title = {${escape(title)}},\n`;
+  if (journal) bibtex += `  journal = {${escape(journal)}},\n`;
   if (year) bibtex += `  year = {${year}},\n`;
   if (volume) bibtex += `  volume = {${volume}},\n`;
   if (pages) bibtex += `  pages = {${pages}},\n`;
-  if (publisher) bibtex += `  publisher = {${publisher}},\n`;
+  if (publisher) bibtex += `  publisher = {${escape(publisher)}},\n`;
   if (doi) bibtex += `  doi = {${doi}},\n`;
   if (url) bibtex += `  url = {${url}},\n`;
   bibtex += "}";
@@ -146,9 +161,18 @@ function downloadFile(content, filename, mimeType) {
   URL.revokeObjectURL(url);
 }
 
+// Sanitize filename to be safe for all operating systems
+function sanitizeFilename(filename) {
+  return filename
+    .replace(/[<>:"/\\|?*]/g, "") // Remove invalid characters
+    .replace(/\s+/g, "_") // Replace spaces with underscores
+    .substring(0, 200); // Limit length
+}
+
 function exportBibTeX() {
   const bibtex = generateBibTeX();
-  const filename = `${props.resultData.Title || "literature"}.bib`;
+  const rawTitle = props.resultData.Title || "literature";
+  const filename = `${sanitizeFilename(rawTitle)}.bib`;
   downloadFile(bibtex, filename, "application/x-bibtex");
   emit("update:modelValue", false);
 }
@@ -161,7 +185,7 @@ function exportJSON() {
     props.resultData.Name ||
     props.resultData["Case Citation"] ||
     "export";
-  const filename = `${title.replace(/[^a-z0-9]/gi, "_").toLowerCase()}.json`;
+  const filename = `${sanitizeFilename(title)}.json`;
   downloadFile(json, filename, "application/json");
   emit("update:modelValue", false);
 }
