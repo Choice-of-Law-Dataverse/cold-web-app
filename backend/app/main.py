@@ -12,6 +12,7 @@ from app.routes import (
     moderation as moderation_router,
     search,
     sitemap,
+    statistics,
     submarine,
     suggestions as suggestions_router,
 )
@@ -62,6 +63,10 @@ app = FastAPI(
             "description": "Landing page support endpoints (e.g., jurisdictions with data).",
         },
         {
+            "name": "Statistics",
+            "description": "Data aggregation and statistics endpoints.",
+        },
+        {
             "name": "Submarine",
             "description": "Fun demo route.",
         },
@@ -95,6 +100,7 @@ api_router.include_router(ai.router)
 api_router.include_router(submarine.router)
 api_router.include_router(sitemap.router)
 api_router.include_router(landing_page.router)
+api_router.include_router(statistics.router)
 
 api_router.include_router(suggestions_router.router)
 

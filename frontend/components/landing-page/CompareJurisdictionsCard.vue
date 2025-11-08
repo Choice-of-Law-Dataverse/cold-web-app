@@ -1,129 +1,91 @@
 <template>
   <UCard class="cold-ucard h-full w-full">
-    <h2 class="popular-title">{{ title }}</h2>
+    <h2 class="popular-title text-center">{{ title }}</h2>
 
-    <NuxtLink :to="resolvedButtonLink" class="no-underline">
-      <div class="flags-row">
-        <div class="flag-cell">
-          <img
-            v-if="!leftFlagError"
-            :src="leftFlagUrl"
-            :alt="`${iso3Left} flag`"
-            class="flag-img"
-            @error="leftFlagError = true"
+    <div
+      v-for="(comparison, index) in comparisons"
+      :key="index"
+      :class="['mb-6', { 'mb-0': index === comparisons.length - 1 }]"
+    >
+      <NuxtLink
+        :to="`/jurisdiction-comparison/${comparison.left}+${comparison.right}`"
+        class="no-underline"
+      >
+        <div
+          class="mt-4 flex items-start justify-center gap-6 rounded-lg p-3 transition-colors duration-200 hover:bg-gray-50"
+        >
+          <div class="flex min-w-[120px] flex-col items-center gap-2">
+            <div class="flex h-12 w-full items-center justify-center">
+              <img
+                v-if="!flagErrors[`${index}-left`]"
+                :src="getFlagUrl(comparison.left)"
+                :alt="`${comparison.left} flag`"
+                class="block h-12 w-auto max-w-full border border-[var(--color-cold-gray)]"
+                @error="flagErrors[`${index}-left`] = true"
+              >
+              <div
+                v-else
+                class="inline-flex h-9 items-center justify-center border border-[var(--color-cold-gray)] bg-gray-100 px-3 font-semibold"
+              >
+                {{ comparison.left }}
+              </div>
+            </div>
+            <div
+              class="text-center text-sm font-semibold tracking-wider text-[var(--color-cold-night)]"
+            >
+              {{ comparison.left }}
+            </div>
+          </div>
+
+          <div
+            class="mt-3 self-center px-2 text-sm font-semibold uppercase text-[var(--color-cold-gray)]"
           >
-          <div v-else class="flag-fallback">{{ iso3Left }}</div>
-        </div>
+            vs
+          </div>
 
-        <div class="flag-cell">
-          <img
-            v-if="!rightFlagError"
-            :src="rightFlagUrl"
-            :alt="`${rightIso3} flag`"
-            class="flag-img"
-            @error="rightFlagError = true"
-          >
-          <div v-else class="flag-fallback">{{ rightIso3 }}</div>
+          <div class="flex min-w-[120px] flex-col items-center gap-2">
+            <div class="flex h-12 w-full items-center justify-center">
+              <img
+                v-if="!flagErrors[`${index}-right`]"
+                :src="getFlagUrl(comparison.right)"
+                :alt="`${comparison.right} flag`"
+                class="block h-12 w-auto max-w-full border border-[var(--color-cold-gray)]"
+                @error="flagErrors[`${index}-right`] = true"
+              >
+              <div
+                v-else
+                class="inline-flex h-9 items-center justify-center border border-[var(--color-cold-gray)] bg-gray-100 px-3 font-semibold"
+              >
+                {{ comparison.right }}
+              </div>
+            </div>
+            <div
+              class="text-center text-sm font-semibold tracking-wider text-[var(--color-cold-night)]"
+            >
+              {{ comparison.right }}
+            </div>
+          </div>
         </div>
-      </div>
-
-      <div class="codes-row">
-        <div class="code">{{ iso3Left }}</div>
-        <div class="code">{{ rightIso3 }}</div>
-      </div>
-    </NuxtLink>
+      </NuxtLink>
+    </div>
   </UCard>
 </template>
 
 <script setup>
-import { computed, ref, onMounted } from "vue";
+import { ref } from "vue";
 
-const props = defineProps({
+defineProps({
   title: { type: String, default: "Compare Jurisdictions" },
-  buttonText: { type: String, default: "Go to comparison" },
-  buttonLink: { type: String, default: null },
-  iso3Left: { type: String, required: true },
-  iso3Right: { type: String, required: true },
-  detectVisitorRight: { type: Boolean, default: false },
+  comparisons: {
+    type: Array,
+    required: true,
+    validator: (value) => value.every((comp) => comp.left && comp.right),
+  },
 });
 
-const upperLeft = computed(() => (props.iso3Left || "").toUpperCase());
-const rightIso3 = ref((props.iso3Right || "").toUpperCase());
+const flagErrors = ref({});
 
-const leftFlagUrl = computed(
-  () =>
-    `https://choiceoflaw.blob.core.windows.net/assets/flags/${upperLeft.value.toLowerCase()}.svg`,
-);
-const rightFlagUrl = computed(
-  () =>
-    `https://choiceoflaw.blob.core.windows.net/assets/flags/${rightIso3.value.toLowerCase()}.svg`,
-);
-
-const leftFlagError = ref(false);
-const rightFlagError = ref(false);
-
-const resolvedButtonLink = computed(() => {
-  if (props.buttonLink) return props.buttonLink;
-  if (!upperLeft.value || !rightIso3.value) return "#";
-  return `/jurisdiction-comparison/${upperLeft.value}+${rightIso3.value}`;
-});
-
-onMounted(async () => {
-  if (!props.detectVisitorRight) return;
-
-  rightIso3.value = "CAN";
-});
+const getFlagUrl = (iso3) => {
+  return `https://choiceoflaw.blob.core.windows.net/assets/flags/${iso3.toLowerCase()}.svg`;
+};
 </script>
-
-<style scoped>
-h2 {
-  text-align: center;
-}
-.flags-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  align-items: center;
-  gap: 12px;
-  margin-top: 28px;
-  margin-bottom: 12px;
-}
-.flag-cell {
-  display: flex;
-  justify-content: center;
-}
-.flag-img {
-  height: 48px;
-  width: auto;
-  max-width: 100%;
-  display: block;
-  border: 1px solid var(--color-cold-gray);
-}
-.flag-fallback {
-  height: 36px;
-  padding: 0 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #f3f4f6;
-  border: 1px solid var(--color-cold-gray);
-  font-weight: 600;
-}
-
-.codes-row {
-  margin-top: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.code {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-.link-container {
-  margin-top: 18px;
-  display: flex;
-  justify-content: center;
-}
-</style>
