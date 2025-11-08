@@ -356,6 +356,82 @@ class SearchService:
     =======================================================================
     """
 
+    def _infer_type_from_query(self, search_string: str) -> list[str] | None:
+        """
+        Infer the type of data the user is looking for based on keywords in the search query.
+        Returns a list of table names to prioritize, or None if no inference can be made.
+        """
+        if not search_string:
+            return None
+
+        search_lower = search_string.lower()
+
+        # Keywords to type mappings
+        type_keywords = {
+            "Domestic Instruments": [
+                "legislation",
+                "statute",
+                "act",
+                "law",
+                "code",
+                "domestic instrument",
+                "legal instrument",
+            ],
+            "Court Decisions": [
+                "case",
+                "court",
+                "decision",
+                "judgment",
+                "ruling",
+                "precedent",
+            ],
+            "International Instruments": [
+                "treaty",
+                "convention",
+                "international instrument",
+                "international agreement",
+            ],
+            "Regional Instruments": [
+                "regional instrument",
+                "regional agreement",
+                "directive",
+                "regulation",
+            ],
+            "Literature": [
+                "article",
+                "book",
+                "publication",
+                "literature",
+                "journal",
+                "commentary",
+            ],
+        }
+
+        # Check for matches
+        inferred_types = []
+        for table_name, keywords in type_keywords.items():
+            if any(keyword in search_lower for keyword in keywords):
+                inferred_types.append(table_name)
+
+        return inferred_types if inferred_types else None
+
+    def _prioritize_results_by_type(self, rows: list[dict[str, Any]], priority_types: list[str]) -> list[dict[str, Any]]:
+        """
+        Re-order results to prioritize certain table types while maintaining relative order within each group.
+        """
+        prioritized = []
+        others = []
+
+        for row in rows:
+            source_table = row.get("source_table")
+            if source_table in priority_types:
+                prioritized.append(row)
+            else:
+                others.append(row)
+
+        # Return prioritized types first, then others
+        return prioritized + others
+
     def _extract_filters(self, filters):
         tables = []
         jurisdictions = []
@@ -437,6 +513,22 @@ class SearchService:
         rows = self.db.execute_query(sql, params) or []
         # log raw SQL rows, serializing dates as strings
         logger.debug("raw SQL results:\n%s", json.dumps(rows, indent=2, default=str))
+
+        # Apply smart type prioritization when not sorting by date
+        if not sort_by_date and not tables:
+            # Infer type from search query
+            inferred_types = self._infer_type_from_query(search_string)
+
+            # Apply prioritization
+            if inferred_types:
+                # Prioritize inferred types
+                logger.debug("Inferred types from query: %s", inferred_types)
+                rows = self._prioritize_results_by_type(rows, inferred_types)
+            else:
+                # Default: prioritize Answers (Questions/Answers) when no type can be inferred
+                logger.debug("No type inferred, prioritizing Answers by default")
+                rows = self._prioritize_results_by_type(rows, ["Answers", "HCCH Answers"])
+
         # flatten nested complete_record into top-level
         parsed_results = []
         raw_results = []
