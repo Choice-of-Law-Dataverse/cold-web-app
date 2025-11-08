@@ -218,6 +218,7 @@ import { onMounted, ref, computed, reactive, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import jurisdictionsData from "@/assets/jurisdictions-data.json";
 import { handleImageError } from "@/utils/handleImageError";
+import { parseJurisdictionString } from "@/utils/jurisdictionParser";
 import { useCheckTarget } from "~/composables/useCheckTarget";
 import CiteModal from "@/components/ui/CiteModal.vue";
 
@@ -285,7 +286,7 @@ const formattedJurisdiction = computed(() => {
     return [];
   }
 
-  return [...new Set(jurisdictionString.split(",").map((item) => item.trim()))];
+  return parseJurisdictionString(jurisdictionString);
 });
 
 const formattedSourceTable = computed(() => {
