@@ -185,6 +185,25 @@ export interface SearchResponse {
 }
 
 /**
+ * Jurisdiction with answer coverage statistics
+ */
+export interface JurisdictionWithAnswerCoverage {
+  id: number;
+  Name: string;
+  "Alpha-3 Code": string;
+  "Answer Coverage": number;
+  [key: string]: unknown; // Allows for additional jurisdiction fields
+}
+
+/**
+ * Jurisdiction count statistics
+ */
+export interface JurisdictionCount {
+  jurisdiction: string;
+  n: number;
+}
+
+/**
  * API response wrapper (generic)
  */
 export interface ApiResponse<T = unknown> {
