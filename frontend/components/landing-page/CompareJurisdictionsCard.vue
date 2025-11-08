@@ -1,45 +1,70 @@
 <template>
   <UCard class="cold-ucard h-full w-full">
-    <h2 class="popular-title">{{ title }}</h2>
+    <h2 class="popular-title text-center">{{ title }}</h2>
 
     <div
       v-for="(comparison, index) in comparisons"
       :key="index"
-      class="comparison-row"
+      :class="['mb-6', { 'mb-0': index === comparisons.length - 1 }]"
     >
       <NuxtLink
         :to="`/jurisdiction-comparison/${comparison.left}+${comparison.right}`"
         class="no-underline"
       >
-        <div class="flags-row">
-          <div class="flag-cell">
-            <img
-              v-if="!flagErrors[`${index}-left`]"
-              :src="getFlagUrl(comparison.left)"
-              :alt="`${comparison.left} flag`"
-              class="flag-img"
-              @error="flagErrors[`${index}-left`] = true"
+        <div
+          class="mt-4 flex items-start justify-center gap-6 rounded-lg p-3 transition-colors duration-200 hover:bg-gray-50"
+        >
+          <div class="flex min-w-[120px] flex-col items-center gap-2">
+            <div class="flex h-12 w-full items-center justify-center">
+              <img
+                v-if="!flagErrors[`${index}-left`]"
+                :src="getFlagUrl(comparison.left)"
+                :alt="`${comparison.left} flag`"
+                class="block h-12 w-auto max-w-full border border-[var(--color-cold-gray)]"
+                @error="flagErrors[`${index}-left`] = true"
+              >
+              <div
+                v-else
+                class="inline-flex h-9 items-center justify-center border border-[var(--color-cold-gray)] bg-gray-100 px-3 font-semibold"
+              >
+                {{ comparison.left }}
+              </div>
+            </div>
+            <div
+              class="text-center text-sm font-semibold tracking-wider text-[var(--color-cold-night)]"
             >
-            <div v-else class="flag-fallback">{{ comparison.left }}</div>
+              {{ comparison.left }}
+            </div>
           </div>
 
-          <div class="vs-divider">vs</div>
-
-          <div class="flag-cell">
-            <img
-              v-if="!flagErrors[`${index}-right`]"
-              :src="getFlagUrl(comparison.right)"
-              :alt="`${comparison.right} flag`"
-              class="flag-img"
-              @error="flagErrors[`${index}-right`] = true"
-            >
-            <div v-else class="flag-fallback">{{ comparison.right }}</div>
+          <div
+            class="mt-3 self-center px-2 text-sm font-semibold uppercase text-[var(--color-cold-gray)]"
+          >
+            vs
           </div>
-        </div>
 
-        <div class="codes-row">
-          <div class="code">{{ comparison.left }}</div>
-          <div class="code">{{ comparison.right }}</div>
+          <div class="flex min-w-[120px] flex-col items-center gap-2">
+            <div class="flex h-12 w-full items-center justify-center">
+              <img
+                v-if="!flagErrors[`${index}-right`]"
+                :src="getFlagUrl(comparison.right)"
+                :alt="`${comparison.right} flag`"
+                class="block h-12 w-auto max-w-full border border-[var(--color-cold-gray)]"
+                @error="flagErrors[`${index}-right`] = true"
+              >
+              <div
+                v-else
+                class="inline-flex h-9 items-center justify-center border border-[var(--color-cold-gray)] bg-gray-100 px-3 font-semibold"
+              >
+                {{ comparison.right }}
+              </div>
+            </div>
+            <div
+              class="text-center text-sm font-semibold tracking-wider text-[var(--color-cold-night)]"
+            >
+              {{ comparison.right }}
+            </div>
+          </div>
         </div>
       </NuxtLink>
     </div>
@@ -64,64 +89,3 @@ const getFlagUrl = (iso3) => {
   return `https://choiceoflaw.blob.core.windows.net/assets/flags/${iso3.toLowerCase()}.svg`;
 };
 </script>
-
-<style scoped>
-h2 {
-  text-align: center;
-}
-.comparison-row {
-  margin-bottom: 24px;
-}
-.comparison-row:last-child {
-  margin-bottom: 0;
-}
-.flags-row {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  gap: 12px;
-  margin-top: 16px;
-  margin-bottom: 12px;
-}
-.flag-cell {
-  display: flex;
-  justify-content: center;
-}
-.vs-divider {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-cold-gray);
-  text-transform: uppercase;
-  padding: 0 8px;
-}
-.flag-img {
-  height: 48px;
-  width: auto;
-  max-width: 100%;
-  display: block;
-  border: 1px solid var(--color-cold-gray);
-}
-.flag-fallback {
-  height: 36px;
-  padding: 0 12px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: #f3f4f6;
-  border: 1px solid var(--color-cold-gray);
-  font-weight: 600;
-}
-
-.codes-row {
-  margin-top: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-.code {
-  text-align: center;
-  font-size: 20px;
-  font-weight: 600;
-  letter-spacing: 0.5px;
-}
-</style>

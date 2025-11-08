@@ -7,10 +7,7 @@ interface JurisdictionCount {
   n: number;
 }
 
-async function fetchCountByJurisdiction(
-  tableName: string,
-  limit?: number,
-) {
+async function fetchCountByJurisdiction(tableName: string, limit?: number) {
   const { apiClient } = useApiClient();
   const params = new URLSearchParams({ table: tableName });
   if (limit) {

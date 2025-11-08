@@ -24,7 +24,7 @@
               style="display: flex; align-items: flex-start"
             >
               <span
-                class="expand-icon px-1 cursor-pointer align-middle"
+                class="expand-icon cursor-pointer px-1 align-middle"
                 :style="{
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -68,7 +68,7 @@
               </span>
             </div>
           </template>
-                    <template #answer-data="{ row }">
+          <template #answer-data="{ row }">
             <div style="text-align: right">
               <NuxtLink
                 v-if="row.answer"
@@ -106,7 +106,7 @@
               <div class="flex items-start">
                 <span
                   v-if="row.hasExpand"
-                  class="expand-icon-mobile px-1 cursor-pointer"
+                  class="expand-icon-mobile cursor-pointer px-1"
                   :style="{
                     transform: row.expanded ? 'rotate(90deg)' : 'rotate(0deg)',
                   }"
