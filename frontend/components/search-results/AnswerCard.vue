@@ -33,20 +33,6 @@
         </div>
       </DetailRow>
 
-      <!-- Last Modified section -->
-      <DetailRow v-if="lastUpdatedDisplay" label="Last Updated">
-        <div
-          :class="
-            computeTextClasses(
-              resultData['Last Modified'] ? 'Last Modified' : 'Created',
-              config.valueClassMap['Last Modified'],
-            )
-          "
-        >
-          {{ lastUpdatedDisplay }}
-        </div>
-      </DetailRow>
-
       <!-- More Information section -->
       <DetailRow
         v-if="hasMoreInformation"
@@ -96,6 +82,20 @@
               {{ relatedCasesCount }} related court decisions
             </a>
           </div>
+        </div>
+      </DetailRow>
+
+      <!-- Last Modified section -->
+      <DetailRow v-if="lastUpdatedDisplay" label="Last Updated">
+        <div
+          :class="
+            computeTextClasses(
+              resultData['Last Modified'] ? 'Last Modified' : 'Created',
+              config.valueClassMap['Last Modified'],
+            )
+          "
+        >
+          {{ lastUpdatedDisplay }}
         </div>
       </DetailRow>
     </div>
