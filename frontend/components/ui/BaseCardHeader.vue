@@ -160,6 +160,18 @@
                       class="mb-0.5 ml-1 inline-block text-[1.2em]"
                     />
                   </a>
+                  <a
+                    v-else-if="action.label === 'Export'"
+                    href="#"
+                    class="flex items-center"
+                    @click.prevent="isExportOpen = true"
+                  >
+                    {{ action.label }}
+                    <UIcon
+                      :name="action.icon"
+                      class="mb-0.5 ml-1 inline-block text-[1.2em]"
+                    />
+                  </a>
                   <NuxtLink
                     v-else
                     class="flex items-center"
@@ -211,6 +223,11 @@
     </template>
   </div>
   <CiteModal v-model="isCiteOpen" />
+  <ExportModal
+    v-model="isExportOpen"
+    :result-data="resultData"
+    :page-type="adjustedSourceTable"
+  />
 </template>
 
 <script setup>
@@ -221,12 +238,14 @@ import { handleImageError } from "@/utils/handleImageError";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
 import { useCheckTarget } from "~/composables/useCheckTarget";
 import CiteModal from "@/components/ui/CiteModal.vue";
+import ExportModal from "@/components/ui/ExportModal.vue";
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
 const route = useRoute();
 const router = useRouter();
 const isCiteOpen = ref(false);
+const isExportOpen = ref(false);
 
 const downloadPDFLink = computed(() => {
   const segments = route.path.split("/").filter(Boolean);
@@ -397,6 +416,10 @@ const suggestEditActions = computed(() => {
   actions.push({
     label: "Cite",
     icon: "i-material-symbols:verified-outline",
+  });
+  actions.push({
+    label: "Export",
+    icon: "i-material-symbols:download-outline",
   });
   if (pdfExists.value) {
     actions.push({
