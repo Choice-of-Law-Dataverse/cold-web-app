@@ -10,7 +10,7 @@ interface JurisdictionCount {
 async function fetchCountByJurisdiction(tableName: string) {
   const { apiClient } = useApiClient();
   return await apiClient<JurisdictionCount[]>(
-    `/landing-page/count-by-jurisdiction?table=${encodeURIComponent(tableName)}`,
+    `/statistics/count-by-jurisdiction?table=${encodeURIComponent(tableName)}`,
     { method: "GET" },
   );
 }
