@@ -1,11 +1,7 @@
 <template>
   <UCard class="cold-ucard overflow-visible">
     <div class="flex flex-col items-stretch gap-8 md:flex-row md:items-center">
-      <h3 class="text-left md:whitespace-nowrap">
-        Compare
-        {{ formattedJurisdiction?.Name || "this jurisdiction" }} with other
-        jurisdictions
-      </h3>
+      <h3 class="text-left md:whitespace-nowrap">Add comparison with</h3>
 
       <div
         v-if="availableJurisdictions && availableJurisdictions.length > 0"
@@ -14,7 +10,7 @@
         <div class="w-full md:w-auto">
           <JurisdictionSelectMenu
             :countries="availableJurisdictions"
-            placeholder="Pick a jurisdiction to compare..."
+            placeholder="Jurisdiction"
             @country-selected="onJurisdictionSelected"
           />
         </div>
@@ -48,7 +44,7 @@ defineProps({
   },
 });
 
-const emit = defineEmits(['jurisdiction-selected']);
+const emit = defineEmits(["jurisdiction-selected"]);
 
 const route = useRoute();
 
@@ -70,8 +66,7 @@ const availableJurisdictions = computed(() => {
 const onJurisdictionSelected = (selectedJurisdiction) => {
   if (!selectedJurisdiction?.alpha3Code) return;
 
-  // Emit the selected jurisdiction to the parent component
-  emit('jurisdiction-selected', selectedJurisdiction);
+  emit("jurisdiction-selected", selectedJurisdiction);
 };
 </script>
 

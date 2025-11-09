@@ -1,10 +1,7 @@
 import { computed, type Ref } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
-import type {
-  FullTableRequest,
-  AnswerItem,
-} from "@/types/api";
+import type { FullTableRequest, AnswerItem } from "@/types/api";
 import { useFullTable } from "@/composables/useFullTable";
 
 const processAnswerText = (answerText: string) => {
@@ -24,7 +21,7 @@ const fetchAnswersData = async (jurisdictions: string[]) => {
 
   // Fetch answers for all jurisdictions
   const allAnswers: Record<string, Record<string, string>> = {};
-  
+
   for (const jurisdiction of jurisdictions) {
     const body: FullTableRequest = {
       table: "Answers",
@@ -47,8 +44,10 @@ const fetchAnswersData = async (jurisdictions: string[]) => {
         const answerValue = (row.Answer || row["Answer"] || "") as string;
 
         // Store by base question ID (without ISO3 prefix)
-        const baseQuestionId = rawColdId ? String(rawColdId).replace(/^[A-Z]{3}_/, '') : String(rawQuestionId).replace(/^[A-Z]{3}_/, '');
-        
+        const baseQuestionId = rawColdId
+          ? String(rawColdId).replace(/^[A-Z]{3}_/, "")
+          : String(rawQuestionId).replace(/^[A-Z]{3}_/, "");
+
         if (baseQuestionId) {
           map[baseQuestionId] = answerValue;
         }
@@ -56,7 +55,7 @@ const fetchAnswersData = async (jurisdictions: string[]) => {
     }
     allAnswers[jurisdiction.toUpperCase()] = map;
   }
-  
+
   return allAnswers;
 };
 
