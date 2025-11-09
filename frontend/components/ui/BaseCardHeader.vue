@@ -207,7 +207,7 @@
                       a.label === 'Edit',
                   )"
                   :key="'edit-' + index"
-                  class="flex items-center"
+                  class="flex items-center text-cold-purple"
                   :class="action.class"
                   v-bind="action.to ? { to: action.to } : {}"
                   target="_blank"

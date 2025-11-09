@@ -8,6 +8,27 @@
       :show-suggest-edit="true"
       source-table="International Instrument"
     >
+      <!-- Name (Title) with PDF and Source Link -->
+      <template #name="{ value }">
+        <DetailRow
+          :label="keyLabelLookup.get('Name')?.label || 'Title'"
+          :tooltip="keyLabelLookup.get('Name')?.tooltip"
+        >
+          <div class="flex items-start justify-between gap-4">
+            <div :class="valueClassMap.Name" class="flex-1">
+              {{ value }}
+            </div>
+            <div class="flex flex-shrink-0 items-center gap-3">
+              <PdfLink
+                :record-id="route.params.id as string"
+                folder-name="international-instruments"
+              />
+              <SourceExternalLink :source-url="processedInternationalInstrument?.URL" />
+            </div>
+          </div>
+        </DetailRow>
+      </template>
+
       <template #literature>
         <DetailRow
           :label="keyLabelLookup.get('Literature')?.label || 'Literature'"
@@ -81,6 +102,8 @@ import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import PdfLink from "@/components/ui/PdfLink.vue";
+import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import BaseLegalContent from "@/components/legal/BaseLegalContent.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
