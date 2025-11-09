@@ -8,7 +8,6 @@
     :placeholder="placeholder"
     :options="countries"
     size="xl"
-    :loading="isLoading"
     @change="onSelect"
   >
     <!-- Custom option rendering with avatars -->
@@ -80,9 +79,8 @@
 <script setup>
 import { reactive } from "vue";
 import { handleImageError } from "@/utils/handleImageError";
-import { useCoveredCountries } from "@/composables/useCoveredCountries";
 
-defineProps({
+const props = defineProps({
   countries: {
     type: Array,
     required: true,
@@ -93,12 +91,14 @@ defineProps({
   },
 });
 
-const { data: coveredCountries, isLoading } = useCoveredCountries();
-
 const isCovered = (alpha3Code) => {
-  if (!coveredCountries.value || !alpha3Code) return false;
-  return coveredCountries.value.has(alpha3Code.toLowerCase());
+  if (!alpha3Code || !props.countries) return false;
+  const jurisdiction = props.countries.find(
+    (j) => j.alpha3Code?.toLowerCase() === alpha3Code?.toLowerCase(),
+  );
+  return jurisdiction?.answerCoverage > 0;
 };
+
 const emit = defineEmits(["countrySelected"]);
 
 const selected = defineModel({
