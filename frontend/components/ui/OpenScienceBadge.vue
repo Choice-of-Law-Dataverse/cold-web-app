@@ -1,13 +1,11 @@
 <template>
-  <a
-    href="https://creativecommons.org/licenses/by-sa/4.0/"
-    target="_blank"
-    rel="noopener noreferrer"
+  <NuxtLink
+    to="/disclaimer"
     class="label-open-science fit-content inline-flex items-center gap-1 px-1 py-0.5 no-underline"
     title="This is an Open Science project. Content is freely available under CC BY-SA 4.0 license."
   >
     <UIcon name="i-material-symbols:public" />
-    <span> Open&nbsp;Science CC&nbsp;BY-SA </span></a
+    <span>Open&nbsp;Science</span></NuxtLink
   >
 </template>
 
