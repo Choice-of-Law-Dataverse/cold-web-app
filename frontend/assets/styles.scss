@@ -38,7 +38,7 @@ h3 {
 }
 
 a {
-  color: var(--color-cold-purple) !important;
+  color: var(--color-cold-purple);
   text-decoration: none !important;
   font-weight: 400 !important; // Regular
 }
@@ -647,5 +647,50 @@ button.cold-toggle-btn {
   }
   100% {
     transform: translateX(0);
+  }
+}
+
+// Print styles -----------------------------------------------
+@media print {
+  // Hide navigation, header chrome, and interactive elements
+  header,
+  nav,
+  .header-container,
+  button,
+  .no-print,
+  [class*="UButton"],
+  [class*="u-button"],
+  footer,
+  .arrow-container,
+  .arrow-icon {
+    display: none !important;
+  }
+
+  // Ensure content is visible and properly formatted
+  body,
+  main {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    padding: 0;
+    background: white !important;
+  }
+
+  // Preserve links but make them readable
+  a {
+    text-decoration: underline !important;
+  }
+
+  // Optimize page breaks
+  h1,
+  h2,
+  h3 {
+    page-break-after: avoid;
+  }
+
+  table,
+  figure,
+  img {
+    page-break-inside: avoid;
   }
 }

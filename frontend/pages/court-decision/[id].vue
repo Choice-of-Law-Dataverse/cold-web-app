@@ -8,6 +8,27 @@
       :show-suggest-edit="true"
       source-table="Court Decisions"
     >
+      <!-- Case Title with PDF and Source Link -->
+      <template #case-title="{ value }">
+        <DetailRow
+          :label="keyLabelLookup.get('Case Title')?.label || 'Case Title'"
+          :tooltip="keyLabelLookup.get('Case Title')?.tooltip"
+        >
+          <div class="flex items-start justify-between gap-4">
+            <div :class="valueClassMap['Case Title']" class="flex-1">
+              {{ value }}
+            </div>
+            <div class="flex flex-shrink-0 items-center gap-3">
+              <PdfLink
+                :record-id="route.params.id as string"
+                folder-name="court-decisions"
+              />
+              <SourceExternalLink :source-url="sourceUrl" />
+            </div>
+          </div>
+        </DetailRow>
+      </template>
+
       <template #domestic-legal-provisions="{ value }">
         <DetailRow
           v-if="value"
@@ -182,6 +203,8 @@ import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import PdfLink from "@/components/ui/PdfLink.vue";
+import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
@@ -219,5 +242,10 @@ const keyLabelLookup = computed(() => {
     map.set(pair.key, pair);
   });
   return map;
+});
+
+// Source URL for court decisions
+const sourceUrl = computed(() => {
+  return (courtDecision.value?.["Official Source (URL)"] || "") as string;
 });
 </script>

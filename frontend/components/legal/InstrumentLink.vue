@@ -1,6 +1,6 @@
 <template>
   <span v-if="!isLoading">
-    <NuxtLink v-if="displayTitle && id" :to="generateInstrumentLink(id)">{{
+    <NuxtLink v-if="displayTitle && id" class="text-cold-purple" :to="generateInstrumentLink(id)">{{
       displayTitle
     }}</NuxtLink>
     <span v-else>{{ id }}</span>

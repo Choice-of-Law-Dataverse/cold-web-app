@@ -4,13 +4,12 @@
       :href="pdfUrl"
       target="_blank"
       rel="noopener noreferrer"
-      class="inline-flex items-center gap-1 text-sm"
-      style="color: var(--color-cold-purple)"
+      class="label inline-flex items-center gap-1 text-cold-teal"
       aria-label="Download PDF for record"
       @click.stop
     >
-      <UIcon name="i-material-symbols:picture-as-pdf-outline" class="h-4 w-4" />
       <span>PDF</span>
+      <UIcon name="i-material-symbols:picture-as-pdf-outline" class="h-4 w-4" />
     </a>
   </div>
 </template>
