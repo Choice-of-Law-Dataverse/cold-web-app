@@ -161,10 +161,10 @@
                     />
                   </a>
                   <a
-                    v-else-if="action.label === 'BibTeX'"
+                    v-else-if="action.label === 'JSON'"
                     href="#"
                     class="flex items-center"
-                    @click.prevent="exportBibTeX"
+                    @click.prevent="exportJSON"
                   >
                     {{ action.label }}
                     <UIcon
@@ -243,7 +243,6 @@ import { useRoute, useRouter } from "vue-router";
 import jurisdictionsData from "@/assets/jurisdictions-data.json";
 import { handleImageError } from "@/utils/handleImageError";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
-import { useCheckTarget } from "~/composables/useCheckTarget";
 import CiteModal from "@/components/ui/CiteModal.vue";
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
@@ -251,14 +250,6 @@ const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 const route = useRoute();
 const router = useRouter();
 const isCiteOpen = ref(false);
-
-const downloadPDFLink = computed(() => {
-  const segments = route.path.split("/").filter(Boolean);
-  const contentType = segments[0] || "unknown";
-  const id = segments[1] || "";
-  const folder = `${contentType}s`;
-  return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`;
-});
 
 const props = defineProps({
   resultData: {
@@ -388,59 +379,25 @@ const formattedTheme = computed(() => {
 const erroredImages = reactive({});
 
 const suggestEditActions = computed(() => {
-  let linkUrl = "";
-  let linkLabel = "Link";
-  if (props.cardType === "Literature") {
-    if (props.resultData["Open Access URL"]) {
-      linkUrl = props.resultData["Open Access URL"];
-      linkLabel = "Open Access Link";
-    } else {
-      linkUrl = props.resultData["Url"] || "";
-    }
-  } else if (props.cardType === "Court Decisions") {
-    linkUrl = props.resultData["Official Source (URL)"] || "";
-  } else if (props.cardType === "Domestic Instrument") {
-    linkUrl = props.resultData["Source (URL)"] || "";
-  } else if (props.cardType === "Regional Instrument") {
-    linkUrl = props.resultData["URL"] || "";
-  } else if (props.cardType === "International Instrument") {
-    linkUrl = props.resultData["URL"] || "";
-  } else if (props.cardType === "Arbitral Rule") {
-    linkUrl = props.resultData["Official_Source__URL_"] || "";
-  } else if (props.cardType === "Arbitral Award") {
-    linkUrl = props.resultData["Official_Source__URL_"] || "";
-  }
   const actions = [];
-  if (linkUrl) {
-    actions.push({
-      label: linkLabel,
-      icon: "i-material-symbols:open-in-new",
-      to: linkUrl,
-    });
-  }
+  
   actions.push({
     label: "Cite",
     icon: "i-material-symbols:verified-outline",
   });
-  // Add BibTeX button only for Literature
-  if (props.cardType === "Literature") {
-    actions.push({
-      label: "BibTeX",
-      icon: "i-material-symbols:download-outline",
-    });
-  }
+  
+  // Add JSON export button
+  actions.push({
+    label: "JSON",
+    icon: "i-material-symbols:download-outline",
+  });
+  
   // Add Print button
   actions.push({
     label: "Print",
     icon: "i-material-symbols:print-outline",
   });
-  if (pdfExists.value) {
-    actions.push({
-      label: "PDF",
-      icon: "i-material-symbols:arrow-circle-down-outline",
-      to: downloadPDFLink.value,
-    });
-  }
+  
   const editLink = suggestEditLink.value;
   actions.push({
     label: "Edit",
@@ -449,8 +406,6 @@ const suggestEditActions = computed(() => {
   });
   return actions;
 });
-
-const { data: pdfExists } = useCheckTarget(downloadPDFLink);
 
 const suggestEditLink = ref("");
 const airtableFormID = "appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form";
