@@ -66,8 +66,8 @@
     />
     <ClientOnly>
       <JurisdictionQuestions
-        v-if="jurisdictionData?.Name"
-        :formatted-jurisdiction="[jurisdictionData.Name]"
+        v-if="jurisdictionData"
+        :jurisdictions="[jurisdictionData]"
       />
       <template #fallback>
         <div class="px-6">
