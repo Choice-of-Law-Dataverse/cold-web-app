@@ -46,13 +46,13 @@ const jurisdictionCode = computed(() => {
 const questionId = computed(() => {
   // Extract question ID from the answer ID (route param)
   // Answer ID format: {ISO3_CODE}_{QUESTION_ID}
-  const answerId = route.params.id as string;
-  if (!answerId) return null;
+  const answerId = route.params.id;
+  if (!answerId || typeof answerId !== "string") return null;
 
-  const parts = answerId.split('_');
+  const parts = answerId.split("_");
   if (parts.length > 1) {
     // Return everything after the first underscore
-    return parts.slice(1).join('_');
+    return parts.slice(1).join("_");
   }
   return null;
 });
