@@ -123,22 +123,66 @@
           >
         </NuxtLink>
 
-        <!-- HCCHApproved and Menu/Links Row -->
+        <!-- Menu/Links Row -->
         <div
           v-if="!isExpanded"
           class="mobile-nav-group flex items-center space-x-4"
         >
-          <HCCHApproved v-if="!showMenu" class="hcch-approved" />
-          <template v-if="!showMenu">
-            <button class="menu-button custom-nav-links" @click="openMenu">
-              Menu
-            </button>
+          <!-- Mobile: Show menu button and collapsible menu -->
+          <template v-if="isMobile">
+            <template v-if="!showMenu">
+              <button class="menu-button custom-nav-links" @click="openMenu">
+                Menu
+              </button>
+            </template>
+            <template v-else>
+              <div
+                class="flex items-center space-x-3 sm:space-x-6"
+                :class="{ 'mobile-menu-links': isMobile }"
+              >
+                <ULink
+                  v-for="(link, i) in links"
+                  :key="i"
+                  :to="link.to"
+                  :class="[
+                    'custom-nav-links',
+                    { active: route.path.startsWith(link.to) },
+                  ]"
+                  @click="closeMenu"
+                >
+                  <span>{{ link.label }}</span>
+                </ULink>
+                <button
+                  class="close-menu-button ml-2"
+                  aria-label="Close menu"
+                  style="
+                    background: none;
+                    border: none;
+                    cursor: pointer;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    height: 2.5rem;
+                    width: 2.5rem;
+                    min-width: 2.5rem;
+                    min-height: 2.5rem;
+                    z-index: 10;
+                  "
+                  @click="closeMenu"
+                >
+                  <span>
+                    <UIcon
+                      name="i-material-symbols:close"
+                      class="ml-[1em] mt-[0.3em] text-[1.3em]"
+                    />
+                  </span>
+                </button>
+              </div>
+            </template>
           </template>
+          <!-- Desktop: Always show menu links -->
           <template v-else>
-            <div
-              class="flex items-center space-x-3 sm:space-x-6"
-              :class="{ 'mobile-menu-links': isMobile }"
-            >
+            <div class="flex items-center space-x-6">
               <ULink
                 v-for="(link, i) in links"
                 :key="i"
@@ -147,35 +191,9 @@
                   'custom-nav-links',
                   { active: route.path.startsWith(link.to) },
                 ]"
-                @click="closeMenu"
               >
                 <span>{{ link.label }}</span>
               </ULink>
-              <button
-                class="close-menu-button ml-2"
-                aria-label="Close menu"
-                style="
-                  background: none;
-                  border: none;
-                  cursor: pointer;
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                  height: 2.5rem;
-                  width: 2.5rem;
-                  min-width: 2.5rem;
-                  min-height: 2.5rem;
-                  z-index: 10;
-                "
-                @click="closeMenu"
-              >
-                <span>
-                  <UIcon
-                    name="i-material-symbols:close"
-                    class="ml-[1em] mt-[0.3em] text-[1.3em]"
-                  />
-                </span>
-              </button>
             </div>
           </template>
         </div>
@@ -187,7 +205,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import HCCHApproved from "../ui/HCCHApproved.vue";
 import eventBus from "@/eventBus";
 import jurisdictionsData from "@/assets/jurisdictions-data.json";
 import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
@@ -576,10 +593,6 @@ nav {
   }
   .search-container {
     flex: 0 0 auto;
-  }
-
-  .mobile-nav-group .hcch-approved {
-    margin-left: 0;
   }
 
   .mobile-nav-group > * + * {

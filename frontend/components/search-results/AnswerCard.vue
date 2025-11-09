@@ -33,20 +33,6 @@
         </div>
       </DetailRow>
 
-      <!-- Last Modified section -->
-      <DetailRow v-if="lastUpdatedDisplay" label="Last Updated">
-        <div
-          :class="
-            computeTextClasses(
-              resultData['Last Modified'] ? 'Last Modified' : 'Created',
-              config.valueClassMap['Last Modified'],
-            )
-          "
-        >
-          {{ lastUpdatedDisplay }}
-        </div>
-      </DetailRow>
-
       <!-- More Information section -->
       <DetailRow
         v-if="hasMoreInformation"
@@ -82,7 +68,11 @@
               <template v-else>
                 <template v-if="Array.isArray(domesticValue)">
                   <div v-for="(item, index) in domesticValue" :key="index">
-                    <a :href="`/literature/L-${item.id}`">{{ item.title }}</a>
+                    <NuxtLink
+                      class="text-cold-purple"
+                      :to="`/literature/L-${item.id}`"
+                      >{{ item.title }}</NuxtLink
+                    >
                   </div>
                 </template>
                 <div v-else>
@@ -92,10 +82,24 @@
             </template>
           </template>
           <div v-if="relatedCasesCount">
-            <a :href="relatedDecisionsLink">
+            <NuxtLink class="text-cold-purple" :to="relatedDecisionsLink">
               {{ relatedCasesCount }} related court decisions
-            </a>
+            </NuxtLink>
           </div>
+        </div>
+      </DetailRow>
+
+      <!-- Last Modified section -->
+      <DetailRow v-if="lastUpdatedDisplay" label="Last Updated">
+        <div
+          :class="
+            computeTextClasses(
+              resultData['Last Modified'] ? 'Last Modified' : 'Created',
+              config.valueClassMap['Last Modified'],
+            )
+          "
+        >
+          {{ lastUpdatedDisplay }}
         </div>
       </DetailRow>
     </div>

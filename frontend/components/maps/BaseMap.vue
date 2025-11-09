@@ -7,9 +7,7 @@
     :use-global-leaflet="false"
     :options="mapOptions"
   >
-    <div id="info-control" class="info">
-      <h2>Answer Coverage</h2>
-    </div>
+    <div id="info-control" class="info" />
     <!-- Tile Layer -->
     <LTileLayer
       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -38,7 +36,7 @@ import { computed } from "vue";
 import { navigateTo } from "#app";
 
 import { useGeoJsonData } from "@/composables/useGeoJsonData";
-import { useCoveredCountries } from "@/composables/useCoveredCountries";
+import { useJurisdictions } from "@/composables/useJurisdictions";
 
 const props = defineProps({
   zoom: {
@@ -83,14 +81,28 @@ const props = defineProps({
 });
 
 const { data: geoJsonData } = useGeoJsonData();
-const { data: coveredCountries } = useCoveredCountries();
+const { data: jurisdictions } = useJurisdictions();
 
 const isDataReady = computed(
   () =>
-    geoJsonData.value &&
-    coveredCountries.value &&
-    coveredCountries.value.size > 0,
+    geoJsonData.value && jurisdictions.value && jurisdictions.value.length > 0,
 );
+
+// Create a map for quick lookup of answer coverages by ISO code
+const answerCoverageMap = computed(() => {
+  if (!jurisdictions.value) return new Map();
+
+  const map = new Map();
+  jurisdictions.value.forEach((jurisdiction) => {
+    if (jurisdiction.alpha3Code) {
+      map.set(
+        jurisdiction.alpha3Code.toLowerCase(),
+        jurisdiction.answerCoverage || 0,
+      );
+    }
+  });
+  return map;
+});
 
 const mapOptions = computed(() => {
   const options = {
@@ -112,8 +124,12 @@ const mapOptions = computed(() => {
 const onEachFeature = (feature, layer) => {
   const isoCode = feature.properties.iso_a3_eh;
   const countryName = feature.properties.name;
-  const isCovered =
-    coveredCountries.value?.has(isoCode?.toLowerCase()) || false;
+  const answerCoverage =
+    answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
+  const isCovered = answerCoverage > 0;
+
+  // Calculate opacity based on answer coverage (0-100 maps to 0.1-1.0)
+  const fillOpacity = isCovered ? 0.1 + (answerCoverage / 100) * 0.9 : 1;
 
   const defaultStyle = {
     fillColor: isCovered
@@ -121,12 +137,13 @@ const onEachFeature = (feature, layer) => {
       : "var(--color-cold-gray)",
     weight: 0.5,
     color: "white",
-    fillOpacity: 1,
+    fillOpacity,
   };
 
   const hoverStyle = {
     ...defaultStyle,
-    fillOpacity: 0.8,
+    fillColor: "var(--color-cold-teal)",
+    fillOpacity: Math.max(0.8, fillOpacity),
   };
 
   layer.setStyle(defaultStyle);
@@ -136,9 +153,12 @@ const onEachFeature = (feature, layer) => {
 
     const infoControl = document.getElementById("info-control");
     if (infoControl) {
+      const displayText = isCovered
+        ? `${answerCoverage.toFixed(1)}%`
+        : "No data available";
       infoControl.innerHTML = `
-        <h2>${countryName}</h2>
-        <h2>${isCovered ? "Data available" : "No data available"}</h2>
+        <h2 class="text-[var(--color-cold-night)]">${countryName}</h2>
+        <h4>${displayText}</h4>
       `;
     }
   });
@@ -148,9 +168,7 @@ const onEachFeature = (feature, layer) => {
 
     const infoControl = document.getElementById("info-control");
     if (infoControl) {
-      infoControl.innerHTML = `
-        <h2>Answer Coverage</h2>
-      `;
+      infoControl.innerHTML = "";
     }
   });
 

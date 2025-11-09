@@ -9,17 +9,23 @@
     </div>
 
     <div class="col-span-12">
-      <h2
-        class="mb-6 flex w-full flex-row items-center gap-1 pb-4 pt-4 text-xl font-medium md:text-left"
+      <div
+        class="mb-6 flex w-full flex-col justify-between gap-2 pb-4 pt-4 sm:flex-row sm:items-center"
       >
-        <span>
-          Navigate private international law issues with precision.
+        <h2 class="text-xl font-medium md:text-left">
+          <span>
+            Navigate private international law issues with precision.
 
-          <NuxtLink class="suggestion-button" to="/about" variant="link">
-            <span>Read more </span>
-          </NuxtLink>
-        </span>
-      </h2>
+            <NuxtLink class="suggestion-button" to="/about" variant="link">
+              <span>Read more </span>
+            </NuxtLink>
+          </span>
+        </h2>
+        <div class="flex items-center gap-2 sm:flex-col md:flex-row">
+          <HCCHApproved />
+          <OpenScienceBadge />
+        </div>
+      </div>
     </div>
 
     <div class="col-span-12">
@@ -115,10 +121,11 @@
     <div class="col-span-12 flex md:col-span-4">
       <CompareJurisdictionsCard
         title="Compare Jurisdictions"
-        button-text="Go to comparison"
-        iso3-left="CHE"
-        iso3-right="CAN"
-        :detect-visitor-right="true"
+        :comparisons="[
+          { left: 'CHE', right: 'CAN' },
+          { left: 'BRA', right: 'MOZ' },
+          { left: 'EUR', right: 'GBR' },
+        ]"
       />
     </div>
     <div class="col-span-12 flex md:col-span-8">
@@ -182,6 +189,8 @@ import CountrySelectMenu from "@/components/landing-page/TempJurisdictionPicker.
 import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
+import OpenScienceBadge from "@/components/ui/OpenScienceBadge.vue";
+import HCCHApproved from "@/components/ui/HCCHApproved.vue";
 import { externalLinks } from "@/utils/externalLinks";
 import RecentDomesticInstruments from "@/components/landing-page/RecentDomesticInstruments.vue";
 import SuccessfulLegalTransplantations from "@/components/landing-page/SuccessfulLegalTransplantations.vue";

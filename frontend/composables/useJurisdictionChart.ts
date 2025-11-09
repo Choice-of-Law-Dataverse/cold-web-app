@@ -1,24 +1,36 @@
-import { useQuery } from "@tanstack/vue-query";
-const fetchJurisdictionChartData = async () => {
-  const response = await fetch("count_jurisdictions.json");
-  const data = await response.json();
-
-  const xValues = data.map((item: Record<string, unknown>) => item.n);
-  const yValues = data.map(
-    (item: Record<string, unknown>) => item.jurisdiction,
-  );
-  const links = data.map((item: Record<string, unknown>) => item.url);
-
-  return {
-    xValues,
-    yValues,
-    links,
-  };
-};
+import { computed, ref } from "vue";
+import { useCountByJurisdiction } from "@/composables/useCountByJurisdiction";
+import type { TableName } from "@/types/api";
 
 export function useJurisdictionChart() {
-  return useQuery({
-    queryKey: ["jurisdictionChart"],
-    queryFn: fetchJurisdictionChartData,
+  const tableName = ref("Court Decisions" as TableName);
+  const limit = ref(6);
+  const {
+    data: rawData,
+    isLoading,
+    error,
+  } = useCountByJurisdiction(tableName, limit);
+
+  const data = computed(() => {
+    if (!rawData.value) return null;
+
+    const xValues = rawData.value.map((item) => item.n);
+    const yValues = rawData.value.map((item) => item.jurisdiction);
+    const links = rawData.value.map(
+      (item) =>
+        `/search?jurisdiction=${encodeURIComponent(item.jurisdiction)}&type=Court+Decisions`,
+    );
+
+    return {
+      xValues,
+      yValues,
+      links,
+    };
   });
+
+  return {
+    data,
+    isLoading,
+    error,
+  };
 }

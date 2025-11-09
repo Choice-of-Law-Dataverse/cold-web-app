@@ -54,7 +54,6 @@ title: Team — CoLD
     class="external-link-icon"
   /></a> has recently completed his Master's degree in Law at the University of Lucerne. He acts as a Researcher for the Dataverse, with a focus on data analysis and data input. Dominic is also responsible for administrative tasks and event coordination.
 
-
 ## Partners
 
 Prof. Geneviève Saumier, Université de Montréal  

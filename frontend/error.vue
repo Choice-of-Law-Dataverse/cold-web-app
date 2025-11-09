@@ -10,7 +10,9 @@
       >
         <h2>{{ errorMessage }}</h2>
 
-        <NuxtLink to="/" class="mt-6"> Take me back to Home </NuxtLink>
+        <NuxtLink to="/" class="mt-6 text-cold-teal">
+          Take me back to Home
+        </NuxtLink>
       </div>
     </main>
 

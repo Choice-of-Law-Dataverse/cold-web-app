@@ -40,9 +40,9 @@ export default defineNuxtPlugin((nuxt) => {
     },
   });
 
-  if (process.env.NODE_ENV !== "production") {
-    window.__TANSTACK_QUERY_CLIENT__ = queryClient;
-  }
+  // if (process.env.NODE_ENV !== "production") {
+  //   window.__TANSTACK_QUERY_CLIENT__ = queryClient;
+  // }
 
   const options: VueQueryPluginOptions = {
     queryClient,

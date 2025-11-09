@@ -4,7 +4,6 @@ from typing import Any
 
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
-from sqlalchemy.orm import sessionmaker
 
 try:
     import jwt  # type: ignore
@@ -12,6 +11,7 @@ except Exception:  # pragma: no cover - optional dependency resolution in some e
     jwt = None  # type: ignore
 
 from app.config import config
+from app.services.db_manager import suggestions_db_manager
 
 
 class SuggestionService:
@@ -23,7 +23,11 @@ class SuggestionService:
         if not conn:
             raise RuntimeError("No SQL connection string configured for suggestions storage")
 
-        self.engine = sa.create_engine(conn)
+        # Initialize the suggestions database manager if not already initialized
+        if not suggestions_db_manager.is_initialized:
+            suggestions_db_manager.initialize(conn)
+
+        self.engine = suggestions_db_manager.get_engine()
         # Use default schema (search_path) of the provided connection
         self.metadata = sa.MetaData()
 
@@ -142,7 +146,6 @@ class SuggestionService:
 
         # Ensure all tables exist (will not alter existing ones)
         self.metadata.create_all(self.engine)
-        self.Session = sessionmaker(bind=self.engine, expire_on_commit=False)
 
     def _get_token_sub(self, authorization: str | None) -> str | None:
         if not authorization:
@@ -188,7 +191,7 @@ class SuggestionService:
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
 
-        with self.Session() as session:
+        with suggestions_db_manager.get_session() as session:
             safe_payload = self._to_jsonable(payload)
             # Case analyzer table stores JSON in 'data' column
             if table == "case_analyzer":
@@ -223,7 +226,7 @@ class SuggestionService:
         target = self.tables.get(table)
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
-        with self.Session() as session:
+        with suggestions_db_manager.get_session() as session:
             if table == "case_analyzer":
                 # Select raw 'data' and filter in Python for moderation status
                 cols = [target.c.id]
@@ -319,7 +322,7 @@ class SuggestionService:
         target = self.tables.get(table)
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
-        with self.Session() as session:
+        with suggestions_db_manager.get_session() as session:
             if table == "case_analyzer":
                 import json as _json
 
@@ -382,7 +385,7 @@ class SuggestionService:
         target = self.tables.get(table)
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
-        with self.Session() as session:
+        with suggestions_db_manager.get_session() as session:
             if table == "case_analyzer":
                 import json as _json
 

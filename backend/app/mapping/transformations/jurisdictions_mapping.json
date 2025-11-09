@@ -19,7 +19,8 @@
       "Last Modified By.id": "updated_by",
       "Created By.id": "created_by",
       "Jurisdiction Summary": "Jurisdiction_Summary",
-      "Legal Family": "Legal_Family"
+      "Legal Family": "Legal_Family",
+      "Answer Coverage": "Answer_Coverage"
     },
     "boolean_mappings": {
       "Irrelevant?": {

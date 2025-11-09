@@ -1,7 +1,9 @@
 import { computed } from "vue";
-import { useFullTable } from "@/composables/useFullTable";
+import { useQuery } from "@tanstack/vue-query";
+import { useApiClient } from "@/composables/useApiClient";
+import type { JurisdictionWithAnswerCoverage } from "@/types/api";
 
-function convert(record: Record<string, unknown>) {
+function convert(record: JurisdictionWithAnswerCoverage) {
   return {
     ...record,
     Name: record?.Name || "N/A",
@@ -18,29 +20,45 @@ function convert(record: Record<string, unknown>) {
           record["Alpha-3 Code"],
         ).toLowerCase()}.svg`
       : undefined,
+    answerCoverage: record["Answer Coverage"],
   };
 }
 
 export function useJurisdictions() {
-  return useFullTable("Jurisdictions", {
-    select: (data) =>
-      data
-        .filter(
-          (record: Record<string, unknown>) => record["Irrelevant?"] === false,
-        )
-        .map(convert)
-        .sort((a: Record<string, unknown>, b: Record<string, unknown>) =>
-          ((a.label as string) || "").localeCompare((b.label as string) || ""),
-        ),
+  const { apiClient } = useApiClient();
+
+  const { data: rawData, ...rest } = useQuery({
+    queryKey: ["jurisdictions-with-answer-percentage"],
+    queryFn: () =>
+      apiClient<JurisdictionWithAnswerCoverage[]>(
+        "/statistics/jurisdictions-with-answer-percentage",
+        { method: "GET" },
+      ),
   });
+
+  const data = computed(() => {
+    if (!rawData.value) return undefined;
+
+    return rawData.value
+      .filter(
+        (record: JurisdictionWithAnswerCoverage) =>
+          record["Irrelevant?"] === false,
+      )
+      .map(convert);
+  });
+
+  return {
+    data,
+    ...rest,
+  };
 }
 
 export function useJurisdiction(iso3: Ref<string>) {
-  const result = useFullTable("Jurisdictions");
+  const { data: jurisdictionsData, ...rest } = useJurisdictions();
 
-  const data = computed<Record<string, unknown> | undefined>(() => {
+  const data = computed(() => {
     const isoValue = iso3.value;
-    const records = result.data?.value;
+    const records = jurisdictionsData.value;
 
     if (!isoValue || !records) {
       return undefined;
@@ -49,16 +67,14 @@ export function useJurisdiction(iso3: Ref<string>) {
     const iso3Code = isoValue.toLocaleUpperCase();
 
     const match = records.find(
-      (r) =>
-        typeof r?.["Alpha-3 Code"] === "string" &&
-        (r["Alpha-3 Code"] as string).toLocaleUpperCase() === iso3Code,
+      (r) => r.alpha3Code?.toLocaleUpperCase() === iso3Code,
     );
 
-    return match ? convert(match) : undefined;
+    return match;
   });
 
   return {
-    ...result,
     data,
+    ...rest,
   };
 }

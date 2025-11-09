@@ -4,10 +4,7 @@
       <!-- Title Section -->
       <div>
         <h3 class="mb-1 text-left md:whitespace-nowrap">
-          <NuxtLink
-            v-if="jurisdictionCode"
-            :to="`/jurisdiction/${jurisdictionCode.toLowerCase()}`"
-          >
+          <NuxtLink v-if="jurisdictionCode" :to="countryReportLink">
             Country report for
             {{ processedAnswerData?.Jurisdictions || "this jurisdiction" }}
           </NuxtLink>
@@ -27,6 +24,9 @@
 
 <script setup>
 import { computed } from "vue";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
 
 const props = defineProps({
   processedAnswerData: {
@@ -41,6 +41,28 @@ const jurisdictionCode = computed(() => {
     props.processedAnswerData?.["Jurisdictions Alpha-3 code"] ||
     props.processedAnswerData?.["Jurisdictions Alpha-3 Code"]
   );
+});
+
+const questionId = computed(() => {
+  // Extract question ID from the answer ID (route param)
+  // Answer ID format: {ISO3_CODE}_{QUESTION_ID}
+  const answerId = route.params.id;
+  if (!answerId || typeof answerId !== "string") return null;
+
+  const parts = answerId.split("_");
+  if (parts.length > 1) {
+    // Return everything after the first underscore
+    return parts.slice(1).join("_");
+  }
+  return null;
+});
+
+const countryReportLink = computed(() => {
+  const baseLink = `/jurisdiction/${jurisdictionCode.value?.toLowerCase()}`;
+  if (questionId.value) {
+    return `${baseLink}#question-${questionId.value}`;
+  }
+  return baseLink;
 });
 </script>
 
