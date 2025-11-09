@@ -2,7 +2,10 @@
   <template v-for="(prov, index) in processedProvisions" :key="index">
     <template v-if="renderAsLi">
       <li>
-        <NuxtLink :to="generateLegalProvisionLink(prov.raw)">
+        <NuxtLink
+          class="text-cold-purple"
+          :to="generateLegalProvisionLink(prov.raw)"
+        >
           <template v-if="instrumentTitles[prov.instrumentId]">
             <template v-if="!skipArticle">
               {{ formatArticle(prov.articleId) }},
@@ -19,7 +22,10 @@
       </li>
     </template>
     <template v-else>
-      <NuxtLink :to="generateLegalProvisionLink(prov.raw)">
+      <NuxtLink
+        class="text-cold-purple"
+        :to="generateLegalProvisionLink(prov.raw)"
+      >
         <template v-if="instrumentTitles[prov.instrumentId]">
           <template v-if="!skipArticle">
             {{ formatArticle(prov.articleId) }},

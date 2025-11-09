@@ -2,9 +2,12 @@
   <UCard class="cold-ucard">
     <div class="overflow-hidden">
       <h2 class="mb-8 mt-2">Questions and Answers {{ jurisdictionName }}</h2>
-      
+
       <!-- Loading State -->
-      <div v-if="loading || answersLoading" class="flex flex-col space-y-3 py-8">
+      <div
+        v-if="loading || answersLoading"
+        class="flex flex-col space-y-3 py-8"
+      >
         <LoadingBar />
         <LoadingBar />
         <LoadingBar />
@@ -16,14 +19,14 @@
           v-for="row in rows"
           :id="`question-${row.id}`"
           :key="row.id"
-          class="flex flex-col md:flex-row md:items-center gap-2 md:gap-4 py-3"
+          class="flex flex-col gap-2 py-3 md:flex-row md:items-center md:gap-4"
           :style="{ paddingLeft: `${row.level * 2}em` }"
         >
           <!-- Question -->
           <div class="whitespace-pre-line text-sm md:w-[60%]">
             {{ row.question }}
           </div>
-          
+
           <!-- Answer -->
           <div class="md:w-[40%] md:text-right">
             <NuxtLink

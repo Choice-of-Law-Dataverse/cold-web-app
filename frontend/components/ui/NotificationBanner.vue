@@ -6,8 +6,8 @@
     </span>
     <span v-else-if="jurisdictionName">
       {{ fallbackMessage.replace("{jurisdiction}", jurisdictionName) }}
-      <a href="/contact" class="contact-link">Contact us</a> if you want to
-      contribute.
+      <NuxtLink to="/contact" class="contact-link">Contact us</NuxtLink> if you
+      want to contribute.
     </span>
     <span v-else>{{ fallbackMessage }}</span>
   </div>

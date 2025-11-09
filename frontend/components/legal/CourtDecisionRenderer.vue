@@ -6,7 +6,7 @@
     default-class="result-value-small"
   >
     <template #default="{ item }">
-      <NuxtLink :to="generateCourtDecisionLink(item)">
+      <NuxtLink class="text-cold-purple" :to="generateCourtDecisionLink(item)">
         <template v-if="caseTitles[item] !== undefined">
           {{ caseTitles[item] }}
         </template>
