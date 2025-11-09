@@ -8,7 +8,7 @@
       class="result-value-small flex flex-col gap-1"
     >
       <div v-for="item in displayedItems" :key="item.id">
-        <NuxtLink :to="`${basePath}/${item.id}`">
+        <NuxtLink class="text-cold-purple" :to="`${basePath}/${item.id}`">
           {{ item.title }}
         </NuxtLink>
       </div>
