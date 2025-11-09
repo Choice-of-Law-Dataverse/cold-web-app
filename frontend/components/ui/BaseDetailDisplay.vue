@@ -54,7 +54,6 @@
           <section
             v-for="(item, index) in keyLabelPairs"
             :key="index"
-            class="section-gap m-0 flex flex-col p-0 md:flex-row md:gap-6"
           >
             <!-- Check if it's the special 'Specialist' key -->
             <template v-if="item.key === 'Region'">
