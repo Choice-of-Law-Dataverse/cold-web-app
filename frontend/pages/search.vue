@@ -7,9 +7,7 @@
       </p>
       <p class="error-details">{{ apiError }}</p>
     </div>
-    <EmptySearchState
-      v-else-if="!searchQuery && !hasActiveFilters"
-    />
+    <EmptySearchState v-else-if="!searchQuery && !hasActiveFilters" />
     <SearchResults
       v-else
       v-model:filters="filter"
