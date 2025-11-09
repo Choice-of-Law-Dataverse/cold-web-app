@@ -38,7 +38,7 @@
 
       <div v-if="category">
         <small
-          ><br >
+          ><br />
           Category: {{ category }}</small
         >
       </div>

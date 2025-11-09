@@ -22,7 +22,7 @@
                 :alt="`${comparison.left} flag`"
                 class="block h-12 w-auto max-w-full border border-[var(--color-cold-gray)]"
                 @error="flagErrors[`${index}-left`] = true"
-              >
+              />
               <div
                 v-else
                 class="inline-flex h-9 items-center justify-center border border-[var(--color-cold-gray)] bg-gray-100 px-3 font-semibold"
@@ -51,7 +51,7 @@
                 :alt="`${comparison.right} flag`"
                 class="block h-12 w-auto max-w-full border border-[var(--color-cold-gray)]"
                 @error="flagErrors[`${index}-right`] = true"
-              >
+              />
               <div
                 v-else
                 class="inline-flex h-9 items-center justify-center border border-[var(--color-cold-gray)] bg-gray-100 px-3 font-semibold"

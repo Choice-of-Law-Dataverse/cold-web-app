@@ -16,7 +16,7 @@
               <img
                 :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${decision['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
                 class="mr-3 h-5 border border-cold-gray"
-              >
+              />
               <span class="break-words text-left">
                 {{
                   decision["Publication Date ISO"]

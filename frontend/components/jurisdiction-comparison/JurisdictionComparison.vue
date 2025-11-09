@@ -77,7 +77,7 @@
       </div>
     </div>
 
-    <hr class="mt-2" >
+    <hr class="mt-2" />
 
     <!-- Table Always Visible -->
     <JurisdictionComparisonTable

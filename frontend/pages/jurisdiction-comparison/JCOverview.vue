@@ -2,7 +2,7 @@
   <div>
     <div class="hidden md:block">
       <div class="jc-z-top mt-24" />
-      <hr class="jc-hr" >
+      <hr class="jc-hr" />
       <div
         class="jc-grid jc-data-row"
         :style="{
@@ -41,7 +41,7 @@
                   v-if="
                     lineIndex < getSampleDataForColumn(index - 1).length - 1
                   "
-                >
+                />
               </p>
               <p
                 v-else-if="
@@ -68,7 +68,7 @@
                   v-if="
                     lineIndex < getSampleDataForColumn(index - 1).length - 1
                   "
-                >
+                />
               </p>
               <p
                 v-else-if="
@@ -95,7 +95,7 @@
                   v-if="
                     lineIndex < getSampleDataForColumn(index - 1).length - 1
                   "
-                >
+                />
               </p>
               <p v-else>
                 {{ line }}
@@ -103,7 +103,7 @@
                   v-if="
                     lineIndex < getSampleDataForColumn(index - 1).length - 1
                   "
-                >
+                />
               </p>
             </div>
           </div>
@@ -144,7 +144,7 @@
                   "
                   :alt="filter.value.value[0].label + ' flag'"
                   @error="() => (erroredFlags[index] = true)"
-                >
+                />
                 {{ filter.value.value[0].label }}
               </template>
               <template v-else>
