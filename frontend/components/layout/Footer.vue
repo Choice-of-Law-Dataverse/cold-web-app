@@ -1,9 +1,12 @@
+<script setup>
+import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
+</script>
+
 <template>
   <footer class="mt-24 min-h-[300px] bg-cold-night px-6 py-12 text-white">
-    <div
-      class="mx-auto grid max-w-container grid-cols-1 items-start md:grid-cols-12 md:gap-6"
-    >
-      <div class="mt-4 flex flex-col gap-3 md:col-span-8">
+    <div class="mx-auto max-w-container">
+      <!-- Logo and Tagline -->
+      <div class="mb-8 flex flex-col gap-3">
         <img
           src="https://choiceoflaw.blob.core.windows.net/assets/cold_flag_footer.svg"
           class="w-25 mb-6 max-w-16"
@@ -13,25 +16,53 @@
           Funded by the<br >Swiss National Science Foundation
         </p>
       </div>
-      <!-- Footer Links -->
+
+      <!-- Footer Sitemap - 3 Columns -->
       <div
-        class="mb-4 mt-12 flex flex-row flex-wrap gap-x-8 gap-y-3 whitespace-nowrap md:col-span-4 md:mb-0 md:mt-4 md:justify-end"
+        class="grid grid-cols-1 gap-8 border-t border-gray-700 pt-8 md:grid-cols-3"
       >
-        <NuxtLink to="/about" class="whitespace-nowrap !text-white">
-          About
-        </NuxtLink>
-        <NuxtLink to="/learn" class="whitespace-nowrap !text-white">
-          Learn
-        </NuxtLink>
-        <NuxtLink to="/contact" class="whitespace-nowrap !text-white">
-          Contact
-        </NuxtLink>
-        <NuxtLink to="/search" class="whitespace-nowrap !text-white">
-          Search
-        </NuxtLink>
-        <NuxtLink to="/disclaimer" class="whitespace-nowrap !text-white">
-          Disclaimer
-        </NuxtLink>
+        <!-- Column 1: About with subpages -->
+        <div class="flex flex-col gap-3">
+          <h3 class="mb-2 font-bold">About</h3>
+          <NuxtLink
+            v-for="link in aboutNavLinks"
+            :key="link.key"
+            :to="link.path"
+            class="text-sm !text-white hover:underline"
+          >
+            {{ link.label }}
+          </NuxtLink>
+        </div>
+
+        <!-- Column 2: Learn with subpages -->
+        <div class="flex flex-col gap-3">
+          <h3 class="mb-2 font-bold">Learn</h3>
+          <NuxtLink
+            v-for="link in learnNavLinks"
+            :key="link.key"
+            :to="link.path"
+            class="text-sm !text-white hover:underline"
+          >
+            {{ link.label }}
+          </NuxtLink>
+        </div>
+
+        <!-- Column 3: Utilities -->
+        <div class="flex flex-col gap-3">
+          <h3 class="mb-2 font-bold">Resources</h3>
+          <NuxtLink to="/contact" class="text-sm !text-white hover:underline">
+            Contact
+          </NuxtLink>
+          <NuxtLink to="/search" class="text-sm !text-white hover:underline">
+            Search
+          </NuxtLink>
+          <NuxtLink
+            to="/disclaimer"
+            class="text-sm !text-white hover:underline"
+          >
+            Disclaimer
+          </NuxtLink>
+        </div>
       </div>
     </div>
   </footer>
@@ -44,5 +75,10 @@ a {
 
 h2 {
   color: white !important;
+}
+
+h3 {
+  color: white !important;
+  font-size: 1rem;
 }
 </style>
