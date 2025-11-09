@@ -63,7 +63,7 @@
                 >{{ bibtexContent }}</pre
               >
               <button
-                class="flex w-fit items-center gap-1 label text-cold-teal"
+                class="label flex w-fit items-center gap-1 text-cold-teal"
                 @click="exportBibTeX"
               >
                 <UIcon

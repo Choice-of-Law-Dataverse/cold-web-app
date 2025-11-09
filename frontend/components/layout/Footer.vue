@@ -22,46 +22,54 @@ import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
         class="grid grid-cols-1 gap-8 border-t border-gray-700 pt-8 md:grid-cols-3"
       >
         <!-- Column 1: About with subpages -->
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-row justify-between gap-3 md:flex-col">
           <h3 class="mb-2 font-bold">About</h3>
-          <NuxtLink
-            v-for="link in aboutNavLinks"
-            :key="link.key"
-            :to="link.path"
-            class="text-sm !text-white hover:underline"
-          >
-            {{ link.label }}
-          </NuxtLink>
+          <div class="flex flex-col gap-3 text-right md:text-left">
+            <NuxtLink
+              v-for="link in aboutNavLinks"
+              :key="link.key"
+              :to="link.path"
+              class="text-sm !text-white hover:underline"
+            >
+              {{ link.label }}
+            </NuxtLink>
+          </div>
         </div>
 
         <!-- Column 2: Learn with subpages -->
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-row justify-between gap-3 md:flex-col">
           <h3 class="mb-2 font-bold">Learn</h3>
-          <NuxtLink
-            v-for="link in learnNavLinks"
-            :key="link.key"
-            :to="link.path"
-            class="text-sm !text-white hover:underline"
-          >
-            {{ link.label }}
-          </NuxtLink>
+          <div class="flex flex-col gap-3 text-right md:text-left">
+            <NuxtLink
+              v-for="link in learnNavLinks"
+              :key="link.key"
+              :to="link.path"
+              class="text-sm !text-white hover:underline"
+            >
+              {{ link.label }}
+            </NuxtLink>
+          </div>
         </div>
 
         <!-- Column 3: Utilities -->
-        <div class="flex flex-col gap-3">
+        <div
+          class="flex flex-row justify-between gap-3 md:flex-col md:justify-start"
+        >
           <h3 class="mb-2 font-bold">Resources</h3>
-          <NuxtLink to="/contact" class="text-sm !text-white hover:underline">
-            Contact
-          </NuxtLink>
-          <NuxtLink to="/search" class="text-sm !text-white hover:underline">
-            Search
-          </NuxtLink>
-          <NuxtLink
-            to="/disclaimer"
-            class="text-sm !text-white hover:underline"
-          >
-            Disclaimer
-          </NuxtLink>
+          <div class="flex flex-col gap-3 text-right md:text-left">
+            <NuxtLink to="/contact" class="text-sm !text-white hover:underline">
+              Contact
+            </NuxtLink>
+            <NuxtLink to="/search" class="text-sm !text-white hover:underline">
+              Search
+            </NuxtLink>
+            <NuxtLink
+              to="/disclaimer"
+              class="text-sm !text-white hover:underline"
+            >
+              Disclaimer
+            </NuxtLink>
+          </div>
         </div>
       </div>
     </div>
