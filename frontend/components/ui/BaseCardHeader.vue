@@ -380,24 +380,24 @@ const erroredImages = reactive({});
 
 const suggestEditActions = computed(() => {
   const actions = [];
-  
+
   actions.push({
     label: "Cite",
     icon: "i-material-symbols:verified-outline",
   });
-  
+
   // Add JSON export button
   actions.push({
     label: "JSON",
-    icon: "i-material-symbols:download-outline",
+    icon: "i-material-symbols:data-object",
   });
-  
+
   // Add Print button
   actions.push({
     label: "Print",
     icon: "i-material-symbols:print-outline",
   });
-  
+
   const editLink = suggestEditLink.value;
   actions.push({
     label: "Edit",
@@ -492,56 +492,6 @@ watch(selectedType, (val, old) => {
   }
 });
 
-// Export functions
-function generateBibTeX() {
-  const data = props.resultData;
-  const authors = data.Authors || data.Author || "";
-  const title = data.Title || "";
-  const year = data.Year || data["Publication Year"] || "";
-  const journal = data["Publication Title"] || data.Journal || "";
-  const volume = data.Volume || "";
-  const pages = data.Pages || "";
-  const publisher = data.Publisher || "";
-  const doi = data.DOI || "";
-  const url = data.Url || data.URL || "";
-
-  // Generate citation key from first author's last name and year
-  let citationKey = "cold_literature";
-  if (authors && year) {
-    const firstAuthor = authors.split(",")[0].trim().split(" ").pop();
-    // Clean the author name for use in citation key
-    const cleanAuthor = firstAuthor
-      .replace(/[^a-zA-Z]/g, "")
-      .toLowerCase();
-    citationKey = `${cleanAuthor}${year}`;
-  } else if (title && year) {
-    // Fallback to first word of title + year
-    const firstWord = title
-      .split(" ")[0]
-      .replace(/[^a-zA-Z]/g, "")
-      .toLowerCase();
-    citationKey = `${firstWord}${year}`;
-  }
-
-  // Escape special BibTeX characters in strings
-  const escape = (str) =>
-    str.replace(/[{}\\]/g, (char) => `\\${char}`).replace(/%/g, "\\%");
-
-  let bibtex = `@article{${citationKey},\n`;
-  if (authors) bibtex += `  author = {${escape(authors)}},\n`;
-  if (title) bibtex += `  title = {${escape(title)}},\n`;
-  if (journal) bibtex += `  journal = {${escape(journal)}},\n`;
-  if (year) bibtex += `  year = {${year}},\n`;
-  if (volume) bibtex += `  volume = {${volume}},\n`;
-  if (pages) bibtex += `  pages = {${pages}},\n`;
-  if (publisher) bibtex += `  publisher = {${escape(publisher)}},\n`;
-  if (doi) bibtex += `  doi = {${doi}},\n`;
-  if (url) bibtex += `  url = {${url}},\n`;
-  bibtex += "}";
-
-  return bibtex;
-}
-
 function sanitizeFilename(filename) {
   return filename
     .replace(/[<>:"/\\|?*]/g, "") // Remove invalid characters
@@ -561,14 +511,6 @@ function downloadFile(content, filename, mimeType) {
   URL.revokeObjectURL(url);
 }
 
-function exportBibTeX() {
-  const bibtex = generateBibTeX();
-  const rawTitle = props.resultData.Title || "literature";
-  const filename = `${sanitizeFilename(rawTitle)}.bib`;
-  downloadFile(bibtex, filename, "application/x-bibtex");
-}
-
-// Keep JSON export function but don't expose button
 function exportJSON() {
   const json = JSON.stringify(props.resultData, null, 2);
   const title =

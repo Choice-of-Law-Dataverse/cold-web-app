@@ -11,9 +11,7 @@
       <!-- Case Title with PDF and Source Link -->
       <template #case-title="{ value }">
         <DetailRow
-          :label="
-            keyLabelLookup.get('Case Title')?.label || 'Case Title'
-          "
+          :label="keyLabelLookup.get('Case Title')?.label || 'Case Title'"
           :tooltip="keyLabelLookup.get('Case Title')?.tooltip"
         >
           <div class="flex items-start justify-between gap-4">
@@ -25,18 +23,7 @@
                 :record-id="route.params.id as string"
                 folder-name="court-decisions"
               />
-              <a
-                v-if="sourceUrl"
-                :href="sourceUrl"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-1 text-sm"
-                style="color: var(--color-cold-purple)"
-                @click.stop
-              >
-                <UIcon name="i-material-symbols:open-in-new" class="h-4 w-4" />
-                <span>Link</span>
-              </a>
+              <SourceExternalLink :source-url="sourceUrl" />
             </div>
           </div>
         </DetailRow>
@@ -217,6 +204,7 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
+import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";

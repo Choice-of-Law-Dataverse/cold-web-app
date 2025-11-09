@@ -19,21 +19,10 @@
               <div :class="valueClassMap.Title" class="flex-1">{{ value }}</div>
               <div class="flex flex-shrink-0 items-center gap-3">
                 <PdfLink :record-id="id" folder-name="literatures" />
-                <a
-                  v-if="sourceUrl"
-                  :href="sourceUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-1 text-sm"
-                  style="color: var(--color-cold-purple)"
-                  @click.stop
-                >
-                  <UIcon
-                    name="i-material-symbols:open-in-new"
-                    class="h-4 w-4"
-                  />
-                  <span>{{ sourceLinkLabel }}</span>
-                </a>
+                <SourceExternalLink
+                  :source-url="sourceUrl"
+                  :label="sourceLinkLabel"
+                />
               </div>
             </div>
           </DetailRow>
@@ -72,16 +61,16 @@
               <pre
                 class="overflow-x-auto rounded-md bg-gray-50 p-4 text-xs font-mono dark:bg-gray-800"
               >{{ bibtexContent }}</pre>
-            <button
+              <button
                 class="link-button flex w-fit items-center gap-1 text-[var(--color-cold-teal)]"
-              @click="exportBibTeX"
-            >
-              <UIcon
+                @click="exportBibTeX"
+              >
+                <UIcon
                   name="i-material-symbols:download-for-offline-rounded"
-                class="h-4 w-4"
-              />
-              <span>Download BibTeX</span>
-            </button>
+                  class="h-4 w-4"
+                />
+                <span>Download BibTeX</span>
+              </button>
             </div>
           </DetailRow>
         </section>
@@ -103,6 +92,7 @@ import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
+import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { literatureConfig } from "@/config/pageConfigs";
 import type { TableName } from "@/types/api";
