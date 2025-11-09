@@ -36,7 +36,7 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { computed } from "vue";
 import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
@@ -48,8 +48,9 @@ defineProps({
   },
 });
 
+const emit = defineEmits(['jurisdiction-selected']);
+
 const route = useRoute();
-const router = useRouter();
 
 const { data: jurisdictions, isLoading } = useJurisdictions();
 
@@ -67,13 +68,10 @@ const availableJurisdictions = computed(() => {
 });
 
 const onJurisdictionSelected = (selectedJurisdiction) => {
-  if (!selectedJurisdiction?.alpha3Code || !currentIso3Code.value) return;
+  if (!selectedJurisdiction?.alpha3Code) return;
 
-  const currentCode = currentIso3Code.value.toLowerCase();
-  const selectedCode = selectedJurisdiction.alpha3Code.toLowerCase();
-
-  const comparisonUrl = `/jurisdiction-comparison/${currentCode}+${selectedCode}`;
-  router.push(comparisonUrl);
+  // Emit the selected jurisdiction to the parent component
+  emit('jurisdiction-selected', selectedJurisdiction);
 };
 </script>
 
