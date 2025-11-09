@@ -63,14 +63,14 @@
                 >{{ bibtexContent }}</pre
               >
               <button
-                class="link-button flex w-fit items-center gap-1 text-[var(--color-cold-teal)]"
+                class="flex w-fit items-center gap-1 label text-cold-teal"
                 @click="exportBibTeX"
               >
                 <UIcon
-                  name="i-material-symbols:download-for-offline-rounded"
+                  name="i-material-symbols:download-2-outline"
                   class="h-4 w-4"
                 />
-                <span>Download BibTeX</span>
+                <span>Download</span>
               </button>
             </div>
           </DetailRow>
