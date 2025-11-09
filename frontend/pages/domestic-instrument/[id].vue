@@ -8,6 +8,40 @@
       :show-suggest-edit="true"
       source-table="Domestic Instrument"
     >
+      <!-- Title with PDF and Source Link -->
+      <template #title-(in-english)="{ value }">
+        <DetailRow
+          :label="
+            keyLabelLookup.get('Title (in English)')?.label || 'Name'
+          "
+          :tooltip="keyLabelLookup.get('Title (in English)')?.tooltip"
+        >
+          <div class="flex items-start justify-between gap-4">
+            <div :class="valueClassMap['Title (in English)']" class="flex-1">
+              {{ value }}
+            </div>
+            <div class="flex flex-shrink-0 items-center gap-3">
+              <PdfLink
+                :record-id="route.params.id as string"
+                folder-name="domestic-instruments"
+              />
+              <a
+                v-if="sourceUrl"
+                :href="sourceUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1 text-sm"
+                style="color: var(--color-cold-purple)"
+                @click.stop
+              >
+                <UIcon name="i-material-symbols:open-in-new" class="h-4 w-4" />
+                <span>Link</span>
+              </a>
+            </div>
+          </div>
+        </DetailRow>
+      </template>
+
       <!-- Slot for Amended by -->
       <template #amended-by="{ value }">
         <DetailRow
@@ -123,6 +157,7 @@ import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import PdfLink from "@/components/ui/PdfLink.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
@@ -192,6 +227,11 @@ const isCompatible = (field: string): boolean => {
   ];
   return value === true || value === "true";
 };
+
+// Source URL for domestic instruments
+const sourceUrl = computed(() => {
+  return (legalInstrument.value?.["Source (URL)"] || "") as string;
+});
 
 const getSortedProvisionIdsForInstrument = (rawValue: string): string[] => {
   return getSortedProvisionIds(
