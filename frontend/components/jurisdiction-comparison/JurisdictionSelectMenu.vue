@@ -22,9 +22,7 @@
               boxSizing: 'border-box',
               width: 'auto',
               height: '16px',
-              filter: option?.answerCoverage > 0
-                ? undefined
-                : 'grayscale(0.9)',
+              filter: option?.answerCoverage > 0 ? undefined : 'grayscale(0.9)',
             }"
             class="mr-2 self-center"
             @error="() => handleImageError(erroredAvatars, option?.label)"
@@ -55,9 +53,8 @@
               boxSizing: 'border-box',
               width: 'auto',
               height: '16px',
-              filter: selected?.answerCoverage > 0
-                ? undefined
-                : 'grayscale(0.9)',
+              filter:
+                selected?.answerCoverage > 0 ? undefined : 'grayscale(0.9)',
             }"
             class="mr-1.5 self-center"
             @error="() => handleImageError(erroredAvatars, selected?.label)"

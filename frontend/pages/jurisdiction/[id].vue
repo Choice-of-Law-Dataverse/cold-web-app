@@ -117,8 +117,9 @@ const route = useRoute();
 
 const { keyLabelPairs, valueClassMap } = jurisdictionConfig;
 
-const { isLoading, data: jurisdictionData } =
-  useJurisdiction(computed(() => route.params.id as string));
+const { isLoading, data: jurisdictionData } = useJurisdiction(
+  computed(() => route.params.id as string),
+);
 
 const keyLabelPairsWithoutLegalFamily = computed(() =>
   keyLabelPairs.filter((pair) => pair.key !== "Legal Family"),

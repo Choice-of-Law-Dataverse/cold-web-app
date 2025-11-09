@@ -2,7 +2,7 @@
   <UCard class="cold-ucard overflow-visible">
     <div class="flex flex-col gap-6 md:flex-row md:items-center">
       <h2 class="popular-title">Open a Country Report</h2>
-      <div class="suggestions w-full md:w-auto">
+      <div class="suggestions w-full">
         <JurisdictionSelectMenu
           :countries="jurisdictions || []"
           @country-selected="navigateToCountry"

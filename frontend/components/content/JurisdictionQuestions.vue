@@ -15,7 +15,7 @@
             v-if="!jurisdictionsLoading"
             class="flex flex-col gap-4 md:flex-row md:items-center"
           >
-            <div class="relative z-10 w-full md:w-auto">
+
               <JurisdictionSelectMenu
                 v-model="selectedJurisdiction"
                 :countries="allJurisdictionsData || []"
@@ -23,7 +23,7 @@
                 placeholder="Jurisdiction"
                 @country-selected="handleAddJurisdiction"
               />
-            </div>
+
           </div>
 
           <!-- Loading state -->
