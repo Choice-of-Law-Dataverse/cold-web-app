@@ -123,12 +123,11 @@
           />
         </NuxtLink>
 
-        <!-- HCCHApproved and Menu/Links Row -->
+        <!-- Menu/Links Row -->
         <div
           v-if="!isExpanded"
           class="mobile-nav-group flex items-center space-x-4"
         >
-          <HCCHApproved v-if="!showMenu" class="hcch-approved" />
           <template v-if="!showMenu">
             <button class="menu-button custom-nav-links" @click="openMenu">
               Menu
@@ -187,7 +186,6 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import HCCHApproved from "../ui/HCCHApproved.vue";
 import eventBus from "@/eventBus";
 import jurisdictionsData from "@/assets/jurisdictions-data.json";
 import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
@@ -576,10 +574,6 @@ nav {
   }
   .search-container {
     flex: 0 0 auto;
-  }
-
-  .mobile-nav-group .hcch-approved {
-    margin-left: 0;
   }
 
   .mobile-nav-group > * + * {

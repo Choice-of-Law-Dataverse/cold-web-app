@@ -151,8 +151,32 @@
                   <a
                     v-if="action.label === 'Cite'"
                     href="#"
-                    class="flex items-center"
+                    class="flex items-center text-cold-purple"
                     @click.prevent="isCiteOpen = true"
+                  >
+                    {{ action.label }}
+                    <UIcon
+                      :name="action.icon"
+                      class="mb-0.5 ml-1 inline-block text-[1.2em]"
+                    />
+                  </a>
+                  <a
+                    v-else-if="action.label === 'JSON'"
+                    href="#"
+                    class="flex items-center text-cold-purple"
+                    @click.prevent="exportJSON"
+                  >
+                    {{ action.label }}
+                    <UIcon
+                      :name="action.icon"
+                      class="mb-0.5 ml-1 inline-block text-[1.2em]"
+                    />
+                  </a>
+                  <a
+                    v-else-if="action.label === 'Print'"
+                    href="#"
+                    class="flex items-center text-cold-purple"
+                    @click.prevent="printPage"
                   >
                     {{ action.label }}
                     <UIcon
@@ -162,7 +186,7 @@
                   </a>
                   <NuxtLink
                     v-else
-                    class="flex items-center"
+                    class="flex items-center text-cold-purple"
                     :class="action.class"
                     v-bind="action.to ? { to: action.to } : {}"
                     target="_blank"
@@ -183,7 +207,7 @@
                       a.label === 'Edit',
                   )"
                   :key="'edit-' + index"
-                  class="flex items-center"
+                  class="flex items-center text-cold-purple"
                   :class="action.class"
                   v-bind="action.to ? { to: action.to } : {}"
                   target="_blank"
@@ -219,7 +243,6 @@ import { useRoute, useRouter } from "vue-router";
 import jurisdictionsData from "@/assets/jurisdictions-data.json";
 import { handleImageError } from "@/utils/handleImageError";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
-import { useCheckTarget } from "~/composables/useCheckTarget";
 import CiteModal from "@/components/ui/CiteModal.vue";
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
@@ -227,14 +250,6 @@ const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 const route = useRoute();
 const router = useRouter();
 const isCiteOpen = ref(false);
-
-const downloadPDFLink = computed(() => {
-  const segments = route.path.split("/").filter(Boolean);
-  const contentType = segments[0] || "unknown";
-  const id = segments[1] || "";
-  const folder = `${contentType}s`;
-  return `https://choiceoflaw.blob.core.windows.net/${folder}/${id}.pdf`;
-});
 
 const props = defineProps({
   resultData: {
@@ -364,47 +379,25 @@ const formattedTheme = computed(() => {
 const erroredImages = reactive({});
 
 const suggestEditActions = computed(() => {
-  let linkUrl = "";
-  let linkLabel = "Link";
-  if (props.cardType === "Literature") {
-    if (props.resultData["Open Access URL"]) {
-      linkUrl = props.resultData["Open Access URL"];
-      linkLabel = "Open Access Link";
-    } else {
-      linkUrl = props.resultData["Url"] || "";
-    }
-  } else if (props.cardType === "Court Decisions") {
-    linkUrl = props.resultData["Official Source (URL)"] || "";
-  } else if (props.cardType === "Domestic Instrument") {
-    linkUrl = props.resultData["Source (URL)"] || "";
-  } else if (props.cardType === "Regional Instrument") {
-    linkUrl = props.resultData["URL"] || "";
-  } else if (props.cardType === "International Instrument") {
-    linkUrl = props.resultData["URL"] || "";
-  } else if (props.cardType === "Arbitral Rule") {
-    linkUrl = props.resultData["Official_Source__URL_"] || "";
-  } else if (props.cardType === "Arbitral Award") {
-    linkUrl = props.resultData["Official_Source__URL_"] || "";
-  }
   const actions = [];
-  if (linkUrl) {
-    actions.push({
-      label: linkLabel,
-      icon: "i-material-symbols:open-in-new",
-      to: linkUrl,
-    });
-  }
+
   actions.push({
     label: "Cite",
     icon: "i-material-symbols:verified-outline",
   });
-  if (pdfExists.value) {
-    actions.push({
-      label: "PDF",
-      icon: "i-material-symbols:arrow-circle-down-outline",
-      to: downloadPDFLink.value,
-    });
-  }
+
+  // Add JSON export button
+  actions.push({
+    label: "JSON",
+    icon: "i-material-symbols:data-object",
+  });
+
+  // Add Print button
+  actions.push({
+    label: "Print",
+    icon: "i-material-symbols:print-outline",
+  });
+
   const editLink = suggestEditLink.value;
   actions.push({
     label: "Edit",
@@ -413,8 +406,6 @@ const suggestEditActions = computed(() => {
   });
   return actions;
 });
-
-const { data: pdfExists } = useCheckTarget(downloadPDFLink);
 
 const suggestEditLink = ref("");
 const airtableFormID = "appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form";
@@ -500,6 +491,41 @@ watch(selectedType, (val, old) => {
     router.push(typeToNewPath(val));
   }
 });
+
+function sanitizeFilename(filename) {
+  return filename
+    .replace(/[<>:"/\\|?*]/g, "") // Remove invalid characters
+    .replace(/\s+/g, "_") // Replace spaces with underscores
+    .substring(0, 200); // Limit length
+}
+
+function downloadFile(content, filename, mimeType) {
+  const blob = new Blob([content], { type: mimeType });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+function exportJSON() {
+  const json = JSON.stringify(props.resultData, null, 2);
+  const title =
+    props.resultData.Title ||
+    props.resultData["Case Title"] ||
+    props.resultData.Name ||
+    props.resultData["Case Citation"] ||
+    "export";
+  const filename = `${sanitizeFilename(title)}.json`;
+  downloadFile(json, filename, "application/json");
+}
+
+function printPage() {
+  window.print();
+}
 
 const selectUiLabel = {
   base: "new-select-label leading-none !text-[var(--color-cold-purple)]",

@@ -2,6 +2,11 @@ export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
   ssr: true,
+  nitro: {
+    experimental: {
+      tasks: false,
+    },
+  },
   $production: {
     scripts: {
       registry: {

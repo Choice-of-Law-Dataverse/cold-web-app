@@ -537,6 +537,7 @@ function getFlagUrl(label) {
 }
 
 .overview-link {
+  color: var(--color-cold-purple);
   font-weight: 500 !important;
 }
 

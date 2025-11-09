@@ -66,7 +66,7 @@
               <NuxtLink
                 v-if="jurisdictionFilters[j - 1]?.value.value[0]?.alpha3Code"
                 :to="`/question/${jurisdictionFilters[j - 1]?.value.value[0]?.alpha3Code?.toUpperCase()}_${questionIDs[i]}`"
-                class="result-value-large"
+                class="result-value-large text-cold-purple"
               >
                 {{ sampleData[j - 1]?.[i] || questionIDs[i] }}
               </NuxtLink>

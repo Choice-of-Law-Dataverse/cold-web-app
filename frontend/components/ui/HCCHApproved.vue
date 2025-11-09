@@ -8,7 +8,7 @@
       name="i-material-symbols:check-circle"
       class="mr-[0.3em] mt-[0.1em] text-[1.15em]"
     />
-    HCCH<span class="desktop-only-text">&nbsp;Compliant</span>
+    HCCH&nbsp;Compliant
   </NuxtLink>
 </template>
 
@@ -17,13 +17,5 @@
   color: var(--color-cold-night);
   background-color: var(--color-cold-green);
   border: 1px solid var(--color-cold-night);
-}
-@media (max-width: 639px) {
-  .label-question {
-    padding-right: 9px !important;
-  }
-  .desktop-only-text {
-    display: none;
-  }
 }
 </style>
