@@ -1,22 +1,26 @@
-import { useQuery } from "@tanstack/vue-query";
-
-const fetchCoveredCountries = async (): Promise<Set<string>> => {
-  const response = await fetch("/temp_answer_coverage.txt");
-  if (!response.ok) {
-    throw new Error("Failed to fetch countries file");
-  }
-  const text = await response.text();
-  const countries = text
-    .split("\n")
-    .map((line) => line.trim().toLowerCase())
-    .filter((line) => line.length > 0);
-
-  return new Set(countries);
-};
+import { computed } from "vue";
+import { useJurisdictions } from "@/composables/useJurisdictions";
 
 export function useCoveredCountries() {
-  return useQuery({
-    queryKey: ["coveredCountries"],
-    queryFn: fetchCoveredCountries,
+  const { data: jurisdictions, ...rest } = useJurisdictions();
+
+  const data = computed(() => {
+    if (!jurisdictions.value) return undefined;
+
+    return new Set(
+      jurisdictions.value
+        .filter(
+          (jurisdiction) =>
+            jurisdiction.answerCoverage &&
+            jurisdiction.answerCoverage > 0 &&
+            jurisdiction.alpha3Code,
+        )
+        .map((jurisdiction) => jurisdiction.alpha3Code!.toLowerCase()),
+    );
   });
+
+  return {
+    data,
+    ...rest,
+  };
 }
