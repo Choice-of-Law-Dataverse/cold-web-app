@@ -6,7 +6,7 @@
     class="cold-uselectmenu z-200 w-72 lg:w-96"
     :ui-menu="{ container: 'z-[2050] group', height: 'max-h-96' }"
     :placeholder="placeholder"
-    :options="countries"
+    :options="availableCountries"
     size="xl"
     @change="onSelect"
   >
@@ -22,9 +22,7 @@
               boxSizing: 'border-box',
               width: 'auto',
               height: '16px',
-              filter: isCovered(option?.alpha3Code)
-                ? undefined
-                : 'grayscale(0.9)',
+              filter: option?.answerCoverage > 0 ? undefined : 'grayscale(0.9)',
             }"
             class="mr-2 self-center"
             @error="() => handleImageError(erroredAvatars, option?.label)"
@@ -32,7 +30,7 @@
         </template>
         <span
           :style="{
-            color: isCovered(option?.alpha3Code) ? undefined : 'gray',
+            color: option?.answerCoverage > 0 ? undefined : 'gray',
           }"
         >
           {{ option?.label }}
@@ -55,9 +53,8 @@
               boxSizing: 'border-box',
               width: 'auto',
               height: '16px',
-              filter: isCovered(selected?.alpha3Code)
-                ? undefined
-                : 'grayscale(0.9)',
+              filter:
+                selected?.answerCoverage > 0 ? undefined : 'grayscale(0.9)',
             }"
             class="mr-1.5 self-center"
             @error="() => handleImageError(erroredAvatars, selected?.label)"
@@ -66,7 +63,7 @@
         <span
           class="truncate"
           :style="{
-            color: isCovered(selected?.alpha3Code) ? undefined : 'gray',
+            color: selected?.answerCoverage > 0 ? undefined : 'gray',
           }"
         >
           {{ selected?.label }}
@@ -77,7 +74,7 @@
 </template>
 
 <script setup>
-import { reactive } from "vue";
+import { reactive, computed } from "vue";
 import { handleImageError } from "@/utils/handleImageError";
 
 const props = defineProps({
@@ -89,15 +86,25 @@ const props = defineProps({
     type: String,
     default: "Pick a Jurisdiction",
   },
+  excludedCodes: {
+    type: Array,
+    default: () => [],
+  },
 });
 
-const isCovered = (alpha3Code) => {
-  if (!alpha3Code || !props.countries) return false;
-  const jurisdiction = props.countries.find(
-    (j) => j.alpha3Code?.toLowerCase() === alpha3Code?.toLowerCase(),
+const availableCountries = computed(() => {
+  if (!props.excludedCodes || props.excludedCodes.length === 0) {
+    return props.countries;
+  }
+
+  const excludedSet = new Set(
+    props.excludedCodes.map((code) => code?.toUpperCase()).filter(Boolean),
   );
-  return jurisdiction?.answerCoverage > 0;
-};
+
+  return props.countries.filter(
+    (country) => !excludedSet.has(country.alpha3Code?.toUpperCase()),
+  );
+});
 
 const emit = defineEmits(["countrySelected"]);
 

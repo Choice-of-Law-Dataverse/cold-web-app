@@ -1,11 +1,7 @@
 <template>
   <UCard class="cold-ucard overflow-visible">
     <div class="flex flex-col items-stretch gap-8 md:flex-row md:items-center">
-      <h3 class="text-left md:whitespace-nowrap">
-        Compare
-        {{ formattedJurisdiction?.Name || "this jurisdiction" }} with other
-        jurisdictions
-      </h3>
+      <h3 class="text-left md:whitespace-nowrap">Add comparison with</h3>
 
       <div
         v-if="availableJurisdictions && availableJurisdictions.length > 0"
@@ -14,7 +10,7 @@
         <div class="w-full md:w-auto">
           <JurisdictionSelectMenu
             :countries="availableJurisdictions"
-            placeholder="Pick a jurisdiction to compare..."
+            placeholder="Jurisdiction"
             @country-selected="onJurisdictionSelected"
           />
         </div>
@@ -36,7 +32,7 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { computed } from "vue";
 import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
@@ -48,8 +44,9 @@ defineProps({
   },
 });
 
+const emit = defineEmits(["jurisdiction-selected"]);
+
 const route = useRoute();
-const router = useRouter();
 
 const { data: jurisdictions, isLoading } = useJurisdictions();
 
@@ -67,13 +64,9 @@ const availableJurisdictions = computed(() => {
 });
 
 const onJurisdictionSelected = (selectedJurisdiction) => {
-  if (!selectedJurisdiction?.alpha3Code || !currentIso3Code.value) return;
+  if (!selectedJurisdiction?.alpha3Code) return;
 
-  const currentCode = currentIso3Code.value.toLowerCase();
-  const selectedCode = selectedJurisdiction.alpha3Code.toLowerCase();
-
-  const comparisonUrl = `/jurisdiction-comparison/${currentCode}+${selectedCode}`;
-  router.push(comparisonUrl);
+  emit("jurisdiction-selected", selectedJurisdiction);
 };
 </script>
 

@@ -1,7 +1,7 @@
 <template>
   <div>
     <BaseDetailLayout
-      :loading="isLoading.value"
+      :loading="isLoading"
       :result-data="jurisdictionData || {}"
       :key-label-pairs="keyLabelPairsWithoutLegalFamily"
       :value-class-map="valueClassMap"
@@ -60,14 +60,10 @@
         </div>
       </template>
     </BaseDetailLayout>
-    <JurisdictionSelector
-      v-if="jurisdictionData"
-      :formatted-jurisdiction="jurisdictionData"
-    />
     <ClientOnly>
       <JurisdictionQuestions
-        v-if="jurisdictionData?.Name"
-        :formatted-jurisdiction="[jurisdictionData.Name]"
+        v-if="jurisdictionData"
+        :primary-jurisdiction="jurisdictionData"
       />
       <template #fallback>
         <div class="px-6">
@@ -108,7 +104,6 @@ import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
-import JurisdictionSelector from "@/components/ui/JurisdictionSelector.vue";
 import JurisdictionQuestions from "@/components/content/JurisdictionQuestions.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedCourtDecisions from "@/components/sources/RelatedCourtDecisions.vue";
@@ -122,16 +117,11 @@ const route = useRoute();
 
 const { keyLabelPairs, valueClassMap } = jurisdictionConfig;
 
-const compareJurisdiction = ref<string | null>(null);
-
-const { isLoading: isJurisdictionLoading, data: jurisdictionData } =
-  useJurisdiction(computed(() => route.params.id as string));
+const { isLoading, data: jurisdictionData } = useJurisdiction(
+  computed(() => route.params.id as string),
+);
 
 const keyLabelPairsWithoutLegalFamily = computed(() =>
   keyLabelPairs.filter((pair) => pair.key !== "Legal Family"),
 );
-
-compareJurisdiction.value = (route.query.c as string) || null;
-
-const isLoading = computed(() => isJurisdictionLoading);
 </script>
