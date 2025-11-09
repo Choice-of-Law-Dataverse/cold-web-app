@@ -4,7 +4,7 @@ export const useSearchFilters = (initialFilters = {}) => {
   const currentJurisdictionFilter = ref([]);
   const currentThemeFilter = ref([]);
   const currentTypeFilter = ref([]);
-  const selectValue = ref(initialFilters.sortBy || "relevance");
+  const selectValue = ref(initialFilters.sortBy || "date");
 
   const hasActiveFilters = computed(
     () =>
@@ -30,7 +30,7 @@ export const useSearchFilters = (initialFilters = {}) => {
         : undefined,
     theme: theme.length > 0 ? theme.join(",") : undefined,
     type: type.length > 0 ? type.join(",") : undefined,
-    sortBy: sort || "relevance",
+    sortBy: sort || "date",
   });
 
   const resetFilters = () => {

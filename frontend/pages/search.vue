@@ -38,7 +38,7 @@ const searchQuery = ref(route.query.q || "");
 
 const filter = ref({
   jurisdiction: route.query.jurisdiction,
-  sortBy: route.query.sortBy || "relevance",
+  sortBy: route.query.sortBy || "date",
   theme: route.query.theme,
   type: route.query.type,
 });
