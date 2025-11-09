@@ -21,7 +21,10 @@
             </NuxtLink>
           </span>
         </h2>
-        <OpenScienceBadge />
+        <div class="flex items-center gap-2 sm:flex-col md:flex-row">
+          <HCCHApproved />
+          <OpenScienceBadge />
+        </div>
       </div>
     </div>
 
@@ -187,6 +190,7 @@ import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
 import OpenScienceBadge from "@/components/ui/OpenScienceBadge.vue";
+import HCCHApproved from "@/components/ui/HCCHApproved.vue";
 import { externalLinks } from "@/utils/externalLinks";
 import RecentDomesticInstruments from "@/components/landing-page/RecentDomesticInstruments.vue";
 import SuccessfulLegalTransplantations from "@/components/landing-page/SuccessfulLegalTransplantations.vue";
