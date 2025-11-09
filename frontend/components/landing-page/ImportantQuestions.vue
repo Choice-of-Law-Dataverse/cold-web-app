@@ -82,11 +82,11 @@
                         :key="li"
                         class="countries-line"
                       >
-                        <a
+                        <NuxtLink
                           v-for="country in line"
                           :key="country.code"
-                          class="country-item label-jurisdiction country-link-flex"
-                          :href="`/question/${country.code}${currentSuffix}`"
+                          class="country-item label-jurisdiction country-link-flex text-cold-purple"
+                          :to="`/question/${country.code}${currentSuffix}`"
                         >
                           <img
                             :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
@@ -103,7 +103,7 @@
                             "
                           >
                           {{ country.name }}
-                        </a>
+                        </NuxtLink>
                       </div>
                     </div>
                     <div

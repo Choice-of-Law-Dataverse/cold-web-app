@@ -40,7 +40,9 @@
           :key="index"
           class="section-gap m-0 p-0"
         >
-          <a :href="`/literature/L-${item.id}`">{{ item.title }}</a>
+          <NuxtLink class="text-cold-purple" :to="`/literature/L-${item.id}`">{{
+            item.title
+          }}</NuxtLink>
         </div>
       </template>
       <div v-else-if="literaturesLoading" class="section-gap m-0 p-0">
@@ -52,9 +54,11 @@
         <LoadingBar class="pt-[9px]" />
       </div>
       <div v-else-if="oupChapterSource" class="section-gap m-0 p-0">
-        <a :href="`/literature/L-${oupChapterSource.id}`">{{
-          oupChapterSource.title
-        }}</a>
+        <NuxtLink
+          class="text-cold-purple"
+          :to="`/literature/L-${oupChapterSource.id}`"
+          >{{ oupChapterSource.title }}</NuxtLink
+        >
       </div>
     </template>
 
