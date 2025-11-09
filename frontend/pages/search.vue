@@ -7,6 +7,7 @@
       </p>
       <p class="error-details">{{ apiError }}</p>
     </div>
+    <EmptySearchState v-else-if="!searchQuery && !hasActiveFilters" />
     <SearchResults
       v-else
       v-model:filters="filter"
@@ -23,6 +24,7 @@
 import { ref, onMounted, watch, computed, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import SearchResults from "@/components/search-results/SearchResults.vue";
+import EmptySearchState from "@/components/search-results/EmptySearchState.vue";
 import { useSearch } from "@/composables/useSearch";
 import { useHead, useSeoMeta } from "#imports";
 
@@ -39,6 +41,14 @@ const filter = ref({
   sortBy: route.query.sortBy || "relevance",
   theme: route.query.theme,
   type: route.query.type,
+});
+
+const hasActiveFilters = computed(() => {
+  return !!(
+    filter.value.jurisdiction ||
+    filter.value.theme ||
+    filter.value.type
+  );
 });
 
 const searchText = ref(route.query.q || "");

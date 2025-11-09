@@ -84,7 +84,7 @@ export function useSearch(searchParams: Ref<SearchParams>) {
         return !!params.enabledOverride;
       }
       return !!(
-        params.query ||
+        (params.query && params.query.trim()) ||
         params.filters.jurisdiction ||
         params.filters.theme ||
         params.filters.type
