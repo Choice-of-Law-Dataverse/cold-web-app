@@ -15,13 +15,22 @@
       </div>
       <!-- Footer Links -->
       <div
-        class="mb-4 mt-12 flex flex-row gap-8 whitespace-nowrap md:col-span-4 md:mb-0 md:mt-4 md:justify-end"
+        class="mb-4 mt-12 flex flex-row flex-wrap gap-x-8 gap-y-3 whitespace-nowrap md:col-span-4 md:mb-0 md:mt-4 md:justify-end"
       >
-        <NuxtLink to="/disclaimer" class="whitespace-nowrap !text-white">
-          Disclaimer
+        <NuxtLink to="/about" class="whitespace-nowrap !text-white">
+          About
+        </NuxtLink>
+        <NuxtLink to="/learn" class="whitespace-nowrap !text-white">
+          Learn
         </NuxtLink>
         <NuxtLink to="/contact" class="whitespace-nowrap !text-white">
           Contact
+        </NuxtLink>
+        <NuxtLink to="/search" class="whitespace-nowrap !text-white">
+          Search
+        </NuxtLink>
+        <NuxtLink to="/disclaimer" class="whitespace-nowrap !text-white">
+          Disclaimer
         </NuxtLink>
       </div>
     </div>
