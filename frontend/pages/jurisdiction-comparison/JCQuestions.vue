@@ -38,7 +38,7 @@
           <h2 class="jc-title-fullwidth mb-6 mt-16">{{ title }}</h2>
         </div>
       </div>
-      <hr class="jc-hr" />
+      <hr class="jc-hr" >
       <div v-show="isOpen">
         <div v-if="isLoading" class="justify-left flex w-full py-8">
           <div class="w-full max-w-xs">
@@ -80,7 +80,7 @@
     <!-- Mobile & Tablet Layout -->
     <div class="md:hidden">
       <div class="mobile-layout">
-        <hr class="jc-hr mb-12 mt-4" />
+        <hr class="jc-hr mb-12 mt-4" >
         <div class="mb-2 mt-4 flex items-center">
           <button
             v-if="showCaret"
@@ -157,7 +157,7 @@
                       "
                       :alt="filter.value.value[0].label + ' flag'"
                       @error="() => (erroredFlags[index] = true)"
-                    />
+                    >
                     {{ filter.value.value[0].label }}
                   </template>
                   <template v-else>

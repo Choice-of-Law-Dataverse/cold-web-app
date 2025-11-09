@@ -21,7 +21,7 @@
             :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
             class="mb-0.5 mr-1.5 h-[9px]"
             @error="handleImageError(erroredImages, jurisdictionString)"
-          />
+          >
           {{ jurisdictionString }}
         </NuxtLink>
         <!-- Legal Family next to jurisdiction name -->

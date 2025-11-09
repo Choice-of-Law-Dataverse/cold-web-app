@@ -107,7 +107,7 @@
             src="https://choiceoflaw.blob.core.windows.net/assets/cold_beta_logo.svg"
             alt="CoLD Logo"
             class="mb-4 h-12 w-auto"
-          />
+          >
         </NuxtLink>
         <!-- Inline mobile logo for horizontal arrangement -->
         <NuxtLink
@@ -120,7 +120,7 @@
             src="https://choiceoflaw.blob.core.windows.net/assets/cold_beta_logo.svg"
             alt="CoLD Logo"
             class="h-10 w-auto"
-          />
+          >
         </NuxtLink>
 
         <!-- Menu/Links Row -->

@@ -109,7 +109,7 @@
           </button>
         </div>
 
-        <hr class="jc-hr mt-4" />
+        <hr class="jc-hr mt-4" >
       </div>
     </div>
   </div>

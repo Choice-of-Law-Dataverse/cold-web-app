@@ -7,10 +7,10 @@
         <img
           src="https://choiceoflaw.blob.core.windows.net/assets/cold_flag_footer.svg"
           class="w-25 mb-6 max-w-16"
-        />
-        <h2 class="!font-bold leading-tight">Choice of Law<br />Dataverse</h2>
+        >
+        <h2 class="!font-bold leading-tight">Choice of Law<br >Dataverse</h2>
         <p class="leading-snug">
-          Funded by the<br />Swiss National Science Foundation
+          Funded by the<br >Swiss National Science Foundation
         </p>
       </div>
       <!-- Footer Links -->

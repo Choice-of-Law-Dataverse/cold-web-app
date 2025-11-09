@@ -101,7 +101,7 @@
                                 e.target.style.display = 'none';
                               }
                             "
-                          />
+                          >
                           {{ country.name }}
                         </a>
                       </div>
