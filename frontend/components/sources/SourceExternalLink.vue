@@ -5,12 +5,11 @@
       :href="sourceUrl"
       target="_blank"
       rel="noopener noreferrer"
-      class="inline-flex items-center gap-1 text-sm"
-      style="color: var(--color-cold-purple)"
+      class="label inline-flex items-center gap-1 text-cold-teal"
       @click.stop
     >
-      <UIcon name="i-material-symbols:open-in-new" class="h-4 w-4" />
       <span>{{ label }}</span>
+      <UIcon name="i-material-symbols:open-in-new" class="h-4 w-4" />
     </a>
   </div>
 </template>

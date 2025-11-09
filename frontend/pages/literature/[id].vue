@@ -59,8 +59,9 @@
           <DetailRow label="BibTeX Citation">
             <div class="flex flex-col gap-3">
               <pre
-                class="overflow-x-auto rounded-md bg-gray-50 p-4 text-xs font-mono dark:bg-gray-800"
-              >{{ bibtexContent }}</pre>
+                class="overflow-x-auto rounded-md bg-gray-50 p-4 font-mono text-xs dark:bg-gray-800"
+                >{{ bibtexContent }}</pre
+              >
               <button
                 class="link-button flex w-fit items-center gap-1 text-[var(--color-cold-teal)]"
                 @click="exportBibTeX"
@@ -96,11 +97,7 @@ import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { literatureConfig } from "@/config/pageConfigs";
 import type { TableName } from "@/types/api";
-import {
-  generateBibTeX,
-  sanitizeFilename,
-  downloadFile,
-} from "@/utils/bibtex";
+import { generateBibTeX, sanitizeFilename, downloadFile } from "@/utils/bibtex";
 
 interface LiteratureRecord {
   Title?: string;

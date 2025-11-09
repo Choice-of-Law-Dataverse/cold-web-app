@@ -51,10 +51,7 @@
           <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
           <slot />
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
-          <section
-            v-for="(item, index) in keyLabelPairs"
-            :key="index"
-          >
+          <section v-for="(item, index) in keyLabelPairs" :key="index">
             <!-- Check if it's the special 'Specialist' key -->
             <template v-if="item.key === 'Region'">
               <slot />

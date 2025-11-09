@@ -151,7 +151,7 @@
                   <a
                     v-if="action.label === 'Cite'"
                     href="#"
-                    class="flex items-center"
+                    class="flex items-center text-cold-purple"
                     @click.prevent="isCiteOpen = true"
                   >
                     {{ action.label }}
@@ -163,7 +163,7 @@
                   <a
                     v-else-if="action.label === 'JSON'"
                     href="#"
-                    class="flex items-center"
+                    class="flex items-center text-cold-purple"
                     @click.prevent="exportJSON"
                   >
                     {{ action.label }}
@@ -175,7 +175,7 @@
                   <a
                     v-else-if="action.label === 'Print'"
                     href="#"
-                    class="flex items-center"
+                    class="flex items-center text-cold-purple"
                     @click.prevent="printPage"
                   >
                     {{ action.label }}
@@ -186,7 +186,7 @@
                   </a>
                   <NuxtLink
                     v-else
-                    class="flex items-center"
+                    class="flex items-center text-cold-purple"
                     :class="action.class"
                     v-bind="action.to ? { to: action.to } : {}"
                     target="_blank"
