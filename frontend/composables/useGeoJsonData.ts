@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/vue-query";
 
 const fetchGeoJsonData = async () => {
-  const response = await fetch("/temp_custom.geo.json");
+  const response = await fetch("/geo.json");
   if (!response.ok) {
     throw new Error("Failed to fetch GeoJSON file");
   }
