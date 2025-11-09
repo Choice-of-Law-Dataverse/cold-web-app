@@ -8,7 +8,7 @@
       :class="['mb-6', { 'mb-0': index === comparisons.length - 1 }]"
     >
       <NuxtLink
-        :to="`/jurisdiction-comparison/${comparison.left}+${comparison.right}`"
+        :to="`/jurisdiction/${comparison.left}?compare=${comparison.right}#questions-and-answers`"
         class="no-underline"
       >
         <div
