@@ -137,8 +137,6 @@
       <TopLiteratureThemes />
     </div>
 
-
-
     <div class="col-span-12 md:col-span-4">
       <ConnectCard
         title="Questions, Feedback?"

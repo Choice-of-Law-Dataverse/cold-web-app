@@ -39,9 +39,7 @@
 
         <!-- Jurisdictions Display -->
         <div v-if="selectedAnswer">
-          <div v-if="isLoading" class="copy mt-4">
-            Loading jurisdictions...
-          </div>
+          <div v-if="isLoading" class="copy mt-4">Loading jurisdictions...</div>
           <div v-else-if="error" class="copy mt-4">
             Error loading jurisdictions
           </div>
@@ -54,11 +52,7 @@
             >
               <img
                 :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
-                style="
-                  height: 12px;
-                  margin-right: 6px;
-                  margin-bottom: 2px;
-                "
+                style="height: 12px; margin-right: 6px; margin-bottom: 2px"
                 :alt="country.code + ' flag'"
                 @error="
                   (e) => {
@@ -69,9 +63,7 @@
               {{ country.name }}
             </NuxtLink>
           </div>
-          <div v-else class="copy mt-4">
-            No jurisdictions to be displayed
-          </div>
+          <div v-else class="copy mt-4">No jurisdictions to be displayed</div>
         </div>
       </div>
     </div>
