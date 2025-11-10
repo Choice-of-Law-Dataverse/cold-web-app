@@ -137,18 +137,7 @@
       <TopLiteratureThemes />
     </div>
 
-    <div class="col-span-12 mb-4 flex justify-center">
-      <ImportantQuestions
-        :question-suffixes="[
-          '_01-P',
-          '_03-PA',
-          '_07-PA',
-          '_09-FoC',
-          '_13-TC',
-          '_22-MR',
-        ]"
-      />
-    </div>
+
 
     <div class="col-span-12 md:col-span-4">
       <ConnectCard
@@ -197,7 +186,6 @@ import RecentDomesticInstruments from "@/components/landing-page/RecentDomesticI
 import SuccessfulLegalTransplantations from "@/components/landing-page/SuccessfulLegalTransplantations.vue";
 import LeadingCases from "@/components/landing-page/LeadingCases.vue";
 import { useHead } from "#imports";
-import ImportantQuestions from "@/components/landing-page/ImportantQuestions.vue";
 import PlotCourtDecisionsJurisdiction from "@/components/landing-page/PlotCourtDecisionsJurisdiction.vue";
 
 const links = externalLinks;

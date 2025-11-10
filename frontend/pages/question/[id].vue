@@ -78,6 +78,10 @@
       </template>
     </BaseDetailLayout>
     <CountryReportLink :processed-answer-data="processedAnswerData ?? {}" />
+    <QuestionJurisdictions
+      v-if="questionSuffix"
+      :question-suffix="questionSuffix"
+    />
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
@@ -99,6 +103,7 @@ import CourtDecisionRenderer from "@/components/legal/CourtDecisionRenderer.vue"
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";
 import CountryReportLink from "@/components/ui/CountryReportLink.vue";
+import QuestionJurisdictions from "@/components/ui/QuestionJurisdictions.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useAnswer } from "@/composables/useAnswer";
 import { questionConfig } from "@/config/pageConfigs";
@@ -143,6 +148,20 @@ const processedAnswerData = computed(() => {
         ? courtDecisionsId.split(",").map((caseId: string) => caseId.trim())
         : [],
   } as AnswerData;
+});
+
+const questionSuffix = computed(() => {
+  // Extract question suffix from the answer ID (route param)
+  // Answer ID format: {ISO3_CODE}_{QUESTION_SUFFIX}
+  const answerId = route.params.id as string;
+  if (!answerId || typeof answerId !== "string") return null;
+
+  const parts = answerId.split("_");
+  if (parts.length > 1) {
+    // Return everything after the first underscore (the question suffix)
+    return "_" + parts.slice(1).join("_");
+  }
+  return null;
 });
 
 onMounted(async () => {
