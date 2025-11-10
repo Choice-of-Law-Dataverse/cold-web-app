@@ -3,6 +3,7 @@
     :items="fullItemsList"
     :is-loading="isLoading"
     base-path="/court-decision"
+    entity-type="court-decision"
     :empty-value-behavior="emptyValueBehavior"
   />
 </template>

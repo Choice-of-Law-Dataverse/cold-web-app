@@ -40,7 +40,7 @@ h3 {
 a {
   color: var(--color-cold-purple);
   text-decoration: none !important;
-  font-weight: 400 !important; // Regular
+  font-weight: 400; // Regular
 }
 
 .title-container {
@@ -151,48 +151,126 @@ li::marker {
   @extend .label;
   color: var(--color-label-question);
   padding: 2px 6px;
-  background-color: var(--color-label-question-alpha);
-  border: 1px solid var(--color-label-question);
+  background-color: color-mix(
+    in srgb,
+    var(--color-label-question) 5%,
+    transparent
+  );
+  border: none;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--color-label-question) 10%,
+      transparent
+    );
+  }
 }
 
 .label-court-decision {
   @extend .label;
   color: var(--color-label-court-decision);
   padding: 2px 6px;
-  background-color: var(--color-label-court-decision-alpha);
-  border: 1px solid var(--color-label-court-decision);
+  background-color: color-mix(
+    in srgb,
+    var(--color-label-court-decision) 5%,
+    transparent
+  );
+  border: none;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--color-label-court-decision) 10%,
+      transparent
+    );
+  }
 }
 
 .label-instrument {
   @extend .label;
   color: var(--color-label-instrument);
   padding: 2px 6px;
-  background-color: var(--color-label-instrument-alpha);
-  border: 1px solid var(--color-label-instrument);
+  background-color: color-mix(
+    in srgb,
+    var(--color-label-instrument) 5%,
+    transparent
+  );
+  border: none;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--color-label-instrument) 10%,
+      transparent
+    );
+  }
 }
 
 .label-literature {
   @extend .label;
   color: var(--color-label-literature);
   padding: 2px 6px;
-  background-color: var(--color-label-literature-alpha);
-  border: 1px solid var(--color-label-literature);
+  background-color: color-mix(
+    in srgb,
+    var(--color-label-literature) 5%,
+    transparent
+  );
+  border: none;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--color-label-literature) 10%,
+      transparent
+    );
+  }
 }
 
 .label-arbitration {
   @extend .label;
   color: var(--color-label-arbitration);
   padding: 2px 6px;
-  background-color: var(--color-label-arbitration-alpha);
-  border: 1px solid var(--color-label-arbitration);
+  background-color: color-mix(
+    in srgb,
+    var(--color-label-arbitration) 5%,
+    transparent
+  );
+  border: none;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--color-label-arbitration) 10%,
+      transparent
+    );
+  }
 }
 
 .label-theme {
   @extend .label;
-  color: var(--color-cold-night-alpha);
-  background-color: white;
+  color: var(--color-cold-night);
+  background-color: color-mix(
+    in srgb,
+    var(--color-cold-night-alpha-25) 20%,
+    transparent
+  );
   padding: 2px 6px;
-  border: 1px solid var(--color-cold-night-alpha-25);
+  border: none;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: color-mix(
+      in srgb,
+      var(--color-cold-night-alpha-25) 40%,
+      transparent
+    );
+  }
 }
 
 // Results
