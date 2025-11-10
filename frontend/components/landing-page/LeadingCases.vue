@@ -1,8 +1,10 @@
 <template>
-  <UCard class="cold-ucard flex h-full w-full flex-col">
-    <h2 class="popular-title">Leading Cases</h2>
-    <p class="result-value-small">Court decisions ranked highly in CoLD</p>
-    <div>
+  <UCard class="cold-ucard flex h-full w-full">
+    <div class="flex w-full flex-col gap-4">
+      <div>
+        <h2 class="popular-title">Leading Cases</h2>
+        <p class="result-value-small mb-0">Read top-ranked court decisions</p>
+      </div>
       <div v-if="isLoading">
         <LoadingLandingPageCard />
       </div>
@@ -12,11 +14,15 @@
           :key="index"
         >
           <NuxtLink :to="`/court-decision/${decision.ID}`">
-            <UButton class="suggestion-button mt-8" variant="link">
-              <img
-                :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${decision['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
-                class="mr-3 h-5 border border-cold-gray"
+            <UButton class="suggestion-button" variant="link">
+              <span
+                class="mr-3 inline-flex min-w-[40px] items-center justify-center"
               >
+                <img
+                  :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${decision['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
+                  class="h-5 border border-cold-gray"
+                >
+              </span>
               <span class="break-words text-left">
                 {{
                   decision["Publication Date ISO"]
@@ -41,10 +47,3 @@ import { formatYear } from "@/utils/format";
 
 const { data: leadingCases, isLoading } = useLeadingCases();
 </script>
-
-<style scoped>
-.result-value-small {
-  line-height: 36px !important;
-  margin-bottom: 0px !important;
-}
-</style>

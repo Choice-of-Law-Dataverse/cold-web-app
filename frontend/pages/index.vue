@@ -91,19 +91,19 @@
       />
     </div>
 
-    <div class="col-span-12 flex md:col-span-8">
+    <div class="col-span-12 flex md:col-span-7">
       <RecentDomesticInstruments />
     </div>
 
-    <div class="col-span-12 flex md:col-span-4">
+    <div class="col-span-12 flex md:col-span-5">
       <PopularSearches />
     </div>
 
-    <div class="col-span-12 flex md:col-span-8">
+    <div class="col-span-12 flex md:col-span-7">
       <SuccessfulLegalTransplantations />
     </div>
 
-    <div class="col-span-12 flex md:col-span-4">
+    <div class="col-span-12 flex md:col-span-5">
       <ConnectCard
         title="Transnational Standard"
         subtitle="Authoritative Instrument on Choice of Law"
@@ -111,14 +111,15 @@
         button-link="/international-instrument/II-Pri-1"
         image-src="https://choiceoflaw.blob.core.windows.net/assets/hcch-logo-circle.svg"
         :new-tab="false"
+        :center-title="false"
       />
     </div>
 
-    <div class="col-span-12 flex md:col-span-8">
+    <div class="col-span-12 flex md:col-span-7">
       <PlotCourtDecisionsJurisdiction />
     </div>
 
-    <div class="col-span-12 flex md:col-span-4">
+    <div class="col-span-12 flex md:col-span-5">
       <CompareJurisdictionsCard
         title="Compare Jurisdictions"
         :comparisons="[
@@ -128,11 +129,11 @@
         ]"
       />
     </div>
-    <div class="col-span-12 flex md:col-span-8">
+    <div class="col-span-12 flex md:col-span-7">
       <LeadingCases />
     </div>
 
-    <div class="col-span-12 flex md:col-span-4">
+    <div class="col-span-12 flex md:col-span-5">
       <TopLiteratureThemes />
     </div>
 

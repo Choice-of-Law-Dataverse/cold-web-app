@@ -1,7 +1,9 @@
 <template>
   <UCard class="cold-ucard h-full w-full">
-    <h2 class="popular-title">{{ title }}</h2>
-    <p v-if="subtitle" class="result-value-small" style="text-align: center">
+    <h2 class="popular-title" :class="{ 'text-center': centerTitle }">
+      {{ title }}
+    </h2>
+    <p v-if="subtitle" class="result-value-small">
       {{ subtitle }}
     </p>
     <div class="icon-container">
@@ -97,6 +99,10 @@ const props = defineProps({
     required: false,
     default: "",
   },
+  centerTitle: {
+    type: Boolean,
+    default: true,
+  },
 });
 
 const isRelativeLink = computed(() => {
@@ -109,10 +115,6 @@ const isRelativeLink = computed(() => {
 </script>
 
 <style scoped>
-h2 {
-  text-align: center;
-}
-
 .icon-container {
   display: flex;
   justify-content: center;
