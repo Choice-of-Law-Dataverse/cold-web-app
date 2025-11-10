@@ -18,7 +18,7 @@ export function useJurisdictionChart() {
     const yValues = rawData.value.map((item) => item.jurisdiction);
     const links = rawData.value.map(
       (item) =>
-        `/search?jurisdiction=${encodeURIComponent(item.jurisdiction)}&type=Court+Decisions`,
+        `/search?jurisdiction=${encodeURIComponent(item.jurisdiction)}&type=Court+Decisions&sortBy=date`,
     );
 
     return {
