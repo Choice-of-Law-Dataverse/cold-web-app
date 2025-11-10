@@ -3,6 +3,7 @@
     :items="fullLiteratureList"
     :is-loading="isLoading"
     base-path="/literature"
+    entity-type="literature"
     :empty-value-behavior="emptyValueBehavior"
   />
 </template>

@@ -3,6 +3,7 @@
     :items="fullItemsList"
     :is-loading="isLoading"
     base-path="/domestic-instrument"
+    entity-type="instrument"
     :empty-value-behavior="emptyValueBehavior"
   />
 </template>

@@ -3,6 +3,7 @@
     :items="fullItemsList"
     :is-loading="isLoading"
     base-path="/question"
+    entity-type="question"
     :empty-value-behavior="emptyValueBehavior"
   />
 </template>
