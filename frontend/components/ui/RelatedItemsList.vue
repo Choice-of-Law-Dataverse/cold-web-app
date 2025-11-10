@@ -9,9 +9,10 @@
           v-for="item in displayedItems"
           :key="item.id"
           :class="[
-            'inline-flex items-center rounded-full px-3 py-1 text-sm font-medium transition-colors',
+            'inline-flex items-center rounded-full px-3 py-1 text-sm transition-colors',
             badgeColorClass,
           ]"
+          :style="{ fontWeight: '500' }"
           :to="`${basePath}/${item.id}`"
         >
           {{ item.title }}
