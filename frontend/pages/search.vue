@@ -117,6 +117,7 @@ watch(
     const query = {
       ...route.query,
       jurisdiction: newFilters.jurisdiction,
+      sortBy: newFilters.sortBy,
       theme: newFilters.theme,
       type: newFilters.type,
     };
@@ -144,6 +145,7 @@ watch(
 
     const newFilters = {};
     if (newQuery.jurisdiction) newFilters.jurisdiction = newQuery.jurisdiction;
+    if (newQuery.sortBy) newFilters.sortBy = newQuery.sortBy;
     if (newQuery.theme) newFilters.theme = newQuery.theme;
     if (newQuery.type) newFilters.type = newQuery.type;
 
