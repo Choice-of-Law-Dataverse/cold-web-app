@@ -1,10 +1,11 @@
 <template>
   <UCard class="cold-ucard h-full w-full">
-    <div class="flex flex-col gap-8">
+    <div class="flex flex-col gap-4">
       <div>
         <h2 class="popular-title text-left md:whitespace-nowrap">
           Popular Searches
         </h2>
+        <p class="result-value-small">Start with frequent queries</p>
       </div>
 
       <UButton
@@ -30,6 +31,7 @@ const router = useRouter();
 const searchSuggestions = ref([
   "Tacit Choice in Argentina",
   "Party Autonomy in Switzerland",
+  "Public Policy in India",
 ]);
 
 function handleSuggestionClick(suggestion) {

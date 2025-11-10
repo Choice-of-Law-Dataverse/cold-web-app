@@ -1,10 +1,12 @@
 <template>
   <UCard class="cold-ucard flex h-full w-full flex-col">
-    <h2 class="popular-title">Successful Legal Transplantations</h2>
-    <p class="result-value-small">
-      Domestic Instruments compatible with the HCCH Principles
-    </p>
-    <div>
+    <div class="flex flex-col gap-4">
+      <div>
+        <h2 class="popular-title">Successful Legal Transplantations</h2>
+        <p class="result-value-small">
+          Domestic Instruments compatible with the HCCH Principles
+        </p>
+      </div>
       <div v-if="isLoading">
         <LoadingLandingPageCard />
       </div>
@@ -14,11 +16,15 @@
           :key="index"
         >
           <NuxtLink :to="`/domestic-instrument/${instrument.ID}`">
-            <UButton class="suggestion-button mt-6" variant="link">
-              <img
-                :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
-                class="mr-3 h-5 border border-cold-gray"
+            <UButton class="suggestion-button" variant="link">
+              <span
+                class="mr-3 inline-flex min-w-[40px] items-center justify-center"
               >
+                <img
+                  :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
+                  class="h-5 border border-cold-gray"
+                >
+              </span>
               <span class="break-words text-left">
                 {{
                   instrument["Entry Into Force"]

@@ -2,7 +2,7 @@
   <UCard class="cold-ucard flex h-full w-full flex-col">
     <h2 class="popular-title">Court Decisions by Jurisdiction</h2>
     <p class="result-value-small">
-      Click bars to see a jurisdiction's decisions
+      Explore countries with the highest case law volume
     </p>
 
     <div v-if="isLoading" class="loading-state">
