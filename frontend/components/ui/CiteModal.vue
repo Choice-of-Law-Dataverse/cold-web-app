@@ -19,7 +19,6 @@
           :aria-disabled="copying ? 'true' : 'false'"
           @click.prevent="!copying && copyToClipboard()"
         >
-          {{ copied ? "Copied" : "Copy to Clipboard" }}
           <UIcon
             :name="
               copied
@@ -28,6 +27,7 @@
             "
             class="relative top-[1px] inline-block"
           />
+          {{ copied ? "Copied" : "Copy to Clipboard" }}
         </NuxtLink>
       </div>
     </div>

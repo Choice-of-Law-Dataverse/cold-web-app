@@ -8,8 +8,8 @@
       aria-label="Download PDF for record"
       @click.stop
     >
-      <span>PDF</span>
       <UIcon name="i-material-symbols:picture-as-pdf-outline" class="h-4 w-4" />
+      <span>PDF</span>
     </a>
   </div>
 </template>

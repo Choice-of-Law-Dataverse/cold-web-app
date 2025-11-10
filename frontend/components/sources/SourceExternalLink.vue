@@ -8,8 +8,8 @@
       class="label inline-flex items-center gap-1 text-cold-teal"
       @click.stop
     >
-      <span>{{ label }}</span>
       <UIcon name="i-material-symbols:open-in-new" class="h-4 w-4" />
+      <span>{{ label }}</span>
     </a>
   </div>
 </template>

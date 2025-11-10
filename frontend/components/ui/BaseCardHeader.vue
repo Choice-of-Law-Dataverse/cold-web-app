@@ -151,52 +151,52 @@
                   <a
                     v-if="action.label === 'Cite'"
                     href="#"
-                    class="flex items-center text-cold-purple"
+                    class="flex items-center gap-1 text-cold-purple"
                     @click.prevent="isCiteOpen = true"
                   >
-                    {{ action.label }}
                     <UIcon
                       :name="action.icon"
-                      class="mb-0.5 ml-1 inline-block text-[1.2em]"
+                      class="mb-0.5 inline-block text-[1.2em]"
                     />
+                    {{ action.label }}
                   </a>
                   <a
                     v-else-if="action.label === 'JSON'"
                     href="#"
-                    class="flex items-center text-cold-purple"
+                    class="flex items-center gap-1 text-cold-purple"
                     @click.prevent="exportJSON"
                   >
-                    {{ action.label }}
                     <UIcon
                       :name="action.icon"
-                      class="mb-0.5 ml-1 inline-block text-[1.2em]"
+                      class="mb-0.5 inline-block text-[1.2em]"
                     />
+                    {{ action.label }}
                   </a>
                   <a
                     v-else-if="action.label === 'Print'"
                     href="#"
-                    class="flex items-center text-cold-purple"
+                    class="flex items-center gap-1 text-cold-purple"
                     @click.prevent="printPage"
                   >
-                    {{ action.label }}
                     <UIcon
                       :name="action.icon"
-                      class="mb-0.5 ml-1 inline-block text-[1.2em]"
+                      class="mb-0.5 inline-block text-[1.2em]"
                     />
+                    {{ action.label }}
                   </a>
                   <NuxtLink
                     v-else
-                    class="flex items-center text-cold-purple"
+                    class="flex items-center gap-1 text-cold-purple"
                     :class="action.class"
                     v-bind="action.to ? { to: action.to } : {}"
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    {{ action.label }}
                     <UIcon
                       :name="action.icon"
-                      class="mb-0.5 ml-1 inline-block text-[1.2em]"
+                      class="mb-0.5 inline-block text-[1.2em]"
                     />
+                    {{ action.label }}
                   </NuxtLink>
                 </template>
                 <!-- The Edit link for International Instrument only, no target/rel -->
@@ -207,17 +207,17 @@
                       a.label === 'Edit',
                   )"
                   :key="'edit-' + index"
-                  class="flex items-center text-cold-purple"
+                  class="flex items-center gap-1 text-cold-purple"
                   :class="action.class"
                   v-bind="action.to ? { to: action.to } : {}"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  {{ action.label }}
                   <UIcon
                     :name="action.icon"
-                    class="mb-0.5 ml-1 inline-block text-[1.2em]"
+                    class="mb-0.5 inline-block text-[1.2em]"
                   />
+                  {{ action.label }}
                 </NuxtLink>
               </div>
             </template>
@@ -351,7 +351,7 @@ const labelColorClass = computed(() => {
     case "Literature":
       return "label-literature";
     case "Jurisdiction":
-      return "label-jurisdiction";
+      return "hidden";
     default:
       return "";
   }
@@ -606,16 +606,16 @@ a {
 
 .jurisdiction-label-link {
   color: var(--color-cold-night) !important;
-  font-weight: 700 !important;
+  font-weight: 500 !important;
 }
 
 .theme-label-link {
   color: var(--color-cold-night-alpha) !important;
-  font-weight: 700 !important;
+  font-weight: 500 !important;
 }
 
 .source-table-label-link {
-  font-weight: 700 !important;
+  font-weight: 500 !important;
 }
 
 .label-court-decision,
