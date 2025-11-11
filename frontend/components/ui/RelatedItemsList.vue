@@ -17,11 +17,15 @@
         >
           {{ item.title }}
         </NuxtLink>
+        <button
+          v-if="fullItemsList.length > 10"
+          class="inline-flex items-center rounded-full bg-cold-teal/5 px-3 py-1 text-sm text-cold-teal transition-colors hover:bg-cold-teal/10"
+          :style="{ fontWeight: '500' }"
+          @click="showAll = !showAll"
+        >
+          {{ showAll ? 'Show less' : 'Show more' }}
+        </button>
       </div>
-      <ShowMoreLess
-        v-if="fullItemsList.length > 10"
-        v-model:is-expanded="showAll"
-      />
     </div>
     <p v-else-if="emptyValueBehavior.action === 'display'" class="prose">
       {{ emptyValueBehavior.fallback }}
@@ -31,7 +35,6 @@
 
 <script setup>
 import { ref, computed } from "vue";
-import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 
 const props = defineProps({
