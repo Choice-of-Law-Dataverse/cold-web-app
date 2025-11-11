@@ -253,10 +253,11 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
+import { useQuestions } from "@/composables/useQuestions";
 import {
-  useQuestionsWithAnswers,
+  useAnswersByJurisdictions,
   processAnswerText,
-} from "@/composables/useQuestionsWithAnswers";
+} from "~/composables/useAnswers";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
@@ -383,8 +384,12 @@ const jurisdictionCodes = computed(() =>
     .filter((code): code is string => Boolean(code)),
 );
 
-const { questionsData, answersMap, loading, answersLoading } =
-  useQuestionsWithAnswers(jurisdictionCodes);
+// Fetch questions and answers separately
+const { data: questionsData, isLoading: questionsLoading } = useQuestions();
+const { data: answersMap, isLoading: answersLoading } =
+  useAnswersByJurisdictions(jurisdictionCodes);
+
+const loading = computed(() => questionsLoading.value);
 
 const isSingleJurisdiction = computed(() => jurisdictions.value.length === 1);
 
@@ -401,10 +406,15 @@ const getAnswerLink = (alpha3Code: string, questionId: string) => {
   return `/question/${alpha3Code}_${questionId}`;
 };
 
+const loadedJurisdictions = computed(() => {
+  if (!answersMap.value) return new Set<string>();
+  return new Set(answersMap.value.keys());
+});
+
 const hasAnswersForJurisdiction = (alpha3Code?: string) => {
   if (!alpha3Code) return false;
   const upperCode = alpha3Code.toUpperCase();
-  return answersMap.value && upperCode in answersMap.value;
+  return loadedJurisdictions.value.has(upperCode);
 };
 
 const rows = computed(() => {
@@ -435,7 +445,7 @@ const rows = computed(() => {
     // Backward compatible format for single jurisdiction
     if (isSingleJurisdiction.value) {
       const iso3 = jurisdictionCodes.value[0]?.toUpperCase();
-      const answerText = (iso3 && answersMap.value?.[iso3]?.[id]) || "";
+      const answerText = iso3 ? answersMap.value?.get(iso3)?.get(id) || "" : "";
       const answerDisplay = processAnswerText(answerText);
 
       return {
@@ -452,7 +462,7 @@ const rows = computed(() => {
     for (const jurisdiction of jurisdictions.value) {
       const iso3 = jurisdiction.alpha3Code?.toUpperCase();
       if (iso3) {
-        const answerText = answersMap.value?.[iso3]?.[id] || "";
+        const answerText = answersMap.value?.get(iso3)?.get(id) || "";
         answers[iso3] = processAnswerText(answerText);
       }
     }
