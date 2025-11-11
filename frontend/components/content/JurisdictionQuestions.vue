@@ -32,7 +32,7 @@
       </div>
 
       <div
-        v-if="loading || answersLoading"
+        v-if="isSingleJurisdiction && (loading || answersLoading)"
         class="flex flex-col space-y-3 py-8"
       >
         <LoadingBar />
@@ -163,8 +163,17 @@
                 :key="jurisdiction.alpha3Code || jurisdiction.Name"
                 class="flex-1 text-center"
               >
-                <NuxtLink
+                <div
                   v-if="
+                    answersLoading &&
+                    !hasAnswersForJurisdiction(jurisdiction.alpha3Code)
+                  "
+                  class="flex justify-center"
+                >
+                  <USkeleton class="h-4 w-16" />
+                </div>
+                <NuxtLink
+                  v-else-if="
                     jurisdiction.alpha3Code &&
                     row.answers?.[jurisdiction.alpha3Code]
                   "
@@ -200,8 +209,23 @@
                 :key="jurisdiction.alpha3Code || jurisdiction.Name"
                 class="flex items-center gap-2"
               >
-                <NuxtLink
+                <div
                   v-if="
+                    answersLoading &&
+                    !hasAnswersForJurisdiction(jurisdiction.alpha3Code)
+                  "
+                  class="flex items-center gap-2"
+                >
+                  <img
+                    v-if="jurisdiction.avatar"
+                    :src="jurisdiction.avatar"
+                    :alt="`${jurisdiction.Name} flag`"
+                    class="h-2 w-3 object-cover"
+                  >
+                  <USkeleton class="h-4 w-16" />
+                </div>
+                <NuxtLink
+                  v-else-if="
                     jurisdiction.alpha3Code &&
                     row.answers?.[jurisdiction.alpha3Code]
                   "
@@ -375,6 +399,12 @@ const jurisdictionName = computed(() => {
 
 const getAnswerLink = (alpha3Code: string, questionId: string) => {
   return `/question/${alpha3Code}_${questionId}`;
+};
+
+const hasAnswersForJurisdiction = (alpha3Code?: string) => {
+  if (!alpha3Code) return false;
+  const upperCode = alpha3Code.toUpperCase();
+  return answersMap.value && upperCode in answersMap.value;
 };
 
 const rows = computed(() => {
