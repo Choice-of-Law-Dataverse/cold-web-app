@@ -257,6 +257,13 @@ export const questionConfig = {
         fallback: "No related literature",
       },
     },
+    {
+      key: "Compare Answers",
+      label: "Compare Answers",
+      emptyValueBehavior: {
+        shouldDisplay: () => true, // Always display this slot
+      },
+    },
   ],
   valueClassMap: {
     Question: "result-value-medium section-gap",
@@ -268,6 +275,7 @@ export const questionConfig = {
     "OUP Book Quote": "result-value-small section-gap",
     "Court Decisions ID": "result-value-small section-gap",
     "Related Literature": "result-value-small section-gap",
+    "Compare Answers": "result-value-small section-gap",
   },
 };
 

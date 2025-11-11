@@ -76,12 +76,17 @@
           />
         </DetailRow>
       </template>
+
+      <template #compare-answers>
+        <DetailRow label="Compare Answers">
+          <QuestionJurisdictions
+            v-if="questionSuffix"
+            :question-suffix="questionSuffix"
+          />
+        </DetailRow>
+      </template>
     </BaseDetailLayout>
     <CountryReportLink :processed-answer-data="processedAnswerData ?? {}" />
-    <QuestionJurisdictions
-      v-if="questionSuffix"
-      :question-suffix="questionSuffix"
-    />
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
