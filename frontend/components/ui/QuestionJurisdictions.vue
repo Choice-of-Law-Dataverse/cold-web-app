@@ -1,80 +1,69 @@
 <template>
-  <UCard class="cold-ucard">
-    <div class="flex flex-col gap-6">
-      <!-- Title Section -->
-      <div>
-        <h3 class="mb-1 text-left">Country Systematization</h3>
-        <span class="result-value-small">
-          View all jurisdictions for each answer to this question
-        </span>
-      </div>
+  <div class="flex flex-col gap-4">
+    <h4 class="label flex flex-wrap gap-4 text-lg">
+      <span
+        v-for="option in answers"
+        :key="option"
+        class="cursor-pointer border-b-2 border-transparent pb-0.5 hover:border-cold-teal"
+        :class="
+          selectedAnswer === option ? 'text-cold-teal' : 'text-cold-night'
+        "
+        @click="selectAnswer(option)"
+      >
+        {{ option }}
+      </span>
+    </h4>
 
-      <!-- Answer Tabs -->
-      <div>
-        <h3 class="mb-4">
-          <span
-            v-for="option in answers"
-            :key="option"
-            class="answer-option mr-4 cursor-pointer"
-            :class="{ 'selected-answer': selectedAnswer === option }"
-            @click="selectAnswer(option)"
+    <p class="label flex flex-wrap gap-2">
+      <span
+        v-for="region in regions"
+        :key="region"
+        class="cursor-pointer border-b-2 border-transparent pb-0.5 hover:border-cold-teal"
+        :class="
+          selectedRegion === region ? 'text-cold-teal' : 'text-cold-night'
+        "
+        @click="selectRegion(region)"
+      >
+        {{ region }}
+      </span>
+    </p>
+
+    <div v-if="selectedAnswer">
+      <div v-if="isLoading" class="copy mt-4">Loading jurisdictions...</div>
+      <div v-else-if="error" class="copy mt-4">Error loading jurisdictions</div>
+      <div
+        v-else-if="countries.length"
+        class="mt-2 flex flex-wrap items-center gap-3"
+      >
+        <NuxtLink
+          v-for="country in countries"
+          :key="country.code"
+          class="label-jurisdiction inline-flex items-center whitespace-nowrap text-cold-night hover:text-cold-purple"
+          :to="`/question/${country.code}${questionSuffix}`"
+        >
+          <img
+            :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
+            class="mb-0.5 mr-1.5 h-3"
+            :alt="country.code + ' flag'"
+            @error="
+              (e) => {
+                e.target.style.display = 'none';
+              }
+            "
           >
-            {{ option }}
-          </span>
-        </h3>
-
-        <!-- Region Filter -->
-        <p class="label regions-container mb-6 ml-1">
-          <span
-            v-for="region in regions"
-            :key="region"
-            class="region-label mr-4"
-            :class="{ 'selected-region': selectedRegion === region }"
-            style="cursor: pointer"
-            @click="selectRegion(region)"
-          >
-            {{ region }}
-          </span>
-        </p>
-
-        <!-- Jurisdictions Display -->
-        <div v-if="selectedAnswer">
-          <div v-if="isLoading" class="copy mt-4">Loading jurisdictions...</div>
-          <div v-else-if="error" class="copy mt-4">
-            Error loading jurisdictions
-          </div>
-          <div v-else-if="countries.length" class="countries-container mt-2">
-            <NuxtLink
-              v-for="country in countries"
-              :key="country.code"
-              class="country-item label-jurisdiction country-link-flex text-cold-purple"
-              :to="`/question/${country.code}${questionSuffix}`"
-            >
-              <img
-                :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
-                style="height: 12px; margin-right: 6px; margin-bottom: 2px"
-                :alt="country.code + ' flag'"
-                @error="
-                  (e) => {
-                    e.target.style.display = 'none';
-                  }
-                "
-              >
-              {{ country.name }}
-            </NuxtLink>
-          </div>
-          <div v-else class="copy mt-4">No jurisdictions to be displayed</div>
-        </div>
+          {{ country.name }}
+        </NuxtLink>
       </div>
+      <div v-else class="copy mt-4">No jurisdictions</div>
     </div>
-  </UCard>
+  </div>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
 import { useQuestionCountries } from "@/composables/useQuestionCountries";
 
-const answers = ["Yes", "No"];
+const answers = ["Yes", "No", "Not applicable"];
 const regions = [
   "All",
   "Asia & Pacific",
@@ -117,52 +106,4 @@ function selectRegion(region) {
 }
 </script>
 
-<style scoped>
-h3 {
-  color: var(--color-cold-purple) !important;
-}
-
-.label {
-  font-weight: 600 !important;
-}
-
-.label-jurisdiction {
-  color: var(--color-cold-night) !important;
-}
-
-.regions-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.region-label {
-  color: var(--color-cold-night-alpha-25);
-}
-
-.selected-region {
-  color: inherit;
-}
-
-.countries-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  align-items: center;
-}
-
-.country-item {
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-}
-
-.answer-option {
-  padding-bottom: 2px;
-  border-bottom: 2px solid transparent;
-}
-
-.selected-answer {
-  border-bottom: 2px solid var(--color-cold-purple);
-}
-</style>
+<style scoped></style>
