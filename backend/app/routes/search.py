@@ -6,6 +6,7 @@ from app.schemas.requests import (
     FullTableRequest,
     FullTextSearchRequest,
 )
+from app.schemas.responses import SpecialistResponse
 from app.services.search import SearchService
 
 search_service = SearchService()
@@ -145,3 +146,42 @@ def return_full_table(request: Request, body: FullTableRequest):
         raise HTTPException(status_code=500, detail=str(e)) from e
 
     return results
+
+
+@router.get(
+    "/specialists/{jurisdiction_alpha_code}",
+    response_model=list[SpecialistResponse],
+    summary="Get specialists by jurisdiction",
+    description="Returns all specialists associated with a specific jurisdiction using Alpha_3_Code.",
+    responses={
+        200: {
+            "description": "Array of specialists for the given jurisdiction.",
+            "content": {
+                "application/json": {
+                    "example": [
+                        {
+                            "id": 1,
+                            "created_at": "2024-01-01T00:00:00",
+                            "updated_at": "2024-01-15T10:30:00",
+                            "created_by": "admin",
+                            "updated_by": "admin",
+                            "nc_order": 1.0,
+                            "ncRecordId": "rec123",
+                            "ncRecordHash": "hash123",
+                            "Specialist": "Dr. Jane Smith",
+                            "Created": "2024-01-01T00:00:00",
+                        }
+                    ]
+                }
+            },
+        },
+        404: {"description": "Jurisdiction not found."},
+        500: {"description": "Server error while querying specialists."},
+    },
+)
+def get_specialists_by_jurisdiction(jurisdiction_alpha_code: str):
+    try:
+        results = search_service.get_specialists_by_jurisdiction(jurisdiction_alpha_code)
+        return results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e

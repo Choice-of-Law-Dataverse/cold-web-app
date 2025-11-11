@@ -34,23 +34,7 @@
         "false_value": false
       }
     },
-    "nested_mappings": {
-      "related_specialists": {
-        "source_array": "related_specialists",
-        "array_operations": {
-          "Specialists": {
-            "operation": "join",
-            "field": "Specialist",
-            "separator": ","
-          },
-          "Specialists ID": {
-            "operation": "join",
-            "field": "id",
-            "separator": ","
-          }
-        }
-      }
-    }
+    "nested_mappings": {}
   },
   "post_processing": {
     "remove_null_values": true,
