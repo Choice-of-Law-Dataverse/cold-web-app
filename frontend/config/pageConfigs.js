@@ -9,7 +9,6 @@ import tooltipLiteratureYear from "@/content/info_boxes/literature/year.md?raw";
 
 import tooltipJurisdictionJurisdictionalDifferentiator from "@/content/info_boxes/jurisdiction/jurisdictional_differentiator.md?raw";
 import tooltipJurisdictionRelatedLiterature from "@/content/info_boxes/jurisdiction/related_literature.md?raw";
-import tooltipJurisdictionSpecialists from "@/content/info_boxes/jurisdiction/specialists.md?raw";
 import tooltipJurisdictionRelatedData from "@/content/info_boxes/jurisdiction/related_data.md?raw";
 
 import tooltipQuestion from "@/content/info_boxes/question/question.md?raw";
@@ -134,15 +133,6 @@ export const jurisdictionConfig = {
       emptyValueBehavior: { action: "hide" },
     },
     {
-      key: "Specialists",
-      label: "Specialists",
-      tooltip: tooltipJurisdictionSpecialists,
-      emptyValueBehavior: {
-        action: "display",
-        fallback: "No specialists available",
-      },
-    },
-    {
       key: "Related Literature",
       label: "Related Literature",
       tooltip: tooltipJurisdictionRelatedLiterature,
@@ -158,7 +148,6 @@ export const jurisdictionConfig = {
   valueClassMap: {
     "Jurisdiction Summary": "prose mb-4",
     "Jurisdictional Differentiator": "prose mb-4",
-    Specialists: "prose mb-1",
     "Related Literature": "prose mb-4",
   },
 };
