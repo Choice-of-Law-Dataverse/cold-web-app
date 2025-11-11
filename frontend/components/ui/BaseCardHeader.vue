@@ -136,7 +136,7 @@
           </template>
           <template v-else>
             <template v-if="showSuggestEdit">
-              <div class="label flex flex-row items-center gap-3">
+              <div class="label flex flex-row items-center gap-1">
                 <!-- All actions except the International Instrument Edit link -->
                 <template
                   v-for="(action, index) in suggestEditActions.filter(
@@ -148,45 +148,45 @@
                   )"
                   :key="index"
                 >
-                  <a
+                  <button
                     v-if="action.label === 'Cite'"
-                    href="#"
-                    class="flex items-center gap-1 text-cold-purple"
+                    type="button"
+                    class="action-button"
                     @click.prevent="isCiteOpen = true"
                   >
                     <UIcon
                       :name="action.icon"
-                      class="mb-0.5 inline-block text-[1.2em]"
+                      class="inline-block text-[1.2em]"
                     />
                     {{ action.label }}
-                  </a>
-                  <a
+                  </button>
+                  <button
                     v-else-if="action.label === 'JSON'"
-                    href="#"
-                    class="flex items-center gap-1 text-cold-purple"
+                    type="button"
+                    class="action-button"
                     @click.prevent="exportJSON"
                   >
                     <UIcon
                       :name="action.icon"
-                      class="mb-0.5 inline-block text-[1.2em]"
+                      class="inline-block text-[1.2em]"
                     />
                     {{ action.label }}
-                  </a>
-                  <a
+                  </button>
+                  <button
                     v-else-if="action.label === 'Print'"
-                    href="#"
-                    class="flex items-center gap-1 text-cold-purple"
+                    type="button"
+                    class="action-button"
                     @click.prevent="printPage"
                   >
                     <UIcon
                       :name="action.icon"
-                      class="mb-0.5 inline-block text-[1.2em]"
+                      class="inline-block text-[1.2em]"
                     />
                     {{ action.label }}
-                  </a>
+                  </button>
                   <NuxtLink
                     v-else
-                    class="flex items-center gap-1 text-cold-purple"
+                    class="action-button"
                     :class="action.class"
                     v-bind="action.to ? { to: action.to } : {}"
                     target="_blank"
@@ -194,7 +194,7 @@
                   >
                     <UIcon
                       :name="action.icon"
-                      class="mb-0.5 inline-block text-[1.2em]"
+                      class="inline-block text-[1.2em]"
                     />
                     {{ action.label }}
                   </NuxtLink>
@@ -207,7 +207,7 @@
                       a.label === 'Edit',
                   )"
                   :key="'edit-' + index"
-                  class="flex items-center gap-1 text-cold-purple"
+                  class="action-button"
                   :class="action.class"
                   v-bind="action.to ? { to: action.to } : {}"
                   target="_blank"
@@ -215,7 +215,7 @@
                 >
                   <UIcon
                     :name="action.icon"
-                    class="mb-0.5 inline-block text-[1.2em]"
+                    class="inline-block text-[1.2em]"
                   />
                   {{ action.label }}
                 </NuxtLink>
@@ -775,5 +775,10 @@ a.label-arbitration {
   font-size: 1.5rem;
   color: var(--color-cold-purple);
   transition: transform 0.3s ease;
+}
+
+.action-button {
+  @apply flex items-center gap-1 rounded-full px-2 py-1 text-xs uppercase text-cold-purple transition-colors hover:bg-cold-purple/10;
+  font-weight: 500;
 }
 </style>
