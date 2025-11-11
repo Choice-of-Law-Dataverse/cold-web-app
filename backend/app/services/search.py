@@ -262,6 +262,12 @@ class SearchService:
                     continue
                 flat_record[key] = value
 
+            # Merge hop1_relations into flat_record for transformation
+            # This makes related entity arrays available to the transformer
+            for key, value in hop1_relations.items():
+                if key not in flat_record:
+                    flat_record[key] = value
+
             # Apply transformation using the appropriate transformer (similar to full_text_search)
             transformed_record = DataTransformerFactory.transform_result(found_table, flat_record)
 
@@ -494,3 +500,31 @@ class SearchService:
             "page_size": page_size,
             "results": parsed_results,
         }
+
+    def get_specialists_by_jurisdiction(self, jurisdiction_alpha_code: str) -> list[dict[str, Any]]:
+        """
+        Get all specialists associated with a specific jurisdiction.
+
+        Args:
+            jurisdiction_alpha_code: The Alpha_3_Code of the jurisdiction to query
+
+        Returns:
+            List of specialist records
+        """
+        query = """
+            SELECT s.*
+            FROM p1q5x3pj29vkrdr."Specialists" s
+            INNER JOIN p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Specialists" js
+                ON s.id = js."Specialists_id"
+            INNER JOIN p1q5x3pj29vkrdr."Jurisdictions" j
+                ON j.id = js."Jurisdictions_id"
+            WHERE j."Alpha_3_Code" = :jurisdiction_alpha_code
+            ORDER BY s."Specialist"
+        """
+
+        try:
+            results = self.db.execute_query(query, {"jurisdiction_alpha_code": jurisdiction_alpha_code})
+            return results or []
+        except Exception as e:
+            logger.error(f"Error querying specialists for jurisdiction {jurisdiction_alpha_code}: {e}")
+            raise

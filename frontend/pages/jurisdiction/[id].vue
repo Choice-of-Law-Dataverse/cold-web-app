@@ -14,6 +14,23 @@
       </h1>
       <template #search-links>
         <div class="mt-4 flex flex-col gap-4">
+          <DetailRow label="Specialists">
+            <div v-if="specialistsData && specialistsData.length > 0" class="result-value-small">
+              <div class="mb-2 flex flex-row flex-wrap gap-2">
+                <span
+                  v-for="(specialist, i) in specialistsData"
+                  :key="i"
+                  class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700"
+                  style="font-weight: 500"
+                >
+                  {{ specialist.Specialist }}
+                </span>
+              </div>
+            </div>
+            <div v-else class="prose mb-1">
+              No specialists available
+            </div>
+          </DetailRow>
           <DetailRow label="Domestic Instruments">
             <RelatedDomesticInstruments
               :jurisdiction="jurisdictionData?.Name as string"
@@ -111,6 +128,7 @@ import RelatedDomesticInstruments from "@/components/sources/RelatedDomesticInst
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useJurisdiction } from "@/composables/useJurisdictions";
+import { useSpecialists } from "@/composables/useSpecialists";
 import { jurisdictionConfig } from "@/config/pageConfigs";
 
 const route = useRoute();
@@ -120,6 +138,9 @@ const { keyLabelPairs, valueClassMap } = jurisdictionConfig;
 const { isLoading, data: jurisdictionData } = useJurisdiction(
   computed(() => route.params.id as string),
 );
+
+const jurisdictionAlphaCode = computed(() => jurisdictionData.value?.alpha3Code as string);
+const { data: specialistsData } = useSpecialists(jurisdictionAlphaCode);
 
 const keyLabelPairsWithoutLegalFamily = computed(() =>
   keyLabelPairs.filter((pair) => pair.key !== "Legal Family"),
