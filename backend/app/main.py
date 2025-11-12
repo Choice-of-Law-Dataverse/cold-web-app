@@ -1,5 +1,6 @@
 import logging
 
+import logfire
 import uvicorn
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -180,6 +181,17 @@ app.include_router(moderation_router.router)
 def root():
     """Simple health check endpoint for the CoLD API root."""
     return {"message": "Hello World from CoLD"}
+
+
+# Initialize Logfire
+logfire.configure()
+
+# Enable auto-instrumentation
+logfire.instrument_fastapi(app)
+logfire.instrument_sqlalchemy()
+logfire.instrument_requests()
+logfire.instrument_psycopg()
+logfire.instrument_pymongo()
 
 
 def main():
