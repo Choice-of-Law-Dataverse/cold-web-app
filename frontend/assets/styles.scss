@@ -140,8 +140,12 @@ li::marker {
 
 .label-jurisdiction {
   @extend .label;
-  background-color: var(--color-cold-gray-alpha);
-  padding: 3px 7px;
+  background-color: color-mix(
+    in srgb,
+    var(--color-cold-gray-alpha) 33%,
+    transparent
+  );
+  padding: 2px 6px;
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;

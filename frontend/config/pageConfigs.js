@@ -146,9 +146,9 @@ export const jurisdictionConfig = {
     },
   ],
   valueClassMap: {
-    "Jurisdiction Summary": "prose mb-4",
-    "Jurisdictional Differentiator": "prose mb-4",
-    "Related Literature": "prose mb-4",
+    "Jurisdiction Summary": "prose",
+    "Jurisdictional Differentiator": "prose",
+    "Related Literature": "prose",
   },
 };
 
@@ -288,7 +288,11 @@ export const legalInstrumentConfig = {
       label: "Amended by",
       emptyValueBehavior: { action: "hide" },
     },
-    { key: "Amends", label: "Amends", emptyValueBehavior: { action: "hide" } },
+    {
+      key: "Amends",
+      label: "Amends",
+      emptyValueBehavior: { action: "hide" },
+    },
     {
       key: "Replaces",
       label: "Replaces",
@@ -374,7 +378,11 @@ export const regionalInstrumentConfig = {
       label: "Abbreviation",
       emptyValueBehavior: { action: "display", fallback: "No title available" },
     },
-    { key: "Title", label: "Title", emptyValueBehavior: { action: "hide" } },
+    {
+      key: "Title",
+      label: "Title",
+      emptyValueBehavior: { action: "hide" },
+    },
     {
       key: "Date",
       label: "Date",
@@ -503,7 +511,11 @@ export const arbitralAwardConfig = {
         fallback: "No institution available",
       },
     },
-    { key: "Source", label: "Source", emptyValueBehavior: { action: "hide" } },
+    {
+      key: "Source",
+      label: "Source",
+      emptyValueBehavior: { action: "hide" },
+    },
     {
       key: "Year",
       label: "Year",

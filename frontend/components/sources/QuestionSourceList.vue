@@ -35,11 +35,7 @@
     <!-- Updated OUP Chapter bullet point -->
     <template v-if="fallbackData && fallbackData['Literature']">
       <template v-if="literatures?.length">
-        <div
-          v-for="(item, index) in literatures"
-          :key="index"
-          class="m-0 p-0"
-        >
+        <div v-for="(item, index) in literatures" :key="index" class="m-0 p-0">
           <NuxtLink class="text-cold-purple" :to="`/literature/L-${item.id}`">{{
             item.title
           }}</NuxtLink>
