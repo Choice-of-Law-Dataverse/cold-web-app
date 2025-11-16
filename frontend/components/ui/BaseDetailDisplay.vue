@@ -47,7 +47,7 @@
 
       <!-- Main content -->
       <div class="flex">
-        <div class="main-content flex w-full flex-col gap-0 px-6 py-8">
+        <div class="main-content flex w-full flex-col gap-4 px-6 py-8">
           <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
           <slot />
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
