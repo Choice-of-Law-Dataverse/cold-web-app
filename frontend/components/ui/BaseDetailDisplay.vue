@@ -112,7 +112,7 @@
                         resultData?.[item.key] === 'NA') &&
                       item.emptyValueBehavior?.action === 'display' &&
                       !item.emptyValueBehavior?.getFallback
-                        ? 'text-gray-300'
+                        ? 'text-gray-400'
                         : '',
                       'prose',
                       'mt-0',

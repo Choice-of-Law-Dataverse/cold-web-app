@@ -53,7 +53,7 @@
                   class="arrow-icon"
                 />
               </NuxtLink>
-              <span v-else class="text-gray-300">—</span>
+              <span v-else class="text-gray-400">—</span>
             </template>
           </UTable>
         </div>

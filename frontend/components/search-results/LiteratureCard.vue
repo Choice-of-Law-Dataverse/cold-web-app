@@ -11,7 +11,7 @@
               processedResultData.Title === 'NA') &&
             config.keyLabelPairs.find((pair) => pair.key === 'Title')
               ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-300'
+              ? 'text-gray-400'
               : '',
           ]"
         >
@@ -29,7 +29,7 @@
               processedResultData.Author === 'NA') &&
             config.keyLabelPairs.find((pair) => pair.key === 'Author')
               ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-300'
+              ? 'text-gray-400'
               : '',
           ]"
         >
@@ -47,7 +47,7 @@
               processedResultData['Publication Year'] === 'NA') &&
             config.keyLabelPairs.find((pair) => pair.key === 'Publication Year')
               ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-300'
+              ? 'text-gray-400'
               : '',
           ]"
         >
@@ -72,7 +72,7 @@
               config.keyLabelPairs.find(
                 (pair) => pair.key === 'Publication Title',
               )?.emptyValueBehavior?.action === 'display'
-                ? 'text-gray-300'
+                ? 'text-gray-400'
                 : '',
             ]"
           >
@@ -96,7 +96,7 @@
                 processedResultData['Publisher'] === 'NA') &&
               config.keyLabelPairs.find((pair) => pair.key === 'Publisher')
                 ?.emptyValueBehavior?.action === 'display'
-                ? 'text-gray-300'
+                ? 'text-gray-400'
                 : '',
             ]"
           >

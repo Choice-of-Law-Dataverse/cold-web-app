@@ -286,8 +286,6 @@ li::marker {
   @extend .result-value;
   font-size: 28px !important;
   line-height: 34px !important;
-  // margin-top: 6px !important;
-  margin-bottom: 24px !important;
 }
 
 .result-value-medium {
@@ -301,7 +299,6 @@ li::marker {
   font-size: 14px !important;
   font-weight: 400 !important; // Regular
   line-height: 26px !important;
-  // margin: 0 !important;
   white-space: normal;
 }
 

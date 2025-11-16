@@ -15,7 +15,7 @@
                 processedResultData['Name'] === 'NA') &&
               config.keyLabelPairs.find((pair) => pair.key === 'Name')
                 ?.emptyValueBehavior?.action === 'display'
-                ? 'text-gray-300'
+                ? 'text-gray-400'
                 : '',
             ]"
           >

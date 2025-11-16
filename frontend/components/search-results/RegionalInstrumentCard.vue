@@ -15,7 +15,7 @@
                 processedResultData['Abbreviation'] === 'NA') &&
               config.keyLabelPairs.find((pair) => pair.key === 'Abbreviation')
                 ?.emptyValueBehavior?.action === 'display'
-                ? 'text-gray-300'
+                ? 'text-gray-400'
                 : '',
             ]"
           >
@@ -46,7 +46,7 @@
               processedResultData['Title'] === 'NA') &&
             config.keyLabelPairs.find((pair) => pair.key === 'Title')
               ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-300'
+              ? 'text-gray-400'
               : '',
           ]"
         >

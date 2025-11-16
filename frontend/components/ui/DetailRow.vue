@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col md:flex-row md:items-start md:gap-6">
+  <div class="flex flex-col gap-4 md:flex-row md:items-start md:gap-6">
     <div class="label-key md:w-48 md:flex-shrink-0">
       <span class="flex items-center">
         {{ label }}

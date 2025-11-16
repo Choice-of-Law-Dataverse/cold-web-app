@@ -82,7 +82,7 @@
           <NuxtLink
             v-if="countryReportLink"
             :to="countryReportLink"
-            class="result-value-small section-gap text-cold-purple hover:text-cold-purple"
+            class="result-value-small text-cold-purple hover:text-cold-purple"
           >
             View full questionnaire for {{ processedAnswerData?.Jurisdictions }}
           </NuxtLink>

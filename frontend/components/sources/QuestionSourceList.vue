@@ -7,7 +7,7 @@
           'Domestic Legal Provisions'
         ].split(',')"
         :key="'domestic-legal-' + index"
-        class="section-gap m-0 p-0"
+        class="m-0 p-0"
       >
         <LegalProvisionRenderer
           :value="provision"
@@ -23,7 +23,7 @@
           'Domestic Instruments ID'
         ].split(',')"
         :key="'domestic-instrument-' + index"
-        class="section-gap m-0 p-0"
+        class="m-0 p-0"
       >
         <LegalProvisionRenderer
           skip-article
@@ -38,22 +38,22 @@
         <div
           v-for="(item, index) in literatures"
           :key="index"
-          class="section-gap m-0 p-0"
+          class="m-0 p-0"
         >
           <NuxtLink class="text-cold-purple" :to="`/literature/L-${item.id}`">{{
             item.title
           }}</NuxtLink>
         </div>
       </template>
-      <div v-else-if="literaturesLoading" class="section-gap m-0 p-0">
+      <div v-else-if="literaturesLoading" class="m-0 p-0">
         <LoadingBar class="pt-[9px]" />
       </div>
     </template>
     <template v-else>
-      <div v-if="isLoading" class="section-gap m-0 p-0">
+      <div v-if="isLoading" class="m-0 p-0">
         <LoadingBar class="pt-[9px]" />
       </div>
-      <div v-else-if="oupChapterSource" class="section-gap m-0 p-0">
+      <div v-else-if="oupChapterSource" class="m-0 p-0">
         <NuxtLink
           class="text-cold-purple"
           :to="`/literature/L-${oupChapterSource.id}`"
@@ -64,7 +64,7 @@
 
     <!-- Fallback message when no sources available -->
     <template v-if="!hasAnySources && !isLoading && !literaturesLoading">
-      <p>No source available</p>
+      <p class="text-gray-400">No source available</p>
     </template>
   </div>
 </template>
