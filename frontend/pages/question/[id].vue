@@ -78,12 +78,10 @@
       </template>
 
       <template #compare-answers>
-        <DetailRow label="Compare Answers">
-          <QuestionJurisdictions
-            v-if="questionSuffix"
-            :question-suffix="questionSuffix"
-          />
-        </DetailRow>
+        <QuestionJurisdictions
+          v-if="questionSuffix"
+          :question-suffix="questionSuffix"
+        />
       </template>
     </BaseDetailLayout>
     <CountryReportLink :processed-answer-data="processedAnswerData ?? {}" />
