@@ -57,7 +57,6 @@ import { ref, computed } from "vue";
 import { useQuestionCountries } from "@/composables/useQuestionCountries";
 import DetailRow from "@/components/ui/DetailRow.vue";
 
-const answers = ["Yes", "No", "Not applicable"];
 const regions = [
   "All",
   "Asia & Pacific",
@@ -84,6 +83,35 @@ const {
   error,
 } = useQuestionCountries(computed(() => props.questionSuffix));
 
+const answers = computed(() => {
+  const allAnswers = questionData.value?.answers || [];
+  const uniqueAnswers = new Set(
+    allAnswers
+      .map((item) => item.Answer)
+      .filter((answer) => typeof answer === "string" && answer.trim() !== ""),
+  );
+
+  const excludedAnswers = ["No data", "Nothing found", "No information"];
+  excludedAnswers.forEach((answer) => uniqueAnswers.delete(answer));
+
+  const priorityOrder = ["Yes", "No", "Not applicable"];
+  const sortedAnswers = [];
+
+  priorityOrder.forEach((answer) => {
+    if (uniqueAnswers.has(answer)) {
+      sortedAnswers.push(answer);
+      uniqueAnswers.delete(answer);
+    }
+  });
+
+  const remainingAnswers = Array.from(uniqueAnswers).sort((a, b) =>
+    a.localeCompare(b),
+  );
+  sortedAnswers.push(...remainingAnswers);
+
+  return sortedAnswers;
+});
+
 function selectRegion(region) {
   selectedRegion.value = region;
 }
@@ -91,19 +119,16 @@ function selectRegion(region) {
 function getCountriesForAnswer(answer) {
   const allAnswers = questionData.value?.answers || [];
 
-  // Filter by answer
   let filtered = allAnswers.filter(
     (item) => typeof item.Answer === "string" && item.Answer === answer,
   );
 
-  // Filter by region if not "All"
   if (selectedRegion.value !== "All") {
     filtered = filtered.filter(
       (item) => item["Jurisdictions Region"] === selectedRegion.value,
     );
   }
 
-  // Map to country objects and sort
   const countries = filtered
     .map((item) => ({
       name: item.Jurisdictions,
