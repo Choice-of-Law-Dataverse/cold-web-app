@@ -47,83 +47,80 @@
 
       <!-- Main content -->
       <div class="flex">
-        <div class="main-content flex w-full flex-col gap-0 px-6 py-8">
+        <div class="main-content flex w-full flex-col gap-4 px-6 py-8">
           <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
           <slot />
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
-          <section v-for="(item, index) in keyLabelPairs" :key="index">
-            <!-- Check if it's the special 'Specialist' key -->
-            <template v-if="item.key === 'Region'">
-              <slot />
-            </template>
-            <!-- Check for slot first -->
-            <template
-              v-if="
-                $slots[item.key.replace(/ /g, '-').toLowerCase()] &&
-                shouldDisplayValue(item, resultData?.[item.key])
-              "
-            >
-              <slot
-                :name="item.key.replace(/ /g, '-').toLowerCase()"
-                :value="resultData?.[item.key]"
-              />
-            </template>
-            <!-- If no slot, use default display -->
-            <template v-else>
-              <!-- Conditionally render the label and value container -->
-              <DetailRow
-                v-if="shouldDisplayValue(item, resultData?.[item.key])"
-                :label="item.label"
-                :tooltip="item.tooltip"
+          <template v-for="(item, index) in keyLabelPairs" :key="index">
+            <section v-if="shouldDisplayValue(item, resultData?.[item.key])">
+              <!-- Check if it's the special 'Specialist' key -->
+              <template v-if="item.key === 'Region'">
+                <slot />
+              </template>
+              <!-- Check for slot first -->
+              <template
+                v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
               >
-                <template #label-actions>
-                  <slot
-                    :name="item.key + '-header-actions'"
-                    :value="resultData?.[item.key]"
-                  />
-                </template>
+                <slot
+                  :name="item.key.replace(/ /g, '-').toLowerCase()"
+                  :value="resultData?.[item.key]"
+                />
+              </template>
+              <!-- If no slot, use default display -->
+              <template v-else>
+                <!-- Conditionally render the label and value container -->
+                <DetailRow :label="item.label" :tooltip="item.tooltip">
+                  <template #label-actions>
+                    <slot
+                      :name="item.key + '-header-actions'"
+                      :value="resultData?.[item.key]"
+                    />
+                  </template>
 
-                <!-- Conditionally render bullet list if Answer or Specialists is an array -->
-                <template
-                  v-if="
-                    (item.key === 'Answer' || item.key === 'Specialists') &&
-                    Array.isArray(getDisplayValue(item, resultData?.[item.key]))
-                  "
-                >
-                  <div class="mt-0 flex flex-col gap-2">
-                    <div
-                      v-for="(line, i) in getDisplayValue(
-                        item,
-                        resultData?.[item.key],
-                      )"
-                      :key="i"
-                      :class="props.valueClassMap[item.key] || 'prose'"
-                    >
-                      {{ line }}
-                    </div>
-                  </div>
-                </template>
-                <template v-else>
-                  <p
-                    :class="[
-                      props.valueClassMap[item.key] ||
-                        'whitespace-pre-line leading-relaxed',
-                      (!resultData?.[item.key] ||
-                        resultData?.[item.key] === 'NA') &&
-                      item.emptyValueBehavior?.action === 'display' &&
-                      !item.emptyValueBehavior?.getFallback
-                        ? 'text-gray-300'
-                        : '',
-                      'prose',
-                      'mt-0',
-                    ]"
+                  <!-- Conditionally render bullet list if Answer or Specialists is an array -->
+                  <template
+                    v-if="
+                      (item.key === 'Answer' || item.key === 'Specialists') &&
+                      Array.isArray(
+                        getDisplayValue(item, resultData?.[item.key]),
+                      )
+                    "
                   >
-                    {{ getDisplayValue(item, resultData?.[item.key]) }}
-                  </p>
-                </template>
-              </DetailRow>
-            </template>
-          </section>
+                    <div class="mt-0 flex flex-col gap-2">
+                      <div
+                        v-for="(line, i) in getDisplayValue(
+                          item,
+                          resultData?.[item.key],
+                        )"
+                        :key="i"
+                        :class="props.valueClassMap[item.key] || 'prose'"
+                      >
+                        {{ line }}
+                      </div>
+                    </div>
+                  </template>
+                  <template v-else>
+                    <p
+                      :class="[
+                        props.valueClassMap[item.key] ||
+                          'whitespace-pre-line leading-relaxed',
+                        (!resultData?.[item.key] ||
+                          resultData?.[item.key] === 'NA') &&
+                        item.emptyValueBehavior?.action === 'display' &&
+                        !item.emptyValueBehavior?.getFallback
+                          ? 'text-gray-400'
+                          : '',
+                        'prose',
+                        'mt-0',
+                      ]"
+                    >
+                      {{ getDisplayValue(item, resultData?.[item.key]) }}
+                    </p>
+                  </template>
+                </DetailRow>
+              </template>
+            </section>
+          </template>
           <slot name="search-links" />
         </div>
       </div>

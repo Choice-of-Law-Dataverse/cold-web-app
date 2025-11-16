@@ -14,7 +14,7 @@
                 ?.emptyValueBehavior?.action === 'display' &&
               !config.keyLabelPairs.find((pair) => pair.key === 'Case Title')
                 ?.emptyValueBehavior?.getFallback
-                ? 'text-gray-300'
+                ? 'text-gray-400'
                 : '',
             ]"
           >

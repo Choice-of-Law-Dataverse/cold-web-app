@@ -16,7 +16,7 @@
               config.keyLabelPairs.find(
                 (pair) => pair.key === 'Title (in English)',
               )?.emptyValueBehavior?.action === 'display'
-                ? 'text-gray-300'
+                ? 'text-gray-400'
                 : '',
             ]"
           >

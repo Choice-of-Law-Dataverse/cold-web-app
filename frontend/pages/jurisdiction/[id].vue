@@ -9,11 +9,11 @@
       :show-suggest-edit="true"
       source-table="Jurisdiction"
     >
-      <h1 class="mb-12">
+      <h1 class="mb-4">
         Country Report for {{ jurisdictionData?.Name || "N/A" }}
       </h1>
       <template #search-links>
-        <div class="mt-4 flex flex-col gap-4">
+        <div class="flex flex-col gap-4">
           <DetailRow label="Specialists">
             <div
               v-if="specialistsData && specialistsData.length > 0"

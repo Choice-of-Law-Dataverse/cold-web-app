@@ -150,26 +150,26 @@
                 {{ value.slice(0, 400)
                 }}<span v-if="value.length > 400">…</span>
               </p>
-              <NuxtLink
-                class="ml-2 cursor-pointer"
+              <button
+                class="inline-flex items-center rounded-full bg-cold-teal/5 px-3 py-1 text-sm text-cold-teal transition-colors hover:bg-cold-teal/10"
+                :style="{ fontWeight: '500' }"
                 @click="showFullText = true"
               >
-                <Icon name="material-symbols:add" :class="iconClass" />
                 Show more
-              </NuxtLink>
+              </button>
             </div>
             <div v-else>
               <p class="prose mt-0">
                 {{ value }}
               </p>
-              <NuxtLink
+              <button
                 v-if="value.length > 400"
-                class="ml-2 cursor-pointer"
+                class="inline-flex items-center rounded-full bg-cold-teal/5 px-3 py-1 text-sm text-cold-teal transition-colors hover:bg-cold-teal/10"
+                :style="{ fontWeight: '500' }"
                 @click="showFullText = false"
               >
-                <Icon name="material-symbols:remove" :class="iconClass" />
                 Show less
-              </NuxtLink>
+              </button>
             </div>
           </div>
         </DetailRow>

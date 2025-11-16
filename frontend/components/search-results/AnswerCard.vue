@@ -246,7 +246,7 @@ const computeTextClasses = (key, baseClass) => {
   const isEmpty = !props.resultData[key] || props.resultData[key] === "NA";
   const emptyClass =
     isEmpty && pair?.emptyValueBehavior?.action === "display"
-      ? "text-gray-300"
+      ? "text-gray-400"
       : "";
   return [baseClass, "text-sm leading-relaxed whitespace-pre-line", emptyClass];
 };

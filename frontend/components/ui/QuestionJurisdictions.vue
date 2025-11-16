@@ -1,6 +1,6 @@
 <template>
   <UCard class="cold-ucard">
-    <div class="flex flex-col gap-8">
+    <div class="flex flex-col gap-4">
       <h3 class="comparison-title mb-4">Comparison</h3>
 
       <DetailRow label="Region">
@@ -20,11 +20,11 @@
 
       <div v-if="isLoading" class="copy mt-4">Loading jurisdictions...</div>
       <div v-else-if="error" class="copy mt-4">Error loading jurisdictions</div>
-      <div v-else class="flex flex-col gap-6">
+      <div v-else class="flex flex-col gap-4">
         <DetailRow v-for="answer in answers" :key="answer" :label="answer">
           <div
             v-if="getCountriesForAnswer(answer).length"
-            class="flex flex-wrap items-center gap-3"
+            class="flex flex-wrap items-center gap-2"
           >
             <NuxtLink
               v-for="country in getCountriesForAnswer(answer)"
