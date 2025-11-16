@@ -77,16 +77,22 @@
         </DetailRow>
       </template>
 
-      <template #compare-answers>
-        <DetailRow label="Compare Answers">
-          <QuestionJurisdictions
-            v-if="questionSuffix"
-            :question-suffix="questionSuffix"
-          />
+      <template #country-report>
+        <DetailRow label="Country Report" class="mb-4">
+          <NuxtLink
+            v-if="countryReportLink"
+            :to="countryReportLink"
+            class="result-value-small section-gap text-cold-purple hover:text-cold-purple"
+          >
+            View full questionnaire for {{ processedAnswerData?.Jurisdictions }}
+          </NuxtLink>
         </DetailRow>
       </template>
     </BaseDetailLayout>
-    <CountryReportLink :processed-answer-data="processedAnswerData ?? {}" />
+    <QuestionJurisdictions
+      v-if="questionSuffix"
+      :question-suffix="questionSuffix"
+    />
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
@@ -107,7 +113,6 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import CourtDecisionRenderer from "@/components/legal/CourtDecisionRenderer.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";
-import CountryReportLink from "@/components/ui/CountryReportLink.vue";
 import QuestionJurisdictions from "@/components/ui/QuestionJurisdictions.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useAnswer } from "@/composables/useAnswer";
@@ -167,6 +172,25 @@ const questionSuffix = computed(() => {
     return "_" + parts.slice(1).join("_");
   }
   return null;
+});
+
+const jurisdictionCode = computed(() => {
+  return (
+    processedAnswerData.value?.["Jurisdictions Alpha-3 code"] ||
+    processedAnswerData.value?.["Jurisdictions Alpha-3 Code"]
+  );
+});
+
+const countryReportLink = computed(() => {
+  const code = jurisdictionCode.value;
+  if (!code || typeof code !== "string") return null;
+
+  const baseLink = `/jurisdiction/${code.toLowerCase()}`;
+  if (questionSuffix.value) {
+    // Remove the leading underscore from questionSuffix for the hash
+    return `${baseLink}#question-${questionSuffix.value.substring(1)}`;
+  }
+  return baseLink;
 });
 
 onMounted(async () => {

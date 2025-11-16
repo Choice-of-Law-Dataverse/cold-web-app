@@ -1,67 +1,61 @@
 <template>
-  <div class="flex flex-col gap-4">
-    <h4 class="label flex flex-wrap gap-4 text-lg">
-      <span
-        v-for="option in answers"
-        :key="option"
-        class="cursor-pointer border-b-2 border-transparent pb-0.5 hover:border-cold-teal"
-        :class="
-          selectedAnswer === option ? 'text-cold-teal' : 'text-cold-night'
-        "
-        @click="selectAnswer(option)"
-      >
-        {{ option }}
-      </span>
-    </h4>
+  <UCard class="cold-ucard">
+    <div class="flex flex-col gap-8">
+      <h3 class="comparison-title mb-4">Comparison</h3>
 
-    <p class="label flex flex-wrap gap-2">
-      <span
-        v-for="region in regions"
-        :key="region"
-        class="cursor-pointer border-b-2 border-transparent pb-0.5 hover:border-cold-teal"
-        :class="
-          selectedRegion === region ? 'text-cold-teal' : 'text-cold-night'
-        "
-        @click="selectRegion(region)"
-      >
-        {{ region }}
-      </span>
-    </p>
+      <DetailRow label="Region">
+        <div class="flex flex-wrap gap-2">
+          <button
+            v-for="region in regions"
+            :key="region"
+            type="button"
+            class="region-badge"
+            :class="{ 'region-badge-active': selectedRegion === region }"
+            @click="selectRegion(region)"
+          >
+            {{ region }}
+          </button>
+        </div>
+      </DetailRow>
 
-    <div v-if="selectedAnswer">
       <div v-if="isLoading" class="copy mt-4">Loading jurisdictions...</div>
       <div v-else-if="error" class="copy mt-4">Error loading jurisdictions</div>
-      <div
-        v-else-if="countries.length"
-        class="mt-2 flex flex-wrap items-center gap-3"
-      >
-        <NuxtLink
-          v-for="country in countries"
-          :key="country.code"
-          class="label-jurisdiction inline-flex items-center whitespace-nowrap text-cold-night hover:text-cold-purple"
-          :to="`/question/${country.code}${questionSuffix}`"
-        >
-          <img
-            :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
-            class="mb-0.5 mr-1.5 h-3"
-            :alt="country.code + ' flag'"
-            @error="
-              (e) => {
-                e.target.style.display = 'none';
-              }
-            "
+      <div v-else class="flex flex-col gap-6">
+        <DetailRow v-for="answer in answers" :key="answer" :label="answer">
+          <div
+            v-if="getCountriesForAnswer(answer).length"
+            class="flex flex-wrap items-center gap-3"
           >
-          {{ country.name }}
-        </NuxtLink>
+            <NuxtLink
+              v-for="country in getCountriesForAnswer(answer)"
+              :key="country.code"
+              class="label-jurisdiction inline-flex items-center whitespace-nowrap text-cold-night hover:text-cold-purple"
+              :to="`/question/${country.code}${questionSuffix}`"
+            >
+              <img
+                :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
+                class="mb-0.5 mr-1.5 h-3"
+                :alt="country.code + ' flag'"
+                @error="
+                  (e) => {
+                    e.target.style.display = 'none';
+                  }
+                "
+              >
+              {{ country.name }}
+            </NuxtLink>
+          </div>
+          <div v-else class="copy">No jurisdictions</div>
+        </DetailRow>
       </div>
-      <div v-else class="copy mt-4">No jurisdictions</div>
     </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup>
 import { ref, computed } from "vue";
 import { useQuestionCountries } from "@/composables/useQuestionCountries";
+import DetailRow from "@/components/ui/DetailRow.vue";
 
 const answers = ["Yes", "No", "Not applicable"];
 const regions = [
@@ -82,28 +76,53 @@ const props = defineProps({
   },
 });
 
-const selectedAnswer = ref("Yes");
 const selectedRegion = ref("All");
 
 const {
   data: questionData,
   isLoading,
   error,
-} = useQuestionCountries(
-  computed(() => props.questionSuffix),
-  selectedAnswer,
-  selectedRegion,
-);
-
-const countries = computed(() => questionData.value?.countries || []);
-
-function selectAnswer(answer) {
-  selectedAnswer.value = answer;
-}
+} = useQuestionCountries(computed(() => props.questionSuffix));
 
 function selectRegion(region) {
   selectedRegion.value = region;
 }
+
+function getCountriesForAnswer(answer) {
+  const allAnswers = questionData.value?.answers || [];
+
+  // Filter by answer
+  let filtered = allAnswers.filter(
+    (item) => typeof item.Answer === "string" && item.Answer === answer,
+  );
+
+  // Filter by region if not "All"
+  if (selectedRegion.value !== "All") {
+    filtered = filtered.filter(
+      (item) => item["Jurisdictions Region"] === selectedRegion.value,
+    );
+  }
+
+  // Map to country objects and sort
+  const countries = filtered
+    .map((item) => ({
+      name: item.Jurisdictions,
+      code: item["Jurisdictions Alpha-3 code"],
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+
+  return countries;
+}
 </script>
 
-<style scoped></style>
+<style scoped>
+.region-badge {
+  @apply flex items-center gap-1 rounded-full bg-cold-teal/10 px-3 py-1.5 text-xs text-cold-teal transition-colors hover:bg-cold-teal/20;
+  font-weight: 400;
+}
+
+.region-badge-active {
+  @apply bg-cold-teal/20 text-cold-teal;
+  font-weight: 500;
+}
+</style>

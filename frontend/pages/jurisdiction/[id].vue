@@ -15,7 +15,10 @@
       <template #search-links>
         <div class="mt-4 flex flex-col gap-4">
           <DetailRow label="Specialists">
-            <div v-if="specialistsData && specialistsData.length > 0" class="result-value-small">
+            <div
+              v-if="specialistsData && specialistsData.length > 0"
+              class="result-value-small"
+            >
               <div class="mb-2 flex flex-row flex-wrap gap-2">
                 <span
                   v-for="(specialist, i) in specialistsData"
@@ -27,9 +30,7 @@
                 </span>
               </div>
             </div>
-            <div v-else class="prose mb-1">
-              No specialists available
-            </div>
+            <div v-else class="prose mb-1">No specialists available</div>
           </DetailRow>
           <DetailRow label="Domestic Instruments">
             <RelatedDomesticInstruments
@@ -139,7 +140,9 @@ const { isLoading, data: jurisdictionData } = useJurisdiction(
   computed(() => route.params.id as string),
 );
 
-const jurisdictionAlphaCode = computed(() => jurisdictionData.value?.alpha3Code as string);
+const jurisdictionAlphaCode = computed(
+  () => jurisdictionData.value?.alpha3Code as string,
+);
 const { data: specialistsData } = useSpecialists(jurisdictionAlphaCode);
 
 const keyLabelPairsWithoutLegalFamily = computed(() =>

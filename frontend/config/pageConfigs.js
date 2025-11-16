@@ -202,26 +202,7 @@ export const questionConfig = {
       valueTransform: (val) =>
         typeof formatDate === "function" ? formatDate(val) : val,
     },
-    {
-      key: "Created",
-      label: "Last Updated",
-      emptyValueBehavior: {
-        action: "hide",
-        shouldDisplay: (data) => {
-          const lm = data && data["Last Modified"];
-          const created = data && data["Created"];
-          if (typeof formatYear === "function") {
-            return !formatYear(lm) && !!formatYear(created);
-          }
-          return (
-            !(lm && !isNaN(new Date(lm))) &&
-            !!(created && !isNaN(new Date(created)))
-          );
-        },
-      },
-      valueTransform: (val) =>
-        typeof formatDate === "function" ? formatDate(val) : val,
-    },
+
     {
       key: "OUP Book Quote",
       label: "OUP Book Quote",
@@ -247,24 +228,44 @@ export const questionConfig = {
       },
     },
     {
-      key: "Compare Answers",
-      label: "Compare Answers",
+      key: "Country Report",
+      label: "Country Report",
       emptyValueBehavior: {
         shouldDisplay: () => true, // Always display this slot
       },
+    },
+    {
+      key: "Created",
+      label: "Last Updated",
+      emptyValueBehavior: {
+        action: "hide",
+        shouldDisplay: (data) => {
+          const lm = data && data["Last Modified"];
+          const created = data && data["Created"];
+          if (typeof formatYear === "function") {
+            return !formatYear(lm) && !!formatYear(created);
+          }
+          return (
+            !(lm && !isNaN(new Date(lm))) &&
+            !!(created && !isNaN(new Date(created)))
+          );
+        },
+      },
+      valueTransform: (val) =>
+        typeof formatDate === "function" ? formatDate(val) : val,
     },
   ],
   valueClassMap: {
     Question: "result-value-medium section-gap",
     Answer: "result-value-large section-gap",
     "Domestic Legal Provisions": "result-value-small section-gap",
-    "Last Modified": "result-value-small section-gap",
     Created: "result-value-small section-gap",
     "More Information": "result-value-small whitespace-pre-line section-gap",
     "OUP Book Quote": "result-value-small section-gap",
     "Court Decisions ID": "result-value-small section-gap",
     "Related Literature": "result-value-small section-gap",
-    "Compare Answers": "result-value-small section-gap",
+    "Country Report": "result-value-small section-gap",
+    "Last Modified": "result-value-small section-gap",
   },
 };
 
