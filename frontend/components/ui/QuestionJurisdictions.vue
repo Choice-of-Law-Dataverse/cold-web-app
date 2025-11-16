@@ -3,18 +3,17 @@
     <h3 class="comparison-title mb-6">Comparison</h3>
 
     <DetailRow label="Region">
-      <div class="label flex flex-wrap gap-2">
-        <span
+      <div class="flex flex-wrap gap-2">
+        <button
           v-for="region in regions"
           :key="region"
-          class="cursor-pointer border-b-2 border-transparent pb-0.5 hover:border-cold-teal"
-          :class="
-            selectedRegion === region ? 'text-cold-teal' : 'text-cold-night'
-          "
+          type="button"
+          class="region-badge"
+          :class="{ 'region-badge-active': selectedRegion === region }"
           @click="selectRegion(region)"
         >
           {{ region }}
-        </span>
+        </button>
       </div>
     </DetailRow>
 
@@ -121,5 +120,14 @@ function getCountriesForAnswer(answer) {
 <style scoped>
 .comparison-title {
   color: var(--color-cold-purple) !important;
+}
+
+.region-badge {
+  @apply flex items-center gap-1 rounded-full border border-cold-teal px-3 py-1.5 text-xs uppercase text-cold-teal transition-colors hover:bg-cold-teal/10;
+  font-weight: 500;
+}
+
+.region-badge-active {
+  @apply bg-cold-teal text-white;
 }
 </style>
