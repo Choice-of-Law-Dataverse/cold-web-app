@@ -1,24 +1,26 @@
 <template>
-  <div class="w-full">
-    <h3 class="label mb-4 text-2xl font-semibold">Comparison</h3>
+  <div class="w-full border-t border-cold-gray pt-8">
+    <h3 class="comparison-title mb-6">Comparison</h3>
 
-    <p class="label mb-4 flex flex-wrap gap-2">
-      <span
-        v-for="region in regions"
-        :key="region"
-        class="cursor-pointer border-b-2 border-transparent pb-0.5 hover:border-cold-teal"
-        :class="
-          selectedRegion === region ? 'text-cold-teal' : 'text-cold-night'
-        "
-        @click="selectRegion(region)"
-      >
-        {{ region }}
-      </span>
-    </p>
+    <DetailRow label="Region">
+      <div class="label flex flex-wrap gap-2">
+        <span
+          v-for="region in regions"
+          :key="region"
+          class="cursor-pointer border-b-2 border-transparent pb-0.5 hover:border-cold-teal"
+          :class="
+            selectedRegion === region ? 'text-cold-teal' : 'text-cold-night'
+          "
+          @click="selectRegion(region)"
+        >
+          {{ region }}
+        </span>
+      </div>
+    </DetailRow>
 
     <div v-if="isLoading" class="copy mt-4">Loading jurisdictions...</div>
     <div v-else-if="error" class="copy mt-4">Error loading jurisdictions</div>
-    <div v-else class="flex flex-col gap-6">
+    <div v-else class="mt-6 flex flex-col gap-6">
       <DetailRow
         v-for="answer in answers"
         :key="answer"
@@ -116,4 +118,8 @@ function getCountriesForAnswer(answer) {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.comparison-title {
+  color: var(--color-cold-purple) !important;
+}
+</style>
