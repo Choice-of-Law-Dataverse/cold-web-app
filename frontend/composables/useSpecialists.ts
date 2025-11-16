@@ -15,11 +15,16 @@ export interface Specialist {
   Created: string | null;
 }
 
-async function fetchSpecialists(jurisdictionAlphaCode: string): Promise<Specialist[]> {
+async function fetchSpecialists(
+  jurisdictionAlphaCode: string,
+): Promise<Specialist[]> {
   const { apiClient } = useApiClient();
-  return await apiClient<Specialist[]>(`/search/specialists/${encodeURIComponent(jurisdictionAlphaCode)}`, {
-    method: "GET",
-  });
+  return await apiClient<Specialist[]>(
+    `/search/specialists/${encodeURIComponent(jurisdictionAlphaCode)}`,
+    {
+      method: "GET",
+    },
+  );
 }
 
 export function useSpecialists(jurisdictionAlphaCode: Ref<string>) {

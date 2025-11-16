@@ -1,57 +1,55 @@
 <template>
-  <div class="w-full border-t border-cold-gray pt-8">
-    <h3 class="comparison-title mb-6">Comparison</h3>
+  <UCard class="cold-ucard">
+    <div class="flex flex-col gap-8">
+      <h3 class="comparison-title mb-4">Comparison</h3>
 
-    <DetailRow label="Region">
-      <div class="flex flex-wrap gap-2">
-        <button
-          v-for="region in regions"
-          :key="region"
-          type="button"
-          class="region-badge"
-          :class="{ 'region-badge-active': selectedRegion === region }"
-          @click="selectRegion(region)"
-        >
-          {{ region }}
-        </button>
-      </div>
-    </DetailRow>
-
-    <div v-if="isLoading" class="copy mt-4">Loading jurisdictions...</div>
-    <div v-else-if="error" class="copy mt-4">Error loading jurisdictions</div>
-    <div v-else class="mt-6 flex flex-col gap-6">
-      <DetailRow
-        v-for="answer in answers"
-        :key="answer"
-        :label="answer"
-      >
-        <div
-          v-if="getCountriesForAnswer(answer).length"
-          class="flex flex-wrap items-center gap-3"
-        >
-          <NuxtLink
-            v-for="country in getCountriesForAnswer(answer)"
-            :key="country.code"
-            class="label-jurisdiction inline-flex items-center whitespace-nowrap text-cold-night hover:text-cold-purple"
-            :to="`/question/${country.code}${questionSuffix}`"
+      <DetailRow label="Region">
+        <div class="flex flex-wrap gap-2">
+          <button
+            v-for="region in regions"
+            :key="region"
+            type="button"
+            class="region-badge"
+            :class="{ 'region-badge-active': selectedRegion === region }"
+            @click="selectRegion(region)"
           >
-            <img
-              :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
-              class="mb-0.5 mr-1.5 h-3"
-              :alt="country.code + ' flag'"
-              @error="
-                (e) => {
-                  e.target.style.display = 'none';
-                }
-              "
-            >
-            {{ country.name }}
-          </NuxtLink>
+            {{ region }}
+          </button>
         </div>
-        <div v-else class="copy">No jurisdictions</div>
       </DetailRow>
+
+      <div v-if="isLoading" class="copy mt-4">Loading jurisdictions...</div>
+      <div v-else-if="error" class="copy mt-4">Error loading jurisdictions</div>
+      <div v-else class="flex flex-col gap-6">
+        <DetailRow v-for="answer in answers" :key="answer" :label="answer">
+          <div
+            v-if="getCountriesForAnswer(answer).length"
+            class="flex flex-wrap items-center gap-3"
+          >
+            <NuxtLink
+              v-for="country in getCountriesForAnswer(answer)"
+              :key="country.code"
+              class="label-jurisdiction inline-flex items-center whitespace-nowrap text-cold-night hover:text-cold-purple"
+              :to="`/question/${country.code}${questionSuffix}`"
+            >
+              <img
+                :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
+                class="mb-0.5 mr-1.5 h-3"
+                :alt="country.code + ' flag'"
+                @error="
+                  (e) => {
+                    e.target.style.display = 'none';
+                  }
+                "
+              >
+              {{ country.name }}
+            </NuxtLink>
+          </div>
+          <div v-else class="copy">No jurisdictions</div>
+        </DetailRow>
+      </div>
     </div>
-  </div>
+  </UCard>
 </template>
 
 <script setup>
@@ -118,16 +116,13 @@ function getCountriesForAnswer(answer) {
 </script>
 
 <style scoped>
-.comparison-title {
-  color: var(--color-cold-purple) !important;
-}
-
 .region-badge {
-  @apply flex items-center gap-1 rounded-full border border-cold-teal px-3 py-1.5 text-xs uppercase text-cold-teal transition-colors hover:bg-cold-teal/10;
-  font-weight: 500;
+  @apply flex items-center gap-1 rounded-full bg-cold-teal/10 px-3 py-1.5 text-xs text-cold-teal transition-colors hover:bg-cold-teal/20;
+  font-weight: 400;
 }
 
 .region-badge-active {
-  @apply bg-cold-teal text-white;
+  @apply bg-cold-teal/20 text-cold-teal;
+  font-weight: 500;
 }
 </style>

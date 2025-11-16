@@ -24,7 +24,10 @@ const fetchQuestionCountries = async ({ suffix }: { suffix: string }) => {
     : [];
 
   let questionTitle = "";
-  if (dataWithSuffix.length > 0 && typeof dataWithSuffix[0].Question === "string") {
+  if (
+    dataWithSuffix.length > 0 &&
+    typeof dataWithSuffix[0].Question === "string"
+  ) {
     questionTitle = dataWithSuffix[0].Question;
   }
 

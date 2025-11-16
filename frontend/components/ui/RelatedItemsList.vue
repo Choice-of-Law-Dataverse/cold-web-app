@@ -23,7 +23,7 @@
           :style="{ fontWeight: '500' }"
           @click="showAll = !showAll"
         >
-          {{ showAll ? 'Show less' : 'Show more' }}
+          {{ showAll ? "Show less" : "Show more" }}
         </button>
       </div>
     </div>
