@@ -91,7 +91,7 @@ function selectRegion(region) {
 
 function getCountriesForAnswer(answer) {
   const allAnswers = questionData.value?.answers || [];
-  
+
   // Filter by answer
   let filtered = allAnswers.filter(
     (item) => typeof item.Answer === "string" && item.Answer === answer,
