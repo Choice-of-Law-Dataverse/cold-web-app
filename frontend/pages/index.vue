@@ -2,22 +2,23 @@
   <!-- Header Section -->
   <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
     <div class="col-span-12">
-      <div class="mb-3 text-[60px] font-bold leading-[68px] md:text-left">
-        Choice of Law<br >
-        Dataverse
+      <div
+        class="text-pretty text-[60px] font-bold leading-[68px] md:text-left"
+      >
+        Choice of Law Dataverse
       </div>
     </div>
 
     <div class="col-span-12">
       <div
-        class="mb-6 flex w-full flex-col justify-between gap-2 pb-4 pt-4 sm:flex-row sm:items-center"
+        class="mb-6 flex w-full flex-col justify-between gap-2 sm:flex-row sm:items-center"
       >
-        <h2 class="text-xl font-medium md:text-left">
+        <h2 class="text-pretty text-xl font-medium md:text-left">
           <span>
             Navigate private international law issues with precision.
 
             <NuxtLink class="suggestion-button" to="/about" variant="link">
-              <span>Read more </span>
+              <span>Read&nbsp;more</span>
             </NuxtLink>
           </span>
         </h2>
