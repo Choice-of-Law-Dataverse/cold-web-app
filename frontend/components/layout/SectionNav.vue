@@ -7,9 +7,7 @@
           :key="link.key"
           :class="[
             'result-value-small cursor-pointer whitespace-nowrap',
-            activeTab === link.key
-              ? 'active font-bold text-cold-purple'
-              : 'text-cold-night',
+            activeTab === link.key ? 'active font-bold' : 'text-cold-night',
           ]"
           @click="setActiveTab(link.path)"
         >
@@ -48,8 +46,8 @@ const setActiveTab = (path) => {
 
 <style scoped>
 .nav-wrapper {
-  position: relative !important;
-  z-index: 0 !important;
+  position: relative;
+  z-index: 0;
   margin-bottom: -1.5em;
 
   overflow-x: auto;
@@ -69,52 +67,23 @@ ul {
   border-bottom: 0 solid var(--color-cold-gray);
 }
 
-ul::before {
-  content: "";
-  position: absolute;
-  bottom: 39px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background-color: var(--color-cold-gray);
-  z-index: -1;
-}
-
 ul::-webkit-scrollbar {
   display: none;
 }
 
-li {
-  position: relative !important;
-  z-index: 1 !important;
-}
-
 li.active {
-  z-index: 2 !important;
-}
-
-li.active::after {
-  content: "";
-  position: absolute !important;
-  left: 0;
-  bottom: -9px;
-  width: 100%;
-  height: 1px;
-  background-color: var(--color-cold-purple);
-  z-index: 3 !important;
-  pointer-events: none;
-}
-
-.list-none {
-  list-style: none !important;
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--color-cold-purple);
 }
 
 .flex li {
   padding: 0.5rem 1.5rem;
 }
 
-::v-deep(ul) {
-  list-style-type: disc !important;
-  padding-left: 12px !important;
-}
+/* ::v-deep(ul) {
+  list-style-type: disc;
+  padding-left: 12px;
+} */
 </style>

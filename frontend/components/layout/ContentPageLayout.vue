@@ -29,41 +29,44 @@ defineProps({
 </script>
 
 <style scoped>
-::v-deep(ul) {
-  list-style-type: disc !important;
-  padding-left: 12px !important;
+ul {
+  list-style-type: disc;
+  padding-left: 12px;
 }
 
 /* Hierarchical numbering styles - only applied when prop is true */
 .hierarchical-numbering {
+  /* Initialize the counter once at the container level */
+  counter-reset: list-counter;
+
   /* Add consistent spacing between list items */
   ::v-deep(ol > li),
   ::v-deep(ol ol > li),
-  ::v-deep(ol ol ol > li),
-  ::v-deep(ol ol ol ol > li) {
-    margin-bottom: 24px !important;
+  ::v-deep(ol ol ol > li) {
+    margin-bottom: 24px;
   }
 
-  /* Reset the counter for the top-level list */
+  /* Don't reset the counter for each list */
   ::v-deep(ol) {
-    counter-reset: list-counter;
-    list-style: none !important;
+    list-style: none;
     margin-left: 0;
     padding-left: 0;
   }
 
   ::v-deep(ol > li) {
     counter-increment: list-counter;
+    padding-inline-start: 0px !important;
   }
 
   ::v-deep(ol > li::before) {
-    content: counter(list-counter) ". ";
+    content: counter(list-counter) "";
     font-weight: bold;
+    padding-right: 1em;
   }
 
   ::v-deep(ol ol) {
     counter-reset: sub-list-counter;
-    list-style: none !important;
+    list-style: none;
     margin-left: 24px;
   }
 
@@ -72,13 +75,13 @@ defineProps({
   }
 
   ::v-deep(ol ol > li::before) {
-    content: counter(list-counter) "." counter(sub-list-counter) ". ";
+    content: counter(list-counter) "." counter(sub-list-counter) "";
     font-weight: bold;
   }
 
   ::v-deep(ol ol ol) {
     counter-reset: sub-sub-list-counter;
-    list-style: none !important;
+    list-style: none;
     margin-left: 24px;
   }
 
@@ -88,23 +91,7 @@ defineProps({
 
   ::v-deep(ol ol ol > li::before) {
     content: counter(list-counter) "." counter(sub-list-counter) "."
-      counter(sub-sub-list-counter) ". ";
-    font-weight: bold;
-  }
-
-  ::v-deep(ol ol ol ol) {
-    counter-reset: sub-sub-sub-list-counter;
-    list-style: none !important;
-    margin-left: 24px;
-  }
-
-  ::v-deep(ol ol ol ol > li) {
-    counter-increment: sub-sub-sub-list-counter;
-  }
-
-  ::v-deep(ol ol ol ol > li::before) {
-    content: counter(list-counter) "." counter(sub-list-counter) "."
-      counter(sub-sub-list-counter) "." counter(sub-sub-sub-list-counter) ". ";
+      counter(sub-sub-list-counter) "";
     font-weight: bold;
   }
 }

@@ -175,6 +175,14 @@
         </DetailRow>
       </template>
 
+      <template #country-report>
+        <CountryReportLink
+          :jurisdiction-code="
+            courtDecision?.['Jurisdictions Alpha-3 Code'] as string
+          "
+        />
+      </template>
+
       <template #search-links />
     </BaseDetailLayout>
 
@@ -208,6 +216,7 @@ import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
+import CountryReportLink from "@/components/ui/CountryReportLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useCourtDecision } from "@/composables/useCourtDecision";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
