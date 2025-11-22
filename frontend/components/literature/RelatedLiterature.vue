@@ -3,7 +3,7 @@
     :items="fullLiteratureList"
     :is-loading="isLoading"
     base-path="/literature"
-    entity-type="literature"
+    :entity-type="oupFilter === 'onlyOup' ? 'oup-chapter' : 'literature'"
     :empty-value-behavior="emptyValueBehavior"
   />
 </template>
@@ -27,6 +27,11 @@ const props = defineProps({
     validator: (value) =>
       ["themes", "id", "both", "jurisdiction"].includes(value),
   },
+  oupFilter: {
+    type: String,
+    required: true,
+    validator: (value) => ["onlyOup", "noOup"].includes(value),
+  },
   emptyValueBehavior: {
     type: Object,
     default: () => ({
@@ -36,7 +41,7 @@ const props = defineProps({
   },
 });
 
-const { themes, literatureId, jurisdiction, mode } = toRefs(props);
+const { themes, literatureId, jurisdiction, mode, oupFilter } = toRefs(props);
 
 const { data: literatureFromIds, isLoading: loadingIds } = useLiteratures(
   computed(() =>
@@ -50,6 +55,7 @@ const literatureTitles = computed(() => {
     .map((item) => ({
       id: item?.id,
       title: item?.Title,
+      oupChapter: item?.["OUP JD Chapter"],
     }))
     .filter((item) => item.title);
 });
@@ -88,6 +94,7 @@ const mergedLiterature = computed(() => {
       merged.push({
         id: item?.id,
         title: item?.Title,
+        oupChapter: item?.["OUP JD Chapter"],
       });
       idSet.add(item.id);
     }
@@ -95,7 +102,11 @@ const mergedLiterature = computed(() => {
 
   (literatureFromThemes.value || []).forEach((item) => {
     if (item.id && !idSet.has(item.id)) {
-      merged.push(item);
+      merged.push({
+        id: item?.id,
+        title: item?.title,
+        oupChapter: item?.["OUP JD Chapter"],
+      });
       idSet.add(item.id);
     }
   });
@@ -104,23 +115,40 @@ const mergedLiterature = computed(() => {
 });
 
 const fullLiteratureList = computed(() => {
+  let items = [];
+
   switch (mode.value) {
     case "id":
-      return literatureTitles.value;
+      items = literatureTitles.value;
+      break;
     case "themes":
-      return literatureFromThemes.value || [];
+      items = (literatureFromThemes.value || []).map((item) => ({
+        id: item?.id,
+        title: item?.title,
+        oupChapter: item?.["OUP JD Chapter"],
+      }));
+      break;
     case "jurisdiction":
-      return (literatureFromJurisdiction.value || [])
+      items = (literatureFromJurisdiction.value || [])
         .map((item) => ({
           id: item?.id,
           title: item?.Title,
+          oupChapter: item?.["OUP JD Chapter"],
         }))
         .filter((item) => item.title);
+      break;
     case "both":
-      return mergedLiterature.value;
+      items = mergedLiterature.value;
+      break;
     default:
-      return [];
+      items = [];
   }
+
+  return items.filter((item) =>
+    oupFilter.value === "onlyOup"
+      ? item?.oupChapter === true
+      : !item?.oupChapter,
+  );
 });
 
 const isLoading = computed(() => {
