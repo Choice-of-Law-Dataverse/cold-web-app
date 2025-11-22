@@ -138,11 +138,10 @@ li::marker {
 
 .label-question {
   @extend .label;
-  color: var(--color-label-question);
   padding: 2px 6px;
   background-color: color-mix(
     in srgb,
-    var(--color-label-question) 5%,
+    var(--color-label-question) 8%,
     transparent
   );
   border: none;
@@ -151,7 +150,7 @@ li::marker {
   &:hover {
     background-color: color-mix(
       in srgb,
-      var(--color-label-question) 10%,
+      var(--color-label-question) 12%,
       transparent
     );
   }
@@ -159,11 +158,10 @@ li::marker {
 
 .label-court-decision {
   @extend .label;
-  color: var(--color-label-court-decision);
   padding: 2px 6px;
   background-color: color-mix(
     in srgb,
-    var(--color-label-court-decision) 5%,
+    var(--color-label-court-decision) 8%,
     transparent
   );
   border: none;
@@ -172,7 +170,7 @@ li::marker {
   &:hover {
     background-color: color-mix(
       in srgb,
-      var(--color-label-court-decision) 10%,
+      var(--color-label-court-decision) 12%,
       transparent
     );
   }
@@ -180,11 +178,10 @@ li::marker {
 
 .label-instrument {
   @extend .label;
-  color: var(--color-label-instrument);
   padding: 2px 6px;
   background-color: color-mix(
     in srgb,
-    var(--color-label-instrument) 5%,
+    var(--color-label-instrument) 8%,
     transparent
   );
   border: none;
@@ -193,7 +190,7 @@ li::marker {
   &:hover {
     background-color: color-mix(
       in srgb,
-      var(--color-label-instrument) 10%,
+      var(--color-label-instrument) 12%,
       transparent
     );
   }
@@ -201,11 +198,10 @@ li::marker {
 
 .label-literature {
   @extend .label;
-  color: var(--color-label-literature);
   padding: 2px 6px;
   background-color: color-mix(
     in srgb,
-    var(--color-label-literature) 5%,
+    var(--color-label-literature) 8%,
     transparent
   );
   border: none;
@@ -214,7 +210,7 @@ li::marker {
   &:hover {
     background-color: color-mix(
       in srgb,
-      var(--color-label-literature) 10%,
+      var(--color-label-literature) 12%,
       transparent
     );
   }
@@ -222,11 +218,10 @@ li::marker {
 
 .label-arbitration {
   @extend .label;
-  color: var(--color-label-arbitration);
   padding: 2px 6px;
   background-color: color-mix(
     in srgb,
-    var(--color-label-arbitration) 5%,
+    var(--color-label-arbitration) 8%,
     transparent
   );
   border: none;
@@ -235,7 +230,7 @@ li::marker {
   &:hover {
     background-color: color-mix(
       in srgb,
-      var(--color-label-arbitration) 10%,
+      var(--color-label-arbitration) 12%,
       transparent
     );
   }
@@ -243,7 +238,6 @@ li::marker {
 
 .label-theme {
   @extend .label;
-  color: var(--color-cold-night);
   background-color: color-mix(
     in srgb,
     var(--color-cold-night-alpha-25) 20%,

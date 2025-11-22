@@ -35,6 +35,7 @@
               <img
                 :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
                 class="mb-0.5 mr-1.5 h-3"
+                style="filter: saturate(0.7)"
                 :alt="country.code + ' flag'"
                 @error="
                   (e) => {
