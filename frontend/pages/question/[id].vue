@@ -78,15 +78,7 @@
       </template>
 
       <template #country-report>
-        <DetailRow label="Country Report" class="mb-4">
-          <NuxtLink
-            v-if="countryReportLink"
-            :to="countryReportLink"
-            class="result-value-small text-cold-purple hover:text-cold-purple"
-          >
-            View full questionnaire for {{ processedAnswerData?.Jurisdictions }}
-          </NuxtLink>
-        </DetailRow>
+        <CountryReportLink :jurisdiction-code="jurisdictionCode as string" />
       </template>
     </BaseDetailLayout>
     <QuestionJurisdictions
@@ -117,6 +109,7 @@ import QuestionJurisdictions from "@/components/ui/QuestionJurisdictions.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useAnswer } from "@/composables/useAnswer";
 import { questionConfig } from "@/config/pageConfigs";
+import CountryReportLink from "~/components/ui/CountryReportLink.vue";
 
 interface AnswerData {
   Question?: string;
@@ -179,18 +172,6 @@ const jurisdictionCode = computed(() => {
     processedAnswerData.value?.["Jurisdictions Alpha-3 code"] ||
     processedAnswerData.value?.["Jurisdictions Alpha-3 Code"]
   );
-});
-
-const countryReportLink = computed(() => {
-  const code = jurisdictionCode.value;
-  if (!code || typeof code !== "string") return null;
-
-  const baseLink = `/jurisdiction/${code.toLowerCase()}`;
-  if (questionSuffix.value) {
-    // Remove the leading underscore from questionSuffix for the hash
-    return `${baseLink}#question-${questionSuffix.value.substring(1)}`;
-  }
-  return baseLink;
 });
 
 onMounted(async () => {

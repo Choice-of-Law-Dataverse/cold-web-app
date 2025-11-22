@@ -350,6 +350,13 @@ export const legalInstrumentConfig = {
       tooltip: tooltipDomesticInstrumentSelectedProvisions,
       emptyValueBehavior: { action: "hide" },
     },
+    {
+      key: "Country Report",
+      label: "Country Report",
+      emptyValueBehavior: {
+        shouldDisplay: () => true, // Always display this slot
+      },
+    },
   ],
   valueClassMap: {
     "Title (in English)": "result-value-medium",
@@ -368,6 +375,7 @@ export const legalInstrumentConfig = {
     Themes: "result-value-small",
     "Manual Tags": "result-value-small",
     "Related Literature": "result-value-small",
+    "Country Report": "result-value-small",
   },
 };
 
@@ -669,6 +677,13 @@ export const courtDecisionConfig = {
       tooltip: tooltipCourtDecisionRelatedLiterature,
       emptyValueBehavior: { action: "hide" },
     },
+    {
+      key: "Country Report",
+      label: "Country Report",
+      emptyValueBehavior: {
+        shouldDisplay: () => true, // Always display this slot
+      },
+    },
   ],
   valueClassMap: {
     "Case Title": "result-value-medium",
@@ -688,6 +703,7 @@ export const courtDecisionConfig = {
     "Related Literature": "result-value-small",
     "Related Questions": "result-value-small",
     "Domestic Legal Provisions": "result-value-small",
+    "Country Report": "result-value-small",
   },
 };
 

@@ -124,10 +124,15 @@
           </div>
         </DetailRow>
       </template>
+
+      <template #country-report>
+        <CountryReportLink
+          :jurisdiction-code="
+            processedLegalInstrument?.['Jurisdictions Alpha-3 Code'] as string
+          "
+        />
+      </template>
     </BaseDetailLayout>
-    <CountryReportLink
-      :processed-answer-data="processedLegalInstrument || {}"
-    />
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
@@ -164,6 +169,7 @@ interface LegalInstrumentRecord {
   "Compatible With the UNCITRAL Model Law"?: boolean | string;
   "Compatible With the HCCH Principles"?: boolean | string;
   "Ranking (Display Order)"?: string;
+  "Jurisdictions Alpha-3 Code"?: string;
   [key: string]: unknown;
 }
 

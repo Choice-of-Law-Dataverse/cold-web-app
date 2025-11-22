@@ -1,46 +1,43 @@
 <template>
-  <UCard class="cold-ucard">
-    <div class="flex flex-col gap-8">
-      <!-- Title Section -->
-      <div>
-        <h3 class="mb-1 text-left md:whitespace-nowrap">
-          <NuxtLink v-if="jurisdictionCode" :to="countryReportLink">
-            Country report for
-            {{ processedAnswerData?.Jurisdictions || "this jurisdiction" }}
-          </NuxtLink>
-          <span v-else>
-            Country report for
-            {{ processedAnswerData?.Jurisdictions || "this jurisdiction" }}
-          </span>
-        </h3>
-        <span class="result-value-small">
-          The country report provides detailed information, answers, and more on
-          {{ processedAnswerData?.Jurisdictions || "this jurisdiction" }}
-        </span>
-      </div>
-    </div>
-  </UCard>
+  <DetailRow label="Country Report" class="mb-4">
+    <NuxtLink
+      v-if="countryReportLink"
+      :to="countryReportLink"
+      class="inline-flex items-center gap-2 rounded-full bg-cold-purple/5 px-3 py-1 text-sm text-cold-purple transition-colors hover:bg-cold-purple/10"
+      :style="{ fontWeight: '500' }"
+    >
+      <img
+        v-if="props.jurisdictionCode"
+        :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${props.jurisdictionCode.toLowerCase()}.svg`"
+        :alt="`${jurisdictionName} flag`"
+        class="h-4 w-4"
+      >
+      Full questionnaire for {{ jurisdictionName }}
+    </NuxtLink>
+  </DetailRow>
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, toRef } from "vue";
 import { useRoute } from "vue-router";
+import DetailRow from "@/components/ui/DetailRow.vue";
+import { useJurisdiction } from "@/composables/useJurisdictions";
 
 const route = useRoute();
 
 const props = defineProps({
-  processedAnswerData: {
-    type: Object,
-    required: false,
-    default: () => ({}),
+  jurisdictionCode: {
+    type: String,
+    required: true,
   },
 });
 
-const jurisdictionCode = computed(() => {
-  return (
-    props.processedAnswerData?.["Jurisdictions Alpha-3 code"] ||
-    props.processedAnswerData?.["Jurisdictions Alpha-3 Code"]
-  );
+const jurisdictionCodeRef = toRef(() => props.jurisdictionCode);
+
+const { data: jurisdiction } = useJurisdiction(jurisdictionCodeRef);
+
+const jurisdictionName = computed(() => {
+  return jurisdiction.value?.Name || "this jurisdiction";
 });
 
 const questionId = computed(() => {
@@ -58,16 +55,11 @@ const questionId = computed(() => {
 });
 
 const countryReportLink = computed(() => {
-  const baseLink = `/jurisdiction/${jurisdictionCode.value?.toLowerCase()}`;
+  if (!props.jurisdictionCode) return null;
+  const baseLink = `/jurisdiction/${props.jurisdictionCode.toLowerCase()}`;
   if (questionId.value) {
     return `${baseLink}#question-${questionId.value}`;
   }
   return baseLink;
 });
 </script>
-
-<style scoped>
-h3 {
-  color: var(--color-cold-purple) !important;
-}
-</style>
