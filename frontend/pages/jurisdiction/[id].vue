@@ -114,14 +114,19 @@
             <div class="col-span-12">
               <UCard class="cold-ucard">
                 <div>
-                  <h2 class="mb-8 mt-2">
-                    Questions and Answers
-                    {{
-                      jurisdictionData?.Name
-                        ? `for ${jurisdictionData.Name}`
-                        : ""
-                    }}
-                  </h2>
+                  <div class="flex justify-between">
+                    <h3 class="comparison-title mb-4">Questionnaire</h3>
+                    <span
+                      class="mb-4 flex flex-wrap gap-4 text-sm text-cold-purple"
+                    >
+                      <NuxtLink to="/learn/methodology" class="hover:underline">
+                        Methodology
+                      </NuxtLink>
+                      <NuxtLink to="/learn/glossary" class="hover:underline">
+                        Glossary
+                      </NuxtLink>
+                    </span>
+                  </div>
                   <div class="ml-8 flex flex-col space-y-3 py-8">
                     <LoadingBar />
                     <LoadingBar />
