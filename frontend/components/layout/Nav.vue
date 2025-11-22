@@ -538,6 +538,13 @@ a {
   text-decoration-color: var(--color-cold-purple) !important;
 }
 
+:deep(.custom-nav-links:hover) {
+  text-decoration: underline !important;
+  text-underline-offset: 6px !important;
+  text-decoration-thickness: 2px !important;
+  text-decoration-color: var(--color-cold-purple) !important;
+}
+
 .bg-purple-active {
   background-color: var(--color-cold-purple-alpha) !important;
 }
