@@ -6,6 +6,7 @@ interface LiteratureItem {
   id: string;
   Title?: string;
   title?: string;
+  "OUP JD Chapter"?: boolean;
 }
 
 export function useLiteratureByTheme(themes: Ref<string | undefined>) {
@@ -30,6 +31,7 @@ export function useLiteratureByTheme(themes: Ref<string | undefined>) {
         return {
           id: litItem.id,
           title: litItem.Title || litItem.title || "Untitled",
+          "OUP JD Chapter": litItem["OUP JD Chapter"],
         };
       });
   });

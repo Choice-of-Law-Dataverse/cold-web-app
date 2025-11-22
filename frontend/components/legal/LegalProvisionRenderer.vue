@@ -1,56 +1,21 @@
 <template>
-  <template v-for="(prov, index) in processedProvisions" :key="index">
-    <template v-if="renderAsLi">
-      <li>
-        <NuxtLink
-          class="text-cold-purple"
-          :to="generateLegalProvisionLink(prov.raw)"
-        >
-          <template v-if="instrumentTitles[prov.instrumentId]">
-            <template v-if="!skipArticle">
-              {{ formatArticle(prov.articleId) }},
-              {{ instrumentTitles[prov.instrumentId] }}
-            </template>
-            <template v-else>
-              {{ instrumentTitles[prov.instrumentId] }}
-            </template>
-          </template>
-          <template v-else>
-            <LoadingBar class="pt-[9px]" />
-          </template>
-        </NuxtLink>
-      </li>
-    </template>
-    <template v-else>
-      <NuxtLink
-        class="text-cold-purple"
-        :to="generateLegalProvisionLink(prov.raw)"
-      >
-        <template v-if="instrumentTitles[prov.instrumentId]">
-          <template v-if="!skipArticle">
-            {{ formatArticle(prov.articleId) }},
-            {{ instrumentTitles[prov.instrumentId] }}
-          </template>
-          <template v-else>
-            {{ instrumentTitles[prov.instrumentId] }}
-          </template>
-        </template>
-        <template v-else>
-          <LoadingBar class="pt-[9px]" />
-        </template>
-      </NuxtLink>
-    </template>
-  </template>
+  <RelatedItemsList
+    :items="formattedItems"
+    :is-loading="isLoading"
+    :base-path="basePath"
+    entity-type="instrument"
+    :empty-value-behavior="{ action: 'hide' }"
+  />
 </template>
 
 <script setup>
-import { computed, watch } from "vue";
+import { computed } from "vue";
 import {
   generateLegalProvisionLink,
   parseLegalProvisionLink,
 } from "@/utils/legal";
 import { useRecordDetailsList } from "@/composables/useRecordDetails";
-import LoadingBar from "@/components/layout/LoadingBar.vue";
+import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 
 const props = defineProps({
   value: {
@@ -129,18 +94,30 @@ const instrumentTitles = computed(() => {
 
 const formatArticle = (article) =>
   article ? article.replace(/(Art\.)(\d+)/, "$1 $2") : "";
-watch(
-  processedProvisions,
-  () => {
-    /* IDs are computed reactively; useRecordDetailsList handles fetching */
-  },
-  { immediate: true },
-);
-</script>
 
-<style scoped>
-li {
-  list-style-type: disc;
-  margin-left: 20px;
-}
-</style>
+const isLoading = computed(() => {
+  return processedProvisions.value.some(
+    (prov) => !instrumentTitles.value[prov.instrumentId],
+  );
+});
+
+const basePath = computed(() => "");
+
+const formattedItems = computed(() => {
+  return processedProvisions.value
+    .map((prov) => {
+      const title = instrumentTitles.value[prov.instrumentId];
+      if (!title) return null;
+
+      const displayTitle = props.skipArticle
+        ? title
+        : `${formatArticle(prov.articleId)}, ${title}`;
+
+      return {
+        id: generateLegalProvisionLink(prov.raw),
+        title: displayTitle,
+      };
+    })
+    .filter(Boolean);
+});
+</script>

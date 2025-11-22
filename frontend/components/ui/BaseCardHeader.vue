@@ -776,9 +776,4 @@ a.label-arbitration {
   color: var(--color-cold-purple);
   transition: transform 0.3s ease;
 }
-
-.action-button {
-  @apply flex items-center gap-1 rounded-full px-2 py-1 text-xs uppercase text-cold-purple transition-colors hover:bg-cold-purple/10;
-  font-weight: 500;
-}
 </style>

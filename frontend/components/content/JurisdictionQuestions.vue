@@ -1,15 +1,33 @@
 <template>
   <UCard id="questions-and-answers" class="cold-ucard overflow-visible">
     <div class="overflow-hidden">
-      <h2 class="mb-8 mt-2">Questions and Answers {{ jurisdictionName }}</h2>
+      <div class="flex justify-between">
+        <h3 class="comparison-title mb-4">Questionnaire</h3>
+        <span class="mb-4 flex flex-wrap gap-2">
+          <NuxtLink to="/learn/methodology" type="button" class="action-button">
+            <UIcon
+              :name="'i-material-symbols:school-outline'"
+              class="inline-block text-[1.2em]"
+            />
+            Methodology
+          </NuxtLink>
+          <NuxtLink to="/learn/glossary" type="button" class="action-button">
+            <UIcon
+              :name="'i-material-symbols:dictionary-outline'"
+              class="inline-block text-[1.2em]"
+            />
+            Glossary
+          </NuxtLink>
+        </span>
+      </div>
 
       <div v-if="!isSingleJurisdiction || allJurisdictionsData" class="mb-6">
         <div
           class="flex flex-col items-stretch gap-4 md:flex-row md:items-center"
         >
-          <h3 class="text-left text-base md:whitespace-nowrap">
+          <h4 class="text-left text-base md:whitespace-nowrap">
             Add comparison with
-          </h3>
+          </h4>
 
           <div
             v-if="!jurisdictionsLoading"
@@ -392,15 +410,6 @@ const { data: answersMap, isLoading: answersLoading } =
 const loading = computed(() => questionsLoading.value);
 
 const isSingleJurisdiction = computed(() => jurisdictions.value.length === 1);
-
-const jurisdictionName = computed(() => {
-  if (isSingleJurisdiction.value) {
-    return props.primaryJurisdiction?.Name
-      ? `for ${props.primaryJurisdiction.Name}`
-      : "";
-  }
-  return `- Comparison`;
-});
 
 const getAnswerLink = (alpha3Code: string, questionId: string) => {
   return `/question/${alpha3Code}_${questionId}`;

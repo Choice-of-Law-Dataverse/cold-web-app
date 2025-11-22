@@ -53,6 +53,31 @@
 
           <DetailRow
             :label="
+              keyLabelPairs.find((pair) => pair.key === 'OUP Chapter')?.label ||
+              'OUP Chapter'
+            "
+            :tooltip="
+              jurisdictionConfig.keyLabelPairs.find(
+                (pair) => pair.key === 'OUP Chapter',
+              )?.tooltip
+            "
+          >
+            <RelatedLiterature
+              :literature-id="(jurisdictionData?.Literature as string) || ''"
+              :mode="'both'"
+              :oup-filter="'onlyOup'"
+              :jurisdiction="jurisdictionData?.Name as string"
+              :use-id="true"
+              :value-class-map="valueClassMap['Related Literature']"
+              :empty-value-behavior="{
+                action: 'display',
+                fallback: 'No OUP chapters available',
+              }"
+            />
+          </DetailRow>
+
+          <DetailRow
+            :label="
               keyLabelPairs.find((pair) => pair.key === 'Related Literature')
                 ?.label || 'Related Literature'
             "
@@ -67,12 +92,12 @@
               :value-class-map="valueClassMap['Related Literature']"
               :use-id="true"
               :jurisdiction="jurisdictionData?.Name as string"
-              :empty-value-behavior="
-                jurisdictionConfig.keyLabelPairs.find(
-                  (pair) => pair.key === 'Related Literature',
-                )?.emptyValueBehavior
-              "
+              :empty-value-behavior="{
+                action: 'display',
+                fallback: 'No related literature available',
+              }"
               :mode="'both'"
+              :oup-filter="'noOup'"
             />
           </DetailRow>
         </div>
@@ -89,14 +114,19 @@
             <div class="col-span-12">
               <UCard class="cold-ucard">
                 <div>
-                  <h2 class="mb-8 mt-2">
-                    Questions and Answers
-                    {{
-                      jurisdictionData?.Name
-                        ? `for ${jurisdictionData.Name}`
-                        : ""
-                    }}
-                  </h2>
+                  <div class="flex justify-between">
+                    <h3 class="comparison-title mb-4">Questionnaire</h3>
+                    <span
+                      class="mb-4 flex flex-wrap gap-4 text-sm text-cold-purple"
+                    >
+                      <NuxtLink to="/learn/methodology" class="hover:underline">
+                        Methodology
+                      </NuxtLink>
+                      <NuxtLink to="/learn/glossary" class="hover:underline">
+                        Glossary
+                      </NuxtLink>
+                    </span>
+                  </div>
                   <div class="ml-8 flex flex-col space-y-3 py-8">
                     <LoadingBar />
                     <LoadingBar />
