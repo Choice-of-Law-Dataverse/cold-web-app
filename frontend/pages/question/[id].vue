@@ -25,7 +25,7 @@
             "
             :fallback-data="answerData"
             :value-class-map="valueClassMap"
-            :fetch-oup-chapter="true"
+            :fetch-oup-chapter="false"
             :fetch-primary-source="true"
           />
         </DetailRow>
@@ -52,6 +52,29 @@
         </DetailRow>
       </template>
 
+      <template #oup-chapter>
+        <DetailRow
+          :label="keyLabelLookup.get('OUP Chapter')?.label || 'OUP Chapter'"
+          :tooltip="keyLabelLookup.get('OUP Chapter')?.tooltip"
+        >
+          <RelatedLiterature
+            :themes="processedAnswerData?.Themes"
+            :literature-id="
+              processedAnswerData?.['Jurisdictions Literature ID']
+            "
+            :jurisdiction="processedAnswerData?.Jurisdictions"
+            :mode="'both'"
+            :value-class-map="valueClassMap['OUP Chapter']"
+            :empty-value-behavior="
+              questionConfig.keyLabelPairs.find(
+                (pair) => pair.key === 'OUP Chapter',
+              )?.emptyValueBehavior
+            "
+            :oup-filter="'onlyOup'"
+          />
+        </DetailRow>
+      </template>
+
       <template #related-literature>
         <DetailRow
           :label="
@@ -73,6 +96,7 @@
                 (pair) => pair.key === 'Related Literature',
               )?.emptyValueBehavior
             "
+            :oup-filter="'noOup'"
           />
         </DetailRow>
       </template>

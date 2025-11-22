@@ -53,6 +53,31 @@
 
           <DetailRow
             :label="
+              keyLabelPairs.find((pair) => pair.key === 'OUP Chapter')?.label ||
+              'OUP Chapter'
+            "
+            :tooltip="
+              jurisdictionConfig.keyLabelPairs.find(
+                (pair) => pair.key === 'OUP Chapter',
+              )?.tooltip
+            "
+          >
+            <RelatedLiterature
+              :literature-id="(jurisdictionData?.Literature as string) || ''"
+              :mode="'both'"
+              :oup-filter="'onlyOup'"
+              :jurisdiction="jurisdictionData?.Name as string"
+              :use-id="true"
+              :value-class-map="valueClassMap['Related Literature']"
+              :empty-value-behavior="{
+                action: 'display',
+                fallback: 'No OUP chapters available',
+              }"
+            />
+          </DetailRow>
+
+          <DetailRow
+            :label="
               keyLabelPairs.find((pair) => pair.key === 'Related Literature')
                 ?.label || 'Related Literature'
             "
@@ -67,12 +92,12 @@
               :value-class-map="valueClassMap['Related Literature']"
               :use-id="true"
               :jurisdiction="jurisdictionData?.Name as string"
-              :empty-value-behavior="
-                jurisdictionConfig.keyLabelPairs.find(
-                  (pair) => pair.key === 'Related Literature',
-                )?.emptyValueBehavior
-              "
+              :empty-value-behavior="{
+                action: 'display',
+                fallback: 'No related literature available',
+              }"
               :mode="'both'"
+              :oup-filter="'noOup'"
             />
           </DetailRow>
         </div>

@@ -139,6 +139,11 @@ export const jurisdictionConfig = {
       emptyValueBehavior: { action: "hide" },
     },
     {
+      key: "OUP Chapter",
+      label: "OUP Chapter",
+      emptyValueBehavior: { action: "hide" },
+    },
+    {
       key: "Related Data",
       label: "Related Data",
       tooltip: tooltipJurisdictionRelatedData,
@@ -186,23 +191,12 @@ export const questionConfig = {
         fallback: "No source available",
       },
     },
-    {
-      key: "Last Modified",
-      label: "Last Updated",
-      emptyValueBehavior: {
-        action: "hide",
-        shouldDisplay: (data) => {
-          const lm = data && data["Last Modified"];
-          if (typeof formatYear === "function") {
-            return !!formatYear(lm);
-          }
-          return !!(lm && !isNaN(new Date(lm)));
-        },
-      },
-      valueTransform: (val) =>
-        typeof formatDate === "function" ? formatDate(val) : val,
-    },
 
+    {
+      key: "OUP Chapter",
+      label: "OUP Chapter",
+      emptyValueBehavior: { action: "show" },
+    },
     {
       key: "OUP Book Quote",
       label: "OUP Book Quote",
@@ -235,6 +229,22 @@ export const questionConfig = {
       },
     },
     {
+      key: "Last Modified",
+      label: "Last Updated",
+      emptyValueBehavior: {
+        action: "hide",
+        shouldDisplay: (data) => {
+          const lm = data && data["Last Modified"];
+          if (typeof formatYear === "function") {
+            return !!formatYear(lm);
+          }
+          return !!(lm && !isNaN(new Date(lm)));
+        },
+      },
+      valueTransform: (val) =>
+        typeof formatDate === "function" ? formatDate(val) : val,
+    },
+    {
       key: "Created",
       label: "Last Updated",
       emptyValueBehavior: {
@@ -264,6 +274,7 @@ export const questionConfig = {
     "OUP Book Quote": "result-value-small",
     "Court Decisions ID": "result-value-small",
     "Related Literature": "result-value-small",
+    "OUP Chapter": "result-value-small",
     "Country Report": "result-value-small",
     "Last Modified": "result-value-small",
   },
@@ -351,6 +362,11 @@ export const legalInstrumentConfig = {
       emptyValueBehavior: { action: "hide" },
     },
     {
+      key: "OUP Chapter",
+      label: "OUP Chapter",
+      emptyValueBehavior: { action: "hide" },
+    },
+    {
       key: "Country Report",
       label: "Country Report",
       emptyValueBehavior: {
@@ -375,6 +391,7 @@ export const legalInstrumentConfig = {
     Themes: "result-value-small",
     "Manual Tags": "result-value-small",
     "Related Literature": "result-value-small",
+    "OUP Chapter": "result-value-small",
     "Country Report": "result-value-small",
   },
 };
@@ -415,6 +432,11 @@ export const regionalInstrumentConfig = {
       emptyValueBehavior: { action: "hide" },
     },
     {
+      key: "OUP Chapter",
+      label: "OUP Chapter",
+      emptyValueBehavior: { action: "hide" },
+    },
+    {
       key: "Regional Legal Provisions",
       label: "Selected Provisions",
       tooltip: tooltipRegionalInstrumentSelectedProvisions,
@@ -426,6 +448,7 @@ export const regionalInstrumentConfig = {
     Title: "result-value-small",
     Date: "result-value-small",
     "Related Literature": "result-value-small",
+    "OUP Chapter": "result-value-small",
     "Regional Legal Provisions": "result-value-small",
   },
 };
@@ -461,6 +484,11 @@ export const internationalInstrumentConfig = {
       emptyValueBehavior: { action: "hide" },
     },
     {
+      key: "OUP Chapter",
+      label: "OUP Chapter",
+      emptyValueBehavior: { action: "hide" },
+    },
+    {
       key: "Selected Provisions",
       label: "Selected Provisions",
       tooltip: tooltipInternationalInstrumentSelectedProvisions,
@@ -472,6 +500,7 @@ export const internationalInstrumentConfig = {
     Date: "result-value-small",
     Specialists: "result-value-small",
     "Related Literature": "result-value-small",
+    "OUP Chapter": "result-value-small",
     "Selected Provisions": "result-value-small",
   },
 };
@@ -678,6 +707,11 @@ export const courtDecisionConfig = {
       emptyValueBehavior: { action: "hide" },
     },
     {
+      key: "OUP Chapter",
+      label: "OUP Chapter",
+      emptyValueBehavior: { action: "hide" },
+    },
+    {
       key: "Country Report",
       label: "Country Report",
       emptyValueBehavior: {
@@ -701,6 +735,7 @@ export const courtDecisionConfig = {
     "Case Citation": "result-value-small-citation",
     "Original Text": "result-value-small",
     "Related Literature": "result-value-small",
+    "OUP Chapter": "result-value-small",
     "Related Questions": "result-value-small",
     "Domestic Legal Provisions": "result-value-small",
     "Country Report": "result-value-small",
