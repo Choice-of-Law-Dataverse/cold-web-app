@@ -104,9 +104,9 @@
           class="desktop-logo absolute left-1/2 top-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center"
         >
           <img
-            src="https://choiceoflaw.blob.core.windows.net/assets/cold_beta_logo.svg"
+            src="https://choiceoflaw.blob.core.windows.net/assets/cold_logo.svg"
             alt="CoLD Logo"
-            class="mb-4 h-12 w-auto"
+            class="h-12 w-auto"
           >
         </NuxtLink>
         <!-- Inline mobile logo for horizontal arrangement -->
@@ -117,7 +117,7 @@
           aria-label="Home"
         >
           <img
-            src="https://choiceoflaw.blob.core.windows.net/assets/cold_beta_logo.svg"
+            src="https://choiceoflaw.blob.core.windows.net/assets/cold_logo.svg"
             alt="CoLD Logo"
             class="h-10 w-auto"
           >
