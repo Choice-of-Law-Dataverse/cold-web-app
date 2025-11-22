@@ -16,7 +16,7 @@ title: Methodology — CoLD
 
 1. Do the courts have the authority to [refer to](/learn/glossary#refer-to-an-instrument) the HCCH Principles as [persuasive authority](/learn/glossary#persuasive-authority)?
 
-   ### Party Autonomy and Freedom of Choice
+### Party Autonomy and Freedom of Choice
 
 1. Is the principle of [party autonomy](/learn/glossary#party-autonomy) in respect of choice of law in [international commercial contracts](/learn/glossary#international-commercial-contracts) widely accepted in your jurisdiction?
 1. More specifically, are the parties to an [international commercial contract](/learn/glossary#international-commercial-contracts) allowed to choose the law [applicable to their contract](/learn/glossary#observance-of-a-choice-of-law-clause)?
@@ -31,7 +31,9 @@ title: Methodology — CoLD
 1. Are the parties allowed to choose [non-State law (“rules of law”)](/learn/glossary#non-state-law-rules-of-law) to govern their contract?
 1. Are there any particular requirements or restrictions with regard to the eligible [rules of law](/learn/glossary#non-state-law-rules-of-law)?
 1. Are the parties allowed to incorporate rules of law into their contract [by way of reference](/learn/glossary#incorporate-rules-by-way-of-reference)? Are there any requirements for the effective incorporation of such rules?
-   ### Express and Tacit Choice
+
+### Express and Tacit Choice
+
 1. Does your jurisdiction require a choice of law to be made [expressly](/learn/glossary#express-choice)?
 1. Can a choice of law be made tacitly?
 1. Is [tacit choice](/learn/glossary#tacit-choice) of law clearly distinguished from the position where there is no choice of law?
@@ -46,27 +48,37 @@ title: Methodology — CoLD
 1. May the parties choose [non-State law](/learn/glossary#non-state-law-rules-of-law) [tacitly](/learn/glossary#tacit-choice)?
 1. Do the courts in your jurisdiction readily admit the existence of a [tacit choice](/learn/glossary#tacit-choice) of law?
 1. Is the notion of a tacit choice of law supported in legal literature?
-   ### Mandatory Rules
+
+### Mandatory Rules
+
 1. Is there a concept of “overriding mandatory [mandatory rule](/learn/glossary#mandatory-rules) provision” in your jurisdiction? (e.g., “a substantive law rule that applies irrespective of the law chosen by the parties”)
 1. Do the courts in your jurisdiction apply overriding mandatory provisions of the law of the forum under certain circumstances? If the courts in your jurisdiction sometimes apply overriding mandatory provisions of the law of the forum, under which circumstances will this be the case?
 1. Do the courts **apply** overriding mandatory provisions **of other jurisdictions**? Do the courts **take into account** overriding mandatory provisions of other jurisdictions?
-   ### Public Policy
+
+### Public Policy
+
 1. Is “[public policy](/learn/glossary#public-policy)” used in your jurisdiction in the context of cross-border legal relations?
 1. Is there a particular notion or understanding of [public policy](/learn/glossary#public-policy) with regard to the field of commercial law?
 1. Do the courts exclude the application of a provision of the law chosen by the parties if the result of such application would be manifestly incompatible with the [public policy](/learn/glossary#public-policy) of the forum?
 1. Do the courts apply or take into account the [public policy](/learn/glossary#public-policy) of a State whose law would be applicable in the absence of a choice of law?
-   ### Arbitration
+
+### Arbitration
+
 1. Do arbitral tribunals have the authority to apply the HCCH Principles?
 1. Do arbitral tribunals apply or take into account overriding mandatory provisions or the [public policy](/learn/glossary#public-policy) of a law other than the law chosen by the parties? ([See also Arbitrators vs. State judges](/learn/glossary#arbitrators-vs-state-judges))
 1. Does the codification on [arbitration](/learn/glossary#arbitration), if any, include conflict of laws rules? Is any revision of the _lex arbitri_ under discussion?
-   ### Absence of Choice
+
+### Absence of Choice
+
 1. In the [absence of a choice](/learn/glossary#absence-of-choice) by the parties, does your jurisdiction provide a framework for identifying the applicable law?
 1. Does the framework establish clear [connecting factors](/learn/glossary#connecting-factors) to designate the applicable law?
    1. Which are the most common [connecting factors](/learn/glossary#connecting-factors)?
    1. Among these, what is the most frequently relied upon by courts?
 1. Is this connecting factor suitable to be considered a general default rule?
 1. Are you aware of any recent [arbitral award](/learn/glossary#arbitral-awards-vs-court-decisions) dealing with this issue?
-   ### Future Version of the HCCH Principles
+
+### Future Version of the HCCH Principles
+
 1. Is a future version of the HCCH Principles covering the law applicable in the absence of a choice of law by the parties desirable?
 1. Is further guidance on applicable law in [international contracts](/learn/glossary#international-commercial-contracts) providing protection to [weaker parties](/learn/glossary#weaker-vulnerable-parties) necessary?
 1. Are there other topics that should be considered for further guidance or revision of the HCCH Principles?

@@ -75,21 +75,6 @@ h6 > a {
   text-decoration: none !important;
 }
 
-// Lists
-ol {
-  list-style: decimal !important; // Ensure numbers appear
-}
-
-ul {
-  list-style-type: disc !important;
-  margin: 0 !important;
-  padding: 0.5rem 0 1.5rem 1.5rem !important;
-}
-
-li {
-  margin: 0 !important;
-}
-
 li::marker {
   color: var(--color-cold-night) !important;
 }
