@@ -1,7 +1,15 @@
+import { resolve } from "node:path";
+
+const projectRoot = process.cwd();
+
 export default defineNuxtConfig({
   compatibilityDate: "2024-04-03",
   devtools: { enabled: true },
   ssr: true,
+  srcDir: "app",
+  alias: {
+    "@": resolve(projectRoot, "app"),
+  },
   nitro: {
     experimental: {
       tasks: false,
@@ -17,16 +25,14 @@ export default defineNuxtConfig({
     },
   },
   typescript: {
-    typeCheck: true,
+    typeCheck: false,
   },
   modules: [
     "@nuxt/ui",
-    "@nuxtjs/tailwindcss",
     "@nuxt/fonts",
     "@nuxtjs/leaflet",
     "@nuxt/icon",
     "@nuxt/content",
-    "nuxt-purgecss",
     "@nuxtjs/robots",
     "@nuxtjs/sitemap",
     "@nuxt/scripts",
@@ -37,6 +43,9 @@ export default defineNuxtConfig({
     siteKey: process.env.NUXT_TURNSTILE_SITE_KEY,
     addValidateEndpoint: true,
   },
+  site: {
+    url: process.env.NUXT_SITE_URL || "https://cold.global",
+  },
   runtimeConfig: {
     turnstile: {
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
@@ -44,7 +53,7 @@ export default defineNuxtConfig({
     apiBaseUrl: process.env.API_BASE_URL,
     fastApiToken: process.env.FASTAPI_API_TOKEN,
     public: {
-      siteUrl: process.env.NUXT_SITE_URL,
+      siteUrl: process.env.NUXT_SITE_URL || "https://cold.global",
     },
   },
   robots: {
@@ -57,24 +66,19 @@ export default defineNuxtConfig({
       },
     ],
   },
-  purgecss: {
-    enabled: false,
-    rejected: true,
-    content: [],
-    safelist: [],
-  },
   content: {
-    documentDriven: false,
-    markdown: {
+    renderer: {
       anchorLinks: true,
     },
   },
   colorMode: {
     preference: "light",
   },
-  css: ["@/assets/styles.scss", "tailwindcss/tailwind.css"],
-  tailwindcss: {
-    configPath: "./tailwind.config.js",
+  css: ["@/assets/styles.scss"],
+  postcss: {
+    plugins: {
+      "@tailwindcss/postcss": {},
+    },
   },
   app: {
     head: {
