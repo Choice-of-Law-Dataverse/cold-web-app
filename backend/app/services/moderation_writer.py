@@ -107,6 +107,14 @@ class MainDBWriter:
         },
     }
 
+    # Field labels for metadata in Internal_Notes
+    CASE_ANALYZER_METADATA_LABELS = {
+        "jurisdiction_type": "Jurisdiction Type",
+        "choice_of_law_sections": "Choice of Law Section(s)",
+        "theme": "Theme",
+        "model": "AI Model",
+    }
+
     @staticmethod
     def _parse_date(val: Any) -> Any:
         if val is None:
@@ -192,14 +200,6 @@ class MainDBWriter:
             session.commit()
             new_id = result.scalar_one()
             return int(new_id)
-
-    # Field labels for metadata in Internal_Notes
-    CASE_ANALYZER_METADATA_LABELS = {
-        "jurisdiction_type": "Jurisdiction Type",
-        "choice_of_law_sections": "Choice of Law Section(s)",
-        "theme": "Theme",
-        "model": "AI Model",
-    }
 
     def prepare_case_analyzer_for_court_decisions(self, normalized: dict[str, Any]) -> dict[str, Any]:
         """

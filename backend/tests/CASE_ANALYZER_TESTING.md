@@ -35,6 +35,8 @@ This guide describes how to test the automatic insertion of case_analyzer sugges
 Query the Court_Decisions table to verify the new record:
 
 ```sql
+-- Replace <schema_name> with your NocoDB schema (e.g., nc_p1q5)
+-- Replace <merged_id> with the merged record ID from the approval
 SELECT 
     id,
     "Case_Citation",
@@ -45,7 +47,7 @@ SELECT
     "Choice_of_Law_Issue",
     "Court_s_Position",
     "Internal_Notes"
-FROM nc_p1q5."Court_Decisions"
+FROM <schema_name>."Court_Decisions"
 WHERE id = <merged_id>;
 ```
 
@@ -61,13 +63,15 @@ Expected results:
 Query the jurisdiction link table:
 
 ```sql
+-- Replace <schema_name> with your NocoDB schema (e.g., nc_p1q5)
+-- Replace <merged_id> with the merged record ID
 SELECT 
     cd."Case_Citation",
     j."Name"
-FROM nc_p1q5."Court_Decisions" cd
-JOIN nc_p1q5."_nc_m2m_Jurisdictions_Court_Decisions" link 
+FROM <schema_name>."Court_Decisions" cd
+JOIN <schema_name>."_nc_m2m_Jurisdictions_Court_Decisions" link 
     ON cd.id = link."Court_Decisions_id"
-JOIN nc_p1q5."Jurisdictions" j 
+JOIN <schema_name>."Jurisdictions" j 
     ON link."Jurisdictions_id" = j.id
 WHERE cd.id = <merged_id>;
 ```

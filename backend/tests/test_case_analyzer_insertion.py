@@ -145,7 +145,12 @@ class TestCaseAnalyzerInsertion:
             result = writer.prepare_case_analyzer_for_court_decisions(normalized)
             
             # Check all expected fields are present
-            assert len(result) == 9  # 7 direct fields + jurisdiction + internal_notes
+            # 7 direct fields: case_citation, date, abstract, relevant_facts, pil_provisions, 
+            #                  choice_of_law_issue, courts_position
+            # 1 linking field: jurisdiction
+            # 1 combined field: internal_notes (from metadata)
+            expected_field_count = 9
+            assert len(result) == expected_field_count
             assert result["case_citation"] == "Complete Case [2024]"
             assert result["jurisdiction"] == "United States"
             
