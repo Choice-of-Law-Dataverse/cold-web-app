@@ -18,6 +18,13 @@ class TestCaseAnalyzerInsertion:
         # Create a mock writer (we don't need real DB connection for this test)
         with patch.object(MainDBWriter, '__init__', return_value=None):
             writer = MainDBWriter()
+            # Mock the CASE_ANALYZER_METADATA_LABELS constant
+            writer.CASE_ANALYZER_METADATA_LABELS = {
+                "jurisdiction_type": "Jurisdiction Type",
+                "choice_of_law_sections": "Choice of Law Section(s)",
+                "theme": "Theme",
+                "model": "AI Model",
+            }
             
             # Mock normalized case analyzer data
             normalized = {
@@ -58,6 +65,12 @@ class TestCaseAnalyzerInsertion:
         """Test transformation with minimal data."""
         with patch.object(MainDBWriter, '__init__', return_value=None):
             writer = MainDBWriter()
+            writer.CASE_ANALYZER_METADATA_LABELS = {
+                "jurisdiction_type": "Jurisdiction Type",
+                "choice_of_law_sections": "Choice of Law Section(s)",
+                "theme": "Theme",
+                "model": "AI Model",
+            }
             
             normalized = {
                 "case_citation": "Test Case [2024]",
@@ -75,6 +88,12 @@ class TestCaseAnalyzerInsertion:
         """Test transformation with None/empty values."""
         with patch.object(MainDBWriter, '__init__', return_value=None):
             writer = MainDBWriter()
+            writer.CASE_ANALYZER_METADATA_LABELS = {
+                "jurisdiction_type": "Jurisdiction Type",
+                "choice_of_law_sections": "Choice of Law Section(s)",
+                "theme": "Theme",
+                "model": "AI Model",
+            }
             
             normalized = {
                 "case_citation": None,
@@ -99,6 +118,12 @@ class TestCaseAnalyzerInsertion:
         """Test transformation with all possible fields."""
         with patch.object(MainDBWriter, '__init__', return_value=None):
             writer = MainDBWriter()
+            writer.CASE_ANALYZER_METADATA_LABELS = {
+                "jurisdiction_type": "Jurisdiction Type",
+                "choice_of_law_sections": "Choice of Law Section(s)",
+                "theme": "Theme",
+                "model": "AI Model",
+            }
             
             normalized = {
                 "case_citation": "Complete Case [2024]",

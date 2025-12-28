@@ -1,6 +1,7 @@
 # ruff: noqa: E501
 import html
 import json
+import logging
 from datetime import date, datetime
 from typing import Any
 
@@ -18,6 +19,8 @@ from app.schemas.suggestions import (
 )
 from app.services.moderation_writer import MainDBWriter
 from app.services.suggestions import SuggestionService
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/moderation", tags=["Moderation"], include_in_schema=False)
 
@@ -697,9 +700,14 @@ async def approve(request: Request, category: str, suggestion_id: int):
         if court_decision_data.get("jurisdiction"):
             try:
                 writer.link_jurisdictions("Court_Decisions", merged_id, court_decision_data["jurisdiction"])
-            except Exception:
-                # If jurisdiction linking fails, continue anyway
-                pass
+            except Exception as e:
+                # If jurisdiction linking fails, continue anyway - record is still created
+                logger.warning(
+                    "Failed to link jurisdiction '%s' for Court_Decisions record %s: %s",
+                    court_decision_data.get("jurisdiction"),
+                    merged_id,
+                    str(e),
+                )
         
         # Mark as approved with the merged record ID
         service.mark_status(
@@ -776,8 +784,14 @@ async def approve(request: Request, category: str, suggestion_id: int):
         if key in payload_for_writer and payload_for_writer.get(key):
             try:
                 writer.link_jurisdictions(target_table, merged_id, payload_for_writer.get(key))
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(
+                    "Failed to link jurisdiction '%s' for %s record %s: %s",
+                    payload_for_writer.get(key),
+                    target_table,
+                    merged_id,
+                    str(e),
+                )
     service.mark_status(
         table,
         suggestion_id,

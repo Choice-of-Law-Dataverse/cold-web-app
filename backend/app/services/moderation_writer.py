@@ -93,6 +93,7 @@ class MainDBWriter:
             "publication_date": "Date",
         },
         # Case Analyzer (maps normalized fields to Court_Decisions columns)
+        # Note: Some fields are combined into Internal_Notes via prepare_case_analyzer_for_court_decisions()
         "Case_Analyzer": {
             "case_citation": "Case_Citation",
             "date": "Date_of_Judgment",
@@ -101,10 +102,8 @@ class MainDBWriter:
             "pil_provisions": "PIL_Provisions",
             "choice_of_law_issue": "Choice_of_Law_Issue",
             "courts_position": "Court_s_Position",
-            "jurisdiction": "jurisdiction",  # Used for jurisdiction linking
-            "theme": "Internal_Notes",  # Store theme in internal notes for now
-            "choice_of_law_sections": "Internal_Notes",  # Will be concatenated with theme
-            "jurisdiction_type": "Internal_Notes",  # Will be concatenated
+            "internal_notes": "Internal_Notes",
+            # jurisdiction is used for linking, not direct column mapping
         },
     }
 
@@ -194,6 +193,14 @@ class MainDBWriter:
             new_id = result.scalar_one()
             return int(new_id)
 
+    # Field labels for metadata in Internal_Notes
+    CASE_ANALYZER_METADATA_LABELS = {
+        "jurisdiction_type": "Jurisdiction Type",
+        "choice_of_law_sections": "Choice of Law Section(s)",
+        "theme": "Theme",
+        "model": "AI Model",
+    }
+
     def prepare_case_analyzer_for_court_decisions(self, normalized: dict[str, Any]) -> dict[str, Any]:
         """
         Transform normalized case_analyzer data into Court_Decisions-compatible format.
@@ -223,14 +230,9 @@ class MainDBWriter:
         
         # Combine metadata fields into Internal_Notes
         notes_parts: list[str] = []
-        if normalized.get("jurisdiction_type"):
-            notes_parts.append(f"Jurisdiction Type: {normalized['jurisdiction_type']}")
-        if normalized.get("choice_of_law_sections"):
-            notes_parts.append(f"Choice of Law Section(s): {normalized['choice_of_law_sections']}")
-        if normalized.get("theme"):
-            notes_parts.append(f"Theme: {normalized['theme']}")
-        if normalized.get("model"):
-            notes_parts.append(f"AI Model: {normalized['model']}")
+        for field_key, label in self.CASE_ANALYZER_METADATA_LABELS.items():
+            if normalized.get(field_key):
+                notes_parts.append(f"{label}: {normalized[field_key]}")
         if notes_parts:
             prepared["internal_notes"] = "\n".join(notes_parts)
         
