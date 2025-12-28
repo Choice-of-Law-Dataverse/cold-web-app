@@ -669,7 +669,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
     table = _table_key(category)
     if not table:
         raise HTTPException(status_code=404)
-    global service
+    global service, writer
     if service is None:
         service = SuggestionService()
     items = service.list_pending(table)
@@ -678,16 +678,37 @@ async def approve(request: Request, category: str, suggestion_id: int):
         raise HTTPException(status_code=404, detail="Suggestion not found or not pending")
     original_payload: dict[str, Any] = item["payload"] or {}
 
-    # Case Analyzer: recompute normalized snapshot and mark finished; no editable inputs expected
+    # Case Analyzer: normalize, insert into Court_Decisions, and mark finished
     if category == "case-analyzer":
         normalized = _normalize_case_analyzer_payload(original_payload, item)
         service.update_payload(table, suggestion_id, {"normalized": normalized})
+        
+        # Insert into Court_Decisions table
+        if writer is None:
+            writer = MainDBWriter()
+        
+        # Prepare data for Court_Decisions table
+        court_decision_data = writer.prepare_case_analyzer_for_court_decisions(normalized)
+        
+        # Insert the record
+        merged_id = writer.insert_record("Court_Decisions", court_decision_data)
+        
+        # Link jurisdiction if available
+        if court_decision_data.get("jurisdiction"):
+            try:
+                writer.link_jurisdictions("Court_Decisions", merged_id, court_decision_data["jurisdiction"])
+            except Exception:
+                # If jurisdiction linking fails, continue anyway
+                pass
+        
+        # Mark as approved with the merged record ID
         service.mark_status(
             table,
             suggestion_id,
             "approved",
             request.session.get("moderator", "moderator"),
-            note="",
+            note="Automatically inserted into Court_Decisions table",
+            merged_id=merged_id,
         )
         return RedirectResponse(url=f"/moderation/{category}", status_code=302)
 
@@ -726,7 +747,6 @@ async def approve(request: Request, category: str, suggestion_id: int):
 
     moderation_note = ""
 
-    global writer
     if writer is None:
         writer = MainDBWriter()
     table_map = {
