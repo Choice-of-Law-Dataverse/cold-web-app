@@ -19,12 +19,26 @@ import { computed, toRef } from "vue";
 import { useCheckTarget } from "@/composables/useCheckTarget";
 
 const props = defineProps<{
-  recordId: string;
-  folderName: string;
+  recordId?: string;
+  folderName?: string;
+  url?: string;
 }>();
 
 const pdfUrl = computed(() => {
-  if (!props.recordId) return "";
+  // If a URL is provided directly, use it
+  if (props.url) {
+    // If it's an R2 storage URL, proxy it for authentication
+    if (props.url.includes('r2.cloudflarestorage.com')) {
+      // Extract the path after the domain
+      const urlObj = new URL(props.url);
+      const path = urlObj.pathname.substring(1); // Remove leading slash
+      return `/api/r2-proxy/${path}`;
+    }
+    return props.url;
+  }
+  
+  // Fall back to constructing Azure blob URL if recordId and folderName are provided
+  if (!props.recordId || !props.folderName) return "";
   return `https://choiceoflaw.blob.core.windows.net/${props.folderName}/${props.recordId}.pdf`;
 });
 

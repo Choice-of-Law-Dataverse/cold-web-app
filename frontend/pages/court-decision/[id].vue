@@ -20,6 +20,7 @@
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
+                :url="(courtDecision as any)?.pdfUrl"
                 :record-id="route.params.id as string"
                 folder-name="court-decisions"
               />
