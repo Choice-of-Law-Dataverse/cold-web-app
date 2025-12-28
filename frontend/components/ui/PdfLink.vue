@@ -21,7 +21,7 @@ import { useCheckTarget } from "@/composables/useCheckTarget";
 const props = defineProps<{
   recordId?: string;
   folderName?: string;
-  url?: string;
+  url?: string | null;
 }>();
 
 const pdfUrl = computed(() => {
