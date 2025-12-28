@@ -43,6 +43,7 @@ export default defineNuxtConfig({
     },
     apiBaseUrl: process.env.API_BASE_URL,
     fastApiToken: process.env.FASTAPI_API_TOKEN,
+    r2BaseUrl: process.env.R2_BASE_URL || "https://coldnocodb.1744e88118d6dbb785a27b3f7431a798.r2.cloudflarestorage.com",
     public: {
       siteUrl: process.env.NUXT_SITE_URL,
     },

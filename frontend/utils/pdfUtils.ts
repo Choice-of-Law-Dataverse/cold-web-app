@@ -1,6 +1,11 @@
 /**
  * Utility function to extract PDF URL from backend PDF field
- * The backend returns PDF data as a string representation of a dict
+ * The backend returns PDF data as a string representation of a Python dict
+ * 
+ * Note: This uses simple string replacement to convert Python dict syntax to JSON.
+ * This approach is fragile and may not work with escaped quotes or complex strings.
+ * Ideally, the backend should return proper JSON format, but this works for the
+ * current data format.
  */
 export function extractPdfUrl(pdfField: unknown): string | null {
   if (!pdfField || typeof pdfField !== "string") return null;

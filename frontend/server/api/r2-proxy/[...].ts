@@ -29,9 +29,8 @@ export default defineEventHandler(async (event) => {
   // Expected format: /api/r2-proxy/nc/uploads/noco/...
   const path = event.path.replace(/^\/api\/r2-proxy\//, "");
 
-  // Construct the full R2 URL
-  const r2BaseUrl = "https://coldnocodb.1744e88118d6dbb785a27b3f7431a798.r2.cloudflarestorage.com";
-  const url = `${r2BaseUrl}/${path}`;
+  // Construct the full R2 URL using configured base URL
+  const url = `${config.r2BaseUrl}/${path}`;
 
   // Proxy the request with authentication
   // R2 storage accessed through NocoDB might require the NocoDB API token

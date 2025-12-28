@@ -18,6 +18,9 @@
 import { computed, toRef } from "vue";
 import { useCheckTarget } from "@/composables/useCheckTarget";
 
+// R2 storage domain identifier
+const R2_STORAGE_DOMAIN = 'r2.cloudflarestorage.com';
+
 const props = defineProps<{
   recordId?: string;
   folderName?: string;
@@ -28,7 +31,7 @@ const pdfUrl = computed(() => {
   // If a URL is provided directly, use it
   if (props.url) {
     // If it's an R2 storage URL, proxy it for authentication
-    if (props.url.includes('r2.cloudflarestorage.com')) {
+    if (props.url.includes(R2_STORAGE_DOMAIN)) {
       // Extract the path after the domain
       const urlObj = new URL(props.url);
       const path = urlObj.pathname.substring(1); // Remove leading slash
