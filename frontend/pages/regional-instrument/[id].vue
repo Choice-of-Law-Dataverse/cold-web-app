@@ -20,6 +20,7 @@
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
+                :url="processedRegionalInstrument?.pdfUrl"
                 :record-id="route.params.id as string"
                 folder-name="regional-instruments"
               />
@@ -103,6 +104,7 @@ import { regionalInstrumentConfig } from "@/config/pageConfigs";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import { extractPdfUrl } from "@/utils/pdfUtils";
 import type { TableName } from "@/types/api";
 
 interface RegionalInstrumentRecord {
@@ -141,6 +143,7 @@ const keyLabelLookup = computed(() => {
 
 const processedRegionalInstrument = computed(() => {
   if (!regionalInstrument.value) return null;
+  const pdfUrl = extractPdfUrl(regionalInstrument.value["Official Source (PDF)"]);
   return {
     ...regionalInstrument.value,
     "Title (in English)":
@@ -152,6 +155,7 @@ const processedRegionalInstrument = computed(() => {
     Literature: (regionalInstrument.value as Record<string, unknown>)[
       "Literature"
     ],
+    pdfUrl,
   };
 });
 </script>
