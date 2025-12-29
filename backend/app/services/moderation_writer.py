@@ -92,6 +92,27 @@ class MainDBWriter:
             "url": "Url",
             "publication_date": "Date",
         },
+        # Case Analyzer (maps normalized fields to Court_Decisions columns)
+        # Note: Some fields are combined into Internal_Notes via prepare_case_analyzer_for_court_decisions()
+        "Case_Analyzer": {
+            "case_citation": "Case_Citation",
+            "date": "Date_of_Judgment",
+            "abstract": "Abstract",
+            "relevant_facts": "Relevant_Facts",
+            "pil_provisions": "PIL_Provisions",
+            "choice_of_law_issue": "Choice_of_Law_Issue",
+            "courts_position": "Court_s_Position",
+            "choice_of_law_sections": "Quote",
+            "internal_notes": "Internal_Notes",
+            # jurisdiction is used for linking, not direct column mapping
+        },
+    }
+
+    # Field labels for metadata in Internal_Notes
+    CASE_ANALYZER_METADATA_LABELS = {
+        "jurisdiction_type": "Jurisdiction Type",
+        "theme": "Theme",
+        "model": "AI Model",
     }
 
     @staticmethod
@@ -179,6 +200,45 @@ class MainDBWriter:
             session.commit()
             new_id = result.scalar_one()
             return int(new_id)
+
+    def prepare_case_analyzer_for_court_decisions(self, normalized: dict[str, Any]) -> dict[str, Any]:
+        """
+        Transform normalized case_analyzer data into Court_Decisions-compatible format.
+        Combines multiple metadata fields into Internal_Notes.
+        """
+        prepared: dict[str, Any] = {}
+
+        # Direct mappings
+        if normalized.get("case_citation"):
+            prepared["case_citation"] = normalized["case_citation"]
+        if normalized.get("date"):
+            prepared["date"] = normalized["date"]
+        if normalized.get("abstract"):
+            prepared["abstract"] = normalized["abstract"]
+        if normalized.get("relevant_facts"):
+            prepared["relevant_facts"] = normalized["relevant_facts"]
+        if normalized.get("pil_provisions"):
+            prepared["pil_provisions"] = normalized["pil_provisions"]
+        if normalized.get("choice_of_law_issue"):
+            prepared["choice_of_law_issue"] = normalized["choice_of_law_issue"]
+        if normalized.get("courts_position"):
+            prepared["courts_position"] = normalized["courts_position"]
+        if normalized.get("choice_of_law_sections"):
+            prepared["quote"] = normalized["choice_of_law_sections"]
+
+        # Store jurisdiction for linking (not a direct column)
+        if normalized.get("jurisdiction"):
+            prepared["jurisdiction"] = normalized["jurisdiction"]
+
+        # Combine metadata fields into Internal_Notes
+        notes_parts: list[str] = []
+        for field_key, label in self.CASE_ANALYZER_METADATA_LABELS.items():
+            if normalized.get(field_key):
+                notes_parts.append(f"{label}: {normalized[field_key]}")
+        if notes_parts:
+            prepared["internal_notes"] = "\n".join(notes_parts)
+
+        return prepared
 
     # --- Jurisdictions linking helpers ---
     def _resolve_jurisdiction_ids(self, raw_value: Any) -> list[int]:
