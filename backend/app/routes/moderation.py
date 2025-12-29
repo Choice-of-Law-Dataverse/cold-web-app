@@ -685,18 +685,14 @@ async def approve(request: Request, category: str, suggestion_id: int):
     if category == "case-analyzer":
         normalized = _normalize_case_analyzer_payload(original_payload, item)
         service.update_payload(table, suggestion_id, {"normalized": normalized})
-        
-        # Insert into Court_Decisions table
+
         if writer is None:
             writer = MainDBWriter()
-        
-        # Prepare data for Court_Decisions table
+
         court_decision_data = writer.prepare_case_analyzer_for_court_decisions(normalized)
-        
-        # Insert the record
+
         merged_id = writer.insert_record("Court_Decisions", court_decision_data)
-        
-        # Link jurisdiction if available
+
         if court_decision_data.get("jurisdiction"):
             try:
                 writer.link_jurisdictions("Court_Decisions", merged_id, court_decision_data["jurisdiction"])
@@ -708,8 +704,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
                     merged_id,
                     str(e),
                 )
-        
-        # Mark as approved with the merged record ID
+
         service.mark_status(
             table,
             suggestion_id,

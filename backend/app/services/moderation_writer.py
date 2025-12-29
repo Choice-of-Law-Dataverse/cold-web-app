@@ -102,6 +102,7 @@ class MainDBWriter:
             "pil_provisions": "PIL_Provisions",
             "choice_of_law_issue": "Choice_of_Law_Issue",
             "courts_position": "Court_s_Position",
+            "choice_of_law_sections": "Quote",
             "internal_notes": "Internal_Notes",
             # jurisdiction is used for linking, not direct column mapping
         },
@@ -110,7 +111,6 @@ class MainDBWriter:
     # Field labels for metadata in Internal_Notes
     CASE_ANALYZER_METADATA_LABELS = {
         "jurisdiction_type": "Jurisdiction Type",
-        "choice_of_law_sections": "Choice of Law Section(s)",
         "theme": "Theme",
         "model": "AI Model",
     }
@@ -207,7 +207,7 @@ class MainDBWriter:
         Combines multiple metadata fields into Internal_Notes.
         """
         prepared: dict[str, Any] = {}
-        
+
         # Direct mappings
         if normalized.get("case_citation"):
             prepared["case_citation"] = normalized["case_citation"]
@@ -223,11 +223,13 @@ class MainDBWriter:
             prepared["choice_of_law_issue"] = normalized["choice_of_law_issue"]
         if normalized.get("courts_position"):
             prepared["courts_position"] = normalized["courts_position"]
-        
+        if normalized.get("choice_of_law_sections"):
+            prepared["quote"] = normalized["choice_of_law_sections"]
+
         # Store jurisdiction for linking (not a direct column)
         if normalized.get("jurisdiction"):
             prepared["jurisdiction"] = normalized["jurisdiction"]
-        
+
         # Combine metadata fields into Internal_Notes
         notes_parts: list[str] = []
         for field_key, label in self.CASE_ANALYZER_METADATA_LABELS.items():
@@ -235,7 +237,7 @@ class MainDBWriter:
                 notes_parts.append(f"{label}: {normalized[field_key]}")
         if notes_parts:
             prepared["internal_notes"] = "\n".join(notes_parts)
-        
+
         return prepared
 
     # --- Jurisdictions linking helpers ---
