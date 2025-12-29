@@ -1,5 +1,6 @@
 """Tests for Database class with singleton manager integration."""
 
+from sqlalchemy import text
 
 from app.services.database import Database
 from app.services.db_manager import db_manager
@@ -53,8 +54,8 @@ class TestDatabaseWithManager:
 
         # Create a simple table
         with db_manager.get_session() as session:
-            session.execute("CREATE TABLE test_table (id INTEGER PRIMARY KEY, name TEXT)")
-            session.execute("INSERT INTO test_table (id, name) VALUES (1, 'test')")
+            session.execute(text("CREATE TABLE test_table (id INTEGER PRIMARY KEY, name TEXT)"))
+            session.execute(text("INSERT INTO test_table (id, name) VALUES (1, 'test')"))
             session.commit()
 
         # Query using Database.execute_query
@@ -70,7 +71,7 @@ class TestDatabaseWithManager:
 
         # Create a simple table
         with db_manager.get_session() as session:
-            session.execute("CREATE TABLE test_table (id INTEGER PRIMARY KEY, name TEXT)")
+            session.execute(text("CREATE TABLE test_table (id INTEGER PRIMARY KEY, name TEXT)"))
             session.commit()
 
         # First attempt returns empty, but should still return empty list (not retry indefinitely)
@@ -85,7 +86,7 @@ class TestDatabaseWithManager:
 
         # Create a table
         with db_manager.get_session() as session:
-            session.execute("CREATE TABLE reflected_table (id INTEGER PRIMARY KEY, data TEXT)")
+            session.execute(text("CREATE TABLE reflected_table (id INTEGER PRIMARY KEY, data TEXT)"))
             session.commit()
 
         # Create a new Database instance to trigger reflection
@@ -100,9 +101,9 @@ class TestDatabaseWithManager:
 
         # Create and populate a table
         with db_manager.get_session() as session:
-            session.execute("CREATE TABLE context_test (id INTEGER PRIMARY KEY, value TEXT)")
-            session.execute("INSERT INTO context_test (id, value) VALUES (1, 'test1')")
-            session.execute("INSERT INTO context_test (id, value) VALUES (2, 'test2')")
+            session.execute(text("CREATE TABLE context_test (id INTEGER PRIMARY KEY, value TEXT)"))
+            session.execute(text("INSERT INTO context_test (id, value) VALUES (1, 'test1')"))
+            session.execute(text("INSERT INTO context_test (id, value) VALUES (2, 'test2')"))
             session.commit()
 
         # Use execute_query which internally uses context manager

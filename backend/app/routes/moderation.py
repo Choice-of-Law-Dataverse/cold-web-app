@@ -1,6 +1,7 @@
 # ruff: noqa: E501
 import html
 import json
+import logging
 from datetime import date, datetime
 from typing import Any
 
@@ -18,6 +19,8 @@ from app.schemas.suggestions import (
 )
 from app.services.moderation_writer import MainDBWriter
 from app.services.suggestions import SuggestionService
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/moderation", tags=["Moderation"], include_in_schema=False)
 
@@ -669,7 +672,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
     table = _table_key(category)
     if not table:
         raise HTTPException(status_code=404)
-    global service
+    global service, writer
     if service is None:
         service = SuggestionService()
     items = service.list_pending(table)
@@ -678,16 +681,37 @@ async def approve(request: Request, category: str, suggestion_id: int):
         raise HTTPException(status_code=404, detail="Suggestion not found or not pending")
     original_payload: dict[str, Any] = item["payload"] or {}
 
-    # Case Analyzer: recompute normalized snapshot and mark finished; no editable inputs expected
+    # Case Analyzer: normalize, insert into Court_Decisions, and mark finished
     if category == "case-analyzer":
         normalized = _normalize_case_analyzer_payload(original_payload, item)
         service.update_payload(table, suggestion_id, {"normalized": normalized})
+
+        if writer is None:
+            writer = MainDBWriter()
+
+        court_decision_data = writer.prepare_case_analyzer_for_court_decisions(normalized)
+
+        merged_id = writer.insert_record("Court_Decisions", court_decision_data)
+
+        if court_decision_data.get("jurisdiction"):
+            try:
+                writer.link_jurisdictions("Court_Decisions", merged_id, court_decision_data["jurisdiction"])
+            except Exception as e:
+                # If jurisdiction linking fails, continue anyway - record is still created
+                logger.warning(
+                    "Failed to link jurisdiction '%s' for Court_Decisions record %s: %s",
+                    court_decision_data.get("jurisdiction"),
+                    merged_id,
+                    str(e),
+                )
+
         service.mark_status(
             table,
             suggestion_id,
             "approved",
             request.session.get("moderator", "moderator"),
-            note="",
+            note="Automatically inserted into Court_Decisions table",
+            merged_id=merged_id,
         )
         return RedirectResponse(url=f"/moderation/{category}", status_code=302)
 
@@ -726,7 +750,6 @@ async def approve(request: Request, category: str, suggestion_id: int):
 
     moderation_note = ""
 
-    global writer
     if writer is None:
         writer = MainDBWriter()
     table_map = {
@@ -756,8 +779,14 @@ async def approve(request: Request, category: str, suggestion_id: int):
         if key in payload_for_writer and payload_for_writer.get(key):
             try:
                 writer.link_jurisdictions(target_table, merged_id, payload_for_writer.get(key))
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(
+                    "Failed to link jurisdiction '%s' for %s record %s: %s",
+                    payload_for_writer.get(key),
+                    target_table,
+                    merged_id,
+                    str(e),
+                )
     service.mark_status(
         table,
         suggestion_id,
