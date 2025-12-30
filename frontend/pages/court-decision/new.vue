@@ -462,6 +462,7 @@ function validateForm() {
       case_title: caseTitle.value,
       instance: caseInstance.value,
       official_keywords: caseOfficialKeywords.value,
+      source: "cold.global",
     };
     formSchema.parse(formData);
     errors.value = {};

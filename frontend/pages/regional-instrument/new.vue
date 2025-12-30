@@ -169,6 +169,7 @@ function handleNewSave() {
     instrument_date: date.value ? format(date.value, "yyyy-MM-dd") : undefined,
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
+    source: "cold.global",
   };
 
   (async () => {

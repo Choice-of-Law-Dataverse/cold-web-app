@@ -302,6 +302,7 @@ function handleNewSave() {
     theme: theme.value || undefined,
     submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
+    source: "cold.global",
   };
 
   (async () => {
