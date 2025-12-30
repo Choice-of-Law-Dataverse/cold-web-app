@@ -709,6 +709,26 @@ async def approve(request: Request, category: str, suggestion_id: int):
                 api_token=config.NOCODB_API_TOKEN,
             )
 
+        # Resolve jurisdiction IDs BEFORE creating the record
+        jurisdiction_ids: list[int] = []
+        if court_decision_data.get("jurisdiction"):
+            try:
+                jurisdiction_value = court_decision_data.get("jurisdiction")
+                logger.info("Resolving jurisdiction '%s' before creating record", jurisdiction_value)
+                jurisdiction_ids = nocodb_service.list_jurisdictions(jurisdiction_value)
+
+                if not jurisdiction_ids:
+                    logger.warning(
+                        "Could not resolve jurisdiction '%s' - record will be created without jurisdiction link",
+                        jurisdiction_value,
+                    )
+            except Exception as e:
+                logger.warning(
+                    "Failed to resolve jurisdiction '%s': %s - record will be created without jurisdiction link",
+                    court_decision_data.get("jurisdiction"),
+                    str(e),
+                )
+
         # Map snake_case keys to NocoDB column names (PascalCase)
         column_mapping = writer.COLUMN_MAPPINGS.get("Court_Decisions", {})
         nocodb_data: dict[str, Any] = {}
@@ -716,16 +736,21 @@ async def approve(request: Request, category: str, suggestion_id: int):
         # Map fields to NocoDB column names
         for key, value in court_decision_data.items():
             if key == "jurisdiction":
-                # Skip jurisdiction - handled via linking below
+                # Skip jurisdiction - will be included as Jurisdictions field below
                 continue
             nocodb_column = column_mapping.get(key, key)
             if value is not None and value != "":
                 nocodb_data[nocodb_column] = value
 
+        # Add jurisdiction IDs to the record data if resolved
+        if jurisdiction_ids:
+            nocodb_data["Jurisdictions"] = jurisdiction_ids
+            logger.info("Including jurisdiction IDs %s in record creation", jurisdiction_ids)
+
         # Check for PDF URL in the original payload
         pdf_url = original_payload.get("pdf_url")
 
-        # Create the record in NocoDB via API
+        # Create the record in NocoDB via API with jurisdiction IDs already included
         created_record = nocodb_service.create_row("Court_Decisions", nocodb_data)
         merged_id = created_record.get("id") or created_record.get("Id")
 
@@ -765,38 +790,6 @@ async def approve(request: Request, category: str, suggestion_id: int):
                 # Log the error but don't fail the entire operation
                 logger.error("Failed to download/upload PDF from %s: %s", pdf_url, str(e))
                 # Continue - record is already created
-
-        # Link jurisdiction via NocoDB API if available
-        if court_decision_data.get("jurisdiction"):
-            try:
-                jurisdiction_value = court_decision_data.get("jurisdiction")
-                logger.info("Linking jurisdiction '%s' to record %s", jurisdiction_value, merged_id)
-
-                # Resolve jurisdiction IDs
-                jurisdiction_ids = nocodb_service.list_jurisdictions(jurisdiction_value)
-
-                if jurisdiction_ids:
-                    # Link via NocoDB API
-                    nocodb_service.link_records(
-                        table="Court_Decisions",
-                        record_id=int(merged_id),
-                        link_field="Jurisdictions",
-                        linked_record_ids=jurisdiction_ids,
-                    )
-                    logger.info("Successfully linked jurisdiction(s) %s to record %s", jurisdiction_ids, merged_id)
-                else:
-                    logger.warning(
-                        "Could not resolve jurisdiction '%s' for record %s",
-                        jurisdiction_value,
-                        merged_id,
-                    )
-            except Exception as e:
-                logger.warning(
-                    "Failed to link jurisdiction '%s' for Court_Decisions record %s: %s",
-                    court_decision_data.get("jurisdiction"),
-                    merged_id,
-                    str(e),
-                )
 
         service.mark_status(
             table,
