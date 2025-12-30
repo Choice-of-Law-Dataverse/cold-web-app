@@ -185,7 +185,3 @@ class TestAzureStorageIntegration:
         assert result == mock_blob_data
         mock_blob_service.assert_called_once()
         mock_service_instance.get_blob_client.assert_called_once_with(container="test-container", blob="test-file.pdf")
-
-
-if __name__ == "__main__":
-    pytest.main([__file__, "-v"])
