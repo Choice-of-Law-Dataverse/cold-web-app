@@ -6,9 +6,6 @@ export default defineNuxtConfig({
     experimental: {
       tasks: false,
     },
-    externals: {
-      inline: ["@aws-sdk/client-s3", "@aws-sdk/s3-request-presigner", "tslib"],
-    },
   },
   $production: {
     scripts: {
