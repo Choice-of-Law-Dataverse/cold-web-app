@@ -114,7 +114,7 @@ class NocoDBService:
         """
         Upload a file to a NocoDB attachment field.
         According to NocoDB docs, files should be uploaded using multipart/form-data.
-        
+
         Reference: https://nocodb.com/docs/product-docs/developer-resources/rest-apis/upload-via-api#python
         """
         logger.debug(
@@ -127,7 +127,7 @@ class NocoDBService:
         # Step 1: Upload file to get the attachment URL
         upload_url = f"{self.base_url}/{table}/{record_id}/{column_name}"
         files = {"file": (filename, BytesIO(file_data), mime_type)}
-        
+
         resp = self.session.post(upload_url, headers=self.headers, files=files)
         logger.debug("Upload file response: %s %s", resp.status_code, resp.text[:200])
         resp.raise_for_status()

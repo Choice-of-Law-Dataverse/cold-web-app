@@ -710,7 +710,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
         # Map snake_case keys to NocoDB column names (PascalCase)
         column_mapping = writer.COLUMN_MAPPINGS.get("Court_Decisions", {})
         nocodb_data: dict[str, Any] = {}
-        
+
         # Map fields to NocoDB column names
         for key, value in court_decision_data.items():
             if key == "jurisdiction":
@@ -722,11 +722,11 @@ async def approve(request: Request, category: str, suggestion_id: int):
 
         # Check for PDF URL in the original payload
         pdf_url = original_payload.get("pdf_url")
-        
+
         # Create the record in NocoDB via API
         created_record = nocodb_service.create_row("Court_Decisions", nocodb_data)
         merged_id = created_record.get("id") or created_record.get("Id")
-        
+
         if not merged_id:
             logger.error("Failed to get record ID from NocoDB response: %s", created_record)
             raise HTTPException(
@@ -739,12 +739,12 @@ async def approve(request: Request, category: str, suggestion_id: int):
             try:
                 logger.info("Downloading PDF from Azure: %s", pdf_url)
                 pdf_data = download_blob_with_managed_identity(pdf_url)
-                
+
                 # Extract filename from URL
                 filename = pdf_url.split("/")[-1]
                 if not filename.endswith(".pdf"):
                     filename = f"{filename}.pdf"
-                
+
                 # Upload to NocoDB (assuming there's an attachment field like "Official_Source_PDF")
                 logger.info("Uploading PDF to NocoDB for record %s", merged_id)
                 nocodb_service.upload_file(
