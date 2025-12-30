@@ -23,7 +23,7 @@ export default defineEventHandler(async (event) => {
   if (!isValidOrigin) {
     throw createError({
       statusCode: 403,
-      statusMessage: "Forbidden: Invalid origin",
+      message: "Forbidden: Invalid origin",
     });
   }
 
