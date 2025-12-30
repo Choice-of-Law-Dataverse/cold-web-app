@@ -3,9 +3,11 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
   nitro: {
-    preset: "vercel",
     experimental: {
       tasks: false,
+    },
+    externals: {
+      inline: ["@aws-sdk/client-s3", "@aws-sdk/s3-request-presigner"],
     },
   },
   $production: {
