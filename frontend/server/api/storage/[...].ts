@@ -1,6 +1,13 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { parseProxyUrl } from "@/utils/storage";
+
+/**
+ * Extracts storage path from a proxy URL
+ * Example: /api/storage/nc/uploads/noco/file.pdf -> nc/uploads/noco/file.pdf
+ */
+function parseProxyUrl(proxyUrl: string): string {
+  return proxyUrl.replace(/^\/api\/storage\//, "");
+}
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
