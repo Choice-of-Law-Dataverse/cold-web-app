@@ -20,6 +20,7 @@
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
+                :pdf-field="(courtDecision as any)?.['Official Source (PDF)']"
                 :record-id="route.params.id as string"
                 folder-name="court-decisions"
               />
@@ -131,6 +132,7 @@
               ''
             "
             :mode="'themes'"
+            :oup-filter="'noOup'"
             :empty-value-behavior="{
               action: 'display',
               fallback: 'No related literature available',

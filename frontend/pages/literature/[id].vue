@@ -18,7 +18,11 @@
             <div class="flex items-start justify-between gap-4">
               <div :class="valueClassMap.Title" class="flex-1">{{ value }}</div>
               <div class="flex flex-shrink-0 items-center gap-3">
-                <PdfLink :record-id="id" folder-name="literatures" />
+                <PdfLink
+                  :pdf-field="literature?.['Official Source (PDF)']"
+                  :record-id="id"
+                  folder-name="literatures"
+                />
                 <SourceExternalLink
                   :source-url="sourceUrl"
                   :label="sourceLinkLabel"

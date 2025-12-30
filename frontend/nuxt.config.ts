@@ -43,6 +43,12 @@ export default defineNuxtConfig({
     },
     apiBaseUrl: process.env.API_BASE_URL,
     fastApiToken: process.env.FASTAPI_API_TOKEN,
+    r2: {
+      accountId: process.env.R2_ACCOUNT_ID,
+      bucketName: process.env.R2_BUCKET_NAME,
+      accessKeyId: process.env.R2_ACCESS_KEY_ID,
+      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    },
     public: {
       siteUrl: process.env.NUXT_SITE_URL,
     },

@@ -23,6 +23,7 @@
           </div>
 
           <PdfLink
+            :pdf-field="resultData['Attachment']"
             :record-id="resultData.id"
             folder-name="regional-instruments"
           />

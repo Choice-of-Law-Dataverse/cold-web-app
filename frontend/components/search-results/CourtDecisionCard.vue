@@ -21,7 +21,13 @@
             {{ getValue("Case Title") }}
           </div>
 
-          <PdfLink :record-id="resultData.id" folder-name="court-decisions" />
+          <PdfLink
+            :pdf-field="
+              resultData['Official Source (PDF)'] || resultData['Source (PDF)']
+            "
+            :record-id="resultData.id"
+            folder-name="court-decisions"
+          />
         </div>
       </DetailRow>
 

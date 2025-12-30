@@ -20,6 +20,7 @@
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
+                :pdf-field="regionalInstrument?.['Attachment']"
                 :record-id="route.params.id as string"
                 folder-name="regional-instruments"
               />
@@ -45,6 +46,7 @@
               keyLabelLookup.get('Literature')?.emptyValueBehavior
             "
             mode="id"
+            :oup-filter="'noOup'"
           />
         </DetailRow>
       </template>
