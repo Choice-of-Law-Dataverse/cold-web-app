@@ -1,5 +1,6 @@
 import logging
 from collections.abc import Sequence
+from io import BytesIO
 from typing import Any
 
 from app.services.http_session_manager import http_session_manager
@@ -86,3 +87,50 @@ class NocoDBService:
                 break
             offset += limit
         return records
+
+    def create_row(self, table: str, data: dict[str, Any]) -> dict[str, Any]:
+        """
+        Create a new record in NocoDB via API.
+        Returns the created record with its ID and metadata.
+        """
+        logger.debug("Creating row in table %s with data: %s", table, data)
+        url = f"{self.base_url}/{table}"
+        resp = self.session.post(url, headers=self.headers, json=data)
+        logger.debug("Create row response: %s %s", resp.status_code, resp.text[:200])
+        resp.raise_for_status()
+        result = resp.json()
+        logger.debug("Created row result: %s", result)
+        return result
+
+    def upload_file(
+        self,
+        table: str,
+        record_id: int,
+        column_name: str,
+        file_data: bytes,
+        filename: str,
+        mime_type: str = "application/pdf",
+    ) -> dict[str, Any]:
+        """
+        Upload a file to a NocoDB attachment field.
+        According to NocoDB docs, files should be uploaded using multipart/form-data.
+        
+        Reference: https://nocodb.com/docs/product-docs/developer-resources/rest-apis/upload-via-api#python
+        """
+        logger.debug(
+            "Uploading file to table %s, record %s, column %s, filename %s",
+            table,
+            record_id,
+            column_name,
+            filename,
+        )
+        # Step 1: Upload file to get the attachment URL
+        upload_url = f"{self.base_url}/{table}/{record_id}/{column_name}"
+        files = {"file": (filename, BytesIO(file_data), mime_type)}
+        
+        resp = self.session.post(upload_url, headers=self.headers, files=files)
+        logger.debug("Upload file response: %s %s", resp.status_code, resp.text[:200])
+        resp.raise_for_status()
+        result = resp.json()
+        logger.debug("Upload file result: %s", result)
+        return result

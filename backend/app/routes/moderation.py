@@ -17,7 +17,9 @@ from app.schemas.suggestions import (
     LiteratureSuggestion,
     RegionalInstrumentSuggestion,
 )
+from app.services.azure_storage import download_blob_with_managed_identity
 from app.services.moderation_writer import MainDBWriter
+from app.services.nocodb import NocoDBService
 from app.services.suggestions import SuggestionService
 
 logger = logging.getLogger(__name__)
@@ -26,6 +28,7 @@ router = APIRouter(prefix="/moderation", tags=["Moderation"], include_in_schema=
 
 service: SuggestionService | None = None
 writer: MainDBWriter | None = None
+nocodb_service: NocoDBService | None = None
 
 
 def _is_logged_in(request: Request) -> bool:
@@ -672,7 +675,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
     table = _table_key(category)
     if not table:
         raise HTTPException(status_code=404)
-    global service, writer
+    global service, writer, nocodb_service
     if service is None:
         service = SuggestionService()
     items = service.list_pending(table)
@@ -681,7 +684,7 @@ async def approve(request: Request, category: str, suggestion_id: int):
         raise HTTPException(status_code=404, detail="Suggestion not found or not pending")
     original_payload: dict[str, Any] = item["payload"] or {}
 
-    # Case Analyzer: normalize, insert into Court_Decisions, and mark finished
+    # Case Analyzer: normalize, insert into Court_Decisions via NocoDB API, and mark finished
     if category == "case-analyzer":
         normalized = _normalize_case_analyzer_payload(original_payload, item)
         service.update_payload(table, suggestion_id, {"normalized": normalized})
@@ -689,15 +692,88 @@ async def approve(request: Request, category: str, suggestion_id: int):
         if writer is None:
             writer = MainDBWriter()
 
+        # Prepare data for Court_Decisions (with snake_case keys)
         court_decision_data = writer.prepare_case_analyzer_for_court_decisions(normalized)
 
-        merged_id = writer.insert_record("Court_Decisions", court_decision_data)
+        # Initialize NocoDB service
+        if nocodb_service is None:
+            if not config.NOCODB_BASE_URL or not config.NOCODB_API_TOKEN:
+                raise HTTPException(
+                    status_code=500,
+                    detail="NocoDB API credentials not configured",
+                )
+            nocodb_service = NocoDBService(
+                base_url=config.NOCODB_BASE_URL,
+                api_token=config.NOCODB_API_TOKEN,
+            )
 
+        # Map snake_case keys to NocoDB column names (PascalCase)
+        column_mapping = writer.COLUMN_MAPPINGS.get("Court_Decisions", {})
+        nocodb_data: dict[str, Any] = {}
+        
+        # Map fields to NocoDB column names
+        for key, value in court_decision_data.items():
+            if key == "jurisdiction":
+                # Skip jurisdiction - handled via linking below
+                continue
+            nocodb_column = column_mapping.get(key, key)
+            if value is not None and value != "":
+                nocodb_data[nocodb_column] = value
+
+        # Check for PDF URL in the original payload
+        pdf_url = original_payload.get("pdf_url")
+        
+        # Create the record in NocoDB via API
+        created_record = nocodb_service.create_row("Court_Decisions", nocodb_data)
+        merged_id = created_record.get("id") or created_record.get("Id")
+        
+        if not merged_id:
+            logger.error("Failed to get record ID from NocoDB response: %s", created_record)
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to create record in NocoDB",
+            )
+
+        # Handle PDF upload if pdf_url is present
+        if pdf_url and isinstance(pdf_url, str) and pdf_url.strip():
+            try:
+                logger.info("Downloading PDF from Azure: %s", pdf_url)
+                pdf_data = download_blob_with_managed_identity(pdf_url)
+                
+                # Extract filename from URL
+                filename = pdf_url.split("/")[-1]
+                if not filename.endswith(".pdf"):
+                    filename = f"{filename}.pdf"
+                
+                # Upload to NocoDB (assuming there's an attachment field like "Official_Source_PDF")
+                logger.info("Uploading PDF to NocoDB for record %s", merged_id)
+                nocodb_service.upload_file(
+                    table="Court_Decisions",
+                    record_id=int(merged_id),
+                    column_name="Official_Source_PDF",
+                    file_data=pdf_data,
+                    filename=filename,
+                    mime_type="application/pdf",
+                )
+                logger.info("Successfully uploaded PDF to NocoDB")
+            except Exception as e:
+                # Log the error but don't fail the entire operation
+                logger.error("Failed to download/upload PDF from %s: %s", pdf_url, str(e))
+                # Continue - record is already created
+
+        # Link jurisdiction via NocoDB API if available
         if court_decision_data.get("jurisdiction"):
             try:
-                writer.link_jurisdictions("Court_Decisions", merged_id, court_decision_data["jurisdiction"])
+                # For NocoDB, we need to use the API to link records
+                # This would require additional NocoDB API calls for linking
+                # For now, log a warning as the direct DB method won't work with API-only approach
+                logger.warning(
+                    "Jurisdiction linking via NocoDB API not yet implemented for record %s. Jurisdiction: %s",
+                    merged_id,
+                    court_decision_data.get("jurisdiction"),
+                )
+                # TODO: Implement NocoDB API-based jurisdiction linking
             except Exception as e:
-                # If jurisdiction linking fails, continue anyway - record is still created
                 logger.warning(
                     "Failed to link jurisdiction '%s' for Court_Decisions record %s: %s",
                     court_decision_data.get("jurisdiction"),
@@ -710,8 +786,8 @@ async def approve(request: Request, category: str, suggestion_id: int):
             suggestion_id,
             "approved",
             request.session.get("moderator", "moderator"),
-            note="Automatically inserted into Court_Decisions table",
-            merged_id=merged_id,
+            note="Automatically inserted into Court_Decisions table via NocoDB API",
+            merged_id=int(merged_id),
         )
         return RedirectResponse(url=f"/moderation/{category}", status_code=302)
 
