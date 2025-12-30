@@ -132,6 +132,7 @@
               ''
             "
             :mode="'themes'"
+            :oup-filter="'noOup'"
             :empty-value-behavior="{
               action: 'display',
               fallback: 'No related literature available',

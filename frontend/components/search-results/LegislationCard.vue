@@ -24,7 +24,9 @@
           </div>
 
           <PdfLink
-            :pdf-field="resultData['Official Source (PDF)']"
+            :pdf-field="
+              resultData['Official Source (PDF)'] || resultData['Source (PDF)']
+            "
             :record-id="resultData.id"
             folder-name="domestic-instruments"
           />

@@ -1,5 +1,6 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { parseProxyUrl } from "@/utils/storage";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
@@ -29,8 +30,8 @@ export default defineEventHandler(async (event) => {
   }
 
   // Extract the R2 storage path from the request
-  // Expected format: /api/pdf/nc/uploads/noco/...
-  const path = event.path.replace(/^\/api\/pdf\//, "");
+  // Expected format: /api/storage/nc/uploads/noco/...
+  const path = decodeURIComponent(parseProxyUrl(event.path));
 
   if (
     !config.r2AccessKeyId ||

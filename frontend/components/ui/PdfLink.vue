@@ -16,7 +16,11 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { extractPdfUrl } from "@/utils/pdfUtils";
+import {
+  getPdfProxyUrl,
+  extractStoragePath,
+  buildProxyUrl,
+} from "@/utils/storage";
 import { useCheckTarget } from "@/composables/useCheckTarget";
 
 const props = defineProps<{
@@ -27,21 +31,15 @@ const props = defineProps<{
 }>();
 
 const pdfUrl = computed(() => {
-  // If a pdfField is provided, extract the URL from it
+  // If a pdfField is provided, convert it to internal proxy URL
   if (props.pdfField !== undefined && props.pdfField !== null) {
-    const extractedUrl = extractPdfUrl(props.pdfField);
-    if (extractedUrl) {
-      const urlObj = new URL(extractedUrl);
-      const path = urlObj.pathname.substring(1); // Remove leading slash
-      return `/api/pdf/${path}`;
-    }
+    return getPdfProxyUrl(props.pdfField) || "";
   }
 
-  // If a URL is provided directly, use it (backward compatibility)
+  // If a URL is provided directly, convert it to internal proxy URL (backward compatibility)
   if (props.url) {
-    const urlObj = new URL(props.url);
-    const path = urlObj.pathname.substring(1); // Remove leading slash
-    return `/api/pdf/${path}`;
+    const storagePath = extractStoragePath(props.url);
+    return storagePath ? buildProxyUrl(storagePath) : "";
   }
 
   return "";

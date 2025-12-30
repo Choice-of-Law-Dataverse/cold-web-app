@@ -20,7 +20,10 @@
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
-                :pdf-field="legalInstrument?.['Official Source (PDF)']"
+                :pdf-field="
+                  legalInstrument?.['Official Source (PDF)'] ||
+                  legalInstrument?.['Source (PDF)']
+                "
                 :record-id="route.params.id as string"
                 folder-name="domestic-instruments"
               />
