@@ -3,6 +3,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
   nitro: {
+    preset: "vercel",
     experimental: {
       tasks: false,
     },
