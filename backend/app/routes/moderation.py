@@ -9,6 +9,7 @@ from urllib.parse import urlparse
 
 from fastapi import APIRouter, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
+from starlette.datastructures import FormData
 
 from app.config import config
 from app.schemas.suggestions import (
@@ -482,7 +483,7 @@ def _render_detail_entry(category: str, model, item: dict[str, Any]) -> str:
         )
         meta = f"<div style='color:#555;font-size:12px;margin-bottom:6px'>ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"
         buttons = (
-            f"<form method='post' action='/moderation/{category}/{item['id']}/approve'>"
+            f"<form method='post' action='/moderation/{category}/{item['id']}/approve' onsubmit='this.querySelectorAll(\"button\").forEach(b=>b.disabled=true)'>"
             f"<div style='margin-top:8px'>"
             f"<button type='submit' style='padding:6px 12px'>Mark as finished</button>"
             f"<button type='submit' formaction='/moderation/{category}/{item['id']}/reject' style='padding:6px 12px;margin-left:8px'>Reject</button>"
@@ -548,12 +549,11 @@ def _render_detail_entry(category: str, model, item: dict[str, Any]) -> str:
             + comments_block
             + "</div>"
         )
-    meta = f"<div style='color:#555;font-size:12px;margin-bottom:6px'>ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"
     meta = f"<div style='color:#555;font-size:12px;margin-bottom:6px'>ID #{item['id']} — Source: {html.escape(str(item.get('source') or ''))}{by_meta}</div>"  # noqa: E501
     # Safeguard join if any element is None
     inputs_html = "".join(i for i in inputs if isinstance(i, str))
     return (
-        f"<div style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>{meta}{submit_block}<form method='post' action='/moderation/{category}/{item['id']}/approve'>"  # noqa: E501
+        f"<div style='border:1px solid #ddd;padding:10px;border-radius:6px;margin-bottom:12px'>{meta}{submit_block}<form method='post' action='/moderation/{category}/{item['id']}/approve' onsubmit='this.querySelectorAll(\"button\").forEach(b=>b.disabled=true)'>"  # noqa: E501
         + inputs_html
         + buttons
         + "</form></div>"
@@ -618,7 +618,6 @@ def _table_key(path_segment: str) -> str | None:
         "regional-instruments": "regional_instruments",
         "international-instruments": "international_instruments",
         "literature": "literature",
-        # New: Case Analyzer
         "case-analyzer": "case_analyzer",
     }
     return mapping.get(path_segment)
@@ -639,14 +638,12 @@ def list_pending(request: Request, category: str):
     if model is None:
         raise HTTPException(status_code=404)
 
-    # Overview list with key info and link to detail view
     entries = "".join(_render_overview_item(category, model, i) for i in items)
     empty_state = "<p>No pending suggestions.</p>" if not entries else ""
     content = f"<h3>Pending suggestions: {html.escape(category)}</h3><ul class='plain'>{entries}</ul>{empty_state}<p><a href='/moderation'>Back</a></p>"  # noqa: E501
     return _page(f"Pending - {category}", content)
 
 
-# New: detail page per entry
 @router.get("/{category}/{suggestion_id}")
 def view_entry(request: Request, category: str, suggestion_id: int):
     if not _is_logged_in(request):
@@ -680,134 +677,209 @@ async def approve(request: Request, category: str, suggestion_id: int):
     global service, writer, nocodb_service
     if service is None:
         service = SuggestionService()
+    if writer is None:
+        writer = MainDBWriter()
+    assert service is not None
+    assert writer is not None
     items = service.list_pending(table)
     item = next((i for i in items if i["id"] == suggestion_id), None)
     if not item:
         raise HTTPException(status_code=404, detail="Suggestion not found or not pending")
     original_payload: dict[str, Any] = item["payload"] or {}
 
-    # Case Analyzer: normalize, insert into Court_Decisions via NocoDB API, and mark finished
     if category == "case-analyzer":
-        normalized = _normalize_case_analyzer_payload(original_payload, item)
-        service.update_payload(table, suggestion_id, {"normalized": normalized})
-
-        if writer is None:
-            writer = MainDBWriter()
-
-        # Prepare data for Court_Decisions (with snake_case keys)
-        court_decision_data = writer.prepare_case_analyzer_for_court_decisions(normalized)
-
-        # Initialize NocoDB service
-        if nocodb_service is None:
-            if not config.NOCODB_BASE_URL or not config.NOCODB_API_TOKEN:
-                raise HTTPException(
-                    status_code=500,
-                    detail="NocoDB API credentials not configured",
-                )
-            nocodb_service = NocoDBService(
-                base_url=config.NOCODB_BASE_URL,
-                api_token=config.NOCODB_API_TOKEN,
-            )
-
-        # Resolve jurisdiction IDs BEFORE creating the record
-        jurisdiction_ids: list[int] = []
-        if court_decision_data.get("jurisdiction"):
-            try:
-                jurisdiction_value = court_decision_data.get("jurisdiction")
-                logger.info("Resolving jurisdiction '%s' before creating record", jurisdiction_value)
-                jurisdiction_ids = nocodb_service.list_jurisdictions(jurisdiction_value)
-
-                if not jurisdiction_ids:
-                    logger.warning(
-                        "Could not resolve jurisdiction '%s' - record will be created without jurisdiction link",
-                        jurisdiction_value,
-                    )
-            except Exception as e:
-                logger.warning(
-                    "Failed to resolve jurisdiction '%s': %s - record will be created without jurisdiction link",
-                    court_decision_data.get("jurisdiction"),
-                    str(e),
-                )
-
-        # Map snake_case keys to NocoDB column names (PascalCase)
-        column_mapping = writer.COLUMN_MAPPINGS.get("Court_Decisions", {})
-        nocodb_data: dict[str, Any] = {}
-
-        # Map fields to NocoDB column names
-        for key, value in court_decision_data.items():
-            if key == "jurisdiction":
-                # Skip jurisdiction - will be included as Jurisdictions field below
-                continue
-            nocodb_column = column_mapping.get(key, key)
-            if value is not None and value != "":
-                nocodb_data[nocodb_column] = value
-
-        # Add jurisdiction IDs to the record data if resolved
-        if jurisdiction_ids:
-            nocodb_data["Jurisdictions"] = jurisdiction_ids
-            logger.info("Including jurisdiction IDs %s in record creation", jurisdiction_ids)
-
-        # Check for PDF URL in the original payload
-        pdf_url = original_payload.get("pdf_url")
-
-        # Create the record in NocoDB via API with jurisdiction IDs already included
-        created_record = nocodb_service.create_row("Court_Decisions", nocodb_data)
-        merged_id = created_record.get("id") or created_record.get("Id")
-
-        if not merged_id:
-            logger.error("Failed to get record ID from NocoDB response: %s", created_record)
-            raise HTTPException(
-                status_code=500,
-                detail="Failed to create record in NocoDB",
-            )
-
-        # Handle PDF upload if pdf_url is present
-        if pdf_url and isinstance(pdf_url, str) and pdf_url.strip():
-            try:
-                logger.info("Downloading PDF from Azure: %s", pdf_url)
-                pdf_data = download_blob_with_managed_identity(pdf_url)
-
-                # Extract filename from URL (handle query params and fragments)
-                parsed_url = urlparse(pdf_url)
-                filename = os.path.basename(parsed_url.path)
-                if not filename:
-                    filename = "document.pdf"
-                elif not filename.endswith(".pdf"):
-                    filename = f"{filename}.pdf"
-
-                # Upload to NocoDB (assuming there's an attachment field like "Official_Source_PDF")
-                logger.info("Uploading PDF to NocoDB for record %s", merged_id)
-                nocodb_service.upload_file(
-                    table="Court_Decisions",
-                    record_id=int(merged_id),
-                    column_name="Official_Source_PDF",
-                    file_data=pdf_data,
-                    filename=filename,
-                    mime_type="application/pdf",
-                )
-                logger.info("Successfully uploaded PDF to NocoDB")
-            except Exception as e:
-                # Log the error but don't fail the entire operation
-                logger.error("Failed to download/upload PDF from %s: %s", pdf_url, str(e))
-                # Continue - record is already created
-
-        service.mark_status(
-            table,
-            suggestion_id,
-            "approved",
-            request.session.get("moderator", "moderator"),
-            note="Automatically inserted into Court_Decisions table via NocoDB API",
-            merged_id=int(merged_id),
-        )
+        await _approve_case_analyzer(request, table, suggestion_id, original_payload, item)
         return RedirectResponse(url=f"/moderation/{category}", status_code=302)
 
-    # Default flow for other categories: write into main DB and mark approved
+    await _approve_default_category(request, category, table, suggestion_id, original_payload)
+    return RedirectResponse(url=f"/moderation/{category}", status_code=302)
+
+
+async def _approve_case_analyzer(
+    request: Request,
+    table: str,
+    suggestion_id: int,
+    original_payload: dict[str, Any],
+    item: dict[str, Any],
+) -> None:
+    """Handle approval of case analyzer submissions via NocoDB API."""
+    global service, writer, nocodb_service
+    assert service is not None
+    assert writer is not None
+
+    normalized = _normalize_case_analyzer_payload(original_payload, item)
+    service.update_payload(table, suggestion_id, {"normalized": normalized})
+
+    court_decision_data = writer.prepare_case_analyzer_for_court_decisions(normalized)
+
+    if nocodb_service is None:
+        if not config.NOCODB_BASE_URL or not config.NOCODB_API_TOKEN:
+            raise HTTPException(
+                status_code=500,
+                detail="NocoDB API credentials not configured",
+            )
+        nocodb_service = NocoDBService(
+            base_url=config.NOCODB_BASE_URL,
+            api_token=config.NOCODB_API_TOKEN,
+        )
+
+    jurisdiction_ids = _resolve_jurisdiction_ids(nocodb_service, court_decision_data)
+    nocodb_data = _prepare_nocodb_data(writer, court_decision_data)
+    created_record = nocodb_service.create_row("mdmls7kc3a3w1vu", nocodb_data)
+    merged_id = created_record.get("id") or created_record.get("Id")
+
+    if not merged_id:
+        logger.error("Failed to get record ID from NocoDB response: %s", created_record)
+        raise HTTPException(
+            status_code=500,
+            detail="Failed to create record in NocoDB",
+        )
+
+    _link_jurisdictions(nocodb_service, jurisdiction_ids, merged_id)
+    _handle_pdf_upload(nocodb_service, original_payload, merged_id)
+
+    service.mark_status(
+        table,
+        suggestion_id,
+        "approved",
+        request.session.get("moderator", "moderator"),
+        note="Automatically inserted into Court_Decisions table via NocoDB API",
+        merged_id=int(merged_id),
+    )
+
+
+def _resolve_jurisdiction_ids(
+    nocodb_service: NocoDBService,
+    court_decision_data: dict[str, Any],
+) -> list[int]:
+    """Resolve jurisdiction string to NocoDB jurisdiction IDs."""
+    jurisdiction_ids: list[int] = []
+    if court_decision_data.get("jurisdiction"):
+        try:
+            jurisdiction_value = court_decision_data.get("jurisdiction")
+            if jurisdiction_value is not None:
+                logger.info("Resolving jurisdiction '%s' before creating record", jurisdiction_value)
+                jurisdiction_ids = nocodb_service.list_jurisdictions(str(jurisdiction_value))
+
+            if not jurisdiction_ids:
+                logger.warning(
+                    "Could not resolve jurisdiction '%s' - record will be created without jurisdiction link",
+                    jurisdiction_value,
+                )
+        except Exception as e:
+            logger.warning(
+                "Failed to resolve jurisdiction '%s': %s - record will be created without jurisdiction link",
+                court_decision_data.get("jurisdiction"),
+                str(e),
+            )
+    return jurisdiction_ids
+
+
+def _prepare_nocodb_data(
+    writer: MainDBWriter,
+    court_decision_data: dict[str, Any],
+) -> dict[str, Any]:
+    """Map snake_case keys to NocoDB column names (PascalCase)."""
+    column_mapping = writer.COLUMN_MAPPINGS.get("Court_Decisions", {})
+    nocodb_data: dict[str, Any] = {}
+
+    for key, value in court_decision_data.items():
+        if key == "jurisdiction":
+            # Skip jurisdiction - handled separately via link_records
+            continue
+        nocodb_column = column_mapping.get(key, key)
+        if value is not None and value != "":
+            nocodb_data[nocodb_column] = value
+
+    return nocodb_data
+
+
+def _link_jurisdictions(
+    nocodb_service: NocoDBService,
+    jurisdiction_ids: list[int],
+    merged_id: int | str,
+) -> None:
+    """Link jurisdiction IDs to the court decision record."""
+    if jurisdiction_ids:
+        try:
+            logger.info("Linking jurisdiction IDs %s to record %s", jurisdiction_ids, merged_id)
+            nocodb_service.link_records(
+                table="mdmls7kc3a3w1vu",
+                record_id=int(merged_id),
+                field_id="c2rumo81p8xw0pg",
+                linked_record_ids=jurisdiction_ids,
+            )
+            logger.info("Successfully linked jurisdictions to record")
+        except Exception as e:
+            logger.error("Failed to link jurisdictions: %s", str(e))
+            # Continue - record is already created
+
+
+def _handle_pdf_upload(
+    nocodb_service: NocoDBService,
+    original_payload: dict[str, Any],
+    merged_id: int | str,
+) -> None:
+    """Download PDF from Azure and upload to NocoDB if pdf_url is present."""
+    pdf_url = original_payload.get("pdf_url")
+    if not pdf_url or not isinstance(pdf_url, str) or not pdf_url.strip():
+        return
+
+    try:
+        logger.info("Downloading PDF from Azure: %s", pdf_url)
+        pdf_data = download_blob_with_managed_identity(pdf_url)
+
+        parsed_url = urlparse(pdf_url)
+        filename = os.path.basename(parsed_url.path)
+        if not filename:
+            filename = "document.pdf"
+        elif not filename.endswith(".pdf"):
+            filename = f"{filename}.pdf"
+
+        logger.info("Uploading PDF to NocoDB for record %s", merged_id)
+        nocodb_service.upload_file(
+            table="mdmls7kc3a3w1vu",
+            record_id=int(merged_id),
+            field_id="ciw1ko4kixrlep0",
+            file_data=pdf_data,
+            filename=filename,
+            mime_type="application/pdf",
+            field_name="Official Source (PDF)",
+        )
+        logger.info("Successfully uploaded PDF to NocoDB")
+    except Exception as e:
+        logger.error("Failed to download/upload PDF from %s: %s", pdf_url, str(e))
+        # Continue - record is already created
+
+
+async def _approve_default_category(
+    request: Request,
+    category: str,
+    table: str,
+    suggestion_id: int,
+    original_payload: dict[str, Any],
+) -> None:
+    """Handle approval for default categories (non-case-analyzer)."""
+    global service, writer
+    assert service is not None
+    assert writer is not None
+
     form = await request.form()
     model = _category_schema(category)
     if model is None:
         raise HTTPException(status_code=400, detail="Unsupported category")
-    updated_fields: dict[str, Any] = {}
-    # Exclude submitter meta from write-back to main DB
+
+    updated_fields = _extract_form_fields(form, model)
+    moderation_note = ""
+
+    target_table = _get_target_table(category)
+    if not target_table:
+        raise HTTPException(status_code=400, detail="Unsupported category")
+
+    if target_table == "Domestic_Instruments":
+        _normalize_domestic_instruments(updated_fields)
+
+    payload_merged: dict[str, Any] = {**original_payload, **updated_fields}
     _reserved = {
         "submitter_email",
         "submitter_comments",
@@ -815,12 +887,39 @@ async def approve(request: Request, category: str, suggestion_id: int):
         "source_pdf",
         "attachment",
     }
+    payload_for_writer = {k: v for k, v in payload_merged.items() if k not in _reserved}
+
+    merged_id = writer.insert_record(target_table, payload_for_writer)
+    _link_jurisdictions_for_default_categories(writer, target_table, merged_id, payload_for_writer)
+
+    service.mark_status(
+        table,
+        suggestion_id,
+        "approved",
+        request.session.get("moderator", "moderator"),
+        note=moderation_note,
+        merged_id=merged_id,
+    )
+
+
+def _extract_form_fields(form: FormData, model: type) -> dict[str, Any]:
+    """Extract and type-convert form fields based on model schema."""
+    updated_fields: dict[str, Any] = {}
+    _reserved = {
+        "submitter_email",
+        "submitter_comments",
+        "official_source_pdf",
+        "source_pdf",
+        "attachment",
+    }
+
     for fname, finfo in model.model_fields.items():  # type: ignore[attr-defined]
         if fname in _reserved:
             continue
         raw = form.get(fname)
         ann = getattr(finfo, "annotation", str)
         base_t = _python_type(ann)
+
         if base_t is bool:
             updated_fields[fname] = "true" if raw in ("true", "on", "1", "yes") else ""
         elif base_t in (list, tuple):
@@ -834,10 +933,11 @@ async def approve(request: Request, category: str, suggestion_id: int):
             else:
                 updated_fields[fname] = "" if raw is None else str(raw)
 
-    moderation_note = ""
+    return updated_fields
 
-    if writer is None:
-        writer = MainDBWriter()
+
+def _get_target_table(category: str) -> str | None:
+    """Map category to target database table name."""
     table_map = {
         "court-decisions": "Court_Decisions",
         "domestic-instruments": "Domestic_Instruments",
@@ -845,22 +945,26 @@ async def approve(request: Request, category: str, suggestion_id: int):
         "international-instruments": "International_Instruments",
         "literature": "Literature",
     }
-    target_table = table_map.get(category)
-    if not target_table:
-        raise HTTPException(status_code=400, detail="Unsupported category")
-    # Small normalization: for Domestic Instruments, auto-derive year text if missing
-    if target_table == "Domestic_Instruments":
-        if (not updated_fields.get("date_year_of_entry_into_force")) and updated_fields.get("entry_into_force"):
-            try:
-                # Keep as string; writer will coerce types as needed
-                year = str(updated_fields["entry_into_force"])[:4]
-                updated_fields["date_year_of_entry_into_force"] = year
-            except Exception:
-                pass
-    payload_merged: dict[str, Any] = {**original_payload, **updated_fields}
-    # Prepare payload for main DB without submitter meta
-    payload_for_writer = {k: v for k, v in payload_merged.items() if k not in _reserved}
-    merged_id = writer.insert_record(target_table, payload_for_writer)
+    return table_map.get(category)
+
+
+def _normalize_domestic_instruments(updated_fields: dict[str, Any]) -> None:
+    """Auto-derive year text for Domestic Instruments if missing."""
+    if (not updated_fields.get("date_year_of_entry_into_force")) and updated_fields.get("entry_into_force"):
+        try:
+            year = str(updated_fields["entry_into_force"])[:4]
+            updated_fields["date_year_of_entry_into_force"] = year
+        except Exception:
+            pass
+
+
+def _link_jurisdictions_for_default_categories(
+    writer: MainDBWriter,
+    target_table: str,
+    merged_id: int,
+    payload_for_writer: dict[str, Any],
+) -> None:
+    """Link jurisdictions for default categories."""
     for key in ("jurisdiction", "jurisdiction_link"):
         if key in payload_for_writer and payload_for_writer.get(key):
             try:
@@ -873,15 +977,6 @@ async def approve(request: Request, category: str, suggestion_id: int):
                     merged_id,
                     str(e),
                 )
-    service.mark_status(
-        table,
-        suggestion_id,
-        "approved",
-        request.session.get("moderator", "moderator"),
-        note=moderation_note,
-        merged_id=merged_id,
-    )
-    return RedirectResponse(url=f"/moderation/{category}", status_code=302)
 
 
 @router.post("/{category}/{suggestion_id}/reject")

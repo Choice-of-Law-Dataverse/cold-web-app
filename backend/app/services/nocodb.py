@@ -1,6 +1,5 @@
 import logging
 from collections.abc import Sequence
-from io import BytesIO
 from typing import Any
 
 from app.services.http_session_manager import http_session_manager
@@ -106,49 +105,103 @@ class NocoDBService:
         self,
         table: str,
         record_id: int,
-        column_name: str,
+        field_id: str,
         file_data: bytes,
         filename: str,
         mime_type: str = "application/pdf",
+        field_name: str | None = None,
     ) -> dict[str, Any]:
         """
-        Upload a file to a NocoDB attachment field.
-        According to NocoDB docs, files should be uploaded using multipart/form-data.
+        Upload a file to a NocoDB attachment field using a two-step process:
+        1. Upload file to NocoDB storage (v2 API) to get attachment metadata
+        2. Update the record (v1 API) with the attachment metadata
 
-        Reference: https://nocodb.com/docs/product-docs/developer-resources/rest-apis/upload-via-api#python
+        Args:
+            table: Table ID
+            record_id: Record ID
+            field_id: Field ID (for fetching current attachments)
+            file_data: Binary file data
+            filename: Name of the file
+            mime_type: MIME type
+            field_name: Field name to use in PATCH (defaults to field_id if not provided)
+
+        Reference: https://nocodb.com/docs/product-docs/developer-resources/rest-apis/upload-via-api
         """
+        from io import BytesIO
+
         logger.debug(
-            "Uploading file to table %s, record %s, column %s, filename %s",
+            "Uploading file to table %s, record %s, field %s, filename %s",
             table,
             record_id,
-            column_name,
+            field_id,
             filename,
         )
-        # Step 1: Upload file to get the attachment URL
-        upload_url = f"{self.base_url}/{table}/{record_id}/{column_name}"
+
+        # Step 1: Upload file to NocoDB storage
+        base_parts = self.base_url.split("/api/")
+        if len(base_parts) >= 2:
+            storage_base = base_parts[0]
+            upload_url = f"{storage_base}/api/v2/storage/upload"
+        else:
+            upload_url = f"{self.base_url}/api/v2/storage/upload"
+
         files = {"file": (filename, BytesIO(file_data), mime_type)}
 
+        logger.debug("Uploading file to NocoDB storage: %s", upload_url)
         resp = self.session.post(upload_url, headers=self.headers, files=files)
-        logger.debug("Upload file response: %s %s", resp.status_code, resp.text[:200])
+        logger.debug("Upload file response: %s %s", resp.status_code, resp.text[:500])
+        resp.raise_for_status()
+        upload_result = resp.json()
+        logger.debug("Upload file result: %s", upload_result)
+
+        # Step 2: Update the record with the attachment metadata
+        update_url = f"{self.base_url}/{table}/{record_id}"
+
+        # Get current attachments if any
+        try:
+            current_row = self.get_row(table, str(record_id))
+            current_attachments = current_row.get(field_id, [])
+            if not isinstance(current_attachments, list):
+                current_attachments = []
+        except Exception as e:
+            logger.warning("Failed to get current attachments: %s. Starting with empty list.", e)
+            current_attachments = []
+
+        # Append new attachment(s)
+        if isinstance(upload_result, list):
+            new_attachments = current_attachments + upload_result
+        else:
+            new_attachments = current_attachments + [upload_result]
+
+        # Use field_name for update if provided, otherwise use field_id
+        update_field = field_name if field_name else field_id
+        update_data = {update_field: new_attachments}
+
+        logger.debug("Updating record with attachment using field '%s': %s", update_field, update_data)
+        resp = self.session.patch(update_url, headers=self.headers, json=update_data)
+        logger.debug("Update record response: %s %s", resp.status_code, resp.text[:500])
         resp.raise_for_status()
         result = resp.json()
-        logger.debug("Upload file result: %s", result)
+        logger.debug("Update record result: %s", result)
+
         return result
 
     def link_records(
         self,
         table: str,
         record_id: int,
-        link_field: str,
+        field_id: str,
         linked_record_ids: list[int],
     ) -> dict[str, Any]:
         """
-        Link records in a many-to-many relationship via NocoDB API.
+        Link records in a many-to-many relationship via NocoDB v2 API.
+
+        Uses POST /api/v2/tables/{tableId}/links/{linkFieldId}/records/{recordId}
 
         Args:
-            table: The source table name (e.g., "Court_Decisions")
+            table: The source table ID (e.g., "mdmls7kc3a3w1vu")
             record_id: The ID of the record in the source table
-            link_field: The name of the link field (e.g., "Jurisdictions")
+            field_id: The link field ID (e.g., "c6rj8tua651icm0" for Jurisdictions)
             linked_record_ids: List of IDs to link from the target table
 
         Returns:
@@ -158,19 +211,25 @@ class NocoDBService:
             "Linking records in table %s, record %s, field %s, linked IDs: %s",
             table,
             record_id,
-            link_field,
+            field_id,
             linked_record_ids,
         )
 
-        # NocoDB API for linking: POST /api/v1/db/data/noco/{projectId}/{tableName}/{rowId}/{linkFieldName}
-        # However, the simpler approach is to PATCH the record with the link field
-        url = f"{self.base_url}/{table}/{record_id}"
+        # Extract base URL for v2 API
+        base_parts = self.base_url.split("/api/")
+        if len(base_parts) >= 2:
+            storage_base = base_parts[0]
+            # Use v2 API endpoint structure
+            url = f"{storage_base}/api/v2/tables/{table}/links/{field_id}/records/{record_id}"
+        else:
+            url = f"{self.base_url}/api/v2/tables/{table}/links/{field_id}/records/{record_id}"
 
-        # For linking, we send the IDs as an array in the link field
-        data = {link_field: linked_record_ids}
+        # Payload is an array of record IDs with capital "Id" per v2 API
+        data = [{"Id": link_id} for link_id in linked_record_ids]
 
-        resp = self.session.patch(url, headers=self.headers, json=data)
-        logger.debug("Link records response: %s %s", resp.status_code, resp.text[:200])
+        logger.debug("Linking records via v2 API: %s with data: %s", url, data)
+        resp = self.session.post(url, headers=self.headers, json=data)
+        logger.debug("Link records response: %s %s", resp.status_code, resp.text[:400])
         resp.raise_for_status()
         result = resp.json()
         logger.debug("Link records result: %s", result)
