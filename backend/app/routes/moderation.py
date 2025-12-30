@@ -764,15 +764,27 @@ async def approve(request: Request, category: str, suggestion_id: int):
         # Link jurisdiction via NocoDB API if available
         if court_decision_data.get("jurisdiction"):
             try:
-                # For NocoDB, we need to use the API to link records
-                # This would require additional NocoDB API calls for linking
-                # For now, log a warning as the direct DB method won't work with API-only approach
-                logger.warning(
-                    "Jurisdiction linking via NocoDB API not yet implemented for record %s. Jurisdiction: %s",
-                    merged_id,
-                    court_decision_data.get("jurisdiction"),
-                )
-                # TODO: Implement NocoDB API-based jurisdiction linking
+                jurisdiction_value = court_decision_data.get("jurisdiction")
+                logger.info("Linking jurisdiction '%s' to record %s", jurisdiction_value, merged_id)
+
+                # Resolve jurisdiction IDs
+                jurisdiction_ids = nocodb_service.list_jurisdictions(jurisdiction_value)
+
+                if jurisdiction_ids:
+                    # Link via NocoDB API
+                    nocodb_service.link_records(
+                        table="Court_Decisions",
+                        record_id=int(merged_id),
+                        link_field="Jurisdictions",
+                        linked_record_ids=jurisdiction_ids,
+                    )
+                    logger.info("Successfully linked jurisdiction(s) %s to record %s", jurisdiction_ids, merged_id)
+                else:
+                    logger.warning(
+                        "Could not resolve jurisdiction '%s' for record %s",
+                        jurisdiction_value,
+                        merged_id,
+                    )
             except Exception as e:
                 logger.warning(
                     "Failed to link jurisdiction '%s' for Court_Decisions record %s: %s",

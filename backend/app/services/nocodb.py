@@ -134,3 +134,88 @@ class NocoDBService:
         result = resp.json()
         logger.debug("Upload file result: %s", result)
         return result
+
+    def link_records(
+        self,
+        table: str,
+        record_id: int,
+        link_field: str,
+        linked_record_ids: list[int],
+    ) -> dict[str, Any]:
+        """
+        Link records in a many-to-many relationship via NocoDB API.
+
+        Args:
+            table: The source table name (e.g., "Court_Decisions")
+            record_id: The ID of the record in the source table
+            link_field: The name of the link field (e.g., "Jurisdictions")
+            linked_record_ids: List of IDs to link from the target table
+
+        Returns:
+            API response
+        """
+        logger.debug(
+            "Linking records in table %s, record %s, field %s, linked IDs: %s",
+            table,
+            record_id,
+            link_field,
+            linked_record_ids,
+        )
+
+        # NocoDB API for linking: POST /api/v1/db/data/noco/{projectId}/{tableName}/{rowId}/{linkFieldName}
+        # However, the simpler approach is to PATCH the record with the link field
+        url = f"{self.base_url}/{table}/{record_id}"
+
+        # For linking, we send the IDs as an array in the link field
+        data = {link_field: linked_record_ids}
+
+        resp = self.session.patch(url, headers=self.headers, json=data)
+        logger.debug("Link records response: %s %s", resp.status_code, resp.text[:200])
+        resp.raise_for_status()
+        result = resp.json()
+        logger.debug("Link records result: %s", result)
+        return result
+
+    def list_jurisdictions(
+        self,
+        jurisdiction_value: str,
+    ) -> list[int]:
+        """
+        Resolve jurisdiction IDs from various input formats (ID, ISO3 code, or Name).
+
+        Args:
+            jurisdiction_value: Can be an ID, ISO3 code (Alpha_3_Code), or Name
+
+        Returns:
+            List of jurisdiction IDs
+        """
+        if not jurisdiction_value or not jurisdiction_value.strip():
+            return []
+
+        # Try as numeric ID first
+        try:
+            jur_id = int(jurisdiction_value.strip())
+            # Verify it exists
+            rows = self.list_rows("Jurisdictions", limit=1)
+            # TODO: Add filtering by ID once we implement proper filtering
+            return [jur_id]
+        except ValueError:
+            pass
+
+        # Search by Alpha_3_Code or Name
+        # Note: This is a simplified implementation
+        # In production, you'd want to use proper NocoDB filtering
+        rows = self.list_rows("Jurisdictions", limit=1000)
+
+        search_value = jurisdiction_value.strip().lower()
+        for row in rows:
+            alpha3 = row.get("Alpha_3_Code", "")
+            name = row.get("Name", "")
+
+            if (alpha3 and alpha3.lower() == search_value) or (name and name.lower() == search_value):
+                row_id = row.get("id") or row.get("Id")
+                if row_id:
+                    return [int(row_id)]
+
+        logger.warning("Could not find jurisdiction for value: %s", jurisdiction_value)
+        return []

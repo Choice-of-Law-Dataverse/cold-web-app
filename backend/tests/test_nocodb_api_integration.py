@@ -77,6 +77,64 @@ class TestNocoDBService:
             # Verify the response
             assert result[0]["url"] == "https://nocodb.com/files/test.pdf"
 
+    def test_link_records_success(self):
+        """Test linking records via NocoDB API."""
+        mock_session = MagicMock()
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {"id": 123, "Jurisdictions": [1, 2]}
+        mock_response.text = '{"id": 123}'
+        mock_session.patch.return_value = mock_response
+
+        with patch("app.services.nocodb.http_session_manager.get_session", return_value=mock_session):
+            service = NocoDBService(base_url="https://test.nocodb.com", api_token="test-token")
+
+            # Test linking
+            result = service.link_records(
+                table="Court_Decisions",
+                record_id=123,
+                link_field="Jurisdictions",
+                linked_record_ids=[1, 2],
+            )
+
+            # Verify the API was called correctly
+            mock_session.patch.assert_called_once()
+            call_args = mock_session.patch.call_args
+            assert call_args[0][0] == "https://test.nocodb.com/Court_Decisions/123"
+            assert call_args[1]["json"] == {"Jurisdictions": [1, 2]}
+
+            # Verify the response
+            assert result["id"] == 123
+            assert result["Jurisdictions"] == [1, 2]
+
+    def test_list_jurisdictions_by_name(self):
+        """Test resolving jurisdiction by name."""
+        mock_session = MagicMock()
+        mock_response = Mock()
+        mock_response.status_code = 200
+        mock_response.json.return_value = {
+            "list": [
+                {"id": 1, "Name": "United States", "Alpha_3_Code": "USA"},
+                {"id": 2, "Name": "United Kingdom", "Alpha_3_Code": "GBR"},
+            ]
+        }
+        mock_session.get.return_value = mock_response
+
+        with patch("app.services.nocodb.http_session_manager.get_session", return_value=mock_session):
+            service = NocoDBService(base_url="https://test.nocodb.com", api_token="test-token")
+
+            # Test by name
+            result = service.list_jurisdictions("United Kingdom")
+            assert result == [2]
+
+            # Test by ISO3 code
+            result = service.list_jurisdictions("USA")
+            assert result == [1]
+
+            # Test not found
+            result = service.list_jurisdictions("NonExistent")
+            assert result == []
+
 
 class TestAzureStorageIntegration:
     """Tests for Azure Blob Storage integration."""
