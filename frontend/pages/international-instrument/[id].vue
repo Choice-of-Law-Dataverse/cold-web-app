@@ -20,7 +20,7 @@
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
-                :url="processedInternationalInstrument?.pdfUrl"
+                :pdf-field="internationalInstrument?.['Official Source (PDF)']"
                 :record-id="route.params.id as string"
                 folder-name="international-instruments"
               />
@@ -115,7 +115,6 @@ import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useInternationalLegalProvisions } from "@/composables/useInternationalLegalProvisions";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import { extractPdfUrl } from "@/utils/pdfUtils";
 import type { TableName } from "@/types/api";
 
 interface InternationalInstrumentRecord {
@@ -151,7 +150,6 @@ const keyLabelLookup = computed(() => {
 
 const processedInternationalInstrument = computed(() => {
   if (!internationalInstrument.value) return null;
-  const pdfUrl = extractPdfUrl(internationalInstrument.value["Official Source (PDF)"]);
   return {
     ...internationalInstrument.value,
     "Title (in English)":
@@ -167,7 +165,6 @@ const processedInternationalInstrument = computed(() => {
     Abbreviation: (internationalInstrument.value as Record<string, unknown>)[
       "Abbreviation"
     ],
-    pdfUrl,
   };
 });
 

@@ -18,7 +18,11 @@
             <div class="flex items-start justify-between gap-4">
               <div :class="valueClassMap.Title" class="flex-1">{{ value }}</div>
               <div class="flex flex-shrink-0 items-center gap-3">
-                <PdfLink :url="pdfUrl" :record-id="id" folder-name="literatures" />
+                <PdfLink
+                  :pdf-field="literature?.['Official Source (PDF)']"
+                  :record-id="id"
+                  folder-name="literatures"
+                />
                 <SourceExternalLink
                   :source-url="sourceUrl"
                   :label="sourceLinkLabel"
@@ -96,7 +100,6 @@ import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { literatureConfig } from "@/config/pageConfigs";
-import { extractPdfUrl } from "@/utils/pdfUtils";
 import type { TableName } from "@/types/api";
 import { generateBibTeX, sanitizeFilename, downloadFile } from "@/utils/bibtex";
 
@@ -124,12 +127,6 @@ const keyLabelLookup = computed(() => {
     map.set(pair.key, pair);
   });
   return map;
-});
-
-// PDF URL extraction
-const pdfUrl = computed(() => {
-  if (!literature.value) return null;
-  return extractPdfUrl(literature.value["Official Source (PDF)"]);
 });
 
 // Source URL logic

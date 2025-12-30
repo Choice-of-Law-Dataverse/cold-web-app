@@ -23,6 +23,7 @@
           </div>
 
           <PdfLink
+            :pdf-field="resultData['Official Source (PDF)']"
             :record-id="resultData.id"
             folder-name="international-instruments"
           />

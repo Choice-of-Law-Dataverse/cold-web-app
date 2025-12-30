@@ -29,11 +29,15 @@ export default defineEventHandler(async (event) => {
   }
 
   // Extract the R2 storage path from the request
-  // Expected format: /api/r2-proxy/nc/uploads/noco/...
-  const path = event.path.replace(/^\/api\/r2-proxy\//, "");
+  // Expected format: /api/pdf/nc/uploads/noco/...
+  const path = event.path.replace(/^\/api\/pdf\//, "");
 
-  // Check if we have R2 credentials to generate presigned URLs
-  if (!config.r2AccessKeyId || !config.r2SecretAccessKey || !config.r2AccountId || !config.r2BucketName) {
+  if (
+    !config.r2AccessKeyId ||
+    !config.r2SecretAccessKey ||
+    !config.r2AccountId ||
+    !config.r2BucketName
+  ) {
     throw createError({
       statusCode: 500,
       statusMessage: "R2 credentials not configured",
@@ -41,7 +45,6 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    // Configure S3 client for R2
     const s3Client = new S3Client({
       region: "auto",
       endpoint: `https://${config.r2AccountId}.r2.cloudflarestorage.com`,
@@ -51,18 +54,15 @@ export default defineEventHandler(async (event) => {
       },
     });
 
-    // Create GetObject command
     const command = new GetObjectCommand({
       Bucket: config.r2BucketName,
       Key: path,
     });
 
-    // Generate presigned URL (valid for 1 hour)
     const presignedUrl = await getSignedUrl(s3Client, command, {
       expiresIn: 3600,
     });
 
-    // Redirect to the presigned URL
     return sendRedirect(event, presignedUrl, 302);
   } catch (error) {
     console.error("Error generating presigned URL:", error);

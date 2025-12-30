@@ -1,7 +1,6 @@
 import { computed, type Ref } from "vue";
 import { formatDate } from "@/utils/format.js";
 import { useRecordDetails } from "@/composables/useRecordDetails";
-import { extractPdfUrl } from "@/utils/pdfUtils";
 
 export function useCourtDecision(courtDecisionId: Ref<string | number>) {
   return useRecordDetails(
@@ -9,7 +8,6 @@ export function useCourtDecision(courtDecisionId: Ref<string | number>) {
     courtDecisionId,
     {
       select: (data) => {
-        const pdfUrl = extractPdfUrl(data["Official Source (PDF)"]);
         return {
           ...data,
           "Case Title":
@@ -29,7 +27,6 @@ export function useCourtDecision(courtDecisionId: Ref<string | number>) {
           hasEnglishQuoteTranslation:
             data["Translated Excerpt"] &&
             (data["Translated Excerpt"] as string).trim() !== "",
-          pdfUrl, // Add the extracted PDF URL
         };
       },
     },

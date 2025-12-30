@@ -20,7 +20,7 @@
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
-                :url="processedLegalInstrument?.pdfUrl"
+                :pdf-field="legalInstrument?.['Official Source (PDF)']"
                 :record-id="route.params.id as string"
                 folder-name="domestic-instruments"
               />
@@ -161,7 +161,6 @@ import { useRecordDetails } from "@/composables/useRecordDetails";
 import { useDetailDisplay } from "@/composables/useDetailDisplay";
 import { legalInstrumentConfig } from "@/config/pageConfigs";
 import { getSortedProvisionIds } from "@/utils/provision-sorting";
-import { extractPdfUrl } from "@/utils/pdfUtils";
 import type { TableName } from "@/types/api";
 
 interface LegalInstrumentRecord {
@@ -207,15 +206,12 @@ const processedLegalInstrument = computed(() => {
     legalInstrument.value["Compatible With the UNCITRAL Model Law"] === true ||
     legalInstrument.value["Compatible With the HCCH Principles"] === true;
 
-  const pdfUrl = extractPdfUrl(legalInstrument.value["Official Source (PDF)"]);
-
   return {
     ...legalInstrument.value,
     "Title (in English)":
       legalInstrument.value["Title (in English)"] ||
       legalInstrument.value["Official Title"],
     Compatibility: hasCompatibility ? true : undefined,
-    pdfUrl,
   };
 });
 
