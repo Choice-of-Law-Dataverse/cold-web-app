@@ -147,6 +147,10 @@ class TestAzureStorageIntegration:
         with pytest.raises(ValueError, match="Invalid blob URL"):
             download_blob_with_managed_identity("not-a-url")
 
+        # Test with non-HTTPS URL
+        with pytest.raises(ValueError, match="Only HTTPS URLs are supported"):
+            download_blob_with_managed_identity("http://account.blob.core.windows.net/container/file.pdf")
+
         # Test with non-blob URL
         with pytest.raises(ValueError, match="Invalid Azure blob storage URL"):
             download_blob_with_managed_identity("https://example.com/file.pdf")
@@ -173,16 +177,14 @@ class TestAzureStorageIntegration:
         mock_service_instance.get_blob_client.return_value = mock_blob_client
         mock_blob_service.return_value = mock_service_instance
 
-        # Test download
-        url = "https://choiceoflaw.blob.core.windows.net/cold-case-analysis/test-file.pdf"
+        # Test download with a generic Azure blob storage URL
+        url = "https://testaccount.blob.core.windows.net/test-container/test-file.pdf"
         result = download_blob_with_managed_identity(url)
 
         # Verify
         assert result == mock_blob_data
         mock_blob_service.assert_called_once()
-        mock_service_instance.get_blob_client.assert_called_once_with(
-            container="cold-case-analysis", blob="test-file.pdf"
-        )
+        mock_service_instance.get_blob_client.assert_called_once_with(container="test-container", blob="test-file.pdf")
 
 
 if __name__ == "__main__":

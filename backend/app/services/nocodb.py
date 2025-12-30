@@ -195,10 +195,15 @@ class NocoDBService:
         # Try as numeric ID first
         try:
             jur_id = int(jurisdiction_value.strip())
-            # Verify it exists
-            rows = self.list_rows("Jurisdictions", limit=1)
-            # TODO: Add filtering by ID once we implement proper filtering
-            return [jur_id]
+            # Verify it exists by fetching jurisdictions
+            rows = self.list_rows("Jurisdictions", limit=1000)
+            for row in rows:
+                row_id = row.get("id") or row.get("Id")
+                if row_id and int(row_id) == jur_id:
+                    return [jur_id]
+            # ID not found
+            logger.warning("Jurisdiction ID %d not found", jur_id)
+            return []
         except ValueError:
             pass
 

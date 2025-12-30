@@ -2,8 +2,10 @@
 import html
 import json
 import logging
+import os
 from datetime import date, datetime
 from typing import Any
+from urllib.parse import urlparse
 
 from fastapi import APIRouter, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
@@ -740,9 +742,12 @@ async def approve(request: Request, category: str, suggestion_id: int):
                 logger.info("Downloading PDF from Azure: %s", pdf_url)
                 pdf_data = download_blob_with_managed_identity(pdf_url)
 
-                # Extract filename from URL
-                filename = pdf_url.split("/")[-1]
-                if not filename.endswith(".pdf"):
+                # Extract filename from URL (handle query params and fragments)
+                parsed_url = urlparse(pdf_url)
+                filename = os.path.basename(parsed_url.path)
+                if not filename:
+                    filename = "document.pdf"
+                elif not filename.endswith(".pdf"):
                     filename = f"{filename}.pdf"
 
                 # Upload to NocoDB (assuming there's an attachment field like "Official_Source_PDF")

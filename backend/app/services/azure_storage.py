@@ -32,6 +32,10 @@ def download_blob_with_managed_identity(blob_url: str) -> bytes:
     if not parsed.scheme or not parsed.netloc:
         raise ValueError(f"Invalid blob URL: {blob_url}")
 
+    # Ensure HTTPS is used for secure connections
+    if parsed.scheme != "https":
+        raise ValueError(f"Only HTTPS URLs are supported for Azure blob storage: {blob_url}")
+
     # Extract storage account name from hostname (e.g., account.blob.core.windows.net)
     hostname_parts = parsed.netloc.split(".")
     if len(hostname_parts) < 3 or hostname_parts[1] != "blob":
