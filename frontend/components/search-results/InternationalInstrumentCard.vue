@@ -23,6 +23,11 @@
           </div>
 
           <PdfLink
+            :pdf-field="
+              resultData['Official Source (PDF)'] ||
+              resultData['Source (PDF)'] ||
+              resultData['Attachment']
+            "
             :record-id="resultData.id"
             folder-name="international-instruments"
           />
