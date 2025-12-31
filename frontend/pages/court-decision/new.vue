@@ -354,6 +354,10 @@ import tooltipPublicationDate from "@/content/info_boxes/court_decision/publicat
 import tooltipQuote from "@/content/info_boxes/court_decision/quote.md?raw";
 import tooltipRelevantFacts from "@/content/info_boxes/court_decision/relevant_facts.md?raw";
 
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const caseCitation = ref("");
 const caseTitle = ref("");
 const caseFullText = ref("");

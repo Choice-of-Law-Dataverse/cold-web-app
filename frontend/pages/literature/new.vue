@@ -169,6 +169,10 @@ import SaveModal from "@/components/ui/SaveModal.vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import { format } from "date-fns";
 
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const author = ref("");
 const title = ref("");
 const publicationTitle = ref("");

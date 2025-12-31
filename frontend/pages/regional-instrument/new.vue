@@ -93,8 +93,12 @@ import DatePicker from "@/components/ui/DatePicker.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import tooltipRegionalInstrumentDate from "@/content/info_boxes/regional_instrument/date.md?raw";
-
 import { format } from "date-fns";
+
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const date = ref(null);
 
 const abbreviation = ref("");

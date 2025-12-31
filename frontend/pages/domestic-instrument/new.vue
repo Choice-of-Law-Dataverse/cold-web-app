@@ -252,6 +252,10 @@ import tooltipOfficialTitle from "@/content/info_boxes/domestic_instrument/offic
 import tooltipDomesticInstrumentPublicationDate from "@/content/info_boxes/domestic_instrument/publication_date.md?raw";
 import tooltipDomesticInstrumentTitle from "@/content/info_boxes/domestic_instrument/title.md?raw";
 
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const officialTitle = ref("");
 const titleEn = ref("");
 const selectedJurisdiction = ref([]);
