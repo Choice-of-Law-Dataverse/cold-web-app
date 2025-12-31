@@ -152,7 +152,6 @@
                 >
                   <span>{{ link.label }}</span>
                 </ULink>
-                <AuthButton />
                 <button
                   class="close-menu-button ml-2"
                   aria-label="Close menu"
@@ -195,7 +194,6 @@
               >
                 <span>{{ link.label }}</span>
               </ULink>
-              <AuthButton />
             </div>
           </template>
         </div>
@@ -210,7 +208,6 @@ import { useRouter, useRoute } from "vue-router";
 import eventBus from "@/eventBus";
 import jurisdictionsData from "@/assets/jurisdictions-data.json";
 import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
-import AuthButton from "@/components/layout/AuthButton.vue";
 
 const router = useRouter();
 const route = useRoute();

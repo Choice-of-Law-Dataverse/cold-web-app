@@ -3,7 +3,7 @@
     <template v-if="user">
       <UButton
         variant="link"
-        class="!text-cold-night font-semibold"
+        class="font-semibold !text-cold-night"
         @click="handleLogout"
       >
         Logout
@@ -12,7 +12,7 @@
     <template v-else>
       <UButton
         variant="link"
-        class="!text-cold-night font-semibold"
+        class="font-semibold !text-cold-night"
         @click="handleLogin"
       >
         Login
@@ -27,7 +27,6 @@ import { ref, onMounted } from "vue";
 const user = ref(null);
 
 onMounted(async () => {
-  // Check if Auth0 is available and user is logged in
   try {
     const { data } = await useFetch("/api/auth/session");
     if (data.value?.user) {
@@ -39,13 +38,11 @@ onMounted(async () => {
 });
 
 function handleLogin() {
-  // Redirect to Auth0 login
-  window.location.href = "/api/auth/login";
+  navigateTo("/auth/login", { external: true });
 }
 
 function handleLogout() {
-  // Redirect to Auth0 logout
-  window.location.href = "/api/auth/logout";
+  navigateTo("/auth/logout", { external: true });
 }
 </script>
 

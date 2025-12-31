@@ -31,15 +31,17 @@ export default defineEventHandler(async (event) => {
 
   const url = joinURL(config.apiBaseUrl, path);
 
-  // Try to get the user's Auth0 token from the session
   let authToken = config.fastApiToken; // Default to the backend token
 
+  const auth0Client = useAuth0(event);
+
   try {
-    // Check if user is authenticated with Auth0
-    const session = await getSession(event);
-    if (session?.user?.accessToken) {
+    // Try to get the user's Auth0 token from the session
+    const accessTokenResult = await auth0Client.getAccessToken();
+
+    if (accessTokenResult) {
       // Use the user's Auth0 token if they're logged in
-      authToken = session.user.accessToken;
+      authToken = accessTokenResult.accessToken;
     }
   } catch {
     // If there's any error getting the session, continue with the default token
