@@ -26,6 +26,9 @@ class Config:
     # Moderation UI credentials (basic form login)
     MODERATION_USERNAME: str | None = os.getenv("MODERATION_USERNAME")
     MODERATION_PASSWORD: str | None = os.getenv("MODERATION_PASSWORD")
+    # Auth0 configuration
+    AUTH0_DOMAIN: str | None = os.getenv("AUTH0_DOMAIN")
+    AUTH0_AUDIENCE: str | None = os.getenv("AUTH0_AUDIENCE")
 
     def __post_init__(self) -> None:
         # Set MODERATION_SECRET after initialization to use JWT_SECRET as fallback

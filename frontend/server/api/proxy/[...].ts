@@ -31,9 +31,24 @@ export default defineEventHandler(async (event) => {
 
   const url = joinURL(config.apiBaseUrl, path);
 
+  // Try to get the user's Auth0 token from the session
+  let authToken = config.fastApiToken; // Default to the backend token
+
+  try {
+    // Check if user is authenticated with Auth0
+    const session = await getSession(event);
+    if (session?.user?.accessToken) {
+      // Use the user's Auth0 token if they're logged in
+      authToken = session.user.accessToken;
+    }
+  } catch (error) {
+    // If there's any error getting the session, continue with the default token
+    console.log("No user session found, using default token");
+  }
+
   return proxyRequest(event, url, {
     headers: {
-      Authorization: `Bearer ${config.fastApiToken}`,
+      Authorization: `Bearer ${authToken}`,
     },
   });
 });
