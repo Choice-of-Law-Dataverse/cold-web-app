@@ -41,7 +41,7 @@ export default defineEventHandler(async (event) => {
       // Use the user's Auth0 token if they're logged in
       authToken = session.user.accessToken;
     }
-  } catch (error) {
+  } catch {
     // If there's any error getting the session, continue with the default token
     console.log("No user session found, using default token");
   }
