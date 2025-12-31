@@ -1,10 +1,47 @@
 # app/core/security.py
 import jwt
+import requests
 from fastapi import Header, HTTPException, status
 from jose import jwt as jose_jwt
 from jose.exceptions import JWTError
 
 from app.config import config
+
+# Cache for JWKS to avoid fetching on every request
+_jwks_cache = {"data": None, "timestamp": 0}
+JWKS_CACHE_DURATION = 3600  # Cache for 1 hour
+
+
+def get_jwks(domain: str):
+    """
+    Fetch JWKS from Auth0, with caching to avoid rate limiting.
+    Cache is valid for 1 hour.
+    """
+    import time
+    
+    current_time = time.time()
+    
+    # Return cached data if still valid
+    if _jwks_cache["data"] and (current_time - _jwks_cache["timestamp"]) < JWKS_CACHE_DURATION:
+        return _jwks_cache["data"]
+    
+    # Fetch new JWKS
+    jwks_url = f"https://{domain}/.well-known/jwks.json"
+    try:
+        jwks_response = requests.get(jwks_url, timeout=10)
+        jwks_response.raise_for_status()  # Raise exception for bad status codes
+        jwks = jwks_response.json()
+        
+        # Update cache
+        _jwks_cache["data"] = jwks
+        _jwks_cache["timestamp"] = current_time
+        
+        return jwks
+    except requests.exceptions.RequestException as e:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail=f"Unable to fetch JWKS from Auth0: {str(e)}",
+        ) from e
 
 
 def verify_auth0_token(token: str):
@@ -12,7 +49,7 @@ def verify_auth0_token(token: str):
     Verify an Auth0 JWT token.
     
     This function:
-    1. Fetches the JWKS from Auth0
+    1. Fetches the JWKS from Auth0 (with caching)
     2. Verifies the token signature
     3. Validates the token claims (audience, issuer)
     
@@ -27,17 +64,11 @@ def verify_auth0_token(token: str):
     issuer = f"https://{config.AUTH0_DOMAIN}/"
     
     try:
-        # For Auth0, we need to get the signing key from JWKS endpoint
-        # First, decode without verification to get the key ID
+        # Decode without verification to get the key ID
         unverified_header = jose_jwt.get_unverified_header(token)
         
-        # Import here to avoid circular dependency
-        import requests
-        
-        # Get JWKS from Auth0
-        jwks_url = f"https://{config.AUTH0_DOMAIN}/.well-known/jwks.json"
-        jwks_response = requests.get(jwks_url, timeout=10)
-        jwks = jwks_response.json()
+        # Get JWKS from Auth0 (with caching)
+        jwks = get_jwks(config.AUTH0_DOMAIN)
         
         # Find the key that matches the token's kid
         rsa_key = {}
