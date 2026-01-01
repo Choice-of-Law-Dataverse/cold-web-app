@@ -132,3 +132,31 @@ def require_user(authorization: str = Header(None)) -> dict:
         )
 
     return verify_auth0_token(token)
+
+
+def require_editor_or_admin(authorization: str = Header(None)) -> dict:
+    """
+    Require user to have editor or admin role.
+
+    Returns user payload if valid Auth0 token is provided with editor or admin role.
+    Raises 401 if token is missing or invalid.
+    Raises 403 if user doesn't have required role.
+
+    Roles are expected in the token as 'https://cold.global/roles' array.
+    """
+    user = require_user(authorization)
+
+    # Check for roles in Auth0 custom claims
+    roles = user.get("https://cold.global/roles", [])
+
+    if not isinstance(roles, list):
+        roles = [roles] if roles else []
+
+    # Check if user has editor or admin role
+    if "editor" not in roles and "admin" not in roles:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Editor or admin role required",
+        )
+
+    return user

@@ -1,5 +1,16 @@
 <script setup>
 import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
+
+const user = useUser();
+
+// Check if user has editor or admin role
+const canModerate = computed(() => {
+  if (!user.value) return false;
+  const roles = user.value["https://cold.global/roles"] || [];
+  return (
+    Array.isArray(roles) && (roles.includes("editor") || roles.includes("admin"))
+  );
+});
 </script>
 
 <template>
@@ -68,6 +79,13 @@ import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
               class="text-sm !text-white hover:underline"
             >
               Disclaimer
+            </NuxtLink>
+            <NuxtLink
+              v-if="canModerate"
+              to="/moderation"
+              class="text-sm !text-white hover:underline"
+            >
+              Moderation
             </NuxtLink>
           </div>
         </div>
