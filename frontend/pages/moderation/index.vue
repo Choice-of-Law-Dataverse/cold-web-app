@@ -21,16 +21,11 @@
 </template>
 
 <script setup lang="ts">
+import { MODERATION_CATEGORIES } from "@/config/moderationConfig";
+
 definePageMeta({
   middleware: ["moderation"],
 });
 
-const categories = [
-  { id: "court-decisions", label: "Court Decisions" },
-  { id: "domestic-instruments", label: "Domestic Instruments" },
-  { id: "regional-instruments", label: "Regional Instruments" },
-  { id: "international-instruments", label: "International Instruments" },
-  { id: "literature", label: "Literature" },
-  { id: "case-analyzer", label: "Case Analyzer" },
-];
+const categories = MODERATION_CATEGORIES;
 </script>

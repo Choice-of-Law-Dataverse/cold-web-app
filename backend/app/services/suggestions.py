@@ -299,6 +299,90 @@ class SuggestionService:
             rows = session.execute(query).mappings().all()
             return [dict(r) for r in rows]
 
+    def get_pending_by_id(self, table: str, suggestion_id: int) -> dict | None:
+        """Get a specific pending suggestion by ID."""
+        target = self.tables.get(table)
+        if target is None:
+            raise ValueError(f"Unknown suggestions table '{table}'")
+
+        with suggestions_db_manager.get_session() as session:
+            if table == "case_analyzer":
+                import json as _json
+
+                cols = [target.c.id]
+                created_col = getattr(target.c, "created_at", None)
+                if created_col is not None:
+                    cols.append(created_col)
+                data_col = getattr(target.c, "data", None)
+                if data_col is None:
+                    return None
+                cols.append(data_col)
+                # Optional meta columns
+                username_col = getattr(target.c, "username", None)
+                user_email_col = getattr(target.c, "user_email", None)
+                model_col = getattr(target.c, "model", None)
+                citation_col = getattr(target.c, "case_citation", None)
+                source_col = getattr(target.c, "source", None)
+                for c in (
+                    username_col,
+                    user_email_col,
+                    model_col,
+                    citation_col,
+                    source_col,
+                ):
+                    if c is not None:
+                        cols.append(c)
+
+                query = sa.select(*cols).where(target.c.id == suggestion_id)
+                row = session.execute(query).mappings().first()
+                if not row:
+                    return None
+
+                raw_data = row.get("data")
+                payload: Any
+                if isinstance(raw_data, dict):
+                    payload = raw_data
+                else:
+                    try:
+                        payload = _json.loads(raw_data) if raw_data is not None else {}
+                    except Exception:
+                        payload = {}
+
+                status = payload.get("moderation_status") if isinstance(payload, dict) else None
+                if status in {"approved", "rejected"}:
+                    return None  # Not pending
+
+                return {
+                    "id": row["id"],
+                    "created_at": row.get("created_at"),
+                    "payload": payload,
+                    "source": row.get("source") if source_col is not None else None,
+                    "username": row.get("username") if username_col is not None else None,
+                    "user_email": row.get("user_email") if user_email_col is not None else None,
+                    "model": row.get("model") if model_col is not None else None,
+                    "case_citation": row.get("case_citation") if citation_col is not None else None,
+                }
+
+            # Default flow uses JSONB 'payload'
+            query = (
+                sa.select(
+                    target.c.id,
+                    target.c.created_at,
+                    target.c.payload,
+                    target.c.source,
+                    target.c.token_sub,
+                )
+                .where(target.c.id == suggestion_id)
+                .where(
+                    sa.or_(
+                        ~target.c.payload.has_key("moderation_status"),  # type: ignore[attr-defined]
+                        target.c.payload["moderation_status"].astext.is_(None),
+                    )
+                )
+            )
+            row = session.execute(query).mappings().first()
+            return dict(row) if row else None
+
     def mark_status(
         self,
         table: str,

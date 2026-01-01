@@ -251,8 +251,7 @@ async def get_suggestion_detail(
         )
 
     try:
-        items = service.list_pending(table)
-        item = next((i for i in items if i["id"] == suggestion_id), None)
+        item = service.get_pending_by_id(table, suggestion_id)
         if not item:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -290,14 +289,16 @@ async def approve_suggestion(
     try:
         # Import here to avoid circular dependencies
         from app.routes.moderation import (
+            MainDBWriter,
+            NocoDBService,
             _approve_case_analyzer,
-            _approve_default_category,
-            nocodb_service,
-            writer,
+            _get_target_table,
+            _link_jurisdictions_for_default_categories,
+            _normalize_domestic_instruments,
         )
+        from app.config import config
 
-        items = service.list_pending(table)
-        item = next((i for i in items if i["id"] == suggestion_id), None)
+        item = service.get_pending_by_id(table, suggestion_id)
         if not item:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -313,8 +314,37 @@ async def approve_suggestion(
             # Use existing case analyzer approval logic
             await _approve_case_analyzer(request, table, suggestion_id, original_payload, item)
         else:
-            # Use existing default category approval logic
-            await _approve_default_category(request, category, table, suggestion_id, original_payload)
+            # Handle default categories - simplified without form editing
+            writer = MainDBWriter()
+            target_table = _get_target_table(category)
+            if not target_table:
+                raise HTTPException(status_code=400, detail="Unsupported category")
+
+            if target_table == "Domestic_Instruments":
+                _normalize_domestic_instruments(original_payload)
+
+            # Filter out reserved metadata fields
+            _reserved = {
+                "submitter_email",
+                "submitter_comments",
+                "official_source_pdf",
+                "source_pdf",
+                "attachment",
+                "category",
+            }
+            payload_for_writer = {k: v for k, v in original_payload.items() if k not in _reserved}
+
+            merged_id = writer.insert_record(target_table, payload_for_writer)
+            _link_jurisdictions_for_default_categories(writer, target_table, merged_id, payload_for_writer)
+
+            service.mark_status(
+                table,
+                suggestion_id,
+                "approved",
+                moderator_email,
+                note="",
+                merged_id=merged_id,
+            )
 
         return {"status": "success", "message": "Suggestion approved successfully"}
 

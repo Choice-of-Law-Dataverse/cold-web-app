@@ -143,6 +143,7 @@
 
 <script setup lang="ts">
 import { format } from "date-fns";
+import { getCategoryLabel } from "@/config/moderationConfig";
 
 definePageMeta({
   middleware: ["moderation"],
@@ -151,19 +152,7 @@ definePageMeta({
 const route = useRoute();
 const category = computed(() => route.params.category as string);
 const suggestionId = computed(() => Number(route.params.id));
-
-const categoryLabels: Record<string, string> = {
-  "court-decisions": "Court Decisions",
-  "domestic-instruments": "Domestic Instruments",
-  "regional-instruments": "Regional Instruments",
-  "international-instruments": "International Instruments",
-  literature: "Literature",
-  "case-analyzer": "Case Analyzer",
-};
-
-const categoryLabel = computed(
-  () => categoryLabels[category.value] || category.value,
-);
+const categoryLabel = computed(() => getCategoryLabel(category.value));
 
 const { getSuggestionDetail, approveSuggestion, rejectSuggestion } =
   useModerationApi();
