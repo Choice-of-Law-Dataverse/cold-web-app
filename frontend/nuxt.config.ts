@@ -43,7 +43,7 @@ export default defineNuxtConfig({
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
     },
     apiBaseUrl: process.env.API_BASE_URL,
-    fastApiToken: process.env.FASTAPI_API_TOKEN,
+    apiKey: process.env.API_KEY,
     r2: {
       accountId: process.env.R2_ACCOUNT_ID,
       bucketName: process.env.R2_BUCKET_NAME,

@@ -31,26 +31,20 @@ export default defineEventHandler(async (event) => {
 
   const url = joinURL(config.apiBaseUrl, path);
 
-  let authToken = config.fastApiToken; // Default to the backend token
-
-  const auth0Client = useAuth0(event);
+  const headers: Record<string, string> = {
+    "X-API-Key": config.apiKey, // Custom header for frontend verification
+  };
 
   try {
-    // Try to get the user's Auth0 token from the session
+    const auth0Client = useAuth0(event);
     const accessTokenResult = await auth0Client.getAccessToken();
 
-    if (accessTokenResult) {
-      // Use the user's Auth0 token if they're logged in
-      authToken = accessTokenResult.accessToken;
+    if (accessTokenResult?.accessToken) {
+      headers["Authorization"] = `Bearer ${accessTokenResult.accessToken}`;
     }
   } catch {
-    // If there's any error getting the session, continue with the default token
-    console.log("No user session found, using default token");
+    /* noop */
   }
 
-  return proxyRequest(event, url, {
-    headers: {
-      Authorization: `Bearer ${authToken}`,
-    },
-  });
+  return proxyRequest(event, url, { headers });
 });
