@@ -146,14 +146,14 @@ def require_editor_or_admin(authorization: str = Header(None)) -> dict:
     """
     user = require_user(authorization)
 
-    # Check for roles in Auth0 custom claims
     roles = user.get("https://cold.global/roles", [])
 
     if not isinstance(roles, list):
         roles = [roles] if roles else []
 
-    # Check if user has editor or admin role
-    if "editor" not in roles and "admin" not in roles:
+    roles_lower = [role.lower() if isinstance(role, str) else role for role in roles]
+
+    if "editor" not in roles_lower and "admin" not in roles_lower:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Editor or admin role required",

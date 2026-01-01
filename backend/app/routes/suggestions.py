@@ -3,10 +3,8 @@ from typing import Any
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 
 from app.auth import require_editor_or_admin, require_user, verify_frontend_request
-from app.config import config
 from app.routes.moderation import (
     MainDBWriter,
-    NocoDBService,
     _approve_case_analyzer,
     _get_target_table,
     _link_jurisdictions_for_default_categories,
@@ -279,7 +277,7 @@ async def get_suggestion_detail(
 @router.post(
     "/{category}/{suggestion_id}/approve",
     summary="Approve a suggestion",
-    description="Requires editor or admin role. Marks a suggestion as approved and processes it for insertion into the main database.",
+    description="Requires editor or admin role. Marks a suggestion as approved and processes it for insertion",
 )
 async def approve_suggestion(
     category: str,
@@ -287,7 +285,7 @@ async def approve_suggestion(
     request: Request,
     user: dict = Depends(require_editor_or_admin),
 ) -> dict[str, str]:
-    """Approve a suggestion and process it for database insertion."""
+    """Approve a suggestion and process it for persistent storage."""
     table = _table_key(category)
     if not table:
         raise HTTPException(

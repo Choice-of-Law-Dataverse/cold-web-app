@@ -300,13 +300,13 @@ def _normalize_case_analyzer_payload(raw: dict[str, Any], item: dict[str, Any]) 
     # Court's Position assembly per rules
     if is_common_law is True:
         parts: list[str] = []
-        cp = pref("courts_position_edited")  # exact key as requested
+        cp = pref("courts_position_edited", "courts_position")
         if cp:
             parts.append(str(cp).strip())
-        ob = pref("obiter_dicta_edited")
+        ob = pref("obiter_dicta_edited", "obiter_dicta")
         if ob:
             parts.append(f"Obiter Dicta: {str(ob).strip()}")
-        ds = pref("dissenting_opinions_edited")
+        ds = pref("dissenting_opinions_edited", "dissenting_opinions")
         if ds:
             parts.append(f"Dissenting Opinions: {str(ds).strip()}")
         result["courts_position"] = "\n\n".join([p for p in parts if p]) or None

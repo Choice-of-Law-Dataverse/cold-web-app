@@ -6,10 +6,14 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo(`/auth/login?returnTo=${to.path}`, { external: true });
   }
 
-  // Check if user has editor or admin role
   const roles = session.value["https://cold.global/roles"] || [];
+
   const hasRequiredRole =
-    Array.isArray(roles) && (roles.includes("editor") || roles.includes("admin"));
+    Array.isArray(roles) &&
+    roles.some(
+      (role) =>
+        role.toLowerCase() === "editor" || role.toLowerCase() === "admin",
+    );
 
   if (!hasRequiredRole) {
     // User is logged in but doesn't have the required role

@@ -29,7 +29,7 @@ export const useModerationApi = () => {
   ): Promise<PendingSuggestion[]> => {
     try {
       const { data, error } = await useFetch<PendingSuggestion[]>(
-        `/api/proxy/api/v1/suggestions/pending/${category}`,
+        `/api/proxy/suggestions/pending/${category}`,
         {
           method: "GET",
         },
@@ -55,7 +55,7 @@ export const useModerationApi = () => {
   ): Promise<PendingSuggestion> => {
     try {
       const { data, error } = await useFetch<PendingSuggestion>(
-        `/api/proxy/api/v1/suggestions/${category}/${id}`,
+        `/api/proxy/suggestions/${category}/${id}`,
         {
           method: "GET",
         },
@@ -85,7 +85,7 @@ export const useModerationApi = () => {
   ): Promise<ModerationResponse> => {
     try {
       const { data, error } = await useFetch<ModerationResponse>(
-        `/api/proxy/api/v1/suggestions/${category}/${id}/approve`,
+        `/api/proxy/suggestions/${category}/${id}/approve`,
         {
           method: "POST",
         },
@@ -113,7 +113,7 @@ export const useModerationApi = () => {
   ): Promise<ModerationResponse> => {
     try {
       const { data, error } = await useFetch<ModerationResponse>(
-        `/api/proxy/api/v1/suggestions/${category}/${id}/reject`,
+        `/api/proxy/suggestions/${category}/${id}/reject`,
         {
           method: "POST",
         },
