@@ -520,7 +520,6 @@ function handleNewSave() {
     case_title: caseTitle.value,
     instance: caseInstance.value,
     official_keywords: caseOfficialKeywords.value,
-    submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
   };
 
@@ -530,6 +529,7 @@ function handleNewSave() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          source: "cold.global",
         },
         body: payload,
       });

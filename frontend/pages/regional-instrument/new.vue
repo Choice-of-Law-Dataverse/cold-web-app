@@ -171,16 +171,19 @@ function handleNewSave() {
     url: url.value || undefined,
     attachment: "", // ignored for now
     instrument_date: date.value ? format(date.value, "yyyy-MM-dd") : undefined,
-    submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
-    source: "cold.global",
   };
 
   (async () => {
     try {
       const { useApiClient } = await import("@/composables/useApiClient");
       const { apiClient } = useApiClient();
-      await apiClient("/suggestions/regional-instruments", { body: payload });
+      await apiClient("/suggestions/regional-instruments", {
+        body: payload,
+        headers: {
+          source: "cold.global",
+        },
+      });
 
       showSaveModal.value = false;
       router.push({

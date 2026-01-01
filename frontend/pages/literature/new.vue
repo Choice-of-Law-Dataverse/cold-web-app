@@ -140,18 +140,10 @@
     <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
     <SaveModal
       v-model="showSaveModal"
-      :email="email"
       :comments="comments"
-      :token="token"
       :save-modal-errors="saveModalErrors"
       :name="title"
-      :specialists="specialists"
-      :date="publicationDate || null"
-      :pdf-file="pdfFile"
-      :link="url"
-      @update:email="(val) => (email = val)"
       @update:comments="(val) => (comments = val)"
-      @update:token="(val) => (token = val)"
       @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
       @save="handleNewSave"
     />
@@ -159,7 +151,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useHead, useRouter } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
@@ -187,14 +179,7 @@ const theme = ref("");
 const selectedJurisdiction = ref([]);
 const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
 
-const specialists = ref([""]);
-const pdfFile = ref(null);
-const email = ref("");
 const comments = ref("");
-
-const token = ref("");
-
-watch(token, () => {});
 
 const loadJurisdictions = async () => {
   try {
@@ -304,9 +289,7 @@ function handleNewSave() {
         selectedJurisdiction.value[0]?.label) ||
       undefined,
     theme: theme.value || undefined,
-    submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
-    source: "cold.global",
   };
 
   (async () => {
@@ -315,6 +298,7 @@ function handleNewSave() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          source: "cold.global",
         },
         body: payload,
       });

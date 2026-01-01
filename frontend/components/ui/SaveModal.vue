@@ -11,26 +11,8 @@
     <div class="p-6">
       <h2 class="mb-4 text-center text-lg font-bold">Ready to submit?</h2>
       <p class="mb-6 text-center">
-        Please provide your contact information to complete your submission.
+        Review your submission and add optional comments if needed.
       </p>
-
-      <!-- Email Field -->
-      <UFormGroup
-        size="lg"
-        :error="saveModalErrorsProxy.submitter_email"
-        class="mb-4"
-        hint="Required"
-      >
-        <template #label>
-          <span class="label">Email</span>
-        </template>
-        <UInput
-          v-model="emailProxy"
-          type="email"
-          placeholder="Your email address"
-          class="cold-input mt-2"
-        />
-      </UFormGroup>
 
       <!-- Comments Field -->
       <UFormGroup size="lg" class="mb-6">
@@ -45,22 +27,10 @@
         />
       </UFormGroup>
 
-      <div class="mb-8 w-full">
-        <form class="w-full" @submit.prevent="onSubmit">
-          <NuxtTurnstile
-            ref="turnstile"
-            v-model="tokenProxy"
-            class="turnstile-full w-full"
-            :options="{ size: 'flexible' }"
-          />
-        </form>
-      </div>
-
       <div class="flex flex-col items-center gap-2">
         <h2
           class="submit-heading mb-4 flex cursor-pointer items-center p-0"
-          :aria-disabled="!tokenProxy ? 'true' : 'false'"
-          @click.prevent="tokenProxy ? handleSubmit() : null"
+          @click.prevent="handleSubmit()"
         >
           Submit Your Data Now
           <UIcon
@@ -182,17 +152,12 @@ watch(linkProxy, (val) => {
 });
 
 const saveModalSchema = z.object({
-  submitterEmail: z
-    .string()
-    .min(1, { message: "Email is required" })
-    .email({ message: "Please enter a valid email address" }),
   submitterComments: z.string().optional(),
 });
 
 function validateSaveModal() {
   try {
     const modalData = {
-      submitterEmail: emailProxy.value,
       submitterComments: commentsProxy.value,
     };
     saveModalSchema.parse(modalData);

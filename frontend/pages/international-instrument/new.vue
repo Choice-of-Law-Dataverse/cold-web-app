@@ -176,9 +176,7 @@ function handleNewSave() {
     attachment: "", // ignored for now
     instrument_date:
       date.value && date.value ? format(date.value, "yyyy-MM-dd") : undefined,
-    submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
-    source: "cold.global",
   };
 
   (async () => {
@@ -187,6 +185,9 @@ function handleNewSave() {
       const { apiClient } = useApiClient();
       await apiClient("/suggestions/international-instruments", {
         body: payload,
+        headers: {
+          source: "cold.global",
+        },
       });
 
       showSaveModal.value = false;
