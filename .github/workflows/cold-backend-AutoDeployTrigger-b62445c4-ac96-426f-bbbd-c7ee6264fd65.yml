@@ -2,19 +2,19 @@ name: Trigger auto deployment for cold-backend
 
 # When this action will be executed
 on:
-  # Allow manual trigger 
-  workflow_dispatch:      
+  # Allow manual trigger
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    permissions: 
+    permissions:
       id-token: write #This is required for requesting the OIDC JWT Token
       contents: read #Required when GH token is used to authenticate with private repo
 
     steps:
       - name: Checkout to the branch
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Azure Login
         uses: azure/login@v2
@@ -37,5 +37,3 @@ jobs:
           imageToBuild: choiceoflawdataverse/cold-backend:${{ github.sha }}
           _buildArgumentsKey_: |
             _buildArgumentsValues_
-
-
