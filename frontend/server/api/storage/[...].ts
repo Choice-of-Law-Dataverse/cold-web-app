@@ -1,5 +1,6 @@
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import * as logfire from "@pydantic/logfire-node";
 
 /**
  * Extracts storage path from a proxy URL
@@ -20,6 +21,7 @@ export default defineEventHandler(async (event) => {
     `http://localhost:3000`,
     `https://${host}`,
     `http://${host}`,
+    config.public.siteUrl,
   ];
 
   const isValidOrigin =
@@ -30,6 +32,12 @@ export default defineEventHandler(async (event) => {
     );
 
   if (!isValidOrigin) {
+    logfire.warning("Storage request blocked - invalid origin", {
+      origin,
+      referer,
+      host,
+      allowedOrigins,
+    });
     throw createError({
       statusCode: 403,
       message: "Forbidden: Invalid origin",
@@ -46,6 +54,12 @@ export default defineEventHandler(async (event) => {
     !config.r2.accountId ||
     !config.r2.bucketName
   ) {
+    logfire.error("R2 credentials not configured", {
+      hasAccessKeyId: !!config.r2.accessKeyId,
+      hasSecretAccessKey: !!config.r2.secretAccessKey,
+      hasAccountId: !!config.r2.accountId,
+      hasBucketName: !!config.r2.bucketName,
+    });
     throw createError({
       statusCode: 500,
       message: "R2 credentials not configured",
@@ -73,7 +87,11 @@ export default defineEventHandler(async (event) => {
 
     return sendRedirect(event, presignedUrl, 302);
   } catch (error) {
-    console.error("Error generating presigned URL:", error);
+    logfire.error("Failed to generate presigned URL", {
+      path,
+      bucket: config.r2.bucketName,
+      error: error instanceof Error ? error.message : String(error),
+    });
     throw createError({
       statusCode: 500,
       message: "Failed to generate presigned URL",
