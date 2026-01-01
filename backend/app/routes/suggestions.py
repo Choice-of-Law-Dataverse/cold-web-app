@@ -3,6 +3,15 @@ from typing import Any
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 
 from app.auth import require_editor_or_admin, require_user, verify_frontend_request
+from app.config import config
+from app.routes.moderation import (
+    MainDBWriter,
+    NocoDBService,
+    _approve_case_analyzer,
+    _get_target_table,
+    _link_jurisdictions_for_default_categories,
+    _normalize_domestic_instruments,
+)
 from app.schemas.suggestions import (
     CourtDecisionSuggestion,
     DomesticInstrumentSuggestion,
@@ -287,17 +296,6 @@ async def approve_suggestion(
         )
 
     try:
-        # Import here to avoid circular dependencies
-        from app.routes.moderation import (
-            MainDBWriter,
-            NocoDBService,
-            _approve_case_analyzer,
-            _get_target_table,
-            _link_jurisdictions_for_default_categories,
-            _normalize_domestic_instruments,
-        )
-        from app.config import config
-
         item = service.get_pending_by_id(table, suggestion_id)
         if not item:
             raise HTTPException(

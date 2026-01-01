@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
+import json
 from typing import Any
 
 import sqlalchemy as sa
@@ -249,7 +250,6 @@ class SuggestionService:
                 rows = session.execute(query).mappings().all()
 
                 results: list[dict] = []
-                import json as _json
 
                 for r in rows:
                     raw_data = r.get("data")
@@ -258,7 +258,7 @@ class SuggestionService:
                         payload = raw_data
                     else:
                         try:
-                            payload = _json.loads(raw_data) if raw_data is not None else {}
+                            payload = json.loads(raw_data) if raw_data is not None else {}
                         except Exception:
                             payload = {}
                     status = payload.get("moderation_status") if isinstance(payload, dict) else None
@@ -307,8 +307,6 @@ class SuggestionService:
 
         with suggestions_db_manager.get_session() as session:
             if table == "case_analyzer":
-                import json as _json
-
                 cols = [target.c.id]
                 created_col = getattr(target.c, "created_at", None)
                 if created_col is not None:
@@ -344,7 +342,7 @@ class SuggestionService:
                     payload = raw_data
                 else:
                     try:
-                        payload = _json.loads(raw_data) if raw_data is not None else {}
+                        payload = json.loads(raw_data) if raw_data is not None else {}
                     except Exception:
                         payload = {}
 
@@ -399,8 +397,6 @@ class SuggestionService:
             raise ValueError(f"Unknown suggestions table '{table}'")
         with suggestions_db_manager.get_session() as session:
             if table == "case_analyzer":
-                import json as _json
-
                 sel = sa.select(target.c.data).where(target.c.id == suggestion_id).limit(1)
                 row = session.execute(sel).first()
                 current: dict[str, Any]
@@ -408,7 +404,7 @@ class SuggestionService:
                     current = dict(row[0])
                 else:
                     try:
-                        current = _json.loads(row[0]) if row else {}
+                        current = json.loads(row[0]) if row else {}
                     except Exception:
                         current = {}
                 current["moderation_status"] = status
@@ -416,7 +412,7 @@ class SuggestionService:
                 current["moderation_note"] = note or ""
                 if merged_id is not None:
                     current["merged_record_id"] = int(merged_id)
-                new_val = _json.dumps(self._to_jsonable(current))
+                new_val = json.dumps(self._to_jsonable(current))
                 upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val)
                 session.execute(upd)
                 session.commit()
@@ -462,8 +458,6 @@ class SuggestionService:
             raise ValueError(f"Unknown suggestions table '{table}'")
         with suggestions_db_manager.get_session() as session:
             if table == "case_analyzer":
-                import json as _json
-
                 sel = sa.select(target.c.data).where(target.c.id == suggestion_id).limit(1)
                 row = session.execute(sel).first()
                 current: dict[str, Any]
@@ -471,11 +465,11 @@ class SuggestionService:
                     current = dict(row[0])
                 else:
                     try:
-                        current = _json.loads(row[0]) if row else {}
+                        current = json.loads(row[0]) if row else {}
                     except Exception:
                         current = {}
                 merged = {**current, **payload}
-                new_val = _json.dumps(self._to_jsonable(merged))
+                new_val = json.dumps(self._to_jsonable(merged))
                 upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val)
                 session.execute(upd)
                 session.commit()
