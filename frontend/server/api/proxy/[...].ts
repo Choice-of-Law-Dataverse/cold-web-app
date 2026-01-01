@@ -1,4 +1,6 @@
 import { joinURL } from "ufo";
+import * as logfire from "@pydantic/logfire-node";
+import { propagation, trace, context } from "@opentelemetry/api";
 
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig();
@@ -6,21 +8,6 @@ export default defineEventHandler(async (event) => {
   const origin = getHeader(event, "origin");
   const referer = getHeader(event, "referer");
   const host = getHeader(event, "host");
-
-  console.log(
-    "[PROXY] Request:",
-    event.path,
-    "| Origin:",
-    origin,
-    "| Host:",
-    host,
-  );
-  console.log(
-    "[PROXY] API_KEY:",
-    config.apiKey ? "present" : "MISSING",
-    "| API_BASE_URL:",
-    config.apiBaseUrl,
-  );
 
   const allowedOrigins = [
     `http://localhost:3000`,
@@ -37,12 +24,12 @@ export default defineEventHandler(async (event) => {
     );
 
   if (!isValidOrigin) {
-    console.error(
-      "[PROXY] BLOCKED - Invalid origin:",
+    logfire.warning("Proxy request blocked - invalid origin", {
       origin,
-      "| Allowed:",
+      referer,
+      host,
       allowedOrigins,
-    );
+    });
     throw createError({
       statusCode: 403,
       message: "Forbidden: Invalid origin",
@@ -55,6 +42,15 @@ export default defineEventHandler(async (event) => {
   const headers: Record<string, string> = {
     "X-API-Key": config.apiKey,
   };
+
+  // Propagate trace context to backend for distributed tracing
+  const activeSpan = trace.getActiveSpan();
+  if (activeSpan) {
+    const ctx = trace.setSpan(context.active(), activeSpan);
+    propagation.inject(ctx, headers);
+  }
+
+  const startTime = Date.now();
 
   try {
     const auth0Client = useAuth0(event);
@@ -69,10 +65,16 @@ export default defineEventHandler(async (event) => {
 
   try {
     const result = await proxyRequest(event, url, { headers });
-    console.log("[PROXY] SUCCESS:", path);
+
     return result;
   } catch (error) {
-    console.error("[PROXY] ERROR:", path, error);
+    const duration = Date.now() - startTime;
+    logfire.error("Proxy request failed", {
+      path,
+      method: event.method,
+      duration,
+      error: error instanceof Error ? error.message : String(error),
+    });
     throw error;
   }
 });

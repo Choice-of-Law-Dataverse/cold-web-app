@@ -39,6 +39,11 @@ export default defineNuxtConfig({
   runtimeConfig: {
     apiBaseUrl: process.env.NUXT_API_BASE_URL,
     apiKey: process.env.NUXT_API_KEY,
+    logfire: {
+      token: process.env.NUXT_LOGFIRE_TOKEN,
+      serviceName: process.env.LOGFIRE_SERVICE_NAME || "cold-frontend-server",
+      serviceVersion: process.env.LOGFIRE_SERVICE_VERSION || "1.0.0",
+    },
     r2: {
       accountId: process.env.NUXT_R2_ACCOUNT_ID,
       bucketName: process.env.NUXT_R2_BUCKET_NAME,
