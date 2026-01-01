@@ -54,7 +54,6 @@ const props = defineProps({
   modelValue: { type: Boolean, required: true },
   email: { type: String, required: true },
   comments: { type: String, required: true },
-  token: { type: String, required: true },
   saveModalErrors: { type: Object, required: true },
   name: { type: String, required: true },
   specialists: { type: Array, required: true },
@@ -74,7 +73,6 @@ const emit = defineEmits([
   "update:comments",
   "update:submitter_email",
   "update:submitter_comments",
-  "update:token",
   "update:saveModalErrors",
   "update:link",
   "save",
@@ -85,7 +83,6 @@ const emit = defineEmits([
 const modelValueProxy = ref(props.modelValue);
 const emailProxy = ref(props.submitterEmail ?? props.email);
 const commentsProxy = ref(props.submitterComments ?? props.comments);
-const tokenProxy = ref(props.token);
 const saveModalErrorsProxy = ref({ ...props.saveModalErrors });
 const linkProxy = ref(props.link);
 
@@ -119,16 +116,6 @@ watch(
 watch(commentsProxy, (val) => {
   emit("update:submitterComments", val);
   emit("update:comments", val);
-});
-
-watch(
-  () => props.token,
-  (val) => {
-    tokenProxy.value = val;
-  },
-);
-watch(tokenProxy, (val) => {
-  emit("update:token", val);
 });
 
 watch(
@@ -179,51 +166,10 @@ function onSave() {
   emit("save");
 }
 
-watch(
-  () => props.modelValue,
-  (val) => {
-    modelValueProxy.value = val;
-  },
-);
-watch(modelValueProxy, (val) => {
-  emit("update:modelValue", val);
-});
-
-watch(
-  () => [props.submitterEmail, props.email],
-  ([newEmail, legacyEmail]) => {
-    emailProxy.value = newEmail ?? legacyEmail;
-  },
-);
-watch(emailProxy, (val) => {
-  emit("update:submitterEmail", val);
-  emit("update:email", val);
-});
-
-watch(
-  () => [props.submitterComments, props.comments],
-  ([newVal, legacyVal]) => {
-    commentsProxy.value = newVal ?? legacyVal;
-  },
-);
-watch(commentsProxy, (val) => {
-  emit("update:submitterComments", val);
-  emit("update:comments", val);
-});
-
-watch(
-  () => props.token,
-  (val) => {
-    tokenProxy.value = val;
-  },
-);
-watch(tokenProxy, (val) => {
-  emit("update:token", val);
-});
-
 function closeModal() {
   modelValueProxy.value = false;
 }
+
 function handleSubmit() {
   if (validateSaveModal()) {
     onSave();

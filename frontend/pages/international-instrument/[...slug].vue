@@ -109,7 +109,6 @@
       v-model="showSaveModal"
       :email="email"
       :comments="comments"
-      :token="token"
       :save-modal-errors="saveModalErrors"
       :name="name"
       :specialists="specialists"
@@ -119,7 +118,6 @@
       :instrument-id="instrumentApiId"
       @update:email="(val) => (email = val)"
       @update:comments="(val) => (comments = val)"
-      @update:token="(val) => (token = val)"
       @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
       @save="handleEditSave"
     />
@@ -162,7 +160,6 @@ const pdfFileName = ref("");
 const date = ref(new Date());
 const email = ref("");
 const comments = ref("");
-const token = ref("");
 const errors = ref({});
 const saveModalErrors = ref({});
 const showSaveModal = ref(false);

@@ -317,13 +317,11 @@
       v-model="showSaveModal"
       :email="email"
       :comments="comments"
-      :token="token"
       :save-modal-errors="saveModalErrors"
       :name="caseCitation"
       :date="datePublication"
       @update:email="(val) => (email = val)"
       @update:comments="(val) => (comments = val)"
-      @update:token="(val) => (token = val)"
       @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
       @save="handleNewSave"
     />
@@ -331,7 +329,7 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import { useHead, useRouter } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
@@ -381,9 +379,6 @@ const dateJudgment = ref(null);
 const email = ref("");
 const comments = ref("");
 
-const token = ref("");
-
-watch(token, () => {});
 const selectedJurisdiction = ref([]);
 const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
 
