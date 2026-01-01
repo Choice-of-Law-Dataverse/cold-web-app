@@ -20,6 +20,7 @@ export default defineEventHandler(async (event) => {
     `http://localhost:3000`,
     `https://${host}`,
     `http://${host}`,
+    config.public.siteUrl,
   ];
 
   const isValidOrigin =

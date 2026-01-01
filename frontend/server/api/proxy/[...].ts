@@ -11,6 +11,7 @@ export default defineEventHandler(async (event) => {
     `http://localhost:3000`,
     `https://${host}`,
     `http://${host}`,
+    config.public.siteUrl,
   ];
 
   const isValidOrigin =
@@ -32,7 +33,7 @@ export default defineEventHandler(async (event) => {
   const url = joinURL(config.apiBaseUrl, path);
 
   const headers: Record<string, string> = {
-    "X-API-Key": config.apiKey, // Custom header for frontend verification
+    "X-API-Key": config.apiKey,
   };
 
   try {
