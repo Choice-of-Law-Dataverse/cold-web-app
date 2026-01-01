@@ -1,18 +1,9 @@
 <template>
-  <div class="container mx-auto max-w-6xl px-6 py-12">
-    <div class="mb-8 flex items-center justify-between">
-      <div>
-        <UButton
-          variant="ghost"
-          icon="i-heroicons-arrow-left"
-          @click="navigateTo('/moderation')"
-        >
-          Back to Categories
-        </UButton>
-        <h1 class="mt-4 text-3xl font-bold">
-          Pending: {{ categoryLabel }}
-        </h1>
-      </div>
+  <div class="mx-auto max-w-container px-6 py-12">
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold">
+        Pending: {{ categoryLabel }}
+      </h1>
     </div>
 
     <!-- Loading state -->
@@ -69,6 +60,22 @@
               {{ suggestion.username || suggestion.user_email || "Unknown" }}
             </p>
           </DetailRow>
+          <DetailRow
+            v-if="getJurisdiction(suggestion)"
+            label="Jurisdiction"
+          >
+            <p class="prose mt-0 text-sm">
+              {{ getJurisdiction(suggestion) }}
+            </p>
+          </DetailRow>
+          <DetailRow
+            v-if="getPreciseJurisdiction(suggestion)"
+            label="Precise Jurisdiction"
+          >
+            <p class="prose mt-0 text-sm">
+              {{ getPreciseJurisdiction(suggestion) }}
+            </p>
+          </DetailRow>
           <DetailRow v-if="suggestion.created_at" label="Created">
             <p class="prose mt-0 text-sm">
               {{ formatDate(suggestion.created_at) }}
@@ -103,7 +110,6 @@ const {
   data: suggestions,
   pending,
   error,
-  refresh,
 } = await useAsyncData(
   `pending-${category.value}`,
   () => listPendingSuggestions(category.value),
@@ -126,7 +132,9 @@ const getSuggestionTitle = (suggestion: PendingSuggestion): string => {
 
   for (const field of titleFields) {
     if (payload[field]) {
-      return payload[field];
+      const value = payload[field];
+      // Handle array values by taking first element
+      return Array.isArray(value) ? value[0] : value;
     }
   }
 
@@ -136,11 +144,6 @@ const getSuggestionTitle = (suggestion: PendingSuggestion): string => {
 const getSuggestionMeta = (suggestion: PendingSuggestion): string => {
   const payload = suggestion.payload || {};
   const parts: string[] = [];
-
-  // Add jurisdiction if available
-  if (payload.jurisdiction || payload.country) {
-    parts.push(`Jurisdiction: ${payload.jurisdiction || payload.country}`);
-  }
 
   // Add date if available
   const dateFields = [
@@ -158,6 +161,20 @@ const getSuggestionMeta = (suggestion: PendingSuggestion): string => {
   }
 
   return parts.join(" | ") || "No additional information";
+};
+
+const getJurisdiction = (suggestion: PendingSuggestion): string => {
+  const payload = suggestion.payload || {};
+  const value = payload.jurisdiction || payload.country;
+  if (!value) return "";
+  return Array.isArray(value) ? value[0] : value;
+};
+
+const getPreciseJurisdiction = (suggestion: PendingSuggestion): string => {
+  const payload = suggestion.payload || {};
+  const value = payload.precise_jurisdiction || payload.precise_jurisdiction_edited;
+  if (!value) return "";
+  return Array.isArray(value) ? value[0] : value;
 };
 
 const formatDate = (dateString: string): string => {

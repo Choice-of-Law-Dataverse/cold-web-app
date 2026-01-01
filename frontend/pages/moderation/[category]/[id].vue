@@ -1,14 +1,7 @@
 <template>
-  <div class="container mx-auto max-w-4xl px-6 py-12">
+  <div class="mx-auto max-w-container px-6 py-12">
     <div class="mb-8">
-      <UButton
-        variant="ghost"
-        icon="i-heroicons-arrow-left"
-        @click="navigateTo(`/moderation/${category}`)"
-      >
-        Back to List
-      </UButton>
-      <h1 class="mt-4 text-3xl font-bold">
+      <h1 class="text-3xl font-bold">
         {{ categoryLabel }} — Entry #{{ suggestionId }}
       </h1>
     </div>
@@ -38,10 +31,10 @@
 
         <div class="flex flex-col gap-4 px-6 py-8">
           <DetailRow
-            v-if="suggestion.username || suggestion.user_email"
+            v-if="suggestion.username || suggestion.user_email || suggestion.token_sub" 
             label="Submitted by"
           >
-            {{ suggestion.username || suggestion.user_email || "Unknown" }}
+            {{ suggestion.username || suggestion.user_email || suggestion.token_sub || "Unknown" }}
           </DetailRow>
           <DetailRow v-if="suggestion.created_at" label="Created">
             {{ formatDate(suggestion.created_at) }}
@@ -172,7 +165,7 @@ const filteredPayload = computed(() => {
   if (!suggestion.value?.payload) return {};
 
   // Filter out metadata fields
-  const metaFields = [
+  const metaFields = new Set([
     "submitter_email",
     "submitter_comments",
     "official_source_pdf",
@@ -183,13 +176,54 @@ const filteredPayload = computed(() => {
     "moderated_by",
     "moderation_note",
     "merged_record_id",
-  ];
+    "full_text",
+    "pdf_uuid",
+    "pdf_url",
+    "analysis_done",
+    "analysis_ready",
+    "workflow_started",
+    "parallel_execution_started",
+  ]);
 
   const filtered: Record<string, unknown> = {};
-  for (const [key, value] of Object.entries(suggestion.value.payload)) {
-    if (!metaFields.includes(key) && value !== null && value !== "") {
-      filtered[key] = value;
+  const payload = suggestion.value.payload;
+  
+  // For case analyzer, collect fields with _edited versions
+  const editedFields = new Set<string>();
+  if (category.value === 'case-analyzer') {
+    for (const key of Object.keys(payload)) {
+      if (key.endsWith('_edited')) {
+        const baseField = key.replace('_edited', '');
+        editedFields.add(baseField);
+      }
     }
+  }
+
+  for (const [key, value] of Object.entries(payload)) {
+    // Skip if null, empty, or in metadata fields
+    if (metaFields.has(key) || value === null || value === "") {
+      continue;
+    }
+
+    // Case analyzer specific filtering
+    if (category.value === 'case-analyzer') {
+      // Skip *_printed, *_reasoning, and *_confidence fields
+      if (key.endsWith('_printed') || key.endsWith('_reasoning') || key.endsWith('_confidence')) {
+        continue;
+      }
+      
+      // Skip full_text
+      if (key === 'full_text') {
+        continue;
+      }
+      
+      // Skip base field if _edited version exists
+      if (editedFields.has(key)) {
+        continue;
+      }
+    }
+
+    filtered[key] = value;
   }
 
   return filtered;

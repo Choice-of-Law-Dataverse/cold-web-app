@@ -1,22 +1,19 @@
 <template>
-  <div class="container mx-auto max-w-4xl px-6 py-12">
+  <div class="mx-auto max-w-container px-6 py-12">
     <h1 class="mb-8 text-3xl font-bold">Suggestions Moderation</h1>
 
-    <div class="space-y-4">
-      <UCard
-        v-for="category in categories"
-        :key="category.id"
-        class="cursor-pointer transition-shadow hover:shadow-lg"
-        @click="navigateTo(`/moderation/${category.id}`)"
-      >
-        <template #header>
-          <h2 class="text-xl font-semibold">{{ category.label }}</h2>
-        </template>
-        <p class="text-gray-600">
-          Review and approve {{ category.label.toLowerCase() }} submissions
-        </p>
-      </UCard>
-    </div>
+    <UCard>
+      <div class="flex flex-col gap-4 p-6">
+        <NuxtLink
+          v-for="category in categories"
+          :key="category.id"
+          :to="`/moderation/${category.id}`"
+          class="text-lg text-blue-600 hover:text-blue-800 hover:underline"
+        >
+          {{ category.label }}
+        </NuxtLink>
+      </div>
+    </UCard>
   </div>
 </template>
 

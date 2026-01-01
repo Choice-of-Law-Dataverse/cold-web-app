@@ -8,12 +8,12 @@ export interface CategoryConfig {
 }
 
 export const MODERATION_CATEGORIES: CategoryConfig[] = [
+  { id: "case-analyzer", label: "Case Analyzer" },
   { id: "court-decisions", label: "Court Decisions" },
   { id: "domestic-instruments", label: "Domestic Instruments" },
   { id: "regional-instruments", label: "Regional Instruments" },
   { id: "international-instruments", label: "International Instruments" },
   { id: "literature", label: "Literature" },
-  { id: "case-analyzer", label: "Case Analyzer" },
 ];
 
 export const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(
