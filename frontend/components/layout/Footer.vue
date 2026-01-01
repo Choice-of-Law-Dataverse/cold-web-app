@@ -2,15 +2,6 @@
 import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
 
 const user = useUser();
-
-// Check if user has editor or admin role
-const canModerate = computed(() => {
-  if (!user.value) return false;
-  const roles = user.value["https://cold.global/roles"] || [];
-  return (
-    Array.isArray(roles) && (roles.includes("editor") || roles.includes("admin"))
-  );
-});
 </script>
 
 <template>
@@ -80,8 +71,30 @@ const canModerate = computed(() => {
             >
               Disclaimer
             </NuxtLink>
+          </div>
+        </div>
+        <div
+          class="flex flex-row justify-between gap-3 md:flex-col md:justify-start"
+        >
+          <h3 class="my-2 font-bold">Admin</h3>
+          <div class="flex flex-col gap-3 text-right md:text-left">
+            <a
+              v-if="user"
+              href="/auth/logout"
+              class="cursor-pointer text-sm !text-white hover:underline"
+            >
+              Logout
+            </a>
+
+            <a
+              v-else
+              href="/auth/login"
+              class="cursor-pointer text-sm !text-white hover:underline"
+            >
+              Login
+            </a>
+
             <NuxtLink
-              v-if="canModerate"
               to="/moderation"
               class="text-sm !text-white hover:underline"
             >
