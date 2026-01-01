@@ -7,8 +7,20 @@ export default defineEventHandler(async (event) => {
   const referer = getHeader(event, "referer");
   const host = getHeader(event, "host");
 
-  console.log("[PROXY] Request:", event.path, "| Origin:", origin, "| Host:", host);
-  console.log("[PROXY] API_KEY:", config.apiKey ? "present" : "MISSING", "| API_BASE_URL:", config.apiBaseUrl);
+  console.log(
+    "[PROXY] Request:",
+    event.path,
+    "| Origin:",
+    origin,
+    "| Host:",
+    host,
+  );
+  console.log(
+    "[PROXY] API_KEY:",
+    config.apiKey ? "present" : "MISSING",
+    "| API_BASE_URL:",
+    config.apiBaseUrl,
+  );
 
   const allowedOrigins = [
     `http://localhost:3000`,
@@ -25,7 +37,12 @@ export default defineEventHandler(async (event) => {
     );
 
   if (!isValidOrigin) {
-    console.error("[PROXY] BLOCKED - Invalid origin:", origin, "| Allowed:", allowedOrigins);
+    console.error(
+      "[PROXY] BLOCKED - Invalid origin:",
+      origin,
+      "| Allowed:",
+      allowedOrigins,
+    );
     throw createError({
       statusCode: 403,
       message: "Forbidden: Invalid origin",
