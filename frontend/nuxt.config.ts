@@ -3,6 +3,9 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
   nitro: {
+    prerender: {
+      crawlLinks: true,
+    },
     experimental: {
       tasks: false,
     },
@@ -30,18 +33,10 @@ export default defineNuxtConfig({
     "@nuxtjs/robots",
     "@nuxtjs/sitemap",
     "@nuxt/scripts",
-    "@nuxtjs/turnstile",
     "@nuxt/eslint",
     "@auth0/auth0-nuxt",
   ],
-  turnstile: {
-    siteKey: process.env.NUXT_TURNSTILE_SITE_KEY,
-    addValidateEndpoint: true,
-  },
   runtimeConfig: {
-    turnstile: {
-      secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
-    },
     apiBaseUrl: process.env.API_BASE_URL,
     apiKey: process.env.API_KEY,
     r2: {

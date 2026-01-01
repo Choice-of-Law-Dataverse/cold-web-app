@@ -233,18 +233,6 @@ function handleSubmit() {
 </script>
 
 <style scoped>
-/* Ensure the Cloudflare Turnstile widget spans the full column width */
-.turnstile-full {
-  display: block;
-  width: 100% !important;
-}
-.turnstile-full :deep(iframe),
-.turnstile-full :deep(div),
-.turnstile-full :deep(*) {
-  max-width: 100% !important;
-  width: 100% !important;
-}
-
 /* Local purple heading for the Submit action */
 .submit-heading {
   color: var(--color-cold-purple) !important;
