@@ -24,17 +24,26 @@
     <!-- Suggestion detail -->
     <div v-else-if="suggestion">
       <!-- Metadata card -->
-      <UCard class="cold-ucard mb-6">
+      <UCard class="mb-6" :ui="{ body: { padding: '' } }">
         <template #header>
           <h2 class="text-xl font-semibold">Submission Information</h2>
         </template>
 
         <div class="flex flex-col gap-4 px-6 py-8">
           <DetailRow
-            v-if="suggestion.username || suggestion.user_email || suggestion.token_sub" 
+            v-if="
+              suggestion.username ||
+              suggestion.user_email ||
+              suggestion.token_sub
+            "
             label="Submitted by"
           >
-            {{ suggestion.username || suggestion.user_email || suggestion.token_sub || "Unknown" }}
+            {{
+              suggestion.username ||
+              suggestion.user_email ||
+              suggestion.token_sub ||
+              "Unknown"
+            }}
           </DetailRow>
           <DetailRow v-if="suggestion.created_at" label="Created">
             {{ formatDate(suggestion.created_at) }}
@@ -49,7 +58,7 @@
       </UCard>
 
       <!-- Data fields card -->
-      <UCard class="cold-ucard mb-6">
+      <UCard class="mb-6" :ui="{ body: { padding: '' } }">
         <template #header>
           <h2 class="text-xl font-semibold">Submitted Data</h2>
         </template>
@@ -187,13 +196,13 @@ const filteredPayload = computed(() => {
 
   const filtered: Record<string, unknown> = {};
   const payload = suggestion.value.payload;
-  
+
   // For case analyzer, collect fields with _edited versions
   const editedFields = new Set<string>();
-  if (category.value === 'case-analyzer') {
+  if (category.value === "case-analyzer") {
     for (const key of Object.keys(payload)) {
-      if (key.endsWith('_edited')) {
-        const baseField = key.replace('_edited', '');
+      if (key.endsWith("_edited")) {
+        const baseField = key.replace("_edited", "");
         editedFields.add(baseField);
       }
     }
@@ -206,17 +215,21 @@ const filteredPayload = computed(() => {
     }
 
     // Case analyzer specific filtering
-    if (category.value === 'case-analyzer') {
+    if (category.value === "case-analyzer") {
       // Skip *_printed, *_reasoning, and *_confidence fields
-      if (key.endsWith('_printed') || key.endsWith('_reasoning') || key.endsWith('_confidence')) {
+      if (
+        key.endsWith("_printed") ||
+        key.endsWith("_reasoning") ||
+        key.endsWith("_confidence")
+      ) {
         continue;
       }
-      
+
       // Skip full_text
-      if (key === 'full_text') {
+      if (key === "full_text") {
         continue;
       }
-      
+
       // Skip base field if _edited version exists
       if (editedFields.has(key)) {
         continue;
@@ -230,9 +243,7 @@ const filteredPayload = computed(() => {
 });
 
 const formatFieldName = (key: string): string => {
-  return key
-    .replace(/_/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
 const formatValue = (value: unknown): string => {
@@ -259,15 +270,13 @@ const formatDate = (dateString: string): string => {
 const handleApprove = async () => {
   approving.value = true;
   try {
-    const result = await approveSuggestion(
-      category.value,
-      suggestionId.value,
-    );
+    const result = await approveSuggestion(category.value, suggestionId.value);
     successMessage.value =
       result.message || "Suggestion approved successfully!";
     showSuccessModal.value = true;
   } catch (err: unknown) {
-    errorMessage.value = err instanceof Error ? err.message : "Failed to approve suggestion";
+    errorMessage.value =
+      err instanceof Error ? err.message : "Failed to approve suggestion";
     showErrorModal.value = true;
   } finally {
     approving.value = false;
@@ -282,7 +291,8 @@ const handleReject = async () => {
       result.message || "Suggestion rejected successfully!";
     showSuccessModal.value = true;
   } catch (err: unknown) {
-    errorMessage.value = err instanceof Error ? err.message : "Failed to reject suggestion";
+    errorMessage.value =
+      err instanceof Error ? err.message : "Failed to reject suggestion";
     showErrorModal.value = true;
   } finally {
     rejecting.value = false;
@@ -293,20 +303,3 @@ const goToList = () => {
   navigateTo(`/moderation/${category.value}`);
 };
 </script>
-
-<style scoped>
-.cold-ucard :deep(.px-4) {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-.cold-ucard :deep(.py-5) {
-  padding-top: 16px !important;
-  padding-bottom: 18px !important;
-}
-
-.cold-ucard :deep(.sm\:px-6) {
-  padding-left: 16px !important;
-  padding-right: 16px !important;
-}
-</style>

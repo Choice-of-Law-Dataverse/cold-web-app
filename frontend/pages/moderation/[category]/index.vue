@@ -1,9 +1,7 @@
 <template>
   <div class="mx-auto max-w-container px-6 py-12">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold">
-        Pending: {{ categoryLabel }}
-      </h1>
+      <h1 class="text-3xl font-bold">Pending: {{ categoryLabel }}</h1>
     </div>
 
     <!-- Loading state -->
@@ -34,7 +32,8 @@
       <UCard
         v-for="suggestion in suggestions"
         :key="suggestion.id"
-        class="cold-ucard cursor-pointer transition-shadow hover:shadow-lg"
+        class="cursor-pointer transition-shadow hover:shadow-lg"
+        :ui="{ body: { padding: '' } }"
         @click="navigateTo(`/moderation/${category}/${suggestion.id}`)"
       >
         <template #header>
@@ -53,6 +52,24 @@
 
         <div class="flex flex-col gap-3 px-6 py-4">
           <DetailRow
+            v-if="getPreciseJurisdiction(suggestion)"
+            label="Jurisdiction"
+          >
+            <p class="prose mt-0 text-sm">
+              {{ getPreciseJurisdiction(suggestion) }}
+            </p>
+          </DetailRow>
+
+          <DetailRow
+            v-if="getJurisdiction(suggestion)"
+            label="Jurisdiction Type"
+          >
+            <p class="prose mt-0 text-sm">
+              {{ getJurisdiction(suggestion) }}
+            </p>
+          </DetailRow>
+
+          <DetailRow
             v-if="suggestion.username || suggestion.user_email"
             label="Submitted by"
           >
@@ -60,27 +77,12 @@
               {{ suggestion.username || suggestion.user_email || "Unknown" }}
             </p>
           </DetailRow>
-          <DetailRow
-            v-if="getJurisdiction(suggestion)"
-            label="Jurisdiction"
-          >
-            <p class="prose mt-0 text-sm">
-              {{ getJurisdiction(suggestion) }}
-            </p>
-          </DetailRow>
-          <DetailRow
-            v-if="getPreciseJurisdiction(suggestion)"
-            label="Precise Jurisdiction"
-          >
-            <p class="prose mt-0 text-sm">
-              {{ getPreciseJurisdiction(suggestion) }}
-            </p>
-          </DetailRow>
           <DetailRow v-if="suggestion.created_at" label="Created">
             <p class="prose mt-0 text-sm">
               {{ formatDate(suggestion.created_at) }}
             </p>
           </DetailRow>
+
           <DetailRow v-if="suggestion.source" label="Source">
             <p class="prose mt-0 text-sm">{{ suggestion.source }}</p>
           </DetailRow>
@@ -134,7 +136,8 @@ const getSuggestionTitle = (suggestion: PendingSuggestion): string => {
     if (payload[field]) {
       const value = payload[field];
       // Handle array values by taking first element
-      return Array.isArray(value) ? value[0] : value;
+      const extracted = Array.isArray(value) ? value[0] : value;
+      return String(extracted);
     }
   }
 
@@ -167,14 +170,17 @@ const getJurisdiction = (suggestion: PendingSuggestion): string => {
   const payload = suggestion.payload || {};
   const value = payload.jurisdiction || payload.country;
   if (!value) return "";
-  return Array.isArray(value) ? value[0] : value;
+  const extracted = Array.isArray(value) ? value[0] : value;
+  return String(extracted);
 };
 
 const getPreciseJurisdiction = (suggestion: PendingSuggestion): string => {
   const payload = suggestion.payload || {};
-  const value = payload.precise_jurisdiction || payload.precise_jurisdiction_edited;
+  const value =
+    payload.precise_jurisdiction || payload.precise_jurisdiction_edited;
   if (!value) return "";
-  return Array.isArray(value) ? value[0] : value;
+  const extracted = Array.isArray(value) ? value[0] : value;
+  return String(extracted);
 };
 
 const formatDate = (dateString: string): string => {
@@ -185,20 +191,3 @@ const formatDate = (dateString: string): string => {
   }
 };
 </script>
-
-<style scoped>
-.cold-ucard :deep(.px-4) {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-.cold-ucard :deep(.py-5) {
-  padding-top: 16px !important;
-  padding-bottom: 18px !important;
-}
-
-.cold-ucard :deep(.sm\:px-6) {
-  padding-left: 16px !important;
-  padding-right: 16px !important;
-}
-</style>

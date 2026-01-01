@@ -6,7 +6,7 @@
 export interface PendingSuggestion {
   id: number;
   created_at: string;
-  payload: Record<string, any>;
+  payload: Record<string, unknown>;
   source?: string;
   token_sub?: string;
   username?: string;
