@@ -1,6 +1,15 @@
+from typing import Any
+
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 
-from app.auth import require_user, verify_frontend_request
+from app.auth import require_editor_or_admin, require_user, verify_frontend_request
+from app.routes.moderation import (
+    MainDBWriter,
+    _approve_case_analyzer,
+    _get_target_table,
+    _link_jurisdictions_for_default_categories,
+    _normalize_domestic_instruments,
+)
 from app.schemas.suggestions import (
     CourtDecisionSuggestion,
     DomesticInstrumentSuggestion,
@@ -185,3 +194,199 @@ async def submit_literature(
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
+
+
+# Moderation endpoints
+
+
+def _table_key(path_segment: str) -> str | None:
+    """Map category path segment to internal table name."""
+    mapping = {
+        "court-decisions": "court_decisions",
+        "domestic-instruments": "domestic_instruments",
+        "regional-instruments": "regional_instruments",
+        "international-instruments": "international_instruments",
+        "literature": "literature",
+        "case-analyzer": "case_analyzer",
+    }
+    return mapping.get(path_segment)
+
+
+@router.get(
+    "/pending/{category}",
+    summary="List pending suggestions for a category",
+    description="Requires editor or admin role. Returns list of pending suggestions for moderation.",
+)
+async def list_pending_suggestions(
+    category: str,
+    user: dict = Depends(require_editor_or_admin),
+) -> list[dict[str, Any]]:
+    """List all pending suggestions for a specific category."""
+    table = _table_key(category)
+    if not table:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Invalid category: {category}",
+        )
+
+    try:
+        items = service.list_pending(table)
+        return items
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch pending suggestions: {str(e)}",
+        ) from e
+
+
+@router.get(
+    "/{category}/{suggestion_id}",
+    summary="Get specific suggestion details",
+    description="Requires editor or admin role. Returns detailed information about a specific suggestion.",
+)
+async def get_suggestion_detail(
+    category: str,
+    suggestion_id: int,
+    user: dict = Depends(require_editor_or_admin),
+) -> dict[str, Any]:
+    """Get detailed information about a specific suggestion."""
+    table = _table_key(category)
+    if not table:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Invalid category: {category}",
+        )
+
+    try:
+        item = service.get_pending_by_id(table, suggestion_id)
+        if not item:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Suggestion not found or not pending",
+            )
+        return item
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to fetch suggestion: {str(e)}",
+        ) from e
+
+
+@router.post(
+    "/{category}/{suggestion_id}/approve",
+    summary="Approve a suggestion",
+    description="Requires editor or admin role. Marks a suggestion as approved and processes it for insertion",
+)
+async def approve_suggestion(
+    category: str,
+    suggestion_id: int,
+    request: Request,
+    user: dict = Depends(require_editor_or_admin),
+) -> dict[str, str]:
+    """Approve a suggestion and process it for persistent storage."""
+    table = _table_key(category)
+    if not table:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Invalid category: {category}",
+        )
+
+    try:
+        item = service.get_pending_by_id(table, suggestion_id)
+        if not item:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Suggestion not found or not pending",
+            )
+
+        original_payload: dict[str, Any] = item.get("payload", {}) or {}
+
+        # Get user email from Auth0 token
+        moderator_email = user.get("https://cold.global/email") or user.get("email") or user.get("sub", "unknown")
+
+        if category == "case-analyzer":
+            # Use existing case analyzer approval logic
+            await _approve_case_analyzer(request, table, suggestion_id, original_payload, item)
+        else:
+            # Handle default categories - simplified without form editing
+            writer = MainDBWriter()
+            target_table = _get_target_table(category)
+            if not target_table:
+                raise HTTPException(status_code=400, detail="Unsupported category")
+
+            if target_table == "Domestic_Instruments":
+                _normalize_domestic_instruments(original_payload)
+
+            # Filter out reserved metadata fields
+            _reserved = {
+                "submitter_email",
+                "submitter_comments",
+                "official_source_pdf",
+                "source_pdf",
+                "attachment",
+                "category",
+            }
+            payload_for_writer = {k: v for k, v in original_payload.items() if k not in _reserved}
+
+            merged_id = writer.insert_record(target_table, payload_for_writer)
+            _link_jurisdictions_for_default_categories(writer, target_table, merged_id, payload_for_writer)
+
+            service.mark_status(
+                table,
+                suggestion_id,
+                "approved",
+                moderator_email,
+                note="",
+                merged_id=merged_id,
+            )
+
+        return {"status": "success", "message": "Suggestion approved successfully"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to approve suggestion: {str(e)}",
+        ) from e
+
+
+@router.post(
+    "/{category}/{suggestion_id}/reject",
+    summary="Reject a suggestion",
+    description="Requires editor or admin role. Marks a suggestion as rejected.",
+)
+async def reject_suggestion(
+    category: str,
+    suggestion_id: int,
+    user: dict = Depends(require_editor_or_admin),
+) -> dict[str, str]:
+    """Reject a suggestion."""
+    table = _table_key(category)
+    if not table:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Invalid category: {category}",
+        )
+
+    try:
+        # Get user email from Auth0 token
+        moderator_email = user.get("https://cold.global/email") or user.get("email") or user.get("sub", "unknown")
+
+        service.mark_status(
+            table,
+            suggestion_id,
+            "rejected",
+            moderator_email,
+            note="",
+        )
+
+        return {"status": "success", "message": "Suggestion rejected successfully"}
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to reject suggestion: {str(e)}",
+        ) from e
