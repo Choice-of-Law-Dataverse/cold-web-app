@@ -10,7 +10,6 @@ load_dotenv()
 class Config:
     APP_NAME: str = "CoLD FastAPI Backend"
     API_VERSION: str = "1.0.0"
-    JWT_SECRET: str = os.getenv("JWT_SECRET", "MYSECRET")
     SQL_CONN_STRING: str | None = os.getenv("SQL_CONN_STRING")
     MONGODB_CONN_STRING: str | None = os.getenv("MONGODB_CONN_STRING")
     OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY")
@@ -26,10 +25,12 @@ class Config:
     # Moderation UI credentials (basic form login)
     MODERATION_USERNAME: str | None = os.getenv("MODERATION_USERNAME")
     MODERATION_PASSWORD: str | None = os.getenv("MODERATION_PASSWORD")
-
-    def __post_init__(self) -> None:
-        # Set MODERATION_SECRET after initialization to use JWT_SECRET as fallback
-        self.MODERATION_SECRET: str = os.getenv("MODERATION_SECRET", self.JWT_SECRET)
+    MODERATION_SECRET: str = os.getenv("MODERATION_SECRET", os.getenv("API_KEY", "secret"))
+    # Auth0 configuration
+    AUTH0_DOMAIN: str | None = os.getenv("AUTH0_DOMAIN")
+    AUTH0_AUDIENCE: str | None = os.getenv("AUTH0_AUDIENCE")
+    # Frontend API key for request validation
+    API_KEY: str | None = os.getenv("API_KEY")
 
 
 config = Config()

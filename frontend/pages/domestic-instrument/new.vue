@@ -252,6 +252,10 @@ import tooltipOfficialTitle from "@/content/info_boxes/domestic_instrument/offic
 import tooltipDomesticInstrumentPublicationDate from "@/content/info_boxes/domestic_instrument/publication_date.md?raw";
 import tooltipDomesticInstrumentTitle from "@/content/info_boxes/domestic_instrument/title.md?raw";
 
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const officialTitle = ref("");
 const titleEn = ref("");
 const selectedJurisdiction = ref([]);
@@ -401,9 +405,7 @@ function handleNewSave() {
       compatibleUncitralModelLaw.value !== undefined
         ? compatibleUncitralModelLaw.value
         : undefined,
-    submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
-    source: "cold.global",
   };
 
   (async () => {
@@ -412,6 +414,7 @@ function handleNewSave() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          source: "cold.global",
         },
         body: payload,
       });

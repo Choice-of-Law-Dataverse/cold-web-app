@@ -5,11 +5,6 @@ from typing import Any
 import sqlalchemy as sa
 from sqlalchemy.dialects.postgresql import JSONB
 
-try:
-    import jwt  # type: ignore
-except Exception:  # pragma: no cover - optional dependency resolution in some editors
-    jwt = None  # type: ignore
-
 from app.config import config
 from app.services.db_manager import suggestions_db_manager
 
@@ -147,17 +142,12 @@ class SuggestionService:
         # Ensure all tables exist (will not alter existing ones)
         self.metadata.create_all(self.engine)
 
-    def _get_token_sub(self, authorization: str | None) -> str | None:
-        if not authorization:
+    def _get_token_sub(self, user: dict[str, Any] | None) -> str | None:
+        """Extract email from Auth0 user payload and use as identifier."""
+        if not user:
             return None
-        try:
-            parts = authorization.split()
-            if len(parts) >= 2 and parts[0].lower() == "bearer" and jwt is not None:
-                decoded = jwt.decode(parts[1], config.JWT_SECRET, algorithms=["HS256"])  # type: ignore[attr-defined]
-                return str(decoded.get("sub")) if isinstance(decoded, dict) else None
-        except Exception:
-            return None
-        return None
+        # Auth0 custom claims with namespace
+        return user.get("https://cold.global/email") or user.get("email") or user.get("sub")
 
     @staticmethod
     def _to_jsonable(obj: Any) -> Any:
@@ -184,9 +174,9 @@ class SuggestionService:
         client_ip: str | None = None,
         user_agent: str | None = None,
         source: str | None = None,
-        authorization: str | None = None,
+        user: dict[str, Any] | None = None,
     ) -> int:
-        token_sub = self._get_token_sub(authorization)
+        token_sub = self._get_token_sub(user)
         target = self.tables.get(table)
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
@@ -295,6 +285,7 @@ class SuggestionService:
                     target.c.created_at,
                     target.c.payload,
                     target.c.source,
+                    target.c.token_sub,
                 )
                 .where(
                     sa.or_(

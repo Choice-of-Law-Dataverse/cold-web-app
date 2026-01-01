@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from app.auth import verify_jwt_token
+from app.auth import verify_frontend_request
 from app.schemas.requests import (
     CuratedDetailsRequest,
     FullTableRequest,
@@ -14,7 +14,7 @@ search_service = SearchService()
 router = APIRouter(
     prefix="/search",
     tags=["Search"],
-    dependencies=[Depends(verify_jwt_token)],
+    dependencies=[Depends(verify_frontend_request)],
 )
 
 

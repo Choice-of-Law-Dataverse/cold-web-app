@@ -93,8 +93,12 @@ import CancelModal from "@/components/ui/CancelModal.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import tooltipInternationalInstrumentDate from "@/content/info_boxes/international_instrument/date.md?raw";
 import tooltipInternationalInstrumentLink from "@/content/info_boxes/international_instrument/link.md?raw";
-
 import { format } from "date-fns";
+
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const date = ref(new Date());
 
 const name = ref("");
@@ -172,9 +176,7 @@ function handleNewSave() {
     attachment: "", // ignored for now
     instrument_date:
       date.value && date.value ? format(date.value, "yyyy-MM-dd") : undefined,
-    submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
-    source: "cold.global",
   };
 
   (async () => {
@@ -183,6 +185,9 @@ function handleNewSave() {
       const { apiClient } = useApiClient();
       await apiClient("/suggestions/international-instruments", {
         body: payload,
+        headers: {
+          source: "cold.global",
+        },
       });
 
       showSaveModal.value = false;

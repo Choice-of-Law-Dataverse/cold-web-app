@@ -422,7 +422,7 @@ def _render_overview_item(category: str, model, item: dict[str, Any]) -> str:
     created = item.get("created_at")
     created_s = format_created(created)
     submit_name = item.get("username") or first_key("username", "submitter_name", "name")
-    submit_email = item.get("user_email") or first_key("user_email", "email", "submitter_email")
+    submit_email = item.get("token_sub") or item.get("user_email") or first_key("user_email", "email", "submitter_email")
     submit_comments = first_key("submitter_comments", "comments", "note")
     comments_snippet = ""
     if isinstance(submit_comments, str) and submit_comments.strip():

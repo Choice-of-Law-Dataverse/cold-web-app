@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 
-from app.auth import verify_jwt_token
+from app.auth import require_user, verify_frontend_request
 from app.schemas.suggestions import (
     CourtDecisionSuggestion,
     DomesticInstrumentSuggestion,
@@ -15,7 +15,7 @@ from app.services.suggestions import SuggestionService
 router = APIRouter(
     prefix="/suggestions",
     tags=["Suggestions"],
-    dependencies=[Depends(verify_jwt_token)],
+    dependencies=[Depends(verify_frontend_request)],
 )
 
 service = SuggestionService()
@@ -31,7 +31,7 @@ service = SuggestionService()
 async def submit_suggestion(
     body: SuggestionPayload,
     request: Request,
-    authorization: str = Header(None),
+    user: dict = Depends(require_user),
 ):
     try:
         payload = {
@@ -45,7 +45,7 @@ async def submit_suggestion(
             client_ip=request.client.host if request.client else None,
             user_agent=request.headers.get("User-Agent"),
             source=body.source,
-            authorization=authorization,
+            user=user,
         )
         return SuggestionResponse(id=new_id)
     except Exception as e:
@@ -61,7 +61,7 @@ async def submit_suggestion(
 async def submit_court_decision(
     body: CourtDecisionSuggestion,
     request: Request,
-    authorization: str = Header(None),
+    user: dict = Depends(require_user),
     source: str | None = Header(None),
 ):
     try:
@@ -72,7 +72,7 @@ async def submit_court_decision(
             client_ip=request.client.host if request.client else None,
             user_agent=request.headers.get("User-Agent"),
             source=source,
-            authorization=authorization,
+            user=user,
         )
         return SuggestionResponse(id=new_id)
     except Exception as e:
@@ -88,7 +88,7 @@ async def submit_court_decision(
 async def submit_domestic_instrument(
     body: DomesticInstrumentSuggestion,
     request: Request,
-    authorization: str = Header(None),
+    user: dict = Depends(require_user),
     source: str | None = Header(None),
 ):
     try:
@@ -99,7 +99,7 @@ async def submit_domestic_instrument(
             client_ip=request.client.host if request.client else None,
             user_agent=request.headers.get("User-Agent"),
             source=source,
-            authorization=authorization,
+            user=user,
         )
         return SuggestionResponse(id=new_id)
     except Exception as e:
@@ -115,7 +115,7 @@ async def submit_domestic_instrument(
 async def submit_regional_instrument(
     body: RegionalInstrumentSuggestion,
     request: Request,
-    authorization: str = Header(None),
+    user: dict = Depends(require_user),
     source: str | None = Header(None),
 ):
     try:
@@ -126,7 +126,7 @@ async def submit_regional_instrument(
             client_ip=request.client.host if request.client else None,
             user_agent=request.headers.get("User-Agent"),
             source=source,
-            authorization=authorization,
+            user=user,
         )
         return SuggestionResponse(id=new_id)
     except Exception as e:
@@ -142,7 +142,7 @@ async def submit_regional_instrument(
 async def submit_international_instrument(
     body: InternationalInstrumentSuggestion,
     request: Request,
-    authorization: str = Header(None),
+    user: dict = Depends(require_user),
     source: str | None = Header(None),
 ):
     try:
@@ -153,7 +153,7 @@ async def submit_international_instrument(
             client_ip=request.client.host if request.client else None,
             user_agent=request.headers.get("User-Agent"),
             source=source,
-            authorization=authorization,
+            user=user,
         )
         return SuggestionResponse(id=new_id)
     except Exception as e:
@@ -169,7 +169,7 @@ async def submit_international_instrument(
 async def submit_literature(
     body: LiteratureSuggestion,
     request: Request,
-    authorization: str = Header(None),
+    user: dict = Depends(require_user),
     source: str | None = Header(None),
 ):
     try:
@@ -180,7 +180,7 @@ async def submit_literature(
             client_ip=request.client.host if request.client else None,
             user_agent=request.headers.get("User-Agent"),
             source=source,
-            authorization=authorization,
+            user=user,
         )
         return SuggestionResponse(id=new_id)
     except Exception as e:

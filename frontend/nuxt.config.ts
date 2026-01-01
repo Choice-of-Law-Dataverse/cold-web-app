@@ -32,6 +32,7 @@ export default defineNuxtConfig({
     "@nuxt/scripts",
     "@nuxtjs/turnstile",
     "@nuxt/eslint",
+    "@auth0/auth0-nuxt",
   ],
   turnstile: {
     siteKey: process.env.NUXT_TURNSTILE_SITE_KEY,
@@ -42,12 +43,20 @@ export default defineNuxtConfig({
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
     },
     apiBaseUrl: process.env.API_BASE_URL,
-    fastApiToken: process.env.FASTAPI_API_TOKEN,
+    apiKey: process.env.API_KEY,
     r2: {
       accountId: process.env.R2_ACCOUNT_ID,
       bucketName: process.env.R2_BUCKET_NAME,
       accessKeyId: process.env.R2_ACCESS_KEY_ID,
       secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+    },
+    auth0: {
+      appBaseUrl: process.env.NUXT_SITE_URL,
+      audience: process.env.AUTH0_AUDIENCE,
+      clientId: process.env.AUTH0_CLIENT_ID,
+      clientSecret: process.env.AUTH0_CLIENT_SECRET,
+      domain: "login.cold.global",
+      sessionSecret: process.env.AUTH0_SECRET,
     },
     public: {
       siteUrl: process.env.NUXT_SITE_URL,

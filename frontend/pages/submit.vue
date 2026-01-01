@@ -9,6 +9,23 @@
       </p>
     </div>
 
+    <div class="mx-auto mb-8 max-w-3xl rounded-lg bg-cold-purple/5 p-6">
+      <div class="flex items-start gap-3">
+        <UIcon
+          name="i-material-symbols:info-outline"
+          class="mt-1 h-5 w-5 flex-shrink-0 text-cold-purple"
+        />
+        <div>
+          <p class="text-sm text-cold-night">
+            <strong>Login required:</strong> You'll need a free account to
+            submit content. We use authentication solely to prevent automated
+            spam and vandalism, ensuring the integrity of our database. Your
+            account is completely free and takes just moments to create.
+          </p>
+        </div>
+      </div>
+    </div>
+
     <GridContainer class="mx-auto max-w-6xl gap-y-6">
       <GridItem :cols="6" :md-cols="4">
         <ConnectCard

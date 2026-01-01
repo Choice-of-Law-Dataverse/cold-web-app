@@ -93,8 +93,12 @@ import DatePicker from "@/components/ui/DatePicker.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import tooltipRegionalInstrumentDate from "@/content/info_boxes/regional_instrument/date.md?raw";
-
 import { format } from "date-fns";
+
+definePageMeta({
+  middleware: ["auth"],
+});
+
 const date = ref(null);
 
 const abbreviation = ref("");
@@ -167,16 +171,19 @@ function handleNewSave() {
     url: url.value || undefined,
     attachment: "", // ignored for now
     instrument_date: date.value ? format(date.value, "yyyy-MM-dd") : undefined,
-    submitter_email: email.value || undefined,
     submitter_comments: comments.value || undefined,
-    source: "cold.global",
   };
 
   (async () => {
     try {
       const { useApiClient } = await import("@/composables/useApiClient");
       const { apiClient } = useApiClient();
-      await apiClient("/suggestions/regional-instruments", { body: payload });
+      await apiClient("/suggestions/regional-instruments", {
+        body: payload,
+        headers: {
+          source: "cold.global",
+        },
+      });
 
       showSaveModal.value = false;
       router.push({

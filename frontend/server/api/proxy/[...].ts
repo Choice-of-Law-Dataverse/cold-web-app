@@ -31,9 +31,20 @@ export default defineEventHandler(async (event) => {
 
   const url = joinURL(config.apiBaseUrl, path);
 
-  return proxyRequest(event, url, {
-    headers: {
-      Authorization: `Bearer ${config.fastApiToken}`,
-    },
-  });
+  const headers: Record<string, string> = {
+    "X-API-Key": config.apiKey, // Custom header for frontend verification
+  };
+
+  try {
+    const auth0Client = useAuth0(event);
+    const accessTokenResult = await auth0Client.getAccessToken();
+
+    if (accessTokenResult?.accessToken) {
+      headers["Authorization"] = `Bearer ${accessTokenResult.accessToken}`;
+    }
+  } catch {
+    /* noop */
+  }
+
+  return proxyRequest(event, url, { headers });
 });
