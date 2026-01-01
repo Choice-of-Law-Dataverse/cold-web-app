@@ -22,7 +22,7 @@
     <LoadingCard />
   </template>
   <template v-else>
-    <UCard class="cold-ucard">
+    <UCard class="cold-ucard" :ui="{ body: { padding: '' } }">
       <!-- Header section: render only when showHeader is true -->
       <template v-if="showHeader" #header>
         <BaseCardHeader
@@ -285,21 +285,6 @@ const getDisplayValue = (item, value) => {
 </script>
 
 <style scoped>
-.cold-ucard ::v-deep(.px-4) {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-.cold-ucard ::v-deep(.py-5) {
-  padding-top: 16px !important;
-  padding-bottom: 18px !important;
-}
-
-.cold-ucard ::v-deep(.sm\:px-6) {
-  padding-left: 16px !important;
-  padding-right: 16px !important;
-}
-
 .label-key {
   padding: 0;
 }
