@@ -32,7 +32,9 @@ jobs:
             SECRETS="AUTH0-AUDIENCE AUTH0-CLIENT-ID AUTH0-CLIENT-SECRET AUTH0-SECRET NUXT-SITE-URL"
             for secret in $SECRETS; do
               value=$(az keyvault secret show --vault-name cold-key-vault --name $secret --query value -o tsv)
-              echo "$secret=$value" >> $GITHUB_OUTPUT
+              echo "::add-mask::$value"
+              output_name=$(echo $secret | tr '-' '_')
+              echo "$output_name=$value" >> $GITHUB_OUTPUT
             done
 
       - name: Build and deploy to Azure Container Apps
@@ -48,8 +50,8 @@ jobs:
           resourceGroup: cold
           targetPort: 3000
           buildArguments: |
-            AUTH0_AUDIENCE=${{ steps.fetch-secrets.outputs.AUTH0-AUDIENCE }}
-            AUTH0_CLIENT_ID=${{ steps.fetch-secrets.outputs.AUTH0-CLIENT-ID }}
-            AUTH0_CLIENT_SECRET=${{ steps.fetch-secrets.outputs.AUTH0-CLIENT-SECRET }}
-            AUTH0_SECRET=${{ steps.fetch-secrets.outputs.AUTH0-SECRET }}
-            NUXT_SITE_URL=${{ steps.fetch-secrets.outputs.NUXT-SITE-URL }}
+            AUTH0_AUDIENCE=${{ steps.fetch-secrets.outputs.AUTH0_AUDIENCE }}
+            AUTH0_CLIENT_ID=${{ steps.fetch-secrets.outputs.AUTH0_CLIENT_ID }}
+            AUTH0_CLIENT_SECRET=${{ steps.fetch-secrets.outputs.AUTH0_CLIENT_SECRET }}
+            AUTH0_SECRET=${{ steps.fetch-secrets.outputs.AUTH0_SECRET }}
+            NUXT_SITE_URL=${{ steps.fetch-secrets.outputs.NUXT_SITE_URL }}

@@ -3,6 +3,9 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   ssr: true,
   nitro: {
+    prerender: {
+      crawlLinks: true,
+    },
     experimental: {
       tasks: false,
     },
