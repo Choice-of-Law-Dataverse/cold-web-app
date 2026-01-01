@@ -119,10 +119,8 @@ frontend/
 
 ```bash
 # Optional - for external integrations
-NUXT_TURNSTILE_SITE_KEY=your-turnstile-site-key
-NUXT_TURNSTILE_SECRET_KEY=your-turnstile-secret-key
 API_BASE_URL=https://your-api-endpoint
-FASTAPI_API_TOKEN=your-api-token
+API_KEY=your-api-token
 NUXT_SITE_URL=https://your-site-url
 NUXT_SITE_NAME="Your Site Name"
 ```
