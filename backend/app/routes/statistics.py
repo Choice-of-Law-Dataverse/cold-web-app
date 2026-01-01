@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query, Request
 
-from app.auth import verify_jwt_token
+from app.auth import verify_frontend_request
 from app.schemas.responses import JurisdictionCount
 from app.services.statistics import StatisticsService
 
@@ -8,7 +8,7 @@ from app.services.statistics import StatisticsService
 statistics_service = StatisticsService()
 
 # Define router
-router = APIRouter(prefix="/statistics", tags=["Statistics"], dependencies=[Depends(verify_jwt_token)])
+router = APIRouter(prefix="/statistics", tags=["Statistics"], dependencies=[Depends(verify_frontend_request)])
 
 
 @router.get(

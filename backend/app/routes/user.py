@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import JSONResponse
 
-from app.auth import verify_jwt_token
+from app.auth import verify_frontend_request
 
-router = APIRouter(prefix="/user", tags=["User"], dependencies=[Depends(verify_jwt_token)])
+router = APIRouter(prefix="/user", tags=["User"], dependencies=[Depends(verify_frontend_request)])
 
 
 @router.get("/get_user_info")

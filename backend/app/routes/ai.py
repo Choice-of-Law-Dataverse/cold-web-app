@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends
 
-from app.auth import verify_jwt_token
+from app.auth import verify_frontend_request
 from app.schemas.requests import ClassifyQueryRequest
 from app.services.ai import GPT
 
 gpt = GPT()
 
-router = APIRouter(prefix="/ai", tags=["AI"], dependencies=[Depends(verify_jwt_token)])
+router = APIRouter(prefix="/ai", tags=["AI"], dependencies=[Depends(verify_frontend_request)])
 
 
 @router.post(

@@ -1,11 +1,11 @@
 from fastapi import APIRouter, Depends, Request
 
-from app.auth import verify_jwt_token
+from app.auth import verify_frontend_request
 from app.services.sitemap import SitemapService
 
 sitemap_service = SitemapService()
 
-router = APIRouter(prefix="/sitemap", tags=["Sitemap"], dependencies=[Depends(verify_jwt_token)])
+router = APIRouter(prefix="/sitemap", tags=["Sitemap"], dependencies=[Depends(verify_frontend_request)])
 
 
 @router.get("/urls")
