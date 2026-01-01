@@ -51,7 +51,7 @@ export default defineNuxtConfig({
       secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
     },
     auth0: {
-      appBaseUrl: process.env.AUTH0_BASE_URL,
+      appBaseUrl: process.env.NUXT_SITE_URL,
       audience: process.env.AUTH0_AUDIENCE,
       clientId: process.env.AUTH0_CLIENT_ID,
       clientSecret: process.env.AUTH0_CLIENT_SECRET,
