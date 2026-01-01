@@ -21,8 +21,6 @@ export interface ModerationResponse {
 }
 
 export const useModerationApi = () => {
-  const config = useRuntimeConfig();
-
   /**
    * List pending suggestions for a category
    */

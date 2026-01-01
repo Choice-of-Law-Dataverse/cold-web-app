@@ -237,8 +237,8 @@ const handleApprove = async () => {
     successMessage.value =
       result.message || "Suggestion approved successfully!";
     showSuccessModal.value = true;
-  } catch (err: any) {
-    errorMessage.value = err.message || "Failed to approve suggestion";
+  } catch (err: unknown) {
+    errorMessage.value = err instanceof Error ? err.message : "Failed to approve suggestion";
     showErrorModal.value = true;
   } finally {
     approving.value = false;
@@ -252,8 +252,8 @@ const handleReject = async () => {
     successMessage.value =
       result.message || "Suggestion rejected successfully!";
     showSuccessModal.value = true;
-  } catch (err: any) {
-    errorMessage.value = err.message || "Failed to reject suggestion";
+  } catch (err: unknown) {
+    errorMessage.value = err instanceof Error ? err.message : "Failed to reject suggestion";
     showErrorModal.value = true;
   } finally {
     rejecting.value = false;
