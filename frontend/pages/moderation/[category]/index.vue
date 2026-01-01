@@ -81,6 +81,7 @@
 <script setup lang="ts">
 import { format } from "date-fns";
 import { getCategoryLabel } from "@/config/moderationConfig";
+import type { PendingSuggestion } from "@/composables/useModerationApi";
 
 definePageMeta({
   middleware: ["moderation"],
@@ -105,7 +106,7 @@ const {
   },
 );
 
-const getSuggestionTitle = (suggestion: any): string => {
+const getSuggestionTitle = (suggestion: PendingSuggestion): string => {
   const payload = suggestion.payload || {};
 
   // Try various title fields
@@ -126,7 +127,7 @@ const getSuggestionTitle = (suggestion: any): string => {
   return `Entry #${suggestion.id}`;
 };
 
-const getSuggestionMeta = (suggestion: any): string => {
+const getSuggestionMeta = (suggestion: PendingSuggestion): string => {
   const payload = suggestion.payload || {};
   const parts: string[] = [];
 

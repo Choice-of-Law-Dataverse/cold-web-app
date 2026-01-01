@@ -305,7 +305,7 @@ async def approve_suggestion(
                 detail="Suggestion not found or not pending",
             )
 
-        original_payload: dict[str, Any] = item.get("payload") or {}
+        original_payload: dict[str, Any] = item.get("payload", {}) or {}
 
         # Get user email from Auth0 token
         moderator_email = user.get("https://cold.global/email") or user.get("email") or user.get("sub", "unknown")

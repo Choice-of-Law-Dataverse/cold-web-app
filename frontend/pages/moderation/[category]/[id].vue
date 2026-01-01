@@ -190,7 +190,7 @@ const filteredPayload = computed(() => {
     "merged_record_id",
   ];
 
-  const filtered: Record<string, any> = {};
+  const filtered: Record<string, unknown> = {};
   for (const [key, value] of Object.entries(suggestion.value.payload)) {
     if (!metaFields.includes(key) && value !== null && value !== "") {
       filtered[key] = value;
@@ -206,7 +206,7 @@ const formatFieldName = (key: string): string => {
     .replace(/\b\w/g, (char) => char.toUpperCase());
 };
 
-const formatValue = (value: any): string => {
+const formatValue = (value: unknown): string => {
   if (value === null || value === undefined) return "N/A";
   if (typeof value === "boolean") return value ? "Yes" : "No";
   if (Array.isArray(value)) return value.join(", ");
@@ -214,7 +214,7 @@ const formatValue = (value: any): string => {
   return String(value);
 };
 
-const isLongText = (value: any): boolean => {
+const isLongText = (value: unknown): boolean => {
   if (typeof value !== "string") return false;
   return value.length > 100 || value.includes("\n");
 };
