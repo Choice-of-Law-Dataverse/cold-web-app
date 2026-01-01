@@ -11,6 +11,7 @@ jobs:
       contents: read
     environment:
       name: production
+      url: https://api.cold.global
 
     steps:
       - name: Checkout

@@ -37,13 +37,18 @@ export default defineNuxtConfig({
     "@auth0/auth0-nuxt",
   ],
   runtimeConfig: {
-    apiBaseUrl: process.env.API_BASE_URL,
-    apiKey: process.env.API_KEY,
+    apiBaseUrl: process.env.NUXT_API_BASE_URL,
+    apiKey: process.env.NUXT_API_KEY,
+    logfire: {
+      token: process.env.NUXT_LOGFIRE_TOKEN,
+      serviceName: process.env.LOGFIRE_SERVICE_NAME || "cold-frontend-server",
+      serviceVersion: process.env.LOGFIRE_SERVICE_VERSION || "1.0.0",
+    },
     r2: {
-      accountId: process.env.R2_ACCOUNT_ID,
-      bucketName: process.env.R2_BUCKET_NAME,
-      accessKeyId: process.env.R2_ACCESS_KEY_ID,
-      secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
+      accountId: process.env.NUXT_R2_ACCOUNT_ID,
+      bucketName: process.env.NUXT_R2_BUCKET_NAME,
+      accessKeyId: process.env.NUXT_R2_ACCESS_KEY_ID,
+      secretAccessKey: process.env.NUXT_R2_SECRET_ACCESS_KEY,
     },
     auth0: {
       appBaseUrl: process.env.NUXT_SITE_URL,

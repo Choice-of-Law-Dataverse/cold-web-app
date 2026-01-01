@@ -66,7 +66,6 @@
       v-model="showSaveModal"
       :email="email"
       :comments="comments"
-      :token="token"
       :save-modal-errors="saveModalErrors"
       :name="name"
       :specialists="specialists"
@@ -75,7 +74,6 @@
       :link="link"
       @update:email="(val) => (email = val)"
       @update:comments="(val) => (comments = val)"
-      @update:token="(val) => (token = val)"
       @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
       @save="handleNewSave"
     />
@@ -83,7 +81,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref } from "vue";
 import { useHead, useRouter } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
@@ -107,10 +105,6 @@ const specialists = ref([""]);
 const pdfFile = ref(null);
 const email = ref("");
 const comments = ref("");
-
-const token = ref("");
-
-watch(token, () => {});
 
 const formSchema = z.object({
   name: z
