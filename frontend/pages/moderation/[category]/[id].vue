@@ -31,57 +31,51 @@
     <!-- Suggestion detail -->
     <div v-else-if="suggestion">
       <!-- Metadata card -->
-      <UCard class="mb-6">
+      <UCard class="cold-ucard mb-6">
         <template #header>
           <h2 class="text-xl font-semibold">Submission Information</h2>
         </template>
 
-        <div class="space-y-3">
-          <div v-if="suggestion.username || suggestion.user_email">
-            <strong class="text-gray-700">Submitted by:</strong>
-            <span class="ml-2">{{
-              suggestion.username || suggestion.user_email || "Unknown"
-            }}</span>
-          </div>
-          <div v-if="suggestion.created_at">
-            <strong class="text-gray-700">Created:</strong>
-            <span class="ml-2">{{ formatDate(suggestion.created_at) }}</span>
-          </div>
-          <div v-if="suggestion.source">
-            <strong class="text-gray-700">Source:</strong>
-            <span class="ml-2">{{ suggestion.source }}</span>
-          </div>
-          <div>
-            <strong class="text-gray-700">ID:</strong>
-            <span class="ml-2">{{ suggestion.id }}</span>
-          </div>
+        <div class="flex flex-col gap-4 px-6 py-8">
+          <DetailRow
+            v-if="suggestion.username || suggestion.user_email"
+            label="Submitted by"
+          >
+            {{ suggestion.username || suggestion.user_email || "Unknown" }}
+          </DetailRow>
+          <DetailRow v-if="suggestion.created_at" label="Created">
+            {{ formatDate(suggestion.created_at) }}
+          </DetailRow>
+          <DetailRow v-if="suggestion.source" label="Source">
+            {{ suggestion.source }}
+          </DetailRow>
+          <DetailRow label="ID">
+            {{ suggestion.id }}
+          </DetailRow>
         </div>
       </UCard>
 
       <!-- Data fields card -->
-      <UCard class="mb-6">
+      <UCard class="cold-ucard mb-6">
         <template #header>
           <h2 class="text-xl font-semibold">Submitted Data</h2>
         </template>
 
-        <div class="space-y-4">
-          <div
+        <div class="flex flex-col gap-4 px-6 py-8">
+          <DetailRow
             v-for="(value, key) in filteredPayload"
             :key="key"
-            class="border-b border-gray-200 pb-3 last:border-0"
+            :label="formatFieldName(key)"
           >
-            <strong class="block text-sm font-semibold text-gray-700">
-              {{ formatFieldName(key) }}
-            </strong>
-            <div class="mt-1 text-gray-900">
-              <template v-if="isLongText(value)">
-                <p class="whitespace-pre-wrap">{{ formatValue(value) }}</p>
-              </template>
-              <template v-else>
+            <template v-if="isLongText(value)">
+              <p class="prose mt-0 whitespace-pre-wrap">
                 {{ formatValue(value) }}
-              </template>
-            </div>
-          </div>
+              </p>
+            </template>
+            <template v-else>
+              <p class="prose mt-0">{{ formatValue(value) }}</p>
+            </template>
+          </DetailRow>
         </div>
       </UCard>
 
@@ -144,6 +138,7 @@
 <script setup lang="ts">
 import { format } from "date-fns";
 import { getCategoryLabel } from "@/config/moderationConfig";
+import DetailRow from "@/components/ui/DetailRow.vue";
 
 definePageMeta({
   middleware: ["moderation"],
@@ -264,3 +259,20 @@ const goToList = () => {
   navigateTo(`/moderation/${category.value}`);
 };
 </script>
+
+<style scoped>
+.cold-ucard :deep(.px-4) {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.cold-ucard :deep(.py-5) {
+  padding-top: 16px !important;
+  padding-bottom: 18px !important;
+}
+
+.cold-ucard :deep(.sm\:px-6) {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+</style>

@@ -43,7 +43,7 @@
       <UCard
         v-for="suggestion in suggestions"
         :key="suggestion.id"
-        class="cursor-pointer transition-shadow hover:shadow-lg"
+        class="cold-ucard cursor-pointer transition-shadow hover:shadow-lg"
         @click="navigateTo(`/moderation/${category}/${suggestion.id}`)"
       >
         <template #header>
@@ -60,18 +60,23 @@
           </div>
         </template>
 
-        <div class="space-y-2 text-sm text-gray-700">
-          <div v-if="suggestion.username || suggestion.user_email">
-            <strong>Submitted by:</strong>
-            {{ suggestion.username || suggestion.user_email || "Unknown" }}
-          </div>
-          <div v-if="suggestion.created_at">
-            <strong>Created:</strong>
-            {{ formatDate(suggestion.created_at) }}
-          </div>
-          <div v-if="suggestion.source">
-            <strong>Source:</strong> {{ suggestion.source }}
-          </div>
+        <div class="flex flex-col gap-3 px-6 py-4">
+          <DetailRow
+            v-if="suggestion.username || suggestion.user_email"
+            label="Submitted by"
+          >
+            <p class="prose mt-0 text-sm">
+              {{ suggestion.username || suggestion.user_email || "Unknown" }}
+            </p>
+          </DetailRow>
+          <DetailRow v-if="suggestion.created_at" label="Created">
+            <p class="prose mt-0 text-sm">
+              {{ formatDate(suggestion.created_at) }}
+            </p>
+          </DetailRow>
+          <DetailRow v-if="suggestion.source" label="Source">
+            <p class="prose mt-0 text-sm">{{ suggestion.source }}</p>
+          </DetailRow>
         </div>
       </UCard>
     </div>
@@ -82,6 +87,7 @@
 import { format } from "date-fns";
 import { getCategoryLabel } from "@/config/moderationConfig";
 import type { PendingSuggestion } from "@/composables/useModerationApi";
+import DetailRow from "@/components/ui/DetailRow.vue";
 
 definePageMeta({
   middleware: ["moderation"],
@@ -162,3 +168,20 @@ const formatDate = (dateString: string): string => {
   }
 };
 </script>
+
+<style scoped>
+.cold-ucard :deep(.px-4) {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+.cold-ucard :deep(.py-5) {
+  padding-top: 16px !important;
+  padding-bottom: 18px !important;
+}
+
+.cold-ucard :deep(.sm\:px-6) {
+  padding-left: 16px !important;
+  padding-right: 16px !important;
+}
+</style>
