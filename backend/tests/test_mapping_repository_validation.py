@@ -53,7 +53,7 @@ def temp_mappings_dir():
 
 def test_mapping_repository_loads_valid_mappings(temp_mappings_dir):
     """Test that MappingRepository loads and validates correct mappings."""
-    repo = MappingRepository(mappings_directory=temp_mappings_dir, validate=True)
+    repo = MappingRepository(mappings_directory=temp_mappings_dir)
 
     # Should have loaded the valid mapping
     mapping = repo.get_mapping("TestTable")
@@ -65,30 +65,17 @@ def test_mapping_repository_loads_valid_mappings(temp_mappings_dir):
 
 def test_mapping_repository_handles_invalid_mappings(temp_mappings_dir):
     """Test that MappingRepository handles invalid mappings gracefully."""
-    repo = MappingRepository(mappings_directory=temp_mappings_dir, validate=True)
+    repo = MappingRepository(mappings_directory=temp_mappings_dir)
 
-    # Invalid mapping should be stored as raw dict
+    # Invalid mapping should not be loaded (validation is required)
     mapping = repo.get_mapping("InvalidTable")
-    # It may be None or a dict depending on how we handle invalid mappings
-    # The current implementation stores it as a fallback
-    assert mapping is not None  # Stored despite validation error
-
-
-def test_mapping_repository_without_validation(temp_mappings_dir):
-    """Test that MappingRepository can work without validation."""
-    repo = MappingRepository(mappings_directory=temp_mappings_dir, validate=False)
-
-    # Both should be loaded without validation
-    valid_mapping = repo.get_mapping("TestTable")
-    invalid_mapping = repo.get_mapping("InvalidTable")
-
-    assert valid_mapping is not None
-    assert invalid_mapping is not None
+    # Invalid mappings are now skipped during load
+    assert mapping is None
 
 
 def test_mapping_repository_get_all_mappings(temp_mappings_dir):
     """Test getting all mappings."""
-    repo = MappingRepository(mappings_directory=temp_mappings_dir, validate=True)
+    repo = MappingRepository(mappings_directory=temp_mappings_dir)
 
     all_mappings = repo.get_all_mappings()
     assert len(all_mappings) >= 1  # At least the valid one
@@ -97,7 +84,7 @@ def test_mapping_repository_get_all_mappings(temp_mappings_dir):
 
 def test_mapping_repository_has_mapping(temp_mappings_dir):
     """Test checking if mapping exists."""
-    repo = MappingRepository(mappings_directory=temp_mappings_dir, validate=True)
+    repo = MappingRepository(mappings_directory=temp_mappings_dir)
 
     assert repo.has_mapping("TestTable") is True
     assert repo.has_mapping("Nonexistent Table") is False
@@ -105,7 +92,7 @@ def test_mapping_repository_has_mapping(temp_mappings_dir):
 
 def test_mapping_repository_get_supported_tables(temp_mappings_dir):
     """Test getting list of supported tables."""
-    repo = MappingRepository(mappings_directory=temp_mappings_dir, validate=True)
+    repo = MappingRepository(mappings_directory=temp_mappings_dir)
 
     tables = repo.get_supported_tables()
     assert "TestTable" in tables
@@ -113,7 +100,7 @@ def test_mapping_repository_get_supported_tables(temp_mappings_dir):
 
 def test_mapping_repository_reload_mapping(temp_mappings_dir):
     """Test reloading a specific mapping."""
-    repo = MappingRepository(mappings_directory=temp_mappings_dir, validate=True)
+    repo = MappingRepository(mappings_directory=temp_mappings_dir)
 
     # Reload the valid mapping
     result = repo.reload_mapping("TestTable")
@@ -127,7 +114,7 @@ def test_mapping_repository_reload_mapping(temp_mappings_dir):
 def test_mapping_repository_with_real_mappings():
     """Test MappingRepository with actual mapping files if they exist."""
     # Use default directory
-    repo = MappingRepository(validate=True)
+    repo = MappingRepository()
 
     # If any mappings exist, they should be loaded
     tables = repo.get_supported_tables()
@@ -171,7 +158,7 @@ def test_mapping_config_type_safety():
         with open(mapping_file, "w") as f:
             json.dump(mapping_data, f)
 
-        repo = MappingRepository(mappings_directory=tmpdir, validate=True)
+        repo = MappingRepository(mappings_directory=tmpdir)
         mapping = repo.get_mapping("Type Safety Test")
 
         assert isinstance(mapping, MappingConfig)
@@ -182,6 +169,34 @@ def test_mapping_config_type_safety():
         assert nested.source_array == "items"
         assert nested.array_operations is not None
         assert "Items" in nested.array_operations
+
+
+def test_memory_cache_usage():
+    """Test that memory caching is used for get_mapping."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        mapping_data = {
+            "table_name": "Cache Test",
+            "description": "Testing memory cache",
+            "version": "1.0",
+            "mappings": {
+                "direct_mappings": {"id": "CoLD_ID"},
+            },
+        }
+
+        mapping_file = Path(tmpdir) / "cache_test_mapping.json"
+        with open(mapping_file, "w") as f:
+            json.dump(mapping_data, f)
+
+        repo = MappingRepository(mappings_directory=tmpdir)
+
+        # First call
+        mapping1 = repo.get_mapping("Cache Test")
+        # Second call should return same object from cache dict
+        mapping2 = repo.get_mapping("Cache Test")
+
+        # Should return the same object (from cache dict)
+        assert mapping1 is mapping2
+        assert isinstance(mapping1, MappingConfig)
 
 
 if __name__ == "__main__":

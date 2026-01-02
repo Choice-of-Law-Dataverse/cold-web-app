@@ -52,7 +52,7 @@ mapping = MappingConfig(
 
 ## Using the MappingRepository
 
-### With Validation (Default)
+### Standard Usage (Validation Always Enabled)
 
 ```python
 from app.services.mapping_repository import get_mapping_repository
@@ -61,35 +61,21 @@ from app.services.mapping_repository import get_mapping_repository
 # Get the singleton repository (validates all files on load)
 repo = get_mapping_repository()
 
-# Get a validated mapping
+# Get a validated mapping (with LRU caching for performance)
 mapping = repo.get_mapping("Court Decisions")
 
-if isinstance(mapping, MappingConfig):
+if mapping:
     # Type-safe access with IDE autocomplete
     table_name = mapping.table_name
     direct_maps = mapping.mappings.direct_mappings
-    
+
     # Access nested mappings with type safety
     if "related_jurisdictions" in mapping.mappings.nested_mappings:
         nested = mapping.mappings.nested_mappings["related_jurisdictions"]
         source_array = nested.source_array
 ```
 
-### Without Validation (Backward Compatible)
-
-```python
-from app.services.mapping_repository import MappingRepository
-
-# Disable validation for backward compatibility
-# Note: Don't use get_mapping_repository() as it always enables validation
-repo = MappingRepository(validate=False)
-
-# Get mapping as raw dict
-mapping = repo.get_mapping("Court Decisions")
-# mapping is dict[str, Any]
-```
-
-**Note:** The singleton `get_mapping_repository()` always creates a repository with validation enabled. If you need validation disabled, create a new `MappingRepository` instance directly.
+**Note:** Validation is now standard and always enabled. Invalid mapping files will not be loaded and will log errors at startup.
 
 ## Validation Benefits
 
@@ -190,37 +176,38 @@ uv run pytest tests/test_mapping_repository_validation.py -v
 
 ## Migration Guide
 
-Existing code using `MappingRepository` continues to work without changes. To leverage type safety:
+Existing code using `MappingRepository` continues to work with these improvements:
 
-### Before
+### Updated Behavior
 ```python
 mapping = repo.get_mapping("Court Decisions")
-# mapping: dict[str, Any] | None
-direct_maps = mapping["mappings"]["direct_mappings"]  # type: Any
-```
+# mapping: MappingConfig | None (always validated)
 
-### After (with type checking)
-```python
-mapping = repo.get_mapping("Court Decisions")
-# mapping: MappingConfig | dict[str, Any] | None
-
-if isinstance(mapping, MappingConfig):
+if mapping:
     # Full type safety and IDE support
     direct_maps = mapping.mappings.direct_mappings  # type: dict[str, str]
 ```
 
-## Disabling Validation
+### Key Changes
+- **Validation is standard**: All mappings are validated on load
+- **Memory caching**: All mappings cached in memory for fast access
+- **Invalid mappings are skipped**: Files that fail validation are not loaded
+- **Type safety**: Return type is always `MappingConfig | None`
 
-If you encounter issues or want to disable validation temporarily:
+## Performance Improvements
+
+### Memory Caching
+The repository caches all mappings in memory on initialization:
 
 ```python
-from app.services.mapping_repository import MappingRepository
+# All mappings loaded and cached on first init
+repo = get_mapping_repository()
 
-# Create repository without validation
-repo = MappingRepository(validate=False)
-
-# All mappings load as dict[str, Any] without validation
+# get_mapping() returns from memory cache (dict lookup)
+mapping = repo.get_mapping("Court Decisions")
 ```
+
+All mappings are loaded once during initialization and stored in an internal dictionary cache for fast access. No file I/O occurs after initialization unless explicitly reloading via `reload_mapping()`.
 
 ## Future Enhancements
 
