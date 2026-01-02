@@ -56,8 +56,9 @@ mapping = MappingConfig(
 
 ```python
 from app.services.mapping_repository import get_mapping_repository
+# Or: from app.services.mapping_repository import MappingRepository
 
-# Get the repository (validates all files on load)
+# Get the singleton repository (validates all files on load)
 repo = get_mapping_repository()
 
 # Get a validated mapping
@@ -80,12 +81,15 @@ if isinstance(mapping, MappingConfig):
 from app.services.mapping_repository import MappingRepository
 
 # Disable validation for backward compatibility
+# Note: Don't use get_mapping_repository() as it always enables validation
 repo = MappingRepository(validate=False)
 
 # Get mapping as raw dict
 mapping = repo.get_mapping("Court Decisions")
 # mapping is dict[str, Any]
 ```
+
+**Note:** The singleton `get_mapping_repository()` always creates a repository with validation enabled. If you need validation disabled, create a new `MappingRepository` instance directly.
 
 ## Validation Benefits
 

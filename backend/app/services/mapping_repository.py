@@ -115,7 +115,8 @@ class MappingRepository:
             bool: True if successfully reloaded, False otherwise
         """
         try:
-            filename = f"{table_name.lower()}_mapping.json"
+            # Convert table name to filename: lowercase, replace spaces with underscores
+            filename = f"{table_name.lower().replace(' ', '_')}_mapping.json"
             filepath = os.path.join(self.mappings_directory, filename)
 
             if os.path.exists(filepath):
@@ -169,6 +170,10 @@ _mapping_repository = None
 def get_mapping_repository() -> MappingRepository:
     """
     Get the global mapping repository instance (singleton pattern).
+
+    Note: This always returns a repository with validation enabled (validate=True).
+    If you need a repository with validation disabled, create a new instance directly:
+        repo = MappingRepository(validate=False)
 
     Returns:
         MappingRepository: The global mapping repository instance
