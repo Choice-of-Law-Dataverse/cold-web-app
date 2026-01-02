@@ -74,6 +74,8 @@ class UserMapping(BaseModel):
 class Mappings(BaseModel):
     """Container for all mapping configurations."""
 
+    model_config = {"extra": "forbid"}
+
     direct_mappings: dict[str, str] = Field(default_factory=dict, description="Direct field-to-field mappings")
     conditional_mappings: dict[str, ConditionalMapping] = Field(
         default_factory=dict, description="Conditional field mappings with fallbacks"
@@ -88,6 +90,7 @@ class PostProcessing(BaseModel):
     """Configuration for post-processing operations."""
 
     remove_null_values: bool = Field(default=False, description="Whether to remove null values from output")
+    remove_empty_strings: bool = Field(default=False, description="Whether to remove empty strings from output")
     field_transformations: dict[str, Any] = Field(default_factory=dict, description="Additional field transformations")
 
 
