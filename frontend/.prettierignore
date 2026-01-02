@@ -1,0 +1,3 @@
+# Large JSON files that should not be formatted
+public/geo.json
+public/count_jurisdictions.json

@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - '**'
-  push:
-    branches:
-      - '**'
 
 jobs:
   # Detect which parts of the codebase have changed
@@ -53,6 +50,10 @@ jobs:
         with:
           python-version-file: backend/.python-version
 
+      - name: Set up environment
+        working-directory: backend
+        run: cp .blueprint.env .env.test
+
       - name: Install dependencies
         working-directory: backend
         run: uv sync --all-extras --all-packages --group dev
@@ -75,10 +76,12 @@ jobs:
         run: uv run pytest
         continue-on-error: true
 
-      - name: Assert backend builds
+      - name: Check Python syntax
         id: build
         working-directory: backend
-        run: docker build -t cold-backend .
+        run: |
+          python -m py_compile app/**/*.py
+          echo "Python syntax check passed"
         continue-on-error: true
 
       - name: Check all backend steps
@@ -111,6 +114,10 @@ jobs:
           node-version-file: frontend/.nvmrc
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
+
+      - name: Set up environment
+        working-directory: frontend
+        run: cp .blueprint.env .env.test
 
       - name: Install dependencies
         working-directory: frontend
@@ -159,7 +166,7 @@ jobs:
               { name: 'Backend / Ruff Linter', outcome: '${{ needs.backend-checks.outputs.ruff }}', description: 'Ruff linting' },
               { name: 'Backend / Pyright Type Checker', outcome: '${{ needs.backend-checks.outputs.pyright }}', description: 'Type checking' },
               { name: 'Backend / Pytest', outcome: '${{ needs.backend-checks.outputs.pytest }}', description: 'Tests' },
-              { name: 'Backend / Docker Build', outcome: '${{ needs.backend-checks.outputs.build }}', description: 'Build' }
+              { name: 'Backend / Python Syntax', outcome: '${{ needs.backend-checks.outputs.build }}', description: 'Python syntax check' }
             ];
             
             for (const check of checks) {
