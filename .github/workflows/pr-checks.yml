@@ -34,6 +34,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: path-filter
     if: needs.path-filter.outputs.backend == 'true'
+    outputs:
+      ruff: ${{ steps.ruff.outcome }}
+      pyright: ${{ steps.pyright.outcome }}
+      pytest: ${{ steps.pytest.outcome }}
+      build: ${{ steps.build.outcome }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -55,106 +60,26 @@ jobs:
       - name: Run ruff linter
         id: ruff
         working-directory: backend
-        run: |
-          echo "status=running" >> $GITHUB_OUTPUT
-          uv run ruff check
-          echo "status=success" >> $GITHUB_OUTPUT
+        run: uv run ruff check
         continue-on-error: true
-
-      - name: Update ruff check status
-        if: always() && steps.ruff.outcome != 'skipped'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const status = '${{ steps.ruff.outcome }}';
-            const conclusion = status === 'success' ? 'success' : 'failure';
-            
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: conclusion === 'success' ? 'success' : 'failure',
-              context: 'Backend / Ruff Linter',
-              description: conclusion === 'success' ? 'Ruff linting passed' : 'Ruff linting failed'
-            });
 
       - name: Run pyright type checker
         id: pyright
         working-directory: backend
-        run: |
-          echo "status=running" >> $GITHUB_OUTPUT
-          uv run pyright .
-          echo "status=success" >> $GITHUB_OUTPUT
+        run: uv run pyright .
         continue-on-error: true
-
-      - name: Update pyright check status
-        if: always() && steps.pyright.outcome != 'skipped'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const status = '${{ steps.pyright.outcome }}';
-            const conclusion = status === 'success' ? 'success' : 'failure';
-            
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: conclusion === 'success' ? 'success' : 'failure',
-              context: 'Backend / Pyright Type Checker',
-              description: conclusion === 'success' ? 'Type checking passed' : 'Type checking failed'
-            });
 
       - name: Run pytest
         id: pytest
         working-directory: backend
-        run: |
-          echo "status=running" >> $GITHUB_OUTPUT
-          uv run pytest
-          echo "status=success" >> $GITHUB_OUTPUT
+        run: uv run pytest
         continue-on-error: true
-
-      - name: Update pytest check status
-        if: always() && steps.pytest.outcome != 'skipped'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const status = '${{ steps.pytest.outcome }}';
-            const conclusion = status === 'success' ? 'success' : 'failure';
-            
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: conclusion === 'success' ? 'success' : 'failure',
-              context: 'Backend / Pytest',
-              description: conclusion === 'success' ? 'Tests passed' : 'Tests failed'
-            });
 
       - name: Assert backend builds
         id: build
         working-directory: backend
-        run: |
-          echo "status=running" >> $GITHUB_OUTPUT
-          docker build -t cold-backend .
-          echo "status=success" >> $GITHUB_OUTPUT
+        run: docker build -t cold-backend .
         continue-on-error: true
-
-      - name: Update build check status
-        if: always() && steps.build.outcome != 'skipped'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const status = '${{ steps.build.outcome }}';
-            const conclusion = status === 'success' ? 'success' : 'failure';
-            
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: conclusion === 'success' ? 'success' : 'failure',
-              context: 'Backend / Docker Build',
-              description: conclusion === 'success' ? 'Build successful' : 'Build failed'
-            });
 
       - name: Check all backend steps
         if: always()
@@ -172,6 +97,10 @@ jobs:
     runs-on: ubuntu-latest
     needs: path-filter
     if: needs.path-filter.outputs.frontend == 'true'
+    outputs:
+      prettier: ${{ steps.prettier.outcome }}
+      eslint: ${{ steps.eslint.outcome }}
+      build: ${{ steps.build.outcome }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -190,80 +119,20 @@ jobs:
       - name: Run prettier check
         id: prettier
         working-directory: frontend
-        run: |
-          echo "status=running" >> $GITHUB_OUTPUT
-          npm run format:check
-          echo "status=success" >> $GITHUB_OUTPUT
+        run: npm run format:check
         continue-on-error: true
-
-      - name: Update prettier check status
-        if: always() && steps.prettier.outcome != 'skipped'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const status = '${{ steps.prettier.outcome }}';
-            const conclusion = status === 'success' ? 'success' : 'failure';
-            
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: conclusion === 'success' ? 'success' : 'failure',
-              context: 'Frontend / Prettier',
-              description: conclusion === 'success' ? 'Code formatting passed' : 'Code formatting failed'
-            });
 
       - name: Run eslint
         id: eslint
         working-directory: frontend
-        run: |
-          echo "status=running" >> $GITHUB_OUTPUT
-          npm run lint
-          echo "status=success" >> $GITHUB_OUTPUT
+        run: npm run lint
         continue-on-error: true
-
-      - name: Update eslint check status
-        if: always() && steps.eslint.outcome != 'skipped'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const status = '${{ steps.eslint.outcome }}';
-            const conclusion = status === 'success' ? 'success' : 'failure';
-            
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: conclusion === 'success' ? 'success' : 'failure',
-              context: 'Frontend / ESLint',
-              description: conclusion === 'success' ? 'Linting passed' : 'Linting failed'
-            });
 
       - name: Assert frontend builds
         id: build
         working-directory: frontend
-        run: |
-          echo "status=running" >> $GITHUB_OUTPUT
-          npm run build
-          echo "status=success" >> $GITHUB_OUTPUT
+        run: npm run build
         continue-on-error: true
-
-      - name: Update build check status
-        if: always() && steps.build.outcome != 'skipped'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const status = '${{ steps.build.outcome }}';
-            const conclusion = status === 'success' ? 'success' : 'failure';
-            
-            await github.rest.repos.createCommitStatus({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              sha: context.sha,
-              state: conclusion === 'success' ? 'success' : 'failure',
-              context: 'Frontend / Nuxt Build',
-              description: conclusion === 'success' ? 'Build successful' : 'Build failed'
-            });
 
       - name: Check all frontend steps
         if: always()
@@ -274,3 +143,61 @@ jobs:
             echo "One or more frontend checks failed"
             exit 1
           fi
+
+  # Update GitHub commit statuses for all checks
+  update-status:
+    runs-on: ubuntu-latest
+    needs: [path-filter, backend-checks, frontend-checks]
+    if: always() && (needs.backend-checks.result != 'skipped' || needs.frontend-checks.result != 'skipped')
+    steps:
+      - name: Update backend check statuses
+        if: needs.backend-checks.result != 'skipped'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const checks = [
+              { name: 'Backend / Ruff Linter', outcome: '${{ needs.backend-checks.outputs.ruff }}', description: 'Ruff linting' },
+              { name: 'Backend / Pyright Type Checker', outcome: '${{ needs.backend-checks.outputs.pyright }}', description: 'Type checking' },
+              { name: 'Backend / Pytest', outcome: '${{ needs.backend-checks.outputs.pytest }}', description: 'Tests' },
+              { name: 'Backend / Docker Build', outcome: '${{ needs.backend-checks.outputs.build }}', description: 'Build' }
+            ];
+            
+            for (const check of checks) {
+              const state = check.outcome === 'success' ? 'success' : 'failure';
+              const description = check.outcome === 'success' ? `${check.description} passed` : `${check.description} failed`;
+              
+              await github.rest.repos.createCommitStatus({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: context.sha,
+                state: state,
+                context: check.name,
+                description: description
+              });
+            }
+
+      - name: Update frontend check statuses
+        if: needs.frontend-checks.result != 'skipped'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const checks = [
+              { name: 'Frontend / Prettier', outcome: '${{ needs.frontend-checks.outputs.prettier }}', description: 'Code formatting' },
+              { name: 'Frontend / ESLint', outcome: '${{ needs.frontend-checks.outputs.eslint }}', description: 'Linting' },
+              { name: 'Frontend / Nuxt Build', outcome: '${{ needs.frontend-checks.outputs.build }}', description: 'Build' }
+            ];
+            
+            for (const check of checks) {
+              const state = check.outcome === 'success' ? 'success' : 'failure';
+              const description = check.outcome === 'success' ? `${check.description} passed` : `${check.description} failed`;
+              
+              await github.rest.repos.createCommitStatus({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                sha: context.sha,
+                state: state,
+                context: check.name,
+                description: description
+              });
+            }
+
