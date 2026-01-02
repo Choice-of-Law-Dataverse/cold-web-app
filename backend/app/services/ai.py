@@ -1,12 +1,12 @@
 # ruff: noqa: E501
 import requests
 
-from app.config import Config
+from app.config import config
 
 
 class GPT:
     def __init__(self):
-        self.openai_api_key = Config.OPENAI_API_KEY
+        self.openai_api_key = config.OPENAI_API_KEY
 
     # Define the function that sends a request to OpenAI API
     def classify_user_query(self, user_query):
