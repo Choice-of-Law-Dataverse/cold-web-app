@@ -23,7 +23,6 @@ from app.mapping.configs.regional_instruments_mapping import REGIONAL_INSTRUMENT
 from app.mapping.configs.regional_legal_provisions_mapping import REGIONAL_LEGAL_PROVISIONS_MAPPING
 from app.schemas.mapping_schema import MappingConfig
 
-
 # Registry of all mapping configurations
 ALL_MAPPINGS: dict[str, MappingConfig] = {
     "Answers": ANSWERS_MAPPING,
