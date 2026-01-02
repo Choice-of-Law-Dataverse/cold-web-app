@@ -77,14 +77,10 @@ def test_config_moderation_secret_fallback():
         assert config.MODERATION_SECRET == "my_moderation_secret"
 
     # Test 3: Neither set -> use default "secret"
-    with patch.dict(os.environ, {}, clear=False):
-        # Remove API_KEY and MODERATION_SECRET if they exist
-        env_copy = os.environ.copy()
-        for key in ["API_KEY", "MODERATION_SECRET"]:
-            env_copy.pop(key, None)
-        with patch.dict(os.environ, env_copy, clear=True):
-            config = Config()
-            assert config.MODERATION_SECRET == "secret"
+    env_without_keys = {k: v for k, v in os.environ.items() if k not in ["API_KEY", "MODERATION_SECRET"]}
+    with patch.dict(os.environ, env_without_keys, clear=True):
+        config = Config()
+        assert config.MODERATION_SECRET == "secret"
 
     # Test 4: MODERATION_SECRET explicitly set to "secret" with API_KEY -> use "secret"
     # This test ensures the validator doesn't override an explicit "secret" value

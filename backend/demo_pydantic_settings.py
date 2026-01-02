@@ -9,7 +9,6 @@ This script demonstrates the key features of the Pydantic Settings implementatio
 5. Case sensitivity
 """
 
-import os
 
 from app.config import Config, config
 
@@ -34,10 +33,7 @@ def main():
 
     # Demonstrate creating a custom config with environment variables
     print("\n3. Custom Config with Environment Variables:")
-    os.environ["TEST_SQL_CONN"] = "postgresql://test:test@localhost/testdb"
-    os.environ["TEST_LOG_LEVEL"] = "DEBUG"
-
-    # Create a custom config that reads from different env vars
+    # Create a custom config with explicit values (overriding any env vars)
     custom_config = Config(
         SQL_CONN_STRING="postgresql://custom:custom@localhost/customdb",
         LOG_LEVEL="DEBUG",

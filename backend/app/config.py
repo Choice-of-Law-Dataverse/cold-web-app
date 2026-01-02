@@ -27,6 +27,7 @@ class Config(BaseSettings):
     # Moderation UI credentials (basic form login)
     MODERATION_USERNAME: str | None = None
     MODERATION_PASSWORD: str | None = None
+    # MODERATION_SECRET: falls back to API_KEY if not set, then to 'secret'
     MODERATION_SECRET: str | None = None
     # Auth0 configuration
     AUTH0_DOMAIN: str | None = None
