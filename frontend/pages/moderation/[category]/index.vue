@@ -95,6 +95,7 @@
 <script setup lang="ts">
 import { format } from "date-fns";
 import { getCategoryLabel } from "@/config/moderationConfig";
+import { useModerationApi } from "@/composables/useModerationApi";
 import type { PendingSuggestion } from "@/composables/useModerationApi";
 import DetailRow from "@/components/ui/DetailRow.vue";
 
