@@ -36,7 +36,7 @@ describe("useFullTable", () => {
   });
 
   it("includes filters in query key when provided", () => {
-    const filters = [{ field: "Name", value: "Test" }];
+    const filters = [{ column: "Name", value: "Test" }];
 
     useFullTable("Questions", { filters });
 
