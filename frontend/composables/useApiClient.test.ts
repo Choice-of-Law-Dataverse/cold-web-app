@@ -45,7 +45,7 @@ describe("useApiClient", () => {
     });
 
     const client = useApiClient();
-    const body = { key: "value" };
+    const body = { table: "Questions" } as const;
     await client.apiClient("/test-endpoint", { body });
 
     expect(fetch).toHaveBeenCalledWith(

@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "include": [
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "vitest.config.ts",
+    "vitest.setup.ts"
+  ],
+  "compilerOptions": {
+    "types": ["vitest/globals", "@vue/test-utils"]
+  }
+}
