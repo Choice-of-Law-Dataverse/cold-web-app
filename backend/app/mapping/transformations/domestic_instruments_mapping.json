@@ -25,8 +25,8 @@
     },
     "conditional_mappings": {
       "sort_date": {
-  "primary": "Date",
-  "fallback": "updated_at"
+        "primary": "Date",
+        "fallback": "updated_at"
       },
       "Title (in English)": {
         "primary": "Title__in_English_",

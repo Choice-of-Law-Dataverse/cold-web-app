@@ -94,9 +94,9 @@ def test_mapping_repository():
     # Get Answers mapping
     answers_mapping = repo.get_mapping("Answers")
     if answers_mapping:
-        logger.debug("Answers mapping version: %s", answers_mapping.get("version"))
-        logger.debug("Answers mapping description: %s", answers_mapping.get("description"))
-        logger.debug("Direct mappings count: %d", len(answers_mapping.get("mappings", {}).get("direct_mappings", {})))
+        logger.debug("Answers mapping version: %s", answers_mapping.version)
+        logger.debug("Answers mapping description: %s", answers_mapping.description)
+        logger.debug("Direct mappings count: %d", len(answers_mapping.mappings.direct_mappings))
     else:
         logger.debug("No Answers mapping found")
 

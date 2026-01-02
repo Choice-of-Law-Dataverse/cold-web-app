@@ -60,6 +60,9 @@ def test_nested_mapping_with_index():
         source_array="related_items",
         index=0,
         mappings={"Item Name": "name", "Item ID": "id"},
+        array_operations=None,
+        conditional_mappings=None,
+        boolean_mappings=None,
     )
     assert mapping.source_array == "related_items"
     assert mapping.index == 0
@@ -70,11 +73,16 @@ def test_nested_mapping_with_array_operations():
     """Test nested mapping with array operations."""
     mapping = NestedMapping(
         source_array="related_items",
+        index=None,
+        mappings=None,
         array_operations={
             "Items": ArrayOperation(operation="join", field="name", separator=", "),
         },
+        conditional_mappings=None,
+        boolean_mappings=None,
     )
     assert mapping.source_array == "related_items"
+    assert mapping.array_operations is not None
     assert "Items" in mapping.array_operations
     assert mapping.array_operations["Items"].operation == "join"
 
@@ -153,6 +161,9 @@ def test_mapping_config_complete():
                     source_array="related_questions",
                     index=0,
                     mappings={"Question": "Question"},
+                    array_operations=None,
+                    conditional_mappings=None,
+                    boolean_mappings=None,
                 ),
             },
             boolean_mappings={
@@ -236,6 +247,11 @@ def test_nested_mapping_complex_structure():
             "active": BooleanMapping(source_field="is_active", true_value="Yes", false_value="No"),
         },
     )
+
+    # Add explicit assertions to satisfy type checker
+    assert mapping.array_operations is not None
+    assert mapping.conditional_mappings is not None
+    assert mapping.boolean_mappings is not None
 
     assert mapping.source_array == "hop1_relations.related_items"
     assert mapping.index == 0

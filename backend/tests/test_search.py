@@ -6,9 +6,9 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
-from app.auth import verify_jwt_token
+from app.auth import verify_frontend_request
 
-# Import the FastAPI app, JWT dependency, and the search routes
+# Import the FastAPI app and the search routes
 from app.main import app
 from app.routes import search as search_routes
 
@@ -18,14 +18,14 @@ sys.path.insert(0, str(project_root))
 
 
 # ------------------------------------------------------------------------------
-# Override the JWT dependency for testing.
+# Override the authentication dependency for testing.
 # ------------------------------------------------------------------------------
-def override_verify_jwt_token():
-    # Simply return a dummy user payload (or do nothing)
-    return {"sub": "test_user"}
+def override_verify_frontend_request():
+    # Simply pass through - no authentication needed for tests
+    return None
 
 
-app.dependency_overrides[verify_jwt_token] = override_verify_jwt_token
+app.dependency_overrides[verify_frontend_request] = override_verify_frontend_request
 
 
 # ------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ def test_full_text_search():
             }
         ],
     }
-    response = client.post("/search/", json=payload)
+    response = client.post("/api/v1/search/", json=payload)
     assert response.status_code == 200
     json_data = response.json()
     assert json_data["dummy"] == "full_text_search"
@@ -126,7 +126,7 @@ def test_curated_details_search_valid():
     Test the POST /search/details endpoint with a valid table.
     """
     payload = {"table": "Answers", "id": "1"}  # id is now a string
-    response = client.post("/search/details", json=payload)
+    response = client.post("/api/v1/search/details", json=payload)
     assert response.status_code == 200
     json_data = response.json()
     assert json_data["dummy"] == "curated_details_search"
@@ -139,7 +139,7 @@ def test_curated_details_search_invalid():
     Test the POST /search/details endpoint with an invalid table.
     """
     payload = {"table": "NonExistent", "id": "1"}  # id as a string
-    response = client.post("/search/details", json=payload)
+    response = client.post("/api/v1/search/details", json=payload)
     assert response.status_code == 200
     json_data = response.json()
     assert "error" in json_data
@@ -151,7 +151,7 @@ def test_full_table_without_filters():
     Test the POST /search/full_table endpoint without providing filters.
     """
     payload = {"table": "Answers", "filters": None}
-    response = client.post("/search/full_table", json=payload)
+    response = client.post("/api/v1/search/full_table", json=payload)
     assert response.status_code == 200
     json_data = response.json()
     # Since filters is None, the endpoint should call full_table().
@@ -169,7 +169,7 @@ def test_full_table_with_filters():
             {"column": "name", "value": "John Doe"}  # changed "value" to "values"
         ],
     }
-    response = client.post("/search/full_table", json=payload)
+    response = client.post("/api/v1/search/full_table", json=payload)
     assert response.status_code == 200
     json_data = response.json()
     assert json_data["dummy"] == "filtered_table"
@@ -183,7 +183,7 @@ def test_full_table_missing_table():
     Expect a 400 error.
     """
     payload = {"table": "", "filters": None}
-    response = client.post("/search/full_table", json=payload)
+    response = client.post("/api/v1/search/full_table", json=payload)
     # The route raises an HTTPException with status_code 400.
     assert response.status_code == 400
     json_data = response.json()

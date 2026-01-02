@@ -21,8 +21,8 @@ class BooleanMapping(BaseModel):
     """Configuration for boolean field transformation."""
 
     source_field: str = Field(..., description="Source field name")
-    true_value: str = Field(..., description="Value representing true")
-    false_value: str = Field(..., description="Value representing false")
+    true_value: str | bool = Field(..., description="Value representing true")
+    false_value: str | bool = Field(..., description="Value representing false")
 
 
 class ArrayOperation(BaseModel):
@@ -40,9 +40,7 @@ class NestedMapping(BaseModel):
     index: int | None = Field(None, description="Optional index to extract single item from array")
     mappings: dict[str, str] | None = Field(None, description="Direct field mappings for nested data")
     array_operations: dict[str, ArrayOperation] | None = Field(None, description="Operations to perform on arrays")
-    conditional_mappings: dict[str, ConditionalMapping] | None = Field(
-        None, description="Conditional mappings for nested data"
-    )
+    conditional_mappings: dict[str, ConditionalMapping] | None = Field(None, description="Conditional mappings for nested data")
     boolean_mappings: dict[str, BooleanMapping] | None = Field(None, description="Boolean mappings for nested data")
 
 
@@ -78,25 +76,17 @@ class Mappings(BaseModel):
     conditional_mappings: dict[str, ConditionalMapping] = Field(
         default_factory=dict, description="Conditional field mappings with fallbacks"
     )
-    nested_mappings: dict[str, NestedMapping] = Field(
-        default_factory=dict, description="Nested/related data mappings"
-    )
-    complex_mappings: dict[str, ComplexMapping] = Field(
-        default_factory=dict, description="Complex field transformations"
-    )
+    nested_mappings: dict[str, NestedMapping] = Field(default_factory=dict, description="Nested/related data mappings")
+    complex_mappings: dict[str, ComplexMapping] = Field(default_factory=dict, description="Complex field transformations")
     user_mappings: dict[str, UserMapping] = Field(default_factory=dict, description="User data transformations")
-    boolean_mappings: dict[str, BooleanMapping] = Field(
-        default_factory=dict, description="Boolean field transformations"
-    )
+    boolean_mappings: dict[str, BooleanMapping] = Field(default_factory=dict, description="Boolean field transformations")
 
 
 class PostProcessing(BaseModel):
     """Configuration for post-processing operations."""
 
     remove_null_values: bool = Field(default=False, description="Whether to remove null values from output")
-    field_transformations: dict[str, Any] = Field(
-        default_factory=dict, description="Additional field transformations"
-    )
+    field_transformations: dict[str, Any] = Field(default_factory=dict, description="Additional field transformations")
 
 
 class MappingConfig(BaseModel):
@@ -107,19 +97,19 @@ class MappingConfig(BaseModel):
     ensuring all required fields are present and correctly typed.
     """
 
-    model_config = {"json_schema_extra": {
-        "example": {
-            "table_name": "Answers",
-            "description": "Transformation rules for Answers table",
-            "version": "1.0",
-            "mappings": {
-                "direct_mappings": {"id": "CoLD_ID", "rank": "rank"},
-                "conditional_mappings": {
-                    "sort_date": {"primary": "updated_at", "fallback": "result_date"}
+    model_config = {
+        "json_schema_extra": {
+            "example": {
+                "table_name": "Answers",
+                "description": "Transformation rules for Answers table",
+                "version": "1.0",
+                "mappings": {
+                    "direct_mappings": {"id": "CoLD_ID", "rank": "rank"},
+                    "conditional_mappings": {"sort_date": {"primary": "updated_at", "fallback": "result_date"}},
                 },
-            },
+            }
         }
-    }}
+    }
 
     table_name: str = Field(..., description="Name of the table this mapping applies to")
     description: str = Field(..., description="Human-readable description of the mapping")
