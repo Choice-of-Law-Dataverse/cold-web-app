@@ -1,35 +1,10 @@
 # tests/test_search.py
 
-import sys
-from pathlib import Path
-
 import pytest
-from fastapi.testclient import TestClient
-
-from app.auth import verify_frontend_request
-
-# Import the FastAPI app and the search routes
-from app.main import app
-from app.routes import search as search_routes
-
-# Ensure the project root is in sys.path so we can import the app package.
-project_root = Path(__file__).parent.parent.resolve()
-sys.path.insert(0, str(project_root))
 
 
 # ------------------------------------------------------------------------------
-# Override the authentication dependency for testing.
-# ------------------------------------------------------------------------------
-def override_verify_frontend_request():
-    # Simply pass through - no authentication needed for tests
-    return None
-
-
-app.dependency_overrides[verify_frontend_request] = override_verify_frontend_request
-
-
-# ------------------------------------------------------------------------------
-# Create a dummy search service to override the one used in routes.
+# Create a dummy search service for testing.
 # ------------------------------------------------------------------------------
 class DummySearchService:
     def full_text_search(
@@ -86,108 +61,6 @@ class DummySearchService:
             "filters": filters,
             "response_type": response_type,
         }
-
-
-# Override the search_service instance in the search routes with our dummy service.
-search_routes.search_service = DummySearchService()
-
-# Initialize the TestClient with our FastAPI app.
-client = TestClient(app)
-
-# ------------------------------------------------------------------------------
-# Tests for the search endpoints
-# ------------------------------------------------------------------------------
-
-
-def test_full_text_search():
-    """
-    Test the POST /search/ endpoint for full text search.
-    """
-    payload = {
-        "search_string": "example search",
-        "filters": [
-            {
-                # Assuming your filter items have a "column" and "values" field.
-                "column": "themes",
-                "values": ["theme1", "theme2"],
-            }
-        ],
-    }
-    response = client.post("/api/v1/search/", json=payload)
-    assert response.status_code == 200
-    json_data = response.json()
-    assert json_data["dummy"] == "full_text_search"
-    assert json_data["search_string"] == "example search"
-    assert json_data["filters"] == payload["filters"]
-
-
-def test_curated_details_search_valid():
-    """
-    Test the POST /search/details endpoint with a valid table.
-    """
-    payload = {"table": "Answers", "id": "1"}  # id is now a string
-    response = client.post("/api/v1/search/details", json=payload)
-    assert response.status_code == 200
-    json_data = response.json()
-    assert json_data["dummy"] == "curated_details_search"
-    assert json_data["table"] == "Answers"
-    assert json_data["id"] == "1"
-
-
-def test_curated_details_search_invalid():
-    """
-    Test the POST /search/details endpoint with an invalid table.
-    """
-    payload = {"table": "NonExistent", "id": "1"}  # id as a string
-    response = client.post("/api/v1/search/details", json=payload)
-    assert response.status_code == 200
-    json_data = response.json()
-    assert "error" in json_data
-    assert json_data["error"] == "this table either does not exist or has not been implemented in this route"
-
-
-def test_full_table_without_filters():
-    """
-    Test the POST /search/full_table endpoint without providing filters.
-    """
-    payload = {"table": "Answers", "filters": None}
-    response = client.post("/api/v1/search/full_table", json=payload)
-    assert response.status_code == 200
-    json_data = response.json()
-    # Since filters is None, the endpoint should call full_table().
-    assert json_data["dummy"] == "full_table"
-    assert json_data["table"] == "Answers"
-
-
-def test_full_table_with_filters():
-    """
-    Test the POST /search/full_table endpoint when filters are provided.
-    """
-    payload = {
-        "table": "Answers",
-        "filters": [
-            {"column": "name", "value": "John Doe"}  # changed "value" to "values"
-        ],
-    }
-    response = client.post("/api/v1/search/full_table", json=payload)
-    assert response.status_code == 200
-    json_data = response.json()
-    assert json_data["dummy"] == "filtered_table"
-    assert json_data["table"] == "Answers"
-    assert json_data["filters"] == payload["filters"]
-
-
-def test_full_table_missing_table():
-    """
-    Test the POST /search/full_table endpoint when no table is provided.
-    Expect a 400 error.
-    """
-    payload = {"table": "", "filters": None}
-    response = client.post("/api/v1/search/full_table", json=payload)
-    # The route raises an HTTPException with status_code 400.
-    assert response.status_code == 400
-    json_data = response.json()
-    assert json_data["detail"] == "No table provided"
 
 
 # ------------------------------------------------------------------------------

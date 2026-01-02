@@ -81,6 +81,33 @@ bun run preview
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 
+## Development Workflow
+
+### Code Quality Checks
+
+This project uses automated quality checks that run on every PR:
+
+- **Prettier**: Code formatting
+
+  ```bash
+  npm run format:check  # Check formatting
+  npm run format        # Fix formatting
+  ```
+
+- **ESLint**: Linting
+
+  ```bash
+  npm run lint        # Check for issues
+  npm run lint:fix    # Fix issues automatically
+  ```
+
+- **Build**: Ensures the application can be built
+  ```bash
+  npm run build
+  ```
+
+These checks are automatically run by the PR workflow when changes are made to the `frontend/` directory.
+
 # Docker
 
 ## Building and Running the Container

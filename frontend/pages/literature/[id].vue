@@ -26,6 +26,7 @@
                 <SourceExternalLink
                   :source-url="sourceUrl"
                   :label="sourceLinkLabel"
+                  :open-access="!!literature?.['Open Access URL']"
                 />
               </div>
             </div>

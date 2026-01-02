@@ -107,7 +107,7 @@
                 :src="jurisdiction.avatar"
                 :alt="`${jurisdiction.Name} flag`"
                 class="h-3.5 w-5 rounded-sm object-cover"
-              >
+              />
               <span>{{ jurisdiction.Name }}</span>
               <UIcon
                 v-if="index > 0"
@@ -149,7 +149,7 @@
                       :src="jurisdiction.avatar"
                       :alt="`${jurisdiction.Name} flag`"
                       class="h-3.5 w-5 flex-shrink-0 rounded-sm object-cover"
-                    >
+                    />
                     <span class="min-w-0 truncate">{{
                       jurisdiction.Name
                     }}</span>
@@ -239,7 +239,7 @@
                     :src="jurisdiction.avatar"
                     :alt="`${jurisdiction.Name} flag`"
                     class="h-2 w-3 object-cover"
-                  >
+                  />
                   <USkeleton class="h-4 w-16" />
                 </div>
                 <NuxtLink
@@ -255,7 +255,7 @@
                     :src="jurisdiction.avatar"
                     :alt="`${jurisdiction.Name} flag`"
                     class="h-2 w-3 object-cover"
-                  >
+                  />
                   {{ row.answers[jurisdiction.alpha3Code] }}
                 </NuxtLink>
                 <span v-else>-</span>

@@ -27,7 +27,10 @@ router = APIRouter(
     dependencies=[Depends(verify_frontend_request)],
 )
 
-service = SuggestionService()
+
+def get_suggestion_service() -> SuggestionService:
+    """Dependency function to lazily instantiate the SuggestionService."""
+    return SuggestionService()
 
 
 @router.post(
@@ -41,6 +44,7 @@ async def submit_suggestion(
     body: SuggestionPayload,
     request: Request,
     user: dict = Depends(require_user),
+    service: SuggestionService = Depends(get_suggestion_service),
 ):
     try:
         payload = {
@@ -72,6 +76,7 @@ async def submit_court_decision(
     request: Request,
     user: dict = Depends(require_user),
     source: str | None = Header(None),
+    service: SuggestionService = Depends(get_suggestion_service),
 ):
     try:
         payload = {"category": "court_decision", **body.model_dump()}
@@ -99,6 +104,7 @@ async def submit_domestic_instrument(
     request: Request,
     user: dict = Depends(require_user),
     source: str | None = Header(None),
+    service: SuggestionService = Depends(get_suggestion_service),
 ):
     try:
         payload = {"category": "domestic_instrument", **body.model_dump()}
@@ -126,6 +132,7 @@ async def submit_regional_instrument(
     request: Request,
     user: dict = Depends(require_user),
     source: str | None = Header(None),
+    service: SuggestionService = Depends(get_suggestion_service),
 ):
     try:
         payload = {"category": "regional_instrument", **body.model_dump()}
@@ -153,6 +160,7 @@ async def submit_international_instrument(
     request: Request,
     user: dict = Depends(require_user),
     source: str | None = Header(None),
+    service: SuggestionService = Depends(get_suggestion_service),
 ):
     try:
         payload = {"category": "international_instrument", **body.model_dump()}
@@ -180,6 +188,7 @@ async def submit_literature(
     request: Request,
     user: dict = Depends(require_user),
     source: str | None = Header(None),
+    service: SuggestionService = Depends(get_suggestion_service),
 ):
     try:
         payload = {"category": "literature", **body.model_dump()}
@@ -220,6 +229,7 @@ def _table_key(path_segment: str) -> str | None:
 async def list_pending_suggestions(
     category: str,
     _: dict = Depends(require_editor_or_admin),
+    service: SuggestionService = Depends(get_suggestion_service),
 ) -> list[dict[str, Any]]:
     """List all pending suggestions for a specific category."""
     table = _table_key(category)
@@ -248,6 +258,7 @@ async def get_suggestion_detail(
     category: str,
     suggestion_id: int,
     _: dict = Depends(require_editor_or_admin),
+    service: SuggestionService = Depends(get_suggestion_service),
 ) -> dict[str, Any]:
     """Get detailed information about a specific suggestion."""
     table = _table_key(category)
@@ -284,6 +295,7 @@ async def approve_suggestion(
     suggestion_id: int,
     request: Request,
     user: dict = Depends(require_editor_or_admin),
+    service: SuggestionService = Depends(get_suggestion_service),
 ) -> dict[str, str]:
     """Approve a suggestion and process it for persistent storage."""
     table = _table_key(category)
@@ -362,6 +374,7 @@ async def reject_suggestion(
     category: str,
     suggestion_id: int,
     user: dict = Depends(require_editor_or_admin),
+    service: SuggestionService = Depends(get_suggestion_service),
 ) -> dict[str, str]:
     """Reject a suggestion."""
     table = _table_key(category)

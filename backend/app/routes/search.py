@@ -9,7 +9,11 @@ from app.schemas.requests import (
 from app.schemas.responses import SpecialistResponse
 from app.services.search import SearchService
 
-search_service = SearchService()
+
+def get_search_service() -> SearchService:
+    """Dependency function to lazily instantiate the SearchService."""
+    return SearchService()
+
 
 router = APIRouter(
     prefix="/search",
@@ -54,7 +58,10 @@ router = APIRouter(
         }
     },
 )
-def handle_full_text_search(body: FullTextSearchRequest):
+def handle_full_text_search(
+    body: FullTextSearchRequest,
+    search_service: SearchService = Depends(get_search_service),
+):
     search_string = body.search_string
     filters = body.filters or []
     page = body.page
@@ -94,7 +101,10 @@ def handle_full_text_search(body: FullTextSearchRequest):
         404: {"description": "Record not found."},
     },
 )
-def handle_curated_details_search(body: CuratedDetailsRequest):
+def handle_curated_details_search(
+    body: CuratedDetailsRequest,
+    search_service: SearchService = Depends(get_search_service),
+):
     table = body.table
     record_id = body.id
     response_type = getattr(body, "response_type", "parsed")
@@ -129,7 +139,10 @@ def handle_curated_details_search(body: CuratedDetailsRequest):
         500: {"description": "Server error while querying the table."},
     },
 )
-def return_full_table(body: FullTableRequest):
+def return_full_table(
+    body: FullTableRequest,
+    search_service: SearchService = Depends(get_search_service),
+):
     table = body.table
     filters = body.filters or []
     response_type = getattr(body, "response_type", "parsed")
@@ -179,7 +192,10 @@ def return_full_table(body: FullTableRequest):
         500: {"description": "Server error while querying specialists."},
     },
 )
-def get_specialists_by_jurisdiction(jurisdiction_alpha_code: str):
+def get_specialists_by_jurisdiction(
+    jurisdiction_alpha_code: str,
+    search_service: SearchService = Depends(get_search_service),
+):
     try:
         results = search_service.get_specialists_by_jurisdiction(jurisdiction_alpha_code)
         return results

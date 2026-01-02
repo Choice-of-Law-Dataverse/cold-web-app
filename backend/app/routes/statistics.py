@@ -4,8 +4,11 @@ from app.auth import verify_frontend_request
 from app.schemas.responses import JurisdictionCount
 from app.services.statistics import StatisticsService
 
-# Initialize service
-statistics_service = StatisticsService()
+
+def get_statistics_service() -> StatisticsService:
+    """Dependency function to lazily instantiate the StatisticsService."""
+    return StatisticsService()
+
 
 # Define router
 router = APIRouter(prefix="/statistics", tags=["Statistics"], dependencies=[Depends(verify_frontend_request)])
@@ -44,7 +47,9 @@ router = APIRouter(prefix="/statistics", tags=["Statistics"], dependencies=[Depe
         },
     },
 )
-def get_jurisdictions_with_answer_coverage():
+def get_jurisdictions_with_answer_coverage(
+    statistics_service: StatisticsService = Depends(get_statistics_service),
+):
     """Returns all jurisdictions with percentage of answers containing data."""
 
     return statistics_service.get_jurisdictions_with_answer_coverage()
@@ -76,6 +81,7 @@ def get_jurisdictions_with_answer_coverage():
 def count_by_jurisdiction(
     table: str = Query(..., description="Table name (e.g., 'Court Decisions', 'Domestic Instruments', 'Literature')"),
     limit: int | None = Query(None, ge=1, description="Optional limit on number of results to return"),
+    statistics_service: StatisticsService = Depends(get_statistics_service),
 ) -> list[JurisdictionCount]:
     """Returns count of rows grouped by jurisdiction for the specified table."""
 
