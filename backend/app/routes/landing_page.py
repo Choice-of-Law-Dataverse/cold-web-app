@@ -3,8 +3,11 @@ from fastapi import APIRouter, Depends
 from app.auth import verify_frontend_request
 from app.services.landing_page import LandingPageService
 
-# Initialize service
-landing_page_service = LandingPageService()
+
+def get_landing_page_service() -> LandingPageService:
+    """Dependency function to lazily instantiate the LandingPageService."""
+    return LandingPageService()
+
 
 # Define router
 router = APIRouter(prefix="/landing-page", tags=["LandingPage"], dependencies=[Depends(verify_frontend_request)])
@@ -21,7 +24,9 @@ router = APIRouter(prefix="/landing-page", tags=["LandingPage"], dependencies=[D
         }
     },
 )
-def get_jurisdictions():
+def get_jurisdictions(
+    landing_page_service: LandingPageService = Depends(get_landing_page_service),
+):
     """Returns list of Alpha-3 codes with has_data flag (1 or 0) based on Answers table."""
     results = landing_page_service.get_jurisdictions()
     return results

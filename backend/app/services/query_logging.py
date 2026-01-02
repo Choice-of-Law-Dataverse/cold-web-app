@@ -10,9 +10,20 @@ from app.config import config
 
 logger = logging.getLogger(__name__)
 
-client = MongoClient(config.MONGODB_CONN_STRING, server_api=ServerApi("1"))
-db = client["query_logs"]
-collection = db["queries"]
+# Lazy initialization to avoid connection attempts at import time
+_client = None
+_collection = None
+
+
+def get_collection():
+    """Lazily initialize and return MongoDB collection."""
+    global _client, _collection
+    if _collection is None:
+        if config.MONGODB_CONN_STRING:
+            _client = MongoClient(config.MONGODB_CONN_STRING, server_api=ServerApi("1"))
+            db = _client["query_logs"]
+            _collection = db["queries"]
+    return _collection
 
 
 async def log_query(request: Request, call_next: Callable) -> Response:
@@ -51,9 +62,13 @@ async def log_query(request: Request, call_next: Callable) -> Response:
         "request_body": request_json,
     }
 
-    collection.insert_one(log_data)
-
-    logger.debug("Logged query: %s", log_data)
+    # Only log if MongoDB is configured
+    collection = get_collection()
+    if collection is not None:
+        collection.insert_one(log_data)
+        logger.debug("Logged query: %s", log_data)
+    else:
+        logger.debug("MongoDB not configured, skipping query logging")
 
     response = await call_next(request)
     return response

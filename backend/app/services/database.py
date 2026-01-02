@@ -28,17 +28,23 @@ class Database:
             db_manager.initialize(connection_string)
 
         self.engine = db_manager.get_engine()
-        self.metadata: sa.MetaData | None = sa.MetaData()
+        self.metadata: sa.MetaData | None = None
+        self._metadata_reflected = False
         self.max_retries = max_retries
         self.retry_delay = retry_delay
 
-        metadata = self.metadata
-        assert metadata is not None
-        try:
-            metadata.reflect(bind=self.engine)
-        except SQLAlchemyError:
-            logger.exception("Error reflecting metadata")
-            self.metadata = None
+    def _ensure_metadata(self):
+        """Lazily reflect metadata on first use."""
+        if self.metadata is None:
+            self.metadata = sa.MetaData()
+
+        if not self._metadata_reflected and self.engine:
+            try:
+                self.metadata.reflect(bind=self.engine)
+                self._metadata_reflected = True
+            except SQLAlchemyError:
+                logger.exception("Error reflecting metadata")
+                self.metadata = None
 
     def _retry_on_empty(self, func: Callable[..., Any], *args: Any, **kwargs: Any) -> Any:
         """
