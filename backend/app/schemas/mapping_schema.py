@@ -42,7 +42,9 @@ class NestedMapping(BaseModel):
     index: int | None = Field(default=None, description="Optional index to extract single item from array")
     mappings: dict[str, str] | None = Field(default=None, description="Direct field mappings for nested data")
     array_operations: dict[str, ArrayOperation] | None = Field(default=None, description="Operations to perform on arrays")
-    conditional_mappings: dict[str, ConditionalMapping] | None = Field(default=None, description="Conditional mappings for nested data")
+    conditional_mappings: dict[str, ConditionalMapping] | None = Field(
+        default=None, description="Conditional mappings for nested data"
+    )
     boolean_mappings: dict[str, BooleanMapping] | None = Field(default=None, description="Boolean mappings for nested data")
 
 

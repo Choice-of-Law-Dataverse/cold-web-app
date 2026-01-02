@@ -12,8 +12,7 @@ from app.schemas.mapping_schema import (
 DOMESTIC_LEGAL_PROVISIONS_MAPPING = MappingConfig(
     table_name="Domestic Legal Provisions",
     description=(
-        "Transformation rules for converting Domestic Legal Provisions table "
-        "from current NocoDB format to reference format"
+        "Transformation rules for converting Domestic Legal Provisions table from current NocoDB format to reference format"
     ),
     version="1.0",
     mappings=Mappings(

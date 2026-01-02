@@ -11,7 +11,7 @@ def test_yes_no_value_enum():
     assert YesNoValue.YES == "Yes"
     assert YesNoValue.NO == "No"
     assert YesNoValue.NONE == "None"
-    
+
     # Enums should be comparable to strings
     assert YesNoValue.YES == "Yes"
     assert YesNoValue.YES.value == "Yes"
@@ -24,7 +24,7 @@ def test_boolean_mapping_with_enums():
         true_value=YesNoValue.YES,
         false_value=YesNoValue.NO,
     )
-    
+
     assert mapping.source_field == "is_active"
     assert mapping.true_value == "Yes"  # Enum inherits from str
     assert mapping.false_value == "No"
@@ -47,7 +47,7 @@ def test_mapping_config_with_enum_boolean_mappings():
             },
         ),
     )
-    
+
     assert config.mappings.boolean_mappings["active"].true_value == "Yes"
     assert config.mappings.boolean_mappings["active"].false_value == "None"
 
@@ -55,15 +55,15 @@ def test_mapping_config_with_enum_boolean_mappings():
 def test_enum_in_actual_mapping():
     """Test that enum values are used in actual mapping configurations."""
     from app.mapping.configs import ANSWERS_MAPPING
-    
+
     # Check that the Answers mapping loads successfully
     assert ANSWERS_MAPPING.table_name == "Answers"
-    
+
     # Check nested boolean mapping uses enum
     nested_mapping = ANSWERS_MAPPING.mappings.nested_mappings.get("related_jurisdictions")
     assert nested_mapping is not None
     assert nested_mapping.boolean_mappings is not None
-    
+
     irrelevant_mapping = nested_mapping.boolean_mappings.get("Jurisdictions Irrelevant")
     assert irrelevant_mapping is not None
     assert irrelevant_mapping.true_value == "Yes"
@@ -73,9 +73,9 @@ def test_enum_in_actual_mapping():
 def test_jurisdictions_mapping_boolean_enum():
     """Test that Jurisdictions mapping uses boolean true/false correctly."""
     from app.mapping.configs import JURISDICTIONS_MAPPING
-    
+
     assert JURISDICTIONS_MAPPING.table_name == "Jurisdictions"
-    
+
     # Check boolean mappings use native booleans
     irrelevant_mapping = JURISDICTIONS_MAPPING.mappings.boolean_mappings.get("Irrelevant?")
     assert irrelevant_mapping is not None

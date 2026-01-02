@@ -178,7 +178,7 @@ class ConfigurableTransformer:
     ):
         """
         Apply boolean field mappings.
-        
+
         Note: true_value and false_value can be Enum values (which inherit from str),
         boolean values, or regular strings. Enum values will be automatically converted
         to their string representation when assigned.

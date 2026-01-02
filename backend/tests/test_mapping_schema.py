@@ -1,7 +1,5 @@
 """Tests for mapping schema validation using Pydantic."""
 
-import json
-from pathlib import Path
 
 import pytest
 from pydantic import ValidationError

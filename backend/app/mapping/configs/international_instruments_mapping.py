@@ -14,8 +14,7 @@ from app.schemas.mapping_schema import (
 INTERNATIONAL_INSTRUMENTS_MAPPING = MappingConfig(
     table_name="International Instruments",
     description=(
-        "Transformation rules for converting International Instruments table "
-        "from current NocoDB format to reference format"
+        "Transformation rules for converting International Instruments table from current NocoDB format to reference format"
     ),
     version="1.0",
     mappings=Mappings(
