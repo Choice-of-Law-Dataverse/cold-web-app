@@ -86,6 +86,19 @@ def test_config_moderation_secret_fallback():
             config = Config()
             assert config.MODERATION_SECRET == "secret"
 
+    # Test 4: MODERATION_SECRET explicitly set to "secret" with API_KEY -> use "secret"
+    # This test ensures the validator doesn't override an explicit "secret" value
+    with patch.dict(
+        os.environ,
+        {
+            "API_KEY": "my_api_key",
+            "MODERATION_SECRET": "secret",
+        },
+        clear=False,
+    ):
+        config = Config()
+        assert config.MODERATION_SECRET == "secret"  # Should not be overridden by API_KEY
+
 
 def test_config_nullable_fields():
     """Test that nullable fields work correctly."""

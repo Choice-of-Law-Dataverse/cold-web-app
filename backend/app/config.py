@@ -1,4 +1,4 @@
-from pydantic import Field, model_validator
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -27,7 +27,7 @@ class Config(BaseSettings):
     # Moderation UI credentials (basic form login)
     MODERATION_USERNAME: str | None = None
     MODERATION_PASSWORD: str | None = None
-    MODERATION_SECRET: str = Field(default="secret")
+    MODERATION_SECRET: str | None = None
     # Auth0 configuration
     AUTH0_DOMAIN: str | None = None
     AUTH0_AUDIENCE: str | None = None
@@ -37,8 +37,8 @@ class Config(BaseSettings):
     @model_validator(mode="after")
     def set_moderation_secret_fallback(self) -> "Config":
         """Set MODERATION_SECRET to API_KEY if not explicitly provided, fallback to 'secret'."""
-        if self.MODERATION_SECRET == "secret" and self.API_KEY:
-            self.MODERATION_SECRET = self.API_KEY
+        if self.MODERATION_SECRET is None:
+            self.MODERATION_SECRET = self.API_KEY or "secret"
         return self
 
 
