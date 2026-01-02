@@ -15,7 +15,7 @@ The mapping system has been refactored from JSON files to Python class-based con
 ### After (Python-based)
 - Mappings stored in `app/mapping/configs/*.py`
 - Loaded as Python modules (import time)
-- Enum values for categorical data (e.g., `BooleanValue.YES`)
+- Enum values for categorical data (e.g., `YesNoValue.YES`)
 - Compile-time validation via Pydantic
 
 ## File Structure
@@ -83,12 +83,12 @@ result = transformer.transform("Answers", source_data)
 
 **New (enum values):**
 ```python
-from app.mapping.enums import BooleanValue
+from app.mapping.enums import YesNoValue
 
 BooleanMapping(
     source_field="is_active",
-    true_value=BooleanValue.YES,  # Type-safe enum
-    false_value=BooleanValue.NO,
+    true_value=YesNoValue.YES,  # Type-safe enum
+    false_value=YesNoValue.NO,
 )
 ```
 
@@ -124,8 +124,8 @@ Better diffs in Git:
 +  "true_value": "yes"
 
 # New Python diff - clearer intent
--  true_value=BooleanValue.YES,
-+  true_value=BooleanValue.NO,
+-  true_value=YesNoValue.YES,
++  true_value=YesNoValue.NO,
 ```
 
 ### 5. No Runtime Overhead
@@ -186,7 +186,7 @@ Create `app/mapping/configs/new_table_mapping.py`:
 
 ```python
 from app.schemas.mapping_schema import MappingConfig, Mappings
-from app.mapping.enums import BooleanValue
+from app.mapping.enums import YesNoValue
 
 NEW_TABLE_MAPPING = MappingConfig(
     table_name="New Table",
@@ -229,10 +229,10 @@ assert NEW_TABLE_MAPPING.table_name == "New Table"
 ### Using Enums for Boolean Values
 
 ```python
-from app.mapping.enums import BooleanValue
+from app.mapping.enums import YesNoValue
 
 # String-based enum (inherits from str)
-BooleanValue.YES == "Yes"  # True
+YesNoValue.YES == "Yes"  # True
 ```
 
 ### Direct Mappings
@@ -261,7 +261,7 @@ conditional_mappings={
 
 ```python
 from app.schemas.mapping_schema import NestedMapping, BooleanMapping
-from app.mapping.enums import BooleanValue
+from app.mapping.enums import YesNoValue
 
 nested_mappings={
     "related_items": NestedMapping(
@@ -270,8 +270,8 @@ nested_mappings={
         boolean_mappings={
             "active": BooleanMapping(
                 source_field="is_active",
-                true_value=BooleanValue.YES,
-                false_value=BooleanValue.NONE,
+                true_value=YesNoValue.YES,
+                false_value=YesNoValue.NONE,
             ),
         },
     ),

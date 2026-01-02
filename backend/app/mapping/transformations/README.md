@@ -37,7 +37,7 @@ All transformation configurations have been migrated from JSON files to Python c
 **New (Python):**
 ```python
 from app.schemas.mapping_schema import MappingConfig, Mappings, BooleanMapping
-from app.mapping.enums import BooleanValue
+from app.mapping.enums import YesNoValue
 
 ANSWERS_MAPPING = MappingConfig(
     table_name="Answers",
@@ -45,8 +45,8 @@ ANSWERS_MAPPING = MappingConfig(
         boolean_mappings={
             "active": BooleanMapping(
                 source_field="is_active",
-                true_value=BooleanValue.YES,
-                false_value=BooleanValue.NO,
+                true_value=YesNoValue.YES,
+                false_value=YesNoValue.NO,
             )
         }
     )
@@ -84,7 +84,7 @@ from app.schemas.mapping_schema import (
     NestedMapping,
     PostProcessing,
 )
-from app.mapping.enums import BooleanValue
+from app.mapping.enums import YesNoValue
 
 ANSWERS_MAPPING = MappingConfig(
     table_name="Answers",
@@ -160,12 +160,12 @@ All configurations are located in `app/mapping/configs/` as Python modules.
 The system now uses type-safe enums for categorical values:
 
 ```python
-from app.mapping.enums import BooleanValue
+from app.mapping.enums import YesNoValue
 
 # Available values:
-BooleanValue.YES    # "Yes"
-BooleanValue.NO     # "No"
-BooleanValue.NONE   # "None"
+YesNoValue.YES    # "Yes"
+YesNoValue.NO     # "No"
+YesNoValue.NONE   # "None"
 ```
 
 These enums ensure type safety and prevent typos in string values.
@@ -265,7 +265,7 @@ Cleanup rules applied after transformation:
 
 ```python
 from app.schemas.mapping_schema import MappingConfig, Mappings
-from app.mapping.enums import BooleanValue
+from app.mapping.enums import YesNoValue
 
 NEW_TABLE_MAPPING = MappingConfig(
     table_name="New Table",

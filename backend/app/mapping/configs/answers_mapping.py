@@ -9,7 +9,7 @@ from app.schemas.mapping_schema import (
     NestedMapping,
     PostProcessing,
 )
-from app.mapping.enums import BooleanValue
+from app.mapping.enums import YesNoValue
 
 
 ANSWERS_MAPPING = MappingConfig(
@@ -66,8 +66,8 @@ ANSWERS_MAPPING = MappingConfig(
                 boolean_mappings={
                     'Jurisdictions Irrelevant': BooleanMapping(
                         source_field='Irrelevant_',
-                        true_value=BooleanValue.YES,
-                        false_value=BooleanValue.NONE,
+                        true_value=YesNoValue.YES,
+                        false_value=YesNoValue.NONE,
                     ),
                 },
             ),

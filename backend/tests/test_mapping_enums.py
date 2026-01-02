@@ -2,27 +2,27 @@
 
 import pytest
 
-from app.mapping.enums import BooleanValue
+from app.mapping.enums import YesNoValue
 from app.schemas.mapping_schema import BooleanMapping, MappingConfig, Mappings
 
 
-def test_boolean_value_enum():
-    """Test BooleanValue enum."""
-    assert BooleanValue.YES == "Yes"
-    assert BooleanValue.NO == "No"
-    assert BooleanValue.NONE == "None"
+def test_yes_no_value_enum():
+    """Test YesNoValue enum."""
+    assert YesNoValue.YES == "Yes"
+    assert YesNoValue.NO == "No"
+    assert YesNoValue.NONE == "None"
     
     # Enums should be comparable to strings
-    assert BooleanValue.YES == "Yes"
-    assert BooleanValue.YES.value == "Yes"
+    assert YesNoValue.YES == "Yes"
+    assert YesNoValue.YES.value == "Yes"
 
 
 def test_boolean_mapping_with_enums():
     """Test that BooleanMapping works with enum values."""
     mapping = BooleanMapping(
         source_field="is_active",
-        true_value=BooleanValue.YES,
-        false_value=BooleanValue.NO,
+        true_value=YesNoValue.YES,
+        false_value=YesNoValue.NO,
     )
     
     assert mapping.source_field == "is_active"
@@ -41,8 +41,8 @@ def test_mapping_config_with_enum_boolean_mappings():
             boolean_mappings={
                 "active": BooleanMapping(
                     source_field="is_active",
-                    true_value=BooleanValue.YES,
-                    false_value=BooleanValue.NONE,
+                    true_value=YesNoValue.YES,
+                    false_value=YesNoValue.NONE,
                 ),
             },
         ),

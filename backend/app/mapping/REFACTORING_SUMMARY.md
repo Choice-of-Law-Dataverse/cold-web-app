@@ -13,7 +13,7 @@ Successfully refactored the entire mapping system from JSON files to Python clas
 #### 1. Enum System (`app/mapping/enums.py`)
 Created type-safe enums for categorical values:
 ```python
-class BooleanValue(str, Enum):
+class YesNoValue(str, Enum):
     YES = "Yes"
     NO = "No"
     NONE = "None"
@@ -46,8 +46,8 @@ Example transformation:
 boolean_mappings={
     "active": BooleanMapping(
         source_field="is_active",
-        true_value=BooleanValue.YES,  # Type-safe enum
-        false_value=BooleanValue.NO,
+        true_value=YesNoValue.YES,  # Type-safe enum
+        false_value=YesNoValue.NO,
     )
 }
 ```
@@ -149,8 +149,8 @@ from app.mapping.configs import ALL_MAPPINGS
 print(f"Loaded {len(ALL_MAPPINGS)} mappings")  # 15
 
 # Using enum values
-from app.mapping.enums import BooleanValue
-assert BooleanValue.YES == "Yes"
+from app.mapping.enums import YesNoValue
+assert YesNoValue.YES == "Yes"
 
 # Transforming data
 from app.services.configurable_transformer import ConfigurableTransformer
@@ -184,7 +184,7 @@ Successfully transformed the mapping system from JSON files to type-safe Python 
 
 ✅ "Get rid of the JSONs" - Converted all 15 JSON files to Python classes  
 ✅ "Have real classes" - Using Pydantic MappingConfig classes  
-✅ "Yes, No should be Enums" - Created BooleanValue enum  
+✅ "Yes, No should be Enums" - Created YesNoValue enum  
 
 The system is now more maintainable, type-safe, and developer-friendly while maintaining full backward compatibility.
 

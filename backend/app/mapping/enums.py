@@ -8,8 +8,8 @@ to provide type safety and better IDE support.
 from enum import Enum
 
 
-class BooleanValue(str, Enum):
-    """Enum for boolean-like string values."""
+class YesNoValue(str, Enum):
+    """Enum for Yes/No/None string values."""
 
     YES = "Yes"
     NO = "No"
