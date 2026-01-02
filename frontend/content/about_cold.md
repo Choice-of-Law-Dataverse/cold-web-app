@@ -32,6 +32,12 @@ Follow the development of this website on GitHub:
     class="external-link-icon"
   /></a>
 
+## CoLD Wins Swiss National ORD Prize 2025
+
+<img src="https://choiceoflaw.blob.core.windows.net/assets/Prix-ORD-DEF_2025.png" alt="Swiss National ORD Prize 2025" style="width:120px;float:right;margin-left:1em;" />
+
+In 2025, the Choice of Law Dataverse (CoLD) project was awarded the prestigious Swiss National Prize for Open Research Data (ORD Prize) in the legal sciences category by the Swiss Academies of Arts and Sciences. This recognition highlights CoLD's innovative approach to making private international law data openly accessible and its commitment to transparent, collaborative research. The award celebrates exemplary practices in open research data and acknowledges the impact of CoLD in advancing access to legal knowledge for students, researchers, and practitioners worldwide. [Read more](https://ord.swiss-academies.ch/news/swiss-national-ord-prize-2025-for-legal-and-environmental-sciences).
+
 ## CoLD Tech Wiki
 
 For more information on the technologies used and developed to build CoLD, see <a href="https://choice-of-law-dataverse.github.io/" target="_blank">choice-of-law-dataverse.github.io<img
