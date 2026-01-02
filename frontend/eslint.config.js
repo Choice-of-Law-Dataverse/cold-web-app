@@ -6,6 +6,9 @@ export default createConfigForNuxt({
     perfectionist,
   },
 
+  // Ignore large JSON files that shouldn't be linted
+  ignores: ["public/geo.json", "public/count_jurisdictions.json"],
+
   rules: {
     "perfectionist/sort-imports": [
       "error",

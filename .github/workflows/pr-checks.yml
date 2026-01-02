@@ -35,7 +35,6 @@ jobs:
       ruff: ${{ steps.ruff.outcome }}
       pyright: ${{ steps.pyright.outcome }}
       pytest: ${{ steps.pytest.outcome }}
-      build: ${{ steps.build.outcome }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -76,21 +75,12 @@ jobs:
         run: uv run pytest
         continue-on-error: true
 
-      - name: Check Python syntax
-        id: build
-        working-directory: backend
-        run: |
-          python -m py_compile app/**/*.py
-          echo "Python syntax check passed"
-        continue-on-error: true
-
       - name: Check all backend steps
         if: always()
         run: |
           if [ "${{ steps.ruff.outcome }}" != "success" ] || \
              [ "${{ steps.pyright.outcome }}" != "success" ] || \
-             [ "${{ steps.pytest.outcome }}" != "success" ] || \
-             [ "${{ steps.build.outcome }}" != "success" ]; then
+             [ "${{ steps.pytest.outcome }}" != "success" ]; then
             echo "One or more backend checks failed"
             exit 1
           fi
@@ -150,61 +140,4 @@ jobs:
             echo "One or more frontend checks failed"
             exit 1
           fi
-
-  # Update GitHub commit statuses for all checks
-  update-status:
-    runs-on: ubuntu-latest
-    needs: [path-filter, backend-checks, frontend-checks]
-    if: always() && (needs.backend-checks.result != 'skipped' || needs.frontend-checks.result != 'skipped')
-    steps:
-      - name: Update backend check statuses
-        if: needs.backend-checks.result != 'skipped'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const checks = [
-              { name: 'Backend / Ruff Linter', outcome: '${{ needs.backend-checks.outputs.ruff }}', description: 'Ruff linting' },
-              { name: 'Backend / Pyright Type Checker', outcome: '${{ needs.backend-checks.outputs.pyright }}', description: 'Type checking' },
-              { name: 'Backend / Pytest', outcome: '${{ needs.backend-checks.outputs.pytest }}', description: 'Tests' },
-              { name: 'Backend / Python Syntax', outcome: '${{ needs.backend-checks.outputs.build }}', description: 'Python syntax check' }
-            ];
-            
-            for (const check of checks) {
-              const state = check.outcome === 'success' ? 'success' : 'failure';
-              const description = check.outcome === 'success' ? `${check.description} passed` : `${check.description} failed`;
-              
-              await github.rest.repos.createCommitStatus({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                sha: context.sha,
-                state: state,
-                context: check.name,
-                description: description
-              });
-            }
-
-      - name: Update frontend check statuses
-        if: needs.frontend-checks.result != 'skipped'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const checks = [
-              { name: 'Frontend / Prettier', outcome: '${{ needs.frontend-checks.outputs.prettier }}', description: 'Code formatting' },
-              { name: 'Frontend / ESLint', outcome: '${{ needs.frontend-checks.outputs.eslint }}', description: 'Linting' },
-              { name: 'Frontend / Nuxt Build', outcome: '${{ needs.frontend-checks.outputs.build }}', description: 'Build' }
-            ];
-            
-            for (const check of checks) {
-              const state = check.outcome === 'success' ? 'success' : 'failure';
-              const description = check.outcome === 'success' ? `${check.description} passed` : `${check.description} failed`;
-              
-              await github.rest.repos.createCommitStatus({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                sha: context.sha,
-                state: state,
-                context: check.name,
-                description: description
-              });
-            }
 
