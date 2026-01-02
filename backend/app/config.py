@@ -8,8 +8,6 @@ load_dotenv()
 
 @dataclass
 class Config:
-    APP_NAME: str = "CoLD FastAPI Backend"
-    API_VERSION: str = "1.0.0"
     SQL_CONN_STRING: str | None = os.getenv("SQL_CONN_STRING")
     MONGODB_CONN_STRING: str | None = os.getenv("MONGODB_CONN_STRING")
     OPENAI_API_KEY: str | None = os.getenv("OPENAI_API_KEY")

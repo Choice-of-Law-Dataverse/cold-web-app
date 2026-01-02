@@ -52,8 +52,6 @@ export function parseProxyUrl(proxyUrl: string): string {
 export function getPdfProxyUrl(pdfField: unknown): string | null {
   if (!pdfField) return null;
 
-  console.log("getPdfProxyUrl input:", pdfField, typeof pdfField);
-
   let extractedUrl: string | null = null;
 
   // Handle when pdfField is already an object (not a string)
@@ -100,7 +98,7 @@ export function getPdfProxyUrl(pdfField: unknown): string | null {
     const storagePath = extractStoragePath(extractedUrl);
     if (storagePath) {
       const proxyUrl = buildProxyUrl(storagePath);
-      console.log("getPdfProxyUrl output:", proxyUrl);
+
       return proxyUrl;
     }
   }

@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.auth import verify_frontend_request
 from app.schemas.requests import (
@@ -54,7 +54,7 @@ router = APIRouter(
         }
     },
 )
-def handle_full_text_search(request: Request, body: FullTextSearchRequest):
+def handle_full_text_search(body: FullTextSearchRequest):
     search_string = body.search_string
     filters = body.filters or []
     page = body.page
@@ -94,7 +94,7 @@ def handle_full_text_search(request: Request, body: FullTextSearchRequest):
         404: {"description": "Record not found."},
     },
 )
-def handle_curated_details_search(request: Request, body: CuratedDetailsRequest):
+def handle_curated_details_search(body: CuratedDetailsRequest):
     table = body.table
     record_id = body.id
     response_type = getattr(body, "response_type", "parsed")
@@ -129,7 +129,7 @@ def handle_curated_details_search(request: Request, body: CuratedDetailsRequest)
         500: {"description": "Server error while querying the table."},
     },
 )
-def return_full_table(request: Request, body: FullTableRequest):
+def return_full_table(body: FullTableRequest):
     table = body.table
     filters = body.filters or []
     response_type = getattr(body, "response_type", "parsed")

@@ -68,40 +68,6 @@ class MappingRepository:
         """
         return self._cache.get(table_name)
 
-    def get_all_mappings(self) -> dict[str, dict[str, Any]]:
-        """
-        Get all loaded mapping configurations.
-
-        Returns:
-            dict: Dictionary of all mapping configurations keyed by table name
-        """
-        return self._cache.copy()
-
-    def reload_mapping(self, table_name: str) -> bool:
-        """
-        Reload a specific mapping configuration from file.
-
-        Args:
-            table_name (str): Name of the table to reload
-
-        Returns:
-            bool: True if successfully reloaded, False otherwise
-        """
-        try:
-            filename = f"{table_name.lower()}_mapping.json"
-            filepath = os.path.join(self.mappings_directory, filename)
-
-            if os.path.exists(filepath):
-                with open(filepath, encoding="utf-8") as f:
-                    mapping_config = json.load(f)
-                    self._cache[table_name] = mapping_config
-                    logger.info(f"Reloaded mapping for table: {table_name}")
-                    return True
-        except Exception as e:
-            logger.error(f"Error reloading mapping for {table_name}: {e}")
-
-        return False
-
     def has_mapping(self, table_name: str) -> bool:
         """
         Check if a mapping exists for the given table.
@@ -114,7 +80,7 @@ class MappingRepository:
         """
         return table_name in self._cache
 
-    def get_supported_tables(self) -> list:
+    def get_supported_tables(self) -> list[str]:
         """
         Get a list of all tables that have mapping configurations.
 
