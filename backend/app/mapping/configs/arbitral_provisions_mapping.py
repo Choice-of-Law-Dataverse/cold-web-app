@@ -1,5 +1,6 @@
 """Mapping configuration for Arbitral Provisions table."""
 
+from app.mapping.enums import Separator
 from app.schemas.mapping_schema import (
     ArrayOperation,
     MappingConfig,
@@ -37,12 +38,12 @@ ARBITRAL_PROVISIONS_MAPPING = MappingConfig(
                     "Arbitral Awards": ArrayOperation(
                         operation="join",
                         field="Case_Number",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Arbitral Awards Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -52,17 +53,17 @@ ARBITRAL_PROVISIONS_MAPPING = MappingConfig(
                     "Arbitral Institutions": ArrayOperation(
                         operation="join",
                         field="Institution",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Arbitral Institutions Abbrev": ArrayOperation(
                         operation="join",
                         field="Abbreviation",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Arbitral Institutions Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -72,17 +73,17 @@ ARBITRAL_PROVISIONS_MAPPING = MappingConfig(
                     "Arbitral Rules": ArrayOperation(
                         operation="join",
                         field="Set_of_Rules",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Arbitral Rules In Force From": ArrayOperation(
                         operation="join",
                         field="In_Force_From",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Arbitral Rules Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),

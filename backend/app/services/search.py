@@ -3,9 +3,9 @@ import logging
 from typing import Any
 
 from app.config import config
+from app.mapping.configs import ALL_MAPPINGS
 from app.services.configurable_transformer import get_configurable_transformer
 from app.services.database import Database
-from app.services.mapping_repository import get_mapping_repository
 from app.services.transformers import DataTransformerFactory
 
 # logger for this module
@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 class SearchService:
     def __init__(self):
         self.db = Database(config.SQL_CONN_STRING)
-        self.mapping_repo = get_mapping_repository()
         self.configurable_transformer = get_configurable_transformer()
 
     # ------------------------------
@@ -104,7 +103,7 @@ class SearchService:
         convert user-faced value (e.g., "Yes"/"None") into boolean True/False.
         Otherwise, return value unchanged.
         """
-        mapping_conf = self.mapping_repo.get_mapping(table)
+        mapping_conf = ALL_MAPPINGS.get(table)
         if not mapping_conf:
             return user_value
 

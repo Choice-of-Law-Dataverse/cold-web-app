@@ -1,5 +1,6 @@
 """Mapping configuration for Questions table."""
 
+from app.mapping.enums import Separator
 from app.schemas.mapping_schema import (
     ArrayOperation,
     ConditionalMapping,
@@ -46,7 +47,7 @@ QUESTIONS_MAPPING = MappingConfig(
                     "Themes": ArrayOperation(
                         operation="join",
                         field="Theme",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                 },
             ),

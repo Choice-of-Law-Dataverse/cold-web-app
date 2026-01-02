@@ -1,5 +1,6 @@
 """Mapping configuration for Regional Legal Provisions table."""
 
+from app.mapping.enums import Separator
 from app.schemas.mapping_schema import (
     ArrayOperation,
     ConditionalMapping,
@@ -60,7 +61,7 @@ REGIONAL_LEGAL_PROVISIONS_MAPPING = MappingConfig(
                     "Questions": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),

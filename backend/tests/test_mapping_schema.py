@@ -1,6 +1,5 @@
 """Tests for mapping schema validation using Pydantic."""
 
-
 import pytest
 from pydantic import ValidationError
 

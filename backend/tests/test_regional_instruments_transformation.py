@@ -145,7 +145,7 @@ def test_configurable_transformer_direct():
     mock_result = create_mock_regional_instrument_result()
 
     # Check if Regional Instruments mapping is loaded
-    if transformer.mapping_repo.has_mapping("Regional Instruments"):
+    if "Regional Instruments" in transformer.mappings:
         logger.debug("✓ Regional Instruments mapping found")
 
         # Transform

@@ -1,5 +1,6 @@
 """Mapping configuration for Arbitral Rules table."""
 
+from app.mapping.enums import Separator
 from app.schemas.mapping_schema import (
     ArrayOperation,
     MappingConfig,
@@ -34,17 +35,17 @@ ARBITRAL_RULES_MAPPING = MappingConfig(
                     "Arbitral Institutions": ArrayOperation(
                         operation="join",
                         field="Institution",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Arbitral Institutions Abbrev": ArrayOperation(
                         operation="join",
                         field="Abbreviation",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Arbitral Institutions Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -54,12 +55,12 @@ ARBITRAL_RULES_MAPPING = MappingConfig(
                     "Arbitral Provisions (Articles)": ArrayOperation(
                         operation="join",
                         field="Article",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Arbitral Provisions Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -69,17 +70,17 @@ ARBITRAL_RULES_MAPPING = MappingConfig(
                     "Jurisdictions": ArrayOperation(
                         operation="join",
                         field="Name",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Jurisdictions Alpha-3 Code": ArrayOperation(
                         operation="join",
                         field="Alpha_3_Code",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Jurisdictions Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),

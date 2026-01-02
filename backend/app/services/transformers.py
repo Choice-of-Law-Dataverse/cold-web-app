@@ -89,7 +89,7 @@ class DataTransformerFactory:
 
         # Fall back to configurable transformer
         configurable_transformer = get_configurable_transformer()
-        if configurable_transformer.mapping_repo.has_mapping(table_name):
+        if table_name in configurable_transformer.mappings:
             return configurable_transformer.transform(table_name, result)
 
         # No transformation available

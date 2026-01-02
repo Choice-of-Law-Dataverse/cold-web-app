@@ -1,5 +1,6 @@
 """Mapping configuration for Domestic Legal Provisions table."""
 
+from app.mapping.enums import Separator
 from app.schemas.mapping_schema import (
     ArrayOperation,
     MappingConfig,
@@ -45,7 +46,7 @@ DOMESTIC_LEGAL_PROVISIONS_MAPPING = MappingConfig(
                     "Answers": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -55,7 +56,7 @@ DOMESTIC_LEGAL_PROVISIONS_MAPPING = MappingConfig(
                     "Questions": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -65,7 +66,7 @@ DOMESTIC_LEGAL_PROVISIONS_MAPPING = MappingConfig(
                     "Themes Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),

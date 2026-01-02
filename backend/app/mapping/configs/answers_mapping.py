@@ -1,6 +1,6 @@
 """Mapping configuration for Answers table."""
 
-from app.mapping.enums import YesNoValue
+from app.mapping.enums import Separator, YesNoValue
 from app.schemas.mapping_schema import (
     ArrayOperation,
     BooleanMapping,
@@ -76,17 +76,17 @@ ANSWERS_MAPPING = MappingConfig(
                     "Court Decisions": ArrayOperation(
                         operation="join",
                         field="Case_Title",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Court Decisions Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Court Decisions ID": ArrayOperation(
                         operation="join",
                         field="CoLD_ID",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -113,7 +113,7 @@ ANSWERS_MAPPING = MappingConfig(
                     "Themes": ArrayOperation(
                         operation="join",
                         field="Theme",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                 },
             ),

@@ -1,5 +1,6 @@
 """Mapping configuration for Regional Instruments table."""
 
+from app.mapping.enums import Separator
 from app.schemas.mapping_schema import (
     ArrayOperation,
     ConditionalMapping,
@@ -45,12 +46,12 @@ REGIONAL_INSTRUMENTS_MAPPING = MappingConfig(
                     "Specialists": ArrayOperation(
                         operation="join",
                         field="Specialist",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Specialists Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -60,12 +61,12 @@ REGIONAL_INSTRUMENTS_MAPPING = MappingConfig(
                     "Regional Legal Provisions": ArrayOperation(
                         operation="join",
                         field="CoLD_ID",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Regional Legal Provisions Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),

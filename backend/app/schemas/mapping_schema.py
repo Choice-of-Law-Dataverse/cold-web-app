@@ -9,6 +9,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
+from app.mapping.enums import ComplexMappingType, ComplexOperationType, Separator
+
 
 class ConditionalMapping(BaseModel):
     """Configuration for conditional field mapping with fallback."""
@@ -30,7 +32,7 @@ class ArrayOperation(BaseModel):
 
     operation: Literal["join"] = Field(..., description="Operation type (currently only 'join')")
     field: str = Field(..., description="Field name to extract from array items")
-    separator: str = Field(..., description="Separator for join operation")
+    separator: Separator | str = Field(..., description="Separator for join operation")
 
 
 class NestedMapping(BaseModel):
@@ -52,8 +54,8 @@ class ComplexMapping(BaseModel):
     """Configuration for complex field transformations."""
 
     source_field: str = Field(..., description="Source field name")
-    type: str = Field(..., description="Type of complex transformation")
-    operation: str = Field(..., description="Specific operation to perform")
+    type: ComplexMappingType | str = Field(..., description="Type of complex transformation")
+    operation: ComplexOperationType | str = Field(..., description="Specific operation to perform")
 
 
 class UserFieldMapping(BaseModel):

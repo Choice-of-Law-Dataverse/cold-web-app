@@ -1,5 +1,6 @@
 """Mapping configuration for International Instruments table."""
 
+from app.mapping.enums import Separator
 from app.schemas.mapping_schema import (
     ArrayOperation,
     ComplexMapping,
@@ -66,12 +67,12 @@ INTERNATIONAL_INSTRUMENTS_MAPPING = MappingConfig(
                     "Specialists": ArrayOperation(
                         operation="join",
                         field="Specialist",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Specialists Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -81,12 +82,12 @@ INTERNATIONAL_INSTRUMENTS_MAPPING = MappingConfig(
                     "International Legal Provisions": ArrayOperation(
                         operation="join",
                         field="CoLD_ID",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "International Legal Provisions Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -96,12 +97,12 @@ INTERNATIONAL_INSTRUMENTS_MAPPING = MappingConfig(
                     "Literature": ArrayOperation(
                         operation="join",
                         field="CoLD_ID",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Literature Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -111,12 +112,12 @@ INTERNATIONAL_INSTRUMENTS_MAPPING = MappingConfig(
                     "HCCH Answers": ArrayOperation(
                         operation="join",
                         field="Adapted_Question",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "HCCH Answers Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),

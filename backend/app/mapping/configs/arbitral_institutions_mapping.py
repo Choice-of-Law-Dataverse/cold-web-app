@@ -1,5 +1,6 @@
 """Mapping configuration for Arbitral Institutions table."""
 
+from app.mapping.enums import Separator
 from app.schemas.mapping_schema import (
     ArrayOperation,
     MappingConfig,
@@ -33,12 +34,12 @@ ARBITRAL_INSTITUTIONS_MAPPING = MappingConfig(
                     "Arbitral Awards": ArrayOperation(
                         operation="join",
                         field="Case_Number",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Arbitral Awards Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -48,17 +49,17 @@ ARBITRAL_INSTITUTIONS_MAPPING = MappingConfig(
                     "Arbitral Rules": ArrayOperation(
                         operation="join",
                         field="Set_of_Rules",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Arbitral Rules In Force From": ArrayOperation(
                         operation="join",
                         field="In_Force_From",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Arbitral Rules Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -68,12 +69,12 @@ ARBITRAL_INSTITUTIONS_MAPPING = MappingConfig(
                     "Arbitral Provisions (Articles)": ArrayOperation(
                         operation="join",
                         field="Article",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Arbitral Provisions Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -83,17 +84,17 @@ ARBITRAL_INSTITUTIONS_MAPPING = MappingConfig(
                     "Jurisdictions": ArrayOperation(
                         operation="join",
                         field="Name",
-                        separator=", ",
+                        separator=Separator.COMMA_SPACE,
                     ),
                     "Jurisdictions Alpha-3 Code": ArrayOperation(
                         operation="join",
                         field="Alpha_3_Code",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Jurisdictions Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),

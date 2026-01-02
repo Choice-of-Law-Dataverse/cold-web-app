@@ -1,5 +1,6 @@
 """Mapping configuration for Domestic Instruments table."""
 
+from app.mapping.enums import ComplexMappingType, ComplexOperationType, Separator
 from app.schemas.mapping_schema import (
     ArrayOperation,
     BooleanMapping,
@@ -84,7 +85,7 @@ DOMESTIC_INSTRUMENTS_MAPPING = MappingConfig(
                     "Question ID": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -94,7 +95,7 @@ DOMESTIC_INSTRUMENTS_MAPPING = MappingConfig(
                     "Answers Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -104,22 +105,22 @@ DOMESTIC_INSTRUMENTS_MAPPING = MappingConfig(
                     "Domestic Legal Provisions Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Domestic Legal Provisions Full Text of the Provision (English T": ArrayOperation(
                         operation="join",
                         field="Full_Text_of_the_Provision__English_Translation_",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Domestic Legal Provisions Full Text of the Provision (Original ": ArrayOperation(
                         operation="join",
                         field="Full_Text_of_the_Provision__Original_Language_",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Domestic Legal Provisions": ArrayOperation(
                         operation="join",
                         field="CoLD_ID",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -127,8 +128,8 @@ DOMESTIC_INSTRUMENTS_MAPPING = MappingConfig(
         complex_mappings={
             "Source (PDF)": ComplexMapping(
                 source_field="Source__PDF_",
-                type="json_extract",
-                operation="first_item_as_airtable_format",
+                type=ComplexMappingType.JSON_EXTRACT,
+                operation=ComplexOperationType.FIRST_ITEM_AS_AIRTABLE_FORMAT,
             ),
         },
         user_mappings={

@@ -1,5 +1,6 @@
 """Mapping configuration for Court Decisions table."""
 
+from app.mapping.enums import ComplexMappingType, ComplexOperationType, Separator
 from app.schemas.mapping_schema import (
     ArrayOperation,
     ComplexMapping,
@@ -69,7 +70,7 @@ COURT_DECISIONS_MAPPING = MappingConfig(
                     "Questions": ArrayOperation(
                         operation="join",
                         field="CoLD_ID",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -89,7 +90,7 @@ COURT_DECISIONS_MAPPING = MappingConfig(
                     "Themes": ArrayOperation(
                         operation="join",
                         field="Theme",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -97,8 +98,8 @@ COURT_DECISIONS_MAPPING = MappingConfig(
         complex_mappings={
             "Official Source (PDF)": ComplexMapping(
                 source_field="Official_Source__PDF_",
-                type="json_extract",
-                operation="first_item_as_airtable_format",
+                type=ComplexMappingType.JSON_EXTRACT,
+                operation=ComplexOperationType.FIRST_ITEM_AS_AIRTABLE_FORMAT,
             ),
         },
         user_mappings={

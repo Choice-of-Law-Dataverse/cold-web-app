@@ -1,5 +1,6 @@
 """Mapping configuration for Literature table."""
 
+from app.mapping.enums import Separator
 from app.schemas.mapping_schema import (
     ArrayOperation,
     ComplexMapping,
@@ -90,12 +91,12 @@ LITERATURE_MAPPING = MappingConfig(
                     "Themes": ArrayOperation(
                         operation="join",
                         field="Theme",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Themes Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -105,12 +106,12 @@ LITERATURE_MAPPING = MappingConfig(
                     "International Instruments": ArrayOperation(
                         operation="join",
                         field="Name",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "International Instruments Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -120,12 +121,12 @@ LITERATURE_MAPPING = MappingConfig(
                     "International Instruments": ArrayOperation(
                         operation="join",
                         field="Name",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "International Instruments Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -135,12 +136,12 @@ LITERATURE_MAPPING = MappingConfig(
                     "International Legal Provisions": ArrayOperation(
                         operation="join",
                         field="Title_of_the_Provision",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "International Legal Provisions Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -150,12 +151,12 @@ LITERATURE_MAPPING = MappingConfig(
                     "International Legal Provisions": ArrayOperation(
                         operation="join",
                         field="Title_of_the_Provision",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "International Legal Provisions Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
@@ -165,12 +166,12 @@ LITERATURE_MAPPING = MappingConfig(
                     "Regional Instruments": ArrayOperation(
                         operation="join",
                         field="Name",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                     "Regional Instruments Link": ArrayOperation(
                         operation="join",
                         field="ncRecordId",
-                        separator=",",
+                        separator=Separator.COMMA,
                     ),
                 },
             ),
