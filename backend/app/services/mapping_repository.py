@@ -1,14 +1,10 @@
 """
 Mapping repository for managing transformation rules and configurations.
 This module provides a centralized way to load and manage transformation
-mappings from external configuration files with Pydantic validation.
+mappings from Python class-based configurations.
 """
 
-import json
 import logging
-import os
-
-from pydantic import ValidationError
 
 from app.schemas.mapping_schema import MappingConfig
 
@@ -18,56 +14,36 @@ logger = logging.getLogger(__name__)
 class MappingRepository:
     """
     Repository class for managing transformation mapping configurations.
-    Uses Pydantic for validation to ensure mapping files are correctly structured.
-    All mappings are validated on load - validation is standard.
+    Loads mappings from Python class-based configurations for better type safety
+    and maintainability. All mappings are validated at import time by Pydantic.
     Mappings are cached in memory for performance.
     """
 
-    def __init__(self, mappings_directory: str | None = None):
+    def __init__(self, mappings_dict: dict[str, MappingConfig] | None = None):
         """
         Initialize the mapping repository.
 
         Args:
-            mappings_directory (str): Path to the directory containing mapping files
+            mappings_dict: Optional dictionary of mappings. If None, loads from default configs.
         """
-        if mappings_directory is None:
-            # Default to the transformations directory relative to this file
-            current_dir = os.path.dirname(__file__)
-            self.mappings_directory = os.path.join(current_dir, "..", "mapping", "transformations")
-        else:
-            self.mappings_directory = mappings_directory
-
         self._cache: dict[str, MappingConfig] = {}
-        self._load_all_mappings()
+        self._load_all_mappings(mappings_dict)
 
-    def _load_all_mappings(self):
-        """Load all mapping files from the mappings directory with validation."""
+    def _load_all_mappings(self, mappings_dict: dict[str, MappingConfig] | None = None):
+        """Load all mapping configurations from Python classes."""
         try:
-            if not os.path.exists(self.mappings_directory):
-                logger.warning(f"Mappings directory not found: {self.mappings_directory}")
-                return
+            if mappings_dict is None:
+                # Import the default mappings from configs module
+                from app.mapping.configs import ALL_MAPPINGS
 
-            for filename in os.listdir(self.mappings_directory):
-                if filename.endswith(".json"):
-                    filepath = os.path.join(self.mappings_directory, filename)
-                    try:
-                        with open(filepath, encoding="utf-8") as f:
-                            mapping_data = json.load(f)
+                mappings_dict = ALL_MAPPINGS
 
-                            # Always validate with Pydantic
-                            try:
-                                mapping_config = MappingConfig(**mapping_data)
-                                table_name = mapping_config.table_name
-                                self._cache[table_name] = mapping_config
-                                logger.info(f"Loaded and validated mapping for table: {table_name}")
-                            except ValidationError as e:
-                                logger.error(f"Validation error in mapping file {filename}: {e}")
-                                # Validation is required - don't load invalid mappings
-                                continue
-                    except Exception as e:
-                        logger.error(f"Error loading mapping file {filename}: {e}")
+            for table_name, mapping_config in mappings_dict.items():
+                self._cache[table_name] = mapping_config
+                logger.info(f"Loaded mapping for table: {table_name}")
+
         except Exception as e:
-            logger.error(f"Error loading mappings directory: {e}")
+            logger.error(f"Error loading mappings: {e}")
 
     def get_mapping(self, table_name: str) -> MappingConfig | None:
         """
@@ -91,39 +67,6 @@ class MappingRepository:
             dict: Dictionary of all mapping configurations keyed by table name
         """
         return self._cache.copy()
-
-    def reload_mapping(self, table_name: str) -> bool:
-        """
-        Reload a specific mapping configuration from file.
-
-        Args:
-            table_name (str): Name of the table to reload
-
-        Returns:
-            bool: True if successfully reloaded, False otherwise
-        """
-        try:
-            # Convert table name to filename: lowercase, replace spaces with underscores
-            filename = f"{table_name.lower().replace(' ', '_')}_mapping.json"
-            filepath = os.path.join(self.mappings_directory, filename)
-
-            if os.path.exists(filepath):
-                with open(filepath, encoding="utf-8") as f:
-                    mapping_data = json.load(f)
-
-                    # Always validate with Pydantic
-                    try:
-                        mapping_config = MappingConfig(**mapping_data)
-                        self._cache[table_name] = mapping_config
-                        logger.info(f"Reloaded and validated mapping for table: {table_name}")
-                        return True
-                    except ValidationError as e:
-                        logger.error(f"Validation error reloading {table_name}: {e}")
-                        return False
-        except Exception as e:
-            logger.error(f"Error reloading mapping for {table_name}: {e}")
-
-        return False
 
     def has_mapping(self, table_name: str) -> bool:
         """

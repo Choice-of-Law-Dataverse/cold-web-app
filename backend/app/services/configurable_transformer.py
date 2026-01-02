@@ -176,7 +176,13 @@ class ConfigurableTransformer:
         transformed: dict[str, Any],
         boolean_mappings: dict[str, Any],
     ):
-        """Apply boolean field mappings."""
+        """
+        Apply boolean field mappings.
+        
+        Note: true_value and false_value can be Enum values (which inherit from str),
+        boolean values, or regular strings. Enum values will be automatically converted
+        to their string representation when assigned.
+        """
         for target_field, boolean_config in boolean_mappings.items():
             source_field = boolean_config.source_field
             true_value = boolean_config.true_value
