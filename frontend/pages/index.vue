@@ -35,7 +35,7 @@
               src="https://choiceoflaw.blob.core.windows.net/assets/Prix-ORD-DEF_2025.png"
               alt="Swiss National ORD Prize 2025"
               style="width: 95px; height: 100px"
-            >
+            />
           </a>
         </div>
       </div>
