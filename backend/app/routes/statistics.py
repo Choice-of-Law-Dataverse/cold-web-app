@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query, Request
+from fastapi import APIRouter, Depends, Query
 
 from app.auth import verify_frontend_request
 from app.schemas.responses import JurisdictionCount
@@ -44,7 +44,7 @@ router = APIRouter(prefix="/statistics", tags=["Statistics"], dependencies=[Depe
         },
     },
 )
-def get_jurisdictions_with_answer_coverage(request: Request):
+def get_jurisdictions_with_answer_coverage():
     """Returns all jurisdictions with percentage of answers containing data."""
 
     return statistics_service.get_jurisdictions_with_answer_coverage()
@@ -74,7 +74,6 @@ def get_jurisdictions_with_answer_coverage(request: Request):
     },
 )
 def count_by_jurisdiction(
-    request: Request,
     table: str = Query(..., description="Table name (e.g., 'Court Decisions', 'Domestic Instruments', 'Literature')"),
     limit: int | None = Query(None, ge=1, description="Optional limit on number of results to return"),
 ) -> list[JurisdictionCount]:

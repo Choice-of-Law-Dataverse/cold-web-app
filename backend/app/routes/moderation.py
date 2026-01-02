@@ -326,7 +326,7 @@ def _normalize_case_analyzer_payload(raw: dict[str, Any], item: dict[str, Any]) 
 # New helpers: overview and detail rendering
 
 
-def _render_overview_item(category: str, model, item: dict[str, Any]) -> str:
+def _render_overview_item(category: str, item: dict[str, Any]) -> str:
     payload: dict[str, Any] = item.get("payload", {}) or {}
 
     def format_created(value: Any) -> str:
@@ -634,11 +634,8 @@ def list_pending(request: Request, category: str):
     if service is None:
         service = SuggestionService()
     items = service.list_pending(table)
-    model = _category_schema(category)
-    if model is None:
-        raise HTTPException(status_code=404)
 
-    entries = "".join(_render_overview_item(category, model, i) for i in items)
+    entries = "".join(_render_overview_item(category, i) for i in items)
     empty_state = "<p>No pending suggestions.</p>" if not entries else ""
     content = f"<h3>Pending suggestions: {html.escape(category)}</h3><ul class='plain'>{entries}</ul>{empty_state}<p><a href='/moderation'>Back</a></p>"  # noqa: E501
     return _page(f"Pending - {category}", content)

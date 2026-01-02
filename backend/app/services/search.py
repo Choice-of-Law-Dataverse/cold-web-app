@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 class SearchService:
     def __init__(self):
         self.db = Database(config.SQL_CONN_STRING)
-        self.test = config.TEST
         self.mapping_repo = get_mapping_repository()
         self.configurable_transformer = get_configurable_transformer()
 

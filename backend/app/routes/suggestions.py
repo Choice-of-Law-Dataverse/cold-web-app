@@ -219,7 +219,7 @@ def _table_key(path_segment: str) -> str | None:
 )
 async def list_pending_suggestions(
     category: str,
-    user: dict = Depends(require_editor_or_admin),
+    _: dict = Depends(require_editor_or_admin),
 ) -> list[dict[str, Any]]:
     """List all pending suggestions for a specific category."""
     table = _table_key(category)
@@ -247,7 +247,7 @@ async def list_pending_suggestions(
 async def get_suggestion_detail(
     category: str,
     suggestion_id: int,
-    user: dict = Depends(require_editor_or_admin),
+    _: dict = Depends(require_editor_or_admin),
 ) -> dict[str, Any]:
     """Get detailed information about a specific suggestion."""
     table = _table_key(category)

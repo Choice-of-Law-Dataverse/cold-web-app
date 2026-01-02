@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends
 
 from app.auth import verify_frontend_request
 from app.services.sitemap import SitemapService
@@ -9,7 +9,7 @@ router = APIRouter(prefix="/sitemap", tags=["Sitemap"], dependencies=[Depends(ve
 
 
 @router.get("/urls")
-def get_all_frontend_urls(request: Request):
+def get_all_frontend_urls():
     """
     Get all possible frontend URLs for the CoLD application.
     Returns URLs for all questions, literature, regional instruments,

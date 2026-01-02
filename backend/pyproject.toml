@@ -69,6 +69,7 @@ dev = [
     "pytest>=8.3.4",
     "ruff>=0.9.9",
     "pyright>=1.1.404",
+    "vulture>=2.14",
 ]
 
 [tool.uv]

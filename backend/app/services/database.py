@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import time
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from typing import Any
 
 import sqlalchemy as sa
@@ -58,101 +58,6 @@ class Database:
                 return last_result
             time.sleep(self.retry_delay)  # Wait before retrying
         return last_result  # Return the final result after all retries
-
-    def get_all_entries(self):
-        metadata = self.metadata
-        if metadata is None:
-            return None
-
-        def fetch_all_entries() -> dict[str, list[dict[str, Any]]]:
-            all_entries: dict[str, list[dict[str, Any]]] = {}
-            with db_manager.get_session() as session:
-                try:
-                    for table_name, table in metadata.tables.items():
-                        query = table.select()
-                        result = session.execute(query)
-                        columns = result.keys()
-                        entries = [dict(zip(columns, row, strict=False)) for row in result.fetchall()]
-                        all_entries[table_name] = entries
-                except SQLAlchemyError:
-                    logger.exception("Error getting all entries")
-            return all_entries
-
-        return self._retry_on_empty(fetch_all_entries)
-
-    def get_entries_from_tables(self, list_of_tables: Iterable[str]):
-        metadata = self.metadata
-        if metadata is None:
-            return None
-
-        def fetch_entries() -> dict[str, list[dict[str, Any]]]:
-            entries_from_tables: dict[str, list[dict[str, Any]]] = {}
-            with db_manager.get_session() as session:
-                try:
-                    for table_name in list_of_tables:
-                        if table_name in metadata.tables:
-                            table = metadata.tables[table_name]
-                            query = table.select()
-                            result = session.execute(query)
-                            columns = result.keys()
-                            entries = [dict(zip(columns, row, strict=False)) for row in result.fetchall()]
-                            entries_from_tables[table_name] = entries
-                        else:
-                            logger.warning("Table %s does not exist in the database", table_name.strip())
-                except SQLAlchemyError:
-                    logger.exception("Error getting entries from tables")
-            return entries_from_tables
-
-        return self._retry_on_empty(fetch_entries)
-
-    def get_entry_by_id(self, table_name: str, entry_id: Any):
-        metadata = self.metadata
-        if metadata is None:
-            return None
-
-        id_columns = {
-            "Answers": "ID",
-            "HCCH Answers": "ID",
-            "Domestic Instruments": "ID",
-            "Domestic Legal Provisions": "Name",
-            "Regional Instruments": "ID",
-            "Regional Legal Provisions": "ID",
-            "International Instruments": "ID",
-            "International Legal Provisions": "ID",
-            "Court Decisions": "ID",
-            "Jurisdictions": "Alpha-3 Code",
-            "Literature": "ID",
-        }
-
-        def fetch_entry() -> dict[str, Any]:
-            entry: dict[str, Any] = {}
-            with db_manager.get_session() as session:
-                try:
-                    if table_name in metadata.tables:
-                        table = metadata.tables[table_name]
-                        if table_name in id_columns:
-                            id_column = id_columns[table_name]
-                            query = table.select().where(table.c[id_column] == entry_id)
-                            result = session.execute(query)
-
-                            row = result.fetchone()
-                            if row:
-                                columns = result.keys()
-                                entry = dict(zip(columns, row, strict=False))
-                            else:
-                                logger.warning(
-                                    "No entry found with id %s in table %s", str(entry_id).strip(), table_name.strip()
-                                )
-                                return {"error": "no entry found with the specified id"}
-                        else:
-                            logger.warning("Table %s does not have a mapped id column", table_name.strip())
-                    else:
-                        logger.warning("Table %s does not exist in the database", table_name.strip())
-                except SQLAlchemyError:
-                    logger.exception("Error getting entry by id")
-            return entry
-
-        return self._retry_on_empty(fetch_entry)
 
     def execute_query(self, query: str, params: dict[str, Any] | None = None):
         def fetch_query() -> list[dict[str, Any]] | None:
