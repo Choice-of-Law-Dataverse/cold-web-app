@@ -10,7 +10,7 @@ import sys
 # Add the current directory to the Python path to import app modules
 sys.path.insert(0, os.path.dirname(__file__))
 
-from app.services.mapping_repository import get_mapping_repository
+from app.mapping.configs import ALL_MAPPINGS
 from app.services.transformers import DataTransformerFactory
 
 logger = logging.getLogger(__name__)
@@ -20,9 +20,8 @@ def test_all_supported_tables():
     """Test all supported table transformations."""
     logger.debug("=== TESTING ALL SUPPORTED TABLES ===")
 
-    # Get mapping repository
-    repo = get_mapping_repository()
-    supported_tables = repo.get_supported_tables()
+    # Get supported tables from ALL_MAPPINGS
+    supported_tables = list(ALL_MAPPINGS.keys())
 
     logger.debug(f"Supported tables: {supported_tables}")
 
@@ -105,7 +104,7 @@ def test_factory_fallback():
     logger.debug(f"Answers transformation (explicit): {len(transformed_answers)} fields")
 
     # Test with a table that only has configuration
-    if get_mapping_repository().has_mapping("Questions"):
+    if "Questions" in ALL_MAPPINGS:
         questions_data = {
             "source_table": "Questions",
             "CoLD_ID": "Q-001",
@@ -124,10 +123,7 @@ def test_mapping_configurations():
     """Test mapping configuration loading and structure."""
     logger.debug("\n=== TESTING MAPPING CONFIGURATIONS ===")
 
-    repo = get_mapping_repository()
-
-    for table_name in repo.get_supported_tables():
-        mapping = repo.get_mapping(table_name)
+    for table_name, mapping in ALL_MAPPINGS.items():
         if mapping is None:
             logger.debug(f"\n--- {table_name} Configuration ---")
             logger.debug("No mapping loaded; skipping.")

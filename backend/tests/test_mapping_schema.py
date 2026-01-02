@@ -1,8 +1,5 @@
 """Tests for mapping schema validation using Pydantic."""
 
-import json
-from pathlib import Path
-
 import pytest
 from pydantic import ValidationError
 
@@ -215,20 +212,14 @@ def test_mapping_config_from_json():
 
 
 def test_load_actual_mapping_file():
-    """Test loading and validating an actual mapping file."""
-    # Path to an actual mapping file
-    mapping_file = Path(__file__).parent.parent / "app" / "mapping" / "transformations" / "answers_mapping.json"
+    """Test loading and validating an actual Python mapping."""
+    # Test loading from the new Python-based configs
+    from app.mapping.configs import ANSWERS_MAPPING
 
-    if not mapping_file.exists():
-        pytest.skip("Mapping file not found")
-
-    with open(mapping_file) as f:
-        data = json.load(f)
-
-    # This should validate successfully
-    config = MappingConfig(**data)
-    assert config.table_name == "Answers"
-    assert len(config.mappings.direct_mappings) > 0
+    # This should load successfully
+    assert isinstance(ANSWERS_MAPPING, MappingConfig)
+    assert ANSWERS_MAPPING.table_name == "Answers"
+    assert len(ANSWERS_MAPPING.mappings.direct_mappings) > 0
 
 
 def test_nested_mapping_complex_structure():

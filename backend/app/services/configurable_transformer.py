@@ -1,16 +1,15 @@
 """
 Configuration-driven data transformer that uses external mapping rules.
 This module provides a generic transformer that applies transformation rules
-loaded from external configuration files via the mapping repository.
+loaded from external configuration files.
 """
 
 import json
 import logging
 from typing import Any
 
+from app.mapping.configs import ALL_MAPPINGS
 from app.schemas.mapping_schema import MappingConfig, PostProcessing
-
-from .mapping_repository import get_mapping_repository
 
 logger = logging.getLogger(__name__)
 
@@ -20,14 +19,14 @@ class ConfigurableTransformer:
     A configurable transformer that applies transformation rules from external configuration.
     """
 
-    def __init__(self, mapping_repository=None):
+    def __init__(self, mappings: dict[str, MappingConfig] | None = None):
         """
         Initialize the configurable transformer.
 
         Args:
-            mapping_repository: Optional mapping repository instance
+            mappings: Optional mapping dictionary (for testing). Uses ALL_MAPPINGS by default.
         """
-        self.mapping_repo = mapping_repository or get_mapping_repository()
+        self.mappings = mappings if mappings is not None else ALL_MAPPINGS
 
     def transform(self, table_name: str, source_data: dict[str, Any]) -> dict[str, Any]:
         """
@@ -40,7 +39,7 @@ class ConfigurableTransformer:
         Returns:
             dict: Transformed data
         """
-        mapping_config = self.mapping_repo.get_mapping(table_name)
+        mapping_config = self.mappings.get(table_name)
         if not mapping_config:
             logger.debug(f"No mapping configuration found for table: {table_name}")
             return source_data
@@ -176,7 +175,13 @@ class ConfigurableTransformer:
         transformed: dict[str, Any],
         boolean_mappings: dict[str, Any],
     ):
-        """Apply boolean field mappings."""
+        """
+        Apply boolean field mappings.
+
+        Note: true_value and false_value can be Enum values (which inherit from str),
+        boolean values, or regular strings. Enum values will be automatically converted
+        to their string representation when assigned.
+        """
         for target_field, boolean_config in boolean_mappings.items():
             source_field = boolean_config.source_field
             true_value = boolean_config.true_value
@@ -339,7 +344,7 @@ class ConfigurableTransformer:
         Returns:
             dict: Mapping from transformed field names to source field names
         """
-        mapping_config = self.mapping_repo.get_mapping(table_name)
+        mapping_config = self.mappings.get(table_name)
         if not mapping_config:
             return {}
 

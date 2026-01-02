@@ -142,7 +142,7 @@ def test_configurable_transformer_direct():
     mock_result = create_mock_court_decision_result()
 
     # Check if Court Decisions mapping is loaded
-    if transformer.mapping_repo.has_mapping("Court Decisions"):
+    if "Court Decisions" in transformer.mappings:
         logger.debug("✓ Court Decisions mapping found")
 
         # Transform

@@ -93,8 +93,8 @@ if __name__ == "__main__":
                 logger.debug(f"Maps to backend: '{source}'")
 
         # Get the mapping config directly
-        mapping_repo = transformer.mapping_repo
-        config = mapping_repo.get_mapping("Domestic Instruments")
+        mappings = transformer.mappings
+        config = mappings.get("Domestic Instruments")
         if not config:
             logger.debug("No mapping configuration found for Domestic Instruments.")
         else:

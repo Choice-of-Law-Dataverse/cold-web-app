@@ -141,7 +141,7 @@ def test_configurable_transformer_direct():
     mock_result = create_mock_domestic_instrument_result()
 
     # Check if Domestic Instruments mapping is loaded
-    if transformer.mapping_repo.has_mapping("Domestic Instruments"):
+    if "Domestic Instruments" in transformer.mappings:
         logger.debug("✓ Domestic Instruments mapping found")
 
         # Transform

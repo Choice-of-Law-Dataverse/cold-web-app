@@ -9,6 +9,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
+from app.mapping.enums import ComplexMappingType, ComplexOperationType, Separator
+
 
 class ConditionalMapping(BaseModel):
     """Configuration for conditional field mapping with fallback."""
@@ -30,26 +32,30 @@ class ArrayOperation(BaseModel):
 
     operation: Literal["join"] = Field(..., description="Operation type (currently only 'join')")
     field: str = Field(..., description="Field name to extract from array items")
-    separator: str = Field(..., description="Separator for join operation")
+    separator: Separator | str = Field(..., description="Separator for join operation")
 
 
 class NestedMapping(BaseModel):
     """Configuration for nested/related data mapping."""
 
+    model_config = {"extra": "forbid"}
+
     source_array: str = Field(..., description="Source array field path")
-    index: int | None = Field(None, description="Optional index to extract single item from array")
-    mappings: dict[str, str] | None = Field(None, description="Direct field mappings for nested data")
-    array_operations: dict[str, ArrayOperation] | None = Field(None, description="Operations to perform on arrays")
-    conditional_mappings: dict[str, ConditionalMapping] | None = Field(None, description="Conditional mappings for nested data")
-    boolean_mappings: dict[str, BooleanMapping] | None = Field(None, description="Boolean mappings for nested data")
+    index: int | None = Field(default=None, description="Optional index to extract single item from array")
+    mappings: dict[str, str] | None = Field(default=None, description="Direct field mappings for nested data")
+    array_operations: dict[str, ArrayOperation] | None = Field(default=None, description="Operations to perform on arrays")
+    conditional_mappings: dict[str, ConditionalMapping] | None = Field(
+        default=None, description="Conditional mappings for nested data"
+    )
+    boolean_mappings: dict[str, BooleanMapping] | None = Field(default=None, description="Boolean mappings for nested data")
 
 
 class ComplexMapping(BaseModel):
     """Configuration for complex field transformations."""
 
     source_field: str = Field(..., description="Source field name")
-    type: str = Field(..., description="Type of complex transformation")
-    operation: str = Field(..., description="Specific operation to perform")
+    type: ComplexMappingType | str = Field(..., description="Type of complex transformation")
+    operation: ComplexOperationType | str = Field(..., description="Specific operation to perform")
 
 
 class UserFieldMapping(BaseModel):
@@ -72,6 +78,8 @@ class UserMapping(BaseModel):
 class Mappings(BaseModel):
     """Container for all mapping configurations."""
 
+    model_config = {"extra": "forbid"}
+
     direct_mappings: dict[str, str] = Field(default_factory=dict, description="Direct field-to-field mappings")
     conditional_mappings: dict[str, ConditionalMapping] = Field(
         default_factory=dict, description="Conditional field mappings with fallbacks"
@@ -86,6 +94,7 @@ class PostProcessing(BaseModel):
     """Configuration for post-processing operations."""
 
     remove_null_values: bool = Field(default=False, description="Whether to remove null values from output")
+    remove_empty_strings: bool = Field(default=False, description="Whether to remove empty strings from output")
     field_transformations: dict[str, Any] = Field(default_factory=dict, description="Additional field transformations")
 
 

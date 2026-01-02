@@ -11,8 +11,8 @@ import sys
 # Add the current directory to the Python path to import app modules
 sys.path.insert(0, os.path.dirname(__file__))
 
+from app.mapping.configs import ALL_MAPPINGS
 from app.services.configurable_transformer import ConfigurableTransformer
-from app.services.mapping_repository import MappingRepository
 from app.services.transformers import AnswersTransformer, DataTransformerFactory
 
 logger = logging.getLogger(__name__)
@@ -85,14 +85,12 @@ def test_mapping_repository():
     logger.debug("=== TESTING MAPPING REPOSITORY ===")
 
     # Test loading mappings
-    repo = MappingRepository()
-
-    logger.debug("Supported tables: %s", repo.get_supported_tables())
-    logger.debug("Has Answers mapping: %s", repo.has_mapping("Answers"))
-    logger.debug("Has Unknown mapping: %s", repo.has_mapping("Unknown"))
+    logger.debug("Supported tables: %s", list(ALL_MAPPINGS.keys()))
+    logger.debug("Has Answers mapping: %s", "Answers" in ALL_MAPPINGS)
+    logger.debug("Has Unknown mapping: %s", "Unknown" in ALL_MAPPINGS)
 
     # Get Answers mapping
-    answers_mapping = repo.get_mapping("Answers")
+    answers_mapping = ALL_MAPPINGS.get("Answers")
     if answers_mapping:
         logger.debug("Answers mapping version: %s", answers_mapping.version)
         logger.debug("Answers mapping description: %s", answers_mapping.description)
