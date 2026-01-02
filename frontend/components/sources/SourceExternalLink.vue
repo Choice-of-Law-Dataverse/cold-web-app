@@ -13,7 +13,7 @@
           class="w-3"
           src="https://choiceoflaw.blob.core.windows.net/assets/Open_Access_logo_PLoS_transparent.svg"
           alt="Open Access Logo"
-        >
+        />
       </template>
       <template v-else>
         <UIcon name="i-material-symbols:open-in-new" class="h-4 w-4" />

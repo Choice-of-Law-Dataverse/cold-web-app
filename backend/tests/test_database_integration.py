@@ -73,7 +73,7 @@ class TestDatabaseWithManager:
         assert results == []
 
     def test_metadata_reflection_with_manager(self):
-        """Test that metadata reflection works with the manager."""
+        """Test that metadata reflection works with the manager (lazy loading)."""
         Database(connection_string="sqlite:///:memory:")
 
         # Create a table
@@ -81,10 +81,16 @@ class TestDatabaseWithManager:
             session.execute(text("CREATE TABLE reflected_table (id INTEGER PRIMARY KEY, data TEXT)"))
             session.commit()
 
-        # Create a new Database instance to trigger reflection
+        # Create a new Database instance
         db2 = Database(connection_string="sqlite:///:memory:")
 
-        # Metadata should be initialized (even if empty for in-memory SQLite)
+        # Metadata should be None initially (lazy loading)
+        assert db2.metadata is None
+
+        # Trigger metadata reflection
+        db2._ensure_metadata()
+
+        # Now metadata should be initialized
         assert db2.metadata is not None
 
     def test_database_handles_session_context_manager(self):

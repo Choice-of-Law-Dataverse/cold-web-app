@@ -10,7 +10,7 @@
         :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${props.jurisdictionCode.toLowerCase()}.svg`"
         :alt="`${jurisdictionName} flag`"
         class="h-4 w-4"
-      >
+      />
       Full questionnaire for {{ jurisdictionName }}
     </NuxtLink>
   </DetailRow>

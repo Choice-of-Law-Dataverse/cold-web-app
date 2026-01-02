@@ -173,7 +173,7 @@ app.include_router(api_router)
 
 # Session middleware for moderation UI
 
-app.add_middleware(SessionMiddleware, secret_key=config.MODERATION_SECRET)
+app.add_middleware(SessionMiddleware, secret_key=config.MODERATION_SECRET or "secret")
 
 # Mount moderation router (also at root without API prefix to serve simple HTML)
 app.include_router(moderation_router.router)

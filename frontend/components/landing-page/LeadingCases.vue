@@ -21,7 +21,7 @@
                 <img
                   :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${decision['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
                   class="h-5 border border-cold-gray"
-                >
+                />
               </span>
               <span class="break-words text-left">
                 {{
