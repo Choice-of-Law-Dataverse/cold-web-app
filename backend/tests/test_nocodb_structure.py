@@ -98,11 +98,11 @@ if __name__ == "__main__":
         if not config:
             logger.debug("No mapping configuration found for Domestic Instruments.")
         else:
-            boolean_mappings = config.get("mappings", {}).get("boolean_mappings", {})
+            boolean_mappings = config.mappings.boolean_mappings
 
             logger.debug("\n=== Boolean Mapping Configuration ===")
             for target_field, boolean_config in boolean_mappings.items():
-                source_field = boolean_config.get("source_field")
+                source_field = boolean_config.source_field
                 logger.debug(f"'{target_field}' <- '{source_field}'")
                 logger.debug(f"Expected in NocoDB data: '{source_field}'")
 

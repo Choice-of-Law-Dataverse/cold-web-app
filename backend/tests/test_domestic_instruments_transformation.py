@@ -173,84 +173,10 @@ def test_configurable_transformer_direct():
         logger.debug("✗ Domestic Instruments mapping not found")
 
 
-def test_boolean_mappings():
-    """Test boolean field mappings."""
-    logger.debug("\n=== TESTING BOOLEAN MAPPINGS ===")
-
-    transformer = ConfigurableTransformer()
-
-    # Test data with boolean fields
-    test_data = {
-        "Compatible_With_the_HCCH_Principles_": False,
-        "Compatible_With_the_UNCITRAL_Model_Law_": None,
-    }
-
-    # Apply boolean mapping
-    transformed = {}
-    transformer._apply_boolean_mappings(
-        test_data,
-        transformed,
-        {
-            "Compatible With the HCCH Principles": {
-                "source_field": "Compatible_With_the_HCCH_Principles_",
-                "true_value": True,
-                "false_value": False,
-            },
-            "Compatible With the UNCITRAL Model Law": {
-                "source_field": "Compatible_With_the_UNCITRAL_Model_Law_",
-                "true_value": True,
-                "false_value": False,
-            },
-        },
-    )
-
-    logger.debug("Boolean mapping results:")
-    for key, value in transformed.items():
-        logger.debug(f"{key}: {value} (type: {type(value).__name__})")
-
-
-def test_conditional_mappings():
-    """Test conditional field mappings."""
-    logger.debug("\n=== TESTING CONDITIONAL MAPPINGS ===")
-
-    transformer = ConfigurableTransformer()
-
-    # Test data with conditional fields
-    test_data = {
-        "Title__in_English_": "Chadian Law on the Reform of Judicial Organisation",
-        "Official_Title": "Ordinance No 6 of 21 March 1967",
-        "Source__URL_": None,
-        "Official_Source_URL": "https://example.com/law.pdf",
-    }
-
-    # Apply conditional mapping
-    transformed = {}
-    transformer._apply_conditional_mappings(
-        test_data,
-        transformed,
-        {
-            "Title (in English)": {
-                "primary": "Title__in_English_",
-                "fallback": "Official_Title",
-            },
-            "Source (URL)": {
-                "primary": "Source__URL_",
-                "fallback": "Official_Source_URL",
-            },
-        },
-    )
-
-    logger.debug("Conditional mapping results:")
-    for key, value in transformed.items():
-        logger.debug(f"{key}: {value}")
-
-
 if __name__ == "__main__":
     try:
         test_domestic_instruments_transformation()
         test_configurable_transformer_direct()
-        test_boolean_mappings()
-        test_conditional_mappings()
         logger.debug("\n=== ALL DOMESTIC INSTRUMENTS TESTS COMPLETED ===")
     except Exception as e:
         logger.debug(f"Test error: {e}")

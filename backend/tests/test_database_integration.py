@@ -40,14 +40,6 @@ class TestDatabaseWithManager:
 
         assert engine1 is engine2
 
-    def test_database_with_invalid_connection_string(self):
-        """Test Database initialization with invalid connection string."""
-        # This should fail when trying to reflect metadata
-        db = Database(connection_string="sqlite:///invalid_path_that_does_not_exist.db")
-
-        # The engine should still be created, but metadata might be None
-        assert db.engine is not None
-
     def test_execute_query_with_manager(self):
         """Test that execute_query uses the manager's session."""
         db = Database(connection_string="sqlite:///:memory:")

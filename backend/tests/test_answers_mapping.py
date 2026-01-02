@@ -8,6 +8,8 @@ import logging
 import os
 import sys
 
+import pytest
+
 from app.services.transformers import AnswersTransformer
 
 logger = logging.getLogger(__name__)
@@ -27,6 +29,10 @@ def load_test_data():
     return current_data, reference_data
 
 
+@pytest.mark.skipif(
+    not os.path.exists("app/mapping/answers_current.json"),
+    reason="Test data files not available",
+)
 def test_transformation():
     """Test the transformation logic."""
     current_data, reference_data = load_test_data()
@@ -178,11 +184,12 @@ def test_transformation_mock():
         logger.debug(f"Missing keys: {expected_keys - transformed_keys}")
         logger.debug(f"Extra keys: {transformed_keys - expected_keys}")
 
-        return transformed_result
+        # Assert that all expected keys are present
+        assert expected_keys.issubset(transformed_keys), f"Missing keys: {expected_keys - transformed_keys}"
 
     except Exception as e:
         logger.debug(f"Error during transformation test: {e}")
-        return None
+        raise
 
 
 if __name__ == "__main__":

@@ -104,20 +104,23 @@ class SearchService:
         convert user-faced value (e.g., "Yes"/"None") into boolean True/False.
         Otherwise, return value unchanged.
         """
-        mapping_conf = self.mapping_repo.get_mapping(table) or {}
-        bool_maps = (mapping_conf.get("mappings") or {}).get("boolean_mappings") or {}
+        mapping_conf = self.mapping_repo.get_mapping(table)
+        if not mapping_conf:
+            return user_value
+
+        bool_maps = mapping_conf.mappings.boolean_mappings
         bm = bool_maps.get(column)
         if not bm:
             # also check nested boolean mappings (inside nested_mappings)
-            nested = (mapping_conf.get("mappings") or {}).get("nested_mappings") or {}
+            nested = mapping_conf.mappings.nested_mappings
             for _k, nm in nested.items():
-                nbm = (nm or {}).get("boolean_mappings") or {}
+                nbm = nm.boolean_mappings if nm.boolean_mappings else {}
                 if column in nbm:
                     bm = nbm[column]
                     break
         if bm:
-            true_val = bm.get("true_value")
-            false_val = bm.get("false_value")
+            true_val = bm.true_value
+            false_val = bm.false_value
             if isinstance(user_value, str):
                 if true_val is not None and user_value == true_val:
                     return True

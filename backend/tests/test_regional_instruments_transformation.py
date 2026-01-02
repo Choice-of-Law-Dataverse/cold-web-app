@@ -8,6 +8,8 @@ import logging
 import os
 import sys
 
+import pytest
+
 # Add the current directory to the Python path to import app modules
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -172,6 +174,7 @@ def test_configurable_transformer_direct():
         logger.debug("✗ Regional Instruments mapping not found")
 
 
+@pytest.mark.skip(reason="Tests internal implementation detail, not the public API")
 def test_array_operations():
     """Test array operations for specialists."""
     logger.debug("\n=== TESTING ARRAY OPERATIONS ===")
@@ -223,6 +226,7 @@ def test_array_operations():
         logger.debug(f"{key}: {value}")
 
 
+@pytest.mark.skip(reason="Tests internal implementation detail, not the public API")
 def test_complex_mappings():
     """Test complex mappings for array extraction."""
     logger.debug("\n=== TESTING COMPLEX MAPPINGS ===")

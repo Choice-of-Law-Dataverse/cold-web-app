@@ -134,19 +134,19 @@ def test_mapping_configurations():
             continue
 
         logger.debug(f"\n--- {table_name} Configuration ---")
-        logger.debug(f"Version: {mapping.get('version')}")
-        logger.debug(f"Description: {mapping.get('description', 'No description')[:60]}...")
+        logger.debug(f"Version: {mapping.version}")
+        logger.debug(f"Description: {mapping.description[:60] if mapping.description else 'No description'}...")
 
-        mappings = mapping.get("mappings", {})
-        logger.debug(f"Direct mappings: {len(mappings.get('direct_mappings', {}))}")
-        logger.debug(f"Conditional mappings: {len(mappings.get('conditional_mappings', {}))}")
-        logger.debug(f"Nested mappings: {len(mappings.get('nested_mappings', {}))}")
-        logger.debug(f"Complex mappings: {len(mappings.get('complex_mappings', {}))}")
-        logger.debug(f"User mappings: {len(mappings.get('user_mappings', {}))}")
-        logger.debug(f"Boolean mappings: {len(mappings.get('boolean_mappings', {}))}")
+        mappings = mapping.mappings
+        logger.debug(f"Direct mappings: {len(mappings.direct_mappings)}")
+        logger.debug(f"Conditional mappings: {len(mappings.conditional_mappings)}")
+        logger.debug(f"Nested mappings: {len(mappings.nested_mappings)}")
+        logger.debug(f"Complex mappings: {len(mappings.complex_mappings)}")
+        logger.debug(f"User mappings: {len(mappings.user_mappings)}")
+        logger.debug(f"Boolean mappings: {len(mappings.boolean_mappings)}")
 
-        post_processing = mapping.get("post_processing", {})
-        logger.debug(f"Post-processing rules: {len(post_processing)}")
+        post_processing = mapping.post_processing
+        logger.debug(f"Post-processing: remove_null_values={post_processing.remove_null_values}")
 
 
 def run_performance_test():

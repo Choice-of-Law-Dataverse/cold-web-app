@@ -190,6 +190,11 @@ class TestHTTPSessionManager:
 
     def test_auto_initialize_on_get_session(self, caplog):
         """Test that get_session auto-initializes if not already initialized."""
+        import logging
+
+        # Ensure we capture logs from the http_session_manager logger
+        caplog.set_level(logging.INFO, logger="app.services.http_session_manager")
+
         manager = HTTPSessionManager()
         manager._session = None  # Reset state
 

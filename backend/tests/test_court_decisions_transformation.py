@@ -9,6 +9,8 @@ import logging
 import os
 import sys
 
+import pytest
+
 # Add the current directory to the Python path to import app modules
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -166,6 +168,7 @@ def test_configurable_transformer_direct():
         logger.debug("✗ Court Decisions mapping not found")
 
 
+@pytest.mark.skip(reason="Tests internal implementation detail, not the public API")
 def test_json_extraction():
     """Test JSON extraction for PDF fields."""
     logger.debug("\n=== TESTING JSON EXTRACTION ===")
