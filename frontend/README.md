@@ -88,12 +88,14 @@ Check out the [deployment documentation](https://nuxt.com/docs/getting-started/d
 This project uses automated quality checks that run on every PR:
 
 - **Prettier**: Code formatting
+
   ```bash
   npm run format:check  # Check formatting
   npm run format        # Fix formatting
   ```
 
 - **ESLint**: Linting
+
   ```bash
   npm run lint        # Check for issues
   npm run lint:fix    # Fix issues automatically

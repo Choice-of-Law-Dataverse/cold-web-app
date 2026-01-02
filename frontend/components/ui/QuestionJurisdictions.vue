@@ -60,7 +60,7 @@
                     e.target.style.display = 'none';
                   }
                 "
-              >
+              />
               {{ country.name }}
             </NuxtLink>
           </div>
