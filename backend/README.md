@@ -1,40 +1,130 @@
-# CoLD FASTAPI
-[API Documentation](https://cold-container-test.livelyisland-3dd94f86.switzerlandnorth.azurecontainerapps.io/docs)
+# Backend - FastAPI Application
 
-## Local testing
+FastAPI backend for the Choice of Law Dataverse (CoLD), built with Python, SQLAlchemy, and Pydantic.
+
+> **For AI coding agents**: See [AGENTS.md](AGENTS.md) for agent-specific instructions.
+
+## Package Manager: uv
+
+**This project uses [uv](https://docs.astral.sh/uv/) for Python package and project management.**
+
+uv is a fast Python package installer and resolver, written in Rust. It manages:
+
+- Python version (automatically installs Python 3.12)
+- Virtual environment
+- Project dependencies
+- Script execution
+
+### Installation
+
+```bash
+# macOS/Linux
+brew install uv
+
+# Windows
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+
+# Or see: https://docs.astral.sh/uv/
 ```
-uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+
+### Setup
+
+```bash
+cd backend
+
+# Install dependencies (creates venv + installs packages)
+uv sync --all-extras --all-packages --group dev
+
+# Or use Makefile
+make setup
 ```
 
-## Development Workflow
+## Development
 
-### Code Quality Checks
+Start the development server:
 
-This project uses automated quality checks that run on every PR:
+```bash
+# Using uv (runs in managed virtual environment)
+uv run uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
-- **Ruff**: Linting and code style checking
-  ```bash
-  make lint
-  ```
+# Or use Makefile
+make dev
+```
 
-- **Pyright**: Type checking
-  ```bash
-  make type-check
-  ```
+All Python commands should use `uv run` to ensure the correct environment:
 
-- **Pytest**: Unit tests
-  ```bash
-  make test
-  ```
+```bash
+uv run pytest              # Run tests
+uv run python script.py    # Run a script
+uv run ruff check          # Run linting
+```
 
-- **Docker Build**: Ensures the application can be built
-  ```bash
-  make build
-  ```
+API will be available at:
 
-Run all checks at once:
+- **Server**: http://0.0.0.0:8000
+- **API Docs**: http://localhost:8000/api/v1/docs
+
+**Note**: Full functionality requires database connection (see Environment Variables below).
+
+## Before Committing
+
+**Always run the validation checks:**
+
 ```bash
 make check
 ```
 
-These checks are automatically run by the PR workflow when changes are made to the `backend/` directory.
+This runs formatting, linting, type checking, and tests.
+
+## Code Style
+
+- **Type hints**: Always annotate functions and variables (use `list[str]` not `List[str]`)
+- **Pydantic models**: Use for all request/response validation in `app/schemas/`
+- **Import organization**: Group stdlib → third-party → local (with blank lines)
+- **No barrel files**: Avoid `__init__.py` re-exports
+- **Conventional commits**: Follow semantic commit format
+
+See [AGENTS.md](AGENTS.md) for detailed coding conventions.
+
+## Available Commands
+
+See [Makefile](Makefile) for complete documentation. Common commands:
+
+```bash
+make setup        # First-time setup
+make dev          # Start development server
+make check        # Run all quality checks
+make test         # Run tests
+```
+
+## Environment Variables
+
+Create a `.env` file with required variables:
+
+```bash
+# Required for full functionality
+SQL_CONN_STRING="your-database-connection-string"
+MONGODB_CONN_STRING="your-mongodb-connection"
+OPENAI_API_KEY="your-openai-key"
+
+# Authentication (Auth0)
+AUTH0_DOMAIN="your-auth0-domain"
+AUTH0_AUDIENCE="your-auth0-audience"
+
+# API validation
+API_KEY="your-frontend-api-key"
+
+# Optional - NocoDB integration
+NOCODB_BASE_URL="your-nocodb-url"
+NOCODB_API_TOKEN="your-nocodb-token"
+```
+
+## API Documentation
+
+Live API documentation: [CoLD Backend Docs](https://api.cold.global/api/v1/docs)
+
+## Docker (Production Only)
+
+**Docker is only used for production deployment. Local and agentic development should use uv directly.**
+
+For production deployment, see [Dockerfile](Dockerfile) and [Makefile](Makefile) for Docker commands.

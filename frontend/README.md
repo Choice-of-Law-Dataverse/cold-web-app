@@ -1,48 +1,28 @@
-# Nuxt 3 Minimal Starter
+# Frontend - Nuxt 3 Application
 
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Nuxt 3 frontend for the Choice of Law Dataverse (CoLD), built with Vue.js, TypeScript, and TailwindCSS.
+
+> **For AI coding agents**: See [AGENTS.md](AGENTS.md) for agent-specific instructions.
+
+## Prerequisites
+
+- **Node.js v20+** (tested with v20.19.5)
+- **npm 10+** (tested with v10.8.2)
 
 ## Setup
 
-Make sure to install the dependencies:
+Install dependencies:
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-For running locally, make sure you have Nuxt and Nuxt UI set up
-
-```bash
-npx nuxi@latest init <project-name>
-npx nuxi@latest module add ui
-```
-
-## Development Server
+## Development
 
 Start the development server on `http://localhost:3000`:
 
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
 ## Production
@@ -50,78 +30,64 @@ bun run dev
 Build the application for production:
 
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
 ```
 
-Locally preview production build:
+Preview the production build:
 
 ```bash
-# npm
 npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Before Committing
 
-## Development Workflow
+**Always run the validation checks:**
 
-### Code Quality Checks
+```bash
+npm run check
+```
 
-This project uses automated quality checks that run on every PR:
+This command runs:
 
-- **Prettier**: Code formatting
+- **Build validation**: Ensures the application builds successfully
+- **Prettier**: Checks code formatting
+- **Linting**: Runs ESLint for code quality
 
-  ```bash
-  npm run format:check  # Check formatting
-  npm run format        # Fix formatting
-  ```
+Individual validation commands:
 
-- **ESLint**: Linting
+```bash
+npm run format:check  # Check formatting
+npm run format        # Fix formatting
+npm run lint          # Check for issues
+npm run lint:fix      # Fix issues automatically
+npm run build         # Verify build works
+```
 
-  ```bash
-  npm run lint        # Check for issues
-  npm run lint:fix    # Fix issues automatically
-  ```
+## Code Standards
 
-- **Build**: Ensures the application can be built
-  ```bash
-  npm run build
-  ```
+- **TypeScript only**: Use `.ts` and `.vue` files with `<script setup lang="ts">`, never `.js`
+- **Composition API**: Use Vue Composition API with composables
+- **No barrel files**: Import directly from specific modules
+- **Conventional commits**: Follow semantic commit format
 
-These checks are automatically run by the PR workflow when changes are made to the `frontend/` directory.
+See [AGENTS.md](AGENTS.md) for detailed coding conventions.
 
-# Docker
+Check out the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) and [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 
-## Building and Running the Container
+## Additional Resources
 
-To build the container run:
-`docker build -t cold-nuxt-frontend .`
-To run the container run:
-`docker run -p 3000:3000 cold-nuxt-frontend`
+### Docker (Production Only)
 
-The docker image has been pushed to dockerhub using:
-`docker tag cold-nuxt-frontend simonweigold/cold-nuxt-frontend:latest`
-`docker push simonweigold/cold-nuxt-frontend:latest`
+**Docker is only used for production deployment. Local and agentic development should use npm directly.**
 
-# Nuxt Leaflet
+For production deployment:
+
+```bash
+docker build -t cold-nuxt-frontend .
+docker run -p 3000:3000 cold-nuxt-frontend
+```
+
+### Nuxt Leaflet
 
 Resources for landing page map:
 
