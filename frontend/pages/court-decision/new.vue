@@ -16,10 +16,15 @@
       <h3 class="mb-12">
         The CoLD Case Analyzer extracts information from court cases
         <NuxtLink
-          to="/court-decision/analyze"
-          class="text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+          to="https://case-analyzer.cold.global/"
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          Use the AI Case Analyzer
+          Open the Case Analyzer now
+          <UIcon
+            name="i-material-symbols:open-in-new"
+            class="relative top-[2px]"
+          />
         </NuxtLink>
       </h3>
       <div class="section-gap m-0 p-0">
@@ -28,12 +33,6 @@
             <span class="label flex flex-row items-center">
               Case citation
               <InfoPopover :text="tooltipCaseCitation" />
-              <span
-                v-if="aiGeneratedFields.has('case_citation')"
-                class="ml-2 rounded bg-purple-100 px-2 py-1 text-xs text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-              >
-                AI Generated
-              </span>
             </span>
           </template>
           <UInput v-model="caseCitation" class="cold-input mt-2" />
@@ -140,15 +139,7 @@
 
         <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
           <template #label>
-            <span class="label flex flex-row items-center">
-              Jurisdiction
-              <span
-                v-if="aiGeneratedFields.has('jurisdiction')"
-                class="ml-2 rounded bg-purple-100 px-2 py-1 text-xs text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-              >
-                AI Generated
-              </span>
-            </span>
+            <span class="label">Jurisdiction</span>
           </template>
           <SearchFilters
             v-model="selectedJurisdiction"
@@ -164,12 +155,6 @@
             <span class="label flex flex-row items-center">
               Abstract
               <InfoPopover :text="tooltipAbstract" />
-              <span
-                v-if="aiGeneratedFields.has('abstract')"
-                class="ml-2 rounded bg-purple-100 px-2 py-1 text-xs text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-              >
-                AI Generated
-              </span>
             </span>
           </template>
           <UTextarea
@@ -184,12 +169,6 @@
             <span class="label flex flex-row items-center">
               Relevant Facts
               <InfoPopover :text="tooltipRelevantFacts" />
-              <span
-                v-if="aiGeneratedFields.has('relevant_facts')"
-                class="ml-2 rounded bg-purple-100 px-2 py-1 text-xs text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-              >
-                AI Generated
-              </span>
             </span>
           </template>
           <UTextarea
@@ -204,12 +183,6 @@
             <span class="label flex flex-row items-center">
               PIL Provisions
               <InfoPopover :text="tooltipPILProvisions" />
-              <span
-                v-if="aiGeneratedFields.has('pil_provisions')"
-                class="ml-2 rounded bg-purple-100 px-2 py-1 text-xs text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-              >
-                AI Generated
-              </span>
             </span>
           </template>
           <UInput v-model="casePILProvisions" class="cold-input mt-2" />
@@ -220,12 +193,6 @@
             <span class="label flex flex-row items-center">
               Choice of Law Issue
               <InfoPopover :text="tooltipChoiceofLawIssue" />
-              <span
-                v-if="aiGeneratedFields.has('choice_of_law_issue')"
-                class="ml-2 rounded bg-purple-100 px-2 py-1 text-xs text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-              >
-                AI Generated
-              </span>
             </span>
           </template>
           <UTextarea
@@ -240,12 +207,6 @@
             <span class="label flex flex-row items-center">
               Court's Position
               <InfoPopover :text="tooltipCourtsPosition" />
-              <span
-                v-if="aiGeneratedFields.has('courts_position')"
-                class="ml-2 rounded bg-purple-100 px-2 py-1 text-xs text-purple-800 dark:bg-purple-900 dark:text-purple-200"
-              >
-                AI Generated
-              </span>
             </span>
           </template>
           <UTextarea
@@ -369,7 +330,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useHead, useRouter, useRoute } from "#imports";
+import { useHead, useRouter } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
@@ -418,9 +379,6 @@ const dateJudgment = ref(null);
 const email = ref("");
 const comments = ref("");
 
-const aiGeneratedFields = ref < Set < string >> new Set();
-const fromAnalysis = ref(false);
-
 const selectedJurisdiction = ref([]);
 const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
 
@@ -454,71 +412,7 @@ const loadJurisdictions = async () => {
   }
 };
 
-onMounted(() => {
-  loadJurisdictions();
-  loadAnalysisResults();
-});
-
-function loadAnalysisResults() {
-  const route = useRoute();
-  if (route.query.fromAnalysis === "true" && typeof window !== "undefined") {
-    fromAnalysis.value = true;
-    const storedData = sessionStorage.getItem("caseAnalysisResults");
-    if (storedData) {
-      try {
-        const data = JSON.parse(storedData);
-        const { jurisdiction, results } = data;
-
-        if (jurisdiction?.precise_jurisdiction) {
-          const jurisdictionLabel = jurisdiction.precise_jurisdiction;
-          const found = jurisdictionOptions.value.find(
-            (opt) => opt.label === jurisdictionLabel,
-          );
-          if (found) {
-            selectedJurisdiction.value = [found];
-            aiGeneratedFields.value.add("jurisdiction");
-          }
-        }
-
-        if (results.case_citation?.case_citation) {
-          caseCitation.value = results.case_citation.case_citation;
-          aiGeneratedFields.value.add("case_citation");
-        }
-
-        if (results.abstract?.abstract) {
-          caseAbstract.value = results.abstract.abstract;
-          aiGeneratedFields.value.add("abstract");
-        }
-
-        if (results.relevant_facts?.relevant_facts) {
-          caseRelevantFacts.value = results.relevant_facts.relevant_facts;
-          aiGeneratedFields.value.add("relevant_facts");
-        }
-
-        if (results.pil_provisions?.pil_provisions) {
-          casePILProvisions.value =
-            results.pil_provisions.pil_provisions.join(", ");
-          aiGeneratedFields.value.add("pil_provisions");
-        }
-
-        if (results.col_issue?.choice_of_law_issue) {
-          caseChoiceofLawIssue.value = results.col_issue.choice_of_law_issue;
-          aiGeneratedFields.value.add("choice_of_law_issue");
-        }
-
-        if (results.courts_position?.courts_position) {
-          caseCourtsPosition.value = results.courts_position.courts_position;
-          aiGeneratedFields.value.add("courts_position");
-        }
-
-        sessionStorage.removeItem("caseAnalysisResults");
-      } catch (error) {
-        console.error("Error loading analysis results:", error);
-      }
-    }
-  }
-}
-
+onMounted(loadJurisdictions);
 const formSchema = z.object({
   case_citation: z
     .string()
