@@ -44,7 +44,9 @@ describe("NoSearchResults", () => {
 
   it("renders no results message", () => {
     const wrapper = mount(NoSearchResults);
-    expect(wrapper.text()).toContain("Sorry, there are no results for your search");
+    expect(wrapper.text()).toContain(
+      "Sorry, there are no results for your search",
+    );
   });
 
   it("renders submit data section", () => {
@@ -73,7 +75,10 @@ describe("NoSearchResults", () => {
   });
 
   it("formats multiple jurisdictions with commas and spaces", () => {
-    mockRoute.query = { jurisdiction: "France,Germany,USA", q: "France comparison" };
+    mockRoute.query = {
+      jurisdiction: "France,Germany,USA",
+      q: "France comparison",
+    };
     const wrapper = mount(NoSearchResults);
     const text = wrapper.text();
     // Check if jurisdiction formatting is applied when filter exists
@@ -108,7 +113,8 @@ describe("NoSearchResults", () => {
     const wrapper = mount(NoSearchResults);
     // queryContainsJurisdiction should be false, so no suggestion shown
     const text = wrapper.text();
-    const hasSuggestion = text.includes("Maybe try") && text.includes("removing");
+    const hasSuggestion =
+      text.includes("Maybe try") && text.includes("removing");
     expect(hasSuggestion).toBe(false);
   });
 

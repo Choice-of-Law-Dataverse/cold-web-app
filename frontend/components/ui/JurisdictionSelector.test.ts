@@ -4,7 +4,10 @@ import JurisdictionSelector from "./JurisdictionSelector.vue";
 import { ref } from "vue";
 
 // Mock the composables
-const mockJurisdictions = ref(null);
+const mockJurisdictions = ref<Array<{
+  name: string;
+  alpha3Code: string;
+}> | null>(null);
 const mockIsLoading = ref(false);
 
 vi.mock("@/composables/useJurisdictions", () => ({
@@ -15,7 +18,7 @@ vi.mock("@/composables/useJurisdictions", () => ({
 }));
 
 // Mock the route
-const mockRoute = {
+const mockRoute: { params: { id: string | undefined } } = {
   params: { id: "fra" },
 };
 
@@ -77,9 +80,9 @@ describe("JurisdictionSelector", () => {
     });
 
     // Check that Germany and Italy are available but France is not
-    expect(wrapper.findComponent({ name: "JurisdictionSelectMenu" }).exists()).toBe(
-      true,
-    );
+    expect(
+      wrapper.findComponent({ name: "JurisdictionSelectMenu" }).exists(),
+    ).toBe(true);
   });
 
   it("emits jurisdiction-selected when selection is made", async () => {
@@ -95,7 +98,9 @@ describe("JurisdictionSelector", () => {
       },
     });
 
-    const selectMenu = wrapper.findComponent({ name: "JurisdictionSelectMenu" });
+    const selectMenu = wrapper.findComponent({
+      name: "JurisdictionSelectMenu",
+    });
     await selectMenu.vm.$emit("country-selected", {
       name: "Germany",
       alpha3Code: "DEU",
@@ -108,9 +113,7 @@ describe("JurisdictionSelector", () => {
   });
 
   it("does not emit event when selection has no alpha3Code", async () => {
-    mockJurisdictions.value = [
-      { name: "Germany", alpha3Code: "DEU" },
-    ];
+    mockJurisdictions.value = [{ name: "Germany", alpha3Code: "DEU" }];
 
     const wrapper = mount(JurisdictionSelector, {
       props: {
@@ -118,7 +121,9 @@ describe("JurisdictionSelector", () => {
       },
     });
 
-    const selectMenu = wrapper.findComponent({ name: "JurisdictionSelectMenu" });
+    const selectMenu = wrapper.findComponent({
+      name: "JurisdictionSelectMenu",
+    });
     await selectMenu.vm.$emit("country-selected", { name: "Invalid" });
 
     expect(wrapper.emitted("jurisdiction-selected")).toBeFalsy();
@@ -138,7 +143,9 @@ describe("JurisdictionSelector", () => {
     });
 
     // France should be filtered out despite lowercase alpha3Code in data
-    const selectMenu = wrapper.findComponent({ name: "JurisdictionSelectMenu" });
+    const selectMenu = wrapper.findComponent({
+      name: "JurisdictionSelectMenu",
+    });
     expect(selectMenu.exists()).toBe(true);
   });
 
@@ -156,9 +163,7 @@ describe("JurisdictionSelector", () => {
   });
 
   it("returns empty array when currentIso3Code is missing", () => {
-    mockJurisdictions.value = [
-      { name: "Germany", alpha3Code: "DEU" },
-    ];
+    mockJurisdictions.value = [{ name: "Germany", alpha3Code: "DEU" }];
     mockRoute.params.id = undefined;
 
     const wrapper = mount(JurisdictionSelector, {

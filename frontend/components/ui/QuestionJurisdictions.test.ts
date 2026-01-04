@@ -4,9 +4,12 @@ import QuestionJurisdictions from "./QuestionJurisdictions.vue";
 import { ref } from "vue";
 
 // Mock the composable
-const mockQuestionData = ref(null);
+const mockQuestionData = ref<{
+  answers: unknown[];
+  questionTitle?: string;
+} | null>(null);
 const mockIsLoading = ref(false);
-const mockError = ref(null);
+const mockError = ref<Error | null>(null);
 
 vi.mock("@/composables/useQuestionCountries", () => ({
   useQuestionCountries: () => ({
@@ -83,10 +86,26 @@ describe("QuestionJurisdictions", () => {
   it("excludes 'No data', 'Nothing found', and 'No information' answers", () => {
     mockQuestionData.value = {
       answers: [
-        { Answer: "Yes", Jurisdictions: "France", "Jurisdictions Alpha-3 code": "FRA" },
-        { Answer: "No data", Jurisdictions: "Spain", "Jurisdictions Alpha-3 code": "ESP" },
-        { Answer: "Nothing found", Jurisdictions: "Italy", "Jurisdictions Alpha-3 code": "ITA" },
-        { Answer: "No information", Jurisdictions: "Germany", "Jurisdictions Alpha-3 code": "DEU" },
+        {
+          Answer: "Yes",
+          Jurisdictions: "France",
+          "Jurisdictions Alpha-3 code": "FRA",
+        },
+        {
+          Answer: "No data",
+          Jurisdictions: "Spain",
+          "Jurisdictions Alpha-3 code": "ESP",
+        },
+        {
+          Answer: "Nothing found",
+          Jurisdictions: "Italy",
+          "Jurisdictions Alpha-3 code": "ITA",
+        },
+        {
+          Answer: "No information",
+          Jurisdictions: "Germany",
+          "Jurisdictions Alpha-3 code": "DEU",
+        },
       ],
     };
     const wrapper = mount(QuestionJurisdictions, {
@@ -103,10 +122,26 @@ describe("QuestionJurisdictions", () => {
   it("prioritizes Yes, No, Not applicable answers in order", () => {
     mockQuestionData.value = {
       answers: [
-        { Answer: "Maybe", Jurisdictions: "Country1", "Jurisdictions Alpha-3 code": "C01" },
-        { Answer: "No", Jurisdictions: "Country2", "Jurisdictions Alpha-3 code": "C02" },
-        { Answer: "Not applicable", Jurisdictions: "Country3", "Jurisdictions Alpha-3 code": "C03" },
-        { Answer: "Yes", Jurisdictions: "Country4", "Jurisdictions Alpha-3 code": "C04" },
+        {
+          Answer: "Maybe",
+          Jurisdictions: "Country1",
+          "Jurisdictions Alpha-3 code": "C01",
+        },
+        {
+          Answer: "No",
+          Jurisdictions: "Country2",
+          "Jurisdictions Alpha-3 code": "C02",
+        },
+        {
+          Answer: "Not applicable",
+          Jurisdictions: "Country3",
+          "Jurisdictions Alpha-3 code": "C03",
+        },
+        {
+          Answer: "Yes",
+          Jurisdictions: "Country4",
+          "Jurisdictions Alpha-3 code": "C04",
+        },
       ],
     };
     const wrapper = mount(QuestionJurisdictions, {
@@ -123,9 +158,21 @@ describe("QuestionJurisdictions", () => {
   it("sorts remaining answers alphabetically after priority answers", () => {
     mockQuestionData.value = {
       answers: [
-        { Answer: "Zebra", Jurisdictions: "Country1", "Jurisdictions Alpha-3 code": "C01" },
-        { Answer: "Apple", Jurisdictions: "Country2", "Jurisdictions Alpha-3 code": "C02" },
-        { Answer: "Yes", Jurisdictions: "Country3", "Jurisdictions Alpha-3 code": "C03" },
+        {
+          Answer: "Zebra",
+          Jurisdictions: "Country1",
+          "Jurisdictions Alpha-3 code": "C01",
+        },
+        {
+          Answer: "Apple",
+          Jurisdictions: "Country2",
+          "Jurisdictions Alpha-3 code": "C02",
+        },
+        {
+          Answer: "Yes",
+          Jurisdictions: "Country3",
+          "Jurisdictions Alpha-3 code": "C03",
+        },
       ],
     };
     const wrapper = mount(QuestionJurisdictions, {
@@ -142,8 +189,18 @@ describe("QuestionJurisdictions", () => {
   it("filters countries by selected region", async () => {
     mockQuestionData.value = {
       answers: [
-        { Answer: "Yes", Jurisdictions: "France", "Jurisdictions Alpha-3 code": "FRA", "Jurisdictions Region": "Europe" },
-        { Answer: "Yes", Jurisdictions: "Japan", "Jurisdictions Alpha-3 code": "JPN", "Jurisdictions Region": "Asia & Pacific" },
+        {
+          Answer: "Yes",
+          Jurisdictions: "France",
+          "Jurisdictions Alpha-3 code": "FRA",
+          "Jurisdictions Region": "Europe",
+        },
+        {
+          Answer: "Yes",
+          Jurisdictions: "Japan",
+          "Jurisdictions Alpha-3 code": "JPN",
+          "Jurisdictions Region": "Asia & Pacific",
+        },
       ],
     };
     const wrapper = mount(QuestionJurisdictions, {
@@ -151,15 +208,15 @@ describe("QuestionJurisdictions", () => {
         questionSuffix: "/test-question",
       },
     });
-    
+
     // Initially "All" is selected, should show both countries
     expect(wrapper.text()).toContain("France");
     expect(wrapper.text()).toContain("Japan");
 
     // Click Europe region
     const buttons = wrapper.findAll(".region-badge");
-    const europeButton = buttons.find(btn => btn.text() === "Europe");
-    await europeButton.trigger("click");
+    const europeButton = buttons.find((btn) => btn.text() === "Europe");
+    await europeButton!.trigger("click");
 
     // Should show only France now
     expect(wrapper.text()).toContain("France");
@@ -169,9 +226,21 @@ describe("QuestionJurisdictions", () => {
   it("sorts countries alphabetically within each answer group", () => {
     mockQuestionData.value = {
       answers: [
-        { Answer: "Yes", Jurisdictions: "Zambia", "Jurisdictions Alpha-3 code": "ZMB" },
-        { Answer: "Yes", Jurisdictions: "Argentina", "Jurisdictions Alpha-3 code": "ARG" },
-        { Answer: "Yes", Jurisdictions: "Brazil", "Jurisdictions Alpha-3 code": "BRA" },
+        {
+          Answer: "Yes",
+          Jurisdictions: "Zambia",
+          "Jurisdictions Alpha-3 code": "ZMB",
+        },
+        {
+          Answer: "Yes",
+          Jurisdictions: "Argentina",
+          "Jurisdictions Alpha-3 code": "ARG",
+        },
+        {
+          Answer: "Yes",
+          Jurisdictions: "Brazil",
+          "Jurisdictions Alpha-3 code": "BRA",
+        },
       ],
     };
     const wrapper = mount(QuestionJurisdictions, {
@@ -194,7 +263,12 @@ describe("QuestionJurisdictions", () => {
   it("displays 'No jurisdictions' when no countries for an answer", async () => {
     mockQuestionData.value = {
       answers: [
-        { Answer: "Yes", Jurisdictions: "France", "Jurisdictions Alpha-3 code": "FRA", "Jurisdictions Region": "Europe" },
+        {
+          Answer: "Yes",
+          Jurisdictions: "France",
+          "Jurisdictions Alpha-3 code": "FRA",
+          "Jurisdictions Region": "Europe",
+        },
       ],
     };
     const wrapper = mount(QuestionJurisdictions, {
@@ -205,8 +279,8 @@ describe("QuestionJurisdictions", () => {
 
     // Select a region with no countries
     const buttons = wrapper.findAll(".region-badge");
-    const africaButton = buttons.find(btn => btn.text() === "Africa");
-    await africaButton.trigger("click");
+    const africaButton = buttons.find((btn) => btn.text() === "Africa");
+    await africaButton!.trigger("click");
     await wrapper.vm.$nextTick();
 
     expect(wrapper.text()).toContain("No jurisdictions");
@@ -215,7 +289,11 @@ describe("QuestionJurisdictions", () => {
   it("renders links with correct paths", async () => {
     mockQuestionData.value = {
       answers: [
-        { Answer: "Yes", Jurisdictions: "France", "Jurisdictions Alpha-3 code": "FRA" },
+        {
+          Answer: "Yes",
+          Jurisdictions: "France",
+          "Jurisdictions Alpha-3 code": "FRA",
+        },
       ],
     };
     const wrapper = mount(QuestionJurisdictions, {
