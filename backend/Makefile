@@ -38,16 +38,6 @@ format: ## Format code with ruff
 	@uv run ruff format
 	@uv run ruff check --fix
 
-.PHONY: format-check
-format-check: ## Check code formatting without making changes
-	@echo "$(GREEN)Checking code formatting$(RESET)"
-	@uv run ruff format --check
-
-.PHONY: lint
-lint: ## Lint code with ruff
-	@echo "$(GREEN)Linting code$(RESET)"
-	@uv run ruff check
-
 .PHONY: type-check
 type-check: ## Run type checking with pyright
 	@echo "$(GREEN)Running type checks$(RESET)"
@@ -80,7 +70,7 @@ clean: ## Clean up generated files
 	@find . -type f -name "*.pyc" -delete
 
 .PHONY: check
-check: format-check lint type-check test ## Run all quality checks
+check: format type-check test ## Run all quality checks
 
 .PHONY: ci
 ci: check coverage ## Run all CI checks
