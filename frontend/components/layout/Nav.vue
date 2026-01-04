@@ -274,8 +274,11 @@ const isSearchFocused = ref(false);
 
 const searchInput = ref(null);
 
+// Minimum search length for jurisdiction suggestions
+const MIN_SEARCH_LENGTH = 3;
+
 function updateSuggestions() {
-  if (!searchText.value || searchText.value.trim().length < 3 || !jurisdictions.value) {
+  if (!searchText.value || searchText.value.trim().length < MIN_SEARCH_LENGTH || !jurisdictions.value) {
     suggestions.value = [];
     showSuggestions.value = false;
     return;
@@ -283,7 +286,7 @@ function updateSuggestions() {
   const words = searchText.value
     .toLowerCase()
     .split(/\s+/)
-    .filter((word) => word.length >= 3);
+    .filter((word) => word.length >= MIN_SEARCH_LENGTH);
 
   const filtered = findMatchingJurisdictions(words);
 

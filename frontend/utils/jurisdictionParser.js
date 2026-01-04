@@ -9,6 +9,9 @@
  * @returns {string[]} - Array of jurisdiction names
  */
 export function parseJurisdictionString(jurisdictionString) {
+  // Threshold for determining if a string is a comma-separated list
+  const MIN_COMMAS_FOR_LIST = 2;
+
   if (!jurisdictionString || typeof jurisdictionString !== "string") {
     return [];
   }
@@ -31,7 +34,7 @@ export function parseJurisdictionString(jurisdictionString) {
   // If there are multiple commas or the pattern suggests a list, split it
   const commaCount = (trimmed.match(/,/g) || []).length;
   
-  if (commaCount >= 2) {
+  if (commaCount >= MIN_COMMAS_FOR_LIST) {
     // Multiple commas likely indicate a list of jurisdictions
     return [...new Set(trimmed.split(",").map((part) => part.trim()))];
   }
