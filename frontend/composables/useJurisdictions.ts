@@ -27,43 +27,36 @@ function convert(record: JurisdictionWithAnswerCoverage) {
 export function useJurisdictions() {
   const { apiClient } = useApiClient();
 
-  const { data: rawData, ...rest } = useQuery({
+  const { data, ...rest } = useQuery({
     queryKey: ["jurisdictions-with-answer-percentage"],
     queryFn: () =>
       apiClient<JurisdictionWithAnswerCoverage[]>(
         "/statistics/jurisdictions-with-answer-percentage",
         { method: "GET" },
       ),
-  });
+    select: (rawData) => {
+      const jurisdictions = rawData
+        .filter((record) => record["Irrelevant?"] === false)
+        .map(convert);
 
-  const data = computed(() => {
-    if (!rawData.value) return undefined;
+      const knownJurisdictionTerms = new Set<string>();
+      jurisdictions.forEach((j) => {
+        knownJurisdictionTerms.add(j.Name.toLowerCase());
+        if (j.alpha3Code) {
+          knownJurisdictionTerms.add(j.alpha3Code.toLowerCase());
+        }
+      });
 
-    return rawData.value
-      .filter(
-        (record: JurisdictionWithAnswerCoverage) =>
-          record["Irrelevant?"] === false,
-      )
-      .map(convert);
-  });
-
-  const knownJurisdictionTerms = computed(() => {
-    if (!data.value) return new Set<string>();
-
-    const terms = new Set<string>();
-    data.value.forEach((j) => {
-      terms.add(j.Name.toLowerCase());
-      if (j.alpha3Code) {
-        terms.add(j.alpha3Code.toLowerCase());
-      }
-    });
-
-    return terms;
+      return {
+        jurisdictions,
+        knownJurisdictionTerms,
+      };
+    },
   });
 
   return {
-    data,
-    knownJurisdictionTerms,
+    data: computed(() => data.value?.jurisdictions),
+    knownJurisdictionTerms: computed(() => data.value?.knownJurisdictionTerms ?? new Set<string>()),
     ...rest,
   };
 }
