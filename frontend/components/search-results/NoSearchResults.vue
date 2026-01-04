@@ -71,7 +71,7 @@ const jurisdictionFilter = computed(() => {
 const queryContainsJurisdiction = computed(() => {
   const q = (route.query.q || "").toLowerCase();
   if (!q || !jurisdictions.value) return false;
-  
+
   const words = q.split(/\s+/);
   return words.some((word) => isJurisdictionTerm(word));
 });

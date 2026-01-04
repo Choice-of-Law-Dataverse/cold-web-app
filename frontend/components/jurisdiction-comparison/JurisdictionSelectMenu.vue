@@ -106,7 +106,7 @@ const availableCountries = computed(() => {
   );
 });
 
-const emit = defineEmits(["countrySelected"]);
+const emit = defineEmits(["country-selected"]);
 
 const selected = defineModel({
   type: String,
@@ -116,6 +116,6 @@ const selected = defineModel({
 const erroredAvatars = reactive({});
 
 const onSelect = (value) => {
-  emit("countrySelected", value);
+  emit("country-selected", value);
 };
 </script>

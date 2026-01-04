@@ -6,7 +6,11 @@ import { useJurisdictions } from "@/composables/useJurisdictions";
  * Leverages TanStack Query cache from useJurisdictions for efficient data access.
  */
 export function useJurisdictionLookup() {
-  const { data: jurisdictions, knownJurisdictionTerms, ...rest } = useJurisdictions();
+  const {
+    data: jurisdictions,
+    knownJurisdictionTerms,
+    ...rest
+  } = useJurisdictions();
 
   /**
    * Finds the ISO-3 code for a given jurisdiction name.
@@ -16,8 +20,8 @@ export function useJurisdictionLookup() {
   const getJurisdictionISO = (name: string): string => {
     if (!jurisdictions.value || !name) return "default";
 
-    const jurisdiction = jurisdictions.value.find((j) =>
-      j.Name.toLowerCase() === name.toLowerCase()
+    const jurisdiction = jurisdictions.value.find(
+      (j) => j.Name.toLowerCase() === name.toLowerCase(),
     );
 
     return jurisdiction?.alpha3Code?.toLowerCase() || "default";
@@ -38,7 +42,7 @@ export function useJurisdictionLookup() {
           const nameLower = j.Name.toLowerCase();
           const codeLower = j.alpha3Code?.toLowerCase() || "";
           return nameLower.includes(word) || codeLower.includes(word);
-        })
+        }),
       )
       .map((j) => j.Name);
   };
@@ -51,8 +55,8 @@ export function useJurisdictionLookup() {
   const findJurisdictionByName = (name: string) => {
     if (!jurisdictions.value || !name) return undefined;
 
-    return jurisdictions.value.find((j) =>
-      j.Name.toLowerCase() === name.toLowerCase()
+    return jurisdictions.value.find(
+      (j) => j.Name.toLowerCase() === name.toLowerCase(),
     );
   };
 

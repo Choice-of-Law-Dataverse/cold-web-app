@@ -212,7 +212,11 @@ import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
 const router = useRouter();
 const route = useRoute();
 
-const { data: jurisdictions, findMatchingJurisdictions, findJurisdictionByName } = useJurisdictionLookup();
+const {
+  data: jurisdictions,
+  findMatchingJurisdictions,
+  findJurisdictionByName,
+} = useJurisdictionLookup();
 
 const basePath = (arr) => `/${arr[0].path.split("/")[1]}`;
 
@@ -277,7 +281,11 @@ const searchInput = ref(null);
 const MIN_SEARCH_LENGTH = 3;
 
 function updateSuggestions() {
-  if (!searchText.value || searchText.value.trim().length < MIN_SEARCH_LENGTH || !jurisdictions.value) {
+  if (
+    !searchText.value ||
+    searchText.value.trim().length < MIN_SEARCH_LENGTH ||
+    !jurisdictions.value
+  ) {
     suggestions.value = [];
     showSuggestions.value = false;
     return;

@@ -35,12 +35,12 @@ export function parseJurisdictionString(jurisdictionString) {
   // that naturally contain commas (e.g., "Congo, the Democratic Republic of the")
   // If there are multiple commas or the pattern suggests a list, split it
   const commaCount = (trimmed.match(/,/g) || []).length;
-  
+
   if (commaCount >= MIN_COMMAS_FOR_LIST) {
     // Multiple commas likely indicate a list of jurisdictions
     return [...new Set(trimmed.split(",").map((part) => part.trim()))];
   }
-  
+
   // Single comma or no comma - treat as a single jurisdiction
   return [trimmed];
 }

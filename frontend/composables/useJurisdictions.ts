@@ -58,7 +58,9 @@ export function useJurisdictions() {
 
   return {
     data: computed(() => data.value?.jurisdictions),
-    knownJurisdictionTerms: computed(() => data.value?.knownJurisdictionTerms ?? EMPTY_SET),
+    knownJurisdictionTerms: computed(
+      () => data.value?.knownJurisdictionTerms ?? EMPTY_SET,
+    ),
     ...rest,
   };
 }
