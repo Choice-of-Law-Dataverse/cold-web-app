@@ -10,7 +10,6 @@ from collections.abc import AsyncGenerator
 from typing import Any, Literal
 
 import logfire
-import nest_asyncio
 import pymupdf4llm
 from agents import Agent, Runner
 from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
@@ -20,7 +19,19 @@ from app.config import config
 
 logger = logging.getLogger(__name__)
 
-nest_asyncio.apply()
+_openai_client = None
+
+
+def get_openai_client():
+    """Get singleton OpenAI client for agents."""
+    global _openai_client
+    if _openai_client is None:
+        import nest_asyncio
+        import openai
+
+        nest_asyncio.apply()
+        _openai_client = openai.OpenAI(api_key=config.OPENAI_API_KEY)
+    return _openai_client
 
 
 class ColSectionOutput(BaseModel):
@@ -97,6 +108,11 @@ class CaseCitationOutput(BaseModel):
     reasoning: str
 
 
+def get_llm_model() -> str:
+    """Get the configured LLM model name."""
+    return "gpt-4o-mini"
+
+
 def extract_text_from_pdf(pdf_bytes: bytes) -> str:
     """Extract text from PDF bytes using pymupdf4llm."""
     with logfire.span("pdf_extraction"):
@@ -105,20 +121,9 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
             markdown_text = pymupdf4llm.to_markdown(pdf_stream)
             return markdown_text
         except Exception as e:
-            logger.error("Failed to extract text from PDF: %s", str(e))
-            raise ValueError(f"Failed to extract text from PDF: {str(e)}") from e
-
-
-def get_openai_client():
-    """Get OpenAI client for agents."""
-    import openai
-
-    return openai.OpenAI(api_key=config.OPENAI_API_KEY)
-
-
-def get_llm_model() -> str:
-    """Get the configured LLM model name."""
-    return "gpt-4o-mini"
+            error_msg = f"Failed to extract text from PDF: {str(e)}"
+            logger.error(error_msg)
+            raise ValueError(error_msg) from e
 
 
 def detect_jurisdiction(text: str) -> JurisdictionOutput:

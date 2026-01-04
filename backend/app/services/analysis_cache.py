@@ -1,6 +1,10 @@
 """
 Simple in-memory cache for case analysis documents.
 Uses correlation IDs to link analysis steps.
+
+Note: This is an in-memory cache that will lose data on application restart
+and does not scale across multiple instances. For production use with multiple
+instances, consider implementing a persistent cache using Redis or similar.
 """
 
 import uuid
