@@ -10,6 +10,7 @@ from starlette.middleware.sessions import SessionMiddleware
 from app.config import config
 from app.routes import (
     ai,
+    case_analysis,
     landing_page,
     moderation as moderation_router,
     search,
@@ -118,6 +119,10 @@ app = FastAPI(
             "description": "AI helpers such as query classification.",
         },
         {
+            "name": "Case Analysis",
+            "description": "Court decision analysis with AI-powered extraction and classification.",
+        },
+        {
             "name": "Sitemap",
             "description": "Frontend URLs for site map generation.",
         },
@@ -161,6 +166,7 @@ api_router = APIRouter(prefix="/api/v1")
 
 api_router.include_router(search.router)
 api_router.include_router(ai.router)
+api_router.include_router(case_analysis.router)
 api_router.include_router(submarine.router)
 api_router.include_router(sitemap.router)
 api_router.include_router(landing_page.router)
