@@ -9,7 +9,9 @@
  * @returns {string[]} - Array of jurisdiction names
  */
 export function parseJurisdictionString(jurisdictionString) {
-  // Threshold for determining if a string is a comma-separated list
+  // Threshold for determining if a string is a comma-separated list.
+  // Set to 2 because jurisdiction names with a single comma (like "Congo, the Democratic Republic of the")
+  // should be treated as single jurisdictions, while strings with 2+ commas are likely lists.
   const MIN_COMMAS_FOR_LIST = 2;
 
   if (!jurisdictionString || typeof jurisdictionString !== "string") {
