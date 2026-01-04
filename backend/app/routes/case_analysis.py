@@ -6,17 +6,15 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import StreamingResponse
 
 from app.auth import verify_frontend_request
+from app.case_analysis.models import JurisdictionOutput
+from app.case_analysis.utils.pdf_handler import extract_text_from_pdf
 from app.schemas.case_analysis import (
     ConfirmAnalysisRequest,
     UploadDocumentRequest,
     UploadDocumentResponse,
 )
 from app.services.analysis_cache import analysis_cache
-from app.services.case_analysis import (
-    analyze_case_streaming,
-    detect_jurisdiction,
-    extract_text_from_pdf,
-)
+from app.services.case_analysis import analyze_case_streaming, detect_jurisdiction
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +63,7 @@ async def upload_document(body: UploadDocumentRequest):
             raise HTTPException(status_code=422, detail=f"Failed to extract text from PDF: {str(e)}") from e
 
         try:
-            jurisdiction_result = detect_jurisdiction(extracted_text)
+            jurisdiction_result: JurisdictionOutput = detect_jurisdiction(extracted_text)
             logger.info("Detected jurisdiction: %s", jurisdiction_result.precise_jurisdiction)
         except Exception as e:
             logger.error("Failed to detect jurisdiction: %s", str(e))
