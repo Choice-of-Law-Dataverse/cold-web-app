@@ -60,7 +60,6 @@ import { useJurisdictionLookup } from "@/composables/useJurisdictionLookup";
 const route = useRoute();
 const router = useRouter();
 
-// Use jurisdiction lookup composable
 const { data: jurisdictions, isJurisdictionTerm } = useJurisdictionLookup();
 
 const jurisdictionFilter = computed(() => {

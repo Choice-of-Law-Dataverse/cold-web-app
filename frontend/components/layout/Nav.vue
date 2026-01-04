@@ -212,7 +212,6 @@ import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
 const router = useRouter();
 const route = useRoute();
 
-// Use jurisdiction lookup composable
 const { data: jurisdictions, findMatchingJurisdictions, findJurisdictionByName } = useJurisdictionLookup();
 
 const basePath = (arr) => `/${arr[0].path.split("/")[1]}`;

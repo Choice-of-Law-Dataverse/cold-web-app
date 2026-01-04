@@ -251,7 +251,6 @@ const route = useRoute();
 const router = useRouter();
 const isCiteOpen = ref(false);
 
-// Use jurisdiction lookup composable
 const { getJurisdictionISO } = useJurisdictionLookup();
 
 const props = defineProps({

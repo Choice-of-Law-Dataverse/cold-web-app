@@ -47,8 +47,23 @@ export function useJurisdictions() {
       .map(convert);
   });
 
+  const knownJurisdictionTerms = computed(() => {
+    if (!data.value) return new Set<string>();
+
+    const terms = new Set<string>();
+    data.value.forEach((j) => {
+      terms.add(j.Name.toLowerCase());
+      if (j.alpha3Code) {
+        terms.add(j.alpha3Code.toLowerCase());
+      }
+    });
+
+    return terms;
+  });
+
   return {
     data,
+    knownJurisdictionTerms,
     ...rest,
   };
 }
