@@ -105,6 +105,7 @@ select = [
     "C4",  # flake8-comprehensions
     "UP",  # pyupgrade
 ]
+ignore = ["E501"]
 isort = { combine-as-imports = true, known-first-party = ["chai"] }
 
 [tool.ruff.lint.flake8-bugbear]
