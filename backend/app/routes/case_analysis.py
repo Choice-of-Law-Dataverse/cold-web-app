@@ -111,7 +111,6 @@ async def upload_document(
             "full_text": extracted_text,
             "jurisdiction": jurisdiction_data,
             "correlation_id": correlation_id,
-            "analysis_results": {},
         }
 
         try:
@@ -223,9 +222,11 @@ async def analyze_document(
 
                     # Update database if we have draft_id and step data
                     if draft_id and result.get("status") == "completed" and result.get("data"):
-                        step_name = result.get("step", "unknown")
+                        step_name = result.get("step")
+                        if not step_name:
+                            continue
                         try:
-                            update_data = {f"analysis_results.{step_name}": result.get("data")}
+                            update_data = {step_name: result.get("data")}
                             service.update_payload("case_analyzer", draft_id, update_data)
                             logger.info("Updated step %s in draft ID: %d", step_name, draft_id)
                         except Exception as e:

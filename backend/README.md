@@ -66,6 +66,31 @@ API will be available at:
 
 **Note**: Full functionality requires database connection (see Environment Variables below).
 
+## Database Migrations
+
+Alembic manages the suggestions schema. Apply migrations before running the app:
+
+```bash
+# Uses SUGGESTIONS_SQL_CONN_STRING from .env (or ALEMBIC_SQL_CONN_STRING / -x sql-url override)
+uv run alembic upgrade head
+
+# Or via Makefile
+make migrate_suggestions
+```
+
+To point Alembic at a different DSN, export `ALEMBIC_SQL_CONN_STRING` or pass an override:
+
+```bash
+ALEMBIC_SQL_CONN_STRING="postgresql://..." uv run alembic upgrade head
+uv run alembic upgrade head -x sql-url="postgresql://..."
+```
+
+Create new revisions after updating `app/services/suggestions_schema.py`:
+
+```bash
+uv run alembic revision -m "short description"
+```
+
 ## Before Committing
 
 **Always run the validation checks:**
@@ -113,6 +138,9 @@ AUTH0_AUDIENCE="your-auth0-audience"
 
 # API validation
 API_KEY="your-frontend-api-key"
+
+# Suggestions database (required for migrations)
+SUGGESTIONS_SQL_CONN_STRING="postgresql://user:pass@host:5432/suggestions"
 
 # Optional - NocoDB integration
 NOCODB_BASE_URL="your-nocodb-url"

@@ -4,17 +4,14 @@ from decimal import Decimal
 from typing import Any
 
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import JSONB
 
 from app.config import config
 from app.services.db_manager import suggestions_db_manager
+from app.services.suggestions_schema import SUGGESTION_TABLES, SUGGESTIONS_METADATA
 
 
 class SuggestionService:
     """Stores suggestions in per-type Postgres tables using the default schema from the DSN."""
-
-    _metadata: sa.MetaData | None = None
-    _tables: dict[str, sa.Table] | None = None
 
     def __init__(self) -> None:
         # Prefer dedicated connection string for suggestions DB
@@ -27,145 +24,8 @@ class SuggestionService:
             suggestions_db_manager.initialize(conn)
 
         self.engine = suggestions_db_manager.get_engine()
-
-        # Initialize metadata and tables only once
-        if SuggestionService._metadata is None:
-            # Use default schema (search_path) of the provided connection
-            SuggestionService._metadata = sa.MetaData()
-
-            # Define per-type suggestion tables with JSONB payloads
-            SuggestionService._tables = {
-                "generic": sa.Table(
-                    "suggestions_generic",
-                    SuggestionService._metadata,
-                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                    sa.Column(
-                        "created_at",
-                        sa.DateTime(timezone=True),
-                        server_default=sa.func.now(),
-                        nullable=False,
-                    ),
-                    sa.Column("payload", JSONB, nullable=False),
-                    sa.Column("client_ip", sa.String(64), nullable=True),
-                    sa.Column("user_agent", sa.Text, nullable=True),
-                    sa.Column("source", sa.String(256), nullable=True),
-                    sa.Column("token_sub", sa.String(256), nullable=True),
-                    extend_existing=True,
-                ),
-                "court_decisions": sa.Table(
-                    "suggestions_court_decisions",
-                    SuggestionService._metadata,
-                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                    sa.Column(
-                        "created_at",
-                        sa.DateTime(timezone=True),
-                        server_default=sa.func.now(),
-                        nullable=False,
-                    ),
-                    sa.Column("payload", JSONB, nullable=False),
-                    sa.Column("client_ip", sa.String(64), nullable=True),
-                    sa.Column("user_agent", sa.Text, nullable=True),
-                    sa.Column("source", sa.String(256), nullable=True),
-                    sa.Column("token_sub", sa.String(256), nullable=True),
-                    extend_existing=True,
-                ),
-                "domestic_instruments": sa.Table(
-                    "suggestions_domestic_instruments",
-                    SuggestionService._metadata,
-                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                    sa.Column(
-                        "created_at",
-                        sa.DateTime(timezone=True),
-                        server_default=sa.func.now(),
-                        nullable=False,
-                    ),
-                    sa.Column("payload", JSONB, nullable=False),
-                    sa.Column("client_ip", sa.String(64), nullable=True),
-                    sa.Column("user_agent", sa.Text, nullable=True),
-                    sa.Column("source", sa.String(256), nullable=True),
-                    sa.Column("token_sub", sa.String(256), nullable=True),
-                    extend_existing=True,
-                ),
-                "regional_instruments": sa.Table(
-                    "suggestions_regional_instruments",
-                    SuggestionService._metadata,
-                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                    sa.Column(
-                        "created_at",
-                        sa.DateTime(timezone=True),
-                        server_default=sa.func.now(),
-                        nullable=False,
-                    ),
-                    sa.Column("payload", JSONB, nullable=False),
-                    sa.Column("client_ip", sa.String(64), nullable=True),
-                    sa.Column("user_agent", sa.Text, nullable=True),
-                    sa.Column("source", sa.String(256), nullable=True),
-                    sa.Column("token_sub", sa.String(256), nullable=True),
-                    extend_existing=True,
-                ),
-                "international_instruments": sa.Table(
-                    "suggestions_international_instruments",
-                    SuggestionService._metadata,
-                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                    sa.Column(
-                        "created_at",
-                        sa.DateTime(timezone=True),
-                        server_default=sa.func.now(),
-                        nullable=False,
-                    ),
-                    sa.Column("payload", JSONB, nullable=False),
-                    sa.Column("client_ip", sa.String(64), nullable=True),
-                    sa.Column("user_agent", sa.Text, nullable=True),
-                    sa.Column("source", sa.String(256), nullable=True),
-                    sa.Column("token_sub", sa.String(256), nullable=True),
-                    extend_existing=True,
-                ),
-                "literature": sa.Table(
-                    "suggestions_literature",
-                    SuggestionService._metadata,
-                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                    sa.Column(
-                        "created_at",
-                        sa.DateTime(timezone=True),
-                        server_default=sa.func.now(),
-                        nullable=False,
-                    ),
-                    sa.Column("payload", JSONB, nullable=False),
-                    sa.Column("client_ip", sa.String(64), nullable=True),
-                    sa.Column("user_agent", sa.Text, nullable=True),
-                    sa.Column("source", sa.String(256), nullable=True),
-                    sa.Column("token_sub", sa.String(256), nullable=True),
-                    extend_existing=True,
-                ),
-                # Case Analyzer uses existing schema with a 'data' column
-                "case_analyzer": sa.Table(
-                    "suggestions_case_analyzer",
-                    SuggestionService._metadata,
-                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                    sa.Column(
-                        "created_at",
-                        sa.DateTime(timezone=True),
-                        server_default=sa.func.now(),
-                        nullable=False,
-                    ),
-                    sa.Column("data", JSONB, nullable=False),
-                    sa.Column("client_ip", sa.String(64), nullable=True),
-                    sa.Column("user_agent", sa.Text, nullable=True),
-                    sa.Column("source", sa.String(256), nullable=True),
-                    sa.Column("token_sub", sa.String(256), nullable=True),
-                    sa.Column("username", sa.String(256), nullable=True),
-                    sa.Column("user_email", sa.String(256), nullable=True),
-                    sa.Column("model", sa.String(64), nullable=True),
-                    sa.Column("case_citation", sa.Text, nullable=True),
-                    extend_existing=True,
-                ),
-            }
-
-            # Ensure all tables exist (will not alter existing ones)
-            SuggestionService._metadata.create_all(self.engine)
-
-        self.metadata = SuggestionService._metadata
-        self.tables = SuggestionService._tables
+        self.metadata = SUGGESTIONS_METADATA
+        self.tables = SUGGESTION_TABLES
 
     def _get_token_sub(self, user: dict[str, Any] | None) -> str | None:
         """Extract email from Auth0 user payload and use as identifier."""
@@ -191,6 +51,15 @@ class SuggestionService:
         # Fallback to string representation
         return str(obj)
 
+    @staticmethod
+    def _extract_moderation_status(payload: Any) -> str | None:
+        if isinstance(payload, dict):
+            status = payload.get("moderation_status")
+            if isinstance(status, str):
+                stripped = status.strip()
+                return stripped or None
+        return None
+
     def save_suggestion(
         self,
         payload: dict[str, Any],
@@ -207,10 +76,14 @@ class SuggestionService:
             raise ValueError(f"Unknown suggestions table '{table}'")
 
         with suggestions_db_manager.get_session() as session:
+            status_value = self._extract_moderation_status(payload)
             safe_payload = self._to_jsonable(payload)
             # Case analyzer table stores JSON in 'data' column
             if table == "case_analyzer":
-                values: dict[str, Any] = {"data": safe_payload}
+                values: dict[str, Any] = {
+                    "data": safe_payload,
+                    "moderation_status": status_value,
+                }
                 if hasattr(target.c, "client_ip"):
                     values["client_ip"] = client_ip
                 if hasattr(target.c, "user_agent"):
@@ -219,6 +92,8 @@ class SuggestionService:
                     values["source"] = source
                 if hasattr(target.c, "token_sub"):
                     values["token_sub"] = token_sub
+                if hasattr(target.c, "username") and user and user.get("name"):
+                    values["username"] = user.get("name")
                 stmt = target.insert().values(**values).returning(target.c.id)
             else:
                 stmt = (
@@ -229,6 +104,7 @@ class SuggestionService:
                         user_agent=user_agent,
                         source=source,
                         token_sub=token_sub,
+                        moderation_status=status_value,
                     )
                     .returning(target.c.id)
                 )
@@ -252,25 +128,25 @@ class SuggestionService:
                 if data_col is None:
                     return []
                 cols.append(data_col)
+
                 # Optional meta columns
-                username_col = getattr(target.c, "username", None)
-                user_email_col = getattr(target.c, "user_email", None)
-                model_col = getattr(target.c, "model", None)
-                citation_col = getattr(target.c, "case_citation", None)
-                source_col = getattr(target.c, "source", None)
-                for c in (
-                    username_col,
-                    user_email_col,
-                    model_col,
-                    citation_col,
-                    source_col,
-                ):
-                    if c is not None:
-                        cols.append(c)
+                def _optional_column(name: str) -> sa.Column | None:
+                    col = getattr(target.c, name, None)
+                    if col is None:
+                        return None
+                    cols.append(col)
+                    return col
+
+                username_col = _optional_column("username")
+                user_email_col = _optional_column("user_email")
+                model_col = _optional_column("model")
+                citation_col = _optional_column("case_citation")
+                source_col = _optional_column("source")
                 query = sa.select(*cols)
+                query = query.where(target.c.moderation_status.is_(None))
                 if created_col is not None:
                     query = query.order_by(created_col.desc())
-                query = query.limit(limit * 5)  # read more since we'll filter client-side
+                query = query.limit(limit * 2)
                 rows = session.execute(query).mappings().all()
 
                 results: list[dict] = []
@@ -303,6 +179,13 @@ class SuggestionService:
                 return results[:limit]
 
             # Default flow uses JSONB 'payload'
+            pending_condition = sa.and_(
+                target.c.moderation_status.is_(None),
+                sa.or_(
+                    ~target.c.payload.has_key("moderation_status"),  # type: ignore[attr-defined]
+                    target.c.payload["moderation_status"].astext.is_(None),
+                ),
+            )
             query = (
                 sa.select(
                     target.c.id,
@@ -311,12 +194,7 @@ class SuggestionService:
                     target.c.source,
                     target.c.token_sub,
                 )
-                .where(
-                    sa.or_(
-                        ~target.c.payload.has_key("moderation_status"),  # type: ignore[attr-defined]
-                        target.c.payload["moderation_status"].astext.is_(None),
-                    )
-                )
+                .where(pending_condition)
                 .order_by(target.c.created_at.desc())
                 .limit(limit)
             )
@@ -339,23 +217,22 @@ class SuggestionService:
                 if data_col is None:
                     return None
                 cols.append(data_col)
-                # Optional meta columns
-                username_col = getattr(target.c, "username", None)
-                user_email_col = getattr(target.c, "user_email", None)
-                model_col = getattr(target.c, "model", None)
-                citation_col = getattr(target.c, "case_citation", None)
-                source_col = getattr(target.c, "source", None)
-                for c in (
-                    username_col,
-                    user_email_col,
-                    model_col,
-                    citation_col,
-                    source_col,
-                ):
-                    if c is not None:
-                        cols.append(c)
+
+                def _optional_column(name: str) -> sa.Column | None:
+                    col = getattr(target.c, name, None)
+                    if col is None:
+                        return None
+                    cols.append(col)
+                    return col
+
+                username_col = _optional_column("username")
+                user_email_col = _optional_column("user_email")
+                model_col = _optional_column("model")
+                citation_col = _optional_column("case_citation")
+                source_col = _optional_column("source")
 
                 query = sa.select(*cols).where(target.c.id == suggestion_id)
+                query = query.where(target.c.moderation_status.is_(None))
                 row = session.execute(query).mappings().first()
                 if not row:
                     return None
@@ -395,6 +272,7 @@ class SuggestionService:
                     target.c.token_sub,
                 )
                 .where(target.c.id == suggestion_id)
+                .where(target.c.moderation_status.is_(None))
                 .where(
                     sa.or_(
                         ~target.c.payload.has_key("moderation_status"),  # type: ignore[attr-defined]
@@ -437,7 +315,7 @@ class SuggestionService:
                 if merged_id is not None:
                     current["merged_record_id"] = int(merged_id)
                 new_val = json.dumps(self._to_jsonable(current))
-                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val)
+                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val, moderation_status=status)
                 session.execute(upd)
                 session.commit()
                 return
@@ -471,7 +349,7 @@ class SuggestionService:
                     merged_id_json,
                     True,
                 )
-            stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=update_expr)
+            stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=update_expr, moderation_status=status)
             session.execute(stmt)
             session.commit()
 
@@ -493,12 +371,18 @@ class SuggestionService:
                     except Exception:
                         current = {}
                 merged = {**current, **payload}
+                status_value = self._extract_moderation_status(merged)
                 new_val = json.dumps(self._to_jsonable(merged))
-                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val)
+                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val, moderation_status=status_value)
                 session.execute(upd)
                 session.commit()
                 return
 
-            stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=self._to_jsonable(payload))
+            status_value = self._extract_moderation_status(payload)
+            stmt = (
+                sa.update(target)
+                .where(target.c.id == suggestion_id)
+                .values(payload=self._to_jsonable(payload), moderation_status=status_value)
+            )
             session.execute(stmt)
             session.commit()
