@@ -222,7 +222,7 @@ def _table_key(path_segment: str) -> str | None:
 
 
 @router.get(
-    "/pending/{category}",
+    "/moderation/pending/{category}",
     summary="List pending suggestions for a category",
     description="Requires editor or admin role. Returns list of pending suggestions for moderation.",
 )
@@ -250,7 +250,7 @@ async def list_pending_suggestions(
 
 
 @router.get(
-    "/{category}/{suggestion_id}",
+    "/moderation/{category}/{suggestion_id}",
     summary="Get specific suggestion details",
     description="Requires editor or admin role. Returns detailed information about a specific suggestion.",
 )
@@ -286,7 +286,7 @@ async def get_suggestion_detail(
 
 
 @router.post(
-    "/{category}/{suggestion_id}/approve",
+    "/moderation/{category}/{suggestion_id}/approve",
     summary="Approve a suggestion",
     description="Requires editor or admin role. Marks a suggestion as approved and processes it for insertion",
 )
@@ -366,7 +366,7 @@ async def approve_suggestion(
 
 
 @router.post(
-    "/{category}/{suggestion_id}/reject",
+    "/moderation/{category}/{suggestion_id}/reject",
     summary="Reject a suggestion",
     description="Requires editor or admin role. Marks a suggestion as rejected.",
 )
