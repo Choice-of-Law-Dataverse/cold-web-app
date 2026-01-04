@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
 import type { JurisdictionWithAnswerCoverage } from "@/types/api";
 
+const EMPTY_SET = new Set<string>();
+
 function convert(record: JurisdictionWithAnswerCoverage) {
   return {
     ...record,
@@ -27,28 +29,38 @@ function convert(record: JurisdictionWithAnswerCoverage) {
 export function useJurisdictions() {
   const { apiClient } = useApiClient();
 
-  const { data: rawData, ...rest } = useQuery({
+  const { data, ...rest } = useQuery({
     queryKey: ["jurisdictions-with-answer-percentage"],
     queryFn: () =>
       apiClient<JurisdictionWithAnswerCoverage[]>(
         "/statistics/jurisdictions-with-answer-percentage",
         { method: "GET" },
       ),
-  });
+    select: (rawData) => {
+      const jurisdictions = rawData
+        .filter((record) => record["Irrelevant?"] === false)
+        .map(convert);
 
-  const data = computed(() => {
-    if (!rawData.value) return undefined;
+      const knownJurisdictionTerms = new Set<string>();
+      jurisdictions.forEach((j) => {
+        knownJurisdictionTerms.add(j.Name.toLowerCase());
+        if (j.alpha3Code) {
+          knownJurisdictionTerms.add(j.alpha3Code.toLowerCase());
+        }
+      });
 
-    return rawData.value
-      .filter(
-        (record: JurisdictionWithAnswerCoverage) =>
-          record["Irrelevant?"] === false,
-      )
-      .map(convert);
+      return {
+        jurisdictions,
+        knownJurisdictionTerms,
+      };
+    },
   });
 
   return {
-    data,
+    data: computed(() => data.value?.jurisdictions),
+    knownJurisdictionTerms: computed(
+      () => data.value?.knownJurisdictionTerms ?? EMPTY_SET,
+    ),
     ...rest,
   };
 }

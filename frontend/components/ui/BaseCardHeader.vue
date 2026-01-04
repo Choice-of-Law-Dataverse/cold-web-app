@@ -240,9 +240,9 @@
 <script setup>
 import { onMounted, ref, computed, reactive, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import jurisdictionsData from "@/assets/jurisdictions-data.json";
 import { handleImageError } from "@/utils/handleImageError";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
+import { useJurisdictionLookup } from "@/composables/useJurisdictionLookup";
 import CiteModal from "@/components/ui/CiteModal.vue";
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
@@ -250,6 +250,8 @@ const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 const route = useRoute();
 const router = useRouter();
 const isCiteOpen = ref(false);
+
+const { getJurisdictionISO } = useJurisdictionLookup();
 
 const props = defineProps({
   resultData: {
@@ -414,10 +416,6 @@ onMounted(() => {
   const currentURL = window.location.href;
   suggestEditLink.value = `https://airtable.com/${airtableFormID}?prefill_URL=${encodeURIComponent(currentURL)}&hide_URL=true`;
 });
-function getJurisdictionISO(name) {
-  const entry = jurisdictionsData.find((item) => item.name.includes(name));
-  return entry ? entry.alternative[0].toLowerCase() : "default";
-}
 
 const legalFamily = computed(() => {
   if (
