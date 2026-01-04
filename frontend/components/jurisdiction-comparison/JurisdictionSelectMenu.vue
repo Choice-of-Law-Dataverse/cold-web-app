@@ -7,6 +7,7 @@
     :ui-menu="{ container: 'z-[2050] group', height: 'max-h-96' }"
     :placeholder="placeholder"
     :options="availableCountries"
+    :disabled="disabled"
     size="xl"
     @change="onSelect"
   >
@@ -89,6 +90,10 @@ const props = defineProps({
   excludedCodes: {
     type: Array,
     default: () => [],
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
 });
 
