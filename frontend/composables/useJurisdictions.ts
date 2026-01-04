@@ -3,6 +3,8 @@ import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
 import type { JurisdictionWithAnswerCoverage } from "@/types/api";
 
+const EMPTY_SET = new Set<string>();
+
 function convert(record: JurisdictionWithAnswerCoverage) {
   return {
     ...record,
@@ -56,7 +58,7 @@ export function useJurisdictions() {
 
   return {
     data: computed(() => data.value?.jurisdictions),
-    knownJurisdictionTerms: computed(() => data.value?.knownJurisdictionTerms ?? new Set<string>()),
+    knownJurisdictionTerms: computed(() => data.value?.knownJurisdictionTerms ?? EMPTY_SET),
     ...rest,
   };
 }
