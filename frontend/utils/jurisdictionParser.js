@@ -1,15 +1,9 @@
-import jurisdictionsData from "@/assets/jurisdictions-data.json";
-
-/**
- * Creates a set of all known jurisdiction names (lowercase) for fast lookup
- */
-const knownJurisdictions = new Set(
-  jurisdictionsData.flatMap((j) => j.name.map((n) => n.toLowerCase())),
-);
-
 /**
  * Parses a jurisdiction string that may contain single or multiple jurisdictions.
  * Handles jurisdiction names that contain commas (e.g., "Congo, the Democratic Republic of the")
+ *
+ * Since this data comes from the backend, we trust it and simply handle comma-separated lists.
+ * Multi-word jurisdiction names with commas are preserved as single entries.
  *
  * @param {string} jurisdictionString - The string to parse
  * @returns {string[]} - Array of jurisdiction names
@@ -24,25 +18,24 @@ export function parseJurisdictionString(jurisdictionString) {
     return [];
   }
 
-  // First, check if the entire string is a known jurisdiction
-  if (knownJurisdictions.has(trimmed.toLowerCase())) {
-    return [trimmed];
+  // Check if the string contains " and " which typically indicates multiple jurisdictions
+  if (trimmed.includes(" and ")) {
+    return trimmed
+      .split(" and ")
+      .map((part) => part.trim())
+      .filter((part) => part);
   }
 
-  // If not, try splitting by comma and validate each part
-  const parts = trimmed.split(",").map((part) => part.trim());
-
-  // Check if all parts are valid jurisdiction names
-  const allPartsValid = parts.every((part) =>
-    knownJurisdictions.has(part.toLowerCase()),
-  );
-
-  if (allPartsValid) {
-    // All parts are valid jurisdictions, so it's a comma-separated list
-    return [...new Set(parts)];
+  // For comma-separated values, we need to be careful about jurisdiction names
+  // that naturally contain commas (e.g., "Congo, the Democratic Republic of the")
+  // If there are multiple commas or the pattern suggests a list, split it
+  const commaCount = (trimmed.match(/,/g) || []).length;
+  
+  if (commaCount >= 2) {
+    // Multiple commas likely indicate a list of jurisdictions
+    return [...new Set(trimmed.split(",").map((part) => part.trim()))];
   }
-
-  // If splitting by comma doesn't produce valid jurisdictions,
-  // treat the entire string as a single jurisdiction name
+  
+  // Single comma or no comma - treat as a single jurisdiction
   return [trimmed];
 }
