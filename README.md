@@ -2,6 +2,60 @@
 
 Repository for building and deploying the CoLD web app on [www.cold.global](https://www.cold.global/).
 
+> **For AI coding agents**: See [AGENTS.md](AGENTS.md) for agent-specific instructions.
+
+## Quick Start
+
+### Prerequisites
+
+- **Node.js v20+** with npm 10+
+- **Python 3.12** (managed by uv)
+- **uv** (Python package manager): `brew install uv` (macOS) or see [uv docs](https://docs.astral.sh/uv/)
+
+### Running Locally
+
+```bash
+# Frontend (in one terminal)
+cd frontend
+npm install
+npm run dev
+# Open http://localhost:3000/
+
+# Backend (in another terminal)
+cd backend
+make sync
+make dev
+# API docs at http://localhost:8000/api/v1/docs
+```
+
+## Development Workflow
+
+### Before Committing
+
+Always run validation checks before committing:
+
+```bash
+# Frontend validation
+cd frontend && npm run check
+
+# Backend validation
+cd backend && make check
+```
+
+### Code Standards
+
+- **Conventional Commits**: Follow [Conventional Commits](https://www.conventionalcommits.org/) format (`feat:`, `fix:`, `docs:`, etc.)
+- **No Barrel Files**: Avoid `index.ts`/`index.js`/`__init__.py` re-exports
+- **TypeScript Only**: All frontend code must be `.ts` or `.vue` (never `.js`)
+
+See [AGENTS.md](AGENTS.md) for detailed coding conventions.
+
+## Project Structure
+
+- **[frontend/](frontend/)**: Nuxt 3 application - see [frontend/README.md](frontend/README.md)
+- **[backend/](backend/)**: FastAPI application - see [backend/README.md](backend/README.md)
+- **[AGENTS.md](AGENTS.md)**: Instructions for AI coding agents
+
 ## API Documentation
 
 The API documentation can be found [here](https://cold-backend.thankfulcoast-6e0fb265.switzerlandnorth.azurecontainerapps.io/api/v1/docs).
