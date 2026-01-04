@@ -4,17 +4,16 @@ Adapted from cold-case-analysis repository.
 """
 
 import asyncio
-import base64
 import io
 import logging
-from typing import Any, AsyncGenerator, Literal
+from collections.abc import AsyncGenerator
+from typing import Any, Literal
 
 import logfire
 import nest_asyncio
 import pymupdf4llm
 from agents import Agent, Runner
 from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
-from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 
 from app.config import config
@@ -107,7 +106,7 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
             return markdown_text
         except Exception as e:
             logger.error("Failed to extract text from PDF: %s", str(e))
-            raise ValueError(f"Failed to extract text from PDF: {str(e)}")
+            raise ValueError(f"Failed to extract text from PDF: {str(e)}") from e
 
 
 def get_openai_client():

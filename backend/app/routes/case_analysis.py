@@ -55,21 +55,21 @@ async def upload_document(body: UploadDocumentRequest):
             logger.info("Decoding PDF file: %s (%d bytes)", body.file_name, len(pdf_bytes))
         except Exception as e:
             logger.error("Failed to decode base64 PDF content: %s", str(e))
-            raise HTTPException(status_code=400, detail="Invalid base64-encoded PDF content")
+            raise HTTPException(status_code=400, detail="Invalid base64-encoded PDF content") from e
 
         try:
             extracted_text = extract_text_from_pdf(pdf_bytes)
             logger.info("Extracted %d characters from PDF", len(extracted_text))
         except Exception as e:
             logger.error("Failed to extract text from PDF: %s", str(e))
-            raise HTTPException(status_code=422, detail=f"Failed to extract text from PDF: {str(e)}")
+            raise HTTPException(status_code=422, detail=f"Failed to extract text from PDF: {str(e)}") from e
 
         try:
             jurisdiction_result = detect_jurisdiction(extracted_text)
             logger.info("Detected jurisdiction: %s", jurisdiction_result.precise_jurisdiction)
         except Exception as e:
             logger.error("Failed to detect jurisdiction: %s", str(e))
-            raise HTTPException(status_code=500, detail=f"Failed to detect jurisdiction: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Failed to detect jurisdiction: {str(e)}") from e
 
         jurisdiction_data = {
             "legal_system_type": jurisdiction_result.legal_system_type,
@@ -149,7 +149,7 @@ async def analyze_document(body: ConfirmAnalysisRequest):
                     event_data = json.dumps(result)
                     yield f"data: {event_data}\n\n"
 
-                yield "data: {\"done\": true}\n\n"
+                yield 'data: {"done": true}\n\n'
             except Exception as e:
                 logger.error("Analysis workflow failed: %s", str(e))
                 error_event = json.dumps({"step": "error", "status": "error", "error": str(e)})

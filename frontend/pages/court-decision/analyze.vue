@@ -1,8 +1,8 @@
 <template>
   <div class="container mx-auto px-4 py-8">
-    <div class="max-w-4xl mx-auto">
-      <h1 class="text-3xl font-bold mb-6">AI Case Analyzer</h1>
-      <p class="text-gray-600 dark:text-gray-400 mb-8">
+    <div class="mx-auto max-w-4xl">
+      <h1 class="mb-6 text-3xl font-bold">AI Case Analyzer</h1>
+      <p class="mb-8 text-gray-600 dark:text-gray-400">
         Upload a court decision PDF to automatically extract key information and
         populate the submission form.
       </p>
@@ -14,17 +14,17 @@
         </template>
 
         <div
-          class="border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-lg p-8 text-center"
+          class="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center dark:border-gray-700"
+          :class="{ 'border-blue-500 bg-blue-50 dark:bg-blue-900': isDragging }"
           @dragover.prevent="isDragging = true"
           @dragleave.prevent="isDragging = false"
           @drop.prevent="handleFileDrop"
-          :class="{ 'border-blue-500 bg-blue-50 dark:bg-blue-900': isDragging }"
         >
           <UIcon
             name="i-material-symbols:cloud-upload"
-            class="text-6xl text-gray-400 mb-4"
+            class="mb-4 text-6xl text-gray-400"
           />
-          <p class="text-lg mb-4">
+          <p class="mb-4 text-lg">
             Drag and drop your PDF here, or click to select
           </p>
           <input
@@ -34,23 +34,28 @@
             class="hidden"
             @change="handleFileSelect"
           />
-          <UButton @click="$refs.fileInput.click()" size="lg">
+          <UButton size="lg" @click="fileInput?.click()">
             Select PDF File
           </UButton>
           <p v-if="selectedFile" class="mt-4 text-sm text-gray-600">
-            Selected: {{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})
+            Selected: {{ selectedFile.name }} ({{
+              formatFileSize(selectedFile.size)
+            }})
           </p>
         </div>
 
         <template #footer>
-          <div class="flex justify-between items-center">
-            <UButton variant="ghost" @click="$router.push('/court-decision/new')">
+          <div class="flex items-center justify-between">
+            <UButton
+              variant="ghost"
+              @click="$router.push('/court-decision/new')"
+            >
               Cancel
             </UButton>
             <UButton
-              @click="uploadDocument"
               :disabled="!selectedFile || isUploading"
               :loading="isUploading"
+              @click="uploadDocument"
             >
               Upload and Analyze
             </UButton>
@@ -67,7 +72,7 @@
         <div v-if="jurisdictionInfo" class="space-y-4">
           <UAlert
             :icon="getConfidenceIcon(jurisdictionInfo.confidence)"
-            :color="getConfidenceColor(jurisdictionInfo.confidence)"
+            :color="getConfidenceColor(jurisdictionInfo.confidence) as any"
             :title="`Detected with ${jurisdictionInfo.confidence} confidence`"
           />
 
@@ -104,14 +109,11 @@
         </div>
 
         <template #footer>
-          <div class="flex justify-between items-center">
+          <div class="flex items-center justify-between">
             <UButton variant="ghost" @click="resetAnalysis">
               Start Over
             </UButton>
-            <UButton
-              @click="confirmAndAnalyze"
-              :loading="isAnalyzing"
-            >
+            <UButton :loading="isAnalyzing" @click="confirmAndAnalyze">
               Confirm and Continue Analysis
             </UButton>
           </div>
@@ -128,12 +130,15 @@
           <div
             v-for="step in analysisSteps"
             :key="step.name"
-            class="border rounded-lg p-4"
+            class="rounded-lg border p-4"
             :class="{
-              'border-blue-500 bg-blue-50 dark:bg-blue-900': step.status === 'in_progress',
-              'border-green-500 bg-green-50 dark:bg-green-900': step.status === 'completed',
-              'border-red-500 bg-red-50 dark:bg-red-900': step.status === 'error',
-              'border-gray-300 dark:border-gray-700': step.status === 'pending'
+              'border-blue-500 bg-blue-50 dark:bg-blue-900':
+                step.status === 'in_progress',
+              'border-green-500 bg-green-50 dark:bg-green-900':
+                step.status === 'completed',
+              'border-red-500 bg-red-50 dark:bg-red-900':
+                step.status === 'error',
+              'border-gray-300 dark:border-gray-700': step.status === 'pending',
             }"
           >
             <div class="flex items-center justify-between">
@@ -146,7 +151,7 @@
                 <UIcon
                   v-if="step.status === 'in_progress'"
                   name="i-material-symbols:autorenew"
-                  class="text-2xl text-blue-500 animate-spin"
+                  class="animate-spin text-2xl text-blue-500"
                 />
                 <UIcon
                   v-if="step.status === 'completed'"
@@ -162,11 +167,11 @@
               </div>
               <span
                 v-if="step.confidence"
-                class="text-sm px-2 py-1 rounded"
+                class="rounded px-2 py-1 text-sm"
                 :class="{
                   'bg-green-200 text-green-800': step.confidence === 'high',
                   'bg-yellow-200 text-yellow-800': step.confidence === 'medium',
-                  'bg-red-200 text-red-800': step.confidence === 'low'
+                  'bg-red-200 text-red-800': step.confidence === 'low',
                 }"
               >
                 {{ step.confidence }} confidence
@@ -180,10 +185,7 @@
 
         <template #footer>
           <div class="flex justify-end">
-            <UButton
-              v-if="analysisComplete"
-              @click="goToForm"
-            >
+            <UButton v-if="analysisComplete" @click="goToForm">
               Go to Form
             </UButton>
           </div>
@@ -204,42 +206,99 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { useRouter } from '#imports';
+import { ref, computed } from "vue";
+import { useRouter } from "#imports";
 
 definePageMeta({
-  middleware: ['auth'],
+  middleware: ["auth"],
 });
 
-useHead({ title: 'AI Case Analyzer — CoLD' });
+useHead({ title: "AI Case Analyzer — CoLD" });
 
 const router = useRouter();
 
-const currentStep = ref<'upload' | 'confirm' | 'analyzing'>('upload');
+const fileInput = ref<HTMLInputElement>();
+const currentStep = ref<"upload" | "confirm" | "analyzing">("upload");
 const selectedFile = ref<File | null>(null);
 const isDragging = ref(false);
 const isUploading = ref(false);
 const isAnalyzing = ref(false);
 const error = ref<string | null>(null);
 
+interface JurisdictionInfo {
+  legal_system_type: string;
+  precise_jurisdiction: string;
+  jurisdiction_code: string;
+  confidence: string;
+  reasoning: string;
+}
+
 const correlationId = ref<string | null>(null);
-const jurisdictionInfo = ref<any>(null);
-const analysisResults = ref<any>({});
+const jurisdictionInfo = ref<JurisdictionInfo | null>(null);
+const analysisResults = ref<Record<string, unknown>>({});
 
 const analysisSteps = ref([
-  { name: 'col_extraction', label: 'Choice of Law Extraction', status: 'pending', confidence: null, error: null },
-  { name: 'theme_classification', label: 'Theme Classification', status: 'pending', confidence: null, error: null },
-  { name: 'case_citation', label: 'Case Citation', status: 'pending', confidence: null, error: null },
-  { name: 'abstract', label: 'Abstract Generation', status: 'pending', confidence: null, error: null },
-  { name: 'relevant_facts', label: 'Relevant Facts', status: 'pending', confidence: null, error: null },
-  { name: 'pil_provisions', label: 'PIL Provisions', status: 'pending', confidence: null, error: null },
-  { name: 'col_issue', label: 'Choice of Law Issue', status: 'pending', confidence: null, error: null },
-  { name: 'courts_position', label: "Court's Position", status: 'pending', confidence: null, error: null },
+  {
+    name: "col_extraction",
+    label: "Choice of Law Extraction",
+    status: "pending",
+    confidence: null,
+    error: null,
+  },
+  {
+    name: "theme_classification",
+    label: "Theme Classification",
+    status: "pending",
+    confidence: null,
+    error: null,
+  },
+  {
+    name: "case_citation",
+    label: "Case Citation",
+    status: "pending",
+    confidence: null,
+    error: null,
+  },
+  {
+    name: "abstract",
+    label: "Abstract Generation",
+    status: "pending",
+    confidence: null,
+    error: null,
+  },
+  {
+    name: "relevant_facts",
+    label: "Relevant Facts",
+    status: "pending",
+    confidence: null,
+    error: null,
+  },
+  {
+    name: "pil_provisions",
+    label: "PIL Provisions",
+    status: "pending",
+    confidence: null,
+    error: null,
+  },
+  {
+    name: "col_issue",
+    label: "Choice of Law Issue",
+    status: "pending",
+    confidence: null,
+    error: null,
+  },
+  {
+    name: "courts_position",
+    label: "Court's Position",
+    status: "pending",
+    confidence: null,
+    error: null,
+  },
 ]);
 
 const analysisComplete = computed(() => {
-  return analysisSteps.value.every(step => 
-    step.status === 'completed' || step.status === 'error'
+  return analysisSteps.value.every(
+    (step) => step.status === "completed" || step.status === "error",
   );
 });
 
@@ -248,10 +307,10 @@ function handleFileDrop(e: DragEvent) {
   const files = e.dataTransfer?.files;
   if (files && files.length > 0) {
     const file = files[0];
-    if (file.type === 'application/pdf') {
+    if (file.type === "application/pdf") {
       selectedFile.value = file;
     } else {
-      error.value = 'Please select a PDF file';
+      error.value = "Please select a PDF file";
     }
   }
 }
@@ -264,9 +323,9 @@ function handleFileSelect(e: Event) {
 }
 
 function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return bytes + ' B';
-  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
-  return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+  if (bytes < 1024) return bytes + " B";
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + " KB";
+  return (bytes / (1024 * 1024)).toFixed(2) + " MB";
 }
 
 async function uploadDocument() {
@@ -279,27 +338,31 @@ async function uploadDocument() {
     const reader = new FileReader();
     const fileContent = await new Promise<string>((resolve, reject) => {
       reader.onload = () => {
-        const base64 = (reader.result as string).split(',')[1];
+        const base64 = (reader.result as string).split(",")[1];
         resolve(base64);
       };
       reader.onerror = reject;
       reader.readAsDataURL(selectedFile.value!);
     });
 
-    const response = await $fetch('/api/proxy/case-analysis/upload', {
-      method: 'POST',
-      body: {
+    const response = await $fetch("/api/proxy/case-analysis/upload", {
+      method: "POST",
+      body: JSON.stringify({
         file_name: selectedFile.value.name,
         file_content_base64: fileContent,
-      },
-    });
+      }),
+    }) as { correlation_id: string; jurisdiction: JurisdictionInfo };
 
     correlationId.value = response.correlation_id;
     jurisdictionInfo.value = response.jurisdiction;
-    currentStep.value = 'confirm';
-  } catch (err: any) {
+    currentStep.value = "confirm";
+  } catch (err: unknown) {
     console.error('Upload failed:', err);
-    error.value = err.data?.detail || 'Failed to upload document. Please try again.';
+    const errorMessage = err && typeof err === 'object' && 'data' in err && 
+      err.data && typeof err.data === 'object' && 'detail' in err.data
+      ? String(err.data.detail)
+      : 'Failed to upload document. Please try again.';
+    error.value = errorMessage;
   } finally {
     isUploading.value = false;
   }
@@ -309,14 +372,14 @@ async function confirmAndAnalyze() {
   if (!correlationId.value || !jurisdictionInfo.value) return;
 
   isAnalyzing.value = true;
-  currentStep.value = 'analyzing';
+  currentStep.value = "analyzing";
   error.value = null;
 
   try {
-    const response = await fetch('/api/proxy/case-analysis/analyze', {
-      method: 'POST',
+    const response = await fetch("/api/proxy/case-analysis/analyze", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         correlation_id: correlationId.value,
@@ -328,7 +391,7 @@ async function confirmAndAnalyze() {
     const decoder = new TextDecoder();
 
     if (!reader) {
-      throw new Error('No response body');
+      throw new Error("No response body");
     }
 
     while (true) {
@@ -336,17 +399,19 @@ async function confirmAndAnalyze() {
       if (done) break;
 
       const chunk = decoder.decode(value);
-      const lines = chunk.split('\n');
+      const lines = chunk.split("\n");
 
       for (const line of lines) {
-        if (line.startsWith('data: ')) {
+        if (line.startsWith("data: ")) {
           const data = JSON.parse(line.slice(6));
-          
+
           if (data.done) {
             break;
           }
 
-          const stepIndex = analysisSteps.value.findIndex(s => s.name === data.step);
+          const stepIndex = analysisSteps.value.findIndex(
+            (s) => s.name === data.step,
+          );
           if (stepIndex !== -1) {
             analysisSteps.value[stepIndex].status = data.status;
             if (data.data) {
@@ -362,36 +427,39 @@ async function confirmAndAnalyze() {
     }
 
     storeAnalysisResults();
-  } catch (err: any) {
-    console.error('Analysis failed:', err);
-    error.value = 'Analysis failed. Please try again.';
+  } catch (err: unknown) {
+    console.error("Analysis failed:", err);
+    error.value = "Analysis failed. Please try again.";
   } finally {
     isAnalyzing.value = false;
   }
 }
 
 function storeAnalysisResults() {
-  if (typeof window !== 'undefined') {
-    sessionStorage.setItem('caseAnalysisResults', JSON.stringify({
-      correlationId: correlationId.value,
-      jurisdiction: jurisdictionInfo.value,
-      results: analysisResults.value,
-    }));
+  if (typeof window !== "undefined") {
+    sessionStorage.setItem(
+      "caseAnalysisResults",
+      JSON.stringify({
+        correlationId: correlationId.value,
+        jurisdiction: jurisdictionInfo.value,
+        results: analysisResults.value,
+      }),
+    );
   }
 }
 
 function goToForm() {
-  router.push('/court-decision/new?fromAnalysis=true');
+  router.push("/court-decision/new?fromAnalysis=true");
 }
 
 function resetAnalysis() {
-  currentStep.value = 'upload';
+  currentStep.value = "upload";
   selectedFile.value = null;
   correlationId.value = null;
   jurisdictionInfo.value = null;
   analysisResults.value = {};
-  analysisSteps.value.forEach(step => {
-    step.status = 'pending';
+  analysisSteps.value.forEach((step) => {
+    step.status = "pending";
     step.confidence = null;
     step.error = null;
   });
@@ -400,19 +468,29 @@ function resetAnalysis() {
 
 function getConfidenceIcon(confidence: string): string {
   switch (confidence) {
-    case 'high': return 'i-material-symbols:check-circle';
-    case 'medium': return 'i-material-symbols:warning';
-    case 'low': return 'i-material-symbols:error';
-    default: return 'i-material-symbols:info';
+    case "high":
+      return "i-material-symbols:check-circle";
+    case "medium":
+      return "i-material-symbols:warning";
+    case "low":
+      return "i-material-symbols:error";
+    default:
+      return "i-material-symbols:info";
   }
 }
 
-function getConfidenceColor(confidence: string): string {
+function getConfidenceColor(
+  confidence: string,
+): "green" | "yellow" | "red" | "gray" {
   switch (confidence) {
-    case 'high': return 'green';
-    case 'medium': return 'yellow';
-    case 'low': return 'red';
-    default: return 'gray';
+    case "high":
+      return "green";
+    case "medium":
+      return "yellow";
+    case "low":
+      return "red";
+    default:
+      return "gray";
   }
 }
 </script>
