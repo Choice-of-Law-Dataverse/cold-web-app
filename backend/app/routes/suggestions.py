@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 
 from app.auth import require_editor_or_admin, require_user, verify_frontend_request
 from app.schemas.suggestions import (
+    CaseAnalyzerSuggestion,
     CourtDecisionSuggestion,
     DomesticInstrumentSuggestion,
     InternationalInstrumentSuggestion,
@@ -58,6 +59,34 @@ async def submit_suggestion(
             client_ip=request.client.host if request.client else None,
             user_agent=request.headers.get("User-Agent"),
             source=body.source,
+            user=user,
+        )
+        return SuggestionResponse(id=new_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
+
+@router.post(
+    "/case-analyzer",
+    summary="Submit processed Case Analyzer result",
+    response_model=SuggestionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def submit_case_analyzer_result(
+    body: CaseAnalyzerSuggestion,
+    request: Request,
+    user: dict = Depends(require_user),
+    source: str | None = Header(None),
+    service: SuggestionService = Depends(get_suggestion_service),
+):
+    try:
+        payload = body.model_dump(exclude_none=True)
+        new_id = service.save_suggestion(
+            payload=payload,
+            table="case_analyzer",
+            client_ip=request.client.host if request.client else None,
+            user_agent=request.headers.get("User-Agent"),
+            source=source,
             user=user,
         )
         return SuggestionResponse(id=new_id)
@@ -221,6 +250,20 @@ def _table_key(path_segment: str) -> str | None:
     return mapping.get(path_segment)
 
 
+def _has_editor_access(user: dict | None) -> bool:
+    roles = user.get("https://cold.global/roles", []) if user else []
+    if isinstance(roles, str):
+        roles = [roles]
+    normalized = {role.lower() for role in roles if isinstance(role, str)}
+    return "editor" in normalized or "admin" in normalized
+
+
+def _extract_token_sub(user: dict | None) -> str | None:
+    if not user:
+        return None
+    return user.get("https://cold.global/email") or user.get("email") or user.get("sub")
+
+
 @router.get(
     "/pending/{category}",
     summary="List pending suggestions for a category",
@@ -252,12 +295,15 @@ async def list_pending_suggestions(
 @router.get(
     "/{category}/{suggestion_id}",
     summary="Get specific suggestion details",
-    description="Requires editor or admin role. Returns detailed information about a specific suggestion.",
+    description=(
+        "Authenticated users can retrieve details for their own submissions. "
+        "Editors and admins can access any suggestion for moderation."
+    ),
 )
 async def get_suggestion_detail(
     category: str,
     suggestion_id: int,
-    _: dict = Depends(require_editor_or_admin),
+    user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> dict[str, Any]:
     """Get detailed information about a specific suggestion."""
@@ -268,13 +314,30 @@ async def get_suggestion_detail(
             detail=f"Invalid category: {category}",
         )
 
+    is_moderator = _has_editor_access(user)
+
+    if not is_moderator and table == "case_analyzer":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions for this category",
+        )
+
+    token_sub = None if is_moderator else _extract_token_sub(user)
+    if not is_moderator and not token_sub:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Unable to verify submission ownership",
+        )
+
     try:
-        item = service.get_pending_by_id(table, suggestion_id)
+        item = service.get_suggestion_by_id(table, suggestion_id, token_sub=token_sub)
         if not item:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Suggestion not found or not pending",
+                detail="Suggestion not found or not accessible",
             )
+        if not is_moderator:
+            item.pop("token_sub", None)
         return item
     except HTTPException:
         raise
@@ -306,7 +369,7 @@ async def approve_suggestion(
         )
 
     try:
-        item = service.get_pending_by_id(table, suggestion_id)
+        item = service.get_suggestion_by_id(table, suggestion_id, pending_only=True)
         if not item:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,

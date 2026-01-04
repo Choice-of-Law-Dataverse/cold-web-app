@@ -92,6 +92,8 @@ class SuggestionService:
                     values["source"] = source
                 if hasattr(target.c, "token_sub"):
                     values["token_sub"] = token_sub
+                if hasattr(target.c, "user_email") and token_sub:
+                    values["user_email"] = token_sub
                 if hasattr(target.c, "username") and user and user.get("name"):
                     values["username"] = user.get("name")
                 stmt = target.insert().values(**values).returning(target.c.id)
@@ -201,8 +203,14 @@ class SuggestionService:
             rows = session.execute(query).mappings().all()
             return [dict(r) for r in rows]
 
-    def get_pending_by_id(self, table: str, suggestion_id: int) -> dict | None:
-        """Get a specific pending suggestion by ID."""
+    def get_suggestion_by_id(
+        self,
+        table: str,
+        suggestion_id: int,
+        *,
+        token_sub: str | None = None,
+        pending_only: bool = False,
+    ) -> dict | None:
         target = self.tables.get(table)
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
@@ -230,28 +238,35 @@ class SuggestionService:
                 model_col = _optional_column("model")
                 citation_col = _optional_column("case_citation")
                 source_col = _optional_column("source")
+                status_col = _optional_column("moderation_status")
 
                 query = sa.select(*cols).where(target.c.id == suggestion_id)
-                query = query.where(target.c.moderation_status.is_(None))
+                if token_sub:
+                    ownership_filters: list[Any] = []
+                    if username_col is not None:
+                        ownership_filters.append(username_col == token_sub)
+                    if user_email_col is not None:
+                        ownership_filters.append(user_email_col == token_sub)
+                    if ownership_filters:
+                        query = query.where(sa.or_(*ownership_filters))
+                    else:
+                        return None
+                if pending_only:
+                    query = query.where(target.c.moderation_status.is_(None))
                 row = session.execute(query).mappings().first()
                 if not row:
                     return None
 
                 raw_data = row.get("data")
-                payload: Any
                 if isinstance(raw_data, dict):
-                    payload = raw_data
+                    payload: Any = raw_data
                 else:
                     try:
                         payload = json.loads(raw_data) if raw_data is not None else {}
                     except Exception:
                         payload = {}
 
-                status = payload.get("moderation_status") if isinstance(payload, dict) else None
-                if status in {"approved", "rejected"}:
-                    return None  # Not pending
-
-                return {
+                result = {
                     "id": row["id"],
                     "created_at": row.get("created_at"),
                     "payload": payload,
@@ -260,28 +275,57 @@ class SuggestionService:
                     "user_email": row.get("user_email") if user_email_col is not None else None,
                     "model": row.get("model") if model_col is not None else None,
                     "case_citation": row.get("case_citation") if citation_col is not None else None,
+                    "moderation_status": row.get("moderation_status") if status_col is not None else None,
                 }
 
-            # Default flow uses JSONB 'payload'
-            query = (
-                sa.select(
-                    target.c.id,
-                    target.c.created_at,
-                    target.c.payload,
-                    target.c.source,
-                    target.c.token_sub,
-                )
-                .where(target.c.id == suggestion_id)
-                .where(target.c.moderation_status.is_(None))
-                .where(
+                if pending_only:
+                    status_val = result.get("moderation_status")
+                    if status_val in {"approved", "rejected"}:
+                        return None
+
+                return result
+
+            query = sa.select(
+                target.c.id,
+                target.c.created_at,
+                target.c.payload,
+                target.c.source,
+                target.c.token_sub,
+                target.c.moderation_status,
+            ).where(target.c.id == suggestion_id)
+
+            if token_sub:
+                query = query.where(target.c.token_sub == token_sub)
+
+            if pending_only:
+                query = query.where(target.c.moderation_status.is_(None)).where(
                     sa.or_(
                         ~target.c.payload.has_key("moderation_status"),  # type: ignore[attr-defined]
                         target.c.payload["moderation_status"].astext.is_(None),
                     )
                 )
-            )
+
             row = session.execute(query).mappings().first()
-            return dict(row) if row else None
+            if not row:
+                return None
+
+            payload_value = row.get("payload")
+            if isinstance(payload_value, dict):
+                payload_data: Any = payload_value
+            else:
+                try:
+                    payload_data = json.loads(payload_value) if payload_value is not None else {}
+                except Exception:
+                    payload_data = {}
+
+            return {
+                "id": row["id"],
+                "created_at": row.get("created_at"),
+                "payload": payload_data,
+                "source": row.get("source"),
+                "token_sub": row.get("token_sub"),
+                "moderation_status": row.get("moderation_status"),
+            }
 
     def mark_status(
         self,

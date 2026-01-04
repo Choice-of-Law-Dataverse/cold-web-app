@@ -2,11 +2,13 @@ import base64
 import json
 import logging
 import traceback
+from typing import Any
 
 import logfire
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
+from app.auth import require_user, verify_frontend_request
 from app.case_analysis.models import JurisdictionOutput
 from app.case_analysis.utils.pdf_handler import extract_text_from_pdf
 from app.schemas.case_analysis import (
@@ -22,8 +24,7 @@ from app.services.suggestions import SuggestionService
 
 logger = logging.getLogger(__name__)
 
-# router = APIRouter(prefix="/case-analysis", tags=["Case Analysis"], dependencies=[Depends(verify_frontend_request)])
-router = APIRouter(prefix="/case-analysis", tags=["Case Analysis"])
+router = APIRouter(prefix="/case-analysis", tags=["Case Analysis"], dependencies=[Depends(verify_frontend_request)])
 
 
 def get_suggestion_service() -> SuggestionService:
@@ -44,10 +45,9 @@ def get_suggestion_service() -> SuggestionService:
 async def upload_document(
     body: UploadDocumentRequest,
     request: Request,
-    # user: dict = Depends(require_user),
+    user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ):
-    user = {"sub": "dummy"}
     """
     Upload and process a court decision document.
 
@@ -156,6 +156,7 @@ async def upload_document(
 )
 async def analyze_document(
     body: ConfirmAnalysisRequest,
+    _: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ):
     """
@@ -201,6 +202,8 @@ async def analyze_document(
             "reasoning": body.jurisdiction.reasoning,
         }
 
+        confidence_scores: dict[str, str] = {}
+
         # Update jurisdiction if it was corrected
         if draft_id:
             try:
@@ -213,6 +216,13 @@ async def analyze_document(
             except Exception as e:
                 logger.error("Failed to update jurisdiction in database: %s", str(e))
 
+        def record_confidence(step_name: str, data: dict[str, Any] | None) -> None:
+            if not data:
+                return
+            confidence_value = data.get("confidence")
+            if isinstance(confidence_value, str):
+                confidence_scores[step_name] = confidence_value
+
         async def event_generator():
             """Generate SSE events for each analysis step."""
             try:
@@ -220,13 +230,17 @@ async def analyze_document(
                     # Update cache
                     analysis_cache.update_results(body.correlation_id, result.get("step", "unknown"), result)
 
+                    step_name = result.get("step")
+                    if isinstance(step_name, str) and result.get("status") == "completed":
+                        record_confidence(step_name, result.get("data"))
+
                     # Update database if we have draft_id and step data
                     if draft_id and result.get("status") == "completed" and result.get("data"):
-                        step_name = result.get("step")
                         if not step_name:
                             continue
                         try:
-                            update_data = {step_name: result.get("data")}
+                            step_payload = result.get("data")
+                            update_data = {step_name: step_payload}
                             service.update_payload("case_analyzer", draft_id, update_data)
                             logger.info("Updated step %s in draft ID: %d", step_name, draft_id)
                         except Exception as e:
@@ -238,12 +252,21 @@ async def analyze_document(
                 # Mark as completed when all steps are done
                 if draft_id:
                     try:
-                        service.update_payload("case_analyzer", draft_id, {"status": "completed"})
+                        service.update_payload(
+                            "case_analyzer",
+                            draft_id,
+                            {"status": "completed", "confidence_summary": confidence_scores},
+                        )
                         logger.info("Marked draft ID %d as completed", draft_id)
                     except Exception as e:
                         logger.error("Failed to mark draft as completed: %s", str(e))
 
-                yield 'data: {"done": true}\n\n'
+                done_payload = {
+                    "step": "analysis_complete",
+                    "status": "completed",
+                    "data": {"confidence_summary": confidence_scores, "done": True},
+                }
+                yield f"data: {json.dumps(done_payload)}\n\n"
             except BaseException as e:
                 logger.error("Analysis workflow failed: %s", str(e))
                 logger.error("Traceback: %s", traceback.format_exc())
@@ -251,7 +274,11 @@ async def analyze_document(
                 # Mark as failed in database
                 if draft_id:
                     try:
-                        service.update_payload("case_analyzer", draft_id, {"status": "failed", "error": str(e)})
+                        service.update_payload(
+                            "case_analyzer",
+                            draft_id,
+                            {"status": "failed", "error": str(e), "confidence_summary": confidence_scores},
+                        )
                     except Exception as db_error:
                         logger.error("Failed to mark draft as failed: %s", str(db_error))
 
