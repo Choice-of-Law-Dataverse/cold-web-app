@@ -23,7 +23,14 @@ _openai_client = None
 
 
 def get_openai_client():
-    """Get singleton OpenAI client for agents."""
+    """
+    Get singleton OpenAI client for agents.
+
+    Note: nest_asyncio.apply() is required because the openai-agents library
+    uses asyncio.run() internally, which would fail in an already-running async
+    context (like FastAPI). nest_asyncio patches asyncio to allow nested event loops.
+    This is applied once when the client is first created.
+    """
     global _openai_client
     if _openai_client is None:
         import nest_asyncio
@@ -127,7 +134,12 @@ def extract_text_from_pdf(pdf_bytes: bytes) -> str:
 
 
 def detect_jurisdiction(text: str) -> JurisdictionOutput:
-    """Detect jurisdiction from court decision text."""
+    """
+    Detect jurisdiction from court decision text.
+
+    Note: Uses asyncio.run() internally via the agents library. This works in
+    FastAPI's async context because nest_asyncio is applied in get_openai_client().
+    """
     with logfire.span("jurisdiction_detection"):
         if not text or len(text.strip()) < 50:
             return JurisdictionOutput(
