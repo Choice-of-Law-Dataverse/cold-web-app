@@ -1029,7 +1029,7 @@ CREATE OR REPLACE FUNCTION data_views.search_all(
     filter_themes TEXT[] DEFAULT NULL,
     page INT DEFAULT 1,
     page_size INT DEFAULT 50,
-    sort_by_date BOOLEAN DEFAULT FALSE
+    sort_by_date BOOLEAN DEFAULT TRUE
 )
 RETURNS TABLE(
     table_name TEXT,
@@ -1074,6 +1074,8 @@ BEGIN
                SELECT 1 FROM unnest(filter_themes) AS tf
                WHERE search_view."Themes" ILIKE '%'||tf||'%'
           ))
+        -- Exclude answers with "No data"
+          AND NOT (btrim(COALESCE(a."Answer", '')) ILIKE '%no data%')
 
         UNION ALL
 
@@ -1198,12 +1200,9 @@ BEGIN
     ) AS sub
     ORDER BY
         -- Bucket results to enforce special ordering rules:
-        -- 0 = normal results, 1 = low-ranked Court Decisions (Case_Rank <= 5), 2 = Answers with "No data"
-        -- This ensures "No data" Answers are always at the very end, even after low-ranked Court Decisions.
+        -- 0 = normal results, 1 = low-ranked Court Decisions (Case_Rank <= 5)
+        -- Low-ranked Court Decisions are deprioritized to appear after other results.
         CASE
-            WHEN sub.table_name = 'Answers'
-                 AND btrim(COALESCE(sub.complete_record->>'Answer', '')) ILIKE '%no data%'
-            THEN 2
             WHEN sub.table_name = 'Court Decisions'
                  AND COALESCE((sub.complete_record->>'Case_Rank')::numeric, 1000000) <= 5
             THEN 1
