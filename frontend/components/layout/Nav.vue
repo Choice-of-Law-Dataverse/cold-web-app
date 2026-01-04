@@ -206,11 +206,17 @@
 import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import eventBus from "@/eventBus";
-import jurisdictionsData from "@/assets/jurisdictions-data.json";
+import { useJurisdictionLookup } from "@/composables/useJurisdictionLookup";
 import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
 
 const router = useRouter();
 const route = useRoute();
+
+const {
+  data: jurisdictions,
+  findMatchingJurisdictions,
+  findJurisdictionByName,
+} = useJurisdictionLookup();
 
 const basePath = (arr) => `/${arr[0].path.split("/")[1]}`;
 
@@ -271,8 +277,15 @@ const isSearchFocused = ref(false);
 
 const searchInput = ref(null);
 
+// Minimum search length for jurisdiction suggestions
+const MIN_SEARCH_LENGTH = 3;
+
 function updateSuggestions() {
-  if (!searchText.value || searchText.value.trim().length < 3) {
+  if (
+    !searchText.value ||
+    searchText.value.trim().length < MIN_SEARCH_LENGTH ||
+    !jurisdictions.value
+  ) {
     suggestions.value = [];
     showSuggestions.value = false;
     return;
@@ -280,28 +293,20 @@ function updateSuggestions() {
   const words = searchText.value
     .toLowerCase()
     .split(/\s+/)
-    .filter((word) => word.length >= 3);
+    .filter((word) => word.length >= MIN_SEARCH_LENGTH);
 
-  const filtered = jurisdictionsData
-    .filter((item) =>
-      words.some(
-        (word) =>
-          item.name[0].toLowerCase().includes(word) ||
-          item.alternative.some((adj) => adj.toLowerCase().includes(word)),
-      ),
-    )
-    .map((item) => item.name[0]);
+  const filtered = findMatchingJurisdictions(words);
 
   suggestions.value = filtered.slice(0, 5);
   showSuggestions.value = suggestions.value.length > 0;
 }
 
 function handleSuggestionClick(selected) {
-  const record = jurisdictionsData.find((item) => item.name[0] === selected);
+  const record = findJurisdictionByName(selected);
   const keywords = record
     ? [
-        record.name[0].toLowerCase().trim(),
-        ...record.alternative.map((a) => a.toLowerCase().trim()),
+        record.Name.toLowerCase().trim(),
+        ...(record.alpha3Code ? [record.alpha3Code.toLowerCase().trim()] : []),
       ]
     : [selected.toLowerCase().trim()];
 

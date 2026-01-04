@@ -55,10 +55,12 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
-import jurisdictionsData from "@/assets/jurisdictions-data.json";
+import { useJurisdictionLookup } from "@/composables/useJurisdictionLookup";
 
 const route = useRoute();
 const router = useRouter();
+
+const { data: jurisdictions, isJurisdictionTerm } = useJurisdictionLookup();
 
 const jurisdictionFilter = computed(() => {
   return route.query.jurisdiction
@@ -68,12 +70,10 @@ const jurisdictionFilter = computed(() => {
 
 const queryContainsJurisdiction = computed(() => {
   const q = (route.query.q || "").toLowerCase();
-  if (!q) return false;
+  if (!q || !jurisdictions.value) return false;
+
   const words = q.split(/\s+/);
-  const jurisdictionTerms = jurisdictionsData
-    .flatMap((j) => [...(j.name || []), ...(j.alternative || [])])
-    .flatMap((term) => term.split(",").map((t) => t.trim().toLowerCase()));
-  return words.some((word) => jurisdictionTerms.includes(word));
+  return words.some((word) => isJurisdictionTerm(word));
 });
 
 function removeJurisdictionFilter() {
