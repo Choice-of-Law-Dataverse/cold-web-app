@@ -100,11 +100,7 @@ async def analyze_case_streaming(text: str, jurisdiction_data: dict[str, Any]) -
             yield {
                 "step": "col_extraction",
                 "status": "completed",
-                "data": {
-                    "col_sections": col_result.col_sections,
-                    "confidence": col_result.confidence,
-                    "reasoning": col_result.reasoning,
-                },
+                "data": col_result.model_dump(),
             }
             col_section_text = str(col_result)
         except BaseException as e:
@@ -140,11 +136,7 @@ async def analyze_case_streaming(text: str, jurisdiction_data: dict[str, Any]) -
             yield {
                 "step": "theme_classification",
                 "status": "completed",
-                "data": {
-                    "themes": theme_result.themes,
-                    "confidence": theme_result.confidence,
-                    "reasoning": theme_result.reasoning,
-                },
+                "data": theme_result.model_dump(),
             }
 
             if isinstance(citation_result_raw, Exception):
@@ -157,10 +149,7 @@ async def analyze_case_streaming(text: str, jurisdiction_data: dict[str, Any]) -
                 yield {
                     "step": "case_citation",
                     "status": "completed",
-                    "data": {
-                        "case_citation": citation_result.case_citation,
-                        "confidence": citation_result.confidence,
-                    },
+                    "data": citation_result.model_dump(),
                 }
 
             if isinstance(facts_result_raw, Exception):
@@ -173,10 +162,7 @@ async def analyze_case_streaming(text: str, jurisdiction_data: dict[str, Any]) -
             yield {
                 "step": "relevant_facts",
                 "status": "completed",
-                "data": {
-                    "relevant_facts": facts_result.relevant_facts,
-                    "confidence": facts_result.confidence,
-                },
+                "data": facts_result.model_dump(),
             }
 
             if isinstance(provisions_result_raw, Exception):
@@ -189,10 +175,7 @@ async def analyze_case_streaming(text: str, jurisdiction_data: dict[str, Any]) -
             yield {
                 "step": "pil_provisions",
                 "status": "completed",
-                "data": {
-                    "pil_provisions": provisions_result.pil_provisions,
-                    "confidence": provisions_result.confidence,
-                },
+                "data": provisions_result.model_dump(),
             }
         except Exception as e:
             logger.error("Parallel task execution failed: %s", str(e))
@@ -206,10 +189,7 @@ async def analyze_case_streaming(text: str, jurisdiction_data: dict[str, Any]) -
             yield {
                 "step": "col_issue",
                 "status": "completed",
-                "data": {
-                    "choice_of_law_issue": issue_result.col_issue,
-                    "confidence": issue_result.confidence,
-                },
+                "data": issue_result.model_dump(),
             }
         except Exception as e:
             logger.error("COL issue extraction failed: %s", str(e))
@@ -284,30 +264,21 @@ async def analyze_case_streaming(text: str, jurisdiction_data: dict[str, Any]) -
                 yield {
                     "step": "courts_position",
                     "status": "completed",
-                    "data": {
-                        "courts_position": position_result.courts_position,
-                        "confidence": position_result.confidence,
-                    },
+                    "data": position_result.model_dump(),
                 }
             elif step_name == "obiter_dicta":
                 obiter_result = cast(ObiterDictaOutput, result)
                 yield {
                     "step": "obiter_dicta",
                     "status": "completed",
-                    "data": {
-                        "obiter_dicta": obiter_result.obiter_dicta,
-                        "confidence": obiter_result.confidence,
-                    },
+                    "data": obiter_result.model_dump(),
                 }
             elif step_name == "dissenting_opinions":
                 dissent_result = cast(DissentingOpinionsOutput, result)
                 yield {
                     "step": "dissenting_opinions",
                     "status": "completed",
-                    "data": {
-                        "dissenting_opinions": dissent_result.dissenting_opinions,
-                        "confidence": dissent_result.confidence,
-                    },
+                    "data": dissent_result.model_dump(),
                 }
 
         if position_result is None:
@@ -337,10 +308,7 @@ async def analyze_case_streaming(text: str, jurisdiction_data: dict[str, Any]) -
             yield {
                 "step": "abstract",
                 "status": "completed",
-                "data": {
-                    "abstract": abstract_result.abstract,
-                    "confidence": abstract_result.confidence,
-                },
+                "data": abstract_result.model_dump(),
             }
         except Exception as e:
             logger.error("Abstract generation failed: %s", str(e))

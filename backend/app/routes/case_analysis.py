@@ -2,7 +2,6 @@ import base64
 import json
 import logging
 import traceback
-from typing import Any
 
 import logfire
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -108,6 +107,7 @@ async def upload_document(
         draft_payload = {
             "status": "draft",
             "file_name": body.file_name,
+            "pdf_url": body.blob_url,
             "full_text": extracted_text,
             "jurisdiction": jurisdiction_data,
             "correlation_id": correlation_id,
@@ -202,26 +202,16 @@ async def analyze_document(
             "reasoning": body.jurisdiction.reasoning,
         }
 
-        confidence_scores: dict[str, str] = {}
-
         # Update jurisdiction if it was corrected
         if draft_id:
             try:
-                service.update_payload(
-                    "case_analyzer",
+                service.update_case_analyzer_draft(
                     draft_id,
                     {"jurisdiction": jurisdiction_data, "status": "analyzing"},
                 )
                 logger.info("Updated jurisdiction in draft ID: %d", draft_id)
             except Exception as e:
                 logger.error("Failed to update jurisdiction in database: %s", str(e))
-
-        def record_confidence(step_name: str, data: dict[str, Any] | None) -> None:
-            if not data:
-                return
-            confidence_value = data.get("confidence")
-            if isinstance(confidence_value, str):
-                confidence_scores[step_name] = confidence_value
 
         async def event_generator():
             """Generate SSE events for each analysis step."""
@@ -231,8 +221,6 @@ async def analyze_document(
                     analysis_cache.update_results(body.correlation_id, result.get("step", "unknown"), result)
 
                     step_name = result.get("step")
-                    if isinstance(step_name, str) and result.get("status") == "completed":
-                        record_confidence(step_name, result.get("data"))
 
                     # Update database if we have draft_id and step data
                     if draft_id and result.get("status") == "completed" and result.get("data"):
@@ -241,7 +229,7 @@ async def analyze_document(
                         try:
                             step_payload = result.get("data")
                             update_data = {step_name: step_payload}
-                            service.update_payload("case_analyzer", draft_id, update_data)
+                            service.update_case_analyzer_draft(draft_id, update_data)
                             logger.info("Updated step %s in draft ID: %d", step_name, draft_id)
                         except Exception as e:
                             logger.error("Failed to update step %s in database: %s", step_name, str(e))
@@ -252,11 +240,7 @@ async def analyze_document(
                 # Mark as completed when all steps are done
                 if draft_id:
                     try:
-                        service.update_payload(
-                            "case_analyzer",
-                            draft_id,
-                            {"status": "completed", "confidence_summary": confidence_scores},
-                        )
+                        service.update_case_analyzer_draft(draft_id, {"status": "completed"})
                         logger.info("Marked draft ID %d as completed", draft_id)
                     except Exception as e:
                         logger.error("Failed to mark draft as completed: %s", str(e))
@@ -264,7 +248,7 @@ async def analyze_document(
                 done_payload = {
                     "step": "analysis_complete",
                     "status": "completed",
-                    "data": {"confidence_summary": confidence_scores, "done": True},
+                    "data": {"done": True},
                 }
                 yield f"data: {json.dumps(done_payload)}\n\n"
             except BaseException as e:
@@ -274,11 +258,7 @@ async def analyze_document(
                 # Mark as failed in database
                 if draft_id:
                     try:
-                        service.update_payload(
-                            "case_analyzer",
-                            draft_id,
-                            {"status": "failed", "error": str(e), "confidence_summary": confidence_scores},
-                        )
+                        service.update_case_analyzer_draft(draft_id, {"status": "failed", "error": str(e)})
                     except Exception as db_error:
                         logger.error("Failed to mark draft as failed: %s", str(db_error))
 

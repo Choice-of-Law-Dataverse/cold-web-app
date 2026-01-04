@@ -358,8 +358,8 @@ class SuggestionService:
                 current["moderation_note"] = note or ""
                 if merged_id is not None:
                     current["merged_record_id"] = int(merged_id)
-                new_val = json.dumps(self._to_jsonable(current))
-                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val, moderation_status=status)
+                json_ready = self._to_jsonable(current)
+                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=json_ready, moderation_status=status)
                 session.execute(upd)
                 session.commit()
                 return
@@ -397,7 +397,33 @@ class SuggestionService:
             session.execute(stmt)
             session.commit()
 
-    # New: update the entire payload for a specific suggestion (used to persist edited fields)
+    def update_case_analyzer_draft(self, draft_id: int, updates: dict[str, Any]) -> None:
+        """Update a case analyzer draft by merging new fields into existing data."""
+        target = self.tables["case_analyzer"]
+        with suggestions_db_manager.get_session() as session:
+            # Load existing data
+            sel = sa.select(target.c.data).where(target.c.id == draft_id).limit(1)
+            row = session.execute(sel).first()
+            current: dict[str, Any]
+            if row and isinstance(row[0], dict):
+                current = dict(row[0])
+            else:
+                try:
+                    current = json.loads(row[0]) if row else {}
+                except Exception:
+                    current = {}
+
+            # Merge updates into existing data
+            merged = {**current, **updates}
+            status_value = self._extract_moderation_status(merged)
+            json_ready = self._to_jsonable(merged)
+
+            # Update the record
+            upd = sa.update(target).where(target.c.id == draft_id).values(data=json_ready, moderation_status=status_value)
+            session.execute(upd)
+            session.commit()
+
+    # Generic update method for backward compatibility
     def update_payload(self, table: str, suggestion_id: int, payload: dict[str, Any]) -> None:
         target = self.tables.get(table)
         if target is None:
@@ -416,8 +442,12 @@ class SuggestionService:
                         current = {}
                 merged = {**current, **payload}
                 status_value = self._extract_moderation_status(merged)
-                new_val = json.dumps(self._to_jsonable(merged))
-                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val, moderation_status=status_value)
+                json_ready = self._to_jsonable(merged)
+                upd = (
+                    sa.update(target)
+                    .where(target.c.id == suggestion_id)
+                    .values(data=json_ready, moderation_status=status_value)
+                )
                 session.execute(upd)
                 session.commit()
                 return
