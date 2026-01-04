@@ -13,6 +13,9 @@ from app.services.db_manager import suggestions_db_manager
 class SuggestionService:
     """Stores suggestions in per-type Postgres tables using the default schema from the DSN."""
 
+    _metadata: sa.MetaData | None = None
+    _tables: dict[str, sa.Table] | None = None
+
     def __init__(self) -> None:
         # Prefer dedicated connection string for suggestions DB
         conn = config.SUGGESTIONS_SQL_CONN_STRING or config.SQL_CONN_STRING
@@ -24,124 +27,145 @@ class SuggestionService:
             suggestions_db_manager.initialize(conn)
 
         self.engine = suggestions_db_manager.get_engine()
-        # Use default schema (search_path) of the provided connection
-        self.metadata = sa.MetaData()
 
-        # Define per-type suggestion tables with JSONB payloads
-        self.tables: dict[str, sa.Table] = {
-            "generic": sa.Table(
-                "suggestions_generic",
-                self.metadata,
-                sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                sa.Column(
-                    "created_at",
-                    sa.DateTime(timezone=True),
-                    server_default=sa.func.now(),
-                    nullable=False,
-                ),
-                sa.Column("payload", JSONB, nullable=False),
-                sa.Column("client_ip", sa.String(64), nullable=True),
-                sa.Column("user_agent", sa.Text, nullable=True),
-                sa.Column("source", sa.String(256), nullable=True),
-                sa.Column("token_sub", sa.String(256), nullable=True),
-                extend_existing=True,
-            ),
-            "court_decisions": sa.Table(
-                "suggestions_court_decisions",
-                self.metadata,
-                sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                sa.Column(
-                    "created_at",
-                    sa.DateTime(timezone=True),
-                    server_default=sa.func.now(),
-                    nullable=False,
-                ),
-                sa.Column("payload", JSONB, nullable=False),
-                sa.Column("client_ip", sa.String(64), nullable=True),
-                sa.Column("user_agent", sa.Text, nullable=True),
-                sa.Column("source", sa.String(256), nullable=True),
-                sa.Column("token_sub", sa.String(256), nullable=True),
-                extend_existing=True,
-            ),
-            "domestic_instruments": sa.Table(
-                "suggestions_domestic_instruments",
-                self.metadata,
-                sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                sa.Column(
-                    "created_at",
-                    sa.DateTime(timezone=True),
-                    server_default=sa.func.now(),
-                    nullable=False,
-                ),
-                sa.Column("payload", JSONB, nullable=False),
-                sa.Column("client_ip", sa.String(64), nullable=True),
-                sa.Column("user_agent", sa.Text, nullable=True),
-                sa.Column("source", sa.String(256), nullable=True),
-                sa.Column("token_sub", sa.String(256), nullable=True),
-                extend_existing=True,
-            ),
-            "regional_instruments": sa.Table(
-                "suggestions_regional_instruments",
-                self.metadata,
-                sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                sa.Column(
-                    "created_at",
-                    sa.DateTime(timezone=True),
-                    server_default=sa.func.now(),
-                    nullable=False,
-                ),
-                sa.Column("payload", JSONB, nullable=False),
-                sa.Column("client_ip", sa.String(64), nullable=True),
-                sa.Column("user_agent", sa.Text, nullable=True),
-                sa.Column("source", sa.String(256), nullable=True),
-                sa.Column("token_sub", sa.String(256), nullable=True),
-                extend_existing=True,
-            ),
-            "international_instruments": sa.Table(
-                "suggestions_international_instruments",
-                self.metadata,
-                sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                sa.Column(
-                    "created_at",
-                    sa.DateTime(timezone=True),
-                    server_default=sa.func.now(),
-                    nullable=False,
-                ),
-                sa.Column("payload", JSONB, nullable=False),
-                sa.Column("client_ip", sa.String(64), nullable=True),
-                sa.Column("user_agent", sa.Text, nullable=True),
-                sa.Column("source", sa.String(256), nullable=True),
-                sa.Column("token_sub", sa.String(256), nullable=True),
-                extend_existing=True,
-            ),
-            "literature": sa.Table(
-                "suggestions_literature",
-                self.metadata,
-                sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                sa.Column(
-                    "created_at",
-                    sa.DateTime(timezone=True),
-                    server_default=sa.func.now(),
-                    nullable=False,
-                ),
-                sa.Column("payload", JSONB, nullable=False),
-                sa.Column("client_ip", sa.String(64), nullable=True),
-                sa.Column("user_agent", sa.Text, nullable=True),
-                sa.Column("source", sa.String(256), nullable=True),
-                sa.Column("token_sub", sa.String(256), nullable=True),
-                extend_existing=True,
-            ),
-            # Case Analyzer uses existing schema with a 'data' column, so autoload it
-            "case_analyzer": sa.Table(
-                "suggestions_case_analyzer",
-                self.metadata,
-                autoload_with=self.engine,
-                extend_existing=True,
-            ),
-        }
+        # Initialize metadata and tables only once
+        if SuggestionService._metadata is None:
+            # Use default schema (search_path) of the provided connection
+            SuggestionService._metadata = sa.MetaData()
 
-        # Ensure all tables exist (will not alter existing ones)
-        self.metadata.create_all(self.engine)
+            # Define per-type suggestion tables with JSONB payloads
+            SuggestionService._tables = {
+                "generic": sa.Table(
+                    "suggestions_generic",
+                    SuggestionService._metadata,
+                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
+                    sa.Column(
+                        "created_at",
+                        sa.DateTime(timezone=True),
+                        server_default=sa.func.now(),
+                        nullable=False,
+                    ),
+                    sa.Column("payload", JSONB, nullable=False),
+                    sa.Column("client_ip", sa.String(64), nullable=True),
+                    sa.Column("user_agent", sa.Text, nullable=True),
+                    sa.Column("source", sa.String(256), nullable=True),
+                    sa.Column("token_sub", sa.String(256), nullable=True),
+                    extend_existing=True,
+                ),
+                "court_decisions": sa.Table(
+                    "suggestions_court_decisions",
+                    SuggestionService._metadata,
+                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
+                    sa.Column(
+                        "created_at",
+                        sa.DateTime(timezone=True),
+                        server_default=sa.func.now(),
+                        nullable=False,
+                    ),
+                    sa.Column("payload", JSONB, nullable=False),
+                    sa.Column("client_ip", sa.String(64), nullable=True),
+                    sa.Column("user_agent", sa.Text, nullable=True),
+                    sa.Column("source", sa.String(256), nullable=True),
+                    sa.Column("token_sub", sa.String(256), nullable=True),
+                    extend_existing=True,
+                ),
+                "domestic_instruments": sa.Table(
+                    "suggestions_domestic_instruments",
+                    SuggestionService._metadata,
+                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
+                    sa.Column(
+                        "created_at",
+                        sa.DateTime(timezone=True),
+                        server_default=sa.func.now(),
+                        nullable=False,
+                    ),
+                    sa.Column("payload", JSONB, nullable=False),
+                    sa.Column("client_ip", sa.String(64), nullable=True),
+                    sa.Column("user_agent", sa.Text, nullable=True),
+                    sa.Column("source", sa.String(256), nullable=True),
+                    sa.Column("token_sub", sa.String(256), nullable=True),
+                    extend_existing=True,
+                ),
+                "regional_instruments": sa.Table(
+                    "suggestions_regional_instruments",
+                    SuggestionService._metadata,
+                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
+                    sa.Column(
+                        "created_at",
+                        sa.DateTime(timezone=True),
+                        server_default=sa.func.now(),
+                        nullable=False,
+                    ),
+                    sa.Column("payload", JSONB, nullable=False),
+                    sa.Column("client_ip", sa.String(64), nullable=True),
+                    sa.Column("user_agent", sa.Text, nullable=True),
+                    sa.Column("source", sa.String(256), nullable=True),
+                    sa.Column("token_sub", sa.String(256), nullable=True),
+                    extend_existing=True,
+                ),
+                "international_instruments": sa.Table(
+                    "suggestions_international_instruments",
+                    SuggestionService._metadata,
+                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
+                    sa.Column(
+                        "created_at",
+                        sa.DateTime(timezone=True),
+                        server_default=sa.func.now(),
+                        nullable=False,
+                    ),
+                    sa.Column("payload", JSONB, nullable=False),
+                    sa.Column("client_ip", sa.String(64), nullable=True),
+                    sa.Column("user_agent", sa.Text, nullable=True),
+                    sa.Column("source", sa.String(256), nullable=True),
+                    sa.Column("token_sub", sa.String(256), nullable=True),
+                    extend_existing=True,
+                ),
+                "literature": sa.Table(
+                    "suggestions_literature",
+                    SuggestionService._metadata,
+                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
+                    sa.Column(
+                        "created_at",
+                        sa.DateTime(timezone=True),
+                        server_default=sa.func.now(),
+                        nullable=False,
+                    ),
+                    sa.Column("payload", JSONB, nullable=False),
+                    sa.Column("client_ip", sa.String(64), nullable=True),
+                    sa.Column("user_agent", sa.Text, nullable=True),
+                    sa.Column("source", sa.String(256), nullable=True),
+                    sa.Column("token_sub", sa.String(256), nullable=True),
+                    extend_existing=True,
+                ),
+                # Case Analyzer uses existing schema with a 'data' column
+                "case_analyzer": sa.Table(
+                    "suggestions_case_analyzer",
+                    SuggestionService._metadata,
+                    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
+                    sa.Column(
+                        "created_at",
+                        sa.DateTime(timezone=True),
+                        server_default=sa.func.now(),
+                        nullable=False,
+                    ),
+                    sa.Column("data", JSONB, nullable=False),
+                    sa.Column("client_ip", sa.String(64), nullable=True),
+                    sa.Column("user_agent", sa.Text, nullable=True),
+                    sa.Column("source", sa.String(256), nullable=True),
+                    sa.Column("token_sub", sa.String(256), nullable=True),
+                    sa.Column("username", sa.String(256), nullable=True),
+                    sa.Column("user_email", sa.String(256), nullable=True),
+                    sa.Column("model", sa.String(64), nullable=True),
+                    sa.Column("case_citation", sa.Text, nullable=True),
+                    extend_existing=True,
+                ),
+            }
+
+            # Ensure all tables exist (will not alter existing ones)
+            SuggestionService._metadata.create_all(self.engine)
+
+        self.metadata = SuggestionService._metadata
+        self.tables = SuggestionService._tables
 
     def _get_token_sub(self, user: dict[str, Any] | None) -> str | None:
         """Extract email from Auth0 user payload and use as identifier."""

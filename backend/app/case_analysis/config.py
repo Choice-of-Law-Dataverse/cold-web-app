@@ -2,6 +2,8 @@
 
 import logging
 
+import openai
+
 from app.config import config
 
 logger = logging.getLogger(__name__)
@@ -13,8 +15,6 @@ def get_openai_client():
     """Get singleton AsyncOpenAI client for agents."""
     global _openai_client
     if _openai_client is None:
-        import openai
-
         _openai_client = openai.AsyncOpenAI(api_key=config.OPENAI_API_KEY)
     return _openai_client
 

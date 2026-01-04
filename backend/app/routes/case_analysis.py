@@ -1,4 +1,7 @@
+import base64
+import json
 import logging
+import traceback
 
 import logfire
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -13,6 +16,7 @@ from app.schemas.case_analysis import (
     UploadDocumentResponse,
 )
 from app.services.analysis_cache import analysis_cache
+from app.services.azure_storage import download_blob_with_managed_identity
 from app.services.case_analysis import analyze_case_streaming, detect_jurisdiction
 from app.services.suggestions import SuggestionService
 
@@ -63,15 +67,11 @@ async def upload_document(
             # Check if blob_url is a data URL or Azure blob URL
             if body.blob_url.startswith("data:application/pdf;base64,"):
                 # Extract base64 from data URL
-                import base64
-
                 base64_content = body.blob_url.replace("data:application/pdf;base64,", "")
                 pdf_bytes = base64.b64decode(base64_content)
                 logger.info("Using inline base64 PDF: %s (%d bytes)", body.file_name, len(pdf_bytes))
             else:
                 # Download from Azure blob storage
-                from app.services.azure_storage import download_blob_with_managed_identity
-
                 pdf_bytes = download_blob_with_managed_identity(body.blob_url)
                 logger.info("Downloaded PDF from blob: %s (%d bytes)", body.blob_url, len(pdf_bytes))
         except Exception as e:
@@ -216,9 +216,6 @@ async def analyze_document(
 
         async def event_generator():
             """Generate SSE events for each analysis step."""
-            import json
-            import traceback
-
             try:
                 async for result in analyze_case_streaming(text, jurisdiction_data):
                     # Update cache
