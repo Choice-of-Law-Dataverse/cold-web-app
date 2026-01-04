@@ -39,6 +39,10 @@ export default defineNuxtConfig({
   runtimeConfig: {
     apiBaseUrl: process.env.NUXT_API_BASE_URL,
     apiKey: process.env.NUXT_API_KEY,
+    azureStorageAccountName: process.env.AZURE_STORAGE_ACCOUNT_NAME,
+    azureStorageConnectionString: process.env.AZURE_STORAGE_CONNECTION_STRING,
+    azureTempContainerName:
+      process.env.AZURE_TEMP_CONTAINER_NAME || "temp-uploads",
     logfire: {
       token: process.env.NUXT_LOGFIRE_TOKEN,
       serviceName: process.env.LOGFIRE_SERVICE_NAME || "cold-frontend-server",

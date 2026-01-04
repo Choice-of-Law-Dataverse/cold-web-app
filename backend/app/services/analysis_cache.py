@@ -53,11 +53,7 @@ class AnalysisCache:
     def cleanup_expired(self) -> None:
         """Remove expired entries from cache."""
         now = datetime.now()
-        expired_ids = [
-            correlation_id
-            for correlation_id, entry in self._cache.items()
-            if now - entry["created_at"] > self._ttl
-        ]
+        expired_ids = [correlation_id for correlation_id, entry in self._cache.items() if now - entry["created_at"] > self._ttl]
         for correlation_id in expired_ids:
             del self._cache[correlation_id]
 

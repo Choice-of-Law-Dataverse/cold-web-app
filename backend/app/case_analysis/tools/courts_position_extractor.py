@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 import logfire
@@ -14,7 +13,7 @@ from app.case_analysis.utils.system_prompt_generator import generate_system_prom
 logger = logging.getLogger(__name__)
 
 
-def extract_courts_position(
+async def extract_courts_position(
     text: str,
     col_section_output: ColSectionOutput,
     legal_system: str,
@@ -56,6 +55,7 @@ def extract_courts_position(
                 openai_client=get_openai_client(),
             ),
         )
-        result = asyncio.run(Runner.run(agent, prompt)).final_output_as(CourtsPositionOutput)
+        run_result = await Runner.run(agent, prompt)
+        result = run_result.final_output_as(CourtsPositionOutput)
 
         return result

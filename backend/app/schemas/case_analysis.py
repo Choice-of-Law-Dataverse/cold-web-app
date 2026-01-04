@@ -7,7 +7,7 @@ class UploadDocumentRequest(BaseModel):
     """Request to upload and process a court decision document."""
 
     file_name: str = Field(..., description="Original filename of the uploaded document")
-    file_content_base64: str = Field(..., description="Base64-encoded PDF file content")
+    blob_url: str = Field(..., description="Azure Blob Storage URL of the uploaded PDF")
 
 
 class JurisdictionInfo(BaseModel):

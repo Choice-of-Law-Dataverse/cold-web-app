@@ -24,6 +24,7 @@ JURISDICTION_MAP = {
     "Common-law jurisdiction": "common-law",
 }
 
+
 def get_prompt_module(jurisdiction, prompt_type, specific_jurisdiction=None):
     """
     Get the appropriate prompt module based on jurisdiction and specific jurisdiction.
@@ -46,6 +47,7 @@ def get_prompt_module(jurisdiction, prompt_type, specific_jurisdiction=None):
     key = JURISDICTION_MAP.get(jurisdiction, "civil-law")
     module_path = PROMPT_MODULES[key][prompt_type]
     return importlib.import_module(module_path)
+
 
 # Usage:
 # get_prompt_module(jurisdiction, 'col_section').COL_SECTION_PROMPT

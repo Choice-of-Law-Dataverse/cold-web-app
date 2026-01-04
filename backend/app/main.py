@@ -5,14 +5,12 @@ import logfire
 import uvicorn
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.sessions import SessionMiddleware
 
 from app.config import config
 from app.routes import (
     ai,
     case_analysis,
     landing_page,
-    moderation as moderation_router,
     search,
     sitemap,
     statistics,
@@ -176,13 +174,6 @@ api_router.include_router(suggestions_router.router)
 
 
 app.include_router(api_router)
-
-# Session middleware for moderation UI
-
-app.add_middleware(SessionMiddleware, secret_key=config.MODERATION_SECRET or "secret")
-
-# Mount moderation router (also at root without API prefix to serve simple HTML)
-app.include_router(moderation_router.router)
 
 
 @app.get("/api/v1")

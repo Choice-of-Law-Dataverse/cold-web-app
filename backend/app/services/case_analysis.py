@@ -2,15 +2,20 @@
 Case analysis service using tools from cold-case-analysis repository.
 """
 
+import asyncio
 import logging
 from collections.abc import AsyncGenerator
-from typing import Any
+from typing import Any, cast
 
 import logfire
 
 from app.case_analysis.models import (
+    CaseCitationOutput,
     ColSectionOutput,
     JurisdictionOutput,
+    PILProvisionsOutput,
+    RelevantFactsOutput,
+    ThemeClassificationOutput,
 )
 from app.case_analysis.tools.abstract_generator import extract_abstract
 from app.case_analysis.tools.case_citation_extractor import extract_case_citation
@@ -22,12 +27,11 @@ from app.case_analysis.tools.jurisdiction_detector import detect_legal_system_ty
 from app.case_analysis.tools.pil_provisions_extractor import extract_pil_provisions
 from app.case_analysis.tools.relevant_facts_extractor import extract_relevant_facts
 from app.case_analysis.tools.theme_classifier import theme_classification_node
-from app.case_analysis.utils.pdf_handler import extract_text_from_pdf
 
 logger = logging.getLogger(__name__)
 
 
-def detect_jurisdiction(text: str) -> JurisdictionOutput:
+async def detect_jurisdiction(text: str) -> JurisdictionOutput:
     """
     Detect jurisdiction from court decision text using two-step process.
 
@@ -48,17 +52,15 @@ def detect_jurisdiction(text: str) -> JurisdictionOutput:
             )
 
         # Step 1: Detect legal system type (Civil-law, Common-law, etc.)
-        legal_system_type = detect_legal_system_type("", text)
+        await detect_legal_system_type("", text)
 
         # Step 2: Classify precise jurisdiction
-        jurisdiction_result = detect_precise_jurisdiction_with_confidence(text)
+        jurisdiction_result = await detect_precise_jurisdiction_with_confidence(text)
 
         return jurisdiction_result
 
 
-async def analyze_case_streaming(
-    text: str, jurisdiction_data: dict[str, Any]
-) -> AsyncGenerator[dict[str, Any], None]:
+async def analyze_case_streaming(text: str, jurisdiction_data: dict[str, Any]) -> AsyncGenerator[dict[str, Any], None]:
     """
     Execute complete case analysis workflow with streaming updates.
 
@@ -75,11 +77,11 @@ async def analyze_case_streaming(
     jurisdiction = jurisdiction_data["precise_jurisdiction"]
 
     with logfire.span("case_analysis_workflow"):
-        # Step 1: Extract COL sections
+        # Step 1: Extract COL sections (required for all subsequent steps)
         yield {"step": "col_extraction", "status": "in_progress"}
 
         try:
-            col_result: ColSectionOutput = extract_col_section(text, legal_system, jurisdiction)
+            col_result: ColSectionOutput = await extract_col_section(text, legal_system, jurisdiction)
             yield {
                 "step": "col_extraction",
                 "status": "completed",
@@ -89,17 +91,37 @@ async def analyze_case_streaming(
                     "reasoning": col_result.reasoning,
                 },
             }
-            col_sections = col_result.col_sections
             col_section_text = str(col_result)
-        except Exception as e:
+        except BaseException as e:
             logger.error("COL extraction failed: %s", str(e))
             yield {"step": "col_extraction", "status": "error", "error": str(e)}
             return
 
-        # Step 2: Theme classification
+        # Step 2-5: Run independent tasks in parallel (using gather for simpler error handling)
         yield {"step": "theme_classification", "status": "in_progress"}
+        yield {"step": "case_citation", "status": "in_progress"}
+        yield {"step": "relevant_facts", "status": "in_progress"}
+        yield {"step": "pil_provisions", "status": "in_progress"}
+
         try:
-            theme_result = theme_classification_node(text, col_section_text, legal_system, jurisdiction)
+            results = await asyncio.gather(
+                theme_classification_node(text, col_section_text, legal_system, jurisdiction),
+                extract_case_citation(text, legal_system, jurisdiction),
+                extract_relevant_facts(text, col_result, legal_system, jurisdiction),
+                extract_pil_provisions(text, col_result, legal_system, jurisdiction),
+                return_exceptions=True,
+            )
+
+            theme_result_raw, citation_result_raw, facts_result_raw, provisions_result_raw = results
+
+            # Check for exceptions and narrow types
+            if isinstance(theme_result_raw, Exception):
+                logger.error("Theme classification failed: %s", str(theme_result_raw))
+                yield {"step": "theme_classification", "status": "error", "error": str(theme_result_raw)}
+                return
+
+            # Cast after exception check for type narrowing
+            theme_result = cast(ThemeClassificationOutput, theme_result_raw)
             yield {
                 "step": "theme_classification",
                 "status": "completed",
@@ -109,46 +131,30 @@ async def analyze_case_streaming(
                     "reasoning": theme_result.reasoning,
                 },
             }
-        except Exception as e:
-            logger.error("Theme classification failed: %s", str(e))
-            yield {"step": "theme_classification", "status": "error", "error": str(e)}
 
-        # Step 3: Case citation
-        yield {"step": "case_citation", "status": "in_progress"}
-        try:
-            citation_result = extract_case_citation(text, legal_system, jurisdiction)
-            yield {
-                "step": "case_citation",
-                "status": "completed",
-                "data": {
-                    "case_citation": citation_result.case_citation,
-                    "confidence": citation_result.confidence,
-                },
-            }
-        except Exception as e:
-            logger.error("Case citation extraction failed: %s", str(e))
-            yield {"step": "case_citation", "status": "error", "error": str(e)}
+            if isinstance(citation_result_raw, Exception):
+                logger.error("Case citation extraction failed: %s", str(citation_result_raw))
+                yield {"step": "case_citation", "status": "error", "error": str(citation_result_raw)}
+                citation_result = None
+            else:
+                # Cast after exception check for type narrowing
+                citation_result = cast(CaseCitationOutput, citation_result_raw)
+                yield {
+                    "step": "case_citation",
+                    "status": "completed",
+                    "data": {
+                        "case_citation": citation_result.case_citation,
+                        "confidence": citation_result.confidence,
+                    },
+                }
 
-        # Step 4: Abstract
-        yield {"step": "abstract", "status": "in_progress"}
-        try:
-            abstract_result = extract_abstract(col_section_text, legal_system, jurisdiction)
-            yield {
-                "step": "abstract",
-                "status": "completed",
-                "data": {
-                    "abstract": abstract_result.abstract,
-                    "confidence": abstract_result.confidence,
-                },
-            }
-        except Exception as e:
-            logger.error("Abstract generation failed: %s", str(e))
-            yield {"step": "abstract", "status": "error", "error": str(e)}
+            if isinstance(facts_result_raw, Exception):
+                logger.error("Facts extraction failed: %s", str(facts_result_raw))
+                yield {"step": "relevant_facts", "status": "error", "error": str(facts_result_raw)}
+                return
 
-        # Step 5: Relevant facts
-        yield {"step": "relevant_facts", "status": "in_progress"}
-        try:
-            facts_result = extract_relevant_facts(col_section_text, legal_system, jurisdiction)
+            # Cast after exception check for type narrowing
+            facts_result = cast(RelevantFactsOutput, facts_result_raw)
             yield {
                 "step": "relevant_facts",
                 "status": "completed",
@@ -157,14 +163,14 @@ async def analyze_case_streaming(
                     "confidence": facts_result.confidence,
                 },
             }
-        except Exception as e:
-            logger.error("Facts extraction failed: %s", str(e))
-            yield {"step": "relevant_facts", "status": "error", "error": str(e)}
 
-        # Step 6: PIL provisions
-        yield {"step": "pil_provisions", "status": "in_progress"}
-        try:
-            provisions_result = extract_pil_provisions(col_section_text, legal_system, jurisdiction)
+            if isinstance(provisions_result_raw, Exception):
+                logger.error("PIL provisions extraction failed: %s", str(provisions_result_raw))
+                yield {"step": "pil_provisions", "status": "error", "error": str(provisions_result_raw)}
+                return
+
+            # Cast after exception check for type narrowing
+            provisions_result = cast(PILProvisionsOutput, provisions_result_raw)
             yield {
                 "step": "pil_provisions",
                 "status": "completed",
@@ -174,13 +180,14 @@ async def analyze_case_streaming(
                 },
             }
         except Exception as e:
-            logger.error("PIL provisions extraction failed: %s", str(e))
-            yield {"step": "pil_provisions", "status": "error", "error": str(e)}
+            logger.error("Parallel task execution failed: %s", str(e))
+            yield {"step": "parallel_tasks", "status": "error", "error": str(e)}
+            return
 
-        # Step 7: COL issue
+        # Step 6: COL issue (depends on theme)
         yield {"step": "col_issue", "status": "in_progress"}
         try:
-            issue_result = extract_col_issue(col_section_text, legal_system, jurisdiction)
+            issue_result = await extract_col_issue(text, col_result, legal_system, jurisdiction, theme_result)
             yield {
                 "step": "col_issue",
                 "status": "completed",
@@ -192,11 +199,15 @@ async def analyze_case_streaming(
         except Exception as e:
             logger.error("COL issue extraction failed: %s", str(e))
             yield {"step": "col_issue", "status": "error", "error": str(e)}
+            return
 
-        # Step 8: Court's position
+        # Step 7: Court's position (depends on theme and issue)
         yield {"step": "courts_position", "status": "in_progress"}
         try:
-            position_result = extract_courts_position(col_section_text, legal_system, jurisdiction)
+            position_task = asyncio.create_task(
+                extract_courts_position(text, col_result, legal_system, jurisdiction, theme_result, issue_result)
+            )
+            position_result = await position_task
             yield {
                 "step": "courts_position",
                 "status": "completed",
@@ -208,5 +219,34 @@ async def analyze_case_streaming(
         except Exception as e:
             logger.error("Court's position extraction failed: %s", str(e))
             yield {"step": "courts_position", "status": "error", "error": str(e)}
+            return
+
+        # Step 8: Abstract (requires all previous results)
+        yield {"step": "abstract", "status": "in_progress"}
+        try:
+            abstract_task = asyncio.create_task(
+                extract_abstract(
+                    text,
+                    legal_system,
+                    jurisdiction,
+                    theme_result,
+                    facts_result,
+                    provisions_result,
+                    issue_result,
+                    position_result,
+                )
+            )
+            abstract_result = await abstract_task
+            yield {
+                "step": "abstract",
+                "status": "completed",
+                "data": {
+                    "abstract": abstract_result.abstract,
+                    "confidence": abstract_result.confidence,
+                },
+            }
+        except Exception as e:
+            logger.error("Abstract generation failed: %s", str(e))
+            yield {"step": "abstract", "status": "error", "error": str(e)}
 
         yield {"step": "analysis_complete", "status": "completed"}

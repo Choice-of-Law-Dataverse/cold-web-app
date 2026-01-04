@@ -27,7 +27,8 @@ from app.services.suggestions import SuggestionService
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/moderation", tags=["Moderation"], include_in_schema=False)
+# router = APIRouter(prefix="/moderation", tags=["Moderation"], include_in_schema=False)
+router = APIRouter(prefix="", tags=["Moderation"], include_in_schema=False)
 
 service: SuggestionService | None = None
 writer: MainDBWriter | None = None

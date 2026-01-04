@@ -3,6 +3,7 @@
 Dynamic system prompt generator that creates jurisdiction-specific system prompts
 with optional jurisdiction summaries from jurisdictions.csv
 """
+
 import csv
 import logging
 from pathlib import Path
@@ -113,7 +114,7 @@ This case originates from {jurisdiction_name}. Consider this jurisdictional cont
         system_prompt += f"""
 
 LEGAL SYSTEM CONTEXT:
-This decision comes from a {legal_system_type.lower().replace('jurisdiction', 'legal system')}. Consider the typical approaches and methodologies of this legal tradition in your analysis."""
+This decision comes from a {legal_system_type.lower().replace("jurisdiction", "legal system")}. Consider the typical approaches and methodologies of this legal tradition in your analysis."""
 
     return system_prompt
 

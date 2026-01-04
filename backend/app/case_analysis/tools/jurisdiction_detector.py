@@ -3,7 +3,6 @@
 Detects the jurisdiction type of a court decision: Civil-law, Common-law, or No court decision using an LLM.
 """
 
-import asyncio
 import logging
 
 import logfire
@@ -194,7 +193,7 @@ def detect_legal_system_by_jurisdiction(jurisdiction_name: str) -> str | None:
     return None
 
 
-def detect_legal_system_type(jurisdiction_name: str, text: str) -> str:
+async def detect_legal_system_type(jurisdiction_name: str, text: str) -> str:
     """
     Uses jurisdiction mapping first, then LLM analysis to classify the input text as:
     - 'Civil-law jurisdiction'
@@ -226,7 +225,7 @@ def detect_legal_system_type(jurisdiction_name: str, text: str) -> str:
             ),
         )
 
-        result_obj = asyncio.run(Runner.run(agent, prompt))
+        result_obj = await Runner.run(agent, prompt)
         result = result_obj.final_output.strip()
 
         allowed = ["Civil-law jurisdiction", "Common-law jurisdiction", "No court decision"]

@@ -10,21 +10,12 @@ _openai_client = None
 
 
 def get_openai_client():
-    """
-    Get singleton OpenAI client for agents.
-
-    Note: nest_asyncio.apply() is required because the openai-agents library
-    uses asyncio.run() internally, which would fail in an already-running async
-    context (like FastAPI). nest_asyncio patches asyncio to allow nested event loops.
-    This is applied once when the client is first created.
-    """
+    """Get singleton AsyncOpenAI client for agents."""
     global _openai_client
     if _openai_client is None:
-        import nest_asyncio
         import openai
 
-        nest_asyncio.apply()
-        _openai_client = openai.OpenAI(api_key=config.OPENAI_API_KEY)
+        _openai_client = openai.AsyncOpenAI(api_key=config.OPENAI_API_KEY)
     return _openai_client
 
 

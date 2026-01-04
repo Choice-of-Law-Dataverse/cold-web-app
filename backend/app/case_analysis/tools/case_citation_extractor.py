@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 import logfire
@@ -11,7 +10,7 @@ from app.case_analysis.models.analysis_models import CaseCitationOutput
 logger = logging.getLogger(__name__)
 
 
-def extract_case_citation(
+async def extract_case_citation(
     text: str,
     legal_system: str,
     jurisdiction: str,
@@ -51,6 +50,7 @@ def extract_case_citation(
                 openai_client=get_openai_client(),
             ),
         )
-        result = asyncio.run(Runner.run(agent, prompt)).final_output_as(CaseCitationOutput)
+        run_result = await Runner.run(agent, prompt)
+        result = run_result.final_output_as(CaseCitationOutput)
 
         return result

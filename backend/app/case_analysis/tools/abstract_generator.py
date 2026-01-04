@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 import logfire
@@ -22,7 +21,7 @@ from app.case_analysis.utils.system_prompt_generator import generate_system_prom
 logger = logging.getLogger(__name__)
 
 
-def extract_abstract(
+async def extract_abstract(
     text: str,
     legal_system: str,
     jurisdiction: str | None,
@@ -87,6 +86,7 @@ def extract_abstract(
                 openai_client=get_openai_client(),
             ),
         )
-        result = asyncio.run(Runner.run(agent, prompt)).final_output_as(AbstractOutput)
+        run_result = await Runner.run(agent, prompt)
+        result = run_result.final_output_as(AbstractOutput)
 
         return result

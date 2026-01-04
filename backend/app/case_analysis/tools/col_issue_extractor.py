@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 import logfire
@@ -15,7 +14,7 @@ from app.case_analysis.utils.themes_extractor import filter_themes_by_list
 logger = logging.getLogger(__name__)
 
 
-def extract_col_issue(
+async def extract_col_issue(
     text: str,
     col_section_output: ColSectionOutput,
     legal_system: str,
@@ -55,6 +54,7 @@ def extract_col_issue(
                 openai_client=get_openai_client(),
             ),
         )
-        result = asyncio.run(Runner.run(agent, prompt)).final_output_as(ColIssueOutput)
+        run_result = await Runner.run(agent, prompt)
+        result = run_result.final_output_as(ColIssueOutput)
 
         return result

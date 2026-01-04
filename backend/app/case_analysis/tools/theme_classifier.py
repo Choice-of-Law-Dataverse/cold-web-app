@@ -1,4 +1,3 @@
-import asyncio
 import logging
 
 import logfire
@@ -14,7 +13,7 @@ from app.case_analysis.utils.themes_extractor import THEMES_TABLE_STR
 logger = logging.getLogger(__name__)
 
 
-def theme_classification_node(
+async def theme_classification_node(
     text: str,
     col_section: str,
     legal_system: str,
@@ -49,7 +48,8 @@ def theme_classification_node(
                     openai_client=get_openai_client(),
                 ),
             )
-            result = asyncio.run(Runner.run(agent, prompt)).final_output_as(ThemeClassificationOutput)
+            run_result = await Runner.run(agent, prompt)
+            result = run_result.final_output_as(ThemeClassificationOutput)
             return result
         except Exception as e:
             logger.error("Error during theme classification: %s", e)

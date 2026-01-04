@@ -338,30 +338,71 @@ async function uploadDocument() {
     const reader = new FileReader();
     const fileContent = await new Promise<string>((resolve, reject) => {
       reader.onload = () => {
-        const base64 = (reader.result as string).split(",")[1];
+        const result = reader.result as string;
+        // Strip the data URL prefix (e.g., "data:application/pdf;base64,")
+        const base64 = result.includes(",") ? result.split(",")[1] : result;
         resolve(base64);
       };
       reader.onerror = reject;
       reader.readAsDataURL(selectedFile.value!);
     });
 
-    const response = await $fetch("/api/proxy/case-analysis/upload", {
-      method: "POST",
-      body: JSON.stringify({
-        file_name: selectedFile.value.name,
-        file_content_base64: fileContent,
-      }),
-    }) as { correlation_id: string; jurisdiction: JurisdictionInfo };
+    // For local dev: send directly to backend
+    // For production: upload to Azure first, then send blob URL
+    const useDirectUpload = true; // TODO: make this environment-based
 
-    correlationId.value = response.correlation_id;
-    jurisdictionInfo.value = response.jurisdiction;
+    let blob_url: string;
+
+    if (useDirectUpload) {
+      // Direct upload - backend will handle the PDF bytes
+      blob_url = `data:application/pdf;base64,${fileContent}`;
+    } else {
+      // Upload to Azure Blob Storage first
+      const uploadResponse = await $fetch<{
+        blob_url: string;
+        blob_name: string;
+      }>("/api/upload-temp", {
+        method: "POST",
+        body: {
+          file_name: selectedFile.value.name,
+          file_content_base64: fileContent,
+        },
+      });
+      blob_url = uploadResponse.blob_url;
+    }
+
+    // Send to backend for processing
+    const data = await $fetch<{
+      correlation_id: string;
+      jurisdiction: JurisdictionInfo;
+    }>("/api/proxy/case-analysis/upload", {
+      method: "POST",
+      body: {
+        file_name: selectedFile.value.name,
+        blob_url: blob_url,
+      },
+    });
+
+    correlationId.value = data.correlation_id;
+    jurisdictionInfo.value = data.jurisdiction;
     currentStep.value = "confirm";
   } catch (err: unknown) {
-    console.error('Upload failed:', err);
-    const errorMessage = err && typeof err === 'object' && 'data' in err && 
-      err.data && typeof err.data === 'object' && 'detail' in err.data
-      ? String(err.data.detail)
-      : 'Failed to upload document. Please try again.';
+    console.error("Upload failed:", err);
+    if (err && typeof err === "object") {
+      const error = err as Record<string, unknown>;
+      console.error("Error data:", error.data);
+      console.error("Error message:", error.message);
+      console.error("Error statusCode:", error.statusCode);
+    }
+    const errorMessage =
+      err &&
+      typeof err === "object" &&
+      "data" in err &&
+      err.data &&
+      typeof err.data === "object" &&
+      "detail" in err.data
+        ? String(err.data.detail)
+        : "Failed to upload document. Please try again.";
     error.value = errorMessage;
   } finally {
     isUploading.value = false;

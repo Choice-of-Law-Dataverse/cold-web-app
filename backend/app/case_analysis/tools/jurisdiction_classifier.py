@@ -3,7 +3,6 @@
 Identifies the precise jurisdiction from court decision text using the jurisdictions.csv database.
 """
 
-import asyncio
 import csv
 import logging
 from pathlib import Path
@@ -24,9 +23,9 @@ from .jurisdiction_detector import (
 logger = logging.getLogger(__name__)
 
 
-def determine_legal_system_type(jurisdiction_name: str, text: str | None = None) -> str:
+async def determine_legal_system_type(jurisdiction_name: str, text: str | None = None) -> str:
     if text is not None:
-        return detect_legal_system_type(jurisdiction_name, text)
+        return await detect_legal_system_type(jurisdiction_name, text)
     fallback = detect_legal_system_by_jurisdiction(jurisdiction_name)
     return fallback or "No court decision"
 
@@ -63,18 +62,7 @@ def create_jurisdiction_list():
     return "\n".join(jurisdiction_list)
 
 
-def detect_precise_jurisdiction(text: str) -> str:
-    """
-    Uses an LLM to identify the precise jurisdiction from court decision text.
-    Returns the jurisdiction name as a string in the format "Jurisdiction".
-
-    This is the legacy interface - calls detect_precise_jurisdiction_with_confidence internally.
-    """
-    result = detect_precise_jurisdiction_with_confidence(text)
-    return result.precise_jurisdiction
-
-
-def detect_precise_jurisdiction_with_confidence(text: str) -> JurisdictionOutput:
+async def detect_precise_jurisdiction_with_confidence(text: str) -> JurisdictionOutput:
     """
     Uses an LLM to identify the precise jurisdiction from court decision text with confidence.
     Returns a JurisdictionOutput Pydantic model with jurisdiction data including confidence and reasoning.
@@ -110,7 +98,8 @@ def detect_precise_jurisdiction_with_confidence(text: str) -> JurisdictionOutput
                 ),
             )
 
-            result = asyncio.run(Runner.run(agent, prompt)).final_output_as(JurisdictionOutput)
+            run_result = await Runner.run(agent, prompt)
+            result = run_result.final_output_as(JurisdictionOutput)
 
             jurisdiction_name = result.precise_jurisdiction
             legal_system_type = result.legal_system_type

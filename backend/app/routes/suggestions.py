@@ -3,13 +3,6 @@ from typing import Any
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 
 from app.auth import require_editor_or_admin, require_user, verify_frontend_request
-from app.routes.moderation import (
-    MainDBWriter,
-    _approve_case_analyzer,
-    _get_target_table,
-    _link_jurisdictions_for_default_categories,
-    _normalize_domestic_instruments,
-)
 from app.schemas.suggestions import (
     CourtDecisionSuggestion,
     DomesticInstrumentSuggestion,
@@ -18,6 +11,13 @@ from app.schemas.suggestions import (
     RegionalInstrumentSuggestion,
     SuggestionPayload,
     SuggestionResponse,
+)
+from app.services.moderation_writer import MainDBWriter
+from app.services.suggestion_approval import (
+    approve_case_analyzer,
+    get_target_table,
+    link_jurisdictions_for_default_categories,
+    normalize_domestic_instruments,
 )
 from app.services.suggestions import SuggestionService
 
@@ -320,16 +320,17 @@ async def approve_suggestion(
 
         if category == "case-analyzer":
             # Use existing case analyzer approval logic
-            await _approve_case_analyzer(request, table, suggestion_id, original_payload, item)
+            writer = MainDBWriter()
+            await approve_case_analyzer(service, writer, table, suggestion_id, original_payload, item, moderator_email)
         else:
             # Handle default categories - simplified without form editing
             writer = MainDBWriter()
-            target_table = _get_target_table(category)
+            target_table = get_target_table(category)
             if not target_table:
                 raise HTTPException(status_code=400, detail="Unsupported category")
 
             if target_table == "Domestic_Instruments":
-                _normalize_domestic_instruments(original_payload)
+                normalize_domestic_instruments(original_payload)
 
             # Filter out reserved metadata fields
             _reserved = {
@@ -343,7 +344,7 @@ async def approve_suggestion(
             payload_for_writer = {k: v for k, v in original_payload.items() if k not in _reserved}
 
             merged_id = writer.insert_record(target_table, payload_for_writer)
-            _link_jurisdictions_for_default_categories(writer, target_table, merged_id, payload_for_writer)
+            link_jurisdictions_for_default_categories(writer, target_table, merged_id, payload_for_writer)
 
             service.mark_status(
                 table,
