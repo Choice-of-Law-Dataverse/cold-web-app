@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
+import { ref } from "vue";
 import NoSearchResults from "./NoSearchResults.vue";
 
 // Mock the route
@@ -17,22 +18,36 @@ vi.mock("vue-router", () => ({
   }),
 }));
 
-// Mock jurisdictions data
-vi.mock("@/assets/jurisdictions-data.json", () => ({
-  default: [
-    {
-      name: ["France"],
-      alternative: ["FRA", "French Republic"],
+// Mock jurisdiction lookup composable
+const mockJurisdictions = ref([
+  {
+    Name: "France",
+    alpha3Code: "FRA",
+  },
+  {
+    Name: "Germany",
+    alpha3Code: "DEU",
+  },
+  {
+    Name: "United States",
+    alpha3Code: "USA",
+  },
+]);
+
+vi.mock("@/composables/useJurisdictionLookup", () => ({
+  useJurisdictionLookup: () => ({
+    data: mockJurisdictions,
+    isJurisdictionTerm: (word: string) => {
+      const terms = new Set();
+      mockJurisdictions.value.forEach((j) => {
+        terms.add(j.Name.toLowerCase());
+        if (j.alpha3Code) {
+          terms.add(j.alpha3Code.toLowerCase());
+        }
+      });
+      return terms.has(word.toLowerCase());
     },
-    {
-      name: ["Germany"],
-      alternative: ["DEU", "Federal Republic of Germany"],
-    },
-    {
-      name: ["United States", "USA"],
-      alternative: ["USA", "US"],
-    },
-  ],
+  }),
 }));
 
 describe("NoSearchResults", () => {
