@@ -14,14 +14,13 @@
       @open-cancel-modal="showCancelModal = true"
     >
       <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
-                <!-- Title (required) -->
+        <!-- Title (required) -->
         <UFormGroup size="lg" hint="Required" :error="errors.title">
           <template #label>
             <span class="label">Title</span>
           </template>
           <UInput v-model="title" class="cold-input mt-2" />
         </UFormGroup>
-
 
         <!-- Year (required) -->
         <UFormGroup size="lg" hint="Required" :error="errors.publication_year">
@@ -39,8 +38,6 @@
           <UInput v-model="author" class="cold-input mt-2" />
         </UFormGroup>
 
-
-
         <!-- Publication (optional) -->
         <UFormGroup size="lg" :error="errors.publication_title">
           <template #label>
@@ -49,7 +46,7 @@
           <UInput v-model="publicationTitle" class="cold-input mt-2" />
         </UFormGroup>
 
-                <!-- Jurisdiction (optional) -->
+        <!-- Jurisdiction (optional) -->
         <UFormGroup size="lg">
           <template #label>
             <span class="label">Jurisdiction</span>
