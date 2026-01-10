@@ -189,7 +189,6 @@ logfire.configure()
 logfire.instrument_fastapi(app)
 logfire.instrument_sqlalchemy()
 logfire.instrument_requests()
-logfire.instrument_psycopg()
 logfire.instrument_pymongo()
 
 
