@@ -57,7 +57,7 @@
           Cancel
         </UButton>
         <UButton
-          color="primary"
+          class="bg-cold-purple text-white hover:bg-cold-purple/90"
           :disabled="!selectedFile || isUploading"
           :loading="isUploading"
           @click="$emit('upload')"

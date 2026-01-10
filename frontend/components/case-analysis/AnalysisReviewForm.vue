@@ -7,15 +7,47 @@
     </template>
 
     <div class="space-y-5">
+      <div class="grid gap-5 md:grid-cols-2">
+        <DocumentDisplay :document-name="documentName" />
+        <div>
+          <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+            Jurisdiction
+          </p>
+          <div
+            class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-3 py-3 dark:border-gray-700 dark:bg-gray-900"
+          >
+            <UAvatar
+              v-if="selectedJurisdiction?.avatar"
+              :src="selectedJurisdiction.avatar"
+              :style="{
+                borderRadius: '0',
+                border: '1px solid var(--color-cold-gray)',
+                boxSizing: 'border-box',
+                width: 'auto',
+                height: '16px',
+              }"
+              class="flex-shrink-0"
+            />
+            <span class="text-sm text-gray-700 dark:text-gray-300">
+              {{
+                selectedJurisdiction?.label ||
+                selectedJurisdiction?.Name ||
+                "Not selected"
+              }}
+            </span>
+          </div>
+        </div>
+      </div>
+
       <UFormGroup>
         <template #label>
-          <span class="flex items-center gap-2">
+
             Case Citation
             <ConfidenceIndicator
               :is-loading="isFieldLoading('caseCitation')"
               :field-status="getFieldStatus('caseCitation')"
             />
-          </span>
+
         </template>
         <UInput
           v-model="localForm.caseCitation"
@@ -25,13 +57,13 @@
 
       <UFormGroup>
         <template #label>
-          <span class="flex items-center gap-2">
+
             Choice of Law Sections
             <ConfidenceIndicator
               :is-loading="isFieldLoading('choiceOfLawSections')"
               :field-status="getFieldStatus('choiceOfLawSections')"
             />
-          </span>
+
         </template>
         <UTextarea
           v-model="localForm.choiceOfLawSections"
@@ -42,13 +74,13 @@
 
       <UFormGroup>
         <template #label>
-          <span class="flex items-center gap-2">
+
             Themes
             <ConfidenceIndicator
               :is-loading="isFieldLoading('themes')"
               :field-status="getFieldStatus('themes')"
             />
-          </span>
+
         </template>
         <UTextarea
           v-model="localForm.themes"
@@ -59,13 +91,11 @@
 
       <UFormGroup>
         <template #label>
-          <span class="flex items-center gap-2">
             Relevant Facts
             <ConfidenceIndicator
               :is-loading="isFieldLoading('caseRelevantFacts')"
               :field-status="getFieldStatus('caseRelevantFacts')"
             />
-          </span>
         </template>
         <UTextarea
           v-model="localForm.caseRelevantFacts"
@@ -76,13 +106,11 @@
 
       <UFormGroup>
         <template #label>
-          <span class="flex items-center gap-2">
             PIL Provisions
             <ConfidenceIndicator
               :is-loading="isFieldLoading('casePILProvisions')"
               :field-status="getFieldStatus('casePILProvisions')"
             />
-          </span>
         </template>
         <UTextarea
           v-model="localForm.casePILProvisions"
@@ -93,13 +121,11 @@
 
       <UFormGroup>
         <template #label>
-          <span class="flex items-center gap-2">
             Choice of Law Issue
             <ConfidenceIndicator
               :is-loading="isFieldLoading('caseChoiceofLawIssue')"
               :field-status="getFieldStatus('caseChoiceofLawIssue')"
             />
-          </span>
         </template>
         <UTextarea
           v-model="localForm.caseChoiceofLawIssue"
@@ -110,13 +136,11 @@
 
       <UFormGroup>
         <template #label>
-          <span class="flex items-center gap-2">
             Court's Position
             <ConfidenceIndicator
               :is-loading="isFieldLoading('caseCourtsPosition')"
               :field-status="getFieldStatus('caseCourtsPosition')"
             />
-          </span>
         </template>
         <UTextarea
           v-model="localForm.caseCourtsPosition"
@@ -127,13 +151,11 @@
 
       <UFormGroup v-if="isCommonLawJurisdiction">
         <template #label>
-          <span class="flex items-center gap-2">
             Obiter Dicta
             <ConfidenceIndicator
               :is-loading="isFieldLoading('caseObiterDicta')"
               :field-status="getFieldStatus('caseObiterDicta')"
             />
-          </span>
         </template>
         <UTextarea
           v-model="localForm.caseObiterDicta"
@@ -144,13 +166,11 @@
 
       <UFormGroup v-if="isCommonLawJurisdiction">
         <template #label>
-          <span class="flex items-center gap-2">
             Dissenting Opinions
             <ConfidenceIndicator
               :is-loading="isFieldLoading('caseDissentingOpinions')"
               :field-status="getFieldStatus('caseDissentingOpinions')"
             />
-          </span>
         </template>
         <UTextarea
           v-model="localForm.caseDissentingOpinions"
@@ -161,13 +181,11 @@
 
       <UFormGroup>
         <template #label>
-          <span class="flex items-center gap-2">
             Abstract
             <ConfidenceIndicator
               :is-loading="isFieldLoading('caseAbstract')"
               :field-status="getFieldStatus('caseAbstract')"
             />
-          </span>
         </template>
         <UTextarea
           v-model="localForm.caseAbstract"
@@ -183,7 +201,7 @@
           Start Over
         </UButton>
         <UButton
-          color="primary"
+          class="bg-cold-purple text-white hover:bg-cold-purple/90"
           :loading="isSubmitting"
           :disabled="isAnalyzing || isSubmitted"
           @click="$emit('submit')"
@@ -197,8 +215,12 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { EditedAnalysisValues } from "~/types/analyzer";
+import type {
+  EditedAnalysisValues,
+  JurisdictionOption,
+} from "~/types/analyzer";
 import ConfidenceIndicator from "@/components/case-analysis/ConfidenceIndicator.vue";
+import DocumentDisplay from "@/components/case-analysis/DocumentDisplay.vue";
 
 interface FieldStatus {
   confidence: string | null;
@@ -208,6 +230,8 @@ interface FieldStatus {
 
 const props = defineProps<{
   editableForm: EditedAnalysisValues;
+  documentName: string;
+  selectedJurisdiction: JurisdictionOption | undefined;
   isCommonLawJurisdiction: boolean;
   isAnalyzing: boolean;
   isSubmitting: boolean;

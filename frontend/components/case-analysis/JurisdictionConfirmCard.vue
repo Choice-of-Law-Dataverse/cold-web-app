@@ -5,8 +5,13 @@
     </template>
 
     <div v-if="jurisdictionInfo" class="space-y-6">
+      <DocumentDisplay :document-name="documentName" />
+
       <UFormGroup label="Legal System Type">
-        <UInput :model-value="jurisdictionInfo.legal_system_type" readonly />
+        <UInput
+          :model-value="jurisdictionInfo.legal_system_type"
+          :readonly="true"
+        />
         <template #hint>
           <span
             v-if="jurisdictionInfo.confidence"
@@ -34,7 +39,7 @@
           Start Over
         </UButton>
         <UButton
-          color="primary"
+          class="bg-cold-purple text-white hover:bg-cold-purple/90"
           :loading="isLoading"
           @click="$emit('continue')"
         >
@@ -48,11 +53,15 @@
 <script setup lang="ts">
 import type { JurisdictionInfo, JurisdictionOption } from "~/types/analyzer";
 import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
+import DocumentDisplay from "@/components/case-analysis/DocumentDisplay.vue";
+import { useJurisdictions } from "@/composables/useJurisdictions";
+
+const { data: jurisdictions } = useJurisdictions();
 
 defineProps<{
+  documentName: string;
   jurisdictionInfo: JurisdictionInfo | null;
   selectedJurisdiction: JurisdictionOption | undefined;
-  jurisdictions: JurisdictionOption[] | null;
   isLoading?: boolean;
 }>();
 
