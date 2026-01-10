@@ -24,6 +24,7 @@ class UploadDocumentResponse(BaseModel):
     """Response from document upload containing initial analysis."""
 
     correlation_id: str = Field(..., description="Unique identifier for tracking this analysis")
+    draft_id: int | None = Field(None, description="Database ID of the draft suggestion (None if save failed)")
     extracted_text: str = Field(..., description="Extracted text from the document")
     jurisdiction: JurisdictionInfo = Field(..., description="Detected jurisdiction information")
 

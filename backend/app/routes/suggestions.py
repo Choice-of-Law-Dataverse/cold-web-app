@@ -81,6 +81,23 @@ async def submit_case_analyzer_result(
 ):
     try:
         payload = body.model_dump(exclude_none=True)
+        draft_id = payload.pop("draft_id", None)
+
+        # If draft_id provided, fetch and merge with existing draft data
+        if draft_id:
+            existing_draft = service.get_suggestion_by_id("case_analyzer", draft_id)
+            if existing_draft:
+                # Get existing data
+                existing_data = existing_draft.get("payload", {}) or existing_draft.get("data", {})
+                # Preserve critical fields from draft
+                for field in ["pdf_url", "file_name", "full_text", "correlation_id"]:
+                    if field in existing_data and field not in payload:
+                        payload[field] = existing_data[field]
+                # Update existing draft instead of creating new
+                service.update_case_analyzer_draft(draft_id, payload)
+                return SuggestionResponse(id=draft_id)
+
+        # No draft_id or draft not found - create new suggestion
         new_id = service.save_suggestion(
             payload=payload,
             table="case_analyzer",

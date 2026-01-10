@@ -141,6 +141,7 @@ async def upload_document(
             "correlation_id": correlation_id,
         }
 
+        draft_id: int | None = None
         try:
             draft_id = service.save_suggestion(
                 payload=draft_payload,
@@ -162,7 +163,8 @@ async def upload_document(
 
         return UploadDocumentResponse(
             correlation_id=correlation_id,
-            extracted_text=extracted_text[:500],
+            draft_id=draft_id,
+            extracted_text=extracted_text,
             jurisdiction=JurisdictionInfo(
                 legal_system_type=jurisdiction_result.legal_system_type,
                 precise_jurisdiction=jurisdiction_result.precise_jurisdiction,
@@ -313,7 +315,7 @@ async def analyze_document(
                         "data": {"done": True},
                     }
                     yield f"data: {json.dumps(done_payload)}\n\n"
-                except BaseException as e:
+                except Exception as e:
                     logger.error("Analysis workflow failed: %s", str(e))
                     logger.error("Traceback: %s", traceback.format_exc())
 
