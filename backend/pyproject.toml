@@ -5,8 +5,9 @@ description = "cold-backend"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "alembic>=1.14.0",
     "annotated-types==0.7.0",
-    "anyio==4.4.0",
+    "anyio>=4.5.0",
     "attrs==24.3.0",
     "azure-identity>=1.19.0",
     "azure-storage-blob>=12.24.0",
@@ -26,17 +27,22 @@ dependencies = [
     "jinja2==3.1.4",
     "jsonschema==4.23.0",
     "jsonschema-specifications==2024.10.1",
+    "langchain-core>=0.3.78",
+    "langchain-openai>=0.3.34",
     "logfire[fastapi,httpx,psycopg2,pymongo,requests,sqlalchemy]>=4.14.2",
     "markupsafe==2.1.5",
     "mixedbread-ai==2.2.6",
+    "nest-asyncio>=1.6.0",
     "numpy==2.0.0",
+    "openai-agents>=0.6.4",
     "passlib==1.7.4",
     "psycopg2-binary==2.9.9",
-    "pydantic==2.8.2",
-    "pydantic-core==2.20.1",
+    "pydantic>=2.12.3",
+    "pydantic-core>=2.20.1",
     "pydantic-settings>=2.12.0",
     "pyjwt[crypto]==2.10.1",
     "pymongo==4.10.1",
+    "pymupdf4llm>=0.0.27",
     "pyodbc==5.1.0",
     "python-dotenv==1.0.1",
     "python-multipart==0.0.20",
@@ -48,7 +54,7 @@ dependencies = [
     "sniffio==1.3.1",
     "sqlalchemy==2.0.31",
     "starlette==0.41.3",
-    "typing-extensions==4.12.2",
+    "typing-extensions>=4.14.1",
     "urllib3==2.3.0",
     "uvicorn==0.34.0",
     "werkzeug==3.0.3",
@@ -100,6 +106,7 @@ select = [
     "C4",  # flake8-comprehensions
     "UP",  # pyupgrade
 ]
+ignore = ["E501"]
 isort = { combine-as-imports = true, known-first-party = ["chai"] }
 
 [tool.ruff.lint.flake8-bugbear]

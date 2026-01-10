@@ -162,7 +162,7 @@ describe("JurisdictionSelector", () => {
     expect(wrapper.text()).toContain("unavailable");
   });
 
-  it("returns empty array when currentIso3Code is missing", () => {
+  it("returns all jurisdictions when currentIso3Code is missing", () => {
     mockJurisdictions.value = [{ name: "Germany", alpha3Code: "DEU" }];
     mockRoute.params.id = undefined;
 
@@ -172,6 +172,6 @@ describe("JurisdictionSelector", () => {
       },
     });
 
-    expect(wrapper.text()).toContain("unavailable");
+    expect(wrapper.text()).not.toContain("unavailable");
   });
 });

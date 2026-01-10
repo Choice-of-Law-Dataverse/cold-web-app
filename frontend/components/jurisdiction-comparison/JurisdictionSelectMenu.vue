@@ -7,6 +7,7 @@
     :ui-menu="{ container: 'z-[2050] group', height: 'max-h-96' }"
     :placeholder="placeholder"
     :options="availableCountries"
+    :disabled="disabled"
     size="xl"
     @change="onSelect"
   >
@@ -22,7 +23,9 @@
               boxSizing: 'border-box',
               width: 'auto',
               height: '16px',
-              filter: option?.answerCoverage > 0 ? undefined : 'grayscale(0.9)',
+              filter: hasCoverage(option?.answerCoverage)
+                ? undefined
+                : 'grayscale(0.9)',
             }"
             class="mr-2 self-center"
             @error="() => handleImageError(erroredAvatars, option?.label)"
@@ -30,7 +33,7 @@
         </template>
         <span
           :style="{
-            color: option?.answerCoverage > 0 ? undefined : 'gray',
+            color: hasCoverage(option?.answerCoverage) ? undefined : 'gray',
           }"
         >
           {{ option?.label }}
@@ -53,8 +56,9 @@
               boxSizing: 'border-box',
               width: 'auto',
               height: '16px',
-              filter:
-                selected?.answerCoverage > 0 ? undefined : 'grayscale(0.9)',
+              filter: hasCoverage(selected?.answerCoverage)
+                ? undefined
+                : 'grayscale(0.9)',
             }"
             class="mr-1.5 self-center"
             @error="() => handleImageError(erroredAvatars, selected?.label)"
@@ -63,7 +67,7 @@
         <span
           class="truncate"
           :style="{
-            color: selected?.answerCoverage > 0 ? undefined : 'gray',
+            color: hasCoverage(selected?.answerCoverage) ? undefined : 'gray',
           }"
         >
           {{ selected?.label }}
@@ -73,49 +77,55 @@
   </USelectMenu>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { reactive, computed } from "vue";
+import type { JurisdictionOption } from "@/types/analyzer";
 import { handleImageError } from "@/utils/handleImageError";
 
-const props = defineProps({
-  countries: {
-    type: Array,
-    required: true,
+const props = withDefaults(
+  defineProps<{
+    countries: JurisdictionOption[];
+    placeholder?: string;
+    excludedCodes?: Array<string | null | undefined>;
+    disabled?: boolean;
+  }>(),
+  {
+    placeholder: "Pick a Jurisdiction",
+    excludedCodes: () => [],
+    disabled: false,
   },
-  placeholder: {
-    type: String,
-    default: "Pick a Jurisdiction",
-  },
-  excludedCodes: {
-    type: Array,
-    default: () => [],
-  },
-});
+);
 
 const availableCountries = computed(() => {
-  if (!props.excludedCodes || props.excludedCodes.length === 0) {
+  if (!props.excludedCodes.length) {
     return props.countries;
   }
 
   const excludedSet = new Set(
-    props.excludedCodes.map((code) => code?.toUpperCase()).filter(Boolean),
+    props.excludedCodes
+      .map((code) => code?.toUpperCase())
+      .filter((code): code is string => Boolean(code)),
   );
 
-  return props.countries.filter(
-    (country) => !excludedSet.has(country.alpha3Code?.toUpperCase()),
-  );
+  return props.countries.filter((country) => {
+    const code = country.alpha3Code;
+    return !code || !excludedSet.has(code.toUpperCase());
+  });
 });
 
-const emit = defineEmits(["country-selected"]);
+const emit = defineEmits<{
+  (event: "country-selected", value: JurisdictionOption | undefined): void;
+}>();
 
-const selected = defineModel({
-  type: String,
-  default: null,
+const selected = defineModel<JurisdictionOption | undefined>({
+  default: undefined,
 });
 
-const erroredAvatars = reactive({});
+const erroredAvatars = reactive<Record<string, boolean>>({});
 
-const onSelect = (value) => {
+const onSelect = (value: JurisdictionOption | undefined) => {
   emit("country-selected", value);
 };
+
+const hasCoverage = (coverage?: number) => (coverage ?? 0) > 0;
 </script>

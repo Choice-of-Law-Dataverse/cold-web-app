@@ -14,7 +14,7 @@
       @open-cancel-modal="showCancelModal = true"
     >
       <!-- Always render this section, even if keyLabelPairs is empty -->
-      <div class="section-gap m-0 p-0">
+      <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
         <UFormGroup size="lg" hint="Required" :error="errors.abbreviation">
           <template #label>
             <span class="label">Abbreviation</span>
@@ -22,14 +22,14 @@
           <UInput v-model="abbreviation" class="cold-input mt-2" />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label">Title</span>
           </template>
           <UInput v-model="title" class="cold-input mt-2" />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label">URL</span>
           </template>
@@ -40,7 +40,7 @@
           />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Date
@@ -59,6 +59,15 @@
             </template>
           </UPopover>
         </UFormGroup>
+
+        <div class="flex justify-end md:col-span-2">
+          <UButton
+            class="bg-cold-purple text-white hover:bg-cold-purple/90"
+            @click="openSaveModal"
+          >
+            Submit your data
+          </UButton>
+        </div>
       </div>
     </BaseDetailLayout>
 

@@ -13,7 +13,7 @@
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
-      <div class="section-gap m-0 p-0">
+      <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
         <UFormGroup size="lg" hint="Required" :error="errors.jurisdiction_link">
           <template #label>
             <span class="label">Jurisdiction</span>
@@ -22,17 +22,12 @@
             v-model="selectedJurisdiction"
             :options="jurisdictionOptions"
             class="mt-2 w-full"
-            show-avatars="true"
+            :show-avatars="true"
             :multiple="false"
           />
         </UFormGroup>
 
-        <UFormGroup
-          size="lg"
-          class="mt-8"
-          :error="errors.official_title"
-          hint="Required"
-        >
+        <UFormGroup size="lg" :error="errors.official_title" hint="Required">
           <template #label>
             <span class="label flex flex-row items-center">
               Official Title
@@ -46,12 +41,7 @@
           />
         </UFormGroup>
 
-        <UFormGroup
-          size="lg"
-          class="mt-8"
-          :error="errors.title_en"
-          hint="Required"
-        >
+        <UFormGroup size="lg" :error="errors.title_en" hint="Required">
           <template #label>
             <span class="label flex flex-row items-center">
               Name
@@ -65,12 +55,7 @@
           />
         </UFormGroup>
 
-        <UFormGroup
-          size="lg"
-          class="mt-8"
-          hint="Required"
-          :error="errors.entry_into_force"
-        >
+        <UFormGroup size="lg" hint="Required" :error="errors.entry_into_force">
           <template #label>
             <span class="label flex flex-row items-center">
               Entry Into Force
@@ -89,12 +74,7 @@
           </UPopover>
         </UFormGroup>
 
-        <UFormGroup
-          size="lg"
-          class="mt-8"
-          hint="Required"
-          :error="errors.source_url"
-        >
+        <UFormGroup size="lg" hint="Required" :error="errors.source_url">
           <template #label>
             <span class="label">Source (URL)</span>
           </template>
@@ -105,21 +85,21 @@
           />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label">Themes</span>
           </template>
           <UInput v-model="themes" class="cold-input mt-2" />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label">Status</span>
           </template>
           <UInput v-model="status" class="cold-input mt-2" />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Publication Date
@@ -142,7 +122,7 @@
           </UPopover>
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Abbreviation
@@ -152,7 +132,7 @@
           <UInput v-model="abbreviation" class="cold-input mt-2" />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Compatible With the HCCH Principles?
@@ -181,7 +161,7 @@
           </div>
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Compatible With the UNCITRAL Model Law?
@@ -209,6 +189,15 @@
             </UButton>
           </div>
         </UFormGroup>
+
+        <div class="flex justify-end md:col-span-2">
+          <UButton
+            class="bg-cold-purple text-white hover:bg-cold-purple/90"
+            @click="openSaveModal"
+          >
+            Submit your data
+          </UButton>
+        </div>
       </div>
     </BaseDetailLayout>
 

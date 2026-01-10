@@ -279,31 +279,20 @@ import {
 import { useJurisdictions } from "@/composables/useJurisdictions";
 import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
+import type { JurisdictionOption } from "@/types/analyzer";
 
 // Props - now only needs the primary jurisdiction
 const props = defineProps<{
-  primaryJurisdiction: {
-    Name: string;
-    alpha3Code?: string;
-    avatar?: string;
-    [key: string]: unknown;
-  };
+  primaryJurisdiction: JurisdictionOption;
 }>();
 
 const route = useRoute();
 
 // Track comparison jurisdictions
-const comparisonJurisdictions = ref<
-  Array<{
-    Name: string;
-    alpha3Code?: string;
-    avatar?: string;
-    [key: string]: unknown;
-  }>
->([]);
+const comparisonJurisdictions = ref<JurisdictionOption[]>([]);
 
 // Track selected value for the selector (to reset after selection)
-const selectedJurisdiction = ref(null);
+const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 
 // Get all available jurisdictions
 const { data: allJurisdictionsData, isLoading: jurisdictionsLoading } =
@@ -362,7 +351,7 @@ const excludedJurisdictionCodes = computed(() => {
 });
 
 const handleAddJurisdiction = (
-  jurisdiction: typeof props.primaryJurisdiction,
+  jurisdiction: JurisdictionOption | undefined,
 ) => {
   if (!jurisdiction?.alpha3Code) return;
 
@@ -373,7 +362,7 @@ const handleAddJurisdiction = (
 
   if (!alreadySelected) {
     comparisonJurisdictions.value.push(jurisdiction);
-    selectedJurisdiction.value = null;
+    selectedJurisdiction.value = undefined;
   }
 };
 

@@ -27,7 +27,8 @@ from app.services.suggestions import SuggestionService
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/moderation", tags=["Moderation"], include_in_schema=False)
+# router = APIRouter(prefix="/moderation", tags=["Moderation"], include_in_schema=False)
+router = APIRouter(prefix="", tags=["Moderation"], include_in_schema=False)
 
 service: SuggestionService | None = None
 writer: MainDBWriter | None = None
@@ -319,6 +320,10 @@ def _normalize_case_analyzer_payload(raw: dict[str, Any], item: dict[str, Any]) 
         result["raw_data"] = json.dumps(data_obj, ensure_ascii=False, indent=2)
     except Exception:
         result["raw_data"] = str(data_obj)
+
+    # Preserve pdf_url and file_name for approval workflow
+    result["pdf_url"] = data_obj.get("pdf_url") or raw.get("pdf_url")
+    result["file_name"] = data_obj.get("file_name") or raw.get("file_name")
 
     return result
 

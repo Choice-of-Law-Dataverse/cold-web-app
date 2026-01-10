@@ -4,10 +4,10 @@ from decimal import Decimal
 from typing import Any
 
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import JSONB
 
 from app.config import config
 from app.services.db_manager import suggestions_db_manager
+from app.services.suggestions_schema import SUGGESTION_TABLES, SUGGESTIONS_METADATA
 
 
 class SuggestionService:
@@ -24,124 +24,8 @@ class SuggestionService:
             suggestions_db_manager.initialize(conn)
 
         self.engine = suggestions_db_manager.get_engine()
-        # Use default schema (search_path) of the provided connection
-        self.metadata = sa.MetaData()
-
-        # Define per-type suggestion tables with JSONB payloads
-        self.tables: dict[str, sa.Table] = {
-            "generic": sa.Table(
-                "suggestions_generic",
-                self.metadata,
-                sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                sa.Column(
-                    "created_at",
-                    sa.DateTime(timezone=True),
-                    server_default=sa.func.now(),
-                    nullable=False,
-                ),
-                sa.Column("payload", JSONB, nullable=False),
-                sa.Column("client_ip", sa.String(64), nullable=True),
-                sa.Column("user_agent", sa.Text, nullable=True),
-                sa.Column("source", sa.String(256), nullable=True),
-                sa.Column("token_sub", sa.String(256), nullable=True),
-                extend_existing=True,
-            ),
-            "court_decisions": sa.Table(
-                "suggestions_court_decisions",
-                self.metadata,
-                sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                sa.Column(
-                    "created_at",
-                    sa.DateTime(timezone=True),
-                    server_default=sa.func.now(),
-                    nullable=False,
-                ),
-                sa.Column("payload", JSONB, nullable=False),
-                sa.Column("client_ip", sa.String(64), nullable=True),
-                sa.Column("user_agent", sa.Text, nullable=True),
-                sa.Column("source", sa.String(256), nullable=True),
-                sa.Column("token_sub", sa.String(256), nullable=True),
-                extend_existing=True,
-            ),
-            "domestic_instruments": sa.Table(
-                "suggestions_domestic_instruments",
-                self.metadata,
-                sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                sa.Column(
-                    "created_at",
-                    sa.DateTime(timezone=True),
-                    server_default=sa.func.now(),
-                    nullable=False,
-                ),
-                sa.Column("payload", JSONB, nullable=False),
-                sa.Column("client_ip", sa.String(64), nullable=True),
-                sa.Column("user_agent", sa.Text, nullable=True),
-                sa.Column("source", sa.String(256), nullable=True),
-                sa.Column("token_sub", sa.String(256), nullable=True),
-                extend_existing=True,
-            ),
-            "regional_instruments": sa.Table(
-                "suggestions_regional_instruments",
-                self.metadata,
-                sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                sa.Column(
-                    "created_at",
-                    sa.DateTime(timezone=True),
-                    server_default=sa.func.now(),
-                    nullable=False,
-                ),
-                sa.Column("payload", JSONB, nullable=False),
-                sa.Column("client_ip", sa.String(64), nullable=True),
-                sa.Column("user_agent", sa.Text, nullable=True),
-                sa.Column("source", sa.String(256), nullable=True),
-                sa.Column("token_sub", sa.String(256), nullable=True),
-                extend_existing=True,
-            ),
-            "international_instruments": sa.Table(
-                "suggestions_international_instruments",
-                self.metadata,
-                sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                sa.Column(
-                    "created_at",
-                    sa.DateTime(timezone=True),
-                    server_default=sa.func.now(),
-                    nullable=False,
-                ),
-                sa.Column("payload", JSONB, nullable=False),
-                sa.Column("client_ip", sa.String(64), nullable=True),
-                sa.Column("user_agent", sa.Text, nullable=True),
-                sa.Column("source", sa.String(256), nullable=True),
-                sa.Column("token_sub", sa.String(256), nullable=True),
-                extend_existing=True,
-            ),
-            "literature": sa.Table(
-                "suggestions_literature",
-                self.metadata,
-                sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
-                sa.Column(
-                    "created_at",
-                    sa.DateTime(timezone=True),
-                    server_default=sa.func.now(),
-                    nullable=False,
-                ),
-                sa.Column("payload", JSONB, nullable=False),
-                sa.Column("client_ip", sa.String(64), nullable=True),
-                sa.Column("user_agent", sa.Text, nullable=True),
-                sa.Column("source", sa.String(256), nullable=True),
-                sa.Column("token_sub", sa.String(256), nullable=True),
-                extend_existing=True,
-            ),
-            # Case Analyzer uses existing schema with a 'data' column, so autoload it
-            "case_analyzer": sa.Table(
-                "suggestions_case_analyzer",
-                self.metadata,
-                autoload_with=self.engine,
-                extend_existing=True,
-            ),
-        }
-
-        # Ensure all tables exist (will not alter existing ones)
-        self.metadata.create_all(self.engine)
+        self.metadata = SUGGESTIONS_METADATA
+        self.tables = SUGGESTION_TABLES
 
     def _get_token_sub(self, user: dict[str, Any] | None) -> str | None:
         """Extract email from Auth0 user payload and use as identifier."""
@@ -167,6 +51,15 @@ class SuggestionService:
         # Fallback to string representation
         return str(obj)
 
+    @staticmethod
+    def _extract_moderation_status(payload: Any) -> str | None:
+        if isinstance(payload, dict):
+            status = payload.get("moderation_status")
+            if isinstance(status, str):
+                stripped = status.strip()
+                return stripped or None
+        return None
+
     def save_suggestion(
         self,
         payload: dict[str, Any],
@@ -183,10 +76,14 @@ class SuggestionService:
             raise ValueError(f"Unknown suggestions table '{table}'")
 
         with suggestions_db_manager.get_session() as session:
+            status_value = self._extract_moderation_status(payload)
             safe_payload = self._to_jsonable(payload)
             # Case analyzer table stores JSON in 'data' column
             if table == "case_analyzer":
-                values: dict[str, Any] = {"data": safe_payload}
+                values: dict[str, Any] = {
+                    "data": safe_payload,
+                    "moderation_status": status_value,
+                }
                 if hasattr(target.c, "client_ip"):
                     values["client_ip"] = client_ip
                 if hasattr(target.c, "user_agent"):
@@ -195,6 +92,10 @@ class SuggestionService:
                     values["source"] = source
                 if hasattr(target.c, "token_sub"):
                     values["token_sub"] = token_sub
+                if hasattr(target.c, "user_email") and token_sub:
+                    values["user_email"] = token_sub
+                if hasattr(target.c, "username") and user and user.get("name"):
+                    values["username"] = user.get("name")
                 stmt = target.insert().values(**values).returning(target.c.id)
             else:
                 stmt = (
@@ -205,6 +106,7 @@ class SuggestionService:
                         user_agent=user_agent,
                         source=source,
                         token_sub=token_sub,
+                        moderation_status=status_value,
                     )
                     .returning(target.c.id)
                 )
@@ -228,25 +130,25 @@ class SuggestionService:
                 if data_col is None:
                     return []
                 cols.append(data_col)
+
                 # Optional meta columns
-                username_col = getattr(target.c, "username", None)
-                user_email_col = getattr(target.c, "user_email", None)
-                model_col = getattr(target.c, "model", None)
-                citation_col = getattr(target.c, "case_citation", None)
-                source_col = getattr(target.c, "source", None)
-                for c in (
-                    username_col,
-                    user_email_col,
-                    model_col,
-                    citation_col,
-                    source_col,
-                ):
-                    if c is not None:
-                        cols.append(c)
+                def _optional_column(name: str) -> sa.Column | None:
+                    col = getattr(target.c, name, None)
+                    if col is None:
+                        return None
+                    cols.append(col)
+                    return col
+
+                username_col = _optional_column("username")
+                user_email_col = _optional_column("user_email")
+                model_col = _optional_column("model")
+                citation_col = _optional_column("case_citation")
+                source_col = _optional_column("source")
                 query = sa.select(*cols)
+                query = query.where(target.c.moderation_status.is_(None))
                 if created_col is not None:
                     query = query.order_by(created_col.desc())
-                query = query.limit(limit * 5)  # read more since we'll filter client-side
+                query = query.limit(limit * 2)
                 rows = session.execute(query).mappings().all()
 
                 results: list[dict] = []
@@ -279,6 +181,13 @@ class SuggestionService:
                 return results[:limit]
 
             # Default flow uses JSONB 'payload'
+            pending_condition = sa.and_(
+                target.c.moderation_status.is_(None),
+                sa.or_(
+                    ~target.c.payload.has_key("moderation_status"),  # type: ignore[attr-defined]
+                    target.c.payload["moderation_status"].astext.is_(None),
+                ),
+            )
             query = (
                 sa.select(
                     target.c.id,
@@ -287,20 +196,21 @@ class SuggestionService:
                     target.c.source,
                     target.c.token_sub,
                 )
-                .where(
-                    sa.or_(
-                        ~target.c.payload.has_key("moderation_status"),  # type: ignore[attr-defined]
-                        target.c.payload["moderation_status"].astext.is_(None),
-                    )
-                )
+                .where(pending_condition)
                 .order_by(target.c.created_at.desc())
                 .limit(limit)
             )
             rows = session.execute(query).mappings().all()
             return [dict(r) for r in rows]
 
-    def get_pending_by_id(self, table: str, suggestion_id: int) -> dict | None:
-        """Get a specific pending suggestion by ID."""
+    def get_suggestion_by_id(
+        self,
+        table: str,
+        suggestion_id: int,
+        *,
+        token_sub: str | None = None,
+        pending_only: bool = False,
+    ) -> dict | None:
         target = self.tables.get(table)
         if target is None:
             raise ValueError(f"Unknown suggestions table '{table}'")
@@ -315,42 +225,48 @@ class SuggestionService:
                 if data_col is None:
                     return None
                 cols.append(data_col)
-                # Optional meta columns
-                username_col = getattr(target.c, "username", None)
-                user_email_col = getattr(target.c, "user_email", None)
-                model_col = getattr(target.c, "model", None)
-                citation_col = getattr(target.c, "case_citation", None)
-                source_col = getattr(target.c, "source", None)
-                for c in (
-                    username_col,
-                    user_email_col,
-                    model_col,
-                    citation_col,
-                    source_col,
-                ):
-                    if c is not None:
-                        cols.append(c)
+
+                def _optional_column(name: str) -> sa.Column | None:
+                    col = getattr(target.c, name, None)
+                    if col is None:
+                        return None
+                    cols.append(col)
+                    return col
+
+                username_col = _optional_column("username")
+                user_email_col = _optional_column("user_email")
+                model_col = _optional_column("model")
+                citation_col = _optional_column("case_citation")
+                source_col = _optional_column("source")
+                status_col = _optional_column("moderation_status")
 
                 query = sa.select(*cols).where(target.c.id == suggestion_id)
+                if token_sub:
+                    ownership_filters: list[Any] = []
+                    if username_col is not None:
+                        ownership_filters.append(username_col == token_sub)
+                    if user_email_col is not None:
+                        ownership_filters.append(user_email_col == token_sub)
+                    if ownership_filters:
+                        query = query.where(sa.or_(*ownership_filters))
+                    else:
+                        return None
+                if pending_only:
+                    query = query.where(target.c.moderation_status.is_(None))
                 row = session.execute(query).mappings().first()
                 if not row:
                     return None
 
                 raw_data = row.get("data")
-                payload: Any
                 if isinstance(raw_data, dict):
-                    payload = raw_data
+                    payload: Any = raw_data
                 else:
                     try:
                         payload = json.loads(raw_data) if raw_data is not None else {}
                     except Exception:
                         payload = {}
 
-                status = payload.get("moderation_status") if isinstance(payload, dict) else None
-                if status in {"approved", "rejected"}:
-                    return None  # Not pending
-
-                return {
+                result = {
                     "id": row["id"],
                     "created_at": row.get("created_at"),
                     "payload": payload,
@@ -359,27 +275,57 @@ class SuggestionService:
                     "user_email": row.get("user_email") if user_email_col is not None else None,
                     "model": row.get("model") if model_col is not None else None,
                     "case_citation": row.get("case_citation") if citation_col is not None else None,
+                    "moderation_status": row.get("moderation_status") if status_col is not None else None,
                 }
 
-            # Default flow uses JSONB 'payload'
-            query = (
-                sa.select(
-                    target.c.id,
-                    target.c.created_at,
-                    target.c.payload,
-                    target.c.source,
-                    target.c.token_sub,
-                )
-                .where(target.c.id == suggestion_id)
-                .where(
+                if pending_only:
+                    status_val = result.get("moderation_status")
+                    if status_val in {"approved", "rejected"}:
+                        return None
+
+                return result
+
+            query = sa.select(
+                target.c.id,
+                target.c.created_at,
+                target.c.payload,
+                target.c.source,
+                target.c.token_sub,
+                target.c.moderation_status,
+            ).where(target.c.id == suggestion_id)
+
+            if token_sub:
+                query = query.where(target.c.token_sub == token_sub)
+
+            if pending_only:
+                query = query.where(target.c.moderation_status.is_(None)).where(
                     sa.or_(
                         ~target.c.payload.has_key("moderation_status"),  # type: ignore[attr-defined]
                         target.c.payload["moderation_status"].astext.is_(None),
                     )
                 )
-            )
+
             row = session.execute(query).mappings().first()
-            return dict(row) if row else None
+            if not row:
+                return None
+
+            payload_value = row.get("payload")
+            if isinstance(payload_value, dict):
+                payload_data: Any = payload_value
+            else:
+                try:
+                    payload_data = json.loads(payload_value) if payload_value is not None else {}
+                except Exception:
+                    payload_data = {}
+
+            return {
+                "id": row["id"],
+                "created_at": row.get("created_at"),
+                "payload": payload_data,
+                "source": row.get("source"),
+                "token_sub": row.get("token_sub"),
+                "moderation_status": row.get("moderation_status"),
+            }
 
     def mark_status(
         self,
@@ -412,8 +358,8 @@ class SuggestionService:
                 current["moderation_note"] = note or ""
                 if merged_id is not None:
                     current["merged_record_id"] = int(merged_id)
-                new_val = json.dumps(self._to_jsonable(current))
-                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val)
+                json_ready = self._to_jsonable(current)
+                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=json_ready, moderation_status=status)
                 session.execute(upd)
                 session.commit()
                 return
@@ -447,11 +393,50 @@ class SuggestionService:
                     merged_id_json,
                     True,
                 )
-            stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=update_expr)
+            stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=update_expr, moderation_status=status)
             session.execute(stmt)
             session.commit()
 
-    # New: update the entire payload for a specific suggestion (used to persist edited fields)
+    def get_case_analyzer_draft(self, draft_id: int) -> dict[str, Any] | None:
+        """Get a case analyzer draft by ID. Returns the data payload or None if not found."""
+        result = self.get_suggestion_by_id("case_analyzer", draft_id)
+        if result is None:
+            return None
+        return result.get("payload", {})
+
+    def update_case_analyzer_draft(self, draft_id: int, updates: dict[str, Any]) -> None:
+        """Update a case analyzer draft by merging new fields into existing data."""
+        target = self.tables["case_analyzer"]
+        with suggestions_db_manager.get_session() as session:
+            # Load existing data
+            sel = sa.select(target.c.data).where(target.c.id == draft_id).limit(1)
+            row = session.execute(sel).first()
+            current: dict[str, Any]
+            if row and isinstance(row[0], dict):
+                current = dict(row[0])
+            else:
+                try:
+                    current = json.loads(row[0]) if row else {}
+                except Exception:
+                    current = {}
+
+            # Preserve critical fields if not explicitly being updated
+            preserved_fields = ["pdf_url", "file_name", "full_text", "correlation_id"]
+            for field in preserved_fields:
+                if field in current and field not in updates:
+                    updates[field] = current[field]
+
+            # Merge updates into existing data
+            merged = {**current, **updates}
+            status_value = self._extract_moderation_status(merged)
+            json_ready = self._to_jsonable(merged)
+
+            # Update the record
+            upd = sa.update(target).where(target.c.id == draft_id).values(data=json_ready, moderation_status=status_value)
+            session.execute(upd)
+            session.commit()
+
+    # Generic update method for backward compatibility
     def update_payload(self, table: str, suggestion_id: int, payload: dict[str, Any]) -> None:
         target = self.tables.get(table)
         if target is None:
@@ -469,12 +454,22 @@ class SuggestionService:
                     except Exception:
                         current = {}
                 merged = {**current, **payload}
-                new_val = json.dumps(self._to_jsonable(merged))
-                upd = sa.update(target).where(target.c.id == suggestion_id).values(data=new_val)
+                status_value = self._extract_moderation_status(merged)
+                json_ready = self._to_jsonable(merged)
+                upd = (
+                    sa.update(target)
+                    .where(target.c.id == suggestion_id)
+                    .values(data=json_ready, moderation_status=status_value)
+                )
                 session.execute(upd)
                 session.commit()
                 return
 
-            stmt = sa.update(target).where(target.c.id == suggestion_id).values(payload=self._to_jsonable(payload))
+            status_value = self._extract_moderation_status(payload)
+            stmt = (
+                sa.update(target)
+                .where(target.c.id == suggestion_id)
+                .values(payload=self._to_jsonable(payload), moderation_status=status_value)
+            )
             session.execute(stmt)
             session.commit()

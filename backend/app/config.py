@@ -34,6 +34,9 @@ class Config(BaseSettings):
     AUTH0_AUDIENCE: str | None = None
     # Frontend API key for request validation
     API_KEY: str | None = None
+    # Azure Storage configuration
+    AZURE_STORAGE_ACCOUNT: str = "choiceoflaw"
+    AZURE_STORAGE_CONTAINER: str = "cold-case-analysis"
 
     @model_validator(mode="after")
     def set_moderation_secret_fallback(self) -> "Config":

@@ -234,6 +234,7 @@ class LiteratureSuggestion(BaseModel):
 # New: Case Analyzer Suggestions (standalone; no direct DB merge)
 class CaseAnalyzerSuggestion(BaseModel):
     # Meta
+    draft_id: int | None = Field(None, description="Draft ID to merge with")
     username: str | None = Field(None, description="Submitter Username")
     user_email: str | None = Field(None, description="Submitter Email")
     model: str | None = Field(None, description="Model used to analyze")

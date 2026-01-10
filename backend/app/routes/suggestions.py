@@ -3,14 +3,8 @@ from typing import Any
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 
 from app.auth import require_editor_or_admin, require_user, verify_frontend_request
-from app.routes.moderation import (
-    MainDBWriter,
-    _approve_case_analyzer,
-    _get_target_table,
-    _link_jurisdictions_for_default_categories,
-    _normalize_domestic_instruments,
-)
 from app.schemas.suggestions import (
+    CaseAnalyzerSuggestion,
     CourtDecisionSuggestion,
     DomesticInstrumentSuggestion,
     InternationalInstrumentSuggestion,
@@ -18,6 +12,13 @@ from app.schemas.suggestions import (
     RegionalInstrumentSuggestion,
     SuggestionPayload,
     SuggestionResponse,
+)
+from app.services.moderation_writer import MainDBWriter
+from app.services.suggestion_approval import (
+    approve_case_analyzer,
+    get_target_table,
+    link_jurisdictions_for_default_categories,
+    normalize_domestic_instruments,
 )
 from app.services.suggestions import SuggestionService
 
@@ -58,6 +59,51 @@ async def submit_suggestion(
             client_ip=request.client.host if request.client else None,
             user_agent=request.headers.get("User-Agent"),
             source=body.source,
+            user=user,
+        )
+        return SuggestionResponse(id=new_id)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e)) from e
+
+
+@router.post(
+    "/case-analyzer",
+    summary="Submit processed Case Analyzer result",
+    response_model=SuggestionResponse,
+    status_code=status.HTTP_201_CREATED,
+)
+async def submit_case_analyzer_result(
+    body: CaseAnalyzerSuggestion,
+    request: Request,
+    user: dict = Depends(require_user),
+    source: str | None = Header(None),
+    service: SuggestionService = Depends(get_suggestion_service),
+):
+    try:
+        payload = body.model_dump(exclude_none=True)
+        draft_id = payload.pop("draft_id", None)
+
+        # If draft_id provided, fetch and merge with existing draft data
+        if draft_id:
+            existing_draft = service.get_suggestion_by_id("case_analyzer", draft_id)
+            if existing_draft:
+                # Get existing data
+                existing_data = existing_draft.get("payload", {}) or existing_draft.get("data", {})
+                # Preserve critical fields from draft
+                for field in ["pdf_url", "file_name", "full_text", "correlation_id"]:
+                    if field in existing_data and field not in payload:
+                        payload[field] = existing_data[field]
+                # Update existing draft instead of creating new
+                service.update_case_analyzer_draft(draft_id, payload)
+                return SuggestionResponse(id=draft_id)
+
+        # No draft_id or draft not found - create new suggestion
+        new_id = service.save_suggestion(
+            payload=payload,
+            table="case_analyzer",
+            client_ip=request.client.host if request.client else None,
+            user_agent=request.headers.get("User-Agent"),
+            source=source,
             user=user,
         )
         return SuggestionResponse(id=new_id)
@@ -221,6 +267,20 @@ def _table_key(path_segment: str) -> str | None:
     return mapping.get(path_segment)
 
 
+def _has_editor_access(user: dict | None) -> bool:
+    roles = user.get("https://cold.global/roles", []) if user else []
+    if isinstance(roles, str):
+        roles = [roles]
+    normalized = {role.lower() for role in roles if isinstance(role, str)}
+    return "editor" in normalized or "admin" in normalized
+
+
+def _extract_token_sub(user: dict | None) -> str | None:
+    if not user:
+        return None
+    return user.get("https://cold.global/email") or user.get("email") or user.get("sub")
+
+
 @router.get(
     "/pending/{category}",
     summary="List pending suggestions for a category",
@@ -252,12 +312,15 @@ async def list_pending_suggestions(
 @router.get(
     "/{category}/{suggestion_id}",
     summary="Get specific suggestion details",
-    description="Requires editor or admin role. Returns detailed information about a specific suggestion.",
+    description=(
+        "Authenticated users can retrieve details for their own submissions. "
+        "Editors and admins can access any suggestion for moderation."
+    ),
 )
 async def get_suggestion_detail(
     category: str,
     suggestion_id: int,
-    _: dict = Depends(require_editor_or_admin),
+    user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> dict[str, Any]:
     """Get detailed information about a specific suggestion."""
@@ -268,13 +331,30 @@ async def get_suggestion_detail(
             detail=f"Invalid category: {category}",
         )
 
+    is_moderator = _has_editor_access(user)
+
+    if not is_moderator and table == "case_analyzer":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Insufficient permissions for this category",
+        )
+
+    token_sub = None if is_moderator else _extract_token_sub(user)
+    if not is_moderator and not token_sub:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Unable to verify submission ownership",
+        )
+
     try:
-        item = service.get_pending_by_id(table, suggestion_id)
+        item = service.get_suggestion_by_id(table, suggestion_id, token_sub=token_sub)
         if not item:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="Suggestion not found or not pending",
+                detail="Suggestion not found or not accessible",
             )
+        if not is_moderator:
+            item.pop("token_sub", None)
         return item
     except HTTPException:
         raise
@@ -306,7 +386,7 @@ async def approve_suggestion(
         )
 
     try:
-        item = service.get_pending_by_id(table, suggestion_id)
+        item = service.get_suggestion_by_id(table, suggestion_id, pending_only=True)
         if not item:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -320,16 +400,17 @@ async def approve_suggestion(
 
         if category == "case-analyzer":
             # Use existing case analyzer approval logic
-            await _approve_case_analyzer(request, table, suggestion_id, original_payload, item)
+            writer = MainDBWriter()
+            await approve_case_analyzer(service, writer, table, suggestion_id, original_payload, item, moderator_email)
         else:
             # Handle default categories - simplified without form editing
             writer = MainDBWriter()
-            target_table = _get_target_table(category)
+            target_table = get_target_table(category)
             if not target_table:
                 raise HTTPException(status_code=400, detail="Unsupported category")
 
             if target_table == "Domestic_Instruments":
-                _normalize_domestic_instruments(original_payload)
+                normalize_domestic_instruments(original_payload)
 
             # Filter out reserved metadata fields
             _reserved = {
@@ -343,7 +424,7 @@ async def approve_suggestion(
             payload_for_writer = {k: v for k, v in original_payload.items() if k not in _reserved}
 
             merged_id = writer.insert_record(target_table, payload_for_writer)
-            _link_jurisdictions_for_default_categories(writer, target_table, merged_id, payload_for_writer)
+            link_jurisdictions_for_default_categories(writer, target_table, merged_id, payload_for_writer)
 
             service.mark_status(
                 table,

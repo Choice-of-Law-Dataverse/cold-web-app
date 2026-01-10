@@ -1,7 +1,7 @@
 <template>
   <UCard class="cold-ucard overflow-visible">
     <div class="flex flex-col items-stretch gap-8 md:flex-row md:items-center">
-      <h3 class="text-left md:whitespace-nowrap">Add comparison with</h3>
+      <h3 v-if="label" class="text-left md:whitespace-nowrap">{{ label }}</h3>
 
       <div
         v-if="availableJurisdictions && availableJurisdictions.length > 0"
@@ -9,7 +9,9 @@
       >
         <div class="w-full md:w-auto">
           <JurisdictionSelectMenu
+            v-model="selectedJurisdiction"
             :countries="availableJurisdictions"
+            :disabled="disabled"
             placeholder="Jurisdiction"
             @country-selected="onJurisdictionSelected"
           />
@@ -33,14 +35,22 @@
 
 <script setup>
 import { useRoute } from "vue-router";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 
-defineProps({
+const props = defineProps({
   formattedJurisdiction: {
     type: Object,
     required: true,
+  },
+  label: {
+    type: String,
+    default: "Add comparison with",
+  },
+  disabled: {
+    type: Boolean,
+    default: false,
   },
 });
 
@@ -55,13 +65,34 @@ const currentIso3Code = computed(() => {
 });
 
 const availableJurisdictions = computed(() => {
-  if (!jurisdictions.value || !currentIso3Code.value) return [];
+  if (!jurisdictions.value) return [];
+
+  if (!currentIso3Code.value) {
+    return jurisdictions.value;
+  }
 
   return jurisdictions.value.filter(
     (jurisdiction) =>
       jurisdiction.alpha3Code?.toUpperCase() !== currentIso3Code.value,
   );
 });
+
+const selectedJurisdiction = ref(null);
+
+watch(
+  [jurisdictions, () => props.formattedJurisdiction],
+  ([newJurisdictions, newFormattedJurisdiction]) => {
+    if (newJurisdictions && newFormattedJurisdiction?.Name) {
+      const found = newJurisdictions.find(
+        (j) => j.Name === newFormattedJurisdiction.Name,
+      );
+      if (found) {
+        selectedJurisdiction.value = found;
+      }
+    }
+  },
+  { immediate: true },
+);
 
 const onJurisdictionSelected = (selectedJurisdiction) => {
   if (!selectedJurisdiction?.alpha3Code) return;

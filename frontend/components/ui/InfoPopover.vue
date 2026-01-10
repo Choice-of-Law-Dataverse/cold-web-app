@@ -9,7 +9,7 @@
       base: 'overflow-hidden',
     }"
   >
-    <span class="icon cursor-pointer p-2">
+    <span class="icon cursor-pointer px-1">
       <Icon name="i-material-symbols:info-outline" />
     </span>
 

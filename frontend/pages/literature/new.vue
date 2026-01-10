@@ -13,7 +13,39 @@
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
-      <div class="section-gap m-0 p-0">
+      <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
+        <!-- Title (required) -->
+        <UFormGroup size="lg" hint="Required" :error="errors.title">
+          <template #label>
+            <span class="label">Title</span>
+          </template>
+          <UInput v-model="title" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <!-- Year (required) -->
+        <UFormGroup size="lg" hint="Required" :error="errors.publication_year">
+          <template #label>
+            <span class="label">Year</span>
+          </template>
+          <UInput v-model="publicationYear" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <!-- Author(s) (required) -->
+        <UFormGroup size="lg" hint="Required" :error="errors.author">
+          <template #label>
+            <span class="label">Author</span>
+          </template>
+          <UInput v-model="author" class="cold-input mt-2" />
+        </UFormGroup>
+
+        <!-- Publication (optional) -->
+        <UFormGroup size="lg" :error="errors.publication_title">
+          <template #label>
+            <span class="label">Publication title</span>
+          </template>
+          <UInput v-model="publicationTitle" class="cold-input mt-2" />
+        </UFormGroup>
+
         <!-- Jurisdiction (optional) -->
         <UFormGroup size="lg">
           <template #label>
@@ -23,60 +55,13 @@
             v-model="selectedJurisdiction"
             :options="jurisdictionOptions"
             class="mt-2 w-full"
-            show-avatars="true"
+            :show-avatars="true"
             :multiple="false"
           />
         </UFormGroup>
 
-        <!-- Year (required) -->
-        <UFormGroup
-          size="lg"
-          class="mt-8"
-          hint="Required"
-          :error="errors.publication_year"
-        >
-          <template #label>
-            <span class="label">Year</span>
-          </template>
-          <UInput v-model="publicationYear" class="cold-input mt-2" />
-        </UFormGroup>
-
-        <!-- Author(s) (required) -->
-        <UFormGroup
-          size="lg"
-          class="mt-8"
-          hint="Required"
-          :error="errors.author"
-        >
-          <template #label>
-            <span class="label">Author</span>
-          </template>
-          <UInput v-model="author" class="cold-input mt-2" />
-        </UFormGroup>
-
-        <!-- Title (required) -->
-        <UFormGroup
-          size="lg"
-          class="mt-8"
-          hint="Required"
-          :error="errors.title"
-        >
-          <template #label>
-            <span class="label">Title</span>
-          </template>
-          <UInput v-model="title" class="cold-input mt-2" />
-        </UFormGroup>
-
-        <!-- Publication (optional) -->
-        <UFormGroup size="lg" class="mt-8" :error="errors.publication_title">
-          <template #label>
-            <span class="label">Publication title</span>
-          </template>
-          <UInput v-model="publicationTitle" class="cold-input mt-2" />
-        </UFormGroup>
-
         <!-- URL (optional) -->
-        <UFormGroup size="lg" class="mt-8" :error="errors.url">
+        <UFormGroup size="lg" :error="errors.url">
           <template #label>
             <span class="label">URL</span>
           </template>
@@ -84,7 +69,7 @@
         </UFormGroup>
 
         <!-- DOI (optional) -->
-        <UFormGroup size="lg" class="mt-8" :error="errors.doi">
+        <UFormGroup size="lg" :error="errors.doi">
           <template #label>
             <span class="label">DOI</span>
           </template>
@@ -92,7 +77,7 @@
         </UFormGroup>
 
         <!-- Date (optional) -->
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label">Publication date</span>
           </template>
@@ -113,7 +98,7 @@
         </UFormGroup>
 
         <!-- ISBN (optional) -->
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label">ISBN</span>
           </template>
@@ -121,19 +106,28 @@
         </UFormGroup>
 
         <!-- ISSN (optional) -->
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label">ISSN</span>
           </template>
           <UInput v-model="issn" class="cold-input mt-2" />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label">Theme</span>
           </template>
           <UInput v-model="theme" class="cold-input mt-2" />
         </UFormGroup>
+
+        <div class="flex justify-end md:col-span-2">
+          <UButton
+            class="bg-cold-purple text-white hover:bg-cold-purple/90"
+            @click="openSaveModal"
+          >
+            Submit your data
+          </UButton>
+        </div>
       </div>
     </BaseDetailLayout>
 

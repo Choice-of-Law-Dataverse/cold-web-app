@@ -56,7 +56,7 @@ const props = defineProps({
   comments: { type: String, required: true },
   saveModalErrors: { type: Object, required: true },
   name: { type: String, required: true },
-  specialists: { type: Array, required: true },
+  specialists: { type: Array, required: false, default: () => [] },
   date: { type: [String, Date], required: false, default: null },
   pdfFile: { type: [Object, null], required: false, default: null },
   instrumentId: {

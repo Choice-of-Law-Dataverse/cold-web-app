@@ -746,3 +746,140 @@ button.cold-toggle-btn {
   @apply flex items-center gap-1 rounded-full px-2 py-1 text-xs uppercase text-cold-purple transition-colors hover:bg-cold-purple/10;
   font-weight: 500;
 }
+
+// Modern UI Components -----------------------------------------------
+
+// Icon badge - gradient rounded square with icon inside
+.icon-badge {
+  @apply flex h-10 w-10 items-center justify-center rounded-xl;
+
+  &--purple-teal {
+    @apply bg-gradient-to-br from-cold-purple to-cold-teal;
+  }
+
+  &--teal-green {
+    @apply bg-gradient-to-br from-cold-teal to-cold-green;
+  }
+
+  &--green-teal {
+    @apply bg-gradient-to-br from-cold-green to-cold-teal;
+  }
+
+  &--purple {
+    @apply bg-gradient-to-br from-cold-purple to-cold-purple/80;
+  }
+
+  .icon {
+    @apply h-5 w-5 text-white;
+  }
+}
+
+// Primary action button with gradient and shadow
+.btn-primary-gradient {
+  @apply bg-gradient-to-r from-cold-purple to-cold-purple/90 text-white shadow-lg transition-all;
+  box-shadow: 0 10px 15px -3px rgba(111, 77, 250, 0.25);
+
+  &:hover:not(:disabled) {
+    box-shadow: 0 20px 25px -5px rgba(111, 77, 250, 0.3);
+  }
+
+  &:disabled {
+    @apply opacity-60;
+  }
+}
+
+// Success button style
+.btn-success {
+  @apply bg-cold-green text-white;
+}
+
+// Page hero - decorative header section
+.page-hero {
+  @apply relative mb-10 overflow-hidden rounded-2xl p-6 sm:p-8;
+  @apply bg-gradient-to-br from-cold-purple/5 via-white to-cold-teal/5;
+  @apply dark:from-cold-purple/10 dark:via-gray-900 dark:to-cold-teal/10;
+
+  &__bg {
+    @apply pointer-events-none absolute inset-0 overflow-hidden;
+  }
+
+  &__orb {
+    @apply absolute rounded-full blur-3xl;
+
+    &--left {
+      @apply -left-20 -top-20 h-64 w-64 bg-gradient-to-br from-cold-purple/10 to-transparent;
+    }
+
+    &--right {
+      @apply -bottom-20 -right-20 h-64 w-64 bg-gradient-to-tl from-cold-teal/10 to-transparent;
+    }
+  }
+
+  &__content {
+    @apply relative flex items-center gap-6 sm:gap-8;
+  }
+
+  &__badge {
+    @apply mb-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold text-white;
+    @apply bg-gradient-to-r from-cold-purple to-cold-teal;
+  }
+
+  &__title {
+    @apply text-3xl font-bold sm:text-4xl;
+    @apply bg-gradient-to-r from-cold-night to-cold-purple bg-clip-text text-transparent;
+    @apply dark:from-white dark:to-cold-purple;
+  }
+
+  &__subtitle {
+    @apply mt-3 max-w-lg text-base text-gray-600 dark:text-gray-300;
+  }
+}
+
+// Card header with icon badge
+.card-header-modern {
+  @apply flex items-center gap-3;
+
+  &__icon {
+    @extend .icon-badge;
+    @extend .icon-badge--teal-green;
+  }
+
+  &__text {
+    h3 {
+      @apply font-semibold text-gray-900 dark:text-white;
+    }
+
+    p {
+      @apply text-xs text-gray-500 dark:text-gray-400;
+    }
+  }
+}
+
+// Card footer with helper text and actions
+.card-footer-modern {
+  @apply flex items-center justify-between;
+
+  &__hint {
+    @apply text-xs text-gray-400 dark:text-gray-500;
+
+    .iconify,
+    svg {
+      @apply mr-1 inline h-3 w-3;
+    }
+  }
+
+  &__actions {
+    @apply flex items-center gap-3;
+  }
+}
+
+// Sparkle icon for AI features
+.sparkle-icon {
+  @apply h-3 w-3;
+}
+
+// Animated glow effect
+.glow-pulse {
+  @apply animate-pulse rounded-full blur-2xl;
+  @apply bg-gradient-to-br from-cold-purple/20 to-cold-teal/20;
+}

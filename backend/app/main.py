@@ -5,13 +5,12 @@ import logfire
 import uvicorn
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.sessions import SessionMiddleware
 
 from app.config import config
 from app.routes import (
     ai,
+    case_analysis,
     landing_page,
-    moderation as moderation_router,
     search,
     sitemap,
     statistics,
@@ -118,6 +117,10 @@ app = FastAPI(
             "description": "AI helpers such as query classification.",
         },
         {
+            "name": "Case Analysis",
+            "description": "Court decision analysis with AI-powered extraction and classification.",
+        },
+        {
             "name": "Sitemap",
             "description": "Frontend URLs for site map generation.",
         },
@@ -161,6 +164,7 @@ api_router = APIRouter(prefix="/api/v1")
 
 api_router.include_router(search.router)
 api_router.include_router(ai.router)
+api_router.include_router(case_analysis.router)
 api_router.include_router(submarine.router)
 api_router.include_router(sitemap.router)
 api_router.include_router(landing_page.router)
@@ -170,13 +174,6 @@ api_router.include_router(suggestions_router.router)
 
 
 app.include_router(api_router)
-
-# Session middleware for moderation UI
-
-app.add_middleware(SessionMiddleware, secret_key=config.MODERATION_SECRET or "secret")
-
-# Mount moderation router (also at root without API prefix to serve simple HTML)
-app.include_router(moderation_router.router)
 
 
 @app.get("/api/v1")
@@ -192,7 +189,6 @@ logfire.configure()
 logfire.instrument_fastapi(app)
 logfire.instrument_sqlalchemy()
 logfire.instrument_requests()
-logfire.instrument_psycopg()
 logfire.instrument_pymongo()
 
 
