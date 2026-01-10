@@ -255,21 +255,23 @@ def _handle_pdf_upload(
     original_payload: dict[str, Any],
     merged_id: int | str,
 ) -> None:
-    """Download PDF from Azure and upload to NocoDB if pdf_url is present."""
+    """
+    Download PDF from Azure Storage and upload to NocoDB.
+    """
     pdf_url = original_payload.get("pdf_url")
     if not pdf_url or not isinstance(pdf_url, str) or not pdf_url.strip():
+        logger.warning("No pdf_url found in payload for record %s", merged_id)
         return
 
     try:
+        # Download from Azure blob storage
         logger.info("Downloading PDF from Azure: %s", pdf_url)
         pdf_data = download_blob_with_managed_identity(pdf_url)
-
         parsed_url = urlparse(pdf_url)
         filename = os.path.basename(parsed_url.path)
-        if not filename:
-            filename = "document.pdf"
-        elif not filename.endswith(".pdf"):
-            filename = f"{filename}.pdf"
+
+        if not filename or not filename.endswith(".pdf"):
+            filename = f"{filename}.pdf" if filename else "document.pdf"
 
         logger.info("Uploading PDF to NocoDB for record %s", merged_id)
         nocodb_service.upload_file(
@@ -283,8 +285,8 @@ def _handle_pdf_upload(
         )
         logger.info("Successfully uploaded PDF to NocoDB")
     except Exception as e:
-        logger.error("Failed to download/upload PDF from %s: %s", pdf_url, str(e))
-        # Continue - record is already created
+        logger.error("Failed to process PDF: %s", str(e))
+        # Continue - record is already created, PDF can be added manually later
 
 
 async def approve_case_analyzer(

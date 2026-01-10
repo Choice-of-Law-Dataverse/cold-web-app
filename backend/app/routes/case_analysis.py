@@ -18,13 +18,16 @@ from app.schemas.case_analysis import (
     UploadDocumentResponse,
 )
 from app.services.analysis_cache import analysis_cache
-from app.services.azure_storage import download_blob_with_managed_identity
+from app.services.azure_storage import download_blob_with_managed_identity, upload_blob_with_managed_identity
 from app.services.case_analysis import analyze_case_streaming, detect_jurisdiction
 from app.services.suggestions import SuggestionService
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/case-analysis", tags=["Case Analysis"], dependencies=[Depends(verify_frontend_request)])
+
+# Maximum PDF size: 50MB
+MAX_PDF_SIZE_BYTES = 50 * 1024 * 1024
 
 
 def get_suggestion_service() -> SuggestionService:
@@ -63,17 +66,41 @@ async def upload_document(
         UploadDocumentResponse with correlation_id, extracted_text, and jurisdiction info
     """
     with logfire.span("upload_document", file_name=body.file_name, blob_url=body.blob_url[:100]):
+        # Determine if we need to upload to Azure or use existing Azure URL
+        azure_blob_url: str
+
         try:
             # Check if blob_url is a data URL or Azure blob URL
             if body.blob_url.startswith("data:application/pdf;base64,"):
                 # Extract base64 from data URL
                 base64_content = body.blob_url.replace("data:application/pdf;base64,", "")
                 pdf_bytes = base64.b64decode(base64_content)
-                logger.info("Using inline base64 PDF: %s (%d bytes)", body.file_name, len(pdf_bytes))
+
+                # Check file size
+                if len(pdf_bytes) > MAX_PDF_SIZE_BYTES:
+                    raise HTTPException(
+                        status_code=413,
+                        detail=f"PDF file too large ({len(pdf_bytes) / 1024 / 1024:.1f}MB). Maximum size is {MAX_PDF_SIZE_BYTES / 1024 / 1024}MB",
+                    )
+
+                logger.info("Decoded inline base64 PDF: %s (%d bytes)", body.file_name, len(pdf_bytes))
+
+                # Upload to Azure Storage to avoid storing large base64 in database
+                try:
+                    azure_blob_url = upload_blob_with_managed_identity(pdf_bytes, body.file_name)
+                    logger.info("Uploaded PDF to Azure: %s", azure_blob_url)
+                except Exception as upload_error:
+                    logger.error("Failed to upload PDF to Azure: %s", str(upload_error))
+                    raise HTTPException(
+                        status_code=500, detail="Failed to upload PDF to storage. Please try again or contact support."
+                    ) from upload_error
             else:
                 # Download from Azure blob storage
                 pdf_bytes = download_blob_with_managed_identity(body.blob_url)
+                azure_blob_url = body.blob_url
                 logger.info("Downloaded PDF from blob: %s (%d bytes)", body.blob_url, len(pdf_bytes))
+        except HTTPException:
+            raise
         except Exception as e:
             logger.error("Failed to get PDF content: %s", str(e))
             raise HTTPException(status_code=400, detail="Failed to get PDF content") from e
@@ -104,11 +131,11 @@ async def upload_document(
         correlation_id = analysis_cache.create_entry(extracted_text, jurisdiction_data)
         logger.info("Created cache entry with correlation_id: %s", correlation_id)
 
-        # Persist to database as draft
+        # Persist to database as draft (including pdf_url for later approval)
         draft_payload = {
             "status": "draft",
             "file_name": body.file_name,
-            "pdf_url": body.blob_url,
+            "pdf_url": azure_blob_url,  # Store for moderator approval later
             "full_text": extracted_text,
             "jurisdiction": jurisdiction_data,
             "correlation_id": correlation_id,

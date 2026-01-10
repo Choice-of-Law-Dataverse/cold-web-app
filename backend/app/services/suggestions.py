@@ -420,6 +420,12 @@ class SuggestionService:
                 except Exception:
                     current = {}
 
+            # Preserve critical fields if not explicitly being updated
+            preserved_fields = ["pdf_url", "file_name", "full_text", "correlation_id"]
+            for field in preserved_fields:
+                if field in current and field not in updates:
+                    updates[field] = current[field]
+
             # Merge updates into existing data
             merged = {**current, **updates}
             status_value = self._extract_moderation_status(merged)

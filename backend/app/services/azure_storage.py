@@ -1,14 +1,20 @@
 """
-Azure Blob Storage helper for downloading files using managed identity.
+Azure Blob Storage helper for downloading and uploading files using managed identity.
 """
 
 import logging
+import uuid
+from datetime import UTC, datetime
 from urllib.parse import urlparse
 
 from azure.identity import DefaultAzureCredential
-from azure.storage.blob import BlobServiceClient
+from azure.storage.blob import BlobServiceClient, ContentSettings
 
 logger = logging.getLogger(__name__)
+
+# Storage configuration - these should be set via environment variables in production
+DEFAULT_STORAGE_ACCOUNT = "coldstorageaccount"
+DEFAULT_CONTAINER = "case-analyzer-uploads"
 
 
 def download_blob_with_managed_identity(blob_url: str) -> bytes:
@@ -79,4 +85,53 @@ def download_blob_with_managed_identity(blob_url: str) -> bytes:
 
     except Exception as e:
         logger.error("Failed to download blob from %s: %s", blob_url, str(e))
+        raise
+
+
+def upload_blob_with_managed_identity(
+    pdf_bytes: bytes,
+    filename: str,
+    storage_account: str | None = None,
+    container: str | None = None,
+) -> str:
+    """
+    Upload a PDF to Azure Storage using managed identity.
+
+    Args:
+        pdf_bytes: PDF file content as bytes
+        filename: Original filename (used to generate unique blob name)
+        storage_account: Azure storage account name (defaults to DEFAULT_STORAGE_ACCOUNT)
+        container: Container name (defaults to DEFAULT_CONTAINER)
+
+    Returns:
+        str: Full Azure blob URL
+
+    Raises:
+        Exception: If upload fails
+    """
+    storage_account = storage_account or DEFAULT_STORAGE_ACCOUNT
+    container = container or DEFAULT_CONTAINER
+    account_url = f"https://{storage_account}.blob.core.windows.net"
+
+    # Generate unique blob name with timestamp and UUID
+    timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
+    unique_id = str(uuid.uuid4())[:8]
+    file_extension = filename.rsplit(".", 1)[-1] if "." in filename else "pdf"
+    blob_name = f"case-analysis/{timestamp}_{unique_id}.{file_extension}"
+
+    logger.info("Uploading %d bytes to blob: %s/%s", len(pdf_bytes), container, blob_name)
+
+    try:
+        credential = DefaultAzureCredential()
+        blob_service_client = BlobServiceClient(account_url=account_url, credential=credential)
+        blob_client = blob_service_client.get_blob_client(container=container, blob=blob_name)
+
+        blob_client.upload_blob(pdf_bytes, overwrite=False, content_settings=ContentSettings(content_type="application/pdf"))
+
+        blob_url = f"{account_url}/{container}/{blob_name}"
+        logger.info("Successfully uploaded blob to: %s", blob_url)
+        return blob_url
+
+    except Exception as e:
+        logger.error("Failed to upload blob: %s", str(e))
         raise
