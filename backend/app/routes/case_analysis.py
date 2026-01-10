@@ -2,6 +2,7 @@ import base64
 import json
 import logging
 import traceback
+from typing import Any
 
 import logfire
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -213,56 +214,91 @@ async def analyze_document(
             except Exception as e:
                 logger.error("Failed to update jurisdiction in database: %s", str(e))
 
+        # Fetch cached results from database if resuming
+        cached_results: dict[str, Any] | None = None
+        if body.resume and draft_id:
+            try:
+                draft_data = service.get_case_analyzer_draft(draft_id)
+                if draft_data:
+                    # Extract step results from draft data
+                    cached_results = {}
+                    for step_key in [
+                        "col_extraction",
+                        "theme_classification",
+                        "case_citation",
+                        "relevant_facts",
+                        "pil_provisions",
+                        "col_issue",
+                        "courts_position",
+                        "obiter_dicta",
+                        "dissenting_opinions",
+                        "abstract",
+                    ]:
+                        if step_key in draft_data and draft_data[step_key]:
+                            cached_results[step_key] = draft_data[step_key]
+                    logger.info("Resuming analysis with %d cached steps", len(cached_results))
+            except Exception as e:
+                logger.error("Failed to fetch cached results for resume: %s", str(e))
+
         async def event_generator():
             """Generate SSE events for each analysis step."""
-            try:
-                async for result in analyze_case_streaming(text, jurisdiction_data):
-                    # Update cache
-                    analysis_cache.update_results(body.correlation_id, result.get("step", "unknown"), result)
+            with logfire.span(
+                "case_analysis_stream",
+                correlation_id=body.correlation_id,
+                resume=body.resume,
+                draft_id=draft_id,
+            ):
+                try:
+                    async for result in analyze_case_streaming(text, jurisdiction_data, cached_results):
+                        # Update cache
+                        analysis_cache.update_results(body.correlation_id, result.get("step", "unknown"), result)
 
-                    step_name = result.get("step")
+                        step_name = result.get("step")
 
-                    # Update database if we have draft_id and step data
-                    if draft_id and result.get("status") == "completed" and result.get("data"):
-                        if not step_name:
-                            continue
+                        # Update database if we have draft_id and step data
+                        if draft_id and result.get("status") == "completed" and result.get("data"):
+                            if not step_name:
+                                continue
+                            try:
+                                step_payload = result.get("data")
+                                update_data = {step_name: step_payload}
+                                with logfire.span("persist_case_analyzer_step", step=step_name, draft_id=draft_id):
+                                    service.update_case_analyzer_draft(draft_id, update_data)
+                                logger.info("Updated step %s in draft ID: %d", step_name, draft_id)
+                            except Exception as e:
+                                logger.error("Failed to update step %s in database: %s", step_name, str(e))
+
+                        event_data = json.dumps(result)
+                        yield f"data: {event_data}\n\n"
+
+                    # Mark as completed when all steps are done
+                    if draft_id:
                         try:
-                            step_payload = result.get("data")
-                            update_data = {step_name: step_payload}
-                            service.update_case_analyzer_draft(draft_id, update_data)
-                            logger.info("Updated step %s in draft ID: %d", step_name, draft_id)
+                            with logfire.span("finalize_case_analyzer_draft", draft_id=draft_id):
+                                service.update_case_analyzer_draft(draft_id, {"status": "completed"})
+                            logger.info("Marked draft ID %d as completed", draft_id)
                         except Exception as e:
-                            logger.error("Failed to update step %s in database: %s", step_name, str(e))
+                            logger.error("Failed to mark draft as completed: %s", str(e))
 
-                    event_data = json.dumps(result)
-                    yield f"data: {event_data}\n\n"
+                    done_payload = {
+                        "step": "analysis_complete",
+                        "status": "completed",
+                        "data": {"done": True},
+                    }
+                    yield f"data: {json.dumps(done_payload)}\n\n"
+                except BaseException as e:
+                    logger.error("Analysis workflow failed: %s", str(e))
+                    logger.error("Traceback: %s", traceback.format_exc())
 
-                # Mark as completed when all steps are done
-                if draft_id:
-                    try:
-                        service.update_case_analyzer_draft(draft_id, {"status": "completed"})
-                        logger.info("Marked draft ID %d as completed", draft_id)
-                    except Exception as e:
-                        logger.error("Failed to mark draft as completed: %s", str(e))
+                    # Mark as failed in database
+                    if draft_id:
+                        try:
+                            with logfire.span("fail_case_analyzer_draft", draft_id=draft_id):
+                                service.update_case_analyzer_draft(draft_id, {"status": "failed", "error": str(e)})
+                        except Exception as db_error:
+                            logger.error("Failed to mark draft as failed: %s", str(db_error))
 
-                done_payload = {
-                    "step": "analysis_complete",
-                    "status": "completed",
-                    "data": {"done": True},
-                }
-                yield f"data: {json.dumps(done_payload)}\n\n"
-            except BaseException as e:
-                logger.error("Analysis workflow failed: %s", str(e))
-                logger.error("Traceback: %s", traceback.format_exc())
-
-                # Mark as failed in database
-                if draft_id:
-                    try:
-                        service.update_case_analyzer_draft(draft_id, {"status": "failed", "error": str(e)})
-                    except Exception as db_error:
-                        logger.error("Failed to mark draft as failed: %s", str(db_error))
-
-                error_event = json.dumps({"step": "error", "status": "error", "error": str(e)})
-                yield f"data: {error_event}\n\n"
+                    error_event = json.dumps({"step": "error", "status": "error", "error": str(e)})
+                    yield f"data: {error_event}\n\n"
 
         return StreamingResponse(event_generator(), media_type="text/event-stream")

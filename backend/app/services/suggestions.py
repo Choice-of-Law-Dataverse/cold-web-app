@@ -397,6 +397,13 @@ class SuggestionService:
             session.execute(stmt)
             session.commit()
 
+    def get_case_analyzer_draft(self, draft_id: int) -> dict[str, Any] | None:
+        """Get a case analyzer draft by ID. Returns the data payload or None if not found."""
+        result = self.get_suggestion_by_id("case_analyzer", draft_id)
+        if result is None:
+            return None
+        return result.get("payload", {})
+
     def update_case_analyzer_draft(self, draft_id: int, updates: dict[str, Any]) -> None:
         """Update a case analyzer draft by merging new fields into existing data."""
         target = self.tables["case_analyzer"]

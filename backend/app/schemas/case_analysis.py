@@ -33,6 +33,7 @@ class ConfirmAnalysisRequest(BaseModel):
 
     correlation_id: str = Field(..., description="Correlation ID from upload response")
     jurisdiction: JurisdictionInfo = Field(..., description="Confirmed or corrected jurisdiction information")
+    resume: bool = Field(False, description="Whether to resume from last successful step (for error recovery)")
 
 
 class AnalysisStep(BaseModel):
