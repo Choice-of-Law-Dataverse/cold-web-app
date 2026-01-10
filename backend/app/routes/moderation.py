@@ -321,6 +321,10 @@ def _normalize_case_analyzer_payload(raw: dict[str, Any], item: dict[str, Any]) 
     except Exception:
         result["raw_data"] = str(data_obj)
 
+    # Preserve pdf_url and file_name for approval workflow
+    result["pdf_url"] = data_obj.get("pdf_url") or raw.get("pdf_url")
+    result["file_name"] = data_obj.get("file_name") or raw.get("file_name")
+
     return result
 
 

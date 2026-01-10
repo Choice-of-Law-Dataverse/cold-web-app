@@ -10,11 +10,9 @@ from urllib.parse import urlparse
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient, ContentSettings
 
-logger = logging.getLogger(__name__)
+from app.config import config
 
-# Storage configuration - these should be set via environment variables in production
-DEFAULT_STORAGE_ACCOUNT = "coldstorageaccount"
-DEFAULT_CONTAINER = "case-analyzer-uploads"
+logger = logging.getLogger(__name__)
 
 
 def download_blob_with_managed_identity(blob_url: str) -> bytes:
@@ -91,8 +89,6 @@ def download_blob_with_managed_identity(blob_url: str) -> bytes:
 def upload_blob_with_managed_identity(
     pdf_bytes: bytes,
     filename: str,
-    storage_account: str | None = None,
-    container: str | None = None,
 ) -> str:
     """
     Upload a PDF to Azure Storage using managed identity.
@@ -100,8 +96,6 @@ def upload_blob_with_managed_identity(
     Args:
         pdf_bytes: PDF file content as bytes
         filename: Original filename (used to generate unique blob name)
-        storage_account: Azure storage account name (defaults to DEFAULT_STORAGE_ACCOUNT)
-        container: Container name (defaults to DEFAULT_CONTAINER)
 
     Returns:
         str: Full Azure blob URL
@@ -109,8 +103,8 @@ def upload_blob_with_managed_identity(
     Raises:
         Exception: If upload fails
     """
-    storage_account = storage_account or DEFAULT_STORAGE_ACCOUNT
-    container = container or DEFAULT_CONTAINER
+    storage_account = config.AZURE_STORAGE_ACCOUNT
+    container = config.AZURE_STORAGE_CONTAINER
     account_url = f"https://{storage_account}.blob.core.windows.net"
 
     # Generate unique blob name with timestamp and UUID
