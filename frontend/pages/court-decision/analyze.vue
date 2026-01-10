@@ -1,497 +1,13 @@
 <template>
   <div class="container mx-auto px-4 py-8">
-    <div class="mx-auto max-w-4xl">
-      <h1 class="mb-6 text-3xl font-bold">AI Case Analyzer</h1>
-      <p class="mb-8 text-gray-600 dark:text-gray-400">
-        Upload a court decision PDF to automatically extract key information and
-        populate the submission form.
-      </p>
-
-      <!-- Step 1: File Upload -->
-      <UCard v-if="currentStep === 'upload'" class="mb-6">
-        <template #header>
-          <h2 class="text-xl font-semibold">Step 1: Upload Document</h2>
-        </template>
-
-        <div
-          class="rounded-lg border-2 border-dashed border-gray-300 p-8 text-center dark:border-gray-700"
-          :class="{ 'border-blue-500 bg-blue-50 dark:bg-blue-900': isDragging }"
-          @dragover.prevent="isDragging = true"
-          @dragleave.prevent="isDragging = false"
-          @drop.prevent="handleFileDrop"
-        >
-          <UIcon
-            name="i-material-symbols:cloud-upload"
-            class="mb-4 text-6xl text-gray-400"
-          />
-          <p class="mb-4 text-lg">
-            Drag and drop your PDF here, or click to select
-          </p>
-          <input
-            ref="fileInput"
-            type="file"
-            accept=".pdf"
-            class="hidden"
-            @change="handleFileSelect"
-          />
-          <UButton size="lg" @click="fileInput?.click()">
-            Select PDF File
-          </UButton>
-          <p v-if="selectedFile" class="mt-4 text-sm text-gray-600">
-            Selected: {{ selectedFile.name }} ({{
-              formatFileSize(selectedFile.size)
-            }})
-          </p>
-        </div>
-
-        <template #footer>
-          <div class="flex items-center justify-between">
-            <UButton variant="ghost" @click="navigateTo('/court-decision/new')">
-              Cancel
-            </UButton>
-            <UButton
-              :disabled="!selectedFile || isUploading"
-              :loading="isUploading"
-              @click="uploadDocument"
-            >
-              Upload and Analyze
-            </UButton>
-          </div>
-        </template>
-      </UCard>
-
-      <!-- Step 2: Jurisdiction Confirmation -->
-      <UCard v-if="currentStep === 'confirm'" class="mb-6">
-        <template #header>
-          <h2 class="text-xl font-semibold">Step 2: Confirm Jurisdiction</h2>
-        </template>
-
-        <div v-if="jurisdictionInfo" class="space-y-8">
-          <div class="space-y-4">
-            <UAlert
-              :color="getConfidenceColor(jurisdictionInfo.confidence) as any"
-              :title="`Detected with ${jurisdictionInfo.confidence} confidence`"
-            />
-            <div class="flex items-center justify-end">
-              <UPopover mode="hover">
-                <UButton
-                  icon="i-material-symbols:info-outline"
-                  variant="ghost"
-                  color="gray"
-                  size="sm"
-                >
-                  View Reasoning
-                </UButton>
-                <template #panel>
-                  <div class="max-w-md p-4 text-sm">
-                    <p class="font-semibold text-gray-900 dark:text-white">
-                      Detection Reasoning:
-                    </p>
-                    <p class="mt-2 text-gray-700 dark:text-gray-300">
-                      {{ jurisdictionInfo.reasoning }}
-                    </p>
-                  </div>
-                </template>
-              </UPopover>
-            </div>
-          </div>
-
-          <UFormGroup size="lg">
-            <template #label>
-              <span class="label">Legal System Type</span>
-            </template>
-            <UInput
-              v-model="jurisdictionInfo.legal_system_type"
-              readonly
-              class="cold-input mt-2 bg-gray-50 dark:bg-gray-800"
-            />
-          </UFormGroup>
-
-          <UFormGroup size="lg">
-            <template #label>
-              <span class="label">Jurisdiction</span>
-            </template>
-            <div class="mt-2">
-              <JurisdictionSelector
-                :formatted-jurisdiction="{
-                  Name: jurisdictionInfo.precise_jurisdiction,
-                }"
-                label=""
-                @jurisdiction-selected="onJurisdictionSelected"
-              />
-            </div>
-          </UFormGroup>
-        </div>
-
-        <template #footer>
-          <div class="flex items-center justify-between">
-            <UButton variant="ghost" @click="resetAnalysis">
-              Start Over
-            </UButton>
-            <UButton :loading="isAnalyzing" @click="confirmAndAnalyze">
-              Confirm and Continue Analysis
-            </UButton>
-          </div>
-        </template>
-      </UCard>
-
-      <UCard v-if="showReviewForm" class="mb-6">
-        <template #header>
-          <div class="flex flex-col gap-4">
-            <div class="flex items-center justify-between">
-              <div>
-                <h2 class="text-xl font-semibold">
-                  {{
-                    isAnalyzing
-                      ? "Step 3: Analyzing Document"
-                      : "Step 3: Review & Submit"
-                  }}
-                </h2>
-                <p
-                  v-if="isAnalyzing"
-                  class="mt-1 text-sm text-gray-500 dark:text-gray-400"
-                >
-                  Fields will populate as analysis completes
-                </p>
-                <p
-                  v-else-if="draftSavedMessage"
-                  class="mt-1 text-sm text-gray-500"
-                >
-                  Draft saved at {{ draftSavedMessage }}
-                </p>
-              </div>
-              <UButton
-                v-if="!isAnalyzing && suggestionId"
-                color="gray"
-                variant="ghost"
-                icon="i-material-symbols:refresh"
-                :loading="isLoadingExistingSuggestion"
-                @click="reloadSuggestionFromServer"
-              >
-                Reload
-              </UButton>
-            </div>
-            <UProgress
-              v-if="isAnalyzing"
-              :value="analysisProgress"
-              :max="100"
-              color="primary"
-              size="sm"
-            />
-          </div>
-        </template>
-
-        <div class="space-y-6">
-          <UFormGroup>
-            <template #label>
-              <div class="flex items-center justify-between">
-                <span>Case Citation</span>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    v-if="isFieldLoading('caseCitation')"
-                    name="i-material-symbols:progress-activity"
-                    class="h-4 w-4 animate-spin text-blue-500"
-                  />
-                  <UBadge
-                    v-else-if="getFieldStatus('caseCitation')?.confidence"
-                    :color="
-                      getConfidenceColor(
-                        getFieldStatus('caseCitation')!.confidence!,
-                      )
-                    "
-                    size="xs"
-                  >
-                    {{ getFieldStatus("caseCitation")!.confidence }}
-                  </UBadge>
-                </div>
-              </div>
-            </template>
-            <UInput
-              v-model="editableForm.caseCitation"
-              :disabled="isFieldDisabled('caseCitation')"
-              class="cold-input"
-            />
-          </UFormGroup>
-
-          <UFormGroup>
-            <template #label>
-              <div class="flex items-center justify-between">
-                <span>Jurisdiction</span>
-              </div>
-            </template>
-            <JurisdictionSelector
-              :formatted-jurisdiction="{
-                Name: editableForm.jurisdiction,
-              }"
-              label=""
-              :disabled="isAnalyzing"
-              @jurisdiction-selected="onReviewJurisdictionSelected"
-            />
-          </UFormGroup>
-
-          <UFormGroup>
-            <template #label>
-              <div class="flex items-center justify-between">
-                <span>Relevant Facts</span>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    v-if="isFieldLoading('caseRelevantFacts')"
-                    name="i-material-symbols:progress-activity"
-                    class="h-4 w-4 animate-spin text-blue-500"
-                  />
-                  <UBadge
-                    v-else-if="getFieldStatus('caseRelevantFacts')?.confidence"
-                    :color="
-                      getConfidenceColor(
-                        getFieldStatus('caseRelevantFacts')!.confidence!,
-                      )
-                    "
-                    size="xs"
-                  >
-                    {{ getFieldStatus("caseRelevantFacts")!.confidence }}
-                  </UBadge>
-                </div>
-              </div>
-            </template>
-            <UTextarea
-              v-model="editableForm.caseRelevantFacts"
-              :disabled="isFieldDisabled('caseRelevantFacts')"
-              :rows="4"
-              class="cold-input"
-            />
-          </UFormGroup>
-
-          <UFormGroup>
-            <template #label>
-              <div class="flex items-center justify-between">
-                <span>PIL Provisions</span>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    v-if="isFieldLoading('casePILProvisions')"
-                    name="i-material-symbols:progress-activity"
-                    class="h-4 w-4 animate-spin text-blue-500"
-                  />
-                  <UBadge
-                    v-else-if="getFieldStatus('casePILProvisions')?.confidence"
-                    :color="
-                      getConfidenceColor(
-                        getFieldStatus('casePILProvisions')!.confidence!,
-                      )
-                    "
-                    size="xs"
-                  >
-                    {{ getFieldStatus("casePILProvisions")!.confidence }}
-                  </UBadge>
-                </div>
-              </div>
-            </template>
-            <UTextarea
-              v-model="editableForm.casePILProvisions"
-              :disabled="isFieldDisabled('casePILProvisions')"
-              :rows="4"
-              class="cold-input"
-            />
-          </UFormGroup>
-
-          <UFormGroup>
-            <template #label>
-              <div class="flex items-center justify-between">
-                <span>Choice of Law Issue</span>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    v-if="isFieldLoading('caseChoiceofLawIssue')"
-                    name="i-material-symbols:progress-activity"
-                    class="h-4 w-4 animate-spin text-blue-500"
-                  />
-                  <UBadge
-                    v-else-if="
-                      getFieldStatus('caseChoiceofLawIssue')?.confidence
-                    "
-                    :color="
-                      getConfidenceColor(
-                        getFieldStatus('caseChoiceofLawIssue')!.confidence!,
-                      )
-                    "
-                    size="xs"
-                  >
-                    {{ getFieldStatus("caseChoiceofLawIssue")!.confidence }}
-                  </UBadge>
-                </div>
-              </div>
-            </template>
-            <UTextarea
-              v-model="editableForm.caseChoiceofLawIssue"
-              :disabled="isFieldDisabled('caseChoiceofLawIssue')"
-              :rows="4"
-              class="cold-input"
-            />
-          </UFormGroup>
-
-          <UFormGroup>
-            <template #label>
-              <div class="flex items-center justify-between">
-                <span>Court's Position</span>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    v-if="isFieldLoading('caseCourtsPosition')"
-                    name="i-material-symbols:progress-activity"
-                    class="h-4 w-4 animate-spin text-blue-500"
-                  />
-                  <UBadge
-                    v-else-if="getFieldStatus('caseCourtsPosition')?.confidence"
-                    :color="
-                      getConfidenceColor(
-                        getFieldStatus('caseCourtsPosition')!.confidence!,
-                      )
-                    "
-                    size="xs"
-                  >
-                    {{ getFieldStatus("caseCourtsPosition")!.confidence }}
-                  </UBadge>
-                </div>
-              </div>
-            </template>
-            <UTextarea
-              v-model="editableForm.caseCourtsPosition"
-              :disabled="isFieldDisabled('caseCourtsPosition')"
-              :rows="4"
-              class="cold-input"
-            />
-          </UFormGroup>
-
-          <UFormGroup v-if="isCommonLawJurisdiction">
-            <template #label>
-              <div class="flex items-center justify-between">
-                <span>Obiter Dicta</span>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    v-if="isFieldLoading('caseObiterDicta')"
-                    name="i-material-symbols:progress-activity"
-                    class="h-4 w-4 animate-spin text-blue-500"
-                  />
-                  <UBadge
-                    v-else-if="getFieldStatus('caseObiterDicta')?.confidence"
-                    :color="
-                      getConfidenceColor(
-                        getFieldStatus('caseObiterDicta')!.confidence!,
-                      )
-                    "
-                    size="xs"
-                  >
-                    {{ getFieldStatus("caseObiterDicta")!.confidence }}
-                  </UBadge>
-                </div>
-              </div>
-            </template>
-            <UTextarea
-              v-model="editableForm.caseObiterDicta"
-              :disabled="isFieldDisabled('caseObiterDicta')"
-              :rows="4"
-              class="cold-input"
-            />
-          </UFormGroup>
-
-          <UFormGroup v-if="isCommonLawJurisdiction">
-            <template #label>
-              <div class="flex items-center justify-between">
-                <span>Dissenting Opinions</span>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    v-if="isFieldLoading('caseDissentingOpinions')"
-                    name="i-material-symbols:progress-activity"
-                    class="h-4 w-4 animate-spin text-blue-500"
-                  />
-                  <UBadge
-                    v-else-if="
-                      getFieldStatus('caseDissentingOpinions')?.confidence
-                    "
-                    :color="
-                      getConfidenceColor(
-                        getFieldStatus('caseDissentingOpinions')!.confidence!,
-                      )
-                    "
-                    size="xs"
-                  >
-                    {{ getFieldStatus("caseDissentingOpinions")!.confidence }}
-                  </UBadge>
-                </div>
-              </div>
-            </template>
-            <UTextarea
-              v-model="editableForm.caseDissentingOpinions"
-              :disabled="isFieldDisabled('caseDissentingOpinions')"
-              :rows="4"
-              class="cold-input"
-            />
-          </UFormGroup>
-
-          <UFormGroup>
-            <template #label>
-              <div class="flex items-center justify-between">
-                <span>Abstract</span>
-                <div class="flex items-center gap-2">
-                  <UIcon
-                    v-if="isFieldLoading('caseAbstract')"
-                    name="i-material-symbols:progress-activity"
-                    class="h-4 w-4 animate-spin text-blue-500"
-                  />
-                  <UBadge
-                    v-else-if="getFieldStatus('caseAbstract')?.confidence"
-                    :color="
-                      getConfidenceColor(
-                        getFieldStatus('caseAbstract')!.confidence!,
-                      )
-                    "
-                    size="xs"
-                  >
-                    {{ getFieldStatus("caseAbstract")!.confidence }}
-                  </UBadge>
-                </div>
-              </div>
-            </template>
-            <UTextarea
-              v-model="editableForm.caseAbstract"
-              :disabled="isFieldDisabled('caseAbstract')"
-              :rows="4"
-              class="cold-input"
-            />
-          </UFormGroup>
-        </div>
-
-        <template #footer>
-          <div class="flex items-center justify-between">
-            <UButton color="gray" variant="outline" @click="resetAnalysis">
-              Start Over
-            </UButton>
-            <div class="flex gap-2">
-              <UButton
-                v-if="!isAnalyzing"
-                color="gray"
-                :loading="isSavingDraft"
-                @click="saveEditedDraft"
-              >
-                Save Draft
-              </UButton>
-              <UButton
-                color="primary"
-                :loading="isSubmitting"
-                :disabled="isAnalyzing"
-                @click="submitAnalyzerSuggestion"
-              >
-                Submit for Review
-              </UButton>
-            </div>
-          </div>
-        </template>
-      </UCard>
-
-      <UAlert
-        v-if="submissionMessage"
-        color="green"
-        icon="i-material-symbols:check-circle"
-        :title="submissionMessage"
-        class="mb-6"
-      />
+    <div class="mx-auto max-w-5xl">
+      <!-- Page Header -->
+      <div class="mb-6">
+        <h1 class="text-2xl font-bold">AI Case Analyzer</h1>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          Upload a court decision to extract PIL elements automatically
+        </p>
+      </div>
 
       <!-- Error Display -->
       <UAlert
@@ -500,29 +16,369 @@
         icon="i-material-symbols:error"
         :title="error"
         class="mb-6"
+        :close-button="{
+          icon: 'i-heroicons-x-mark',
+          color: 'red',
+          variant: 'link',
+        }"
         @close="error = null"
       />
+
+      <!-- Two column layout throughout -->
+      <div class="grid gap-6 lg:grid-cols-3">
+        <!-- Sidebar: Progress tracker (always visible) -->
+        <div class="lg:col-span-1">
+          <CaseAnalysisStepTracker
+            :steps="analysisSteps"
+            :is-common-law="isCommonLawJurisdiction"
+            :current-phase="currentStep"
+            @retry="handleRetry"
+          />
+        </div>
+
+        <!-- Main content area -->
+        <div class="lg:col-span-2">
+          <!-- Step 1: File Upload -->
+          <UCard v-if="currentStep === 'upload'">
+            <template #header>
+              <h3 class="font-semibold">Upload Document</h3>
+            </template>
+
+            <div
+              class="hover:border-primary cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-8 text-center transition-colors dark:border-gray-600"
+              :class="{
+                'border-primary bg-primary/5': isDragging || selectedFile,
+                'pointer-events-none opacity-60': isUploading,
+              }"
+              @dragover.prevent="isDragging = true"
+              @dragleave.prevent="isDragging = false"
+              @drop.prevent="handleFileDrop"
+              @click="!isUploading && fileInput?.click()"
+            >
+              <input
+                ref="fileInput"
+                type="file"
+                accept=".pdf"
+                class="hidden"
+                @change="handleFileSelect"
+              />
+
+              <UIcon
+                :name="
+                  selectedFile
+                    ? 'i-heroicons-document-check'
+                    : 'i-heroicons-arrow-up-tray'
+                "
+                class="mx-auto mb-3 h-10 w-10"
+                :class="selectedFile ? 'text-primary' : 'text-gray-400'"
+              />
+
+              <div v-if="!selectedFile">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  Drag and drop your PDF here, or
+                  <span class="text-primary font-medium">browse</span>
+                </p>
+                <p class="mt-1 text-xs text-gray-500">PDF files only</p>
+              </div>
+
+              <div v-else>
+                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                  {{ selectedFile.name }}
+                </p>
+                <p class="mt-1 text-xs text-gray-500">
+                  {{ formatFileSize(selectedFile.size) }} - Click to change
+                </p>
+              </div>
+            </div>
+
+            <template #footer>
+              <div class="flex items-center justify-end gap-3">
+                <UButton
+                  variant="ghost"
+                  color="gray"
+                  @click="navigateTo('/court-decision/new')"
+                >
+                  Cancel
+                </UButton>
+                <UButton
+                  color="primary"
+                  :disabled="!selectedFile || isUploading"
+                  :loading="isUploading"
+                  @click="uploadDocument"
+                >
+                  Upload and Analyze
+                </UButton>
+              </div>
+            </template>
+          </UCard>
+
+          <!-- Step 2: Jurisdiction Confirmation -->
+          <UCard v-if="currentStep === 'confirm'">
+            <template #header>
+              <h3 class="font-semibold">Confirm Jurisdiction</h3>
+            </template>
+
+            <div v-if="jurisdictionInfo" class="space-y-6">
+              <UFormGroup label="Legal System Type">
+                <UInput
+                  :model-value="jurisdictionInfo.legal_system_type"
+                  readonly
+                />
+                <template #hint>
+                  <span
+                    v-if="jurisdictionInfo.confidence"
+                    class="text-xs text-cold-teal"
+                  >
+                    {{ jurisdictionInfo.confidence }} confidence
+                  </span>
+                </template>
+              </UFormGroup>
+
+              <UFormGroup label="Jurisdiction">
+                <JurisdictionSelectMenu
+                  v-model="selectedJurisdiction"
+                  :countries="jurisdictions || []"
+                  placeholder="Select jurisdiction"
+                  @country-selected="onJurisdictionSelected"
+                />
+              </UFormGroup>
+            </div>
+
+            <template #footer>
+              <div class="flex items-center justify-end gap-3">
+                <UButton variant="ghost" color="gray" @click="resetAnalysis">
+                  Start Over
+                </UButton>
+                <UButton
+                  color="primary"
+                  :loading="isAnalyzing"
+                  @click="confirmAndAnalyze(false)"
+                >
+                  Continue Analysis
+                </UButton>
+              </div>
+            </template>
+          </UCard>
+
+          <!-- Step 3: Review & Submit -->
+          <UCard v-if="currentStep === 'analyzing'">
+            <template #header>
+              <h3 class="font-semibold">
+                {{ isAnalyzing ? "Extracting Data..." : "Review & Submit" }}
+              </h3>
+            </template>
+
+            <div class="space-y-5">
+              <UFormGroup>
+                <template #label>
+                  <span class="flex items-center gap-2">
+                    Case Citation
+                    <ConfidenceIndicator
+                      :is-loading="isFieldLoading('caseCitation')"
+                      :field-status="getFieldStatus('caseCitation')"
+                    />
+                  </span>
+                </template>
+                <UInput
+                  v-model="editableForm.caseCitation"
+                  :disabled="isFieldDisabled('caseCitation')"
+                />
+              </UFormGroup>
+
+              <UFormGroup>
+                <template #label>
+                  <span class="flex items-center gap-2">
+                    Choice of Law Sections
+                    <ConfidenceIndicator
+                      :is-loading="isFieldLoading('choiceOfLawSections')"
+                      :field-status="getFieldStatus('choiceOfLawSections')"
+                    />
+                  </span>
+                </template>
+                <UTextarea
+                  v-model="editableForm.choiceOfLawSections"
+                  :disabled="isFieldDisabled('choiceOfLawSections')"
+                  :rows="3"
+                />
+              </UFormGroup>
+
+              <UFormGroup>
+                <template #label>
+                  <span class="flex items-center gap-2">
+                    Themes
+                    <ConfidenceIndicator
+                      :is-loading="isFieldLoading('themes')"
+                      :field-status="getFieldStatus('themes')"
+                    />
+                  </span>
+                </template>
+                <UTextarea
+                  v-model="editableForm.themes"
+                  :disabled="isFieldDisabled('themes')"
+                  :rows="2"
+                />
+              </UFormGroup>
+
+              <UFormGroup>
+                <template #label>
+                  <span class="flex items-center gap-2">
+                    Relevant Facts
+                    <ConfidenceIndicator
+                      :is-loading="isFieldLoading('caseRelevantFacts')"
+                      :field-status="getFieldStatus('caseRelevantFacts')"
+                    />
+                  </span>
+                </template>
+                <UTextarea
+                  v-model="editableForm.caseRelevantFacts"
+                  :disabled="isFieldDisabled('caseRelevantFacts')"
+                  :rows="4"
+                />
+              </UFormGroup>
+
+              <UFormGroup>
+                <template #label>
+                  <span class="flex items-center gap-2">
+                    PIL Provisions
+                    <ConfidenceIndicator
+                      :is-loading="isFieldLoading('casePILProvisions')"
+                      :field-status="getFieldStatus('casePILProvisions')"
+                    />
+                  </span>
+                </template>
+                <UTextarea
+                  v-model="editableForm.casePILProvisions"
+                  :disabled="isFieldDisabled('casePILProvisions')"
+                  :rows="2"
+                />
+              </UFormGroup>
+
+              <UFormGroup>
+                <template #label>
+                  <span class="flex items-center gap-2">
+                    Choice of Law Issue
+                    <ConfidenceIndicator
+                      :is-loading="isFieldLoading('caseChoiceofLawIssue')"
+                      :field-status="getFieldStatus('caseChoiceofLawIssue')"
+                    />
+                  </span>
+                </template>
+                <UTextarea
+                  v-model="editableForm.caseChoiceofLawIssue"
+                  :disabled="isFieldDisabled('caseChoiceofLawIssue')"
+                  :rows="3"
+                />
+              </UFormGroup>
+
+              <UFormGroup>
+                <template #label>
+                  <span class="flex items-center gap-2">
+                    Court's Position
+                    <ConfidenceIndicator
+                      :is-loading="isFieldLoading('caseCourtsPosition')"
+                      :field-status="getFieldStatus('caseCourtsPosition')"
+                    />
+                  </span>
+                </template>
+                <UTextarea
+                  v-model="editableForm.caseCourtsPosition"
+                  :disabled="isFieldDisabled('caseCourtsPosition')"
+                  :rows="3"
+                />
+              </UFormGroup>
+
+              <UFormGroup v-if="isCommonLawJurisdiction">
+                <template #label>
+                  <span class="flex items-center gap-2">
+                    Obiter Dicta
+                    <ConfidenceIndicator
+                      :is-loading="isFieldLoading('caseObiterDicta')"
+                      :field-status="getFieldStatus('caseObiterDicta')"
+                    />
+                  </span>
+                </template>
+                <UTextarea
+                  v-model="editableForm.caseObiterDicta"
+                  :disabled="isFieldDisabled('caseObiterDicta')"
+                  :rows="3"
+                />
+              </UFormGroup>
+
+              <UFormGroup v-if="isCommonLawJurisdiction">
+                <template #label>
+                  <span class="flex items-center gap-2">
+                    Dissenting Opinions
+                    <ConfidenceIndicator
+                      :is-loading="isFieldLoading('caseDissentingOpinions')"
+                      :field-status="getFieldStatus('caseDissentingOpinions')"
+                    />
+                  </span>
+                </template>
+                <UTextarea
+                  v-model="editableForm.caseDissentingOpinions"
+                  :disabled="isFieldDisabled('caseDissentingOpinions')"
+                  :rows="3"
+                />
+              </UFormGroup>
+
+              <UFormGroup>
+                <template #label>
+                  <span class="flex items-center gap-2">
+                    Abstract
+                    <ConfidenceIndicator
+                      :is-loading="isFieldLoading('caseAbstract')"
+                      :field-status="getFieldStatus('caseAbstract')"
+                    />
+                  </span>
+                </template>
+                <UTextarea
+                  v-model="editableForm.caseAbstract"
+                  :disabled="isFieldDisabled('caseAbstract')"
+                  :rows="4"
+                />
+              </UFormGroup>
+            </div>
+
+            <template #footer>
+              <div class="flex items-center justify-end gap-3">
+                <UButton variant="ghost" color="gray" @click="resetAnalysis">
+                  Start Over
+                </UButton>
+                <UButton
+                  color="primary"
+                  :loading="isSubmitting"
+                  :disabled="isAnalyzing || isSubmitted"
+                  @click="submitAnalyzerSuggestion"
+                >
+                  {{ isSubmitted ? "Submitted" : "Submit for Review" }}
+                </UButton>
+              </div>
+            </template>
+          </UCard>
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, watchEffect, onMounted } from "vue";
+import { ref, watchEffect } from "vue";
 import type {
   JurisdictionInfo,
-  EditedAnalysisValues,
+  JurisdictionOption,
   SuggestionResponse,
   AnalysisStepPayload,
-  CaseAnalyzerSuggestionRecord,
+  EditedAnalysisValues,
 } from "~/types/analyzer";
 import { useAnalyzerForm } from "~/composables/useAnalyzerForm";
 import { useAnalysisSteps } from "~/composables/useAnalysisSteps";
-import { useAnalyzerStorage } from "~/composables/useAnalyzerStorage";
 import {
   buildCaseAnalyzerPayload,
   extractErrorMessage,
 } from "~/utils/analyzerPayloadParser";
-import JurisdictionSelector from "@/components/ui/JurisdictionSelector.vue";
+import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
+import ConfidenceIndicator from "@/components/case-analysis/ConfidenceIndicator.vue";
+import { useJurisdictions } from "@/composables/useJurisdictions";
 
 definePageMeta({
   middleware: ["auth"],
@@ -530,8 +386,11 @@ definePageMeta({
 
 useHead({ title: "AI Case Analyzer — CoLD" });
 
-const router = useRouter();
-const route = useRoute();
+const toast = useToast();
+
+// Jurisdictions for selector
+const { data: jurisdictions } = useJurisdictions();
+const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 
 // File upload state
 const fileInput = ref<HTMLInputElement>();
@@ -547,16 +406,8 @@ const jurisdictionInfo = ref<JurisdictionInfo | null>(null);
 const analysisResults = ref<Record<string, AnalysisStepPayload>>({});
 
 // Composables
-const {
-  analysisSteps,
-  isAnalyzing,
-  getFieldStatus,
-  isFieldLoading,
-  isFieldDisabled,
-  hydrateAnalysisStepsFromResults,
-  markStepsCompleteWithoutResults,
-  getConfidenceColor,
-} = useAnalysisSteps();
+const { analysisSteps, isAnalyzing, getFieldStatus, isFieldLoading } =
+  useAnalysisSteps();
 
 const {
   editableForm,
@@ -565,77 +416,55 @@ const {
   resetEditableForm,
 } = useAnalyzerForm(jurisdictionInfo, analysisResults);
 
-const {
-  suggestionId,
-  lastFetchedSuggestionId,
-  isLoadingExistingSuggestion,
-  draftSavedMessage,
-  storeAnalysisResults,
-  parseSuggestionIdParam,
-  applySuggestionRecord,
-} = useAnalyzerStorage(
-  correlationId,
-  jurisdictionInfo,
-  analysisResults,
-  editableForm,
-  hydrateAnalysisStepsFromResults,
-  markStepsCompleteWithoutResults,
-);
-
 // UI state
-const isSavingDraft = ref(false);
 const isSubmitting = ref(false);
-const submissionMessage = ref<string | null>(null);
+const isSubmitted = ref(false);
 
-const showReviewForm = computed(() => {
-  return currentStep.value === "analyzing";
-});
+// Check if field should be disabled (analyzing or submitted)
+function isFieldDisabled(fieldName: keyof EditedAnalysisValues): boolean {
+  if (isSubmitted.value) return true;
+  return isFieldLoading(fieldName);
+}
 
-const analysisProgress = computed(() => {
-  if (!analysisSteps.value.length) return 0;
-  const completed = analysisSteps.value.filter(
-    (step) => step.status === "completed",
-  ).length;
-  return Math.round((completed / analysisSteps.value.length) * 100);
-});
-
-// Lifecycle hooks
+// Populate form when analysis completes
 watchEffect(() => {
-  if (
-    showReviewForm.value &&
-    suggestionId.value === null &&
-    !isAnalyzing.value
-  ) {
+  if (currentStep.value === "analyzing" && !isAnalyzing.value) {
     populateEditableForm();
   }
 });
 
-onMounted(() => {
-  const initialSuggestionId = parseSuggestionIdParam(route.query.suggestionId);
-  if (initialSuggestionId !== null) {
-    fetchCaseAnalyzerSuggestion(initialSuggestionId, {
-      syncQuery: false,
-      silent: true,
-    });
+// Initialize selectedJurisdiction when jurisdictionInfo changes
+watchEffect(() => {
+  if (jurisdictionInfo.value && jurisdictions.value) {
+    const match = jurisdictions.value.find(
+      (j: JurisdictionOption) =>
+        j.Name === jurisdictionInfo.value?.precise_jurisdiction,
+    );
+    if (match) {
+      selectedJurisdiction.value = match;
+    }
   }
 });
 
-if (import.meta.client) {
-  watch(
-    () => route.query.suggestionId,
-    (newValue) => {
-      const parsed = parseSuggestionIdParam(newValue);
-      if (parsed === null) {
-        suggestionId.value = null;
-        return;
-      }
-      if (parsed === lastFetchedSuggestionId.value) {
-        suggestionId.value = parsed;
-        return;
-      }
-      fetchCaseAnalyzerSuggestion(parsed, { syncQuery: false, silent: true });
-    },
-  );
+// Helper to update a specific step's status
+function updateStepStatus(
+  stepName: string,
+  status: "pending" | "in_progress" | "completed" | "error",
+  data?: { confidence?: string; reasoning?: string },
+) {
+  console.log(`updateStepStatus called: ${stepName} -> ${status}`);
+  const step = analysisSteps.value.find((s) => s.name === stepName);
+  console.log(`Found step:`, step);
+  if (step) {
+    step.status = status;
+    if (data) {
+      step.confidence = data.confidence || null;
+      step.reasoning = data.reasoning || null;
+    }
+    console.log(`Updated step to:`, step);
+  } else {
+    console.error(`Step not found: ${stepName}`);
+  }
 }
 
 // Event handlers
@@ -672,6 +501,9 @@ async function uploadDocument() {
   isUploading.value = true;
   error.value = null;
 
+  // Mark upload step as in progress
+  updateStepStatus("document_upload", "in_progress");
+
   try {
     const reader = new FileReader();
     const fileContent = await new Promise<string>((resolve, reject) => {
@@ -703,6 +535,10 @@ async function uploadDocument() {
       blob_url = uploadResponse.blob_url;
     }
 
+    // Mark upload complete, start jurisdiction detection
+    updateStepStatus("document_upload", "completed");
+    updateStepStatus("jurisdiction_detection", "in_progress");
+
     const data = await $fetch<{
       correlation_id: string;
       jurisdiction: JurisdictionInfo;
@@ -716,21 +552,26 @@ async function uploadDocument() {
 
     correlationId.value = data.correlation_id;
     jurisdictionInfo.value = data.jurisdiction;
+
+    // Mark jurisdiction detection complete with confidence
+    updateStepStatus("jurisdiction_detection", "completed", {
+      confidence: data.jurisdiction.confidence,
+      reasoning: data.jurisdiction.reasoning,
+    });
+
     currentStep.value = "confirm";
   } catch (err: unknown) {
     console.error("Upload failed:", err);
     error.value =
       extractErrorMessage(err) ||
       "Failed to upload document. Please try again.";
+    updateStepStatus("document_upload", "error");
   } finally {
     isUploading.value = false;
   }
 }
 
-function onJurisdictionSelected(jurisdiction: {
-  Name?: string;
-  alpha3Code?: string;
-}) {
+function onJurisdictionSelected(jurisdiction: JurisdictionOption | undefined) {
   if (jurisdictionInfo.value && jurisdiction) {
     jurisdictionInfo.value.precise_jurisdiction = jurisdiction.Name || "";
     jurisdictionInfo.value.jurisdiction_code =
@@ -738,18 +579,38 @@ function onJurisdictionSelected(jurisdiction: {
   }
 }
 
-function onReviewJurisdictionSelected(jurisdiction: { Name?: string }) {
-  if (jurisdiction?.Name) {
-    editableForm.jurisdiction = jurisdiction.Name;
-  }
-}
+// Step label mapping for toast notifications
+const stepLabels: Record<string, string> = {
+  col_extraction: "Choice of Law Extraction",
+  theme_classification: "Theme Classification",
+  case_citation: "Case Citation",
+  relevant_facts: "Relevant Facts",
+  pil_provisions: "PIL Provisions",
+  col_issue: "Choice of Law Issue",
+  courts_position: "Court's Position",
+  obiter_dicta: "Obiter Dicta",
+  dissenting_opinions: "Dissenting Opinions",
+  abstract: "Abstract",
+};
 
-async function confirmAndAnalyze() {
+async function confirmAndAnalyze(resume = false) {
   if (!correlationId.value || !jurisdictionInfo.value) return;
 
   isAnalyzing.value = true;
   currentStep.value = "analyzing";
   error.value = null;
+
+  // Reset only analysis steps (not upload/jurisdiction) if not resuming
+  if (!resume) {
+    analysisSteps.value.forEach((step) => {
+      if (!["document_upload", "jurisdiction_detection"].includes(step.name)) {
+        step.status = "pending";
+        step.confidence = null;
+        step.reasoning = null;
+        step.error = null;
+      }
+    });
+  }
 
   try {
     const response = await fetch("/api/proxy/case-analysis/analyze", {
@@ -760,6 +621,7 @@ async function confirmAndAnalyze() {
       body: JSON.stringify({
         correlation_id: correlationId.value,
         jurisdiction: jurisdictionInfo.value,
+        resume,
       }),
     });
 
@@ -783,6 +645,7 @@ async function confirmAndAnalyze() {
             const data = JSON.parse(line.slice(6));
             const step = analysisSteps.value.find((s) => s.name === data.step);
             if (step) {
+              const prevStatus = step.status;
               step.status = data.status;
               if (data.data) {
                 step.confidence = data.data.confidence || null;
@@ -793,6 +656,16 @@ async function confirmAndAnalyze() {
               if (data.error) {
                 step.error = data.error;
               }
+              // Show toast when step completes
+              if (data.status === "completed" && prevStatus !== "completed") {
+                toast.add({
+                  title: stepLabels[data.step] || data.step,
+                  description: "Completed",
+                  color: "teal",
+                  icon: "i-heroicons-check-circle",
+                  timeout: 2000,
+                });
+              }
             }
           } catch (e) {
             console.error("Failed to parse SSE data:", e);
@@ -800,8 +673,6 @@ async function confirmAndAnalyze() {
         }
       }
     }
-
-    storeAnalysisResults();
   } catch (err: unknown) {
     console.error("Analysis failed:", err);
     error.value = "Analysis failed. Please try again.";
@@ -810,15 +681,9 @@ async function confirmAndAnalyze() {
   }
 }
 
-async function saveEditedDraft() {
-  if (!showReviewForm.value) return;
-  isSavingDraft.value = true;
-  try {
-    storeAnalysisResults();
-    draftSavedMessage.value = new Date().toLocaleTimeString();
-  } finally {
-    isSavingDraft.value = false;
-  }
+function handleRetry(_stepName: string) {
+  // Resume analysis from where it failed
+  confirmAndAnalyze(true);
 }
 
 async function submitAnalyzerSuggestion() {
@@ -829,10 +694,8 @@ async function submitAnalyzerSuggestion() {
   isSubmitting.value = true;
   error.value = null;
   try {
-    const editedPayload: EditedAnalysisValues = { ...editableForm };
-    storeAnalysisResults(editedPayload);
     const suggestionPayload = buildCaseAnalyzerPayload(
-      editedPayload,
+      { ...editableForm },
       correlationId.value,
       jurisdictionInfo.value,
       analysisResults.value,
@@ -849,11 +712,14 @@ async function submitAnalyzerSuggestion() {
       },
     );
 
-    lastFetchedSuggestionId.value = response.id;
-    updateSuggestionId(response.id);
-    await fetchCaseAnalyzerSuggestion(response.id, { syncQuery: false });
-
-    submissionMessage.value = `Thanks! Suggestion #${response.id} has been stored.`;
+    isSubmitted.value = true;
+    toast.add({
+      title: "Submission Successful",
+      description: `Suggestion #${response.id} has been submitted for review.`,
+      color: "teal",
+      icon: "i-heroicons-check-circle",
+      timeout: 5000,
+    });
   } catch (err) {
     console.error("Suggestion submission failed:", err);
     error.value =
@@ -863,87 +729,15 @@ async function submitAnalyzerSuggestion() {
   }
 }
 
-async function fetchCaseAnalyzerSuggestion(
-  id: number,
-  options: { syncQuery?: boolean; silent?: boolean } = {},
-) {
-  if (!Number.isFinite(id)) {
-    return;
-  }
-
-  isLoadingExistingSuggestion.value = true;
-
-  try {
-    const record = await $fetch<CaseAnalyzerSuggestionRecord>(
-      `/api/proxy/suggestions/case-analyzer/${id}`,
-    );
-    lastFetchedSuggestionId.value = id;
-    updateSuggestionId(id, { syncQuery: options.syncQuery !== false });
-
-    if (record.payload) {
-      applySuggestionRecord(record.payload);
-      currentStep.value = "analyzing";
-    }
-
-    if (!options.silent) {
-      submissionMessage.value = `Loaded suggestion #${id} from database.`;
-    }
-  } catch (err) {
-    console.error("Failed to load suggestion:", err);
-    error.value =
-      extractErrorMessage(err) || `Unable to load suggestion #${id}.`;
-  } finally {
-    isLoadingExistingSuggestion.value = false;
-  }
-}
-
-function updateSuggestionId(
-  id: number | null,
-  options: { syncQuery?: boolean } = {},
-) {
-  suggestionId.value = id;
-
-  if (options.syncQuery === false) {
-    return;
-  }
-
-  const currentQuery = { ...route.query } as Record<string, string | string[]>;
-  const existingId = parseSuggestionIdParam(currentQuery.suggestionId);
-
-  if (id === null) {
-    if (currentQuery.suggestionId === undefined) {
-      return;
-    }
-    delete currentQuery.suggestionId;
-    void router.replace({ path: route.path, query: currentQuery });
-    return;
-  }
-
-  if (existingId === id) {
-    return;
-  }
-
-  currentQuery.suggestionId = String(id);
-  void router.replace({ path: route.path, query: currentQuery });
-}
-
-async function reloadSuggestionFromServer() {
-  if (!suggestionId.value) {
-    return;
-  }
-  await fetchCaseAnalyzerSuggestion(suggestionId.value);
-}
-
 function resetAnalysis() {
   currentStep.value = "upload";
   selectedFile.value = null;
   correlationId.value = null;
   jurisdictionInfo.value = null;
+  selectedJurisdiction.value = undefined;
   analysisResults.value = {};
-  lastFetchedSuggestionId.value = null;
-  updateSuggestionId(null);
   resetEditableForm();
-  submissionMessage.value = null;
+  isSubmitted.value = false;
   analysisSteps.value.forEach((step) => {
     step.status = "pending";
     step.confidence = null;
@@ -953,13 +747,3 @@ function resetAnalysis() {
   error.value = null;
 }
 </script>
-
-<style scoped>
-.cold-input {
-  background-color: #ffffff;
-}
-
-:global(.dark) .cold-input {
-  background-color: #111827;
-}
-</style>

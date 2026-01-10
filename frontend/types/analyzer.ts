@@ -7,15 +7,20 @@ export interface JurisdictionInfo {
 }
 
 export interface JurisdictionOption {
+  id?: number;
+  Name: string;
   label: string;
   avatar?: string;
   alpha3Code?: string;
   answerCoverage?: number;
+  [key: string]: unknown;
 }
 
 export interface EditedAnalysisValues {
   caseCitation: string;
   jurisdiction: string;
+  choiceOfLawSections: string;
+  themes: string;
   caseAbstract: string;
   caseRelevantFacts: string;
   casePILProvisions: string;
@@ -80,6 +85,11 @@ export interface AnalysisStep {
   error: string | null;
 }
 
+export interface FieldStatus {
+  confidence: string | null;
+  reasoning: string | null;
+}
+
 export type AnalysisStepPayload = Record<string, unknown>;
 
 export const ANALYZER_FIELD_MAP: Record<
@@ -93,6 +103,15 @@ export const ANALYZER_FIELD_MAP: Record<
   jurisdiction: {
     keys: ["jurisdiction_edited", "jurisdiction"],
     nestedKeys: ["precise_jurisdiction"],
+  },
+  choiceOfLawSections: {
+    keys: ["col_sections_edited", "col_sections"],
+    nestedKeys: ["col_sections"],
+  },
+  themes: {
+    keys: ["themes_edited", "themes"],
+    nestedKeys: ["themes"],
+    joinWith: ", ",
   },
   caseAbstract: {
     keys: ["abstract_edited", "abstract"],
@@ -108,8 +127,8 @@ export const ANALYZER_FIELD_MAP: Record<
     joinWith: ", ",
   },
   caseChoiceofLawIssue: {
-    keys: ["choice_of_law_issue_edited", "choice_of_law_issue"],
-    nestedKeys: ["choice_of_law_issue"],
+    keys: ["choice_of_law_issue_edited", "choice_of_law_issue", "col_issue"],
+    nestedKeys: ["choice_of_law_issue", "col_issue"],
   },
   caseCourtsPosition: {
     keys: ["courts_position_edited", "courts_position"],

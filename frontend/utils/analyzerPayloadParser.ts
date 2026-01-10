@@ -144,6 +144,8 @@ export function extractEditedFieldsFromPayload(
   const values: EditedAnalysisValues = {
     caseCitation: "",
     jurisdiction: "",
+    choiceOfLawSections: "",
+    themes: "",
     caseAbstract: "",
     caseRelevantFacts: "",
     casePILProvisions: "",

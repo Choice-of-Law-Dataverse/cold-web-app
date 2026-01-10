@@ -12,6 +12,8 @@ export function useAnalyzerForm(
   const editableForm = reactive<EditedAnalysisValues>({
     caseCitation: "",
     jurisdiction: "",
+    choiceOfLawSections: "",
+    themes: "",
     caseAbstract: "",
     caseRelevantFacts: "",
     casePILProvisions: "",
@@ -36,7 +38,13 @@ export function useAnalyzerForm(
       return "";
     }
     const rawValue = (payload as AnalysisStepPayload)[key];
-    return typeof rawValue === "string" ? rawValue : "";
+    if (typeof rawValue === "string") {
+      return rawValue;
+    }
+    if (Array.isArray(rawValue)) {
+      return rawValue.join(", ");
+    }
+    return "";
   }
 
   function populateEditableForm() {
@@ -50,6 +58,11 @@ export function useAnalyzerForm(
       "case_citation",
       "case_citation",
     );
+    editableForm.choiceOfLawSections = getAnalysisValue(
+      "col_extraction",
+      "col_sections",
+    );
+    editableForm.themes = getAnalysisValue("theme_classification", "themes");
     editableForm.caseAbstract = getAnalysisValue("abstract", "abstract");
     editableForm.caseRelevantFacts = getAnalysisValue(
       "relevant_facts",
@@ -61,7 +74,7 @@ export function useAnalyzerForm(
     );
     editableForm.caseChoiceofLawIssue = getAnalysisValue(
       "col_issue",
-      "choice_of_law_issue",
+      "col_issue",
     );
     editableForm.caseCourtsPosition = getAnalysisValue(
       "courts_position",
@@ -81,6 +94,8 @@ export function useAnalyzerForm(
 
   function resetEditableForm() {
     editableForm.caseCitation = "";
+    editableForm.choiceOfLawSections = "";
+    editableForm.themes = "";
     editableForm.caseAbstract = "";
     editableForm.caseRelevantFacts = "";
     editableForm.casePILProvisions = "";

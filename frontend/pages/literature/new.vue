@@ -14,19 +14,14 @@
       @open-cancel-modal="showCancelModal = true"
     >
       <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
-        <!-- Jurisdiction (optional) -->
-        <UFormGroup size="lg">
+                <!-- Title (required) -->
+        <UFormGroup size="lg" hint="Required" :error="errors.title">
           <template #label>
-            <span class="label">Jurisdiction</span>
+            <span class="label">Title</span>
           </template>
-          <SearchFilters
-            v-model="selectedJurisdiction"
-            :options="jurisdictionOptions"
-            class="mt-2 w-full"
-            :show-avatars="true"
-            :multiple="false"
-          />
+          <UInput v-model="title" class="cold-input mt-2" />
         </UFormGroup>
+
 
         <!-- Year (required) -->
         <UFormGroup size="lg" hint="Required" :error="errors.publication_year">
@@ -44,13 +39,7 @@
           <UInput v-model="author" class="cold-input mt-2" />
         </UFormGroup>
 
-        <!-- Title (required) -->
-        <UFormGroup size="lg" hint="Required" :error="errors.title">
-          <template #label>
-            <span class="label">Title</span>
-          </template>
-          <UInput v-model="title" class="cold-input mt-2" />
-        </UFormGroup>
+
 
         <!-- Publication (optional) -->
         <UFormGroup size="lg" :error="errors.publication_title">
@@ -58,6 +47,20 @@
             <span class="label">Publication title</span>
           </template>
           <UInput v-model="publicationTitle" class="cold-input mt-2" />
+        </UFormGroup>
+
+                <!-- Jurisdiction (optional) -->
+        <UFormGroup size="lg">
+          <template #label>
+            <span class="label">Jurisdiction</span>
+          </template>
+          <SearchFilters
+            v-model="selectedJurisdiction"
+            :options="jurisdictionOptions"
+            class="mt-2 w-full"
+            :show-avatars="true"
+            :multiple="false"
+          />
         </UFormGroup>
 
         <!-- URL (optional) -->

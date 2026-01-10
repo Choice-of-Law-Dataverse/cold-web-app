@@ -6,7 +6,26 @@ import type {
 } from "~/types/analyzer";
 
 export function useAnalysisSteps() {
+  // Steps ordered by workflow dependency chain
   const analysisSteps = ref<AnalysisStep[]>([
+    // Phase 1: Document processing
+    {
+      name: "document_upload",
+      label: "Document Upload",
+      status: "pending",
+      confidence: null,
+      reasoning: null,
+      error: null,
+    },
+    {
+      name: "jurisdiction_detection",
+      label: "Jurisdiction Detection",
+      status: "pending",
+      confidence: null,
+      reasoning: null,
+      error: null,
+    },
+    // Phase 2: Initial extraction (depends on document)
     {
       name: "col_extraction",
       label: "Choice of Law Extraction",
@@ -23,17 +42,10 @@ export function useAnalysisSteps() {
       reasoning: null,
       error: null,
     },
+    // Phase 3: Content extraction (depends on col_extraction)
     {
       name: "case_citation",
       label: "Case Citation",
-      status: "pending",
-      confidence: null,
-      reasoning: null,
-      error: null,
-    },
-    {
-      name: "abstract",
-      label: "Abstract Generation",
       status: "pending",
       confidence: null,
       reasoning: null,
@@ -71,6 +83,7 @@ export function useAnalysisSteps() {
       reasoning: null,
       error: null,
     },
+    // Phase 4: Common law specific (depends on courts_position)
     {
       name: "obiter_dicta",
       label: "Obiter Dicta",
@@ -87,12 +100,23 @@ export function useAnalysisSteps() {
       reasoning: null,
       error: null,
     },
+    // Phase 5: Summary (depends on all above)
+    {
+      name: "abstract",
+      label: "Abstract",
+      status: "pending",
+      confidence: null,
+      reasoning: null,
+      error: null,
+    },
   ]);
 
   const isAnalyzing = ref(false);
 
   const formFieldAnalysisStepMap: Record<string, string> = {
     caseCitation: "case_citation",
+    choiceOfLawSections: "col_extraction",
+    themes: "theme_classification",
     caseAbstract: "abstract",
     caseRelevantFacts: "relevant_facts",
     casePILProvisions: "pil_provisions",
