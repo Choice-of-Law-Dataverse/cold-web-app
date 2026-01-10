@@ -55,13 +55,13 @@ function getStepsForPhase(phaseSteps: string[]) {
 function getStatusIcon(status: string): string {
   switch (status) {
     case "completed":
-      return "i-heroicons-check-badge";
+      return "i-material-symbols-check-circle";
     case "in_progress":
-      return "i-heroicons-arrow-path";
+      return "i-material-symbols-sync";
     case "error":
-      return "i-heroicons-x-circle";
+      return "i-material-symbols-error";
     default:
-      return "i-heroicons-clock";
+      return "i-material-symbols-schedule";
   }
 }
 
