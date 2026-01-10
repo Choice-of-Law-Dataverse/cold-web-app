@@ -27,7 +27,7 @@
           />
         </NuxtLink>
       </h3>
-      <div class="section-gap m-0 p-0">
+      <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
         <UFormGroup size="lg" hint="Required" :error="errors.case_citation">
           <template #label>
             <span class="label flex flex-row items-center">
@@ -38,7 +38,7 @@
           <UInput v-model="caseCitation" class="cold-input mt-2" />
         </UFormGroup>
 
-        <UFormGroup size="lg" hint="Required" class="mt-8">
+        <UFormGroup size="lg" hint="Required">
           <template #label>
             <span class="label flex flex-row items-center">
               Publication Date
@@ -64,7 +64,6 @@
         <UFormGroup
           size="lg"
           hint="Required"
-          class="mt-8"
           :error="errors.official_source_url"
         >
           <template #label>
@@ -77,12 +76,7 @@
           />
         </UFormGroup>
 
-        <UFormGroup
-          size="lg"
-          class="mt-8"
-          hint="Required"
-          :error="errors.copyright_issues"
-        >
+        <UFormGroup size="lg" hint="Required" :error="errors.copyright_issues">
           <template #label>
             <span class="label">Copyright issues</span>
           </template>
@@ -108,7 +102,7 @@
           </div>
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label">Full Text</span>
           </template>
@@ -119,7 +113,7 @@
           />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label">English Translation of Full Text</span>
           </template>
@@ -130,14 +124,14 @@
           />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label">Case Rank</span>
           </template>
           <UInput v-model="caseRank" class="cold-input mt-2" />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label">Jurisdiction</span>
           </template>
@@ -145,12 +139,12 @@
             v-model="selectedJurisdiction"
             :options="jurisdictionOptions"
             class="mt-2 w-full"
-            show-avatars="true"
+            :show-avatars="true"
             :multiple="false"
           />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Abstract
@@ -164,7 +158,7 @@
           />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Relevant Facts
@@ -178,7 +172,7 @@
           />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               PIL Provisions
@@ -188,7 +182,7 @@
           <UInput v-model="casePILProvisions" class="cold-input mt-2" />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Choice of Law Issue
@@ -202,7 +196,7 @@
           />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Court's Position
@@ -216,7 +210,7 @@
           />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center"
               >Translated Excerpt</span
@@ -229,7 +223,7 @@
           />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center"
               >Text of the Relevant Legal Provisions</span
@@ -242,7 +236,7 @@
           />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Quote
@@ -256,7 +250,7 @@
           />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8">
+        <UFormGroup size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Judgment Date
@@ -277,7 +271,7 @@
           </UPopover>
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Case Title
@@ -287,7 +281,7 @@
           <UInput v-model="caseTitle" class="cold-input mt-2" />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Instance
@@ -297,7 +291,7 @@
           <UInput v-model="caseInstance" class="cold-input mt-2" />
         </UFormGroup>
 
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
+        <UFormGroup size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center"
               >Official Keywords</span
@@ -309,6 +303,15 @@
             :rows="6"
           />
         </UFormGroup>
+
+        <div class="flex justify-end md:col-span-2">
+          <UButton
+            class="bg-cold-purple text-white hover:bg-cold-purple/90"
+            @click="openSaveModal"
+          >
+            Submit your data
+          </UButton>
+        </div>
       </div>
     </BaseDetailLayout>
 
