@@ -20,19 +20,22 @@ def get_openai_client():
 
 
 # Task-specific model configuration
+# gpt-5-nano: Fast, cheap, good for classification and simple extraction
+# gpt-5-mini: Balanced, good for summarization and text generation
+# gpt-5.1: High reasoning capability, best for complex legal analysis
 TASK_MODELS = {
-    "abstract": "gpt-4o-mini",
-    "case_citation": "gpt-4o-mini",
-    "col_issue": "gpt-4o",
-    "col_section": "gpt-4o-mini",
-    "courts_position": "gpt-4o",
-    "dissenting_opinions": "gpt-4o",
-    "jurisdiction_classification": "gpt-4o-mini",
-    "legal_system": "gpt-4o-mini",
-    "obiter_dicta": "gpt-4o",
-    "pil_provisions": "gpt-4o-mini",
-    "relevant_facts": "gpt-4o-mini",
-    "themes": "gpt-4o-mini",
+    "abstract": "gpt-5-mini",
+    "case_citation": "gpt-5-nano",
+    "col_issue": "gpt-5.1",
+    "col_section": "gpt-5-mini",
+    "courts_position": "gpt-5.1",
+    "dissenting_opinions": "gpt-5.1",
+    "jurisdiction_classification": "gpt-5-nano",
+    "legal_system": "gpt-5-nano",
+    "obiter_dicta": "gpt-5.1",
+    "pil_provisions": "gpt-5-nano",
+    "relevant_facts": "gpt-5-mini",
+    "themes": "gpt-5-nano",
 }
 
 
