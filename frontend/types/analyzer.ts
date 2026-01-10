@@ -37,6 +37,7 @@ export interface AnalyzerFieldConfig {
 }
 
 export interface CaseAnalyzerSuggestionPayload {
+  draft_id?: number;
   username?: string;
   user_email?: string;
   model?: string;

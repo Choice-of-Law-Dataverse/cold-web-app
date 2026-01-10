@@ -1,9 +1,38 @@
 <template>
   <UCard>
     <template #header>
-      <h3 class="font-semibold">
-        {{ isAnalyzing ? "Extracting Data..." : "Review & Submit" }}
-      </h3>
+      <div class="flex items-center gap-3">
+        <div
+          class="flex h-10 w-10 items-center justify-center rounded-xl"
+          :class="
+            isAnalyzing
+              ? 'animate-pulse bg-gradient-to-br from-cold-purple to-cold-teal'
+              : 'bg-gradient-to-br from-cold-green to-cold-teal'
+          "
+        >
+          <UIcon
+            :name="
+              isAnalyzing
+                ? 'i-heroicons-cog-6-tooth'
+                : 'i-heroicons-clipboard-document-check'
+            "
+            class="h-5 w-5 text-white"
+            :class="isAnalyzing ? 'animate-spin' : ''"
+          />
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900 dark:text-white">
+            {{ isAnalyzing ? "Extracting Data..." : "Review & Submit" }}
+          </h3>
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            {{
+              isAnalyzing
+                ? "AI is analyzing your document"
+                : "Verify and edit extracted data"
+            }}
+          </p>
+        </div>
+      </div>
     </template>
 
     <div class="space-y-5">
@@ -41,13 +70,11 @@
 
       <UFormGroup>
         <template #label>
-
-            Case Citation
-            <ConfidenceIndicator
-              :is-loading="isFieldLoading('caseCitation')"
-              :field-status="getFieldStatus('caseCitation')"
-            />
-
+          Case Citation
+          <ConfidenceIndicator
+            :is-loading="isFieldLoading('caseCitation')"
+            :field-status="getFieldStatus('caseCitation')"
+          />
         </template>
         <UInput
           v-model="localForm.caseCitation"
@@ -57,13 +84,11 @@
 
       <UFormGroup>
         <template #label>
-
-            Choice of Law Sections
-            <ConfidenceIndicator
-              :is-loading="isFieldLoading('choiceOfLawSections')"
-              :field-status="getFieldStatus('choiceOfLawSections')"
-            />
-
+          Choice of Law Sections
+          <ConfidenceIndicator
+            :is-loading="isFieldLoading('choiceOfLawSections')"
+            :field-status="getFieldStatus('choiceOfLawSections')"
+          />
         </template>
         <UTextarea
           v-model="localForm.choiceOfLawSections"
@@ -74,13 +99,11 @@
 
       <UFormGroup>
         <template #label>
-
-            Themes
-            <ConfidenceIndicator
-              :is-loading="isFieldLoading('themes')"
-              :field-status="getFieldStatus('themes')"
-            />
-
+          Themes
+          <ConfidenceIndicator
+            :is-loading="isFieldLoading('themes')"
+            :field-status="getFieldStatus('themes')"
+          />
         </template>
         <UTextarea
           v-model="localForm.themes"
@@ -91,11 +114,11 @@
 
       <UFormGroup>
         <template #label>
-            Relevant Facts
-            <ConfidenceIndicator
-              :is-loading="isFieldLoading('caseRelevantFacts')"
-              :field-status="getFieldStatus('caseRelevantFacts')"
-            />
+          Relevant Facts
+          <ConfidenceIndicator
+            :is-loading="isFieldLoading('caseRelevantFacts')"
+            :field-status="getFieldStatus('caseRelevantFacts')"
+          />
         </template>
         <UTextarea
           v-model="localForm.caseRelevantFacts"
@@ -106,11 +129,11 @@
 
       <UFormGroup>
         <template #label>
-            PIL Provisions
-            <ConfidenceIndicator
-              :is-loading="isFieldLoading('casePILProvisions')"
-              :field-status="getFieldStatus('casePILProvisions')"
-            />
+          PIL Provisions
+          <ConfidenceIndicator
+            :is-loading="isFieldLoading('casePILProvisions')"
+            :field-status="getFieldStatus('casePILProvisions')"
+          />
         </template>
         <UTextarea
           v-model="localForm.casePILProvisions"
@@ -121,11 +144,11 @@
 
       <UFormGroup>
         <template #label>
-            Choice of Law Issue
-            <ConfidenceIndicator
-              :is-loading="isFieldLoading('caseChoiceofLawIssue')"
-              :field-status="getFieldStatus('caseChoiceofLawIssue')"
-            />
+          Choice of Law Issue
+          <ConfidenceIndicator
+            :is-loading="isFieldLoading('caseChoiceofLawIssue')"
+            :field-status="getFieldStatus('caseChoiceofLawIssue')"
+          />
         </template>
         <UTextarea
           v-model="localForm.caseChoiceofLawIssue"
@@ -136,11 +159,11 @@
 
       <UFormGroup>
         <template #label>
-            Court's Position
-            <ConfidenceIndicator
-              :is-loading="isFieldLoading('caseCourtsPosition')"
-              :field-status="getFieldStatus('caseCourtsPosition')"
-            />
+          Court's Position
+          <ConfidenceIndicator
+            :is-loading="isFieldLoading('caseCourtsPosition')"
+            :field-status="getFieldStatus('caseCourtsPosition')"
+          />
         </template>
         <UTextarea
           v-model="localForm.caseCourtsPosition"
@@ -151,11 +174,11 @@
 
       <UFormGroup v-if="isCommonLawJurisdiction">
         <template #label>
-            Obiter Dicta
-            <ConfidenceIndicator
-              :is-loading="isFieldLoading('caseObiterDicta')"
-              :field-status="getFieldStatus('caseObiterDicta')"
-            />
+          Obiter Dicta
+          <ConfidenceIndicator
+            :is-loading="isFieldLoading('caseObiterDicta')"
+            :field-status="getFieldStatus('caseObiterDicta')"
+          />
         </template>
         <UTextarea
           v-model="localForm.caseObiterDicta"
@@ -166,11 +189,11 @@
 
       <UFormGroup v-if="isCommonLawJurisdiction">
         <template #label>
-            Dissenting Opinions
-            <ConfidenceIndicator
-              :is-loading="isFieldLoading('caseDissentingOpinions')"
-              :field-status="getFieldStatus('caseDissentingOpinions')"
-            />
+          Dissenting Opinions
+          <ConfidenceIndicator
+            :is-loading="isFieldLoading('caseDissentingOpinions')"
+            :field-status="getFieldStatus('caseDissentingOpinions')"
+          />
         </template>
         <UTextarea
           v-model="localForm.caseDissentingOpinions"
@@ -181,11 +204,11 @@
 
       <UFormGroup>
         <template #label>
-            Abstract
-            <ConfidenceIndicator
-              :is-loading="isFieldLoading('caseAbstract')"
-              :field-status="getFieldStatus('caseAbstract')"
-            />
+          Abstract
+          <ConfidenceIndicator
+            :is-loading="isFieldLoading('caseAbstract')"
+            :field-status="getFieldStatus('caseAbstract')"
+          />
         </template>
         <UTextarea
           v-model="localForm.caseAbstract"
@@ -196,18 +219,34 @@
     </div>
 
     <template #footer>
-      <div class="flex items-center justify-end gap-3">
-        <UButton variant="ghost" color="gray" @click="$emit('reset')">
-          Start Over
-        </UButton>
-        <UButton
-          class="bg-cold-purple text-white hover:bg-cold-purple/90"
-          :loading="isSubmitting"
-          :disabled="isAnalyzing || isSubmitted"
-          @click="$emit('submit')"
-        >
-          {{ isSubmitted ? "Submitted" : "Submit for Review" }}
-        </UButton>
+      <div class="card-footer-modern">
+        <p class="card-footer-modern__hint">
+          <UIcon name="i-heroicons-pencil-square" />
+          Edit fields before submitting
+        </p>
+        <div class="card-footer-modern__actions">
+          <UButton variant="ghost" color="gray" @click="$emit('reset')">
+            Start Over
+          </UButton>
+          <UButton
+            :class="isSubmitted ? 'btn-success' : 'btn-primary-gradient'"
+            :loading="isSubmitting"
+            :disabled="isAnalyzing || isSubmitted"
+            @click="$emit('submit')"
+          >
+            <template #leading>
+              <UIcon
+                :name="
+                  isSubmitted
+                    ? 'i-heroicons-check-circle'
+                    : 'i-heroicons-paper-airplane'
+                "
+                class="h-4 w-4"
+              />
+            </template>
+            {{ isSubmitted ? "Submitted" : "Submit for Review" }}
+          </UButton>
+        </div>
       </div>
     </template>
   </UCard>

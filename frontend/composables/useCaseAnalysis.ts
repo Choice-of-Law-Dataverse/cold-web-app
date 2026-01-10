@@ -127,6 +127,7 @@ export function useCaseAnalysis(
 
   async function submitSuggestion(
     correlationId: string,
+    draftId: number | null,
     jurisdictionInfo: JurisdictionInfo | null,
     analysisResults: Record<string, AnalysisStepPayload>,
     editableForm: EditedAnalysisValues,
@@ -143,6 +144,7 @@ export function useCaseAnalysis(
         correlationId,
         jurisdictionInfo,
         analysisResults,
+        draftId,
       );
 
       const response = await $fetch<SuggestionResponse>(

@@ -53,7 +53,15 @@ function getStatusColor(status: string): string {
 <template>
   <UCard>
     <template #header>
-      <h3 class="text-sm font-semibold">Progress</h3>
+      <div class="card-header-modern">
+        <div class="icon-badge icon-badge--teal-green">
+          <UIcon name="i-heroicons-list-bullet" class="icon" />
+        </div>
+        <div class="card-header-modern__text">
+          <h3>Progress</h3>
+          <p>Analysis steps</p>
+        </div>
+      </div>
     </template>
 
     <div class="flex flex-row flex-wrap gap-3 lg:flex-col">

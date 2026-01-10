@@ -225,6 +225,7 @@ export function buildCaseAnalyzerPayload(
   correlationId: string | null,
   jurisdictionInfo: unknown,
   analysisResults: Record<string, AnalysisStepPayload>,
+  draftId: number | null = null,
 ): CaseAnalyzerSuggestionPayload {
   const payload: CaseAnalyzerSuggestionPayload = {
     case_citation: sanitizeAnalyzerField(editedPayload.caseCitation),
@@ -241,6 +242,11 @@ export function buildCaseAnalyzerPayload(
       editedPayload.caseDissentingOpinions,
     ),
   };
+
+  // Include draft_id if available for merging with existing draft
+  if (draftId !== null) {
+    payload.draft_id = draftId;
+  }
 
   if (correlationId) {
     payload.notes = `Correlation ID: ${correlationId}`;

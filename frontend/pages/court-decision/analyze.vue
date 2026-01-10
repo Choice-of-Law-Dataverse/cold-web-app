@@ -2,108 +2,15 @@
   <div class="container mx-auto px-4 py-8">
     <div class="mx-auto max-w-5xl">
       <!-- Page Header -->
-      <div class="mb-8">
-        <div class="flex items-center gap-6">
-          <div class="flex-1">
-            <h1 class="text-2xl font-bold">AI Case Analyzer</h1>
-            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
-              Upload a court decision to extract PIL elements automatically
-            </p>
-          </div>
-          <div class="hidden md:block">
-            <svg
-              width="120"
-              height="120"
-              viewBox="0 0 120 120"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              class="text-cold-teal/20"
-            >
-              <!-- Document shape -->
-              <rect
-                x="20"
-                y="15"
-                width="60"
-                height="80"
-                rx="4"
-                fill="currentColor"
-                stroke="currentColor"
-                stroke-width="2"
-              />
-              <rect
-                x="25"
-                y="20"
-                width="50"
-                height="70"
-                rx="2"
-                fill="white"
-                class="dark:fill-gray-900"
-              />
-              <!-- Document lines -->
-              <line
-                x1="32"
-                y1="30"
-                x2="68"
-                y2="30"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-              <line
-                x1="32"
-                y1="40"
-                x2="68"
-                y2="40"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-              <line
-                x1="32"
-                y1="50"
-                x2="60"
-                y2="50"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-              />
-              <!-- AI sparkle -->
-              <circle
-                cx="85"
-                cy="35"
-                r="20"
-                fill="currentColor"
-                class="text-cold-teal"
-              />
-              <path
-                d="M85 25 L87 32 L94 35 L87 38 L85 45 L83 38 L76 35 L83 32 Z"
-                fill="white"
-                class="dark:fill-gray-900"
-              />
-              <!-- Magnifying glass -->
-              <circle
-                cx="65"
-                cy="70"
-                r="15"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="3"
-                class="text-cold-teal"
-              />
-              <line
-                x1="76"
-                y1="81"
-                x2="88"
-                y2="93"
-                stroke="currentColor"
-                stroke-width="3"
-                stroke-linecap="round"
-                class="text-cold-teal"
-              />
-            </svg>
-          </div>
-        </div>
-      </div>
+      <PageHero
+        title="Case Analyzer"
+        subtitle="Upload a court decision and let AI automatically extract jurisdiction, choice of law provisions, and key PIL elements."
+        badge="AI-Powered"
+      >
+        <template #illustration>
+          <AnalyzerIllustration />
+        </template>
+      </PageHero>
 
       <!-- Error Display -->
       <UAlert
@@ -189,6 +96,8 @@ import FileUploadCard from "@/components/case-analysis/FileUploadCard.vue";
 import JurisdictionConfirmCard from "@/components/case-analysis/JurisdictionConfirmCard.vue";
 import AnalysisReviewForm from "@/components/case-analysis/AnalysisReviewForm.vue";
 import AnalysisStepTracker from "@/components/case-analysis/AnalysisStepTracker.vue";
+import PageHero from "@/components/ui/PageHero.vue";
+import AnalyzerIllustration from "@/components/case-analysis/AnalyzerIllustration.vue";
 
 definePageMeta({
   middleware: ["auth"],
@@ -210,6 +119,7 @@ const {
   selectedFile,
   isUploading,
   correlationId,
+  draftId,
   jurisdictionInfo,
   uploadDocument: performUpload,
   reset: resetUpload,
@@ -287,6 +197,12 @@ async function uploadDocument() {
 
   if (result.success) {
     currentStep.value = "confirm";
+    // Add draft_id to URL for bookmarking/returning to draft
+    if (draftId.value) {
+      await navigateTo({
+        query: { draft: draftId.value.toString() },
+      });
+    }
   } else {
     error.value = result.error || "Upload failed";
     updateStepStatus("document_upload", "error");
@@ -342,6 +258,7 @@ async function submitAnalyzerSuggestion() {
 
   const result = await analysis.submitSuggestion(
     correlationId.value,
+    draftId.value,
     jurisdictionInfo.value,
     analysisResults.value,
     editableForm,

@@ -1,7 +1,15 @@
 <template>
   <UCard>
     <template #header>
-      <h3 class="font-semibold">Confirm Jurisdiction</h3>
+      <div class="card-header-modern">
+        <div class="icon-badge icon-badge--teal-green">
+          <UIcon name="i-heroicons-globe-alt" class="icon" />
+        </div>
+        <div class="card-header-modern__text">
+          <h3>Confirm Jurisdiction</h3>
+          <p>Verify detected location</p>
+        </div>
+      </div>
     </template>
 
     <div v-if="jurisdictionInfo" class="space-y-6">
@@ -34,17 +42,26 @@
     </div>
 
     <template #footer>
-      <div class="flex items-center justify-end gap-3">
-        <UButton variant="ghost" color="gray" @click="$emit('reset')">
-          Start Over
-        </UButton>
-        <UButton
-          class="bg-cold-purple text-white hover:bg-cold-purple/90"
-          :loading="isLoading"
-          @click="$emit('continue')"
-        >
-          Continue Analysis
-        </UButton>
+      <div class="card-footer-modern">
+        <p class="card-footer-modern__hint">
+          <UIcon name="i-heroicons-arrow-path" />
+          You can adjust later
+        </p>
+        <div class="card-footer-modern__actions">
+          <UButton variant="ghost" color="gray" @click="$emit('reset')">
+            Start Over
+          </UButton>
+          <UButton
+            class="btn-primary-gradient"
+            :loading="isLoading"
+            @click="$emit('continue')"
+          >
+            <template #leading>
+              <UIcon name="i-heroicons-arrow-right" class="h-4 w-4" />
+            </template>
+            Continue Analysis
+          </UButton>
+        </div>
       </div>
     </template>
   </UCard>

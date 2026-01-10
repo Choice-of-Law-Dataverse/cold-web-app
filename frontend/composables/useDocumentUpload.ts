@@ -7,6 +7,7 @@ export function useDocumentUpload() {
   const selectedFile = ref<File | null>(null);
   const isUploading = ref(false);
   const correlationId = ref<string | null>(null);
+  const draftId = ref<number | null>(null);
   const jurisdictionInfo = ref<JurisdictionInfo | null>(null);
 
   async function uploadDocument(
@@ -47,6 +48,7 @@ export function useDocumentUpload() {
 
       const data = await $fetch<{
         correlation_id: string;
+        draft_id: number;
         jurisdiction: JurisdictionInfo;
       }>("/api/proxy/case-analysis/upload", {
         method: "POST",
@@ -57,6 +59,7 @@ export function useDocumentUpload() {
       });
 
       correlationId.value = data.correlation_id;
+      draftId.value = data.draft_id;
       jurisdictionInfo.value = data.jurisdiction;
 
       onJurisdictionDetected?.();
@@ -78,6 +81,7 @@ export function useDocumentUpload() {
   function reset() {
     selectedFile.value = null;
     correlationId.value = null;
+    draftId.value = null;
     jurisdictionInfo.value = null;
     isUploading.value = false;
   }
@@ -86,6 +90,7 @@ export function useDocumentUpload() {
     selectedFile,
     isUploading,
     correlationId,
+    draftId,
     jurisdictionInfo,
     uploadDocument,
     reset,
