@@ -143,7 +143,7 @@ async def analyze_case_streaming(
                     "data": col_result.model_dump(),
                 }
                 col_section_text = str(col_result)
-            except BaseException as e:
+            except Exception as e:
                 logger.error("COL extraction failed: %s", str(e))
                 yield {"step": "col_extraction", "status": "error", "error": str(e)}
                 return

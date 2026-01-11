@@ -224,6 +224,7 @@ def normalize_case_analyzer_payload(raw: dict[str, Any], item: dict[str, Any]) -
         try:
             data_obj = json.loads(data_obj)
         except Exception:
+            # Keep as string if JSON parsing fails
             pass
     if not isinstance(data_obj, dict):
         data_obj = {}
@@ -466,6 +467,7 @@ def normalize_domestic_instruments(updated_fields: dict[str, Any]) -> None:
             year = str(updated_fields["entry_into_force"])[:4]
             updated_fields["date_year_of_entry_into_force"] = year
         except Exception:
+            # Skip if entry_into_force is missing or invalid
             pass
 
 
