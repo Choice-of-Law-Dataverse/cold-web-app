@@ -210,7 +210,7 @@ async function fetchCountries() {
     return
   }
   try {
-    const res = await fetch(`${config.public.apiBaseUrl}/search/full_table`, {
+    const res = await fetch(`/api/proxy/search/full_table`, {
       method: 'POST',
       headers: {
         authorization: `Bearer ${config.public.FASTAPI}`,

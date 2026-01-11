@@ -30,17 +30,14 @@ export function useJurisdiction() {
             table: 'Literature',
             id: id,
           }
-          const response = await fetch(
-            `${config.public.apiBaseUrl}/search/details`,
-            {
-              method: 'POST',
-              headers: {
-                authorization: `Bearer ${config.public.FASTAPI}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(jsonPayload),
-            }
-          )
+          const response = await fetch(`/api/proxy/search/details`, {
+            method: 'POST',
+            headers: {
+              authorization: `Bearer ${config.public.FASTAPI}`,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(jsonPayload),
+          })
           if (!response.ok)
             throw new Error('Failed to fetch literature details')
           const data = await response.json()
@@ -58,20 +55,17 @@ export function useJurisdiction() {
     if (!jurisdictionName) return
 
     try {
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/full_table`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            table: 'Specialists',
-            filters: [{ column: 'Jurisdiction', value: jurisdictionName }],
-          }),
-        }
-      )
+      const response = await fetch(`/api/proxy/search/full_table`, {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          table: 'Specialists',
+          filters: [{ column: 'Jurisdiction', value: jurisdictionName }],
+        }),
+      })
 
       if (!response.ok) throw new Error('Failed to fetch specialists')
 
@@ -103,17 +97,14 @@ export function useJurisdiction() {
     }
 
     try {
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/details`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(jsonPayload),
-        }
-      )
+      const response = await fetch(`/api/proxy/search/details`, {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      })
 
       if (!response.ok) {
         throw new Error(`Failed to fetch jurisdiction: ${response.statusText}`)

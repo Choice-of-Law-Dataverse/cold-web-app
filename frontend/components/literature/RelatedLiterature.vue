@@ -124,7 +124,7 @@ async function fetchLiteratureTitlesById(ids, useJurisdictionsColumn = false) {
     ids.map(async (id) => {
       try {
         const response = await fetch(
-          `${config.public.apiBaseUrl}/search/details`,
+          `/api/proxy/search/details`,
           {
             method: 'POST',
             headers: {
@@ -156,7 +156,7 @@ async function fetchRelatedLiterature(themes) {
   if (!themes) return
   loading.value = true
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
+    const response = await fetch(`/api/proxy/search/`, {
       method: 'POST',
       headers: {
         authorization: `Bearer ${config.public.FASTAPI}`,

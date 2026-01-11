@@ -34,17 +34,14 @@ export function useJurisdictionComparison() {
     loadingJurisdictions.value = true
     try {
       const config = useRuntimeConfig()
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/full_table`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
-        }
-      )
+      const response = await fetch(`/api/proxy/search/full_table`, {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ table: 'Jurisdictions', filters: [] }),
+      })
 
       if (!response.ok) throw new Error('Failed to load jurisdictions')
 

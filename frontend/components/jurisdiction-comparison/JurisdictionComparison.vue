@@ -185,7 +185,7 @@ async function fetchFilteredTableData(filters) {
 
   try {
     const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
+      `/api/proxy/search/full_table`,
       {
         method: 'POST',
         headers: {
@@ -239,7 +239,7 @@ async function fetchJurisdictions() {
     }
 
     const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
+      `/api/proxy/search/full_table`,
       {
         method: 'POST',
         headers: {

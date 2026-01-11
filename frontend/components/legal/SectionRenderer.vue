@@ -62,7 +62,7 @@ function parseIdParts(id) {
 async function fetchTitle(instrumentId) {
   if (!instrumentId) return
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
+    const response = await fetch(`/api/proxy/search/details`, {
       method: 'POST',
       headers: {
         authorization: `Bearer ${config.public.FASTAPI}`,

@@ -106,7 +106,7 @@ async function fetchInstrumentTitle(instrumentId) {
   if (!instrumentId || instrumentTitles.value[instrumentId]) return
   const jsonPayload = { table: 'Domestic Instruments', id: instrumentId }
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
+    const response = await fetch(`/api/proxy/search/details`, {
       method: 'POST',
       headers: {
         authorization: `Bearer ${config.public.FASTAPI}`,

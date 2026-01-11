@@ -82,7 +82,7 @@ export default {
       try {
         // Step 1: Call classify_query API to classify the search query
         const response = await fetch(
-          `${config.public.apiBaseUrl}/classify_query`,
+          `/api/proxy/classify_query`,
           {
             method: 'POST',
             headers: {
@@ -132,7 +132,7 @@ export default {
     async fetchData(term, table) {
       try {
         const response = await fetch(
-          `${config.public.apiBaseUrl}/search/full_table`,
+          `/api/proxy/search/full_table`,
           {
             method: 'POST',
             headers: {

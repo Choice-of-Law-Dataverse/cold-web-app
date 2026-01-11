@@ -259,7 +259,7 @@ function handleNewSave() {
   ;(async () => {
     try {
       await $fetch(
-        `${config.public.apiBaseUrl}/suggestions/international-instruments`,
+        `/api/proxy/suggestions/international-instruments`,
         {
           method: 'POST',
           headers: {

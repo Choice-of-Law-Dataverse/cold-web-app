@@ -222,7 +222,7 @@ async function fetchSearchResults(query, filters, append = false) {
     requestBody.browser_info_hint = userInfo || {}
     requestBody.hostname = userHost
 
-    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
+    const response = await fetch(`/api/proxy/search/`, {
       method: 'POST',
       headers: {
         authorization: `Bearer ${config.public.FASTAPI}`,
@@ -303,12 +303,12 @@ const getBrowserInfo = () => {
 const fetchUserInfo = async () => {
   try {
     // Initial request to get the client hints (https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers#client_hints)
-    await fetch(`${config.public.apiBaseUrl}/get_user_info`, {
+    await fetch(`/api/proxy/get_user_info`, {
       method: 'GET',
     })
 
     // After getting client hints from the browser, make a second request
-    const response = await fetch(`${config.public.apiBaseUrl}/user_info`, {
+    const response = await fetch(`/api/proxy/user_info`, {
       method: 'GET',
     })
 

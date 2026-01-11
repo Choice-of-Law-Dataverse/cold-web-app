@@ -178,7 +178,7 @@ async function fetchResultCount(jurisdiction, table) {
     page_size: 1,
   }
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
+    const response = await fetch(`/api/proxy/search/`, {
       method: 'POST',
       headers: {
         authorization: `Bearer ${config.public.FASTAPI}`,

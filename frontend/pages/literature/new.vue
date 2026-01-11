@@ -191,7 +191,7 @@ watch(token, () => {})
 const loadJurisdictions = async () => {
   try {
     const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
+      `/api/proxy/search/full_table`,
       {
         method: 'POST',
         headers: {
@@ -308,7 +308,7 @@ function handleNewSave() {
 
   ;(async () => {
     try {
-      await $fetch(`${config.public.apiBaseUrl}/suggestions/literature`, {
+      await $fetch(`/api/proxy/suggestions/literature`, {
         method: 'POST',
         headers: {
           authorization: `Bearer ${config.public.FASTAPI}`,

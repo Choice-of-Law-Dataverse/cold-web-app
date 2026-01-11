@@ -57,7 +57,7 @@ async function fetchDomesticInstruments() {
   try {
     const payload = { table: 'Domestic Instruments', filters: [] }
     const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
+      `/api/proxy/search/full_table`,
       {
         method: 'POST',
         headers: {

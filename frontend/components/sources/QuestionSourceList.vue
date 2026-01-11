@@ -120,7 +120,7 @@ async function fetchPrimarySource() {
 
   try {
     const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
+      `/api/proxy/search/full_table`,
       {
         method: 'POST',
         headers: {
@@ -173,7 +173,7 @@ async function fetchOupChapterSource() {
 
   try {
     const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
+      `/api/proxy/search/full_table`,
       {
         method: 'POST',
         headers: {
@@ -225,7 +225,7 @@ async function fetchLiteratureTitles(idStr) {
   const promises = ids.map(async (id) => {
     try {
       const response = await fetch(
-        `${config.public.apiBaseUrl}/search/details`,
+        `/api/proxy/search/details`,
         {
           method: 'POST',
           headers: {

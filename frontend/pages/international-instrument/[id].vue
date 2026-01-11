@@ -130,7 +130,7 @@ async function fetchProvisions() {
   provisionsError.value = null
   try {
     const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
+      `/api/proxy/search/full_table`,
       {
         method: 'POST',
         headers: {

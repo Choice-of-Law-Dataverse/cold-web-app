@@ -15,37 +15,36 @@ export default defineNuxtConfig({
     '@nuxtjs/robots',
     '@nuxtjs/sitemap',
     '@nuxt/scripts',
-    '@nuxtjs/turnstile'
+    '@nuxtjs/turnstile',
   ],
   turnstile: {
     siteKey: process.env.NUXT_TURNSTILE_SITE_KEY,
-    addValidateEndpoint: true  // adds server-side validate endpoint
+    addValidateEndpoint: true, // adds server-side validate endpoint
   },
   runtimeConfig: {
+    apiBaseUrl: process.env.NUXT_API_BASE_URL,
+    apiKey: process.env.NUXT_API_KEY,
     turnstile: {
       secretKey: process.env.NUXT_TURNSTILE_SECRET_KEY,
     },
     public: {
-      apiBaseUrl: process.env.API_BASE_URL,
-      FASTAPI: process.env.FASTAPI_API_TOKEN
-    }
+      FASTAPI: process.env.FASTAPI_API_TOKEN,
+    },
   },
   robots: {
     robotsTxt: true,
-    sitemap: [
-      '/sitemap.txt',
-    ],
+    sitemap: ['/sitemap.txt'],
     groups: [
       {
         // Alpha: Allow nothing, disallow everything
         allow: [],
         disallow: ['/'],
-        
+
         // Beta and Live: Disallow search, new and edit. Allow everything else
         // allow: ['/'],
         // disallow: ['/search', '*/new', '*/edit'],
       },
-    ]
+    ],
   },
   purgecss: {
     enabled: false, // Disable for the time being
@@ -61,10 +60,10 @@ export default defineNuxtConfig({
     documentDriven: false,
     markdown: {
       anchorLinks: true,
-    }
+    },
   },
   colorMode: {
-    preference: 'light'
+    preference: 'light',
   },
   css: ['@/assets/styles.scss', 'tailwindcss/tailwind.css'], // Tailwind last
   tailwindcss: {
@@ -72,7 +71,7 @@ export default defineNuxtConfig({
   },
   vite: {
     optimizeDeps: {
-      include: ["plotly.js-dist-min"],
+      include: ['plotly.js-dist-min'],
     },
     // Fix legacy JS bug (https://stackoverflow.com/a/79054778/22393957)
     css: {
@@ -93,6 +92,6 @@ export default defineNuxtConfig({
   },
   imports: {
     dirs: ['utils'],
-    presets: ['vue']
-  }
-});
+    presets: ['vue'],
+  },
+})

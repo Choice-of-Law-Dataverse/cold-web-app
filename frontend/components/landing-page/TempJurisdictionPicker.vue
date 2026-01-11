@@ -33,7 +33,7 @@ async function fetchJurisdictions() {
     // Fetch both tables concurrently
     const responses = await Promise.all(
       jsonPayloads.map((payload) =>
-        fetch(`${config.public.apiBaseUrl}/search/full_table`, {
+        fetch(`/api/proxy/search/full_table`, {
           method: 'POST',
           headers: {
             authorization: `Bearer ${config.public.FASTAPI}`,

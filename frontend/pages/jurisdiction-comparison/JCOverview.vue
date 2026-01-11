@@ -258,7 +258,7 @@ const fetchLegalFamily = async (iso3Code) => {
 
   try {
     const config = useRuntimeConfig()
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
+    const response = await fetch(`/api/proxy/search/details`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -310,7 +310,7 @@ const fetchDataCount = async (jurisdictionName, tableType) => {
 
   try {
     const config = useRuntimeConfig()
-    const response = await fetch(`${config.public.apiBaseUrl}/search/`, {
+    const response = await fetch(`/api/proxy/search/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

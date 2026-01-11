@@ -61,7 +61,7 @@ watchEffect(async () => {
     questionList.value.map(async (q) => {
       try {
         const response = await fetch(
-          `${config.public.apiBaseUrl}/search/details`,
+          `/api/proxy/search/details`,
           {
             method: 'POST',
             headers: {

@@ -44,7 +44,7 @@ async function fetchCaseTitle(caseId) {
   if (!caseId || caseTitles.value[caseId]) return
   const jsonPayload = { table: 'Court Decisions', id: caseId }
   try {
-    const response = await fetch(`${config.public.apiBaseUrl}/search/details`, {
+    const response = await fetch(`/api/proxy/search/details`, {
       method: 'POST',
       headers: {
         authorization: `Bearer ${config.public.FASTAPI}`,

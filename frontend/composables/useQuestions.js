@@ -48,17 +48,14 @@ export function useQuestions() {
         ],
       }
 
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/full_table`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        }
-      )
+      const response = await fetch(`/api/proxy/search/full_table`, {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      })
       if (!response.ok) {
         throw new Error(`Failed to fetch answers: ${response.statusText}`)
       }
@@ -217,17 +214,14 @@ export function useQuestions() {
     }
 
     try {
-      const response = await fetch(
-        `${config.public.apiBaseUrl}/search/full_table`,
-        {
-          method: 'POST',
-          headers: {
-            authorization: `Bearer ${config.public.FASTAPI}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(jsonPayload),
-        }
-      )
+      const response = await fetch(`/api/proxy/search/full_table`, {
+        method: 'POST',
+        headers: {
+          authorization: `Bearer ${config.public.FASTAPI}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(jsonPayload),
+      })
 
       if (!response.ok) {
         throw new Error(`Failed to fetch questions: ${response.statusText}`)

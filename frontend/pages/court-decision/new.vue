@@ -363,7 +363,7 @@ const jurisdictionOptions = ref([{ label: 'All Jurisdictions' }])
 const loadJurisdictions = async () => {
   try {
     const response = await fetch(
-      `${config.public.apiBaseUrl}/search/full_table`,
+      `/api/proxy/search/full_table`,
       {
         method: 'POST',
         headers: {
@@ -508,7 +508,7 @@ function handleNewSave() {
   // Explicitly log the exact payload we send
   ;(async () => {
     try {
-      await $fetch(`${config.public.apiBaseUrl}/suggestions/court-decisions`, {
+      await $fetch(`/api/proxy/suggestions/court-decisions`, {
         method: 'POST',
         headers: {
           authorization: `Bearer ${config.public.FASTAPI}`,
