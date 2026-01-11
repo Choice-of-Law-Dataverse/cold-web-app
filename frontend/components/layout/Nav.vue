@@ -283,22 +283,19 @@ function updateSuggestions() {
   if (!enableJurisdictionFetch.value) {
     enableJurisdictionFetch.value = true;
   }
-  
-  if (
-    !searchText.value ||
-    searchText.value.trim().length < MIN_SEARCH_LENGTH
-  ) {
+
+  if (!searchText.value || searchText.value.trim().length < MIN_SEARCH_LENGTH) {
     suggestions.value = [];
     showSuggestions.value = false;
     return;
   }
-  
+
   if (!jurisdictionLookup.data.value) {
     suggestions.value = [];
     showSuggestions.value = false;
     return;
   }
-  
+
   const words = searchText.value
     .toLowerCase()
     .split(/\s+/)
