@@ -96,6 +96,14 @@ class SuggestionService:
                     values["user_email"] = token_sub
                 if hasattr(target.c, "username") and user and user.get("name"):
                     values["username"] = user.get("name")
+                # Extract case_citation from nested structure if present
+                if hasattr(target.c, "case_citation"):
+                    case_citation_value = None
+                    if isinstance(payload.get("case_citation"), dict):
+                        case_citation_value = payload["case_citation"].get("case_citation")
+                    elif isinstance(payload.get("case_citation"), str):
+                        case_citation_value = payload["case_citation"]
+                    values["case_citation"] = case_citation_value
                 stmt = target.insert().values(**values).returning(target.c.id)
             else:
                 stmt = (
