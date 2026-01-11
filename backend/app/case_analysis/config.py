@@ -3,8 +3,11 @@
 import logging
 
 import openai
+from agents import set_tracing_export_api_key
 
 from app.config import config
+
+set_tracing_export_api_key(config.OPENAI_API_KEY if config.OPENAI_API_KEY is not None else "")
 
 logger = logging.getLogger(__name__)
 
