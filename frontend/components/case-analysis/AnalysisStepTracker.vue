@@ -54,9 +54,6 @@ function getStatusColor(status: string): string {
   <UCard>
     <template #header>
       <div class="card-header-modern">
-        <div class="icon-badge icon-badge--teal-green">
-          <UIcon name="i-heroicons-list-bullet" class="icon" />
-        </div>
         <div class="card-header-modern__text">
           <h3>Progress</h3>
           <p>Analysis steps</p>

@@ -2,14 +2,6 @@
   <UCard class="overflow-hidden">
     <template #header>
       <div class="flex items-center gap-3">
-        <div
-          class="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-cold-purple to-cold-teal"
-        >
-          <UIcon
-            name="i-heroicons-document-arrow-up"
-            class="h-5 w-5 text-white"
-          />
-        </div>
         <div>
           <h3 class="font-semibold text-gray-900 dark:text-white">
             Upload Document

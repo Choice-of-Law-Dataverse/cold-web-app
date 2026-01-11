@@ -61,6 +61,7 @@
             @continue="confirmAndAnalyze(false)"
             @reset="resetAnalysis"
             @jurisdiction-updated="onJurisdictionSelected"
+            @legal-system-updated="onLegalSystemSelected"
           />
 
           <!-- Step 3: Review & Submit -->
@@ -214,6 +215,12 @@ function onJurisdictionSelected(jurisdiction: JurisdictionOption) {
     jurisdictionInfo.value.precise_jurisdiction = jurisdiction.Name || "";
     jurisdictionInfo.value.jurisdiction_code =
       jurisdiction.alpha3Code || jurisdictionInfo.value.jurisdiction_code;
+  }
+}
+
+function onLegalSystemSelected(legalSystemType: string) {
+  if (jurisdictionInfo.value) {
+    jurisdictionInfo.value.legal_system_type = legalSystemType;
   }
 }
 

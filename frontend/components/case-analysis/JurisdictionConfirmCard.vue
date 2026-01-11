@@ -2,9 +2,6 @@
   <UCard>
     <template #header>
       <div class="card-header-modern">
-        <div class="icon-badge icon-badge--teal-green">
-          <UIcon name="i-heroicons-globe-alt" class="icon" />
-        </div>
         <div class="card-header-modern__text">
           <h3>Confirm Jurisdiction</h3>
           <p>Verify detected location</p>
@@ -16,18 +13,14 @@
       <DocumentDisplay :document-name="documentName" />
 
       <UFormGroup label="Legal System Type">
-        <UInput
+        <USelect
           :model-value="jurisdictionInfo.legal_system_type"
-          :readonly="true"
+          :options="legalSystemOptions"
+          placeholder="Select legal system"
+          size="xl"
+          :disabled="isLoading"
+          @update:model-value="handleLegalSystemUpdate"
         />
-        <template #hint>
-          <span
-            v-if="jurisdictionInfo.confidence"
-            class="text-xs text-cold-teal"
-          >
-            {{ jurisdictionInfo.confidence }} confidence
-          </span>
-        </template>
       </UFormGroup>
 
       <UFormGroup label="Jurisdiction">
@@ -68,6 +61,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import type { JurisdictionInfo, JurisdictionOption } from "~/types/analyzer";
 import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
 import DocumentDisplay from "@/components/case-analysis/DocumentDisplay.vue";
@@ -75,7 +69,7 @@ import { useJurisdictions } from "@/composables/useJurisdictions";
 
 const { data: jurisdictions } = useJurisdictions();
 
-defineProps<{
+const props = defineProps<{
   documentName: string;
   jurisdictionInfo: JurisdictionInfo | null;
   selectedJurisdiction: JurisdictionOption | undefined;
@@ -87,7 +81,23 @@ const emit = defineEmits<{
   continue: [];
   reset: [];
   "jurisdiction-updated": [jurisdiction: JurisdictionOption];
+  "legal-system-updated": [legalSystemType: string];
 }>();
+
+const legalSystemOptionsBase = [
+  "Civil-law jurisdiction",
+  "Common-law jurisdiction",
+  "No court decision",
+];
+
+const legalSystemOptions = computed(() => {
+  const options = [...legalSystemOptionsBase];
+  const current = props.jurisdictionInfo?.legal_system_type;
+  if (current && !options.includes(current)) {
+    options.push(current);
+  }
+  return options;
+});
 
 function handleJurisdictionUpdate(
   jurisdiction: JurisdictionOption | undefined,
@@ -100,6 +110,12 @@ function handleJurisdictionSelected(
 ) {
   if (jurisdiction) {
     emit("jurisdiction-updated", jurisdiction);
+  }
+}
+
+function handleLegalSystemUpdate(legalSystemType: string | undefined) {
+  if (legalSystemType) {
+    emit("legal-system-updated", legalSystemType);
   }
 }
 </script>

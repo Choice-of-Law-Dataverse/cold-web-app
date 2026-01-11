@@ -2,24 +2,6 @@
   <UCard>
     <template #header>
       <div class="flex items-center gap-3">
-        <div
-          class="flex h-10 w-10 items-center justify-center rounded-xl"
-          :class="
-            isAnalyzing
-              ? 'animate-pulse bg-gradient-to-br from-cold-purple to-cold-teal'
-              : 'bg-gradient-to-br from-cold-green to-cold-teal'
-          "
-        >
-          <UIcon
-            :name="
-              isAnalyzing
-                ? 'i-heroicons-cog-6-tooth'
-                : 'i-heroicons-clipboard-document-check'
-            "
-            class="h-5 w-5 text-white"
-            :class="isAnalyzing ? 'animate-spin' : ''"
-          />
-        </div>
         <div>
           <h3 class="font-semibold text-gray-900 dark:text-white">
             {{ isAnalyzing ? "Extracting Data..." : "Review & Submit" }}
@@ -70,20 +52,6 @@
 
       <UFormGroup>
         <template #label>
-          Case Citation
-          <ConfidenceIndicator
-            :is-loading="isFieldLoading('caseCitation')"
-            :field-status="getFieldStatus('caseCitation')"
-          />
-        </template>
-        <UInput
-          v-model="localForm.caseCitation"
-          :disabled="isFieldDisabled('caseCitation')"
-        />
-      </UFormGroup>
-
-      <UFormGroup>
-        <template #label>
           Choice of Law Sections
           <ConfidenceIndicator
             :is-loading="isFieldLoading('choiceOfLawSections')"
@@ -93,7 +61,7 @@
         <UTextarea
           v-model="localForm.choiceOfLawSections"
           :disabled="isFieldDisabled('choiceOfLawSections')"
-          :rows="3"
+          :rows="6"
         />
       </UFormGroup>
 
@@ -108,6 +76,21 @@
         <UTextarea
           v-model="localForm.themes"
           :disabled="isFieldDisabled('themes')"
+          :rows="1"
+        />
+      </UFormGroup>
+
+      <UFormGroup>
+        <template #label>
+          Case Citation
+          <ConfidenceIndicator
+            :is-loading="isFieldLoading('caseCitation')"
+            :field-status="getFieldStatus('caseCitation')"
+          />
+        </template>
+        <UInput
+          v-model="localForm.caseCitation"
+          :disabled="isFieldDisabled('caseCitation')"
           :rows="2"
         />
       </UFormGroup>
@@ -123,7 +106,7 @@
         <UTextarea
           v-model="localForm.caseRelevantFacts"
           :disabled="isFieldDisabled('caseRelevantFacts')"
-          :rows="4"
+          :rows="6"
         />
       </UFormGroup>
 
@@ -153,7 +136,7 @@
         <UTextarea
           v-model="localForm.caseChoiceofLawIssue"
           :disabled="isFieldDisabled('caseChoiceofLawIssue')"
-          :rows="3"
+          :rows="6"
         />
       </UFormGroup>
 
@@ -168,7 +151,7 @@
         <UTextarea
           v-model="localForm.caseCourtsPosition"
           :disabled="isFieldDisabled('caseCourtsPosition')"
-          :rows="3"
+          :rows="6"
         />
       </UFormGroup>
 
@@ -213,7 +196,7 @@
         <UTextarea
           v-model="localForm.caseAbstract"
           :disabled="isFieldDisabled('caseAbstract')"
-          :rows="4"
+          :rows="6"
         />
       </UFormGroup>
     </div>
