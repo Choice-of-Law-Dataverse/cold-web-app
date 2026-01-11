@@ -8,7 +8,6 @@ import logging
 from types import ModuleType
 
 from .base import get_registry
-from .registry import register_all_prompts
 
 logger = logging.getLogger(__name__)
 
@@ -16,13 +15,6 @@ logger = logging.getLogger(__name__)
 JURISDICTION_MAP = {
     "Civil-law jurisdiction": "civil-law",
     "Common-law jurisdiction": "common-law",
-}
-
-# Legacy mapping for prompt types to registry types
-PROMPT_TYPE_MAP = {
-    "col_section": "col_section",
-    "theme": "theme",
-    "analysis": None,  # Analysis has multiple sub-types
 }
 
 

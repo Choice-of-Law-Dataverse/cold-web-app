@@ -10,7 +10,6 @@ Usage:
 """
 
 import sys
-from typing import Any
 
 from .base import get_registry
 

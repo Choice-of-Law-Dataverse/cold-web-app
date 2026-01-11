@@ -1,7 +1,7 @@
 """Base classes and utilities for prompt management."""
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 
