@@ -48,6 +48,27 @@ test: ## Run tests
 	@echo "$(GREEN)Running tests$(RESET)"
 	@uv run pytest
 
+.PHONY: migrate_suggestions
+migrate_suggestions: ## Apply Alembic migrations to the suggestions database
+	@set -a; [ -f .env ] && . ./.env; set +a; \
+	if [ -z "$$SUGGESTIONS_SQL_CONN_STRING" ]; then \
+		echo "$(RED)SUGGESTIONS_SQL_CONN_STRING must be set (export it or add it to .env)$(RESET)"; \
+		exit 1; \
+	fi; \
+	echo "$(GREEN)Applying suggestions migrations$(RESET)"; \
+	ALEMBIC_SQL_CONN_STRING="$$SUGGESTIONS_SQL_CONN_STRING" uv run alembic upgrade head
+
+.PHONY: revert_migration
+revert_migration: ## Revert the last Alembic migration (use STEPS=n to revert n migrations)
+	@set -a; [ -f .env ] && . ./.env; set +a; \
+	if [ -z "$$SUGGESTIONS_SQL_CONN_STRING" ]; then \
+		echo "$(RED)SUGGESTIONS_SQL_CONN_STRING must be set (export it or add it to .env)$(RESET)"; \
+		exit 1; \
+	fi; \
+	STEPS=$${STEPS:-1}; \
+	echo "$(YELLOW)Reverting $$STEPS migration(s)$(RESET)"; \
+	ALEMBIC_SQL_CONN_STRING="$$SUGGESTIONS_SQL_CONN_STRING" uv run alembic downgrade -$$STEPS
+
 .PHONY: coverage ## Run tests with coverage report
 coverage:
 	@echo "$(GREEN)Running tests with coverage$(RESET)"

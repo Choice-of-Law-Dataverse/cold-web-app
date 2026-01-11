@@ -45,6 +45,7 @@
               <USelect
                 v-model="selectedType"
                 variant="none"
+                placeholder=" "
                 :options="typeOptions"
                 value-attribute="value"
                 option-attribute="label"
@@ -127,12 +128,13 @@
 
         <div class="ml-auto justify-self-end">
           <template v-if="headerMode === 'new'">
-            <NuxtLink
-              class="label flex cursor-pointer items-center pt-0.5"
+            <UButton
+              size="xs"
+              class="bg-cold-purple text-white hover:bg-cold-purple/90"
               @click="emit('open-save-modal')"
             >
-              Submit your data …
-            </NuxtLink>
+              Submit your data
+            </UButton>
           </template>
           <template v-else>
             <template v-if="showSuggestEdit">
@@ -444,7 +446,6 @@ function getSourceTablePlural(label) {
 }
 
 const typeOptions = [
-  { label: "Change", value: "" },
   { label: "Court Decision", value: "Court Decision" },
   { label: "Domestic Instrument", value: "Domestic Instrument" },
   { label: "Regional Instrument", value: "Regional Instrument" },
@@ -485,7 +486,7 @@ function typeToNewPath(label) {
 }
 
 watch(selectedType, (val, old) => {
-  if (props.headerMode === "new" && val !== "" && val !== old) {
+  if (props.headerMode === "new" && val && val !== old) {
     router.push(typeToNewPath(val));
   }
 });

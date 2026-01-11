@@ -174,7 +174,6 @@ const errorMessage = ref("");
 const filteredPayload = computed(() => {
   if (!suggestion.value?.payload) return {};
 
-  // Filter out metadata fields
   const metaFields = new Set([
     "submitter_email",
     "submitter_comments",
@@ -193,12 +192,15 @@ const filteredPayload = computed(() => {
     "analysis_ready",
     "workflow_started",
     "parallel_execution_started",
+    "raw_data",
+    "draft_id",
+    "notes",
   ]);
 
   const filtered: Record<string, unknown> = {};
   const payload = suggestion.value.payload;
 
-  // For case analyzer, collect fields with _edited versions
+  // For case analyzer, collect fields with _edited versions (legacy format)
   const editedFields = new Set<string>();
   if (category.value === "case-analyzer") {
     for (const key of Object.keys(payload)) {
@@ -210,14 +212,11 @@ const filteredPayload = computed(() => {
   }
 
   for (const [key, value] of Object.entries(payload)) {
-    // Skip if null, empty, or in metadata fields
     if (metaFields.has(key) || value === null || value === "") {
       continue;
     }
 
-    // Case analyzer specific filtering
     if (category.value === "case-analyzer") {
-      // Skip *_printed, *_reasoning, and *_confidence fields
       if (
         key.endsWith("_printed") ||
         key.endsWith("_reasoning") ||
@@ -226,12 +225,10 @@ const filteredPayload = computed(() => {
         continue;
       }
 
-      // Skip full_text
       if (key === "full_text") {
         continue;
       }
 
-      // Skip base field if _edited version exists
       if (editedFields.has(key)) {
         continue;
       }

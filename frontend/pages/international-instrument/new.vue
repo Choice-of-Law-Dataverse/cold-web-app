@@ -13,15 +13,14 @@
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
-      <div class="section-gap m-0 p-0">
+      <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
         <UFormGroup size="lg" hint="Required" :error="errors.name">
           <template #label>
             <span class="label">Title</span>
           </template>
           <UInput v-model="name" class="cold-input mt-2" />
         </UFormGroup>
-        <UFormGroup size="lg" class="mt-8" />
-        <UFormGroup size="lg" class="mt-8" hint="Required" :error="errors.link">
+        <UFormGroup size="lg" hint="Required" :error="errors.link">
           <template #label>
             <span class="label flex flex-row items-center">
               Link
@@ -34,12 +33,7 @@
             placeholder="https://…"
           />
         </UFormGroup>
-        <UFormGroup
-          size="lg"
-          class="mt-8"
-          hint="Required"
-          :error="errors.instrument_date"
-        >
+        <UFormGroup size="lg" hint="Required" :error="errors.instrument_date">
           <template #label>
             <span class="label flex flex-row items-center">
               Date
@@ -58,6 +52,15 @@
             </template>
           </UPopover>
         </UFormGroup>
+
+        <div class="flex justify-end md:col-span-2">
+          <UButton
+            class="bg-cold-purple text-white hover:bg-cold-purple/90"
+            @click="openSaveModal"
+          >
+            Submit your data
+          </UButton>
+        </div>
       </div>
     </BaseDetailLayout>
 

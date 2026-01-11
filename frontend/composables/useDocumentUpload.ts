@@ -1,0 +1,76 @@
+import { ref } from "vue";
+import type { JurisdictionInfo } from "~/types/analyzer";
+import { readFileAsBase64 } from "~/utils/fileUtils";
+import { extractErrorMessage } from "~/utils/analyzerPayloadParser";
+
+export function useDocumentUpload() {
+  const selectedFile = ref<File | null>(null);
+  const isUploading = ref(false);
+  const draftId = ref<number | null>(null);
+  const jurisdictionInfo = ref<JurisdictionInfo | null>(null);
+
+  async function uploadDocument(
+    onUploadStart?: () => void,
+    onUploadComplete?: () => void,
+    onJurisdictionDetected?: () => void,
+  ): Promise<{ success: boolean; error?: string }> {
+    if (!selectedFile.value) {
+      return { success: false, error: "No file selected" };
+    }
+
+    isUploading.value = true;
+    onUploadStart?.();
+
+    try {
+      const fileContent = await readFileAsBase64(selectedFile.value);
+
+      const blobUrl = `data:application/pdf;base64,${fileContent}`;
+
+      onUploadComplete?.();
+
+      const data = await $fetch<{
+        draft_id: number;
+        jurisdiction: JurisdictionInfo;
+      }>("/api/proxy/case-analyzer/upload", {
+        method: "POST",
+        body: {
+          file_name: selectedFile.value.name,
+          blob_url: blobUrl,
+        },
+      });
+
+      draftId.value = data.draft_id;
+      jurisdictionInfo.value = data.jurisdiction;
+
+      onJurisdictionDetected?.();
+
+      return { success: true };
+    } catch (err: unknown) {
+      console.error("Upload failed:", err);
+      return {
+        success: false,
+        error:
+          extractErrorMessage(err) ||
+          "Failed to upload document. Please try again.",
+      };
+    } finally {
+      isUploading.value = false;
+    }
+  }
+
+  function reset() {
+    selectedFile.value = null;
+    draftId.value = null;
+    jurisdictionInfo.value = null;
+    isUploading.value = false;
+  }
+
+  return {
+    selectedFile,
+    isUploading,
+    draftId,
+    jurisdictionInfo,
+    uploadDocument,
+    reset,
+  };
+}

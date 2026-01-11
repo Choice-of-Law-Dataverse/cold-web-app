@@ -1,559 +1,429 @@
 <template>
-  <div>
-    <BaseDetailLayout
-      :loading="false"
-      :result-data="{}"
-      :key-label-pairs="[]"
-      :value-class-map="{}"
-      source-table="Court Decision"
-      header-mode="new"
-      :show-notification-banner="true"
-      :notification-banner-message="notificationBannerMessage"
-      :icon="'i-material-symbols:warning-outline'"
-      @open-save-modal="openSaveModal"
-      @open-cancel-modal="showCancelModal = true"
-    >
-      <h3 class="mb-12">
-        The CoLD Case Analyzer extracts information from court cases
-        <NuxtLink
-          to="https://case-analyzer.cold.global/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Open the Case Analyzer now
+  <div class="container mx-auto px-4 py-8">
+    <div class="mx-auto max-w-5xl">
+      <!-- Page Header -->
+      <PageHero
+        title="Case Analyzer"
+        subtitle="Upload a court decision and let AI automatically extract jurisdiction, choice of law provisions, and key PIL elements."
+        badge="AI-Powered"
+      >
+        <template #illustration>
+          <AnalyzerIllustration />
+        </template>
+      </PageHero>
+
+      <!-- Error Display -->
+      <UAlert
+        v-if="error"
+        color="red"
+        icon="i-material-symbols:error"
+        :title="error"
+        class="mb-6"
+        :close-button="{
+          icon: 'i-heroicons-x-mark',
+          color: 'red',
+          variant: 'link',
+        }"
+        @close="error = null"
+      />
+
+      <!-- Recovery Loading State -->
+      <div
+        v-if="isRecovering"
+        class="mb-6 flex items-center justify-center py-12"
+      >
+        <div class="text-center">
           <UIcon
-            name="i-material-symbols:open-in-new"
-            class="relative top-[2px]"
+            name="i-heroicons-arrow-path"
+            class="text-primary-500 mb-4 h-8 w-8 animate-spin"
           />
-        </NuxtLink>
-      </h3>
-      <div class="section-gap m-0 p-0">
-        <UFormGroup size="lg" hint="Required" :error="errors.case_citation">
-          <template #label>
-            <span class="label flex flex-row items-center">
-              Case citation
-              <InfoPopover :text="tooltipCaseCitation" />
-            </span>
-          </template>
-          <UInput v-model="caseCitation" class="cold-input mt-2" />
-        </UFormGroup>
-
-        <UFormGroup size="lg" hint="Required" class="mt-8">
-          <template #label>
-            <span class="label flex flex-row items-center">
-              Publication Date
-              <InfoPopover :text="tooltipPublicationDate" />
-            </span>
-          </template>
-          <UPopover :popper="{ placement: 'bottom-start' }">
-            <UButton
-              icon="i-heroicons-calendar-days-20-solid"
-              :label="format(datePublication, 'dd MMMM yyyy')"
-              class="cold-date-trigger mt-2"
-            />
-            <template #panel="{ close }">
-              <DatePicker
-                v-model="datePublication"
-                is-required
-                @close="close"
-              />
-            </template>
-          </UPopover>
-        </UFormGroup>
-
-        <UFormGroup
-          size="lg"
-          hint="Required"
-          class="mt-8"
-          :error="errors.official_source_url"
-        >
-          <template #label>
-            <span class="label">Official source (URL)</span>
-          </template>
-          <UInput
-            v-model="officialSourceUrl"
-            placeholder="https://…"
-            class="cold-input mt-2"
-          />
-        </UFormGroup>
-
-        <UFormGroup
-          size="lg"
-          class="mt-8"
-          hint="Required"
-          :error="errors.copyright_issues"
-        >
-          <template #label>
-            <span class="label">Copyright issues</span>
-          </template>
-          <div
-            class="cold-toggle-group mt-2"
-            role="group"
-            aria-label="Copyright issues"
-          >
-            <UButton
-              class="cold-toggle-btn"
-              :aria-pressed="copyrightIssues === 'No'"
-              @click="copyrightIssues = 'No'"
-            >
-              No
-            </UButton>
-            <UButton
-              class="cold-toggle-btn"
-              :aria-pressed="copyrightIssues === 'Yes'"
-              @click="copyrightIssues = 'Yes'"
-            >
-              Yes
-            </UButton>
-          </div>
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label">Full Text</span>
-          </template>
-          <UTextarea
-            v-model="caseFullText"
-            class="cold-input mt-2 min-h-[140px] resize-y"
-            :rows="6"
-          />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label">English Translation of Full Text</span>
-          </template>
-          <UTextarea
-            v-model="caseEnglishTranslation"
-            class="cold-input mt-2 min-h-[140px] resize-y"
-            :rows="6"
-          />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label">Case Rank</span>
-          </template>
-          <UInput v-model="caseRank" class="cold-input mt-2" />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label">Jurisdiction</span>
-          </template>
-          <SearchFilters
-            v-model="selectedJurisdiction"
-            :options="jurisdictionOptions"
-            class="mt-2 w-full"
-            show-avatars="true"
-            :multiple="false"
-          />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label flex flex-row items-center">
-              Abstract
-              <InfoPopover :text="tooltipAbstract" />
-            </span>
-          </template>
-          <UTextarea
-            v-model="caseAbstract"
-            class="cold-input mt-2 min-h-[140px] resize-y"
-            :rows="6"
-          />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label flex flex-row items-center">
-              Relevant Facts
-              <InfoPopover :text="tooltipRelevantFacts" />
-            </span>
-          </template>
-          <UTextarea
-            v-model="caseRelevantFacts"
-            class="cold-input mt-2 min-h-[140px] resize-y"
-            :rows="6"
-          />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label flex flex-row items-center">
-              PIL Provisions
-              <InfoPopover :text="tooltipPILProvisions" />
-            </span>
-          </template>
-          <UInput v-model="casePILProvisions" class="cold-input mt-2" />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label flex flex-row items-center">
-              Choice of Law Issue
-              <InfoPopover :text="tooltipChoiceofLawIssue" />
-            </span>
-          </template>
-          <UTextarea
-            v-model="caseChoiceofLawIssue"
-            class="cold-input mt-2 min-h-[140px] resize-y"
-            :rows="6"
-          />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label flex flex-row items-center">
-              Court's Position
-              <InfoPopover :text="tooltipCourtsPosition" />
-            </span>
-          </template>
-          <UTextarea
-            v-model="caseCourtsPosition"
-            class="cold-input mt-2 min-h-[140px] resize-y"
-            :rows="6"
-          />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label flex flex-row items-center"
-              >Translated Excerpt</span
-            >
-          </template>
-          <UTextarea
-            v-model="caseTranslatedExcerpt"
-            class="cold-input mt-2 min-h-[140px] resize-y"
-            :rows="6"
-          />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label flex flex-row items-center"
-              >Text of the Relevant Legal Provisions</span
-            >
-          </template>
-          <UTextarea
-            v-model="caseTextofRelevantLegalProvisions"
-            class="cold-input mt-2 min-h-[140px] resize-y"
-            :rows="6"
-          />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label flex flex-row items-center">
-              Quote
-              <InfoPopover :text="tooltipQuote" />
-            </span>
-          </template>
-          <UTextarea
-            v-model="caseQuote"
-            class="cold-input mt-2 min-h-[140px] resize-y"
-            :rows="6"
-          />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8">
-          <template #label>
-            <span class="label flex flex-row items-center">
-              Judgment Date
-              <InfoPopover :text="tooltipJudgmentDate" />
-            </span>
-          </template>
-          <UPopover :popper="{ placement: 'bottom-start' }">
-            <UButton
-              icon="i-heroicons-calendar-days-20-solid"
-              :label="
-                dateJudgment ? format(dateJudgment, 'dd MMMM yyyy') : 'Add date'
-              "
-              class="cold-date-trigger mt-2"
-            />
-            <template #panel="{ close }">
-              <DatePicker v-model="dateJudgment" @close="close" />
-            </template>
-          </UPopover>
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label flex flex-row items-center">
-              Case Title
-              <InfoPopover :text="tooltipCaseTitle" />
-            </span>
-          </template>
-          <UInput v-model="caseTitle" class="cold-input mt-2" />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label flex flex-row items-center">
-              Instance
-              <InfoPopover :text="tooltipInstance" />
-            </span>
-          </template>
-          <UInput v-model="caseInstance" class="cold-input mt-2" />
-        </UFormGroup>
-
-        <UFormGroup size="lg" class="mt-8" :error="errors.case_title">
-          <template #label>
-            <span class="label flex flex-row items-center"
-              >Official Keywords</span
-            >
-          </template>
-          <UTextarea
-            v-model="caseOfficialKeywords"
-            class="cold-input mt-2 min-h-[140px] resize-y"
-            :rows="6"
-          />
-        </UFormGroup>
+          <p class="text-gray-600">Recovering your draft...</p>
+        </div>
       </div>
-    </BaseDetailLayout>
 
-    <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
-    <SaveModal
-      v-model="showSaveModal"
-      :email="email"
-      :comments="comments"
-      :save-modal-errors="saveModalErrors"
-      :name="caseCitation"
-      :date="datePublication"
-      @update:email="(val) => (email = val)"
-      @update:comments="(val) => (comments = val)"
-      @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
-      @save="handleNewSave"
-    />
+      <!-- Two column layout throughout -->
+      <div v-if="!isRecovering" class="grid gap-6 lg:grid-cols-3">
+        <!-- Sidebar: Progress tracker (always visible) -->
+        <div class="lg:col-span-1">
+          <AnalysisStepTracker
+            :steps="analysisSteps"
+            :is-common-law="isCommonLawJurisdiction"
+            :current-phase="currentStep"
+            @retry="handleRetry"
+          />
+        </div>
+
+        <!-- Main content area -->
+        <div class="lg:col-span-2">
+          <!-- Step 1: File Upload -->
+          <FileUploadCard
+            v-if="currentStep === 'upload'"
+            v-model:selected-file="selectedFile"
+            :is-uploading="isUploading"
+            @upload="uploadDocument"
+            @cancel="navigateTo('/court-decision/new')"
+            @error="(msg) => (error = msg)"
+          />
+
+          <!-- Step 2: Jurisdiction Confirmation -->
+          <JurisdictionConfirmCard
+            v-if="currentStep === 'confirm'"
+            v-model:selected-jurisdiction="selectedJurisdiction"
+            :document-name="selectedFile?.name || 'Unknown'"
+            :jurisdiction-info="jurisdictionInfo"
+            :is-loading="analysis.isAnalyzing.value"
+            @continue="confirmAndAnalyze(false)"
+            @reset="resetAnalysis"
+            @jurisdiction-updated="onJurisdictionSelected"
+            @legal-system-updated="onLegalSystemSelected"
+          />
+
+          <!-- Step 3: Review & Submit -->
+          <AnalysisReviewForm
+            v-if="currentStep === 'analyzing'"
+            v-model:editable-form="editableForm"
+            :document-name="selectedFile?.name || 'Unknown'"
+            :selected-jurisdiction="selectedJurisdiction"
+            :is-common-law-jurisdiction="isCommonLawJurisdiction"
+            :is-analyzing="analysis.isAnalyzing.value"
+            :is-submitting="analysis.isSubmitting.value"
+            :is-submitted="analysis.isSubmitted.value"
+            :get-field-status="getFieldStatus"
+            :is-field-loading="isFieldLoading"
+            @submit="submitAnalyzerSuggestion"
+            @reset="resetAnalysis"
+          />
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted } from "vue";
-import { useHead, useRouter } from "#imports";
-import { z } from "zod";
-import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import DatePicker from "@/components/ui/DatePicker.vue";
-import CancelModal from "@/components/ui/CancelModal.vue";
-import SaveModal from "@/components/ui/SaveModal.vue";
-import SearchFilters from "@/components/search-results/SearchFilters.vue";
-import InfoPopover from "@/components/ui/InfoPopover.vue";
-import { format } from "date-fns";
-
-import tooltipAbstract from "@/content/info_boxes/court_decision/abstract.md?raw";
-import tooltipCaseCitation from "@/content/info_boxes/court_decision/case_citation.md?raw";
-import tooltipCaseTitle from "@/content/info_boxes/court_decision/case_title.md?raw";
-import tooltipChoiceofLawIssue from "@/content/info_boxes/court_decision/choice_of_law_issue.md?raw";
-import tooltipCourtsPosition from "@/content/info_boxes/court_decision/courts_position.md?raw";
-import tooltipInstance from "@/content/info_boxes/court_decision/instance.md?raw";
-import tooltipJudgmentDate from "@/content/info_boxes/court_decision/judgment_date.md?raw";
-import tooltipPILProvisions from "@/content/info_boxes/court_decision/pil_provisions.md?raw";
-import tooltipPublicationDate from "@/content/info_boxes/court_decision/publication_date.md?raw";
-import tooltipQuote from "@/content/info_boxes/court_decision/quote.md?raw";
-import tooltipRelevantFacts from "@/content/info_boxes/court_decision/relevant_facts.md?raw";
+<script setup lang="ts">
+import { ref, watchEffect, onMounted } from "vue";
+import type { JurisdictionOption, AnalysisStepPayload } from "~/types/analyzer";
+import { useAnalyzerForm } from "~/composables/useAnalyzerForm";
+import { useAnalysisSteps } from "~/composables/useAnalysisSteps";
+import { useDocumentUpload } from "~/composables/useDocumentUpload";
+import { useCaseAnalyzer } from "~/composables/useCaseAnalyzer";
+import { useJurisdictions } from "@/composables/useJurisdictions";
+import FileUploadCard from "@/components/case-analyzer/FileUploadCard.vue";
+import JurisdictionConfirmCard from "@/components/case-analyzer/JurisdictionConfirmCard.vue";
+import AnalysisReviewForm from "@/components/case-analyzer/AnalysisReviewForm.vue";
+import AnalysisStepTracker from "@/components/case-analyzer/AnalysisStepTracker.vue";
+import PageHero from "@/components/ui/PageHero.vue";
+import AnalyzerIllustration from "@/components/case-analyzer/AnalyzerIllustration.vue";
 
 definePageMeta({
   middleware: ["auth"],
 });
 
-const caseCitation = ref("");
-const caseTitle = ref("");
-const caseFullText = ref("");
-const caseEnglishTranslation = ref("");
-const caseRank = ref("");
-const caseAbstract = ref("");
-const caseRelevantFacts = ref("");
-const casePILProvisions = ref("");
-const caseChoiceofLawIssue = ref("");
-const caseCourtsPosition = ref("");
-const caseTranslatedExcerpt = ref("");
-const caseTextofRelevantLegalProvisions = ref("");
-const caseQuote = ref("");
-const caseInstance = ref("");
-const caseOfficialKeywords = ref("");
-const officialSourceUrl = ref("");
-const copyrightIssues = ref("No");
-const datePublication = ref(new Date());
-const dateJudgment = ref(null);
+useHead({ title: "AI Case Analyzer — CoLD" });
 
-const email = ref("");
-const comments = ref("");
+// Route for draft recovery
+const route = useRoute();
 
-const selectedJurisdiction = ref([]);
-const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
+// State
+const currentStep = ref<"upload" | "confirm" | "analyzing">("upload");
+const error = ref<string | null>(null);
+const analysisResults = ref<Record<string, AnalysisStepPayload>>({});
+const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
+const isRecovering = ref(false);
 
-const loadJurisdictions = async () => {
-  try {
-    const response = await fetch(`/api/proxy/search/full_table`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ table: "Jurisdictions", filters: [] }),
-    });
+// Jurisdictions for selector
+const { data: jurisdictions } = useJurisdictions();
 
-    if (!response.ok) throw new Error("Failed to load jurisdictions");
+// Composables
+const {
+  selectedFile,
+  isUploading,
+  draftId,
+  jurisdictionInfo,
+  uploadDocument: performUpload,
+  reset: resetUpload,
+} = useDocumentUpload();
 
-    const jurisdictionsData = await response.json();
-    jurisdictionOptions.value = [
-      { label: "Select Jurisdiction" },
-      ...jurisdictionsData
-        .filter((entry) => entry["Irrelevant?"] === false)
-        .map((entry) => ({
-          label: entry.Name,
-          avatar: entry["Alpha-3 Code"]
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry["Alpha-3 Code"].toLowerCase()}.svg`
-            : undefined,
-        }))
-        .sort((a, b) => (a.label || "").localeCompare(b.label || "")),
-    ];
-  } catch (error) {
-    console.error("Error loading jurisdictions:", error);
+const { analysisSteps, getFieldStatus, isFieldLoading } = useAnalysisSteps();
+
+const analysis = useCaseAnalyzer(analysisSteps, analysisResults, () =>
+  populateEditableForm(),
+);
+
+const {
+  editableForm,
+  isCommonLawJurisdiction,
+  populateEditableForm,
+  resetEditableForm,
+} = useAnalyzerForm(jurisdictionInfo, analysisResults);
+
+// Helper to update a specific step's status
+function updateStepStatus(
+  stepName: string,
+  status: "pending" | "in_progress" | "completed" | "error",
+  data?: { confidence?: string; reasoning?: string },
+) {
+  const step = analysisSteps.value.find((s) => s.name === stepName);
+  if (step) {
+    step.status = status;
+    if (data) {
+      step.confidence = data.confidence || null;
+      step.reasoning = data.reasoning || null;
+    }
   }
-};
+}
 
-onMounted(loadJurisdictions);
-const formSchema = z.object({
-  case_citation: z
-    .string()
-    .min(1, { message: "Case citation is required" })
-    .min(3, { message: "Case citation must be at least 3 characters long" }),
-  official_source_url: z.string().url({
-    message: 'Link must be a valid URL. It must start with "https://"',
-  }),
+// Populate form when analysis completes
+watchEffect(() => {
+  if (currentStep.value === "analyzing" && !analysis.isAnalyzing.value) {
+    populateEditableForm();
+  }
 });
 
-const errors = ref({});
-const saveModalErrors = ref({});
+// Initialize selectedJurisdiction when jurisdictionInfo changes
+watchEffect(() => {
+  if (jurisdictionInfo.value && jurisdictions.value) {
+    const match = jurisdictions.value.find(
+      (j: JurisdictionOption) =>
+        j.Name === jurisdictionInfo.value?.precise_jurisdiction,
+    );
+    if (match) {
+      selectedJurisdiction.value = match;
+    }
+  }
+});
 
-const router = useRouter();
-const showSaveModal = ref(false);
-const showCancelModal = ref(false);
-const notificationBannerMessage =
-  "Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.";
+// Document upload handler
+async function uploadDocument() {
+  error.value = null;
+  updateStepStatus("document_upload", "in_progress");
 
-useHead({ title: "New Court Decision — CoLD" });
+  const result = await performUpload(
+    () => updateStepStatus("document_upload", "in_progress"),
+    () => {
+      updateStepStatus("document_upload", "completed");
+      updateStepStatus("jurisdiction_detection", "in_progress");
+    },
+    () => {
+      if (jurisdictionInfo.value) {
+        updateStepStatus("jurisdiction_detection", "completed", {
+          confidence: jurisdictionInfo.value.confidence,
+          reasoning: jurisdictionInfo.value.reasoning,
+        });
+      }
+    },
+  );
 
-function validateForm() {
+  if (result.success) {
+    currentStep.value = "confirm";
+    // Add draft_id to URL for bookmarking/returning to draft
+    if (draftId.value) {
+      await navigateTo({
+        query: { draft: draftId.value.toString() },
+      });
+    }
+  } else {
+    error.value = result.error || "Upload failed";
+    updateStepStatus("document_upload", "error");
+  }
+}
+
+function onJurisdictionSelected(jurisdiction: JurisdictionOption) {
+  if (jurisdictionInfo.value) {
+    jurisdictionInfo.value.precise_jurisdiction = jurisdiction.Name || "";
+    jurisdictionInfo.value.jurisdiction_code =
+      jurisdiction.alpha3Code || jurisdictionInfo.value.jurisdiction_code;
+  }
+}
+
+function onLegalSystemSelected(legalSystemType: string) {
+  if (jurisdictionInfo.value) {
+    jurisdictionInfo.value.legal_system_type = legalSystemType;
+  }
+}
+
+async function confirmAndAnalyze(resume = false) {
+  if (!draftId.value || !jurisdictionInfo.value) return;
+
+  currentStep.value = "analyzing";
+  error.value = null;
+
+  // Reset only analysis steps (not upload/jurisdiction) if not resuming
+  if (!resume) {
+    analysisSteps.value.forEach((step) => {
+      if (!["document_upload", "jurisdiction_detection"].includes(step.name)) {
+        step.status = "pending";
+        step.confidence = null;
+        step.reasoning = null;
+        step.error = null;
+      }
+    });
+  }
+
+  const result = await analysis.startAnalysis(
+    draftId.value,
+    jurisdictionInfo.value,
+    resume,
+  );
+
+  if (!result.success) {
+    error.value = result.error || "Analysis failed";
+  }
+}
+
+function handleRetry(_stepName: string) {
+  confirmAndAnalyze(true);
+}
+
+async function submitAnalyzerSuggestion() {
+  if (!draftId.value) {
+    error.value = "No analysis data available";
+    return;
+  }
+
+  const result = await analysis.submitSuggestion(
+    draftId.value,
+    jurisdictionInfo.value,
+    analysisResults.value,
+    editableForm,
+  );
+
+  if (!result.success) {
+    error.value = result.error || "Submission failed";
+  }
+}
+
+function resetAnalysis() {
+  currentStep.value = "upload";
+  selectedJurisdiction.value = undefined;
+  analysisResults.value = {};
+  error.value = null;
+  resetUpload();
+  resetEditableForm();
+  analysis.reset();
+  analysisSteps.value.forEach((step) => {
+    step.status = "pending";
+    step.confidence = null;
+    step.reasoning = null;
+    step.error = null;
+  });
+}
+
+// Draft recovery on page load
+async function recoverDraft(draftIdParam: string) {
+  const draftIdNum = parseInt(draftIdParam, 10);
+  if (isNaN(draftIdNum)) return;
+
+  isRecovering.value = true;
+  error.value = null;
+
   try {
-    const formData = {
-      case_citation: caseCitation.value,
-      date_publication: datePublication.value,
-      official_source_url: officialSourceUrl.value,
-      copyright_issues: copyrightIssues.value,
-      full_text: caseFullText.value,
-      english_translation: caseEnglishTranslation.value,
-      case_rank: caseRank.value,
-      jurisdiction:
-        (Array.isArray(selectedJurisdiction.value) &&
-          selectedJurisdiction.value[0]?.label) ||
-        undefined,
-      abstract: caseAbstract.value,
-      relevant_facts: caseRelevantFacts.value,
-      pil_provisions: casePILProvisions.value,
-      choice_of_law_issue: caseChoiceofLawIssue.value,
-      courts_position: caseCourtsPosition.value,
-      translated_excerpt: caseTranslatedExcerpt.value,
-      text_of_relevant_legal_provisions:
-        caseTextofRelevantLegalProvisions.value,
-      quote: caseQuote.value,
-      date_judgment: dateJudgment.value,
-      case_title: caseTitle.value,
-      instance: caseInstance.value,
-      official_keywords: caseOfficialKeywords.value,
-      source: "cold.global",
-    };
-    formSchema.parse(formData);
-    errors.value = {};
-    return true;
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      errors.value = {};
-      error.errors.forEach((err) => {
-        errors.value[err.path[0]] = err.message;
+    const { data, error: fetchError } = await useFetch<{
+      draft_id: number;
+      status: string;
+      file_name: string | null;
+      pdf_url: string | null;
+      jurisdiction_info: {
+        precise_jurisdiction?: string;
+        jurisdiction_code?: string;
+        legal_system_type?: string;
+        confidence?: string;
+        reasoning?: string;
+      } | null;
+      analyzer_data: Record<string, AnalysisStepPayload>;
+      case_citation: string | null;
+    }>(`/api/proxy/case-analyzer/draft/${draftIdNum}`);
+
+    if (fetchError.value) {
+      // If 400, draft was already submitted - show message and stay on upload
+      if (fetchError.value.statusCode === 400) {
+        error.value =
+          "This draft has already been submitted for review. Start a new analysis.";
+        return;
+      }
+      throw new Error(fetchError.value.message || "Failed to recover draft");
+    }
+
+    if (!data.value) {
+      error.value = "Draft not found";
+      return;
+    }
+
+    const draft = data.value;
+
+    // Restore draft ID
+    draftId.value = draft.draft_id;
+
+    // Restore file info (create a fake file reference for display)
+    if (draft.file_name) {
+      selectedFile.value = new File([], draft.file_name, {
+        type: "application/pdf",
       });
     }
-    return false;
-  }
-}
 
-function openSaveModal() {
-  const isValid = validateForm();
-  if (isValid) {
-    showSaveModal.value = true;
-  }
-}
-
-function confirmCancel() {
-  router.push("/");
-}
-
-function handleNewSave() {
-  const payload = {
-    case_citation: caseCitation.value,
-    date_publication: format(datePublication.value, "yyyy-MM-dd"),
-    official_source_url: officialSourceUrl.value,
-    copyright_issues: copyrightIssues.value,
-    original_text: caseFullText.value,
-    english_translation: caseEnglishTranslation.value,
-    case_rank: caseRank.value,
-    jurisdiction:
-      (Array.isArray(selectedJurisdiction.value) &&
-        selectedJurisdiction.value[0]?.label) ||
-      undefined,
-    abstract: caseAbstract.value,
-    relevant_facts: caseRelevantFacts.value,
-    pil_provisions: casePILProvisions.value,
-    choice_of_law_issue: caseChoiceofLawIssue.value,
-    courts_position: caseCourtsPosition.value,
-    translated_excerpt: caseTranslatedExcerpt.value,
-    text_of_relevant_legal_provisions: caseTextofRelevantLegalProvisions.value,
-    quote: caseQuote.value,
-    decision_date: dateJudgment.value
-      ? format(dateJudgment.value, "yyyy-MM-dd")
-      : undefined,
-    case_title: caseTitle.value,
-    instance: caseInstance.value,
-    official_keywords: caseOfficialKeywords.value,
-    submitter_comments: comments.value || undefined,
-  };
-
-  (async () => {
-    try {
-      await $fetch(`/api/proxy/suggestions/court-decisions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          source: "cold.global",
-        },
-        body: payload,
-      });
-
-      showSaveModal.value = false;
-      router.push({
-        path: "/confirmation",
-        query: { message: "Thanks, we have received your submission." },
-      });
-    } catch (err) {
-      saveModalErrors.value = {
-        general:
-          "There was a problem submitting your suggestion. Please try again.",
+    // Restore jurisdiction info
+    if (draft.jurisdiction_info) {
+      jurisdictionInfo.value = {
+        precise_jurisdiction:
+          draft.jurisdiction_info.precise_jurisdiction || "",
+        jurisdiction_code: draft.jurisdiction_info.jurisdiction_code || "",
+        legal_system_type: draft.jurisdiction_info.legal_system_type || "",
+        confidence: draft.jurisdiction_info.confidence || "",
+        reasoning: draft.jurisdiction_info.reasoning || "",
       };
-      console.error("Submission failed:", err);
     }
-  })();
+
+    // Restore analysis results
+    if (draft.analyzer_data && Object.keys(draft.analyzer_data).length > 0) {
+      analysisResults.value = draft.analyzer_data;
+
+      // Update step statuses based on analyzer_data
+      for (const [stepName, stepData] of Object.entries(draft.analyzer_data)) {
+        const step = analysisSteps.value.find((s) => s.name === stepName);
+        if (step && stepData) {
+          step.status = "completed";
+          const payload = stepData as AnalysisStepPayload;
+          step.confidence =
+            typeof payload.confidence === "string" ? payload.confidence : null;
+          step.reasoning =
+            typeof payload.reasoning === "string" ? payload.reasoning : null;
+        }
+      }
+    }
+
+    // Mark upload and jurisdiction as completed
+    updateStepStatus("document_upload", "completed");
+    if (draft.jurisdiction_info) {
+      updateStepStatus("jurisdiction_detection", "completed", {
+        confidence: draft.jurisdiction_info.confidence,
+        reasoning: draft.jurisdiction_info.reasoning,
+      });
+    }
+
+    // Determine which step to show based on status and data
+    if (draft.status === "completed" || draft.status === "analyzing") {
+      // Has analysis data - go to review form
+      currentStep.value = "analyzing";
+      populateEditableForm();
+    } else if (draft.jurisdiction_info) {
+      // Has jurisdiction but no analysis - go to confirm
+      currentStep.value = "confirm";
+    } else {
+      // No data - stay on upload
+      currentStep.value = "upload";
+    }
+  } catch (err) {
+    error.value =
+      err instanceof Error ? err.message : "Failed to recover draft";
+  } finally {
+    isRecovering.value = false;
+  }
 }
+
+// Check for draft parameter on mount
+onMounted(() => {
+  const draftParam = route.query.draft;
+  if (draftParam && typeof draftParam === "string") {
+    recoverDraft(draftParam);
+  }
+});
 </script>
-
-<style scoped>
-:deep(.card-header__actions) {
-  display: none !important;
-}
-:deep(.card-header [class*="actions"]) {
-  display: none !important;
-}
-
-h3 a {
-  color: var(--color-cold-purple) !important;
-}
-</style>

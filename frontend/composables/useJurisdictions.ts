@@ -2,6 +2,7 @@ import { computed } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
 import type { JurisdictionWithAnswerCoverage } from "@/types/api";
+import type { MaybeRefOrGetter } from "vue";
 
 const EMPTY_SET = new Set<string>();
 
@@ -26,7 +27,7 @@ function convert(record: JurisdictionWithAnswerCoverage) {
   };
 }
 
-export function useJurisdictions() {
+export function useJurisdictions(enabled?: MaybeRefOrGetter<boolean>) {
   const { apiClient } = useApiClient();
 
   const { data, ...rest } = useQuery({
@@ -36,6 +37,7 @@ export function useJurisdictions() {
         "/statistics/jurisdictions-with-answer-percentage",
         { method: "GET" },
       ),
+    enabled,
     select: (rawData) => {
       const jurisdictions = rawData
         .filter((record) => record["Irrelevant?"] === false)

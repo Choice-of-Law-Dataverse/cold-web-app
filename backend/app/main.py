@@ -5,13 +5,12 @@ import logfire
 import uvicorn
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from starlette.middleware.sessions import SessionMiddleware
 
 from app.config import config
 from app.routes import (
     ai,
+    case_analyzer,
     landing_page,
-    moderation as moderation_router,
     search,
     sitemap,
     statistics,
@@ -22,8 +21,8 @@ from app.services.db_manager import db_manager, suggestions_db_manager
 from app.services.http_session_manager import http_session_manager
 from app.services.query_logging import log_query
 
-# Configure logging level
-logging.basicConfig(level=getattr(logging, config.LOG_LEVEL.upper()))
+# Configure logging to send to Logfire
+logging.basicConfig(level=getattr(logging, config.LOG_LEVEL.upper()), handlers=[logfire.LogfireLoggingHandler()])
 
 
 @asynccontextmanager
@@ -31,57 +30,52 @@ async def lifespan(app: FastAPI):
     """Manage application lifespan - startup and shutdown."""
     logger = logging.getLogger(__name__)
 
-    # Startup
-    logger.info("Initializing connection pools...")
+    with logfire.span("application_startup"):
+        logger.info("Initializing connection pools...")
 
-    # Initialize main database connection pool
-    if config.SQL_CONN_STRING:
-        db_manager.initialize(
-            connection_string=config.SQL_CONN_STRING,
-            pool_size=5,
-            max_overflow=10,
-            pool_recycle=3600,
-            pool_pre_ping=True,
+        if config.SQL_CONN_STRING:
+            db_manager.initialize(
+                connection_string=config.SQL_CONN_STRING,
+                pool_size=5,
+                max_overflow=10,
+                pool_recycle=3600,
+                pool_pre_ping=True,
+            )
+            logger.info("Main database connection pool initialized")
+        else:
+            logger.warning("SQL_CONN_STRING not configured, database operations will fail")
+
+        suggestions_conn = config.SUGGESTIONS_SQL_CONN_STRING or config.SQL_CONN_STRING
+        if suggestions_conn:
+            suggestions_db_manager.initialize(
+                connection_string=suggestions_conn,
+                pool_size=3,
+                max_overflow=5,
+                pool_recycle=3600,
+                pool_pre_ping=True,
+            )
+            logger.info("Suggestions database connection pool initialized")
+
+        http_session_manager.initialize(
+            pool_connections=10,
+            pool_maxsize=20,
+            max_retries=3,
         )
-        logger.info("Main database connection pool initialized")
-    else:
-        logger.warning("SQL_CONN_STRING not configured, database operations will fail")
+        logger.info("HTTP session manager initialized")
 
-    # Initialize suggestions database connection pool
-    suggestions_conn = config.SUGGESTIONS_SQL_CONN_STRING or config.SQL_CONN_STRING
-    if suggestions_conn:
-        suggestions_db_manager.initialize(
-            connection_string=suggestions_conn,
-            pool_size=3,
-            max_overflow=5,
-            pool_recycle=3600,
-            pool_pre_ping=True,
-        )
-        logger.info("Suggestions database connection pool initialized")
-
-    # Initialize HTTP session manager for NocoDB API calls
-    http_session_manager.initialize(
-        pool_connections=10,
-        pool_maxsize=20,
-        max_retries=3,
-    )
-    logger.info("HTTP session manager initialized")
-
-    logger.info("All connection pools initialized successfully")
+        logger.info("All connection pools initialized successfully")
 
     yield
 
-    # Shutdown
-    logger.info("Shutting down connection pools...")
+    with logfire.span("application_shutdown"):
+        logger.info("Shutting down connection pools...")
 
-    # Dispose database connection pools
-    db_manager.dispose()
-    suggestions_db_manager.dispose()
+        db_manager.dispose()
+        suggestions_db_manager.dispose()
 
-    # Close HTTP session
-    http_session_manager.close()
+        http_session_manager.close()
 
-    logger.info("Connection pools shut down successfully")
+        logger.info("Connection pools shut down successfully")
 
 
 app = FastAPI(
@@ -116,6 +110,10 @@ app = FastAPI(
         {
             "name": "AI",
             "description": "AI helpers such as query classification.",
+        },
+        {
+            "name": "Case Analysis",
+            "description": "Court decision analysis with AI-powered extraction and classification.",
         },
         {
             "name": "Sitemap",
@@ -161,6 +159,7 @@ api_router = APIRouter(prefix="/api/v1")
 
 api_router.include_router(search.router)
 api_router.include_router(ai.router)
+api_router.include_router(case_analyzer.router)
 api_router.include_router(submarine.router)
 api_router.include_router(sitemap.router)
 api_router.include_router(landing_page.router)
@@ -171,13 +170,6 @@ api_router.include_router(suggestions_router.router)
 
 app.include_router(api_router)
 
-# Session middleware for moderation UI
-
-app.add_middleware(SessionMiddleware, secret_key=config.MODERATION_SECRET or "secret")
-
-# Mount moderation router (also at root without API prefix to serve simple HTML)
-app.include_router(moderation_router.router)
-
 
 @app.get("/api/v1")
 def root():
@@ -185,14 +177,17 @@ def root():
     return {"message": "Hello World from CoLD"}
 
 
-# Initialize Logfire
-logfire.configure()
+# Initialize Logfire with service name for distributed tracing
+logfire.configure(
+    service_name="backend",
+    service_version="1.0.0",
+    distributed_tracing=True,
+)
 
 # Enable auto-instrumentation
 logfire.instrument_fastapi(app)
 logfire.instrument_sqlalchemy()
 logfire.instrument_requests()
-logfire.instrument_psycopg()
 logfire.instrument_pymongo()
 
 
