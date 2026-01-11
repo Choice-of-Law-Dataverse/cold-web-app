@@ -454,7 +454,7 @@ class SuggestionService:
                     current = {}
 
             # Preserve critical fields if not explicitly being updated
-            preserved_fields = ["pdf_url", "file_name", "full_text", "correlation_id"]
+            preserved_fields = ["pdf_url", "file_name", "full_text"]
             for field in preserved_fields:
                 if field in current and field not in updates:
                     updates[field] = current[field]
@@ -582,7 +582,8 @@ class SuggestionService:
         """
         Set the submitted_data column when user submits for approval.
 
-        This also updates moderation_status to 'pending'.
+        This also updates moderation_status to 'pending' and removes full_text
+        from the data column (text can be re-extracted from PDF in Azure blob if needed).
 
         Args:
             draft_id: The case analyzer record ID
@@ -592,14 +593,35 @@ class SuggestionService:
         json_ready = self._to_jsonable(submitted_data)
 
         with suggestions_db_manager.get_session() as session:
-            upd = (
-                sa.update(target)
-                .where(target.c.id == draft_id)
-                .values(
-                    submitted_data=json_ready,
-                    moderation_status="pending",
-                )
-            )
+            # First get the current data to remove full_text
+            sel = sa.select(target.c.data).where(target.c.id == draft_id).limit(1)
+            row = session.execute(sel).first()
+
+            updated_data = None
+            if row and row[0]:
+                current_data: dict[str, Any]
+                if isinstance(row[0], dict):
+                    current_data = dict(row[0])
+                else:
+                    try:
+                        current_data = json.loads(row[0])
+                    except Exception:
+                        current_data = {}
+
+                # Remove full_text from data column - it can be re-extracted from blob if needed
+                if "full_text" in current_data:
+                    del current_data["full_text"]
+                    updated_data = self._to_jsonable(current_data)
+
+            # Update the record
+            values: dict[str, Any] = {
+                "submitted_data": json_ready,
+                "moderation_status": "pending",
+            }
+            if updated_data is not None:
+                values["data"] = updated_data
+
+            upd = sa.update(target).where(target.c.id == draft_id).values(**values)
             session.execute(upd)
             session.commit()
 

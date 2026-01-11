@@ -23,8 +23,7 @@ class JurisdictionInfo(BaseModel):
 class UploadDocumentResponse(BaseModel):
     """Response from document upload containing initial analysis."""
 
-    correlation_id: str = Field(..., description="Unique identifier for tracking this analysis")
-    draft_id: int | None = Field(None, description="Database ID of the draft suggestion (None if save failed)")
+    draft_id: int = Field(..., description="Database ID of the draft suggestion")
     extracted_text: str = Field(..., description="Extracted text from the document")
     jurisdiction: JurisdictionInfo = Field(..., description="Detected jurisdiction information")
 
@@ -32,7 +31,7 @@ class UploadDocumentResponse(BaseModel):
 class ConfirmAnalysisRequest(BaseModel):
     """Request to confirm jurisdiction and continue analysis."""
 
-    correlation_id: str = Field(..., description="Correlation ID from upload response")
+    draft_id: int = Field(..., description="Draft ID from upload response")
     jurisdiction: JurisdictionInfo = Field(..., description="Confirmed or corrected jurisdiction information")
     resume: bool = Field(False, description="Whether to resume from last successful step (for error recovery)")
 
@@ -49,7 +48,7 @@ class AnalysisStep(BaseModel):
 class AnalysisResult(BaseModel):
     """Complete analysis result for court decision."""
 
-    correlation_id: str
+    draft_id: int
     case_citation: str | None = None
     abstract: str | None = None
     relevant_facts: str | None = None

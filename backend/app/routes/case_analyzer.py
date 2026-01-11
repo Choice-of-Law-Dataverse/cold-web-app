@@ -19,8 +19,11 @@ from app.schemas.case_analyzer import (
     UploadDocumentRequest,
     UploadDocumentResponse,
 )
-from app.services.analysis_cache import analysis_cache
-from app.services.azure_storage import download_blob_with_managed_identity, upload_blob_with_managed_identity
+from app.services.azure_storage import (
+    download_blob_with_managed_identity,
+    get_text_from_blob,
+    upload_blob_with_managed_identity,
+)
 from app.services.case_analysis import analyze_case_streaming, detect_jurisdiction
 from app.services.suggestions import SuggestionService
 
@@ -42,7 +45,7 @@ def get_suggestion_service() -> SuggestionService:
     description=(
         "Upload a PDF court decision document. The system will extract text, "
         "detect jurisdiction and legal system type, save as draft in database, "
-        "and return a correlation ID for tracking the analysis."
+        "and return a draft ID for tracking the analysis."
     ),
     response_model=UploadDocumentResponse,
 )
@@ -59,12 +62,11 @@ async def upload_document(
     1. Decode base64 PDF content
     2. Extract text using pymupdf4llm
     3. Detect jurisdiction and legal system type
-    4. Save draft to database with full text
-    5. Cache the text with a correlation ID (for session)
-    6. Return initial analysis results
+    4. Save draft to database with full text and PDF URL
+    5. Return draft_id, extracted_text, and jurisdiction info
 
     Returns:
-        UploadDocumentResponse with correlation_id, extracted_text, and jurisdiction info
+        UploadDocumentResponse with draft_id, extracted_text, and jurisdiction info
     """
     with logfire.span("upload_document", file_name=body.file_name, blob_url=body.blob_url[:100]):
         azure_blob_url: str
@@ -116,16 +118,13 @@ async def upload_document(
             "reasoning": jurisdiction_result.reasoning,
         }
 
-        correlation_id = analysis_cache.create_entry(extracted_text, jurisdiction_data)
         draft_payload = {
             "file_name": body.file_name,
             "pdf_url": azure_blob_url,
             "full_text": extracted_text,
-            "correlation_id": correlation_id,
             "moderation_status": "draft",
         }
 
-        draft_id: int | None = None
         try:
             draft_id = service.save_suggestion(
                 payload=draft_payload,
@@ -139,15 +138,11 @@ async def upload_document(
             # Store jurisdiction_data directly - it already contains all fields
             # (legal_system_type, precise_jurisdiction, jurisdiction_code, confidence, reasoning)
             service.update_analyzer_step(draft_id, "jurisdiction", jurisdiction_data)
-
-            analysis_cache.update_results(correlation_id, "draft_id", {"draft_id": draft_id})
         except Exception as e:
             logger.error("Failed to save draft to database: %s", str(e))
-
-        analysis_cache.cleanup_expired()
+            raise HTTPException(status_code=500, detail="Failed to save draft to database") from e
 
         return UploadDocumentResponse(
-            correlation_id=correlation_id,
             draft_id=draft_id,
             extracted_text=extracted_text,
             jurisdiction=JurisdictionInfo(
@@ -178,7 +173,7 @@ async def analyze_document(
     Execute full case analysis workflow with streaming results.
 
     Steps:
-    1. Retrieve cached text using correlation_id
+    1. Retrieve text from database (or Azure blob if not in DB)
     2. Use confirmed jurisdiction info
     3. Execute analysis workflow:
        - COL section extraction
@@ -195,18 +190,29 @@ async def analyze_document(
     Returns:
         StreamingResponse with analysis steps as SSE
     """
-    with logfire.span("analyze_document", correlation_id=body.correlation_id):
-        cache_entry = analysis_cache.get_entry(body.correlation_id)
+    draft_id = body.draft_id
 
-        if not cache_entry:
-            logger.error("Invalid or expired correlation_id: %s", body.correlation_id)
-            raise HTTPException(status_code=404, detail="Invalid or expired correlation_id")
+    with logfire.span("analyze_document", draft_id=draft_id):
+        # Get the draft record to retrieve full_text and pdf_url
+        record = service.get_case_analyzer_full(draft_id)
+        if not record:
+            logger.error("Draft not found: %d", draft_id)
+            raise HTTPException(status_code=404, detail="Draft not found")
 
-        text = cache_entry["text"]
+        # Get full text from database, or fetch from Azure blob if not present
+        legacy_data = record.get("data", {})
+        text = legacy_data.get("full_text")
 
-        # Get draft_id from cache
-        draft_result = cache_entry.get("analysis_results", {}).get("draft_id", {})
-        draft_id = draft_result.get("draft_id") if isinstance(draft_result, dict) else None
+        if not text:
+            pdf_url = legacy_data.get("pdf_url")
+            if not pdf_url:
+                logger.error("No full_text or pdf_url found for draft: %d", draft_id)
+                raise HTTPException(status_code=400, detail="No document text available for analysis")
+            try:
+                text = get_text_from_blob(pdf_url)
+            except Exception as e:
+                logger.error("Failed to extract text from PDF blob: %s", str(e))
+                raise HTTPException(status_code=500, detail="Failed to retrieve document text") from e
 
         jurisdiction_data = {
             "legal_system_type": body.jurisdiction.legal_system_type,
@@ -216,25 +222,24 @@ async def analyze_document(
             "reasoning": body.jurisdiction.reasoning,
         }
 
-        if draft_id:
-            try:
-                service.update_moderation_status(draft_id, "analyzing")
+        try:
+            service.update_moderation_status(draft_id, "analyzing")
 
-                # Store jurisdiction_data directly with user_confirmed flag
-                # The data already contains confidence/reasoning fields
-                service.update_analyzer_step(
-                    draft_id,
-                    "jurisdiction",
-                    {
-                        **jurisdiction_data,
-                        "user_confirmed": True,
-                    },
-                )
-            except Exception as e:
-                logger.error("Failed to update jurisdiction in database: %s", str(e))
+            # Store jurisdiction_data directly with user_confirmed flag
+            # The data already contains confidence/reasoning fields
+            service.update_analyzer_step(
+                draft_id,
+                "jurisdiction",
+                {
+                    **jurisdiction_data,
+                    "user_confirmed": True,
+                },
+            )
+        except Exception as e:
+            logger.error("Failed to update jurisdiction in database: %s", str(e))
 
         cached_results: dict[str, Any] | None = None
-        if body.resume and draft_id:
+        if body.resume:
             try:
                 analyzer_data = service.get_analyzer_data(draft_id)
                 if analyzer_data:
@@ -265,17 +270,14 @@ async def analyze_document(
             step_name: str | None = None
             with logfire.span(
                 "case_analysis_stream",
-                correlation_id=body.correlation_id,
                 resume=body.resume,
                 draft_id=draft_id,
             ):
                 try:
                     async for result in analyze_case_streaming(text, jurisdiction_data, cached_results):
-                        analysis_cache.update_results(body.correlation_id, result.get("step", "unknown"), result)
-
                         step_name = result.get("step")
 
-                        if draft_id and result.get("status") == "completed" and result.get("data"):
+                        if result.get("status") == "completed" and result.get("data"):
                             if not step_name:
                                 continue
                             try:
@@ -291,12 +293,11 @@ async def analyze_document(
                         event_data = json.dumps(result)
                         yield f"data: {event_data}\n\n"
 
-                    if draft_id:
-                        try:
-                            with logfire.span("finalize_case_analyzer_draft", draft_id=draft_id):
-                                service.update_moderation_status(draft_id, "completed")
-                        except Exception as e:
-                            logger.error("Failed to mark draft as completed: %s", str(e))
+                    try:
+                        with logfire.span("finalize_case_analyzer_draft", draft_id=draft_id):
+                            service.update_moderation_status(draft_id, "completed")
+                    except Exception as e:
+                        logger.error("Failed to mark draft as completed: %s", str(e))
 
                     done_payload = {
                         "step": "analysis_complete",
@@ -308,17 +309,16 @@ async def analyze_document(
                     logger.error("Analysis workflow failed: %s", str(e))
                     logger.error("Traceback: %s", traceback.format_exc())
 
-                    if draft_id:
-                        try:
-                            with logfire.span("fail_case_analyzer_draft", draft_id=draft_id):
-                                service.update_moderation_status(draft_id, "failed")
-                                service.update_analyzer_step(
-                                    draft_id,
-                                    "error",
-                                    {"message": str(e), "step": step_name if step_name else "unknown"},
-                                )
-                        except Exception as db_error:
-                            logger.error("Failed to mark draft as failed: %s", str(db_error))
+                    try:
+                        with logfire.span("fail_case_analyzer_draft", draft_id=draft_id):
+                            service.update_moderation_status(draft_id, "failed")
+                            service.update_analyzer_step(
+                                draft_id,
+                                "error",
+                                {"message": str(e), "step": step_name if step_name else "unknown"},
+                            )
+                    except Exception as db_error:
+                        logger.error("Failed to mark draft as failed: %s", str(db_error))
 
                     error_event = json.dumps({"step": "error", "status": "error", "error": str(e)})
                     yield f"data: {error_event}\n\n"
@@ -466,9 +466,6 @@ async def get_draft_for_recovery(
             "reasoning": legacy_data.get("jurisdiction_reasoning"),
         }
 
-    # Get correlation_id from legacy data
-    correlation_id = legacy_data.get("correlation_id")
-
     # Get file info
     file_name = legacy_data.get("file_name")
     pdf_url = legacy_data.get("pdf_url")
@@ -482,7 +479,6 @@ async def get_draft_for_recovery(
     return {
         "draft_id": draft_id,
         "status": status or "draft",
-        "correlation_id": correlation_id,
         "file_name": file_name,
         "pdf_url": pdf_url,
         "jurisdiction_info": jurisdiction_info,

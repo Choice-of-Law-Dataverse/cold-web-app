@@ -137,7 +137,6 @@ const { data: jurisdictions } = useJurisdictions();
 const {
   selectedFile,
   isUploading,
-  correlationId,
   draftId,
   jurisdictionInfo,
   uploadDocument: performUpload,
@@ -243,7 +242,7 @@ function onLegalSystemSelected(legalSystemType: string) {
 }
 
 async function confirmAndAnalyze(resume = false) {
-  if (!correlationId.value || !jurisdictionInfo.value) return;
+  if (!draftId.value || !jurisdictionInfo.value) return;
 
   currentStep.value = "analyzing";
   error.value = null;
@@ -261,7 +260,7 @@ async function confirmAndAnalyze(resume = false) {
   }
 
   const result = await analysis.startAnalysis(
-    correlationId.value,
+    draftId.value,
     jurisdictionInfo.value,
     resume,
   );
@@ -276,13 +275,12 @@ function handleRetry(_stepName: string) {
 }
 
 async function submitAnalyzerSuggestion() {
-  if (!correlationId.value) {
+  if (!draftId.value) {
     error.value = "No analysis data available";
     return;
   }
 
   const result = await analysis.submitSuggestion(
-    correlationId.value,
     draftId.value,
     jurisdictionInfo.value,
     analysisResults.value,
@@ -322,7 +320,6 @@ async function recoverDraft(draftIdParam: string) {
     const { data, error: fetchError } = await useFetch<{
       draft_id: number;
       status: string;
-      correlation_id: string | null;
       file_name: string | null;
       pdf_url: string | null;
       jurisdiction_info: {
@@ -353,10 +350,7 @@ async function recoverDraft(draftIdParam: string) {
 
     const draft = data.value;
 
-    // Restore correlation ID and draft ID
-    if (draft.correlation_id) {
-      correlationId.value = draft.correlation_id;
-    }
+    // Restore draft ID
     draftId.value = draft.draft_id;
 
     // Restore file info (create a fake file reference for display)

@@ -6,7 +6,6 @@ import { extractErrorMessage } from "~/utils/analyzerPayloadParser";
 export function useDocumentUpload() {
   const selectedFile = ref<File | null>(null);
   const isUploading = ref(false);
-  const correlationId = ref<string | null>(null);
   const draftId = ref<number | null>(null);
   const jurisdictionInfo = ref<JurisdictionInfo | null>(null);
 
@@ -47,7 +46,6 @@ export function useDocumentUpload() {
       onUploadComplete?.();
 
       const data = await $fetch<{
-        correlation_id: string;
         draft_id: number;
         jurisdiction: JurisdictionInfo;
       }>("/api/proxy/case-analyzer/upload", {
@@ -58,7 +56,6 @@ export function useDocumentUpload() {
         },
       });
 
-      correlationId.value = data.correlation_id;
       draftId.value = data.draft_id;
       jurisdictionInfo.value = data.jurisdiction;
 
@@ -80,7 +77,6 @@ export function useDocumentUpload() {
 
   function reset() {
     selectedFile.value = null;
-    correlationId.value = null;
     draftId.value = null;
     jurisdictionInfo.value = null;
     isUploading.value = false;
@@ -89,7 +85,6 @@ export function useDocumentUpload() {
   return {
     selectedFile,
     isUploading,
-    correlationId,
     draftId,
     jurisdictionInfo,
     uploadDocument,

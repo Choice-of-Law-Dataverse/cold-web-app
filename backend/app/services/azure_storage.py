@@ -10,6 +10,7 @@ from urllib.parse import urlparse
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient, ContentSettings
 
+from app.case_analyzer.utils.pdf_handler import extract_text_from_pdf
 from app.config import config
 
 logger = logging.getLogger(__name__)
@@ -29,18 +30,14 @@ def download_blob_with_managed_identity(blob_url: str) -> bytes:
         ValueError: If the URL is invalid
         Exception: If download fails
     """
-    logger.info("Downloading blob from URL: %s", blob_url)
 
-    # Parse the URL to extract account, container, and blob name
     parsed = urlparse(blob_url)
     if not parsed.scheme or not parsed.netloc:
         raise ValueError(f"Invalid blob URL: {blob_url}")
 
-    # Ensure HTTPS is used for secure connections
     if parsed.scheme != "https":
         raise ValueError(f"Only HTTPS URLs are supported for Azure blob storage: {blob_url}")
 
-    # Extract storage account name from hostname (e.g., account.blob.core.windows.net)
     hostname_parts = parsed.netloc.split(".")
     if len(hostname_parts) < 3 or hostname_parts[1] != "blob":
         raise ValueError(f"Invalid Azure blob storage URL: {blob_url}")
@@ -48,7 +45,6 @@ def download_blob_with_managed_identity(blob_url: str) -> bytes:
     account_name = hostname_parts[0]
     account_url = f"https://{account_name}.blob.core.windows.net"
 
-    # Extract container and blob name from path
     # Path format: /container/blob/path/to/file.pdf
     path_parts = parsed.path.lstrip("/").split("/", 1)
     if len(path_parts) < 2:
@@ -65,20 +61,14 @@ def download_blob_with_managed_identity(blob_url: str) -> bytes:
     )
 
     try:
-        # Use DefaultAzureCredential which will try managed identity first
         credential = DefaultAzureCredential()
 
-        # Create BlobServiceClient
         blob_service_client = BlobServiceClient(account_url=account_url, credential=credential)
 
-        # Get blob client
         blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
 
-        # Download blob content
-        logger.info("Downloading blob: %s/%s", container_name, blob_name)
         blob_data = blob_client.download_blob().readall()
 
-        logger.info("Successfully downloaded %d bytes from blob", len(blob_data))
         return blob_data
 
     except Exception as e:
@@ -113,8 +103,6 @@ def upload_blob_with_managed_identity(
     file_extension = filename.rsplit(".", 1)[-1] if "." in filename else "pdf"
     blob_name = f"case-analysis/{timestamp}_{unique_id}.{file_extension}"
 
-    logger.info("Uploading %d bytes to blob: %s/%s", len(pdf_bytes), container, blob_name)
-
     try:
         credential = DefaultAzureCredential()
         blob_service_client = BlobServiceClient(account_url=account_url, credential=credential)
@@ -123,9 +111,27 @@ def upload_blob_with_managed_identity(
         blob_client.upload_blob(pdf_bytes, overwrite=False, content_settings=ContentSettings(content_type="application/pdf"))
 
         blob_url = f"{account_url}/{container}/{blob_name}"
-        logger.info("Successfully uploaded blob to: %s", blob_url)
+
         return blob_url
 
     except Exception as e:
         logger.error("Failed to upload blob: %s", str(e))
         raise
+
+
+def get_text_from_blob(blob_url: str) -> str:
+    """
+    Download a PDF from Azure blob storage and extract text.
+
+    Args:
+        blob_url: Full URL to the PDF blob
+
+    Returns:
+        str: Extracted text from the PDF
+
+    Raises:
+        ValueError: If PDF extraction fails
+        Exception: If download fails
+    """
+    pdf_bytes = download_blob_with_managed_identity(blob_url)
+    return extract_text_from_pdf(pdf_bytes)

@@ -222,10 +222,9 @@ export function getAnalyzerFieldText(
 
 export function buildCaseAnalyzerPayload(
   editedPayload: EditedAnalysisValues,
-  correlationId: string | null,
   jurisdictionInfo: unknown,
   analysisResults: Record<string, AnalysisStepPayload>,
-  draftId: number | null = null,
+  draftId: number,
 ): CaseAnalyzerSuggestionPayload {
   const payload: CaseAnalyzerSuggestionPayload = {
     case_citation: sanitizeAnalyzerField(editedPayload.caseCitation),
@@ -245,19 +244,11 @@ export function buildCaseAnalyzerPayload(
     dissenting_opinions: sanitizeAnalyzerField(
       editedPayload.caseDissentingOpinions,
     ),
+    draft_id: draftId,
   };
 
-  // Include draft_id if available for merging with existing draft
-  if (draftId !== null) {
-    payload.draft_id = draftId;
-  }
-
-  if (correlationId) {
-    payload.notes = `Correlation ID: ${correlationId}`;
-  }
-
   payload.raw_data = JSON.stringify({
-    correlationId,
+    draftId,
     jurisdiction: jurisdictionInfo,
     analysisResults,
     editedFields: editedPayload,

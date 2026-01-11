@@ -43,7 +43,7 @@ export function useCaseAnalyzer(
   const toast = useToast();
 
   async function startAnalysis(
-    correlationId: string,
+    draftId: number,
     jurisdictionInfo: JurisdictionInfo,
     resume = false,
   ): Promise<{ success: boolean; error?: string }> {
@@ -56,7 +56,7 @@ export function useCaseAnalyzer(
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          correlation_id: correlationId,
+          draft_id: draftId,
           jurisdiction: jurisdictionInfo,
           resume,
         }),
@@ -126,22 +126,16 @@ export function useCaseAnalyzer(
   }
 
   async function submitSuggestion(
-    correlationId: string,
-    draftId: number | null,
+    draftId: number,
     jurisdictionInfo: JurisdictionInfo | null,
     analysisResults: Record<string, AnalysisStepPayload>,
     editableForm: EditedAnalysisValues,
   ): Promise<{ success: boolean; error?: string; suggestionId?: number }> {
-    if (!draftId) {
-      return { success: false, error: "No draft ID available" };
-    }
-
     isSubmitting.value = true;
 
     try {
       const submittedData = buildCaseAnalyzerPayload(
         { ...editableForm },
-        correlationId,
         jurisdictionInfo,
         analysisResults,
         draftId,
