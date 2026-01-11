@@ -45,8 +45,8 @@ export default defineNuxtConfig({
       process.env.AZURE_TEMP_CONTAINER_NAME || "temp-uploads",
     logfire: {
       token: process.env.NUXT_LOGFIRE_TOKEN,
-      serviceName: process.env.LOGFIRE_SERVICE_NAME || "cold-frontend-server",
-      serviceVersion: process.env.LOGFIRE_SERVICE_VERSION || "1.0.0",
+      serviceName: "frontend",
+      serviceVersion: "1.0.0",
     },
     r2: {
       accountId: process.env.NUXT_R2_ACCOUNT_ID,

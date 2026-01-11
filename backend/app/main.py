@@ -182,8 +182,11 @@ def root():
     return {"message": "Hello World from CoLD"}
 
 
-# Initialize Logfire
-logfire.configure()
+# Initialize Logfire with service name for distributed tracing
+logfire.configure(
+    service_name="backend",
+    service_version="1.0.0",
+)
 
 # Enable auto-instrumentation
 logfire.instrument_fastapi(app)
