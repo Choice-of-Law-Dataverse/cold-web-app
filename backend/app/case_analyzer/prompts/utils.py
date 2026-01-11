@@ -35,13 +35,13 @@ def list_prompts(filter_by: str | None = None) -> None:
 
     for prompt in sorted(prompts, key=lambda p: p.metadata.name):
         info = prompt.get_info()
-        print(f"Name:        {info['name']}")
-        print(f"Description: {info['description']}")
-        print(f"Version:     {info['version']}")
-        print(f"Type:        {info['prompt_type']}")
-        print(f"Legal Sys:   {info['legal_system'] or 'N/A'}")
-        print(f"Jurisdiction:{info['jurisdiction'] or 'N/A'}")
-        print(f"Parameters:  {', '.join(info['required_params'])}")
+        print(f"Name:         {info['name']}")
+        print(f"Description:  {info['description']}")
+        print(f"Version:      {info['version']}")
+        print(f"Type:         {info['prompt_type']}")
+        print(f"Legal Sys:    {info['legal_system'] or 'N/A'}")
+        print(f"Jurisdiction: {info['jurisdiction'] or 'N/A'}")
+        print(f"Parameters:   {', '.join(info['required_params'])}")
         print(f"{'-'*80}")
 
 

@@ -73,7 +73,7 @@ class PromptRegistry:
 
     def __init__(self):
         self._prompts: dict[str, BasePrompt] = {}
-        self._index: dict[str, list[str]] = {
+        self._index: dict[str, dict[str, list[str]]] = {
             "legal_system": {},
             "jurisdiction": {},
             "prompt_type": {},
