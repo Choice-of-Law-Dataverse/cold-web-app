@@ -4,12 +4,12 @@ import logfire
 from agents import Agent, Runner
 from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
 
-from app.case_analysis.config import get_model, get_openai_client
-from app.case_analysis.models.analysis_models import ColIssueOutput, ColSectionOutput
-from app.case_analysis.models.classification_models import ThemeClassificationOutput
-from app.case_analysis.prompts.prompt_selector import get_prompt_module
-from app.case_analysis.utils.system_prompt_generator import generate_system_prompt
-from app.case_analysis.utils.themes_extractor import filter_themes_by_list
+from app.case_analyzer.config import get_model, get_openai_client
+from app.case_analyzer.models.analysis_models import ColIssueOutput, ColSectionOutput
+from app.case_analyzer.models.classification_models import ThemeClassificationOutput
+from app.case_analyzer.prompts.prompt_selector import get_prompt_module
+from app.case_analyzer.utils.system_prompt_generator import generate_system_prompt
+from app.case_analyzer.utils.themes_extractor import filter_themes_by_list
 
 logger = logging.getLogger(__name__)
 

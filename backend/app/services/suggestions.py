@@ -247,6 +247,7 @@ class SuggestionService:
                 citation_col = _optional_column("case_citation")
                 source_col = _optional_column("source")
                 status_col = _optional_column("moderation_status")
+                submitted_data_col = _optional_column("submitted_data")
 
                 query = sa.select(*cols).where(target.c.id == suggestion_id)
                 if token_sub:
@@ -260,24 +261,48 @@ class SuggestionService:
                     else:
                         return None
                 if pending_only:
-                    query = query.where(target.c.moderation_status.is_(None))
+                    # Support both old format (NULL = pending) and new format (status = 'pending')
+                    query = query.where(
+                        sa.or_(
+                            target.c.moderation_status.is_(None),
+                            target.c.moderation_status == "pending",
+                        )
+                    )
                 row = session.execute(query).mappings().first()
                 if not row:
                     return None
 
+                # Parse data (legacy column - contains file info, full_text, etc.)
                 raw_data = row.get("data")
                 if isinstance(raw_data, dict):
-                    payload: Any = raw_data
+                    legacy_data: Any = raw_data
                 else:
                     try:
-                        payload = json.loads(raw_data) if raw_data is not None else {}
+                        legacy_data = json.loads(raw_data) if raw_data is not None else {}
                     except Exception:
-                        payload = {}
+                        legacy_data = {}
+
+                # Parse submitted_data (new column - contains user-edited analysis data)
+                raw_submitted = row.get("submitted_data") if submitted_data_col is not None else None
+                submitted_data: dict | None = None
+                if raw_submitted is not None:
+                    if isinstance(raw_submitted, dict):
+                        submitted_data = raw_submitted
+                    else:
+                        try:
+                            submitted_data = json.loads(raw_submitted)
+                        except Exception:
+                            submitted_data = None
+
+                # Use submitted_data as payload if available (new format), otherwise legacy data
+                payload: Any = submitted_data if submitted_data else legacy_data
 
                 result = {
                     "id": row["id"],
                     "created_at": row.get("created_at"),
                     "payload": payload,
+                    "data": legacy_data,  # Include legacy data for file_name, pdf_url access
+                    "submitted_data": submitted_data,
                     "source": row.get("source") if source_col is not None else None,
                     "username": row.get("username") if username_col is not None else None,
                     "user_email": row.get("user_email") if user_email_col is not None else None,
@@ -480,4 +505,280 @@ class SuggestionService:
                 .values(payload=self._to_jsonable(payload), moderation_status=status_value)
             )
             session.execute(stmt)
+            session.commit()
+
+    # ========================================================================
+    # New structured column methods for case_analyzer
+    # ========================================================================
+
+    def update_analyzer_step(
+        self,
+        draft_id: int,
+        step_name: str,
+        step_data: dict[str, Any],
+    ) -> None:
+        """
+        Update a single step in the analyzer column.
+
+        The analyzer column stores AI analysis steps with reasoning/confidence.
+        Each step is stored as a key in the JSONB object.
+
+        Args:
+            draft_id: The case analyzer record ID
+            step_name: Name of the step (e.g., 'jurisdiction', 'col_extraction')
+            step_data: Step data including result, confidence, reasoning, etc.
+        """
+        target = self.tables["case_analyzer"]
+        with suggestions_db_manager.get_session() as session:
+            # Load existing analyzer data
+            sel = sa.select(target.c.analyzer).where(target.c.id == draft_id).limit(1)
+            row = session.execute(sel).first()
+
+            current: dict[str, Any] = {}
+            if row and row[0]:
+                if isinstance(row[0], dict):
+                    current = dict(row[0])
+                else:
+                    try:
+                        current = json.loads(row[0])
+                    except Exception:
+                        current = {}
+
+            # Add/update the step
+            current[step_name] = self._to_jsonable(step_data)
+
+            # Update the record
+            upd = sa.update(target).where(target.c.id == draft_id).values(analyzer=current)
+            session.execute(upd)
+            session.commit()
+
+    def get_analyzer_data(self, draft_id: int) -> dict[str, Any] | None:
+        """
+        Get the analyzer column data for a case analyzer record.
+
+        Returns the analyzer JSONB data or None if not found.
+        For backwards compatibility, returns empty dict if analyzer column is null.
+        """
+        target = self.tables["case_analyzer"]
+        with suggestions_db_manager.get_session() as session:
+            sel = sa.select(target.c.analyzer).where(target.c.id == draft_id).limit(1)
+            row = session.execute(sel).first()
+
+            if not row or row[0] is None:
+                return {}
+
+            if isinstance(row[0], dict):
+                return dict(row[0])
+            try:
+                return json.loads(row[0])
+            except Exception:
+                return {}
+
+    def set_submitted_data(
+        self,
+        draft_id: int,
+        submitted_data: dict[str, Any],
+    ) -> None:
+        """
+        Set the submitted_data column when user submits for approval.
+
+        This also updates moderation_status to 'pending'.
+
+        Args:
+            draft_id: The case analyzer record ID
+            submitted_data: The user-edited data submitted for moderation
+        """
+        target = self.tables["case_analyzer"]
+        json_ready = self._to_jsonable(submitted_data)
+
+        with suggestions_db_manager.get_session() as session:
+            upd = (
+                sa.update(target)
+                .where(target.c.id == draft_id)
+                .values(
+                    submitted_data=json_ready,
+                    moderation_status="pending",
+                )
+            )
+            session.execute(upd)
+            session.commit()
+
+    def get_submitted_data(self, draft_id: int) -> dict[str, Any] | None:
+        """
+        Get the submitted_data column for a case analyzer record.
+
+        Returns the submitted_data JSONB or None if not set.
+        """
+        target = self.tables["case_analyzer"]
+        with suggestions_db_manager.get_session() as session:
+            sel = sa.select(target.c.submitted_data).where(target.c.id == draft_id).limit(1)
+            row = session.execute(sel).first()
+
+            if not row or row[0] is None:
+                return None
+
+            if isinstance(row[0], dict):
+                return dict(row[0])
+            try:
+                return json.loads(row[0])
+            except Exception:
+                return None
+
+    def get_case_analyzer_full(self, draft_id: int) -> dict[str, Any] | None:
+        """
+        Get complete case analyzer record with all columns.
+
+        Returns a dict with:
+        - id, created_at, username, user_email, model, case_citation
+        - data: legacy data column (for backwards compat)
+        - analyzer: AI analysis steps
+        - submitted_data: user-submitted data for approval
+        - moderation_status: current status
+        """
+        target = self.tables["case_analyzer"]
+        with suggestions_db_manager.get_session() as session:
+            query = sa.select(
+                target.c.id,
+                target.c.created_at,
+                target.c.username,
+                target.c.user_email,
+                target.c.model,
+                target.c.case_citation,
+                target.c.data,
+                target.c.analyzer,
+                target.c.submitted_data,
+                target.c.moderation_status,
+            ).where(target.c.id == draft_id)
+
+            row = session.execute(query).mappings().first()
+            if not row:
+                return None
+
+            def _parse_json(val: Any) -> dict[str, Any] | None:
+                if val is None:
+                    return None
+                if isinstance(val, dict):
+                    return dict(val)
+                try:
+                    return json.loads(val)
+                except Exception:
+                    return None
+
+            return {
+                "id": row["id"],
+                "created_at": row["created_at"],
+                "username": row["username"],
+                "user_email": row["user_email"],
+                "model": row["model"],
+                "case_citation": row["case_citation"],
+                "data": _parse_json(row["data"]) or {},
+                "analyzer": _parse_json(row["analyzer"]) or {},
+                "submitted_data": _parse_json(row["submitted_data"]),
+                "moderation_status": row["moderation_status"],
+            }
+
+    def get_display_data_for_moderation(self, draft_id: int) -> dict[str, Any] | None:
+        """
+        Get the data to display for moderation with backwards compatibility.
+
+        Priority:
+        1. submitted_data (new records with user submissions)
+        2. data column (legacy records)
+
+        Returns None if record not found.
+        """
+        record = self.get_case_analyzer_full(draft_id)
+        if not record:
+            return None
+
+        # Prefer submitted_data if available
+        if record.get("submitted_data"):
+            return record["submitted_data"]
+
+        # Fall back to legacy data column
+        return record.get("data", {})
+
+    def list_pending_case_analyzer(self, limit: int = 100) -> list[dict]:
+        """
+        List case analyzer records pending moderation.
+
+        Uses moderation_status column as source of truth.
+        Returns records where status is 'pending'.
+        """
+        target = self.tables["case_analyzer"]
+        with suggestions_db_manager.get_session() as session:
+            query = (
+                sa.select(
+                    target.c.id,
+                    target.c.created_at,
+                    target.c.username,
+                    target.c.user_email,
+                    target.c.model,
+                    target.c.case_citation,
+                    target.c.data,
+                    target.c.analyzer,
+                    target.c.submitted_data,
+                    target.c.moderation_status,
+                )
+                .where(target.c.moderation_status == "pending")
+                .order_by(target.c.created_at.desc())
+                .limit(limit)
+            )
+
+            rows = session.execute(query).mappings().all()
+
+            def _parse_json(val: Any) -> dict[str, Any] | None:
+                if val is None:
+                    return None
+                if isinstance(val, dict):
+                    return dict(val)
+                try:
+                    return json.loads(val)
+                except Exception:
+                    return None
+
+            results: list[dict] = []
+            for r in rows:
+                submitted = _parse_json(r["submitted_data"])
+                legacy_data = _parse_json(r["data"]) or {}
+
+                # Use submitted_data if available, else legacy
+                display_data = submitted if submitted else legacy_data
+
+                results.append(
+                    {
+                        "id": r["id"],
+                        "created_at": r["created_at"],
+                        "username": r["username"],
+                        "user_email": r["user_email"],
+                        "model": r["model"],
+                        "case_citation": r["case_citation"],
+                        "payload": display_data,
+                        "data": legacy_data,  # Include original data for pdf_url, file_name
+                        "submitted_data": submitted,
+                        "analyzer": _parse_json(r["analyzer"]) or {},
+                        "moderation_status": r["moderation_status"],
+                    }
+                )
+
+            return results
+
+    def update_moderation_status(
+        self,
+        draft_id: int,
+        status: str,
+    ) -> None:
+        """
+        Update just the moderation_status column.
+
+        Valid statuses: 'draft', 'analyzing', 'completed', 'pending', 'approved', 'rejected', 'failed'
+        """
+        valid_statuses = {"draft", "analyzing", "completed", "pending", "approved", "rejected", "failed"}
+        if status not in valid_statuses:
+            raise ValueError(f"Invalid status '{status}'. Must be one of: {valid_statuses}")
+
+        target = self.tables["case_analyzer"]
+        with suggestions_db_manager.get_session() as session:
+            upd = sa.update(target).where(target.c.id == draft_id).values(moderation_status=status)
+            session.execute(upd)
             session.commit()

@@ -64,7 +64,7 @@
 import { computed } from "vue";
 import type { JurisdictionInfo, JurisdictionOption } from "~/types/analyzer";
 import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
-import DocumentDisplay from "@/components/case-analysis/DocumentDisplay.vue";
+import DocumentDisplay from "@/components/case-analyzer/DocumentDisplay.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 
 const { data: jurisdictions } = useJurisdictions();

@@ -58,3 +58,31 @@ class AnalysisResult(BaseModel):
     courts_position: str | None = None
     themes: list[str] | None = None
     confidence_scores: dict[str, str] | None = None
+
+
+class SubmitForApprovalRequest(BaseModel):
+    """Request to submit user-edited data for moderation approval."""
+
+    draft_id: int = Field(..., description="Database ID of the case analyzer draft")
+    submitted_data: dict = Field(
+        ...,
+        description="User-edited data to submit for approval",
+        json_schema_extra={
+            "example": {
+                "case_citation": "BGE 150 III 123",
+                "jurisdiction": "CHE",
+                "decision_date": "2024-03-15",
+                "abstract": "Edited abstract...",
+                "relevant_facts": "Edited facts...",
+                "courts_position": "Edited position...",
+            }
+        },
+    )
+
+
+class SubmitForApprovalResponse(BaseModel):
+    """Response after submitting for approval."""
+
+    draft_id: int = Field(..., description="Database ID of the submitted draft")
+    status: str = Field("pending", description="New moderation status")
+    message: str = Field(..., description="Success message")

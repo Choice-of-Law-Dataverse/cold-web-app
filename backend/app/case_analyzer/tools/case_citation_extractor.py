@@ -4,8 +4,8 @@ import logfire
 from agents import Agent, Runner, TResponseInputItem
 from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
 
-from app.case_analysis.config import get_model, get_openai_client
-from app.case_analysis.models.analysis_models import CaseCitationOutput
+from app.case_analyzer.config import get_model, get_openai_client
+from app.case_analyzer.models.analysis_models import CaseCitationOutput
 
 logger = logging.getLogger(__name__)
 

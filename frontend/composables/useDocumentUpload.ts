@@ -50,7 +50,7 @@ export function useDocumentUpload() {
         correlation_id: string;
         draft_id: number;
         jurisdiction: JurisdictionInfo;
-      }>("/api/proxy/case-analysis/upload", {
+      }>("/api/proxy/case-analyzer/upload", {
         method: "POST",
         body: {
           file_name: selectedFile.value.name,

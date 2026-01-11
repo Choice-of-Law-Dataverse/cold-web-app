@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import config
 from app.routes import (
     ai,
-    case_analysis,
+    case_analyzer,
     landing_page,
     search,
     sitemap,
@@ -159,7 +159,7 @@ api_router = APIRouter(prefix="/api/v1")
 
 api_router.include_router(search.router)
 api_router.include_router(ai.router)
-api_router.include_router(case_analysis.router)
+api_router.include_router(case_analyzer.router)
 api_router.include_router(submarine.router)
 api_router.include_router(sitemap.router)
 api_router.include_router(landing_page.router)

@@ -1,10 +1,10 @@
+import logging
 from typing import Any
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
 
 from app.auth import require_editor_or_admin, require_user, verify_frontend_request
 from app.schemas.suggestions import (
-    CaseAnalyzerSuggestion,
     CourtDecisionSuggestion,
     DomesticInstrumentSuggestion,
     InternationalInstrumentSuggestion,
@@ -21,6 +21,8 @@ from app.services.suggestion_approval import (
     normalize_domestic_instruments,
 )
 from app.services.suggestions import SuggestionService
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(
     prefix="/suggestions",
@@ -59,51 +61,6 @@ async def submit_suggestion(
             client_ip=request.client.host if request.client else None,
             user_agent=request.headers.get("User-Agent"),
             source=body.source,
-            user=user,
-        )
-        return SuggestionResponse(id=new_id)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) from e
-
-
-@router.post(
-    "/case-analyzer",
-    summary="Submit processed Case Analyzer result",
-    response_model=SuggestionResponse,
-    status_code=status.HTTP_201_CREATED,
-)
-async def submit_case_analyzer_result(
-    body: CaseAnalyzerSuggestion,
-    request: Request,
-    user: dict = Depends(require_user),
-    source: str | None = Header(None),
-    service: SuggestionService = Depends(get_suggestion_service),
-):
-    try:
-        payload = body.model_dump(exclude_none=True)
-        draft_id = payload.pop("draft_id", None)
-
-        # If draft_id provided, fetch and merge with existing draft data
-        if draft_id:
-            existing_draft = service.get_suggestion_by_id("case_analyzer", draft_id)
-            if existing_draft:
-                # Get existing data
-                existing_data = existing_draft.get("payload", {}) or existing_draft.get("data", {})
-                # Preserve critical fields from draft
-                for field in ["pdf_url", "file_name", "full_text", "correlation_id"]:
-                    if field in existing_data and field not in payload:
-                        payload[field] = existing_data[field]
-                # Update existing draft instead of creating new
-                service.update_case_analyzer_draft(draft_id, payload)
-                return SuggestionResponse(id=draft_id)
-
-        # No draft_id or draft not found - create new suggestion
-        new_id = service.save_suggestion(
-            payload=payload,
-            table="case_analyzer",
-            client_ip=request.client.host if request.client else None,
-            user_agent=request.headers.get("User-Agent"),
-            source=source,
             user=user,
         )
         return SuggestionResponse(id=new_id)
@@ -298,10 +255,11 @@ async def list_pending_suggestions(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Invalid category: {category}",
         )
-
     try:
-        items = service.list_pending(table)
-        return items
+        if category == "case-analyzer":
+            return service.list_pending_case_analyzer()
+        else:
+            return service.list_pending(table)
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

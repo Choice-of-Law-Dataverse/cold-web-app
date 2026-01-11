@@ -29,7 +29,7 @@ def get_collection():
 async def log_query(request: Request, call_next: Callable) -> Response:
     # Skip logging for case analysis routes to avoid consuming the body
     # and causing conflicts with BaseHTTPMiddleware or streaming
-    if "/case-analysis/" in request.url.path:
+    if "/case-analyzer/" in request.url.path:
         return await call_next(request)
 
     body_bytes = await request.body()

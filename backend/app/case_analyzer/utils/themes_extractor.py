@@ -4,7 +4,7 @@ import csv
 import logging
 from pathlib import Path
 
-from app.case_analysis.models import ThemeWithNA
+from app.case_analyzer.models import ThemeWithNA
 
 logger = logging.getLogger(__name__)
 

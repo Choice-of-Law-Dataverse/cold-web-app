@@ -176,9 +176,143 @@ def _first(d: dict[str, Any], *keys: str) -> Any:
     return None
 
 
+def _normalize_submitted_data(submitted_data: dict[str, Any], item: dict[str, Any]) -> dict[str, Any]:
+    """Normalize the new submitted_data format for display and NocoDB submission.
+
+    The new format has flat keys like 'jurisdiction', 'abstract', 'legal_provisions'
+    directly at the top level, with a 'raw_data' JSON string containing original
+    analysis results and jurisdiction info.
+
+    Args:
+        submitted_data: The submitted_data from the case_analyzer record
+        item: The full database row with metadata (username, user_email, data, etc.)
+
+    Returns:
+        Normalized dict with standardized field names for display/submission
+    """
+    result: dict[str, Any] = {}
+
+    # Top-level meta from item
+    result["username"] = item.get("username") or submitted_data.get("username")
+    result["user_email"] = item.get("user_email") or submitted_data.get("user_email")
+    result["model"] = item.get("model") or submitted_data.get("model")
+    result["case_citation"] = item.get("case_citation") or submitted_data.get("case_citation")
+
+    # Parse raw_data if available for additional context
+    raw_data_parsed: dict[str, Any] = {}
+    if submitted_data.get("raw_data"):
+        try:
+            raw_str = submitted_data["raw_data"]
+            raw_data_parsed = json.loads(raw_str) if isinstance(raw_str, str) else raw_str
+        except Exception:
+            pass
+
+    # Get jurisdiction info from raw_data.jurisdiction if available
+    jurisdiction_info = raw_data_parsed.get("jurisdiction", {}) or {}
+
+    # Date: from created_at
+    created_at = item.get("created_at")
+    if created_at and hasattr(created_at, "isoformat"):
+        created_at = created_at.isoformat()
+    result["date"] = created_at
+
+    # Jurisdiction (precise) - in new format, 'jurisdiction' field IS the precise jurisdiction
+    result["jurisdiction"] = submitted_data.get("jurisdiction") or jurisdiction_info.get("precise_jurisdiction")
+
+    # Jurisdiction Type (law family) - from raw_data.jurisdiction
+    jurisdiction_type = jurisdiction_info.get("legal_system_type")
+    result["jurisdiction_type"] = jurisdiction_type
+
+    # Sections - prefer direct field, fall back to raw_data.analysisResults
+    col_sections = submitted_data.get("choice_of_law_sections")
+    if not col_sections:
+        analysis_results = raw_data_parsed.get("analysisResults", {}) or {}
+        col_extraction = analysis_results.get("col_extraction", {}) or {}
+        col_sections = col_extraction.get("col_section") or col_extraction.get("col_sections")
+        if isinstance(col_sections, list) and col_sections:
+            col_sections = col_sections[-1] if col_sections else None
+    result["choice_of_law_sections"] = col_sections
+
+    # Theme - prefer direct field, fall back to raw_data.analysisResults
+    theme_val = submitted_data.get("themes")
+    if not theme_val:
+        analysis_results = raw_data_parsed.get("analysisResults", {}) or {}
+        theme_classification = analysis_results.get("theme_classification", {}) or {}
+        theme_val = (
+            theme_classification.get("classification")
+            or theme_classification.get("theme")
+            or theme_classification.get("themes")
+        )
+        if isinstance(theme_val, list) and theme_val:
+            theme_val = theme_val[-1]
+    if isinstance(theme_val, list | dict):
+        try:
+            theme_val = json.dumps(theme_val, ensure_ascii=False)
+        except Exception:
+            theme_val = str(theme_val)
+    result["theme"] = theme_val
+
+    # Direct fields from new format
+    result["abstract"] = submitted_data.get("abstract")
+    result["relevant_facts"] = submitted_data.get("relevant_facts")
+    result["pil_provisions"] = submitted_data.get("legal_provisions")  # New format uses 'legal_provisions'
+    result["choice_of_law_issue"] = submitted_data.get("choice_of_law_issue")
+
+    # Court's Position - check if common law for assembly
+    is_common_law = jurisdiction_type and "common" in jurisdiction_type.lower() if jurisdiction_type else False
+
+    if is_common_law:
+        parts: list[str] = []
+        cp = submitted_data.get("courts_position")
+        if cp:
+            parts.append(str(cp).strip())
+        ob = submitted_data.get("obiter_dicta")
+        if ob:
+            parts.append(f"Obiter Dicta: {str(ob).strip()}")
+        ds = submitted_data.get("dissenting_opinions")
+        if ds:
+            parts.append(f"Dissenting Opinions: {str(ds).strip()}")
+        result["courts_position"] = "\n\n".join([p for p in parts if p]) or None
+    else:
+        result["courts_position"] = submitted_data.get("courts_position")
+
+    # Preserve raw data
+    result["raw_data"] = submitted_data.get("raw_data")
+
+    # pdf_url and file_name from the data column (not submitted_data)
+    # These are stored in the original data column during upload
+    legacy_data: dict[str, Any] = {}
+    item_data = item.get("data")
+    if isinstance(item_data, dict):
+        legacy_data = item_data
+    elif isinstance(item_data, str):
+        try:
+            parsed = json.loads(item_data)
+            if isinstance(parsed, dict):
+                legacy_data = parsed
+        except Exception:
+            pass
+    result["pdf_url"] = legacy_data.get("pdf_url") or submitted_data.get("pdf_url")
+    result["file_name"] = legacy_data.get("file_name") or submitted_data.get("file_name")
+
+    return result
+
+
+def _is_new_submitted_data_format(payload: dict[str, Any]) -> bool:
+    """Check if payload is in new submitted_data format (flat keys, no nested 'data')."""
+    if not isinstance(payload, dict):
+        return False
+    return ("abstract" in payload or "courts_position" in payload or "legal_provisions" in payload) and "data" not in payload
+
+
 def _normalize_case_analyzer_payload(raw: dict[str, Any], item: dict[str, Any]) -> dict[str, Any]:
     """Flatten and normalize the analyzer payload for read-only display.
-    Rules:
+
+    Supports two formats:
+    1. NEW format (submitted_data): flat keys - delegates to _normalize_submitted_data
+    2. OLD format (legacy data): nested 'data' object with '_edited' suffix fields
+
+    Rules for old format:
     - Prefer *_edited fields.
     - Jurisdiction -> precise_jurisdiction(_edited)
     - Jurisdiction Type -> jurisdiction(_edited)
@@ -188,16 +322,21 @@ def _normalize_case_analyzer_payload(raw: dict[str, Any], item: dict[str, Any]) 
         * Civil law: courts_position_edited
         * Common law: concat of courts_position_edited, obiter_dicta_edited, dissenting_opinions_edited
     """
-    result: dict[str, Any] = {}
     if not isinstance(raw, dict):
         raw = {}
 
-    # Top-level meta
+    # Detect and delegate to new format handler
+    if _is_new_submitted_data_format(raw):
+        return _normalize_submitted_data(raw, item)
+
+    # OLD FORMAT: nested 'data' object with '_edited' suffix fields
+    result: dict[str, Any] = {}
+
+    # Top-level meta from item (always available)
     result["username"] = item.get("username") or raw.get("username")
     result["user_email"] = item.get("user_email") or raw.get("user_email")
     result["model"] = item.get("model") or raw.get("model")
     result["case_citation"] = item.get("case_citation") or raw.get("case_citation")
-
     # Load inner data
     data_obj: Any = raw.get("data") if "data" in raw else raw
     if isinstance(data_obj, str):
@@ -256,7 +395,7 @@ def _normalize_case_analyzer_payload(raw: dict[str, Any], item: dict[str, Any]) 
     result["choice_of_law_sections"] = last_item(pref("col_section_edited", "col_section"))
     theme_val = last_item(pref("classification_edited", "classification"))
     # If list item is dict or list, stringify
-    if isinstance(theme_val, (list, dict)):
+    if isinstance(theme_val, list | dict):
         try:
             theme_val = json.dumps(theme_val, ensure_ascii=False)
         except Exception:
@@ -335,7 +474,7 @@ def _render_overview_item(category: str, item: dict[str, Any]) -> str:
     payload: dict[str, Any] = item.get("payload", {}) or {}
 
     def format_created(value: Any) -> str:
-        if isinstance(value, (datetime, date)):
+        if isinstance(value, datetime | date):
             return value.isoformat()
         if value is None:
             return ""
@@ -344,7 +483,7 @@ def _render_overview_item(category: str, item: dict[str, Any]) -> str:
     def val_to_str(v: Any) -> str:
         if v is None:
             return "NA"
-        if isinstance(v, (list, tuple)):
+        if isinstance(v, list | tuple):
             return ", ".join(str(x) for x in v if x is not None)
         return str(v)
 
@@ -638,7 +777,14 @@ def list_pending(request: Request, category: str):
     global service
     if service is None:
         service = SuggestionService()
-    items = service.list_pending(table)
+
+    logger.info("Listing pending suggestions for category: %s", category)
+
+    # Use specialized method for case-analyzer that checks moderation_status='pending'
+    if category == "case-analyzer":
+        items = service.list_pending_case_analyzer()
+    else:
+        items = service.list_pending(table)
 
     entries = "".join(_render_overview_item(category, i) for i in items)
     empty_state = "<p>No pending suggestions.</p>" if not entries else ""
@@ -656,7 +802,13 @@ def view_entry(request: Request, category: str, suggestion_id: int):
     global service
     if service is None:
         service = SuggestionService()
-    items = service.list_pending(table)
+
+    # Use specialized method for case-analyzer
+    if category == "case-analyzer":
+        items = service.list_pending_case_analyzer()
+    else:
+        items = service.list_pending(table)
+
     item = next((i for i in items if i["id"] == suggestion_id), None)
     if not item:
         raise HTTPException(status_code=404, detail="Suggestion not found or not pending")
@@ -683,7 +835,13 @@ async def approve(request: Request, category: str, suggestion_id: int):
         writer = MainDBWriter()
     assert service is not None
     assert writer is not None
-    items = service.list_pending(table)
+
+    # Use specialized method for case-analyzer
+    if category == "case-analyzer":
+        items = service.list_pending_case_analyzer()
+    else:
+        items = service.list_pending(table)
+
     item = next((i for i in items if i["id"] == suggestion_id), None)
     if not item:
         raise HTTPException(status_code=404, detail="Suggestion not found or not pending")
@@ -704,13 +862,26 @@ async def _approve_case_analyzer(
     original_payload: dict[str, Any],
     item: dict[str, Any],
 ) -> None:
-    """Handle approval of case analyzer submissions via NocoDB API."""
+    """Handle approval of case analyzer submissions via NocoDB API.
+
+    Uses submitted_data column if available (new records), otherwise falls back
+    to normalizing from the legacy data column (backwards compatibility).
+    """
     global service, writer, nocodb_service
     assert service is not None
     assert writer is not None
 
-    normalized = _normalize_case_analyzer_payload(original_payload, item)
-    service.update_payload(table, suggestion_id, {"normalized": normalized})
+    # Check if we have submitted_data (new workflow) or need legacy normalization
+    submitted_data = item.get("submitted_data")
+    if submitted_data and _is_new_submitted_data_format(submitted_data):
+        # New workflow: user submitted edited data in new flat format
+        logger.info("Using submitted_data for case analyzer approval (ID: %d)", suggestion_id)
+        normalized = _normalize_submitted_data(submitted_data, item)
+    else:
+        # Legacy workflow: normalize from old data column
+        logger.info("Using legacy normalization for case analyzer approval (ID: %d)", suggestion_id)
+        normalized = _normalize_case_analyzer_payload(original_payload, item)
+        service.update_payload(table, suggestion_id, {"normalized": normalized})
 
     court_decision_data = writer.prepare_case_analyzer_for_court_decisions(normalized)
 
@@ -738,7 +909,14 @@ async def _approve_case_analyzer(
         )
 
     _link_jurisdictions(nocodb_service, jurisdiction_ids, merged_id)
-    _handle_pdf_upload(nocodb_service, original_payload, merged_id)
+
+    # Get pdf_url from submitted_data, original_payload, or legacy data
+    # The pdf_url is stored in the data column, not submitted_data
+    pdf_payload = original_payload
+    if not pdf_payload.get("pdf_url"):
+        # Try getting from submitted_data in case it was included there
+        pdf_payload = submitted_data or original_payload
+    _handle_pdf_upload(nocodb_service, pdf_payload, merged_id)
 
     service.mark_status(
         table,

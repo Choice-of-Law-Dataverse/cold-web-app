@@ -1,6 +1,6 @@
 """Pydantic models for case analysis."""
 
-from app.case_analysis.models.analysis_models import (
+from app.case_analyzer.models.analysis_models import (
     AbstractOutput,
     CaseCitationOutput,
     ColIssueOutput,
@@ -11,7 +11,7 @@ from app.case_analysis.models.analysis_models import (
     PILProvisionsOutput,
     RelevantFactsOutput,
 )
-from app.case_analysis.models.classification_models import (
+from app.case_analyzer.models.classification_models import (
     JurisdictionOutput,
     Theme,
     ThemeClassificationOutput,

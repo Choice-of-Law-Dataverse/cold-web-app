@@ -55,6 +55,8 @@ export interface CaseAnalyzerSuggestionPayload {
   relevant_facts?: string;
   legal_provisions?: string;
   choice_of_law_issue?: string;
+  choice_of_law_sections?: string;
+  themes?: string;
   abstract?: string;
   notes?: string;
   raw_data?: string | Record<string, unknown>;
@@ -63,6 +65,12 @@ export interface CaseAnalyzerSuggestionPayload {
 export interface SuggestionResponse {
   id: number;
   status?: string;
+}
+
+export interface SubmitForApprovalResponse {
+  draft_id: number;
+  status: string;
+  message: string;
 }
 
 export interface CaseAnalyzerSuggestionRecord {

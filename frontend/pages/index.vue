@@ -98,7 +98,7 @@
       <ConnectCard
         title="CoLD Case Analyzer"
         button-text="Analyze Court Cases with AI"
-        button-link="/court-decision/analyze"
+        button-link="/court-decision/new"
         icon-name="i-material-symbols:category-search-outline"
       />
     </div>

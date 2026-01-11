@@ -11,9 +11,9 @@ import logfire
 from agents import Agent, Runner
 from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
 
-from app.case_analysis.config import get_model, get_openai_client
-from app.case_analysis.models.classification_models import JurisdictionOutput
-from app.case_analysis.prompts.precise_jurisdiction_detection_prompt import PRECISE_JURISDICTION_DETECTION_PROMPT
+from app.case_analyzer.config import get_model, get_openai_client
+from app.case_analyzer.models.classification_models import JurisdictionOutput
+from app.case_analyzer.prompts.precise_jurisdiction_detection_prompt import PRECISE_JURISDICTION_DETECTION_PROMPT
 
 from .jurisdiction_detector import (
     detect_legal_system_by_jurisdiction,

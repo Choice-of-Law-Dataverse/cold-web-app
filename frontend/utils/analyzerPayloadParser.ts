@@ -230,6 +230,10 @@ export function buildCaseAnalyzerPayload(
   const payload: CaseAnalyzerSuggestionPayload = {
     case_citation: sanitizeAnalyzerField(editedPayload.caseCitation),
     jurisdiction: sanitizeAnalyzerField(editedPayload.jurisdiction),
+    choice_of_law_sections: sanitizeAnalyzerField(
+      editedPayload.choiceOfLawSections,
+    ),
+    themes: sanitizeAnalyzerField(editedPayload.themes),
     abstract: sanitizeAnalyzerField(editedPayload.caseAbstract),
     relevant_facts: sanitizeAnalyzerField(editedPayload.caseRelevantFacts),
     legal_provisions: sanitizeAnalyzerField(editedPayload.casePILProvisions),

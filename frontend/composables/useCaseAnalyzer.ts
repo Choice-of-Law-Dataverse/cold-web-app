@@ -2,8 +2,8 @@ import { ref, type Ref } from "vue";
 import type {
   JurisdictionInfo,
   AnalysisStepPayload,
-  SuggestionResponse,
   EditedAnalysisValues,
+  SubmitForApprovalResponse,
 } from "~/types/analyzer";
 import {
   buildCaseAnalyzerPayload,
@@ -32,7 +32,7 @@ const stepLabels: Record<string, string> = {
   abstract: "Abstract",
 };
 
-export function useCaseAnalysis(
+export function useCaseAnalyzer(
   analysisSteps: Ref<AnalysisStep[]>,
   analysisResults: Ref<Record<string, AnalysisStepPayload>>,
   onStepUpdate?: (stepName: string, data: AnalysisStepPayload) => void,
@@ -50,7 +50,7 @@ export function useCaseAnalysis(
     isAnalyzing.value = true;
 
     try {
-      const response = await fetch("/api/proxy/case-analysis/analyze", {
+      const response = await fetch("/api/proxy/case-analyzer/analyze", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -132,14 +132,14 @@ export function useCaseAnalysis(
     analysisResults: Record<string, AnalysisStepPayload>,
     editableForm: EditedAnalysisValues,
   ): Promise<{ success: boolean; error?: string; suggestionId?: number }> {
-    if (!correlationId) {
-      return { success: false, error: "No analysis data available" };
+    if (!draftId) {
+      return { success: false, error: "No draft ID available" };
     }
 
     isSubmitting.value = true;
 
     try {
-      const suggestionPayload = buildCaseAnalyzerPayload(
+      const submittedData = buildCaseAnalyzerPayload(
         { ...editableForm },
         correlationId,
         jurisdictionInfo,
@@ -147,13 +147,13 @@ export function useCaseAnalysis(
         draftId,
       );
 
-      const response = await $fetch<SuggestionResponse>(
-        "/api/proxy/suggestions/case-analyzer",
+      const response = await $fetch<SubmitForApprovalResponse>(
+        "/api/proxy/case-analyzer/submit",
         {
           method: "POST",
-          body: suggestionPayload,
-          headers: {
-            Source: "case-analyzer-ui",
+          body: {
+            draft_id: draftId,
+            submitted_data: submittedData,
           },
         },
       );
@@ -161,13 +161,13 @@ export function useCaseAnalysis(
       isSubmitted.value = true;
       toast.add({
         title: "Submission Successful",
-        description: `Suggestion #${response.id} has been submitted for review.`,
+        description: `Suggestion #${response.draft_id} has been submitted for review.`,
         color: "teal",
         icon: "i-heroicons-check-circle",
         timeout: 5000,
       });
 
-      return { success: true, suggestionId: response.id };
+      return { success: true, suggestionId: response.draft_id };
     } catch (err) {
       console.error("Suggestion submission failed:", err);
       return {

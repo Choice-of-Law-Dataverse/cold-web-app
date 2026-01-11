@@ -193,12 +193,17 @@ const filteredPayload = computed(() => {
     "analysis_ready",
     "workflow_started",
     "parallel_execution_started",
+    // New format internal fields
+    "raw_data",
+    "draft_id",
+    "notes",
+    "correlation_id",
   ]);
 
   const filtered: Record<string, unknown> = {};
   const payload = suggestion.value.payload;
 
-  // For case analyzer, collect fields with _edited versions
+  // For case analyzer, collect fields with _edited versions (legacy format)
   const editedFields = new Set<string>();
   if (category.value === "case-analyzer") {
     for (const key of Object.keys(payload)) {
@@ -231,7 +236,7 @@ const filteredPayload = computed(() => {
         continue;
       }
 
-      // Skip base field if _edited version exists
+      // Skip base field if _edited version exists (legacy format)
       if (editedFields.has(key)) {
         continue;
       }

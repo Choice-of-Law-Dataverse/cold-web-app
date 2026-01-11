@@ -9,11 +9,13 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 from app.auth import require_user, verify_frontend_request
-from app.case_analysis.models import JurisdictionOutput
-from app.case_analysis.utils.pdf_handler import extract_text_from_pdf
-from app.schemas.case_analysis import (
+from app.case_analyzer.models import JurisdictionOutput
+from app.case_analyzer.utils.pdf_handler import extract_text_from_pdf
+from app.schemas.case_analyzer import (
     ConfirmAnalysisRequest,
     JurisdictionInfo,
+    SubmitForApprovalRequest,
+    SubmitForApprovalResponse,
     UploadDocumentRequest,
     UploadDocumentResponse,
 )
@@ -26,7 +28,6 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/case-analysis", tags=["Case Analysis"], dependencies=[Depends(verify_frontend_request)])
 
-# Maximum PDF size: 50MB
 MAX_PDF_SIZE_BYTES = 50 * 1024 * 1024
 
 
@@ -66,39 +67,29 @@ async def upload_document(
         UploadDocumentResponse with correlation_id, extracted_text, and jurisdiction info
     """
     with logfire.span("upload_document", file_name=body.file_name, blob_url=body.blob_url[:100]):
-        # Determine if we need to upload to Azure or use existing Azure URL
         azure_blob_url: str
 
         try:
-            # Check if blob_url is a data URL or Azure blob URL
             if body.blob_url.startswith("data:application/pdf;base64,"):
-                # Extract base64 from data URL
                 base64_content = body.blob_url.replace("data:application/pdf;base64,", "")
                 pdf_bytes = base64.b64decode(base64_content)
 
-                # Check file size
                 if len(pdf_bytes) > MAX_PDF_SIZE_BYTES:
                     raise HTTPException(
                         status_code=413,
                         detail=f"PDF file too large ({len(pdf_bytes) / 1024 / 1024:.1f}MB). Maximum size is {MAX_PDF_SIZE_BYTES / 1024 / 1024}MB",
                     )
 
-                logger.info("Decoded inline base64 PDF: %s (%d bytes)", body.file_name, len(pdf_bytes))
-
-                # Upload to Azure Storage to avoid storing large base64 in database
                 try:
                     azure_blob_url = upload_blob_with_managed_identity(pdf_bytes, body.file_name)
-                    logger.info("Uploaded PDF to Azure: %s", azure_blob_url)
                 except Exception as upload_error:
                     logger.error("Failed to upload PDF to Azure: %s", str(upload_error))
                     raise HTTPException(
                         status_code=500, detail="Failed to upload PDF to storage. Please try again or contact support."
                     ) from upload_error
             else:
-                # Download from Azure blob storage
                 pdf_bytes = download_blob_with_managed_identity(body.blob_url)
                 azure_blob_url = body.blob_url
-                logger.info("Downloaded PDF from blob: %s (%d bytes)", body.blob_url, len(pdf_bytes))
         except HTTPException:
             raise
         except Exception as e:
@@ -107,14 +98,12 @@ async def upload_document(
 
         try:
             extracted_text = extract_text_from_pdf(pdf_bytes)
-            logger.info("Extracted %d characters from PDF", len(extracted_text))
         except Exception as e:
             logger.error("Failed to extract text from PDF: %s", str(e))
             raise HTTPException(status_code=422, detail=f"Failed to extract text from PDF: {str(e)}") from e
 
         try:
             jurisdiction_result: JurisdictionOutput = await detect_jurisdiction(extracted_text)
-            logger.info("Detected jurisdiction: %s", jurisdiction_result.precise_jurisdiction)
         except Exception as e:
             logger.error("Failed to detect jurisdiction: %s", str(e))
             raise HTTPException(status_code=500, detail=f"Failed to detect jurisdiction: {str(e)}") from e
@@ -127,18 +116,13 @@ async def upload_document(
             "reasoning": jurisdiction_result.reasoning,
         }
 
-        # Create cache entry for session
         correlation_id = analysis_cache.create_entry(extracted_text, jurisdiction_data)
-        logger.info("Created cache entry with correlation_id: %s", correlation_id)
-
-        # Persist to database as draft (including pdf_url for later approval)
         draft_payload = {
-            "status": "draft",
             "file_name": body.file_name,
-            "pdf_url": azure_blob_url,  # Store for moderator approval later
+            "pdf_url": azure_blob_url,
             "full_text": extracted_text,
-            "jurisdiction": jurisdiction_data,
             "correlation_id": correlation_id,
+            "moderation_status": "draft",
         }
 
         draft_id: int | None = None
@@ -151,13 +135,20 @@ async def upload_document(
                 source="case_analyzer_workflow",
                 user=user,
             )
-            logger.info("Saved draft to database with ID: %d", draft_id)
 
-            # Store draft_id in cache for later updates
+            service.update_analyzer_step(
+                draft_id,
+                "jurisdiction",
+                {
+                    "result": jurisdiction_data,
+                    "confidence": jurisdiction_result.confidence,
+                    "reasoning": jurisdiction_result.reasoning,
+                },
+            )
+
             analysis_cache.update_results(correlation_id, "draft_id", {"draft_id": draft_id})
         except Exception as e:
             logger.error("Failed to save draft to database: %s", str(e))
-            # Continue even if database save fails - we have cache
 
         analysis_cache.cleanup_expired()
 
@@ -218,7 +209,6 @@ async def analyze_document(
             raise HTTPException(status_code=404, detail="Invalid or expired correlation_id")
 
         text = cache_entry["text"]
-        logger.info("Retrieved cached text (%d chars) for analysis", len(text))
 
         # Get draft_id from cache
         draft_result = cache_entry.get("analysis_results", {}).get("draft_id", {})
@@ -232,24 +222,28 @@ async def analyze_document(
             "reasoning": body.jurisdiction.reasoning,
         }
 
-        # Update jurisdiction if it was corrected
         if draft_id:
             try:
-                service.update_case_analyzer_draft(
+                service.update_moderation_status(draft_id, "analyzing")
+
+                service.update_analyzer_step(
                     draft_id,
-                    {"jurisdiction": jurisdiction_data, "status": "analyzing"},
+                    "jurisdiction",
+                    {
+                        "result": jurisdiction_data,
+                        "confidence": jurisdiction_data.get("confidence"),
+                        "reasoning": jurisdiction_data.get("reasoning"),
+                        "user_confirmed": True,
+                    },
                 )
-                logger.info("Updated jurisdiction in draft ID: %d", draft_id)
             except Exception as e:
                 logger.error("Failed to update jurisdiction in database: %s", str(e))
 
-        # Fetch cached results from database if resuming
         cached_results: dict[str, Any] | None = None
         if body.resume and draft_id:
             try:
-                draft_data = service.get_case_analyzer_draft(draft_id)
-                if draft_data:
-                    # Extract step results from draft data
+                analyzer_data = service.get_analyzer_data(draft_id)
+                if analyzer_data:
                     cached_results = {}
                     for step_key in [
                         "col_extraction",
@@ -263,14 +257,18 @@ async def analyze_document(
                         "dissenting_opinions",
                         "abstract",
                     ]:
-                        if step_key in draft_data and draft_data[step_key]:
-                            cached_results[step_key] = draft_data[step_key]
-                    logger.info("Resuming analysis with %d cached steps", len(cached_results))
+                        if step_key in analyzer_data and analyzer_data[step_key]:
+                            step_result = analyzer_data[step_key]
+                            if isinstance(step_result, dict) and "result" in step_result:
+                                cached_results[step_key] = step_result["result"]
+                            else:
+                                cached_results[step_key] = step_result
             except Exception as e:
                 logger.error("Failed to fetch cached results for resume: %s", str(e))
 
         async def event_generator():
             """Generate SSE events for each analysis step."""
+            step_name: str | None = None
             with logfire.span(
                 "case_analysis_stream",
                 correlation_id=body.correlation_id,
@@ -279,33 +277,35 @@ async def analyze_document(
             ):
                 try:
                     async for result in analyze_case_streaming(text, jurisdiction_data, cached_results):
-                        # Update cache
                         analysis_cache.update_results(body.correlation_id, result.get("step", "unknown"), result)
 
                         step_name = result.get("step")
 
-                        # Update database if we have draft_id and step data
                         if draft_id and result.get("status") == "completed" and result.get("data"):
                             if not step_name:
                                 continue
                             try:
                                 step_payload = result.get("data")
-                                update_data = {step_name: step_payload}
                                 with logfire.span("persist_case_analyzer_step", step=step_name, draft_id=draft_id):
-                                    service.update_case_analyzer_draft(draft_id, update_data)
-                                logger.info("Updated step %s in draft ID: %d", step_name, draft_id)
+                                    service.update_analyzer_step(
+                                        draft_id,
+                                        step_name,
+                                        {
+                                            "result": step_payload,
+                                            "confidence": result.get("confidence"),
+                                            "reasoning": result.get("reasoning"),
+                                        },
+                                    )
                             except Exception as e:
                                 logger.error("Failed to update step %s in database: %s", step_name, str(e))
 
                         event_data = json.dumps(result)
                         yield f"data: {event_data}\n\n"
 
-                    # Mark as completed when all steps are done
                     if draft_id:
                         try:
                             with logfire.span("finalize_case_analyzer_draft", draft_id=draft_id):
-                                service.update_case_analyzer_draft(draft_id, {"status": "completed"})
-                            logger.info("Marked draft ID %d as completed", draft_id)
+                                service.update_moderation_status(draft_id, "completed")
                         except Exception as e:
                             logger.error("Failed to mark draft as completed: %s", str(e))
 
@@ -319,11 +319,15 @@ async def analyze_document(
                     logger.error("Analysis workflow failed: %s", str(e))
                     logger.error("Traceback: %s", traceback.format_exc())
 
-                    # Mark as failed in database
                     if draft_id:
                         try:
                             with logfire.span("fail_case_analyzer_draft", draft_id=draft_id):
-                                service.update_case_analyzer_draft(draft_id, {"status": "failed", "error": str(e)})
+                                service.update_moderation_status(draft_id, "failed")
+                                service.update_analyzer_step(
+                                    draft_id,
+                                    "error",
+                                    {"message": str(e), "step": step_name if step_name else "unknown"},
+                                )
                         except Exception as db_error:
                             logger.error("Failed to mark draft as failed: %s", str(db_error))
 
@@ -331,3 +335,169 @@ async def analyze_document(
                     yield f"data: {error_event}\n\n"
 
         return StreamingResponse(event_generator(), media_type="text/event-stream")
+
+
+@router.post(
+    "/submit",
+    summary="Submit case analysis for moderation approval",
+    description=(
+        "Submit user-edited case analysis data for moderation approval. "
+        "The data is stored in the submitted_data column and the status "
+        "is changed to 'pending'. Moderators will review and can approve/reject."
+    ),
+    response_model=SubmitForApprovalResponse,
+)
+async def submit_for_approval(
+    body: SubmitForApprovalRequest,
+    user: dict = Depends(require_user),
+    service: SuggestionService = Depends(get_suggestion_service),
+):
+    """
+    Submit user-edited case analysis data for moderation approval.
+
+    This endpoint:
+    1. Validates the draft exists and belongs to the user
+    2. Stores the user-edited data in the submitted_data column
+    3. Updates moderation_status to 'pending'
+    4. Returns confirmation
+
+    The original analyzer data is preserved for audit purposes.
+    """
+    with logfire.span("submit_for_approval", draft_id=body.draft_id):
+        # Get the full record to verify it exists
+        record = service.get_case_analyzer_full(body.draft_id)
+
+        if not record:
+            logger.error("Draft not found: %d", body.draft_id)
+            raise HTTPException(status_code=404, detail="Draft not found")
+
+        # Check that the draft is in a submittable state
+        current_status = record.get("moderation_status")
+        if current_status in {"pending", "approved", "rejected"}:
+            logger.warning(
+                "Draft %d already submitted (status: %s)",
+                body.draft_id,
+                current_status,
+            )
+            raise HTTPException(
+                status_code=400,
+                detail=f"Draft already submitted for moderation (status: {current_status})",
+            )
+
+        # Verify ownership - the user submitting should be the one who created the draft
+        token_sub = service._get_token_sub(user)
+        record_email = record.get("user_email")
+        if token_sub and record_email and token_sub != record_email:
+            logger.warning(
+                "User %s attempted to submit draft %d owned by %s",
+                token_sub,
+                body.draft_id,
+                record_email,
+            )
+            raise HTTPException(status_code=403, detail="You can only submit your own drafts")
+
+        try:
+            service.set_submitted_data(body.draft_id, body.submitted_data)
+
+            return SubmitForApprovalResponse(
+                draft_id=body.draft_id,
+                status="pending",
+                message="Successfully submitted for moderation approval",
+            )
+        except Exception as e:
+            logger.error("Failed to submit draft %d: %s", body.draft_id, str(e))
+            raise HTTPException(status_code=500, detail="Failed to submit for approval") from e
+
+
+@router.get(
+    "/draft/{draft_id}",
+    summary="Get draft data for recovery",
+    description=(
+        "Fetch draft data to recover the analyzer form state. "
+        "Returns draft data if status is recoverable (not pending/approved)."
+    ),
+)
+async def get_draft_for_recovery(
+    draft_id: int,
+    user: dict = Depends(require_user),
+    service: SuggestionService = Depends(get_suggestion_service),
+) -> dict[str, Any]:
+    """
+    Get draft data to recover form state.
+
+    Only returns data if:
+    - Draft exists
+    - User owns the draft
+    - Status is recoverable (draft, analyzing, completed, failed)
+
+    Does not return data if status is pending, approved, or rejected.
+    """
+    record = service.get_case_analyzer_full(draft_id)
+    if not record:
+        raise HTTPException(status_code=404, detail="Draft not found")
+
+    # Verify ownership
+    token_sub = service._get_token_sub(user)
+    record_email = record.get("user_email")
+    if token_sub and record_email and token_sub != record_email:
+        raise HTTPException(status_code=403, detail="You can only access your own drafts")
+
+    # Check status - don't allow recovery of already-submitted drafts
+    status = record.get("moderation_status")
+    if status in {"pending", "approved", "rejected"}:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Draft already submitted (status: {status}). Cannot recover.",
+        )
+
+    # Parse data columns
+    def _parse_json(val: Any) -> dict[str, Any] | None:
+        if val is None:
+            return None
+        if isinstance(val, dict):
+            return dict(val)
+        try:
+            return json.loads(val)
+        except Exception:
+            return None
+
+    legacy_data = _parse_json(record.get("data")) or {}
+    analyzer_data = _parse_json(record.get("analyzer")) or {}
+
+    # Extract jurisdiction info from legacy data
+    jurisdiction_info = None
+    if legacy_data.get("jurisdiction"):
+        jurisdiction_info = legacy_data["jurisdiction"]
+    elif legacy_data.get("precise_jurisdiction"):
+        jurisdiction_info = {
+            "precise_jurisdiction": legacy_data.get("precise_jurisdiction"),
+            "jurisdiction_code": legacy_data.get("jurisdiction_code"),
+            "legal_system_type": legacy_data.get("legal_system_type"),
+            "confidence": legacy_data.get("jurisdiction_confidence"),
+            "reasoning": legacy_data.get("jurisdiction_reasoning"),
+        }
+
+    # Get correlation_id from legacy data
+    correlation_id = legacy_data.get("correlation_id")
+
+    # Get file info
+    file_name = legacy_data.get("file_name")
+    pdf_url = legacy_data.get("pdf_url")
+
+    # Format created_at safely
+    created_at = record.get("created_at")
+    created_at_str = None
+    if created_at and hasattr(created_at, "isoformat"):
+        created_at_str = created_at.isoformat()
+
+    return {
+        "draft_id": draft_id,
+        "status": status or "draft",
+        "correlation_id": correlation_id,
+        "file_name": file_name,
+        "pdf_url": pdf_url,
+        "jurisdiction_info": jurisdiction_info,
+        "analyzer_data": analyzer_data,
+        "case_citation": record.get("case_citation"),
+        "created_at": created_at_str,
+    }

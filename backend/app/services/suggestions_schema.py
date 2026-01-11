@@ -110,6 +110,8 @@ suggestions_case_analyzer = sa.Table(
     sa.Column("case_citation", sa.Text),
     sa.Column("user_email", sa.Text),
     sa.Column("data", JSONB, nullable=False),
+    sa.Column("analyzer", JSONB, nullable=True),
+    sa.Column("submitted_data", JSONB, nullable=True),
     sa.Column("moderation_status", sa.String(32)),
 )
 

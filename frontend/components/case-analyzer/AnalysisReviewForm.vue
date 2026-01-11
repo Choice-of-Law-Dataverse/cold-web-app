@@ -241,8 +241,8 @@ import type {
   EditedAnalysisValues,
   JurisdictionOption,
 } from "~/types/analyzer";
-import ConfidenceIndicator from "@/components/case-analysis/ConfidenceIndicator.vue";
-import DocumentDisplay from "@/components/case-analysis/DocumentDisplay.vue";
+import ConfidenceIndicator from "@/components/case-analyzer/ConfidenceIndicator.vue";
+import DocumentDisplay from "@/components/case-analyzer/DocumentDisplay.vue";
 
 interface FieldStatus {
   confidence: string | null;
