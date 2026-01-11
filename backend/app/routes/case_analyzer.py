@@ -26,7 +26,7 @@ from app.services.suggestions import SuggestionService
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/case-analysis", tags=["Case Analysis"], dependencies=[Depends(verify_frontend_request)])
+router = APIRouter(prefix="/case-analyzer", tags=["Case Analyzer"], dependencies=[Depends(verify_frontend_request)])
 
 MAX_PDF_SIZE_BYTES = 50 * 1024 * 1024
 
@@ -136,15 +136,9 @@ async def upload_document(
                 user=user,
             )
 
-            service.update_analyzer_step(
-                draft_id,
-                "jurisdiction",
-                {
-                    "result": jurisdiction_data,
-                    "confidence": jurisdiction_result.confidence,
-                    "reasoning": jurisdiction_result.reasoning,
-                },
-            )
+            # Store jurisdiction_data directly - it already contains all fields
+            # (legal_system_type, precise_jurisdiction, jurisdiction_code, confidence, reasoning)
+            service.update_analyzer_step(draft_id, "jurisdiction", jurisdiction_data)
 
             analysis_cache.update_results(correlation_id, "draft_id", {"draft_id": draft_id})
         except Exception as e:
@@ -226,13 +220,13 @@ async def analyze_document(
             try:
                 service.update_moderation_status(draft_id, "analyzing")
 
+                # Store jurisdiction_data directly with user_confirmed flag
+                # The data already contains confidence/reasoning fields
                 service.update_analyzer_step(
                     draft_id,
                     "jurisdiction",
                     {
-                        "result": jurisdiction_data,
-                        "confidence": jurisdiction_data.get("confidence"),
-                        "reasoning": jurisdiction_data.get("reasoning"),
+                        **jurisdiction_data,
                         "user_confirmed": True,
                     },
                 )
@@ -286,16 +280,11 @@ async def analyze_document(
                                 continue
                             try:
                                 step_payload = result.get("data")
-                                with logfire.span("persist_case_analyzer_step", step=step_name, draft_id=draft_id):
-                                    service.update_analyzer_step(
-                                        draft_id,
-                                        step_name,
-                                        {
-                                            "result": step_payload,
-                                            "confidence": result.get("confidence"),
-                                            "reasoning": result.get("reasoning"),
-                                        },
-                                    )
+                                if step_payload and isinstance(step_payload, dict):
+                                    with logfire.span("persist_case_analyzer_step", step=step_name, draft_id=draft_id):
+                                        # Store step_payload directly - it already contains the result data
+                                        # with confidence/reasoning inside if applicable
+                                        service.update_analyzer_step(draft_id, step_name, step_payload)
                             except Exception as e:
                                 logger.error("Failed to update step %s in database: %s", step_name, str(e))
 

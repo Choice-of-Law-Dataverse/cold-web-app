@@ -217,7 +217,23 @@ def _normalize_submitted_data(submitted_data: dict[str, Any], item: dict[str, An
     result["date"] = created_at
 
     # Jurisdiction (precise) - in new format, 'jurisdiction' field IS the precise jurisdiction
+    # Fall back to raw_data.jurisdiction or item's analyzer.jurisdiction.result data
     result["jurisdiction"] = submitted_data.get("jurisdiction") or jurisdiction_info.get("precise_jurisdiction")
+
+    # Additional fallback: get from analyzer column if available
+    if not result["jurisdiction"]:
+        analyzer_data = item.get("analyzer", {})
+        if isinstance(analyzer_data, str):
+            try:
+                analyzer_data = json.loads(analyzer_data)
+            except Exception:
+                analyzer_data = {}
+        if isinstance(analyzer_data, dict):
+            jur_step = analyzer_data.get("jurisdiction", {})
+            if isinstance(jur_step, dict):
+                jur_result = jur_step.get("result", {})
+                if isinstance(jur_result, dict):
+                    result["jurisdiction"] = jur_result.get("precise_jurisdiction")
 
     # Jurisdiction Type (law family) - from raw_data.jurisdiction
     jurisdiction_type = jurisdiction_info.get("legal_system_type")
@@ -910,13 +926,25 @@ async def _approve_case_analyzer(
 
     _link_jurisdictions(nocodb_service, jurisdiction_ids, merged_id)
 
-    # Get pdf_url from submitted_data, original_payload, or legacy data
-    # The pdf_url is stored in the data column, not submitted_data
-    pdf_payload = original_payload
-    if not pdf_payload.get("pdf_url"):
-        # Try getting from submitted_data in case it was included there
-        pdf_payload = submitted_data or original_payload
-    _handle_pdf_upload(nocodb_service, pdf_payload, merged_id)
+    # Get pdf_url from the data column (legacy data), not submitted_data
+    # For new workflow: item["data"] contains the upload data with pdf_url
+    # For legacy workflow: original_payload contains everything
+    legacy_data = item.get("data", {})
+    if isinstance(legacy_data, str):
+        try:
+            legacy_data = json.loads(legacy_data)
+        except Exception:
+            legacy_data = {}
+    if not isinstance(legacy_data, dict):
+        legacy_data = {}
+
+    pdf_url = legacy_data.get("pdf_url") or original_payload.get("pdf_url")
+    file_name = legacy_data.get("file_name") or original_payload.get("file_name")
+
+    if pdf_url:
+        _handle_pdf_upload(nocodb_service, {"pdf_url": pdf_url, "file_name": file_name}, merged_id)
+    else:
+        logger.warning("No pdf_url found for case analyzer %d - skipping PDF upload", suggestion_id)
 
     service.mark_status(
         table,

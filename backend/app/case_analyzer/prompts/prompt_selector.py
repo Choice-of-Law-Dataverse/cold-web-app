@@ -2,19 +2,19 @@ import importlib
 
 PROMPT_MODULES = {
     "civil-law": {
-        "col_section": "app.case_analysis.prompts.civil_law.col_section_prompt",
-        "theme": "app.case_analysis.prompts.civil_law.pil_theme_prompt",
-        "analysis": "app.case_analysis.prompts.civil_law.analysis_prompts",
+        "col_section": "app.case_analyzer.prompts.civil_law.col_section_prompt",
+        "theme": "app.case_analyzer.prompts.civil_law.pil_theme_prompt",
+        "analysis": "app.case_analyzer.prompts.civil_law.analysis_prompts",
     },
     "common-law": {
-        "col_section": "app.case_analysis.prompts.common_law.col_section_prompt",
-        "theme": "app.case_analysis.prompts.common_law.pil_theme_prompt",
-        "analysis": "app.case_analysis.prompts.common_law.analysis_prompts",
+        "col_section": "app.case_analyzer.prompts.common_law.col_section_prompt",
+        "theme": "app.case_analyzer.prompts.common_law.pil_theme_prompt",
+        "analysis": "app.case_analyzer.prompts.common_law.analysis_prompts",
     },
     "india": {
-        "col_section": "app.case_analysis.prompts.india.col_section_prompt",
-        "theme": "app.case_analysis.prompts.india.pil_theme_prompt",
-        "analysis": "app.case_analysis.prompts.india.analysis_prompts",
+        "col_section": "app.case_analyzer.prompts.india.col_section_prompt",
+        "theme": "app.case_analyzer.prompts.india.pil_theme_prompt",
+        "analysis": "app.case_analyzer.prompts.india.analysis_prompts",
     },
 }
 
