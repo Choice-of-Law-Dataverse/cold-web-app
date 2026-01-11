@@ -24,24 +24,7 @@ export function useDocumentUpload() {
     try {
       const fileContent = await readFileAsBase64(selectedFile.value);
 
-      const useDirectUpload = true;
-      let blob_url: string;
-
-      if (useDirectUpload) {
-        blob_url = `data:application/pdf;base64,${fileContent}`;
-      } else {
-        const uploadResponse = await $fetch<{
-          blob_url: string;
-          blob_name: string;
-        }>("/api/upload-temp", {
-          method: "POST",
-          body: {
-            file_name: selectedFile.value.name,
-            file_content_base64: fileContent,
-          },
-        });
-        blob_url = uploadResponse.blob_url;
-      }
+      const blobUrl = `data:application/pdf;base64,${fileContent}`;
 
       onUploadComplete?.();
 
@@ -52,7 +35,7 @@ export function useDocumentUpload() {
         method: "POST",
         body: {
           file_name: selectedFile.value.name,
-          blob_url,
+          blob_url: blobUrl,
         },
       });
 
