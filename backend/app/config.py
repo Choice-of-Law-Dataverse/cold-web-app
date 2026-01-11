@@ -13,7 +13,6 @@ class Config(BaseSettings):
     )
 
     SQL_CONN_STRING: str | None = None
-    MONGODB_CONN_STRING: str | None = None
     OPENAI_API_KEY: str | None = None
     TEST: str | None = None
     # Logging configuration

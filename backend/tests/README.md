@@ -2,7 +2,7 @@
 
 ## Test Architecture
 
-All tests are designed to run **without external dependencies** (no real SQL databases, MongoDB, or internet access).
+All tests are designed to run **without external dependencies** (no real SQL databases or internet access).
 
 ### Test Types
 
@@ -26,12 +26,6 @@ All tests are designed to run **without external dependencies** (no real SQL dat
 - Tests override dependencies with mock services
 - `Database` class uses **lazy metadata loading** (no connection at instantiation)
 - Integration tests use `sqlite:///:memory:` (in-memory, no external DB)
-
-#### MongoDB Connections
-
-- `query_logging.py` uses **lazy initialization**
-- Only connects when `get_collection()` is called
-- Returns `None` if `MONGODB_CONN_STRING` is not configured
 
 #### HTTP/API Calls
 
@@ -60,7 +54,6 @@ uv run pytest tests/test_search_for_entry.py --run-integration
 Tests run in CI with `.blueprint.env` containing dummy connection strings:
 
 - `SQL_CONN_STRING=postgresql://user:pass@localhost:5432/testdb`
-- `MONGODB_CONN_STRING=mongodb://localhost:27017/testdb`
 
 These connections are never attempted because:
 
