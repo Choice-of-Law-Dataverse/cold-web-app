@@ -10,7 +10,7 @@ from urllib.parse import urlparse
 from azure.identity import DefaultAzureCredential
 from azure.storage.blob import BlobServiceClient, ContentSettings
 
-from app.case_analyzer.utils.pdf_handler import extract_text_from_pdf
+from app.case_analyzer import extract_text_from_pdf
 from app.config import config
 
 logger = logging.getLogger(__name__)

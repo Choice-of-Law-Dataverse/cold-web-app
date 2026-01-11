@@ -9,8 +9,8 @@ import logfire
 from agents import Agent, Runner
 from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
 
-from app.case_analyzer.config import get_model, get_openai_client
-from app.case_analyzer.prompts.legal_system_type_detection import LEGAL_SYSTEM_TYPE_DETECTION_PROMPT
+from ..config import get_model, get_openai_client
+from ..prompts import LEGAL_SYSTEM_TYPE_DETECTION_PROMPT
 
 logger = logging.getLogger(__name__)
 

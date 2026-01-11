@@ -9,8 +9,12 @@ from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import StreamingResponse
 
 from app.auth import require_user, verify_frontend_request
-from app.case_analyzer.models import JurisdictionOutput
-from app.case_analyzer.utils.pdf_handler import extract_text_from_pdf
+from app.case_analyzer import (
+    JurisdictionOutput,
+    analyze_case_streaming,
+    detect_jurisdiction,
+    extract_text_from_pdf,
+)
 from app.schemas.case_analyzer import (
     ConfirmAnalysisRequest,
     JurisdictionInfo,
@@ -24,7 +28,6 @@ from app.services.azure_storage import (
     get_text_from_blob,
     upload_blob_with_managed_identity,
 )
-from app.services.case_analysis import analyze_case_streaming, detect_jurisdiction
 from app.services.suggestions import SuggestionService
 
 logger = logging.getLogger(__name__)

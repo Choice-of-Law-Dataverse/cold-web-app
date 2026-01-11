@@ -9,7 +9,7 @@ from typing import Any, cast
 
 import logfire
 
-from app.case_analyzer.models import (
+from .tools import (
     CaseCitationOutput,
     ColSectionOutput,
     CourtsPositionOutput,
@@ -19,18 +19,18 @@ from app.case_analyzer.models import (
     PILProvisionsOutput,
     RelevantFactsOutput,
     ThemeClassificationOutput,
+    classify_themes,
+    detect_precise_jurisdiction_with_confidence,
+    extract_abstract,
+    extract_case_citation,
+    extract_col_issue,
+    extract_col_section,
+    extract_courts_position,
+    extract_dissenting_opinions,
+    extract_obiter_dicta,
+    extract_pil_provisions,
+    extract_relevant_facts,
 )
-from app.case_analyzer.tools.abstract_generator import extract_abstract
-from app.case_analyzer.tools.case_citation_extractor import extract_case_citation
-from app.case_analyzer.tools.col_extractor import extract_col_section
-from app.case_analyzer.tools.col_issue_extractor import extract_col_issue
-from app.case_analyzer.tools.courts_position_extractor import extract_courts_position
-from app.case_analyzer.tools.dissenting_opinions_extractor import extract_dissenting_opinions
-from app.case_analyzer.tools.jurisdiction_classifier import detect_precise_jurisdiction_with_confidence
-from app.case_analyzer.tools.obiter_dicta_extractor import extract_obiter_dicta
-from app.case_analyzer.tools.pil_provisions_extractor import extract_pil_provisions
-from app.case_analyzer.tools.relevant_facts_extractor import extract_relevant_facts
-from app.case_analyzer.tools.theme_classifier import theme_classification_node
 
 logger = logging.getLogger(__name__)
 
@@ -94,7 +94,7 @@ def _reconstruct_theme_classification(cached: dict[str, Any]) -> ThemeClassifica
 
 def _reconstruct_col_issue(cached: dict[str, Any]) -> Any:
     """Reconstruct ColIssueOutput from cached data."""
-    from app.case_analyzer.models import ColIssueOutput
+    from .tools.models import ColIssueOutput
 
     return ColIssueOutput(
         col_issue=cached.get("col_issue", ""),
@@ -205,7 +205,7 @@ async def analyze_case_streaming(
                 task_names = []
 
                 if need_theme:
-                    tasks_to_run.append(theme_classification_node(text, col_section_text, legal_system, jurisdiction))
+                    tasks_to_run.append(classify_themes(text, col_section_text, legal_system, jurisdiction))
                     task_names.append("theme_classification")
                 if need_citation:
                     tasks_to_run.append(extract_case_citation(text, legal_system, jurisdiction))
