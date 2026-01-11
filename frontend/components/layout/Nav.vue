@@ -212,12 +212,6 @@ import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
 const router = useRouter();
 const route = useRoute();
 
-const {
-  data: jurisdictions,
-  findMatchingJurisdictions,
-  findJurisdictionByName,
-} = useJurisdictionLookup();
-
 const basePath = (arr) => `/${arr[0].path.split("/")[1]}`;
 
 const links = [
@@ -274,35 +268,50 @@ const isMobile = ref(false);
 const suggestions = ref([]);
 const showSuggestions = ref(false);
 const isSearchFocused = ref(false);
+const enableJurisdictionFetch = ref(false);
 
 const searchInput = ref(null);
 
 // Minimum search length for jurisdiction suggestions
 const MIN_SEARCH_LENGTH = 3;
 
+// Lazily load jurisdiction data - only fetch when user starts typing
+const jurisdictionLookup = useJurisdictionLookup(enableJurisdictionFetch);
+
 function updateSuggestions() {
+  // Start loading jurisdiction data on first input
+  if (!enableJurisdictionFetch.value) {
+    enableJurisdictionFetch.value = true;
+  }
+  
   if (
     !searchText.value ||
-    searchText.value.trim().length < MIN_SEARCH_LENGTH ||
-    !jurisdictions.value
+    searchText.value.trim().length < MIN_SEARCH_LENGTH
   ) {
     suggestions.value = [];
     showSuggestions.value = false;
     return;
   }
+  
+  if (!jurisdictionLookup.data.value) {
+    suggestions.value = [];
+    showSuggestions.value = false;
+    return;
+  }
+  
   const words = searchText.value
     .toLowerCase()
     .split(/\s+/)
     .filter((word) => word.length >= MIN_SEARCH_LENGTH);
 
-  const filtered = findMatchingJurisdictions(words);
+  const filtered = jurisdictionLookup.findMatchingJurisdictions(words);
 
   suggestions.value = filtered.slice(0, 5);
   showSuggestions.value = suggestions.value.length > 0;
 }
 
 function handleSuggestionClick(selected) {
-  const record = findJurisdictionByName(selected);
+  const record = jurisdictionLookup.findJurisdictionByName(selected);
   const keywords = record
     ? [
         record.Name.toLowerCase().trim(),
@@ -374,6 +383,8 @@ function emitSearch() {
 function expandSearch() {
   isExpanded.value = true;
   isSearchFocused.value = true;
+  // Start loading jurisdiction data when user focuses search
+  enableJurisdictionFetch.value = true;
 }
 
 function handleSearchIconClick() {
