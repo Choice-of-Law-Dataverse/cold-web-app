@@ -129,7 +129,6 @@ Create a `.env` file with required variables:
 ```bash
 # Required for full functionality
 SQL_CONN_STRING="your-database-connection-string"
-MONGODB_CONN_STRING="your-mongodb-connection"
 OPENAI_API_KEY="your-openai-key"
 
 # Authentication (Auth0)

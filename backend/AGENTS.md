@@ -169,7 +169,7 @@ This runs:
 
 Key vars (see [README.md](README.md) for complete list):
 
-- `SQL_CONN_STRING`, `MONGODB_CONN_STRING`, `OPENAI_API_KEY`
+- `SQL_CONN_STRING`, `OPENAI_API_KEY`
 - `AUTH0_DOMAIN`, `AUTH0_AUDIENCE`, `API_KEY`
 
 ## API & Auth

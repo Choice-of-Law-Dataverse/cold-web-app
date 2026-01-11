@@ -19,7 +19,6 @@ from app.routes import (
 )
 from app.services.db_manager import db_manager, suggestions_db_manager
 from app.services.http_session_manager import http_session_manager
-from app.services.query_logging import log_query
 
 # Configure logging to send to Logfire
 logging.basicConfig(level=getattr(logging, config.LOG_LEVEL.upper()), handlers=[logfire.LogfireLoggingHandler()])
@@ -153,8 +152,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.middleware("http")(log_query)
-
 api_router = APIRouter(prefix="/api/v1")
 
 api_router.include_router(search.router)
@@ -188,7 +185,6 @@ logfire.configure(
 logfire.instrument_fastapi(app)
 logfire.instrument_sqlalchemy()
 logfire.instrument_requests()
-logfire.instrument_pymongo()
 
 
 def main():
