@@ -67,7 +67,17 @@ def download_blob_with_managed_identity(blob_url: str) -> bytes:
 
         blob_client = blob_service_client.get_blob_client(container=container_name, blob=blob_name)
 
+        # Check if blob exists first
+        if not blob_client.exists():
+            logger.error("Blob does not exist: %s", blob_url)
+            raise ValueError(f"Blob does not exist in storage: {blob_url}")
+
         blob_data = blob_client.download_blob().readall()
+        logger.debug("Downloaded blob size: %d bytes from %s", len(blob_data), blob_url)
+
+        if not blob_data:
+            logger.error("Downloaded blob is empty: %s", blob_url)
+            raise ValueError(f"Downloaded blob is empty: {blob_url}")
 
         return blob_data
 

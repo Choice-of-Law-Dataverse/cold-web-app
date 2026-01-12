@@ -1,9 +1,17 @@
 <template>
-  <div class="mx-auto max-w-container px-6 py-12">
-    <div class="mb-8">
+  <div class="py-12">
+    <div class="mb-8 flex items-center justify-between">
       <h1 class="text-3xl font-bold">
         {{ categoryLabel }} — Entry #{{ suggestionId }}
       </h1>
+      <UBadge
+        v-if="suggestion?.moderation_status"
+        :color="getStatusBadgeColor(suggestion.moderation_status)"
+        variant="subtle"
+        size="lg"
+      >
+        {{ getStatusLabel(suggestion.moderation_status) }}
+      </UBadge>
     </div>
 
     <!-- Loading state -->
@@ -46,7 +54,7 @@
             }}
           </DetailRow>
           <DetailRow v-if="suggestion.created_at" label="Created">
-            {{ formatDate(suggestion.created_at) }}
+            {{ formatDateLong(suggestion.created_at) }}
           </DetailRow>
           <DetailRow v-if="suggestion.source" label="Source">
             {{ suggestion.source }}
@@ -82,25 +90,54 @@
       </UCard>
 
       <!-- Action buttons -->
-      <div class="flex gap-4">
+      <div class="flex items-center gap-4">
+        <!-- Approve/Reject - only show for pending status -->
+        <template v-if="isPending">
+          <UButton
+            color="green"
+            size="lg"
+            :loading="approving"
+            :disabled="rejecting || deleting"
+            @click="handleApprove"
+          >
+            Approve
+          </UButton>
+          <UButton
+            color="red"
+            size="lg"
+            variant="outline"
+            :loading="rejecting"
+            :disabled="approving || deleting"
+            @click="handleReject"
+          >
+            Reject
+          </UButton>
+        </template>
+
+        <!-- Read-only notice for non-pending items -->
+        <UAlert
+          v-else-if="suggestion?.moderation_status"
+          variant="subtle"
+          icon="i-heroicons-eye"
+          title="Read-only View"
+          :description="`This submission is in '${getStatusLabel(suggestion.moderation_status)}' status and cannot be approved or rejected.`"
+          class="flex-1"
+        />
+
+        <!-- Delete button - always available for case-analyzer -->
         <UButton
-          color="green"
-          size="lg"
-          :loading="approving"
-          :disabled="rejecting"
-          @click="handleApprove"
-        >
-          Approve
-        </UButton>
-        <UButton
+          v-if="isCaseAnalyzer"
           color="red"
           size="lg"
-          variant="outline"
-          :loading="rejecting"
-          :disabled="approving"
-          @click="handleReject"
+          variant="ghost"
+          :loading="deleting"
+          :disabled="approving || rejecting"
+          @click="showDeleteConfirm = true"
         >
-          Reject
+          <template #leading>
+            <UIcon name="i-heroicons-trash" class="h-4 w-4" />
+          </template>
+          Delete
         </UButton>
       </div>
     </div>
@@ -134,13 +171,41 @@
         </template>
       </UCard>
     </UModal>
+
+    <!-- Delete confirmation modal -->
+    <UModal v-model="showDeleteConfirm">
+      <UCard>
+        <template #header>
+          <h3 class="text-lg font-semibold text-red-600">Confirm Delete</h3>
+        </template>
+        <p class="text-gray-700">
+          Are you sure you want to permanently delete this analysis? This action
+          cannot be undone.
+        </p>
+        <template #footer>
+          <div class="flex justify-end gap-2">
+            <UButton
+              variant="ghost"
+              color="gray"
+              @click="showDeleteConfirm = false"
+            >
+              Cancel
+            </UButton>
+            <UButton color="red" :loading="deleting" @click="handleDelete">
+              Delete
+            </UButton>
+          </div>
+        </template>
+      </UCard>
+    </UModal>
   </div>
 </template>
 
 <script setup lang="ts">
-import { format } from "date-fns";
 import { getCategoryLabel } from "@/config/moderationConfig";
 import { useModerationApi } from "@/composables/useModerationApi";
+import { getStatusBadgeColor, getStatusLabel } from "@/utils/moderationStatus";
+import { formatDateLong } from "@/utils/format";
 import DetailRow from "@/components/ui/DetailRow.vue";
 
 definePageMeta({
@@ -148,12 +213,17 @@ definePageMeta({
 });
 
 const route = useRoute();
+const toast = useToast();
 const category = computed(() => route.params.category as string);
 const suggestionId = computed(() => Number(route.params.id));
 const categoryLabel = computed(() => getCategoryLabel(category.value));
 
-const { getSuggestionDetail, approveSuggestion, rejectSuggestion } =
-  useModerationApi();
+const {
+  getSuggestionDetail,
+  approveSuggestion,
+  rejectSuggestion,
+  deleteSuggestion,
+} = useModerationApi();
 
 const {
   data: suggestion,
@@ -166,10 +236,21 @@ const {
 
 const approving = ref(false);
 const rejecting = ref(false);
+const deleting = ref(false);
 const showSuccessModal = ref(false);
 const showErrorModal = ref(false);
+const showDeleteConfirm = ref(false);
 const successMessage = ref("");
 const errorMessage = ref("");
+
+const isCaseAnalyzer = computed(() => category.value === "case-analyzer");
+
+// Check if the suggestion is in pending status
+const isPending = computed(() => {
+  const status = suggestion.value?.moderation_status;
+  // Consider null/undefined as pending (legacy records) or explicit "pending"
+  return !status || status === "pending";
+});
 
 const filteredPayload = computed(() => {
   if (!suggestion.value?.payload) return {};
@@ -257,14 +338,6 @@ const isLongText = (value: unknown): boolean => {
   return value.length > 100 || value.includes("\n");
 };
 
-const formatDate = (dateString: string): string => {
-  try {
-    return format(new Date(dateString), "PPP");
-  } catch {
-    return dateString;
-  }
-};
-
 const handleApprove = async () => {
   approving.value = true;
   try {
@@ -294,6 +367,27 @@ const handleReject = async () => {
     showErrorModal.value = true;
   } finally {
     rejecting.value = false;
+  }
+};
+
+const handleDelete = async () => {
+  deleting.value = true;
+  showDeleteConfirm.value = false;
+  try {
+    const result = await deleteSuggestion(category.value, suggestionId.value);
+    toast.add({
+      title: "Deleted",
+      description: result.message || "Analysis deleted successfully!",
+      color: "green",
+      icon: "i-heroicons-check-circle",
+      timeout: 3000,
+    });
+    navigateTo(`/moderation/${category.value}`);
+  } catch (err: unknown) {
+    errorMessage.value =
+      err instanceof Error ? err.message : "Failed to delete analysis";
+    showErrorModal.value = true;
+    deleting.value = false;
   }
 };
 

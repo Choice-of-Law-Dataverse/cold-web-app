@@ -1,7 +1,10 @@
 <template>
-  <div class="mx-auto max-w-container px-6 py-12">
+  <div class="py-12">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold">Pending: {{ categoryLabel }}</h1>
+      <h1 class="text-3xl font-bold">
+        {{ isCaseAnalyzer ? "All Submissions" : "Pending" }}:
+        {{ categoryLabel }}
+      </h1>
     </div>
 
     <!-- Loading state -->
@@ -24,7 +27,9 @@
       v-else-if="!suggestions || suggestions.length === 0"
       class="py-12 text-center"
     >
-      <p class="text-gray-600">No pending suggestions.</p>
+      <p class="text-gray-600">
+        {{ isCaseAnalyzer ? "No submissions yet." : "No pending suggestions." }}
+      </p>
     </div>
 
     <!-- Suggestions list -->
@@ -32,9 +37,14 @@
       <UCard
         v-for="suggestion in suggestions"
         :key="suggestion.id"
-        class="cursor-pointer transition-shadow hover:shadow-lg"
+        :class="[
+          'transition-shadow',
+          isClickable(suggestion)
+            ? 'cursor-pointer hover:shadow-lg'
+            : 'cursor-not-allowed opacity-60',
+        ]"
         :ui="{ body: { padding: '' } }"
-        @click="navigateTo(`/moderation/${category}/${suggestion.id}`)"
+        @click="handleCardClick(suggestion)"
       >
         <template #header>
           <div class="flex items-start justify-between">
@@ -46,7 +56,12 @@
                 {{ getSuggestionMeta(suggestion) }}
               </p>
             </div>
-            <UBadge color="blue" variant="subtle"> Pending </UBadge>
+            <UBadge
+              :color="getStatusBadgeColor(suggestion.moderation_status)"
+              variant="subtle"
+            >
+              {{ getStatusLabel(suggestion.moderation_status) }}
+            </UBadge>
           </div>
         </template>
 
@@ -79,7 +94,7 @@
           </DetailRow>
           <DetailRow v-if="suggestion.created_at" label="Created">
             <p class="prose mt-0 text-sm">
-              {{ formatDate(suggestion.created_at) }}
+              {{ formatDateLong(suggestion.created_at) }}
             </p>
           </DetailRow>
 
@@ -93,10 +108,11 @@
 </template>
 
 <script setup lang="ts">
-import { format } from "date-fns";
 import { getCategoryLabel } from "@/config/moderationConfig";
 import { useModerationApi } from "@/composables/useModerationApi";
 import type { PendingSuggestion } from "@/composables/useModerationApi";
+import { getStatusBadgeColor, getStatusLabel } from "@/utils/moderationStatus";
+import { formatDateLong } from "@/utils/format";
 import DetailRow from "@/components/ui/DetailRow.vue";
 
 definePageMeta({
@@ -106,6 +122,7 @@ definePageMeta({
 const route = useRoute();
 const category = computed(() => route.params.category as string);
 const categoryLabel = computed(() => getCategoryLabel(category.value));
+const isCaseAnalyzer = computed(() => category.value === "case-analyzer");
 
 const { listPendingSuggestions } = useModerationApi();
 
@@ -115,7 +132,7 @@ const {
   error,
 } = await useAsyncData(
   `pending-${category.value}`,
-  () => listPendingSuggestions(category.value),
+  () => listPendingSuggestions(category.value, isCaseAnalyzer.value),
   {
     watch: [category],
   },
@@ -184,11 +201,19 @@ const getPreciseJurisdiction = (suggestion: PendingSuggestion): string => {
   return String(extracted);
 };
 
-const formatDate = (dateString: string): string => {
-  try {
-    return format(new Date(dateString), "PPP");
-  } catch {
-    return dateString;
+const isClickable = (suggestion: PendingSuggestion): boolean => {
+  // For case-analyzer, approved and rejected items are not clickable
+  if (isCaseAnalyzer.value) {
+    const status = suggestion.moderation_status;
+    return status !== "approved" && status !== "rejected";
+  }
+  // For other categories, all items are clickable
+  return true;
+};
+
+const handleCardClick = (suggestion: PendingSuggestion) => {
+  if (isClickable(suggestion)) {
+    navigateTo(`/moderation/${category.value}/${suggestion.id}`);
   }
 };
 </script>

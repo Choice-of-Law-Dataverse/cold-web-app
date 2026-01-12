@@ -10,6 +10,14 @@ import {
   extractErrorMessage,
 } from "~/utils/analyzerPayloadParser";
 
+export interface DraftRecoveryData {
+  draftId: number;
+  status: string;
+  fileName: string | null;
+  jurisdictionInfo: JurisdictionInfo | null;
+  analyzerData: Record<string, AnalysisStepPayload>;
+}
+
 interface AnalysisStep {
   name: string;
   status: "pending" | "in_progress" | "completed" | "error";
@@ -40,6 +48,7 @@ export function useCaseAnalyzer(
   const isAnalyzing = ref(false);
   const isSubmitting = ref(false);
   const isSubmitted = ref(false);
+  const isRecovering = ref(false);
   const toast = useToast();
 
   async function startAnalysis(
@@ -61,6 +70,19 @@ export function useCaseAnalyzer(
           resume,
         }),
       });
+
+      // Check for HTTP error status
+      if (!response.ok) {
+        const errorText = await response.text();
+        let errorMessage = "Analysis request failed";
+        try {
+          const errorJson = JSON.parse(errorText);
+          errorMessage = errorJson.detail || errorJson.message || errorMessage;
+        } catch {
+          if (errorText) errorMessage = errorText;
+        }
+        throw new Error(errorMessage);
+      }
 
       const reader = response.body?.getReader();
       const decoder = new TextDecoder();
@@ -116,9 +138,20 @@ export function useCaseAnalyzer(
       return { success: true };
     } catch (err: unknown) {
       console.error("Analysis failed:", err);
+      // Mark any in_progress steps as error
+      for (const step of analysisSteps.value) {
+        if (step.status === "in_progress") {
+          step.status = "error";
+          step.error = "Analysis interrupted";
+        }
+      }
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : "Analysis failed. Please try again.";
       return {
         success: false,
-        error: "Analysis failed. Please try again.",
+        error: errorMessage,
       };
     } finally {
       isAnalyzing.value = false;
@@ -175,18 +208,101 @@ export function useCaseAnalyzer(
     }
   }
 
+  async function recoverDraft(
+    draftIdParam: string,
+  ): Promise<{ success: boolean; data?: DraftRecoveryData; error?: string }> {
+    const draftIdNum = parseInt(draftIdParam, 10);
+    if (isNaN(draftIdNum)) {
+      return { success: false, error: "Invalid draft ID" };
+    }
+
+    isRecovering.value = true;
+
+    try {
+      const draft = await $fetch<{
+        draft_id: number;
+        status: string;
+        file_name: string | null;
+        pdf_url: string | null;
+        jurisdiction_info: {
+          precise_jurisdiction?: string;
+          jurisdiction_code?: string;
+          legal_system_type?: string;
+          confidence?: string;
+          reasoning?: string;
+        } | null;
+        analyzer_data: Record<string, AnalysisStepPayload>;
+        case_citation: string | null;
+      }>(`/api/proxy/case-analyzer/draft/${draftIdNum}`);
+
+      // Restore analysis results (step hydration handled by caller)
+      if (draft.analyzer_data && Object.keys(draft.analyzer_data).length > 0) {
+        analysisResults.value = draft.analyzer_data;
+      }
+
+      // Build jurisdiction info object
+      const jurisdictionInfo: JurisdictionInfo | null = draft.jurisdiction_info
+        ? {
+            precise_jurisdiction:
+              draft.jurisdiction_info.precise_jurisdiction || "",
+            jurisdiction_code: draft.jurisdiction_info.jurisdiction_code || "",
+            legal_system_type: draft.jurisdiction_info.legal_system_type || "",
+            confidence: draft.jurisdiction_info.confidence || "",
+            reasoning: draft.jurisdiction_info.reasoning || "",
+          }
+        : null;
+
+      return {
+        success: true,
+        data: {
+          draftId: draft.draft_id,
+          status: draft.status,
+          fileName: draft.file_name,
+          jurisdictionInfo,
+          analyzerData: draft.analyzer_data,
+        },
+      };
+    } catch (err: unknown) {
+      const fetchError = err as {
+        statusCode?: number;
+        data?: { detail?: string };
+      };
+
+      let errorMessage: string;
+      if (fetchError.statusCode === 400) {
+        errorMessage =
+          fetchError.data?.detail ||
+          "This draft has already been submitted for review. Start a new analysis.";
+      } else if (fetchError.statusCode === 403) {
+        errorMessage = "You can only access your own drafts.";
+      } else if (fetchError.statusCode === 404) {
+        errorMessage = "Draft not found.";
+      } else {
+        errorMessage =
+          err instanceof Error ? err.message : "Failed to recover draft";
+      }
+
+      return { success: false, error: errorMessage };
+    } finally {
+      isRecovering.value = false;
+    }
+  }
+
   function reset() {
     isAnalyzing.value = false;
     isSubmitting.value = false;
     isSubmitted.value = false;
+    isRecovering.value = false;
   }
 
   return {
     isAnalyzing,
     isSubmitting,
     isSubmitted,
+    isRecovering,
     startAnalysis,
     submitSuggestion,
+    recoverDraft,
     reset,
   };
 }
