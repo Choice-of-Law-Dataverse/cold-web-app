@@ -6,6 +6,15 @@
       subtitle="Upload a court decision and let AI automatically extract jurisdiction, choice of law provisions, and key PIL elements."
       badge="AI-Powered"
     >
+      <template #content>
+        <NuxtLink
+          to="/court-decision/my-analyses"
+          class="mt-4 inline-flex items-center gap-1 text-sm text-cold-purple hover:underline"
+        >
+          <UIcon name="i-heroicons-document-text" class="h-4 w-4" />
+          View My Analyses
+        </NuxtLink>
+      </template>
       <template #illustration>
         <AnalyzerIllustration />
       </template>
@@ -357,6 +366,9 @@ onMounted(async () => {
       }
     } else {
       error.value = result.error || "Failed to recover draft";
+      // Reset to upload step and clear URL to provide a clean starting point
+      currentStep.value = "upload";
+      navigateTo("/court-decision/new", { replace: true });
     }
   }
 });

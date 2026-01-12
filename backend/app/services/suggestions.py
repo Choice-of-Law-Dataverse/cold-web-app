@@ -60,6 +60,18 @@ class SuggestionService:
                 return stripped or None
         return None
 
+    @staticmethod
+    def _parse_json(val: Any) -> dict[str, Any] | None:
+        """Parse a JSON value that may be a dict, string, or None."""
+        if val is None:
+            return None
+        if isinstance(val, dict):
+            return dict(val)
+        try:
+            return json.loads(val)
+        except Exception:
+            return None
+
     def save_suggestion(
         self,
         payload: dict[str, Any],
@@ -676,16 +688,6 @@ class SuggestionService:
             if not row:
                 return None
 
-            def _parse_json(val: Any) -> dict[str, Any] | None:
-                if val is None:
-                    return None
-                if isinstance(val, dict):
-                    return dict(val)
-                try:
-                    return json.loads(val)
-                except Exception:
-                    return None
-
             return {
                 "id": row["id"],
                 "created_at": row["created_at"],
@@ -693,9 +695,9 @@ class SuggestionService:
                 "user_email": row["user_email"],
                 "model": row["model"],
                 "case_citation": row["case_citation"],
-                "data": _parse_json(row["data"]) or {},
-                "analyzer": _parse_json(row["analyzer"]) or {},
-                "submitted_data": _parse_json(row["submitted_data"]),
+                "data": self._parse_json(row["data"]) or {},
+                "analyzer": self._parse_json(row["analyzer"]) or {},
+                "submitted_data": self._parse_json(row["submitted_data"]),
                 "moderation_status": row["moderation_status"],
             }
 
@@ -749,20 +751,10 @@ class SuggestionService:
 
             rows = session.execute(query).mappings().all()
 
-            def _parse_json(val: Any) -> dict[str, Any] | None:
-                if val is None:
-                    return None
-                if isinstance(val, dict):
-                    return dict(val)
-                try:
-                    return json.loads(val)
-                except Exception:
-                    return None
-
             results: list[dict] = []
             for r in rows:
-                submitted = _parse_json(r["submitted_data"])
-                legacy_data = _parse_json(r["data"]) or {}
+                submitted = self._parse_json(r["submitted_data"])
+                legacy_data = self._parse_json(r["data"]) or {}
 
                 # Use submitted_data if available, else legacy
                 display_data = submitted if submitted else legacy_data
@@ -778,7 +770,7 @@ class SuggestionService:
                         "payload": display_data,
                         "data": legacy_data,  # Include original data for pdf_url, file_name
                         "submitted_data": submitted,
-                        "analyzer": _parse_json(r["analyzer"]) or {},
+                        "analyzer": self._parse_json(r["analyzer"]) or {},
                         "moderation_status": r["moderation_status"],
                     }
                 )
@@ -813,20 +805,10 @@ class SuggestionService:
 
             rows = session.execute(query).mappings().all()
 
-            def _parse_json(val: Any) -> dict[str, Any] | None:
-                if val is None:
-                    return None
-                if isinstance(val, dict):
-                    return dict(val)
-                try:
-                    return json.loads(val)
-                except Exception:
-                    return None
-
             results: list[dict] = []
             for r in rows:
-                submitted = _parse_json(r["submitted_data"])
-                legacy_data = _parse_json(r["data"]) or {}
+                submitted = self._parse_json(r["submitted_data"])
+                legacy_data = self._parse_json(r["data"]) or {}
 
                 # Use submitted_data if available, else legacy
                 display_data = submitted if submitted else legacy_data
@@ -842,7 +824,7 @@ class SuggestionService:
                         "payload": display_data,
                         "data": legacy_data,
                         "submitted_data": submitted,
-                        "analyzer": _parse_json(r["analyzer"]) or {},
+                        "analyzer": self._parse_json(r["analyzer"]) or {},
                         "moderation_status": r["moderation_status"],
                     }
                 )
@@ -874,22 +856,12 @@ class SuggestionService:
 
             rows = session.execute(query).mappings().all()
 
-            def _parse_json(val: Any) -> dict[str, Any] | None:
-                if val is None:
-                    return None
-                if isinstance(val, dict):
-                    return dict(val)
-                try:
-                    return json.loads(val)
-                except Exception:
-                    return None
-
             results: list[dict] = []
             for r in rows:
                 # Parse data columns
-                legacy_data = _parse_json(r["data"]) or {}
-                submitted = _parse_json(r["submitted_data"])
-                analyzer_data = _parse_json(r["analyzer"]) or {}
+                legacy_data = self._parse_json(r["data"]) or {}
+                submitted = self._parse_json(r["submitted_data"])
+                analyzer_data = self._parse_json(r["analyzer"]) or {}
 
                 # Get case citation from column first, then try JSON data
                 case_citation = r["case_citation"]
