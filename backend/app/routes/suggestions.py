@@ -245,10 +245,15 @@ def _extract_token_sub(user: dict | None) -> str | None:
 )
 async def list_pending_suggestions(
     category: str,
+    show_all: bool = False,
     _: dict = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(get_suggestion_service),
 ) -> list[dict[str, Any]]:
-    """List all pending suggestions for a specific category."""
+    """List suggestions for a specific category.
+
+    For case-analyzer, use show_all=true to return all records regardless of status.
+    Default behavior returns only pending records.
+    """
     table = _table_key(category)
     if not table:
         raise HTTPException(
@@ -257,6 +262,8 @@ async def list_pending_suggestions(
         )
     try:
         if category == "case-analyzer":
+            if show_all:
+                return service.list_all_case_analyzer()
             return service.list_pending_case_analyzer()
         else:
             return service.list_pending(table)
@@ -441,4 +448,41 @@ async def reject_suggestion(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to reject suggestion: {str(e)}",
+        ) from e
+
+
+@router.delete(
+    "/{category}/{suggestion_id}",
+    summary="Delete a suggestion",
+    description="Requires editor or admin role. Permanently deletes a suggestion.",
+)
+async def delete_suggestion(
+    category: str,
+    suggestion_id: int,
+    _: dict = Depends(require_editor_or_admin),
+    service: SuggestionService = Depends(get_suggestion_service),
+) -> dict[str, str]:
+    """Delete a suggestion permanently."""
+    if category != "case-analyzer":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Delete is only supported for case-analyzer",
+        )
+
+    try:
+        deleted = service.delete_case_analyzer(suggestion_id)
+        if not deleted:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Suggestion not found",
+            )
+
+        return {"status": "success", "message": "Suggestion deleted successfully"}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to delete suggestion: {str(e)}",
         ) from e

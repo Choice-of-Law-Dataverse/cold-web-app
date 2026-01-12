@@ -124,7 +124,6 @@ async def upload_document(
         draft_payload = {
             "file_name": body.file_name,
             "pdf_url": azure_blob_url,
-            "full_text": extracted_text,
             "moderation_status": "draft",
         }
 
@@ -202,20 +201,23 @@ async def analyze_document(
             logger.error("Draft not found: %d", draft_id)
             raise HTTPException(status_code=404, detail="Draft not found")
 
-        # Get full text from database, or fetch from Azure blob if not present
+        # Get full text from Azure blob storage
         legacy_data = record.get("data", {})
-        text = legacy_data.get("full_text")
-
-        if not text:
-            pdf_url = legacy_data.get("pdf_url")
-            if not pdf_url:
-                logger.error("No full_text or pdf_url found for draft: %d", draft_id)
-                raise HTTPException(status_code=400, detail="No document text available for analysis")
-            try:
-                text = get_text_from_blob(pdf_url)
-            except Exception as e:
-                logger.error("Failed to extract text from PDF blob: %s", str(e))
-                raise HTTPException(status_code=500, detail="Failed to retrieve document text") from e
+        pdf_url = legacy_data.get("pdf_url")
+        if not pdf_url:
+            logger.error("No pdf_url found for draft: %d", draft_id)
+            raise HTTPException(
+                status_code=400,
+                detail="No document available for analysis. Please upload the document again.",
+            )
+        try:
+            text = get_text_from_blob(pdf_url)
+        except Exception as e:
+            logger.error("Failed to extract text from PDF blob: %s", str(e))
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to retrieve document from storage. The document may have been deleted. Please upload the document again.",
+            ) from e
 
         jurisdiction_data = {
             "legal_system_type": body.jurisdiction.legal_system_type,
@@ -402,6 +404,27 @@ async def submit_for_approval(
 
 
 @router.get(
+    "/my-analyses",
+    summary="List user's case analyses",
+    description="Returns all case analyses belonging to the authenticated user.",
+)
+async def list_my_analyses(
+    user: dict = Depends(require_user),
+    service: SuggestionService = Depends(get_suggestion_service),
+) -> list[dict[str, Any]]:
+    """
+    List all case analyses for the authenticated user.
+
+    Returns a list of analyses with id, created_at, case_citation, and moderation_status.
+    """
+    user_email = service._get_token_sub(user)
+    if not user_email:
+        raise HTTPException(status_code=401, detail="Unable to identify user")
+
+    return service.list_user_case_analyses(user_email)
+
+
+@router.get(
     "/draft/{draft_id}",
     summary="Get draft data for recovery",
     description=(
@@ -456,11 +479,16 @@ async def get_draft_for_recovery(
     legacy_data = _parse_json(record.get("data")) or {}
     analyzer_data = _parse_json(record.get("analyzer")) or {}
 
-    # Extract jurisdiction info from legacy data
+    # Extract jurisdiction info - first from analyzer data, then legacy data
     jurisdiction_info = None
-    if legacy_data.get("jurisdiction"):
+    if analyzer_data.get("jurisdiction"):
+        # Jurisdiction stored in analyzer column (new format)
+        jurisdiction_info = analyzer_data["jurisdiction"]
+    elif legacy_data.get("jurisdiction"):
+        # Jurisdiction stored in data column as nested object
         jurisdiction_info = legacy_data["jurisdiction"]
     elif legacy_data.get("precise_jurisdiction"):
+        # Jurisdiction stored in data column as flat fields (legacy)
         jurisdiction_info = {
             "precise_jurisdiction": legacy_data.get("precise_jurisdiction"),
             "jurisdiction_code": legacy_data.get("jurisdiction_code"),

@@ -1,99 +1,106 @@
 <template>
-  <div class="container mx-auto px-4 py-8">
-    <div class="mx-auto max-w-5xl">
-      <!-- Page Header -->
-      <PageHero
-        title="Case Analyzer"
-        subtitle="Upload a court decision and let AI automatically extract jurisdiction, choice of law provisions, and key PIL elements."
-        badge="AI-Powered"
-      >
-        <template #illustration>
-          <AnalyzerIllustration />
-        </template>
-      </PageHero>
+  <div class="py-12">
+    <!-- Page Header -->
+    <PageHero
+      title="Case Analyzer"
+      subtitle="Upload a court decision and let AI automatically extract jurisdiction, choice of law provisions, and key PIL elements."
+      badge="AI-Powered"
+    >
+      <template #content>
+        <NuxtLink
+          to="/court-decision/my-analyses"
+          class="mt-4 inline-flex items-center gap-1 text-sm text-cold-purple hover:underline"
+        >
+          <UIcon name="i-heroicons-document-text" class="h-4 w-4" />
+          View My Analyses
+        </NuxtLink>
+      </template>
+      <template #illustration>
+        <AnalyzerIllustration />
+      </template>
+    </PageHero>
 
-      <!-- Error Display -->
-      <UAlert
-        v-if="error"
-        color="red"
-        icon="i-material-symbols:error"
-        :title="error"
-        class="mb-6"
-        :close-button="{
-          icon: 'i-heroicons-x-mark',
-          color: 'red',
-          variant: 'link',
-        }"
-        @close="error = null"
-      />
+    <!-- Error Display -->
+    <UAlert
+      v-if="error"
+      color="red"
+      icon="i-material-symbols:error"
+      :title="error"
+      class="mb-6"
+      :close-button="{
+        icon: 'i-heroicons-x-mark',
+        color: 'red',
+        variant: 'link',
+      }"
+      @close="error = null"
+    />
 
-      <!-- Recovery Loading State -->
-      <div
-        v-if="isRecovering"
-        class="mb-6 flex items-center justify-center py-12"
-      >
-        <div class="text-center">
-          <UIcon
-            name="i-heroicons-arrow-path"
-            class="text-primary-500 mb-4 h-8 w-8 animate-spin"
-          />
-          <p class="text-gray-600">Recovering your draft...</p>
-        </div>
+    <!-- Recovery Loading State -->
+    <div
+      v-if="analysis.isRecovering.value"
+      class="mb-6 flex items-center justify-center py-12"
+    >
+      <div class="text-center">
+        <UIcon
+          name="i-heroicons-arrow-path"
+          class="text-primary-500 mb-4 h-8 w-8 animate-spin"
+        />
+        <p class="text-gray-600">Recovering your draft...</p>
+      </div>
+    </div>
+
+    <!-- Two column layout throughout -->
+    <div v-if="!analysis.isRecovering.value" class="grid gap-6 lg:grid-cols-3">
+      <!-- Sidebar: Progress tracker (always visible) -->
+      <div class="no-print lg:col-span-1">
+        <AnalysisStepTracker
+          :steps="analysisSteps"
+          :is-common-law="isCommonLawJurisdiction"
+          :current-phase="currentStep"
+          @retry="handleRetry"
+        />
       </div>
 
-      <!-- Two column layout throughout -->
-      <div v-if="!isRecovering" class="grid gap-6 lg:grid-cols-3">
-        <!-- Sidebar: Progress tracker (always visible) -->
-        <div class="lg:col-span-1">
-          <AnalysisStepTracker
-            :steps="analysisSteps"
-            :is-common-law="isCommonLawJurisdiction"
-            :current-phase="currentStep"
-            @retry="handleRetry"
-          />
-        </div>
+      <!-- Main content area -->
+      <div class="lg:col-span-2 print:col-span-3">
+        <!-- Step 1: File Upload -->
+        <FileUploadCard
+          v-if="currentStep === 'upload'"
+          v-model:selected-file="selectedFile"
+          :is-uploading="isUploading"
+          @upload="uploadDocument"
+          @cancel="navigateTo('/court-decision/new')"
+          @error="(msg) => (error = msg)"
+        />
 
-        <!-- Main content area -->
-        <div class="lg:col-span-2">
-          <!-- Step 1: File Upload -->
-          <FileUploadCard
-            v-if="currentStep === 'upload'"
-            v-model:selected-file="selectedFile"
-            :is-uploading="isUploading"
-            @upload="uploadDocument"
-            @cancel="navigateTo('/court-decision/new')"
-            @error="(msg) => (error = msg)"
-          />
+        <!-- Step 2: Jurisdiction Confirmation -->
+        <JurisdictionConfirmCard
+          v-if="currentStep === 'confirm'"
+          v-model:selected-jurisdiction="selectedJurisdiction"
+          :document-name="selectedFile?.name || 'Unknown'"
+          :jurisdiction-info="jurisdictionInfo"
+          :is-loading="analysis.isAnalyzing.value"
+          @continue="confirmAndAnalyze(false)"
+          @reset="resetAnalysis"
+          @jurisdiction-updated="onJurisdictionSelected"
+          @legal-system-updated="onLegalSystemSelected"
+        />
 
-          <!-- Step 2: Jurisdiction Confirmation -->
-          <JurisdictionConfirmCard
-            v-if="currentStep === 'confirm'"
-            v-model:selected-jurisdiction="selectedJurisdiction"
-            :document-name="selectedFile?.name || 'Unknown'"
-            :jurisdiction-info="jurisdictionInfo"
-            :is-loading="analysis.isAnalyzing.value"
-            @continue="confirmAndAnalyze(false)"
-            @reset="resetAnalysis"
-            @jurisdiction-updated="onJurisdictionSelected"
-            @legal-system-updated="onLegalSystemSelected"
-          />
-
-          <!-- Step 3: Review & Submit -->
-          <AnalysisReviewForm
-            v-if="currentStep === 'analyzing'"
-            v-model:editable-form="editableForm"
-            :document-name="selectedFile?.name || 'Unknown'"
-            :selected-jurisdiction="selectedJurisdiction"
-            :is-common-law-jurisdiction="isCommonLawJurisdiction"
-            :is-analyzing="analysis.isAnalyzing.value"
-            :is-submitting="analysis.isSubmitting.value"
-            :is-submitted="analysis.isSubmitted.value"
-            :get-field-status="getFieldStatus"
-            :is-field-loading="isFieldLoading"
-            @submit="submitAnalyzerSuggestion"
-            @reset="resetAnalysis"
-          />
-        </div>
+        <!-- Step 3: Review & Submit -->
+        <AnalysisReviewForm
+          v-if="currentStep === 'analyzing'"
+          v-model:editable-form="editableForm"
+          :document-name="selectedFile?.name || 'Unknown'"
+          :selected-jurisdiction="selectedJurisdiction"
+          :is-common-law-jurisdiction="isCommonLawJurisdiction"
+          :is-analyzing="analysis.isAnalyzing.value"
+          :is-submitting="analysis.isSubmitting.value"
+          :is-submitted="analysis.isSubmitted.value"
+          :get-field-status="getFieldStatus"
+          :is-field-loading="isFieldLoading"
+          @submit="submitAnalyzerSuggestion"
+          @reset="resetAnalysis"
+        />
       </div>
     </div>
   </div>
@@ -128,7 +135,6 @@ const currentStep = ref<"upload" | "confirm" | "analyzing">("upload");
 const error = ref<string | null>(null);
 const analysisResults = ref<Record<string, AnalysisStepPayload>>({});
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
-const isRecovering = ref(false);
 
 // Jurisdictions for selector
 const { data: jurisdictions } = useJurisdictions();
@@ -143,7 +149,12 @@ const {
   reset: resetUpload,
 } = useDocumentUpload();
 
-const { analysisSteps, getFieldStatus, isFieldLoading } = useAnalysisSteps();
+const {
+  analysisSteps,
+  getFieldStatus,
+  isFieldLoading,
+  hydrateAnalysisStepsFromResults,
+} = useAnalysisSteps();
 
 const analysis = useCaseAnalyzer(analysisSteps, analysisResults, () =>
   populateEditableForm(),
@@ -306,124 +317,59 @@ function resetAnalysis() {
     step.reasoning = null;
     step.error = null;
   });
-}
-
-// Draft recovery on page load
-async function recoverDraft(draftIdParam: string) {
-  const draftIdNum = parseInt(draftIdParam, 10);
-  if (isNaN(draftIdNum)) return;
-
-  isRecovering.value = true;
-  error.value = null;
-
-  try {
-    const { data, error: fetchError } = await useFetch<{
-      draft_id: number;
-      status: string;
-      file_name: string | null;
-      pdf_url: string | null;
-      jurisdiction_info: {
-        precise_jurisdiction?: string;
-        jurisdiction_code?: string;
-        legal_system_type?: string;
-        confidence?: string;
-        reasoning?: string;
-      } | null;
-      analyzer_data: Record<string, AnalysisStepPayload>;
-      case_citation: string | null;
-    }>(`/api/proxy/case-analyzer/draft/${draftIdNum}`);
-
-    if (fetchError.value) {
-      // If 400, draft was already submitted - show message and stay on upload
-      if (fetchError.value.statusCode === 400) {
-        error.value =
-          "This draft has already been submitted for review. Start a new analysis.";
-        return;
-      }
-      throw new Error(fetchError.value.message || "Failed to recover draft");
-    }
-
-    if (!data.value) {
-      error.value = "Draft not found";
-      return;
-    }
-
-    const draft = data.value;
-
-    // Restore draft ID
-    draftId.value = draft.draft_id;
-
-    // Restore file info (create a fake file reference for display)
-    if (draft.file_name) {
-      selectedFile.value = new File([], draft.file_name, {
-        type: "application/pdf",
-      });
-    }
-
-    // Restore jurisdiction info
-    if (draft.jurisdiction_info) {
-      jurisdictionInfo.value = {
-        precise_jurisdiction:
-          draft.jurisdiction_info.precise_jurisdiction || "",
-        jurisdiction_code: draft.jurisdiction_info.jurisdiction_code || "",
-        legal_system_type: draft.jurisdiction_info.legal_system_type || "",
-        confidence: draft.jurisdiction_info.confidence || "",
-        reasoning: draft.jurisdiction_info.reasoning || "",
-      };
-    }
-
-    // Restore analysis results
-    if (draft.analyzer_data && Object.keys(draft.analyzer_data).length > 0) {
-      analysisResults.value = draft.analyzer_data;
-
-      // Update step statuses based on analyzer_data
-      for (const [stepName, stepData] of Object.entries(draft.analyzer_data)) {
-        const step = analysisSteps.value.find((s) => s.name === stepName);
-        if (step && stepData) {
-          step.status = "completed";
-          const payload = stepData as AnalysisStepPayload;
-          step.confidence =
-            typeof payload.confidence === "string" ? payload.confidence : null;
-          step.reasoning =
-            typeof payload.reasoning === "string" ? payload.reasoning : null;
-        }
-      }
-    }
-
-    // Mark upload and jurisdiction as completed
-    updateStepStatus("document_upload", "completed");
-    if (draft.jurisdiction_info) {
-      updateStepStatus("jurisdiction_detection", "completed", {
-        confidence: draft.jurisdiction_info.confidence,
-        reasoning: draft.jurisdiction_info.reasoning,
-      });
-    }
-
-    // Determine which step to show based on status and data
-    if (draft.status === "completed" || draft.status === "analyzing") {
-      // Has analysis data - go to review form
-      currentStep.value = "analyzing";
-      populateEditableForm();
-    } else if (draft.jurisdiction_info) {
-      // Has jurisdiction but no analysis - go to confirm
-      currentStep.value = "confirm";
-    } else {
-      // No data - stay on upload
-      currentStep.value = "upload";
-    }
-  } catch (err) {
-    error.value =
-      err instanceof Error ? err.message : "Failed to recover draft";
-  } finally {
-    isRecovering.value = false;
-  }
+  // Clear the draft query parameter from URL
+  navigateTo("/court-decision/new", { replace: true });
 }
 
 // Check for draft parameter on mount
-onMounted(() => {
+onMounted(async () => {
   const draftParam = route.query.draft;
   if (draftParam && typeof draftParam === "string") {
-    recoverDraft(draftParam);
+    error.value = null;
+    const result = await analysis.recoverDraft(draftParam);
+
+    if (result.success && result.data) {
+      // Restore useDocumentUpload state
+      draftId.value = result.data.draftId;
+      if (result.data.fileName) {
+        selectedFile.value = new File([], result.data.fileName, {
+          type: "application/pdf",
+        });
+      }
+      if (result.data.jurisdictionInfo) {
+        jurisdictionInfo.value = result.data.jurisdictionInfo;
+      }
+
+      // Hydrate analysis steps from recovered data
+      if (Object.keys(result.data.analyzerData).length > 0) {
+        hydrateAnalysisStepsFromResults(result.data.analyzerData);
+      }
+      updateStepStatus("document_upload", "completed");
+      if (result.data.jurisdictionInfo) {
+        updateStepStatus("jurisdiction_detection", "completed", {
+          confidence: result.data.jurisdictionInfo.confidence,
+          reasoning: result.data.jurisdictionInfo.reasoning,
+        });
+      }
+
+      // Determine which step to show based on status and data
+      if (
+        result.data.status === "completed" ||
+        result.data.status === "analyzing"
+      ) {
+        currentStep.value = "analyzing";
+        populateEditableForm();
+      } else if (result.data.jurisdictionInfo) {
+        currentStep.value = "confirm";
+      } else {
+        currentStep.value = "upload";
+      }
+    } else {
+      error.value = result.error || "Failed to recover draft";
+      // Reset to upload step and clear URL to provide a clean starting point
+      currentStep.value = "upload";
+      navigateTo("/court-decision/new", { replace: true });
+    }
   }
 });
 </script>

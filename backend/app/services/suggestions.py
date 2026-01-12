@@ -60,6 +60,18 @@ class SuggestionService:
                 return stripped or None
         return None
 
+    @staticmethod
+    def _parse_json(val: Any) -> dict[str, Any] | None:
+        """Parse a JSON value that may be a dict, string, or None."""
+        if val is None:
+            return None
+        if isinstance(val, dict):
+            return dict(val)
+        try:
+            return json.loads(val)
+        except Exception:
+            return None
+
     def save_suggestion(
         self,
         payload: dict[str, Any],
@@ -676,16 +688,6 @@ class SuggestionService:
             if not row:
                 return None
 
-            def _parse_json(val: Any) -> dict[str, Any] | None:
-                if val is None:
-                    return None
-                if isinstance(val, dict):
-                    return dict(val)
-                try:
-                    return json.loads(val)
-                except Exception:
-                    return None
-
             return {
                 "id": row["id"],
                 "created_at": row["created_at"],
@@ -693,9 +695,9 @@ class SuggestionService:
                 "user_email": row["user_email"],
                 "model": row["model"],
                 "case_citation": row["case_citation"],
-                "data": _parse_json(row["data"]) or {},
-                "analyzer": _parse_json(row["analyzer"]) or {},
-                "submitted_data": _parse_json(row["submitted_data"]),
+                "data": self._parse_json(row["data"]) or {},
+                "analyzer": self._parse_json(row["analyzer"]) or {},
+                "submitted_data": self._parse_json(row["submitted_data"]),
                 "moderation_status": row["moderation_status"],
             }
 
@@ -749,20 +751,10 @@ class SuggestionService:
 
             rows = session.execute(query).mappings().all()
 
-            def _parse_json(val: Any) -> dict[str, Any] | None:
-                if val is None:
-                    return None
-                if isinstance(val, dict):
-                    return dict(val)
-                try:
-                    return json.loads(val)
-                except Exception:
-                    return None
-
             results: list[dict] = []
             for r in rows:
-                submitted = _parse_json(r["submitted_data"])
-                legacy_data = _parse_json(r["data"]) or {}
+                submitted = self._parse_json(r["submitted_data"])
+                legacy_data = self._parse_json(r["data"]) or {}
 
                 # Use submitted_data if available, else legacy
                 display_data = submitted if submitted else legacy_data
@@ -778,8 +770,133 @@ class SuggestionService:
                         "payload": display_data,
                         "data": legacy_data,  # Include original data for pdf_url, file_name
                         "submitted_data": submitted,
-                        "analyzer": _parse_json(r["analyzer"]) or {},
+                        "analyzer": self._parse_json(r["analyzer"]) or {},
                         "moderation_status": r["moderation_status"],
+                    }
+                )
+
+            return results
+
+    def list_all_case_analyzer(self, limit: int = 100) -> list[dict]:
+        """
+        List ALL case analyzer records regardless of moderation status.
+
+        Used by admins/editors to view all submissions.
+        Returns records ordered by created_at desc.
+        """
+        target = self.tables["case_analyzer"]
+        with suggestions_db_manager.get_session() as session:
+            query = (
+                sa.select(
+                    target.c.id,
+                    target.c.created_at,
+                    target.c.username,
+                    target.c.user_email,
+                    target.c.model,
+                    target.c.case_citation,
+                    target.c.data,
+                    target.c.analyzer,
+                    target.c.submitted_data,
+                    target.c.moderation_status,
+                )
+                .order_by(target.c.created_at.desc())
+                .limit(limit)
+            )
+
+            rows = session.execute(query).mappings().all()
+
+            results: list[dict] = []
+            for r in rows:
+                submitted = self._parse_json(r["submitted_data"])
+                legacy_data = self._parse_json(r["data"]) or {}
+
+                # Use submitted_data if available, else legacy
+                display_data = submitted if submitted else legacy_data
+
+                results.append(
+                    {
+                        "id": r["id"],
+                        "created_at": r["created_at"],
+                        "username": r["username"],
+                        "user_email": r["user_email"],
+                        "model": r["model"],
+                        "case_citation": r["case_citation"],
+                        "payload": display_data,
+                        "data": legacy_data,
+                        "submitted_data": submitted,
+                        "analyzer": self._parse_json(r["analyzer"]) or {},
+                        "moderation_status": r["moderation_status"],
+                    }
+                )
+
+            return results
+
+    def list_user_case_analyses(self, user_email: str, limit: int = 100) -> list[dict]:
+        """
+        List all case analyzer records for a specific user.
+
+        Returns records owned by the user, ordered by created_at desc.
+        """
+        target = self.tables["case_analyzer"]
+        with suggestions_db_manager.get_session() as session:
+            query = (
+                sa.select(
+                    target.c.id,
+                    target.c.created_at,
+                    target.c.case_citation,
+                    target.c.data,
+                    target.c.submitted_data,
+                    target.c.analyzer,
+                    target.c.moderation_status,
+                )
+                .where(target.c.user_email == user_email)
+                .order_by(target.c.created_at.desc())
+                .limit(limit)
+            )
+
+            rows = session.execute(query).mappings().all()
+
+            results: list[dict] = []
+            for r in rows:
+                # Parse data columns
+                legacy_data = self._parse_json(r["data"]) or {}
+                submitted = self._parse_json(r["submitted_data"])
+                analyzer_data = self._parse_json(r["analyzer"]) or {}
+
+                # Get case citation from column first, then try JSON data
+                case_citation = r["case_citation"]
+                if not case_citation:
+                    # Try submitted_data first (user-edited)
+                    if submitted and submitted.get("case_citation"):
+                        case_citation = submitted["case_citation"]
+                    # Then try analyzer data (AI-extracted)
+                    # Structure is: analyzer.case_citation.case_citation
+                    elif analyzer_data.get("case_citation"):
+                        cc_data = analyzer_data["case_citation"]
+                        if isinstance(cc_data, dict) and cc_data.get("case_citation"):
+                            case_citation = cc_data["case_citation"]
+                        elif isinstance(cc_data, str):
+                            case_citation = cc_data
+                    # Finally try legacy data
+                    else:
+                        case_citation = legacy_data.get("case_citation")
+
+                # Get file name from legacy data
+                file_name = legacy_data.get("file_name")
+
+                # Format created_at
+                created_at = r["created_at"]
+                created_at_str = None
+                if created_at and hasattr(created_at, "isoformat"):
+                    created_at_str = created_at.isoformat()
+
+                results.append(
+                    {
+                        "id": r["id"],
+                        "created_at": created_at_str,
+                        "case_citation": case_citation,
+                        "file_name": file_name,
+                        "moderation_status": r["moderation_status"] or "draft",
                     }
                 )
 
@@ -804,3 +921,15 @@ class SuggestionService:
             upd = sa.update(target).where(target.c.id == draft_id).values(moderation_status=status)
             session.execute(upd)
             session.commit()
+
+    def delete_case_analyzer(self, draft_id: int) -> bool:
+        """
+        Delete a case analyzer record.
+
+        Returns True if a record was deleted, False if not found.
+        """
+        target = self.tables["case_analyzer"]
+        with suggestions_db_manager.get_session() as session:
+            result = session.execute(sa.delete(target).where(target.c.id == draft_id))
+            session.commit()
+            return result.rowcount > 0

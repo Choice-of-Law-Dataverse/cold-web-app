@@ -1,5 +1,5 @@
 <template>
-  <div class="mx-auto max-w-container px-6 py-12">
+  <div class="py-12">
     <h1 class="mb-8 text-3xl font-bold">Suggestions Moderation</h1>
 
     <UCard>

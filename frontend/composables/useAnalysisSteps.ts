@@ -150,22 +150,20 @@ export function useAnalysisSteps() {
     analysisSteps.value.forEach((step) => {
       const result = results[step.name];
       if (result) {
+        // Only mark as completed if we have actual result data
         step.status = "completed";
         step.confidence =
           typeof result.confidence === "string"
             ? (result.confidence as string)
-            : step.confidence;
+            : null;
         step.reasoning =
           typeof result.reasoning === "string"
             ? (result.reasoning as string)
-            : step.reasoning;
-        step.error = null;
-      } else if (step.status !== "error") {
-        step.status = "completed";
-        step.confidence = null;
-        step.reasoning = null;
+            : null;
         step.error = null;
       }
+      // Steps without results stay in their current state (pending)
+      // Don't mark them as completed - they weren't executed
     });
   }
 

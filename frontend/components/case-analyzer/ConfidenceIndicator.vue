@@ -9,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <span class="inline-flex items-center gap-1">
+  <span class="no-print inline-flex items-center gap-1">
     <!-- Loading spinner -->
     <UIcon
       v-if="isLoading"

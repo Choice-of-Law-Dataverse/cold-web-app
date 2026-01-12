@@ -697,8 +697,24 @@ button.cold-toggle-btn {
   }
 }
 
+// Print field value - hidden on screen, visible in print
+.print-field-value {
+  display: none;
+}
+
 // Print styles -----------------------------------------------
 @media print {
+  // Show print-only field values
+  .print-field-value {
+    display: block !important;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    background: #fafafa;
+    min-height: 2em;
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
   // Hide navigation, header chrome, and interactive elements
   header,
   nav,
@@ -739,6 +755,48 @@ button.cold-toggle-btn {
   figure,
   img {
     page-break-inside: avoid;
+  }
+
+  // Case analyzer print styles
+  // Make form inputs print-friendly - show values clearly
+  textarea,
+  input[type="text"] {
+    border: 1px solid #ccc !important;
+    background: white !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    overflow: visible !important;
+    height: auto !important;
+    min-height: auto !important;
+    white-space: pre-wrap !important;
+  }
+
+  // Ensure text content is visible
+  textarea {
+    resize: none !important;
+  }
+
+  // Show full grid width when sidebar is hidden
+  .print\:col-span-3 {
+    grid-column: span 3 / span 3 !important;
+  }
+
+  // Hide card footers with action buttons
+  .card-footer-modern {
+    display: none !important;
+  }
+
+  // Page hero should be more compact in print
+  .page-hero {
+    padding: 1rem 0 !important;
+    margin-bottom: 1rem !important;
+  }
+
+  // Remove card shadows/borders for cleaner print
+  .u-card,
+  [class*="UCard"] {
+    box-shadow: none !important;
+    border: 1px solid #e5e7eb !important;
   }
 }
 

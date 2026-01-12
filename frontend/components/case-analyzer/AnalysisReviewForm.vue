@@ -62,7 +62,11 @@
           v-model="localForm.choiceOfLawSections"
           :disabled="isFieldDisabled('choiceOfLawSections')"
           :rows="6"
+          class="print:hidden"
         />
+        <div class="print-field-value">
+          {{ localForm.choiceOfLawSections }}
+        </div>
       </UFormGroup>
 
       <UFormGroup>
@@ -77,7 +81,11 @@
           v-model="localForm.themes"
           :disabled="isFieldDisabled('themes')"
           :rows="1"
+          class="print:hidden"
         />
+        <div class="print-field-value">
+          {{ localForm.themes }}
+        </div>
       </UFormGroup>
 
       <UFormGroup>
@@ -92,7 +100,11 @@
           v-model="localForm.caseCitation"
           :disabled="isFieldDisabled('caseCitation')"
           :rows="2"
+          class="print:hidden"
         />
+        <div class="print-field-value">
+          {{ localForm.caseCitation }}
+        </div>
       </UFormGroup>
 
       <UFormGroup>
@@ -107,7 +119,11 @@
           v-model="localForm.caseRelevantFacts"
           :disabled="isFieldDisabled('caseRelevantFacts')"
           :rows="6"
+          class="print:hidden"
         />
+        <div class="print-field-value">
+          {{ localForm.caseRelevantFacts }}
+        </div>
       </UFormGroup>
 
       <UFormGroup>
@@ -122,7 +138,11 @@
           v-model="localForm.casePILProvisions"
           :disabled="isFieldDisabled('casePILProvisions')"
           :rows="2"
+          class="print:hidden"
         />
+        <div class="print-field-value">
+          {{ localForm.casePILProvisions }}
+        </div>
       </UFormGroup>
 
       <UFormGroup>
@@ -137,7 +157,11 @@
           v-model="localForm.caseChoiceofLawIssue"
           :disabled="isFieldDisabled('caseChoiceofLawIssue')"
           :rows="6"
+          class="print:hidden"
         />
+        <div class="print-field-value">
+          {{ localForm.caseChoiceofLawIssue }}
+        </div>
       </UFormGroup>
 
       <UFormGroup>
@@ -152,7 +176,11 @@
           v-model="localForm.caseCourtsPosition"
           :disabled="isFieldDisabled('caseCourtsPosition')"
           :rows="6"
+          class="print:hidden"
         />
+        <div class="print-field-value">
+          {{ localForm.caseCourtsPosition }}
+        </div>
       </UFormGroup>
 
       <UFormGroup v-if="isCommonLawJurisdiction">
@@ -167,7 +195,11 @@
           v-model="localForm.caseObiterDicta"
           :disabled="isFieldDisabled('caseObiterDicta')"
           :rows="3"
+          class="print:hidden"
         />
+        <div class="print-field-value">
+          {{ localForm.caseObiterDicta }}
+        </div>
       </UFormGroup>
 
       <UFormGroup v-if="isCommonLawJurisdiction">
@@ -182,7 +214,11 @@
           v-model="localForm.caseDissentingOpinions"
           :disabled="isFieldDisabled('caseDissentingOpinions')"
           :rows="3"
+          class="print:hidden"
         />
+        <div class="print-field-value">
+          {{ localForm.caseDissentingOpinions }}
+        </div>
       </UFormGroup>
 
       <UFormGroup>
@@ -197,12 +233,16 @@
           v-model="localForm.caseAbstract"
           :disabled="isFieldDisabled('caseAbstract')"
           :rows="6"
+          class="print:hidden"
         />
+        <div class="print-field-value">
+          {{ localForm.caseAbstract }}
+        </div>
       </UFormGroup>
     </div>
 
     <template #footer>
-      <div class="card-footer-modern">
+      <div class="card-footer-modern no-print">
         <p class="card-footer-modern__hint">
           <UIcon name="i-heroicons-pencil-square" />
           Edit fields before submitting
@@ -210,6 +250,17 @@
         <div class="card-footer-modern__actions">
           <UButton variant="ghost" color="gray" @click="$emit('reset')">
             Start Over
+          </UButton>
+          <UButton
+            variant="ghost"
+            color="gray"
+            :disabled="isAnalyzing"
+            @click="handlePrint"
+          >
+            <template #leading>
+              <UIcon name="i-heroicons-printer" class="h-4 w-4" />
+            </template>
+            Print
           </UButton>
           <UButton
             :class="isSubmitted ? 'btn-success' : 'btn-primary-gradient'"
@@ -278,5 +329,9 @@ const localForm = computed({
 function isFieldDisabled(fieldName: keyof EditedAnalysisValues): boolean {
   if (props.isSubmitted) return true;
   return props.isFieldLoading(fieldName);
+}
+
+function handlePrint() {
+  window.print();
 }
 </script>
