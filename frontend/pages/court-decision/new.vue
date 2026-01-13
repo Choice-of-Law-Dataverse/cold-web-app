@@ -63,9 +63,52 @@
 
       <!-- Main content area -->
       <div class="lg:col-span-2 print:col-span-3">
-        <!-- Step 1: File Upload -->
+        <!-- Login Required Notice (shown when not authenticated) -->
+        <UCard v-if="!user && currentStep === 'upload'" class="mb-6">
+          <div class="rounded-lg bg-cold-purple/5 p-6">
+            <div class="flex items-start gap-4">
+              <div
+                class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-full bg-cold-purple/10"
+              >
+                <UIcon
+                  name="i-heroicons-lock-closed"
+                  class="h-6 w-6 text-cold-purple"
+                />
+              </div>
+              <div class="flex-1">
+                <h3 class="mb-2 font-semibold text-cold-night">
+                  Login Required to Use Case Analyzer
+                </h3>
+                <p class="mb-4 text-sm text-cold-night-alpha">
+                  You'll need a free account to use the AI-powered Case
+                  Analyzer. We use authentication to prevent automated spam and
+                  ensure the integrity of our database. Your account is
+                  completely free and takes just moments to create.
+                </p>
+                <div class="flex flex-wrap gap-3">
+                  <a
+                    :href="`/auth/login?returnTo=/court-decision/new`"
+                    class="inline-flex items-center gap-2 rounded-lg bg-cold-purple px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-cold-purple/90"
+                  >
+                    <UIcon name="i-heroicons-arrow-right-on-rectangle" />
+                    Login
+                  </a>
+                  <a
+                    :href="`/auth/signup?returnTo=/court-decision/new`"
+                    class="inline-flex items-center gap-2 rounded-lg border border-cold-purple px-4 py-2 text-sm font-semibold text-cold-purple transition-colors hover:bg-cold-purple/5"
+                  >
+                    <UIcon name="i-heroicons-user-plus" />
+                    Create Free Account
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </UCard>
+
+        <!-- Step 1: File Upload (shown when authenticated) -->
         <FileUploadCard
-          v-if="currentStep === 'upload'"
+          v-if="user && currentStep === 'upload'"
           v-model:selected-file="selectedFile"
           :is-uploading="isUploading"
           @upload="uploadDocument"
@@ -121,11 +164,12 @@ import AnalysisStepTracker from "@/components/case-analyzer/AnalysisStepTracker.
 import PageHero from "@/components/ui/PageHero.vue";
 import AnalyzerIllustration from "@/components/case-analyzer/AnalyzerIllustration.vue";
 
-definePageMeta({
-  middleware: ["auth"],
-});
+definePageMeta({});
 
 useHead({ title: "AI Case Analyzer — CoLD" });
+
+// Check if user is authenticated
+const user = useUser();
 
 // Route for draft recovery
 const route = useRoute();
