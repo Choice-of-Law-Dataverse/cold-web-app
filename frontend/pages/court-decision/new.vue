@@ -94,7 +94,7 @@
                     Login
                   </a>
                   <a
-                    :href="`/auth/signup?returnTo=/court-decision/new`"
+                    :href="`/auth/login?screen_hint=signup&returnTo=/court-decision/new`"
                     class="inline-flex items-center gap-2 rounded-lg border border-cold-purple px-4 py-2 text-sm font-semibold text-cold-purple transition-colors hover:bg-cold-purple/5"
                   >
                     <UIcon name="i-heroicons-user-plus" />
@@ -361,11 +361,9 @@ function resetAnalysis() {
     step.reasoning = null;
     step.error = null;
   });
-  // Clear the draft query parameter from URL
   navigateTo("/court-decision/new", { replace: true });
 }
 
-// Check for draft parameter on mount
 onMounted(async () => {
   const draftParam = route.query.draft;
   if (draftParam && typeof draftParam === "string") {
