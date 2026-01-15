@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard flex h-full w-full flex-col">
+  <UCard class="cold-ucard gradient-top-border flex h-full w-full flex-col">
     <h2 class="popular-title">Court Decisions by Jurisdiction</h2>
     <p class="result-value-small">
       Explore countries with the highest case law volume
@@ -11,11 +11,11 @@
 
     <div v-else-if="data && chartData.length > 0" class="chart-container">
       <div class="chart-bars">
-        <div
+        <NuxtLink
           v-for="(item, index) in chartData"
           :key="index"
-          class="bar-row"
-          @click="handleBarClick(item.url)"
+          :to="item.url"
+          class="bar-row hover-row no-underline"
           @mouseenter="() => handleBarHover(index, true)"
           @mouseleave="() => handleBarHover(index, false)"
         >
@@ -29,7 +29,7 @@
               <span class="bar-value">{{ item.count }}</span>
             </div>
           </div>
-        </div>
+        </NuxtLink>
       </div>
     </div>
   </UCard>
@@ -39,7 +39,6 @@
 import { ref, computed } from "vue";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
 import { useJurisdictionChart } from "@/composables/useJurisdictionChart";
-import { navigateTo } from "#app";
 
 const { data, isLoading } = useJurisdictionChart();
 const hoveredIndex = ref(-1);
@@ -58,12 +57,6 @@ const chartData = computed(() => {
   }));
 });
 
-function handleBarClick(url) {
-  if (url) {
-    navigateTo(url);
-  }
-}
-
 function handleBarHover(index, isHovering) {
   hoveredIndex.value = isHovering ? index : -1;
 }
@@ -77,18 +70,15 @@ function handleBarHover(index, isHovering) {
 .chart-bars {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 
 .bar-row {
   display: flex;
   align-items: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.bar-row:hover {
-  opacity: 0.9;
+  padding: 0.5rem;
+  margin: 0 -0.5rem;
 }
 
 .bar-label {
@@ -96,22 +86,27 @@ function handleBarHover(index, isHovering) {
   text-align: right;
   padding-right: 1rem;
   font-size: 0.9rem;
-  color: var(--color-cold-night, #1e293b);
+  font-weight: 500;
+  color: var(--color-cold-night);
 }
 
 .bar-container {
   flex: 1;
   height: 32px;
   position: relative;
-  background: #f1f5f9;
+  background: rgb(241 245 249);
   border-radius: 4px;
   overflow: hidden;
 }
 
 .bar {
   height: 100%;
-  background: var(--color-cold-teal, #14b8a6);
-  transition: all 0.3s ease;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-cold-purple) 15%, rgb(241 245 249)),
+    color-mix(in srgb, var(--color-cold-green) 12%, rgb(241 245 249))
+  );
+  transition: all 0.15s ease;
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -121,15 +116,17 @@ function handleBarHover(index, isHovering) {
 }
 
 .bar-hovered {
-  background: var(--color-cold-green, #10b981);
-  transform: scaleY(1.05);
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--color-cold-purple) 25%, rgb(241 245 249)),
+    color-mix(in srgb, var(--color-cold-green) 20%, rgb(241 245 249))
+  );
 }
 
 .bar-value {
-  color: white;
+  color: var(--color-cold-night);
   font-weight: 600;
   font-size: 0.875rem;
-  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Responsive adjustments */

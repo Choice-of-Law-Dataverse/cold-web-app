@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard h-full">
+  <UCard class="cold-ucard gradient-top-border h-full">
     <div>
       <!-- Map Container -->
       <div

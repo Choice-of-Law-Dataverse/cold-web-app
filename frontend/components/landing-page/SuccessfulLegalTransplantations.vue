@@ -1,9 +1,9 @@
 <template>
-  <UCard class="cold-ucard flex h-full w-full flex-col">
+  <UCard class="cold-ucard landing-card flex h-full w-full flex-col">
     <div class="flex flex-col gap-4">
       <div>
-        <h2 class="popular-title">Successful Legal Transplantations</h2>
-        <p class="result-value-small">
+        <h2 class="card-title">Successful Legal Transplantations</h2>
+        <p class="card-subtitle">
           Domestic Instruments compatible with the HCCH Principles
         </p>
       </div>
@@ -11,29 +11,27 @@
         <LoadingLandingPageCard />
       </div>
       <template v-else>
-        <div
-          v-for="(instrument, index) in domesticInstruments.slice(0, 9)"
-          :key="index"
-        >
-          <NuxtLink :to="`/domestic-instrument/${instrument.ID}`">
-            <UButton class="suggestion-button" variant="link">
-              <span
-                class="mr-3 inline-flex min-w-[40px] items-center justify-center"
-              >
-                <img
-                  :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
-                  class="h-5 border border-cold-gray"
-                />
-              </span>
-              <span class="break-words text-left">
-                {{
-                  instrument["Entry Into Force"]
-                    ? formatYear(instrument["Entry Into Force"])
-                    : instrument["Date"]
-                }}:
-                {{ instrument["Title (in English)"] }}
-              </span>
-            </UButton>
+        <div class="flex flex-col gap-2">
+          <NuxtLink
+            v-for="(instrument, index) in domesticInstruments.slice(0, 9)"
+            :key="index"
+            :to="`/domestic-instrument/${instrument.ID}`"
+            class="landing-item-button"
+          >
+            <div class="flag-wrapper">
+              <img
+                :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
+                class="item-flag"
+              />
+            </div>
+            <span class="break-words text-left">
+              {{
+                instrument["Entry Into Force"]
+                  ? formatYear(instrument["Entry Into Force"])
+                  : instrument["Date"]
+              }}:
+              {{ instrument["Title (in English)"] }}
+            </span>
           </NuxtLink>
         </div>
       </template>
@@ -52,10 +50,3 @@ const { data: domesticInstruments, isLoading } = useDomesticInstruments({
   filterCompatible,
 });
 </script>
-
-<style scoped>
-.result-value-small {
-  line-height: 36px !important;
-  margin-bottom: 0px !important;
-}
-</style>

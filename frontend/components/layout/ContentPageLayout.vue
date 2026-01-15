@@ -1,10 +1,12 @@
 <template>
   <UCard class="cold-ucard">
-    <SectionNav v-if="navLinks" :links="navLinks" />
-    <SectionNav v-else />
+    <div class="px-6 pt-6">
+      <SectionNav v-if="navLinks" :links="navLinks" />
+      <SectionNav v-else />
+    </div>
     <!-- Main Content -->
     <div
-      class="main-content prose flex w-full flex-col gap-12 -space-y-10 px-6"
+      class="content-page-prose prose max-w-none px-6 py-8"
       :class="{ 'hierarchical-numbering': enableHierarchicalNumbering }"
     >
       <slot />
@@ -29,11 +31,6 @@ defineProps({
 </script>
 
 <style scoped>
-ul {
-  list-style-type: disc;
-  padding-left: 12px;
-}
-
 /* Hierarchical numbering styles - only applied when prop is true */
 .hierarchical-numbering {
   /* Initialize the counter once at the container level */

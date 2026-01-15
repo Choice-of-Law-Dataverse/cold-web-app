@@ -1,16 +1,20 @@
 <template>
-  <UCard class="cold-ucard h-full">
-    <h2 class="popular-title">{{ title }}</h2>
-    <div class="number-container">
-      <span v-if="!loading && !error">
-        <NuxtLink :to="buttonLink">
-          <UButton class="suggestion-button" variant="link" trailing>{{
-            number ?? props.overrideNumber ?? 0
-          }}</UButton>
-        </NuxtLink>
-      </span>
-      <span v-else-if="loading"><LoadingNumber /></span>
-      <span v-else>Error</span>
+  <UCard class="cold-ucard number-card h-full">
+    <div class="flex h-full flex-col justify-between">
+      <h2 class="card-title mb-4 text-center text-sm font-medium text-gray-600">
+        {{ title }}
+      </h2>
+      <div class="number-container">
+        <span v-if="!loading && !error">
+          <NuxtLink :to="buttonLink">
+            <div class="number-display group">
+              {{ number ?? props.overrideNumber ?? 0 }}
+            </div>
+          </NuxtLink>
+        </span>
+        <span v-else-if="loading"><LoadingNumber /></span>
+        <span v-else>Error</span>
+      </div>
     </div>
   </UCard>
 </template>
@@ -37,16 +41,42 @@ const {
 </script>
 
 <style scoped>
-h2 {
-  text-align: center;
+.number-card {
+  @apply transition-shadow duration-200;
 }
+
+.number-card:hover {
+  @apply shadow-md;
+}
+
+.card-title {
+  line-height: 1.4;
+}
+
 .number-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  min-height: 100px;
+  flex: 1;
 }
-.number-container button {
-  font-size: 72px !important;
-  font-weight: 700 !important;
+
+.number-display {
+  font-size: 64px;
+  font-weight: 700;
+  background: linear-gradient(
+    135deg,
+    var(--color-cold-purple),
+    var(--color-cold-green)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.number-display:hover {
+  filter: brightness(0.85);
 }
 </style>

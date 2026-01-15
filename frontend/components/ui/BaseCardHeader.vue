@@ -1,27 +1,29 @@
 <template>
   <div
     :key="formattedJurisdiction + formattedTheme + legalFamily"
-    class="header-container mt-0.5 flex flex-wrap items-center justify-between"
+    class="header-container flex flex-wrap items-center justify-between gap-3"
   >
     <template v-if="cardType === 'Loading'" />
     <template v-else>
       <!-- Left side of the header: Tags -->
       <div
-        class="tags-container scrollbar-hidden flex w-full flex-wrap items-center gap-2 overflow-x-auto"
+        class="tags-container scrollbar-hidden flex w-full flex-wrap items-center gap-2.5 overflow-x-auto"
       >
         <!-- Display 'Name (from Jurisdiction)' or alternatives -->
         <NuxtLink
           v-for="(jurisdictionString, index) in formattedJurisdiction"
           :key="`jurisdiction-${index}`"
-          class="label-jurisdiction jurisdiction-label-link cursor-pointer"
+          class="label-jurisdiction label-link jurisdiction-label-link cursor-pointer"
           :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString).replace(/%20/g, '+')}`"
         >
-          <img
-            v-if="!erroredImages[jurisdictionString]"
-            :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
-            class="mb-0.5 mr-1.5 h-[9px]"
-            @error="handleImageError(erroredImages, jurisdictionString)"
-          />
+          <span class="hover-flag">
+            <img
+              v-if="!erroredImages[jurisdictionString]"
+              :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
+              class="flag-icon"
+              @error="handleImageError(erroredImages, jurisdictionString)"
+            />
+          </span>
           {{ jurisdictionString }}
         </NuxtLink>
         <!-- Legal Family next to jurisdiction name -->
@@ -36,9 +38,7 @@
         <template v-if="adjustedSourceTable">
           <!-- In 'new' mode, show the data type label style and a link to reveal the dropdown -->
           <div v-if="headerMode === 'new'" class="flex items-center">
-            <span
-              :class="['label', labelColorClass, 'source-table-label-link']"
-            >
+            <span :class="['label', labelColorClass, '']">
               {{ adjustedSourceTable }}
             </span>
             <div class="-ml-2">
@@ -90,7 +90,7 @@
                   adjustedSourceTable,
                 )
               "
-              :class="['label', labelColorClass, 'source-table-label-link']"
+              :class="['label', labelColorClass, '']"
             >
               {{ adjustedSourceTable }}
             </span>
@@ -105,8 +105,8 @@
               :class="[
                 'label',
                 labelColorClass,
+                'label-link',
                 'cursor-pointer',
-                'source-table-label-link',
               ]"
             >
               {{ adjustedSourceTable }}
@@ -118,7 +118,7 @@
         <NuxtLink
           v-for="(theme, index) in formattedTheme"
           :key="`theme-${index}`"
-          class="label-theme theme-label-link cursor-pointer"
+          class="label-theme label-link cursor-pointer"
           :to="
             '/search?theme=' + encodeURIComponent(theme).replace(/%20/g, '+')
           "
@@ -126,7 +126,7 @@
           {{ theme }}
         </NuxtLink>
 
-        <div class="ml-auto justify-self-end">
+        <div class="ml-auto flex items-center justify-self-end">
           <template v-if="headerMode === 'new'">
             <UButton
               size="xs"
@@ -138,7 +138,7 @@
           </template>
           <template v-else>
             <template v-if="showSuggestEdit">
-              <div class="label flex flex-row items-center gap-1">
+              <div class="actions-container flex flex-row items-center gap-1.5">
                 <!-- All actions except the International Instrument Edit link -->
                 <template
                   v-for="(action, index) in suggestEditActions.filter(
@@ -548,6 +548,19 @@ const selectUiLabel = {
   overflow-x: auto;
   white-space: nowrap;
   flex-grow: 1;
+  padding-bottom: 0.25rem;
+  padding-top: 0.25rem;
+}
+
+.actions-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actions-container button,
+.actions-container a {
+  transition: all 0.2s ease;
 }
 
 .fade-out-container {
@@ -600,21 +613,22 @@ const selectUiLabel = {
 }
 
 a {
-  font-weight: 600 !important;
+  font-weight: 500 !important;
+  text-decoration: none !important;
 }
 
 .jurisdiction-label-link {
-  color: var(--color-cold-night) !important;
-  font-weight: 500 !important;
-}
+  font-weight: 600 !important;
 
-.theme-label-link {
-  color: var(--color-cold-night-alpha) !important;
-  font-weight: 500 !important;
-}
+  .hover-flag {
+    margin-right: 0.375rem;
+    margin-bottom: 0.125rem;
+  }
 
-.source-table-label-link {
-  font-weight: 500 !important;
+  .flag-icon {
+    height: 11px;
+    width: auto;
+  }
 }
 
 .label-court-decision,

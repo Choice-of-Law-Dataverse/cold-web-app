@@ -22,7 +22,20 @@
     <LoadingCard />
   </template>
   <template v-else>
-    <UCard class="cold-ucard" :ui="{ body: { padding: '' } }">
+    <UCard
+      class="cold-ucard"
+      :ui="{
+        base: 'overflow-hidden',
+        body: {
+          base: '',
+          padding: '',
+        },
+        header: {
+          base: 'border-b border-gray-100',
+          padding: 'px-6 py-5 sm:px-8 sm:py-6',
+        },
+      }"
+    >
       <!-- Header section: render only when showHeader is true -->
       <template v-if="showHeader" #header>
         <BaseCardHeader
@@ -47,12 +60,17 @@
 
       <!-- Main content -->
       <div class="flex">
-        <div class="main-content flex w-full flex-col gap-4 px-6 py-8">
+        <div
+          class="main-content flex w-full flex-col px-6 py-6 sm:px-8 sm:py-8"
+        >
           <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
           <slot />
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
           <template v-for="(item, index) in keyLabelPairs" :key="index">
-            <section v-if="shouldDisplayValue(item, resultData?.[item.key])">
+            <section
+              v-if="shouldDisplayValue(item, resultData?.[item.key])"
+              class="detail-section"
+            >
               <!-- Check if it's the special 'Specialist' key -->
               <template v-if="item.key === 'Region'">
                 <slot />
@@ -93,7 +111,9 @@
                           resultData?.[item.key],
                         )"
                         :key="i"
-                        :class="props.valueClassMap[item.key] || 'prose'"
+                        :class="
+                          props.valueClassMap[item.key] || 'result-value-small'
+                        "
                       >
                         {{ line }}
                       </div>
@@ -103,14 +123,13 @@
                     <p
                       :class="[
                         props.valueClassMap[item.key] ||
-                          'whitespace-pre-line leading-relaxed',
+                          'result-value-small whitespace-pre-line',
                         (!resultData?.[item.key] ||
                           resultData?.[item.key] === 'NA') &&
                         item.emptyValueBehavior?.action === 'display' &&
                         !item.emptyValueBehavior?.getFallback
                           ? 'text-gray-400'
                           : '',
-                        'prose',
                         'mt-0',
                       ]"
                     >

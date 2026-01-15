@@ -4,7 +4,7 @@
     :ui="{
       background: 'bg-cold-night',
       ring: '',
-      rounded: 'rounded-none',
+      rounded: 'rounded-lg',
       shadow: 'shadow-lg',
       base: 'overflow-hidden',
     }"

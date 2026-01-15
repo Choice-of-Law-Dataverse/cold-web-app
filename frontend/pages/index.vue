@@ -1,42 +1,47 @@
 <template>
   <!-- Header Section -->
-  <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
+  <div class="grid grid-cols-1 gap-8 md:grid-cols-12">
     <div class="col-span-12">
-      <div
-        class="text-pretty text-[60px] font-bold leading-[68px] md:text-left"
-      >
-        Choice of Law Dataverse
-      </div>
-    </div>
-
-    <div class="col-span-12">
-      <div
-        class="mb-6 flex w-full flex-col justify-between gap-2 sm:flex-row sm:items-center"
-      >
-        <h2 class="text-pretty text-xl font-medium md:text-left">
-          <span>
-            Navigate private international law issues with precision.
-
-            <NuxtLink class="suggestion-button" to="/about" variant="link">
-              <span>Read&nbsp;more</span>
-            </NuxtLink>
-          </span>
-        </h2>
-        <div class="flex items-center gap-2 sm:flex-col lg:flex-row">
-          <HCCHApproved />
-          <OpenScienceBadge />
-
-          <a
-            href="https://ord.swiss-academies.ch/news/swiss-national-ord-prize-2025-for-legal-and-environmental-sciences"
-            target="_blank"
-            rel="noopener noreferrer"
+      <div class="hero-gradient rounded-2xl px-8 py-12 md:px-12 md:py-16">
+        <div>
+          <h1
+            class="hero-title mb-4 text-pretty text-[56px] font-bold leading-[1.1] md:text-[64px]"
           >
-            <img
-              src="https://choiceoflaw.blob.core.windows.net/assets/Prix-ORD-DEF_2025.png"
-              alt="Swiss National ORD Prize 2025"
-              style="width: 95px; height: 100px"
-            />
-          </a>
+            Choice of Law Dataverse
+          </h1>
+
+          <div
+            class="mb-8 flex w-full flex-col justify-between gap-4 sm:flex-row sm:items-center"
+          >
+            <h2
+              class="hero-subtitle text-pretty text-xl font-medium md:text-left"
+            >
+              <span>
+                Navigate private international law issues with precision.
+
+                <NuxtLink class="hero-link" to="/about" variant="link">
+                  <span>Read&nbsp;more</span>
+                </NuxtLink>
+              </span>
+            </h2>
+            <div class="flex items-center gap-3 sm:flex-col lg:flex-row">
+              <HCCHApproved />
+              <OpenScienceBadge />
+
+              <a
+                href="https://ord.swiss-academies.ch/news/swiss-national-ord-prize-2025-for-legal-and-environmental-sciences"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="transition-transform hover:scale-105"
+              >
+                <img
+                  src="https://choiceoflaw.blob.core.windows.net/assets/Prix-ORD-DEF_2025.png"
+                  alt="Swiss National ORD Prize 2025"
+                  style="width: 95px; height: 100px"
+                />
+              </a>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -51,7 +56,7 @@
 
     <!-- Number Cards Grid -->
     <div class="col-span-12">
-      <div class="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-6">
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
         <NumberCard
           title="Available Court Decisions"
           button-text="See all"
@@ -221,5 +226,37 @@ useHead({
 <style scoped>
 h2 {
   font-weight: 500 !important;
+}
+
+.hero-gradient {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+}
+
+.hero-title {
+  background: linear-gradient(
+    135deg,
+    var(--color-cold-night),
+    var(--color-cold-purple),
+    var(--color-cold-green)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  color: color-mix(in srgb, var(--color-cold-night) 85%, transparent);
+}
+
+.hero-link {
+  color: var(--color-cold-purple) !important;
+  font-weight: 600 !important;
+  transition: color 0.2s ease;
+  text-decoration: none !important;
+}
+
+.hero-link:hover {
+  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
+  text-decoration: underline !important;
 }
 </style>

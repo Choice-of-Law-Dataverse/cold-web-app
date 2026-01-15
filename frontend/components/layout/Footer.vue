@@ -5,7 +5,7 @@ const user = useUser();
 </script>
 
 <template>
-  <footer class="mt-24 min-h-[300px] bg-cold-night px-6 py-12 text-white">
+  <footer class="footer-container mt-24 min-h-[300px] px-6 py-12">
     <div class="mx-auto max-w-container">
       <!-- Logo and Tagline -->
       <div class="mb-8 flex flex-col gap-3">
@@ -13,25 +13,23 @@ const user = useUser();
           src="https://choiceoflaw.blob.core.windows.net/assets/cold_flag_footer.svg"
           class="w-25 mb-6 max-w-16"
         />
-        <h2 class="!font-bold leading-tight">Choice of Law<br />Dataverse</h2>
-        <p class="leading-snug">
+        <h2 class="footer-title leading-tight">Choice of Law<br />Dataverse</h2>
+        <p class="leading-snug text-gray-300">
           Funded by the<br />Swiss National Science Foundation
         </p>
       </div>
 
       <!-- Footer Sitemap - 3 Columns -->
-      <div
-        class="grid grid-cols-1 gap-8 border-t border-gray-700 pt-8 md:grid-cols-3"
-      >
+      <div class="footer-border grid grid-cols-1 gap-8 pt-8 md:grid-cols-3">
         <!-- Column 1: About with subpages -->
         <div class="flex flex-row justify-between gap-3 md:flex-col">
-          <h3 class="mb-2 font-bold">About</h3>
+          <h3 class="footer-heading mb-2">About</h3>
           <div class="flex flex-col gap-3 text-right md:text-left">
             <NuxtLink
               v-for="link in aboutNavLinks"
               :key="link.key"
               :to="link.path"
-              class="text-sm !text-white hover:underline"
+              class="footer-link"
             >
               {{ link.label }}
             </NuxtLink>
@@ -40,13 +38,13 @@ const user = useUser();
 
         <!-- Column 2: Learn with subpages -->
         <div class="flex flex-row justify-between gap-3 md:flex-col">
-          <h3 class="mb-2 font-bold">Learn</h3>
+          <h3 class="footer-heading mb-2">Learn</h3>
           <div class="flex flex-col gap-3 text-right md:text-left">
             <NuxtLink
               v-for="link in learnNavLinks"
               :key="link.key"
               :to="link.path"
-              class="text-sm !text-white hover:underline"
+              class="footer-link"
             >
               {{ link.label }}
             </NuxtLink>
@@ -57,18 +55,11 @@ const user = useUser();
         <div
           class="flex flex-row justify-between gap-3 md:flex-col md:justify-start"
         >
-          <h3 class="mb-2 font-bold">Resources</h3>
+          <h3 class="footer-heading mb-2">Resources</h3>
           <div class="flex flex-col gap-3 text-right md:text-left">
-            <NuxtLink to="/contact" class="text-sm !text-white hover:underline">
-              Contact
-            </NuxtLink>
-            <NuxtLink to="/search" class="text-sm !text-white hover:underline">
-              Search
-            </NuxtLink>
-            <NuxtLink
-              to="/disclaimer"
-              class="text-sm !text-white hover:underline"
-            >
+            <NuxtLink to="/contact" class="footer-link"> Contact </NuxtLink>
+            <NuxtLink to="/search" class="footer-link"> Search </NuxtLink>
+            <NuxtLink to="/disclaimer" class="footer-link">
               Disclaimer
             </NuxtLink>
           </div>
@@ -76,28 +67,21 @@ const user = useUser();
         <div
           class="flex flex-row justify-between gap-3 md:flex-col md:justify-start"
         >
-          <h3 class="my-2 font-bold">Admin</h3>
+          <h3 class="footer-heading my-2">Admin</h3>
           <div class="flex flex-col gap-3 text-right md:text-left">
             <a
               v-if="user"
               href="/auth/logout"
-              class="cursor-pointer text-sm !text-white hover:underline"
+              class="footer-link cursor-pointer"
             >
               Logout
             </a>
 
-            <a
-              v-else
-              href="/auth/login"
-              class="cursor-pointer text-sm !text-white hover:underline"
-            >
+            <a v-else href="/auth/login" class="footer-link cursor-pointer">
               Login
             </a>
 
-            <NuxtLink
-              to="/moderation"
-              class="text-sm !text-white hover:underline"
-            >
+            <NuxtLink to="/moderation" class="footer-link">
               Moderation
             </NuxtLink>
           </div>
@@ -106,18 +90,3 @@ const user = useUser();
     </div>
   </footer>
 </template>
-
-<style scoped>
-a {
-  font-weight: 600 !important;
-}
-
-h2 {
-  color: white !important;
-}
-
-h3 {
-  color: white !important;
-  font-size: 1rem;
-}
-</style>

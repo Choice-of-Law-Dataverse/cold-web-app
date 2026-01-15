@@ -47,20 +47,21 @@
             <NuxtLink
               v-for="country in getCountriesForAnswer(answer)"
               :key="country.code"
-              class="label-jurisdiction inline-flex items-center whitespace-nowrap text-cold-night hover:text-cold-purple"
+              class="label-jurisdiction"
               :to="`/question/${country.code}${questionSuffix}`"
             >
-              <img
-                :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
-                class="mb-0.5 mr-1.5 h-3"
-                style="filter: saturate(0.7)"
-                :alt="country.code + ' flag'"
-                @error="
-                  (e) => {
-                    e.target.style.display = 'none';
-                  }
-                "
-              />
+              <span class="hover-flag mr-1.5">
+                <img
+                  :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
+                  class="h-3"
+                  :alt="country.code + ' flag'"
+                  @error="
+                    (e) => {
+                      e.target.style.display = 'none';
+                    }
+                  "
+                />
+              </span>
               {{ country.name }}
             </NuxtLink>
           </div>
@@ -158,15 +159,3 @@ function getCountriesForAnswer(answer) {
   return countries;
 }
 </script>
-
-<style scoped>
-.region-badge {
-  @apply flex items-center gap-1 rounded-full bg-cold-teal/10 px-3 py-1.5 text-xs text-cold-teal transition-colors hover:bg-cold-teal/20;
-  font-weight: 400;
-}
-
-.region-badge-active {
-  @apply bg-cold-teal/20 text-cold-teal;
-  font-weight: 500;
-}
-</style>

@@ -1,60 +1,71 @@
 <template>
-  <UCard class="cold-ucard h-full w-full">
-    <h2 class="popular-title" :class="{ 'text-center': centerTitle }">
-      {{ title }}
-    </h2>
-    <p v-if="subtitle" class="result-value-small">
-      {{ subtitle }}
-    </p>
-    <div class="icon-container">
-      <NuxtLink v-if="isRelativeLink" :to="buttonLink">
-        <template v-if="imageSrc">
-          <img :src="imageSrc" alt="" class="h-20 max-w-full" />
-        </template>
-        <template v-else>
-          <Icon :name="iconName" size="72" class="text-cold-green" />
-        </template>
-      </NuxtLink>
-      <a
-        v-else
-        :href="buttonLink"
-        :target="newTab ? '_blank' : '_self'"
-        :rel="newTab ? 'noopener noreferrer' : ''"
-      >
-        <template v-if="imageSrc">
-          <img :src="imageSrc" alt="" class="h-20 max-w-full" />
-        </template>
-        <template v-else>
-          <Icon :name="iconName" size="72" class="text-cold-green" />
-        </template>
-      </a>
-    </div>
-    <div class="link-container">
-      <NuxtLink v-if="isRelativeLink" :to="buttonLink">
-        <UButton
-          class="suggestion-button"
-          variant="link"
-          :icon="buttonIcon"
-          trailing
+  <UCard class="cold-ucard connect-card h-full w-full">
+    <div class="flex h-full flex-col justify-between gap-4">
+      <div>
+        <h2 class="card-title" :class="{ 'text-center': centerTitle }">
+          {{ title }}
+        </h2>
+        <p v-if="subtitle" class="card-subtitle">
+          {{ subtitle }}
+        </p>
+      </div>
+
+      <div class="icon-container">
+        <NuxtLink v-if="isRelativeLink" :to="buttonLink" class="icon-link">
+          <template v-if="imageSrc">
+            <img :src="imageSrc" alt="" class="icon-image" />
+          </template>
+          <template v-else>
+            <div class="icon-wrapper">
+              <Icon :name="iconName" size="64" />
+            </div>
+          </template>
+        </NuxtLink>
+        <a
+          v-else
+          :href="buttonLink"
+          :target="newTab ? '_blank' : '_self'"
+          :rel="newTab ? 'noopener noreferrer' : ''"
+          class="icon-link"
         >
-          {{ buttonText }}
-        </UButton>
-      </NuxtLink>
-      <a
-        v-else
-        :href="buttonLink"
-        :target="newTab ? '_blank' : '_self'"
-        :rel="newTab ? 'noopener noreferrer' : ''"
-      >
-        <UButton
-          class="suggestion-button"
-          variant="link"
-          :icon="buttonIcon"
-          trailing
+          <template v-if="imageSrc">
+            <img :src="imageSrc" alt="" class="icon-image" />
+          </template>
+          <template v-else>
+            <div class="icon-wrapper">
+              <Icon :name="iconName" size="64" />
+            </div>
+          </template>
+        </a>
+      </div>
+
+      <div class="link-container">
+        <NuxtLink v-if="isRelativeLink" :to="buttonLink">
+          <UButton
+            class="connect-button"
+            variant="link"
+            :icon="buttonIcon"
+            trailing
+          >
+            {{ buttonText }}
+          </UButton>
+        </NuxtLink>
+        <a
+          v-else
+          :href="buttonLink"
+          :target="newTab ? '_blank' : '_self'"
+          :rel="newTab ? 'noopener noreferrer' : ''"
         >
-          {{ buttonText }}
-        </UButton>
-      </a>
+          <UButton
+            class="connect-button"
+            variant="link"
+            :icon="buttonIcon"
+            trailing
+          >
+            {{ buttonText }}
+          </UButton>
+        </a>
+      </div>
     </div>
   </UCard>
 </template>
@@ -115,20 +126,79 @@ const isRelativeLink = computed(() => {
 </script>
 
 <style scoped>
+.connect-card {
+  @apply transition-shadow duration-200;
+}
+
+.connect-card:hover {
+  @apply shadow-md;
+}
+
+.card-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-cold-night);
+  line-height: 1.4;
+  margin-bottom: 0.5rem;
+}
+
+.card-subtitle {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: rgb(107 114 128);
+}
+
 .icon-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  margin: 32px;
+  flex: 1;
+  min-height: 100px;
+}
+
+.icon-link {
+  display: block;
+}
+
+.icon-wrapper {
+  @apply inline-flex rounded-2xl p-5 transition-all duration-200;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-green) 8%, transparent),
+    color-mix(in srgb, var(--color-cold-teal) 6%, transparent)
+  );
+  color: var(--color-cold-green);
+}
+
+.icon-link:hover .icon-wrapper {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-green) 12%, transparent),
+    color-mix(in srgb, var(--color-cold-teal) 10%, transparent)
+  );
+}
+
+.icon-image {
+  height: 5rem;
+  max-width: 100%;
+  display: block;
 }
 
 .link-container {
   display: flex;
   justify-content: center;
+  margin-top: auto;
 }
 
-.result-value-small {
-  line-height: 36px !important;
-  margin-bottom: 0px !important;
+.connect-button {
+  color: var(--color-cold-purple) !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  transition: color 0.2s ease;
+  padding: 0 !important;
+}
+
+.connect-button:hover {
+  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
 }
 </style>
