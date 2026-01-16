@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard landing-card h-full w-full">
+  <UCard class="cold-ucard gradient-top-border h-full w-full">
     <div class="flex flex-col gap-4">
       <div>
         <h2 class="card-title text-left md:whitespace-nowrap">

@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard landing-card flex h-full w-full flex-col">
+  <UCard class="cold-ucard gradient-top-border flex h-full w-full flex-col">
     <div class="flex flex-col gap-4">
       <div>
         <h2 class="card-title">Successful Legal Transplantations</h2>

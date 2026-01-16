@@ -135,8 +135,8 @@ li::marker {
 .label-key {
   @extend .label;
   padding: 0;
-  color: rgb(75 85 99); // gray-600 - more subtle than main text
-  font-size: 0.75rem; // 12px - slightly larger for field labels
+  color: var(--color-cold-night-alpha);
+  font-size: 0.75rem;
 }
 
 .label-key-provision-article {
@@ -155,12 +155,12 @@ li::marker {
 
 .label-jurisdiction {
   @extend .label;
-  background-color: rgb(249 250 251); // gray-50
+  background-color: var(--color-cold-gray-alpha);
   padding: 3px 8px;
   display: inline-flex;
   align-items: center;
   flex-shrink: 0;
-  border: 1px solid rgb(229 231 235); // gray-200
+  border: 1px solid var(--color-cold-gray);
   border-radius: 4px;
   color: var(--color-cold-night);
   font-weight: 600;
@@ -168,7 +168,7 @@ li::marker {
 
   &:hover {
     background-color: #fff;
-    border-color: rgb(209 213 219); // gray-300 - subtle border change
+    border-color: color-mix(in srgb, var(--color-cold-gray) 80%, #000);
     box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
   }
 }
@@ -348,34 +348,12 @@ li::marker {
   @extend .result-value-small;
   font-family: "IBM Plex Mono", monospace;
   font-size: 13px !important;
-  background: linear-gradient(
-    135deg,
-    rgb(249 250 251),
-    rgb(255 255 255)
-  ); // Subtle gradient
+  background: linear-gradient(135deg, var(--color-cold-gray-alpha), #fff);
   padding: 1em 1.25em !important;
   line-height: 1.6 !important;
   border-radius: 0.5rem;
-  border: 1px solid rgb(229 231 235); // gray-200
+  border: 1px solid var(--color-cold-gray);
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
-  position: relative;
-  overflow: hidden;
-
-  // Subtle accent corner
-  &::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 32px;
-    height: 32px;
-    background: linear-gradient(
-      135deg,
-      transparent 50%,
-      color-mix(in srgb, var(--color-cold-purple) 5%, transparent) 50%
-    );
-    pointer-events: none;
-  }
 }
 
 // UI Elements -----------------------------------------------

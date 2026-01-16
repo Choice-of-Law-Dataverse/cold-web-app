@@ -31,7 +31,7 @@
           padding: '',
         },
         header: {
-          base: 'border-b border-gray-100',
+          base: 'border-b border-gray-100 sticky-header',
           padding: 'px-6 py-5 sm:px-8 sm:py-6',
         },
       }"
@@ -124,11 +124,8 @@
                       :class="[
                         props.valueClassMap[item.key] ||
                           'result-value-small whitespace-pre-line',
-                        (!resultData?.[item.key] ||
-                          resultData?.[item.key] === 'NA') &&
-                        item.emptyValueBehavior?.action === 'display' &&
-                        !item.emptyValueBehavior?.getFallback
-                          ? 'text-gray-400'
+                        isEmptyValue(item, resultData?.[item.key])
+                          ? 'empty-value'
                           : '',
                         'mt-0',
                       ]"
@@ -270,6 +267,16 @@ const shouldDisplayValue = (item, value) => {
   return true;
 };
 
+const isEmptyValue = (item, value) => {
+  if (!value || value === "NA" || value === "N/A") {
+    return (
+      item.emptyValueBehavior?.action === "display" &&
+      !item.emptyValueBehavior?.getFallback
+    );
+  }
+  return false;
+};
+
 const getDisplayValue = (item, value) => {
   if (item.valueTransform) {
     return item.valueTransform(value);
@@ -317,5 +324,23 @@ const getDisplayValue = (item, value) => {
   margin-top: -1px;
   color: var(--color-cold-purple);
   font-size: 1.1em;
+}
+
+:deep(.sticky-header) {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+:deep(.dark .sticky-header) {
+  background-color: rgb(17 24 39);
+}
+
+.empty-value {
+  color: var(--color-cold-night-alpha-50);
+  font-style: italic;
+  font-size: 0.875rem;
 }
 </style>

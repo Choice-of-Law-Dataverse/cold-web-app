@@ -1,5 +1,10 @@
 <template>
-  <UCard class="cold-ucard connect-card h-full w-full">
+  <UCard
+    :class="[
+      'cold-ucard connect-card h-full w-full',
+      { 'gradient-top-border': showTopBorder },
+    ]"
+  >
     <div class="flex h-full flex-col justify-between gap-4">
       <div>
         <h2 class="card-title" :class="{ 'text-center': centerTitle }">
@@ -114,6 +119,10 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  showTopBorder: {
+    type: Boolean,
+    default: false,
+  },
 });
 
 const isRelativeLink = computed(() => {
@@ -145,7 +154,7 @@ const isRelativeLink = computed(() => {
 .card-subtitle {
   font-size: 0.875rem;
   line-height: 1.5;
-  color: rgb(107 114 128);
+  color: var(--color-cold-night-alpha);
 }
 
 .icon-container {
@@ -195,7 +204,11 @@ const isRelativeLink = computed(() => {
   font-size: 1rem !important;
   font-weight: 600 !important;
   transition: color 0.2s ease;
-  padding: 0 !important;
+  padding: 0.5rem !important;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .connect-button:hover {

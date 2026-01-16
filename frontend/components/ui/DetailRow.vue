@@ -1,8 +1,8 @@
 <template>
   <div
-    class="detail-row hover-row flex flex-col gap-3 md:flex-row md:items-start md:gap-10"
+    class="detail-row flex flex-col gap-3 md:flex-row md:items-start md:gap-10"
   >
-    <div class="label-key md:w-44 md:flex-shrink-0">
+    <div class="label-key md:w-48 md:flex-shrink-0">
       <span class="flex items-center gap-1.5">
         {{ label }}
         <slot name="label-actions" />
@@ -33,11 +33,18 @@ defineProps({
 
 <style scoped>
 .detail-row {
-  padding-top: 1rem;
-  padding-bottom: 1rem;
-  margin: 0 -1.5rem;
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+  padding: 0.75rem 1rem;
+  margin: 0 -1rem;
+  border-radius: 0.375rem;
+  transition: background 0.15s ease;
+}
+
+.detail-row:hover {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 3%, white),
+    color-mix(in srgb, var(--color-cold-green) 2%, white)
+  );
 }
 
 .label-key {
@@ -48,15 +55,20 @@ defineProps({
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
+  font-weight: 500;
+  font-size: 0.75rem;
+  color: var(--color-cold-night-alpha);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
 }
 
 /* InfoPopover icon styling */
 .label-key :deep(svg) {
-  color: rgb(156 163 175); /* gray-400 */
+  color: var(--color-cold-night-alpha-25);
   transition: color 0.2s ease;
 }
 
 .label-key:hover :deep(svg) {
-  color: rgb(107 114 128); /* gray-500 - subtle change */
+  color: var(--color-cold-night-alpha);
 }
 </style>

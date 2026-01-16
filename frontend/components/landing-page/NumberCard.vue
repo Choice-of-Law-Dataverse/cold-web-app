@@ -1,22 +1,24 @@
 <template>
-  <UCard class="cold-ucard number-card h-full">
-    <div class="flex h-full flex-col justify-between">
-      <h2 class="card-title mb-4 text-center text-sm font-medium text-gray-600">
-        {{ title }}
-      </h2>
-      <div class="number-container">
-        <span v-if="!loading && !error">
-          <NuxtLink :to="buttonLink">
-            <div class="number-display group">
+  <NuxtLink :to="buttonLink" class="block h-full">
+    <UCard class="cold-ucard number-card h-full">
+      <div class="flex h-full flex-col justify-between">
+        <h2
+          class="card-title mb-4 text-center text-sm font-medium text-gray-600"
+        >
+          {{ title }}
+        </h2>
+        <div class="number-container">
+          <span v-if="!loading && !error">
+            <div class="number-display">
               {{ number ?? props.overrideNumber ?? 0 }}
             </div>
-          </NuxtLink>
-        </span>
-        <span v-else-if="loading"><LoadingNumber /></span>
-        <span v-else>Error</span>
+          </span>
+          <span v-else-if="loading"><LoadingNumber /></span>
+          <span v-else>Error</span>
+        </div>
       </div>
-    </div>
-  </UCard>
+    </UCard>
+  </NuxtLink>
 </template>
 
 <script setup>
@@ -42,11 +44,12 @@ const {
 
 <style scoped>
 .number-card {
-  @apply transition-shadow duration-200;
+  @apply transition-all duration-200;
 }
 
-.number-card:hover {
+a:hover .number-card {
   @apply shadow-md;
+  transform: translateY(-2px);
 }
 
 .card-title {
@@ -76,7 +79,7 @@ const {
   transition: filter 0.2s ease;
 }
 
-.number-display:hover {
+a:hover .number-display {
   filter: brightness(0.85);
 }
 </style>

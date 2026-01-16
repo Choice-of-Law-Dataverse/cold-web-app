@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard landing-card flex h-full w-full">
+  <UCard class="cold-ucard gradient-top-border flex h-full w-full">
     <div class="flex flex-col gap-4">
       <NuxtLink
         :to="`/search?type=Domestic+Instruments&sortBy=date`"
