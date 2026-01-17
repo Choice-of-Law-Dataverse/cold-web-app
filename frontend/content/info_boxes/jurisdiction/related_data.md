@@ -1,1 +1,0 @@
-Data related to the jurisdiction.

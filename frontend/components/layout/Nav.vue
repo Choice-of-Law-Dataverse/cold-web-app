@@ -207,7 +207,7 @@ import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import eventBus from "@/eventBus";
 import { useJurisdictionLookup } from "@/composables/useJurisdictionLookup";
-import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
+import { aboutNavLinks, learnNavLinks } from "@/config/navigation";
 
 const router = useRouter();
 const route = useRoute();

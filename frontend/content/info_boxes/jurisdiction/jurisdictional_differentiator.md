@@ -1,1 +1,0 @@
-Jurisdictional peculiarities, such as the judicial hierarchy. To be read before consulting jurisdictional information.

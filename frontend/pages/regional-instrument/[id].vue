@@ -3,19 +3,16 @@
     <BaseDetailLayout
       :loading="loading"
       :result-data="processedRegionalInstrument || {}"
-      :key-label-pairs="computedKeyLabelPairs"
-      :value-class-map="valueClassMap"
+      :labels="regionalInstrumentLabels"
+      :tooltips="regionalInstrumentTooltips"
       :show-suggest-edit="true"
       source-table="Regional Instrument"
     >
       <!-- Abbreviation with PDF and Source Link -->
       <template #abbreviation="{ value }">
-        <DetailRow
-          :label="keyLabelLookup.get('Abbreviation')?.label || 'Abbreviation'"
-          :tooltip="keyLabelLookup.get('Abbreviation')?.tooltip"
-        >
+        <DetailRow :label="regionalInstrumentLabels['Abbreviation']">
           <div class="flex items-start justify-between gap-4">
-            <div :class="valueClassMap.Abbreviation" class="flex-1">
+            <div class="result-value-small flex-1">
               {{ value }}
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
@@ -34,16 +31,12 @@
 
       <template #literature>
         <DetailRow
-          :label="keyLabelLookup.get('Literature')?.label || 'Literature'"
-          :tooltip="keyLabelLookup.get('Literature')?.tooltip"
+          :label="regionalInstrumentLabels['Literature']"
+          :tooltip="regionalInstrumentTooltips['Literature']"
         >
           <RelatedLiterature
             :literature-id="
               (processedRegionalInstrument?.Literature as string) || ''
-            "
-            :value-class-map="valueClassMap['Literature']"
-            :empty-value-behavior="
-              keyLabelLookup.get('Literature')?.emptyValueBehavior
             "
             mode="id"
             :oup-filter="'noOup'"
@@ -56,11 +49,8 @@
         <!-- Only render if value exists and is not "N/A" -->
         <DetailRow
           v-if="value && value.trim() && value.trim() !== 'N/A'"
-          :label="
-            keyLabelLookup.get('Regional Legal Provisions')?.label ||
-            'Selected Provisions'
-          "
-          :tooltip="keyLabelLookup.get('Regional Legal Provisions')?.tooltip"
+          :label="regionalInstrumentLabels['Regional Legal Provisions']"
+          :tooltip="regionalInstrumentTooltips['Regional Legal Provisions']"
         >
           <div class="provisions-container">
             <LegalProvision
@@ -100,12 +90,12 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
-import { useDetailDisplay } from "@/composables/useDetailDisplay";
-import { regionalInstrumentConfig } from "@/config/pageConfigs";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import type { TableName } from "@/types/api";
+import { regionalInstrumentLabels } from "@/config/labels";
+import { regionalInstrumentTooltips } from "@/config/tooltips";
 
 interface RegionalInstrumentRecord {
   Abbreviation?: string;
@@ -122,24 +112,6 @@ const id = ref(route.params.id as string);
 
 const { data: regionalInstrument, isLoading: loading } =
   useRecordDetails<RegionalInstrumentRecord>(table, id);
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
-  regionalInstrument,
-  regionalInstrumentConfig,
-);
-
-const keyLabelLookup = computed(() => {
-  const map = new Map();
-  computedKeyLabelPairs.value.forEach((pair: { key: string }) => {
-    map.set(pair.key, pair);
-  });
-  // Also include original config pairs for emptyValueBehavior
-  regionalInstrumentConfig.keyLabelPairs.forEach((pair) => {
-    if (!map.has(pair.key)) {
-      map.set(pair.key, pair);
-    }
-  });
-  return map;
-});
 
 const processedRegionalInstrument = computed(() => {
   if (!regionalInstrument.value) return null;

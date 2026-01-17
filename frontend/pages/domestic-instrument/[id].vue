@@ -3,19 +3,19 @@
     <BaseDetailLayout
       :loading="loading"
       :result-data="processedLegalInstrument || {}"
-      :key-label-pairs="computedKeyLabelPairs"
-      :value-class-map="valueClassMap"
+      :labels="domesticInstrumentLabels"
+      :tooltips="domesticInstrumentTooltips"
       :show-suggest-edit="true"
       source-table="Domestic Instrument"
     >
       <!-- Title with PDF and Source Link -->
       <template #title-(in-english)="{ value }">
         <DetailRow
-          :label="keyLabelLookup.get('Title (in English)')?.label || 'Name'"
-          :tooltip="keyLabelLookup.get('Title (in English)')?.tooltip"
+          :label="domesticInstrumentLabels['Title (in English)']"
+          :tooltip="domesticInstrumentTooltips['Title (in English)']"
         >
           <div class="flex items-start justify-between gap-4">
-            <div :class="valueClassMap['Title (in English)']" class="flex-1">
+            <div class="result-value-small flex-1">
               {{ value }}
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
@@ -35,21 +35,13 @@
 
       <!-- Slot for Amended by -->
       <template #amended-by="{ value }">
-        <DetailRow
-          v-if="value"
-          :label="keyLabelLookup.get('Amended by')?.label || 'Amended by'"
-          :tooltip="keyLabelLookup.get('Amended by')?.tooltip"
-        >
+        <DetailRow v-if="value" :label="domesticInstrumentLabels['Amended by']">
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
       </template>
       <!-- Slot for Amends -->
       <template #amends="{ value }">
-        <DetailRow
-          v-if="value"
-          :label="keyLabelLookup.get('Amends')?.label || 'Amends'"
-          :tooltip="keyLabelLookup.get('Amends')?.tooltip"
-        >
+        <DetailRow v-if="value" :label="domesticInstrumentLabels['Amends']">
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
       </template>
@@ -57,19 +49,14 @@
       <template #replaced-by="{ value }">
         <DetailRow
           v-if="value"
-          :label="keyLabelLookup.get('Replaced by')?.label || 'Replaced by'"
-          :tooltip="keyLabelLookup.get('Replaced by')?.tooltip"
+          :label="domesticInstrumentLabels['Replaced by']"
         >
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
       </template>
       <!-- Slot for Replaces -->
       <template #replaces="{ value }">
-        <DetailRow
-          v-if="value"
-          :label="keyLabelLookup.get('Replaces')?.label || 'Replaces'"
-          :tooltip="keyLabelLookup.get('Replaces')?.tooltip"
-        >
+        <DetailRow v-if="value" :label="domesticInstrumentLabels['Replaces']">
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
       </template>
@@ -81,10 +68,8 @@
             (isCompatible('Compatible With the UNCITRAL Model Law') ||
               isCompatible('Compatible With the HCCH Principles'))
           "
-          :label="
-            keyLabelLookup.get('Compatibility')?.label || 'Compatible with'
-          "
-          :tooltip="keyLabelLookup.get('Compatibility')?.tooltip"
+          :label="domesticInstrumentLabels['Compatibility']"
+          :tooltip="domesticInstrumentTooltips['Compatibility']"
         >
           <div class="result-value-small flex gap-2">
             <CompatibleLabel
@@ -103,11 +88,8 @@
         <!-- Only render if value exists and is not "N/A" -->
         <DetailRow
           v-if="value && value.trim() && value.trim() !== 'N/A'"
-          :label="
-            keyLabelLookup.get('Domestic Legal Provisions')?.label ||
-            'Selected Provisions'
-          "
-          :tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+          :label="domesticInstrumentLabels['Domestic Legal Provisions']"
+          :tooltip="domesticInstrumentTooltips['Domestic Legal Provisions']"
         >
           <div class="provisions-container">
             <LegalProvision
@@ -161,10 +143,10 @@ import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
 import CountryReportLink from "@/components/ui/CountryReportLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
-import { useDetailDisplay } from "@/composables/useDetailDisplay";
-import { legalInstrumentConfig } from "@/config/pageConfigs";
 import { getSortedProvisionIds } from "@/utils/provision-sorting";
 import type { TableName } from "@/types/api";
+import { domesticInstrumentLabels } from "@/config/labels";
+import { domesticInstrumentTooltips } from "@/config/tooltips";
 
 interface LegalInstrumentRecord {
   "Title (in English)"?: string;
@@ -186,19 +168,6 @@ const id = ref(route.params.id as string);
 
 const { data: legalInstrument, isLoading: loading } =
   useRecordDetails<LegalInstrumentRecord>(table, id);
-
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
-  legalInstrument,
-  legalInstrumentConfig,
-);
-
-const keyLabelLookup = computed(() => {
-  const map = new Map();
-  computedKeyLabelPairs.value.forEach((pair) => {
-    map.set(pair.key, pair);
-  });
-  return map;
-});
 
 const processedLegalInstrument = computed(() => {
   if (!legalInstrument.value) {

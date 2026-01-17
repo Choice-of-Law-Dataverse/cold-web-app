@@ -1,1 +1,0 @@
-Selection of important provisions from the international instrument.

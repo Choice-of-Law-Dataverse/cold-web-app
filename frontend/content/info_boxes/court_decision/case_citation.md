@@ -1,1 +1,0 @@
-Contains information on the issuing court, names of the claimant(s) and respondent(s), the number ID of the case, and the date of the decision. Case citations vary according to the jurisdiction.

@@ -1,1 +1,0 @@
-Source of the answer.

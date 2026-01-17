@@ -3,19 +3,16 @@
     <BaseDetailLayout
       :loading="isLoading"
       :result-data="processedAnswerData || {}"
-      :key-label-pairs="keyLabelPairs"
-      :value-class-map="valueClassMap"
+      :labels="questionLabels"
+      :tooltips="questionTooltips"
       :show-suggest-edit="true"
       :source-table="'Question'"
     >
       <!-- Custom rendering for Legal provision articles -->
       <template #domestic-legal-provisions="{ value }">
         <DetailRow
-          :label="
-            keyLabelLookup.get('Domestic Legal Provisions')?.label ||
-            'Source fallback'
-          "
-          :tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+          :label="questionLabels['Domestic Legal Provisions']"
+          :tooltip="questionTooltips['Domestic Legal Provisions']"
         >
           <QuestionSourceList
             :sources="
@@ -24,7 +21,6 @@
               )
             "
             :fallback-data="answerData"
-            :value-class-map="valueClassMap"
             :fetch-oup-chapter="false"
             :fetch-primary-source="true"
           />
@@ -35,30 +31,16 @@
       <template #court-decisions-id="{ value }">
         <DetailRow
           id="related-court-decisions"
-          :label="
-            keyLabelLookup.get('Court Decisions ID')?.label ||
-            'Related Court Decisions'
-          "
-          :tooltip="keyLabelLookup.get('Court Decisions ID')?.tooltip"
+          :label="questionLabels['Court Decisions ID']"
+          :tooltip="questionTooltips['Court Decisions ID']"
           variant="court-decision"
         >
-          <CourtDecisionRenderer
-            :value="value"
-            :value-class-map="valueClassMap['Court Decisions ID']"
-            :empty-value-behavior="
-              keyLabelLookup.get('Domestic Legal Provisions')
-                ?.emptyValueBehavior
-            "
-          />
+          <CourtDecisionRenderer :value="value" />
         </DetailRow>
       </template>
 
       <template #oup-chapter>
-        <DetailRow
-          :label="keyLabelLookup.get('OUP Chapter')?.label || 'OUP Chapter'"
-          :tooltip="keyLabelLookup.get('OUP Chapter')?.tooltip"
-          variant="oup"
-        >
+        <DetailRow :label="questionLabels['OUP Chapter']" variant="oup">
           <RelatedLiterature
             :themes="processedAnswerData?.Themes"
             :literature-id="
@@ -66,12 +48,6 @@
             "
             :jurisdiction="processedAnswerData?.Jurisdictions"
             :mode="'both'"
-            :value-class-map="valueClassMap['OUP Chapter']"
-            :empty-value-behavior="
-              questionConfig.keyLabelPairs.find(
-                (pair) => pair.key === 'OUP Chapter',
-              )?.emptyValueBehavior
-            "
             :oup-filter="'onlyOup'"
           />
         </DetailRow>
@@ -79,11 +55,8 @@
 
       <template #related-literature>
         <DetailRow
-          :label="
-            keyLabelLookup.get('Related Literature')?.label ||
-            'Related Literature'
-          "
-          :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
+          :label="questionLabels['Related Literature']"
+          :tooltip="questionTooltips['Related Literature']"
           variant="literature"
         >
           <RelatedLiterature
@@ -93,12 +66,6 @@
             "
             :jurisdiction="processedAnswerData?.Jurisdictions"
             :mode="'both'"
-            :value-class-map="valueClassMap['Related Literature']"
-            :empty-value-behavior="
-              questionConfig.keyLabelPairs.find(
-                (pair) => pair.key === 'Related Literature',
-              )?.emptyValueBehavior
-            "
             :oup-filter="'noOup'"
           />
         </DetailRow>
@@ -135,8 +102,9 @@ import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";
 import QuestionJurisdictions from "@/components/ui/QuestionJurisdictions.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useAnswer } from "@/composables/useAnswer";
-import { questionConfig } from "@/config/pageConfigs";
 import CountryReportLink from "~/components/ui/CountryReportLink.vue";
+import { questionLabels } from "@/config/labels";
+import { questionTooltips } from "@/config/tooltips";
 
 interface AnswerData {
   Question?: string;
@@ -153,16 +121,6 @@ const route = useRoute();
 const { data: answerData, isLoading } = useAnswer(
   computed(() => route.params.id as string),
 );
-
-const { keyLabelPairs, valueClassMap } = questionConfig;
-
-const keyLabelLookup = computed(() => {
-  const map = new Map();
-  keyLabelPairs.forEach((pair) => {
-    map.set(pair.key, pair);
-  });
-  return map;
-});
 
 const processedAnswerData = computed(() => {
   if (!answerData.value) return null;

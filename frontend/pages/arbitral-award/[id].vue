@@ -3,8 +3,7 @@
     <BaseDetailLayout
       :loading="loading"
       :result-data="processedArbitralAward || {}"
-      :key-label-pairs="computedKeyLabelPairs"
-      :value-class-map="valueClassMap"
+      :labels="arbitralAwardLabels"
       :formatted-jurisdiction="formattedJurisdictions || []"
       :formatted-theme="formattedThemes || []"
       :show-suggest-edit="true"
@@ -29,10 +28,9 @@ import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
-import { useDetailDisplay } from "@/composables/useDetailDisplay";
-import { arbitralAwardConfig } from "@/config/pageConfigs";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import type { TableName } from "@/types/api";
+import { arbitralAwardLabels } from "@/config/labels";
 
 interface ArbitralAwardRecord {
   "Case Number"?: string;
@@ -46,11 +44,6 @@ const id = ref(route.params.id as string);
 
 const { data: arbitralAward, isLoading: loading } =
   useRecordDetails<ArbitralAwardRecord>(table, id);
-
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
-  arbitralAward,
-  arbitralAwardConfig,
-);
 
 const processedArbitralAward = computed(() => {
   if (!arbitralAward.value) return null;

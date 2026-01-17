@@ -3,8 +3,7 @@
     <BaseDetailLayout
       :loading="loading"
       :result-data="processedArbitralRule || {}"
-      :key-label-pairs="computedKeyLabelPairs"
-      :value-class-map="valueClassMap"
+      :labels="arbitralRuleLabels"
       :show-suggest-edit="true"
       source-table="Arbitral Rule"
     />
@@ -22,10 +21,9 @@ import { ref, computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
-import { useDetailDisplay } from "@/composables/useDetailDisplay";
-import { arbitralRuleConfig } from "@/config/pageConfigs";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import type { TableName } from "@/types/api";
+import { arbitralRuleLabels } from "@/config/labels";
 
 interface ArbitralRuleRecord {
   "Set of Rules"?: string;
@@ -40,11 +38,6 @@ const id = ref(route.params.id as string);
 
 const { data: arbitralRule, isLoading: loading } =
   useRecordDetails<ArbitralRuleRecord>(table, id);
-
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
-  arbitralRule,
-  arbitralRuleConfig,
-);
 
 const processedArbitralRule = computed(() => {
   if (!arbitralRule.value) return null;

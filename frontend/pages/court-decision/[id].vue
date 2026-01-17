@@ -3,19 +3,19 @@
     <BaseDetailLayout
       :loading="isLoading"
       :result-data="courtDecision || {}"
-      :key-label-pairs="computedKeyLabelPairs"
-      :value-class-map="valueClassMap"
+      :labels="courtDecisionLabels"
+      :tooltips="courtDecisionTooltips"
       :show-suggest-edit="true"
       source-table="Court Decisions"
     >
       <!-- Case Title with PDF and Source Link -->
       <template #case-title="{ value }">
         <DetailRow
-          :label="keyLabelLookup.get('Case Title')?.label || 'Case Title'"
-          :tooltip="keyLabelLookup.get('Case Title')?.tooltip"
+          :label="courtDecisionLabels['Case Title']"
+          :tooltip="courtDecisionTooltips['Case Title']"
         >
           <div class="flex items-start justify-between gap-4">
-            <div :class="valueClassMap['Case Title']" class="flex-1">
+            <div class="result-value-small flex-1">
               {{ value }}
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
@@ -33,11 +33,8 @@
       <template #domestic-legal-provisions="{ value }">
         <DetailRow
           v-if="value"
-          :label="
-            keyLabelLookup.get('Domestic Legal Provisions')?.label ||
-            'Domestic Legal Provisions'
-          "
-          :tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+          :label="courtDecisionLabels['Domestic Legal Provisions']"
+          :tooltip="courtDecisionTooltips['Domestic Legal Provisions']"
         >
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
@@ -49,8 +46,8 @@
             courtDecision &&
             (courtDecision['Quote'] || courtDecision['Translated Excerpt'])
           "
-          label="Quote"
-          :tooltip="keyLabelLookup.get('Quote')?.tooltip"
+          :label="courtDecisionLabels['Quote']"
+          :tooltip="courtDecisionTooltips['Quote']"
         >
           <div>
             <div
@@ -108,8 +105,8 @@
       <template #related-questions="{ value }">
         <DetailRow
           v-if="value"
-          label="Related Questions"
-          :tooltip="keyLabelLookup.get('Related Questions')?.tooltip"
+          :label="courtDecisionLabels['Related Questions']"
+          :tooltip="courtDecisionTooltips['Related Questions']"
           variant="question"
         >
           <RelatedQuestions
@@ -124,8 +121,8 @@
       </template>
       <template #related-literature>
         <DetailRow
-          label="Related Literature"
-          :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
+          :label="courtDecisionLabels['Related Literature']"
+          :tooltip="courtDecisionTooltips['Related Literature']"
           variant="literature"
         >
           <RelatedLiterature
@@ -146,9 +143,9 @@
       <template #original-text="{ value }">
         <DetailRow
           v-if="value && value.trim() !== ''"
-          :label="keyLabelLookup.get('Original Text')?.label || 'Full Text'"
+          :label="courtDecisionLabels['Original Text']"
         >
-          <div :class="valueClassMap['Original Text']">
+          <div>
             <div v-if="!showFullText && value.length > 400">
               <p class="result-value-small">
                 {{ value.slice(0, 400)
@@ -223,8 +220,8 @@ import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CountryReportLink from "@/components/ui/CountryReportLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useCourtDecision } from "@/composables/useCourtDecision";
-import { useDetailDisplay } from "@/composables/useDetailDisplay";
-import { courtDecisionConfig } from "@/config/pageConfigs";
+import { courtDecisionLabels } from "@/config/labels";
+import { courtDecisionTooltips } from "@/config/tooltips";
 
 defineProps({
   iconClass: {
@@ -241,21 +238,8 @@ const {
   error,
 } = useCourtDecision(computed(() => route.params.id as string));
 
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
-  courtDecision,
-  courtDecisionConfig,
-);
-
 const showEnglishQuote = ref(true);
 const showFullText = ref(false);
-
-const keyLabelLookup = computed(() => {
-  const map = new Map();
-  courtDecisionConfig.keyLabelPairs.forEach((pair) => {
-    map.set(pair.key, pair);
-  });
-  return map;
-});
 
 // Source URL for court decisions
 const sourceUrl = computed(() => {

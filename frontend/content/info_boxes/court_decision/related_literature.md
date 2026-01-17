@@ -1,1 +1,0 @@
-Literature related to the court decision.

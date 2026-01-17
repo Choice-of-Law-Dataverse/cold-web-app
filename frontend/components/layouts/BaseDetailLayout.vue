@@ -2,8 +2,8 @@
   <DetailDisplay
     :loading="props.loading"
     :result-data="props.resultData"
-    :key-label-pairs="props.keyLabelPairs"
-    :value-class-map="props.valueClassMap"
+    :key-label-pairs="computedKeyLabelPairs"
+    :value-class-map="{}"
     :formatted-source-table="props.sourceTable"
     :formatted-jurisdiction="props.formattedJurisdiction"
     :show-header="props.showHeader"
@@ -27,14 +27,18 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import DetailDisplay from "@/components/ui/BaseDetailDisplay.vue";
 
 const props = withDefaults(
   defineProps<{
     loading: boolean;
     resultData: Record<string, unknown>;
-    keyLabelPairs: Record<string, unknown>[];
-    valueClassMap: Record<string, string>;
+    // Typed label/tooltip maps - fields derived from labels keys
+    labels?: Record<string, string>;
+    tooltips?: Partial<Record<string, string>>;
+    // Legacy props (deprecated, used for index pages with full-width slot)
+    keyLabelPairs?: Record<string, unknown>[];
     sourceTable: string;
     formattedJurisdiction?: Record<string, unknown>[];
     showHeader?: boolean;
@@ -48,6 +52,9 @@ const props = withDefaults(
     showSuggestEdit?: boolean;
   }>(),
   {
+    labels: () => ({}),
+    tooltips: undefined,
+    keyLabelPairs: undefined,
     formattedJurisdiction: () => [],
     showHeader: true,
     formattedTheme: () => [],
@@ -61,4 +68,20 @@ const props = withDefaults(
 );
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
+
+// Convert typed props to legacy format for BaseDetailDisplay
+// Fields are derived from labels keys (order preserved in modern JS)
+const computedKeyLabelPairs = computed(() => {
+  // If labels are provided, derive fields from them
+  if (props.labels && Object.keys(props.labels).length > 0) {
+    return Object.entries(props.labels).map(([key, label]) => ({
+      key,
+      label,
+      tooltip: props.tooltips?.[key],
+      emptyValueBehavior: { action: "hide" },
+    }));
+  }
+  // Fallback to keyLabelPairs for legacy index pages
+  return props.keyLabelPairs ?? [];
+});
 </script>

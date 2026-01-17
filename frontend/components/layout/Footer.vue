@@ -1,5 +1,5 @@
 <script setup>
-import { aboutNavLinks, learnNavLinks } from "@/config/pageConfigs.js";
+import { aboutNavLinks, learnNavLinks } from "@/config/navigation";
 
 const user = useUser();
 </script>

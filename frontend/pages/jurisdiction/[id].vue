@@ -3,8 +3,8 @@
     <BaseDetailLayout
       :loading="isLoading"
       :result-data="jurisdictionData || {}"
-      :key-label-pairs="keyLabelPairsWithoutLegalFamily"
-      :value-class-map="valueClassMap"
+      :labels="jurisdictionLabels"
+      :tooltips="jurisdictionTooltips"
       :formatted-jurisdiction="[jurisdictionData?.Name as {}]"
       :show-suggest-edit="true"
       source-table="Jurisdiction"
@@ -52,25 +52,13 @@
           />
         </DetailRow>
 
-        <DetailRow
-          :label="
-            keyLabelPairs.find((pair) => pair.key === 'OUP Chapter')?.label ||
-            'OUP Chapter'
-          "
-          :tooltip="
-            jurisdictionConfig.keyLabelPairs.find(
-              (pair) => pair.key === 'OUP Chapter',
-            )?.tooltip
-          "
-          variant="oup"
-        >
+        <DetailRow :label="jurisdictionLabels['OUP Chapter']" variant="oup">
           <RelatedLiterature
             :literature-id="(jurisdictionData?.Literature as string) || ''"
             :mode="'both'"
             :oup-filter="'onlyOup'"
             :jurisdiction="jurisdictionData?.Name as string"
             :use-id="true"
-            :value-class-map="valueClassMap['Related Literature']"
             :empty-value-behavior="{
               action: 'display',
               fallback: 'No OUP chapters available',
@@ -79,20 +67,12 @@
         </DetailRow>
 
         <DetailRow
-          :label="
-            keyLabelPairs.find((pair) => pair.key === 'Related Literature')
-              ?.label || 'Related Literature'
-          "
-          :tooltip="
-            jurisdictionConfig.keyLabelPairs.find(
-              (pair) => pair.key === 'Related Literature',
-            )?.tooltip
-          "
+          :label="jurisdictionLabels['Related Literature']"
+          :tooltip="jurisdictionTooltips['Related Literature']"
           variant="literature"
         >
           <RelatedLiterature
             :literature-id="(jurisdictionData?.Literature as string) || ''"
-            :value-class-map="valueClassMap['Related Literature']"
             :use-id="true"
             :jurisdiction="jurisdictionData?.Name as string"
             :empty-value-behavior="{
@@ -166,11 +146,10 @@ import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useJurisdiction } from "@/composables/useJurisdictions";
 import { useSpecialists } from "@/composables/useSpecialists";
-import { jurisdictionConfig } from "@/config/pageConfigs";
+import { jurisdictionLabels } from "@/config/labels";
+import { jurisdictionTooltips } from "@/config/tooltips";
 
 const route = useRoute();
-
-const { keyLabelPairs, valueClassMap } = jurisdictionConfig;
 
 const { isLoading, data: jurisdictionData } = useJurisdiction(
   computed(() => route.params.id as string),
@@ -180,8 +159,4 @@ const jurisdictionAlphaCode = computed(
   () => jurisdictionData.value?.alpha3Code as string,
 );
 const { data: specialistsData } = useSpecialists(jurisdictionAlphaCode);
-
-const keyLabelPairsWithoutLegalFamily = computed(() =>
-  keyLabelPairs.filter((pair) => pair.key !== "Legal Family"),
-);
 </script>
