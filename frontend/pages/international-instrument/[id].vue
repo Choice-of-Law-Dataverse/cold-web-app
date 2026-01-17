@@ -35,9 +35,7 @@
           :tooltip="internationalInstrumentTooltips['Literature']"
         >
           <RelatedLiterature
-            :literature-id="
-              (processedInternationalInstrument?.Literature as string) || ''
-            "
+            :literature-id="processedInternationalInstrument?.Literature || ''"
             mode="id"
             :oup-filter="'noOup'"
           />
@@ -85,41 +83,32 @@
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[internationalInstrument?.['Name'] as string]"
+      :title-candidates="[internationalInstrument?.['Name']]"
       fallback="International Instrument"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import BaseLegalContent from "@/components/legal/BaseLegalContent.vue";
-import { useRecordDetails } from "@/composables/useRecordDetails";
+import { useInternationalInstrument } from "@/composables/useInternationalInstrument";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useInternationalLegalProvisions } from "@/composables/useInternationalLegalProvisions";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import type { TableName } from "@/types/api";
 import { internationalInstrumentLabels } from "@/config/labels";
 import { internationalInstrumentTooltips } from "@/config/tooltips";
 
-interface InternationalInstrumentRecord {
-  Name?: string;
-  [key: string]: unknown;
-}
-
 const route = useRoute();
 
-const table = ref<TableName>("International Instruments");
-const id = ref(route.params.id as string);
-
 const { data: internationalInstrument, isLoading: loading } =
-  useRecordDetails<InternationalInstrumentRecord>(table, id);
+  useInternationalInstrument(computed(() => route.params.id as string));
 
 const processedInternationalInstrument = computed(() => {
   if (!internationalInstrument.value) return null;
@@ -132,12 +121,8 @@ const processedInternationalInstrument = computed(() => {
     URL:
       internationalInstrument.value["URL"] ||
       internationalInstrument.value["Link"],
-    Literature: (internationalInstrument.value as Record<string, unknown>)[
-      "Literature"
-    ],
-    Abbreviation: (internationalInstrument.value as Record<string, unknown>)[
-      "Abbreviation"
-    ],
+    Literature: internationalInstrument.value["Literature"],
+    Abbreviation: internationalInstrument.value["Abbreviation"],
   };
 });
 

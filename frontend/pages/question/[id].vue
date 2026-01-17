@@ -106,16 +106,6 @@ import CountryReportLink from "~/components/ui/CountryReportLink.vue";
 import { questionLabels } from "@/config/labels";
 import { questionTooltips } from "@/config/tooltips";
 
-interface AnswerData {
-  Question?: string;
-  Jurisdictions?: string;
-  Themes?: string;
-  "Jurisdictions Literature ID"?: string;
-  "Domestic Legal Provisions"?: string;
-  "Court Decisions ID"?: string | string[];
-  [key: string]: unknown;
-}
-
 const route = useRoute();
 
 const { data: answerData, isLoading } = useAnswer(
@@ -130,12 +120,12 @@ const processedAnswerData = computed(() => {
   return {
     ...answerData.value,
     "Domestic Legal Provisions":
-      (answerData.value["Domestic Legal Provisions"] as string) || "",
+      answerData.value["Domestic Legal Provisions"] || "",
     "Court Decisions ID":
       typeof courtDecisionsId === "string"
         ? courtDecisionsId.split(",").map((caseId: string) => caseId.trim())
         : [],
-  } as AnswerData;
+  };
 });
 
 const questionSuffix = computed(() => {

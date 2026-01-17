@@ -5,7 +5,12 @@
 export interface ArbitralAwardResponse {
   id: string;
   "Case Number"?: string;
+  "Award Title"?: string;
+  "Case Title"?: string;
+  Title?: string;
+  Name?: string;
   "Arbitral Institutions"?: string;
+  "Arbitral Institution"?: string;
   Source?: string;
   Year?: string;
   "Nature of the Award"?: string;

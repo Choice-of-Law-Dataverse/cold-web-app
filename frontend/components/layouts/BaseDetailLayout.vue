@@ -26,17 +26,17 @@
   </DetailDisplay>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends object">
 import { computed } from "vue";
 import DetailDisplay from "@/components/ui/BaseDetailDisplay.vue";
 
 const props = withDefaults(
   defineProps<{
     loading: boolean;
-    resultData: Record<string, unknown>;
-    // Typed label/tooltip maps - fields derived from labels keys
-    labels?: Record<string, string>;
-    tooltips?: Partial<Record<string, string>>;
+    resultData: T;
+    // Typed label/tooltip maps - keys should match resultData properties
+    labels?: Partial<Record<keyof T & string, string>>;
+    tooltips?: Partial<Record<keyof T & string, string>>;
     // Legacy props (deprecated, used for index pages with full-width slot)
     keyLabelPairs?: Record<string, unknown>[];
     sourceTable: string;
@@ -74,10 +74,11 @@ const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 const computedKeyLabelPairs = computed(() => {
   // If labels are provided, derive fields from them
   if (props.labels && Object.keys(props.labels).length > 0) {
+    const tooltips = props.tooltips as Record<string, string> | undefined;
     return Object.entries(props.labels).map(([key, label]) => ({
       key,
       label,
-      tooltip: props.tooltips?.[key],
+      tooltip: tooltips?.[key],
       emptyValueBehavior: { action: "hide" },
     }));
   }

@@ -86,28 +86,20 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import { useRecordDetails } from "@/composables/useRecordDetails";
+import { useLiterature } from "@/composables/useLiterature";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import type { TableName } from "@/types/api";
 import { generateBibTeX, sanitizeFilename, downloadFile } from "@/utils/bibtex";
 import { literatureLabels } from "@/config/labels";
 import { literatureTooltips } from "@/config/tooltips";
 
-interface LiteratureRecord {
-  Title?: string;
-  [key: string]: unknown;
-}
-
 const route = useRoute();
 
-const table = ref<TableName>("Literature");
-const id = ref(route.params.id as string);
+const id = computed(() => route.params.id as string);
 
-const { data: literature, isLoading: loading } =
-  useRecordDetails<LiteratureRecord>(table, id);
+const { data: literature, isLoading: loading } = useLiterature(id);
 
 // Source URL logic
 const sourceUrl = computed(() => {

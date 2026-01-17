@@ -35,9 +35,7 @@
           :tooltip="regionalInstrumentTooltips['Literature']"
         >
           <RelatedLiterature
-            :literature-id="
-              (processedRegionalInstrument?.Literature as string) || ''
-            "
+            :literature-id="processedRegionalInstrument?.Literature || ''"
             mode="id"
             :oup-filter="'noOup'"
           />
@@ -60,8 +58,9 @@
               :text-type="textType"
               :instrument-title="
                 processedRegionalInstrument
-                  ? (processedRegionalInstrument['Abbreviation'] as string) ||
-                    (processedRegionalInstrument['Title'] as string)
+                  ? processedRegionalInstrument['Abbreviation'] ||
+                    processedRegionalInstrument['Title'] ||
+                    ''
                   : ''
               "
               table="Regional Legal Provisions"
@@ -74,9 +73,7 @@
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[
-        processedRegionalInstrument?.['Abbreviation'] as string,
-      ]"
+      :title-candidates="[processedRegionalInstrument?.['Abbreviation']]"
       fallback="Regional Instrument"
     />
   </div>
@@ -89,29 +86,20 @@ import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
-import { useRecordDetails } from "@/composables/useRecordDetails";
+import { useRegionalInstrument } from "@/composables/useRegionalInstrument";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import type { TableName } from "@/types/api";
 import { regionalInstrumentLabels } from "@/config/labels";
 import { regionalInstrumentTooltips } from "@/config/tooltips";
-
-interface RegionalInstrumentRecord {
-  Abbreviation?: string;
-  "Official Title"?: string;
-  [key: string]: unknown;
-}
 
 const route = useRoute();
 const textType = ref("Full Text of the Provision (English Translation)");
 const hasEnglishTranslation = ref(false);
 
-const table = ref<TableName>("Regional Instruments");
-const id = ref(route.params.id as string);
-
-const { data: regionalInstrument, isLoading: loading } =
-  useRecordDetails<RegionalInstrumentRecord>(table, id);
+const { data: regionalInstrument, isLoading: loading } = useRegionalInstrument(
+  computed(() => route.params.id as string),
+);
 
 const processedRegionalInstrument = computed(() => {
   if (!regionalInstrument.value) return null;
@@ -122,10 +110,8 @@ const processedRegionalInstrument = computed(() => {
       regionalInstrument.value["Name"],
     Date: regionalInstrument.value["Date"],
     URL: regionalInstrument.value["URL"] || regionalInstrument.value["Link"],
-    Title: (regionalInstrument.value as Record<string, unknown>)["Title"],
-    Literature: (regionalInstrument.value as Record<string, unknown>)[
-      "Literature"
-    ],
+    Title: regionalInstrument.value["Title"],
+    Literature: regionalInstrument.value["Literature"],
   };
 });
 </script>

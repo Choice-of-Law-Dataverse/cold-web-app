@@ -24,26 +24,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import { useRecordDetails } from "@/composables/useRecordDetails";
+import { useArbitralAward } from "@/composables/useArbitralAward";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import type { TableName } from "@/types/api";
 import { arbitralAwardLabels } from "@/config/labels";
-
-interface ArbitralAwardRecord {
-  "Case Number"?: string;
-  [key: string]: unknown;
-}
 
 const route = useRoute();
 
-const table = ref<TableName>("Arbitral Awards");
-const id = ref(route.params.id as string);
-
-const { data: arbitralAward, isLoading: loading } =
-  useRecordDetails<ArbitralAwardRecord>(table, id);
+const { data: arbitralAward, isLoading: loading } = useArbitralAward(
+  computed(() => route.params.id as string),
+);
 
 const processedArbitralAward = computed(() => {
   if (!arbitralAward.value) return null;

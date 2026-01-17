@@ -142,32 +142,18 @@ import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
 import CountryReportLink from "@/components/ui/CountryReportLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import { useRecordDetails } from "@/composables/useRecordDetails";
+import { useDomesticInstrument } from "@/composables/useDomesticInstrument";
 import { getSortedProvisionIds } from "@/utils/provision-sorting";
-import type { TableName } from "@/types/api";
 import { domesticInstrumentLabels } from "@/config/labels";
 import { domesticInstrumentTooltips } from "@/config/tooltips";
-
-interface LegalInstrumentRecord {
-  "Title (in English)"?: string;
-  "Official Title"?: string;
-  Abbreviation?: string;
-  "Compatible With the UNCITRAL Model Law"?: boolean | string;
-  "Compatible With the HCCH Principles"?: boolean | string;
-  "Ranking (Display Order)"?: string;
-  "Jurisdictions Alpha-3 Code"?: string;
-  [key: string]: unknown;
-}
 
 const route = useRoute();
 const textType = ref("Full Text of the Provision (English Translation)");
 const hasEnglishTranslation = ref(false);
 
-const table = ref<TableName>("Domestic Instruments");
-const id = ref(route.params.id as string);
-
-const { data: legalInstrument, isLoading: loading } =
-  useRecordDetails<LegalInstrumentRecord>(table, id);
+const { data: legalInstrument, isLoading: loading } = useDomesticInstrument(
+  computed(() => route.params.id as string),
+);
 
 const processedLegalInstrument = computed(() => {
   if (!legalInstrument.value) {

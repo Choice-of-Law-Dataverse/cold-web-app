@@ -17,27 +17,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import { useRecordDetails } from "@/composables/useRecordDetails";
+import { useArbitralRule } from "@/composables/useArbitralRule";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import type { TableName } from "@/types/api";
 import { arbitralRuleLabels } from "@/config/labels";
-
-interface ArbitralRuleRecord {
-  "Set of Rules"?: string;
-  related_arbitral_institutions?: Array<{ Institution?: string }>;
-  [key: string]: unknown;
-}
 
 const route = useRoute();
 
-const table = ref<TableName>("Arbitral Rules");
-const id = ref(route.params.id as string);
-
-const { data: arbitralRule, isLoading: loading } =
-  useRecordDetails<ArbitralRuleRecord>(table, id);
+const { data: arbitralRule, isLoading: loading } = useArbitralRule(
+  computed(() => route.params.id as string),
+);
 
 const processedArbitralRule = computed(() => {
   if (!arbitralRule.value) return null;

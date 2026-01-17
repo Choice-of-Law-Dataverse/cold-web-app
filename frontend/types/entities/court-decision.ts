@@ -28,4 +28,5 @@ export interface CourtDecisionResponse {
   "Official Source (URL)"?: string;
   "Jurisdictions Alpha-3 Code"?: string;
   themes?: string;
+  Questions?: string;
 }

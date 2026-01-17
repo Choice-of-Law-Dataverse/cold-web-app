@@ -6,6 +6,7 @@ export interface RegionalInstrumentResponse {
   id: string;
   Abbreviation?: string;
   Title?: string;
+  "Title (in English)"?: string;
   Name?: string;
   Date?: string;
   Specialists?: string;

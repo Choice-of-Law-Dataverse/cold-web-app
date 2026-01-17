@@ -20,7 +20,7 @@
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
-                :pdf-field="(courtDecision as any)?.['Official Source (PDF)']"
+                :pdf-field="courtDecision?.['Official Source (PDF)']"
                 :record-id="route.params.id as string"
                 folder-name="court-decisions"
               />
@@ -52,12 +52,9 @@
           <div>
             <div
               v-if="
-                (courtDecision as Record<string, unknown>)
-                  .hasEnglishQuoteTranslation &&
-                (courtDecision as Record<string, unknown>)['Quote'] &&
-                (
-                  (courtDecision as Record<string, unknown>)['Quote'] as string
-                )?.trim() !== ''
+                courtDecision?.hasEnglishQuoteTranslation &&
+                courtDecision?.Quote &&
+                courtDecision.Quote.trim() !== ''
               "
               class="mb-2 flex items-center gap-1"
             >
@@ -89,12 +86,12 @@
               <p class="result-value-small whitespace-pre-line">
                 {{
                   showEnglishQuote &&
-                  (courtDecision as any).hasEnglishQuoteTranslation &&
-                  (courtDecision as any)["Quote"] &&
-                  (courtDecision as any)["Quote"]?.trim() !== ""
-                    ? (courtDecision as any)["Translated Excerpt"]
-                    : (courtDecision as any)["Quote"] ||
-                      (courtDecision as any)["Translated Excerpt"]
+                  courtDecision?.hasEnglishQuoteTranslation &&
+                  courtDecision?.Quote &&
+                  courtDecision.Quote.trim() !== ""
+                    ? courtDecision["Translated Excerpt"]
+                    : courtDecision?.Quote ||
+                      courtDecision?.["Translated Excerpt"]
                 }}
               </p>
             </div>
@@ -111,9 +108,7 @@
         >
           <RelatedQuestions
             :jurisdiction-code="
-              ((courtDecision as Record<string, unknown>)?.[
-                'Jurisdictions Alpha-3 Code'
-              ] as string) || ''
+              courtDecision?.['Jurisdictions Alpha-3 Code'] || ''
             "
             :questions="value"
           />
@@ -126,10 +121,7 @@
           variant="literature"
         >
           <RelatedLiterature
-            :themes="
-              ((courtDecision as Record<string, unknown>)?.themes as string) ||
-              ''
-            "
+            :themes="courtDecision?.themes || ''"
             :mode="'themes'"
             :oup-filter="'noOup'"
             :empty-value-behavior="{
@@ -178,9 +170,7 @@
 
       <template #country-report>
         <CountryReportLink
-          :jurisdiction-code="
-            courtDecision?.['Jurisdictions Alpha-3 Code'] as string
-          "
+          :jurisdiction-code="courtDecision?.['Jurisdictions Alpha-3 Code']"
         />
       </template>
 
@@ -193,14 +183,10 @@
 
     <PageSeoMeta
       :title-candidates="[
-        ((courtDecision as Record<string, unknown>)?.[
-          'Case Title'
-        ] as string) !== 'Not found'
-          ? ((courtDecision as Record<string, unknown>)?.[
-              'Case Title'
-            ] as string)
+        courtDecision?.['Case Title'] !== 'Not found'
+          ? courtDecision?.['Case Title']
           : null,
-        (courtDecision as Record<string, unknown>)?.['Case Citation'] as string,
+        courtDecision?.['Case Citation'],
       ]"
       fallback="Court Decision"
     />
@@ -243,6 +229,6 @@ const showFullText = ref(false);
 
 // Source URL for court decisions
 const sourceUrl = computed(() => {
-  return (courtDecision.value?.["Official Source (URL)"] || "") as string;
+  return courtDecision.value?.["Official Source (URL)"] || "";
 });
 </script>
