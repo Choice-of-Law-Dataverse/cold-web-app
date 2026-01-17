@@ -92,25 +92,7 @@
 
 body {
   font-family: "Inter", sans-serif;
-  color: var(--color-cold-night) !important;
-}
-
-h1 {
-  font-size: 32px !important;
-  font-weight: 700 !important; // Bold
-  color: var(--color-cold-night) !important;
-}
-
-h2 {
-  font-size: 20px !important;
-  font-weight: 600 !important; // Medium
-  color: var(--color-cold-night) !important;
-}
-
-h3 {
-  font-size: 16px !important;
-  font-weight: 600 !important; // Medium
-  color: var(--color-cold-night) !important;
+  color: var(--color-cold-night);
 }
 
 a {

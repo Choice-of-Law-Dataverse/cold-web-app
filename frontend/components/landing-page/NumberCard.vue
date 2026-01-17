@@ -3,7 +3,7 @@
     <UCard class="cold-ucard number-card h-full">
       <div class="flex h-full flex-col justify-between">
         <h2
-          class="card-title mb-4 text-center text-sm font-medium text-gray-600"
+          class="card-title mb-4 text-center font-medium text-gray-600"
         >
           {{ title }}
         </h2>

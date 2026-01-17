@@ -7,7 +7,7 @@
       >
         <div class="flex flex-col gap-4">
           <h1
-            class="hero-title mb-4 text-pretty text-[40px] font-bold leading-[1.1] sm:text-[56px] md:text-[64px]"
+            class="hero-title mb-4 text-pretty text-[56px] font-bold leading-[1.1] sm:text-[64px] md:text-[81px]"
           >
             Choice of Law Dataverse
           </h1>
@@ -52,7 +52,7 @@
           </div>
         </div>
         <div
-          class="flex min-w-[100px] items-center justify-center gap-3 sm:flex-col lg:flex-row"
+          class="min-w-[100px] items-center justify-center gap-3 sm:flex-col lg:flex-row hidden md:flex"
         >
           <!-- <HCCHApproved />
               <OpenScienceBadge /> -->
@@ -114,7 +114,7 @@
         <NumberCard
           title="Available Arbitral Awards"
           button-text="See all"
-          button-link="/arbitral-awards"
+          button-link="/arbitral-award"
           table-name="Questions"
           :override-number="74"
         />
@@ -122,7 +122,7 @@
         <NumberCard
           title="Available Arbitral Rules"
           button-text="See all"
-          button-link="/arbitral-rules"
+          button-link="/arbitral-rule"
           table-name="Questions"
           :override-number="37"
         />
