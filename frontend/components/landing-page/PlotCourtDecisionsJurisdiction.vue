@@ -26,6 +26,12 @@
               :class="{ 'bar-hovered': hoveredIndex === index }"
               :style="{ width: item.percentage + '%' }"
             >
+              <img
+                v-if="item.flagUrl"
+                :src="item.flagUrl"
+                :alt="item.jurisdiction"
+                class="bar-flag"
+              />
               <span class="bar-value">{{ item.count }}</span>
             </div>
           </div>
@@ -35,13 +41,32 @@
   </UCard>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
 import { useJurisdictionChart } from "@/composables/useJurisdictionChart";
+import { useJurisdictions } from "@/composables/useJurisdictions";
 
 const { data, isLoading } = useJurisdictionChart();
+const { data: jurisdictions } = useJurisdictions();
 const hoveredIndex = ref(-1);
+
+const jurisdictionLookup = computed(() => {
+  if (!jurisdictions.value) return new Map<string, string>();
+  const lookup = new Map<string, string>();
+  for (const j of jurisdictions.value) {
+    if (j.alpha3Code) {
+      lookup.set(j.Name.toLowerCase(), j.alpha3Code.toLowerCase());
+    }
+  }
+  return lookup;
+});
+
+function getFlagUrl(jurisdictionName: string) {
+  const alpha3 = jurisdictionLookup.value.get(jurisdictionName.toLowerCase());
+  if (!alpha3) return null;
+  return `https://choiceoflaw.blob.core.windows.net/assets/flags/${alpha3}.svg`;
+}
 
 const chartData = computed(() => {
   if (!data.value) return [];
@@ -54,10 +79,11 @@ const chartData = computed(() => {
     count,
     percentage: (count / maxValue) * 100,
     url: links[index],
+    flagUrl: getFlagUrl(yValues[index]),
   }));
 });
 
-function handleBarHover(index, isHovering) {
+function handleBarHover(index: number, isHovering: boolean) {
   hoveredIndex.value = isHovering ? index : -1;
 }
 </script>
@@ -109,10 +135,17 @@ function handleBarHover(index, isHovering) {
   transition: all 0.15s ease;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  padding-right: 0.75rem;
+  justify-content: space-between;
+  padding: 0 0.75rem;
   border-radius: 4px;
   position: relative;
+}
+
+.bar-flag {
+  height: 18px;
+  width: auto;
+  border-radius: 2px;
+  flex-shrink: 0;
 }
 
 .bar-hovered {
@@ -142,7 +175,10 @@ function handleBarHover(index, isHovering) {
 
   .bar-value {
     font-size: 0.8rem;
-    padding-right: 0.5rem;
+  }
+
+  .bar-flag {
+    height: 14px;
   }
 }
 </style>
