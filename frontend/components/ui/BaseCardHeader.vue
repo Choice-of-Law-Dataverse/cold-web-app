@@ -271,7 +271,7 @@ import { onMounted, ref, computed, reactive, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { handleImageError } from "@/utils/handleImageError";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
-import { useJurisdictionLookup } from "@/composables/useJurisdictionLookup";
+import { useJurisdictionLookup } from "@/composables/useJurisdictions";
 import CiteModal from "@/components/ui/CiteModal.vue";
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);

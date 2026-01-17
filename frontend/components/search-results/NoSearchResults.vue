@@ -55,7 +55,7 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router";
 import { computed } from "vue";
-import { useJurisdictionLookup } from "@/composables/useJurisdictionLookup";
+import { useJurisdictionLookup } from "@/composables/useJurisdictions";
 
 const route = useRoute();
 const router = useRouter();

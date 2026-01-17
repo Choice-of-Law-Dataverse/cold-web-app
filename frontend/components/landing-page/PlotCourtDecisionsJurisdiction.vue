@@ -44,8 +44,10 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
-import { useJurisdictionChart } from "@/composables/useJurisdictionChart";
-import { useJurisdictions } from "@/composables/useJurisdictions";
+import {
+  useJurisdictionChart,
+  useJurisdictions,
+} from "@/composables/useJurisdictions";
 
 const { data, isLoading } = useJurisdictionChart();
 const { data: jurisdictions } = useJurisdictions();

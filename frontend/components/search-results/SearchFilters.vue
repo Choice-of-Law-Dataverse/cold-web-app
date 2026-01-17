@@ -188,7 +188,7 @@
 <script setup>
 import { computed, reactive } from "vue";
 import { handleImageError } from "@/utils/handleImageError";
-import { useCoveredCountries } from "@/composables/useCoveredCountries";
+import { useCoveredCountries } from "@/composables/useJurisdictions";
 
 const props = defineProps({
   options: { type: Array, required: true },
