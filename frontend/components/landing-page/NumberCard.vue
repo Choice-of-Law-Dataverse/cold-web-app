@@ -8,10 +8,8 @@
           {{ title }}
         </h2>
         <div class="number-container">
-          <span v-if="!loading && !error">
-            <div class="number-display">
-              {{ number ?? props.overrideNumber ?? 0 }}
-            </div>
+          <span v-if="!loading && !error" class="number-display">
+            {{ number ?? props.overrideNumber ?? 0 }}
           </span>
           <span v-else-if="loading"><LoadingNumber /></span>
           <span v-else>Error</span>
@@ -54,13 +52,17 @@ a:hover .number-card {
 
 .card-title {
   line-height: 1.4;
+  height: 3.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .number-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100px;
+  height: 100px;
   flex: 1;
 }
 
@@ -77,6 +79,7 @@ a:hover .number-card {
   -webkit-text-fill-color: transparent;
   cursor: pointer;
   transition: filter 0.2s ease;
+  font-variant-numeric: tabular-nums;
 }
 
 a:hover .number-display {
