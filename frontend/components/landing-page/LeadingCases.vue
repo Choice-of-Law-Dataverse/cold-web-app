@@ -9,12 +9,12 @@
         <LoadingLandingPageCard />
       </div>
       <template v-else>
-        <div class="flex flex-col gap-2">
+        <div class="flex w-full flex-col gap-2">
           <NuxtLink
             v-for="(decision, index) in leadingCases?.slice(0, 3)"
             :key="index"
             :to="`/court-decision/${decision.ID}`"
-            class="landing-item-button"
+            class="landing-item-button w-full"
           >
             <div class="flag-wrapper">
               <img

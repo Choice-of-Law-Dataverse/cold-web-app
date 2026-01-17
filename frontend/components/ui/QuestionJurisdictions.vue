@@ -2,7 +2,9 @@
   <UCard class="cold-ucard">
     <div class="flex flex-col gap-4">
       <div class="flex justify-between">
-        <h3 class="comparison-title mb-4">Comparison</h3>
+        <h3 class="comparison-title mb-4 text-xl font-semibold md:text-2xl">
+          Comparison
+        </h3>
         <span class="mb-4 flex flex-wrap gap-2">
           <NuxtLink to="/learn/methodology" type="button" class="action-button">
             <UIcon
@@ -39,11 +41,12 @@
       <div v-if="isLoading" class="copy mt-4">Loading jurisdictions...</div>
       <div v-else-if="error" class="copy mt-4">Error loading jurisdictions</div>
       <div v-else class="flex flex-col gap-4">
-        <DetailRow v-for="answer in answers" :key="answer" :label="answer">
-          <div
-            v-if="getCountriesForAnswer(answer).length"
-            class="flex flex-wrap items-center gap-4"
-          >
+        <DetailRow
+          v-for="answer in answersWithJurisdictions"
+          :key="answer"
+          :label="answer"
+        >
+          <div class="flex flex-wrap items-center gap-4">
             <NuxtLink
               v-for="country in getCountriesForAnswer(answer)"
               :key="country.code"
@@ -66,7 +69,6 @@
               {{ country.code }}
             </NuxtLink>
           </div>
-          <div v-else class="copy">No jurisdictions</div>
         </DetailRow>
       </div>
     </div>
@@ -131,6 +133,12 @@ const answers = computed(() => {
   sortedAnswers.push(...remainingAnswers);
 
   return sortedAnswers;
+});
+
+const answersWithJurisdictions = computed(() => {
+  return answers.value.filter(
+    (answer) => getCountriesForAnswer(answer).length > 0,
+  );
 });
 
 function selectRegion(region) {

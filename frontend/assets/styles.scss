@@ -527,6 +527,11 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
   position: relative;
   background: #fff;
   border: none !important;
+
+  // When UCard is a flex container, ensure body takes full width
+  &.flex > * {
+    width: 100%;
+  }
 }
 
 @keyframes gradient-slide {
@@ -1080,7 +1085,8 @@ button.cold-toggle-btn {
 
 .landing-item-button {
   @include interactive-item-base;
-  @apply w-full gap-3 px-4 py-3;
+  @apply gap-3 px-4 py-3;
+  width: 100%;
 
   .flag-wrapper {
     @apply min-w-[40px];
@@ -1091,7 +1097,7 @@ button.cold-toggle-btn {
   }
 
   .item-year {
-    @apply ml-auto flex-shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold;
+    @apply flex-shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold;
     color: var(--color-cold-teal);
     background: color-mix(in srgb, var(--color-cold-teal) 10%, transparent);
   }

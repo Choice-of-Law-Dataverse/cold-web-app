@@ -260,7 +260,7 @@ describe("QuestionJurisdictions", () => {
     expect(braIndex).toBeLessThan(zmbIndex);
   });
 
-  it("displays 'No jurisdictions' when no countries for an answer", async () => {
+  it("hides answer row when no jurisdictions for selected region", async () => {
     mockQuestionData.value = {
       answers: [
         {
@@ -283,7 +283,8 @@ describe("QuestionJurisdictions", () => {
     await africaButton!.trigger("click");
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.text()).toContain("No jurisdictions");
+    // Row should not be rendered when there are no jurisdictions
+    expect(wrapper.text()).not.toContain("Yes");
   });
 
   it("renders links with correct paths", async () => {

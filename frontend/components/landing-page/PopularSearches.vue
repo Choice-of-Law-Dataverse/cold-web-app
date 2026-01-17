@@ -6,11 +6,11 @@
         <p class="card-subtitle">Start with frequent queries</p>
       </div>
 
-      <div class="flex flex-col gap-2">
+      <div class="flex w-full flex-col gap-2">
         <button
           v-for="(item, index) in searchSuggestions"
           :key="index"
-          class="landing-item-button"
+          class="landing-item-button w-full"
           @click="handleSuggestionClick(item.query)"
         >
           <Icon name="i-material-symbols:search" class="item-icon" />

@@ -1,6 +1,6 @@
 <template>
   <UCard class="cold-ucard gradient-top-border flex h-full w-full flex-col">
-    <div class="flex flex-col gap-4">
+    <div class="flex w-full flex-col gap-4">
       <div>
         <h2 class="card-title">Successful Legal Transplantations</h2>
         <p class="card-subtitle">
@@ -11,12 +11,12 @@
         <LoadingLandingPageCard />
       </div>
       <template v-else>
-        <div class="flex flex-col gap-2">
+        <div class="flex w-full flex-col gap-2">
           <NuxtLink
             v-for="(instrument, index) in domesticInstruments.slice(0, 9)"
             :key="index"
             :to="`/domestic-instrument/${instrument.ID}`"
-            class="landing-item-button"
+            class="landing-item-button w-full"
           >
             <div class="flag-wrapper">
               <img

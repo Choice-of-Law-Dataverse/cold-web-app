@@ -50,11 +50,15 @@ defineProps({
 
 <style scoped>
 .detail-row {
-  padding: 0.75rem 1rem;
-  margin: 0 -1rem;
+  padding: 0.75rem 2rem;
+  margin: 0 -1.5rem;
   border-radius: 2px;
   border-left: 2px solid transparent;
   transition: background 0.15s ease;
+
+  @media (min-width: 640px) {
+    margin: 0 -2rem;
+  }
 }
 
 .detail-row:hover {

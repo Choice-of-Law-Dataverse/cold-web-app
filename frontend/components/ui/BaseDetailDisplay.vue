@@ -61,7 +61,7 @@
       <!-- Main content -->
       <div class="gradient-top-border flex">
         <div
-          class="main-content flex w-full flex-col px-6 py-6 sm:px-8 sm:py-8 gap-2"
+          class="main-content flex w-full flex-col gap-2 px-6 py-6 sm:px-8 sm:py-8"
         >
           <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
           <slot />

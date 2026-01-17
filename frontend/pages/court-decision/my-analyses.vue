@@ -122,9 +122,7 @@
               <td class="px-4 py-3 text-right">
                 <UButton
                   v-if="canRecoverAnalysis(analysis.moderation_status)"
-                  variant="ghost"
-                  color="primary"
-                  size="xs"
+                  class="action-button"
                   :to="`/court-decision/new?draft=${analysis.id}`"
                 >
                   {{

@@ -8,11 +8,11 @@
         <p class="card-subtitle">Browse essential legal publications</p>
       </div>
 
-      <div class="flex flex-col gap-2">
+      <div class="flex w-full flex-col gap-2">
         <button
           v-for="(suggestion, index) in searchSuggestions"
           :key="index"
-          class="landing-item-button"
+          class="landing-item-button w-full"
           @click="handleSuggestionClick(suggestion)"
         >
           <Icon name="i-material-symbols:book-outline" class="item-icon" />

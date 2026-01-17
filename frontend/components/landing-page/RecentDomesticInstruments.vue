@@ -1,6 +1,6 @@
 <template>
   <UCard class="cold-ucard gradient-top-border flex h-full w-full">
-    <div class="flex flex-col gap-4">
+    <div class="flex w-full flex-col gap-4">
       <NuxtLink
         :to="`/search?type=Domestic+Instruments&sortBy=date`"
         class="no-underline"
@@ -17,12 +17,12 @@
         <LoadingLandingPageCard />
       </div>
       <template v-else>
-        <div class="flex flex-col gap-2">
+        <div class="flex w-full flex-col gap-2">
           <NuxtLink
             v-for="(instrument, index) in domesticInstruments.slice(0, 3)"
             :key="index"
             :to="`/domestic-instrument/${instrument.ID}`"
-            class="landing-item-button"
+            class="landing-item-button w-full"
           >
             <div class="flag-wrapper">
               <img
