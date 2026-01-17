@@ -5,7 +5,7 @@
       :href="sourceUrl as string"
       target="_blank"
       rel="noopener noreferrer"
-      class="label source-link inline-flex items-center gap-1 text-cold-teal"
+      class="action-link-external"
       @click.stop
     >
       <template v-if="openAccess">
@@ -16,7 +16,7 @@
         />
       </template>
       <template v-else>
-        <UIcon name="i-material-symbols:open-in-new" class="h-5 w-5" />
+        <UIcon name="i-material-symbols:open-in-new" />
       </template>
       <span>{{ label }}</span>
     </a>
@@ -36,19 +36,3 @@ withDefaults(defineProps<Props>(), {
   openAccess: false,
 });
 </script>
-
-<style scoped>
-.source-link {
-  padding: 0.375rem 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background-color: color-mix(in srgb, var(--color-cold-teal) 8%, transparent);
-  border-radius: 0.375rem;
-  transition: all 0.15s ease;
-}
-
-.source-link:hover {
-  background-color: color-mix(in srgb, var(--color-cold-teal) 15%, transparent);
-  transform: translateY(-1px);
-}
-</style>

@@ -5,9 +5,30 @@
   >
     <template v-if="cardType === 'Loading'" />
     <template v-else>
+      <!-- Mobile: Actions menu (outside tags container to stay top-right) -->
+      <div v-if="showSuggestEdit && headerMode !== 'new'" class="sm:hidden order-last">
+        <UDropdown
+          :items="mobileMenuItems"
+          :popper="{ placement: 'bottom-end' }"
+          :ui="{
+            item: {
+              base: 'mobile-menu-item',
+              active: 'mobile-menu-item-active',
+            },
+          }"
+        >
+          <UButton
+            icon="i-material-symbols:more-vert"
+            variant="ghost"
+            color="neutral"
+            size="sm"
+          />
+        </UDropdown>
+      </div>
+
       <!-- Left side of the header: Tags -->
       <div
-        class="tags-container scrollbar-hidden flex w-full flex-wrap items-center gap-2.5 overflow-x-auto"
+        class="tags-container scrollbar-hidden flex flex-1 flex-wrap items-center gap-2.5 overflow-x-auto"
       >
         <!-- Display 'Name (from Jurisdiction)' or alternatives -->
         <NuxtLink
@@ -138,7 +159,8 @@
           </template>
           <template v-else>
             <template v-if="showSuggestEdit">
-              <div class="actions-container flex flex-row items-center gap-1.5">
+              <!-- Desktop: Inline actions -->
+              <div class="actions-container hidden sm:flex flex-row items-center gap-1.5">
                 <!-- All actions except the International Instrument Edit link -->
                 <template
                   v-for="(action, index) in suggestEditActions.filter(
@@ -411,6 +433,37 @@ const suggestEditActions = computed(() => {
   return actions;
 });
 
+const mobileMenuItems = computed(() => {
+  return [
+    [
+      {
+        label: "Cite",
+        icon: "i-material-symbols:verified-outline",
+        click: () => {
+          isCiteOpen.value = true;
+        },
+      },
+      {
+        label: "Export JSON",
+        icon: "i-material-symbols:data-object",
+        click: exportJSON,
+      },
+      {
+        label: "Print",
+        icon: "i-material-symbols:print-outline",
+        click: printPage,
+      },
+      {
+        label: "Suggest Edit",
+        icon: "i-material-symbols:edit-square-outline",
+        click: () => {
+          window.open(suggestEditLink.value, "_blank");
+        },
+      },
+    ],
+  ];
+});
+
 const suggestEditLink = ref("");
 const airtableFormID = "appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form";
 
@@ -553,7 +606,6 @@ const selectUiLabel = {
 }
 
 .actions-container {
-  display: flex;
   align-items: center;
   gap: 0.5rem;
 }
@@ -788,5 +840,23 @@ a.label-arbitration {
   font-size: 1.5rem;
   color: var(--color-cold-purple);
   transition: transform 0.3s ease;
+}
+
+/* Mobile menu dropdown styling - matches section-nav-item tabs */
+:deep(.mobile-menu-item) {
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-cold-night);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border-left: 2px solid transparent;
+}
+
+:deep(.mobile-menu-item:hover),
+:deep(.mobile-menu-item-active) {
+  background: var(--gradient-subtle);
+  color: var(--color-cold-purple);
+  border-left-color: var(--color-cold-purple);
 }
 </style>

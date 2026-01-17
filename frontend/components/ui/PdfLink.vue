@@ -4,11 +4,11 @@
       :href="finalPdfUrl"
       target="_blank"
       rel="noopener noreferrer"
-      class="label pdf-link inline-flex items-center gap-1 text-cold-teal"
+      class="action-link-external"
       aria-label="Download PDF for record"
       @click.stop
     >
-      <UIcon name="i-material-symbols:picture-as-pdf-outline" class="h-5 w-5" />
+      <UIcon name="i-material-symbols:picture-as-pdf-outline" />
       <span>PDF</span>
     </a>
   </div>
@@ -73,19 +73,3 @@ const hasPdf = computed(() => {
 
 const finalPdfUrl = computed(() => pdfUrl.value || azureBlobUrl.value);
 </script>
-
-<style scoped>
-.pdf-link {
-  padding: 0.375rem 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  background-color: color-mix(in srgb, var(--color-cold-teal) 8%, transparent);
-  border-radius: 0.375rem;
-  transition: all 0.15s ease;
-}
-
-.pdf-link:hover {
-  background-color: color-mix(in srgb, var(--color-cold-teal) 15%, transparent);
-  transform: translateY(-1px);
-}
-</style>
