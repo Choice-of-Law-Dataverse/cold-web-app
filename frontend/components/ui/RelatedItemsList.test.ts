@@ -160,12 +160,12 @@ describe("RelatedItemsList", () => {
         basePath: "/test",
         emptyValueBehavior: {
           action: "display",
-          fallback: "No related items found",
+          fallback: "—",
         },
       },
     });
 
-    expect(wrapper.text()).toContain("No related items found");
+    expect(wrapper.text()).toContain("—");
   });
 
   it("hides component when no items and action is not display", () => {

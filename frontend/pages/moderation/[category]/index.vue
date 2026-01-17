@@ -70,7 +70,7 @@
             v-if="getPreciseJurisdiction(suggestion)"
             label="Jurisdiction"
           >
-            <p class="prose mt-0 text-sm">
+            <p class="result-value-small text-sm">
               {{ getPreciseJurisdiction(suggestion) }}
             </p>
           </DetailRow>
@@ -79,7 +79,7 @@
             v-if="getJurisdiction(suggestion)"
             label="Jurisdiction Type"
           >
-            <p class="prose mt-0 text-sm">
+            <p class="result-value-small text-sm">
               {{ getJurisdiction(suggestion) }}
             </p>
           </DetailRow>
@@ -88,18 +88,18 @@
             v-if="suggestion.username || suggestion.user_email"
             label="Submitted by"
           >
-            <p class="prose mt-0 text-sm">
+            <p class="result-value-small text-sm">
               {{ suggestion.username || suggestion.user_email || "Unknown" }}
             </p>
           </DetailRow>
           <DetailRow v-if="suggestion.created_at" label="Created">
-            <p class="prose mt-0 text-sm">
+            <p class="result-value-small text-sm">
               {{ formatDateLong(suggestion.created_at) }}
             </p>
           </DetailRow>
 
           <DetailRow v-if="suggestion.source" label="Source">
-            <p class="prose mt-0 text-sm">{{ suggestion.source }}</p>
+            <p class="result-value-small text-sm">{{ suggestion.source }}</p>
           </DetailRow>
         </div>
       </UCard>

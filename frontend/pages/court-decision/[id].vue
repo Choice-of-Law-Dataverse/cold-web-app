@@ -89,7 +89,7 @@
               </span>
             </div>
             <div>
-              <p class="prose mt-0 whitespace-pre-line">
+              <p class="result-value-small whitespace-pre-line">
                 {{
                   showEnglishQuote &&
                   (courtDecision as any).hasEnglishQuoteTranslation &&
@@ -150,7 +150,7 @@
         >
           <div :class="valueClassMap['Original Text']">
             <div v-if="!showFullText && value.length > 400">
-              <p class="prose mt-0">
+              <p class="result-value-small">
                 {{ value.slice(0, 400)
                 }}<span v-if="value.length > 400">…</span>
               </p>
@@ -163,7 +163,7 @@
               </button>
             </div>
             <div v-else>
-              <p class="prose mt-0">
+              <p class="result-value-small">
                 {{ value }}
               </p>
               <button

@@ -42,7 +42,7 @@ const props = defineProps({
     type: Object,
     default: () => ({
       action: "display",
-      fallback: "N/A",
+      fallback: "—",
     }),
   },
 });

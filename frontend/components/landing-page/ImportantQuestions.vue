@@ -30,7 +30,7 @@
               <div class="flex items-center justify-center md:justify-between">
                 <h2
                   ref="titleRef"
-                  class="popular-title mb-0 text-center md:text-left"
+                  class="card-title mb-0 text-center md:text-left"
                 >
                   {{ questionTitle || "Missing Question" }}
                 </h2>

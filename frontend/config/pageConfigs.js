@@ -59,14 +59,14 @@ export const literatureConfig = {
     {
       key: "Title",
       label: "Title",
-      emptyValueBehavior: { action: "display", fallback: "No title available" },
+      emptyValueBehavior: { action: "display", fallback: "—" },
     },
     {
       key: "Author",
       label: "Author(s)",
       emptyValueBehavior: {
         action: "display",
-        fallback: "No author available",
+        fallback: "—",
       },
     },
     {
@@ -78,14 +78,14 @@ export const literatureConfig = {
       key: "Publication Year",
       label: "Year",
       tooltip: tooltipLiteratureYear,
-      emptyValueBehavior: { action: "display", fallback: "No year available" },
+      emptyValueBehavior: { action: "display", fallback: "—" },
     },
     {
       key: "Publication Title",
       label: "Publication",
       emptyValueBehavior: {
         action: "display",
-        fallback: "No publication available",
+        fallback: "—",
         shouldDisplay: (data) => data["Item Type"] !== "book",
       },
     },
@@ -95,7 +95,7 @@ export const literatureConfig = {
       tooltip: tooltipLiteraturePublisher,
       emptyValueBehavior: {
         action: "display",
-        fallback: "No publisher available",
+        fallback: "—",
         shouldDisplay: (data) => data["Item Type"] === "book",
       },
     },
@@ -151,9 +151,9 @@ export const jurisdictionConfig = {
     },
   ],
   valueClassMap: {
-    "Jurisdiction Summary": "prose",
-    "Jurisdictional Differentiator": "prose",
-    "Related Literature": "prose",
+    "Jurisdiction Summary": "result-value-small whitespace-pre-line",
+    "Jurisdictional Differentiator": "result-value-small",
+    "Related Literature": "result-value-small",
   },
 };
 
@@ -165,7 +165,7 @@ export const questionConfig = {
       tooltip: tooltipQuestion,
       emptyValueBehavior: {
         action: "display",
-        fallback: "No question available",
+        fallback: "—",
       },
     },
     {
@@ -174,7 +174,7 @@ export const questionConfig = {
       tooltip: tooltipAnswer,
       emptyValueBehavior: {
         action: "display",
-        fallback: "No answer available",
+        fallback: "—",
       },
     },
     {
@@ -188,7 +188,7 @@ export const questionConfig = {
       tooltip: tooltipSource,
       emptyValueBehavior: {
         action: "display",
-        fallback: "No source available",
+        fallback: "—",
       },
     },
 
@@ -209,7 +209,7 @@ export const questionConfig = {
       tooltip: tooltipRelatedCourtDecisions,
       emptyValueBehavior: {
         action: "display",
-        fallback: "No related court decisions",
+        fallback: "—",
       },
     },
     {
@@ -218,7 +218,7 @@ export const questionConfig = {
       tooltip: tooltipQuestionRelatedLiterature,
       emptyValueBehavior: {
         action: "display",
-        fallback: "No related literature",
+        fallback: "—",
       },
     },
     {
@@ -286,7 +286,7 @@ export const legalInstrumentConfig = {
       key: "Title (in English)",
       label: "Name",
       tooltip: tooltipDomesticInstrumentTitle,
-      emptyValueBehavior: { action: "display", fallback: "No title available" },
+      emptyValueBehavior: { action: "display", fallback: "—" },
     },
     {
       key: "Compatibility",
@@ -332,7 +332,7 @@ export const legalInstrumentConfig = {
       tooltip: tooltipDomesticInstrumentDate,
       emptyValueBehavior: {
         action: "display",
-        fallback: "N/A",
+        fallback: "—",
         shouldHide: (data) => {
           return data && (data["Entry Into Force"] || data["Publication Date"]);
         },
@@ -401,7 +401,7 @@ export const regionalInstrumentConfig = {
     {
       key: "Abbreviation",
       label: "Abbreviation",
-      emptyValueBehavior: { action: "display", fallback: "No title available" },
+      emptyValueBehavior: { action: "display", fallback: "—" },
     },
     {
       key: "Title",
@@ -422,7 +422,7 @@ export const regionalInstrumentConfig = {
       tooltip: tooltipRegionalInstrumentSpecialists,
       emptyValueBehavior: {
         action: "display",
-        fallback: "No specialists available",
+        fallback: "—",
       },
     },
     {
@@ -458,13 +458,13 @@ export const internationalInstrumentConfig = {
     {
       key: "Name",
       label: "Title",
-      emptyValueBehavior: { action: "display", fallback: "No title available" },
+      emptyValueBehavior: { action: "display", fallback: "—" },
     },
     {
       key: "Date",
       label: "Date",
       tooltip: tooltipInternationalInstrumentDate,
-      emptyValueBehavior: { action: "display", fallback: "N/A" },
+      emptyValueBehavior: { action: "display", fallback: "—" },
       valueTransform: (val) =>
         typeof formatDate === "function" ? formatDate(val) : val,
     },
@@ -474,7 +474,7 @@ export const internationalInstrumentConfig = {
       tooltip: tooltipInternationalInstrumentSpecialists,
       emptyValueBehavior: {
         action: "display",
-        fallback: "No specialists available",
+        fallback: "—",
       },
     },
     {
@@ -509,14 +509,14 @@ export const arbitralRuleConfig = {
     {
       key: "Set of Rules",
       label: "Set of Rules",
-      emptyValueBehavior: { action: "display", fallback: "No title available" },
+      emptyValueBehavior: { action: "display", fallback: "—" },
     },
     {
       key: "Arbitral Institutions",
       label: "Arbitral Institutions",
       emptyValueBehavior: {
         action: "display",
-        fallback: "No institution available",
+        fallback: "—",
       },
     },
     {
@@ -538,14 +538,14 @@ export const arbitralAwardConfig = {
     {
       key: "Case Number",
       label: "Case Number",
-      emptyValueBehavior: { action: "display", fallback: "No title available" },
+      emptyValueBehavior: { action: "display", fallback: "—" },
     },
     {
       key: "Arbitral Institutions",
       label: "Arbitral Institutions",
       emptyValueBehavior: {
         action: "display",
-        fallback: "No institution available",
+        fallback: "—",
       },
     },
     {
@@ -556,7 +556,7 @@ export const arbitralAwardConfig = {
     {
       key: "Year",
       label: "Year",
-      emptyValueBehavior: { action: "display", fallback: "hide" },
+      emptyValueBehavior: { action: "display", fallback: "—" },
     },
     {
       key: "Nature of the Award",
@@ -599,14 +599,14 @@ export const courtDecisionConfig = {
       tooltip: tooltipCaseTitle,
       emptyValueBehavior: {
         action: "display",
-        fallback: "No case title available",
+        fallback: "—",
         getFallback: (data) => {
           if (!data) {
-            return "No case citation available";
+            return "—";
           }
           const title = data["Case Title"];
           return !title || title.trim() === "NA"
-            ? data["Case Citation"] || "No case citation available"
+            ? data["Case Citation"] || "—"
             : title;
         },
       },
@@ -617,14 +617,14 @@ export const courtDecisionConfig = {
       tooltip: tooltipCaseCitation,
       emptyValueBehavior: {
         action: "display",
-        fallback: "No case citation available",
+        fallback: "—",
       },
     },
     {
       key: "Publication Date ISO",
       label: "Publication Date",
       tooltip: tooltipPublicationDate,
-      emptyValueBehavior: { action: "display", fallback: "No date available" },
+      emptyValueBehavior: { action: "display", fallback: "—" },
     },
     {
       key: "Date of Judgment",
@@ -638,7 +638,7 @@ export const courtDecisionConfig = {
       tooltip: tooltipInstance,
       emptyValueBehavior: {
         action: "display",
-        fallback: "No instance information available",
+        fallback: "—",
       },
     },
     {

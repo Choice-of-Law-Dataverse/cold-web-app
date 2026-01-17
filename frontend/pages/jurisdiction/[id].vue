@@ -9,9 +9,12 @@
       :show-suggest-edit="true"
       source-table="Jurisdiction"
     >
-      <h1 class="mb-4">
+              <DetailRow label="">
+                  <h1 class="mb-4 text-3xl font-semibold md:text-4xl">
         Country Report for {{ jurisdictionData?.Name || "N/A" }}
       </h1>
+          </DetailRow>
+
       <template #search-links>
         <div class="flex flex-col gap-4">
           <DetailRow label="Specialists">
@@ -116,7 +119,7 @@
               <UCard class="cold-ucard">
                 <div>
                   <div class="flex justify-between">
-                    <h3 class="comparison-title mb-4">Questionnaire</h3>
+                    <h3 class="comparison-title mb-4 text-xl md:text-2xl font-semibold">Questionnaire</h3>
                     <span
                       class="mb-4 flex flex-wrap gap-4 text-sm text-cold-purple"
                     >

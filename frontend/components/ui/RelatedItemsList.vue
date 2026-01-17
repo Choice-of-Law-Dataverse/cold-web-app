@@ -22,8 +22,11 @@
         </button>
       </div>
     </div>
-    <p v-else-if="emptyValueBehavior.action === 'display'" class="prose">
-      {{ emptyValueBehavior.fallback }}
+    <p
+      v-else-if="emptyValueBehavior.action === 'display'"
+      class="result-value-small"
+    >
+      —
     </p>
   </div>
 </template>

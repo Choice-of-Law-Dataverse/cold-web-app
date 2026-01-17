@@ -17,7 +17,7 @@
     </template>
 
     <template v-if="!hasAnySources">
-      <p class="text-gray-400">No source available</p>
+      <p class="result-value-small">—</p>
     </template>
   </div>
 </template>

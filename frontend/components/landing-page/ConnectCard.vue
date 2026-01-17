@@ -143,20 +143,6 @@ const isRelativeLink = computed(() => {
   @apply shadow-md;
 }
 
-.card-title {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--color-cold-night);
-  line-height: 1.4;
-  margin-bottom: 0.5rem;
-}
-
-.card-subtitle {
-  font-size: 0.875rem;
-  line-height: 1.5;
-  color: var(--color-cold-night-alpha);
-}
-
 .icon-container {
   display: flex;
   justify-content: center;

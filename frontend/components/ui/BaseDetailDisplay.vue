@@ -61,7 +61,7 @@
       <!-- Main content -->
       <div class="gradient-top-border flex">
         <div
-          class="main-content flex w-full flex-col px-6 py-6 sm:px-8 sm:py-8"
+          class="main-content flex w-full flex-col px-6 py-6 sm:px-8 sm:py-8 gap-2"
         >
           <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
           <slot />
@@ -124,9 +124,6 @@
                       :class="[
                         props.valueClassMap[item.key] ||
                           'result-value-small whitespace-pre-line',
-                        isEmptyValue(item, resultData?.[item.key])
-                          ? 'empty-value'
-                          : '',
                         'mt-0',
                       ]"
                     >
@@ -267,16 +264,6 @@ const shouldDisplayValue = (item, value) => {
   return true;
 };
 
-const isEmptyValue = (item, value) => {
-  if (!value || value === "NA" || value === "N/A") {
-    return (
-      item.emptyValueBehavior?.action === "display" &&
-      !item.emptyValueBehavior?.getFallback
-    );
-  }
-  return false;
-};
-
 const getDisplayValue = (item, value) => {
   if (item.valueTransform) {
     return item.valueTransform(value);
@@ -294,9 +281,9 @@ const getDisplayValue = (item, value) => {
     item.emptyValueBehavior &&
     item.emptyValueBehavior.action === "display"
   ) {
-    return item.emptyValueBehavior.fallback || "N/A";
+    return "—";
   }
-  if (!item.emptyValueBehavior) return value || "N/A";
+  if (!item.emptyValueBehavior) return value || "—";
   if (
     (!value || value === "NA") &&
     item.emptyValueBehavior.action === "display"
@@ -304,7 +291,7 @@ const getDisplayValue = (item, value) => {
     if (item.emptyValueBehavior.getFallback) {
       return item.emptyValueBehavior.getFallback(props.resultData);
     }
-    return item.emptyValueBehavior.fallback || "N/A";
+    return "—";
   }
   return value;
 };
@@ -336,11 +323,5 @@ const getDisplayValue = (item, value) => {
 
 :deep(.dark .sticky-header) {
   background-color: rgb(17 24 39);
-}
-
-.empty-value {
-  color: var(--color-cold-night-alpha-50);
-  font-style: italic;
-  font-size: 0.875rem;
 }
 </style>

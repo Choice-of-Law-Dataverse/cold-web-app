@@ -2,8 +2,8 @@
   <UCard class="cold-ucard gradient-top-border h-full w-full">
     <div class="flex flex-col gap-4">
       <div>
-        <h2 class="popular-title">{{ title }}</h2>
-        <p class="result-value-small">
+        <h2 class="card-title">{{ title }}</h2>
+        <p class="card-subtitle">
           Compare legal frameworks across jurisdictions
         </p>
       </div>

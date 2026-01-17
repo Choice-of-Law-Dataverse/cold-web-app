@@ -1,7 +1,7 @@
 <template>
   <UCard class="cold-ucard gradient-top-border flex h-full w-full flex-col">
-    <h2 class="popular-title">Court Decisions by Jurisdiction</h2>
-    <p class="result-value-small">
+    <h2 class="card-title">Court Decisions by Jurisdiction</h2>
+    <p class="card-subtitle">
       Explore countries with the highest case law volume
     </p>
 

@@ -110,6 +110,12 @@ a {
     ); // Darker purple for better contrast
   }
 
+  &:focus-visible {
+    outline: 2px solid var(--color-cold-purple);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
   // Subtle underline on hover for prose links
   .prose &:hover {
     text-decoration: underline !important;
@@ -117,17 +123,6 @@ a {
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
   }
-}
-
-.title-container {
-  width: 100%;
-  text-align: center;
-}
-
-.copy {
-  @extend .result-value-small;
-  margin-top: 24px !important;
-  margin-bottom: 24px !important;
 }
 
 .markdown-body h2 > a,
@@ -156,7 +151,7 @@ li::marker {
 }
 
 .prose {
-  font-size: 15px !important;
+  font-size: 0.9375rem !important;
   line-height: 1.7 !important; // Relative line-height for better readability
   color: var(--color-cold-night) !important;
   font-weight: 400 !important;
@@ -201,7 +196,7 @@ li::marker {
 
 .label-key-provision-article {
   @extend .label-key;
-  font-size: 14px !important;
+  font-size: 0.875rem !important;
   text-transform: none;
 }
 
@@ -209,13 +204,13 @@ li::marker {
   @extend .label-key;
   font-weight: 600 !important;
   text-transform: capitalize;
-  font-size: 10px !important;
+  font-size: 0.625rem !important;
   @apply text-sm text-gray-600;
 }
 
-.label-jurisdiction {
-  @extend .label;
-  @apply flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-left font-medium shadow-sm transition-all duration-150;
+// Shared mixin for interactive items with flags/icons (jurisdictions, landing items)
+@mixin interactive-item-base {
+  @apply flex cursor-pointer items-center rounded-lg text-left font-medium shadow-sm transition-all duration-150;
   background: var(--gradient-subtle);
 
   &:hover {
@@ -223,8 +218,13 @@ li::marker {
     background: var(--gradient-subtle-emphasis);
   }
 
+  &:focus-visible {
+    outline: 2px solid var(--color-cold-purple);
+    outline-offset: 2px;
+  }
+
   .flag-wrapper {
-    @apply inline-flex w-4 flex-shrink-0 items-center justify-center;
+    @apply inline-flex flex-shrink-0 items-center justify-center;
   }
 
   .item-flag {
@@ -246,6 +246,22 @@ li::marker {
 
   &:hover .item-icon {
     color: color-mix(in srgb, var(--color-cold-green) 85%, #000);
+  }
+}
+
+.label-jurisdiction {
+  @extend .label;
+  @include interactive-item-base;
+  @apply gap-2 px-2 py-1;
+
+  .flag-wrapper {
+    @apply w-4;
+  }
+}
+
+.detail-value {
+  p {
+    max-width: 72ch; // Limit line length for better readability
   }
 }
 
@@ -311,34 +327,18 @@ li::marker {
   white-space: pre-wrap; // Preserves whitespace and line breaks, but also allows wrapping
 }
 
-.result-value-large {
-  @extend .result-value;
-  font-size: 26px !important;
-  line-height: 1.4 !important; // Relative line-height for better scaling
-  font-weight: 500 !important;
-  letter-spacing: -0.01em; // Slight tightening for larger text
-}
-
-.result-value-medium {
-  @extend .result-value;
-  font-size: 20px !important;
-  line-height: 1.5 !important;
-  font-weight: 500 !important;
-  letter-spacing: -0.005em;
-}
-
 .result-value-small {
   @extend .result-value;
-  font-size: 15px !important;
-  font-weight: 400 !important; // Regular for body text
-  line-height: 1.7 !important; // More spacious for readability
+  font-size: 0.875rem !important; // 14px - matches link-chip
+  font-weight: 500 !important; // Medium - matches link-chip
+  line-height: 1.7 !important;
   white-space: normal;
 }
 
 .result-value-small-citation {
   @extend .result-value-small;
   font-family: "IBM Plex Mono", monospace;
-  font-size: 13px !important;
+  font-size: 0.8125rem !important;
   background: var(--gradient-gray);
   padding: 1em 1.25em !important;
   line-height: 1.6 !important;
@@ -374,7 +374,7 @@ button.inline-flex.items-center.rounded-full {
 
 .suggestion-button {
   color: var(--color-cold-purple) !important;
-  font-size: 20px !important;
+  font-size: 1.25rem !important;
   font-weight: 500 !important;
   line-height: 1.6em !important;
   text-decoration: none !important;
@@ -388,27 +388,13 @@ button.inline-flex.items-center.rounded-full {
 
 .link-button {
   @extend .suggestion-button;
-  font-size: 14px !important;
+  font-size: 0.875rem !important;
   font-weight: 400 !important; // Regular
 }
 
 .link-button-night {
   @extend .link-button;
   color: var(--color-cold-night) !important;
-}
-
-.showmoreless-icon-large {
-  font-size: 1.4rem !important;
-  transform: translateY(4px) !important;
-}
-
-.external-link-icon {
-  display: inline;
-  width: 1em;
-  vertical-align: top !important;
-  margin-left: 0.2em !important;
-  margin-top: 0.5em !important;
-  margin-bottom: 0em !important;
 }
 
 // Info Box in Jurisdiction Map
@@ -465,7 +451,8 @@ ul[role="listbox"] input[role="combobox"][data-headlessui-state="open"] {
 
   &:focus {
     border-color: var(--color-cold-purple) !important;
-    outline: none !important;
+    outline: 2px solid var(--color-cold-purple);
+    outline-offset: -2px;
   }
 }
 
@@ -551,12 +538,6 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
   }
 }
 
-.cold-ucard-info {
-  @extend .cold-ucard;
-  margin-bottom: -8px;
-  background-color: var(--cold-dark-gray) !important;
-}
-
 // Curser on plot
 .js-plotly-plot .nsewdrag {
   cursor: default; /* Set default arrow cursor for non-interactive elements */
@@ -565,11 +546,6 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
 // Consistent vertical gap between page sections
 .section-gap {
   margin-bottom: 1rem; // 16px, adjusted for better spacing
-}
-
-// Jurisdiction Comparison Horizontal Lines
-.jc-hr {
-  border-top: 1px solid var(--color-cold-gray);
 }
 
 // Form Inputs -----------------------------------------------
@@ -587,7 +563,7 @@ select.cold-input {
   border-radius: 0.5rem !important;
   background-color: #ffffff !important;
   color: var(--color-cold-night) !important;
-  font-size: 14px !important;
+  font-size: 0.875rem !important;
   line-height: 1.4 !important;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
   outline: none !important;
@@ -603,7 +579,7 @@ select.cold-input {
   border-radius: 0.5rem !important;
   background-color: transparent !important; /* wrapper controls bg */
   color: var(--color-cold-night) !important;
-  font-size: 14px !important;
+  font-size: 0.875rem !important;
   line-height: 1.4 !important;
   box-shadow: none !important;
   outline: none !important;
@@ -675,191 +651,81 @@ select.cold-input[disabled] {
   background-color: var(--color-cold-gray-alpha) !important;
 }
 
-// Size variants
-.cold-input--sm {
-  height: 34px !important;
-  font-size: 12px !important;
-  padding: 0 10px !important;
-}
-.cold-input--sm :is(input, textarea, select) {
-  height: 100% !important;
-  font-size: 12px !important;
-}
-
-.cold-input--lg {
-  height: 50px !important;
-  font-size: 16px !important;
-  padding: 0 14px !important;
-}
-.cold-input--lg :is(input, textarea, select) {
-  height: 100% !important;
-  font-size: 16px !important;
-}
-
 /* Wrapper adjustments when it contains a textarea */
 .cold-input:has(textarea) {
   height: auto !important;
   padding: 10px 12px !important;
 }
 
-// Validation helpers (opt-in via classes)
-.cold-input--invalid {
-  border-color: #dc2626 !important; // red-600
-}
+// Shared mixin for styled input buttons (date triggers, toggles)
+@mixin cold-input-btn-base {
+  width: 100%;
+  height: 42px;
+  padding: 0 12px;
+  border: 1px solid rgb(229 231 235);
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  background: var(--gradient-subtle);
+  color: var(--color-cold-purple);
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.15s ease;
 
-.cold-input--valid {
-  border-color: #22c55e !important; // green-500
-}
+  &:hover {
+    border-color: rgb(209 213 219);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    background: var(--gradient-subtle-hover);
+  }
 
-// Labels and help text for form fields
-.cold-input-label {
-  @extend .label-key;
-  text-transform: none;
-}
+  &:focus,
+  &:focus-visible {
+    outline: 2px solid var(--color-cold-purple);
+    outline-offset: 2px;
+    border-color: var(--color-cold-purple);
+  }
 
-.cold-input-help {
-  @extend .result-value-small;
-  color: var(--color-cold-night-alpha) !important;
-  margin-top: 4px !important;
+  &[disabled],
+  &:disabled,
+  &[aria-disabled="true"] {
+    background-color: var(--color-cold-gray-alpha);
+    color: var(--color-cold-night-alpha);
+    cursor: not-allowed;
+  }
 }
 
 // Date Picker trigger
 .cold-date-trigger,
 button.cold-date-trigger {
-  width: 100% !important;
-  height: 42px !important;
-  padding: 0 12px !important;
-  border: 1px solid rgb(229 231 235) !important;
-  border-radius: 0.5rem !important;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
-  background: var(--gradient-subtle) !important;
-  color: var(--color-cold-purple) !important;
-  font-weight: 500 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  transition: all 0.15s ease !important;
-}
+  @include cold-input-btn-base;
+  justify-content: flex-start;
 
-/* Ensure icons inside the trigger inherit the text color */
-.cold-date-trigger .iconify,
-.cold-date-trigger svg,
-.cold-date-trigger [class*="icon"] {
-  color: var(--color-cold-purple) !important;
-  fill: currentColor !important;
-}
-
-/* Hover state */
-.cold-date-trigger:hover {
-  border-color: rgb(209 213 219) !important;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
-  background: var(--gradient-subtle-hover) !important;
-}
-
-/* Focus state */
-.cold-date-trigger:focus,
-.cold-date-trigger:focus-visible {
-  outline: none !important;
-  border-color: var(--color-cold-purple) !important;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
-}
-
-/* Disabled state */
-.cold-date-trigger[disabled],
-.cold-date-trigger:disabled,
-.cold-date-trigger[aria-disabled="true"] {
-  background-color: var(--color-cold-gray-alpha) !important;
-  color: var(--color-cold-night-alpha) !important;
-  cursor: not-allowed !important;
+  .iconify,
+  svg,
+  [class*="icon"] {
+    color: var(--color-cold-purple);
+    fill: currentColor;
+  }
 }
 
 // Full-width two-option toggle
 .cold-toggle-group {
-  width: 100% !important;
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 0.5rem !important;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
 }
 
 .cold-toggle-btn,
 button.cold-toggle-btn {
-  width: 100% !important; /* fill each grid cell */
-  height: 42px !important; /* match date trigger */
-  padding: 0 12px !important;
-  border: 1px solid rgb(229 231 235) !important;
-  border-radius: 0.5rem !important;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
-  background: var(--gradient-subtle) !important;
-  color: var(--color-cold-purple) !important;
-  font-weight: 500 !important;
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important; /* center label for toggle */
-  transition: all 0.15s ease !important;
-}
+  @include cold-input-btn-base;
+  justify-content: center;
 
-/* Hover state */
-.cold-toggle-btn:hover {
-  border-color: rgb(209 213 219) !important;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
-  background: var(--gradient-subtle-hover) !important;
-}
-
-/* Active state (selected) */
-.cold-toggle-btn[aria-pressed="true"] {
-  border-color: var(--color-cold-purple) !important;
-  background: var(--gradient-medium-hover) !important;
-  color: var(--color-cold-purple) !important;
-  font-weight: 600 !important;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
-}
-
-/* Disabled state */
-.cold-toggle-btn[disabled],
-.cold-toggle-btn:disabled,
-.cold-toggle-btn[aria-disabled="true"] {
-  background-color: var(--color-cold-gray-alpha) !important;
-  color: var(--color-cold-night-alpha) !important;
-  cursor: not-allowed !important;
-}
-
-// Primary Button -----------------------------------------------
-.cold-btn-primary,
-button.cold-btn-primary {
-  background-color: var(--color-cold-purple) !important;
-  color: white !important;
-  border-radius: 0.5rem !important;
-  padding: 0.5rem 1rem !important;
-  font-weight: 600 !important;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
-  transition: all 0.15s ease !important;
-  border: none !important;
-
-  &:hover {
-    background: color-mix(
-      in srgb,
-      var(--color-cold-purple) 90%,
-      #000
-    ) !important;
-    box-shadow:
-      0 4px 6px -1px rgb(0 0 0 / 0.1),
-      0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
-    transform: translateY(-1px) !important;
-  }
-
-  &:active {
-    transform: translateY(0) !important;
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.1) !important;
-  }
-
-  &:disabled,
-  &[disabled],
-  &[aria-disabled="true"] {
-    background-color: rgb(229 231 235) !important;
-    color: rgb(156 163 175) !important;
-    cursor: not-allowed !important;
-    transform: none !important;
-    box-shadow: none !important;
+  &[aria-pressed="true"] {
+    border-color: var(--color-cold-purple);
+    background: var(--gradient-medium-hover);
+    font-weight: 600;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
   }
 }
 
@@ -919,7 +785,7 @@ button.cold-btn-primary {
     word-wrap: break-word;
     background: #fafafa;
     min-height: 2em;
-    font-size: 12px;
+    font-size: 0.75rem;
     line-height: 1.5;
   }
 
@@ -1016,12 +882,15 @@ button.cold-btn-primary {
   border: 1.5px solid
     color-mix(in srgb, var(--color-cold-night) 25%, transparent);
 
-  &:hover,
-  &:focus {
+  &:hover {
     background: var(--color-cold-night);
     color: white;
     border-color: var(--color-cold-night);
-    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-cold-purple);
+    outline-offset: 2px;
   }
 
   svg,
@@ -1043,12 +912,15 @@ button.cold-btn-primary {
   background: color-mix(in srgb, var(--color-cold-teal) 6%, white);
   border: 1px solid color-mix(in srgb, var(--color-cold-teal) 20%, transparent);
 
-  &:hover,
-  &:focus {
+  &:hover {
     background: color-mix(in srgb, var(--color-cold-teal) 12%, white);
     border-color: color-mix(in srgb, var(--color-cold-teal) 35%, transparent);
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-cold-teal);
+    outline-offset: 2px;
   }
 
   svg,
@@ -1069,20 +941,8 @@ button.cold-btn-primary {
 .icon-badge {
   @apply flex h-10 w-10 items-center justify-center rounded-xl;
 
-  &--purple-teal {
-    @apply bg-gradient-to-br from-cold-purple to-cold-teal;
-  }
-
   &--teal-green {
     @apply bg-gradient-to-br from-cold-teal to-cold-green;
-  }
-
-  &--green-teal {
-    @apply bg-gradient-to-br from-cold-green to-cold-teal;
-  }
-
-  &--purple {
-    @apply bg-gradient-to-br from-cold-purple to-cold-purple/80;
   }
 
   .icon {
@@ -1219,37 +1079,15 @@ button.cold-btn-primary {
 }
 
 .landing-item-button {
-  @apply flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-left font-medium shadow-sm transition-all duration-150;
-  background: var(--gradient-subtle);
-
-  &:hover {
-    @apply shadow;
-    background: var(--gradient-subtle-emphasis);
-  }
+  @include interactive-item-base;
+  @apply w-full gap-3 px-4 py-3;
 
   .flag-wrapper {
-    @apply inline-flex min-w-[40px] flex-shrink-0 items-center justify-center;
+    @apply min-w-[40px];
   }
 
   .item-flag {
-    @apply h-5 rounded-sm border border-gray-200 transition-shadow duration-150;
-  }
-
-  &:hover .item-flag {
-    @apply shadow-sm;
-  }
-
-  span {
-    color: var(--color-cold-night);
-  }
-
-  .item-icon {
-    @apply flex-shrink-0 text-xl transition-colors duration-150;
-    color: var(--color-cold-green);
-  }
-
-  &:hover .item-icon {
-    color: color-mix(in srgb, var(--color-cold-green) 85%, #000);
+    @apply h-5;
   }
 
   .item-year {
@@ -1279,19 +1117,6 @@ button.cold-btn-primary {
 
   &:hover {
     background: var(--gradient-subtle-hover);
-  }
-}
-
-// Link that turns purple on hover
-.hover-link-purple {
-  color: var(--color-cold-purple) !important;
-  font-weight: 500 !important;
-  text-decoration: none !important;
-  transition: all 0.15s ease;
-
-  &:hover {
-    color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
-    text-decoration: underline !important;
   }
 }
 
@@ -1342,15 +1167,18 @@ button.cold-btn-primary {
   color: var(--color-cold-night);
   border: 1px solid color-mix(in srgb, $color 12%, transparent);
 
-  &:hover,
-  &:focus {
+  &:hover {
     background: linear-gradient(
       135deg,
       color-mix(in srgb, $color 14%, white),
       color-mix(in srgb, $color 8%, white)
     );
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $color;
+    outline-offset: 2px;
   }
 
   &:active {
@@ -1416,11 +1244,14 @@ $chip-color-jurisdiction: color-mix(
   background: var(--gradient-subtle);
   color: var(--color-cold-night);
 
-  &:hover,
-  &:focus {
+  &:hover {
     @apply shadow;
     background: var(--gradient-subtle-emphasis);
-    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--color-cold-purple);
+    outline-offset: 2px;
   }
 }
 
@@ -1439,41 +1270,48 @@ $chip-color-jurisdiction: color-mix(
   cursor: pointer;
 }
 
-// Region/filter badge - styled like section-nav-item tabs
-.region-badge {
+// Navigation tabs - unified style for region badges and section navigation
+.nav-tab {
   @apply cursor-pointer whitespace-nowrap rounded-t-lg px-4 py-2.5 text-sm font-medium transition-all duration-150;
   color: var(--color-cold-night);
   position: relative;
-  border-bottom: 2px solid rgb(229 231 235);
   margin-bottom: -2px;
 
   &:hover {
     background: var(--gradient-subtle);
   }
 
-  &.region-badge-active {
+  &:focus-visible {
+    outline: 2px solid var(--color-cold-purple);
+    outline-offset: -2px;
+  }
+
+  // Variant with visible border (for region badges)
+  &--bordered {
+    border-bottom: 2px solid rgb(229 231 235);
+  }
+
+  // Active state
+  &--active {
     color: var(--color-cold-purple);
     font-weight: 600;
     border-bottom: 2px solid var(--color-cold-purple);
   }
 }
 
-// Section navigation tabs
+// Legacy aliases for backwards compatibility
+.region-badge {
+  @extend .nav-tab;
+  @extend .nav-tab--bordered;
+}
+.region-badge-active {
+  @extend .nav-tab--active;
+}
 .section-nav-item {
-  @apply cursor-pointer whitespace-nowrap rounded-t-lg px-4 py-2.5 text-sm font-medium transition-all duration-150;
-  color: var(--color-cold-night);
-  position: relative;
-  margin-bottom: -2px;
-
-  &:hover {
-    background: var(--gradient-subtle);
-  }
-
-  &.section-nav-item-active {
-    color: var(--color-cold-purple);
-    font-weight: 600;
-    border-bottom: 2px solid var(--color-cold-purple);
-  }
+  @extend .nav-tab;
+}
+.section-nav-item-active {
+  @extend .nav-tab--active;
 }
 
 // Content page prose improvements
@@ -1494,9 +1332,14 @@ $chip-color-jurisdiction: color-mix(
   a {
     color: var(--color-cold-purple) !important;
 
-    &:hover,
-    &:focus {
+    &:hover {
       color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--color-cold-purple);
+      outline-offset: 2px;
+      border-radius: 2px;
     }
   }
 
