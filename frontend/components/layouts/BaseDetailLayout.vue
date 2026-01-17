@@ -34,9 +34,9 @@ const props = withDefaults(
   defineProps<{
     loading: boolean;
     resultData: T;
-    // Typed label/tooltip maps - keys should match resultData properties
-    labels?: Partial<Record<keyof T & string, string>>;
-    tooltips?: Partial<Record<keyof T & string, string>>;
+    // Label/tooltip maps - keys must match T
+    labels?: Partial<Record<keyof T, string>>;
+    tooltips?: Partial<Record<keyof T, string>>;
     // Legacy props (deprecated, used for index pages with full-width slot)
     keyLabelPairs?: Record<string, unknown>[];
     sourceTable: string;

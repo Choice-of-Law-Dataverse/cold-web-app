@@ -2,19 +2,69 @@
  * Literature entity type definitions
  */
 
+/** Raw API response */
 export interface LiteratureResponse {
   id: string;
-  Title?: string;
-  Author?: string;
-  Editor?: string;
-  "Publication Year"?: string;
-  "Publication Title"?: string;
-  Publisher?: string;
+  source_table?: string;
+  "Record ID"?: string;
+  CoLD_ID?: string;
+  ID?: string;
+  Key?: string;
   "Item Type"?: string;
-  "Abstract Note"?: string;
+  "Publication Year"?: string;
+  Author?: string;
+  Title?: string;
+  ISBN?: string;
+  ISSN?: string;
   Url?: string;
+  Date?: string;
+  "Date Added"?: string;
+  "Date Modified"?: string;
+  Publisher?: string;
+  Language?: string;
+  Extra?: string;
+  "Manual Tags"?: string;
+  Editor?: string;
+  "Last Modified"?: string;
+  Created?: string;
+  "Publication Title"?: string;
+  Issue?: string;
+  Volume?: string;
+  Pages?: string;
+  "Abstract Note"?: string;
+  "Library Catalog"?: string;
+  DOI?: string;
+  "Access Date"?: string;
+  "Open Access"?: string;
   "Open Access URL"?: string;
-  "Official Source (PDF)"?: string;
+  "Journal Abbreviation"?: string;
+  "Short Title"?: string;
+  Place?: string;
+  "Num Pages"?: string;
+  Type?: string;
+  "OUP JD Chapter"?: string;
+  Contributor?: string;
+  "Automatic Tags"?: string;
+  Number?: string;
+  Series?: string;
+  "Series Number"?: string;
+  "Series Editor"?: string;
+  Edition?: string;
+  "Call Number"?: string;
+  "Jurisdiction Summary"?: string;
+  Answers?: string;
+  sort_date?: string;
+  // Nested mappings
+  "Jurisdiction Link"?: string;
+  Jurisdiction?: string;
   Themes?: string;
-  Jurisdictions?: string;
+  "Themes Link"?: string;
+  "International Instruments"?: string;
+  "International Instruments Link"?: string;
+  "International Legal Provisions"?: string;
+  "International Legal Provisions Link"?: string;
+  "Regional Instruments"?: string;
+  "Regional Instruments Link"?: string;
+  // Legacy/additional fields
+  "Official Source (PDF)"?: string;
 }

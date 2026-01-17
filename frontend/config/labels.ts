@@ -3,16 +3,26 @@
  * Maps API field keys to display labels
  *
  * These objects are the source of truth for which fields to display.
- * Field types are derived from these objects.
+ * `satisfies` ensures keys exist on entity types while preserving literal types.
  */
+
+import type { JurisdictionResponse } from "@/types/entities/jurisdiction";
+import type { Question } from "@/types/entities/question";
+import type { CourtDecision } from "@/types/entities/court-decision";
+import type { LiteratureResponse } from "@/types/entities/literature";
+import type { DomesticInstrument } from "@/types/entities/domestic-instrument";
+import type { RegionalInstrument } from "@/types/entities/regional-instrument";
+import type { InternationalInstrument } from "@/types/entities/international-instrument";
+import type { ArbitralRule } from "@/types/entities/arbitral-rule";
+import type { ArbitralAward } from "@/types/entities/arbitral-award";
 
 export const jurisdictionLabels = {
   "Jurisdiction Summary": "Summary",
   "Jurisdictional Differentiator": "Jurisdictional Differentiator",
-  "Related Literature": "Related Literature",
+  Literature: "Related Literature",
   "OUP Chapter": "OUP Chapter",
   "Related Data": "Related Data",
-} as const;
+} as const satisfies Partial<Record<keyof JurisdictionResponse, string>>;
 
 export const questionLabels = {
   Question: "Question",
@@ -25,7 +35,7 @@ export const questionLabels = {
   "Related Literature": "Related Literature",
   "Last Modified": "Last Updated",
   Created: "Last Updated",
-} as const;
+} as const satisfies Partial<Record<keyof Question, string>>;
 
 export const courtDecisionLabels = {
   "Case Title": "Case Title",
@@ -46,7 +56,7 @@ export const courtDecisionLabels = {
   "Related Questions": "Related Questions",
   "Related Literature": "Related Literature",
   "OUP Chapter": "OUP Chapter",
-} as const;
+} as const satisfies Partial<Record<keyof CourtDecision, string>>;
 
 export const literatureLabels = {
   Title: "Title",
@@ -56,7 +66,7 @@ export const literatureLabels = {
   "Publication Title": "Publication",
   Publisher: "Publisher",
   "Abstract Note": "Abstract",
-} as const;
+} as const satisfies Partial<Record<keyof LiteratureResponse, string>>;
 
 export const domesticInstrumentLabels = {
   "Title (in English)": "Name",
@@ -72,7 +82,7 @@ export const domesticInstrumentLabels = {
   "Publication Date": "Publication Date",
   "Domestic Legal Provisions": "Selected Provisions",
   "OUP Chapter": "OUP Chapter",
-} as const;
+} as const satisfies Partial<Record<keyof DomesticInstrument, string>>;
 
 export const regionalInstrumentLabels = {
   Abbreviation: "Abbreviation",
@@ -82,7 +92,7 @@ export const regionalInstrumentLabels = {
   Literature: "Related Literature",
   "OUP Chapter": "OUP Chapter",
   "Regional Legal Provisions": "Selected Provisions",
-} as const;
+} as const satisfies Partial<Record<keyof RegionalInstrument, string>>;
 
 export const internationalInstrumentLabels = {
   Name: "Title",
@@ -91,13 +101,13 @@ export const internationalInstrumentLabels = {
   Literature: "Related Literature",
   "OUP Chapter": "OUP Chapter",
   "Selected Provisions": "Selected Provisions",
-} as const;
+} as const satisfies Partial<Record<keyof InternationalInstrument, string>>;
 
 export const arbitralRuleLabels = {
   "Set of Rules": "Set of Rules",
   "Arbitral Institutions": "Arbitral Institutions",
   "In Force From": "In Force From",
-} as const;
+} as const satisfies Partial<Record<keyof ArbitralRule, string>>;
 
 export const arbitralAwardLabels = {
   "Case Number": "Case Number",
@@ -108,9 +118,9 @@ export const arbitralAwardLabels = {
   Context: "Context",
   "Seat (Town)": "Seat (Town)",
   "Award Summary": "Award Summary",
-} as const;
+} as const satisfies Partial<Record<keyof ArbitralAward, string>>;
 
-// Derive field types from labels
+// Derive field types from labels (now narrow literal unions)
 export type JurisdictionField = keyof typeof jurisdictionLabels;
 export type QuestionField = keyof typeof questionLabels;
 export type CourtDecisionField = keyof typeof courtDecisionLabels;

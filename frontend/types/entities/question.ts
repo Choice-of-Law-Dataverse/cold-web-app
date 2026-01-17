@@ -1,11 +1,24 @@
 /**
- * Question (Answer) entity type definitions
+ * Question entity type definitions
  */
 
 /** Raw API response */
 export interface QuestionResponse {
   id: string;
+  source_table?: string;
+  rank?: number;
+  ID?: string;
   Question?: string;
+  Question_Number?: string;
+  Created?: string;
+  "Record ID"?: string;
+  Theme_Code?: string;
+  Answering_Options?: string;
+  "Last Modified"?: string;
+  sort_date?: string;
+  // Nested mappings
+  Themes?: string;
+  // Legacy fields for backwards compatibility
   Answer?: string;
   "More Information"?: string;
   "Domestic Legal Provisions"?: string;
@@ -14,13 +27,10 @@ export interface QuestionResponse {
   "Court Decisions ID"?: string;
   "Related Literature"?: string;
   "Country Report"?: string;
-  "Last Modified"?: string;
-  Created?: string;
   Jurisdictions?: string;
   "Jurisdictions Alpha-3 code"?: string;
   "Jurisdictions Alpha-3 Code"?: string;
   "Jurisdictions Literature ID"?: string;
-  Themes?: string;
 }
 
 /** Processed type with normalized fields */

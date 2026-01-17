@@ -7,30 +7,50 @@ import { formatDate } from "@/utils/format";
 /** Raw API response */
 export interface CourtDecisionResponse {
   id: string;
-  "Case Title"?: string;
+  source_table?: string;
+  rank?: number;
+  ID?: string;
   "Case Citation"?: string;
-  "Publication Date ISO"?: string;
-  "Date of Judgment"?: string;
+  "Case Title"?: string;
   Instance?: string;
+  Date?: string;
   Abstract?: string;
-  "Relevant Facts"?: string;
-  "PIL Provisions"?: string;
-  "Domestic Legal Provisions"?: string;
-  "Text of the Relevant Legal Provisions"?: string;
+  Created?: string;
+  "Record ID"?: string;
+  "ID-number"?: string;
+  "Last Modified"?: string;
+  "Answers Link"?: string;
+  "Answers Question"?: string;
+  Text_of_the_Relevant_Legal_Provisions?: string;
+  Quote?: string;
+  "Case Rank"?: string;
+  "English Translation"?: string;
   "Choice of Law Issue"?: string;
   "Court's Position"?: string;
-  Quote?: string;
   "Translated Excerpt"?: string;
+  "Relevant Facts"?: string;
+  "Date of Judgment"?: string;
+  "PIL Provisions"?: string;
   "Original Text"?: string;
+  sort_date?: string;
+  "Publication Date ISO"?: string;
+  "Official Source (URL)"?: string;
+  "Official Source (PDF)"?: string;
+  // Nested mappings
+  Questions?: string;
+  "Jurisdictions Link"?: string;
+  "Jurisdictions Alpha-3 Code"?: string;
+  Jurisdictions?: string;
+  "Region (from Jurisdictions)"?: string;
+  Themes?: string;
+  // Legacy fields for backwards compatibility
+  themes?: string;
+  "Text of the Relevant Legal Provisions"?: string;
+  "Domestic Legal Provisions"?: string;
   "Related Questions"?: string;
   "Related Literature"?: string;
   "OUP Chapter"?: string;
   "Country Report"?: string;
-  "Official Source (PDF)"?: string;
-  "Official Source (URL)"?: string;
-  "Jurisdictions Alpha-3 Code"?: string;
-  themes?: string;
-  Questions?: string;
 }
 
 /** Processed type with normalized fields */
@@ -42,21 +62,23 @@ export interface CourtDecision extends CourtDecisionResponse {
 export function processCourtDecision(
   raw: CourtDecisionResponse,
 ): CourtDecision {
-  const themes = raw.themes;
+  const themes = raw.themes || raw.Themes;
   const questions = raw.Questions;
 
   return {
     ...raw,
     "Case Title":
-      raw["Case Title"] === "Not found" ? raw["Case Citation"] : raw["Case Title"],
+      raw["Case Title"] === "Not found"
+        ? raw["Case Citation"]
+        : raw["Case Title"],
     "Related Literature": themes,
     themes,
     "Case Citation": raw["Case Citation"],
     Questions: questions,
     "Related Questions": questions,
     "Jurisdictions Alpha-3 Code": raw["Jurisdictions Alpha-3 Code"],
-    "Publication Date ISO": formatDate(raw["Publication Date ISO"] ?? null) ?? undefined,
-    "Date of Judgment": formatDate(raw["Date of Judgment"] ?? null) ?? undefined,
+    "Publication Date ISO": formatDate(raw["Publication Date ISO"]),
+    "Date of Judgment": formatDate(raw["Date of Judgment"]),
     hasEnglishQuoteTranslation: Boolean(
       raw["Translated Excerpt"] && raw["Translated Excerpt"].trim() !== "",
     ),

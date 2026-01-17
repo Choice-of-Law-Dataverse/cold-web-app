@@ -10,6 +10,9 @@ export function generateBibTeX(data: LiteratureResponse): string {
   const journal = data["Publication Title"] || "";
   const publisher = data.Publisher || "";
   const url = data.Url || "";
+  const volume = data.Volume || "";
+  const pages = data.Pages || "";
+  const doi = data.DOI || "";
 
   // Generate citation key from first author's last name and year
   let citationKey = "cold_literature";
@@ -36,8 +39,11 @@ export function generateBibTeX(data: LiteratureResponse): string {
   if (title) bibtex += `  title = {${escape(title)}},\n`;
   if (journal) bibtex += `  journal = {${escape(journal)}},\n`;
   if (year) bibtex += `  year = {${year}},\n`;
+  if (volume) bibtex += `  volume = {${volume}},\n`;
+  if (pages) bibtex += `  pages = {${pages}},\n`;
   if (publisher) bibtex += `  publisher = {${escape(publisher)}},\n`;
   if (url) bibtex += `  url = {${url}},\n`;
+  if (doi) bibtex += `  doi = {${doi}},\n`;
   bibtex += "}";
 
   return bibtex;

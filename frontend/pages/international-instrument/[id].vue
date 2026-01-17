@@ -21,9 +21,7 @@
                 :record-id="route.params.id as string"
                 folder-name="international-instruments"
               />
-              <SourceExternalLink
-                :source-url="internationalInstrument?.URL"
-              />
+              <SourceExternalLink :source-url="internationalInstrument?.URL" />
             </div>
           </div>
         </DetailRow>

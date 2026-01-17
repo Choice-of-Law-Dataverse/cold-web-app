@@ -1,31 +1,28 @@
 /**
  * Tooltip content for entity detail pages
  * Only fields that need tooltips are included (Partial)
+ *
+ * `satisfies` ensures keys exist on entity types while preserving literal types.
  */
 
-import type {
-  JurisdictionField,
-  QuestionField,
-  CourtDecisionField,
-  LiteratureField,
-  DomesticInstrumentField,
-  RegionalInstrumentField,
-  InternationalInstrumentField,
-} from "@/config/labels";
+import type { JurisdictionResponse } from "@/types/entities/jurisdiction";
+import type { Question } from "@/types/entities/question";
+import type { CourtDecision } from "@/types/entities/court-decision";
+import type { LiteratureResponse } from "@/types/entities/literature";
+import type { DomesticInstrument } from "@/types/entities/domestic-instrument";
+import type { RegionalInstrument } from "@/types/entities/regional-instrument";
+import type { InternationalInstrument } from "@/types/entities/international-instrument";
 
-// Jurisdiction tooltips
-export const jurisdictionTooltips: Partial<Record<JurisdictionField, string>> =
-  {
-    "Jurisdictional Differentiator":
-      "Jurisdictional peculiarities, such as the judicial hierarchy. To be read before consulting jurisdictional information.",
-    "Related Literature":
-      "This button will open the CoLD search and return all literature pieces that are relevant for this topic.",
-    "Related Data":
-      "This button will provide links to related external data sources with relevant information about this jurisdiction.",
-  };
+export const jurisdictionTooltips = {
+  "Jurisdictional Differentiator":
+    "Jurisdictional peculiarities, such as the judicial hierarchy. To be read before consulting jurisdictional information.",
+  Literature:
+    "This button will open the CoLD search and return all literature pieces that are relevant for this topic.",
+  "Related Data":
+    "This button will provide links to related external data sources with relevant information about this jurisdiction.",
+} as const satisfies Partial<Record<keyof JurisdictionResponse, string>>;
 
-// Question tooltips
-export const questionTooltips: Partial<Record<QuestionField, string>> = {
+export const questionTooltips = {
   Question: "Question pertaining to chosen topic and jurisdiction.",
   Answer:
     "Predetermined response mostly limited to 'Yes', 'No', 'Not applicable', or 'No data'. Not a detailed or explanatory answer.",
@@ -37,12 +34,9 @@ export const questionTooltips: Partial<Record<QuestionField, string>> = {
     "Court decisions that have addressed the same legal issue, according to our database.",
   "Related Literature":
     "This button will open the CoLD search and return all literature pieces that are relevant for this topic.",
-};
+} as const satisfies Partial<Record<keyof Question, string>>;
 
-// Court Decision tooltips
-export const courtDecisionTooltips: Partial<
-  Record<CourtDecisionField, string>
-> = {
+export const courtDecisionTooltips = {
   "Case Title":
     "Extracted from the case citation; main information to identify the case.",
   "Case Citation": "Official and generally accepted citation of a case.",
@@ -71,18 +65,14 @@ export const courtDecisionTooltips: Partial<
     "Questions in our database that the court decision addresses.",
   "Related Literature":
     "This button will open the CoLD search and return all literature pieces that are relevant for this topic.",
-};
+} as const satisfies Partial<Record<keyof CourtDecision, string>>;
 
-// Literature tooltips
-export const literatureTooltips: Partial<Record<LiteratureField, string>> = {
+export const literatureTooltips = {
   "Publication Year": "Year of publication.",
   Publisher: "Publishing house.",
-};
+} as const satisfies Partial<Record<keyof LiteratureResponse, string>>;
 
-// Domestic Instrument tooltips
-export const domesticInstrumentTooltips: Partial<
-  Record<DomesticInstrumentField, string>
-> = {
+export const domesticInstrumentTooltips = {
   "Title (in English)":
     "English translation or accepted name of the instrument, typically a statute or regulation.",
   Compatibility:
@@ -95,12 +85,9 @@ export const domesticInstrumentTooltips: Partial<
     "Date of publication in the official reporter or gazette.",
   "Domestic Legal Provisions":
     "Link to provisions of a particular relevance to Choice of Law, including key articles or sections.",
-};
+} as const satisfies Partial<Record<keyof DomesticInstrument, string>>;
 
-// Regional Instrument tooltips
-export const regionalInstrumentTooltips: Partial<
-  Record<RegionalInstrumentField, string>
-> = {
+export const regionalInstrumentTooltips = {
   Date: "Date when the instrument was enacted or came into force.",
   Specialists:
     "Academics who have published on or are otherwise associated with this instrument.",
@@ -108,12 +95,9 @@ export const regionalInstrumentTooltips: Partial<
     "This button will open the CoLD search and return all literature pieces that are relevant for this instrument.",
   "Regional Legal Provisions":
     "Key provisions within the instrument, selected for their relevance to choice of law.",
-};
+} as const satisfies Partial<Record<keyof RegionalInstrument, string>>;
 
-// International Instrument tooltips
-export const internationalInstrumentTooltips: Partial<
-  Record<InternationalInstrumentField, string>
-> = {
+export const internationalInstrumentTooltips = {
   Date: "Date when the instrument was enacted or came into force.",
   Specialists:
     "Academics who have published on or are otherwise associated with this instrument.",
@@ -121,6 +105,4 @@ export const internationalInstrumentTooltips: Partial<
     "This button will open the CoLD search and return all literature pieces that are relevant for this instrument.",
   "Selected Provisions":
     "Key provisions within the instrument, selected for their relevance to choice of law.",
-};
-
-// Arbitral Rule and Arbitral Award have no tooltips in the original config
+} as const satisfies Partial<Record<keyof InternationalInstrument, string>>;

@@ -1,6 +1,10 @@
 import { computed, type Ref } from "vue";
 import { useRecordDetailsList } from "@/composables/useRecordDetails";
-import type { Question } from "@/types/entities/question";
+import {
+  type QuestionResponse,
+  type Question,
+  processQuestion,
+} from "@/types/entities/question";
 
 export function useRelatedQuestions(
   jurisdictionCode: Ref<string>,
@@ -21,9 +25,10 @@ export function useRelatedQuestions(
       : [],
   );
 
-  const results = useRecordDetailsList<Question>(
+  const results = useRecordDetailsList<QuestionResponse, Question>(
     computed(() => "Answers"),
     compositeIds,
+    processQuestion,
   );
 
   const questionLabels = computed(() => {

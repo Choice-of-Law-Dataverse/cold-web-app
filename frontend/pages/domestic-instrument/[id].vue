@@ -27,7 +27,9 @@
                 :record-id="route.params.id as string"
                 folder-name="domestic-instruments"
               />
-              <SourceExternalLink :source-url="legalInstrument?.['Source (URL)']" />
+              <SourceExternalLink
+                :source-url="legalInstrument?.['Source (URL)']"
+              />
             </div>
           </div>
         </DetailRow>
@@ -151,7 +153,9 @@ const { data: legalInstrument, isLoading: loading } = useDomesticInstrument(
 );
 
 const isCompatible = (
-  field: "Compatible With the UNCITRAL Model Law" | "Compatible With the HCCH Principles",
+  field:
+    | "Compatible With the UNCITRAL Model Law"
+    | "Compatible With the HCCH Principles",
 ): boolean => {
   if (!legalInstrument.value) return false;
   const value = legalInstrument.value[field];

@@ -3,55 +3,40 @@ import { useQuery, useQueries } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
 import type { TableName } from "@/types/api";
 
-async function fetchRecordDetails<T>(table: TableName, id: string | number) {
-  const { apiClient } = useApiClient();
-  return await apiClient<T>("/search/details", { body: { table, id } });
-}
-
-async function fetchAndProcess<TRaw, TProcessed>(
+async function fetchRecordDetails<TRaw, TProcessed = TRaw>(
   table: TableName,
   id: string | number,
-  process: (raw: TRaw) => TProcessed,
+  process?: (raw: TRaw) => TProcessed,
 ) {
   const { apiClient } = useApiClient();
   const raw = await apiClient<TRaw>("/search/details", { body: { table, id } });
-  return process(raw);
+  return process ? process(raw) : (raw as unknown as TProcessed);
 }
 
-/** Simple fetch without transformation */
-export function useRecordDetails<T>(
+export function useRecordDetails<TRaw, TProcessed = TRaw>(
   table: Ref<TableName>,
   id: Ref<string | number>,
+  process?: (raw: TRaw) => TProcessed,
 ) {
   return useQuery({
     queryKey: computed(() => [table.value, id.value]),
-    queryFn: () => fetchRecordDetails<T>(table.value, id.value),
+    queryFn: () =>
+      fetchRecordDetails<TRaw, TProcessed>(table.value, id.value, process),
     enabled: computed(() => Boolean(table.value && id.value)),
   });
 }
 
-/** Fetch with transformation applied before caching */
-export function useRecordDetailsProcessed<TRaw, TProcessed>(
-  table: Ref<TableName>,
-  id: Ref<string | number>,
-  process: (raw: TRaw) => TProcessed,
-) {
-  return useQuery({
-    queryKey: computed(() => [table.value, id.value, "processed"]),
-    queryFn: () => fetchAndProcess<TRaw, TProcessed>(table.value, id.value, process),
-    enabled: computed(() => Boolean(table.value && id.value)),
-  });
-}
-
-export function useRecordDetailsList<T>(
+export function useRecordDetailsList<TRaw, TProcessed = TRaw>(
   table: Ref<TableName>,
   ids: Ref<Array<string | number>>,
+  process?: (raw: TRaw) => TProcessed,
 ) {
   const queries = computed(() => {
     const list = ids.value || [];
     return list.map((id) => ({
       queryKey: [table.value, id],
-      queryFn: () => fetchRecordDetails<T>(table.value, id),
+      queryFn: () =>
+        fetchRecordDetails<TRaw, TProcessed>(table.value, id, process),
       enabled: Boolean(table.value && id),
     }));
   });

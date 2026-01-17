@@ -15,7 +15,11 @@
           :tooltip="questionTooltips['Domestic Legal Provisions']"
         >
           <QuestionSourceList
-            :sources="[value || answerData?.['Domestic Legal Provisions']].filter(Boolean)"
+            :sources="
+              [value || answerData?.['Domestic Legal Provisions']].filter(
+                Boolean,
+              )
+            "
             :fallback-data="answerData"
             :fetch-oup-chapter="false"
             :fetch-primary-source="true"

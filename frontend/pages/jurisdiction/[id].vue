@@ -67,8 +67,8 @@
         </DetailRow>
 
         <DetailRow
-          :label="jurisdictionLabels['Related Literature']"
-          :tooltip="jurisdictionTooltips['Related Literature']"
+          :label="jurisdictionLabels['Literature']"
+          :tooltip="jurisdictionTooltips['Literature']"
           variant="literature"
         >
           <RelatedLiterature

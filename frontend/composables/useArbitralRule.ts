@@ -1,5 +1,5 @@
 import { computed, type Ref } from "vue";
-import { useRecordDetailsProcessed } from "@/composables/useRecordDetails";
+import { useRecordDetails } from "@/composables/useRecordDetails";
 import {
   type ArbitralRuleResponse,
   type ArbitralRule,
@@ -7,7 +7,7 @@ import {
 } from "@/types/entities/arbitral-rule";
 
 export function useArbitralRule(id: Ref<string | number>) {
-  return useRecordDetailsProcessed<ArbitralRuleResponse, ArbitralRule>(
+  return useRecordDetails<ArbitralRuleResponse, ArbitralRule>(
     computed(() => "Arbitral Rules"),
     id,
     processArbitralRule,

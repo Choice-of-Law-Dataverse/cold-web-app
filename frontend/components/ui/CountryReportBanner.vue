@@ -11,7 +11,7 @@
         class="h-5 w-5 rounded-sm shadow-sm"
       />
       <span
-        class="text-sm font-medium text-cold-gray-dark transition-colors group-hover:text-cold-purple"
+        class="text-cold-gray-dark text-sm font-medium transition-colors group-hover:text-cold-purple"
       >
         Full questionnaire for {{ jurisdictionName }}
       </span>

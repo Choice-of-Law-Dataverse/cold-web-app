@@ -5,26 +5,47 @@
 /** Raw API response */
 export interface DomesticInstrumentResponse {
   id: string;
-  "Title (in English)"?: string;
-  "Official Title"?: string;
-  Abbreviation?: string;
+  source_table?: string;
+  rank?: number;
+  ID?: string;
+  "ID-number"?: string;
   Date?: string;
+  Status?: string;
+  Abbreviation?: string;
+  "Relevant Provisions"?: string;
+  "Record ID"?: string;
+  Created?: string;
+  "Last Modified"?: string;
   "Entry Into Force"?: string;
   "Publication Date"?: string;
-  "Compatible With the UNCITRAL Model Law"?: boolean | string;
+  "Full Text of the Provisions"?: string;
+  "Official Title"?: string;
+  sort_date?: string;
+  "Title (in English)"?: string;
+  "Source (URL)"?: string;
+  "Source (PDF)"?: string;
   "Compatible With the HCCH Principles"?: boolean | string;
+  "Compatible With the UNCITRAL Model Law"?: boolean | string;
+  // Nested mappings
+  "Jurisdictions Link"?: string;
+  "Jurisdictions Alpha-3 Code"?: string;
+  Jurisdictions?: string;
+  "Type (from Jurisdictions)"?: string;
+  "Question ID"?: string;
+  "Answers Link"?: string;
+  "Domestic Legal Provisions Link"?: string;
+  "Domestic Legal Provisions Full Text of the Provision (English T"?: string;
+  "Domestic Legal Provisions Full Text of the Provision (Original "?: string;
+  "Domestic Legal Provisions"?: string;
+  // Legacy fields
   "Amended by"?: string;
   Amends?: string;
   Replaces?: string;
   "Replaced by"?: string;
-  "Domestic Legal Provisions"?: string;
   "OUP Chapter"?: string;
   "Country Report"?: string;
   "Ranking (Display Order)"?: string;
-  "Jurisdictions Alpha-3 Code"?: string;
   "Official Source (PDF)"?: string;
-  "Source (PDF)"?: string;
-  "Source (URL)"?: string;
 }
 
 /** Processed type with normalized fields */
@@ -43,7 +64,8 @@ export function processDomesticInstrument(
 
   return {
     ...raw,
-    "Title (in English)": raw["Title (in English)"] || raw["Official Title"] || "",
+    "Title (in English)":
+      raw["Title (in English)"] || raw["Official Title"] || "",
     Compatibility: hasCompatibility ? true : undefined,
   };
 }

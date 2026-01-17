@@ -1,5 +1,5 @@
 import { computed, type Ref } from "vue";
-import { useRecordDetailsProcessed } from "@/composables/useRecordDetails";
+import { useRecordDetails } from "@/composables/useRecordDetails";
 import {
   type DomesticInstrumentResponse,
   type DomesticInstrument,
@@ -7,7 +7,7 @@ import {
 } from "@/types/entities/domestic-instrument";
 
 export function useDomesticInstrument(id: Ref<string | number>) {
-  return useRecordDetailsProcessed<DomesticInstrumentResponse, DomesticInstrument>(
+  return useRecordDetails<DomesticInstrumentResponse, DomesticInstrument>(
     computed(() => "Domestic Instruments"),
     id,
     processDomesticInstrument,

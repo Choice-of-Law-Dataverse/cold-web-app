@@ -53,14 +53,12 @@
               v-for="(provisionId, index) in value.split(',')"
               :key="index"
               :provision-id="provisionId"
-              :text-type="textType"
               :instrument-title="
                 regionalInstrument?.Abbreviation ||
                 regionalInstrument?.Title ||
                 ''
               "
               table="Regional Legal Provisions"
-              @update:has-english-translation="hasEnglishTranslation = $event"
             />
           </div>
         </DetailRow>
@@ -76,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -90,8 +88,6 @@ import { regionalInstrumentLabels } from "@/config/labels";
 import { regionalInstrumentTooltips } from "@/config/tooltips";
 
 const route = useRoute();
-const textType = ref("Full Text of the Provision (English Translation)");
-const hasEnglishTranslation = ref(false);
 
 const { data: regionalInstrument, isLoading: loading } = useRegionalInstrument(
   computed(() => route.params.id as string),

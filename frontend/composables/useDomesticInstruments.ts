@@ -1,29 +1,29 @@
 import { useApiClient } from "@/composables/useApiClient";
 import { useQuery } from "@tanstack/vue-query";
-import { computed, type Ref } from "vue";
+import type { Ref } from "vue";
 import type { FullTableRequest } from "@/types/api";
+import type { DomesticInstrumentResponse } from "@/types/entities/domestic-instrument";
 
-const fetchDomesticInstrumentsData = async (_filterCompatible: boolean) => {
+async function fetchDomesticInstruments(): Promise<
+  DomesticInstrumentResponse[]
+> {
   const { apiClient } = useApiClient();
   const body: FullTableRequest = {
     table: "Domestic Instruments",
   };
 
-  const data = await apiClient("/search/full_table", {
-    body,
-  });
+  const data = await apiClient<DomesticInstrumentResponse[]>(
+    "/search/full_table",
+    { body },
+  );
 
   if (!Array.isArray(data)) {
     return [];
   }
 
-  const instrumentsData = data as Record<string, unknown>[];
-  instrumentsData.sort(
-    (a: Record<string, unknown>, b: Record<string, unknown>) =>
-      Number(b.Date) - Number(a.Date),
-  );
-  return instrumentsData;
-};
+  // Sort by date descending during fetch (cached)
+  return data.sort((a, b) => Number(b.Date) - Number(a.Date));
+}
 
 export function useDomesticInstruments({
   filterCompatible,
@@ -31,17 +31,13 @@ export function useDomesticInstruments({
   filterCompatible: Ref<boolean>;
 }) {
   return useQuery({
-    queryKey: computed(() =>
-      filterCompatible.value
-        ? ["domesticInstruments", "compatible"]
-        : ["domesticInstruments"],
-    ),
-    queryFn: () => fetchDomesticInstrumentsData(filterCompatible.value),
-    select: (data: Record<string, unknown>[]) => {
+    queryKey: ["domesticInstruments"],
+    queryFn: fetchDomesticInstruments,
+    select: (data) => {
+      // Filtering happens on read (not cached) to avoid re-fetching on toggle
       if (filterCompatible.value) {
         return data.filter(
-          (item: Record<string, unknown>) =>
-            item["Compatible With the HCCH Principles"],
+          (item) => item["Compatible With the HCCH Principles"] === true,
         );
       }
       return data;

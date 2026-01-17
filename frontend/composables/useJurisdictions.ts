@@ -6,7 +6,21 @@ import type { MaybeRefOrGetter } from "vue";
 
 const EMPTY_SET = new Set<string>();
 
-function convert(record: JurisdictionWithAnswerCoverage) {
+export interface ProcessedJurisdiction extends JurisdictionWithAnswerCoverage {
+  label: string;
+  alpha3Code: string | undefined;
+  avatar: string | undefined;
+  answerCoverage: number | undefined;
+}
+
+interface JurisdictionsData {
+  jurisdictions: ProcessedJurisdiction[];
+  knownJurisdictionTerms: Set<string>;
+}
+
+function processJurisdiction(
+  record: JurisdictionWithAnswerCoverage,
+): ProcessedJurisdiction {
   return {
     ...record,
     Name: record?.Name || "N/A",
@@ -27,35 +41,37 @@ function convert(record: JurisdictionWithAnswerCoverage) {
   };
 }
 
-export function useJurisdictions(enabled?: MaybeRefOrGetter<boolean>) {
+async function fetchAndProcessJurisdictions(): Promise<JurisdictionsData> {
   const { apiClient } = useApiClient();
 
+  const rawData = await apiClient<JurisdictionWithAnswerCoverage[]>(
+    "/statistics/jurisdictions-with-answer-percentage",
+    { method: "GET" },
+  );
+
+  const jurisdictions = rawData
+    .filter((record) => record["Irrelevant?"] === false)
+    .map(processJurisdiction);
+
+  const knownJurisdictionTerms = new Set<string>();
+  jurisdictions.forEach((j) => {
+    knownJurisdictionTerms.add(j.Name.toLowerCase());
+    if (j.alpha3Code) {
+      knownJurisdictionTerms.add(j.alpha3Code.toLowerCase());
+    }
+  });
+
+  return {
+    jurisdictions,
+    knownJurisdictionTerms,
+  };
+}
+
+export function useJurisdictions(enabled?: MaybeRefOrGetter<boolean>) {
   const { data, ...rest } = useQuery({
     queryKey: ["jurisdictions-with-answer-percentage"],
-    queryFn: () =>
-      apiClient<JurisdictionWithAnswerCoverage[]>(
-        "/statistics/jurisdictions-with-answer-percentage",
-        { method: "GET" },
-      ),
+    queryFn: fetchAndProcessJurisdictions,
     enabled,
-    select: (rawData) => {
-      const jurisdictions = rawData
-        .filter((record) => record["Irrelevant?"] === false)
-        .map(convert);
-
-      const knownJurisdictionTerms = new Set<string>();
-      jurisdictions.forEach((j) => {
-        knownJurisdictionTerms.add(j.Name.toLowerCase());
-        if (j.alpha3Code) {
-          knownJurisdictionTerms.add(j.alpha3Code.toLowerCase());
-        }
-      });
-
-      return {
-        jurisdictions,
-        knownJurisdictionTerms,
-      };
-    },
   });
 
   return {

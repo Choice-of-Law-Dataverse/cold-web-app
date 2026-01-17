@@ -1,5 +1,5 @@
 import { computed, type Ref } from "vue";
-import { useRecordDetailsProcessed } from "@/composables/useRecordDetails";
+import { useRecordDetails } from "@/composables/useRecordDetails";
 import {
   type CourtDecisionResponse,
   type CourtDecision,
@@ -7,7 +7,7 @@ import {
 } from "@/types/entities/court-decision";
 
 export function useCourtDecision(courtDecisionId: Ref<string | number>) {
-  return useRecordDetailsProcessed<CourtDecisionResponse, CourtDecision>(
+  return useRecordDetails<CourtDecisionResponse, CourtDecision>(
     computed(() => "Court Decisions"),
     courtDecisionId,
     processCourtDecision,

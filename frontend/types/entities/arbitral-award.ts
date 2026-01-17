@@ -5,18 +5,37 @@
 /** Raw API response */
 export interface ArbitralAwardResponse {
   id: string;
+  source_table?: string;
+  rank?: number;
+  ID?: string;
+  "Record ID"?: string;
   "Case Number"?: string;
+  Context?: string;
+  "Award Summary"?: string;
+  Year?: string;
+  "Nature of the Award"?: string;
+  "Seat (Town)"?: string;
+  Source?: string;
+  Created?: string;
+  "Last Modified"?: string;
+  sort_date?: string;
+  // Nested mappings
+  "Arbitral Institutions"?: string;
+  "Arbitral Institutions Abbrev"?: string;
+  "Arbitral Institutions Link"?: string;
+  "Arbitral Provisions (Articles)"?: string;
+  "Arbitral Provisions Link"?: string;
+  "Court Decisions"?: string;
+  "Court Decisions Link"?: string;
+  Jurisdictions?: string;
+  "Jurisdictions Alpha-3 Code"?: string;
+  "Jurisdictions Link"?: string;
+  Themes?: string;
+  // Legacy fields
   "Award Title"?: string;
   "Case Title"?: string;
   Title?: string;
   Name?: string;
-  "Arbitral Institutions"?: string;
-  Source?: string;
-  Year?: string;
-  "Nature of the Award"?: string;
-  Context?: string;
-  "Seat (Town)"?: string;
-  "Award Summary"?: string;
   related_arbitral_institutions?: Array<{ Institution?: string }>;
   related_jurisdictions?: Array<{ Name?: string }>;
   related_themes?: Array<{ Theme?: string }>;

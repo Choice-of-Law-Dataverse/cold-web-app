@@ -5,18 +5,30 @@
 /** Raw API response */
 export interface RegionalInstrumentResponse {
   id: string;
-  Abbreviation?: string;
+  source_table?: string;
+  rank?: number;
+  ID?: string;
+  "ID Number"?: string;
   Title?: string;
+  Abbreviation?: string;
+  Date?: string;
+  URL?: string;
+  Attachment?: string;
+  "Record ID"?: string;
+  Created?: string;
+  "Last Modified"?: string;
+  sort_date?: string;
+  // Nested mappings
+  Specialists?: string;
+  "Specialists Link"?: string;
+  "Regional Legal Provisions"?: string;
+  "Regional Legal Provisions Link"?: string;
+  // Legacy fields
   "Title (in English)"?: string;
   Name?: string;
-  Date?: string;
-  Specialists?: string;
   Literature?: string;
   "OUP Chapter"?: string;
-  "Regional Legal Provisions"?: string;
-  URL?: string;
   Link?: string;
-  Attachment?: string;
 }
 
 /** Processed type with normalized fields */

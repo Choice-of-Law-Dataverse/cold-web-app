@@ -5,9 +5,25 @@
 /** Raw API response */
 export interface ArbitralRuleResponse {
   id: string;
+  source_table?: string;
+  rank?: number;
+  ID?: string;
+  "Record ID"?: string;
   "Set of Rules"?: string;
-  "Arbitral Institutions"?: string;
   "In Force From"?: string;
+  "Official Source (URL)"?: string;
+  Created?: string;
+  "Last Modified"?: string;
+  // Nested mappings
+  "Arbitral Institutions"?: string;
+  "Arbitral Institutions Abbrev"?: string;
+  "Arbitral Institutions Link"?: string;
+  "Arbitral Provisions (Articles)"?: string;
+  "Arbitral Provisions Link"?: string;
+  Jurisdictions?: string;
+  "Jurisdictions Alpha-3 Code"?: string;
+  "Jurisdictions Link"?: string;
+  // Legacy fields
   related_arbitral_institutions?: Array<{ Institution?: string }>;
 }
 
