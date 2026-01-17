@@ -267,65 +267,57 @@ li::marker {
   }
 }
 
-// Base class for colored labels with gradient background
-@mixin label-colored($color-var) {
+// Base class for colored labels - same as chips but squared corners + monospace
+@mixin label-colored($color) {
   @extend .label;
-  padding: 3px 8px;
+  padding: 4px 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   background: linear-gradient(
     135deg,
-    color-mix(in srgb, $color-var 12%, transparent),
-    color-mix(in srgb, $color-var 8%, transparent)
+    color-mix(in srgb, $color 8%, white),
+    color-mix(in srgb, $color 4%, white)
   );
-  color: color-mix(in srgb, $color-var 85%, #000);
-  border: none;
+  color: var(--color-cold-night);
+  border: 1px solid color-mix(in srgb, $color 12%, transparent);
   border-radius: 4px;
-  transition: background 0.15s ease;
+  transition: all 0.15s ease;
 
   &:hover {
     background: linear-gradient(
       135deg,
-      color-mix(in srgb, $color-var 16%, transparent),
-      color-mix(in srgb, $color-var 12%, transparent)
+      color-mix(in srgb, $color 14%, white),
+      color-mix(in srgb, $color 8%, white)
     );
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
   }
 }
 
 .label-question {
-  @include label-colored(var(--color-label-question));
+  @include label-colored(var(--color-cold-teal));
 }
 
 .label-court-decision {
-  @include label-colored(var(--color-label-court-decision));
+  @include label-colored(#d97056); // coral
 }
 
 .label-instrument {
-  @include label-colored(var(--color-label-instrument));
+  @include label-colored(var(--color-cold-green));
 }
 
 .label-literature {
-  @include label-colored(var(--color-label-literature));
+  @include label-colored(#d4a84b); // golden
+}
+
+.label-oup-chapter {
+  @include label-colored(#4dc3fa); // oxford blue - from book cover
 }
 
 .label-arbitration {
-  @include label-colored(var(--color-label-arbitration));
+  @include label-colored(#7b8cde); // soft indigo
 }
 
 .label-theme {
-  @extend .label;
-  background: var(--gradient-theme);
-  background-size: 200% 200%;
-  color: color-mix(in srgb, var(--color-cold-purple) 90%, #000);
-  padding: 3px 8px;
-  border: none;
-  border-radius: 4px;
-  transition: all 0.2s ease;
-  position: relative;
-
-  &:hover {
-    background: var(--gradient-theme-hover);
-    box-shadow: 0 0 8px
-      color-mix(in srgb, var(--color-cold-green) 30%, transparent);
-  }
+  @include label-colored(var(--color-cold-purple));
 }
 
 // Results
@@ -1033,19 +1025,51 @@ button.cold-btn-primary {
   }
 }
 
+// Action button - for internal actions (cite, json, print, edit, copy, download)
 .action-button {
-  @apply flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs uppercase text-gray-600 transition-all;
-  font-weight: 500;
-  border: 1px solid transparent;
+  @apply inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium uppercase transition-all;
+  color: var(--color-cold-night);
+  background: var(--gradient-subtle);
+  border: 1px solid color-mix(in srgb, var(--color-cold-purple) 8%, transparent);
 
-  &:hover {
-    @apply text-cold-purple;
-    background: color-mix(in srgb, var(--color-cold-purple) 6%, transparent);
+  &:hover,
+  &:focus {
+    background: var(--gradient-subtle-emphasis);
     border-color: color-mix(in srgb, var(--color-cold-purple) 15%, transparent);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+    outline: none;
   }
 
   svg,
   .iconify {
+    font-size: 1.1em;
+    transition: transform 0.15s ease;
+  }
+
+  &:hover svg,
+  &:hover .iconify {
+    transform: scale(1.05);
+  }
+}
+
+// External link button - for links that open in new tab (link, pdf)
+.action-link-external {
+  @apply inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium uppercase transition-all;
+  color: var(--color-cold-teal);
+  background: color-mix(in srgb, var(--color-cold-teal) 6%, white);
+  border: 1px solid color-mix(in srgb, var(--color-cold-teal) 20%, transparent);
+
+  &:hover,
+  &:focus {
+    background: color-mix(in srgb, var(--color-cold-teal) 12%, white);
+    border-color: color-mix(in srgb, var(--color-cold-teal) 35%, transparent);
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+    outline: none;
+  }
+
+  svg,
+  .iconify {
+    font-size: 1.1em;
     transition: transform 0.15s ease;
   }
 
@@ -1311,21 +1335,112 @@ button.cold-btn-primary {
   }
 }
 
-// Region/filter badge with gradient
+// Link chip - compact pill for related items and cross-references
+// Base chip mixin for consistent structure
+@mixin link-chip-base($color) {
+  @apply inline-flex items-center text-pretty rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-150;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, $color 8%, white),
+    color-mix(in srgb, $color 4%, white)
+  );
+  color: var(--color-cold-night);
+  border: 1px solid color-mix(in srgb, $color 12%, transparent);
+
+  &:hover,
+  &:focus {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, $color 14%, white),
+      color-mix(in srgb, $color 8%, white)
+    );
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+    outline: none;
+  }
+
+  &:active {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, $color 18%, white),
+      color-mix(in srgb, $color 12%, white)
+    );
+  }
+}
+
+// Default chip (purple)
+.link-chip {
+  @include link-chip-base(var(--color-cold-purple));
+}
+
+// Entity-type chip colors
+$chip-color-court-decision: #d97056;
+$chip-color-question: var(--color-cold-teal);
+$chip-color-instrument: var(--color-cold-green);
+$chip-color-literature: #d4a84b;
+$chip-color-oup-chapter: #4dc3fa; // oxford blue - from book cover
+$chip-color-arbitration: #7b8cde;
+$chip-color-jurisdiction: color-mix(in srgb, var(--color-cold-purple) 33%, transparent);
+
+// Entity-type variants
+.link-chip--court-decision {
+  @include link-chip-base($chip-color-court-decision);
+}
+
+.link-chip--question {
+  @include link-chip-base($chip-color-question);
+}
+
+.link-chip--instrument {
+  @include link-chip-base($chip-color-instrument);
+}
+
+.link-chip--literature {
+  @include link-chip-base($chip-color-literature);
+}
+
+.link-chip--oup-chapter {
+  @include link-chip-base($chip-color-oup-chapter);
+}
+
+.link-chip--arbitration {
+  @include link-chip-base($chip-color-arbitration);
+}
+
+.link-chip--jurisdiction {
+  @include link-chip-base($chip-color-jurisdiction);
+}
+
+// Non-interactive chip variant (for display-only items like specialists)
+.link-chip--static {
+  @apply inline-flex items-center text-pretty rounded-full px-3 py-1.5 text-sm font-medium;
+  background: var(--gradient-subtle);
+  color: var(--color-cold-night);
+  border: 1px solid color-mix(in srgb, var(--color-cold-purple) 6%, transparent);
+}
+
+// "Show more" style chip
+.link-chip--action {
+  @include link-chip-base(var(--color-cold-teal));
+  color: var(--color-cold-teal);
+  cursor: pointer;
+}
+
+// Region/filter badge - styled like section-nav-item tabs
 .region-badge {
-  @apply flex items-center gap-1 rounded-full px-3 py-1.5 text-xs transition-all duration-150;
-  font-weight: 400;
-  background: var(--gradient-transparent-light);
-  color: color-mix(in srgb, var(--color-cold-purple) 90%, #000);
+  @apply cursor-pointer whitespace-nowrap rounded-t-lg px-4 py-2.5 text-sm font-medium transition-all duration-150;
+  color: var(--color-cold-night);
+  position: relative;
+  border-bottom: 2px solid rgb(229 231 235);
+  margin-bottom: -2px;
 
   &:hover {
-    background: var(--gradient-transparent-medium);
+    background: var(--gradient-subtle);
   }
 
   &.region-badge-active {
-    font-weight: 500;
-    background: var(--gradient-transparent-strong);
     color: var(--color-cold-purple);
+    font-weight: 600;
+    border-bottom: 2px solid var(--color-cold-purple);
   }
 }
 

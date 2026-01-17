@@ -8,17 +8,14 @@
         <NuxtLink
           v-for="item in displayedItems"
           :key="item.id"
-          :class="[
-            'inline-flex items-center text-pretty rounded-full px-3 py-1 text-sm shadow-sm transition-all',
-            badgeColorClass,
-          ]"
+          :class="chipClass"
           :to="item.id.startsWith('/') ? item.id : `${basePath}/${item.id}`"
         >
           {{ item.title }}
         </NuxtLink>
         <button
           v-if="fullItemsList.length > 10"
-          class="inline-flex items-center rounded-full bg-cold-teal/10 px-3 py-1 text-sm text-cold-teal shadow-sm transition-colors hover:bg-cold-teal/20 hover:shadow-md"
+          class="link-chip--action"
           @click="showAll = !showAll"
         >
           {{ showAll ? "Show less" : "Show more" }}
@@ -67,29 +64,28 @@ const displayedItems = computed(() => {
   return !showAll.value && arr.length > 10 ? arr.slice(0, 10) : arr;
 });
 
-const badgeColorClass = computed(() => {
+const chipClass = computed(() => {
   const type = props.entityType.toLowerCase();
 
   if (type.includes("court") || type.includes("decision")) {
-    return "bg-label-court-decision/10 text-cold-night hover:bg-label-court-decision/20 hover:shadow-md";
+    return "link-chip--court-decision";
   }
   if (type.includes("question") || type.includes("answer")) {
-    return "bg-label-question/10 text-cold-night hover:bg-label-question/20 hover:shadow-md";
+    return "link-chip--question";
   }
   if (type.includes("instrument")) {
-    return "bg-label-instrument/10 text-cold-night hover:bg-label-instrument/20 hover:shadow-md";
+    return "link-chip--instrument";
+  }
+  if (type.includes("oup-chapter") || type.includes("oup")) {
+    return "link-chip--oup-chapter";
   }
   if (type.includes("literature")) {
-    return "bg-label-literature/10 text-cold-night hover:bg-label-literature/20 hover:shadow-md";
+    return "link-chip--literature";
   }
   if (type.includes("arbitr")) {
-    return "bg-label-arbitration/10 text-cold-night hover:bg-label-arbitration/20 hover:shadow-md";
-  }
-  if (type.includes("oup-chapter")) {
-    return "bg-blue-900/10 text-cold-night hover:bg-blue-900/20 hover:shadow-md";
+    return "link-chip--arbitration";
   }
 
-  // Default fallback
-  return "bg-cold-purple/10 text-cold-night hover:bg-cold-purple/20 hover:shadow-md";
+  return "link-chip";
 });
 </script>

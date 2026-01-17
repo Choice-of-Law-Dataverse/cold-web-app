@@ -23,8 +23,7 @@
                 <span
                   v-for="(specialist, i) in specialistsData"
                   :key="i"
-                  class="inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm text-gray-700"
-                  style="font-weight: 500"
+                  class="link-chip--static"
                 >
                   {{ specialist.Specialist }}
                 </span>

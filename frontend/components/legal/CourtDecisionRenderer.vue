@@ -4,9 +4,13 @@
     :value-class-map="valueClassMap"
     :empty-value-behavior="emptyValueBehavior"
     default-class="result-value-small"
+    wrapper-class="flex flex-wrap gap-2"
   >
     <template #default="{ item }">
-      <NuxtLink class="text-cold-purple" :to="generateCourtDecisionLink(item)">
+      <NuxtLink
+        class="link-chip--court-decision"
+        :to="generateCourtDecisionLink(item)"
+      >
         <template v-if="caseTitles[item] !== undefined">
           {{ caseTitles[item] }}
         </template>

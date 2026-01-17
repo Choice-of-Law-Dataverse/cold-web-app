@@ -183,7 +183,34 @@ describe("RelatedItemsList", () => {
     expect(wrapper.text()).not.toContain("Should not see this");
   });
 
-  it("applies court decision badge color for court entity type", () => {
+  it("applies default link-chip class when no entityType", () => {
+    const wrapper = mount(RelatedItemsList, {
+      props: {
+        items: mockItems,
+        basePath: "/test",
+      },
+    });
+
+    expect(wrapper.html()).toContain("link-chip");
+  });
+
+  it("applies link-chip--action class to show more button", () => {
+    const manyItems = Array.from({ length: 15 }, (_, i) => ({
+      id: `${i + 1}`,
+      title: `Item ${i + 1}`,
+    }));
+
+    const wrapper = mount(RelatedItemsList, {
+      props: {
+        items: manyItems,
+        basePath: "/test",
+      },
+    });
+
+    expect(wrapper.html()).toContain("link-chip--action");
+  });
+
+  it("applies court-decision chip class for court entity type", () => {
     const wrapper = mount(RelatedItemsList, {
       props: {
         items: mockItems,
@@ -192,22 +219,10 @@ describe("RelatedItemsList", () => {
       },
     });
 
-    expect(wrapper.html()).toContain("bg-label-court-decision/10");
+    expect(wrapper.html()).toContain("link-chip--court-decision");
   });
 
-  it("applies question badge color for question entity type", () => {
-    const wrapper = mount(RelatedItemsList, {
-      props: {
-        items: mockItems,
-        basePath: "/test",
-        entityType: "question",
-      },
-    });
-
-    expect(wrapper.html()).toContain("bg-label-question/10");
-  });
-
-  it("applies instrument badge color for instrument entity type", () => {
+  it("applies instrument chip class for instrument entity type", () => {
     const wrapper = mount(RelatedItemsList, {
       props: {
         items: mockItems,
@@ -216,10 +231,10 @@ describe("RelatedItemsList", () => {
       },
     });
 
-    expect(wrapper.html()).toContain("bg-label-instrument/10");
+    expect(wrapper.html()).toContain("link-chip--instrument");
   });
 
-  it("applies literature badge color for literature entity type", () => {
+  it("applies literature chip class for literature entity type", () => {
     const wrapper = mount(RelatedItemsList, {
       props: {
         items: mockItems,
@@ -228,10 +243,22 @@ describe("RelatedItemsList", () => {
       },
     });
 
-    expect(wrapper.html()).toContain("bg-label-literature/10");
+    expect(wrapper.html()).toContain("link-chip--literature");
   });
 
-  it("applies arbitration badge color for arbitration entity type", () => {
+  it("applies literature chip class for oup-chapter entity type", () => {
+    const wrapper = mount(RelatedItemsList, {
+      props: {
+        items: mockItems,
+        basePath: "/test",
+        entityType: "oup-chapter",
+      },
+    });
+
+    expect(wrapper.html()).toContain("link-chip--literature");
+  });
+
+  it("applies arbitration chip class for arbitral entity type", () => {
     const wrapper = mount(RelatedItemsList, {
       props: {
         items: mockItems,
@@ -240,18 +267,6 @@ describe("RelatedItemsList", () => {
       },
     });
 
-    expect(wrapper.html()).toContain("bg-label-arbitration/10");
-  });
-
-  it("applies default badge color for unknown entity type", () => {
-    const wrapper = mount(RelatedItemsList, {
-      props: {
-        items: mockItems,
-        basePath: "/test",
-        entityType: "unknown",
-      },
-    });
-
-    expect(wrapper.html()).toContain("bg-cold-purple/10");
+    expect(wrapper.html()).toContain("link-chip--arbitration");
   });
 });

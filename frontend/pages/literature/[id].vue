@@ -68,24 +68,12 @@
                 >{{ bibtexContent }}</pre
               >
               <div class="flex gap-3">
-                <button
-                  class="label flex w-fit items-center gap-1 text-cold-purple transition-colors hover:text-cold-teal"
-                  @click="copyBibTeX"
-                >
-                  <UIcon
-                    name="i-material-symbols:content-copy-outline"
-                    class="h-4 w-4"
-                  />
+                <button class="action-button" @click="copyBibTeX">
+                  <UIcon name="i-material-symbols:content-copy-outline" />
                   <span>Copy</span>
                 </button>
-                <button
-                  class="label flex w-fit items-center gap-1 text-cold-teal transition-colors hover:text-cold-purple"
-                  @click="exportBibTeX"
-                >
-                  <UIcon
-                    name="i-material-symbols:download-2-outline"
-                    class="h-4 w-4"
-                  />
+                <button class="action-button" @click="exportBibTeX">
+                  <UIcon name="i-material-symbols:download-2-outline" />
                   <span>Download</span>
                 </button>
               </div>

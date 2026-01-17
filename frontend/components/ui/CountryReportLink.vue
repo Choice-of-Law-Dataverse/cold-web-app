@@ -3,7 +3,7 @@
     <NuxtLink
       v-if="countryReportLink"
       :to="countryReportLink"
-      class="inline-flex items-center gap-2 rounded-full bg-cold-purple/10 px-3 py-1 text-sm text-cold-night shadow-sm transition-colors hover:bg-cold-purple/20 hover:shadow-md"
+      class="link-chip--jurisdiction gap-2"
     >
       <img
         v-if="props.jurisdictionCode"
