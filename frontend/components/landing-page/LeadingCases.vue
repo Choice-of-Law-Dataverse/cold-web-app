@@ -22,13 +22,15 @@
                 class="item-flag"
               />
             </div>
-            <span class="break-words text-left">
+            <span class="item-title">
+              {{ decision["Case Title"] }}
+            </span>
+            <span class="item-year">
               {{
                 decision["Publication Date ISO"]
                   ? formatYear(decision["Publication Date ISO"])
                   : decision["Date"]
-              }}:
-              {{ decision["Case Title"] }}
+              }}
             </span>
           </NuxtLink>
         </div>

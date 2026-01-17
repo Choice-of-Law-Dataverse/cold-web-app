@@ -32,7 +32,7 @@
         },
         header: {
           base: 'sticky-header border-bottom-0',
-          padding: 'px-6 py-5 sm:px-8 sm:py-6',
+          padding: 'px-6 py-5',
         },
       }"
     >

@@ -1268,6 +1268,16 @@ button.cold-btn-primary {
   &:hover .item-icon {
     color: color-mix(in srgb, var(--color-cold-green) 85%, #000);
   }
+
+  .item-year {
+    @apply ml-auto flex-shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-semibold;
+    color: var(--color-cold-teal);
+    background: color-mix(in srgb, var(--color-cold-teal) 10%, transparent);
+  }
+
+  .item-title {
+    @apply flex-1 text-left;
+  }
 }
 
 // Shared hover row pattern - for detail rows, question rows, comparison rows

@@ -30,13 +30,15 @@
                 class="item-flag"
               />
             </div>
-            <span class="break-words text-left">
+            <span class="item-title">
+              {{ instrument["Title (in English)"] }}
+            </span>
+            <span class="item-year">
               {{
                 instrument["Entry Into Force"]
                   ? formatYear(instrument["Entry Into Force"])
                   : instrument["Date"]
-              }}:
-              {{ instrument["Title (in English)"] }}
+              }}
             </span>
           </NuxtLink>
         </div>
