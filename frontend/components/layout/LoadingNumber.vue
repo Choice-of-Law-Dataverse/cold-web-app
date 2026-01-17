@@ -1,5 +1,10 @@
 <template>
-  <div class="flex items-center justify-center">
+  <div
+    class="flex items-center justify-center"
+    role="status"
+    aria-live="polite"
+    aria-label="Loading"
+  >
     <div class="loading-number">
       <div class="loading-digits">
         <span class="digit" style="animation-delay: 0ms">0</span>
@@ -7,6 +12,7 @@
         <span class="digit" style="animation-delay: 200ms">0</span>
       </div>
     </div>
+    <span class="sr-only">Loading content</span>
   </div>
 </template>
 
@@ -44,6 +50,13 @@
   }
   50% {
     opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .digit {
+    animation: none;
+    opacity: 0.5;
   }
 }
 </style>
