@@ -10,6 +10,82 @@
   --container-width: calc(
     (var(--column-width) * 12) + (var(--gutter-width) * 11)
   );
+
+  // Gradient variables - reusable linear gradient definitions
+  // Purple-Green gradients with white
+  --gradient-subtle: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 2%, white),
+    color-mix(in srgb, var(--color-cold-green) 1%, white)
+  );
+  --gradient-subtle-hover: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 3%, white),
+    color-mix(in srgb, var(--color-cold-green) 2%, white)
+  );
+  --gradient-subtle-emphasis: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 4%, white),
+    color-mix(in srgb, var(--color-cold-green) 3%, white)
+  );
+  --gradient-medium: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 6%, white),
+    color-mix(in srgb, var(--color-cold-green) 4%, white)
+  );
+  --gradient-medium-hover: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 10%, white),
+    color-mix(in srgb, var(--color-cold-green) 8%, white)
+  );
+
+  // Purple-Green gradients with transparent (for badges/regions)
+  --gradient-transparent-light: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 8%, transparent),
+    color-mix(in srgb, var(--color-cold-green) 6%, transparent)
+  );
+  --gradient-transparent-medium: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 12%, transparent),
+    color-mix(in srgb, var(--color-cold-green) 10%, transparent)
+  );
+  --gradient-transparent-strong: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 15%, transparent),
+    color-mix(in srgb, var(--color-cold-green) 12%, transparent)
+  );
+
+  // Theme label gradient (three-color)
+  --gradient-theme: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 10%, transparent),
+    color-mix(in srgb, var(--color-cold-green) 8%, transparent),
+    color-mix(in srgb, var(--color-cold-teal) 10%, transparent)
+  );
+  --gradient-theme-hover: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 15%, transparent),
+    color-mix(in srgb, var(--color-cold-green) 12%, transparent),
+    color-mix(in srgb, var(--color-cold-teal) 15%, transparent)
+  );
+
+  // Footer gradient
+  --gradient-footer: linear-gradient(
+    135deg,
+    var(--color-cold-night),
+    color-mix(in srgb, var(--color-cold-night) 75%, var(--color-cold-purple))
+  );
+
+  // Gradient top border (horizontal)
+  --gradient-border-horizontal: linear-gradient(
+    90deg,
+    var(--color-cold-purple),
+    var(--color-cold-green)
+  );
+
+  // Other gradients
+  --gradient-gray: linear-gradient(135deg, var(--color-cold-gray-alpha), #fff);
 }
 
 // Fonts -----------------------------------------------
@@ -125,11 +201,13 @@ li::marker {
 
 // Labels
 .label {
-  font-size: 0.6875rem; // 11px - smaller and more subtle
+  font-size: 0.75rem;
   font-weight: 500;
   text-transform: uppercase;
   color: var(--color-cold-night);
   letter-spacing: 0.05em; // Better letter spacing for uppercase
+  display: inline-flex;
+  gap: 4px;
 }
 
 .label-key {
@@ -155,142 +233,86 @@ li::marker {
 
 .label-jurisdiction {
   @extend .label;
-  background-color: var(--color-cold-gray-alpha);
-  padding: 3px 8px;
-  display: inline-flex;
-  align-items: center;
-  flex-shrink: 0;
-  border: 1px solid var(--color-cold-gray);
-  border-radius: 4px;
-  color: var(--color-cold-night);
-  font-weight: 600;
-  transition: all 0.15s ease;
+  @apply flex cursor-pointer items-center gap-2 rounded-lg px-2 py-1 text-left font-medium shadow-sm transition-all duration-150;
+  background: var(--gradient-subtle);
 
   &:hover {
-    background-color: #fff;
-    border-color: color-mix(in srgb, var(--color-cold-gray) 80%, #000);
-    box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
+    @apply shadow;
+    background: var(--gradient-subtle-emphasis);
+  }
+
+  .flag-wrapper {
+    @apply inline-flex w-4 flex-shrink-0 items-center justify-center;
+  }
+
+  .item-flag {
+    @apply rounded-sm border border-gray-200 transition-shadow duration-150;
+  }
+
+  &:hover .item-flag {
+    @apply shadow-sm;
+  }
+
+  span {
+    color: var(--color-cold-night);
+  }
+
+  .item-icon {
+    @apply flex-shrink-0 text-xl transition-colors duration-150;
+    color: var(--color-cold-green);
+  }
+
+  &:hover .item-icon {
+    color: color-mix(in srgb, var(--color-cold-green) 85%, #000);
+  }
+}
+
+// Base class for colored labels with gradient background
+@mixin label-colored($color-var) {
+  @extend .label;
+  padding: 3px 8px;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, $color-var 12%, transparent),
+    color-mix(in srgb, $color-var 8%, transparent)
+  );
+  color: color-mix(in srgb, $color-var 85%, #000);
+  border: none;
+  border-radius: 4px;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, $color-var 16%, transparent),
+      color-mix(in srgb, $color-var 12%, transparent)
+    );
   }
 }
 
 .label-question {
-  @extend .label;
-  padding: 3px 8px;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-label-question) 12%, transparent),
-    color-mix(in srgb, var(--color-label-question) 8%, transparent)
-  );
-  color: color-mix(in srgb, var(--color-label-question) 85%, #000);
-  border: none;
-  border-radius: 4px;
-  transition: background 0.15s ease;
-
-  &:hover {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-label-question) 16%, transparent),
-      color-mix(in srgb, var(--color-label-question) 12%, transparent)
-    );
-  }
+  @include label-colored(var(--color-label-question));
 }
 
 .label-court-decision {
-  @extend .label;
-  padding: 3px 8px;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-label-court-decision) 12%, transparent),
-    color-mix(in srgb, var(--color-label-court-decision) 8%, transparent)
-  );
-  color: color-mix(in srgb, var(--color-label-court-decision) 85%, #000);
-  border: none;
-  border-radius: 4px;
-  transition: background 0.15s ease;
-
-  &:hover {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-label-court-decision) 16%, transparent),
-      color-mix(in srgb, var(--color-label-court-decision) 12%, transparent)
-    );
-  }
+  @include label-colored(var(--color-label-court-decision));
 }
 
 .label-instrument {
-  @extend .label;
-  padding: 3px 8px;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-label-instrument) 12%, transparent),
-    color-mix(in srgb, var(--color-label-instrument) 8%, transparent)
-  );
-  color: color-mix(in srgb, var(--color-label-instrument) 85%, #000);
-  border: none;
-  border-radius: 4px;
-  transition: background 0.15s ease;
-
-  &:hover {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-label-instrument) 16%, transparent),
-      color-mix(in srgb, var(--color-label-instrument) 12%, transparent)
-    );
-  }
+  @include label-colored(var(--color-label-instrument));
 }
 
 .label-literature {
-  @extend .label;
-  padding: 3px 8px;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-label-literature) 12%, transparent),
-    color-mix(in srgb, var(--color-label-literature) 8%, transparent)
-  );
-  color: color-mix(in srgb, var(--color-label-literature) 85%, #000);
-  border: none;
-  border-radius: 4px;
-  transition: background 0.15s ease;
-
-  &:hover {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-label-literature) 16%, transparent),
-      color-mix(in srgb, var(--color-label-literature) 12%, transparent)
-    );
-  }
+  @include label-colored(var(--color-label-literature));
 }
 
 .label-arbitration {
-  @extend .label;
-  padding: 3px 8px;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-label-arbitration) 12%, transparent),
-    color-mix(in srgb, var(--color-label-arbitration) 8%, transparent)
-  );
-  color: color-mix(in srgb, var(--color-label-arbitration) 85%, #000);
-  border: none;
-  border-radius: 4px;
-  transition: background 0.15s ease;
-
-  &:hover {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-label-arbitration) 16%, transparent),
-      color-mix(in srgb, var(--color-label-arbitration) 12%, transparent)
-    );
-  }
+  @include label-colored(var(--color-label-arbitration));
 }
 
 .label-theme {
   @extend .label;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 10%, transparent),
-    color-mix(in srgb, var(--color-cold-green) 8%, transparent),
-    color-mix(in srgb, var(--color-cold-teal) 10%, transparent)
-  );
+  background: var(--gradient-theme);
   background-size: 200% 200%;
   color: color-mix(in srgb, var(--color-cold-purple) 90%, #000);
   padding: 3px 8px;
@@ -300,12 +322,7 @@ li::marker {
   position: relative;
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-cold-purple) 15%, transparent),
-      color-mix(in srgb, var(--color-cold-green) 12%, transparent),
-      color-mix(in srgb, var(--color-cold-teal) 15%, transparent)
-    );
+    background: var(--gradient-theme-hover);
     box-shadow: 0 0 8px
       color-mix(in srgb, var(--color-cold-green) 30%, transparent);
   }
@@ -348,7 +365,7 @@ li::marker {
   @extend .result-value-small;
   font-family: "IBM Plex Mono", monospace;
   font-size: 13px !important;
-  background: linear-gradient(135deg, var(--color-cold-gray-alpha), #fff);
+  background: var(--gradient-gray);
   padding: 1em 1.25em !important;
   line-height: 1.6 !important;
   border-radius: 0.5rem;
@@ -452,11 +469,7 @@ button.inline-flex.items-center.rounded-full {
 .cold-uselectmenu.non-all-selected button {
   border-color: var(--color-cold-purple) !important;
   color: var(--color-cold-purple) !important;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 2%, white),
-    color-mix(in srgb, var(--color-cold-green) 1%, white)
-  ) !important;
+  background: var(--gradient-subtle) !important;
 }
 
 // Popper/Dropdown Style
@@ -504,20 +517,12 @@ ul[role="listbox"] input {
 
 // Popper Hover & Active States
 ul[role="listbox"] li:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 3%, white),
-    color-mix(in srgb, var(--color-cold-green) 2%, white)
-  ) !important;
+  background: var(--gradient-subtle-hover) !important;
 }
 
 ul[role="listbox"] li[data-headlessui-state="selected"],
 ul[role="listbox"] li[aria-selected="true"] {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 6%, white),
-    color-mix(in srgb, var(--color-cold-green) 4%, white)
-  ) !important;
+  background: var(--gradient-medium) !important;
   color: var(--color-cold-purple) !important;
   font-weight: 500 !important;
 }
@@ -525,21 +530,12 @@ ul[role="listbox"] li[aria-selected="true"] {
 ul[role="listbox"] li[data-headlessui-state="active"],
 ul[role="listbox"] li[data-headlessui-state="active"]:hover,
 ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 8%, white),
-    color-mix(in srgb, var(--color-cold-green) 6%, white)
-  ) !important;
+  background: var(--gradient-medium-hover) !important;
 }
 
 // Hero gradient - subtle purple→green→white
 .hero-gradient {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 4%, #fff),
-    color-mix(in srgb, var(--color-cold-green) 3%, #fff),
-    #fff
-  );
+  background: var(--gradient-subtle-emphasis);
 }
 
 // Gradient top border accent for special cards
@@ -554,11 +550,7 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
     left: 0;
     right: 0;
     height: 3px;
-    background: linear-gradient(
-      90deg,
-      var(--color-cold-purple),
-      var(--color-cold-green)
-    );
+    background: var(--gradient-border-horizontal);
   }
 }
 
@@ -765,11 +757,7 @@ button.cold-date-trigger {
   border: 1px solid rgb(229 231 235) !important;
   border-radius: 0.5rem !important;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 2%, white),
-    color-mix(in srgb, var(--color-cold-green) 1%, white)
-  ) !important;
+  background: var(--gradient-subtle) !important;
   color: var(--color-cold-purple) !important;
   font-weight: 500 !important;
   display: inline-flex !important;
@@ -790,11 +778,7 @@ button.cold-date-trigger {
 .cold-date-trigger:hover {
   border-color: rgb(209 213 219) !important;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 3%, white),
-    color-mix(in srgb, var(--color-cold-green) 2%, white)
-  ) !important;
+  background: var(--gradient-subtle-hover) !important;
 }
 
 /* Focus state */
@@ -830,11 +814,7 @@ button.cold-toggle-btn {
   border: 1px solid rgb(229 231 235) !important;
   border-radius: 0.5rem !important;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05) !important;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 2%, white),
-    color-mix(in srgb, var(--color-cold-green) 1%, white)
-  ) !important;
+  background: var(--gradient-subtle) !important;
   color: var(--color-cold-purple) !important;
   font-weight: 500 !important;
   display: inline-flex !important;
@@ -847,21 +827,13 @@ button.cold-toggle-btn {
 .cold-toggle-btn:hover {
   border-color: rgb(209 213 219) !important;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 3%, white),
-    color-mix(in srgb, var(--color-cold-green) 2%, white)
-  ) !important;
+  background: var(--gradient-subtle-hover) !important;
 }
 
 /* Active state (selected) */
 .cold-toggle-btn[aria-pressed="true"] {
   border-color: var(--color-cold-purple) !important;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 8%, white),
-    color-mix(in srgb, var(--color-cold-green) 6%, white)
-  ) !important;
+  background: var(--gradient-medium-hover) !important;
   color: var(--color-cold-purple) !important;
   font-weight: 600 !important;
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1) !important;
@@ -1240,19 +1212,11 @@ button.cold-btn-primary {
 
 .landing-item-button {
   @apply flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-3 text-left font-medium shadow-sm transition-all duration-150;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 2%, white),
-    color-mix(in srgb, var(--color-cold-green) 1%, white)
-  );
+  background: var(--gradient-subtle);
 
   &:hover {
     @apply shadow;
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-cold-purple) 4%, white),
-      color-mix(in srgb, var(--color-cold-green) 3%, white)
-    );
+    background: var(--gradient-subtle-emphasis);
   }
 
   .flag-wrapper {
@@ -1286,11 +1250,7 @@ button.cold-btn-primary {
   @apply rounded-lg transition-all duration-150;
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-cold-purple) 2%, white),
-      color-mix(in srgb, var(--color-cold-green) 1%, white)
-    );
+    background: var(--gradient-subtle);
     box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
   }
 }
@@ -1300,11 +1260,7 @@ button.cold-btn-primary {
   @extend .hover-row;
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-cold-purple) 3%, white),
-      color-mix(in srgb, var(--color-cold-green) 2%, white)
-    );
+    background: var(--gradient-subtle-hover);
   }
 }
 
@@ -1359,28 +1315,16 @@ button.cold-btn-primary {
 .region-badge {
   @apply flex items-center gap-1 rounded-full px-3 py-1.5 text-xs transition-all duration-150;
   font-weight: 400;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 8%, transparent),
-    color-mix(in srgb, var(--color-cold-green) 6%, transparent)
-  );
+  background: var(--gradient-transparent-light);
   color: color-mix(in srgb, var(--color-cold-purple) 90%, #000);
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-cold-purple) 12%, transparent),
-      color-mix(in srgb, var(--color-cold-green) 10%, transparent)
-    );
+    background: var(--gradient-transparent-medium);
   }
 
   &.region-badge-active {
     font-weight: 500;
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-cold-purple) 15%, transparent),
-      color-mix(in srgb, var(--color-cold-green) 12%, transparent)
-    );
+    background: var(--gradient-transparent-strong);
     color: var(--color-cold-purple);
   }
 }
@@ -1393,11 +1337,7 @@ button.cold-btn-primary {
   margin-bottom: -2px;
 
   &:hover {
-    background: linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--color-cold-purple) 2%, white),
-      color-mix(in srgb, var(--color-cold-green) 1%, white)
-    );
+    background: var(--gradient-subtle);
   }
 
   &.section-nav-item-active {
@@ -1425,7 +1365,8 @@ button.cold-btn-primary {
   a {
     color: var(--color-cold-purple) !important;
 
-    &:hover {
+    &:hover,
+    &:focus {
       color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
     }
   }
@@ -1516,11 +1457,7 @@ button.cold-btn-primary {
 
 // Footer styles
 .footer-container {
-  background: linear-gradient(
-    135deg,
-    var(--color-cold-night),
-    color-mix(in srgb, var(--color-cold-night) 95%, var(--color-cold-purple))
-  );
+  background: var(--gradient-footer);
   color: white;
 }
 

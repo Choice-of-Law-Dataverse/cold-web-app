@@ -42,7 +42,7 @@
         <DetailRow v-for="answer in answers" :key="answer" :label="answer">
           <div
             v-if="getCountriesForAnswer(answer).length"
-            class="flex flex-wrap items-center gap-2"
+            class="flex flex-wrap items-center gap-4"
           >
             <NuxtLink
               v-for="country in getCountriesForAnswer(answer)"
@@ -50,10 +50,10 @@
               class="label-jurisdiction"
               :to="`/question/${country.code}${questionSuffix}`"
             >
-              <span class="hover-flag mr-1.5">
+              <div class="flag-wrapper">
                 <img
                   :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
-                  class="h-3"
+                  class="item-flag"
                   :alt="country.code + ' flag'"
                   @error="
                     (e) => {
@@ -61,8 +61,9 @@
                     }
                   "
                 />
-              </span>
-              {{ country.name }}
+              </div>
+
+              {{ country.code }}
             </NuxtLink>
           </div>
           <div v-else class="copy">No jurisdictions</div>
@@ -159,3 +160,5 @@ function getCountriesForAnswer(answer) {
   return countries;
 }
 </script>
+
+<style lang="sass" scoped></style>
