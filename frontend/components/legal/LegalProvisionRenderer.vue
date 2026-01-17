@@ -2,13 +2,12 @@
   <RelatedItemsList
     :items="formattedItems"
     :is-loading="isLoading"
-    :base-path="basePath"
-    entity-type="instrument"
+    :base-path="''"
     :empty-value-behavior="{ action: 'hide' }"
   />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import {
   generateLegalProvisionLink,
@@ -16,45 +15,17 @@ import {
 } from "@/utils/legal";
 import { useRecordDetailsList } from "@/composables/useRecordDetails";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import type { RelatedItem } from "@/types/ui";
+import type { DomesticInstrumentResponse } from "@/types/entities/domestic-instrument";
 
-const props = defineProps({
-  value: {
-    type: String,
-    default: "",
-  },
-  fallbackData: {
-    type: Object,
-    required: true,
-  },
-  valueClassMap: {
-    type: Object,
-    default: () => ({}),
-  },
-  skipArticle: {
-    type: Boolean,
-    default: false,
-  },
-  renderAsLi: {
-    type: Boolean,
-    default: false,
-  },
-});
+const props = defineProps<{
+  value: string;
+  skipArticle?: boolean;
+}>();
 
 const provisionItems = computed(() => {
   if (props.value && props.value.trim()) {
     return props.value.split(",");
-  }
-  if (
-    props.fallbackData["Legislation-ID"] &&
-    props.fallbackData["Legislation-ID"].trim()
-  ) {
-    return props.fallbackData["Legislation-ID"].split(",");
-  }
-  if (
-    props.fallbackData["More information"] &&
-    props.fallbackData["More information"].trim()
-  ) {
-    return [props.fallbackData["More information"].replace(/\n/g, " ").trim()];
   }
   return [];
 });
@@ -73,26 +44,26 @@ const instrumentIds = computed(() => {
   return Array.from(unique);
 });
 
-const { data: recordMap } = useRecordDetailsList(
+const { data: recordMap } = useRecordDetailsList<DomesticInstrumentResponse>(
   computed(() => "Domestic Instruments"),
   instrumentIds,
 );
 
 const instrumentTitles = computed(() => {
-  const map = {};
+  const map: Record<string, string> = {};
   instrumentIds.value.forEach((id) => {
-    const rec = recordMap?.value?.find((r) => r?.id === id) || {};
+    const rec = recordMap?.value?.find((r) => r?.id === id);
     const title =
-      rec["Abbreviation"] ||
-      rec["Title (in English)"] ||
-      rec["Title"] ||
+      rec?.Abbreviation ||
+      rec?.["Title (in English)"] ||
+      rec?.["Official Title"] ||
       String(id);
     map[id] = title;
   });
   return map;
 });
 
-const formatArticle = (article) =>
+const formatArticle = (article: string | undefined) =>
   article ? article.replace(/(Art\.)(\d+)/, "$1 $2") : "";
 
 const isLoading = computed(() => {
@@ -101,9 +72,7 @@ const isLoading = computed(() => {
   );
 });
 
-const basePath = computed(() => "");
-
-const formattedItems = computed(() => {
+const formattedItems = computed<RelatedItem[]>(() => {
   return processedProvisions.value
     .map((prov) => {
       const title = instrumentTitles.value[prov.instrumentId];
@@ -118,6 +87,6 @@ const formattedItems = computed(() => {
         title: displayTitle,
       };
     })
-    .filter(Boolean);
+    .filter((item): item is RelatedItem => item !== null);
 });
 </script>

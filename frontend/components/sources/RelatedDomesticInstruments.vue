@@ -3,44 +3,44 @@
     :items="fullItemsList"
     :is-loading="isLoading"
     base-path="/domestic-instrument"
-    entity-type="instrument"
     :empty-value-behavior="emptyValueBehavior"
   />
 </template>
 
-<script setup>
-import { computed, toRefs } from "vue";
+<script setup lang="ts">
+import { computed, toRef } from "vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import { useDomesticInstrumentsByJurisdiction } from "@/composables/useDomesticInstrumentsByJurisdiction";
+import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
-const props = defineProps({
-  jurisdiction: { type: String, default: "" },
-  emptyValueBehavior: {
-    type: Object,
-    default: () => ({
+const props = withDefaults(
+  defineProps<{
+    jurisdiction?: string;
+    emptyValueBehavior?: EmptyValueBehavior;
+  }>(),
+  {
+    jurisdiction: "",
+    emptyValueBehavior: () => ({
       action: "display",
       fallback: "No domestic instruments available",
     }),
   },
-});
-
-const { jurisdiction } = toRefs(props);
+);
 
 const { data: domesticInstruments, isLoading } =
-  useDomesticInstrumentsByJurisdiction(computed(() => jurisdiction.value));
+  useDomesticInstrumentsByJurisdiction(toRef(props, "jurisdiction"));
 
-const fullItemsList = computed(() => {
+const fullItemsList = computed<RelatedItem[]>(() => {
   if (!domesticInstruments.value) return [];
   return domesticInstruments.value
     .map((item) => ({
-      id: item?.id,
-      title:
-        item?.["Title (in English)"] || item?.["Abbreviation"] || "Untitled",
+      id: item?.id ?? "",
+      title: item?.["Title (in English)"] || item?.Abbreviation || "Untitled",
     }))
     .filter(
-      (item) =>
-        item.id &&
-        item.title &&
+      (item): item is RelatedItem =>
+        Boolean(item.id) &&
+        Boolean(item.title) &&
         item.title !== "Untitled" &&
         item.title !== "NA",
     );

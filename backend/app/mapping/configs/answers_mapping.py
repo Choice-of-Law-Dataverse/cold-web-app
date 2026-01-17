@@ -58,7 +58,7 @@ ANSWERS_MAPPING = MappingConfig(
                 index=0,
                 mappings={
                     "Jurisdictions Link": "ncRecordId",
-                    "Jurisdictions Alpha-3 code": "Alpha_3_Code",
+                    "Jurisdictions Alpha-3 Code": "Alpha_3_Code",
                     "Jurisdictions": "Name",
                     "Jurisdictions Region": "Region",
                 },

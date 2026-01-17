@@ -72,11 +72,11 @@ export function processCourtDecision(
         ? raw["Case Citation"]
         : raw["Case Title"],
     "Related Literature": themes,
-    themes,
-    "Case Citation": raw["Case Citation"],
+    Date: formatDate(raw.Date),
+    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
+    Themes: themes,
     Questions: questions,
     "Related Questions": questions,
-    "Jurisdictions Alpha-3 Code": raw["Jurisdictions Alpha-3 Code"],
     "Publication Date ISO": formatDate(raw["Publication Date ISO"]),
     "Date of Judgment": formatDate(raw["Date of Judgment"]),
     hasEnglishQuoteTranslation: Boolean(

@@ -18,19 +18,24 @@ export interface QuestionResponse {
   sort_date?: string;
   // Nested mappings
   Themes?: string;
-  // Legacy fields for backwards compatibility
+  // Nested mappings from related tables
   Answer?: string;
   "More Information"?: string;
   "Domestic Legal Provisions"?: string;
+  "Domestic Legal Provisions Link"?: string;
+  "Domestic Instruments"?: string;
+  "Domestic Instruments ID"?: string;
+  "Domestic Instruments Link"?: string;
   "OUP Chapter"?: string;
   "OUP Book Quote"?: string;
   "Court Decisions ID"?: string;
   "Related Literature"?: string;
   "Country Report"?: string;
   Jurisdictions?: string;
-  "Jurisdictions Alpha-3 code"?: string;
   "Jurisdictions Alpha-3 Code"?: string;
   "Jurisdictions Literature ID"?: string;
+  "Jurisdictions Link"?: string;
+  "Jurisdictions Region"?: string;
 }
 
 /** Processed type with normalized fields */
@@ -45,6 +50,7 @@ export function processQuestion(raw: QuestionResponse): Question {
 
   return {
     ...raw,
+    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
     "Domestic Legal Provisions": raw["Domestic Legal Provisions"] || "",
     "Court Decisions ID":
       typeof courtDecisionsId === "string"

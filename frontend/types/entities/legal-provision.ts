@@ -51,6 +51,7 @@ export interface LegalProvision {
   originalText: string;
   englishText?: string;
   hasEnglishTranslation: boolean;
+  "Last Modified"?: string;
 }
 
 /** Process domestic legal provision */
@@ -66,6 +67,7 @@ export function processDomesticLegalProvision(
       "No content available",
     englishText: englishText || undefined,
     hasEnglishTranslation: Boolean(englishText),
+    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
   };
 }
 
@@ -79,5 +81,6 @@ export function processRegionalLegalProvision(
     originalText: raw["Full Text"] || "No content available",
     englishText: undefined,
     hasEnglishTranslation: false,
+    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
   };
 }

@@ -33,8 +33,6 @@ export const questionLabels = {
   "OUP Book Quote": "OUP Book Quote",
   "Court Decisions ID": "Related Court Decisions",
   "Related Literature": "Related Literature",
-  "Last Modified": "Last Updated",
-  Created: "Last Updated",
 } as const satisfies Partial<Record<keyof Question, string>>;
 
 export const courtDecisionLabels = {

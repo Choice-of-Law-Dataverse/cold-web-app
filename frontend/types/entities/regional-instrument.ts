@@ -44,6 +44,8 @@ export function processRegionalInstrument(
   return {
     ...raw,
     "Title (in English)": raw["Title (in English)"] || raw.Name || "",
+    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
+    Date: formatDate(raw.Date),
     URL: raw.URL || raw.Link || "",
   };
 }

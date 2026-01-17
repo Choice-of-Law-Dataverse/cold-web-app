@@ -3,33 +3,38 @@
     :items="fullItemsList"
     :is-loading="isLoading"
     base-path="/question"
-    entity-type="question"
     :empty-value-behavior="emptyValueBehavior"
   />
 </template>
 
-<script setup>
-import { computed, toRefs } from "vue";
+<script setup lang="ts">
+import { computed, toRef } from "vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import { useRelatedQuestions } from "@/composables/useRelatedQuestions";
+import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
-const props = defineProps({
-  jurisdictionCode: { type: String, default: "" },
-  questions: { type: String, default: "" },
-  emptyValueBehavior: { type: Object, default: () => ({ action: "hide" }) },
-});
-
-const { jurisdictionCode, questions, emptyValueBehavior } = toRefs(props);
-
-const { questionList, questionLabels, isLoading } = useRelatedQuestions(
-  jurisdictionCode,
-  questions,
+const props = withDefaults(
+  defineProps<{
+    jurisdictionCode?: string;
+    questions?: string;
+    emptyValueBehavior?: EmptyValueBehavior;
+  }>(),
+  {
+    jurisdictionCode: "",
+    questions: "",
+    emptyValueBehavior: () => ({ action: "hide" }),
+  },
 );
 
-const fullItemsList = computed(() => {
+const { questionList, questionLabels, isLoading } = useRelatedQuestions(
+  toRef(props, "jurisdictionCode"),
+  toRef(props, "questions"),
+);
+
+const fullItemsList = computed<RelatedItem[]>(() => {
   return questionList.value.map((q, idx) => ({
-    id: `${jurisdictionCode.value}_${q}`,
-    title: questionLabels.value[idx] || `${jurisdictionCode.value}_${q}`,
+    id: `${props.jurisdictionCode}_${q}`,
+    title: questionLabels.value[idx] || `${props.jurisdictionCode}_${q}`,
   }));
 });
 </script>

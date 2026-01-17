@@ -9,21 +9,12 @@
       :source-table="'Question'"
     >
       <!-- Custom rendering for Legal provision articles -->
-      <template #domestic-legal-provisions="{ value }">
+      <template #domestic-legal-provisions>
         <DetailRow
           :label="questionLabels['Domestic Legal Provisions']"
           :tooltip="questionTooltips['Domestic Legal Provisions']"
         >
-          <QuestionSourceList
-            :sources="
-              [value || answerData?.['Domestic Legal Provisions']].filter(
-                Boolean,
-              )
-            "
-            :fallback-data="answerData"
-            :fetch-oup-chapter="false"
-            :fetch-primary-source="true"
-          />
+          <QuestionSourceList v-if="answerData" :data="answerData" />
         </DetailRow>
       </template>
 
@@ -68,7 +59,18 @@
       </template>
 
       <template #footer>
-        <CountryReportBanner :jurisdiction-code="jurisdictionCode" />
+        <div
+          v-if="answerData?.['Last Modified']"
+          class="flex justify-end px-6 pb-4 text-sm text-gray-500"
+        >
+          <span class="flex items-center gap-1">
+            <UIcon name="i-heroicons-clock" class="size-4" />
+            Last updated {{ answerData["Last Modified"] }}
+          </span>
+        </div>
+        <CountryReportBanner
+          :jurisdiction-code="answerData?.['Jurisdictions Alpha-3 Code']"
+        />
       </template>
     </BaseDetailLayout>
     <QuestionJurisdictions
@@ -117,13 +119,6 @@ const questionSuffix = computed(() => {
     return "_" + parts.slice(1).join("_");
   }
   return null;
-});
-
-const jurisdictionCode = computed(() => {
-  return (
-    answerData.value?.["Jurisdictions Alpha-3 code"] ||
-    answerData.value?.["Jurisdictions Alpha-3 Code"]
-  );
 });
 
 onMounted(async () => {

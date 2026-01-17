@@ -64,6 +64,9 @@ export function processDomesticInstrument(
 
   return {
     ...raw,
+    Date: formatDate(raw.Date),
+    "Publication Date": formatDate(raw["Publication Date"]),
+    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
     "Title (in English)":
       raw["Title (in English)"] || raw["Official Title"] || "",
     Compatibility: hasCompatibility ? true : undefined,

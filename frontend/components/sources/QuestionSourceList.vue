@@ -1,42 +1,25 @@
 <template>
   <div class="prose flex flex-col gap-2">
-    <template v-if="fallbackData && fallbackData['Domestic Legal Provisions']">
-      <LegalProvisionRenderer
-        :value="fallbackData['Domestic Legal Provisions']"
-        :fallback-data="fallbackData"
-      />
+    <template v-if="data['Domestic Legal Provisions']">
+      <LegalProvisionRenderer :value="data['Domestic Legal Provisions']" />
     </template>
-    <template
-      v-else-if="fallbackData && fallbackData['Domestic Instruments ID']"
-    >
+    <template v-else-if="data['Domestic Instruments ID']">
       <LegalProvisionRenderer
         skip-article
-        :value="fallbackData['Domestic Instruments ID']"
-        :fallback-data="fallbackData"
+        :value="data['Domestic Instruments ID']"
       />
     </template>
-
-    <template v-if="!hasAnySources">
+    <template v-else>
       <p class="result-value-small">—</p>
     </template>
   </div>
 </template>
 
-<script setup>
-import { computed } from "vue";
+<script setup lang="ts">
 import LegalProvisionRenderer from "@/components/legal/LegalProvisionRenderer.vue";
+import type { Question } from "@/types/entities/question";
 
-const props = defineProps({
-  fallbackData: {
-    type: Object,
-    required: true,
-  },
-});
-
-const hasAnySources = computed(() => {
-  return !!(
-    (props.fallbackData && props.fallbackData["Domestic Legal Provisions"]) ||
-    (props.fallbackData && props.fallbackData["Domestic Instruments ID"])
-  );
-});
+defineProps<{
+  data: Question;
+}>();
 </script>

@@ -55,6 +55,7 @@ export function processInternationalInstrument(
 ): InternationalInstrument {
   return {
     ...raw,
+    "Publication Date": formatDate(raw["Publication Date"] || raw.Date),
     "Title (in English)": raw["Title (in English)"] || raw.Name || "",
     URL: raw.URL || raw.Link || "",
   };

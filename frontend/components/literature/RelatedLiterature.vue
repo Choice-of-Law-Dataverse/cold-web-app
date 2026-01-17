@@ -3,68 +3,73 @@
     :items="fullLiteratureList"
     :is-loading="isLoading"
     base-path="/literature"
-    :entity-type="oupFilter === 'onlyOup' ? 'oup-chapter' : 'literature'"
     :empty-value-behavior="emptyValueBehavior"
   />
 </template>
 
-<script setup>
-import { computed, toRefs } from "vue";
+<script setup lang="ts">
+import { computed, toRef } from "vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import { useLiteratures } from "@/composables/useLiteratures";
 import { useLiteratureByTheme } from "@/composables/useLiteratureByTheme";
 import { useLiteratureByJurisdiction } from "@/composables/useLiteratureByJurisdiction";
+import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
-const props = defineProps({
-  label: { type: String, default: "Related Literature" },
-  tooltip: { type: String, default: "" },
-  themes: { type: String, default: "" },
-  jurisdiction: { type: String, default: "" },
-  literatureId: { type: String, default: "" },
-  mode: {
-    type: String,
-    default: "themes",
-    validator: (value) =>
-      ["themes", "id", "both", "jurisdiction"].includes(value),
-  },
-  oupFilter: {
-    type: String,
-    required: true,
-    validator: (value) => ["onlyOup", "noOup"].includes(value),
-  },
-  emptyValueBehavior: {
-    type: Object,
-    default: () => ({
+type LiteratureMode = "themes" | "id" | "both" | "jurisdiction";
+type OupFilter = "onlyOup" | "noOup";
+
+interface LiteratureItem {
+  id: string;
+  title: string;
+  oupChapter?: boolean;
+}
+
+const props = withDefaults(
+  defineProps<{
+    themes?: string;
+    jurisdiction?: string;
+    literatureId?: string;
+    mode?: LiteratureMode;
+    oupFilter: OupFilter;
+    emptyValueBehavior?: EmptyValueBehavior;
+  }>(),
+  {
+    themes: "",
+    jurisdiction: "",
+    literatureId: "",
+    mode: "themes",
+    emptyValueBehavior: () => ({
       action: "hide",
       fallback: "No related literature available",
     }),
   },
-});
+);
 
-const { themes, literatureId, jurisdiction, mode, oupFilter } = toRefs(props);
+const mode = toRef(props, "mode");
+const oupFilter = toRef(props, "oupFilter");
 
 const { data: literatureFromIds, isLoading: loadingIds } = useLiteratures(
   computed(() =>
-    mode.value === "id" || mode.value === "both" ? literatureId.value : "",
+    mode.value === "id" || mode.value === "both" ? props.literatureId : "",
   ),
 );
 
-const literatureTitles = computed(() => {
+const literatureTitles = computed<LiteratureItem[]>(() => {
   if (!literatureFromIds.value) return [];
   return literatureFromIds.value
+    .filter((item): item is NonNullable<typeof item> => Boolean(item?.Title))
     .map((item) => ({
-      id: item?.id,
-      title: item?.Title,
-      oupChapter: item?.["OUP JD Chapter"],
-    }))
-    .filter((item) => item.title);
+      id: item.id,
+      title: item.Title!,
+      oupChapter: Boolean(item["OUP JD Chapter"]),
+    }));
 });
 
 const { data: literatureFromThemes, isLoading: loadingThemes } =
   useLiteratureByTheme(
     computed(() =>
       mode.value === "themes" || mode.value === "both"
-        ? themes.value
+        ? props.themes
         : undefined,
     ),
   );
@@ -73,14 +78,14 @@ const { data: literatureFromJurisdiction, isLoading: loadingJurisdiction } =
   useLiteratureByJurisdiction(
     computed(() =>
       mode.value === "jurisdiction" || mode.value === "both"
-        ? jurisdiction.value
+        ? props.jurisdiction
         : "",
     ),
   );
 
-const mergedLiterature = computed(() => {
-  const idSet = new Set();
-  const merged = [];
+const mergedLiterature = computed<LiteratureItem[]>(() => {
+  const idSet = new Set<string>();
+  const merged: LiteratureItem[] = [];
 
   literatureTitles.value.forEach((item) => {
     if (item.id && !idSet.has(item.id)) {
@@ -90,22 +95,22 @@ const mergedLiterature = computed(() => {
   });
 
   (literatureFromJurisdiction.value || []).forEach((item) => {
-    if (item.id && !idSet.has(item.id)) {
+    if (item?.id && !idSet.has(item.id) && item.Title) {
       merged.push({
-        id: item?.id,
-        title: item?.Title,
-        oupChapter: item?.["OUP JD Chapter"],
+        id: item.id,
+        title: item.Title,
+        oupChapter: Boolean(item["OUP JD Chapter"]),
       });
       idSet.add(item.id);
     }
   });
 
   (literatureFromThemes.value || []).forEach((item) => {
-    if (item.id && !idSet.has(item.id)) {
+    if (item?.id && !idSet.has(item.id) && item.title) {
       merged.push({
-        id: item?.id,
-        title: item?.title,
-        oupChapter: item?.["OUP JD Chapter"],
+        id: item.id,
+        title: item.title,
+        oupChapter: Boolean(item["OUP JD Chapter"]),
       });
       idSet.add(item.id);
     }
@@ -114,28 +119,30 @@ const mergedLiterature = computed(() => {
   return merged;
 });
 
-const fullLiteratureList = computed(() => {
-  let items = [];
+const fullLiteratureList = computed<RelatedItem[]>(() => {
+  let items: LiteratureItem[] = [];
 
   switch (mode.value) {
     case "id":
       items = literatureTitles.value;
       break;
     case "themes":
-      items = (literatureFromThemes.value || []).map((item) => ({
-        id: item?.id,
-        title: item?.title,
-        oupChapter: item?.["OUP JD Chapter"],
-      }));
+      items = (literatureFromThemes.value || [])
+        .filter((item) => item?.title)
+        .map((item) => ({
+          id: item.id,
+          title: item.title!,
+          oupChapter: Boolean(item["OUP JD Chapter"]),
+        }));
       break;
     case "jurisdiction":
       items = (literatureFromJurisdiction.value || [])
+        .filter((item) => item?.Title)
         .map((item) => ({
-          id: item?.id,
-          title: item?.Title,
-          oupChapter: item?.["OUP JD Chapter"],
-        }))
-        .filter((item) => item.title);
+          id: item!.id,
+          title: item!.Title!,
+          oupChapter: Boolean(item!["OUP JD Chapter"]),
+        }));
       break;
     case "both":
       items = mergedLiterature.value;
@@ -144,11 +151,13 @@ const fullLiteratureList = computed(() => {
       items = [];
   }
 
-  return items.filter((item) =>
-    oupFilter.value === "onlyOup"
-      ? item?.oupChapter === true
-      : !item?.oupChapter,
-  );
+  return items
+    .filter((item) =>
+      oupFilter.value === "onlyOup"
+        ? item.oupChapter === true
+        : !item.oupChapter,
+    )
+    .map(({ id, title }) => ({ id, title }));
 });
 
 const isLoading = computed(() => {
