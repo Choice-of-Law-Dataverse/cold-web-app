@@ -96,7 +96,7 @@ import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";
 import QuestionJurisdictions from "@/components/ui/QuestionJurisdictions.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import { useAnswer } from "@/composables/useAnswer";
+import { useAnswer } from "@/composables/useRecordDetails";
 import CountryReportBanner from "@/components/ui/CountryReportBanner.vue";
 import { questionLabels } from "@/config/labels";
 import { questionTooltips } from "@/config/tooltips";

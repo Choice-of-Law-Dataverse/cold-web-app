@@ -1,6 +1,5 @@
 import { ref, computed, watch } from "vue";
 import { useRecordDetails } from "./useRecordDetails";
-import type { TableName } from "@/types/api";
 import {
   type LegalProvision,
   type DomesticLegalProvisionResponse,
@@ -23,7 +22,6 @@ export function useLegalProvision({
   table?: LegalProvisionTable;
 }) {
   const showEnglish = ref(true);
-  const tableRef = ref<TableName>(table);
   const idRef = ref<string | number>(provisionId);
 
   const isRegional = table === "Regional Legal Provisions";
@@ -34,12 +32,12 @@ export function useLegalProvision({
     error,
   } = isRegional
     ? useRecordDetails<RegionalLegalProvisionResponse, LegalProvision>(
-        tableRef,
+        "Regional Legal Provisions",
         idRef,
         processRegionalLegalProvision,
       )
     : useRecordDetails<DomesticLegalProvisionResponse, LegalProvision>(
-        tableRef,
+        "Domestic Legal Provisions",
         idRef,
         processDomesticLegalProvision,
       );

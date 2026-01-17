@@ -24,7 +24,9 @@
                 :record-id="route.params.id as string"
                 folder-name="court-decisions"
               />
-              <SourceExternalLink :source-url="sourceUrl" />
+              <SourceExternalLink
+                :source-url="courtDecision?.['Official Source (URL)'] || ''"
+              />
             </div>
           </div>
         </DetailRow>
@@ -205,7 +207,7 @@ import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CountryReportBanner from "@/components/ui/CountryReportBanner.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import { useCourtDecision } from "@/composables/useCourtDecision";
+import { useCourtDecision } from "@/composables/useRecordDetails";
 import { courtDecisionLabels } from "@/config/labels";
 import { courtDecisionTooltips } from "@/config/tooltips";
 
@@ -226,9 +228,4 @@ const {
 
 const showEnglishQuote = ref(true);
 const showFullText = ref(false);
-
-// Source URL for court decisions
-const sourceUrl = computed(() => {
-  return courtDecision.value?.["Official Source (URL)"] || "";
-});
 </script>

@@ -45,7 +45,7 @@ const instrumentIds = computed(() => {
 });
 
 const { data: recordMap } = useRecordDetailsList<DomesticInstrumentResponse>(
-  computed(() => "Domestic Instruments"),
+  "Domestic Instruments",
   instrumentIds,
 );
 

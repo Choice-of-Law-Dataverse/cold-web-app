@@ -281,7 +281,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useQuestions } from "@/composables/useQuestions";
+import { useQuestions } from "@/composables/useFullTable";
 import {
   useAnswersByJurisdictions,
   processAnswerText,

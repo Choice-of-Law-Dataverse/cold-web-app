@@ -27,7 +27,7 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import { useArbitralAward } from "@/composables/useArbitralAward";
+import { useArbitralAward } from "@/composables/useRecordDetails";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { arbitralAwardLabels } from "@/config/labels";
 

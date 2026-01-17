@@ -10,9 +10,9 @@
 <script setup lang="ts">
 import { computed, toRef } from "vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
-import { useLiteratures } from "@/composables/useLiteratures";
+import { useLiteratures } from "@/composables/useRecordDetails";
 import { useLiteratureByTheme } from "@/composables/useLiteratureByTheme";
-import { useLiteratureByJurisdiction } from "@/composables/useLiteratureByJurisdiction";
+import { useLiteratureByJurisdiction } from "@/composables/useFullTable";
 import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
 type LiteratureMode = "themes" | "id" | "both" | "jurisdiction";

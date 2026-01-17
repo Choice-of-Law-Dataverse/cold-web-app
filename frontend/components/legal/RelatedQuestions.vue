@@ -10,7 +10,7 @@
 <script setup lang="ts">
 import { computed, toRef } from "vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
-import { useRelatedQuestions } from "@/composables/useRelatedQuestions";
+import { useRelatedQuestions } from "@/composables/useRecordDetails";
 import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
 const props = withDefaults(

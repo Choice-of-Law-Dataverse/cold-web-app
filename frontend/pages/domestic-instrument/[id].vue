@@ -139,7 +139,7 @@ import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
 import CountryReportBanner from "@/components/ui/CountryReportBanner.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import { useDomesticInstrument } from "@/composables/useDomesticInstrument";
+import { useDomesticInstrument } from "@/composables/useRecordDetails";
 import { getSortedProvisionIds } from "@/utils/provision-sorting";
 import { domesticInstrumentLabels } from "@/config/labels";
 import { domesticInstrumentTooltips } from "@/config/tooltips";

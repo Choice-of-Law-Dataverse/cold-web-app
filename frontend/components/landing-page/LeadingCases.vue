@@ -42,7 +42,7 @@
 <script setup>
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
 
-import { useLeadingCases } from "@/composables/useLeadingCases";
+import { useLeadingCases } from "@/composables/useFullTable";
 import { formatYear } from "@/utils/format";
 
 const { data: leadingCases, isLoading } = useLeadingCases();

@@ -80,7 +80,7 @@ import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
-import { useRegionalInstrument } from "@/composables/useRegionalInstrument";
+import { useRegionalInstrument } from "@/composables/useRecordDetails";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
