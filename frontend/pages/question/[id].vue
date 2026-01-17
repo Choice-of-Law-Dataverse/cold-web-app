@@ -2,7 +2,7 @@
   <div>
     <BaseDetailLayout
       :loading="isLoading"
-      :result-data="processedAnswerData || {}"
+      :result-data="answerData || {}"
       :labels="questionLabels"
       :tooltips="questionTooltips"
       :show-suggest-edit="true"
@@ -15,11 +15,7 @@
           :tooltip="questionTooltips['Domestic Legal Provisions']"
         >
           <QuestionSourceList
-            :sources="
-              [value || answerData?.['Domestic Legal Provisions']].filter(
-                Boolean,
-              )
-            "
+            :sources="[value || answerData?.['Domestic Legal Provisions']].filter(Boolean)"
             :fallback-data="answerData"
             :fetch-oup-chapter="false"
             :fetch-primary-source="true"
@@ -42,11 +38,9 @@
       <template #oup-chapter>
         <DetailRow :label="questionLabels['OUP Chapter']" variant="oup">
           <RelatedLiterature
-            :themes="processedAnswerData?.Themes"
-            :literature-id="
-              processedAnswerData?.['Jurisdictions Literature ID']
-            "
-            :jurisdiction="processedAnswerData?.Jurisdictions"
+            :themes="answerData?.Themes"
+            :literature-id="answerData?.['Jurisdictions Literature ID']"
+            :jurisdiction="answerData?.Jurisdictions"
             :mode="'both'"
             :oup-filter="'onlyOup'"
           />
@@ -60,19 +54,17 @@
           variant="literature"
         >
           <RelatedLiterature
-            :themes="processedAnswerData?.Themes"
-            :literature-id="
-              processedAnswerData?.['Jurisdictions Literature ID']
-            "
-            :jurisdiction="processedAnswerData?.Jurisdictions"
+            :themes="answerData?.Themes"
+            :literature-id="answerData?.['Jurisdictions Literature ID']"
+            :jurisdiction="answerData?.Jurisdictions"
             :mode="'both'"
             :oup-filter="'noOup'"
           />
         </DetailRow>
       </template>
 
-      <template #country-report>
-        <CountryReportLink :jurisdiction-code="jurisdictionCode as string" />
+      <template #footer>
+        <CountryReportBanner :jurisdiction-code="jurisdictionCode" />
       </template>
     </BaseDetailLayout>
     <QuestionJurisdictions
@@ -82,10 +74,7 @@
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[
-        processedAnswerData?.Jurisdictions as string,
-        processedAnswerData?.Question as string,
-      ]"
+      :title-candidates="[answerData?.Jurisdictions, answerData?.Question]"
       fallback="Question"
     />
   </div>
@@ -102,7 +91,7 @@ import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";
 import QuestionJurisdictions from "@/components/ui/QuestionJurisdictions.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useAnswer } from "@/composables/useAnswer";
-import CountryReportLink from "~/components/ui/CountryReportLink.vue";
+import CountryReportBanner from "@/components/ui/CountryReportBanner.vue";
 import { questionLabels } from "@/config/labels";
 import { questionTooltips } from "@/config/tooltips";
 
@@ -111,22 +100,6 @@ const route = useRoute();
 const { data: answerData, isLoading } = useAnswer(
   computed(() => route.params.id as string),
 );
-
-const processedAnswerData = computed(() => {
-  if (!answerData.value) return null;
-
-  const courtDecisionsId = answerData.value["Court Decisions ID"];
-
-  return {
-    ...answerData.value,
-    "Domestic Legal Provisions":
-      answerData.value["Domestic Legal Provisions"] || "",
-    "Court Decisions ID":
-      typeof courtDecisionsId === "string"
-        ? courtDecisionsId.split(",").map((caseId: string) => caseId.trim())
-        : [],
-  };
-});
 
 const questionSuffix = computed(() => {
   // Extract question suffix from the answer ID (route param)
@@ -144,8 +117,8 @@ const questionSuffix = computed(() => {
 
 const jurisdictionCode = computed(() => {
   return (
-    processedAnswerData.value?.["Jurisdictions Alpha-3 code"] ||
-    processedAnswerData.value?.["Jurisdictions Alpha-3 Code"]
+    answerData.value?.["Jurisdictions Alpha-3 code"] ||
+    answerData.value?.["Jurisdictions Alpha-3 Code"]
   );
 });
 

@@ -59,8 +59,9 @@ export function useLegalProvision({
     provisionData,
     (newData) => {
       if (newData) {
+        const data = newData as Record<string, unknown>;
         hasEnglishTranslation.value =
-          "Full Text of the Provision (English Translation)" in newData;
+          "Full Text of the Provision (English Translation)" in data;
 
         if (onHasEnglishTranslationUpdate) {
           onHasEnglishTranslationUpdate(hasEnglishTranslation.value);

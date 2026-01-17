@@ -2,7 +2,7 @@
   <div>
     <BaseDetailLayout
       :loading="loading"
-      :result-data="processedInternationalInstrument || {}"
+      :result-data="internationalInstrument || {}"
       :labels="internationalInstrumentLabels"
       :tooltips="internationalInstrumentTooltips"
       :show-suggest-edit="true"
@@ -17,12 +17,12 @@
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
-                :pdf-field="internationalInstrument?.['Attachment']"
+                :pdf-field="internationalInstrument?.Attachment"
                 :record-id="route.params.id as string"
                 folder-name="international-instruments"
               />
               <SourceExternalLink
-                :source-url="processedInternationalInstrument?.URL"
+                :source-url="internationalInstrument?.URL"
               />
             </div>
           </div>
@@ -35,7 +35,7 @@
           :tooltip="internationalInstrumentTooltips['Literature']"
         >
           <RelatedLiterature
-            :literature-id="processedInternationalInstrument?.Literature || ''"
+            :literature-id="internationalInstrument?.Literature || ''"
             mode="id"
             :oup-filter="'noOup'"
           />
@@ -58,10 +58,10 @@
                 :key="index"
                 :title="
                   provision['Title of the Provision'] +
-                  (processedInternationalInstrument
+                  (internationalInstrument
                     ? ', ' +
-                      (processedInternationalInstrument['Abbreviation'] ||
-                        processedInternationalInstrument['Title (in English)'])
+                      (internationalInstrument.Abbreviation ||
+                        internationalInstrument['Title (in English)'])
                     : '')
                 "
                 :anchor-id="
@@ -83,7 +83,7 @@
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[internationalInstrument?.['Name']]"
+      :title-candidates="[internationalInstrument?.Name]"
       fallback="International Instrument"
     />
   </div>
@@ -109,22 +109,6 @@ const route = useRoute();
 
 const { data: internationalInstrument, isLoading: loading } =
   useInternationalInstrument(computed(() => route.params.id as string));
-
-const processedInternationalInstrument = computed(() => {
-  if (!internationalInstrument.value) return null;
-  return {
-    ...internationalInstrument.value,
-    "Title (in English)":
-      internationalInstrument.value["Title (in English)"] ||
-      internationalInstrument.value["Name"],
-    Date: internationalInstrument.value["Date"],
-    URL:
-      internationalInstrument.value["URL"] ||
-      internationalInstrument.value["Link"],
-    Literature: internationalInstrument.value["Literature"],
-    Abbreviation: internationalInstrument.value["Abbreviation"],
-  };
-});
 
 const {
   data: provisions,

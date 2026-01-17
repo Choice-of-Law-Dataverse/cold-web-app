@@ -137,6 +137,8 @@
           <slot name="search-links" />
         </div>
       </div>
+      <!-- Footer slot for full-width content like country report banner -->
+      <slot name="footer" />
     </UCard>
   </template>
 </template>

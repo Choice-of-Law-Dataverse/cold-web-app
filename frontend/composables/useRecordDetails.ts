@@ -8,29 +8,44 @@ async function fetchRecordDetails<T>(table: TableName, id: string | number) {
   return await apiClient<T>("/search/details", { body: { table, id } });
 }
 
-type Options<T> =
-  | Partial<{
-      select: (data: T) => T;
-    }>
-  | undefined;
+async function fetchAndProcess<TRaw, TProcessed>(
+  table: TableName,
+  id: string | number,
+  process: (raw: TRaw) => TProcessed,
+) {
+  const { apiClient } = useApiClient();
+  const raw = await apiClient<TRaw>("/search/details", { body: { table, id } });
+  return process(raw);
+}
 
-export function useRecordDetails<T = Record<string, unknown>>(
+/** Simple fetch without transformation */
+export function useRecordDetails<T>(
   table: Ref<TableName>,
   id: Ref<string | number>,
-  { select }: Options<T> = {},
 ) {
   return useQuery({
     queryKey: computed(() => [table.value, id.value]),
     queryFn: () => fetchRecordDetails<T>(table.value, id.value),
     enabled: computed(() => Boolean(table.value && id.value)),
-    select,
   });
 }
 
-export function useRecordDetailsList<T = Record<string, unknown>>(
+/** Fetch with transformation applied before caching */
+export function useRecordDetailsProcessed<TRaw, TProcessed>(
+  table: Ref<TableName>,
+  id: Ref<string | number>,
+  process: (raw: TRaw) => TProcessed,
+) {
+  return useQuery({
+    queryKey: computed(() => [table.value, id.value, "processed"]),
+    queryFn: () => fetchAndProcess<TRaw, TProcessed>(table.value, id.value, process),
+    enabled: computed(() => Boolean(table.value && id.value)),
+  });
+}
+
+export function useRecordDetailsList<T>(
   table: Ref<TableName>,
   ids: Ref<Array<string | number>>,
-  { select }: Options<T> = {},
 ) {
   const queries = computed(() => {
     const list = ids.value || [];
@@ -38,7 +53,6 @@ export function useRecordDetailsList<T = Record<string, unknown>>(
       queryKey: [table.value, id],
       queryFn: () => fetchRecordDetails<T>(table.value, id),
       enabled: Boolean(table.value && id),
-      ...(select && { select }),
     }));
   });
 

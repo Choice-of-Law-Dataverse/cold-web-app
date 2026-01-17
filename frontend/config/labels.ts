@@ -23,7 +23,6 @@ export const questionLabels = {
   "OUP Book Quote": "OUP Book Quote",
   "Court Decisions ID": "Related Court Decisions",
   "Related Literature": "Related Literature",
-  "Country Report": "Country Report",
   "Last Modified": "Last Updated",
   Created: "Last Updated",
 } as const;
@@ -47,7 +46,6 @@ export const courtDecisionLabels = {
   "Related Questions": "Related Questions",
   "Related Literature": "Related Literature",
   "OUP Chapter": "OUP Chapter",
-  "Country Report": "Country Report",
 } as const;
 
 export const literatureLabels = {
@@ -74,7 +72,6 @@ export const domesticInstrumentLabels = {
   "Publication Date": "Publication Date",
   "Domestic Legal Provisions": "Selected Provisions",
   "OUP Chapter": "OUP Chapter",
-  "Country Report": "Country Report",
 } as const;
 
 export const regionalInstrumentLabels = {

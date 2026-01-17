@@ -2,7 +2,7 @@
   <div>
     <BaseDetailLayout
       :loading="loading"
-      :result-data="processedRegionalInstrument || {}"
+      :result-data="regionalInstrument || {}"
       :labels="regionalInstrumentLabels"
       :tooltips="regionalInstrumentTooltips"
       :show-suggest-edit="true"
@@ -17,13 +17,11 @@
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
-                :pdf-field="regionalInstrument?.['Attachment']"
+                :pdf-field="regionalInstrument?.Attachment"
                 :record-id="route.params.id as string"
                 folder-name="regional-instruments"
               />
-              <SourceExternalLink
-                :source-url="processedRegionalInstrument?.URL"
-              />
+              <SourceExternalLink :source-url="regionalInstrument?.URL" />
             </div>
           </div>
         </DetailRow>
@@ -35,7 +33,7 @@
           :tooltip="regionalInstrumentTooltips['Literature']"
         >
           <RelatedLiterature
-            :literature-id="processedRegionalInstrument?.Literature || ''"
+            :literature-id="regionalInstrument?.Literature || ''"
             mode="id"
             :oup-filter="'noOup'"
           />
@@ -57,11 +55,9 @@
               :provision-id="provisionId"
               :text-type="textType"
               :instrument-title="
-                processedRegionalInstrument
-                  ? processedRegionalInstrument['Abbreviation'] ||
-                    processedRegionalInstrument['Title'] ||
-                    ''
-                  : ''
+                regionalInstrument?.Abbreviation ||
+                regionalInstrument?.Title ||
+                ''
               "
               table="Regional Legal Provisions"
               @update:has-english-translation="hasEnglishTranslation = $event"
@@ -73,7 +69,7 @@
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[processedRegionalInstrument?.['Abbreviation']]"
+      :title-candidates="[regionalInstrument?.Abbreviation]"
       fallback="Regional Instrument"
     />
   </div>
@@ -100,18 +96,4 @@ const hasEnglishTranslation = ref(false);
 const { data: regionalInstrument, isLoading: loading } = useRegionalInstrument(
   computed(() => route.params.id as string),
 );
-
-const processedRegionalInstrument = computed(() => {
-  if (!regionalInstrument.value) return null;
-  return {
-    ...regionalInstrument.value,
-    "Title (in English)":
-      regionalInstrument.value["Title (in English)"] ||
-      regionalInstrument.value["Name"],
-    Date: regionalInstrument.value["Date"],
-    URL: regionalInstrument.value["URL"] || regionalInstrument.value["Link"],
-    Title: regionalInstrument.value["Title"],
-    Literature: regionalInstrument.value["Literature"],
-  };
-});
 </script>
