@@ -5,7 +5,7 @@
     :ui="{
       container: 'w-screen max-w-none',
       width: 'w-screen max-w-none',
-      rounded: 'rounded-none',
+      rounded: 'rounded-lg',
     }"
   >
     <div class="p-6">

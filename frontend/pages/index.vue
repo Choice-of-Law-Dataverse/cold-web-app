@@ -1,42 +1,78 @@
 <template>
   <!-- Header Section -->
-  <div class="grid grid-cols-1 gap-6 md:grid-cols-12">
+  <div class="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
     <div class="col-span-12">
       <div
-        class="text-pretty text-[60px] font-bold leading-[68px] md:text-left"
+        class="hero-gradient flex flex-col items-center justify-between gap-4 rounded-2xl px-3 py-6 md:flex-row md:px-6 md:py-12"
       >
-        Choice of Law Dataverse
-      </div>
-    </div>
-
-    <div class="col-span-12">
-      <div
-        class="mb-6 flex w-full flex-col justify-between gap-2 sm:flex-row sm:items-center"
-      >
-        <h2 class="text-pretty text-xl font-medium md:text-left">
-          <span>
-            Navigate private international law issues with precision.
-
-            <NuxtLink class="suggestion-button" to="/about" variant="link">
-              <span>Read&nbsp;more</span>
-            </NuxtLink>
-          </span>
-        </h2>
-        <div class="flex items-center gap-2 sm:flex-col lg:flex-row">
-          <HCCHApproved />
-          <OpenScienceBadge />
-
-          <a
-            href="https://ord.swiss-academies.ch/news/swiss-national-ord-prize-2025-for-legal-and-environmental-sciences"
-            target="_blank"
-            rel="noopener noreferrer"
+        <div class="flex flex-col gap-4">
+          <h1
+            class="hero-title mb-4 text-pretty text-[56px] font-bold leading-[1.1] sm:text-[64px] md:text-[81px]"
           >
-            <img
-              src="https://choiceoflaw.blob.core.windows.net/assets/Prix-ORD-DEF_2025.png"
-              alt="Swiss National ORD Prize 2025"
-              style="width: 95px; height: 100px"
-            />
-          </a>
+            Choice of Law Dataverse
+          </h1>
+
+          <div
+            class="flex w-full flex-col justify-between gap-4 sm:flex-row sm:items-start"
+          >
+            <div class="flex flex-col gap-4">
+              <h2
+                class="hero-subtitle text-pretty text-xl font-medium md:text-left"
+              >
+                <span>
+                  Navigate private international law issues with precision.
+
+                  <NuxtLink class="hero-link" to="/about" variant="link">
+                    <span>Read&nbsp;more</span>
+                  </NuxtLink>
+                </span>
+              </h2>
+              <div class="flex flex-wrap gap-3">
+                <NuxtLink to="/search">
+                  <UButton
+                    size="lg"
+                    class="hero-cta"
+                    icon="i-material-symbols:search"
+                  >
+                    Start Exploring
+                  </UButton>
+                </NuxtLink>
+                <NuxtLink to="/court-decision/new">
+                  <UButton
+                    size="lg"
+                    variant="outline"
+                    class="hero-cta-secondary"
+                    icon="i-material-symbols:category-search-outline"
+                  >
+                    Analyze Case
+                  </UButton>
+                </NuxtLink>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="hidden min-w-[100px] items-center justify-center gap-3 sm:flex-col md:flex lg:flex-row"
+        >
+          <!-- <HCCHApproved />
+              <OpenScienceBadge /> -->
+
+          <UTooltip
+            text="Winner of Swiss National ORD Prize 2025 for Legal Sciences"
+          >
+            <a
+              href="https://ord.swiss-academies.ch/news/swiss-national-ord-prize-2025-for-legal-and-environmental-sciences"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="transition-transform hover:scale-105"
+            >
+              <img
+                src="https://choiceoflaw.blob.core.windows.net/assets/Prix-ORD-DEF_2025.png"
+                alt="Swiss National ORD Prize 2025"
+                style="width: 95px; height: 100px"
+              />
+            </a>
+          </UTooltip>
         </div>
       </div>
     </div>
@@ -49,9 +85,18 @@
       <JurisdictionMap />
     </div>
 
+    <!-- Explore Data Section -->
+    <div class="col-span-12">
+      <SectionHeader
+        title="Explore Our Data"
+        subtitle="Browse thousands of court decisions, instruments, and legal resources"
+        icon="i-material-symbols:database-outline"
+      />
+    </div>
+
     <!-- Number Cards Grid -->
     <div class="col-span-12">
-      <div class="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-6">
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
         <NumberCard
           title="Available Court Decisions"
           button-text="See all"
@@ -69,7 +114,7 @@
         <NumberCard
           title="Available Arbitral Awards"
           button-text="See all"
-          button-link="/arbitral-awards"
+          button-link="/arbitral-award"
           table-name="Questions"
           :override-number="74"
         />
@@ -77,11 +122,20 @@
         <NumberCard
           title="Available Arbitral Rules"
           button-text="See all"
-          button-link="/arbitral-rules"
+          button-link="/arbitral-rule"
           table-name="Questions"
           :override-number="37"
         />
       </div>
+    </div>
+
+    <!-- Contribute & Analyze Section -->
+    <div class="col-span-12">
+      <SectionHeader
+        title="Contribute & Analyze"
+        subtitle="Help grow the dataverse or use AI to analyze court cases"
+        icon="i-material-symbols:edit-document-outline"
+      />
     </div>
 
     <div class="col-span-12 md:col-span-6">
@@ -100,6 +154,15 @@
         button-text="Analyze Court Cases with AI"
         button-link="/court-decision/new"
         icon-name="i-material-symbols:category-search-outline"
+      />
+    </div>
+
+    <!-- Featured Content Section -->
+    <div class="col-span-12">
+      <SectionHeader
+        title="Featured Content"
+        subtitle="Recent additions and popular searches in private international law"
+        icon="i-material-symbols:star-outline"
       />
     </div>
 
@@ -124,6 +187,7 @@
         image-src="https://choiceoflaw.blob.core.windows.net/assets/hcch-logo-circle.svg"
         :new-tab="false"
         :center-title="false"
+        :show-top-border="true"
       />
     </div>
 
@@ -147,6 +211,15 @@
 
     <div class="col-span-12 flex md:col-span-5">
       <TopLiteratureThemes />
+    </div>
+
+    <!-- Stay Connected Section -->
+    <div class="col-span-12">
+      <SectionHeader
+        title="Stay Connected"
+        subtitle="Get in touch and stay updated with the latest from CoLD"
+        icon="i-material-symbols:connect-without-contact"
+      />
     </div>
 
     <div class="col-span-12 md:col-span-4">
@@ -189,8 +262,9 @@ import CountrySelectMenu from "@/components/landing-page/TempJurisdictionPicker.
 import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
-import OpenScienceBadge from "@/components/ui/OpenScienceBadge.vue";
-import HCCHApproved from "@/components/ui/HCCHApproved.vue";
+// import OpenScienceBadge from "@/components/ui/OpenScienceBadge.vue";
+// import HCCHApproved from "@/components/ui/HCCHApproved.vue";
+import SectionHeader from "@/components/ui/SectionHeader.vue";
 import { externalLinks } from "@/utils/externalLinks";
 import RecentDomesticInstruments from "@/components/landing-page/RecentDomesticInstruments.vue";
 import SuccessfulLegalTransplantations from "@/components/landing-page/SuccessfulLegalTransplantations.vue";
@@ -221,5 +295,75 @@ useHead({
 <style scoped>
 h2 {
   font-weight: 500 !important;
+}
+
+.hero-gradient {
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
+}
+
+.hero-title {
+  background: linear-gradient(
+    135deg,
+    var(--color-cold-night),
+    var(--color-cold-purple),
+    var(--color-cold-green)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.hero-subtitle {
+  color: color-mix(in srgb, var(--color-cold-night) 85%, transparent);
+}
+
+.hero-link {
+  color: var(--color-cold-purple) !important;
+  font-weight: 600 !important;
+  transition: color 0.2s ease;
+  text-decoration: none !important;
+}
+
+.hero-link:hover {
+  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
+  text-decoration: underline !important;
+}
+
+.hero-cta {
+  background: linear-gradient(
+    135deg,
+    var(--color-cold-purple),
+    var(--color-cold-teal)
+  ) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border: none !important;
+  transition: all 0.2s ease !important;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+}
+
+.hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+}
+
+.hero-cta-secondary {
+  border-color: var(--color-cold-purple) !important;
+  color: var(--color-cold-purple) !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.hero-cta-secondary:hover {
+  background: color-mix(
+    in srgb,
+    var(--color-cold-purple) 8%,
+    transparent
+  ) !important;
+  transform: translateY(-2px);
 }
 </style>

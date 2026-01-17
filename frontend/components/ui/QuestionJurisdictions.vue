@@ -2,7 +2,9 @@
   <UCard class="cold-ucard">
     <div class="flex flex-col gap-4">
       <div class="flex justify-between">
-        <h3 class="comparison-title mb-4">Comparison</h3>
+        <h3 class="comparison-title mb-4 text-xl font-semibold md:text-2xl">
+          Comparison
+        </h3>
         <span class="mb-4 flex flex-wrap gap-2">
           <NuxtLink to="/learn/methodology" type="button" class="action-button">
             <UIcon
@@ -39,32 +41,34 @@
       <div v-if="isLoading" class="copy mt-4">Loading jurisdictions...</div>
       <div v-else-if="error" class="copy mt-4">Error loading jurisdictions</div>
       <div v-else class="flex flex-col gap-4">
-        <DetailRow v-for="answer in answers" :key="answer" :label="answer">
-          <div
-            v-if="getCountriesForAnswer(answer).length"
-            class="flex flex-wrap items-center gap-2"
-          >
+        <DetailRow
+          v-for="answer in answersWithJurisdictions"
+          :key="answer"
+          :label="answer"
+        >
+          <div class="flex flex-wrap items-center gap-4">
             <NuxtLink
               v-for="country in getCountriesForAnswer(answer)"
               :key="country.code"
-              class="label-jurisdiction inline-flex items-center whitespace-nowrap text-cold-night hover:text-cold-purple"
+              class="label-jurisdiction"
               :to="`/question/${country.code}${questionSuffix}`"
             >
-              <img
-                :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
-                class="mb-0.5 mr-1.5 h-3"
-                style="filter: saturate(0.7)"
-                :alt="country.code + ' flag'"
-                @error="
-                  (e) => {
-                    e.target.style.display = 'none';
-                  }
-                "
-              />
-              {{ country.name }}
+              <div class="flag-wrapper">
+                <img
+                  :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
+                  class="item-flag"
+                  :alt="country.code + ' flag'"
+                  @error="
+                    (e) => {
+                      e.target.style.display = 'none';
+                    }
+                  "
+                />
+              </div>
+
+              {{ country.code }}
             </NuxtLink>
           </div>
-          <div v-else class="copy">No jurisdictions</div>
         </DetailRow>
       </div>
     </div>
@@ -131,6 +135,12 @@ const answers = computed(() => {
   return sortedAnswers;
 });
 
+const answersWithJurisdictions = computed(() => {
+  return answers.value.filter(
+    (answer) => getCountriesForAnswer(answer).length > 0,
+  );
+});
+
 function selectRegion(region) {
   selectedRegion.value = region;
 }
@@ -159,14 +169,4 @@ function getCountriesForAnswer(answer) {
 }
 </script>
 
-<style scoped>
-.region-badge {
-  @apply flex items-center gap-1 rounded-full bg-cold-teal/10 px-3 py-1.5 text-xs text-cold-teal transition-colors hover:bg-cold-teal/20;
-  font-weight: 400;
-}
-
-.region-badge-active {
-  @apply bg-cold-teal/20 text-cold-teal;
-  font-weight: 500;
-}
-</style>
+<style lang="sass" scoped></style>

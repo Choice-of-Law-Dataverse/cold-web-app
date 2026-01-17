@@ -1,9 +1,9 @@
 <template>
-  <UCard class="cold-ucard h-full w-full">
+  <UCard class="cold-ucard gradient-top-border h-full w-full">
     <div class="flex flex-col gap-4">
       <div>
-        <h2 class="popular-title">{{ title }}</h2>
-        <p class="result-value-small">
+        <h2 class="card-title">{{ title }}</h2>
+        <p class="card-subtitle">
           Compare legal frameworks across jurisdictions
         </p>
       </div>
@@ -14,57 +14,63 @@
           class="no-underline"
         >
           <div
-            class="flex items-start justify-between rounded-lg p-1 transition-colors duration-200 hover:bg-gray-50"
+            class="comparison-row hover-row flex items-start justify-between p-2"
           >
-            <div class="flex min-w-[100px] flex-col items-center gap-2">
-              <div class="flex h-12 w-full items-center justify-center">
+            <div
+              class="comparison-side flex min-w-[100px] flex-col items-center gap-2"
+            >
+              <div
+                class="flag-container flex h-12 w-full items-center justify-center"
+              >
                 <img
                   v-if="!flagErrors[`${index}-left`]"
                   :src="getFlagUrl(comparison.left)"
                   :alt="`${comparison.left} flag`"
-                  class="block h-12 w-auto max-w-full border border-[var(--color-cold-gray)]"
+                  class="comparison-flag block h-12 w-auto max-w-full"
                   @error="flagErrors[`${index}-left`] = true"
                 />
                 <div
                   v-else
-                  class="inline-flex h-9 items-center justify-center border border-[var(--color-cold-gray)] bg-gray-100 px-3 font-semibold"
+                  class="flag-fallback inline-flex h-9 items-center justify-center border border-gray-300 bg-gray-100 px-3 font-semibold"
                 >
                   {{ comparison.left }}
                 </div>
               </div>
               <div
-                class="text-center text-sm font-semibold tracking-wider text-[var(--color-cold-night)]"
+                class="jurisdiction-name text-center text-sm font-semibold tracking-wider text-[var(--color-cold-night)]"
               >
                 {{ comparison.left }}
               </div>
             </div>
 
             <div
-              class="mt-3 self-center px-2 text-sm font-semibold uppercase text-[var(--color-cold-gray)]"
+              class="comparison-vs mt-3 self-center px-2 text-sm font-semibold uppercase text-gray-400"
             >
               vs
             </div>
 
             <div
-              class="flex min-w-[100px] flex-col items-center gap-2 md:min-w-[120px]"
+              class="comparison-side flex min-w-[100px] flex-col items-center gap-2 md:min-w-[120px]"
             >
-              <div class="flex h-12 w-full items-center justify-center">
+              <div
+                class="flag-container flex h-12 w-full items-center justify-center"
+              >
                 <img
                   v-if="!flagErrors[`${index}-right`]"
                   :src="getFlagUrl(comparison.right)"
                   :alt="`${comparison.right} flag`"
-                  class="block h-12 w-auto max-w-full border border-[var(--color-cold-gray)]"
+                  class="comparison-flag block h-12 w-auto max-w-full"
                   @error="flagErrors[`${index}-right`] = true"
                 />
                 <div
                   v-else
-                  class="inline-flex h-9 items-center justify-center border border-[var(--color-cold-gray)] bg-gray-100 px-3 font-semibold"
+                  class="flag-fallback inline-flex h-9 items-center justify-center border border-gray-300 bg-gray-100 px-3 font-semibold"
                 >
                   {{ comparison.right }}
                 </div>
               </div>
               <div
-                class="text-center text-sm font-semibold tracking-wider text-[var(--color-cold-night)]"
+                class="jurisdiction-name text-center text-sm font-semibold tracking-wider text-[var(--color-cold-night)]"
               >
                 {{ comparison.right }}
               </div>
@@ -94,3 +100,34 @@ const getFlagUrl = (iso3) => {
   return `https://choiceoflaw.blob.core.windows.net/assets/flags/${iso3.toLowerCase()}.svg`;
 };
 </script>
+
+<style scoped>
+.comparison-row {
+  @apply p-2 shadow-sm;
+}
+
+.comparison-flag {
+  @apply rounded border border-gray-200;
+}
+
+.comparison-vs {
+  @apply relative text-gray-400 transition-colors duration-200;
+}
+
+.comparison-row:hover .comparison-vs {
+  color: var(--color-cold-green);
+}
+
+.jurisdiction-name {
+  @apply text-center text-sm font-semibold uppercase tracking-wider transition-colors duration-200;
+  color: var(--color-cold-night);
+}
+
+.comparison-row:hover .jurisdiction-name {
+  color: var(--color-cold-purple);
+}
+
+.flag-fallback {
+  @apply inline-flex h-9 items-center justify-center border border-gray-300 bg-gray-100 px-3 font-semibold;
+}
+</style>

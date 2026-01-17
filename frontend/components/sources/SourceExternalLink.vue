@@ -5,18 +5,18 @@
       :href="sourceUrl as string"
       target="_blank"
       rel="noopener noreferrer"
-      class="label inline-flex items-center gap-1 text-cold-teal"
+      class="action-link-external"
       @click.stop
     >
       <template v-if="openAccess">
         <img
-          class="w-3"
+          class="h-4 w-4"
           src="https://choiceoflaw.blob.core.windows.net/assets/Open_Access_logo_PLoS_transparent.svg"
           alt="Open Access Logo"
         />
       </template>
       <template v-else>
-        <UIcon name="i-material-symbols:open-in-new" class="h-4 w-4" />
+        <UIcon name="i-material-symbols:open-in-new" />
       </template>
       <span>{{ label }}</span>
     </a>

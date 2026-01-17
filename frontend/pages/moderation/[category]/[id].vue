@@ -78,12 +78,12 @@
             :label="formatFieldName(key)"
           >
             <template v-if="isLongText(value)">
-              <p class="prose mt-0 whitespace-pre-wrap">
+              <p class="result-value-small whitespace-pre-wrap">
                 {{ formatValue(value) }}
               </p>
             </template>
             <template v-else>
-              <p class="prose mt-0">{{ formatValue(value) }}</p>
+              <p class="result-value-small">{{ formatValue(value) }}</p>
             </template>
           </DetailRow>
         </div>

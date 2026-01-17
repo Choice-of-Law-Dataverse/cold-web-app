@@ -1,17 +1,25 @@
 <template>
-  <UCard id="questions-and-answers" class="cold-ucard overflow-visible">
-    <div class="overflow-hidden">
+  <UCard
+    id="questions-and-answers"
+    class="cold-ucard overflow-visible"
+    :ui="{
+      body: {
+        padding: 'p-0 sm:p-0',
+      },
+    }"
+  >
+    <div class="overflow-hidden px-4 py-5 sm:px-6">
       <div class="flex justify-between">
         <h3 class="comparison-title mb-4">Questionnaire</h3>
         <span class="mb-4 flex flex-wrap gap-2">
-          <NuxtLink to="/learn/methodology" type="button" class="action-button">
+          <NuxtLink to="/learn/methodology" class="answer-button gap-2">
             <UIcon
               :name="'i-material-symbols:school-outline'"
               class="inline-block text-[1.2em]"
             />
             Methodology
           </NuxtLink>
-          <NuxtLink to="/learn/glossary" type="button" class="action-button">
+          <NuxtLink to="/learn/glossary" class="answer-button gap-2">
             <UIcon
               :name="'i-material-symbols:dictionary-outline'"
               class="inline-block text-[1.2em]"
@@ -58,30 +66,30 @@
         <LoadingBar />
       </div>
 
-      <div v-else-if="isSingleJurisdiction" class="divide-y divide-cold-gray">
+      <div v-else-if="isSingleJurisdiction" class="divide-y divide-gray-100">
         <div
           v-for="row in rows"
           :id="`question-${row.id}`"
           :key="row.id"
-          class="flex flex-col gap-2 py-3 md:flex-row md:items-center md:gap-4"
+          class="question-row hover-row--emphasis flex flex-col gap-2 px-2 py-4 md:flex-row md:items-center md:gap-4"
           :style="{ paddingLeft: `${row.level * 2}em` }"
         >
           <div
             class="whitespace-pre-line text-sm md:w-[60%]"
-            :class="{ 'font-bold': isBoldQuestion(row.id) }"
+            :class="{ 'font-semibold': isBoldQuestion(row.id) }"
           >
             {{ row.question }}
           </div>
 
-          <div class="md:w-[40%] md:text-right">
+          <div class="flex justify-end md:w-[40%] md:text-right">
             <NuxtLink
               v-if="row.answer"
               :to="row.answerLink"
-              class="font-semibold text-cold-purple hover:underline"
+              class="answer-button"
             >
-              {{ row.answer }}
+              {{ shouldShowDash(row.answer) ? "—" : row.answer }}
             </NuxtLink>
-            <span v-else>{{ row.answer }}</span>
+            <span v-else class="text-gray-400">—</span>
           </div>
         </div>
       </div>
@@ -119,9 +127,9 @@
         </div>
 
         <div class="hidden md:block">
-          <div class="divide-y divide-cold-gray">
+          <div class="divide-y divide-gray-100">
             <div
-              class="flex gap-4 border-b-2 border-cold-gray py-3 font-semibold"
+              class="comparison-header sticky top-0 z-10 flex gap-4 border-b-2 border-gray-200 bg-white py-4 font-semibold"
             >
               <div class="w-[40%]">Question</div>
               <div
@@ -129,48 +137,42 @@
                 :key="jurisdiction.alpha3Code || jurisdiction.Name"
                 class="min-w-0 flex-1 text-center"
               >
-                <UBadge
-                  color="gray"
-                  variant="soft"
-                  class="text-md inline-flex max-w-full"
-                  :class="index > 0 ? 'cursor-pointer hover:bg-gray-200' : ''"
+                <button
+                  type="button"
+                  class="jurisdiction-action-button"
+                  :class="{ removable: index > 0 }"
                   :title="jurisdiction.Name"
+                  :disabled="index === 0"
                   @click="
                     index > 0
                       ? removeJurisdiction(jurisdiction.alpha3Code)
                       : null
                   "
                 >
-                  <div
-                    class="inline-flex min-w-0 max-w-full items-center gap-1.5"
-                  >
-                    <img
-                      v-if="jurisdiction.avatar"
-                      :src="jurisdiction.avatar"
-                      :alt="`${jurisdiction.Name} flag`"
-                      class="h-3.5 w-5 flex-shrink-0 rounded-sm object-cover"
-                    />
-                    <span class="min-w-0 truncate">{{
-                      jurisdiction.Name
-                    }}</span>
-                    <UIcon
-                      v-if="index > 0"
-                      name="i-heroicons-x-mark-20-solid"
-                      class="h-4 w-4 flex-shrink-0"
-                    />
-                  </div>
-                </UBadge>
+                  <img
+                    v-if="jurisdiction.avatar"
+                    :src="jurisdiction.avatar"
+                    :alt="`${jurisdiction.Name} flag`"
+                    class="h-3.5 w-5 flex-shrink-0 rounded-sm object-cover"
+                  />
+                  <span class="min-w-0 truncate">{{ jurisdiction.Name }}</span>
+                  <UIcon
+                    v-if="index > 0"
+                    name="i-heroicons-x-mark-20-solid"
+                    class="h-4 w-4 flex-shrink-0"
+                  />
+                </button>
               </div>
             </div>
             <div
               v-for="row in rows"
               :id="`question-${row.id}`"
               :key="row.id"
-              class="flex gap-4 py-3"
+              class="comparison-row hover-row--emphasis flex gap-4 py-4"
             >
               <div
                 class="w-[40%] whitespace-pre-line text-sm"
-                :class="{ 'font-bold': isBoldQuestion(row.id) }"
+                :class="{ 'font-semibold': isBoldQuestion(row.id) }"
                 :style="{ paddingLeft: `${row.level * 2}em` }"
               >
                 {{ row.question }}
@@ -196,27 +198,31 @@
                     row.answers?.[jurisdiction.alpha3Code]
                   "
                   :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
-                  class="font-semibold text-cold-purple hover:underline"
+                  class="answer-button"
                 >
-                  {{ row.answers[jurisdiction.alpha3Code] }}
+                  {{
+                    shouldShowDash(row.answers[jurisdiction.alpha3Code])
+                      ? "—"
+                      : row.answers[jurisdiction.alpha3Code]
+                  }}
                 </NuxtLink>
-                <span v-else>-</span>
+                <span v-else class="text-gray-400">—</span>
               </div>
             </div>
           </div>
         </div>
 
-        <div class="block divide-y divide-cold-gray md:hidden">
+        <div class="block divide-y divide-gray-100 md:hidden">
           <div
             v-for="row in rows"
             :id="`question-${row.id}`"
             :key="row.id"
-            class="py-3"
+            class="question-row px-2 py-4"
             :style="{ paddingLeft: `${row.level * 2}em` }"
           >
             <div
               class="mb-3 whitespace-pre-line text-sm"
-              :class="{ 'font-bold': isBoldQuestion(row.id) }"
+              :class="{ 'font-semibold': isBoldQuestion(row.id) }"
             >
               {{ row.question }}
             </div>
@@ -248,7 +254,7 @@
                     row.answers?.[jurisdiction.alpha3Code]
                   "
                   :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
-                  class="flex items-center gap-2 font-semibold text-cold-purple hover:underline"
+                  class="answer-button gap-2"
                 >
                   <img
                     v-if="jurisdiction.avatar"
@@ -256,9 +262,13 @@
                     :alt="`${jurisdiction.Name} flag`"
                     class="h-2 w-3 object-cover"
                   />
-                  {{ row.answers[jurisdiction.alpha3Code] }}
+                  {{
+                    shouldShowDash(row.answers[jurisdiction.alpha3Code])
+                      ? "—"
+                      : row.answers[jurisdiction.alpha3Code]
+                  }}
                 </NuxtLink>
-                <span v-else>-</span>
+                <span v-else class="text-gray-400">—</span>
               </div>
             </div>
           </div>
@@ -385,6 +395,16 @@ const isBoldQuestion = (questionId: string) => {
   return BOLD_QUESTIONS.has(questionId);
 };
 
+// Answers to display as a dash
+const DASH_ANSWERS = new Set([
+  "Not applicable",
+  "Jurisdiction does not cover this question",
+]);
+
+const shouldShowDash = (answer: string | undefined) => {
+  return !answer || DASH_ANSWERS.has(answer);
+};
+
 const jurisdictionCodes = computed(() =>
   jurisdictions.value
     .map((j) => j.alpha3Code)
@@ -474,3 +494,50 @@ const rows = computed(() => {
   });
 });
 </script>
+
+<style scoped>
+.question-row,
+.comparison-row {
+  margin: 0 -1rem;
+  padding-left: 1rem !important;
+  padding-right: 1rem !important;
+}
+
+.comparison-header {
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  border-bottom: 2px solid
+    color-mix(in srgb, var(--color-cold-purple) 10%, transparent) !important;
+}
+
+.jurisdiction-action-button {
+  @apply inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all;
+  color: var(--color-cold-night);
+  background: white;
+  border: 1.5px solid
+    color-mix(in srgb, var(--color-cold-night) 25%, transparent);
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &.removable {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-cold-night);
+      color: white;
+      border-color: var(--color-cold-night);
+    }
+  }
+}
+
+.answer-button {
+  @apply inline-flex items-center rounded-lg px-4 py-2 font-medium shadow-sm transition-all duration-150;
+  background: var(--gradient-subtle);
+
+  &:hover {
+    @apply shadow;
+    background: var(--gradient-subtle-emphasis);
+  }
+}
+</style>

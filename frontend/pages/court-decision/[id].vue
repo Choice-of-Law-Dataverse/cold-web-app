@@ -89,7 +89,7 @@
               </span>
             </div>
             <div>
-              <p class="prose mt-0 whitespace-pre-line">
+              <p class="result-value-small whitespace-pre-line">
                 {{
                   showEnglishQuote &&
                   (courtDecision as any).hasEnglishQuoteTranslation &&
@@ -110,6 +110,7 @@
           v-if="value"
           label="Related Questions"
           :tooltip="keyLabelLookup.get('Related Questions')?.tooltip"
+          variant="question"
         >
           <RelatedQuestions
             :jurisdiction-code="
@@ -125,6 +126,7 @@
         <DetailRow
           label="Related Literature"
           :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
+          variant="literature"
         >
           <RelatedLiterature
             :themes="
@@ -148,7 +150,7 @@
         >
           <div :class="valueClassMap['Original Text']">
             <div v-if="!showFullText && value.length > 400">
-              <p class="prose mt-0">
+              <p class="result-value-small">
                 {{ value.slice(0, 400)
                 }}<span v-if="value.length > 400">…</span>
               </p>
@@ -161,7 +163,7 @@
               </button>
             </div>
             <div v-else>
-              <p class="prose mt-0">
+              <p class="result-value-small">
                 {{ value }}
               </p>
               <button

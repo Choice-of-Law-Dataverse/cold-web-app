@@ -37,6 +37,7 @@
 
     <!-- Results Count and Sort -->
     <div
+      v-if="props.hasQuery || hasActiveFilters"
       class="result-value-small results-margin-fix flex w-full items-center gap-2 whitespace-nowrap"
     >
       <template v-if="!loading">
@@ -93,7 +94,12 @@
       <LoadingCard v-for="n in 6" :key="`loading-${n}`" />
     </div>
 
-    <!-- No Results State -->
+    <!-- Empty State (no query) -->
+    <EmptySearchState
+      v-else-if="!loading && !allResults.length && !props.hasQuery"
+    />
+
+    <!-- No Results State (has query but no results) -->
     <NoSearchResults v-else-if="!loading && !allResults.length" />
 
     <!-- Results Grid -->
@@ -165,6 +171,7 @@ import CourtDecisionCard from "@/components/search-results/CourtDecisionCard.vue
 import AnswerCard from "@/components/search-results/AnswerCard.vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import NoSearchResults from "@/components/search-results/NoSearchResults.vue";
+import EmptySearchState from "@/components/search-results/EmptySearchState.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 
 import { useJurisdictions } from "@/composables/useJurisdictions";
@@ -199,6 +206,10 @@ const props = defineProps({
     default: false,
   },
   canLoadMore: {
+    type: Boolean,
+    default: false,
+  },
+  hasQuery: {
     type: Boolean,
     default: false,
   },

@@ -1,5 +1,11 @@
 <template>
-  <UModal v-model="modelValueProxy" prevent-close>
+  <UModal
+    v-model="modelValueProxy"
+    prevent-close
+    :ui="{
+      rounded: 'rounded-lg',
+    }"
+  >
     <slot name="cancel-modal" :close="closeModal">
       <div class="p-6 text-center">
         <h2 class="mb-4 text-lg font-bold">Discard changes?</h2>

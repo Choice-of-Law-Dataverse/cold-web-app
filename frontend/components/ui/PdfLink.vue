@@ -4,11 +4,11 @@
       :href="finalPdfUrl"
       target="_blank"
       rel="noopener noreferrer"
-      class="label inline-flex items-center gap-1 text-cold-teal"
+      class="action-link-external"
       aria-label="Download PDF for record"
       @click.stop
     >
-      <UIcon name="i-material-symbols:picture-as-pdf-outline" class="h-4 w-4" />
+      <UIcon name="i-material-symbols:picture-as-pdf-outline" />
       <span>PDF</span>
     </a>
   </div>

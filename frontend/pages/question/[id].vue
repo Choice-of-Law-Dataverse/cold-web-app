@@ -40,6 +40,7 @@
             'Related Court Decisions'
           "
           :tooltip="keyLabelLookup.get('Court Decisions ID')?.tooltip"
+          variant="court-decision"
         >
           <CourtDecisionRenderer
             :value="value"
@@ -56,6 +57,7 @@
         <DetailRow
           :label="keyLabelLookup.get('OUP Chapter')?.label || 'OUP Chapter'"
           :tooltip="keyLabelLookup.get('OUP Chapter')?.tooltip"
+          variant="oup"
         >
           <RelatedLiterature
             :themes="processedAnswerData?.Themes"
@@ -82,6 +84,7 @@
             'Related Literature'
           "
           :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
+          variant="literature"
         >
           <RelatedLiterature
             :themes="processedAnswerData?.Themes"

@@ -210,8 +210,8 @@ describe("QuestionJurisdictions", () => {
     });
 
     // Initially "All" is selected, should show both countries
-    expect(wrapper.text()).toContain("France");
-    expect(wrapper.text()).toContain("Japan");
+    expect(wrapper.text()).toContain("FRA");
+    expect(wrapper.text()).toContain("JPN");
 
     // Click Europe region
     const buttons = wrapper.findAll(".region-badge");
@@ -219,8 +219,8 @@ describe("QuestionJurisdictions", () => {
     await europeButton!.trigger("click");
 
     // Should show only France now
-    expect(wrapper.text()).toContain("France");
-    expect(wrapper.text()).not.toContain("Japan");
+    expect(wrapper.text()).toContain("FRA");
+    expect(wrapper.text()).not.toContain("JPN");
   });
 
   it("sorts countries alphabetically within each answer group", () => {
@@ -250,9 +250,9 @@ describe("QuestionJurisdictions", () => {
     });
     const text = wrapper.text();
     // Check that Argentina appears before Brazil and Brazil before Zambia in the text
-    const argIndex = text.indexOf("Argentina");
-    const braIndex = text.indexOf("Brazil");
-    const zmbIndex = text.indexOf("Zambia");
+    const argIndex = text.indexOf("ARG");
+    const braIndex = text.indexOf("BRA");
+    const zmbIndex = text.indexOf("ZMB");
     expect(argIndex).toBeGreaterThan(-1);
     expect(braIndex).toBeGreaterThan(-1);
     expect(zmbIndex).toBeGreaterThan(-1);
@@ -260,7 +260,7 @@ describe("QuestionJurisdictions", () => {
     expect(braIndex).toBeLessThan(zmbIndex);
   });
 
-  it("displays 'No jurisdictions' when no countries for an answer", async () => {
+  it("hides answer row when no jurisdictions for selected region", async () => {
     mockQuestionData.value = {
       answers: [
         {
@@ -283,7 +283,8 @@ describe("QuestionJurisdictions", () => {
     await africaButton!.trigger("click");
     await wrapper.vm.$nextTick();
 
-    expect(wrapper.text()).toContain("No jurisdictions");
+    // Row should not be rendered when there are no jurisdictions
+    expect(wrapper.text()).not.toContain("Yes");
   });
 
   it("renders links with correct paths", async () => {

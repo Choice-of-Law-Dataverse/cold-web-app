@@ -1,7 +1,7 @@
 <template>
   <div>
     <div v-if="hasContent">
-      <div v-if="isList" class="flex flex-col gap-1">
+      <div v-if="isList" :class="wrapperClass">
         <div
           v-for="(item, index) in items"
           :key="index"
@@ -36,6 +36,10 @@ const props = defineProps({
     type: String,
     default: "result-value",
   },
+  wrapperClass: {
+    type: String,
+    default: "flex flex-col gap-1",
+  },
   isList: {
     type: Boolean,
     default: true,
@@ -44,7 +48,7 @@ const props = defineProps({
     type: Object,
     default: () => ({
       action: "display",
-      fallback: "N/A",
+      fallback: "—",
     }),
   },
 });

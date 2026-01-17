@@ -22,7 +22,20 @@
     <LoadingCard />
   </template>
   <template v-else>
-    <UCard class="cold-ucard" :ui="{ body: { padding: '' } }">
+    <UCard
+      class="cold-ucard"
+      :ui="{
+        base: 'overflow-hidden',
+        body: {
+          base: '',
+          padding: '',
+        },
+        header: {
+          base: 'sticky-header border-bottom-0',
+          padding: 'px-6 py-5',
+        },
+      }"
+    >
       <!-- Header section: render only when showHeader is true -->
       <template v-if="showHeader" #header>
         <BaseCardHeader
@@ -46,13 +59,18 @@
       <slot name="full-width" />
 
       <!-- Main content -->
-      <div class="flex">
-        <div class="main-content flex w-full flex-col gap-4 px-6 py-8">
+      <div class="gradient-top-border flex">
+        <div
+          class="main-content flex w-full flex-col gap-2 px-6 py-6 sm:px-8 sm:py-8"
+        >
           <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
           <slot />
           <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
           <template v-for="(item, index) in keyLabelPairs" :key="index">
-            <section v-if="shouldDisplayValue(item, resultData?.[item.key])">
+            <section
+              v-if="shouldDisplayValue(item, resultData?.[item.key])"
+              class="detail-section"
+            >
               <!-- Check if it's the special 'Specialist' key -->
               <template v-if="item.key === 'Region'">
                 <slot />
@@ -93,7 +111,9 @@
                           resultData?.[item.key],
                         )"
                         :key="i"
-                        :class="props.valueClassMap[item.key] || 'prose'"
+                        :class="
+                          props.valueClassMap[item.key] || 'result-value-small'
+                        "
                       >
                         {{ line }}
                       </div>
@@ -103,14 +123,7 @@
                     <p
                       :class="[
                         props.valueClassMap[item.key] ||
-                          'whitespace-pre-line leading-relaxed',
-                        (!resultData?.[item.key] ||
-                          resultData?.[item.key] === 'NA') &&
-                        item.emptyValueBehavior?.action === 'display' &&
-                        !item.emptyValueBehavior?.getFallback
-                          ? 'text-gray-400'
-                          : '',
-                        'prose',
+                          'result-value-small whitespace-pre-line',
                         'mt-0',
                       ]"
                     >
@@ -268,9 +281,9 @@ const getDisplayValue = (item, value) => {
     item.emptyValueBehavior &&
     item.emptyValueBehavior.action === "display"
   ) {
-    return item.emptyValueBehavior.fallback || "N/A";
+    return "—";
   }
-  if (!item.emptyValueBehavior) return value || "N/A";
+  if (!item.emptyValueBehavior) return value || "—";
   if (
     (!value || value === "NA") &&
     item.emptyValueBehavior.action === "display"
@@ -278,7 +291,7 @@ const getDisplayValue = (item, value) => {
     if (item.emptyValueBehavior.getFallback) {
       return item.emptyValueBehavior.getFallback(props.resultData);
     }
-    return item.emptyValueBehavior.fallback || "N/A";
+    return "—";
   }
   return value;
 };
@@ -298,5 +311,17 @@ const getDisplayValue = (item, value) => {
   margin-top: -1px;
   color: var(--color-cold-purple);
   font-size: 1.1em;
+}
+
+:deep(.sticky-header) {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background-color: white;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+}
+
+:deep(.dark .sticky-header) {
+  background-color: rgb(17 24 39);
 }
 </style>

@@ -67,16 +67,16 @@
                 class="overflow-x-auto rounded-md bg-gray-50 p-4 font-mono text-xs dark:bg-gray-800"
                 >{{ bibtexContent }}</pre
               >
-              <button
-                class="label flex w-fit items-center gap-1 text-cold-teal"
-                @click="exportBibTeX"
-              >
-                <UIcon
-                  name="i-material-symbols:download-2-outline"
-                  class="h-4 w-4"
-                />
-                <span>Download</span>
-              </button>
+              <div class="flex gap-3">
+                <button class="action-button" @click="copyBibTeX">
+                  <UIcon name="i-material-symbols:content-copy-outline" />
+                  <span>Copy</span>
+                </button>
+                <button class="action-button" @click="exportBibTeX">
+                  <UIcon name="i-material-symbols:download-2-outline" />
+                  <span>Download</span>
+                </button>
+              </div>
             </div>
           </DetailRow>
         </section>
@@ -151,6 +151,29 @@ const bibtexContent = computed(() => {
   if (!literature.value) return "";
   return generateBibTeX(literature.value);
 });
+
+const toast = useToast();
+
+async function copyBibTeX() {
+  try {
+    await navigator.clipboard.writeText(bibtexContent.value);
+    toast.add({
+      title: "Copied!",
+      description: "BibTeX citation copied to clipboard",
+      icon: "i-material-symbols:check-circle",
+      color: "green",
+      timeout: 3000,
+    });
+  } catch (error) {
+    toast.add({
+      title: "Copy failed",
+      description: `Could not copy to clipboard: ${error instanceof Error ? error.message : String(error)}`,
+      icon: "i-material-symbols:error-outline",
+      color: "red",
+      timeout: 3000,
+    });
+  }
+}
 
 function exportBibTeX() {
   const bibtex = bibtexContent.value;

@@ -1,18 +1,20 @@
 <template>
-  <UCard class="cold-ucard h-full">
-    <h2 class="popular-title">{{ title }}</h2>
-    <div class="number-container">
-      <span v-if="!loading && !error">
-        <NuxtLink :to="buttonLink">
-          <UButton class="suggestion-button" variant="link" trailing>{{
-            number ?? props.overrideNumber ?? 0
-          }}</UButton>
-        </NuxtLink>
-      </span>
-      <span v-else-if="loading"><LoadingNumber /></span>
-      <span v-else>Error</span>
-    </div>
-  </UCard>
+  <NuxtLink :to="buttonLink" class="block h-full">
+    <UCard class="cold-ucard number-card h-full">
+      <div class="flex h-full flex-col justify-between">
+        <h2 class="card-title mb-4 text-center">
+          {{ title }}
+        </h2>
+        <div class="number-container">
+          <span v-if="!loading && !error" class="number-display">
+            {{ number ?? props.overrideNumber ?? 0 }}
+          </span>
+          <span v-else-if="loading"><LoadingNumber /></span>
+          <span v-else>Error</span>
+        </div>
+      </div>
+    </UCard>
+  </NuxtLink>
 </template>
 
 <script setup>
@@ -37,16 +39,48 @@ const {
 </script>
 
 <style scoped>
-h2 {
-  text-align: center;
+.number-card {
+  @apply transition-all duration-200;
 }
+
+a:hover .number-card {
+  @apply shadow-md;
+  transform: translateY(-2px);
+}
+
+.card-title {
+  line-height: 1.4;
+  height: 3.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .number-container {
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 100px;
+  flex: 1;
 }
-.number-container button {
-  font-size: 72px !important;
-  font-weight: 700 !important;
+
+.number-display {
+  font-size: 64px;
+  font-weight: 700;
+  background: linear-gradient(
+    135deg,
+    var(--color-cold-purple),
+    var(--color-cold-green)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+  font-variant-numeric: tabular-nums;
+}
+
+a:hover .number-display {
+  filter: brightness(0.85);
 }
 </style>
