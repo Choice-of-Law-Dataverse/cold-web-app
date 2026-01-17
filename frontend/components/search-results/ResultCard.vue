@@ -6,14 +6,15 @@
       class="card-link-wrapper"
     >
       <UCard
-class="cold-ucard"       :ui="{
-        base: 'overflow-hidden',
-        body: {
-          base: 'flex gradient-top-border',
-          padding: 'px-6 py-5',
-        },
-
-      }">
+        class="cold-ucard"
+        :ui="{
+          base: 'overflow-hidden',
+          body: {
+            base: 'flex gradient-top-border',
+            padding: 'px-6 py-5',
+          },
+        }"
+      >
         <template #header>
           <BaseCardHeader
             v-if="resultData"
@@ -26,8 +27,7 @@ class="cold-ucard"       :ui="{
           />
         </template>
 
-
-          <slot />
+        <slot />
       </UCard>
     </NuxtLink>
     <UCard v-else class="cold-ucard">

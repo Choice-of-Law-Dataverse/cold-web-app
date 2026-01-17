@@ -59,7 +59,7 @@
       <slot name="full-width" />
 
       <!-- Main content -->
-      <div class="flex gradient-top-border">
+      <div class="gradient-top-border flex">
         <div
           class="main-content flex w-full flex-col px-6 py-6 sm:px-8 sm:py-8"
         >

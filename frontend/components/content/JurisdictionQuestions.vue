@@ -1,11 +1,14 @@
 <template>
   <UCard
-id="questions-and-answers" class="cold-ucard overflow-visible" :ui="{
-    body: {
-      padding: 'p-0 sm:p-0'
-    }
-  }">
-    <div class="overflow-hidden px-4 sm:px-6 py-5">
+    id="questions-and-answers"
+    class="cold-ucard overflow-visible"
+    :ui="{
+      body: {
+        padding: 'p-0 sm:p-0',
+      },
+    }"
+  >
+    <div class="overflow-hidden px-4 py-5 sm:px-6">
       <div class="flex justify-between">
         <h3 class="comparison-title mb-4">Questionnaire</h3>
         <span class="mb-4 flex flex-wrap gap-2">
@@ -68,7 +71,7 @@ id="questions-and-answers" class="cold-ucard overflow-visible" :ui="{
           v-for="row in rows"
           :id="`question-${row.id}`"
           :key="row.id"
-          class="question-row hover-row--emphasis flex flex-col gap-2 py-4 px-2 md:flex-row md:items-center md:gap-4"
+          class="question-row hover-row--emphasis flex flex-col gap-2 px-2 py-4 md:flex-row md:items-center md:gap-4"
           :style="{ paddingLeft: `${row.level * 2}em` }"
         >
           <div
@@ -152,9 +155,7 @@ id="questions-and-answers" class="cold-ucard overflow-visible" :ui="{
                     :alt="`${jurisdiction.Name} flag`"
                     class="h-3.5 w-5 flex-shrink-0 rounded-sm object-cover"
                   />
-                  <span class="min-w-0 truncate">{{
-                    jurisdiction.Name
-                  }}</span>
+                  <span class="min-w-0 truncate">{{ jurisdiction.Name }}</span>
                   <UIcon
                     v-if="index > 0"
                     name="i-heroicons-x-mark-20-solid"
@@ -216,7 +217,7 @@ id="questions-and-answers" class="cold-ucard overflow-visible" :ui="{
             v-for="row in rows"
             :id="`question-${row.id}`"
             :key="row.id"
-            class="question-row py-4 px-2"
+            class="question-row px-2 py-4"
             :style="{ paddingLeft: `${row.level * 2}em` }"
           >
             <div
@@ -512,7 +513,8 @@ const rows = computed(() => {
   @apply inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all;
   color: var(--color-cold-night);
   background: white;
-  border: 1.5px solid color-mix(in srgb, var(--color-cold-night) 25%, transparent);
+  border: 1.5px solid
+    color-mix(in srgb, var(--color-cold-night) 25%, transparent);
 
   &:disabled {
     cursor: default;

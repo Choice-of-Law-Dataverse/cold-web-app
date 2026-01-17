@@ -183,7 +183,7 @@ describe("RelatedItemsList", () => {
     expect(wrapper.text()).not.toContain("Should not see this");
   });
 
-  it("applies default link-chip class when no entityType", () => {
+  it("applies link-chip--neutral class to items", () => {
     const wrapper = mount(RelatedItemsList, {
       props: {
         items: mockItems,
@@ -191,7 +191,7 @@ describe("RelatedItemsList", () => {
       },
     });
 
-    expect(wrapper.html()).toContain("link-chip");
+    expect(wrapper.html()).toContain("link-chip--neutral");
   });
 
   it("applies link-chip--action class to show more button", () => {
@@ -210,7 +210,7 @@ describe("RelatedItemsList", () => {
     expect(wrapper.html()).toContain("link-chip--action");
   });
 
-  it("applies court-decision chip class for court entity type", () => {
+  it("applies link-chip--neutral regardless of entity type", () => {
     const wrapper = mount(RelatedItemsList, {
       props: {
         items: mockItems,
@@ -219,54 +219,7 @@ describe("RelatedItemsList", () => {
       },
     });
 
-    expect(wrapper.html()).toContain("link-chip--court-decision");
-  });
-
-  it("applies instrument chip class for instrument entity type", () => {
-    const wrapper = mount(RelatedItemsList, {
-      props: {
-        items: mockItems,
-        basePath: "/test",
-        entityType: "instrument",
-      },
-    });
-
-    expect(wrapper.html()).toContain("link-chip--instrument");
-  });
-
-  it("applies literature chip class for literature entity type", () => {
-    const wrapper = mount(RelatedItemsList, {
-      props: {
-        items: mockItems,
-        basePath: "/test",
-        entityType: "literature",
-      },
-    });
-
-    expect(wrapper.html()).toContain("link-chip--literature");
-  });
-
-  it("applies literature chip class for oup-chapter entity type", () => {
-    const wrapper = mount(RelatedItemsList, {
-      props: {
-        items: mockItems,
-        basePath: "/test",
-        entityType: "oup-chapter",
-      },
-    });
-
-    expect(wrapper.html()).toContain("link-chip--literature");
-  });
-
-  it("applies arbitration chip class for arbitral entity type", () => {
-    const wrapper = mount(RelatedItemsList, {
-      props: {
-        items: mockItems,
-        basePath: "/test",
-        entityType: "arbitral award",
-      },
-    });
-
-    expect(wrapper.html()).toContain("link-chip--arbitration");
+    expect(wrapper.html()).toContain("link-chip--neutral");
+    expect(wrapper.html()).not.toContain("link-chip--court-decision");
   });
 });

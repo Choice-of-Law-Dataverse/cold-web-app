@@ -52,7 +52,7 @@
           </div>
         </div>
         <div
-          class="min-w-[100px] items-center justify-center gap-3 sm:flex-col lg:flex-row hidden md:flex"
+          class="hidden min-w-[100px] items-center justify-center gap-3 sm:flex-col md:flex lg:flex-row"
         >
           <!-- <HCCHApproved />
               <OpenScienceBadge /> -->

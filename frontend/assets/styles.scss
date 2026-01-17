@@ -1013,7 +1013,8 @@ button.cold-btn-primary {
   @apply inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium uppercase transition-all;
   color: var(--color-cold-night);
   background: white;
-  border: 1.5px solid color-mix(in srgb, var(--color-cold-night) 25%, transparent);
+  border: 1.5px solid
+    color-mix(in srgb, var(--color-cold-night) 25%, transparent);
 
   &:hover,
   &:focus {
