@@ -4,7 +4,9 @@
   >
     <div class="label-key md:w-48 md:flex-shrink-0">
       <span class="flex items-center gap-1.5">
-        {{ label }}
+        <span class="mono-font">
+          {{ label }}
+        </span>
         <slot name="label-actions" />
         <InfoPopover v-if="tooltip" :text="tooltip" />
       </span>
