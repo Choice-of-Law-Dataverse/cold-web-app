@@ -69,6 +69,9 @@ export default {
 
         "label-arbitration": "#5a6ab8", // darker indigo
         "label-arbitration-alpha": "#5a6ab81A",
+
+        "label-oup": "#7c3aed", // violet for OUP chapters
+        "label-oup-alpha": "#7c3aed1A",
       },
     },
   },
@@ -122,6 +125,9 @@ export default {
           "--color-label-arbitration-alpha": theme(
             "colors.label-arbitration-alpha",
           ),
+
+          "--color-label-oup": theme("colors.label-oup"),
+          "--color-label-oup-alpha": theme("colors.label-oup-alpha"),
         },
       });
     },

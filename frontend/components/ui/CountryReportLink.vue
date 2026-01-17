@@ -1,9 +1,9 @@
 <template>
-  <DetailRow label="Country Report" class="mb-4">
+  <DetailRow label="Country Report" variant="jurisdiction" class="mb-4">
     <NuxtLink
       v-if="countryReportLink"
       :to="countryReportLink"
-      class="link-chip--jurisdiction gap-2"
+      class="link-chip--neutral gap-2"
     >
       <img
         v-if="props.jurisdictionCode"

@@ -95,7 +95,9 @@
     </div>
 
     <!-- Empty State (no query) -->
-    <EmptySearchState v-else-if="!loading && !allResults.length && !props.hasQuery" />
+    <EmptySearchState
+      v-else-if="!loading && !allResults.length && !props.hasQuery"
+    />
 
     <!-- No Results State (has query but no results) -->
     <NoSearchResults v-else-if="!loading && !allResults.length" />

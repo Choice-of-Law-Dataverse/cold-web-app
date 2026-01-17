@@ -31,7 +31,7 @@
           padding: '',
         },
         header: {
-          base: 'border-b border-gray-100 sticky-header',
+          base: 'sticky-header border-bottom-0',
           padding: 'px-6 py-5 sm:px-8 sm:py-6',
         },
       }"
@@ -59,7 +59,7 @@
       <slot name="full-width" />
 
       <!-- Main content -->
-      <div class="flex">
+      <div class="flex gradient-top-border">
         <div
           class="main-content flex w-full flex-col px-6 py-6 sm:px-8 sm:py-8"
         >

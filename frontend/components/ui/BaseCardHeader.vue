@@ -6,7 +6,10 @@
     <template v-if="cardType === 'Loading'" />
     <template v-else>
       <!-- Mobile: Actions menu (outside tags container to stay top-right) -->
-      <div v-if="showSuggestEdit && headerMode !== 'new'" class="sm:hidden order-last">
+      <div
+        v-if="showSuggestEdit && headerMode !== 'new'"
+        class="order-last sm:hidden"
+      >
         <UDropdown
           :items="mobileMenuItems"
           :popper="{ placement: 'bottom-end' }"
@@ -160,7 +163,9 @@
           <template v-else>
             <template v-if="showSuggestEdit">
               <!-- Desktop: Inline actions -->
-              <div class="actions-container hidden sm:flex flex-row items-center gap-1.5">
+              <div
+                class="actions-container hidden flex-row items-center gap-1.5 sm:flex"
+              >
                 <!-- All actions except the International Instrument Edit link -->
                 <template
                   v-for="(action, index) in suggestEditActions.filter(

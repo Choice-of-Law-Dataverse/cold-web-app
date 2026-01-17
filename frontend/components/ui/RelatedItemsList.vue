@@ -4,7 +4,7 @@
       <LoadingBar />
     </div>
     <div v-else-if="displayedItems.length" class="result-value-small">
-      <div class="mb-2 flex flex-row flex-wrap gap-2">
+      <div class="mb-2 flex flex-row flex-wrap gap-x-6 gap-y-2">
         <NuxtLink
           v-for="item in displayedItems"
           :key="item.id"
@@ -64,28 +64,6 @@ const displayedItems = computed(() => {
   return !showAll.value && arr.length > 10 ? arr.slice(0, 10) : arr;
 });
 
-const chipClass = computed(() => {
-  const type = props.entityType.toLowerCase();
-
-  if (type.includes("court") || type.includes("decision")) {
-    return "link-chip--court-decision";
-  }
-  if (type.includes("question") || type.includes("answer")) {
-    return "link-chip--question";
-  }
-  if (type.includes("instrument")) {
-    return "link-chip--instrument";
-  }
-  if (type.includes("oup-chapter") || type.includes("oup")) {
-    return "link-chip--oup-chapter";
-  }
-  if (type.includes("literature")) {
-    return "link-chip--literature";
-  }
-  if (type.includes("arbitr")) {
-    return "link-chip--arbitration";
-  }
-
-  return "link-chip";
-});
+// Use neutral chip style - semantic color is on the DetailRow label
+const chipClass = "link-chip--neutral";
 </script>

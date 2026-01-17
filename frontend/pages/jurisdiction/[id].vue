@@ -31,7 +31,7 @@
             </div>
             <div v-else class="prose mb-1">No specialists available</div>
           </DetailRow>
-          <DetailRow label="Domestic Instruments">
+          <DetailRow label="Domestic Instruments" variant="instrument">
             <RelatedDomesticInstruments
               :jurisdiction="jurisdictionData?.Name as string"
               :empty-value-behavior="{
@@ -40,7 +40,7 @@
               }"
             />
           </DetailRow>
-          <DetailRow label="Court Decisions">
+          <DetailRow label="Court Decisions" variant="court-decision">
             <RelatedCourtDecisions
               :jurisdiction="jurisdictionData?.Name as string"
               :empty-value-behavior="{
@@ -60,6 +60,7 @@
                 (pair) => pair.key === 'OUP Chapter',
               )?.tooltip
             "
+            variant="oup"
           >
             <RelatedLiterature
               :literature-id="(jurisdictionData?.Literature as string) || ''"
@@ -85,6 +86,7 @@
                 (pair) => pair.key === 'Related Literature',
               )?.tooltip
             "
+            variant="literature"
           >
             <RelatedLiterature
               :literature-id="(jurisdictionData?.Literature as string) || ''"

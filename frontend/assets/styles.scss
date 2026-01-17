@@ -541,8 +541,8 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
     top: 0;
     left: 0;
     right: 0;
-    height: 3px;
-    background: var(--gradient-border-horizontal);
+    height: 6px;
+    background: var(--gradient-theme);
   }
 }
 
@@ -551,12 +551,13 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
   overflow-x: hidden;
   margin-left: 1px;
   margin-right: 1px;
-  box-shadow:
-    0 1px 3px 0 rgb(0 0 0 / 0.05),
-    0 1px 2px -1px rgb(0 0 0 / 0.05);
+  // box-shadow:
+  //   0 1px 3px 0 rgb(0 0 0 / 0.05),
+  //   0 1px 2px -1px rgb(0 0 0 / 0.05);
   border-radius: 0.5rem;
   position: relative;
   background: #fff;
+  border: none !important;
 }
 
 @keyframes gradient-slide {
@@ -1029,14 +1030,14 @@ button.cold-btn-primary {
 .action-button {
   @apply inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium uppercase transition-all;
   color: var(--color-cold-night);
-  background: var(--gradient-subtle);
-  border: 1px solid color-mix(in srgb, var(--color-cold-purple) 8%, transparent);
+  background: white;
+  border: 1.5px solid color-mix(in srgb, var(--color-cold-night) 25%, transparent);
 
   &:hover,
   &:focus {
-    background: var(--gradient-subtle-emphasis);
-    border-color: color-mix(in srgb, var(--color-cold-purple) 15%, transparent);
-    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+    background: var(--color-cold-night);
+    color: white;
+    border-color: var(--color-cold-night);
     outline: none;
   }
 
@@ -1339,6 +1340,7 @@ button.cold-btn-primary {
 // Base chip mixin for consistent structure
 @mixin link-chip-base($color) {
   @apply inline-flex items-center text-pretty rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-150;
+  margin-left: -0.75rem; // Compensate for px-3 padding to align text with surrounding content
   background: linear-gradient(
     135deg,
     color-mix(in srgb, $color 8%, white),
@@ -1379,7 +1381,11 @@ $chip-color-instrument: var(--color-cold-green);
 $chip-color-literature: #d4a84b;
 $chip-color-oup-chapter: #4dc3fa; // oxford blue - from book cover
 $chip-color-arbitration: #7b8cde;
-$chip-color-jurisdiction: color-mix(in srgb, var(--color-cold-purple) 33%, transparent);
+$chip-color-jurisdiction: color-mix(
+  in srgb,
+  var(--color-cold-purple) 33%,
+  transparent
+);
 
 // Entity-type variants
 .link-chip--court-decision {
@@ -1410,12 +1416,27 @@ $chip-color-jurisdiction: color-mix(in srgb, var(--color-cold-purple) 33%, trans
   @include link-chip-base($chip-color-jurisdiction);
 }
 
-// Non-interactive chip variant (for display-only items like specialists)
-.link-chip--static {
-  @apply inline-flex items-center text-pretty rounded-full px-3 py-1.5 text-sm font-medium;
+// Neutral chip - for use in detail views where label has semantic color
+.link-chip--neutral {
+  @apply inline-flex items-center text-pretty rounded-lg px-3 py-1.5 text-sm font-medium shadow-sm transition-all duration-150;
+  margin-left: -0.75rem;
   background: var(--gradient-subtle);
   color: var(--color-cold-night);
-  border: 1px solid color-mix(in srgb, var(--color-cold-purple) 6%, transparent);
+
+  &:hover,
+  &:focus {
+    @apply shadow;
+    background: var(--gradient-subtle-emphasis);
+    outline: none;
+  }
+}
+
+// Non-interactive chip variant (for display-only items like specialists)
+.link-chip--static {
+  @apply inline-flex items-center text-pretty rounded-lg px-3 py-1.5 text-sm font-medium;
+  margin-left: -0.75rem;
+  background: var(--gradient-subtle);
+  color: var(--color-cold-night);
 }
 
 // "Show more" style chip

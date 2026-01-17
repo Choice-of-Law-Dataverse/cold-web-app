@@ -4,14 +4,14 @@
       <div class="flex justify-between">
         <h3 class="comparison-title mb-4">Questionnaire</h3>
         <span class="mb-4 flex flex-wrap gap-2">
-          <NuxtLink to="/learn/methodology" type="button" class="action-button">
+          <NuxtLink to="/learn/methodology" class="answer-button gap-2">
             <UIcon
               :name="'i-material-symbols:school-outline'"
               class="inline-block text-[1.2em]"
             />
             Methodology
           </NuxtLink>
-          <NuxtLink to="/learn/glossary" type="button" class="action-button">
+          <NuxtLink to="/learn/glossary" class="answer-button gap-2">
             <UIcon
               :name="'i-material-symbols:dictionary-outline'"
               class="inline-block text-[1.2em]"
@@ -73,15 +73,15 @@
             {{ row.question }}
           </div>
 
-          <div class="md:w-[40%] md:text-right">
+          <div class="flex justify-end md:w-[40%] md:text-right">
             <NuxtLink
               v-if="row.answer"
               :to="row.answerLink"
-              class="hover-link-purple font-medium"
+              class="answer-button"
             >
-              {{ row.answer }}
+              {{ shouldShowDash(row.answer) ? "—" : row.answer }}
             </NuxtLink>
-            <span v-else class="text-gray-400">{{ row.answer }}</span>
+            <span v-else class="text-gray-400">—</span>
           </div>
         </div>
       </div>
@@ -129,37 +129,33 @@
                 :key="jurisdiction.alpha3Code || jurisdiction.Name"
                 class="min-w-0 flex-1 text-center"
               >
-                <UBadge
-                  color="gray"
-                  variant="soft"
-                  class="jurisdiction-badge text-md inline-flex max-w-full"
-                  :class="index > 0 ? 'cursor-pointer hover:bg-gray-200' : ''"
+                <button
+                  type="button"
+                  class="jurisdiction-action-button"
+                  :class="{ removable: index > 0 }"
                   :title="jurisdiction.Name"
+                  :disabled="index === 0"
                   @click="
                     index > 0
                       ? removeJurisdiction(jurisdiction.alpha3Code)
                       : null
                   "
                 >
-                  <div
-                    class="inline-flex min-w-0 max-w-full items-center gap-1.5"
-                  >
-                    <img
-                      v-if="jurisdiction.avatar"
-                      :src="jurisdiction.avatar"
-                      :alt="`${jurisdiction.Name} flag`"
-                      class="h-3.5 w-5 flex-shrink-0 rounded-sm object-cover"
-                    />
-                    <span class="min-w-0 truncate">{{
-                      jurisdiction.Name
-                    }}</span>
-                    <UIcon
-                      v-if="index > 0"
-                      name="i-heroicons-x-mark-20-solid"
-                      class="h-4 w-4 flex-shrink-0"
-                    />
-                  </div>
-                </UBadge>
+                  <img
+                    v-if="jurisdiction.avatar"
+                    :src="jurisdiction.avatar"
+                    :alt="`${jurisdiction.Name} flag`"
+                    class="h-3.5 w-5 flex-shrink-0 rounded-sm object-cover"
+                  />
+                  <span class="min-w-0 truncate">{{
+                    jurisdiction.Name
+                  }}</span>
+                  <UIcon
+                    v-if="index > 0"
+                    name="i-heroicons-x-mark-20-solid"
+                    class="h-4 w-4 flex-shrink-0"
+                  />
+                </button>
               </div>
             </div>
             <div
@@ -196,11 +192,15 @@
                     row.answers?.[jurisdiction.alpha3Code]
                   "
                   :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
-                  class="answer-link font-medium"
+                  class="answer-button"
                 >
-                  {{ row.answers[jurisdiction.alpha3Code] }}
+                  {{
+                    shouldShowDash(row.answers[jurisdiction.alpha3Code])
+                      ? "—"
+                      : row.answers[jurisdiction.alpha3Code]
+                  }}
                 </NuxtLink>
-                <span v-else class="text-gray-400">-</span>
+                <span v-else class="text-gray-400">—</span>
               </div>
             </div>
           </div>
@@ -248,7 +248,7 @@
                     row.answers?.[jurisdiction.alpha3Code]
                   "
                   :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
-                  class="answer-link flex items-center gap-2 font-medium"
+                  class="answer-button gap-2"
                 >
                   <img
                     v-if="jurisdiction.avatar"
@@ -256,9 +256,13 @@
                     :alt="`${jurisdiction.Name} flag`"
                     class="h-2 w-3 object-cover"
                   />
-                  {{ row.answers[jurisdiction.alpha3Code] }}
+                  {{
+                    shouldShowDash(row.answers[jurisdiction.alpha3Code])
+                      ? "—"
+                      : row.answers[jurisdiction.alpha3Code]
+                  }}
                 </NuxtLink>
-                <span v-else class="text-gray-400">-</span>
+                <span v-else class="text-gray-400">—</span>
               </div>
             </div>
           </div>
@@ -385,6 +389,16 @@ const isBoldQuestion = (questionId: string) => {
   return BOLD_QUESTIONS.has(questionId);
 };
 
+// Answers to display as a dash
+const DASH_ANSWERS = new Set([
+  "Not applicable",
+  "Jurisdiction does not cover this question",
+]);
+
+const shouldShowDash = (answer: string | undefined) => {
+  return !answer || DASH_ANSWERS.has(answer);
+};
+
 const jurisdictionCodes = computed(() =>
   jurisdictions.value
     .map((j) => j.alpha3Code)
@@ -489,7 +503,34 @@ const rows = computed(() => {
     color-mix(in srgb, var(--color-cold-purple) 10%, transparent) !important;
 }
 
-.jurisdiction-badge {
-  @apply transition-all duration-150;
+.jurisdiction-action-button {
+  @apply inline-flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-all;
+  color: var(--color-cold-night);
+  background: white;
+  border: 1.5px solid color-mix(in srgb, var(--color-cold-night) 25%, transparent);
+
+  &:disabled {
+    cursor: default;
+  }
+
+  &.removable {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-cold-night);
+      color: white;
+      border-color: var(--color-cold-night);
+    }
+  }
+}
+
+.answer-button {
+  @apply inline-flex items-center rounded-lg px-4 py-2 font-medium shadow-sm transition-all duration-150;
+  background: var(--gradient-subtle);
+
+  &:hover {
+    @apply shadow;
+    background: var(--gradient-subtle-emphasis);
+  }
 }
 </style>

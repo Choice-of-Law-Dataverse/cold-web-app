@@ -8,7 +8,7 @@
   >
     <template #default="{ item }">
       <NuxtLink
-        class="link-chip--court-decision"
+        class="link-chip--neutral"
         :to="generateCourtDecisionLink(item)"
       >
         <template v-if="caseTitles[item] !== undefined">

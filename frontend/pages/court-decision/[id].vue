@@ -110,6 +110,7 @@
           v-if="value"
           label="Related Questions"
           :tooltip="keyLabelLookup.get('Related Questions')?.tooltip"
+          variant="question"
         >
           <RelatedQuestions
             :jurisdiction-code="
@@ -125,6 +126,7 @@
         <DetailRow
           label="Related Literature"
           :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
+          variant="literature"
         >
           <RelatedLiterature
             :themes="
