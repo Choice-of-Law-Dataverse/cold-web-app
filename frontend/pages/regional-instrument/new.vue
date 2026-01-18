@@ -99,8 +99,10 @@ import InfoPopover from "@/components/ui/InfoPopover.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
-import tooltipRegionalInstrumentDate from "@/content/info_boxes/regional_instrument/date.md?raw";
 import { format } from "date-fns";
+import { regionalInstrumentTooltips } from "@/config/tooltips";
+
+const tooltipRegionalInstrumentDate = regionalInstrumentTooltips["Date"];
 
 definePageMeta({
   middleware: ["auth"],

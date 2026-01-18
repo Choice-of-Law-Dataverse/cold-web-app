@@ -134,11 +134,16 @@ import InfoPopover from "@/components/ui/InfoPopover.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
-import tooltipInternationalInstrumentSpecialist from "@/content/info_boxes/international_instrument/specialists.md?raw";
-import tooltipInternationalInstrumentDate from "@/content/info_boxes/international_instrument/date.md?raw";
-import tooltipInternationalInstrumentLink from "@/content/info_boxes/international_instrument/link.md?raw";
 import { format, parseISO } from "date-fns";
 import { useHead } from "#imports";
+import { internationalInstrumentTooltips } from "@/config/tooltips";
+
+const tooltipInternationalInstrumentSpecialist =
+  internationalInstrumentTooltips["Specialists"];
+const tooltipInternationalInstrumentDate =
+  internationalInstrumentTooltips["Date"];
+const tooltipInternationalInstrumentLink =
+  "Link to the official source or full text of the instrument.";
 
 const route = useRoute();
 const router = useRouter();

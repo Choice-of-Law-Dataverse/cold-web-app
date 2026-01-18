@@ -342,18 +342,19 @@ import SaveModal from "@/components/ui/SaveModal.vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
 import { format } from "date-fns";
+import { courtDecisionTooltips } from "@/config/tooltips";
 
-import tooltipAbstract from "@/content/info_boxes/court_decision/abstract.md?raw";
-import tooltipCaseCitation from "@/content/info_boxes/court_decision/case_citation.md?raw";
-import tooltipCaseTitle from "@/content/info_boxes/court_decision/case_title.md?raw";
-import tooltipChoiceofLawIssue from "@/content/info_boxes/court_decision/choice_of_law_issue.md?raw";
-import tooltipCourtsPosition from "@/content/info_boxes/court_decision/courts_position.md?raw";
-import tooltipInstance from "@/content/info_boxes/court_decision/instance.md?raw";
-import tooltipJudgmentDate from "@/content/info_boxes/court_decision/judgment_date.md?raw";
-import tooltipPILProvisions from "@/content/info_boxes/court_decision/pil_provisions.md?raw";
-import tooltipPublicationDate from "@/content/info_boxes/court_decision/publication_date.md?raw";
-import tooltipQuote from "@/content/info_boxes/court_decision/quote.md?raw";
-import tooltipRelevantFacts from "@/content/info_boxes/court_decision/relevant_facts.md?raw";
+const tooltipAbstract = courtDecisionTooltips["Abstract"];
+const tooltipCaseCitation = courtDecisionTooltips["Case Citation"];
+const tooltipCaseTitle = courtDecisionTooltips["Case Title"];
+const tooltipChoiceofLawIssue = courtDecisionTooltips["Choice of Law Issue"];
+const tooltipCourtsPosition = courtDecisionTooltips["Court's Position"];
+const tooltipInstance = courtDecisionTooltips["Instance"];
+const tooltipJudgmentDate = courtDecisionTooltips["Date of Judgment"];
+const tooltipPILProvisions = courtDecisionTooltips["PIL Provisions"];
+const tooltipPublicationDate = courtDecisionTooltips["Publication Date ISO"];
+const tooltipQuote = courtDecisionTooltips["Quote"];
+const tooltipRelevantFacts = courtDecisionTooltips["Relevant Facts"];
 
 definePageMeta({
   middleware: ["auth"],
