@@ -29,8 +29,7 @@
               :src="option.avatar"
               :style="{
                 borderRadius: '0',
-                border: '1px solid var(--color-cold-gray)',
-                boxSizing: 'border-box',
+                                boxSizing: 'border-box',
                 width: 'auto',
                 height: '16px',
                 filter: isCovered(option.alpha3Code)
@@ -62,8 +61,7 @@
                 :src="internalValue.avatar"
                 :style="{
                   borderRadius: '0',
-                  border: '1px solid var(--color-cold-gray)',
-                  boxSizing: 'border-box',
+                                    boxSizing: 'border-box',
                   width: 'auto',
                   height: '16px',
                   filter: isCovered(internalValue.alpha3Code)
@@ -120,8 +118,7 @@
                   :src="selected.avatar"
                   :style="{
                     borderRadius: '0',
-                    border: '1px solid var(--color-cold-gray)',
-                    boxSizing: 'border-box',
+                                        boxSizing: 'border-box',
                     width: 'auto',
                     height: '16px',
                     filter: isCovered(selected.alpha3Code)

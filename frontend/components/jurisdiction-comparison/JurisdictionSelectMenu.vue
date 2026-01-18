@@ -19,8 +19,7 @@
             :src="option.avatar"
             :style="{
               borderRadius: '0',
-              border: '1px solid var(--color-cold-gray)',
-              boxSizing: 'border-box',
+                            boxSizing: 'border-box',
               width: 'auto',
               height: '16px',
               filter: hasCoverage(option?.answerCoverage)
@@ -51,8 +50,7 @@
             :src="selected.avatar"
             :style="{
               borderRadius: '0',
-              border: '1px solid var(--color-cold-gray)',
-              boxSizing: 'border-box',
+                            boxSizing: 'border-box',
               width: 'auto',
               height: '16px',
               filter: hasCoverage(selected?.answerCoverage)

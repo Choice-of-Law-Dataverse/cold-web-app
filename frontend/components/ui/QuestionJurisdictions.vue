@@ -58,10 +58,6 @@
                   :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
                   class="item-flag"
                   :alt="country.code + ' flag'"
-                  @error="
-                    (e: Event) =>
-                      ((e.target as HTMLImageElement).style.display = 'none')
-                  "
                 />
               </div>
 

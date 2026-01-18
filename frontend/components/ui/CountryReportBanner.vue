@@ -41,7 +41,7 @@
           v-if="jurisdictionCode"
           :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${jurisdictionCode.toLowerCase()}.svg`"
           :alt="`${jurisdictionName} flag`"
-          class="h-8 w-12 rounded object-cover shadow-md ring-1 ring-black/5 transition-transform duration-300 group-hover:scale-105"
+          class="h-6 w-auto transition-transform duration-300 group-hover:scale-105"
         />
         <div
           class="flex h-8 w-8 items-center justify-center rounded-full bg-cold-purple/10 transition-all duration-300 group-hover:translate-x-1 group-hover:bg-cold-purple group-hover:shadow-lg"

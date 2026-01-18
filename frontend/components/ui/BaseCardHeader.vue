@@ -23,7 +23,7 @@
           <UButton
             icon="i-material-symbols:more-vert"
             variant="ghost"
-            color="neutral"
+            color="gray"
             size="sm"
           />
         </UDropdown>
