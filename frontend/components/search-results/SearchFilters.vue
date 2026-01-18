@@ -24,14 +24,7 @@
     >
       <template #option="{ option }">
         <div class="flex items-center">
-          <template
-            v-if="
-              showAvatars &&
-              isObjectOptions &&
-              option.avatar &&
-              !erroredAvatars?.[option.label]
-            "
-          >
+          <template v-if="showAvatars && isObjectOptions && option.avatar">
             <UAvatar
               :src="option.avatar"
               :style="{
@@ -45,7 +38,6 @@
                   : 'grayscale(0.9)',
               }"
               class="mr-2 self-center"
-              @error="() => handleImageError(erroredAvatars, option.label)"
             />
           </template>
           <span
@@ -66,9 +58,7 @@
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
             >
               <UAvatar
-                v-if="
-                  internalValue.avatar && !erroredAvatars[internalValue.label]
-                "
+                v-if="internalValue.avatar"
                 :src="internalValue.avatar"
                 :style="{
                   borderRadius: '0',
@@ -81,9 +71,6 @@
                     : 'grayscale(0.9)',
                 }"
                 class="mr-1.5 self-center"
-                @error="
-                  () => handleImageError(erroredAvatars, internalValue.label)
-                "
               />
               <span
                 class="truncate"
@@ -129,7 +116,7 @@
             >
               <template v-for="(selected, index) in internalValue" :key="index">
                 <UAvatar
-                  v-if="selected.avatar && !erroredAvatars[selected.label]"
+                  v-if="selected.avatar"
                   :src="selected.avatar"
                   :style="{
                     borderRadius: '0',
@@ -142,9 +129,6 @@
                       : 'grayscale(0.9)',
                   }"
                   class="mr-1.5 self-center"
-                  @error="
-                    () => handleImageError(erroredAvatars, selected.label)
-                  "
                 />
                 <span
                   class="mr-2 inline-block truncate"
@@ -186,8 +170,7 @@
 </template>
 
 <script setup>
-import { computed, reactive } from "vue";
-import { handleImageError } from "@/utils/handleImageError";
+import { computed } from "vue";
 import { useCoveredCountries } from "@/composables/useJurisdictions";
 
 const props = defineProps({
@@ -201,8 +184,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:modelValue"]);
-
-const erroredAvatars = reactive({});
 
 const { data: coveredCountries } = useCoveredCountries();
 

@@ -42,10 +42,8 @@
         >
           <span class="hover-flag">
             <img
-              v-if="!erroredImages[jurisdictionString]"
               :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${getJurisdictionISO(jurisdictionString)}.svg`"
               class="flag-icon"
-              @error="handleImageError(erroredImages, jurisdictionString)"
             />
           </span>
           {{ jurisdictionString }}
@@ -267,9 +265,8 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, reactive, watch } from "vue";
+import { onMounted, ref, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { handleImageError } from "@/utils/handleImageError";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
 import CiteModal from "@/components/ui/CiteModal.vue";
@@ -406,8 +403,6 @@ const formattedTheme = computed(() => {
 
   return [...new Set(themes.split(",").map((theme) => theme.trim()))];
 });
-
-const erroredImages = reactive({});
 
 const suggestEditActions = computed(() => {
   const actions = [];

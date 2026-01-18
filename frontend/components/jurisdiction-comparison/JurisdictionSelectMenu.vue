@@ -14,7 +14,7 @@
     <!-- Custom option rendering with avatars -->
     <template #option="{ option }">
       <div class="flex items-center">
-        <template v-if="option?.avatar && !erroredAvatars?.[option?.label]">
+        <template v-if="option?.avatar">
           <UAvatar
             :src="option.avatar"
             :style="{
@@ -28,7 +28,6 @@
                 : 'grayscale(0.9)',
             }"
             class="mr-2 self-center"
-            @error="() => handleImageError(erroredAvatars, option?.label)"
           />
         </template>
         <span
@@ -47,7 +46,7 @@
         v-if="selected"
         class="flex w-full items-center overflow-hidden whitespace-nowrap"
       >
-        <template v-if="selected?.avatar && !erroredAvatars?.[selected?.label]">
+        <template v-if="selected?.avatar">
           <UAvatar
             :src="selected.avatar"
             :style="{
@@ -61,7 +60,6 @@
                 : 'grayscale(0.9)',
             }"
             class="mr-1.5 self-center"
-            @error="() => handleImageError(erroredAvatars, selected?.label)"
           />
         </template>
         <span
@@ -78,9 +76,8 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed } from "vue";
+import { computed } from "vue";
 import type { JurisdictionOption } from "@/types/analyzer";
-import { handleImageError } from "@/utils/handleImageError";
 
 const props = withDefaults(
   defineProps<{
@@ -120,8 +117,6 @@ const emit = defineEmits<{
 const selected = defineModel<JurisdictionOption | undefined>({
   default: undefined,
 });
-
-const erroredAvatars = reactive<Record<string, boolean>>({});
 
 const onSelect = (value: JurisdictionOption | undefined) => {
   emit("country-selected", value);

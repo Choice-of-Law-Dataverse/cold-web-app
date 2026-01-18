@@ -19,6 +19,11 @@
           @click="showAll = !showAll"
         >
           {{ showAll ? "Show less" : "Show more" }}
+          <Icon
+            name="material-symbols:expand-more"
+            class="ml-0.5 text-base transition-transform duration-150"
+            :class="{ 'rotate-180': showAll }"
+          />
         </button>
       </div>
     </div>

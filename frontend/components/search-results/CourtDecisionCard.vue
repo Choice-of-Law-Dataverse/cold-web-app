@@ -1,13 +1,13 @@
 <template>
   <ResultCard :result-data="resultData" card-type="Court Decisions">
-    <div class="flex flex-col gap-0">
+    <div class="flex w-full flex-col gap-0">
       <!-- Case Title section -->
       <DetailRow :label="getLabel('Case Title')">
-        <div class="flex items-start justify-between gap-4">
+        <div class="flex w-full items-start justify-between gap-4">
           <div
             :class="[
               config.valueClassMap['Case Title'],
-              'flex-1 whitespace-pre-line text-sm leading-relaxed',
+              'whitespace-pre-line text-sm leading-relaxed',
               (!resultData['Case Title'] ||
                 resultData['Case Title'] === 'NA') &&
               config.keyLabelPairs.find((pair) => pair.key === 'Case Title')

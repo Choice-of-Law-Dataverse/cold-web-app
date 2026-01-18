@@ -1126,12 +1126,51 @@ button.cold-toggle-btn {
   }
 }
 
-// Label link pattern - night to purple on hover
+// Label link pattern - color inherits from label type, search icon on hover
 .label-link {
-  color: var(--color-cold-night) !important;
   font-weight: 500 !important;
   text-decoration: none !important;
-  transition: color 0.15s ease;
+  transition: all 0.15s ease;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+
+  // Search icon that slides in on hover (uses mask for currentColor support)
+  &::after {
+    content: "";
+    display: inline-block;
+    width: 0;
+    height: 12px;
+    margin-left: 0;
+    background-color: currentColor;
+    mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    opacity: 0;
+    transition:
+      width 0.2s ease,
+      margin-left 0.2s ease,
+      opacity 0.15s ease;
+  }
+
+  &:hover {
+    &::after {
+      width: 12px;
+      margin-left: 4px;
+      opacity: 1;
+    }
+  }
+}
+
+// Jurisdiction link - default night to purple
+.label-link.label-jurisdiction {
+  color: var(--color-cold-night) !important;
 
   &:hover {
     color: var(--color-cold-purple) !important;
@@ -1269,11 +1308,19 @@ $chip-color-jurisdiction: color-mix(
   color: var(--color-cold-night);
 }
 
-// "Show more" style chip
+// "Show more" text link styled to align with chips
 .link-chip--action {
-  @include link-chip-base(var(--color-cold-teal));
-  color: var(--color-cold-teal);
+  @apply inline-flex items-center px-3 py-1.5 text-sm font-medium transition-all duration-150;
+  margin-left: -0.75rem;
+  color: var(--color-cold-night);
   cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 2px;
+
+  &:hover {
+    text-decoration-color: var(--color-cold-night);
+  }
 }
 
 // Navigation tabs - unified style for region badges and section navigation

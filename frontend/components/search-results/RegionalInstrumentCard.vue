@@ -3,14 +3,14 @@
     :result-data="processedResultData"
     card-type="Regional Instrument"
   >
-    <div class="flex flex-col gap-0">
+    <div class="flex w-full flex-col gap-0">
       <!-- Abbreviation section -->
       <DetailRow :label="getLabel('Abbreviation')">
-        <div class="flex items-start justify-between gap-4">
+        <div class="flex w-full items-start justify-between gap-4">
           <div
             :class="[
               config.valueClassMap['Abbreviation'],
-              'flex-1 whitespace-pre-line text-sm leading-relaxed',
+              'whitespace-pre-line text-sm leading-relaxed',
               (!processedResultData['Abbreviation'] ||
                 processedResultData['Abbreviation'] === 'NA') &&
               config.keyLabelPairs.find((pair) => pair.key === 'Abbreviation')
