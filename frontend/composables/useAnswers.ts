@@ -22,7 +22,8 @@ const fetchAnswersForJurisdiction = async (jurisdiction: string) => {
     table: "Answers",
     filters: [
       {
-        column: "Jurisdictions Alpha-3 Code",
+        // TODO: change to "Jurisdictions Alpha-3 Code" after backend deployment
+        column: "Jurisdictions Alpha-3 code",
         value: jurisdiction?.toUpperCase(),
       },
     ],
