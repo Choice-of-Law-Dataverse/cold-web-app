@@ -1,26 +1,59 @@
 <template>
-  <div
+  <NuxtLink
     v-if="jurisdictionCode && countryReportLink"
-    class="border-t border-gray-100 bg-gray-50/50 px-6 py-4 sm:px-8"
+    :to="countryReportLink"
+    class="group relative block overflow-hidden rounded-b-lg bg-gradient-to-r from-cold-purple/5 via-cold-teal/5 to-cold-purple/5 px-6 py-5 transition-all duration-300 hover:from-cold-purple/10 hover:via-cold-teal/10 hover:to-cold-purple/10 sm:px-8"
   >
-    <NuxtLink :to="countryReportLink" class="group flex items-center gap-3">
-      <img
-        v-if="jurisdictionCode"
-        :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${jurisdictionCode.toLowerCase()}.svg`"
-        :alt="`${jurisdictionName} flag`"
-        class="h-5 w-5 rounded-sm shadow-sm"
-      />
-      <span
-        class="text-cold-gray-dark text-sm font-medium transition-colors group-hover:text-cold-purple"
-      >
-        Full questionnaire for {{ jurisdictionName }}
-      </span>
-      <UIcon
-        name="i-heroicons-arrow-right-20-solid"
-        class="h-4 w-4 text-cold-gray transition-transform group-hover:translate-x-0.5 group-hover:text-cold-purple"
-      />
-    </NuxtLink>
-  </div>
+    <!-- Subtle animated gradient overlay -->
+    <div
+      class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+      style="animation: shimmer 2s infinite; background-size: 200% 100%"
+    />
+
+    <div class="relative flex items-center justify-between">
+      <!-- Text content -->
+      <div class="flex items-center gap-3">
+        <div
+          class="flex h-8 w-8 items-center justify-center rounded-full bg-cold-purple/15 transition-all duration-300 group-hover:scale-110 group-hover:bg-cold-purple/25"
+        >
+          <UIcon
+            name="i-heroicons-document-text"
+            class="h-4 w-4 text-cold-purple"
+          />
+        </div>
+        <div class="flex flex-col">
+          <span
+            class="text-xs font-semibold uppercase tracking-wide text-cold-purple"
+          >
+            Country Report
+          </span>
+          <span
+            class="text-sm font-semibold text-gray-700 transition-colors duration-300 group-hover:text-cold-purple"
+          >
+            Full questionnaire for {{ jurisdictionName }}
+          </span>
+        </div>
+      </div>
+
+      <!-- Flag and arrow -->
+      <div class="flex items-center gap-4">
+        <img
+          v-if="jurisdictionCode"
+          :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${jurisdictionCode.toLowerCase()}.svg`"
+          :alt="`${jurisdictionName} flag`"
+          class="h-8 w-12 rounded object-cover shadow-md ring-1 ring-black/5 transition-transform duration-300 group-hover:scale-105"
+        />
+        <div
+          class="flex h-8 w-8 items-center justify-center rounded-full bg-cold-purple/10 transition-all duration-300 group-hover:translate-x-1 group-hover:bg-cold-purple group-hover:shadow-lg"
+        >
+          <UIcon
+            name="i-heroicons-arrow-right-20-solid"
+            class="h-4 w-4 text-cold-purple transition-colors duration-300 group-hover:text-white"
+          />
+        </div>
+      </div>
+    </div>
+  </NuxtLink>
 </template>
 
 <script setup lang="ts">
@@ -65,3 +98,14 @@ const countryReportLink = computed(() => {
   return baseLink;
 });
 </script>
+
+<style scoped>
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+</style>

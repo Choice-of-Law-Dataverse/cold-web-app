@@ -56,6 +56,15 @@ export interface CourtDecisionResponse {
 /** Processed type with normalized fields */
 export interface CourtDecision extends CourtDecisionResponse {
   hasEnglishQuoteTranslation: boolean;
+  /** Pre-computed display title with fallback: Case Title → Case Citation → id */
+  displayTitle: string;
+}
+
+const EXCLUDED_TITLES = new Set(["na", "not found", "n/a"]);
+
+function isValidTitle(title: string | undefined): title is string {
+  if (!title) return false;
+  return !EXCLUDED_TITLES.has(title.toLowerCase());
 }
 
 /** Transform raw response to processed type */
@@ -65,12 +74,20 @@ export function processCourtDecision(
   const themes = raw.themes || raw.Themes;
   const questions = raw.Questions;
 
+  // Compute display title with fallbacks
+  const caseTitle =
+    raw["Case Title"] === "Not found"
+      ? raw["Case Citation"]
+      : raw["Case Title"];
+  const displayTitle = isValidTitle(caseTitle)
+    ? caseTitle
+    : isValidTitle(raw["Case Citation"])
+      ? raw["Case Citation"]
+      : raw.id;
+
   return {
     ...raw,
-    "Case Title":
-      raw["Case Title"] === "Not found"
-        ? raw["Case Citation"]
-        : raw["Case Title"],
+    "Case Title": caseTitle,
     "Related Literature": themes,
     Date: formatDate(raw.Date),
     "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
@@ -82,5 +99,6 @@ export function processCourtDecision(
     hasEnglishQuoteTranslation: Boolean(
       raw["Translated Excerpt"] && raw["Translated Excerpt"].trim() !== "",
     ),
+    displayTitle,
   };
 }

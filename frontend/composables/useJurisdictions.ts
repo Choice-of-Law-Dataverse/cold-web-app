@@ -235,7 +235,7 @@ async function fetchCountByJurisdiction(tableName: TableName, limit?: number) {
   );
 }
 
-export function useCountByJurisdiction(
+function useCountByJurisdiction(
   tableName: Ref<TableName>,
   limit?: Ref<number | undefined>,
 ) {

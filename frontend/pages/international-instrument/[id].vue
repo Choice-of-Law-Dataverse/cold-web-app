@@ -77,6 +77,10 @@
           </div>
         </DetailRow>
       </template>
+
+      <template #footer>
+        <LastModified :date="internationalInstrument?.['Last Modified']" />
+      </template>
     </BaseDetailLayout>
 
     <!-- Handle SEO meta tags -->
@@ -100,6 +104,7 @@ import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useInternationalLegalProvisions } from "@/composables/useFullTable";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import { internationalInstrumentLabels } from "@/config/labels";
 import { internationalInstrumentTooltips } from "@/config/tooltips";
 

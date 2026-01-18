@@ -8,7 +8,11 @@
       :formatted-theme="arbitralAward?.formattedThemes || []"
       :show-suggest-edit="true"
       source-table="Arbitral Award"
-    />
+    >
+      <template #footer>
+        <LastModified :date="arbitralAward?.['Last Modified']" />
+      </template>
+    </BaseDetailLayout>
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
@@ -29,6 +33,7 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useArbitralAward } from "@/composables/useRecordDetails";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import { arbitralAwardLabels } from "@/config/labels";
 
 const route = useRoute();

@@ -17,9 +17,7 @@ export const jurisdictionTooltips = {
   "Jurisdictional Differentiator":
     "Jurisdictional peculiarities, such as the judicial hierarchy. To be read before consulting jurisdictional information.",
   Literature:
-    "This button will open the CoLD search and return all literature pieces that are relevant for this topic.",
-  "Related Data":
-    "This button will provide links to related external data sources with relevant information about this jurisdiction.",
+    "Academic literature relevant to this jurisdiction's choice of law framework.",
 } as const satisfies Partial<Record<keyof JurisdictionResponse, string>>;
 
 export const questionTooltips = {
@@ -33,7 +31,7 @@ export const questionTooltips = {
   "Court Decisions ID":
     "Court decisions that have addressed the same legal issue, according to our database.",
   "Related Literature":
-    "This button will open the CoLD search and return all literature pieces that are relevant for this topic.",
+    "Academic literature relevant to this question's topic.",
 } as const satisfies Partial<Record<keyof Question, string>>;
 
 export const courtDecisionTooltips = {
@@ -64,7 +62,7 @@ export const courtDecisionTooltips = {
   "Related Questions":
     "Questions in our database that the court decision addresses.",
   "Related Literature":
-    "This button will open the CoLD search and return all literature pieces that are relevant for this topic.",
+    "Academic literature relevant to this court decision's legal issues.",
 } as const satisfies Partial<Record<keyof CourtDecision, string>>;
 
 export const literatureTooltips = {

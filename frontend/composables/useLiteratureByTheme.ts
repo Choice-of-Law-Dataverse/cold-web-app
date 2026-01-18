@@ -1,12 +1,23 @@
 import { computed, type Ref } from "vue";
 import { useSearch } from "@/composables/useSearch";
 import type { SearchParams, SearchResponse } from "@/types/api";
+import type { Literature } from "@/types/entities/literature";
 
-interface LiteratureItem {
+interface LiteratureSearchResult {
   id: string;
   Title?: string;
   title?: string;
   "OUP JD Chapter"?: boolean;
+}
+
+function processToLiterature(item: LiteratureSearchResult): Literature {
+  const displayTitle = item.Title || item.title || "Untitled";
+  return {
+    id: item.id,
+    Title: item.Title,
+    displayTitle,
+    isOupChapter: Boolean(item["OUP JD Chapter"]),
+  } as Literature;
 }
 
 export function useLiteratureByTheme(themes: Ref<string | undefined>) {
@@ -22,22 +33,17 @@ export function useLiteratureByTheme(themes: Ref<string | undefined>) {
 
   const { data: searchResults, isLoading } = useSearch(searchParams);
 
-  const literatureFromThemes = computed(() => {
+  const data = computed<Literature[]>(() => {
     if (!searchResults.value?.pages) return [];
     return searchResults.value.pages
       .flatMap((page: SearchResponse) => page.results)
-      .map((item) => {
-        const litItem = item as unknown as LiteratureItem;
-        return {
-          id: litItem.id,
-          title: litItem.Title || litItem.title || "Untitled",
-          "OUP JD Chapter": litItem["OUP JD Chapter"],
-        };
-      });
+      .map((item) =>
+        processToLiterature(item as unknown as LiteratureSearchResult),
+      );
   });
 
   return {
-    data: literatureFromThemes,
+    data,
     isLoading,
   };
 }

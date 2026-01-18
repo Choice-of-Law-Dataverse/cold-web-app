@@ -21,6 +21,7 @@
       <!-- Custom rendering for Court Decisions ID -->
       <template #court-decisions-id="{ value }">
         <DetailRow
+          v-if="value?.length"
           id="related-court-decisions"
           :label="questionLabels['Court Decisions ID']"
           :tooltip="questionTooltips['Court Decisions ID']"
@@ -45,7 +46,6 @@
       <template #related-literature>
         <DetailRow
           :label="questionLabels['Related Literature']"
-          :tooltip="questionTooltips['Related Literature']"
           variant="literature"
         >
           <RelatedLiterature
@@ -59,15 +59,7 @@
       </template>
 
       <template #footer>
-        <div
-          v-if="answerData?.['Last Modified']"
-          class="flex justify-end px-6 pb-4 text-sm text-gray-500"
-        >
-          <span class="flex items-center gap-1">
-            <UIcon name="i-heroicons-clock" class="size-4" />
-            Last updated {{ answerData["Last Modified"] }}
-          </span>
-        </div>
+        <LastModified :date="answerData?.['Last Modified']" />
         <CountryReportBanner
           :jurisdiction-code="answerData?.['Jurisdictions Alpha-3 Code']"
         />
@@ -98,6 +90,7 @@ import QuestionJurisdictions from "@/components/ui/QuestionJurisdictions.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useAnswer } from "@/composables/useRecordDetails";
 import CountryReportBanner from "@/components/ui/CountryReportBanner.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import { questionLabels } from "@/config/labels";
 import { questionTooltips } from "@/config/tooltips";
 

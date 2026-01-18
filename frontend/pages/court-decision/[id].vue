@@ -171,6 +171,7 @@
       </template>
 
       <template #footer>
+        <LastModified :date="courtDecision?.['Last Modified']" />
         <CountryReportBanner
           :jurisdiction-code="courtDecision?.['Jurisdictions Alpha-3 Code']"
         />
@@ -206,6 +207,7 @@ import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CountryReportBanner from "@/components/ui/CountryReportBanner.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useCourtDecision } from "@/composables/useRecordDetails";
 import { courtDecisionLabels } from "@/config/labels";

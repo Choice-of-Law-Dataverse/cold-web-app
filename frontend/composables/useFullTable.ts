@@ -1,8 +1,12 @@
-import { ref, type Ref } from "vue";
+import { computed, ref, type Ref } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
 import type { FullTableRequest, TableName } from "@/types/api";
-import type { LiteratureResponse } from "@/types/entities/literature";
+import {
+  type LiteratureResponse,
+  type Literature,
+  processLiterature,
+} from "@/types/entities/literature";
 import { formatYear } from "@/utils/format";
 
 async function fetchFullTableData<T>(
@@ -15,23 +19,24 @@ async function fetchFullTableData<T>(
   return await apiClient("/search/full_table", { body });
 }
 
-type Options<T> =
+type Options<TInput, TOutput = TInput> =
   | Partial<{
-      select: (data: T[]) => T[];
+      select: (data: TInput[]) => TOutput[];
       filters: FullTableRequest["filters"];
     }>
   | undefined;
 
-export function useFullTable<T = Record<string, unknown>>(
-  table: TableName,
-  { select, filters }: Options<T> = {},
-) {
+export function useFullTable<
+  TInput = Record<string, unknown>,
+  TOutput = TInput,
+>(table: TableName, options: Options<TInput, TOutput> = {}) {
+  const { select, filters } = options;
   return useQuery({
     queryKey: [
       table,
       filters ? filters.map((f) => f.value).join(",") : undefined,
     ],
-    queryFn: () => fetchFullTableData<T>(table, filters),
+    queryFn: () => fetchFullTableData<TInput>(table, filters),
     select,
   });
 }
@@ -78,16 +83,18 @@ export function useLeadingCases() {
 }
 
 export function useLiteratureByJurisdiction(jurisdiction: Ref<string>) {
-  if (!jurisdiction.value) {
-    return { data: ref<LiteratureResponse[]>([]), isLoading: ref(false) };
-  }
+  const { apiClient } = useApiClient();
 
-  return useFullTable<LiteratureResponse>("Literature", {
-    filters: [
-      {
-        column: "Jurisdiction",
-        value: jurisdiction.value,
-      },
-    ],
+  return useQuery({
+    queryKey: computed(() => ["Literature", "jurisdiction", jurisdiction.value]),
+    queryFn: () =>
+      apiClient<LiteratureResponse[]>("/search/full_table", {
+        body: {
+          table: "Literature",
+          filters: [{ column: "Jurisdiction", value: jurisdiction.value }],
+        },
+      }),
+    enabled: computed(() => Boolean(jurisdiction.value)),
+    select: (data) => data.map(processLiterature),
   });
 }

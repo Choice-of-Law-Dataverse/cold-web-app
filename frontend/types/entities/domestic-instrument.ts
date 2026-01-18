@@ -2,6 +2,8 @@
  * Domestic Instrument entity type definitions
  */
 
+import { formatDate } from "@/utils/format";
+
 /** Raw API response */
 export interface DomesticInstrumentResponse {
   id: string;
@@ -52,6 +54,8 @@ export interface DomesticInstrumentResponse {
 export interface DomesticInstrument extends DomesticInstrumentResponse {
   "Title (in English)": string;
   Compatibility?: boolean;
+  /** Pre-computed display title with fallback: Abbreviation → Title (in English) → Official Title → id */
+  displayTitle: string;
 }
 
 /** Transform raw response to processed type */
@@ -62,13 +66,18 @@ export function processDomesticInstrument(
     raw["Compatible With the UNCITRAL Model Law"] === true ||
     raw["Compatible With the HCCH Principles"] === true;
 
+  const titleInEnglish =
+    raw["Title (in English)"] || raw["Official Title"] || "";
+  const displayTitle =
+    raw.Abbreviation || titleInEnglish || raw["Official Title"] || raw.id;
+
   return {
     ...raw,
     Date: formatDate(raw.Date),
     "Publication Date": formatDate(raw["Publication Date"]),
     "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
-    "Title (in English)":
-      raw["Title (in English)"] || raw["Official Title"] || "",
+    "Title (in English)": titleInEnglish,
     Compatibility: hasCompatibility ? true : undefined,
+    displayTitle,
   };
 }

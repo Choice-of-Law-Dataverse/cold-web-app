@@ -113,6 +113,7 @@
       </template>
 
       <template #footer>
+        <LastModified :date="legalInstrument?.['Last Modified']" />
         <CountryReportBanner
           :jurisdiction-code="legalInstrument?.['Jurisdictions Alpha-3 Code']"
         />
@@ -138,6 +139,7 @@ import LegalProvision from "@/components/legal/LegalProvision.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
 import CountryReportBanner from "@/components/ui/CountryReportBanner.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useDomesticInstrument } from "@/composables/useRecordDetails";
 import { getSortedProvisionIds } from "@/utils/provision-sorting";

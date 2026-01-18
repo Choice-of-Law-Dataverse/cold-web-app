@@ -1,6 +1,7 @@
 /**
  * Literature entity type definitions
  */
+import { formatDate } from "@/utils/format";
 
 /** Raw API response */
 export interface LiteratureResponse {
@@ -67,4 +68,22 @@ export interface LiteratureResponse {
   "Regional Instruments Link"?: string;
   // Legacy/additional fields
   "Official Source (PDF)"?: string;
+}
+
+/** Processed type with normalized fields */
+export interface Literature extends LiteratureResponse {
+  /** Pre-computed display title */
+  displayTitle: string;
+  /** Whether this is an OUP JD Chapter */
+  isOupChapter: boolean;
+}
+
+/** Transform raw response to processed type */
+export function processLiterature(raw: LiteratureResponse): Literature {
+  return {
+    ...raw,
+    displayTitle: raw.Title || "Untitled",
+    isOupChapter: Boolean(raw["OUP JD Chapter"]),
+    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
+  };
 }

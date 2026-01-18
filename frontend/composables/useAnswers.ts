@@ -22,7 +22,7 @@ const fetchAnswersForJurisdiction = async (jurisdiction: string) => {
     table: "Answers",
     filters: [
       {
-        column: "Jurisdictions Alpha-3 code",
+        column: "Jurisdictions Alpha-3 Code",
         value: jurisdiction?.toUpperCase(),
       },
     ],

@@ -59,9 +59,8 @@
                   class="item-flag"
                   :alt="country.code + ' flag'"
                   @error="
-                    (e) => {
-                      e.target.style.display = 'none';
-                    }
+                    (e: Event) =>
+                      ((e.target as HTMLImageElement).style.display = 'none')
                   "
                 />
               </div>
@@ -75,9 +74,12 @@
   </UCard>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
-import { useQuestionCountries } from "@/composables/useQuestionCountries";
+import {
+  useQuestionCountries,
+  type Country,
+} from "@/composables/useQuestionCountries";
 import DetailRow from "@/components/ui/DetailRow.vue";
 
 const regions = [
@@ -91,12 +93,9 @@ const regions = [
   "Middle East",
 ];
 
-const props = defineProps({
-  questionSuffix: {
-    type: String,
-    required: true,
-  },
-});
+const props = defineProps<{
+  questionSuffix: string;
+}>();
 
 const selectedRegion = ref("All");
 
@@ -106,66 +105,21 @@ const {
   error,
 } = useQuestionCountries(computed(() => props.questionSuffix));
 
-const answers = computed(() => {
-  const allAnswers = questionData.value?.answers || [];
-  const uniqueAnswers = new Set(
-    allAnswers
-      .map((item) => item.Answer)
-      .filter((answer) => typeof answer === "string" && answer.trim() !== ""),
-  );
-
-  const excludedAnswers = ["No data", "Nothing found", "No information"];
-  excludedAnswers.forEach((answer) => uniqueAnswers.delete(answer));
-
-  const priorityOrder = ["Yes", "No", "Not applicable"];
-  const sortedAnswers = [];
-
-  priorityOrder.forEach((answer) => {
-    if (uniqueAnswers.has(answer)) {
-      sortedAnswers.push(answer);
-      uniqueAnswers.delete(answer);
-    }
-  });
-
-  const remainingAnswers = Array.from(uniqueAnswers).sort((a, b) =>
-    a.localeCompare(b),
-  );
-  sortedAnswers.push(...remainingAnswers);
-
-  return sortedAnswers;
-});
-
 const answersWithJurisdictions = computed(() => {
-  return answers.value.filter(
-    (answer) => getCountriesForAnswer(answer).length > 0,
-  );
+  const answers = questionData.value?.answers || [];
+  return answers.filter((answer) => getCountriesForAnswer(answer).length > 0);
 });
 
-function selectRegion(region) {
+function selectRegion(region: string) {
   selectedRegion.value = region;
 }
 
-function getCountriesForAnswer(answer) {
-  const allAnswers = questionData.value?.answers || [];
-
-  let filtered = allAnswers.filter(
-    (item) => typeof item.Answer === "string" && item.Answer === answer,
-  );
-
-  if (selectedRegion.value !== "All") {
-    filtered = filtered.filter(
-      (item) => item["Jurisdictions Region"] === selectedRegion.value,
-    );
+function getCountriesForAnswer(answer: string): Country[] {
+  const countries = questionData.value?.answerGroups?.get(answer) || [];
+  if (selectedRegion.value === "All") {
+    return countries;
   }
-
-  const countries = filtered
-    .map((item) => ({
-      name: item.Jurisdictions,
-      code: item["Jurisdictions Alpha-3 code"],
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
-
-  return countries;
+  return countries.filter((c) => c.region === selectedRegion.value);
 }
 </script>
 

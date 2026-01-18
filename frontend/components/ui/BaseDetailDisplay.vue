@@ -144,6 +144,7 @@
 </template>
 
 <script setup>
+import { useSlots } from "vue";
 import { useRoute } from "vue-router";
 import { useCoveredCountries } from "@/composables/useJurisdictions";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
@@ -220,7 +221,7 @@ watch(
     const rawJurisdiction = isJurisdictionPage
       ? route.params.id
       : isQuestionPage
-        ? newData["Jurisdictions Alpha-3 code"] || newData.JurisdictionCode
+        ? newData["Jurisdictions Alpha-3 Code"] || newData.JurisdictionCode
         : null;
 
     jurisdictionCode.value =
@@ -243,7 +244,13 @@ watchEffect(() => {
   }
 });
 
+const slots = useSlots();
+
 const shouldDisplayValue = (item, value) => {
+  // Always show if a custom slot exists for this field (slot handles its own data)
+  const slotName = item.key.replace(/ /g, "-").toLowerCase();
+  if (slots[slotName]) return true;
+
   if (!item.emptyValueBehavior) return true;
   if (
     item.emptyValueBehavior.shouldDisplay &&

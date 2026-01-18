@@ -63,6 +63,10 @@
           </div>
         </DetailRow>
       </template>
+
+      <template #footer>
+        <LastModified :date="regionalInstrument?.['Last Modified']" />
+      </template>
     </BaseDetailLayout>
 
     <!-- Handle SEO meta tags -->
@@ -84,6 +88,7 @@ import { useRegionalInstrument } from "@/composables/useRecordDetails";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import { regionalInstrumentLabels } from "@/config/labels";
 import { regionalInstrumentTooltips } from "@/config/tooltips";
 

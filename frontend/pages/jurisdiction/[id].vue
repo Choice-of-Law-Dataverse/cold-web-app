@@ -36,19 +36,11 @@
         <DetailRow label="Domestic Instruments" variant="instrument">
           <RelatedDomesticInstruments
             :jurisdiction="jurisdictionData?.Name as string"
-            :empty-value-behavior="{
-              action: 'display',
-              fallback: 'No domestic instruments available',
-            }"
           />
         </DetailRow>
         <DetailRow label="Court Decisions" variant="court-decision">
           <RelatedCourtDecisions
             :jurisdiction="jurisdictionData?.Name as string"
-            :empty-value-behavior="{
-              action: 'display',
-              fallback: 'No court decisions available',
-            }"
           />
         </DetailRow>
 
@@ -58,11 +50,6 @@
             :mode="'both'"
             :oup-filter="'onlyOup'"
             :jurisdiction="jurisdictionData?.Name as string"
-            :use-id="true"
-            :empty-value-behavior="{
-              action: 'display',
-              fallback: 'No OUP chapters available',
-            }"
           />
         </DetailRow>
 
@@ -73,12 +60,7 @@
         >
           <RelatedLiterature
             :literature-id="(jurisdictionData?.Literature as string) || ''"
-            :use-id="true"
             :jurisdiction="jurisdictionData?.Name as string"
-            :empty-value-behavior="{
-              action: 'display',
-              fallback: 'No related literature available',
-            }"
             :mode="'both'"
             :oup-filter="'noOup'"
           />

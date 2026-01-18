@@ -73,6 +73,10 @@
           </DetailRow>
         </section>
       </template>
+
+      <template #footer>
+        <LastModified :date="literature?.['Last Modified'] as string" />
+      </template>
     </BaseDetailLayout>
 
     <PageSeoMeta
@@ -91,6 +95,7 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import { generateBibTeX, sanitizeFilename, downloadFile } from "@/utils/bibtex";
 import { literatureLabels } from "@/config/labels";
 import { literatureTooltips } from "@/config/tooltips";

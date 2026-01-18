@@ -2,6 +2,8 @@
  * Regional Instrument entity type definitions
  */
 
+import { formatDate } from "@/utils/format";
+
 /** Raw API response */
 export interface RegionalInstrumentResponse {
   id: string;

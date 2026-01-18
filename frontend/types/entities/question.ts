@@ -2,6 +2,8 @@
  * Question entity type definitions
  */
 
+import { formatDate } from "@/utils/format";
+
 /** Raw API response */
 export interface QuestionResponse {
   id: string;

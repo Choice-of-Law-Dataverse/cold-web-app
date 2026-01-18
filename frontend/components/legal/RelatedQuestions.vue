@@ -1,6 +1,6 @@
 <template>
   <RelatedItemsList
-    :items="fullItemsList"
+    :items="items"
     :is-loading="isLoading"
     base-path="/question"
     :empty-value-behavior="emptyValueBehavior"
@@ -8,10 +8,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRef } from "vue";
+import { toRef } from "vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import { useRelatedQuestions } from "@/composables/useRecordDetails";
-import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
+import type { EmptyValueBehavior } from "@/types/ui";
 
 const props = withDefaults(
   defineProps<{
@@ -26,15 +26,8 @@ const props = withDefaults(
   },
 );
 
-const { questionList, questionLabels, isLoading } = useRelatedQuestions(
+const { items, isLoading } = useRelatedQuestions(
   toRef(props, "jurisdictionCode"),
   toRef(props, "questions"),
 );
-
-const fullItemsList = computed<RelatedItem[]>(() => {
-  return questionList.value.map((q, idx) => ({
-    id: `${props.jurisdictionCode}_${q}`,
-    title: questionLabels.value[idx] || `${props.jurisdictionCode}_${q}`,
-  }));
-});
 </script>

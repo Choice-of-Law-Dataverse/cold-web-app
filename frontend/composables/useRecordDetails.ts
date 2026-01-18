@@ -27,7 +27,11 @@ import {
   type Question,
   processQuestion,
 } from "@/types/entities/question";
-import type { LiteratureResponse } from "@/types/entities/literature";
+import {
+  type LiteratureResponse,
+  type Literature,
+  processLiterature,
+} from "@/types/entities/literature";
 import {
   type ArbitralAwardResponse,
   type ArbitralAward,
@@ -156,6 +160,22 @@ export function useArbitralRule(id: Ref<string | number>) {
 
 // List-based composables
 
+export function useCourtDecisionsList(ids: Ref<(string | number)[]>) {
+  return useRecordDetailsList<CourtDecisionResponse, CourtDecision>(
+    "Court Decisions",
+    ids,
+    processCourtDecision,
+  );
+}
+
+export function useDomesticInstrumentsList(ids: Ref<(string | number)[]>) {
+  return useRecordDetailsList<DomesticInstrumentResponse, DomesticInstrument>(
+    "Domestic Instruments",
+    ids,
+    processDomesticInstrument,
+  );
+}
+
 export function useLiteratures(ids: Ref<string>) {
   const literatureIds = computed(() =>
     ids.value
@@ -166,7 +186,11 @@ export function useLiteratures(ids: Ref<string>) {
       : [],
   );
 
-  return useRecordDetailsList<LiteratureResponse>("Literature", literatureIds);
+  return useRecordDetailsList<LiteratureResponse, Literature>(
+    "Literature",
+    literatureIds,
+    processLiterature,
+  );
 }
 
 export function useRelatedQuestions(
@@ -194,28 +218,29 @@ export function useRelatedQuestions(
     processQuestion,
   );
 
-  const questionLabels = computed(() => {
-    const dataMap = compositeIds.value.reduce(
-      (acc, id, index) => {
-        const record = results.data.value?.[index];
-        if (record) {
-          acc[id] = record;
-        }
-        return acc;
-      },
-      {} as Record<string, Question>,
-    );
+  const items = computed(() => {
+    const dataById = new Map<string, Question>();
+    for (let i = 0; i < compositeIds.value.length; i++) {
+      const record = results.data.value?.[i];
+      if (record) {
+        dataById.set(compositeIds.value[i], record);
+      }
+    }
 
     return questionList.value.map((qid) => {
       const id = `${jurisdictionCode.value}_${qid}`;
-      const rec = dataMap[id];
-      return rec?.Question || id;
+      const record = dataById.get(id);
+      return {
+        id,
+        title: record?.Question || id,
+      };
     });
   });
 
   return {
-    questionList,
-    questionLabels,
-    ...results,
+    items,
+    isLoading: results.isLoading,
+    hasError: results.hasError,
+    error: results.error,
   };
 }

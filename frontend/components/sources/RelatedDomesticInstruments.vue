@@ -1,6 +1,6 @@
 <template>
   <RelatedItemsList
-    :items="fullItemsList"
+    :items="data"
     :is-loading="isLoading"
     base-path="/domestic-instrument"
     :empty-value-behavior="emptyValueBehavior"
@@ -8,10 +8,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRef } from "vue";
+import { toRef } from "vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import { useDomesticInstrumentsByJurisdiction } from "@/composables/useDomesticInstrumentsByJurisdiction";
-import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
+import type { EmptyValueBehavior } from "@/types/ui";
 
 const props = withDefaults(
   defineProps<{
@@ -22,27 +22,11 @@ const props = withDefaults(
     jurisdiction: "",
     emptyValueBehavior: () => ({
       action: "display",
-      fallback: "No domestic instruments available",
     }),
   },
 );
 
-const { data: domesticInstruments, isLoading } =
-  useDomesticInstrumentsByJurisdiction(toRef(props, "jurisdiction"));
-
-const fullItemsList = computed<RelatedItem[]>(() => {
-  if (!domesticInstruments.value) return [];
-  return domesticInstruments.value
-    .map((item) => ({
-      id: item?.id ?? "",
-      title: item?.["Title (in English)"] || item?.Abbreviation || "Untitled",
-    }))
-    .filter(
-      (item): item is RelatedItem =>
-        Boolean(item.id) &&
-        Boolean(item.title) &&
-        item.title !== "Untitled" &&
-        item.title !== "NA",
-    );
-});
+const { data, isLoading } = useDomesticInstrumentsByJurisdiction(
+  toRef(props, "jurisdiction"),
+);
 </script>

@@ -6,7 +6,11 @@
       :labels="arbitralRuleLabels"
       :show-suggest-edit="true"
       source-table="Arbitral Rule"
-    />
+    >
+      <template #footer>
+        <LastModified :date="arbitralRule?.['Last Modified']" />
+      </template>
+    </BaseDetailLayout>
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
@@ -22,6 +26,7 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useArbitralRule } from "@/composables/useRecordDetails";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import { arbitralRuleLabels } from "@/config/labels";
 
 const route = useRoute();

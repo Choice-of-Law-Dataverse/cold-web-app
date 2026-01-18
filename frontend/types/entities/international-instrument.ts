@@ -2,6 +2,8 @@
  * International Instrument entity type definitions
  */
 
+import { formatDate } from "@/utils/format";
+
 /** Raw API response */
 export interface InternationalInstrumentResponse {
   id: string;
