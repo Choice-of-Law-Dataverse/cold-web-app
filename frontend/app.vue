@@ -30,26 +30,26 @@ useHead({
     {
       rel: "icon",
       type: "image/png",
-      href: "https://choiceoflaw.blob.core.windows.net/assets/favicon/favicon-96x96.png",
+      href: "/favicon-96x96.png",
       sizes: "96x96",
     },
     {
       rel: "icon",
       type: "image/svg+xml",
-      href: "https://choiceoflaw.blob.core.windows.net/assets/favicon/favicon.svg",
+      href: "/favicon.svg",
     },
     {
       rel: "shortcut icon",
-      href: "https://choiceoflaw.blob.core.windows.net/assets/favicon/favicon.ico",
+      href: "/favicon.ico",
     },
     {
       rel: "apple-touch-icon",
       sizes: "180x180",
-      href: "https://choiceoflaw.blob.core.windows.net/assets/favicon/apple-touch-icon.png",
+      href: "/apple-touch-icon.png",
     },
     {
       rel: "manifest",
-      href: "https://choiceoflaw.blob.core.windows.net/assets/favicon/site.webmanifest",
+      href: "/site.webmanifest",
     },
   ],
   meta: [{ name: "apple-mobile-web-app-title", content: "CoLD" }],
