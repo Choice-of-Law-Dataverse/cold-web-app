@@ -1,16 +1,18 @@
+import type { LiteratureResponse } from "@/types/entities/literature";
+
 /**
  * Generate BibTeX citation from literature record data
  */
-export function generateBibTeX(data: Record<string, unknown>): string {
-  const authors = (data.Authors || data.Author || "") as string;
-  const title = (data.Title || "") as string;
-  const year = (data.Year || data["Publication Year"] || "") as string;
-  const journal = (data["Publication Title"] || data.Journal || "") as string;
-  const volume = (data.Volume || "") as string;
-  const pages = (data.Pages || "") as string;
-  const publisher = (data.Publisher || "") as string;
-  const doi = (data.DOI || "") as string;
-  const url = (data.Url || data.URL || "") as string;
+export function generateBibTeX(data: LiteratureResponse): string {
+  const authors = data.Author || "";
+  const title = data.Title || "";
+  const year = data["Publication Year"] || "";
+  const journal = data["Publication Title"] || "";
+  const publisher = data.Publisher || "";
+  const url = data.Url || "";
+  const volume = data.Volume || "";
+  const pages = data.Pages || "";
+  const doi = data.DOI || "";
 
   // Generate citation key from first author's last name and year
   let citationKey = "cold_literature";
@@ -40,8 +42,8 @@ export function generateBibTeX(data: Record<string, unknown>): string {
   if (volume) bibtex += `  volume = {${volume}},\n`;
   if (pages) bibtex += `  pages = {${pages}},\n`;
   if (publisher) bibtex += `  publisher = {${escape(publisher)}},\n`;
-  if (doi) bibtex += `  doi = {${doi}},\n`;
   if (url) bibtex += `  url = {${url}},\n`;
+  if (doi) bibtex += `  doi = {${doi}},\n`;
   bibtex += "}";
 
   return bibtex;

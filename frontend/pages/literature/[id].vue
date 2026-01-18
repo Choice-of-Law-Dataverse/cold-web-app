@@ -1,22 +1,19 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Literature"
       :loading="loading"
-      :result-data="literature || {}"
-      :key-label-pairs="computedKeyLabelPairs"
-      :value-class-map="valueClassMap"
+      :data="literature || {}"
+      :labels="literatureLabels"
+      :tooltips="literatureTooltips"
       :show-suggest-edit="true"
-      source-table="Literature"
     >
       <!-- Title with PDF and Source Link -->
       <template #title="{ value }">
         <section v-if="value" class="section-gap">
-          <DetailRow
-            :label="keyLabelLookup.get('Title')?.label || 'Title'"
-            :tooltip="keyLabelLookup.get('Title')?.tooltip"
-          >
+          <DetailRow :label="literatureLabels['Title']">
             <div class="flex items-start justify-between gap-4">
-              <div :class="valueClassMap.Title" class="flex-1">{{ value }}</div>
+              <div class="result-value-small flex-1">{{ value }}</div>
               <div class="flex flex-shrink-0 items-center gap-3">
                 <PdfLink
                   :pdf-field="literature?.['Official Source (PDF)']"
@@ -36,12 +33,7 @@
 
       <template #publication-title="{ value }">
         <section v-if="value" class="section-gap">
-          <DetailRow
-            :label="
-              keyLabelLookup.get('Publication Title')?.label || 'Publication'
-            "
-            :tooltip="keyLabelLookup.get('Publication Title')?.tooltip"
-          >
+          <DetailRow :label="literatureLabels['Publication Title']">
             <span class="result-value-small">{{ value }}</span>
           </DetailRow>
         </section>
@@ -50,8 +42,8 @@
       <template #publisher="{ value }">
         <section v-if="value" class="section-gap">
           <DetailRow
-            :label="keyLabelLookup.get('Publisher')?.label || 'Publisher'"
-            :tooltip="keyLabelLookup.get('Publisher')?.tooltip"
+            :label="literatureLabels['Publisher']"
+            :tooltip="literatureTooltips['Publisher']"
           >
             <span class="result-value-small">{{ value }}</span>
           </DetailRow>
@@ -81,6 +73,10 @@
           </DetailRow>
         </section>
       </template>
+
+      <template #footer>
+        <LastModified :date="literature?.['Last Modified'] as string" />
+      </template>
     </BaseDetailLayout>
 
     <PageSeoMeta
@@ -94,41 +90,21 @@
 import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import { useRecordDetails } from "@/composables/useRecordDetails";
-import { useDetailDisplay } from "@/composables/useDetailDisplay";
+import { useLiterature } from "@/composables/useRecordDetails";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import { literatureConfig } from "@/config/pageConfigs";
-import type { TableName } from "@/types/api";
+import LastModified from "@/components/ui/LastModified.vue";
 import { generateBibTeX, sanitizeFilename, downloadFile } from "@/utils/bibtex";
-
-interface LiteratureRecord {
-  Title?: string;
-  [key: string]: unknown;
-}
+import { literatureLabels } from "@/config/labels";
+import { literatureTooltips } from "@/config/tooltips";
 
 const route = useRoute();
 
-const table = ref<TableName>("Literature");
-const id = ref(route.params.id as string);
+const id = computed(() => route.params.id as string);
 
-const { data: literature, isLoading: loading } =
-  useRecordDetails<LiteratureRecord>(table, id);
-
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
-  literature,
-  literatureConfig,
-);
-
-const keyLabelLookup = computed(() => {
-  const map = new Map();
-  computedKeyLabelPairs.value.forEach((pair) => {
-    map.set(pair.key, pair);
-  });
-  return map;
-});
+const { data: literature, isLoading: loading } = useLiterature(id);
 
 // Source URL logic
 const sourceUrl = computed(() => {

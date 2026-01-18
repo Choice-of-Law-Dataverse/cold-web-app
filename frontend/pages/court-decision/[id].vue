@@ -1,30 +1,32 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Court Decisions"
       :loading="isLoading"
-      :result-data="courtDecision || {}"
-      :key-label-pairs="computedKeyLabelPairs"
-      :value-class-map="valueClassMap"
+      :data="courtDecision || {}"
+      :labels="courtDecisionLabels"
+      :tooltips="courtDecisionTooltips"
       :show-suggest-edit="true"
-      source-table="Court Decisions"
     >
       <!-- Case Title with PDF and Source Link -->
       <template #case-title="{ value }">
         <DetailRow
-          :label="keyLabelLookup.get('Case Title')?.label || 'Case Title'"
-          :tooltip="keyLabelLookup.get('Case Title')?.tooltip"
+          :label="courtDecisionLabels['Case Title']"
+          :tooltip="courtDecisionTooltips['Case Title']"
         >
           <div class="flex items-start justify-between gap-4">
-            <div :class="valueClassMap['Case Title']" class="flex-1">
+            <div class="result-value-small flex-1">
               {{ value }}
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
-                :pdf-field="(courtDecision as any)?.['Official Source (PDF)']"
+                :pdf-field="courtDecision?.['Official Source (PDF)']"
                 :record-id="route.params.id as string"
                 folder-name="court-decisions"
               />
-              <SourceExternalLink :source-url="sourceUrl" />
+              <SourceExternalLink
+                :source-url="courtDecision?.['Official Source (URL)'] || ''"
+              />
             </div>
           </div>
         </DetailRow>
@@ -33,11 +35,8 @@
       <template #domestic-legal-provisions="{ value }">
         <DetailRow
           v-if="value"
-          :label="
-            keyLabelLookup.get('Domestic Legal Provisions')?.label ||
-            'Domestic Legal Provisions'
-          "
-          :tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+          :label="courtDecisionLabels['Domestic Legal Provisions']"
+          :tooltip="courtDecisionTooltips['Domestic Legal Provisions']"
         >
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
@@ -49,18 +48,15 @@
             courtDecision &&
             (courtDecision['Quote'] || courtDecision['Translated Excerpt'])
           "
-          label="Quote"
-          :tooltip="keyLabelLookup.get('Quote')?.tooltip"
+          :label="courtDecisionLabels['Quote']"
+          :tooltip="courtDecisionTooltips['Quote']"
         >
           <div>
             <div
               v-if="
-                (courtDecision as Record<string, unknown>)
-                  .hasEnglishQuoteTranslation &&
-                (courtDecision as Record<string, unknown>)['Quote'] &&
-                (
-                  (courtDecision as Record<string, unknown>)['Quote'] as string
-                )?.trim() !== ''
+                courtDecision?.hasEnglishQuoteTranslation &&
+                courtDecision?.Quote &&
+                courtDecision.Quote.trim() !== ''
               "
               class="mb-2 flex items-center gap-1"
             >
@@ -92,12 +88,12 @@
               <p class="result-value-small whitespace-pre-line">
                 {{
                   showEnglishQuote &&
-                  (courtDecision as any).hasEnglishQuoteTranslation &&
-                  (courtDecision as any)["Quote"] &&
-                  (courtDecision as any)["Quote"]?.trim() !== ""
-                    ? (courtDecision as any)["Translated Excerpt"]
-                    : (courtDecision as any)["Quote"] ||
-                      (courtDecision as any)["Translated Excerpt"]
+                  courtDecision?.hasEnglishQuoteTranslation &&
+                  courtDecision?.Quote &&
+                  courtDecision.Quote.trim() !== ""
+                    ? courtDecision["Translated Excerpt"]
+                    : courtDecision?.Quote ||
+                      courtDecision?.["Translated Excerpt"]
                 }}
               </p>
             </div>
@@ -108,15 +104,13 @@
       <template #related-questions="{ value }">
         <DetailRow
           v-if="value"
-          label="Related Questions"
-          :tooltip="keyLabelLookup.get('Related Questions')?.tooltip"
+          :label="courtDecisionLabels['Related Questions']"
+          :tooltip="courtDecisionTooltips['Related Questions']"
           variant="question"
         >
           <RelatedQuestions
             :jurisdiction-code="
-              ((courtDecision as Record<string, unknown>)?.[
-                'Jurisdictions Alpha-3 Code'
-              ] as string) || ''
+              courtDecision?.['Jurisdictions Alpha-3 Code'] || ''
             "
             :questions="value"
           />
@@ -124,15 +118,12 @@
       </template>
       <template #related-literature>
         <DetailRow
-          label="Related Literature"
-          :tooltip="keyLabelLookup.get('Related Literature')?.tooltip"
+          :label="courtDecisionLabels['Related Literature']"
+          :tooltip="courtDecisionTooltips['Related Literature']"
           variant="literature"
         >
           <RelatedLiterature
-            :themes="
-              ((courtDecision as Record<string, unknown>)?.themes as string) ||
-              ''
-            "
+            :themes="courtDecision?.themes || ''"
             :mode="'themes'"
             :oup-filter="'noOup'"
             :empty-value-behavior="{
@@ -146,9 +137,9 @@
       <template #original-text="{ value }">
         <DetailRow
           v-if="value && value.trim() !== ''"
-          :label="keyLabelLookup.get('Original Text')?.label || 'Full Text'"
+          :label="courtDecisionLabels['Original Text']"
         >
-          <div :class="valueClassMap['Original Text']">
+          <div>
             <div v-if="!showFullText && value.length > 400">
               <p class="result-value-small">
                 {{ value.slice(0, 400)
@@ -179,11 +170,10 @@
         </DetailRow>
       </template>
 
-      <template #country-report>
-        <CountryReportLink
-          :jurisdiction-code="
-            courtDecision?.['Jurisdictions Alpha-3 Code'] as string
-          "
+      <template #footer>
+        <LastModified :date="courtDecision?.['Last Modified']" />
+        <CountryReportBanner
+          :jurisdiction-code="courtDecision?.['Jurisdictions Alpha-3 Code']"
         />
       </template>
 
@@ -196,14 +186,10 @@
 
     <PageSeoMeta
       :title-candidates="[
-        ((courtDecision as Record<string, unknown>)?.[
-          'Case Title'
-        ] as string) !== 'Not found'
-          ? ((courtDecision as Record<string, unknown>)?.[
-              'Case Title'
-            ] as string)
+        courtDecision?.['Case Title'] !== 'Not found'
+          ? courtDecision?.['Case Title']
           : null,
-        (courtDecision as Record<string, unknown>)?.['Case Citation'] as string,
+        courtDecision?.['Case Citation'],
       ]"
       fallback="Court Decision"
     />
@@ -220,11 +206,12 @@ import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
-import CountryReportLink from "@/components/ui/CountryReportLink.vue";
+import CountryReportBanner from "@/components/ui/CountryReportBanner.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import { useCourtDecision } from "@/composables/useCourtDecision";
-import { useDetailDisplay } from "@/composables/useDetailDisplay";
-import { courtDecisionConfig } from "@/config/pageConfigs";
+import { useCourtDecision } from "@/composables/useRecordDetails";
+import { courtDecisionLabels } from "@/config/labels";
+import { courtDecisionTooltips } from "@/config/tooltips";
 
 defineProps({
   iconClass: {
@@ -241,24 +228,6 @@ const {
   error,
 } = useCourtDecision(computed(() => route.params.id as string));
 
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
-  courtDecision,
-  courtDecisionConfig,
-);
-
 const showEnglishQuote = ref(true);
 const showFullText = ref(false);
-
-const keyLabelLookup = computed(() => {
-  const map = new Map();
-  courtDecisionConfig.keyLabelPairs.forEach((pair) => {
-    map.set(pair.key, pair);
-  });
-  return map;
-});
-
-// Source URL for court decisions
-const sourceUrl = computed(() => {
-  return (courtDecision.value?.["Official Source (URL)"] || "") as string;
-});
 </script>

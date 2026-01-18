@@ -1,4 +1,21 @@
-import type { ApiRequestBody } from "./api";
+/** Generic body type for error context */
+type ErrorBodyContext = object | undefined;
+
+/** Type guard to check if body has a table property */
+function hasTable(body: ErrorBodyContext): body is { table: string } {
+  return (
+    body !== undefined && "table" in body && typeof body.table === "string"
+  );
+}
+
+/** Type guard to check if body has an id property */
+function hasId(body: ErrorBodyContext): body is { id: string | number } {
+  return (
+    body !== undefined &&
+    "id" in body &&
+    (typeof body.id === "string" || typeof body.id === "number")
+  );
+}
 
 /**
  * Create a NotFound error using Nuxt's createError
@@ -6,12 +23,12 @@ import type { ApiRequestBody } from "./api";
 export function createNotFoundError(
   endpoint: string,
   method: string,
-  body: ApiRequestBody | undefined,
+  body: ErrorBodyContext,
   originalError: unknown,
   customMessage?: string,
 ) {
-  const table = body && "table" in body ? body.table : undefined;
-  const id = body && "id" in body ? body.id : undefined;
+  const table = hasTable(body) ? body.table : undefined;
+  const id = hasId(body) ? body.id : undefined;
   const resource = table ? table : endpoint;
   const itemId = id || "Item";
   const finalMessage = customMessage || `${itemId} not found in ${resource}`;
@@ -43,11 +60,11 @@ export function createNotFoundError(
 export function createApiError(
   endpoint: string,
   method: string,
-  body: ApiRequestBody | undefined,
+  body: ErrorBodyContext,
   originalError: unknown,
   customMessage?: string,
 ) {
-  const table = body && "table" in body ? body.table : undefined;
+  const table = hasTable(body) ? body.table : undefined;
   const operation = table ? `fetch ${table}` : `call ${endpoint}`;
   const baseErrorMessage =
     originalError instanceof Error ? originalError.message : "Unknown error";
@@ -85,17 +102,17 @@ export class NotFoundError extends Error {
   public readonly endpoint: string;
   public readonly method: string;
   public readonly originalError: unknown;
-  public readonly body?: ApiRequestBody;
+  public readonly body?: ErrorBodyContext;
 
   constructor(
     endpoint: string,
     method: string,
-    body: ApiRequestBody | undefined,
+    body: ErrorBodyContext,
     originalError: unknown,
     customMessage?: string,
   ) {
-    const table = body && "table" in body ? body.table : undefined;
-    const id = body && "id" in body ? body.id : undefined;
+    const table = hasTable(body) ? body.table : undefined;
+    const id = hasId(body) ? body.id : undefined;
 
     const resource = table ? table : endpoint;
     const itemId = id || "Item";
@@ -146,16 +163,16 @@ export class ApiError extends Error {
   public readonly endpoint: string;
   public readonly method: string;
   public readonly originalError: unknown;
-  public readonly body?: ApiRequestBody;
+  public readonly body?: ErrorBodyContext;
 
   constructor(
     endpoint: string,
     method: string,
-    body: ApiRequestBody | undefined,
+    body: ErrorBodyContext,
     originalError: unknown,
     customMessage?: string,
   ) {
-    const table = body && "table" in body ? body.table : undefined;
+    const table = hasTable(body) ? body.table : undefined;
 
     const operation = table ? `fetch ${table}` : `call ${endpoint}`;
     const baseErrorMessage =

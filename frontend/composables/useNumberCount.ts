@@ -20,7 +20,9 @@ const fetchNumberCount = async (tableName: TableName) => {
     ],
   };
 
-  const data = await apiClient("/search/", { body });
+  const data = await apiClient<{ total_matches?: number }>("/search/", {
+    body,
+  });
   return data.total_matches ?? 0;
 };
 

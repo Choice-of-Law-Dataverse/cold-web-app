@@ -8,7 +8,7 @@
       :anchor-id="anchorId"
       :class="props.class"
       :loading="loading"
-      :error="error"
+      :error="error?.message"
     >
       <template #header-actions>
         <div v-if="hasEnglishTranslation" class="flex items-center gap-1">
@@ -47,21 +47,22 @@
   </div>
 </template>
 
-<script setup>
-import { computed, watch, onMounted, ref } from "vue";
+<script setup lang="ts">
+import { computed } from "vue";
 import { useLegalProvision } from "@/composables/useLegalProvision";
 import BaseLegalContent from "@/components/legal/BaseLegalContent.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 
-const props = defineProps({
-  provisionId: { type: String, required: true },
-  class: { type: String, default: "" },
-  textType: { type: String, required: true },
-  instrumentTitle: { type: String, default: "" },
-  table: { type: String, default: "Domestic Legal Provisions" },
-});
+const props = defineProps<{
+  provisionId: string;
+  class?: string;
+  instrumentTitle?: string;
+  table?: "Domestic Legal Provisions" | "Regional Legal Provisions";
+}>();
 
-const emit = defineEmits(["update:hasEnglishTranslation"]);
+const emit = defineEmits<{
+  "update:hasEnglishTranslation": [value: boolean];
+}>();
 
 const {
   title,
@@ -71,51 +72,20 @@ const {
   hasEnglishTranslation,
   showEnglish,
   anchorId,
-  fetchProvisionDetails,
-  updateContent,
 } = useLegalProvision({
   provisionId: props.provisionId,
-  textType: props.textType,
   onHasEnglishTranslationUpdate: (value) =>
     emit("update:hasEnglishTranslation", value),
   table: props.table,
 });
 
-const englishTitle = ref("");
-
-watch(
-  content,
-  (newVal) => {
-    if (newVal && typeof newVal === "object" && newVal["Title (in English)"]) {
-      englishTitle.value = newVal["Title (in English)"];
-    }
-  },
-  { immediate: true },
-);
-
 const displayTitle = computed(() => {
   if (loading.value) return "Loading...";
   if (error.value) return "Error";
   const baseTitle = title.value || props.provisionId;
-  let fullTitle = englishTitle.value
-    ? `${baseTitle} - ${englishTitle.value}`
-    : baseTitle;
   if (props.instrumentTitle) {
-    fullTitle += `, ${props.instrumentTitle}`;
+    return `${baseTitle}, ${props.instrumentTitle}`;
   }
-  return fullTitle;
+  return baseTitle;
 });
-
-onMounted(() => {
-  fetchProvisionDetails();
-});
-
-watch(
-  () => props.textType,
-  () => {
-    fetchProvisionDetails();
-  },
-);
-
-watch(showEnglish, updateContent);
 </script>

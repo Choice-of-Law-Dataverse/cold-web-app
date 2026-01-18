@@ -13,7 +13,7 @@
       </span>
     </div>
 
-    <div class="detail-value md:flex-1">
+    <div class="detail-value w-full md:flex-1">
       <slot />
     </div>
   </div>

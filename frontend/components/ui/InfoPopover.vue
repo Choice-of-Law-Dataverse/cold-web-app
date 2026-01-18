@@ -43,5 +43,6 @@ defineProps({
   background-color: var(--color-cold-teal);
   color: white;
   text-transform: none;
+  max-width: 52ch;
 }
 </style>

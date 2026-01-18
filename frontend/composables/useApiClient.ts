@@ -1,10 +1,10 @@
-import type { ApiRequestBody } from "@/types/api";
 import {
   ApiError,
   NotFoundError,
   createApiError,
   createNotFoundError,
 } from "@/types/errors";
+import type { ApiRequestBody } from "~/types/api";
 
 /**
  * Shared API client hook for TanStack Query composables
@@ -13,7 +13,7 @@ import {
 export function useApiClient() {
   const config = useRuntimeConfig();
 
-  const apiClient = async <T = Record<string, unknown>>(
+  const apiClient = async <T>(
     endpoint: string,
     options: {
       body?: ApiRequestBody;

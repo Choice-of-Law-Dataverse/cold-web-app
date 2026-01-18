@@ -1,10 +1,9 @@
 <template>
   <BaseDetailLayout
+    table="Arbitral Awards"
     :loading="loading"
-    :result-data="resultData"
+    :data="resultData"
     :key-label-pairs="computedKeyLabelPairs"
-    :value-class-map="valueClassMap"
-    source-table="Arbitral Award"
   >
     <template #full-width>
       <div class="gradient-top-border w-full">
@@ -93,7 +92,6 @@ useHead({
 const loading = false;
 const resultData = {} as Record<string, unknown>;
 const computedKeyLabelPairs: Record<string, unknown>[] = [];
-const valueClassMap: Record<string, string> = {};
 
 const columns = [
   { key: "caseNumber", label: "Case Number", sortable: true },

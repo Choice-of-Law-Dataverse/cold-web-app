@@ -8,17 +8,22 @@
         <NuxtLink
           v-for="item in displayedItems"
           :key="item.id"
-          :class="chipClass"
+          class="link-chip--neutral"
           :to="item.id.startsWith('/') ? item.id : `${basePath}/${item.id}`"
         >
           {{ item.title }}
         </NuxtLink>
         <button
-          v-if="fullItemsList.length > 10"
+          v-if="items.length > 10"
           class="link-chip--action"
           @click="showAll = !showAll"
         >
           {{ showAll ? "Show less" : "Show more" }}
+          <Icon
+            name="material-symbols:expand-more"
+            class="ml-0.5 text-base transition-transform duration-150"
+            :class="{ 'rotate-180': showAll }"
+          />
         </button>
       </div>
     </div>
@@ -31,29 +36,31 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from "vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
+import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
-const props = defineProps({
-  items: { type: Array, default: () => [] },
-  isLoading: { type: Boolean, default: false },
-  basePath: { type: String, required: true },
-  entityType: { type: String, default: "" },
-  emptyValueBehavior: {
-    type: Object,
-    default: () => ({
+const props = withDefaults(
+  defineProps<{
+    items?: RelatedItem[];
+    isLoading?: boolean;
+    basePath: string;
+    emptyValueBehavior?: EmptyValueBehavior;
+  }>(),
+  {
+    items: () => [],
+    isLoading: false,
+    emptyValueBehavior: () => ({
       action: "display",
       fallback: "No items available",
     }),
   },
-});
+);
 
 const showAll = ref(false);
 
-const fullItemsList = computed(() => props.items || []);
-
-const hasItems = computed(() => fullItemsList.value.length > 0);
+const hasItems = computed(() => props.items.length > 0);
 
 const shouldShowSection = computed(
   () =>
@@ -63,10 +70,8 @@ const shouldShowSection = computed(
 );
 
 const displayedItems = computed(() => {
-  const arr = fullItemsList.value;
-  return !showAll.value && arr.length > 10 ? arr.slice(0, 10) : arr;
+  return !showAll.value && props.items.length > 10
+    ? props.items.slice(0, 10)
+    : props.items;
 });
-
-// Use neutral chip style - semantic color is on the DetailRow label
-const chipClass = "link-chip--neutral";
 </script>

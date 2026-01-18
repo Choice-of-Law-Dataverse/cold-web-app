@@ -1,11 +1,9 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Domestic Instruments"
       :loading="false"
-      :result-data="{}"
-      :key-label-pairs="[]"
-      :value-class-map="{}"
-      source-table="Domestic Instrument"
+      :data="{}"
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"
@@ -231,13 +229,18 @@ import SaveModal from "@/components/ui/SaveModal.vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
 import { format } from "date-fns";
-import tooltipAbbreviation from "@/content/info_boxes/domestic_instrument/abbreviation.md?raw";
-import tooltipCompatibleWithHCCH from "@/content/info_boxes/domestic_instrument/compatible_hcch.md?raw";
-import tooltipCompatibleWithUNCITRAL from "@/content/info_boxes/domestic_instrument/compatible_uncitral.md?raw";
-import tooltipEntryIntoForce from "@/content/info_boxes/domestic_instrument/entry_into_force.md?raw";
-import tooltipOfficialTitle from "@/content/info_boxes/domestic_instrument/official_title.md?raw";
-import tooltipDomesticInstrumentPublicationDate from "@/content/info_boxes/domestic_instrument/publication_date.md?raw";
-import tooltipDomesticInstrumentTitle from "@/content/info_boxes/domestic_instrument/title.md?raw";
+import { domesticInstrumentTooltips } from "@/config/tooltips";
+
+const tooltipAbbreviation = domesticInstrumentTooltips["Abbreviation"];
+const tooltipCompatibleWithHCCH = domesticInstrumentTooltips["Compatibility"];
+const tooltipCompatibleWithUNCITRAL =
+  domesticInstrumentTooltips["Compatibility"];
+const tooltipEntryIntoForce = domesticInstrumentTooltips["Entry Into Force"];
+const tooltipOfficialTitle = domesticInstrumentTooltips["Official Title"];
+const tooltipDomesticInstrumentPublicationDate =
+  domesticInstrumentTooltips["Publication Date"];
+const tooltipDomesticInstrumentTitle =
+  domesticInstrumentTooltips["Title (in English)"];
 
 definePageMeta({
   middleware: ["auth"],

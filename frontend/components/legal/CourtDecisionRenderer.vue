@@ -9,10 +9,10 @@
     <template #default="{ item }">
       <NuxtLink
         class="link-chip--neutral"
-        :to="generateCourtDecisionLink(item)"
+        :to="`/court-decision/${item as string}`"
       >
-        <template v-if="caseTitles[item] !== undefined">
-          {{ caseTitles[item] }}
+        <template v-if="decisionsById.get(item as string)">
+          {{ decisionsById.get(item as string)!.displayTitle }}
         </template>
         <template v-else>
           <LoadingBar />
@@ -22,60 +22,45 @@
   </BaseLegalRenderer>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
-import { useRecordDetailsList } from "@/composables/useRecordDetails";
+import { useCourtDecisionsList } from "@/composables/useRecordDetails";
+import type { CourtDecision } from "@/types/entities/court-decision";
 import BaseLegalRenderer from "./BaseLegalRenderer.vue";
 import { NuxtLink } from "#components";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 
-const props = defineProps({
-  value: {
-    type: [Array, String],
-    default: () => [],
-  },
-  valueClassMap: {
-    type: String,
-    default: "",
-  },
-  emptyValueBehavior: {
-    type: Object,
-    default: () => ({
+const props = withDefaults(
+  defineProps<{
+    value: string[] | string;
+    valueClassMap?: string;
+    emptyValueBehavior?: {
+      action: string;
+      fallback: string;
+    };
+  }>(),
+  {
+    valueClassMap: "",
+    emptyValueBehavior: () => ({
       action: "display",
       fallback: "—",
     }),
   },
-});
-
-const excludedValues = new Set(["na", "not found", "n/a"]);
+);
 
 const decisionIds = computed(() => {
   const items = Array.isArray(props.value) ? props.value : [props.value];
-  const filtered = items.filter(Boolean);
-  const unique = [...new Set(filtered)];
-  return unique;
+  return [...new Set(items.filter(Boolean))];
 });
 
-const { data: decisions } = useRecordDetailsList(
-  computed(() => "Court Decisions"),
-  decisionIds,
-);
+const { data: decisions } = useCourtDecisionsList(decisionIds);
 
-const caseTitles = computed(() => {
-  const map = {};
+const decisionsById = computed(() => {
+  const map = new Map<string, CourtDecision>();
   if (!decisions.value) return map;
-
-  decisions.value.forEach((rec) => {
-    if (!rec) return;
-    const options = [rec["Case Title"], rec["Case Citation"], rec.id];
-    map[rec.id] = options.filter(
-      (t) => t && !excludedValues.has(t.toLowerCase()),
-    )[0];
-  });
+  for (const rec of decisions.value) {
+    if (rec) map.set(rec.id, rec);
+  }
   return map;
 });
-
-function generateCourtDecisionLink(caseId) {
-  return `/court-decision/${caseId}`;
-}
 </script>

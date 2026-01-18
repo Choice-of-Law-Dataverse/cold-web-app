@@ -19,7 +19,7 @@
 <script setup>
 import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { aboutNavLinks } from "@/config/pageConfigs.js";
+import { aboutNavLinks } from "@/config/navigation";
 
 const props = defineProps({
   links: {

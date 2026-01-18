@@ -2,12 +2,13 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
 import QuestionJurisdictions from "./QuestionJurisdictions.vue";
 import { ref } from "vue";
+import type {
+  QuestionCountriesData,
+  Country,
+} from "@/composables/useQuestionCountries";
 
 // Mock the composable
-const mockQuestionData = ref<{
-  answers: unknown[];
-  questionTitle?: string;
-} | null>(null);
+const mockQuestionData = ref<QuestionCountriesData | null>(null);
 const mockIsLoading = ref(false);
 const mockError = ref<Error | null>(null);
 
@@ -18,6 +19,30 @@ vi.mock("@/composables/useQuestionCountries", () => ({
     error: mockError,
   }),
 }));
+
+function createCountry(name: string, code: string, region = ""): Country {
+  return { name, code, region };
+}
+
+function createQuestionData(
+  answersWithCountries: Array<{
+    answer: string;
+    countries: Array<{ name: string; code: string; region?: string }>;
+  }>,
+): QuestionCountriesData {
+  const answers: string[] = [];
+  const answerGroups = new Map<string, Country[]>();
+
+  for (const { answer, countries } of answersWithCountries) {
+    answers.push(answer);
+    answerGroups.set(
+      answer,
+      countries.map((c) => createCountry(c.name, c.code, c.region || "")),
+    );
+  }
+
+  return { questionTitle: "Test Question", answers, answerGroups };
+}
 
 describe("QuestionJurisdictions", () => {
   beforeEach(() => {
@@ -84,30 +109,10 @@ describe("QuestionJurisdictions", () => {
   });
 
   it("excludes 'No data', 'Nothing found', and 'No information' answers", () => {
-    mockQuestionData.value = {
-      answers: [
-        {
-          Answer: "Yes",
-          Jurisdictions: "France",
-          "Jurisdictions Alpha-3 code": "FRA",
-        },
-        {
-          Answer: "No data",
-          Jurisdictions: "Spain",
-          "Jurisdictions Alpha-3 code": "ESP",
-        },
-        {
-          Answer: "Nothing found",
-          Jurisdictions: "Italy",
-          "Jurisdictions Alpha-3 code": "ITA",
-        },
-        {
-          Answer: "No information",
-          Jurisdictions: "Germany",
-          "Jurisdictions Alpha-3 code": "DEU",
-        },
-      ],
-    };
+    // Note: These exclusions now happen in the composable, so we only include valid answers
+    mockQuestionData.value = createQuestionData([
+      { answer: "Yes", countries: [{ name: "France", code: "FRA" }] },
+    ]);
     const wrapper = mount(QuestionJurisdictions, {
       props: {
         questionSuffix: "/test-question",
@@ -120,30 +125,16 @@ describe("QuestionJurisdictions", () => {
   });
 
   it("prioritizes Yes, No, Not applicable answers in order", () => {
-    mockQuestionData.value = {
-      answers: [
-        {
-          Answer: "Maybe",
-          Jurisdictions: "Country1",
-          "Jurisdictions Alpha-3 code": "C01",
-        },
-        {
-          Answer: "No",
-          Jurisdictions: "Country2",
-          "Jurisdictions Alpha-3 code": "C02",
-        },
-        {
-          Answer: "Not applicable",
-          Jurisdictions: "Country3",
-          "Jurisdictions Alpha-3 code": "C03",
-        },
-        {
-          Answer: "Yes",
-          Jurisdictions: "Country4",
-          "Jurisdictions Alpha-3 code": "C04",
-        },
-      ],
-    };
+    // Note: Priority ordering now happens in the composable
+    mockQuestionData.value = createQuestionData([
+      { answer: "Yes", countries: [{ name: "Country4", code: "C04" }] },
+      { answer: "No", countries: [{ name: "Country2", code: "C02" }] },
+      {
+        answer: "Not applicable",
+        countries: [{ name: "Country3", code: "C03" }],
+      },
+      { answer: "Maybe", countries: [{ name: "Country1", code: "C01" }] },
+    ]);
     const wrapper = mount(QuestionJurisdictions, {
       props: {
         questionSuffix: "/test-question",
@@ -156,25 +147,12 @@ describe("QuestionJurisdictions", () => {
   });
 
   it("sorts remaining answers alphabetically after priority answers", () => {
-    mockQuestionData.value = {
-      answers: [
-        {
-          Answer: "Zebra",
-          Jurisdictions: "Country1",
-          "Jurisdictions Alpha-3 code": "C01",
-        },
-        {
-          Answer: "Apple",
-          Jurisdictions: "Country2",
-          "Jurisdictions Alpha-3 code": "C02",
-        },
-        {
-          Answer: "Yes",
-          Jurisdictions: "Country3",
-          "Jurisdictions Alpha-3 code": "C03",
-        },
-      ],
-    };
+    // Note: Sorting now happens in the composable
+    mockQuestionData.value = createQuestionData([
+      { answer: "Yes", countries: [{ name: "Country3", code: "C03" }] },
+      { answer: "Apple", countries: [{ name: "Country2", code: "C02" }] },
+      { answer: "Zebra", countries: [{ name: "Country1", code: "C01" }] },
+    ]);
     const wrapper = mount(QuestionJurisdictions, {
       props: {
         questionSuffix: "/test-question",
@@ -187,22 +165,15 @@ describe("QuestionJurisdictions", () => {
   });
 
   it("filters countries by selected region", async () => {
-    mockQuestionData.value = {
-      answers: [
-        {
-          Answer: "Yes",
-          Jurisdictions: "France",
-          "Jurisdictions Alpha-3 code": "FRA",
-          "Jurisdictions Region": "Europe",
-        },
-        {
-          Answer: "Yes",
-          Jurisdictions: "Japan",
-          "Jurisdictions Alpha-3 code": "JPN",
-          "Jurisdictions Region": "Asia & Pacific",
-        },
-      ],
-    };
+    mockQuestionData.value = createQuestionData([
+      {
+        answer: "Yes",
+        countries: [
+          { name: "France", code: "FRA", region: "Europe" },
+          { name: "Japan", code: "JPN", region: "Asia & Pacific" },
+        ],
+      },
+    ]);
     const wrapper = mount(QuestionJurisdictions, {
       props: {
         questionSuffix: "/test-question",
@@ -224,25 +195,17 @@ describe("QuestionJurisdictions", () => {
   });
 
   it("sorts countries alphabetically within each answer group", () => {
-    mockQuestionData.value = {
-      answers: [
-        {
-          Answer: "Yes",
-          Jurisdictions: "Zambia",
-          "Jurisdictions Alpha-3 code": "ZMB",
-        },
-        {
-          Answer: "Yes",
-          Jurisdictions: "Argentina",
-          "Jurisdictions Alpha-3 code": "ARG",
-        },
-        {
-          Answer: "Yes",
-          Jurisdictions: "Brazil",
-          "Jurisdictions Alpha-3 code": "BRA",
-        },
-      ],
-    };
+    // Note: Sorting now happens in the composable, so countries should already be sorted
+    mockQuestionData.value = createQuestionData([
+      {
+        answer: "Yes",
+        countries: [
+          { name: "Argentina", code: "ARG" },
+          { name: "Brazil", code: "BRA" },
+          { name: "Zambia", code: "ZMB" },
+        ],
+      },
+    ]);
     const wrapper = mount(QuestionJurisdictions, {
       props: {
         questionSuffix: "/test-question",
@@ -261,16 +224,12 @@ describe("QuestionJurisdictions", () => {
   });
 
   it("hides answer row when no jurisdictions for selected region", async () => {
-    mockQuestionData.value = {
-      answers: [
-        {
-          Answer: "Yes",
-          Jurisdictions: "France",
-          "Jurisdictions Alpha-3 code": "FRA",
-          "Jurisdictions Region": "Europe",
-        },
-      ],
-    };
+    mockQuestionData.value = createQuestionData([
+      {
+        answer: "Yes",
+        countries: [{ name: "France", code: "FRA", region: "Europe" }],
+      },
+    ]);
     const wrapper = mount(QuestionJurisdictions, {
       props: {
         questionSuffix: "/test-question",
@@ -288,15 +247,9 @@ describe("QuestionJurisdictions", () => {
   });
 
   it("renders links with correct paths", async () => {
-    mockQuestionData.value = {
-      answers: [
-        {
-          Answer: "Yes",
-          Jurisdictions: "France",
-          "Jurisdictions Alpha-3 code": "FRA",
-        },
-      ],
-    };
+    mockQuestionData.value = createQuestionData([
+      { answer: "Yes", countries: [{ name: "France", code: "FRA" }] },
+    ]);
     const wrapper = mount(QuestionJurisdictions, {
       props: {
         questionSuffix: "/test-question",

@@ -1,63 +1,37 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Arbitral Rules"
       :loading="loading"
-      :result-data="processedArbitralRule || {}"
-      :key-label-pairs="computedKeyLabelPairs"
-      :value-class-map="valueClassMap"
+      :data="arbitralRule || {}"
+      :labels="arbitralRuleLabels"
       :show-suggest-edit="true"
-      source-table="Arbitral Rule"
-    />
+    >
+      <template #footer>
+        <LastModified :date="arbitralRule?.['Last Modified']" />
+      </template>
+    </BaseDetailLayout>
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[arbitralRule?.['Set of Rules'] as string]"
+      :title-candidates="[arbitralRule?.['Set of Rules']]"
       fallback="Arbitral Rule"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
-import { useRecordDetails } from "@/composables/useRecordDetails";
-import { useDetailDisplay } from "@/composables/useDetailDisplay";
-import { arbitralRuleConfig } from "@/config/pageConfigs";
+import { useArbitralRule } from "@/composables/useRecordDetails";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import type { TableName } from "@/types/api";
-
-interface ArbitralRuleRecord {
-  "Set of Rules"?: string;
-  related_arbitral_institutions?: Array<{ Institution?: string }>;
-  [key: string]: unknown;
-}
+import LastModified from "@/components/ui/LastModified.vue";
+import { arbitralRuleLabels } from "@/config/labels";
 
 const route = useRoute();
 
-const table = ref<TableName>("Arbitral Rules");
-const id = ref(route.params.id as string);
-
-const { data: arbitralRule, isLoading: loading } =
-  useRecordDetails<ArbitralRuleRecord>(table, id);
-
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
-  arbitralRule,
-  arbitralRuleConfig,
+const { data: arbitralRule, isLoading: loading } = useArbitralRule(
+  computed(() => route.params.id as string),
 );
-
-const processedArbitralRule = computed(() => {
-  if (!arbitralRule.value) return null;
-  return {
-    ...arbitralRule.value,
-    "Arbitral Institution": Array.isArray(
-      arbitralRule.value?.related_arbitral_institutions,
-    )
-      ? arbitralRule.value.related_arbitral_institutions
-          .map((inst) => inst?.Institution)
-          .filter((v) => v && String(v).trim())
-          .join(", ")
-      : undefined,
-  };
-});
 </script>

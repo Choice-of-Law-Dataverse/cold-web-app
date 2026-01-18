@@ -13,67 +13,25 @@
           :to="`/jurisdiction/${comparison.left}?compare=${comparison.right}#questions-and-answers`"
           class="no-underline"
         >
-          <div
-            class="comparison-row hover-row flex items-start justify-between p-2"
-          >
-            <div
-              class="comparison-side flex min-w-[100px] flex-col items-center gap-2"
-            >
-              <div
-                class="flag-container flex h-12 w-full items-center justify-center"
-              >
-                <img
-                  v-if="!flagErrors[`${index}-left`]"
-                  :src="getFlagUrl(comparison.left)"
-                  :alt="`${comparison.left} flag`"
-                  class="comparison-flag block h-12 w-auto max-w-full"
-                  @error="flagErrors[`${index}-left`] = true"
-                />
-                <div
-                  v-else
-                  class="flag-fallback inline-flex h-9 items-center justify-center border border-gray-300 bg-gray-100 px-3 font-semibold"
-                >
-                  {{ comparison.left }}
-                </div>
-              </div>
-              <div
-                class="jurisdiction-name text-center text-sm font-semibold tracking-wider text-[var(--color-cold-night)]"
-              >
-                {{ comparison.left }}
-              </div>
+          <div class="comparison-row">
+            <div class="comparison-side">
+              <img
+                :src="getFlagUrl(comparison.left)"
+                :alt="`${comparison.left} flag`"
+                class="h-6 w-auto"
+              />
+              <span class="jurisdiction-code">{{ comparison.left }}</span>
             </div>
 
-            <div
-              class="comparison-vs mt-3 self-center px-2 text-sm font-semibold uppercase text-gray-400"
-            >
-              vs
-            </div>
+            <span class="comparison-vs">vs</span>
 
-            <div
-              class="comparison-side flex min-w-[100px] flex-col items-center gap-2 md:min-w-[120px]"
-            >
-              <div
-                class="flag-container flex h-12 w-full items-center justify-center"
-              >
-                <img
-                  v-if="!flagErrors[`${index}-right`]"
-                  :src="getFlagUrl(comparison.right)"
-                  :alt="`${comparison.right} flag`"
-                  class="comparison-flag block h-12 w-auto max-w-full"
-                  @error="flagErrors[`${index}-right`] = true"
-                />
-                <div
-                  v-else
-                  class="flag-fallback inline-flex h-9 items-center justify-center border border-gray-300 bg-gray-100 px-3 font-semibold"
-                >
-                  {{ comparison.right }}
-                </div>
-              </div>
-              <div
-                class="jurisdiction-name text-center text-sm font-semibold tracking-wider text-[var(--color-cold-night)]"
-              >
-                {{ comparison.right }}
-              </div>
+            <div class="comparison-side">
+              <img
+                :src="getFlagUrl(comparison.right)"
+                :alt="`${comparison.right} flag`"
+                class="h-6 w-auto"
+              />
+              <span class="jurisdiction-code">{{ comparison.right }}</span>
             </div>
           </div>
         </NuxtLink>
@@ -83,8 +41,6 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
-
 defineProps({
   title: { type: String, default: "Compare Jurisdictions" },
   comparisons: {
@@ -94,8 +50,6 @@ defineProps({
   },
 });
 
-const flagErrors = ref({});
-
 const getFlagUrl = (iso3) => {
   return `https://choiceoflaw.blob.core.windows.net/assets/flags/${iso3.toLowerCase()}.svg`;
 };
@@ -103,31 +57,25 @@ const getFlagUrl = (iso3) => {
 
 <style scoped>
 .comparison-row {
-  @apply p-2 shadow-sm;
+  @apply flex items-center justify-center gap-6 rounded-lg px-4 py-3 shadow-sm transition-all duration-150;
+  background: var(--gradient-subtle);
+
+  &:hover {
+    @apply shadow;
+    background: var(--gradient-subtle-emphasis);
+  }
 }
 
-.comparison-flag {
-  @apply rounded border border-gray-200;
+.comparison-side {
+  @apply flex w-20 flex-col items-center gap-1;
 }
 
-.comparison-vs {
-  @apply relative text-gray-400 transition-colors duration-200;
-}
-
-.comparison-row:hover .comparison-vs {
-  color: var(--color-cold-green);
-}
-
-.jurisdiction-name {
-  @apply text-center text-sm font-semibold uppercase tracking-wider transition-colors duration-200;
+.jurisdiction-code {
+  @apply text-sm font-semibold;
   color: var(--color-cold-night);
 }
 
-.comparison-row:hover .jurisdiction-name {
-  color: var(--color-cold-purple);
-}
-
-.flag-fallback {
-  @apply inline-flex h-9 items-center justify-center border border-gray-300 bg-gray-100 px-3 font-semibold;
+.comparison-vs {
+  @apply text-sm font-medium text-gray-400;
 }
 </style>

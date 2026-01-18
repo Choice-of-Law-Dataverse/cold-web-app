@@ -1,4 +1,39 @@
 // API Request Body Types for useApiClient composables
+// Entity response type imports for TableResponseMap
+import type { AnswerResponse } from "./entities/answer";
+import type {
+  ArbitralAward,
+  ArbitralAwardResponse,
+} from "./entities/arbitral-award";
+import type {
+  ArbitralRule,
+  ArbitralRuleResponse,
+} from "./entities/arbitral-rule";
+import type {
+  CourtDecision,
+  CourtDecisionResponse,
+} from "./entities/court-decision";
+import type {
+  DomesticInstrument,
+  DomesticInstrumentResponse,
+} from "./entities/domestic-instrument";
+import type {
+  InternationalInstrument,
+  InternationalInstrumentResponse,
+} from "./entities/international-instrument";
+import type { JurisdictionResponse } from "./entities/jurisdiction";
+import type {
+  DomesticLegalProvisionResponse,
+  InternationalLegalProvisionResponse,
+  RegionalLegalProvisionResponse,
+} from "./entities/legal-provision";
+import type { LiteratureResponse } from "./entities/literature";
+import type { Question, QuestionResponse } from "./entities/question";
+import type {
+  RegionalInstrument,
+  RegionalInstrumentResponse,
+} from "./entities/regional-instrument";
+
 export { ApiError } from "./errors";
 
 /**
@@ -49,13 +84,18 @@ export interface DetailsByIdRequest extends BaseTableRequest {
 }
 
 /**
+ * Filter for full table queries
+ */
+export interface FullTableFilter {
+  column: string;
+  value: string | number | boolean;
+}
+
+/**
  * Request body for full table queries
  */
 export interface FullTableRequest extends BaseTableRequest {
-  filters?: Array<{
-    column: string;
-    value: string | number | boolean;
-  }>;
+  filters?: FullTableFilter[];
 }
 
 /**
@@ -165,6 +205,60 @@ export type TableName =
   | "Regional Instruments"
   | "Regional Legal Provisions"
   | "Specialists";
+
+/**
+ * Maps table names to their corresponding response types (raw API data).
+ * Used to provide type safety for filters and query results.
+ */
+export type TableResponseMap = {
+  Answers: AnswerResponse;
+  "Arbitral Awards": ArbitralAwardResponse;
+  "Arbitral Rules": ArbitralRuleResponse;
+  "Court Decisions": CourtDecisionResponse;
+  "Domestic Instruments": DomesticInstrumentResponse;
+  "Domestic Legal Provisions": DomesticLegalProvisionResponse;
+  "International Instruments": InternationalInstrumentResponse;
+  "International Legal Provisions": InternationalLegalProvisionResponse;
+  Jurisdictions: JurisdictionResponse;
+  "Leading Cases": CourtDecisionResponse; // Alias: Leading Cases = Court Decisions with Case Rank filter
+  Literature: LiteratureResponse;
+  Questions: QuestionResponse;
+  "Regional Instruments": RegionalInstrumentResponse;
+  "Regional Legal Provisions": RegionalLegalProvisionResponse;
+  Specialists: Record<string, unknown>; // Not used with full_table endpoint
+};
+
+/**
+ * Maps table names to their processed types (used in detail pages).
+ * Processed types extend response types with computed fields.
+ * Used for typing labels/tooltips in BaseDetailLayout.
+ */
+export type TableProcessedMap = {
+  Answers: AnswerResponse; // No separate processed type
+  "Arbitral Awards": ArbitralAward;
+  "Arbitral Rules": ArbitralRule;
+  "Court Decisions": CourtDecision;
+  "Domestic Instruments": DomesticInstrument;
+  "Domestic Legal Provisions": DomesticLegalProvisionResponse; // No separate processed type
+  "International Instruments": InternationalInstrument;
+  "International Legal Provisions": InternationalLegalProvisionResponse; // No separate processed type
+  Jurisdictions: JurisdictionResponse; // No separate processed type
+  "Leading Cases": CourtDecision; // Alias for Court Decisions
+  Literature: LiteratureResponse; // No separate processed type
+  Questions: Question;
+  "Regional Instruments": RegionalInstrument;
+  "Regional Legal Provisions": RegionalLegalProvisionResponse; // No separate processed type
+  Specialists: Record<string, unknown>; // Not used with full_table endpoint
+};
+
+/**
+ * Type-safe filter for a specific table.
+ * The column must be a key from the table's response type.
+ */
+export type TypedFilter<T extends TableName> = {
+  column: keyof TableResponseMap[T] & string;
+  value: string | number | boolean;
+};
 
 /**
  * Search filter column names

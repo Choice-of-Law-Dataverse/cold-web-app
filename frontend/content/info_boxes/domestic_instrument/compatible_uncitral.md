@@ -1,1 +1,0 @@
-Whether the domestic instrument is inspired by the UNCITRAL Model Law?

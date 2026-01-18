@@ -1,21 +1,21 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Domestic Instruments"
       :loading="loading"
-      :result-data="processedLegalInstrument || {}"
-      :key-label-pairs="computedKeyLabelPairs"
-      :value-class-map="valueClassMap"
+      :data="legalInstrument || {}"
+      :labels="domesticInstrumentLabels"
+      :tooltips="domesticInstrumentTooltips"
       :show-suggest-edit="true"
-      source-table="Domestic Instrument"
     >
       <!-- Title with PDF and Source Link -->
       <template #title-(in-english)="{ value }">
         <DetailRow
-          :label="keyLabelLookup.get('Title (in English)')?.label || 'Name'"
-          :tooltip="keyLabelLookup.get('Title (in English)')?.tooltip"
+          :label="domesticInstrumentLabels['Title (in English)']"
+          :tooltip="domesticInstrumentTooltips['Title (in English)']"
         >
           <div class="flex items-start justify-between gap-4">
-            <div :class="valueClassMap['Title (in English)']" class="flex-1">
+            <div class="result-value-small flex-1">
               {{ value }}
             </div>
             <div class="flex flex-shrink-0 items-center gap-3">
@@ -27,7 +27,9 @@
                 :record-id="route.params.id as string"
                 folder-name="domestic-instruments"
               />
-              <SourceExternalLink :source-url="sourceUrl" />
+              <SourceExternalLink
+                :source-url="legalInstrument?.['Source (URL)']"
+              />
             </div>
           </div>
         </DetailRow>
@@ -35,21 +37,13 @@
 
       <!-- Slot for Amended by -->
       <template #amended-by="{ value }">
-        <DetailRow
-          v-if="value"
-          :label="keyLabelLookup.get('Amended by')?.label || 'Amended by'"
-          :tooltip="keyLabelLookup.get('Amended by')?.tooltip"
-        >
+        <DetailRow v-if="value" :label="domesticInstrumentLabels['Amended by']">
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
       </template>
       <!-- Slot for Amends -->
       <template #amends="{ value }">
-        <DetailRow
-          v-if="value"
-          :label="keyLabelLookup.get('Amends')?.label || 'Amends'"
-          :tooltip="keyLabelLookup.get('Amends')?.tooltip"
-        >
+        <DetailRow v-if="value" :label="domesticInstrumentLabels['Amends']">
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
       </template>
@@ -57,19 +51,14 @@
       <template #replaced-by="{ value }">
         <DetailRow
           v-if="value"
-          :label="keyLabelLookup.get('Replaced by')?.label || 'Replaced by'"
-          :tooltip="keyLabelLookup.get('Replaced by')?.tooltip"
+          :label="domesticInstrumentLabels['Replaced by']"
         >
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
       </template>
       <!-- Slot for Replaces -->
       <template #replaces="{ value }">
-        <DetailRow
-          v-if="value"
-          :label="keyLabelLookup.get('Replaces')?.label || 'Replaces'"
-          :tooltip="keyLabelLookup.get('Replaces')?.tooltip"
-        >
+        <DetailRow v-if="value" :label="domesticInstrumentLabels['Replaces']">
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
       </template>
@@ -81,10 +70,8 @@
             (isCompatible('Compatible With the UNCITRAL Model Law') ||
               isCompatible('Compatible With the HCCH Principles'))
           "
-          :label="
-            keyLabelLookup.get('Compatibility')?.label || 'Compatible with'
-          "
-          :tooltip="keyLabelLookup.get('Compatibility')?.tooltip"
+          :label="domesticInstrumentLabels['Compatibility']"
+          :tooltip="domesticInstrumentTooltips['Compatibility']"
         >
           <div class="result-value-small flex gap-2">
             <CompatibleLabel
@@ -103,11 +90,8 @@
         <!-- Only render if value exists and is not "N/A" -->
         <DetailRow
           v-if="value && value.trim() && value.trim() !== 'N/A'"
-          :label="
-            keyLabelLookup.get('Domestic Legal Provisions')?.label ||
-            'Selected Provisions'
-          "
-          :tooltip="keyLabelLookup.get('Domestic Legal Provisions')?.tooltip"
+          :label="domesticInstrumentLabels['Domestic Legal Provisions']"
+          :tooltip="domesticInstrumentTooltips['Domestic Legal Provisions']"
         >
           <div class="provisions-container">
             <LegalProvision
@@ -118,10 +102,9 @@
               :provision-id="provisionId"
               :text-type="textType"
               :instrument-title="
-                processedLegalInstrument
-                  ? processedLegalInstrument['Abbreviation'] ||
-                    processedLegalInstrument['Title (in English)']
-                  : ''
+                legalInstrument?.Abbreviation ||
+                legalInstrument?.['Title (in English)'] ||
+                ''
               "
               @update:has-english-translation="hasEnglishTranslation = $event"
             />
@@ -129,20 +112,17 @@
         </DetailRow>
       </template>
 
-      <template #country-report>
-        <CountryReportLink
-          :jurisdiction-code="
-            processedLegalInstrument?.['Jurisdictions Alpha-3 Code'] as string
-          "
+      <template #footer>
+        <LastModified :date="legalInstrument?.['Last Modified']" />
+        <CountryReportBanner
+          :jurisdiction-code="legalInstrument?.['Jurisdictions Alpha-3 Code']"
         />
       </template>
     </BaseDetailLayout>
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[
-        processedLegalInstrument?.['Title (in English)'] as string,
-      ]"
+      :title-candidates="[legalInstrument?.['Title (in English)']]"
       fallback="Domestic Instrument"
     />
   </div>
@@ -158,83 +138,36 @@ import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
-import CountryReportLink from "@/components/ui/CountryReportLink.vue";
+import CountryReportBanner from "@/components/ui/CountryReportBanner.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
-import { useRecordDetails } from "@/composables/useRecordDetails";
-import { useDetailDisplay } from "@/composables/useDetailDisplay";
-import { legalInstrumentConfig } from "@/config/pageConfigs";
+import { useDomesticInstrument } from "@/composables/useRecordDetails";
 import { getSortedProvisionIds } from "@/utils/provision-sorting";
-import type { TableName } from "@/types/api";
-
-interface LegalInstrumentRecord {
-  "Title (in English)"?: string;
-  "Official Title"?: string;
-  Abbreviation?: string;
-  "Compatible With the UNCITRAL Model Law"?: boolean | string;
-  "Compatible With the HCCH Principles"?: boolean | string;
-  "Ranking (Display Order)"?: string;
-  "Jurisdictions Alpha-3 Code"?: string;
-  [key: string]: unknown;
-}
+import { domesticInstrumentLabels } from "@/config/labels";
+import { domesticInstrumentTooltips } from "@/config/tooltips";
 
 const route = useRoute();
 const textType = ref("Full Text of the Provision (English Translation)");
 const hasEnglishTranslation = ref(false);
 
-const table = ref<TableName>("Domestic Instruments");
-const id = ref(route.params.id as string);
-
-const { data: legalInstrument, isLoading: loading } =
-  useRecordDetails<LegalInstrumentRecord>(table, id);
-
-const { computedKeyLabelPairs, valueClassMap } = useDetailDisplay(
-  legalInstrument,
-  legalInstrumentConfig,
+const { data: legalInstrument, isLoading: loading } = useDomesticInstrument(
+  computed(() => route.params.id as string),
 );
 
-const keyLabelLookup = computed(() => {
-  const map = new Map();
-  computedKeyLabelPairs.value.forEach((pair) => {
-    map.set(pair.key, pair);
-  });
-  return map;
-});
-
-const processedLegalInstrument = computed(() => {
-  if (!legalInstrument.value) {
-    return null;
-  }
-
-  const hasCompatibility =
-    legalInstrument.value["Compatible With the UNCITRAL Model Law"] === true ||
-    legalInstrument.value["Compatible With the HCCH Principles"] === true;
-
-  return {
-    ...legalInstrument.value,
-    "Title (in English)":
-      legalInstrument.value["Title (in English)"] ||
-      legalInstrument.value["Official Title"],
-    Compatibility: hasCompatibility ? true : undefined,
-  };
-});
-
-const isCompatible = (field: string): boolean => {
-  if (!processedLegalInstrument.value) return false;
-  const value = (processedLegalInstrument.value as Record<string, unknown>)[
-    field
-  ];
+const isCompatible = (
+  field:
+    | "Compatible With the UNCITRAL Model Law"
+    | "Compatible With the HCCH Principles",
+): boolean => {
+  if (!legalInstrument.value) return false;
+  const value = legalInstrument.value[field];
   return value === true || value === "true";
 };
-
-// Source URL for domestic instruments
-const sourceUrl = computed(() => {
-  return (legalInstrument.value?.["Source (URL)"] || "") as string;
-});
 
 const getSortedProvisionIdsForInstrument = (rawValue: string): string[] => {
   return getSortedProvisionIds(
     rawValue,
-    processedLegalInstrument.value?.["Ranking (Display Order)"],
+    legalInstrument.value?.["Ranking (Display Order)"],
   );
 };
 </script>

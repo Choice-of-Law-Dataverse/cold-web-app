@@ -10,13 +10,12 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "LoadingBar",
-  data() {
-    return {
-      randomWidth: `${Math.floor(Math.random() * (350 - 200 + 1)) + 200}px`,
-    };
-  },
-};
+<script setup lang="ts">
+import { ref, onMounted } from "vue";
+
+const randomWidth = ref("280px");
+
+onMounted(() => {
+  randomWidth.value = `${Math.floor(Math.random() * (350 - 200 + 1)) + 200}px`;
+});
 </script>

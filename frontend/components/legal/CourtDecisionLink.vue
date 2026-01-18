@@ -1,28 +1,14 @@
 <template>
-  <BaseLegalLink
-    :to="`/court-decision/${caseId}`"
-    :class="props.class"
-    :loading="loading"
-    :error="error"
-  >
+  <BaseLegalLink :to="`/court-decision/${caseId}`" :class="props.class">
     {{ caseId }}
   </BaseLegalLink>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import BaseLegalLink from "@/components/legal/BaseLegalLink.vue";
-import { useLegalState } from "@/composables/useLegalState.js";
 
-const props = defineProps({
-  caseId: {
-    type: String,
-    required: true,
-  },
-  class: {
-    type: String,
-    default: "",
-  },
-});
-
-const { loading, error } = useLegalState();
+const props = defineProps<{
+  caseId: string;
+  class?: string;
+}>();
 </script>

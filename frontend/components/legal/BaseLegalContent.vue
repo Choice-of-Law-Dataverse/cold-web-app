@@ -2,61 +2,48 @@
   <div
     ref="rootEl"
     class="base-legal-content"
-    :class="{ 'is-first': isFirstProvision }"
+    :class="{ 'is-first': isFirstProvision, 'is-open': isOpen }"
   >
-    <div v-if="error">{{ error }}</div>
+    <div v-if="error" class="error-message">{{ error }}</div>
     <div v-else :id="anchorId" :class="['legal-content', customClass]">
-      <div class="mb-4 flex flex-col">
-        <div class="flex items-center justify-between gap-2">
-          <a
-            :href="`#${anchorId}`"
-            class="label-key-provision-article anchor min-w-0 flex-1"
-            @click="toggleOpen"
+      <button
+        type="button"
+        class="provision-header"
+        :aria-controls="`${anchorId}-content`"
+        :aria-expanded="isOpen.toString()"
+        @click="toggleOpen"
+      >
+        <span class="provision-title">{{ displayTitle }}</span>
+        <span class="provision-chevron" :class="{ 'is-open': isOpen }">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            width="18"
+            height="18"
+            fill="none"
           >
-            {{ displayTitle }}
-          </a>
+            <path
+              d="M9 6l6 6-6 6"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </span>
+      </button>
 
-          <button
-            type="button"
-            :aria-controls="`${anchorId}-content`"
-            :aria-expanded="isOpen.toString()"
-            :aria-label="isOpen ? 'Collapse content' : 'Expand content'"
-            class="flex-shrink-0"
-            @click="toggleOpen"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              width="16"
-              height="16"
-              fill="none"
-              :style="{
-                color: 'var(--color-cold-teal)',
-                transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-              }"
-            >
-              <path
-                d="M9 6l6 6-6 6"
-                stroke="currentColor"
-                stroke-width="3"
-                stroke-linecap="square"
-                stroke-linejoin="square"
-              />
-            </svg>
-          </button>
-        </div>
-
-        <div v-if="isOpen" class="mt-2 flex justify-end">
+      <div
+        v-show="isOpen"
+        :id="`${anchorId}-content`"
+        class="provision-content"
+      >
+        <div v-if="$slots['header-actions']" class="provision-actions">
           <slot name="header-actions" />
         </div>
-
-        <div
-          v-show="isOpen"
-          :id="`${anchorId}-content`"
-          class="content-body prose"
-        >
+        <p class="provision-body">
           <slot />
-        </div>
+        </p>
       </div>
     </div>
   </div>
@@ -130,26 +117,86 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.anchor {
-  text-decoration: none;
-  color: var(--color-cold-night) !important;
-  display: block;
+.base-legal-content:not(.is-first) {
+  margin-top: 8px;
 }
 
-.base-legal-content.is-first .anchor {
-  margin-top: 0;
+.provision-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  padding: 4px 0;
+  text-align: left;
+  cursor: pointer;
+  border: none;
+  background: none;
 }
 
-.content-body {
-  font-size: 14px !important;
-  font-weight: 400 !important;
+.provision-title {
+  flex: 1;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-cold-night);
+  line-height: 1.5;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 2px;
+  transition: text-decoration-color 0.15s ease;
+}
+
+.provision-header:hover .provision-title {
+  text-decoration-color: var(--color-cold-purple);
+}
+
+.provision-chevron {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-cold-purple);
+  opacity: 0.4;
+  transition:
+    transform 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.provision-header:hover .provision-chevron {
+  opacity: 1;
+}
+
+.provision-chevron.is-open {
+  transform: rotate(90deg);
+  opacity: 0.7;
+}
+
+.provision-content {
+  margin-top: 8px;
+  padding: 12px 16px;
+  background: color-mix(in srgb, var(--color-cold-gray) 40%, white);
+  border-radius: 6px;
+}
+
+.provision-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 8px;
+}
+
+.provision-body {
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--color-cold-night);
   white-space: pre-line;
   word-wrap: break-word;
   word-break: break-word;
 }
 
-/* Add spacing between provision component instances */
-.base-legal-content {
-  margin-top: 16px; /* default spacing between items */
+.error-message {
+  padding: 4px 0;
+  color: var(--color-label-court-decision);
+  font-size: 0.875rem;
 }
 </style>
