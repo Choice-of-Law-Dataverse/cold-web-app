@@ -1,11 +1,9 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Court Decisions"
       :loading="false"
-      :result-data="{}"
-      :key-label-pairs="[]"
-      :value-class-map="{}"
-      source-table="Court Decision"
+      :data="{}"
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"

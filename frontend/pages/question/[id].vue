@@ -1,12 +1,12 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Questions"
       :loading="isLoading"
-      :result-data="answerData || {}"
+      :data="answerData || {}"
       :labels="questionLabels"
       :tooltips="questionTooltips"
       :show-suggest-edit="true"
-      :source-table="'Question'"
     >
       <!-- Custom rendering for Legal provision articles -->
       <template #domestic-legal-provisions>

@@ -1,12 +1,12 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Regional Instruments"
       :loading="loading"
-      :result-data="regionalInstrument || {}"
+      :data="regionalInstrument || {}"
       :labels="regionalInstrumentLabels"
       :tooltips="regionalInstrumentTooltips"
       :show-suggest-edit="true"
-      source-table="Regional Instrument"
     >
       <!-- Abbreviation with PDF and Source Link -->
       <template #abbreviation="{ value }">

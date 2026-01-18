@@ -1,11 +1,9 @@
 <template>
   <div v-if="isEditPage">
     <BaseDetailLayout
+      table="International Instruments"
       :loading="loading"
-      :result-data="{}"
-      :key-label-pairs="[]"
-      :value-class-map="{}"
-      source-table="International Instrument"
+      :data="{}"
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"

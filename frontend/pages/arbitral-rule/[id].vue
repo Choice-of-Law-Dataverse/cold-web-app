@@ -1,11 +1,11 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Arbitral Rules"
       :loading="loading"
-      :result-data="arbitralRule || {}"
+      :data="arbitralRule || {}"
       :labels="arbitralRuleLabels"
       :show-suggest-edit="true"
-      source-table="Arbitral Rule"
     >
       <template #footer>
         <LastModified :date="arbitralRule?.['Last Modified']" />

@@ -1,11 +1,9 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Regional Instruments"
       :loading="false"
-      :result-data="{}"
-      :key-label-pairs="[]"
-      :value-class-map="{}"
-      source-table="Regional Instrument"
+      :data="{}"
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"

@@ -1,12 +1,12 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Domestic Instruments"
       :loading="loading"
-      :result-data="legalInstrument || {}"
+      :data="legalInstrument || {}"
       :labels="domesticInstrumentLabels"
       :tooltips="domesticInstrumentTooltips"
       :show-suggest-edit="true"
-      source-table="Domestic Instrument"
     >
       <!-- Title with PDF and Source Link -->
       <template #title-(in-english)="{ value }">

@@ -1,13 +1,13 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Arbitral Awards"
       :loading="loading"
-      :result-data="arbitralAward || {}"
+      :data="arbitralAward || {}"
       :labels="arbitralAwardLabels"
       :formatted-jurisdiction="arbitralAward?.formattedJurisdictions || []"
       :formatted-theme="arbitralAward?.formattedThemes || []"
       :show-suggest-edit="true"
-      source-table="Arbitral Award"
     >
       <template #footer>
         <LastModified :date="arbitralAward?.['Last Modified']" />

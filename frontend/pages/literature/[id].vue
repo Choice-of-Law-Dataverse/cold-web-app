@@ -1,12 +1,12 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Literature"
       :loading="loading"
-      :result-data="literature || {}"
+      :data="literature || {}"
       :labels="literatureLabels"
       :tooltips="literatureTooltips"
       :show-suggest-edit="true"
-      source-table="Literature"
     >
       <!-- Title with PDF and Source Link -->
       <template #title="{ value }">

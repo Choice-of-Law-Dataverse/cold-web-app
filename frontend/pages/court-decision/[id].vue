@@ -1,12 +1,12 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Court Decisions"
       :loading="isLoading"
-      :result-data="courtDecision || {}"
+      :data="courtDecision || {}"
       :labels="courtDecisionLabels"
       :tooltips="courtDecisionTooltips"
       :show-suggest-edit="true"
-      source-table="Court Decisions"
     >
       <!-- Case Title with PDF and Source Link -->
       <template #case-title="{ value }">

@@ -1,11 +1,26 @@
 // API Request Body Types for useApiClient composables
 // Entity response type imports for TableResponseMap
 import type { AnswerResponse } from "./entities/answer";
-import type { ArbitralAwardResponse } from "./entities/arbitral-award";
-import type { ArbitralRuleResponse } from "./entities/arbitral-rule";
-import type { CourtDecisionResponse } from "./entities/court-decision";
-import type { DomesticInstrumentResponse } from "./entities/domestic-instrument";
-import type { InternationalInstrumentResponse } from "./entities/international-instrument";
+import type {
+  ArbitralAward,
+  ArbitralAwardResponse,
+} from "./entities/arbitral-award";
+import type {
+  ArbitralRule,
+  ArbitralRuleResponse,
+} from "./entities/arbitral-rule";
+import type {
+  CourtDecision,
+  CourtDecisionResponse,
+} from "./entities/court-decision";
+import type {
+  DomesticInstrument,
+  DomesticInstrumentResponse,
+} from "./entities/domestic-instrument";
+import type {
+  InternationalInstrument,
+  InternationalInstrumentResponse,
+} from "./entities/international-instrument";
 import type { JurisdictionResponse } from "./entities/jurisdiction";
 import type {
   DomesticLegalProvisionResponse,
@@ -13,8 +28,11 @@ import type {
   RegionalLegalProvisionResponse,
 } from "./entities/legal-provision";
 import type { LiteratureResponse } from "./entities/literature";
-import type { QuestionResponse } from "./entities/question";
-import type { RegionalInstrumentResponse } from "./entities/regional-instrument";
+import type { Question, QuestionResponse } from "./entities/question";
+import type {
+  RegionalInstrument,
+  RegionalInstrumentResponse,
+} from "./entities/regional-instrument";
 
 export { ApiError } from "./errors";
 
@@ -189,7 +207,7 @@ export type TableName =
   | "Specialists";
 
 /**
- * Maps table names to their corresponding response types.
+ * Maps table names to their corresponding response types (raw API data).
  * Used to provide type safety for filters and query results.
  */
 export type TableResponseMap = {
@@ -207,6 +225,29 @@ export type TableResponseMap = {
   Questions: QuestionResponse;
   "Regional Instruments": RegionalInstrumentResponse;
   "Regional Legal Provisions": RegionalLegalProvisionResponse;
+  Specialists: Record<string, unknown>; // Not used with full_table endpoint
+};
+
+/**
+ * Maps table names to their processed types (used in detail pages).
+ * Processed types extend response types with computed fields.
+ * Used for typing labels/tooltips in BaseDetailLayout.
+ */
+export type TableProcessedMap = {
+  Answers: AnswerResponse; // No separate processed type
+  "Arbitral Awards": ArbitralAward;
+  "Arbitral Rules": ArbitralRule;
+  "Court Decisions": CourtDecision;
+  "Domestic Instruments": DomesticInstrument;
+  "Domestic Legal Provisions": DomesticLegalProvisionResponse; // No separate processed type
+  "International Instruments": InternationalInstrument;
+  "International Legal Provisions": InternationalLegalProvisionResponse; // No separate processed type
+  Jurisdictions: JurisdictionResponse; // No separate processed type
+  "Leading Cases": CourtDecision; // Alias for Court Decisions
+  Literature: LiteratureResponse; // No separate processed type
+  Questions: Question;
+  "Regional Instruments": RegionalInstrument;
+  "Regional Legal Provisions": RegionalLegalProvisionResponse; // No separate processed type
   Specialists: Record<string, unknown>; // Not used with full_table endpoint
 };
 

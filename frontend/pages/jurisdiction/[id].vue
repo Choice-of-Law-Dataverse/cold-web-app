@@ -1,13 +1,13 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="Jurisdictions"
       :loading="isLoading"
-      :result-data="jurisdictionData || {}"
+      :data="jurisdictionData || {}"
       :labels="jurisdictionLabels"
       :tooltips="jurisdictionTooltips"
       :formatted-jurisdiction="[jurisdictionData?.Name as {}]"
       :show-suggest-edit="true"
-      source-table="Jurisdiction"
     >
       <DetailRow label="">
         <h1 class="mb-4 text-3xl font-semibold md:text-4xl">

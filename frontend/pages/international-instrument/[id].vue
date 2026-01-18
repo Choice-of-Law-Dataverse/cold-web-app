@@ -1,12 +1,12 @@
 <template>
   <div>
     <BaseDetailLayout
+      table="International Instruments"
       :loading="loading"
-      :result-data="internationalInstrument || {}"
+      :data="internationalInstrument || {}"
       :labels="internationalInstrumentLabels"
       :tooltips="internationalInstrumentTooltips"
       :show-suggest-edit="true"
-      source-table="International Instrument"
     >
       <!-- Name (Title) with PDF and Source Link -->
       <template #name="{ value }">
