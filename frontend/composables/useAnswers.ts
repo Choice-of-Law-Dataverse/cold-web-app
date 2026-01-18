@@ -17,8 +17,7 @@ export { processAnswerText };
 const fetchAnswersForJurisdiction = async (jurisdiction: string) => {
   const data = await fetchFullTableData("Answers", [
     {
-      // TODO: change to "Jurisdictions Alpha-3 Code" after backend deployment
-      column: "Jurisdictions Alpha-3 code",
+      column: "Jurisdictions Alpha-3 Code",
       value: jurisdiction?.toUpperCase(),
     },
   ]);

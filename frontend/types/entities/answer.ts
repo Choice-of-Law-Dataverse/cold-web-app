@@ -27,7 +27,6 @@ export interface AnswerResponse {
   // Nested mappings from related jurisdictions
   "Jurisdictions Link"?: string;
   "Jurisdictions Alpha-3 Code"?: string;
-  "Jurisdictions Alpha-3 code"?: string; // backwards compat
   Jurisdictions?: string;
   "Jurisdictions Region"?: string;
   "Jurisdictions Irrelevant"?: boolean | string;

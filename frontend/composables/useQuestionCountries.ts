@@ -60,10 +60,7 @@ function processAnswers(
 
     answerGroups.get(answer)!.push({
       name: record.Jurisdictions || "",
-      code:
-        record["Jurisdictions Alpha-3 Code"] ||
-        record["Jurisdictions Alpha-3 code"] ||
-        "",
+      code: record["Jurisdictions Alpha-3 Code"] || "",
       region: record["Jurisdictions Region"] || "",
     });
   }
