@@ -1,7 +1,6 @@
 import { computed, type Ref } from "vue";
 import { useQueries } from "@tanstack/vue-query";
-import { useApiClient } from "@/composables/useApiClient";
-import type { FullTableRequest, AnswerItem } from "@/types/api";
+import { fetchFullTableData } from "@/composables/useFullTable";
 
 const processAnswerText = (answerText: string) => {
   if (typeof answerText === "string" && answerText.includes(",")) {
@@ -16,31 +15,19 @@ const processAnswerText = (answerText: string) => {
 export { processAnswerText };
 
 const fetchAnswersForJurisdiction = async (jurisdiction: string) => {
-  const { apiClient } = useApiClient();
+  const data = await fetchFullTableData("Answers", [
+    {
+      // TODO: change to "Jurisdictions Alpha-3 Code" after backend deployment
+      column: "Jurisdictions Alpha-3 code",
+      value: jurisdiction?.toUpperCase(),
+    },
+  ]);
 
-  const body: FullTableRequest = {
-    table: "Answers",
-    filters: [
-      {
-        // TODO: change to "Jurisdictions Alpha-3 Code" after backend deployment
-        column: "Jurisdictions Alpha-3 code",
-        value: jurisdiction?.toUpperCase(),
-      },
-    ],
-  };
-
-  const data = await apiClient("/search/full_table", { body });
-
-  if (!Array.isArray(data)) {
-    return new Map<string, string>();
-  }
-
-  const entries = (data as AnswerItem[])
+  const entries = data
     .map((row) => {
-      const rawQuestionId =
-        row["Question ID"] || row["QuestionID"] || row["CoLD ID"] || row.ID;
+      const rawQuestionId = row["Question ID"] || row["CoLD ID"] || row.ID;
       const rawColdId = row["CoLD ID"] || row["Answer ID"] || rawQuestionId;
-      const answerValue = (row.Answer || row["Answer"] || "") as string;
+      const answerValue = row.Answer || "";
 
       // Store by base question ID (without ISO3 prefix)
       const baseQuestionId = rawColdId

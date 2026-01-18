@@ -1,18 +1,6 @@
 import { computed, type Ref } from "vue";
-import { useQuery } from "@tanstack/vue-query";
-import { useApiClient } from "@/composables/useApiClient";
-import type { FullTableRequest } from "@/types/api";
-
-interface AnswerRecord {
-  ID: string;
-  Answer: string;
-  Question: string;
-  Jurisdictions: string;
-  "Jurisdictions Alpha-3 Code"?: string;
-  "Jurisdictions Alpha-3 code"?: string;
-  "Jurisdictions Region": string;
-  "Jurisdictions Irrelevant"?: string;
-}
+import { useFullTableWithFilters } from "@/composables/useFullTable";
+import type { AnswerResponse } from "@/types/entities/answer";
 
 export interface Country {
   name: string;
@@ -38,22 +26,29 @@ const EXCLUDED_ANSWERS = new Set([
 ]);
 const PRIORITY_ORDER = ["Yes", "No", "Not applicable"];
 
-function processAnswers(records: AnswerRecord[]): QuestionCountriesData {
-  if (records.length === 0) {
+function processAnswers(
+  records: AnswerResponse[],
+  suffix: string,
+): QuestionCountriesData {
+  // Filter to relevant records
+  const relevantRecords = records.filter(
+    (item) =>
+      typeof item.ID === "string" &&
+      item.ID.endsWith(suffix) &&
+      item["Jurisdictions Irrelevant"] !== "Yes",
+  );
+
+  if (relevantRecords.length === 0) {
     return { questionTitle: "", answers: [], answerGroups: new Map() };
   }
 
-  const questionTitle = records[0]?.Question || "Missing Question";
+  const questionTitle = relevantRecords[0]?.Question || "Missing Question";
   const answerGroups = new Map<string, Country[]>();
   const uniqueAnswers = new Set<string>();
 
-  for (const record of records) {
+  for (const record of relevantRecords) {
     const answer = record.Answer;
-    if (
-      typeof answer !== "string" ||
-      !answer.trim() ||
-      EXCLUDED_ANSWERS.has(answer)
-    ) {
+    if (!answer || !answer.trim() || EXCLUDED_ANSWERS.has(answer)) {
       continue;
     }
 
@@ -64,12 +59,12 @@ function processAnswers(records: AnswerRecord[]): QuestionCountriesData {
     }
 
     answerGroups.get(answer)!.push({
-      name: record.Jurisdictions,
+      name: record.Jurisdictions || "",
       code:
         record["Jurisdictions Alpha-3 Code"] ||
         record["Jurisdictions Alpha-3 code"] ||
         "",
-      region: record["Jurisdictions Region"],
+      region: record["Jurisdictions Region"] || "",
     });
   }
 
@@ -93,35 +88,17 @@ function processAnswers(records: AnswerRecord[]): QuestionCountriesData {
   return { questionTitle, answers: sortedAnswers, answerGroups };
 }
 
-async function fetchQuestionCountries(
-  suffix: string,
-): Promise<QuestionCountriesData> {
-  if (!suffix) {
-    return { questionTitle: "", answers: [], answerGroups: new Map() };
-  }
-
-  const { apiClient } = useApiClient();
-  const body: FullTableRequest = {
-    table: "Answers",
-    filters: [{ column: "ID", value: suffix }],
-  };
-
-  const data = await apiClient<AnswerRecord[]>("/search/full_table", { body });
-
-  const relevantRecords = data.filter(
-    (item) =>
-      typeof item.ID === "string" &&
-      item.ID.endsWith(suffix) &&
-      item["Jurisdictions Irrelevant"] !== "Yes",
-  );
-
-  return processAnswers(relevantRecords);
-}
-
 export function useQuestionCountries(suffix: Ref<string>) {
-  return useQuery({
-    queryKey: ["questionCountries", suffix],
-    queryFn: () => fetchQuestionCountries(suffix.value),
+  const filters = computed(() => [
+    { column: "ID" as const, value: suffix.value },
+  ]);
+
+  return useFullTableWithFilters<
+    "Answers",
+    AnswerResponse,
+    QuestionCountriesData
+  >("Answers", filters, {
+    select: (data) => processAnswers(data, suffix.value),
     enabled: computed(() => !!suffix.value),
   });
 }

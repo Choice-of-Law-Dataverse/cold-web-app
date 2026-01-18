@@ -19,7 +19,7 @@
             :src="option.avatar"
             :style="{
               borderRadius: '0',
-                            boxSizing: 'border-box',
+              boxSizing: 'border-box',
               width: 'auto',
               height: '16px',
               filter: hasCoverage(option?.answerCoverage)
@@ -50,7 +50,7 @@
             :src="selected.avatar"
             :style="{
               borderRadius: '0',
-                            boxSizing: 'border-box',
+              boxSizing: 'border-box',
               width: 'auto',
               height: '16px',
               filter: hasCoverage(selected?.answerCoverage)

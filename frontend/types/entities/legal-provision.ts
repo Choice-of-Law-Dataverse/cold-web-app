@@ -2,6 +2,8 @@
  * Legal Provision entity type definitions
  */
 
+import { formatDate } from "@/utils/format";
+
 /** Base fields shared by all legal provisions */
 interface BaseLegalProvisionResponse {
   id: string;
@@ -42,6 +44,19 @@ export interface RegionalLegalProvisionResponse
   // Nested mappings
   "Instrument Link"?: string;
   Questions?: string;
+}
+
+/** International Legal Provisions API response */
+export interface InternationalLegalProvisionResponse
+  extends BaseLegalProvisionResponse {
+  "Title of the Provision"?: string;
+  "Full Text"?: string;
+  Provision?: string;
+  sort_date?: string;
+  Instrument?: string;
+  Ranking__Display_Order_?: string;
+  // Nested mappings
+  "Instrument Link"?: string;
 }
 
 /** Processed Legal Provision with normalized fields */
