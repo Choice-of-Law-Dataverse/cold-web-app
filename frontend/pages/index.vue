@@ -202,6 +202,7 @@
           { left: 'CHE', right: 'CAN' },
           { left: 'BRA', right: 'MOZ' },
           { left: 'EUR', right: 'GBR' },
+          { left: 'USA', right: 'CHN' },
         ]"
       />
     </div>
