@@ -163,7 +163,7 @@ def test_transformation_mock():
             "Jurisdictions Link",
             "Question",
             "Questions Theme Code",
-            "Jurisdictions Alpha-3 code",
+            "Jurisdictions Alpha-3 Code",
             "Jurisdictions",
             "Answer",
             "Record ID",
