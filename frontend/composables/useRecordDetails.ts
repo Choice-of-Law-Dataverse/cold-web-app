@@ -1,75 +1,53 @@
 import { computed, type ComputedRef, type Ref } from "vue";
 import { useQuery, useQueries } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
-import type { TableName } from "@/types/api";
-import {
-  type DomesticInstrumentResponse,
-  type DomesticInstrument,
-  processDomesticInstrument,
-} from "@/types/entities/domestic-instrument";
-import {
-  type InternationalInstrumentResponse,
-  type InternationalInstrument,
-  processInternationalInstrument,
-} from "@/types/entities/international-instrument";
-import {
-  type RegionalInstrumentResponse,
-  type RegionalInstrument,
-  processRegionalInstrument,
-} from "@/types/entities/regional-instrument";
-import {
-  type CourtDecisionResponse,
-  type CourtDecision,
-  processCourtDecision,
-} from "@/types/entities/court-decision";
-import {
-  type QuestionResponse,
-  type Question,
-  processQuestion,
-} from "@/types/entities/question";
-import {
-  type LiteratureResponse,
-  type Literature,
-  processLiterature,
-} from "@/types/entities/literature";
-import {
-  type ArbitralAwardResponse,
-  type ArbitralAward,
-  processArbitralAward,
-} from "@/types/entities/arbitral-award";
-import {
-  type ArbitralRuleResponse,
-  type ArbitralRule,
-  processArbitralRule,
-} from "@/types/entities/arbitral-rule";
+import type { TableName, TableResponseMap } from "@/types/api";
+import { processDomesticInstrument } from "@/types/entities/domestic-instrument";
+import { processInternationalInstrument } from "@/types/entities/international-instrument";
+import { processRegionalInstrument } from "@/types/entities/regional-instrument";
+import { processCourtDecision } from "@/types/entities/court-decision";
+import { type Question, processQuestion } from "@/types/entities/question";
+import { processLiterature } from "@/types/entities/literature";
+import { processArbitralAward } from "@/types/entities/arbitral-award";
+import { processArbitralRule } from "@/types/entities/arbitral-rule";
 
-async function fetchRecordDetails<TRaw, TProcessed = TRaw>(
-  table: TableName,
+async function fetchRecordDetails<
+  T extends TableName,
+  TProcessed = TableResponseMap[T],
+>(
+  table: T,
   id: string | number,
-  process?: (raw: TRaw) => TProcessed,
+  process?: (raw: TableResponseMap[T]) => TProcessed,
 ) {
   const { apiClient } = useApiClient();
-  const raw = await apiClient<TRaw>("/search/details", { body: { table, id } });
+  const raw = await apiClient<TableResponseMap[T]>("/search/details", {
+    body: { table, id },
+  });
   return process ? process(raw) : (raw as unknown as TProcessed);
 }
 
-export function useRecordDetails<TRaw, TProcessed = TRaw>(
-  table: TableName,
+export function useRecordDetails<
+  T extends TableName,
+  TProcessed = TableResponseMap[T],
+>(
+  table: T,
   id: Ref<string | number>,
-  process?: (raw: TRaw) => TProcessed,
+  process?: (raw: TableResponseMap[T]) => TProcessed,
 ) {
   return useQuery({
     queryKey: computed(() => [table, id.value]),
-    queryFn: () =>
-      fetchRecordDetails<TRaw, TProcessed>(table, id.value, process),
+    queryFn: () => fetchRecordDetails(table, id.value, process),
     enabled: computed(() => Boolean(id.value)),
   });
 }
 
-export function useRecordDetailsList<TRaw, TProcessed = TRaw>(
-  table: TableName,
+export function useRecordDetailsList<
+  T extends TableName,
+  TProcessed = TableResponseMap[T],
+>(
+  table: T,
   ids: Ref<Array<string | number>>,
-  process?: (raw: TRaw) => TProcessed,
+  process?: (raw: TableResponseMap[T]) => TProcessed,
 ): {
   data: ComputedRef<(TProcessed | undefined)[]>;
   isLoading: ComputedRef<boolean>;
@@ -80,7 +58,7 @@ export function useRecordDetailsList<TRaw, TProcessed = TRaw>(
     const list = ids.value || [];
     return list.map((id) => ({
       queryKey: [table, id],
-      queryFn: () => fetchRecordDetails<TRaw, TProcessed>(table, id, process),
+      queryFn: () => fetchRecordDetails(table, id, process),
       enabled: Boolean(id),
     }));
   });
@@ -100,7 +78,7 @@ export function useRecordDetailsList<TRaw, TProcessed = TRaw>(
 // Entity-specific composables
 
 export function useDomesticInstrument(id: Ref<string | number>) {
-  return useRecordDetails<DomesticInstrumentResponse, DomesticInstrument>(
+  return useRecordDetails(
     "Domestic Instruments",
     id,
     processDomesticInstrument,
@@ -108,14 +86,15 @@ export function useDomesticInstrument(id: Ref<string | number>) {
 }
 
 export function useInternationalInstrument(id: Ref<string | number>) {
-  return useRecordDetails<
-    InternationalInstrumentResponse,
-    InternationalInstrument
-  >("International Instruments", id, processInternationalInstrument);
+  return useRecordDetails(
+    "International Instruments",
+    id,
+    processInternationalInstrument,
+  );
 }
 
 export function useRegionalInstrument(id: Ref<string | number>) {
-  return useRecordDetails<RegionalInstrumentResponse, RegionalInstrument>(
+  return useRecordDetails(
     "Regional Instruments",
     id,
     processRegionalInstrument,
@@ -123,53 +102,33 @@ export function useRegionalInstrument(id: Ref<string | number>) {
 }
 
 export function useCourtDecision(id: Ref<string | number>) {
-  return useRecordDetails<CourtDecisionResponse, CourtDecision>(
-    "Court Decisions",
-    id,
-    processCourtDecision,
-  );
+  return useRecordDetails("Court Decisions", id, processCourtDecision);
 }
 
 export function useAnswer(id: Ref<string | number>) {
-  return useRecordDetails<QuestionResponse, Question>(
-    "Answers",
-    id,
-    processQuestion,
-  );
+  return useRecordDetails("Answers", id, processQuestion);
 }
 
 export function useLiterature(id: Ref<string | number>) {
-  return useRecordDetails<LiteratureResponse>("Literature", id);
+  return useRecordDetails("Literature", id);
 }
 
 export function useArbitralAward(id: Ref<string | number>) {
-  return useRecordDetails<ArbitralAwardResponse, ArbitralAward>(
-    "Arbitral Awards",
-    id,
-    processArbitralAward,
-  );
+  return useRecordDetails("Arbitral Awards", id, processArbitralAward);
 }
 
 export function useArbitralRule(id: Ref<string | number>) {
-  return useRecordDetails<ArbitralRuleResponse, ArbitralRule>(
-    "Arbitral Rules",
-    id,
-    processArbitralRule,
-  );
+  return useRecordDetails("Arbitral Rules", id, processArbitralRule);
 }
 
 // List-based composables
 
 export function useCourtDecisionsList(ids: Ref<(string | number)[]>) {
-  return useRecordDetailsList<CourtDecisionResponse, CourtDecision>(
-    "Court Decisions",
-    ids,
-    processCourtDecision,
-  );
+  return useRecordDetailsList("Court Decisions", ids, processCourtDecision);
 }
 
 export function useDomesticInstrumentsList(ids: Ref<(string | number)[]>) {
-  return useRecordDetailsList<DomesticInstrumentResponse, DomesticInstrument>(
+  return useRecordDetailsList(
     "Domestic Instruments",
     ids,
     processDomesticInstrument,
@@ -186,11 +145,7 @@ export function useLiteratures(ids: Ref<string>) {
       : [],
   );
 
-  return useRecordDetailsList<LiteratureResponse, Literature>(
-    "Literature",
-    literatureIds,
-    processLiterature,
-  );
+  return useRecordDetailsList("Literature", literatureIds, processLiterature);
 }
 
 export function useRelatedQuestions(
@@ -212,7 +167,7 @@ export function useRelatedQuestions(
       : [],
   );
 
-  const results = useRecordDetailsList<QuestionResponse, Question>(
+  const results = useRecordDetailsList(
     "Answers",
     compositeIds,
     processQuestion,

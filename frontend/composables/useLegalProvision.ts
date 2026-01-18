@@ -1,9 +1,6 @@
 import { ref, computed, watch } from "vue";
 import { useRecordDetails } from "./useRecordDetails";
 import {
-  type LegalProvision,
-  type DomesticLegalProvisionResponse,
-  type RegionalLegalProvisionResponse,
   processDomesticLegalProvision,
   processRegionalLegalProvision,
 } from "@/types/entities/legal-provision";
@@ -31,12 +28,12 @@ export function useLegalProvision({
     isLoading: loading,
     error,
   } = isRegional
-    ? useRecordDetails<RegionalLegalProvisionResponse, LegalProvision>(
+    ? useRecordDetails(
         "Regional Legal Provisions",
         idRef,
         processRegionalLegalProvision,
       )
-    : useRecordDetails<DomesticLegalProvisionResponse, LegalProvision>(
+    : useRecordDetails(
         "Domestic Legal Provisions",
         idRef,
         processDomesticLegalProvision,
