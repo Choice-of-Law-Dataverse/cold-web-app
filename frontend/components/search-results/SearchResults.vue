@@ -258,7 +258,7 @@ const updateFilters = async (filters) => {
 };
 
 const handleSortChange = async (val) => {
-  const sortValue = val || "relevance";
+  const sortValue = val || "date";
   selectValue.value = sortValue;
   emit("update:filters", { ...props.filters, sortBy: sortValue });
   updateSelectWidth();
@@ -266,7 +266,7 @@ const handleSortChange = async (val) => {
 
 const resetFilters = async () => {
   resetFilterValues();
-  await updateFilters({ sortBy: route.query.sortBy || "relevance" });
+  await updateFilters({ sortBy: route.query.sortBy || "date" });
 };
 
 const updateSelectWidth = () => {
