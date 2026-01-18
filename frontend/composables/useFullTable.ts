@@ -1,10 +1,9 @@
-import { computed, ref, type Ref } from "vue";
+import { computed, type Ref } from "vue";
 import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
 import type { FullTableRequest, TableName } from "@/types/api";
 import {
   type LiteratureResponse,
-  type Literature,
   processLiterature,
 } from "@/types/entities/literature";
 import { formatYear } from "@/utils/format";
@@ -86,7 +85,11 @@ export function useLiteratureByJurisdiction(jurisdiction: Ref<string>) {
   const { apiClient } = useApiClient();
 
   return useQuery({
-    queryKey: computed(() => ["Literature", "jurisdiction", jurisdiction.value]),
+    queryKey: computed(() => [
+      "Literature",
+      "jurisdiction",
+      jurisdiction.value,
+    ]),
     queryFn: () =>
       apiClient<LiteratureResponse[]>("/search/full_table", {
         body: {
