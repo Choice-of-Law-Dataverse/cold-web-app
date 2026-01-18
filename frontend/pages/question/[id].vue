@@ -61,7 +61,7 @@
       <template #footer>
         <LastModified :date="answerData?.['Last Modified']" />
         <CountryReportBanner
-          :jurisdiction-code="answerData?.['Jurisdictions Alpha-3 Code']"
+          :jurisdiction-code="answerData?.JurisdictionCode"
         />
       </template>
     </BaseDetailLayout>

@@ -35,6 +35,7 @@ export interface QuestionResponse {
   "Country Report"?: string;
   Jurisdictions?: string;
   "Jurisdictions Alpha-3 Code"?: string;
+  "Jurisdictions Alpha-3 code"?: string;
   "Jurisdictions Literature ID"?: string;
   "Jurisdictions Link"?: string;
   "Jurisdictions Region"?: string;
@@ -44,6 +45,7 @@ export interface QuestionResponse {
 export interface Question extends Omit<QuestionResponse, "Court Decisions ID"> {
   "Domestic Legal Provisions": string;
   "Court Decisions ID": string[];
+  JurisdictionCode: string;
 }
 
 /** Transform raw response to processed type */
@@ -58,5 +60,9 @@ export function processQuestion(raw: QuestionResponse): Question {
       typeof courtDecisionsId === "string"
         ? courtDecisionsId.split(",").map((caseId) => caseId.trim())
         : [],
+    JurisdictionCode:
+      raw["Jurisdictions Alpha-3 Code"] ||
+      raw["Jurisdictions Alpha-3 code"] ||
+      "",
   };
 }

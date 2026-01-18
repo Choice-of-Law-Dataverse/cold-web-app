@@ -221,7 +221,7 @@ watch(
     const rawJurisdiction = isJurisdictionPage
       ? route.params.id
       : isQuestionPage
-        ? newData["Jurisdictions Alpha-3 Code"] || newData.JurisdictionCode
+        ? newData.JurisdictionCode
         : null;
 
     jurisdictionCode.value =

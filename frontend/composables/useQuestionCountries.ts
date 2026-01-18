@@ -8,7 +8,8 @@ interface AnswerRecord {
   Answer: string;
   Question: string;
   Jurisdictions: string;
-  "Jurisdictions Alpha-3 Code": string;
+  "Jurisdictions Alpha-3 Code"?: string;
+  "Jurisdictions Alpha-3 code"?: string;
   "Jurisdictions Region": string;
   "Jurisdictions Irrelevant"?: string;
 }
@@ -64,7 +65,10 @@ function processAnswers(records: AnswerRecord[]): QuestionCountriesData {
 
     answerGroups.get(answer)!.push({
       name: record.Jurisdictions,
-      code: record["Jurisdictions Alpha-3 Code"],
+      code:
+        record["Jurisdictions Alpha-3 Code"] ||
+        record["Jurisdictions Alpha-3 code"] ||
+        "",
       region: record["Jurisdictions Region"],
     });
   }
