@@ -3,8 +3,10 @@ import { format } from "date-fns";
 /**
  * Format date with special handling for Jan 1 (shows year only)
  */
-export function formatDate(dateString: string | null): string | null {
-  if (!dateString) return null;
+export function formatDate(
+  dateString: string | null | undefined,
+): string | undefined {
+  if (!dateString) return undefined;
 
   const date = new Date(dateString);
 
@@ -24,8 +26,10 @@ export function formatDate(dateString: string | null): string | null {
 /**
  * Extract year from date string
  */
-export function extractYear(dateString: string | null): string | null {
-  if (!dateString) return null;
+export function extractYear(
+  dateString: string | null | undefined,
+): string | undefined {
+  if (!dateString) return undefined;
 
   const date = new Date(dateString);
   return date.getFullYear().toString();
@@ -34,7 +38,9 @@ export function extractYear(dateString: string | null): string | null {
 /**
  * Format date to year only
  */
-export function formatYear(dateString: string | null): string | number {
+export function formatYear(
+  dateString: string | null | undefined,
+): string | number {
   if (!dateString) return "";
   const date = new Date(dateString);
   return isNaN(date.getTime()) ? "" : date.getFullYear();
@@ -43,7 +49,7 @@ export function formatYear(dateString: string | null): string | number {
 /**
  * Format date for display (short format: "Jan 1, 2024")
  */
-export function formatDateShort(dateString: string | null): string {
+export function formatDateShort(dateString: string | null | undefined): string {
   if (!dateString) return "—";
   try {
     return format(new Date(dateString), "MMM d, yyyy");

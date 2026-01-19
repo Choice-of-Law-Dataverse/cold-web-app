@@ -1,1 +1,0 @@
-Paragraph quoted from "Choice of Law in International Commercial Contracts : Global Perspectives on the Hague Principles", Daniel Girsberger, Thomas Kadner Graziano, and Jan L. Neels (general editors) (OUP, 2021).

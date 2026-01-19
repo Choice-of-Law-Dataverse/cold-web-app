@@ -137,13 +137,16 @@
           <slot name="search-links" />
         </div>
       </div>
+      <!-- Footer slot for full-width content like country report banner -->
+      <slot name="footer" />
     </UCard>
   </template>
 </template>
 
 <script setup>
+import { useSlots } from "vue";
 import { useRoute } from "vue-router";
-import { useCoveredCountries } from "@/composables/useCoveredCountries";
+import { useCoveredCountries } from "@/composables/useJurisdictions";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
@@ -218,7 +221,7 @@ watch(
     const rawJurisdiction = isJurisdictionPage
       ? route.params.id
       : isQuestionPage
-        ? newData["Jurisdictions Alpha-3 code"] || newData.JurisdictionCode
+        ? newData.JurisdictionCode
         : null;
 
     jurisdictionCode.value =
@@ -241,7 +244,21 @@ watchEffect(() => {
   }
 });
 
+const slots = useSlots();
+
+// Slots that fetch their own data and should always be shown
+const selfFetchingSlots = new Set([
+  "oup-chapter",
+  "related-literature",
+  "literature",
+]);
+
 const shouldDisplayValue = (item, value) => {
+  const slotName = item.key.replace(/ /g, "-").toLowerCase();
+
+  // Only bypass value check for slots that fetch their own data
+  if (slots[slotName] && selfFetchingSlots.has(slotName)) return true;
+
   if (!item.emptyValueBehavior) return true;
   if (
     item.emptyValueBehavior.shouldDisplay &&

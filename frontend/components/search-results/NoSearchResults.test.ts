@@ -34,7 +34,7 @@ const mockJurisdictions = ref([
   },
 ]);
 
-vi.mock("@/composables/useJurisdictionLookup", () => ({
+vi.mock("@/composables/useJurisdictions", () => ({
   useJurisdictionLookup: () => ({
     data: mockJurisdictions,
     isJurisdictionTerm: (word: string) => {

@@ -2,69 +2,34 @@
   <RelatedItemsList
     :items="formattedItems"
     :is-loading="isLoading"
-    :base-path="basePath"
-    entity-type="instrument"
+    :base-path="''"
     :empty-value-behavior="{ action: 'hide' }"
   />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import {
   generateLegalProvisionLink,
   parseLegalProvisionLink,
 } from "@/utils/legal";
-import { useRecordDetailsList } from "@/composables/useRecordDetails";
+import { useDomesticInstrumentsList } from "@/composables/useRecordDetails";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import type { RelatedItem } from "@/types/ui";
+import type { DomesticInstrument } from "@/types/entities/domestic-instrument";
 
-const props = defineProps({
-  value: {
-    type: String,
-    default: "",
-  },
-  fallbackData: {
-    type: Object,
-    required: true,
-  },
-  valueClassMap: {
-    type: Object,
-    default: () => ({}),
-  },
-  skipArticle: {
-    type: Boolean,
-    default: false,
-  },
-  renderAsLi: {
-    type: Boolean,
-    default: false,
-  },
-});
+const props = defineProps<{
+  value: string;
+  skipArticle?: boolean;
+}>();
 
-const provisionItems = computed(() => {
-  if (props.value && props.value.trim()) {
-    return props.value.split(",");
-  }
-  if (
-    props.fallbackData["Legislation-ID"] &&
-    props.fallbackData["Legislation-ID"].trim()
-  ) {
-    return props.fallbackData["Legislation-ID"].split(",");
-  }
-  if (
-    props.fallbackData["More information"] &&
-    props.fallbackData["More information"].trim()
-  ) {
-    return [props.fallbackData["More information"].replace(/\n/g, " ").trim()];
-  }
-  return [];
-});
-
-const processedProvisions = computed(() =>
-  provisionItems.value.map((item) => {
+const processedProvisions = computed(() => {
+  if (!props.value?.trim()) return [];
+  return props.value.split(",").map((item) => {
     const { instrumentId, articleId } = parseLegalProvisionLink(item);
     return { raw: item.trim(), instrumentId, articleId };
-  }),
-);
+  });
+});
 
 const instrumentIds = computed(() => {
   const unique = new Set(
@@ -73,51 +38,44 @@ const instrumentIds = computed(() => {
   return Array.from(unique);
 });
 
-const { data: recordMap } = useRecordDetailsList(
-  computed(() => "Domestic Instruments"),
-  instrumentIds,
-);
+const { data: instruments, isLoading: instrumentsLoading } =
+  useDomesticInstrumentsList(instrumentIds);
 
-const instrumentTitles = computed(() => {
-  const map = {};
-  instrumentIds.value.forEach((id) => {
-    const rec = recordMap?.value?.find((r) => r?.id === id) || {};
-    const title =
-      rec["Abbreviation"] ||
-      rec["Title (in English)"] ||
-      rec["Title"] ||
-      String(id);
-    map[id] = title;
-  });
+const instrumentsById = computed(() => {
+  const map = new Map<string, DomesticInstrument>();
+  if (!instruments.value) return map;
+  for (const rec of instruments.value) {
+    if (rec) map.set(rec.id, rec);
+  }
   return map;
 });
 
-const formatArticle = (article) =>
+const formatArticle = (article: string | undefined) =>
   article ? article.replace(/(Art\.)(\d+)/, "$1 $2") : "";
 
 const isLoading = computed(() => {
+  if (instrumentsLoading.value) return true;
   return processedProvisions.value.some(
-    (prov) => !instrumentTitles.value[prov.instrumentId],
+    (prov) =>
+      prov.instrumentId && !instrumentsById.value.has(prov.instrumentId),
   );
 });
 
-const basePath = computed(() => "");
+const formattedItems = computed<RelatedItem[]>(() => {
+  const items: RelatedItem[] = [];
+  for (const prov of processedProvisions.value) {
+    const instrument = instrumentsById.value.get(prov.instrumentId);
+    if (!instrument) continue;
 
-const formattedItems = computed(() => {
-  return processedProvisions.value
-    .map((prov) => {
-      const title = instrumentTitles.value[prov.instrumentId];
-      if (!title) return null;
+    const displayTitle = props.skipArticle
+      ? instrument.displayTitle
+      : `${formatArticle(prov.articleId)}, ${instrument.displayTitle}`;
 
-      const displayTitle = props.skipArticle
-        ? title
-        : `${formatArticle(prov.articleId)}, ${title}`;
-
-      return {
-        id: generateLegalProvisionLink(prov.raw),
-        title: displayTitle,
-      };
-    })
-    .filter(Boolean);
+    items.push({
+      id: generateLegalProvisionLink(prov.raw),
+      title: displayTitle,
+    });
+  }
+  return items;
 });
 </script>

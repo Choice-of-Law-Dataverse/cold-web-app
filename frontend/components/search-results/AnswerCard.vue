@@ -48,17 +48,13 @@
           <template v-if="hasDomesticValue">
             <template v-if="resultData['Domestic Legal Provisions']">
               <LegalProvisionRenderer
-                render-as-li
                 :value="getValue('Domestic Legal Provisions')"
-                :fallback-data="resultData"
               />
             </template>
             <template v-else-if="resultData['Domestic Instruments ID']">
               <LegalProvisionRenderer
-                render-as-li
                 skip-article
                 :value="getValue('Domestic Instruments ID')"
-                :fallback-data="resultData"
               />
             </template>
             <template v-else>

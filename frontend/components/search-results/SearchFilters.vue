@@ -24,19 +24,11 @@
     >
       <template #option="{ option }">
         <div class="flex items-center">
-          <template
-            v-if="
-              showAvatars &&
-              isObjectOptions &&
-              option.avatar &&
-              !erroredAvatars?.[option.label]
-            "
-          >
+          <template v-if="showAvatars && isObjectOptions && option.avatar">
             <UAvatar
               :src="option.avatar"
               :style="{
                 borderRadius: '0',
-                border: '1px solid var(--color-cold-gray)',
                 boxSizing: 'border-box',
                 width: 'auto',
                 height: '16px',
@@ -45,7 +37,6 @@
                   : 'grayscale(0.9)',
               }"
               class="mr-2 self-center"
-              @error="() => handleImageError(erroredAvatars, option.label)"
             />
           </template>
           <span
@@ -66,13 +57,10 @@
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
             >
               <UAvatar
-                v-if="
-                  internalValue.avatar && !erroredAvatars[internalValue.label]
-                "
+                v-if="internalValue.avatar"
                 :src="internalValue.avatar"
                 :style="{
                   borderRadius: '0',
-                  border: '1px solid var(--color-cold-gray)',
                   boxSizing: 'border-box',
                   width: 'auto',
                   height: '16px',
@@ -81,9 +69,6 @@
                     : 'grayscale(0.9)',
                 }"
                 class="mr-1.5 self-center"
-                @error="
-                  () => handleImageError(erroredAvatars, internalValue.label)
-                "
               />
               <span
                 class="truncate"
@@ -129,11 +114,10 @@
             >
               <template v-for="(selected, index) in internalValue" :key="index">
                 <UAvatar
-                  v-if="selected.avatar && !erroredAvatars[selected.label]"
+                  v-if="selected.avatar"
                   :src="selected.avatar"
                   :style="{
                     borderRadius: '0',
-                    border: '1px solid var(--color-cold-gray)',
                     boxSizing: 'border-box',
                     width: 'auto',
                     height: '16px',
@@ -142,9 +126,6 @@
                       : 'grayscale(0.9)',
                   }"
                   class="mr-1.5 self-center"
-                  @error="
-                    () => handleImageError(erroredAvatars, selected.label)
-                  "
                 />
                 <span
                   class="mr-2 inline-block truncate"
@@ -186,9 +167,8 @@
 </template>
 
 <script setup>
-import { computed, reactive } from "vue";
-import { handleImageError } from "@/utils/handleImageError";
-import { useCoveredCountries } from "@/composables/useCoveredCountries";
+import { computed } from "vue";
+import { useCoveredCountries } from "@/composables/useJurisdictions";
 
 const props = defineProps({
   options: { type: Array, required: true },
@@ -201,8 +181,6 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["update:modelValue"]);
-
-const erroredAvatars = reactive({});
 
 const { data: coveredCountries } = useCoveredCountries();
 

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.dev/svgjs" width="200" height="200"><svg id="SvgjsSvg1002" xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <circle cx="100" cy="100" r="100" fill="#4dfab2"></circle>
+  <path d="M48.56,100c0-36.8,16.67-61,52.46-61,32.94,0,48.6,14.03,50.42,47.17h-28.87c-1.02-15.86-7.32-22.97-21.55-22.97-19.52,0-23.38,14.23-23.38,36.8s3.86,36.8,23.38,36.8c15.04,0,20.53-6.91,21.55-22.77h28.87c-2.23,32.33-19.11,46.97-50.63,46.97-37.41,0-52.26-22.78-52.26-61Z" fill="#0f0035"></path>
+</svg><style>@media (prefers-color-scheme: light) { :root { filter: none; } }
+@media (prefers-color-scheme: dark) { :root { filter: none; } }
+</style></svg>

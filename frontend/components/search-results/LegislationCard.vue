@@ -3,14 +3,14 @@
     :result-data="processedResultData"
     card-type="Domestic Instrument"
   >
-    <div class="flex flex-col gap-0">
+    <div class="flex w-full flex-col gap-0">
       <!-- Title section -->
       <DetailRow :label="getLabel('Title (in English)')">
-        <div class="flex items-start justify-between gap-4">
+        <div class="flex w-full items-start justify-between gap-4">
           <div
             :class="[
               config.valueClassMap['Title (in English)'],
-              'flex-1 whitespace-pre-line text-sm leading-relaxed',
+              'whitespace-pre-line text-sm leading-relaxed',
               (!processedResultData['Title (in English)'] ||
                 processedResultData['Title (in English)'] === 'NA') &&
               config.keyLabelPairs.find(

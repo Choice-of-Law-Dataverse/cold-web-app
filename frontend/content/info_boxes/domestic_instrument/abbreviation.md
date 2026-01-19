@@ -1,1 +1,0 @@
-Official abbreviation used for the domestic instrument.

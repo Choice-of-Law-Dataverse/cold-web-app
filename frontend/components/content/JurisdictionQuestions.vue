@@ -281,7 +281,7 @@
 <script setup lang="ts">
 import { computed, ref, watch, onMounted } from "vue";
 import { useRoute } from "vue-router";
-import { useQuestions } from "@/composables/useQuestions";
+import { useQuestions } from "@/composables/useFullTable";
 import {
   useAnswersByJurisdictions,
   processAnswerText,
@@ -440,24 +440,14 @@ const rows = computed(() => {
     return [];
   }
 
-  const sorted = (
-    questionsData.value as Array<{
-      "CoLD ID"?: string;
-      ID?: string;
-      Question: string;
-      Themes?: string;
-      [key: string]: unknown;
-    }>
-  )
-    .slice()
-    .sort((a, b) => {
-      const aId = (a["CoLD ID"] ?? a.ID ?? "") as string;
-      const bId = (b["CoLD ID"] ?? b.ID ?? "") as string;
-      return aId.localeCompare(bId);
-    });
+  const sorted = questionsData.value.slice().sort((a, b) => {
+    const aId = a.ID ?? "";
+    const bId = b.ID ?? "";
+    return aId.localeCompare(bId);
+  });
 
   return sorted.map((item) => {
-    const id = (item["CoLD ID"] ?? item.ID) as string;
+    const id = item.ID ?? "";
     const level = typeof id === "string" ? id.match(/\./g)?.length || 0 : 0;
 
     // Backward compatible format for single jurisdiction
