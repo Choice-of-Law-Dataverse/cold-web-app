@@ -2,13 +2,12 @@
   <div v-if="loading">
     <LoadingBar class="!mt-8" />
   </div>
+  <InlineError v-else-if="error" />
   <div v-else>
     <BaseLegalContent
       :title="displayTitle"
       :anchor-id="anchorId"
       :class="props.class"
-      :loading="loading"
-      :error="error?.message"
     >
       <template #header-actions>
         <div v-if="hasEnglishTranslation" class="flex items-center gap-1">

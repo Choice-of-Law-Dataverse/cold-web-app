@@ -9,6 +9,8 @@
       <LoadingLandingPageCard />
     </div>
 
+    <InlineError v-else-if="error" />
+
     <div v-else-if="data && chartData.length > 0" class="chart-container">
       <div class="chart-bars">
         <NuxtLink
@@ -49,7 +51,7 @@ import {
   useJurisdictions,
 } from "@/composables/useJurisdictions";
 
-const { data, isLoading } = useJurisdictionChart();
+const { data, isLoading, error } = useJurisdictionChart();
 const { data: jurisdictions } = useJurisdictions();
 const hoveredIndex = ref(-1);
 

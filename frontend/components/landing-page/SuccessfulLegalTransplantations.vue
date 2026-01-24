@@ -10,7 +10,8 @@
       <div v-if="isLoading">
         <LoadingLandingPageCard />
       </div>
-      <template v-else>
+      <InlineError v-else-if="error" />
+      <template v-else-if="domesticInstruments">
         <div class="flex w-full flex-col gap-2">
           <NuxtLink
             v-for="(instrument, index) in domesticInstruments.slice(0, 9)"
@@ -48,7 +49,11 @@ import { useDomesticInstruments } from "@/composables/useDomesticInstruments";
 import { formatYear } from "@/utils/format";
 
 const filterCompatible = ref(true);
-const { data: domesticInstruments, isLoading } = useDomesticInstruments({
+const {
+  data: domesticInstruments,
+  isLoading,
+  error,
+} = useDomesticInstruments({
   filterCompatible,
 });
 </script>

@@ -21,6 +21,9 @@
   <template v-if="loading">
     <LoadingCard />
   </template>
+  <template v-else-if="error">
+    <InlineError />
+  </template>
   <template v-else>
     <UCard
       class="cold-ucard"
@@ -154,6 +157,7 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 
 const props = defineProps({
   loading: Boolean,
+  error: Boolean,
   resultData: {
     type: Object,
     default: () => ({}),

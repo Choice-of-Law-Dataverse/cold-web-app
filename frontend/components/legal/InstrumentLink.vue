@@ -1,5 +1,9 @@
 <template>
-  <span v-if="!isLoading">
+  <span v-if="isLoading">
+    <LoadingBar />
+  </span>
+  <InlineError v-else-if="error" />
+  <span v-else>
     <NuxtLink
       v-if="displayTitle && id"
       class="text-cold-purple"
@@ -8,7 +12,6 @@
     >
     <span v-else>{{ id }}</span>
   </span>
-  <LoadingBar v-else />
 </template>
 
 <script setup>
@@ -41,7 +44,11 @@ function parseIdParts(id) {
   }
 }
 
-const { data: record, isLoading } = useRecordDetails(
+const {
+  data: record,
+  isLoading,
+  error,
+} = useRecordDetails(
   computed(() => props.table),
   instrumentTitleId,
 );

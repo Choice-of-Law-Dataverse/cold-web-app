@@ -37,10 +37,14 @@
             Add comparison with
           </h4>
 
-          <div
-            v-if="!jurisdictionsLoading"
-            class="flex flex-col gap-4 md:flex-row md:items-center"
-          >
+          <!-- Loading state -->
+          <div v-if="jurisdictionsLoading" class="flex items-center gap-2">
+            <LoadingBar />
+          </div>
+
+          <InlineError v-else-if="jurisdictionsError" />
+
+          <div v-else class="flex flex-col gap-4 md:flex-row md:items-center">
             <JurisdictionSelectMenu
               v-model="selectedJurisdiction"
               :countries="allJurisdictionsData || []"
@@ -48,11 +52,6 @@
               placeholder="Jurisdiction"
               @country-selected="handleAddJurisdiction"
             />
-          </div>
-
-          <!-- Loading state -->
-          <div v-else class="flex items-center gap-2">
-            <span class="text-sm text-gray-600">Loading jurisdictions...</span>
           </div>
         </div>
       </div>
@@ -65,6 +64,8 @@
         <LoadingBar />
         <LoadingBar />
       </div>
+
+      <InlineError v-else-if="questionsError || answersError" />
 
       <div v-else-if="isSingleJurisdiction" class="divide-y divide-gray-100">
         <div
@@ -305,8 +306,11 @@ const comparisonJurisdictions = ref<JurisdictionOption[]>([]);
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 
 // Get all available jurisdictions
-const { data: allJurisdictionsData, isLoading: jurisdictionsLoading } =
-  useJurisdictions();
+const {
+  data: allJurisdictionsData,
+  isLoading: jurisdictionsLoading,
+  error: jurisdictionsError,
+} = useJurisdictions();
 
 // Initialize comparison jurisdictions from URL query params on mount
 onMounted(() => {
@@ -412,9 +416,16 @@ const jurisdictionCodes = computed(() =>
 );
 
 // Fetch questions and answers separately
-const { data: questionsData, isLoading: questionsLoading } = useQuestions();
-const { data: answersMap, isLoading: answersLoading } =
-  useAnswersByJurisdictions(jurisdictionCodes);
+const {
+  data: questionsData,
+  isLoading: questionsLoading,
+  error: questionsError,
+} = useQuestions();
+const {
+  data: answersMap,
+  isLoading: answersLoading,
+  error: answersError,
+} = useAnswersByJurisdictions(jurisdictionCodes);
 
 const loading = computed(() => questionsLoading.value);
 
