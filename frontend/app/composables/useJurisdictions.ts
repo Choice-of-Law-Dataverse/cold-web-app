@@ -98,6 +98,11 @@ export function useJurisdictions(enabled?: MaybeRefOrGetter<boolean>) {
     queryKey: ["jurisdictions-with-answer-percentage"],
     queryFn: fetchAndProcessJurisdictions,
     enabled,
+    // Jurisdiction data changes infrequently - cache aggressively
+    staleTime: 1000 * 60 * 30, // 30 minutes
+    gcTime: 1000 * 60 * 60 * 2, // 2 hours (garbage collection)
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 
   return {
