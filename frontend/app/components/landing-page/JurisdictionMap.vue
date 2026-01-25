@@ -118,33 +118,67 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from "vue";
+import { defineAsyncComponent, h, ref } from "vue";
+
+// Loading placeholder for async map components
+const MapLoadingPlaceholder = {
+  render() {
+    return h("div", { class: "map-async-loading" }, [
+      h("div", { class: "map-async-loading__spinner" }),
+    ]);
+  },
+};
+
+// Error placeholder for failed async map loads
+const MapErrorPlaceholder = {
+  render() {
+    return h("div", { class: "map-async-error" }, [
+      h("span", "Failed to load map"),
+    ]);
+  },
+};
+
+// Async component options with loading/error handlers
+const asyncComponentOptions = {
+  loadingComponent: MapLoadingPlaceholder,
+  errorComponent: MapErrorPlaceholder,
+  delay: 100,
+  timeout: 10000,
+};
 
 // Lazy load regional map components for better performance
-const MapAfrica = defineAsyncComponent(
-  () => import("@/components/maps/MapAfrica.vue"),
-);
-const MapAllRegions = defineAsyncComponent(
-  () => import("@/components/maps/MapAllRegions.vue"),
-);
-const MapArabStates = defineAsyncComponent(
-  () => import("@/components/maps/MapArabStates.vue"),
-);
-const MapAsiaPacific = defineAsyncComponent(
-  () => import("@/components/maps/MapAsiaPacific.vue"),
-);
-const MapEurope = defineAsyncComponent(
-  () => import("@/components/maps/MapEurope.vue"),
-);
-const MapMiddleEast = defineAsyncComponent(
-  () => import("@/components/maps/MapMiddleEast.vue"),
-);
-const MapNorthAmerica = defineAsyncComponent(
-  () => import("@/components/maps/MapNorthAmerica.vue"),
-);
-const MapSouthLatinAmerica = defineAsyncComponent(
-  () => import("@/components/maps/MapSouthLatinAmerica.vue"),
-);
+const MapAfrica = defineAsyncComponent({
+  loader: () => import("@/components/maps/MapAfrica.vue"),
+  ...asyncComponentOptions,
+});
+const MapAllRegions = defineAsyncComponent({
+  loader: () => import("@/components/maps/MapAllRegions.vue"),
+  ...asyncComponentOptions,
+});
+const MapArabStates = defineAsyncComponent({
+  loader: () => import("@/components/maps/MapArabStates.vue"),
+  ...asyncComponentOptions,
+});
+const MapAsiaPacific = defineAsyncComponent({
+  loader: () => import("@/components/maps/MapAsiaPacific.vue"),
+  ...asyncComponentOptions,
+});
+const MapEurope = defineAsyncComponent({
+  loader: () => import("@/components/maps/MapEurope.vue"),
+  ...asyncComponentOptions,
+});
+const MapMiddleEast = defineAsyncComponent({
+  loader: () => import("@/components/maps/MapMiddleEast.vue"),
+  ...asyncComponentOptions,
+});
+const MapNorthAmerica = defineAsyncComponent({
+  loader: () => import("@/components/maps/MapNorthAmerica.vue"),
+  ...asyncComponentOptions,
+});
+const MapSouthLatinAmerica = defineAsyncComponent({
+  loader: () => import("@/components/maps/MapSouthLatinAmerica.vue"),
+  ...asyncComponentOptions,
+});
 
 interface RegionOption {
   label: string;
@@ -274,5 +308,42 @@ const { data: disclaimer } = await useAsyncData("map_disclaimer", () =>
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
+}
+
+/* Async Component Loading State */
+.map-async-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f9fafb;
+}
+
+.map-async-loading__spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--color-cold-gray);
+  border-top-color: var(--color-cold-purple);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Async Component Error State */
+.map-async-error {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fef2f2;
+  color: #991b1b;
+  font-size: 0.875rem;
 }
 </style>

@@ -25,7 +25,6 @@
     <!-- Leaflet Map -->
     <LMap
       v-else
-      ref="mapRef"
       :zoom="zoom"
       :center="center"
       :use-global-leaflet="false"
@@ -34,6 +33,21 @@
       role="application"
       aria-label="Interactive jurisdiction coverage map"
     >
+      <!-- Hover Tooltip -->
+      <div
+        class="map-tooltip"
+        :class="{ 'map-tooltip--visible': hoveredCountry }"
+        aria-live="polite"
+        aria-atomic="true"
+      >
+        <template v-if="hoveredCountry">
+          <span class="map-tooltip__name">{{ hoveredCountry.name }}</span>
+          <span class="map-tooltip__coverage">{{
+            hoveredCountry.coverage
+          }}</span>
+        </template>
+      </div>
+
       <!-- Tile Layer -->
       <LTileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -43,7 +57,7 @@
 
       <!-- White Background - Extended to cover larger area for dragging -->
       <LRectangle
-        :bounds="backgroundBounds as [LatLngTuple, LatLngTuple]"
+        :bounds="backgroundBounds"
         :fill="true"
         color="white"
         :weight="0"
@@ -66,8 +80,9 @@ import { navigateTo } from "#app";
 import type {
   LatLngBoundsExpression,
   Layer,
-  Map as LeafletMap,
   MapOptions,
+  Path,
+  PathOptions,
 } from "leaflet";
 
 import { useGeoJsonData } from "@/composables/useGeoJsonData";
@@ -80,37 +95,46 @@ interface GeoJsonFeature {
   };
 }
 
-type LatLngTuple = [number, number];
+interface CoverageInfo {
+  isoCode: string;
+  name: string;
+  coverage: number;
+  isCovered: boolean;
+  fillOpacity: number;
+}
+
+// Simple tuple types for map coordinates (Leaflet's LatLngTuple includes optional altitude)
+type LatLngPair = [number, number];
+type BoundsPair = [LatLngPair, LatLngPair];
 
 interface Props {
   zoom?: number;
-  center?: LatLngTuple;
+  center?: LatLngPair;
   enableDragging?: boolean;
   enableScrollWheelZoom?: boolean;
   enableZoomControl?: boolean;
   enableDoubleClickZoom?: boolean;
-  backgroundBounds?: LatLngBoundsExpression;
+  backgroundBounds?: BoundsPair;
   maxBounds?: LatLngBoundsExpression | null;
   maxBoundsViscosity?: number;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   zoom: 1.5,
-  center: () => [35, 0] as LatLngTuple,
+  center: () => [35, 0],
   enableDragging: false,
   enableScrollWheelZoom: false,
   enableZoomControl: false,
   enableDoubleClickZoom: false,
-  backgroundBounds: () =>
-    [
-      [-200, -400],
-      [200, 400],
-    ] as LatLngBoundsExpression,
+  backgroundBounds: () => [
+    [-200, -400],
+    [200, 400],
+  ],
   maxBounds: null,
   maxBoundsViscosity: 1.0,
 });
 
-const mapRef = ref<{ leafletObject: LeafletMap } | null>(null);
+const hoveredCountry = ref<{ name: string; coverage: string } | null>(null);
 
 const {
   data: geoJsonData,
@@ -143,9 +167,8 @@ const isDataReady = computed(
     jurisdictions.value.length > 0,
 );
 
-const refetchData = () => {
-  refetchGeoJson();
-  refetchJurisdictions();
+const refetchData = async () => {
+  await Promise.all([refetchGeoJson(), refetchJurisdictions()]);
 };
 
 // Create a map for quick lookup of answer coverages by ISO code
@@ -181,13 +204,20 @@ const mapOptions = computed<MapOptions>(() => {
   return options;
 });
 
-// Style function for initial render (prevents flash of default Leaflet styles)
-const getFeatureStyle = (feature: GeoJsonFeature) => {
+// Helper to extract coverage info for a feature (eliminates duplication)
+const getCoverageInfo = (feature: GeoJsonFeature): CoverageInfo => {
   const isoCode = feature.properties.iso_a3_eh;
-  const answerCoverage =
-    answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
-  const isCovered = answerCoverage > 0;
-  const fillOpacity = isCovered ? 0.1 + (answerCoverage / 100) * 0.9 : 1;
+  const name = feature.properties.name;
+  const coverage = answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
+  const isCovered = coverage > 0;
+  const fillOpacity = isCovered ? 0.1 + (coverage / 100) * 0.9 : 1;
+
+  return { isoCode, name, coverage, isCovered, fillOpacity };
+};
+
+// Style function for initial render (prevents flash of default Leaflet styles)
+const getFeatureStyle = (feature: GeoJsonFeature): PathOptions => {
+  const { isCovered, fillOpacity } = getCoverageInfo(feature);
 
   return {
     fillColor: isCovered
@@ -196,32 +226,40 @@ const getFeatureStyle = (feature: GeoJsonFeature) => {
     weight: 0.5,
     color: "white",
     fillOpacity,
-    className: "map-country",
   };
 };
 
 const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
-  const isoCode = feature.properties.iso_a3_eh;
-  const answerCoverage =
-    answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
-  const isCovered = answerCoverage > 0;
-  const fillOpacity = isCovered ? 0.1 + (answerCoverage / 100) * 0.9 : 1;
+  const { isoCode, name, coverage, isCovered, fillOpacity } =
+    getCoverageInfo(feature);
+
+  // Add custom class for CSS transitions (className in style doesn't work)
+  const element = (layer as Path).getElement?.();
+  if (element) {
+    element.classList.add("map-country");
+  }
 
   const defaultStyle = getFeatureStyle(feature);
-  const hoverStyle = {
+  const hoverStyle: PathOptions = {
     ...defaultStyle,
     fillColor: "var(--color-cold-teal)",
     fillOpacity: Math.max(0.8, fillOpacity),
   };
 
   layer.on("mouseover", () => {
-    // @ts-expect-error Leaflet layer type
-    layer.setStyle(hoverStyle);
+    (layer as Path).setStyle(hoverStyle);
+
+    hoveredCountry.value = {
+      name,
+      coverage: isCovered
+        ? `${coverage.toFixed(1)}% coverage`
+        : "No data available",
+    };
   });
 
   layer.on("mouseout", () => {
-    // @ts-expect-error Leaflet layer type
-    layer.setStyle(defaultStyle);
+    (layer as Path).setStyle(defaultStyle);
+    hoveredCountry.value = null;
   });
 
   layer.on("click", () => {
@@ -290,6 +328,45 @@ const geoJsonOptions = computed(() => ({
   justify-content: center;
   background: #fafafa;
   border-radius: 0.5rem;
+}
+
+/* Hover Tooltip */
+.map-tooltip {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  background: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.map-tooltip--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.map-tooltip__name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-cold-night);
+  line-height: 1.3;
+}
+
+.map-tooltip__coverage {
+  font-size: 0.75rem;
+  color: var(--color-cold-purple);
+  font-weight: 500;
 }
 
 /* Screen reader only */
