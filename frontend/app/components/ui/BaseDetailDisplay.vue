@@ -27,12 +27,9 @@
   <template v-else>
     <UCard
       class="cold-ucard overflow-hidden"
-      :class="{ 'card-scrolled': isScrolled }"
       :ui="{
         body: '!p-0',
-        header: isScrolled
-          ? 'sticky-header sticky-header-scrolled border-b-0 px-4 py-3'
-          : 'sticky-header border-b-0 px-6 py-5',
+        header: 'sticky-header border-b-0 px-6 py-5',
       }"
     >
       <!-- Header section: render only when showHeader is true -->
@@ -149,14 +146,11 @@
 import { useSlots } from "vue";
 import { useRoute } from "vue-router";
 import { useCoveredCountries } from "@/composables/useJurisdictions";
-import { useScrollState } from "@/composables/useScrollState";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import InlineError from "@/components/ui/InlineError.vue";
-
-const { isScrolled } = useScrollState();
 
 const props = defineProps({
   loading: Boolean,
@@ -343,47 +337,12 @@ const getDisplayValue = (item, value) => {
 
 :deep(.sticky-header) {
   position: sticky;
-  top: var(--nav-height);
+  top: var(--nav-height-scrolled);
   z-index: 10;
   background-color: white;
-  transition:
-    padding 0.2s ease,
-    margin 0.2s ease,
-    top 0.2s ease;
-}
-
-/* Allow header to expand beyond card when scrolled */
-.card-scrolled.cold-ucard {
-  overflow-x: visible;
 }
 
 :deep(.dark .sticky-header) {
   background-color: rgb(17 24 39);
-}
-
-/* Scrolled state - full width with gradient border */
-:deep(.sticky-header-scrolled) {
-  top: var(--nav-height-scrolled);
-  margin-left: calc(-1 * (50vw - 50%));
-  margin-right: calc(-1 * (50vw - 50%));
-  padding-left: calc(50vw - 50% + 1rem);
-  padding-right: calc(50vw - 50% + 1rem);
-  border-bottom: 4px solid transparent;
-  background:
-    linear-gradient(white, white) padding-box,
-    var(--gradient-theme) border-box;
-}
-
-:deep(.dark .sticky-header-scrolled) {
-  background:
-    linear-gradient(rgb(17 24 39), rgb(17 24 39)) padding-box,
-    var(--gradient-theme) border-box;
-}
-
-@media (min-width: 640px) {
-  :deep(.sticky-header-scrolled) {
-    padding-left: calc(50vw - 50% + 1.5rem);
-    padding-right: calc(50vw - 50% + 1.5rem);
-  }
 }
 </style>
