@@ -47,14 +47,22 @@ const pageTransition = computed(() => {
 </script>
 
 <style scoped>
-/* Ensure main content has minimum height to prevent footer jumping during transitions */
+/*
+ * Main content min-height calculation:
+ * - Ensures stable layout during page transitions (prevents footer jump)
+ * - Allows footer to peek above fold, hinting at more content
+ *
+ * Formula: 100dvh - nav - main-margin - footer-margin - footer-peek
+ * Mobile:  100dvh - nav - 1.5rem - 6rem - 4rem = 100dvh - nav - 11.5rem
+ * Desktop: 100dvh - nav - 3rem - 6rem - 4rem = 100dvh - nav - 13rem
+ */
 .main-content {
-  min-height: calc(100dvh - var(--nav-height) - 6rem);
+  min-height: calc(100dvh - var(--nav-height) - 11.5rem);
 }
 
 @media (min-width: 640px) {
   .main-content {
-    min-height: calc(100dvh - var(--nav-height) - 8rem);
+    min-height: calc(100dvh - var(--nav-height) - 13rem);
   }
 }
 </style>

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { aboutNavLinks, learnNavLinks } from "@/config/navigation";
 
 const user = useUser();
@@ -7,15 +7,25 @@ const user = useUser();
 <template>
   <footer class="footer-container mt-24 min-h-[300px] px-6 py-12">
     <div class="max-w-container mx-auto">
-      <!-- Logo and Tagline -->
-      <div class="mb-8 flex flex-col gap-3">
-        <img
-          src="https://choiceoflaw.blob.core.windows.net/assets/cold_flag_footer.svg"
-          class="mb-6 w-25 max-w-16"
-        />
-        <h2 class="footer-title leading-tight">Choice of Law<br />Dataverse</h2>
-        <p class="leading-snug text-gray-300">
-          Funded by the<br />Swiss National Science Foundation
+      <!-- Logo and Tagline - horizontal on desktop, stacked on mobile -->
+      <div
+        class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <!-- Left: Flag + Title -->
+        <div class="flex items-center gap-4">
+          <img
+            src="https://choiceoflaw.blob.core.windows.net/assets/cold_flag_footer.svg"
+            class="h-12 w-auto sm:h-14"
+            alt="Choice of Law Dataverse flag"
+          />
+          <h2 class="footer-title leading-tight text-pretty">
+            Choice of Law Dataverse
+          </h2>
+        </div>
+
+        <!-- Right: Funding attribution -->
+        <p class="leading-snug text-pretty text-gray-300 sm:text-right">
+          Funded by the Swiss National Science Foundation
         </p>
       </div>
 
