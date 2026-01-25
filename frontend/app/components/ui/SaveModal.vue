@@ -1,13 +1,5 @@
 <template>
-  <UModal
-    v-model="modelValueProxy"
-    prevent-close
-    :ui="{
-      container: 'w-screen max-w-none',
-      width: 'w-screen max-w-none',
-      rounded: 'rounded-lg',
-    }"
-  >
+  <UModal v-model:open="modelValueProxy" :dismissible="false">
     <div class="p-6">
       <h2 class="mb-4 text-center text-lg font-bold">Ready to submit?</h2>
       <p class="mb-6 text-center">
@@ -15,7 +7,7 @@
       </p>
 
       <!-- Comments Field -->
-      <UFormGroup size="lg" class="mb-6">
+      <UFormField size="lg" class="mb-6">
         <template #label>
           <span class="label">Comments</span>
         </template>
@@ -25,7 +17,7 @@
           class="cold-input mt-2"
           :rows="3"
         />
-      </UFormGroup>
+      </UFormField>
 
       <div class="flex flex-col items-center gap-2">
         <h2

@@ -12,7 +12,7 @@
       @open-cancel-modal="showCancelModal = true"
     >
       <div class="section-gap m-0 p-0">
-        <UFormGroup size="lg" hint="Required" :error="errors.name">
+        <UFormField size="lg" hint="Required" :error="errors.name">
           <template #label>
             <span class="label">Name</span>
           </template>
@@ -21,8 +21,8 @@
             class="mt-2"
             placeholder="Name of the International Instrument"
           />
-        </UFormGroup>
-        <UFormGroup size="lg" class="mt-8">
+        </UFormField>
+        <UFormField size="lg" class="mt-8">
           <template #label>
             <span class="label">Specialists</span>
             <InfoPopover :text="tooltipInternationalInstrumentSpecialist" />
@@ -62,8 +62,8 @@
               >
             </div>
           </template>
-        </UFormGroup>
-        <UFormGroup size="lg" class="mt-8">
+        </UFormField>
+        <UFormField size="lg" class="mt-8">
           <template #label>
             <span class="label">PDF</span>
             <InfoPopover :text="tooltipInternationalInstrumentSpecialist" />
@@ -76,15 +76,15 @@
           <div v-if="pdfFileName" class="mt-2 text-sm text-gray-500">
             Current: {{ pdfFileName }}
           </div>
-        </UFormGroup>
-        <UFormGroup size="lg" class="mt-8" :error="errors.link">
+        </UFormField>
+        <UFormField size="lg" class="mt-8" :error="errors.link">
           <template #label>
             <span class="label">Link</span>
             <InfoPopover :text="tooltipInternationalInstrumentLink" />
           </template>
           <UInput v-model="link" class="mt-2" placeholder="Link" />
-        </UFormGroup>
-        <UFormGroup size="lg" class="mt-8">
+        </UFormField>
+        <UFormField size="lg" class="mt-8">
           <template #label>
             <span class="label">Date</span>
             <InfoPopover :text="tooltipInternationalInstrumentDate" />
@@ -99,11 +99,14 @@
               <DatePicker v-model="date" is-required @close="close" />
             </template>
           </UPopover>
-        </UFormGroup>
+        </UFormField>
       </div>
     </BaseDetailLayout>
-    <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
-    <SaveModal
+    <LazyCancelModal
+      v-model="showCancelModal"
+      @confirm-cancel="confirmCancel"
+    />
+    <LazySaveModal
       v-model="showSaveModal"
       :email="email"
       :comments="comments"
@@ -130,8 +133,6 @@ import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
-import CancelModal from "@/components/ui/CancelModal.vue";
-import SaveModal from "@/components/ui/SaveModal.vue";
 import { format, parseISO } from "date-fns";
 import { useHead } from "#imports";
 import { internationalInstrumentTooltips } from "@/config/tooltips";

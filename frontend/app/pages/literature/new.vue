@@ -13,39 +13,39 @@
     >
       <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
         <!-- Title (required) -->
-        <UFormGroup size="lg" hint="Required" :error="errors.title">
+        <UFormField size="lg" hint="Required" :error="errors.title">
           <template #label>
             <span class="label">Title</span>
           </template>
           <UInput v-model="title" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Year (required) -->
-        <UFormGroup size="lg" hint="Required" :error="errors.publication_year">
+        <UFormField size="lg" hint="Required" :error="errors.publication_year">
           <template #label>
             <span class="label">Year</span>
           </template>
           <UInput v-model="publicationYear" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Author(s) (required) -->
-        <UFormGroup size="lg" hint="Required" :error="errors.author">
+        <UFormField size="lg" hint="Required" :error="errors.author">
           <template #label>
             <span class="label">Author</span>
           </template>
           <UInput v-model="author" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Publication (optional) -->
-        <UFormGroup size="lg" :error="errors.publication_title">
+        <UFormField size="lg" :error="errors.publication_title">
           <template #label>
             <span class="label">Publication title</span>
           </template>
           <UInput v-model="publicationTitle" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Jurisdiction (optional) -->
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label">Jurisdiction</span>
           </template>
@@ -56,26 +56,26 @@
             :show-avatars="true"
             :multiple="false"
           />
-        </UFormGroup>
+        </UFormField>
 
         <!-- URL (optional) -->
-        <UFormGroup size="lg" :error="errors.url">
+        <UFormField size="lg" :error="errors.url">
           <template #label>
             <span class="label">URL</span>
           </template>
           <UInput v-model="url" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
         <!-- DOI (optional) -->
-        <UFormGroup size="lg" :error="errors.doi">
+        <UFormField size="lg" :error="errors.doi">
           <template #label>
             <span class="label">DOI</span>
           </template>
           <UInput v-model="doi" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
         <!-- Date (optional) -->
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label">Publication date</span>
           </template>
@@ -93,30 +93,30 @@
               <DatePicker v-model="publicationDate" @close="close" />
             </template>
           </UPopover>
-        </UFormGroup>
+        </UFormField>
 
         <!-- ISBN (optional) -->
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label">ISBN</span>
           </template>
           <UInput v-model="isbn" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
         <!-- ISSN (optional) -->
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label">ISSN</span>
           </template>
           <UInput v-model="issn" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label">Theme</span>
           </template>
           <UInput v-model="theme" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
         <div class="flex justify-end md:col-span-2">
           <UButton
@@ -129,8 +129,11 @@
       </div>
     </BaseDetailLayout>
 
-    <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
-    <SaveModal
+    <LazyCancelModal
+      v-model="showCancelModal"
+      @confirm-cancel="confirmCancel"
+    />
+    <LazySaveModal
       v-model="showSaveModal"
       :comments="comments"
       :save-modal-errors="saveModalErrors"
@@ -148,8 +151,6 @@ import { useHead, useRouter } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
-import CancelModal from "@/components/ui/CancelModal.vue";
-import SaveModal from "@/components/ui/SaveModal.vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import { format } from "date-fns";
 

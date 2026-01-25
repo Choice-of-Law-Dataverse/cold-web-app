@@ -13,21 +13,21 @@
     >
       <!-- Always render this section, even if keyLabelPairs is empty -->
       <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
-        <UFormGroup size="lg" hint="Required" :error="errors.abbreviation">
+        <UFormField size="lg" hint="Required" :error="errors.abbreviation">
           <template #label>
             <span class="label">Abbreviation</span>
           </template>
           <UInput v-model="abbreviation" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label">Title</span>
           </template>
           <UInput v-model="title" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label">URL</span>
           </template>
@@ -36,9 +36,9 @@
             placeholder="https://…"
             class="cold-input mt-2"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Date
@@ -56,7 +56,7 @@
               <DatePicker v-model="date" @close="close" />
             </template>
           </UPopover>
-        </UFormGroup>
+        </UFormField>
 
         <div class="flex justify-end md:col-span-2">
           <UButton
@@ -69,8 +69,11 @@
       </div>
     </BaseDetailLayout>
 
-    <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
-    <SaveModal
+    <LazyCancelModal
+      v-model="showCancelModal"
+      @confirm-cancel="confirmCancel"
+    />
+    <LazySaveModal
       v-model="showSaveModal"
       :email="email"
       :comments="comments"
@@ -95,8 +98,6 @@ import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
-import CancelModal from "@/components/ui/CancelModal.vue";
-import SaveModal from "@/components/ui/SaveModal.vue";
 import { format } from "date-fns";
 import { regionalInstrumentTooltips } from "@/config/tooltips";
 

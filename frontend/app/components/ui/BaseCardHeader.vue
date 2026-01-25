@@ -251,7 +251,7 @@
       </div>
     </template>
   </div>
-  <CiteModal v-model="isCiteOpen" />
+  <LazyCiteModal v-model="isCiteOpen" />
 </template>
 
 <script setup>
@@ -259,7 +259,6 @@ import { onMounted, ref, computed, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
-import CiteModal from "@/components/ui/CiteModal.vue";
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
@@ -429,24 +428,24 @@ const mobileMenuItems = computed(() => {
       {
         label: "Cite",
         icon: "i-material-symbols:verified-outline",
-        click: () => {
+        onSelect: () => {
           isCiteOpen.value = true;
         },
       },
       {
         label: "Export JSON",
         icon: "i-material-symbols:data-object",
-        click: exportJSON,
+        onSelect: exportJSON,
       },
       {
         label: "Print",
         icon: "i-material-symbols:print-outline",
-        click: printPage,
+        onSelect: printPage,
       },
       {
         label: "Suggest Edit",
         icon: "i-material-symbols:edit-square-outline",
-        click: () => {
+        onSelect: () => {
           window.open(suggestEditLink.value, "_blank");
         },
       },

@@ -1,10 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <UModal
-    :model-value="modelValue"
-    :ui="{ rounded: 'rounded-none' }"
-    @update:model-value="(v) => emit('update:modelValue', v)"
-  >
+  <UModal :open="modelValue" @update:open="(v) => emit('update:modelValue', v)">
     <div class="p-6">
       <h2 class="mb-4">Cite This Page</h2>
       <!-- eslint-disable-next-line vue/no-v-html -->

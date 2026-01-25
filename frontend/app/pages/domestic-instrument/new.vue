@@ -12,7 +12,7 @@
       @open-cancel-modal="showCancelModal = true"
     >
       <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
-        <UFormGroup size="lg" hint="Required" :error="errors.jurisdiction_link">
+        <UFormField size="lg" hint="Required" :error="errors.jurisdiction_link">
           <template #label>
             <span class="label">Jurisdiction</span>
           </template>
@@ -23,9 +23,9 @@
             :show-avatars="true"
             :multiple="false"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.official_title" hint="Required">
+        <UFormField size="lg" :error="errors.official_title" hint="Required">
           <template #label>
             <span class="label flex flex-row items-center">
               Official Title
@@ -37,9 +37,9 @@
             class="cold-input mt-2"
             placeholder="e.g. Bundesgesetz über das Internationale Privatrecht"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.title_en" hint="Required">
+        <UFormField size="lg" :error="errors.title_en" hint="Required">
           <template #label>
             <span class="label flex flex-row items-center">
               Name
@@ -51,9 +51,9 @@
             class="cold-input mt-2"
             placeholder="e.g. Swiss Private International Law Act"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" hint="Required" :error="errors.entry_into_force">
+        <UFormField size="lg" hint="Required" :error="errors.entry_into_force">
           <template #label>
             <span class="label flex flex-row items-center">
               Entry Into Force
@@ -70,9 +70,9 @@
               <DatePicker v-model="entryIntoForce" is-required @close="close" />
             </template>
           </UPopover>
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" hint="Required" :error="errors.source_url">
+        <UFormField size="lg" hint="Required" :error="errors.source_url">
           <template #label>
             <span class="label">Source (URL)</span>
           </template>
@@ -81,23 +81,23 @@
             class="cold-input mt-2"
             placeholder="https://…"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label">Themes</span>
           </template>
           <UInput v-model="themes" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label">Status</span>
           </template>
           <UInput v-model="status" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Publication Date
@@ -118,9 +118,9 @@
               <DatePicker v-model="publicationDate" @close="close" />
             </template>
           </UPopover>
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Abbreviation
@@ -128,9 +128,9 @@
             </span>
           </template>
           <UInput v-model="abbreviation" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Compatible With the HCCH Principles?
@@ -157,9 +157,9 @@
               Yes
             </UButton>
           </div>
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Compatible With the UNCITRAL Model Law?
@@ -186,7 +186,7 @@
               Yes
             </UButton>
           </div>
-        </UFormGroup>
+        </UFormField>
 
         <div class="flex justify-end md:col-span-2">
           <UButton
@@ -199,8 +199,11 @@
       </div>
     </BaseDetailLayout>
 
-    <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
-    <SaveModal
+    <LazyCancelModal
+      v-model="showCancelModal"
+      @confirm-cancel="confirmCancel"
+    />
+    <LazySaveModal
       v-model="showSaveModal"
       :email="email"
       :comments="comments"
@@ -224,8 +227,6 @@ import { useHead, useRouter } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
-import CancelModal from "@/components/ui/CancelModal.vue";
-import SaveModal from "@/components/ui/SaveModal.vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
 import { format } from "date-fns";

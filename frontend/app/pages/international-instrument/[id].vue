@@ -33,7 +33,8 @@
           :label="internationalInstrumentLabels['Literature']"
           :tooltip="internationalInstrumentTooltips['Literature']"
         >
-          <RelatedLiterature
+          <LazyRelatedLiterature
+            hydrate-on-visible
             :literature-id="internationalInstrument?.Literature || ''"
             mode="id"
             :oup-filter="'noOup'"
@@ -101,7 +102,6 @@ import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import BaseLegalContent from "@/components/legal/BaseLegalContent.vue";
 import { useInternationalInstrument } from "@/composables/useRecordDetails";
-import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useInternationalLegalProvisions } from "@/composables/useFullTable";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";

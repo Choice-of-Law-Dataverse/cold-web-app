@@ -143,7 +143,7 @@
     </div>
 
     <!-- Success modal -->
-    <UModal v-model="showSuccessModal">
+    <UModal v-model:open="showSuccessModal">
       <UCard>
         <template #header>
           <h3 class="text-lg font-semibold">Success</h3>
@@ -158,7 +158,7 @@
     </UModal>
 
     <!-- Error modal -->
-    <UModal v-model="showErrorModal">
+    <UModal v-model:open="showErrorModal">
       <UCard>
         <template #header>
           <h3 class="text-lg font-semibold text-red-600">Error</h3>
@@ -173,7 +173,7 @@
     </UModal>
 
     <!-- Delete confirmation modal -->
-    <UModal v-model="showDeleteConfirm">
+    <UModal v-model:open="showDeleteConfirm">
       <UCard>
         <template #header>
           <h3 class="text-lg font-semibold text-red-600">Confirm Delete</h3>

@@ -1,13 +1,17 @@
 <template>
   <ContentPageLayout>
-    <ContentDoc path="/about_cold" />
+    <ContentRenderer v-if="page" :value="page" />
   </ContentPageLayout>
 </template>
 
-<script setup>
-import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
+<script setup lang="ts">
 import { onMounted, nextTick } from "vue";
 import { useRoute } from "vue-router";
+import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
+
+const { data: page } = await useAsyncData("about_cold", () =>
+  queryCollection("content").path("/about_cold").first(),
+);
 
 onMounted(async () => {
   const route = useRoute();

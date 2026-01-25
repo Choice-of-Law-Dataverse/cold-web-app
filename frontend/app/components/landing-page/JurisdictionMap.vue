@@ -18,29 +18,35 @@
           />
         </div>
 
-        <div v-if="selectedRegion === 'Africa'" class="map-wrapper">
+        <div v-if="selectedRegion.value === 'Africa'" class="map-wrapper">
           <MapAfrica />
         </div>
-        <div v-if="selectedRegion === 'All Regions'" class="map-wrapper">
+        <div v-if="selectedRegion.value === 'All Regions'" class="map-wrapper">
           <MapAllRegions />
         </div>
-        <div v-if="selectedRegion === 'Arab States'" class="map-wrapper">
+        <div v-if="selectedRegion.value === 'Arab States'" class="map-wrapper">
           <MapArabStates />
         </div>
-        <div v-if="selectedRegion === 'Asia & Pacific'" class="map-wrapper">
+        <div
+          v-if="selectedRegion.value === 'Asia & Pacific'"
+          class="map-wrapper"
+        >
           <MapAsiaPacific />
         </div>
-        <div v-if="selectedRegion === 'Europe'" class="map-wrapper">
+        <div v-if="selectedRegion.value === 'Europe'" class="map-wrapper">
           <MapEurope />
         </div>
-        <div v-if="selectedRegion === 'Middle East'" class="map-wrapper">
+        <div v-if="selectedRegion.value === 'Middle East'" class="map-wrapper">
           <MapMiddleEast />
         </div>
-        <div v-if="selectedRegion === 'North America'" class="map-wrapper">
+        <div
+          v-if="selectedRegion.value === 'North America'"
+          class="map-wrapper"
+        >
           <MapNorthAmerica />
         </div>
         <div
-          v-if="selectedRegion === 'South & Latin America'"
+          v-if="selectedRegion.value === 'South & Latin America'"
           class="map-wrapper"
         >
           <MapSouthLatinAmerica />
@@ -58,13 +64,13 @@
       <UIcon
         name="i-material-symbols:info-outline"
         size="18"
-        class="text-cold-purple mr-2 flex-shrink-0 cursor-pointer pt-6"
+        class="text-cold-purple mr-2 shrink-0 cursor-pointer pt-6"
         @click="isDisclaimerVisible = !isDisclaimerVisible"
       />
       <span class="flex-1">
-        <ContentDoc
-          v-if="isDisclaimerVisible"
-          path="/map_disclaimer"
+        <ContentRenderer
+          v-if="isDisclaimerVisible && disclaimer"
+          :value="disclaimer"
           class="inline-block"
         />
       </span>
@@ -72,7 +78,7 @@
   </UCard>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 
 import MapAfrica from "@/components/maps/MapAfrica.vue";
@@ -84,13 +90,12 @@ import MapMiddleEast from "@/components/maps/MapMiddleEast.vue";
 import MapNorthAmerica from "@/components/maps/MapNorthAmerica.vue";
 import MapSouthLatinAmerica from "@/components/maps/MapSouthLatinAmerica.vue";
 
-const selectedRegion = ref("All Regions");
+interface RegionOption {
+  label: string;
+  value: string;
+}
 
-const updateSelectedRegion = (option) => {
-  selectedRegion.value = option.value;
-};
-
-const regionOptions = [
+const regionOptions: RegionOption[] = [
   { label: "All Regions", value: "All Regions" },
   { label: "Africa", value: "Africa" },
   { label: "Arab States", value: "Arab States" },
@@ -101,7 +106,19 @@ const regionOptions = [
   { label: "South & Latin America", value: "South & Latin America" },
 ];
 
+const selectedRegion = ref<RegionOption>(
+  regionOptions[0] ?? { label: "All Regions", value: "All Regions" },
+);
+
+const updateSelectedRegion = (option: RegionOption) => {
+  selectedRegion.value = option;
+};
+
 const isDisclaimerVisible = ref(false);
+
+const { data: disclaimer } = await useAsyncData("map_disclaimer", () =>
+  queryCollection("content").path("/map_disclaimer").first(),
+);
 </script>
 
 <style scoped>

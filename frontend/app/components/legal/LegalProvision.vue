@@ -22,9 +22,9 @@
             Original
           </span>
 
-          <UToggle
+          <USwitch
             v-model="showEnglish"
-            size="2xs"
+            size="xs"
             class="bg-[var(--color-cold-gray)]"
           />
 

@@ -70,9 +70,9 @@
               >
                 Original
               </span>
-              <UToggle
+              <USwitch
                 v-model="showEnglishQuote"
-                size="2xs"
+                size="xs"
                 class="bg-[var(--color-cold-gray)]"
               />
               <span
@@ -109,7 +109,8 @@
           :tooltip="courtDecisionTooltips['Related Questions']"
           variant="question"
         >
-          <RelatedQuestions
+          <LazyRelatedQuestions
+            hydrate-on-visible
             :jurisdiction-code="
               courtDecision?.['Jurisdictions Alpha-3 Code'] || ''
             "
@@ -123,7 +124,8 @@
           :tooltip="courtDecisionTooltips['Related Literature']"
           variant="literature"
         >
-          <RelatedLiterature
+          <LazyRelatedLiterature
+            hydrate-on-visible
             :themes="courtDecision?.themes || ''"
             :mode="'themes'"
             :oup-filter="'noOup'"
@@ -173,7 +175,8 @@
 
       <template #footer>
         <LastModified :date="courtDecision?.['Last Modified']" />
-        <CountryReportBanner
+        <LazyCountryReportBanner
+          hydrate-on-visible
           :jurisdiction-code="courtDecision?.['Jurisdictions Alpha-3 Code']"
         />
       </template>
@@ -204,10 +207,7 @@ import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
-import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
-import RelatedQuestions from "@/components/legal/RelatedQuestions.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
-import CountryReportBanner from "@/components/ui/CountryReportBanner.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useCourtDecision } from "@/composables/useRecordDetails";

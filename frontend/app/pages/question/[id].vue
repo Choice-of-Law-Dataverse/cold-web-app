@@ -34,7 +34,8 @@
 
       <template #oup-chapter>
         <DetailRow :label="questionLabels['OUP Chapter']" variant="oup">
-          <RelatedLiterature
+          <LazyRelatedLiterature
+            hydrate-on-visible
             :themes="answerData?.Themes"
             :literature-id="answerData?.['Jurisdictions Literature ID']"
             :jurisdiction="answerData?.Jurisdictions"
@@ -49,7 +50,8 @@
           :label="questionLabels['Related Literature']"
           variant="literature"
         >
-          <RelatedLiterature
+          <LazyRelatedLiterature
+            hydrate-on-visible
             :themes="answerData?.Themes"
             :literature-id="answerData?.['Jurisdictions Literature ID']"
             :jurisdiction="answerData?.Jurisdictions"
@@ -61,7 +63,8 @@
 
       <template #footer>
         <LastModified :date="answerData?.['Last Modified']" />
-        <CountryReportBanner
+        <LazyCountryReportBanner
+          hydrate-on-visible
           :jurisdiction-code="answerData?.JurisdictionCode"
         />
       </template>
@@ -85,12 +88,10 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import CourtDecisionRenderer from "@/components/legal/CourtDecisionRenderer.vue";
-import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";
 import QuestionJurisdictions from "@/components/ui/QuestionJurisdictions.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import { useAnswer } from "@/composables/useRecordDetails";
-import CountryReportBanner from "@/components/ui/CountryReportBanner.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import { questionLabels } from "@/config/labels";
 import { questionTooltips } from "@/config/tooltips";

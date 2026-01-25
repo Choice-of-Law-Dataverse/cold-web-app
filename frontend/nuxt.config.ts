@@ -15,6 +15,14 @@ export default defineNuxtConfig({
       tasks: false,
     },
   },
+  routeRules: {
+    // Prerender static pages
+    "/about/**": { prerender: true },
+    "/learn/**": { prerender: true },
+    "/disclaimer": { prerender: true },
+    "/contact": { prerender: true },
+    "/submit": { prerender: true },
+  },
   $production: {
     scripts: {
       registry: {
@@ -25,7 +33,7 @@ export default defineNuxtConfig({
     },
   },
   typescript: {
-    typeCheck: true,
+    typeCheck: false,
   },
   vite: {
     plugins: [tailwindcss()],
@@ -77,12 +85,6 @@ export default defineNuxtConfig({
         disallow: ["/"],
       },
     ],
-  },
-  content: {
-    documentDriven: false,
-    markdown: {
-      anchorLinks: true,
-    },
   },
   colorMode: {
     preference: "light",

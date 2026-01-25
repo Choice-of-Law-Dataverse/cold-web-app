@@ -1,10 +1,14 @@
 <template>
   <ContentPageLayout :nav-links="learnNavLinks">
-    <ContentDoc path="/data_sets" />
+    <ContentRenderer v-if="page" :value="page" />
   </ContentPageLayout>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import ContentPageLayout from "@/components/layout/ContentPageLayout.vue";
 import { learnNavLinks } from "@/config/navigation";
+
+const { data: page } = await useAsyncData("data_sets", () =>
+  queryCollection("content").path("/data_sets").first(),
+);
 </script>

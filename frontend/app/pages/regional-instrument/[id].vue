@@ -33,7 +33,8 @@
           :label="regionalInstrumentLabels['Literature']"
           :tooltip="regionalInstrumentTooltips['Literature']"
         >
-          <RelatedLiterature
+          <LazyRelatedLiterature
+            hydrate-on-visible
             :literature-id="regionalInstrument?.Literature || ''"
             mode="id"
             :oup-filter="'noOup'"
@@ -86,7 +87,6 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import { useRegionalInstrument } from "@/composables/useRecordDetails";
-import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import LastModified from "@/components/ui/LastModified.vue";

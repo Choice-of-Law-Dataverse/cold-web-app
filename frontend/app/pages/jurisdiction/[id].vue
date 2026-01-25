@@ -46,7 +46,8 @@
         </DetailRow>
 
         <DetailRow :label="jurisdictionLabels['OUP Chapter']" variant="oup">
-          <RelatedLiterature
+          <LazyRelatedLiterature
+            hydrate-on-visible
             :literature-id="(jurisdictionData?.Literature as string) || ''"
             :mode="'both'"
             :oup-filter="'onlyOup'"
@@ -59,7 +60,8 @@
           :tooltip="jurisdictionTooltips['Literature']"
           variant="literature"
         >
-          <RelatedLiterature
+          <LazyRelatedLiterature
+            hydrate-on-visible
             :literature-id="(jurisdictionData?.Literature as string) || ''"
             :jurisdiction="jurisdictionData?.Name as string"
             :mode="'both'"
@@ -122,7 +124,6 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import JurisdictionQuestions from "@/components/content/JurisdictionQuestions.vue";
-import RelatedLiterature from "@/components/literature/RelatedLiterature.vue";
 import RelatedCourtDecisions from "@/components/sources/RelatedCourtDecisions.vue";
 import RelatedDomesticInstruments from "@/components/sources/RelatedDomesticInstruments.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";

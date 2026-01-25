@@ -26,7 +26,7 @@
         </NuxtLink>
       </h3>
       <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
-        <UFormGroup size="lg" hint="Required" :error="errors.case_citation">
+        <UFormField size="lg" hint="Required" :error="errors.case_citation">
           <template #label>
             <span class="label flex flex-row items-center">
               Case citation
@@ -34,9 +34,9 @@
             </span>
           </template>
           <UInput v-model="caseCitation" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" hint="Required">
+        <UFormField size="lg" hint="Required">
           <template #label>
             <span class="label flex flex-row items-center">
               Publication Date
@@ -57,9 +57,9 @@
               />
             </template>
           </UPopover>
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup
+        <UFormField
           size="lg"
           hint="Required"
           :error="errors.official_source_url"
@@ -72,9 +72,9 @@
             placeholder="https://…"
             class="cold-input mt-2"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" hint="Required" :error="errors.copyright_issues">
+        <UFormField size="lg" hint="Required" :error="errors.copyright_issues">
           <template #label>
             <span class="label">Copyright issues</span>
           </template>
@@ -98,9 +98,9 @@
               Yes
             </UButton>
           </div>
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label">Full Text</span>
           </template>
@@ -109,9 +109,9 @@
             class="cold-input mt-2 min-h-[140px] resize-y"
             :rows="6"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label">English Translation of Full Text</span>
           </template>
@@ -120,16 +120,16 @@
             class="cold-input mt-2 min-h-[140px] resize-y"
             :rows="6"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label">Case Rank</span>
           </template>
           <UInput v-model="caseRank" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label">Jurisdiction</span>
           </template>
@@ -140,9 +140,9 @@
             :show-avatars="true"
             :multiple="false"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Abstract
@@ -154,9 +154,9 @@
             class="cold-input mt-2 min-h-[140px] resize-y"
             :rows="6"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Relevant Facts
@@ -168,9 +168,9 @@
             class="cold-input mt-2 min-h-[140px] resize-y"
             :rows="6"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               PIL Provisions
@@ -178,9 +178,9 @@
             </span>
           </template>
           <UInput v-model="casePILProvisions" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Choice of Law Issue
@@ -192,9 +192,9 @@
             class="cold-input mt-2 min-h-[140px] resize-y"
             :rows="6"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Court's Position
@@ -206,9 +206,9 @@
             class="cold-input mt-2 min-h-[140px] resize-y"
             :rows="6"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center"
               >Translated Excerpt</span
@@ -219,9 +219,9 @@
             class="cold-input mt-2 min-h-[140px] resize-y"
             :rows="6"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center"
               >Text of the Relevant Legal Provisions</span
@@ -232,9 +232,9 @@
             class="cold-input mt-2 min-h-[140px] resize-y"
             :rows="6"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Quote
@@ -246,9 +246,9 @@
             class="cold-input mt-2 min-h-[140px] resize-y"
             :rows="6"
           />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Judgment Date
@@ -267,9 +267,9 @@
               <DatePicker v-model="dateJudgment" @close="close" />
             </template>
           </UPopover>
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Case Title
@@ -277,9 +277,9 @@
             </span>
           </template>
           <UInput v-model="caseTitle" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center">
               Instance
@@ -287,9 +287,9 @@
             </span>
           </template>
           <UInput v-model="caseInstance" class="cold-input mt-2" />
-        </UFormGroup>
+        </UFormField>
 
-        <UFormGroup size="lg" :error="errors.case_title">
+        <UFormField size="lg" :error="errors.case_title">
           <template #label>
             <span class="label flex flex-row items-center"
               >Official Keywords</span
@@ -300,7 +300,7 @@
             class="cold-input mt-2 min-h-[140px] resize-y"
             :rows="6"
           />
-        </UFormGroup>
+        </UFormField>
 
         <div class="flex justify-end md:col-span-2">
           <UButton
@@ -313,8 +313,11 @@
       </div>
     </BaseDetailLayout>
 
-    <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
-    <SaveModal
+    <LazyCancelModal
+      v-model="showCancelModal"
+      @confirm-cancel="confirmCancel"
+    />
+    <LazySaveModal
       v-model="showSaveModal"
       :email="email"
       :comments="comments"
@@ -335,8 +338,6 @@ import { useHead, useRouter } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
-import CancelModal from "@/components/ui/CancelModal.vue";
-import SaveModal from "@/components/ui/SaveModal.vue";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
 import { format } from "date-fns";

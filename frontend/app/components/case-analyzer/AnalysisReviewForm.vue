@@ -50,7 +50,7 @@
         </div>
       </div>
 
-      <UFormGroup>
+      <UFormField>
         <template #label>
           Choice of Law Sections
           <ConfidenceIndicator
@@ -67,9 +67,9 @@
         <div class="print-field-value">
           {{ localForm.choiceOfLawSections }}
         </div>
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup>
+      <UFormField>
         <template #label>
           Themes
           <ConfidenceIndicator
@@ -86,9 +86,9 @@
         <div class="print-field-value">
           {{ localForm.themes }}
         </div>
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup>
+      <UFormField>
         <template #label>
           Case Citation
           <ConfidenceIndicator
@@ -105,9 +105,9 @@
         <div class="print-field-value">
           {{ localForm.caseCitation }}
         </div>
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup>
+      <UFormField>
         <template #label>
           Relevant Facts
           <ConfidenceIndicator
@@ -124,9 +124,9 @@
         <div class="print-field-value">
           {{ localForm.caseRelevantFacts }}
         </div>
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup>
+      <UFormField>
         <template #label>
           PIL Provisions
           <ConfidenceIndicator
@@ -143,9 +143,9 @@
         <div class="print-field-value">
           {{ localForm.casePILProvisions }}
         </div>
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup>
+      <UFormField>
         <template #label>
           Choice of Law Issue
           <ConfidenceIndicator
@@ -162,9 +162,9 @@
         <div class="print-field-value">
           {{ localForm.caseChoiceofLawIssue }}
         </div>
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup>
+      <UFormField>
         <template #label>
           Court's Position
           <ConfidenceIndicator
@@ -181,9 +181,9 @@
         <div class="print-field-value">
           {{ localForm.caseCourtsPosition }}
         </div>
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup v-if="isCommonLawJurisdiction">
+      <UFormField v-if="isCommonLawJurisdiction">
         <template #label>
           Obiter Dicta
           <ConfidenceIndicator
@@ -200,9 +200,9 @@
         <div class="print-field-value">
           {{ localForm.caseObiterDicta }}
         </div>
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup v-if="isCommonLawJurisdiction">
+      <UFormField v-if="isCommonLawJurisdiction">
         <template #label>
           Dissenting Opinions
           <ConfidenceIndicator
@@ -219,9 +219,9 @@
         <div class="print-field-value">
           {{ localForm.caseDissentingOpinions }}
         </div>
-      </UFormGroup>
+      </UFormField>
 
-      <UFormGroup>
+      <UFormField>
         <template #label>
           Abstract
           <ConfidenceIndicator
@@ -238,7 +238,7 @@
         <div class="print-field-value">
           {{ localForm.caseAbstract }}
         </div>
-      </UFormGroup>
+      </UFormField>
     </div>
 
     <template #footer>
