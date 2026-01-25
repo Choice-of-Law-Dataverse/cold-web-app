@@ -740,7 +740,7 @@ button.inline-flex.items-center.rounded-full:hover {
   color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
 }
 
-/* Info Box in Jurisdiction Map */
+/* Info Box in Jurisdiction Map - country name on hover */
 .info {
   position: absolute;
   z-index: 1000;
@@ -748,6 +748,14 @@ button.inline-flex.items-center.rounded-full:hover {
   font-family: "Inter", Arial, sans-serif;
   padding-right: 12px;
   padding-bottom: 6px;
+}
+
+/* Hide Leaflet legend and attribution controls */
+.leaflet-control.legend,
+.legend,
+.info.legend,
+.leaflet-bottom.leaflet-left {
+  display: none !important;
 }
 
 /* USelectmenu */
