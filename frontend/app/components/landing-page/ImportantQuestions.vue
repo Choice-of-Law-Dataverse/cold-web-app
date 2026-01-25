@@ -88,19 +88,11 @@
                           class="country-item label-jurisdiction country-link-flex text-cold-purple"
                           :to="`/question/${country.code}${currentSuffix}`"
                         >
-                          <img
-                            :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
-                            style="
-                              height: 12px;
-                              margin-right: 6px;
-                              margin-bottom: 2px;
-                            "
+                          <CountryFlag
+                            :iso3="country.code"
+                            size="xs"
+                            class="mr-1.5 mb-0.5"
                             :alt="country.code + ' flag'"
-                            @error="
-                              (e) => {
-                                e.target.style.display = 'none';
-                              }
-                            "
                           />
                           {{ country.name }}
                         </NuxtLink>
@@ -163,6 +155,7 @@
 
 <script setup>
 import { ref, onMounted, computed, nextTick, onUnmounted, watch } from "vue";
+import CountryFlag from "@/components/ui/CountryFlag.vue";
 import { useQuestionCountries } from "@/composables/useQuestionCountries";
 
 const answers = ["Yes", "No"];

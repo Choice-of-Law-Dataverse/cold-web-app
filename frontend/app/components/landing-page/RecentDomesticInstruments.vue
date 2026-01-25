@@ -30,8 +30,8 @@
             class="landing-item-button type-instrument w-full"
           >
             <div class="flag-wrapper">
-              <img
-                :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${instrument['Jurisdictions Alpha-3 Code'].toLowerCase()}.svg`"
+              <CountryFlag
+                :iso3="instrument['Jurisdictions Alpha-3 Code']"
                 class="item-flag"
               />
             </div>
@@ -55,6 +55,7 @@
 <script setup>
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
 import InlineError from "@/components/ui/InlineError.vue";
+import CountryFlag from "@/components/ui/CountryFlag.vue";
 import { useDomesticInstruments } from "@/composables/useDomesticInstruments";
 import { formatYear } from "@/utils/format";
 

@@ -12,15 +12,12 @@
     <!-- Custom item rendering with avatars -->
     <template #item="{ item }">
       <div class="flex items-center">
-        <template v-if="item.avatar?.src">
-          <img
-            :src="item.avatar.src"
-            :style="{
-              filter: item.hasCoverage ? undefined : 'grayscale(0.9)',
-            }"
-            class="mr-2 h-auto w-5 flex-shrink-0 object-contain"
-          />
-        </template>
+        <CountryFlag
+          v-if="item.original?.alpha3Code"
+          :iso3="item.original.alpha3Code"
+          :faded="!item.hasCoverage"
+          class="mr-2"
+        />
         <span
           :style="{
             color: item.hasCoverage ? undefined : 'gray',
@@ -33,17 +30,12 @@
 
     <!-- Custom label rendering for selected value -->
     <template #leading>
-      <template v-if="internalSelected?.avatar?.src">
-        <img
-          :src="internalSelected.avatar.src"
-          :style="{
-            filter: hasCoverage(internalSelected?.original?.answerCoverage)
-              ? undefined
-              : 'grayscale(0.9)',
-          }"
-          class="mr-1.5 h-auto w-5 flex-shrink-0 object-contain"
-        />
-      </template>
+      <CountryFlag
+        v-if="internalSelected?.original?.alpha3Code"
+        :iso3="internalSelected.original.alpha3Code"
+        :faded="!hasCoverage(internalSelected?.original?.answerCoverage)"
+        class="mr-1.5"
+      />
     </template>
   </USelectMenu>
 </template>
@@ -51,6 +43,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import type { JurisdictionOption } from "@/types/analyzer";
+import CountryFlag from "@/components/ui/CountryFlag.vue";
 
 interface SelectItem {
   label: string;

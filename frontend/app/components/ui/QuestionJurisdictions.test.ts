@@ -7,7 +7,7 @@ import type {
   Country,
 } from "@/composables/useQuestionCountries";
 
-// Mock the composable
+// Mock the composables
 const mockQuestionData = ref<QuestionCountriesData | null>(null);
 const mockIsLoading = ref(false);
 const mockError = ref<Error | null>(null);
@@ -17,6 +17,17 @@ vi.mock("@/composables/useQuestionCountries", () => ({
     data: mockQuestionData,
     isLoading: mockIsLoading,
     error: mockError,
+  }),
+}));
+
+// Mock useCoveredCountries for CountryFlag component
+vi.mock("@/composables/useJurisdictions", () => ({
+  useCoveredCountries: () => ({
+    data: ref(new Set<string>()),
+    isLoading: ref(false),
+    error: ref(null),
+    isError: ref(false),
+    isFetching: ref(false),
   }),
 }));
 

@@ -62,8 +62,8 @@
               :to="`/question/${country.code}${questionSuffix}`"
             >
               <div class="flag-wrapper">
-                <img
-                  :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
+                <CountryFlag
+                  :iso3="country.code"
                   class="item-flag"
                   :alt="country.code + ' flag'"
                 />
@@ -85,6 +85,7 @@ import {
   type Country,
 } from "@/composables/useQuestionCountries";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import CountryFlag from "@/components/ui/CountryFlag.vue";
 
 const regions = [
   "All",

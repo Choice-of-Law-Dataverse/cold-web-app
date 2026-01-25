@@ -5,11 +5,11 @@
       :to="countryReportLink"
       class="link-chip--neutral gap-2"
     >
-      <img
+      <CountryFlag
         v-if="props.jurisdictionCode"
-        :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${props.jurisdictionCode.toLowerCase()}.svg`"
+        :iso3="props.jurisdictionCode"
+        size="sm"
         :alt="`${jurisdictionName} flag`"
-        class="h-4 w-4"
       />
       Full questionnaire for {{ jurisdictionName }}
     </NuxtLink>
@@ -21,6 +21,7 @@ import { computed, toRef } from "vue";
 import { useRoute } from "vue-router";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import { useJurisdiction } from "@/composables/useJurisdictions";
+import CountryFlag from "@/components/ui/CountryFlag.vue";
 
 const route = useRoute();
 
