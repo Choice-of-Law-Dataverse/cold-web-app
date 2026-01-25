@@ -65,7 +65,7 @@ const props: any = ...;  // No any!
 - **Always `<script setup lang="ts">`**: Never use Options API for new/touched code
 - **Composables**: Extract shared logic to `composables/useFeatureName.ts`
 - **Component naming**: PascalCase (e.g., `UserProfile.vue`)
-- **Auto-imports**: Nuxt auto-imports components and composables (no manual imports needed)
+- **Auto-imports**: Only Vue/Nuxt built-ins (ref, computed, useRoute, etc.) are auto-imported. Custom components, composables, utils, and third-party libraries require explicit imports.
 
 ```vue
 <!-- ✅ Good -->
