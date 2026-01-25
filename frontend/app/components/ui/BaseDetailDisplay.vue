@@ -343,13 +343,19 @@ const getDisplayValue = (item, value) => {
 
 :deep(.sticky-header) {
   position: sticky;
-  top: 0;
+  top: 5rem; /* Height of nav on mobile */
   z-index: 10;
   background-color: white;
   transition:
     padding 0.2s ease,
     margin 0.2s ease,
     top 0.2s ease;
+}
+
+@media (min-width: 640px) {
+  :deep(.sticky-header) {
+    top: 7rem; /* Height of nav on desktop */
+  }
 }
 
 /* Allow header to expand beyond card when scrolled */
