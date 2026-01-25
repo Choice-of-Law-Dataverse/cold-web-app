@@ -3,10 +3,7 @@
     <div class="gradient-top-border" />
     <div class="p-4 sm:p-6">
       <!-- Map Container -->
-      <div
-        class="map-container"
-        style="height: 600px; width: 100%; margin-top: 0px; position: relative"
-      >
+      <div class="map-container">
         <!-- Dropdown for selecting region -->
         <div class="select-menu-container">
           <USelectMenu
@@ -15,66 +12,105 @@
             placeholder="Select a Region"
             size="xl"
             :items="regionOptions"
+            aria-label="Select map region"
             @update:model-value="updateSelectedRegion"
           />
         </div>
 
-        <div v-if="selectedRegion.value === 'Africa'" class="map-wrapper">
-          <MapAfrica />
+        <!-- Color Legend -->
+        <div class="map-legend" aria-label="Map coverage legend">
+          <div class="map-legend__item">
+            <span class="map-legend__color map-legend__color--covered" />
+            <span class="map-legend__label">Data available</span>
+          </div>
+          <div class="map-legend__item">
+            <span class="map-legend__color map-legend__color--none" />
+            <span class="map-legend__label">No data</span>
+          </div>
         </div>
-        <div
-          v-else-if="selectedRegion.value === 'All Regions'"
-          class="map-wrapper"
-        >
-          <MapAllRegions />
-        </div>
-        <div
-          v-else-if="selectedRegion.value === 'Arab States'"
-          class="map-wrapper"
-        >
-          <MapArabStates />
-        </div>
-        <div
-          v-else-if="selectedRegion.value === 'Asia & Pacific'"
-          class="map-wrapper"
-        >
-          <MapAsiaPacific />
-        </div>
-        <div v-else-if="selectedRegion.value === 'Europe'" class="map-wrapper">
-          <MapEurope />
-        </div>
-        <div
-          v-else-if="selectedRegion.value === 'Middle East'"
-          class="map-wrapper"
-        >
-          <MapMiddleEast />
-        </div>
-        <div
-          v-else-if="selectedRegion.value === 'North America'"
-          class="map-wrapper"
-        >
-          <MapNorthAmerica />
-        </div>
-        <div
-          v-else-if="selectedRegion.value === 'South & Latin America'"
-          class="map-wrapper"
-        >
-          <MapSouthLatinAmerica />
-        </div>
+
+        <!-- Regional Map Components with Transition -->
+        <Transition name="map-fade" mode="out-in">
+          <div
+            v-if="selectedRegion.value === 'Africa'"
+            :key="'africa'"
+            class="map-wrapper"
+          >
+            <MapAfrica />
+          </div>
+          <div
+            v-else-if="selectedRegion.value === 'All Regions'"
+            :key="'all'"
+            class="map-wrapper"
+          >
+            <MapAllRegions />
+          </div>
+          <div
+            v-else-if="selectedRegion.value === 'Arab States'"
+            :key="'arab'"
+            class="map-wrapper"
+          >
+            <MapArabStates />
+          </div>
+          <div
+            v-else-if="selectedRegion.value === 'Asia & Pacific'"
+            :key="'asia'"
+            class="map-wrapper"
+          >
+            <MapAsiaPacific />
+          </div>
+          <div
+            v-else-if="selectedRegion.value === 'Europe'"
+            :key="'europe'"
+            class="map-wrapper"
+          >
+            <MapEurope />
+          </div>
+          <div
+            v-else-if="selectedRegion.value === 'Middle East'"
+            :key="'middle-east'"
+            class="map-wrapper"
+          >
+            <MapMiddleEast />
+          </div>
+          <div
+            v-else-if="selectedRegion.value === 'North America'"
+            :key="'north-america'"
+            class="map-wrapper"
+          >
+            <MapNorthAmerica />
+          </div>
+          <div
+            v-else-if="selectedRegion.value === 'South & Latin America'"
+            :key="'south-latin'"
+            class="map-wrapper"
+          >
+            <MapSouthLatinAmerica />
+          </div>
+        </Transition>
       </div>
+
+      <!-- Disclaimer -->
       <p class="result-value-small mt-4 flex items-start text-xs">
         <UIcon
           name="i-material-symbols:info-outline"
           size="18"
           class="text-cold-purple mr-2 shrink-0 cursor-pointer"
+          role="button"
+          tabindex="0"
+          aria-label="Toggle disclaimer"
           @click="isDisclaimerVisible = !isDisclaimerVisible"
+          @keydown.enter="isDisclaimerVisible = !isDisclaimerVisible"
+          @keydown.space.prevent="isDisclaimerVisible = !isDisclaimerVisible"
         />
         <span class="flex-1">
-          <ContentRenderer
-            v-if="isDisclaimerVisible && disclaimer"
-            :value="disclaimer"
-            class="inline-block"
-          />
+          <Transition name="fade">
+            <ContentRenderer
+              v-if="isDisclaimerVisible && disclaimer"
+              :value="disclaimer"
+              class="inline-block"
+            />
+          </Transition>
         </span>
       </p>
     </div>
@@ -82,16 +118,33 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { defineAsyncComponent, ref } from "vue";
 
-import MapAfrica from "@/components/maps/MapAfrica.vue";
-import MapAllRegions from "@/components/maps/MapAllRegions.vue";
-import MapArabStates from "@/components/maps/MapArabStates.vue";
-import MapAsiaPacific from "@/components/maps/MapAsiaPacific.vue";
-import MapEurope from "@/components/maps/MapEurope.vue";
-import MapMiddleEast from "@/components/maps/MapMiddleEast.vue";
-import MapNorthAmerica from "@/components/maps/MapNorthAmerica.vue";
-import MapSouthLatinAmerica from "@/components/maps/MapSouthLatinAmerica.vue";
+// Lazy load regional map components for better performance
+const MapAfrica = defineAsyncComponent(
+  () => import("@/components/maps/MapAfrica.vue"),
+);
+const MapAllRegions = defineAsyncComponent(
+  () => import("@/components/maps/MapAllRegions.vue"),
+);
+const MapArabStates = defineAsyncComponent(
+  () => import("@/components/maps/MapArabStates.vue"),
+);
+const MapAsiaPacific = defineAsyncComponent(
+  () => import("@/components/maps/MapAsiaPacific.vue"),
+);
+const MapEurope = defineAsyncComponent(
+  () => import("@/components/maps/MapEurope.vue"),
+);
+const MapMiddleEast = defineAsyncComponent(
+  () => import("@/components/maps/MapMiddleEast.vue"),
+);
+const MapNorthAmerica = defineAsyncComponent(
+  () => import("@/components/maps/MapNorthAmerica.vue"),
+);
+const MapSouthLatinAmerica = defineAsyncComponent(
+  () => import("@/components/maps/MapSouthLatinAmerica.vue"),
+);
 
 interface RegionOption {
   label: string;
@@ -125,6 +178,19 @@ const { data: disclaimer } = await useAsyncData("map_disclaimer", () =>
 </script>
 
 <style scoped>
+.map-container {
+  height: 600px;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .map-container {
+    height: 400px;
+  }
+}
+
 .map-wrapper {
   position: absolute;
   top: 0;
@@ -133,18 +199,80 @@ const { data: disclaimer } = await useAsyncData("map_disclaimer", () =>
   height: 100%;
 }
 
-.map-container {
-  overflow: hidden;
-}
-
 .select-menu-container {
   position: absolute;
-  top: 32px;
+  top: 12px;
   right: 12px;
   z-index: 2000;
 }
 
 .select-menu-container .u-select-menu-dropdown {
   z-index: 2001;
+}
+
+/* Color Legend */
+.map-legend {
+  position: absolute;
+  bottom: 16px;
+  left: 12px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  padding: 8px 12px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.map-legend__item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.map-legend__color {
+  width: 16px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.map-legend__color--covered {
+  background: var(--color-cold-purple);
+  opacity: 0.7;
+}
+
+.map-legend__color--none {
+  background: var(--color-cold-gray);
+}
+
+.map-legend__label {
+  font-size: 0.6875rem;
+  color: var(--color-cold-night);
+  line-height: 1;
+}
+
+/* Map Transition */
+.map-fade-enter-active,
+.map-fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.map-fade-enter-from,
+.map-fade-leave-to {
+  opacity: 0;
+}
+
+/* Disclaimer Transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
