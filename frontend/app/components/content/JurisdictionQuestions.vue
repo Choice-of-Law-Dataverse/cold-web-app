@@ -420,6 +420,7 @@ const isBoldQuestion = (questionId: string) => {
 const DASH_ANSWERS = new Set([
   "Not applicable",
   "Jurisdiction does not cover this question",
+  "No information",
 ]);
 
 const shouldShowDash = (answer: string | undefined) => {
