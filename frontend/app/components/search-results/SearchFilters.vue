@@ -7,6 +7,7 @@
         'non-all-selected': multiple
           ? internalValue?.length > 0
           : !!internalValue,
+        'no-scroll': !searchable,
       }"
       :placeholder="
         props.placeholder ||
@@ -15,7 +16,7 @@
       size="lg"
       :items="options"
       value-key="label"
-      :search-input="{ placeholder: 'Search...' }"
+      :search-input="searchable ? { placeholder: 'Search...' } : false"
       :multiple="multiple"
       :loading="loading"
     >
@@ -151,6 +152,7 @@ const props = defineProps({
   loading: { type: Boolean, default: false },
   highlightJurisdictions: { type: Boolean, default: false },
   placeholder: { type: String, default: "" },
+  searchable: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["update:modelValue"]);
@@ -255,3 +257,10 @@ const internalValue = computed({
   },
 });
 </script>
+
+<style scoped>
+/* Remove max-height constraint for dropdowns with few options */
+:deep(.no-scroll [data-slot="content"]) {
+  max-height: none !important;
+}
+</style>

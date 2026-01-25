@@ -17,6 +17,7 @@
         :options="themeOptions"
         class="w-full flex-shrink-0 lg:w-60"
         :placeholder="'Themes'"
+        :searchable="false"
       />
       <SearchFilters
         v-model="currentTypeFilter"
@@ -24,6 +25,7 @@
         class="w-full flex-shrink-0 lg:w-60"
         :multiple="false"
         :placeholder="'Types'"
+        :searchable="false"
       />
       <UButton
         v-if="hasActiveFilters"
