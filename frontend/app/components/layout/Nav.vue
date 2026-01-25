@@ -1,9 +1,9 @@
 <template>
   <nav
-    class="border-cold-gray w-full border-b bg-white px-3 sm:px-6"
-    :class="{ 'bg-purple-active': isExpanded }"
+    class="border-cold-gray sticky top-0 z-50 w-full border-b bg-white px-3 sm:px-6"
+    :class="{ 'bg-purple-active': isExpanded, 'nav-scrolled': isScrolled }"
   >
-    <div class="max-w-container mx-auto w-full py-3 sm:py-6 sm:pt-8">
+    <div class="nav-inner max-w-container mx-auto w-full py-3 sm:py-6 sm:pt-8">
       <div
         class="relative flex items-center justify-between space-x-4 sm:space-x-8"
       >
@@ -267,6 +267,11 @@ const suggestions = ref([]);
 const showSuggestions = ref(false);
 const isSearchFocused = ref(false);
 const enableJurisdictionFetch = ref(false);
+const isScrolled = ref(false);
+
+function handleScroll() {
+  isScrolled.value = window.scrollY > 20;
+}
 
 const searchInput = ref(null);
 
@@ -466,6 +471,8 @@ onMounted(() => {
   checkScreenSize();
 
   window.addEventListener("resize", checkScreenSize);
+  window.addEventListener("scroll", handleScroll, { passive: true });
+  handleScroll(); // Check initial scroll position
 
   if (route.query.q) {
     searchText.value = route.query.q;
@@ -476,6 +483,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener("resize", checkScreenSize);
+  window.removeEventListener("scroll", handleScroll);
   eventBus.off("update-search", updateSearchFromEvent);
   document.removeEventListener("mousedown", handleClickAway);
 });
@@ -558,7 +566,8 @@ onUnmounted(() => {
   display: block;
   transition:
     filter 0.2s ease,
-    transform 0.2s ease;
+    transform 0.2s ease,
+    height 0.2s ease;
 }
 
 .desktop-logo:hover .logo-img {
@@ -632,12 +641,51 @@ a {
 nav {
   min-height: 5rem;
   max-height: 5rem;
+  transition:
+    min-height 0.2s ease,
+    max-height 0.2s ease;
+}
+
+.nav-inner {
+  transition: padding 0.2s ease;
+}
+
+nav.nav-scrolled {
+  min-height: 3.5rem;
+  max-height: 3.5rem;
+}
+
+nav.nav-scrolled .nav-inner {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+nav.nav-scrolled .logo-img {
+  height: 1.75rem;
+}
+
+nav.nav-scrolled .mobile-inline-logo img {
+  height: 1.5rem;
 }
 
 @media (min-width: 640px) {
   nav {
     min-height: 7rem;
     max-height: 7rem;
+  }
+
+  nav.nav-scrolled {
+    min-height: 4rem;
+    max-height: 4rem;
+  }
+
+  nav.nav-scrolled .nav-inner {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+
+  nav.nav-scrolled .logo-img {
+    height: 2rem;
   }
 }
 
