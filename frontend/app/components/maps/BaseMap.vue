@@ -41,11 +41,33 @@
       >
         <template v-if="hoveredCountry">
           <span class="map-tooltip__name">{{ hoveredCountry.name }}</span>
-          <span class="map-tooltip__coverage">{{
+          <span class="map-tooltip__coverage" :style="hoveredCountry.style">{{
             hoveredCountry.coverage
           }}</span>
         </template>
       </div>
+
+      <!-- SVG Gradient Definition -->
+      <svg width="0" height="0" style="position: absolute">
+        <defs>
+          <linearGradient
+            id="map-hover-gradient"
+            x1="0%"
+            y1="0%"
+            x2="100%"
+            y2="100%"
+          >
+            <stop
+              offset="0%"
+              style="stop-color: var(--color-cold-purple); stop-opacity: 1"
+            />
+            <stop
+              offset="100%"
+              style="stop-color: var(--color-cold-green); stop-opacity: 1"
+            />
+          </linearGradient>
+        </defs>
+      </svg>
 
       <!-- Tile Layer -->
       <LTileLayer
@@ -125,7 +147,11 @@ const props = withDefaults(defineProps<Props>(), {
   maxBoundsViscosity: 1.0,
 });
 
-const hoveredCountry = ref<{ name: string; coverage: string } | null>(null);
+const hoveredCountry = ref<{
+  name: string;
+  coverage: string;
+  style: string;
+} | null>(null);
 
 const {
   data: geoJsonData,
@@ -200,7 +226,7 @@ const getFeatureStyle = (feature: GeoJsonFeature): PathOptions => {
   const isoCode = feature.properties.iso_a3_eh;
   const coverage = answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
   const isCovered = coverage > 0;
-  const fillOpacity = isCovered ? 0.1 + (coverage / 100) * 0.9 : 1;
+  const fillOpacity = isCovered ? 0.25 + (coverage / 100) * 0.75 : 0.25;
 
   return {
     fillColor: isCovered
@@ -217,13 +243,12 @@ const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
   const name = feature.properties.name;
   const coverage = answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
   const isCovered = coverage > 0;
-  const fillOpacity = isCovered ? 0.1 + (coverage / 100) * 0.9 : 1;
 
   const defaultStyle = getFeatureStyle(feature);
   const hoverStyle: PathOptions = {
     ...defaultStyle,
-    fillColor: "var(--color-cold-teal)",
-    fillOpacity: Math.max(0.8, fillOpacity),
+    fillColor: "url(#map-hover-gradient)",
+    fillOpacity: 0.9,
   };
 
   // Explicitly set initial style (Leaflet's style option may not apply correctly)
@@ -244,6 +269,7 @@ const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
       coverage: isCovered
         ? `${coverage.toFixed(1)}% coverage`
         : "No data available",
+      style: isCovered ? `color: var(--color-cold-purple);` : `color: #c3c3c3;`,
     };
   });
 
