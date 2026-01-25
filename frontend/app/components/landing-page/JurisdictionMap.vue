@@ -17,18 +17,6 @@
           />
         </div>
 
-        <!-- Color Legend -->
-        <div class="map-legend" aria-label="Map coverage legend">
-          <div class="map-legend__item">
-            <span class="map-legend__color map-legend__color--covered" />
-            <span class="map-legend__label">Data available</span>
-          </div>
-          <div class="map-legend__item">
-            <span class="map-legend__color map-legend__color--none" />
-            <span class="map-legend__label">No data</span>
-          </div>
-        </div>
-
         <!-- Regional Map Components with Transition -->
         <Transition name="map-fade" mode="out-in">
           <div
@@ -89,30 +77,6 @@
           </div>
         </Transition>
       </div>
-
-      <!-- Disclaimer -->
-      <p class="result-value-small mt-4 flex items-start text-xs">
-        <UIcon
-          name="i-material-symbols:info-outline"
-          size="18"
-          class="text-cold-purple mr-2 shrink-0 cursor-pointer"
-          role="button"
-          tabindex="0"
-          aria-label="Toggle disclaimer"
-          @click="isDisclaimerVisible = !isDisclaimerVisible"
-          @keydown.enter="isDisclaimerVisible = !isDisclaimerVisible"
-          @keydown.space.prevent="isDisclaimerVisible = !isDisclaimerVisible"
-        />
-        <span class="flex-1">
-          <Transition name="fade">
-            <ContentRenderer
-              v-if="isDisclaimerVisible && disclaimer"
-              :value="disclaimer"
-              class="inline-block"
-            />
-          </Transition>
-        </span>
-      </p>
     </div>
   </UCard>
 </template>
@@ -203,12 +167,6 @@ const selectedRegion = ref<RegionOption>(
 const updateSelectedRegion = (option: RegionOption) => {
   selectedRegion.value = option;
 };
-
-const isDisclaimerVisible = ref(false);
-
-const { data: disclaimer } = await useAsyncData("map_disclaimer", () =>
-  queryCollection("content").path("/map_disclaimer").first(),
-);
 </script>
 
 <style scoped>
@@ -244,50 +202,6 @@ const { data: disclaimer } = await useAsyncData("map_disclaimer", () =>
   z-index: 2001;
 }
 
-/* Color Legend */
-.map-legend {
-  position: absolute;
-  bottom: 16px;
-  left: 12px;
-  z-index: 1000;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(4px);
-  padding: 8px 12px;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.map-legend__item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.map-legend__color {
-  width: 16px;
-  height: 12px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.map-legend__color--covered {
-  background: var(--color-cold-purple);
-  opacity: 0.7;
-}
-
-.map-legend__color--none {
-  background: var(--color-cold-gray);
-}
-
-.map-legend__label {
-  font-size: 0.6875rem;
-  color: var(--color-cold-night);
-  line-height: 1;
-}
-
 /* Map Transition */
 .map-fade-enter-active,
 .map-fade-leave-active {
@@ -296,17 +210,6 @@ const { data: disclaimer } = await useAsyncData("map_disclaimer", () =>
 
 .map-fade-enter-from,
 .map-fade-leave-to {
-  opacity: 0;
-}
-
-/* Disclaimer Transition */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.15s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
   opacity: 0;
 }
 

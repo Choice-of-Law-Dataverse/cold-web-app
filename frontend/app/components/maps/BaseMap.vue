@@ -38,7 +38,6 @@
         class="map-tooltip"
         :class="{ 'map-tooltip--visible': hoveredCountry }"
         aria-live="polite"
-        aria-atomic="true"
       >
         <template v-if="hoveredCountry">
           <span class="map-tooltip__name">{{ hoveredCountry.name }}</span>
@@ -93,14 +92,6 @@ interface GeoJsonFeature {
     iso_a3_eh: string;
     name: string;
   };
-}
-
-interface CoverageInfo {
-  isoCode: string;
-  name: string;
-  coverage: number;
-  isCovered: boolean;
-  fillOpacity: number;
 }
 
 // Simple tuple types for map coordinates (Leaflet's LatLngTuple includes optional altitude)
@@ -204,20 +195,12 @@ const mapOptions = computed<MapOptions>(() => {
   return options;
 });
 
-// Helper to extract coverage info for a feature (eliminates duplication)
-const getCoverageInfo = (feature: GeoJsonFeature): CoverageInfo => {
+// Get style for a feature based on coverage data
+const getFeatureStyle = (feature: GeoJsonFeature): PathOptions => {
   const isoCode = feature.properties.iso_a3_eh;
-  const name = feature.properties.name;
   const coverage = answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
   const isCovered = coverage > 0;
   const fillOpacity = isCovered ? 0.1 + (coverage / 100) * 0.9 : 1;
-
-  return { isoCode, name, coverage, isCovered, fillOpacity };
-};
-
-// Style function for initial render (prevents flash of default Leaflet styles)
-const getFeatureStyle = (feature: GeoJsonFeature): PathOptions => {
-  const { isCovered, fillOpacity } = getCoverageInfo(feature);
 
   return {
     fillColor: isCovered
@@ -230,14 +213,11 @@ const getFeatureStyle = (feature: GeoJsonFeature): PathOptions => {
 };
 
 const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
-  const { isoCode, name, coverage, isCovered, fillOpacity } =
-    getCoverageInfo(feature);
-
-  // Add custom class for CSS transitions (className in style doesn't work)
-  const element = (layer as Path).getElement?.();
-  if (element) {
-    element.classList.add("map-country");
-  }
+  const isoCode = feature.properties.iso_a3_eh;
+  const name = feature.properties.name;
+  const coverage = answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
+  const isCovered = coverage > 0;
+  const fillOpacity = isCovered ? 0.1 + (coverage / 100) * 0.9 : 1;
 
   const defaultStyle = getFeatureStyle(feature);
   const hoverStyle: PathOptions = {
@@ -246,9 +226,19 @@ const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
     fillOpacity: Math.max(0.8, fillOpacity),
   };
 
+  // Explicitly set initial style (Leaflet's style option may not apply correctly)
+  (layer as Path).setStyle(defaultStyle);
+
+  // Add CSS class for transitions after element is available
+  layer.on("add", () => {
+    const element = (layer as Path).getElement?.();
+    if (element) {
+      element.classList.add("map-country");
+    }
+  });
+
   layer.on("mouseover", () => {
     (layer as Path).setStyle(hoverStyle);
-
     hoveredCountry.value = {
       name,
       coverage: isCovered
