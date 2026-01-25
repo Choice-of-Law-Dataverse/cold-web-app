@@ -1,7 +1,7 @@
 <template>
   <NuxtLink
     to="/contact"
-    class="group from-cold-cream/80 via-cold-cream to-cold-cream/80 hover:from-cold-cream hover:via-amber-50 hover:to-cold-cream relative block overflow-hidden rounded-b-lg bg-gradient-to-r px-6 py-5 transition-all duration-300 sm:px-8"
+    class="group from-cold-cream/80 via-cold-cream to-cold-cream/80 hover:from-cold-cream hover:to-cold-cream relative block overflow-hidden rounded-b-lg bg-gradient-to-r px-6 py-5 transition-all duration-300 hover:via-amber-50 sm:px-8"
   >
     <!-- Subtle animated gradient overlay -->
     <div
@@ -36,9 +36,7 @@
 
       <!-- Arrow CTA -->
       <div class="flex items-center gap-4">
-        <span
-          class="text-cold-purple hidden text-sm font-medium sm:block"
-        >
+        <span class="text-cold-purple hidden text-sm font-medium sm:block">
           Get in touch
         </span>
         <div
