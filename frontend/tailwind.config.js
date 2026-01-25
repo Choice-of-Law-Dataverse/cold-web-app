@@ -1,9 +1,10 @@
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
-    "./components/**/*.{vue,js}",
-    "./layouts/**/*.{vue,js}",
-    "./pages/**/*.{vue,js}",
+    "./app/**/*.{vue,js,ts}",
+    "./components/**/*.{vue,js,ts}",
+    "./layouts/**/*.{vue,js,ts}",
+    "./pages/**/*.{vue,js,ts}",
     "./plugins/**/*.{js,ts}",
     "./nuxt.config.{js,ts}",
   ],
@@ -55,29 +56,27 @@ export default {
         "cold-teal": "#0891B2",
         "cold-charcoal": "#6B7280",
 
-        "label-question": "#0e7490", // darker teal
+        "label-question": "#0e7490",
         "label-question-alpha": "#0e74901A",
 
-        "label-court-decision": "#b85a42", // darker coral
+        "label-court-decision": "#b85a42",
         "label-court-decision-alpha": "#b85a421A",
 
-        "label-instrument": "#2a7a5a", // darker green
+        "label-instrument": "#2a7a5a",
         "label-instrument-alpha": "#2a7a5a1A",
 
-        "label-literature": "#a07830", // darker golden
+        "label-literature": "#a07830",
         "label-literature-alpha": "#a078301A",
 
-        "label-arbitration": "#5a6ab8", // darker indigo
+        "label-arbitration": "#5a6ab8",
         "label-arbitration-alpha": "#5a6ab81A",
 
-        "label-oup": "#7c3aed", // violet for OUP chapters
+        "label-oup": "#7c3aed",
         "label-oup-alpha": "#7c3aed1A",
       },
     },
   },
   plugins: [
-    require("@tailwindcss/forms"),
-    require("@tailwindcss/aspect-ratio"),
     function ({ addBase, theme }) {
       addBase({
         ":root": {

@@ -1,5 +1,10 @@
+import tailwindcss from "@tailwindcss/vite";
+
 export default defineNuxtConfig({
-  compatibilityDate: "2024-04-03",
+  compatibilityDate: "2025-01-01",
+  future: {
+    compatibilityVersion: 4,
+  },
   devtools: { enabled: true },
   ssr: true,
   nitro: {
@@ -22,14 +27,15 @@ export default defineNuxtConfig({
   typescript: {
     typeCheck: true,
   },
+  vite: {
+    plugins: [tailwindcss()],
+  },
   modules: [
     "@nuxt/ui",
-    "@nuxtjs/tailwindcss",
     "@nuxt/fonts",
     "@nuxtjs/leaflet",
     "@nuxt/icon",
     "@nuxt/content",
-    "nuxt-purgecss",
     "@nuxtjs/robots",
     "@nuxtjs/sitemap",
     "@nuxt/scripts",
@@ -72,12 +78,6 @@ export default defineNuxtConfig({
       },
     ],
   },
-  purgecss: {
-    enabled: false,
-    rejected: true,
-    content: [],
-    safelist: [],
-  },
   content: {
     documentDriven: false,
     markdown: {
@@ -87,10 +87,7 @@ export default defineNuxtConfig({
   colorMode: {
     preference: "light",
   },
-  css: ["@/assets/styles.scss", "tailwindcss/tailwind.css"],
-  tailwindcss: {
-    configPath: "./tailwind.config.js",
-  },
+  css: ["@/assets/styles.css"],
   app: {
     head: {
       title: "CoLD",
