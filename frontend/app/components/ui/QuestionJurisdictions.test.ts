@@ -7,7 +7,7 @@ import type {
   Jurisdiction,
 } from "@/composables/useQuestionJurisdictions";
 
-// Mock the composable
+// Mock the composables
 const mockQuestionData = ref<QuestionJurisdictionsData | null>(null);
 const mockIsLoading = ref(false);
 const mockError = ref<Error | null>(null);

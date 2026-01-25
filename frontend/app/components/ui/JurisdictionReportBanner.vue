@@ -37,11 +37,12 @@
 
       <!-- Flag and arrow -->
       <div class="flex items-center gap-4">
-        <img
+        <JurisdictionFlagWithCoverage
           v-if="jurisdictionCode"
-          :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${jurisdictionCode.toLowerCase()}.svg`"
+          :iso3="jurisdictionCode"
+          size="lg"
           :alt="`${jurisdictionName} flag`"
-          class="h-6 w-auto transition-transform duration-300 group-hover:scale-105"
+          class="transition-transform duration-300 group-hover:scale-105"
         />
         <div
           class="bg-cold-purple/10 group-hover:bg-cold-purple flex h-8 w-8 items-center justify-center rounded-full transition-all duration-300 group-hover:translate-x-1 group-hover:shadow-lg"
@@ -60,6 +61,7 @@
 import { computed, toRef } from "vue";
 import { useRoute } from "vue-router";
 import { useJurisdiction } from "@/composables/useJurisdictions";
+import JurisdictionFlagWithCoverage from "@/components/ui/JurisdictionFlagWithCoverage.vue";
 
 const route = useRoute();
 

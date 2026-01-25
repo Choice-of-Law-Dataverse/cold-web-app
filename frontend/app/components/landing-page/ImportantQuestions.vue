@@ -88,19 +88,11 @@
                           class="jurisdiction-item label-jurisdiction jurisdiction-link-flex text-cold-purple"
                           :to="`/question/${jurisdiction.code}${currentSuffix}`"
                         >
-                          <img
-                            :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${jurisdiction.code?.toLowerCase()}.svg`"
-                            style="
-                              height: 12px;
-                              margin-right: 6px;
-                              margin-bottom: 2px;
-                            "
+                          <JurisdictionFlag
+                            :iso3="jurisdiction.code"
+                            size="xs"
+                            class="mr-1.5 mb-0.5"
                             :alt="jurisdiction.code + ' flag'"
-                            @error="
-                              (e) => {
-                                e.target.style.display = 'none';
-                              }
-                            "
                           />
                           {{ jurisdiction.name }}
                         </NuxtLink>
@@ -163,6 +155,7 @@
 
 <script setup>
 import { ref, onMounted, computed, nextTick, onUnmounted, watch } from "vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import { useQuestionJurisdictions } from "@/composables/useQuestionJurisdictions";
 
 const answers = ["Yes", "No"];

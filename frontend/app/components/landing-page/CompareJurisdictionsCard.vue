@@ -19,10 +19,10 @@
         >
           <div class="comparison-row">
             <div class="comparison-side">
-              <img
-                :src="getFlagUrl(comparison.left)"
+              <JurisdictionFlag
+                :iso3="comparison.left"
+                size="lg"
                 :alt="`${comparison.left} flag`"
-                class="h-6 w-auto"
               />
               <span class="jurisdiction-code">{{ comparison.left }}</span>
             </div>
@@ -30,10 +30,10 @@
             <span class="comparison-vs">vs</span>
 
             <div class="comparison-side">
-              <img
-                :src="getFlagUrl(comparison.right)"
+              <JurisdictionFlag
+                :iso3="comparison.right"
+                size="lg"
                 :alt="`${comparison.right} flag`"
-                class="h-6 w-auto"
               />
               <span class="jurisdiction-code">{{ comparison.right }}</span>
             </div>
@@ -45,6 +45,8 @@
 </template>
 
 <script setup>
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+
 defineProps({
   title: { type: String, default: "Compare Jurisdictions" },
   comparisons: {
@@ -53,10 +55,6 @@ defineProps({
     validator: (value) => value.every((comp) => comp.left && comp.right),
   },
 });
-
-const getFlagUrl = (iso3) => {
-  return `https://choiceoflaw.blob.core.windows.net/assets/flags/${iso3.toLowerCase()}.svg`;
-};
 </script>
 
 <style scoped>

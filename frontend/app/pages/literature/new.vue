@@ -195,6 +195,7 @@ const loadJurisdictions = async () => {
         .filter((entry) => entry["Irrelevant?"] === false)
         .map((entry) => ({
           label: entry.Name,
+          alpha3Code: entry["Alpha-3 Code"],
           avatar: entry["Alpha-3 Code"]
             ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry["Alpha-3 Code"].toLowerCase()}.svg`
             : undefined,

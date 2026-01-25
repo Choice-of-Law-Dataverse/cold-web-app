@@ -62,8 +62,8 @@
               :to="`/question/${jurisdiction.code}${questionSuffix}`"
             >
               <div class="flag-wrapper">
-                <img
-                  :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${jurisdiction.code?.toLowerCase()}.svg`"
+                <JurisdictionFlag
+                  :iso3="jurisdiction.code"
                   class="item-flag"
                   :alt="jurisdiction.code + ' flag'"
                 />
@@ -85,6 +85,7 @@ import {
   type Jurisdiction,
 } from "@/composables/useQuestionJurisdictions";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 const regions = [
   "All",

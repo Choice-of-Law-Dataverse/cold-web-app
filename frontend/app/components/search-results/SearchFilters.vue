@@ -21,17 +21,12 @@
     >
       <template #item="{ item }">
         <div class="flex items-center">
-          <template v-if="showAvatars && isObjectOptions && item.avatar">
-            <img
-              :src="item.avatar"
-              :style="{
-                filter: isCovered(item.alpha3Code)
-                  ? undefined
-                  : 'grayscale(0.9)',
-              }"
-              class="mr-2 h-auto w-5 flex-shrink-0 object-contain"
-            />
-          </template>
+          <JurisdictionFlag
+            v-if="showAvatars && isObjectOptions && item.alpha3Code"
+            :iso3="item.alpha3Code"
+            :faded="!isCovered(item.alpha3Code)"
+            class="mr-2"
+          />
           <span
             :style="{
               color: isCovered(item?.alpha3Code) ? undefined : 'gray',
@@ -49,15 +44,11 @@
               v-if="showAvatars"
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
             >
-              <img
-                v-if="internalValue.avatar"
-                :src="internalValue.avatar"
-                :style="{
-                  filter: isCovered(internalValue.alpha3Code)
-                    ? undefined
-                    : 'grayscale(0.9)',
-                }"
-                class="mr-1.5 h-auto w-5 flex-shrink-0 object-contain"
+              <JurisdictionFlag
+                v-if="internalValue.alpha3Code"
+                :iso3="internalValue.alpha3Code"
+                :faded="!isCovered(internalValue.alpha3Code)"
+                class="mr-1.5"
               />
               <span
                 class="truncate"
@@ -102,15 +93,11 @@
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
             >
               <template v-for="(selected, index) in internalValue" :key="index">
-                <img
-                  v-if="selected.avatar"
-                  :src="selected.avatar"
-                  :style="{
-                    filter: isCovered(selected.alpha3Code)
-                      ? undefined
-                      : 'grayscale(0.9)',
-                  }"
-                  class="mr-1.5 h-auto w-5 flex-shrink-0 object-contain"
+                <JurisdictionFlag
+                  v-if="selected.alpha3Code"
+                  :iso3="selected.alpha3Code"
+                  :faded="!isCovered(selected.alpha3Code)"
+                  class="mr-1.5"
                 />
                 <span
                   class="mr-2 inline-block truncate"
@@ -154,6 +141,7 @@
 <script setup>
 import { computed } from "vue";
 import { useCoveredCountries } from "@/composables/useJurisdictions";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 const props = defineProps({
   options: { type: Array, required: true },
