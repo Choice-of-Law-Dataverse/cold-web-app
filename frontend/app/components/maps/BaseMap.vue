@@ -228,13 +228,11 @@ const getFeatureStyle = (feature: GeoJsonFeature): PathOptions => {
     answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
   const isCovered = answerCoverage > 0;
 
-  // Calculate opacity based on answer coverage (0-100 maps to 0.1-1.0)
-  const fillOpacity = isCovered ? 0.1 + (answerCoverage / 100) * 0.9 : 1;
+  // Calculate opacity based on answer coverage (0-100 maps to 0.25-1.0)
+  const fillOpacity = isCovered ? 0.25 + (answerCoverage / 100) * 0.75 : 1;
 
   return {
-    fillColor: isCovered
-      ? "var(--color-cold-purple)"
-      : "var(--color-cold-gray)",
+    fillColor: isCovered ? "var(--color-cold-purple)" : "#efefef",
     weight: 0.5,
     color: "white",
     fillOpacity,
