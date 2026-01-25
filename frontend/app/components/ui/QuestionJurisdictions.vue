@@ -111,7 +111,9 @@ const {
 
 const answersWithJurisdictions = computed(() => {
   const answers = questionData.value?.answers || [];
-  return answers.filter((answer) => getJurisdictionsForAnswer(answer).length > 0);
+  return answers.filter(
+    (answer) => getJurisdictionsForAnswer(answer).length > 0,
+  );
 });
 
 function selectRegion(region: string) {

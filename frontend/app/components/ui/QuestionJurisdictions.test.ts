@@ -20,7 +20,11 @@ vi.mock("@/composables/useQuestionJurisdictions", () => ({
   }),
 }));
 
-function createJurisdiction(name: string, code: string, region = ""): Jurisdiction {
+function createJurisdiction(
+  name: string,
+  code: string,
+  region = "",
+): Jurisdiction {
   return { name, code, region };
 }
 
@@ -37,7 +41,9 @@ function createQuestionData(
     answers.push(answer);
     answerGroups.set(
       answer,
-      jurisdictions.map((j) => createJurisdiction(j.name, j.code, j.region || "")),
+      jurisdictions.map((j) =>
+        createJurisdiction(j.name, j.code, j.region || ""),
+      ),
     );
   }
 

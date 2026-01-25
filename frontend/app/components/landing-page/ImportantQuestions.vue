@@ -228,7 +228,10 @@ watch(
     if (newJurisdictions && newJurisdictions.length > 0) {
       await nextTick();
       computeRows();
-      jurisdictionsLines.value = splitIntoLines(newJurisdictions, rowsCount.value);
+      jurisdictionsLines.value = splitIntoLines(
+        newJurisdictions,
+        rowsCount.value,
+      );
     } else {
       jurisdictionsLines.value = [];
     }
