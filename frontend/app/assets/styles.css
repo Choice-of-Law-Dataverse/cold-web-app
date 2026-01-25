@@ -78,10 +78,6 @@
     (var(--column-width) * 12) + (var(--gutter-width) * 11)
   );
 
-  /* Nav heights */
-  --nav-height: 5rem;
-  --nav-height-scrolled: 3.5rem;
-
   /* Gradient variables - reusable linear gradient definitions */
   /* Purple-Green gradients with white */
   --gradient-subtle: linear-gradient(
@@ -170,13 +166,6 @@
     var(--color-cold-purple) 33%,
     transparent
   );
-}
-
-@media (min-width: 640px) {
-  :root {
-    --nav-height: 7rem;
-    --nav-height-scrolled: 4rem;
-  }
 }
 
 /* Fonts ----------------------------------------------- */
@@ -740,7 +729,7 @@ button.inline-flex.items-center.rounded-full:hover {
   color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
 }
 
-/* Info Box in Jurisdiction Map - country name on hover */
+/* Info Box in Jurisdiction Map */
 .info {
   position: absolute;
   z-index: 1000;
@@ -748,14 +737,6 @@ button.inline-flex.items-center.rounded-full:hover {
   font-family: "Inter", Arial, sans-serif;
   padding-right: 12px;
   padding-bottom: 6px;
-}
-
-/* Hide Leaflet legend and attribution controls */
-.leaflet-control.legend,
-.legend,
-.info.legend,
-.leaflet-bottom.leaflet-left {
-  display: none !important;
 }
 
 /* USelectmenu */

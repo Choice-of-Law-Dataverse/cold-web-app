@@ -62,6 +62,21 @@
           <MapSouthLatinAmerica />
         </div>
       </div>
+      <p class="result-value-small mt-4 flex items-start text-xs">
+        <UIcon
+          name="i-material-symbols:info-outline"
+          size="18"
+          class="text-cold-purple mr-2 shrink-0 cursor-pointer"
+          @click="isDisclaimerVisible = !isDisclaimerVisible"
+        />
+        <span class="flex-1">
+          <ContentRenderer
+            v-if="isDisclaimerVisible && disclaimer"
+            :value="disclaimer"
+            class="inline-block"
+          />
+        </span>
+      </p>
     </div>
   </UCard>
 </template>
@@ -101,6 +116,12 @@ const selectedRegion = ref<RegionOption>(
 const updateSelectedRegion = (option: RegionOption) => {
   selectedRegion.value = option;
 };
+
+const isDisclaimerVisible = ref(false);
+
+const { data: disclaimer } = await useAsyncData("map_disclaimer", () =>
+  queryCollection("content").path("/map_disclaimer").first(),
+);
 </script>
 
 <style scoped>

@@ -132,20 +132,21 @@ const onEachFeature = (feature, layer) => {
     answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
   const isCovered = answerCoverage > 0;
 
-  // Calculate opacity based on answer coverage (0-100 maps to 0.3-1.0)
-  const fillOpacity = isCovered ? 0.3 + (answerCoverage / 100) * 0.7 : 1;
+  // Calculate opacity based on answer coverage (0-100 maps to 0.1-1.0)
+  const fillOpacity = isCovered ? 0.1 + (answerCoverage / 100) * 0.9 : 1;
 
-  // Use hex colors directly as CSS variables don't work in Leaflet inline styles
   const defaultStyle = {
-    fillColor: isCovered ? "#6f4dfa" : "#c7d2e8", // cold-purple or light gray-blue
-    weight: 1,
-    color: "#6f4dfa", // cold-purple border
+    fillColor: isCovered
+      ? "var(--color-cold-purple)"
+      : "var(--color-cold-gray)",
+    weight: 0.5,
+    color: "white",
     fillOpacity,
   };
 
   const hoverStyle = {
     ...defaultStyle,
-    fillColor: "#0891b2", // cold-teal
+    fillColor: "var(--color-cold-teal)",
     fillOpacity: Math.max(0.8, fillOpacity),
   };
 
