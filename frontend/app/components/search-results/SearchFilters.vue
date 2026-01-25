@@ -7,7 +7,6 @@
         'non-all-selected': multiple
           ? internalValue?.length > 0
           : !!internalValue,
-        'no-scroll': !searchable,
       }"
       :placeholder="
         props.placeholder ||
@@ -19,6 +18,7 @@
       :search-input="searchable ? { placeholder: 'Search...' } : false"
       :multiple="multiple"
       :loading="loading"
+      :content="!searchable ? { class: 'no-scroll-dropdown' } : undefined"
     >
       <template #item="{ item }">
         <div class="flex items-center">
@@ -257,10 +257,3 @@ const internalValue = computed({
   },
 });
 </script>
-
-<style scoped>
-/* Remove max-height constraint for dropdowns with few options */
-:deep(.no-scroll [data-slot="content"]) {
-  max-height: none !important;
-}
-</style>

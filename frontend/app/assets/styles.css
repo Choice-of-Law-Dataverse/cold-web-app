@@ -838,6 +838,11 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
   background: var(--gradient-medium-hover) !important;
 }
 
+/* Dropdown without scroll for filters with few options */
+.no-scroll-dropdown [data-slot="content"] {
+  max-height: none !important;
+}
+
 /* Hero gradient - subtle purple→green→white */
 .hero-gradient {
   background: var(--gradient-subtle-emphasis);
