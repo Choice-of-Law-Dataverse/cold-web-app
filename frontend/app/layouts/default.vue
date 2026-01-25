@@ -6,7 +6,7 @@
       <div class="max-w-container mx-auto w-full">
         <div class="flex flex-col gap-4 sm:gap-6">
           <ErrorBoundary>
-            <NuxtPage />
+            <NuxtPage :transition="pageTransition" />
           </ErrorBoundary>
         </div>
       </div>
@@ -16,8 +16,32 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Nav from "@/components/layout/Nav.vue";
 import Footer from "@/components/layout/Footer.vue";
 import ErrorBoundary from "@/components/ui/ErrorBoundary.vue";
+import { useNavigationDirection } from "@/composables/useNavigationDirection";
+
+const { direction } = useNavigationDirection();
+
+const pageTransition = computed(() => {
+  // Use direction-aware transitions for better back/forward UX
+  if (direction.value === "back") {
+    return {
+      name: "page-back",
+      mode: "out-in" as const,
+    };
+  }
+  if (direction.value === "forward") {
+    return {
+      name: "page-forward",
+      mode: "out-in" as const,
+    };
+  }
+  // Default transition for initial load or unknown direction
+  return {
+    name: "page",
+    mode: "out-in" as const,
+  };
+});
 </script>
