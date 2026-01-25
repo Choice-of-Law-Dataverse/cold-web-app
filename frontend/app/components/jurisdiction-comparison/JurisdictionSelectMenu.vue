@@ -62,7 +62,7 @@ interface SelectItem {
 
 const props = withDefaults(
   defineProps<{
-    countries: JurisdictionOption[];
+    jurisdictions: JurisdictionOption[];
     placeholder?: string;
     excludedCodes?: Array<string | null | undefined>;
     disabled?: boolean;
@@ -76,9 +76,9 @@ const props = withDefaults(
   },
 );
 
-const availableCountries = computed(() => {
+const availableJurisdictions = computed(() => {
   if (!props.excludedCodes.length) {
-    return props.countries;
+    return props.jurisdictions;
   }
 
   const excludedSet = new Set(
@@ -87,25 +87,25 @@ const availableCountries = computed(() => {
       .filter((code): code is string => Boolean(code)),
   );
 
-  return props.countries.filter((country) => {
-    const code = country.alpha3Code;
+  return props.jurisdictions.filter((jurisdiction) => {
+    const code = jurisdiction.alpha3Code;
     return !code || !excludedSet.has(code.toUpperCase());
   });
 });
 
 const selectItems = computed<SelectItem[]>(() => {
-  return availableCountries.value.map((country) => ({
-    label: country.label,
-    value: country.alpha3Code || country.Name,
-    avatar: country.avatar ? { src: country.avatar } : undefined,
-    hasCoverage: hasCoverage(country.answerCoverage),
-    original: country,
+  return availableJurisdictions.value.map((jurisdiction) => ({
+    label: jurisdiction.label,
+    value: jurisdiction.alpha3Code || jurisdiction.Name,
+    avatar: jurisdiction.avatar ? { src: jurisdiction.avatar } : undefined,
+    hasCoverage: hasCoverage(jurisdiction.answerCoverage),
+    original: jurisdiction,
   }));
 });
 
 const emit = defineEmits<{
   (
-    event: "country-selected" | "update:modelValue",
+    event: "jurisdiction-selected" | "update:modelValue",
     value: JurisdictionOption | undefined,
   ): void;
 }>();
@@ -133,7 +133,7 @@ watch(
 const onInternalSelect = (value: SelectItem | undefined) => {
   const jurisdiction = value?.original;
   emit("update:modelValue", jurisdiction);
-  emit("country-selected", jurisdiction);
+  emit("jurisdiction-selected", jurisdiction);
 };
 
 const hasCoverage = (coverage?: number) => (coverage ?? 0) > 0;
