@@ -220,7 +220,7 @@ const updateSelectedRegion = (option: RegionOption) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #f9fafb;
+  background: white;
 }
 
 .map-async-loading__spinner {

@@ -1,97 +1,110 @@
 <template>
   <div class="base-map-container">
     <!-- Loading State -->
-    <div v-if="isLoading" class="map-loading-skeleton" aria-label="Loading map">
-      <div class="map-skeleton-shimmer" />
-      <span class="sr-only">Loading map data...</span>
-    </div>
-
-    <!-- Error State -->
-    <div v-else-if="hasError" class="map-error-state" role="alert">
-      <UIcon
-        name="i-heroicons-exclamation-triangle"
-        class="text-red-500"
-        size="24"
-      />
-      <p class="mt-2 text-sm text-gray-600">Unable to load map data</p>
-      <button
-        class="text-cold-purple mt-1 text-sm hover:underline"
-        @click="refetchData"
-      >
-        Try again
-      </button>
-    </div>
-
-    <!-- Leaflet Map -->
-    <LMap
-      v-else
-      :zoom="zoom"
-      :center="center"
-      :use-global-leaflet="false"
-      :options="mapOptions"
-      class="map-leaflet"
-      role="application"
-      aria-label="Interactive jurisdiction coverage map"
-    >
-      <!-- Hover Tooltip -->
+    <Transition name="fade" mode="out-in">
       <div
-        class="map-tooltip"
-        :class="{ 'map-tooltip--visible': hoveredCountry }"
-        aria-live="polite"
+        v-if="isLoading"
+        key="loading"
+        class="map-loading-skeleton"
+        aria-label="Loading map"
       >
-        <template v-if="hoveredCountry">
-          <span class="map-tooltip__name">{{ hoveredCountry.name }}</span>
-          <span class="map-tooltip__coverage" :style="hoveredCountry.style">{{
-            hoveredCountry.coverage
-          }}</span>
-        </template>
+        <div class="map-skeleton-shimmer" />
+        <span class="sr-only">Loading map data...</span>
       </div>
 
-      <!-- SVG Gradient Definition -->
-      <svg width="0" height="0" style="position: absolute">
-        <defs>
-          <linearGradient
-            id="map-hover-gradient"
-            x1="0%"
-            y1="0%"
-            x2="100%"
-            y2="100%"
-          >
-            <stop
-              offset="0%"
-              style="stop-color: var(--color-cold-purple); stop-opacity: 1"
-            />
-            <stop
-              offset="100%"
-              style="stop-color: var(--color-cold-green); stop-opacity: 1"
-            />
-          </linearGradient>
-        </defs>
-      </svg>
+      <!-- Error State -->
+      <div
+        v-else-if="hasError"
+        key="error"
+        class="map-error-state"
+        role="alert"
+      >
+        <UIcon
+          name="i-heroicons-exclamation-triangle"
+          class="text-red-500"
+          size="24"
+        />
+        <p class="mt-2 text-sm text-gray-600">Unable to load map data</p>
+        <button
+          class="text-cold-purple mt-1 text-sm hover:underline"
+          @click="refetchData"
+        >
+          Try again
+        </button>
+      </div>
 
-      <!-- Tile Layer -->
-      <LTileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        :attribution="'&copy; OpenStreetMap contributors'"
-        :max-zoom="19"
-      />
+      <!-- Leaflet Map -->
+      <LMap
+        v-else
+        key="map"
+        :zoom="zoom"
+        :center="center"
+        :use-global-leaflet="false"
+        :options="mapOptions"
+        class="map-leaflet"
+        role="application"
+        aria-label="Interactive jurisdiction coverage map"
+      >
+        <!-- Hover Tooltip -->
+        <div
+          class="map-tooltip"
+          :class="{ 'map-tooltip--visible': hoveredCountry }"
+          aria-live="polite"
+        >
+          <template v-if="hoveredCountry">
+            <span class="map-tooltip__name">{{ hoveredCountry.name }}</span>
+            <span class="map-tooltip__coverage" :style="hoveredCountry.style">{{
+              hoveredCountry.coverage
+            }}</span>
+          </template>
+        </div>
 
-      <!-- White Background - Extended to cover larger area for dragging -->
-      <LRectangle
-        :bounds="backgroundBounds"
-        :fill="true"
-        color="white"
-        :weight="0"
-        :fill-opacity="1"
-      />
+        <!-- SVG Gradient Definition -->
+        <svg width="0" height="0" style="position: absolute">
+          <defs>
+            <linearGradient
+              id="map-hover-gradient"
+              x1="0%"
+              y1="0%"
+              x2="100%"
+              y2="100%"
+            >
+              <stop
+                offset="0%"
+                style="stop-color: var(--color-cold-purple); stop-opacity: 1"
+              />
+              <stop
+                offset="100%"
+                style="stop-color: var(--color-cold-green); stop-opacity: 1"
+              />
+            </linearGradient>
+          </defs>
+        </svg>
 
-      <!-- GeoJSON Layer -->
-      <LGeoJson
-        v-if="isDataReady"
-        :geojson="geoJsonData"
-        :options="geoJsonOptions"
-      />
-    </LMap>
+        <!-- Tile Layer -->
+        <LTileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          :attribution="'&copy; OpenStreetMap contributors'"
+          :max-zoom="19"
+        />
+
+        <!-- White Background - Extended to cover larger area for dragging -->
+        <LRectangle
+          :bounds="backgroundBounds"
+          :fill="true"
+          color="white"
+          :weight="0"
+          :fill-opacity="1"
+        />
+
+        <!-- GeoJSON Layer -->
+        <LGeoJson
+          v-if="isDataReady"
+          :geojson="geoJsonData"
+          :options="geoJsonOptions"
+        />
+      </LMap>
+    </Transition>
   </div>
 </template>
 
@@ -303,6 +316,17 @@ const geoJsonOptions = computed(() => ({
   height: 100%;
 }
 
+/* Fade transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
 /* Loading Skeleton */
 .map-loading-skeleton {
   position: absolute;
@@ -310,7 +334,7 @@ const geoJsonOptions = computed(() => ({
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+  background: white;
   border-radius: 0.5rem;
   overflow: hidden;
 }
@@ -321,7 +345,7 @@ const geoJsonOptions = computed(() => ({
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.4) 50%,
+    rgba(0, 0, 0, 0.02) 50%,
     transparent 100%
   );
   animation: shimmer 1.5s infinite;
