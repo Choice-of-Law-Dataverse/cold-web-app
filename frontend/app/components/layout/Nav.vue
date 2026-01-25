@@ -639,8 +639,8 @@ a {
 }
 
 nav {
-  min-height: 5rem;
-  max-height: 5rem;
+  min-height: var(--nav-height);
+  max-height: var(--nav-height);
   transition:
     min-height 0.2s ease,
     max-height 0.2s ease;
@@ -651,8 +651,8 @@ nav {
 }
 
 nav.nav-scrolled {
-  min-height: 3.5rem;
-  max-height: 3.5rem;
+  min-height: var(--nav-height-scrolled);
+  max-height: var(--nav-height-scrolled);
 }
 
 nav.nav-scrolled .nav-inner {
@@ -669,16 +669,6 @@ nav.nav-scrolled .mobile-inline-logo img {
 }
 
 @media (min-width: 640px) {
-  nav {
-    min-height: 7rem;
-    max-height: 7rem;
-  }
-
-  nav.nav-scrolled {
-    min-height: 4rem;
-    max-height: 4rem;
-  }
-
   nav.nav-scrolled .nav-inner {
     padding-top: 0.75rem;
     padding-bottom: 0.75rem;

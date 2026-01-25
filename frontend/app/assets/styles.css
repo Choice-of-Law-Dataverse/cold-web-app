@@ -78,6 +78,10 @@
     (var(--column-width) * 12) + (var(--gutter-width) * 11)
   );
 
+  /* Nav heights */
+  --nav-height: 5rem;
+  --nav-height-scrolled: 3.5rem;
+
   /* Gradient variables - reusable linear gradient definitions */
   /* Purple-Green gradients with white */
   --gradient-subtle: linear-gradient(
@@ -166,6 +170,13 @@
     var(--color-cold-purple) 33%,
     transparent
   );
+}
+
+@media (min-width: 640px) {
+  :root {
+    --nav-height: 7rem;
+    --nav-height-scrolled: 4rem;
+  }
 }
 
 /* Fonts ----------------------------------------------- */
