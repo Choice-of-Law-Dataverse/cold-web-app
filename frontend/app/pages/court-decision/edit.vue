@@ -313,22 +313,24 @@
       </div>
     </BaseDetailLayout>
 
-    <LazyCancelModal
-      v-model="showCancelModal"
-      @confirm-cancel="confirmCancel"
-    />
-    <LazySaveModal
-      v-model="showSaveModal"
-      :email="email"
-      :comments="comments"
-      :save-modal-errors="saveModalErrors"
-      :name="caseCitation"
-      :date="datePublication"
-      @update:email="(val) => (email = val)"
-      @update:comments="(val) => (comments = val)"
-      @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
-      @save="handleNewSave"
-    />
+    <ClientOnly>
+      <LazyCancelModal
+        v-model="showCancelModal"
+        @confirm-cancel="confirmCancel"
+      />
+      <LazySaveModal
+        v-model="showSaveModal"
+        :email="email"
+        :comments="comments"
+        :save-modal-errors="saveModalErrors"
+        :name="caseCitation"
+        :date="datePublication"
+        @update:email="(val) => (email = val)"
+        @update:comments="(val) => (comments = val)"
+        @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
+        @save="handleNewSave"
+      />
+    </ClientOnly>
   </div>
 </template>
 

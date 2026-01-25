@@ -199,25 +199,27 @@
       </div>
     </BaseDetailLayout>
 
-    <LazyCancelModal
-      v-model="showCancelModal"
-      @confirm-cancel="confirmCancel"
-    />
-    <LazySaveModal
-      v-model="showSaveModal"
-      :email="email"
-      :comments="comments"
-      :save-modal-errors="saveModalErrors"
-      :name="titleEn"
-      :specialists="specialists"
-      :date="entryIntoForce"
-      :pdf-file="pdfFile"
-      :link="sourceUrl"
-      @update:email="(val) => (email = val)"
-      @update:comments="(val) => (comments = val)"
-      @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
-      @save="handleNewSave"
-    />
+    <ClientOnly>
+      <LazyCancelModal
+        v-model="showCancelModal"
+        @confirm-cancel="confirmCancel"
+      />
+      <LazySaveModal
+        v-model="showSaveModal"
+        :email="email"
+        :comments="comments"
+        :save-modal-errors="saveModalErrors"
+        :name="titleEn"
+        :specialists="specialists"
+        :date="entryIntoForce"
+        :pdf-file="pdfFile"
+        :link="sourceUrl"
+        @update:email="(val) => (email = val)"
+        @update:comments="(val) => (comments = val)"
+        @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
+        @save="handleNewSave"
+      />
+    </ClientOnly>
   </div>
 </template>
 
