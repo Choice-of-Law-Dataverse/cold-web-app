@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-cold-bg flex min-h-screen flex-col">
+  <div class="bg-cold-bg flex min-h-dvh flex-col">
     <Nav />
 
-    <main class="mt-6 flex-1 px-3 sm:mt-12 sm:px-6">
+    <main class="main-content mt-6 flex-1 px-3 sm:mt-12 sm:px-6">
       <div class="max-w-container mx-auto w-full">
         <div class="flex flex-col gap-4 sm:gap-6">
           <ErrorBoundary>
@@ -45,3 +45,16 @@ const pageTransition = computed(() => {
   };
 });
 </script>
+
+<style scoped>
+/* Ensure main content has minimum height to prevent footer jumping during transitions */
+.main-content {
+  min-height: calc(100dvh - var(--nav-height) - 6rem);
+}
+
+@media (min-width: 640px) {
+  .main-content {
+    min-height: calc(100dvh - var(--nav-height) - 8rem);
+  }
+}
+</style>

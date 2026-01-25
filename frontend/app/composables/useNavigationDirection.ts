@@ -4,8 +4,7 @@ export type NavigationDirection = "forward" | "back" | "none";
 
 // Global state shared across all uses
 const direction = ref<NavigationDirection>("none");
-const historyStack = ref<string[]>([]);
-const isPopState = ref(false);
+const currentPosition = ref(0);
 
 /**
  * Composable for detecting navigation direction (forward vs back).
@@ -15,65 +14,74 @@ const isPopState = ref(false);
 export function useNavigationDirection() {
   return {
     direction,
-    historyStack,
-    isPopState,
+    currentPosition,
   };
 }
 
 /**
  * Plugin to initialize navigation direction tracking.
  * Should be called once in a Nuxt plugin.
+ *
+ * Uses history.state to reliably track position and detect back/forward navigation.
  */
 export function initNavigationDirection() {
+  if (!import.meta.client) return;
+
   const router = useRouter();
 
-  // Track popstate (browser back/forward)
-  if (import.meta.client) {
-    window.addEventListener("popstate", () => {
-      isPopState.value = true;
-    });
+  // Initialize position from history.state or start at 0
+  const getHistoryPosition = (): number => {
+    return (history.state?.position as number) ?? 0;
+  };
+
+  // Set initial position
+  currentPosition.value = getHistoryPosition();
+
+  // Ensure current history entry has a position
+  if (history.state?.position === undefined) {
+    const newState = { ...history.state, position: currentPosition.value };
+    history.replaceState(newState, "");
   }
 
-  // Use router beforeEach to determine direction
   router.beforeEach((to, from) => {
     if (!from.name) {
-      // Initial navigation
+      // Initial navigation - no transition direction
       direction.value = "none";
-      historyStack.value = [to.fullPath];
       return;
     }
 
-    if (isPopState.value) {
-      // Browser back/forward was used
-      const currentIndex = historyStack.value.indexOf(from.fullPath);
-      const targetIndex = historyStack.value.indexOf(to.fullPath);
+    const previousPosition = currentPosition.value;
+    const newPosition = getHistoryPosition();
 
-      if (targetIndex !== -1 && targetIndex < currentIndex) {
-        // Going back in history
-        direction.value = "back";
-        // Remove entries after the target
-        historyStack.value = historyStack.value.slice(0, targetIndex + 1);
-      } else if (targetIndex !== -1 && targetIndex > currentIndex) {
-        // Going forward in history (rare, but possible with forward button)
-        direction.value = "forward";
-      } else {
-        // Unknown position, treat as back
-        direction.value = "back";
-      }
-    } else {
-      // Normal navigation (link click, programmatic)
+    if (newPosition < previousPosition) {
+      // Going back in history
+      direction.value = "back";
+    } else if (newPosition > previousPosition) {
+      // Going forward (could be new navigation or browser forward)
       direction.value = "forward";
-      historyStack.value.push(to.fullPath);
-
-      // Limit stack size to prevent memory issues
-      if (historyStack.value.length > 50) {
-        historyStack.value = historyStack.value.slice(-50);
-      }
+    } else {
+      // Same position (e.g., replace navigation) - use forward as default
+      direction.value = "forward";
     }
+
+    currentPosition.value = newPosition;
   });
 
-  router.afterEach(() => {
-    // Reset popstate flag after navigation completes
-    isPopState.value = false;
+  router.afterEach((to, from, failure) => {
+    if (failure) return;
+
+    // For new navigations (not back/forward), increment position
+    // Vue Router automatically handles history.state for push navigations
+    const newPosition = getHistoryPosition();
+
+    // If this was a push navigation, ensure position is set
+    if (history.state?.position === undefined) {
+      const nextPosition = currentPosition.value + 1;
+      const newState = { ...history.state, position: nextPosition };
+      history.replaceState(newState, "");
+      currentPosition.value = nextPosition;
+    } else {
+      currentPosition.value = newPosition;
+    }
   });
 }
