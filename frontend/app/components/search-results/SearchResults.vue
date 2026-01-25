@@ -266,7 +266,12 @@ const handleSortChange = async (val) => {
 
 const resetFilters = async () => {
   resetFilterValues();
-  await updateFilters({ sortBy: route.query.sortBy || "relevance" });
+  // Clear all filters and search query, only keep sortBy
+  emit("update:filters", { sortBy: route.query.sortBy || "relevance" });
+  await router.push({
+    path: route.path,
+    query: { sortBy: route.query.sortBy || "relevance" },
+  });
 };
 
 const updateSelectWidth = () => {
