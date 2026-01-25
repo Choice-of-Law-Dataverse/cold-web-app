@@ -22,7 +22,11 @@
             Original
           </span>
 
-          <USwitch v-model="showEnglish" size="xs" />
+          <USwitch
+            v-model="showEnglish"
+            size="sm"
+            checked-icon="i-material-symbols-translate"
+          />
 
           <!-- English label (fades when Original is active) -->
           <span

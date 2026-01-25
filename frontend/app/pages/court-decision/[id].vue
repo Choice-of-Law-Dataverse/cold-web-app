@@ -70,7 +70,11 @@
               >
                 Original
               </span>
-              <USwitch v-model="showEnglishQuote" size="xs" />
+              <USwitch
+                v-model="showEnglishQuote"
+                size="sm"
+                checked-icon="i-material-symbols-translate"
+              />
               <span
                 class="label-key-provision-toggle"
                 :class="{
