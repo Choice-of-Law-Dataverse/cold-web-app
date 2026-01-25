@@ -127,7 +127,7 @@ const mapOptions = computed(() => {
 
 const onEachFeature = (feature, layer) => {
   const isoCode = feature.properties.iso_a3_eh;
-  const countryName = feature.properties.name;
+  const jurisdictionName = feature.properties.name;
   const answerCoverage =
     answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
   const isCovered = answerCoverage > 0;
@@ -161,7 +161,7 @@ const onEachFeature = (feature, layer) => {
         ? `${answerCoverage.toFixed(1)}%`
         : "No data available";
       infoControl.innerHTML = `
-        <h2 class="text-[var(--color-cold-night)]">${countryName}</h2>
+        <h2 class="text-[var(--color-cold-night)]">${jurisdictionName}</h2>
         <h4>${displayText}</h4>
       `;
     }

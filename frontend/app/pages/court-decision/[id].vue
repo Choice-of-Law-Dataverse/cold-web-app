@@ -158,7 +158,7 @@
 
       <template #footer>
         <LastModified :date="courtDecision?.['Last Modified']" />
-        <LazyCountryReportBanner
+        <LazyJurisdictionReportBanner
           :jurisdiction-code="courtDecision?.['Jurisdictions Alpha-3 Code']"
         />
       </template>
@@ -197,8 +197,8 @@ import { useCourtDecision } from "@/composables/useRecordDetails";
 import { courtDecisionLabels } from "@/config/labels";
 import { courtDecisionTooltips } from "@/config/tooltips";
 
-const LazyCountryReportBanner = defineAsyncComponent(
-  () => import("@/components/ui/CountryReportBanner.vue"),
+const LazyJurisdictionReportBanner = defineAsyncComponent(
+  () => import("@/components/ui/JurisdictionReportBanner.vue"),
 );
 const LazyRelatedLiterature = defineAsyncComponent(
   () => import("@/components/literature/RelatedLiterature.vue"),
