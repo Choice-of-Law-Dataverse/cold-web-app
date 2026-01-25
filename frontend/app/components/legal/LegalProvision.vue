@@ -25,7 +25,7 @@
           <USwitch
             v-model="showEnglish"
             size="xs"
-            class="bg-[var(--color-cold-gray)]"
+            :ui="{ base: 'data-[state=unchecked]:bg-[var(--color-cold-gray)]' }"
           />
 
           <!-- English label (fades when Original is active) -->

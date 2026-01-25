@@ -73,7 +73,7 @@
               <USwitch
                 v-model="showEnglishQuote"
                 size="xs"
-                class="bg-[var(--color-cold-gray)]"
+                :ui="{ base: 'data-[state=unchecked]:bg-[var(--color-cold-gray)]' }"
               />
               <span
                 class="label-key-provision-toggle"
