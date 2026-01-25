@@ -336,8 +336,6 @@ const getDisplayValue = (item, value) => {
 }
 
 :deep(.sticky-header) {
-  position: sticky;
-  top: 0;
   z-index: 10;
   background-color: white;
 }
