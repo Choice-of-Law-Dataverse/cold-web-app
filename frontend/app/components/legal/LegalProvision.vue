@@ -24,8 +24,8 @@
 
           <USwitch
             v-model="showEnglish"
-            size="xs"
-            class="bg-[var(--color-cold-gray)]"
+            size="sm"
+            checked-icon="i-material-symbols-translate"
           />
 
           <!-- English label (fades when Original is active) -->

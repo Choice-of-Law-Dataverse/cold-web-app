@@ -72,8 +72,8 @@
               </span>
               <USwitch
                 v-model="showEnglishQuote"
-                size="xs"
-                class="bg-[var(--color-cold-gray)]"
+                size="sm"
+                checked-icon="i-material-symbols-translate"
               />
               <span
                 class="label-key-provision-toggle"

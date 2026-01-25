@@ -683,7 +683,8 @@ li::marker {
 /* UI Elements ----------------------------------------------- */
 
 /* Show more/less buttons - using teal as secondary action color */
-button.inline-flex.items-center.rounded-full {
+/* Exclude [role="switch"] to avoid styling USwitch component */
+button.inline-flex.items-center.rounded-full:not([role="switch"]) {
   background: color-mix(
     in srgb,
     var(--color-cold-teal) 8%,
@@ -696,7 +697,7 @@ button.inline-flex.items-center.rounded-full {
   padding: 0.5rem 1rem;
 }
 
-button.inline-flex.items-center.rounded-full:hover {
+button.inline-flex.items-center.rounded-full:not([role="switch"]):hover {
   background: color-mix(
     in srgb,
     var(--color-cold-teal) 12%,
