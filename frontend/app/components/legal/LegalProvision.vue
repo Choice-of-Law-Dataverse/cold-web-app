@@ -22,11 +22,7 @@
             Original
           </span>
 
-          <USwitch
-            v-model="showEnglish"
-            size="xs"
-            :ui="{ base: 'data-[state=unchecked]:bg-[var(--color-cold-gray)]' }"
-          />
+          <USwitch v-model="showEnglish" size="xs" />
 
           <!-- English label (fades when Original is active) -->
           <span
