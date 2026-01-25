@@ -34,20 +34,6 @@
       role="application"
       aria-label="Interactive jurisdiction coverage map"
     >
-      <!-- Info Control Tooltip -->
-      <div
-        ref="infoControlRef"
-        class="info-control"
-        :class="{ 'info-control--visible': hoveredCountry }"
-        aria-live="polite"
-        aria-atomic="true"
-      >
-        <template v-if="hoveredCountry">
-          <h2 class="info-control__title">{{ hoveredCountry.name }}</h2>
-          <p class="info-control__coverage">{{ hoveredCountry.coverage }}</p>
-        </template>
-      </div>
-
       <!-- Tile Layer -->
       <LTileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -125,7 +111,6 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const mapRef = ref<{ leafletObject: LeafletMap } | null>(null);
-const hoveredCountry = ref<{ name: string; coverage: string } | null>(null);
 
 const {
   data: geoJsonData,
@@ -196,17 +181,15 @@ const mapOptions = computed<MapOptions>(() => {
   return options;
 });
 
-const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
+// Style function for initial render (prevents flash of default Leaflet styles)
+const getFeatureStyle = (feature: GeoJsonFeature) => {
   const isoCode = feature.properties.iso_a3_eh;
-  const countryName = feature.properties.name;
   const answerCoverage =
     answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
   const isCovered = answerCoverage > 0;
-
-  // Calculate opacity based on answer coverage (0-100 maps to 0.1-1.0)
   const fillOpacity = isCovered ? 0.1 + (answerCoverage / 100) * 0.9 : 1;
 
-  const defaultStyle = {
+  return {
     fillColor: isCovered
       ? "var(--color-cold-purple)"
       : "var(--color-cold-gray)",
@@ -215,34 +198,30 @@ const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
     fillOpacity,
     className: "map-country",
   };
+};
 
+const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
+  const isoCode = feature.properties.iso_a3_eh;
+  const answerCoverage =
+    answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
+  const isCovered = answerCoverage > 0;
+  const fillOpacity = isCovered ? 0.1 + (answerCoverage / 100) * 0.9 : 1;
+
+  const defaultStyle = getFeatureStyle(feature);
   const hoverStyle = {
     ...defaultStyle,
     fillColor: "var(--color-cold-teal)",
     fillOpacity: Math.max(0.8, fillOpacity),
   };
 
-  // @ts-expect-error Leaflet layer type
-  layer.setStyle(defaultStyle);
-
   layer.on("mouseover", () => {
     // @ts-expect-error Leaflet layer type
     layer.setStyle(hoverStyle);
-
-    const displayText = isCovered
-      ? `${answerCoverage.toFixed(1)}% coverage`
-      : "No data available";
-
-    hoveredCountry.value = {
-      name: countryName,
-      coverage: displayText,
-    };
   });
 
   layer.on("mouseout", () => {
     // @ts-expect-error Leaflet layer type
     layer.setStyle(defaultStyle);
-    hoveredCountry.value = null;
   });
 
   layer.on("click", () => {
@@ -251,6 +230,7 @@ const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
 };
 
 const geoJsonOptions = computed(() => ({
+  style: getFeatureStyle,
   onEachFeature,
 }));
 </script>
@@ -310,46 +290,6 @@ const geoJsonOptions = computed(() => ({
   justify-content: center;
   background: #fafafa;
   border-radius: 0.5rem;
-}
-
-/* Info Control Tooltip */
-.info-control {
-  position: absolute;
-  top: 12px;
-  left: 12px;
-  z-index: 1000;
-  background: white;
-  padding: 8px 12px;
-  border-radius: 6px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  font-family: "Inter", Arial, sans-serif;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-  pointer-events: none;
-  min-width: 140px;
-}
-
-.info-control--visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.info-control__title {
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--color-cold-night);
-  margin: 0 0 2px 0;
-  line-height: 1.3;
-}
-
-.info-control__coverage {
-  font-size: 0.75rem;
-  color: var(--color-cold-purple);
-  margin: 0;
-  font-weight: 500;
 }
 
 /* Screen reader only */
