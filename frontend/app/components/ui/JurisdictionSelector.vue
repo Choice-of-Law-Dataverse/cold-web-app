@@ -103,7 +103,6 @@ const onJurisdictionSelected = (selectedJurisdiction) => {
 
 <style scoped>
 .flex.flex-col.gap-4 {
-  position: relative;
-  z-index: 10;
+  isolation: isolate;
 }
 </style>

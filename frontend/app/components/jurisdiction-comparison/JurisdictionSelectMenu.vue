@@ -1,43 +1,45 @@
 <template>
-  <USelectMenu
-    v-model="internalSelected"
-    :search-input="{ placeholder: 'Search a Jurisdiction...' }"
-    class="cold-uselectmenu z-200 w-72 lg:w-96"
-    :placeholder="placeholder"
-    :items="selectItems"
-    :disabled="disabled"
-    size="xl"
-    @update:model-value="onInternalSelect"
-  >
-    <!-- Custom item rendering with avatars -->
-    <template #item="{ item }">
-      <div class="flex items-center">
-        <JurisdictionFlag
-          v-if="item.original?.alpha3Code"
-          :iso3="item.original.alpha3Code"
-          :faded="!item.hasCoverage"
-          class="mr-2"
-        />
-        <span
-          :style="{
-            color: item.hasCoverage ? undefined : 'gray',
-          }"
-        >
-          {{ item.label }}
-        </span>
-      </div>
-    </template>
+  <div class="jurisdiction-select-wrapper">
+    <USelectMenu
+      v-model="internalSelected"
+      :search-input="{ placeholder: 'Search a Jurisdiction...' }"
+      class="cold-uselectmenu w-72 lg:w-96"
+      :placeholder="placeholder"
+      :items="selectItems"
+      :disabled="disabled"
+      size="xl"
+      @update:model-value="onInternalSelect"
+    >
+      <!-- Custom item rendering with avatars -->
+      <template #item="{ item }">
+        <div class="flex items-center">
+          <JurisdictionFlag
+            v-if="item.original?.alpha3Code"
+            :iso3="item.original.alpha3Code"
+            :faded="!item.hasCoverage"
+            class="mr-2"
+          />
+          <span
+            :style="{
+              color: item.hasCoverage ? undefined : 'gray',
+            }"
+          >
+            {{ item.label }}
+          </span>
+        </div>
+      </template>
 
-    <!-- Custom label rendering for selected value -->
-    <template #leading>
-      <JurisdictionFlag
-        v-if="internalSelected?.original?.alpha3Code"
-        :iso3="internalSelected.original.alpha3Code"
-        :faded="!hasCoverage(internalSelected?.original?.answerCoverage)"
-        class="mr-1.5"
-      />
-    </template>
-  </USelectMenu>
+      <!-- Custom label rendering for selected value -->
+      <template #leading>
+        <JurisdictionFlag
+          v-if="internalSelected?.original?.alpha3Code"
+          :iso3="internalSelected.original.alpha3Code"
+          :faded="!hasCoverage(internalSelected?.original?.answerCoverage)"
+          class="mr-1.5"
+        />
+      </template>
+    </USelectMenu>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -131,3 +133,9 @@ const onInternalSelect = (value: SelectItem | undefined) => {
 
 const hasCoverage = (coverage?: number) => (coverage ?? 0) > 0;
 </script>
+
+<style scoped>
+.jurisdiction-select-wrapper {
+  isolation: isolate;
+}
+</style>

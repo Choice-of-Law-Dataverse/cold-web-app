@@ -317,6 +317,7 @@ onMounted(async () => {
   align-items: center;
   justify-content: space-between;
   padding-bottom: 12px;
+  isolation: isolate;
 }
 
 .filters-header h2 {

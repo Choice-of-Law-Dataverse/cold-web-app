@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full">
+  <div class="search-filters-wrapper w-full">
     <USelectMenu
       v-model="internalValue"
       class="cold-uselectmenu w-full"
@@ -257,3 +257,9 @@ const internalValue = computed({
   },
 });
 </script>
+
+<style scoped>
+.search-filters-wrapper {
+  isolation: isolate;
+}
+</style>
