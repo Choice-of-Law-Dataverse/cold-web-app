@@ -266,16 +266,13 @@ const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
   layer.on("mouseover", () => {
     (layer as Path).setStyle(hoverStyle);
 
-    const infoControl = document.getElementById("info-control");
-    if (infoControl) {
-      const displayText = isCovered
-        ? `${coverage.toFixed(1)}%`
-        : "No data available";
-      infoControl.innerHTML = `
-        <h2 class="text-[var(--color-cold-night)]">${name}</h2>
-        <h4>${displayText}</h4>
-      `;
-    }
+    hoveredCountry.value = {
+      name,
+      coverage: isCovered
+        ? `${coverage.toFixed(1)}% coverage`
+        : "No data available",
+      style: isCovered ? `color: var(--color-cold-purple);` : `color: #c3c3c3;`,
+    };
   });
 
   layer.on("mouseout", () => {
