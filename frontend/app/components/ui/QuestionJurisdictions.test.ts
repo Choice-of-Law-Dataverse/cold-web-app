@@ -20,17 +20,6 @@ vi.mock("@/composables/useQuestionJurisdictions", () => ({
   }),
 }));
 
-// Mock useCoveredCountries for JurisdictionFlag component
-vi.mock("@/composables/useJurisdictions", () => ({
-  useCoveredCountries: () => ({
-    data: ref(new Set<string>()),
-    isLoading: ref(false),
-    error: ref(null),
-    isError: ref(false),
-    isFetching: ref(false),
-  }),
-}));
-
 function createJurisdiction(
   name: string,
   code: string,

@@ -37,7 +37,7 @@
 
       <!-- Flag and arrow -->
       <div class="flex items-center gap-4">
-        <JurisdictionFlag
+        <JurisdictionFlagWithCoverage
           v-if="jurisdictionCode"
           :iso3="jurisdictionCode"
           size="lg"
@@ -61,7 +61,7 @@
 import { computed, toRef } from "vue";
 import { useRoute } from "vue-router";
 import { useJurisdiction } from "@/composables/useJurisdictions";
-import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+import JurisdictionFlagWithCoverage from "@/components/ui/JurisdictionFlagWithCoverage.vue";
 
 const route = useRoute();
 

@@ -2,16 +2,15 @@
   <img
     v-if="flagUrl"
     :src="flagUrl"
-    :alt="alt"
+    :alt="computedAlt"
     :class="[sizeClasses, props.class]"
-    :style="{ filter: shouldFade ? 'grayscale(0.9)' : undefined }"
+    :style="{ filter: faded ? 'grayscale(0.9)' : undefined }"
     @error="onImageError"
   />
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useCoveredCountries } from "@/composables/useJurisdictions";
 
 const FLAG_BASE_URL = "https://choiceoflaw.blob.core.windows.net/assets/flags/";
 
@@ -19,7 +18,7 @@ type FlagSize = "xs" | "sm" | "md" | "lg";
 
 const props = withDefaults(
   defineProps<{
-    /** ISO 3166-1 alpha-3 country code */
+    /** ISO 3166-1 alpha-3 jurisdiction code */
     iso3?: string | null;
     /** Size preset for the flag */
     size?: FlagSize;
@@ -27,12 +26,7 @@ const props = withDefaults(
     class?: string;
     /** Alt text for the image (defaults to "{iso3} flag") */
     alt?: string;
-    /**
-     * Controls flag fading behavior:
-     * - undefined: Auto-fade based on coverage data (default)
-     * - true: Always show faded
-     * - false: Never show faded
-     */
+    /** Whether to show the flag as faded (grayscale) */
     faded?: boolean;
   }>(),
   {
@@ -40,15 +34,13 @@ const props = withDefaults(
     size: "md",
     class: "",
     alt: undefined,
-    faded: undefined,
+    faded: false,
   },
 );
 
 const emit = defineEmits<{
   (event: "error", e: Event): void;
 }>();
-
-const { data: coveredCountries } = useCoveredCountries();
 
 const flagUrl = computed(() => {
   if (!props.iso3) return null;
@@ -70,23 +62,8 @@ const sizeClasses = computed(() => {
   }
 });
 
-const shouldFade = computed(() => {
-  // If faded is explicitly set, use that value
-  if (props.faded !== undefined) {
-    return props.faded;
-  }
-
-  // Auto-fade based on coverage data
-  if (!props.iso3) return false;
-  if (!coveredCountries.value || coveredCountries.value.size === 0) {
-    // Coverage data not loaded yet - don't fade
-    return false;
-  }
-  return !coveredCountries.value.has(props.iso3.toLowerCase());
-});
-
-const alt = computed(() => {
-  return props.alt ?? (props.iso3 ? `${props.iso3} flag` : "Country flag");
+const computedAlt = computed(() => {
+  return props.alt ?? (props.iso3 ? `${props.iso3} flag` : "Jurisdiction flag");
 });
 
 const onImageError = (e: Event) => {
