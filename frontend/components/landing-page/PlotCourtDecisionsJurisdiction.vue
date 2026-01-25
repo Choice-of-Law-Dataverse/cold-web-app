@@ -9,6 +9,8 @@
       <LoadingLandingPageCard />
     </div>
 
+    <InlineError v-else-if="error" :error="error" />
+
     <div v-else-if="data && chartData.length > 0" class="chart-container">
       <div class="chart-bars">
         <NuxtLink
@@ -44,12 +46,13 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
+import InlineError from "@/components/ui/InlineError.vue";
 import {
   useJurisdictionChart,
   useJurisdictions,
 } from "@/composables/useJurisdictions";
 
-const { data, isLoading } = useJurisdictionChart();
+const { data, isLoading, error } = useJurisdictionChart();
 const { data: jurisdictions } = useJurisdictions();
 const hoveredIndex = ref(-1);
 

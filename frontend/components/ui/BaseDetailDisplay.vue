@@ -21,6 +21,9 @@
   <template v-if="loading">
     <LoadingCard />
   </template>
+  <template v-else-if="error">
+    <InlineError :error="error" />
+  </template>
   <template v-else>
     <UCard
       class="cold-ucard"
@@ -151,9 +154,15 @@ import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import InlineError from "@/components/ui/InlineError.vue";
 
 const props = defineProps({
   loading: Boolean,
+  error: {
+    type: [Object, Error],
+    required: false,
+    default: null,
+  },
   resultData: {
     type: Object,
     default: () => ({}),

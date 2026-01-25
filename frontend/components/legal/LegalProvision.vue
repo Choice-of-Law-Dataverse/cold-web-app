@@ -2,13 +2,12 @@
   <div v-if="loading">
     <LoadingBar class="!mt-8" />
   </div>
+  <InlineError v-else-if="error" :error="error" />
   <div v-else>
     <BaseLegalContent
       :title="displayTitle"
       :anchor-id="anchorId"
       :class="props.class"
-      :loading="loading"
-      :error="error?.message"
     >
       <template #header-actions>
         <div v-if="hasEnglishTranslation" class="flex items-center gap-1">
@@ -52,6 +51,7 @@ import { computed } from "vue";
 import { useLegalProvision } from "@/composables/useLegalProvision";
 import BaseLegalContent from "@/components/legal/BaseLegalContent.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
+import InlineError from "@/components/ui/InlineError.vue";
 
 const props = defineProps<{
   provisionId: string;

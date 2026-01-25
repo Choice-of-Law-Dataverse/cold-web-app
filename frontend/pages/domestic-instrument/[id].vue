@@ -3,6 +3,7 @@
     <BaseDetailLayout
       table="Domestic Instruments"
       :loading="loading"
+      :error="error"
       :data="legalInstrument || {}"
       :labels="domesticInstrumentLabels"
       :tooltips="domesticInstrumentTooltips"
@@ -150,9 +151,11 @@ const route = useRoute();
 const textType = ref("Full Text of the Provision (English Translation)");
 const hasEnglishTranslation = ref(false);
 
-const { data: legalInstrument, isLoading: loading } = useDomesticInstrument(
-  computed(() => route.params.id as string),
-);
+const {
+  data: legalInstrument,
+  isLoading: loading,
+  error,
+} = useDomesticInstrument(computed(() => route.params.id as string));
 
 const isCompatible = (
   field:

@@ -80,12 +80,16 @@ const props = defineProps({
   },
 });
 
-const { data: geoJsonData } = useGeoJsonData();
-const { data: jurisdictions } = useJurisdictions();
+const { data: geoJsonData, error: geoJsonError } = useGeoJsonData();
+const { data: jurisdictions, error: jurisdictionsError } = useJurisdictions();
 
 const isDataReady = computed(
   () =>
-    geoJsonData.value && jurisdictions.value && jurisdictions.value.length > 0,
+    !geoJsonError.value &&
+    !jurisdictionsError.value &&
+    geoJsonData.value &&
+    jurisdictions.value &&
+    jurisdictions.value.length > 0,
 );
 
 // Create a map for quick lookup of answer coverages by ISO code

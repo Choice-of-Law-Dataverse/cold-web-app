@@ -3,6 +3,7 @@
     <BaseDetailLayout
       table="Literature"
       :loading="loading"
+      :error="error"
       :data="literature || {}"
       :labels="literatureLabels"
       :tooltips="literatureTooltips"
@@ -104,7 +105,7 @@ const route = useRoute();
 
 const id = computed(() => route.params.id as string);
 
-const { data: literature, isLoading: loading } = useLiterature(id);
+const { data: literature, isLoading: loading, error } = useLiterature(id);
 
 // Source URL logic
 const sourceUrl = computed(() => {

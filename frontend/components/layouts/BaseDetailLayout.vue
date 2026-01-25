@@ -1,6 +1,7 @@
 <template>
   <DetailDisplay
     :loading="props.loading"
+    :error="props.error ?? undefined"
     :result-data="props.data"
     :key-label-pairs="computedKeyLabelPairs"
     :value-class-map="{}"
@@ -32,6 +33,7 @@ const props = withDefaults(
   defineProps<{
     table: T;
     loading: boolean;
+    error?: Error | null;
     // Data accepts typed processed response or empty object for legacy/new pages
     data: TableProcessedMap[T] | Record<string, unknown>;
     // Label/tooltip maps - keys must match the table's processed type
@@ -49,6 +51,7 @@ const props = withDefaults(
     showSuggestEdit?: boolean;
   }>(),
   {
+    error: undefined,
     labels: () => ({}),
     tooltips: undefined,
     keyLabelPairs: undefined,

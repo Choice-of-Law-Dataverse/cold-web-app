@@ -8,10 +8,11 @@
       <div v-if="isLoading">
         <LoadingLandingPageCard />
       </div>
-      <template v-else>
+      <InlineError v-else-if="error" :error="error" />
+      <template v-else-if="leadingCases">
         <div class="flex w-full flex-col gap-2">
           <NuxtLink
-            v-for="(decision, index) in leadingCases?.slice(0, 3)"
+            v-for="(decision, index) in leadingCases.slice(0, 3)"
             :key="index"
             :to="`/court-decision/${decision.ID}`"
             class="landing-item-button w-full"
@@ -41,9 +42,9 @@
 
 <script setup>
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
-
+import InlineError from "@/components/ui/InlineError.vue";
 import { useLeadingCases } from "@/composables/useFullTable";
 import { formatYear } from "@/utils/format";
 
-const { data: leadingCases, isLoading } = useLeadingCases();
+const { data: leadingCases, isLoading, error } = useLeadingCases();
 </script>
