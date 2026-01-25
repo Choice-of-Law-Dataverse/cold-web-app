@@ -42,7 +42,10 @@
             <LoadingBar />
           </div>
 
-          <InlineError v-else-if="jurisdictionsError" />
+          <InlineError
+            v-else-if="jurisdictionsError"
+            :error="jurisdictionsError"
+          />
 
           <div v-else class="flex flex-col gap-4 md:flex-row md:items-center">
             <JurisdictionSelectMenu
@@ -65,7 +68,10 @@
         <LoadingBar />
       </div>
 
-      <InlineError v-else-if="questionsError || answersError" />
+      <InlineError
+        v-else-if="questionsError || answersError"
+        :error="questionsError || answersError"
+      />
 
       <div v-else-if="isSingleJurisdiction" class="divide-y divide-gray-100">
         <div
@@ -290,6 +296,7 @@ import {
 import { useJurisdictions } from "@/composables/useJurisdictions";
 import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
+import InlineError from "@/components/ui/InlineError.vue";
 import type { JurisdictionOption } from "@/types/analyzer";
 
 // Props - now only needs the primary jurisdiction

@@ -8,7 +8,7 @@
       <div v-if="isLoading">
         <LoadingLandingPageCard />
       </div>
-      <InlineError v-else-if="error" />
+      <InlineError v-else-if="error" :error="error" />
       <template v-else-if="leadingCases">
         <div class="flex w-full flex-col gap-2">
           <NuxtLink
@@ -42,7 +42,7 @@
 
 <script setup>
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
-
+import InlineError from "@/components/ui/InlineError.vue";
 import { useLeadingCases } from "@/composables/useFullTable";
 import { formatYear } from "@/utils/format";
 

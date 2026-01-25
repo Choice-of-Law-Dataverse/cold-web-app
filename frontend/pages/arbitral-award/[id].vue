@@ -3,6 +3,7 @@
     <BaseDetailLayout
       table="Arbitral Awards"
       :loading="loading"
+      :error="error"
       :data="arbitralAward || {}"
       :labels="arbitralAwardLabels"
       :formatted-jurisdiction="arbitralAward?.formattedJurisdictions || []"
@@ -38,7 +39,9 @@ import { arbitralAwardLabels } from "@/config/labels";
 
 const route = useRoute();
 
-const { data: arbitralAward, isLoading: loading } = useArbitralAward(
-  computed(() => route.params.id as string),
-);
+const {
+  data: arbitralAward,
+  isLoading: loading,
+  error,
+} = useArbitralAward(computed(() => route.params.id as string));
 </script>

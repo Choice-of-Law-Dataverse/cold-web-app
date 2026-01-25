@@ -3,6 +3,7 @@
     <BaseDetailLayout
       table="Regional Instruments"
       :loading="loading"
+      :error="error"
       :data="regionalInstrument || {}"
       :labels="regionalInstrumentLabels"
       :tooltips="regionalInstrumentTooltips"
@@ -94,7 +95,9 @@ import { regionalInstrumentTooltips } from "@/config/tooltips";
 
 const route = useRoute();
 
-const { data: regionalInstrument, isLoading: loading } = useRegionalInstrument(
-  computed(() => route.params.id as string),
-);
+const {
+  data: regionalInstrument,
+  isLoading: loading,
+  error,
+} = useRegionalInstrument(computed(() => route.params.id as string));
 </script>

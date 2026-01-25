@@ -2,7 +2,7 @@
   <span v-if="isLoading">
     <LoadingBar />
   </span>
-  <InlineError v-else-if="error" />
+  <InlineError v-else-if="error" :error="error" />
   <span v-else>
     <NuxtLink
       v-if="displayTitle && id"
@@ -19,6 +19,7 @@ import { ref, watch, computed } from "vue";
 import { useRecordDetails } from "@/composables/useRecordDetails";
 import { NuxtLink } from "#components";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
+import InlineError from "@/components/ui/InlineError.vue";
 
 const props = defineProps({
   id: {

@@ -24,7 +24,14 @@
       </UFormGroup>
 
       <UFormGroup label="Jurisdiction">
+        <div v-if="jurisdictionsLoading" class="text-sm text-gray-500">
+          Loading jurisdictions...
+        </div>
+        <div v-else-if="jurisdictionsError" class="text-sm text-gray-500">
+          Failed to load jurisdictions
+        </div>
         <JurisdictionSelectMenu
+          v-else
           :model-value="selectedJurisdiction"
           :countries="jurisdictions || []"
           placeholder="Select jurisdiction"
@@ -67,7 +74,11 @@ import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/Jurisdi
 import DocumentDisplay from "@/components/case-analyzer/DocumentDisplay.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 
-const { data: jurisdictions } = useJurisdictions();
+const {
+  data: jurisdictions,
+  isLoading: jurisdictionsLoading,
+  error: jurisdictionsError,
+} = useJurisdictions();
 
 const props = defineProps<{
   documentName: string;

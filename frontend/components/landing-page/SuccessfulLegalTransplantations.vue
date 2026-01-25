@@ -10,7 +10,7 @@
       <div v-if="isLoading">
         <LoadingLandingPageCard />
       </div>
-      <InlineError v-else-if="error" />
+      <InlineError v-else-if="error" :error="error" />
       <template v-else-if="domesticInstruments">
         <div class="flex w-full flex-col gap-2">
           <NuxtLink
@@ -45,6 +45,7 @@
 <script setup>
 import { ref } from "vue";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
+import InlineError from "@/components/ui/InlineError.vue";
 import { useDomesticInstruments } from "@/composables/useDomesticInstruments";
 import { formatYear } from "@/utils/format";
 

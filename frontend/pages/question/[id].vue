@@ -3,6 +3,7 @@
     <BaseDetailLayout
       table="Questions"
       :loading="isLoading"
+      :error="error"
       :data="answerData || {}"
       :labels="questionLabels"
       :tooltips="questionTooltips"
@@ -96,9 +97,11 @@ import { questionTooltips } from "@/config/tooltips";
 
 const route = useRoute();
 
-const { data: answerData, isLoading } = useAnswer(
-  computed(() => route.params.id as string),
-);
+const {
+  data: answerData,
+  isLoading,
+  error,
+} = useAnswer(computed(() => route.params.id as string));
 
 const questionSuffix = computed(() => {
   // Extract question suffix from the answer ID (route param)

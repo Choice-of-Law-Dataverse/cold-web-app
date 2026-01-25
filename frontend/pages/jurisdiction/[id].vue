@@ -3,6 +3,7 @@
     <BaseDetailLayout
       table="Jurisdictions"
       :loading="isLoading"
+      :error="error"
       :data="jurisdictionData || {}"
       :labels="jurisdictionLabels"
       :tooltips="jurisdictionTooltips"
@@ -133,9 +134,11 @@ import { jurisdictionTooltips } from "@/config/tooltips";
 
 const route = useRoute();
 
-const { isLoading, data: jurisdictionData } = useJurisdiction(
-  computed(() => route.params.id as string),
-);
+const {
+  isLoading,
+  data: jurisdictionData,
+  error,
+} = useJurisdiction(computed(() => route.params.id as string));
 
 const jurisdictionAlphaCode = computed(
   () => jurisdictionData.value?.alpha3Code as string,

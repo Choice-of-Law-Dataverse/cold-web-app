@@ -14,6 +14,9 @@
         <template v-if="decisionsById.get(item as string)">
           {{ decisionsById.get(item as string)!.displayTitle }}
         </template>
+        <template v-else-if="decisionsError">
+          {{ item }}
+        </template>
         <template v-else>
           <LoadingBar />
         </template>
@@ -53,7 +56,8 @@ const decisionIds = computed(() => {
   return [...new Set(items.filter(Boolean))];
 });
 
-const { data: decisions } = useCourtDecisionsList(decisionIds);
+const { data: decisions, error: decisionsError } =
+  useCourtDecisionsList(decisionIds);
 
 const decisionsById = computed(() => {
   const map = new Map<string, CourtDecision>();

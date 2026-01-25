@@ -3,7 +3,7 @@
     <div v-if="isLoading">
       <LoadingBar />
     </div>
-    <InlineError v-else-if="error" />
+    <InlineError v-else-if="error" :error="error" />
     <div v-else-if="displayedItems.length" class="result-value-small">
       <div class="mb-2 flex flex-row flex-wrap gap-x-6 gap-y-2">
         <NuxtLink
@@ -40,20 +40,21 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
+import InlineError from "@/components/ui/InlineError.vue";
 import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
 const props = withDefaults(
   defineProps<{
     items?: RelatedItem[];
     isLoading?: boolean;
-    error?: boolean;
+    error?: Error;
     basePath: string;
     emptyValueBehavior?: EmptyValueBehavior;
   }>(),
   {
     items: () => [],
     isLoading: false,
-    error: false,
+    error: undefined,
     emptyValueBehavior: () => ({
       action: "display",
       fallback: "No items available",

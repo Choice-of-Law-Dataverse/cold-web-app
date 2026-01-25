@@ -3,6 +3,7 @@
     <BaseDetailLayout
       table="Court Decisions"
       :loading="isLoading"
+      :error="error"
       :data="courtDecision || {}"
       :labels="courtDecisionLabels"
       :tooltips="courtDecisionTooltips"

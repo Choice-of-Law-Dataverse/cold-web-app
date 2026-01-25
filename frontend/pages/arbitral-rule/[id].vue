@@ -3,6 +3,7 @@
     <BaseDetailLayout
       table="Arbitral Rules"
       :loading="loading"
+      :error="error"
       :data="arbitralRule || {}"
       :labels="arbitralRuleLabels"
       :show-suggest-edit="true"
@@ -31,7 +32,9 @@ import { arbitralRuleLabels } from "@/config/labels";
 
 const route = useRoute();
 
-const { data: arbitralRule, isLoading: loading } = useArbitralRule(
-  computed(() => route.params.id as string),
-);
+const {
+  data: arbitralRule,
+  isLoading: loading,
+  error,
+} = useArbitralRule(computed(() => route.params.id as string));
 </script>

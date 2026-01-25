@@ -277,6 +277,7 @@ const MIN_SEARCH_LENGTH = 3;
 
 // Lazily load jurisdiction data - only fetch when user starts typing
 const jurisdictionLookup = useJurisdictionLookup(enableJurisdictionFetch);
+const { error: jurisdictionError } = jurisdictionLookup;
 
 function updateSuggestions() {
   // Start loading jurisdiction data on first input
@@ -290,7 +291,8 @@ function updateSuggestions() {
     return;
   }
 
-  if (!jurisdictionLookup.data.value) {
+  // Don't show suggestions if there's an API error or no data
+  if (jurisdictionError.value || !jurisdictionLookup.data.value) {
     suggestions.value = [];
     showSuggestions.value = false;
     return;
@@ -301,20 +303,20 @@ function updateSuggestions() {
     .split(/\s+/)
     .filter((word) => word.length >= MIN_SEARCH_LENGTH);
 
-  const filtered = jurisdictionLookup.findMatchingJurisdictions(words);
+  const filtered = jurisdictionLookup.findMatchingJurisdictions?.(words) ?? [];
 
   suggestions.value = filtered.slice(0, 5);
   showSuggestions.value = suggestions.value.length > 0;
 }
 
 function handleSuggestionClick(selected) {
-  const record = jurisdictionLookup.findJurisdictionByName(selected);
+  const record = jurisdictionLookup.findJurisdictionByName?.(selected);
   const keywords = record
     ? [
-        record.Name.toLowerCase().trim(),
+        record.Name?.toLowerCase().trim(),
         ...(record.alpha3Code ? [record.alpha3Code.toLowerCase().trim()] : []),
-      ]
-    : [selected.toLowerCase().trim()];
+      ].filter(Boolean)
+    : [selected?.toLowerCase().trim()].filter(Boolean);
 
   const remainingWords = searchText.value
     .split(/\s+/)
@@ -352,7 +354,13 @@ function handleSuggestionClick(selected) {
 }
 
 watch(searchText, () => {
-  updateSuggestions();
+  try {
+    updateSuggestions();
+  } catch (e) {
+    console.error("Error updating suggestions:", e);
+    suggestions.value = [];
+    showSuggestions.value = false;
+  }
 });
 
 function emitSearch() {

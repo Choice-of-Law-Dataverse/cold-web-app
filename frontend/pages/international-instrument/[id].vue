@@ -3,6 +3,7 @@
     <BaseDetailLayout
       table="International Instruments"
       :loading="loading"
+      :error="error"
       :data="internationalInstrument || {}"
       :labels="internationalInstrumentLabels"
       :tooltips="internationalInstrumentTooltips"
@@ -110,8 +111,11 @@ import { internationalInstrumentTooltips } from "@/config/tooltips";
 
 const route = useRoute();
 
-const { data: internationalInstrument, isLoading: loading } =
-  useInternationalInstrument(computed(() => route.params.id as string));
+const {
+  data: internationalInstrument,
+  isLoading: loading,
+  error,
+} = useInternationalInstrument(computed(() => route.params.id as string));
 
 const {
   data: provisions,
