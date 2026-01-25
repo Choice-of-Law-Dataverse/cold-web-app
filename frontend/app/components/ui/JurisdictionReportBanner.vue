@@ -1,7 +1,7 @@
 <template>
   <NuxtLink
-    v-if="jurisdictionCode && countryReportLink"
-    :to="countryReportLink"
+    v-if="jurisdictionCode && jurisdictionReportLink"
+    :to="jurisdictionReportLink"
     class="group from-cold-purple/5 via-cold-teal/5 to-cold-purple/5 hover:from-cold-purple/10 hover:via-cold-teal/10 hover:to-cold-purple/10 relative block overflow-hidden rounded-b-lg bg-gradient-to-r px-6 py-5 transition-all duration-300 sm:px-8"
   >
     <!-- Subtle animated gradient overlay -->
@@ -25,7 +25,7 @@
           <span
             class="text-cold-purple text-xs font-semibold tracking-wide uppercase"
           >
-            Country Report
+            Jurisdiction Report
           </span>
           <span
             class="group-hover:text-cold-purple text-sm font-semibold text-gray-700 transition-colors duration-300"
@@ -89,7 +89,7 @@ const questionId = computed(() => {
   return null;
 });
 
-const countryReportLink = computed(() => {
+const jurisdictionReportLink = computed(() => {
   if (!props.jurisdictionCode) return null;
   const baseLink = `/jurisdiction/${props.jurisdictionCode.toLowerCase()}`;
   if (questionId.value) {

@@ -7,7 +7,7 @@
     <div class="flex flex-col gap-4 p-4 sm:p-6">
       <h2 class="card-title">Court Decisions by Jurisdiction</h2>
       <p class="card-subtitle">
-        Explore countries with the highest case law volume
+        Explore jurisdictions with the highest case law volume
       </p>
 
       <div v-if="isLoading" class="loading-state">

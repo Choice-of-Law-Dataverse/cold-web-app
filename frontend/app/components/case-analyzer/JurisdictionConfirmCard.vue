@@ -35,10 +35,10 @@
         <JurisdictionSelectMenu
           v-else
           :model-value="selectedJurisdiction"
-          :countries="jurisdictions || []"
+          :jurisdictions="jurisdictions || []"
           placeholder="Select jurisdiction"
           @update:model-value="handleJurisdictionUpdate"
-          @country-selected="handleJurisdictionSelected"
+          @jurisdiction-selected="handleJurisdictionSelected"
         />
       </UFormField>
     </div>
