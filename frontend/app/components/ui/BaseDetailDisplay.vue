@@ -2,19 +2,6 @@
   <NotificationBanner
     v-if="showNotificationBanner"
     :notification-banner-message="notificationBannerMessage"
-    :fallback-message="fallbackMessage"
-    :icon="icon"
-  />
-
-  <NotificationBanner
-    v-else-if="
-      shouldShowBanner &&
-      (props.resultData?.Name || props.resultData?.['Jurisdictions'])
-    "
-    :jurisdiction-name="
-      props.resultData?.Name || props.resultData?.['Jurisdictions']
-    "
-    :fallback-message="fallbackMessage"
     :icon="icon"
   />
 
@@ -136,6 +123,11 @@
           <slot name="search-links" />
         </div>
       </div>
+      <!-- Contribute banner for uncovered jurisdictions -->
+      <ContributeBanner
+        v-if="shouldShowContributeBanner"
+        :jurisdiction-name="contributeBannerJurisdictionName"
+      />
       <!-- Footer slot for full-width content like country report banner -->
       <slot name="footer" />
     </UCard>
@@ -143,10 +135,11 @@
 </template>
 
 <script setup>
-import { useSlots } from "vue";
+import { useSlots, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useCoveredCountries } from "@/composables/useJurisdictions";
 import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
+import ContributeBanner from "@/components/ui/ContributeBanner.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -198,10 +191,6 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  fallbackMessage: {
-    type: String,
-    default: "",
-  },
   icon: {
     type: String,
     required: false,
@@ -247,6 +236,18 @@ watchEffect(() => {
       jurisdictionCode.value,
     );
   }
+});
+
+// Computed properties for contribute banner
+const shouldShowContributeBanner = computed(() => {
+  return (
+    shouldShowBanner.value &&
+    (props.resultData?.Name || props.resultData?.["Jurisdictions"])
+  );
+});
+
+const contributeBannerJurisdictionName = computed(() => {
+  return props.resultData?.Name || props.resultData?.["Jurisdictions"] || "";
 });
 
 const slots = useSlots();
