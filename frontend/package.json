@@ -6,23 +6,23 @@
     "node": "^22.x"
   },
   "scripts": {
-    "build": "nuxt build",
+    "build": "nuxt build --log-level silent",
     "check": "npm run format && npm run lint:fix && npm run typecheck && npm run test:run",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "start": "nuxt start",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
-    "format": "prettier --write .",
-    "format:check": "prettier --check .",
+    "lint": "eslint . --quiet",
+    "lint:fix": "eslint . --fix --quiet",
+    "format": "prettier --log-level silent --write .",
+    "format:check": "prettier --log-level silent --check .",
     "knip": "knip",
-    "typecheck": "vue-tsc --noEmit -p tsconfig.json",
+    "typecheck": "vue-tsc --noEmit --pretty false -p tsconfig.json",
     "test": "vitest",
     "test:ui": "vitest --ui",
-    "test:run": "vitest run",
-    "test:coverage": "vitest run --coverage"
+    "test:run": "vitest run --reporter=dot",
+    "test:coverage": "vitest run --reporter=dot --coverage"
   },
   "dependencies": {
     "@auth0/auth0-nuxt": "^1.0.0",
