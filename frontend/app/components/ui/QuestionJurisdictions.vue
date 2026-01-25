@@ -56,20 +56,20 @@
         >
           <div class="flex flex-wrap items-center gap-4">
             <NuxtLink
-              v-for="country in getCountriesForAnswer(answer)"
-              :key="country.code"
+              v-for="jurisdiction in getJurisdictionsForAnswer(answer)"
+              :key="jurisdiction.code"
               class="label-jurisdiction"
-              :to="`/question/${country.code}${questionSuffix}`"
+              :to="`/question/${jurisdiction.code}${questionSuffix}`"
             >
               <div class="flag-wrapper">
-                <img
-                  :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${country.code?.toLowerCase()}.svg`"
+                <JurisdictionFlag
+                  :iso3="jurisdiction.code"
                   class="item-flag"
-                  :alt="country.code + ' flag'"
+                  :alt="jurisdiction.code + ' flag'"
                 />
               </div>
 
-              {{ country.code }}
+              {{ jurisdiction.code }}
             </NuxtLink>
           </div>
         </DetailRow>
@@ -81,10 +81,11 @@
 <script setup lang="ts">
 import { ref, computed } from "vue";
 import {
-  useQuestionCountries,
-  type Country,
-} from "@/composables/useQuestionCountries";
+  useQuestionJurisdictions,
+  type Jurisdiction,
+} from "@/composables/useQuestionJurisdictions";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 const regions = [
   "All",
@@ -107,23 +108,25 @@ const {
   data: questionData,
   isLoading,
   error,
-} = useQuestionCountries(computed(() => props.questionSuffix));
+} = useQuestionJurisdictions(computed(() => props.questionSuffix));
 
 const answersWithJurisdictions = computed(() => {
   const answers = questionData.value?.answers || [];
-  return answers.filter((answer) => getCountriesForAnswer(answer).length > 0);
+  return answers.filter(
+    (answer) => getJurisdictionsForAnswer(answer).length > 0,
+  );
 });
 
 function selectRegion(region: string) {
   selectedRegion.value = region;
 }
 
-function getCountriesForAnswer(answer: string): Country[] {
-  const countries = questionData.value?.answerGroups?.get(answer) || [];
+function getJurisdictionsForAnswer(answer: string): Jurisdiction[] {
+  const jurisdictions = questionData.value?.answerGroups?.get(answer) || [];
   if (selectedRegion.value === "All") {
-    return countries;
+    return jurisdictions;
   }
-  return countries.filter((c) => c.region === selectedRegion.value);
+  return jurisdictions.filter((j) => j.region === selectedRegion.value);
 }
 </script>
 

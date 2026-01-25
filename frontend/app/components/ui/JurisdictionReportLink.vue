@@ -1,15 +1,15 @@
 <template>
-  <DetailRow label="Country Report" variant="jurisdiction" class="mb-4">
+  <DetailRow label="Jurisdiction Report" variant="jurisdiction" class="mb-4">
     <NuxtLink
-      v-if="countryReportLink"
-      :to="countryReportLink"
+      v-if="jurisdictionReportLink"
+      :to="jurisdictionReportLink"
       class="link-chip--neutral gap-2"
     >
-      <img
+      <JurisdictionFlag
         v-if="props.jurisdictionCode"
-        :src="`https://choiceoflaw.blob.core.windows.net/assets/flags/${props.jurisdictionCode.toLowerCase()}.svg`"
+        :iso3="props.jurisdictionCode"
+        size="sm"
         :alt="`${jurisdictionName} flag`"
-        class="h-4 w-4"
       />
       Full questionnaire for {{ jurisdictionName }}
     </NuxtLink>
@@ -21,6 +21,7 @@ import { computed, toRef } from "vue";
 import { useRoute } from "vue-router";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import { useJurisdiction } from "@/composables/useJurisdictions";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 const route = useRoute();
 
@@ -53,7 +54,7 @@ const questionId = computed(() => {
   return null;
 });
 
-const countryReportLink = computed(() => {
+const jurisdictionReportLink = computed(() => {
   if (!props.jurisdictionCode) return null;
   const baseLink = `/jurisdiction/${props.jurisdictionCode.toLowerCase()}`;
   if (questionId.value) {

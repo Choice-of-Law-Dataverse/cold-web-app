@@ -55,10 +55,10 @@
             <div v-else class="flex flex-col gap-4 md:flex-row md:items-center">
               <JurisdictionSelectMenu
                 v-model="selectedJurisdiction"
-                :countries="allJurisdictionsData || []"
+                :jurisdictions="allJurisdictionsData || []"
                 :excluded-codes="excludedJurisdictionCodes"
                 placeholder="Jurisdiction"
-                @country-selected="handleAddJurisdiction"
+                @jurisdiction-selected="handleAddJurisdiction"
               />
             </div>
           </div>

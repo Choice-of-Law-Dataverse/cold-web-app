@@ -12,15 +12,12 @@
     <!-- Custom item rendering with avatars -->
     <template #item="{ item }">
       <div class="flex items-center">
-        <template v-if="item.avatar?.src">
-          <img
-            :src="item.avatar.src"
-            :style="{
-              filter: item.hasCoverage ? undefined : 'grayscale(0.9)',
-            }"
-            class="mr-2 h-auto w-5 flex-shrink-0 object-contain"
-          />
-        </template>
+        <JurisdictionFlag
+          v-if="item.original?.alpha3Code"
+          :iso3="item.original.alpha3Code"
+          :faded="!item.hasCoverage"
+          class="mr-2"
+        />
         <span
           :style="{
             color: item.hasCoverage ? undefined : 'gray',
@@ -33,17 +30,12 @@
 
     <!-- Custom label rendering for selected value -->
     <template #leading>
-      <template v-if="internalSelected?.avatar?.src">
-        <img
-          :src="internalSelected.avatar.src"
-          :style="{
-            filter: hasCoverage(internalSelected?.original?.answerCoverage)
-              ? undefined
-              : 'grayscale(0.9)',
-          }"
-          class="mr-1.5 h-auto w-5 flex-shrink-0 object-contain"
-        />
-      </template>
+      <JurisdictionFlag
+        v-if="internalSelected?.original?.alpha3Code"
+        :iso3="internalSelected.original.alpha3Code"
+        :faded="!hasCoverage(internalSelected?.original?.answerCoverage)"
+        class="mr-1.5"
+      />
     </template>
   </USelectMenu>
 </template>
@@ -51,6 +43,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import type { JurisdictionOption } from "@/types/analyzer";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 interface SelectItem {
   label: string;
@@ -62,7 +55,7 @@ interface SelectItem {
 
 const props = withDefaults(
   defineProps<{
-    countries: JurisdictionOption[];
+    jurisdictions: JurisdictionOption[];
     placeholder?: string;
     excludedCodes?: Array<string | null | undefined>;
     disabled?: boolean;
@@ -76,9 +69,9 @@ const props = withDefaults(
   },
 );
 
-const availableCountries = computed(() => {
+const availableJurisdictions = computed(() => {
   if (!props.excludedCodes.length) {
-    return props.countries;
+    return props.jurisdictions;
   }
 
   const excludedSet = new Set(
@@ -87,25 +80,25 @@ const availableCountries = computed(() => {
       .filter((code): code is string => Boolean(code)),
   );
 
-  return props.countries.filter((country) => {
-    const code = country.alpha3Code;
+  return props.jurisdictions.filter((jurisdiction) => {
+    const code = jurisdiction.alpha3Code;
     return !code || !excludedSet.has(code.toUpperCase());
   });
 });
 
 const selectItems = computed<SelectItem[]>(() => {
-  return availableCountries.value.map((country) => ({
-    label: country.label,
-    value: country.alpha3Code || country.Name,
-    avatar: country.avatar ? { src: country.avatar } : undefined,
-    hasCoverage: hasCoverage(country.answerCoverage),
-    original: country,
+  return availableJurisdictions.value.map((jurisdiction) => ({
+    label: jurisdiction.label,
+    value: jurisdiction.alpha3Code || jurisdiction.Name,
+    avatar: jurisdiction.avatar ? { src: jurisdiction.avatar } : undefined,
+    hasCoverage: hasCoverage(jurisdiction.answerCoverage),
+    original: jurisdiction,
   }));
 });
 
 const emit = defineEmits<{
   (
-    event: "country-selected" | "update:modelValue",
+    event: "jurisdiction-selected" | "update:modelValue",
     value: JurisdictionOption | undefined,
   ): void;
 }>();
@@ -133,7 +126,7 @@ watch(
 const onInternalSelect = (value: SelectItem | undefined) => {
   const jurisdiction = value?.original;
   emit("update:modelValue", jurisdiction);
-  emit("country-selected", jurisdiction);
+  emit("jurisdiction-selected", jurisdiction);
 };
 
 const hasCoverage = (coverage?: number) => (coverage ?? 0) > 0;

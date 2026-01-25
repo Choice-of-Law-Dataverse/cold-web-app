@@ -7,7 +7,7 @@
     <div class="flex flex-col gap-4 p-4 sm:p-6">
       <h2 class="card-title">Court Decisions by Jurisdiction</h2>
       <p class="card-subtitle">
-        Explore countries with the highest case law volume
+        Explore jurisdictions with the highest case law volume
       </p>
 
       <div v-if="isLoading" class="loading-state">
@@ -33,9 +33,9 @@
                 :class="{ 'bar-hovered': hoveredIndex === index }"
                 :style="{ width: item.percentage + '%' }"
               >
-                <img
-                  v-if="item.flagUrl"
-                  :src="item.flagUrl"
+                <JurisdictionFlag
+                  v-if="item.alpha3"
+                  :iso3="item.alpha3"
                   :alt="item.jurisdiction"
                   class="bar-flag"
                 />
@@ -53,6 +53,7 @@
 import { ref, computed } from "vue";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
 import InlineError from "@/components/ui/InlineError.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import {
   useJurisdictionChart,
   useJurisdictions,
@@ -73,10 +74,8 @@ const jurisdictionLookup = computed(() => {
   return lookup;
 });
 
-function getFlagUrl(jurisdictionName: string) {
-  const alpha3 = jurisdictionLookup.value.get(jurisdictionName.toLowerCase());
-  if (!alpha3) return null;
-  return `https://choiceoflaw.blob.core.windows.net/assets/flags/${alpha3}.svg`;
+function getAlpha3(jurisdictionName: string): string | null {
+  return jurisdictionLookup.value.get(jurisdictionName.toLowerCase()) ?? null;
 }
 
 const chartData = computed(() => {
@@ -92,7 +91,7 @@ const chartData = computed(() => {
       count,
       percentage: (count / maxValue) * 100,
       url: links[index],
-      flagUrl: getFlagUrl(jurisdiction),
+      alpha3: getAlpha3(jurisdiction),
     };
   });
 });

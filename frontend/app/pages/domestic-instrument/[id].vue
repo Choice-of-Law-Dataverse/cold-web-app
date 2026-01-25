@@ -115,7 +115,7 @@
 
       <template #footer>
         <LastModified :date="legalInstrument?.['Last Modified']" />
-        <LazyCountryReportBanner
+        <LazyJurisdictionReportBanner
           :jurisdiction-code="legalInstrument?.['Jurisdictions Alpha-3 Code']"
         />
       </template>
@@ -146,8 +146,8 @@ import { getSortedProvisionIds } from "@/utils/provision-sorting";
 import { domesticInstrumentLabels } from "@/config/labels";
 import { domesticInstrumentTooltips } from "@/config/tooltips";
 
-const LazyCountryReportBanner = defineAsyncComponent(
-  () => import("@/components/ui/CountryReportBanner.vue"),
+const LazyJurisdictionReportBanner = defineAsyncComponent(
+  () => import("@/components/ui/JurisdictionReportBanner.vue"),
 );
 
 const route = useRoute();

@@ -10,10 +10,10 @@
         <div class="w-full md:w-auto">
           <JurisdictionSelectMenu
             v-model="selectedJurisdiction"
-            :countries="availableJurisdictions"
+            :jurisdictions="availableJurisdictions"
             :disabled="disabled"
             placeholder="Jurisdiction"
-            @country-selected="onJurisdictionSelected"
+            @jurisdiction-selected="onJurisdictionSelected"
           />
         </div>
       </div>

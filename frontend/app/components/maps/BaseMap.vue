@@ -224,9 +224,12 @@ const mapOptions = computed<MapOptions>(() => {
 // Get style for a feature based on coverage data
 const getFeatureStyle = (feature: GeoJsonFeature): PathOptions => {
   const isoCode = feature.properties.iso_a3_eh;
-  const coverage = answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
-  const isCovered = coverage > 0;
-  const fillOpacity = isCovered ? 0.25 + (coverage / 100) * 0.75 : 0.25;
+  const answerCoverage =
+    answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
+  const isCovered = answerCoverage > 0;
+
+  // Calculate opacity based on answer coverage (0-100 maps to 0.1-1.0)
+  const fillOpacity = isCovered ? 0.1 + (answerCoverage / 100) * 0.9 : 1;
 
   return {
     fillColor: isCovered
@@ -264,13 +267,17 @@ const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
 
   layer.on("mouseover", () => {
     (layer as Path).setStyle(hoverStyle);
-    hoveredCountry.value = {
-      name,
-      coverage: isCovered
-        ? `${coverage.toFixed(1)}% coverage`
-        : "No data available",
-      style: isCovered ? `color: var(--color-cold-purple);` : `color: #c3c3c3;`,
-    };
+
+    const infoControl = document.getElementById("info-control");
+    if (infoControl) {
+      const displayText = isCovered
+        ? `${coverage.toFixed(1)}%`
+        : "No data available";
+      infoControl.innerHTML = `
+        <h2 class="text-[var(--color-cold-night)]">${name}</h2>
+        <h4>${displayText}</h4>
+      `;
+    }
   });
 
   layer.on("mouseout", () => {
