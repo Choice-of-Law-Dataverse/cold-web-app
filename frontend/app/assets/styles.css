@@ -180,6 +180,12 @@
   }
 }
 
+/* Scroll margin for hash navigation with sticky header */
+/* Uses scrolled nav height since hash navigation typically happens after page load */
+[id] {
+  scroll-margin-top: calc(var(--nav-height-scrolled) + 1rem);
+}
+
 /* Fonts ----------------------------------------------- */
 
 body {
