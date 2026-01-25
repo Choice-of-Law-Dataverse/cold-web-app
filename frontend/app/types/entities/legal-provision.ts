@@ -16,8 +16,7 @@ interface BaseLegalProvisionResponse {
 }
 
 /** Domestic Legal Provisions API response */
-export interface DomesticLegalProvisionResponse
-  extends BaseLegalProvisionResponse {
+export interface DomesticLegalProvisionResponse extends BaseLegalProvisionResponse {
   Name?: string;
   Article?: string;
   "Full Text of the Provision (Original Language)"?: string;
@@ -34,8 +33,7 @@ export interface DomesticLegalProvisionResponse
 }
 
 /** Regional Legal Provisions API response */
-export interface RegionalLegalProvisionResponse
-  extends BaseLegalProvisionResponse {
+export interface RegionalLegalProvisionResponse extends BaseLegalProvisionResponse {
   "Title of the Provision"?: string;
   "Full Text"?: string;
   Provision?: string;
@@ -47,8 +45,7 @@ export interface RegionalLegalProvisionResponse
 }
 
 /** International Legal Provisions API response */
-export interface InternationalLegalProvisionResponse
-  extends BaseLegalProvisionResponse {
+export interface InternationalLegalProvisionResponse extends BaseLegalProvisionResponse {
   "Title of the Provision"?: string;
   "Full Text"?: string;
   Provision?: string;

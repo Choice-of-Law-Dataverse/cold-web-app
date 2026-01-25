@@ -45,8 +45,7 @@ export interface InternationalInstrumentResponse {
 }
 
 /** Processed type with normalized fields */
-export interface InternationalInstrument
-  extends InternationalInstrumentResponse {
+export interface InternationalInstrument extends InternationalInstrumentResponse {
   "Title (in English)": string;
   URL: string;
 }
