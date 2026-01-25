@@ -15,9 +15,10 @@
       size="lg"
       :items="options"
       value-key="label"
-      :search-input="{ placeholder: 'Search...' }"
+      :search-input="searchable ? { placeholder: 'Search...' } : false"
       :multiple="multiple"
       :loading="loading"
+      :content="!searchable ? { class: 'no-scroll-dropdown' } : undefined"
     >
       <template #item="{ item }">
         <div class="flex items-center">
@@ -151,6 +152,7 @@ const props = defineProps({
   loading: { type: Boolean, default: false },
   highlightJurisdictions: { type: Boolean, default: false },
   placeholder: { type: String, default: "" },
+  searchable: { type: Boolean, default: true },
 });
 
 const emit = defineEmits(["update:modelValue"]);

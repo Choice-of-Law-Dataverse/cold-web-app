@@ -467,6 +467,14 @@ onUnmounted(() => {
   window.removeEventListener("keydown", handleGlobalKeydown);
 });
 
+// Watch route.query.q to keep searchText in sync with URL
+watch(
+  () => route.query.q,
+  (newQ) => {
+    searchText.value = newQ || "";
+  },
+);
+
 onMounted(() => {
   checkScreenSize();
 

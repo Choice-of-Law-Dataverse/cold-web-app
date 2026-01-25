@@ -17,6 +17,7 @@
         :options="themeOptions"
         class="w-full flex-shrink-0 lg:w-60"
         :placeholder="'Themes'"
+        :searchable="false"
       />
       <SearchFilters
         v-model="currentTypeFilter"
@@ -24,6 +25,7 @@
         class="w-full flex-shrink-0 lg:w-60"
         :multiple="false"
         :placeholder="'Types'"
+        :searchable="false"
       />
       <UButton
         v-if="hasActiveFilters"
@@ -266,7 +268,12 @@ const handleSortChange = async (val) => {
 
 const resetFilters = async () => {
   resetFilterValues();
-  await updateFilters({ sortBy: route.query.sortBy || "relevance" });
+  // Clear all filters and search query, only keep sortBy
+  emit("update:filters", { sortBy: route.query.sortBy || "relevance" });
+  await router.push({
+    path: route.path,
+    query: { sortBy: route.query.sortBy || "relevance" },
+  });
 };
 
 const updateSelectWidth = () => {
