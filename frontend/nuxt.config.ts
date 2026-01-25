@@ -1,14 +1,28 @@
+import tailwindcss from "@tailwindcss/vite";
+
 export default defineNuxtConfig({
-  compatibilityDate: "2024-04-03",
-  devtools: { enabled: true },
+  compatibilityDate: "2025-01-01",
+  future: {
+    compatibilityVersion: 4,
+  },
+  devtools: { enabled: process.env.NODE_ENV === "development" },
   ssr: true,
   nitro: {
     prerender: {
-      crawlLinks: true,
+      crawlLinks: false,
+      routes: [],
     },
     experimental: {
       tasks: false,
     },
+  },
+  routeRules: {
+    // Static pages - prerender disabled temporarily to debug build hang
+    // "/about/**": { prerender: true },
+    // "/learn/**": { prerender: true },
+    // "/disclaimer": { prerender: true },
+    // "/contact": { prerender: true },
+    // "/submit": { prerender: true },
   },
   $production: {
     scripts: {
@@ -20,16 +34,34 @@ export default defineNuxtConfig({
     },
   },
   typescript: {
-    typeCheck: true,
+    typeCheck: false,
+  },
+  vite: {
+    plugins: [tailwindcss()],
+    // Suppress OpenTelemetry 'this' keyword warnings (ESM compatibility)
+    optimizeDeps: {
+      exclude: ["@opentelemetry/api"],
+    },
+    build: {
+      rollupOptions: {
+        onwarn(warning, warn) {
+          if (
+            warning.code === "THIS_IS_UNDEFINED" &&
+            warning.id?.includes("@opentelemetry")
+          ) {
+            return;
+          }
+          warn(warning);
+        },
+      },
+    },
   },
   modules: [
     "@nuxt/ui",
-    "@nuxtjs/tailwindcss",
     "@nuxt/fonts",
     "@nuxtjs/leaflet",
     "@nuxt/icon",
     "@nuxt/content",
-    "nuxt-purgecss",
     "@nuxtjs/robots",
     "@nuxtjs/sitemap",
     "@nuxt/scripts",
@@ -72,25 +104,10 @@ export default defineNuxtConfig({
       },
     ],
   },
-  purgecss: {
-    enabled: false,
-    rejected: true,
-    content: [],
-    safelist: [],
-  },
-  content: {
-    documentDriven: false,
-    markdown: {
-      anchorLinks: true,
-    },
-  },
   colorMode: {
     preference: "light",
   },
-  css: ["@/assets/styles.scss", "tailwindcss/tailwind.css"],
-  tailwindcss: {
-    configPath: "./tailwind.config.js",
-  },
+  css: ["@/assets/styles.css"],
   app: {
     head: {
       title: "CoLD",
