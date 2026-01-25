@@ -5,7 +5,7 @@
       :to="countryReportLink"
       class="link-chip--neutral gap-2"
     >
-      <CountryFlag
+      <JurisdictionFlag
         v-if="props.jurisdictionCode"
         :iso3="props.jurisdictionCode"
         size="sm"
@@ -21,7 +21,7 @@ import { computed, toRef } from "vue";
 import { useRoute } from "vue-router";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import { useJurisdiction } from "@/composables/useJurisdictions";
-import CountryFlag from "@/components/ui/CountryFlag.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 const route = useRoute();
 

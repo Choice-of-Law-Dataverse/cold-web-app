@@ -21,7 +21,7 @@
     >
       <template #item="{ item }">
         <div class="flex items-center">
-          <CountryFlag
+          <JurisdictionFlag
             v-if="showAvatars && isObjectOptions && item.alpha3Code"
             :iso3="item.alpha3Code"
             :faded="!isCovered(item.alpha3Code)"
@@ -44,7 +44,7 @@
               v-if="showAvatars"
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
             >
-              <CountryFlag
+              <JurisdictionFlag
                 v-if="internalValue.alpha3Code"
                 :iso3="internalValue.alpha3Code"
                 :faded="!isCovered(internalValue.alpha3Code)"
@@ -93,7 +93,7 @@
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
             >
               <template v-for="(selected, index) in internalValue" :key="index">
-                <CountryFlag
+                <JurisdictionFlag
                   v-if="selected.alpha3Code"
                   :iso3="selected.alpha3Code"
                   :faded="!isCovered(selected.alpha3Code)"
@@ -141,7 +141,7 @@
 <script setup>
 import { computed } from "vue";
 import { useCoveredCountries } from "@/composables/useJurisdictions";
-import CountryFlag from "@/components/ui/CountryFlag.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 const props = defineProps({
   options: { type: Array, required: true },

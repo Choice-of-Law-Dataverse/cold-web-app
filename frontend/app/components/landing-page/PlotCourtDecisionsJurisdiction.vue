@@ -33,7 +33,7 @@
                 :class="{ 'bar-hovered': hoveredIndex === index }"
                 :style="{ width: item.percentage + '%' }"
               >
-                <CountryFlag
+                <JurisdictionFlag
                   v-if="item.alpha3"
                   :iso3="item.alpha3"
                   :alt="item.jurisdiction"
@@ -53,7 +53,7 @@
 import { ref, computed } from "vue";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
 import InlineError from "@/components/ui/InlineError.vue";
-import CountryFlag from "@/components/ui/CountryFlag.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import {
   useJurisdictionChart,
   useJurisdictions,

@@ -20,7 +20,7 @@ vi.mock("@/composables/useQuestionCountries", () => ({
   }),
 }));
 
-// Mock useCoveredCountries for CountryFlag component
+// Mock useCoveredCountries for JurisdictionFlag component
 vi.mock("@/composables/useJurisdictions", () => ({
   useCoveredCountries: () => ({
     data: ref(new Set<string>()),

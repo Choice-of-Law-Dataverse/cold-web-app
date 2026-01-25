@@ -12,7 +12,7 @@
     <!-- Custom item rendering with avatars -->
     <template #item="{ item }">
       <div class="flex items-center">
-        <CountryFlag
+        <JurisdictionFlag
           v-if="item.original?.alpha3Code"
           :iso3="item.original.alpha3Code"
           :faded="!item.hasCoverage"
@@ -30,7 +30,7 @@
 
     <!-- Custom label rendering for selected value -->
     <template #leading>
-      <CountryFlag
+      <JurisdictionFlag
         v-if="internalSelected?.original?.alpha3Code"
         :iso3="internalSelected.original.alpha3Code"
         :faded="!hasCoverage(internalSelected?.original?.answerCoverage)"
@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import type { JurisdictionOption } from "@/types/analyzer";
-import CountryFlag from "@/components/ui/CountryFlag.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 interface SelectItem {
   label: string;

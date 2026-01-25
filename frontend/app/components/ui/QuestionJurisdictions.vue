@@ -62,7 +62,7 @@
               :to="`/question/${country.code}${questionSuffix}`"
             >
               <div class="flag-wrapper">
-                <CountryFlag
+                <JurisdictionFlag
                   :iso3="country.code"
                   class="item-flag"
                   :alt="country.code + ' flag'"
@@ -85,7 +85,7 @@ import {
   type Country,
 } from "@/composables/useQuestionCountries";
 import DetailRow from "@/components/ui/DetailRow.vue";
-import CountryFlag from "@/components/ui/CountryFlag.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 const regions = [
   "All",

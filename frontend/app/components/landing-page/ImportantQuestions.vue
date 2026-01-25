@@ -88,7 +88,7 @@
                           class="country-item label-jurisdiction country-link-flex text-cold-purple"
                           :to="`/question/${country.code}${currentSuffix}`"
                         >
-                          <CountryFlag
+                          <JurisdictionFlag
                             :iso3="country.code"
                             size="xs"
                             class="mr-1.5 mb-0.5"
@@ -155,7 +155,7 @@
 
 <script setup>
 import { ref, onMounted, computed, nextTick, onUnmounted, watch } from "vue";
-import CountryFlag from "@/components/ui/CountryFlag.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import { useQuestionCountries } from "@/composables/useQuestionCountries";
 
 const answers = ["Yes", "No"];

@@ -22,7 +22,7 @@
             class="landing-item-button type-court-decision w-full"
           >
             <div class="flag-wrapper">
-              <CountryFlag
+              <JurisdictionFlag
                 :iso3="decision['Jurisdictions Alpha-3 Code']"
                 class="item-flag"
               />
@@ -47,7 +47,7 @@
 <script setup>
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
 import InlineError from "@/components/ui/InlineError.vue";
-import CountryFlag from "@/components/ui/CountryFlag.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import { useLeadingCases } from "@/composables/useFullTable";
 import { formatYear } from "@/utils/format";
 

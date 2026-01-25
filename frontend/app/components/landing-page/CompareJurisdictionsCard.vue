@@ -19,7 +19,7 @@
         >
           <div class="comparison-row">
             <div class="comparison-side">
-              <CountryFlag
+              <JurisdictionFlag
                 :iso3="comparison.left"
                 size="lg"
                 :alt="`${comparison.left} flag`"
@@ -30,7 +30,7 @@
             <span class="comparison-vs">vs</span>
 
             <div class="comparison-side">
-              <CountryFlag
+              <JurisdictionFlag
                 :iso3="comparison.right"
                 size="lg"
                 :alt="`${comparison.right} flag`"
@@ -45,7 +45,7 @@
 </template>
 
 <script setup>
-import CountryFlag from "@/components/ui/CountryFlag.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 defineProps({
   title: { type: String, default: "Compare Jurisdictions" },

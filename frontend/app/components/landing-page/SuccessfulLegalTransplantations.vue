@@ -24,7 +24,7 @@
             class="landing-item-button type-instrument w-full"
           >
             <div class="flag-wrapper">
-              <CountryFlag
+              <JurisdictionFlag
                 :iso3="instrument['Jurisdictions Alpha-3 Code']"
                 class="item-flag"
               />
@@ -50,7 +50,7 @@
 import { ref } from "vue";
 import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
 import InlineError from "@/components/ui/InlineError.vue";
-import CountryFlag from "@/components/ui/CountryFlag.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import { useDomesticInstruments } from "@/composables/useDomesticInstruments";
 import { formatYear } from "@/utils/format";
 

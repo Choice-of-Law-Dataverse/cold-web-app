@@ -32,7 +32,7 @@
           :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString).replace(/%20/g, '+')}`"
         >
           <span class="hover-flag">
-            <CountryFlag
+            <JurisdictionFlag
               :iso3="getJurisdictionISO(jurisdictionString)"
               class="flag-icon"
             />
@@ -264,7 +264,7 @@ import { onMounted, ref, computed, watch, defineAsyncComponent } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
-import CountryFlag from "@/components/ui/CountryFlag.vue";
+import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 const LazyCiteModal = defineAsyncComponent(
   () => import("@/components/ui/CiteModal.vue"),
