@@ -1,8 +1,8 @@
 <template>
-  <DetailRow label="Country Report" variant="jurisdiction" class="mb-4">
+  <DetailRow label="Jurisdiction Report" variant="jurisdiction" class="mb-4">
     <NuxtLink
-      v-if="countryReportLink"
-      :to="countryReportLink"
+      v-if="jurisdictionReportLink"
+      :to="jurisdictionReportLink"
       class="link-chip--neutral gap-2"
     >
       <JurisdictionFlag
@@ -54,7 +54,7 @@ const questionId = computed(() => {
   return null;
 });
 
-const countryReportLink = computed(() => {
+const jurisdictionReportLink = computed(() => {
   if (!props.jurisdictionCode) return null;
   const baseLink = `/jurisdiction/${props.jurisdictionCode.toLowerCase()}`;
   if (questionId.value) {

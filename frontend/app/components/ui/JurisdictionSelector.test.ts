@@ -101,7 +101,7 @@ describe("JurisdictionSelector", () => {
     const selectMenu = wrapper.findComponent({
       name: "JurisdictionSelectMenu",
     });
-    await selectMenu.vm.$emit("country-selected", {
+    await selectMenu.vm.$emit("jurisdiction-selected", {
       name: "Germany",
       alpha3Code: "DEU",
     });
@@ -124,7 +124,7 @@ describe("JurisdictionSelector", () => {
     const selectMenu = wrapper.findComponent({
       name: "JurisdictionSelectMenu",
     });
-    await selectMenu.vm.$emit("country-selected", { name: "Invalid" });
+    await selectMenu.vm.$emit("jurisdiction-selected", { name: "Invalid" });
 
     expect(wrapper.emitted("jurisdiction-selected")).toBeFalsy();
   });

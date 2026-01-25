@@ -72,38 +72,38 @@
                     Error loading jurisdictions
                   </div>
                   <div
-                    v-else-if="countries.length"
-                    class="countries-scroll countries-scroll-fade-container mt-2"
+                    v-else-if="jurisdictions.length"
+                    class="jurisdictions-scroll jurisdictions-scroll-fade-container mt-2"
                     style="position: relative"
                   >
-                    <div class="countries-lines">
+                    <div class="jurisdictions-lines">
                       <div
-                        v-for="(line, li) in countriesLines"
+                        v-for="(line, li) in jurisdictionsLines"
                         :key="li"
-                        class="countries-line"
+                        class="jurisdictions-line"
                       >
                         <NuxtLink
-                          v-for="country in line"
-                          :key="country.code"
-                          class="country-item label-jurisdiction country-link-flex text-cold-purple"
-                          :to="`/question/${country.code}${currentSuffix}`"
+                          v-for="jurisdiction in line"
+                          :key="jurisdiction.code"
+                          class="jurisdiction-item label-jurisdiction jurisdiction-link-flex text-cold-purple"
+                          :to="`/question/${jurisdiction.code}${currentSuffix}`"
                         >
                           <JurisdictionFlag
-                            :iso3="country.code"
+                            :iso3="jurisdiction.code"
                             size="xs"
                             class="mr-1.5 mb-0.5"
-                            :alt="country.code + ' flag'"
+                            :alt="jurisdiction.code + ' flag'"
                           />
-                          {{ country.name }}
+                          {{ jurisdiction.name }}
                         </NuxtLink>
                       </div>
                     </div>
                     <div
-                      class="fade-out fade-out-countries countries-fade-fixed"
+                      class="fade-out fade-out-jurisdictions jurisdictions-fade-fixed"
                     />
-                    <!-- left-side fade for countries -->
+                    <!-- left-side fade for jurisdictions -->
                     <div
-                      class="fade-out fade-out-countries countries-fade-fixed-left"
+                      class="fade-out fade-out-jurisdictions jurisdictions-fade-fixed-left"
                     />
                   </div>
                   <div v-else class="copy mt-4">
@@ -156,7 +156,7 @@
 <script setup>
 import { ref, onMounted, computed, nextTick, onUnmounted, watch } from "vue";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
-import { useQuestionCountries } from "@/composables/useQuestionCountries";
+import { useQuestionJurisdictions } from "@/composables/useQuestionJurisdictions";
 
 const answers = ["Yes", "No"];
 const regions = [
@@ -178,7 +178,7 @@ const props = defineProps({
 
 const selectedAnswer = ref("Yes");
 const selectedRegion = ref("All");
-const countriesLines = ref([]);
+const jurisdictionsLines = ref([]);
 const titleRef = ref(null);
 const rowsCount = ref(3);
 
@@ -191,9 +191,9 @@ const {
   data: questionData,
   isLoading,
   error,
-} = useQuestionCountries(currentSuffix, selectedAnswer, selectedRegion);
+} = useQuestionJurisdictions(currentSuffix, selectedAnswer, selectedRegion);
 
-const countries = computed(() => questionData.value?.countries || []);
+const jurisdictions = computed(() => questionData.value?.jurisdictions || []);
 const questionTitle = computed(
   () => questionData.value?.questionTitle || "Missing Question",
 );
@@ -216,14 +216,17 @@ function selectRegion(region) {
 }
 
 watch(
-  countries,
-  async (newCountries) => {
-    if (newCountries && newCountries.length > 0) {
+  jurisdictions,
+  async (newJurisdictions) => {
+    if (newJurisdictions && newJurisdictions.length > 0) {
       await nextTick();
       computeRows();
-      countriesLines.value = splitIntoLines(newCountries, rowsCount.value);
+      jurisdictionsLines.value = splitIntoLines(
+        newJurisdictions,
+        rowsCount.value,
+      );
     } else {
-      countriesLines.value = [];
+      jurisdictionsLines.value = [];
     }
   },
   { immediate: true },
@@ -240,7 +243,7 @@ onUnmounted(() => {
 
 function computeRows() {
   // Measure rendered title height to determine how many text lines it takes.
-  // If the title occupies 1 line, allow 4 country rows; otherwise keep 3.
+  // If the title occupies 1 line, allow 4 jurisdiction rows; otherwise keep 3.
   const el = titleRef.value;
   if (!el) {
     rowsCount.value = 3;
@@ -301,19 +304,19 @@ function splitIntoLines(items, rows) {
   display: none; /* Chrome, Safari, Opera */
 }
 
-.countries-scroll {
+.jurisdictions-scroll {
   overflow-x: hidden; /* outer acts as viewport */
   overflow-y: hidden;
   position: relative;
 }
 
-.countries-scroll-fade-container {
+.jurisdictions-scroll-fade-container {
   --fade-width: 20px;
   --scroll-padding-buffer: 100px; /* space to clear fade */
   --scroll-tail-buffer: 200px; /* extra empty space AFTER last item */
 }
 
-.countries-lines {
+.jurisdictions-lines {
   display: flex;
   flex-direction: column;
   gap: 0.75em; /* tighter horizontal spacing within each row */
@@ -324,19 +327,19 @@ function splitIntoLines(items, rows) {
   margin-right: 0 !important;
 }
 
-.countries-lines::-webkit-scrollbar {
+.jurisdictions-lines::-webkit-scrollbar {
   display: none;
 }
 
-/* Spacer to allow final country to clear the fade overlay */
-.countries-lines::after {
+/* Spacer to allow final jurisdiction to clear the fade overlay */
+.jurisdictions-lines::after {
   content: "";
   flex: 0 0 auto;
   width: calc(var(--fade-width) + var(--scroll-tail-buffer));
   height: 1px;
 }
 
-.countries-line {
+.jurisdictions-line {
   display: inline-flex;
   gap: 0.1em;
 }
@@ -365,7 +368,7 @@ function splitIntoLines(items, rows) {
   height: 2.2em;
   right: 0;
 }
-.fade-out-countries {
+.fade-out-jurisdictions {
   height: 100%;
   right: 0;
 }
@@ -381,7 +384,7 @@ function splitIntoLines(items, rows) {
   z-index: 10;
   background: linear-gradient(to right, white, transparent);
 }
-.countries-fade-fixed-left {
+.jurisdictions-fade-fixed-left {
   left: 0;
   right: auto;
   top: 0;
@@ -391,14 +394,14 @@ function splitIntoLines(items, rows) {
   z-index: 10;
   background: linear-gradient(to right, white, transparent);
 }
-.countries-scroll-fade-container {
+.jurisdictions-scroll-fade-container {
   position: relative;
   overflow: hidden; /* Ensure the fade-out stays fixed */
 }
-.countries-lines {
+.jurisdictions-lines {
   overflow-x: auto; /* Allow scrolling within the container */
 }
-.countries-fade-fixed {
+.jurisdictions-fade-fixed {
   position: absolute;
   top: 0;
   right: 0;
@@ -442,7 +445,7 @@ function splitIntoLines(items, rows) {
 }
 .card-container {
   position: relative;
-  /* Make the card container a consistent width so internal content (number of countries)
+  /* Make the card container a consistent width so internal content (number of jurisdictions)
      doesn't change the overall component width. It remains centered and responsive. */
   display: block;
   width: 100%;
@@ -475,13 +478,13 @@ function splitIntoLines(items, rows) {
   min-width: 0; /* allow card to shrink within its container and prevent children from forcing expansion */
 }
 /* Prevent internal flex children from growing the card beyond its max-width */
-.countries-lines,
-.countries-line {
+.jurisdictions-lines,
+.jurisdictions-line {
   max-width: 100%;
   min-width: 0;
 }
-.country-item {
-  white-space: nowrap; /* keep country label and flag on one line */
+.jurisdiction-item {
+  white-space: nowrap; /* keep jurisdiction label and flag on one line */
   display: inline-flex;
   align-items: center;
 }

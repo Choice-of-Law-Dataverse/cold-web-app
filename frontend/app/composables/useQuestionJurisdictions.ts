@@ -2,7 +2,7 @@ import { computed, type Ref } from "vue";
 import { useFullTableWithFilters } from "@/composables/useFullTable";
 import type { AnswerResponse } from "@/types/entities/answer";
 
-export interface Country {
+export interface Jurisdiction {
   name: string;
   code: string;
   region: string;
@@ -10,13 +10,13 @@ export interface Country {
 
 export interface AnswerGroup {
   answer: string;
-  countries: Country[];
+  jurisdictions: Jurisdiction[];
 }
 
-export interface QuestionCountriesData {
+export interface QuestionJurisdictionsData {
   questionTitle: string;
   answers: string[];
-  answerGroups: Map<string, Country[]>;
+  answerGroups: Map<string, Jurisdiction[]>;
 }
 
 const EXCLUDED_ANSWERS = new Set([
@@ -29,7 +29,7 @@ const PRIORITY_ORDER = ["Yes", "No", "Not applicable"];
 function processAnswers(
   records: AnswerResponse[],
   suffix: string,
-): QuestionCountriesData {
+): QuestionJurisdictionsData {
   // Filter to relevant records
   const relevantRecords = records.filter(
     (item) =>
@@ -43,7 +43,7 @@ function processAnswers(
   }
 
   const questionTitle = relevantRecords[0]?.Question || "Missing Question";
-  const answerGroups = new Map<string, Country[]>();
+  const answerGroups = new Map<string, Jurisdiction[]>();
   const uniqueAnswers = new Set<string>();
 
   for (const record of relevantRecords) {
@@ -65,9 +65,9 @@ function processAnswers(
     });
   }
 
-  // Sort countries within each answer group
-  for (const countries of answerGroups.values()) {
-    countries.sort((a, b) => a.name.localeCompare(b.name));
+  // Sort jurisdictions within each answer group
+  for (const jurisdictions of answerGroups.values()) {
+    jurisdictions.sort((a, b) => a.name.localeCompare(b.name));
   }
 
   // Sort answers with priority order first
@@ -85,7 +85,7 @@ function processAnswers(
   return { questionTitle, answers: sortedAnswers, answerGroups };
 }
 
-export function useQuestionCountries(suffix: Ref<string>) {
+export function useQuestionJurisdictions(suffix: Ref<string>) {
   const filters = computed(() => [
     { column: "ID" as const, value: suffix.value },
   ]);
@@ -93,7 +93,7 @@ export function useQuestionCountries(suffix: Ref<string>) {
   return useFullTableWithFilters<
     "Answers",
     AnswerResponse,
-    QuestionCountriesData
+    QuestionJurisdictionsData
   >("Answers", filters, {
     select: (data) => processAnswers(data, suffix.value),
     enabled: computed(() => !!suffix.value),

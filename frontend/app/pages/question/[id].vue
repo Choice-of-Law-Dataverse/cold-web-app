@@ -61,7 +61,7 @@
 
       <template #footer>
         <LastModified :date="answerData?.['Last Modified']" />
-        <LazyCountryReportBanner
+        <LazyJurisdictionReportBanner
           :jurisdiction-code="answerData?.JurisdictionCode"
         />
       </template>
@@ -95,8 +95,8 @@ import LastModified from "@/components/ui/LastModified.vue";
 import { questionLabels } from "@/config/labels";
 import { questionTooltips } from "@/config/tooltips";
 
-const LazyCountryReportBanner = defineAsyncComponent(
-  () => import("@/components/ui/CountryReportBanner.vue"),
+const LazyJurisdictionReportBanner = defineAsyncComponent(
+  () => import("@/components/ui/JurisdictionReportBanner.vue"),
 );
 const LazyRelatedLiterature = defineAsyncComponent(
   () => import("@/components/literature/RelatedLiterature.vue"),
