@@ -58,15 +58,15 @@ const flagUrl = computed(() => {
 const sizeClasses = computed(() => {
   switch (props.size) {
     case "xs":
-      return "h-3 w-auto flex-shrink-0 object-contain";
+      return "w-5 h-auto flex-shrink-0 object-contain";
     case "sm":
-      return "h-4 w-auto flex-shrink-0 object-contain";
+      return "w-6 h-auto flex-shrink-0 object-contain";
     case "md":
-      return "h-5 w-auto flex-shrink-0 object-contain";
+      return "w-7 h-auto flex-shrink-0 object-contain";
     case "lg":
-      return "h-6 w-auto flex-shrink-0 object-contain";
+      return "w-8 h-auto flex-shrink-0 object-contain";
     default:
-      return "h-5 w-auto flex-shrink-0 object-contain";
+      return "w-7 h-auto flex-shrink-0 object-contain";
   }
 });
 
