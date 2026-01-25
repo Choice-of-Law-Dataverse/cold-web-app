@@ -14,19 +14,12 @@
         >
           {{ item.title }}
         </NuxtLink>
-        <button
-          v-if="items.length > 10"
-          class="link-chip--action"
-          @click="showAll = !showAll"
-        >
-          {{ showAll ? "Show less" : "Show more" }}
-          <Icon
-            name="material-symbols:expand-more"
-            class="ml-0.5 text-base transition-transform duration-150"
-            :class="{ 'rotate-180': showAll }"
-          />
-        </button>
       </div>
+      <ShowMoreLess
+        v-if="items.length > 10"
+        v-model:is-expanded="showAll"
+        button-class="link-chip--action"
+      />
     </div>
     <p
       v-else-if="emptyValueBehavior.action === 'display'"
@@ -41,6 +34,7 @@
 import { ref, computed } from "vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
+import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
 const props = withDefaults(

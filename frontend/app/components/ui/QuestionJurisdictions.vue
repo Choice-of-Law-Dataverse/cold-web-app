@@ -1,11 +1,15 @@
 <template>
-  <UCard class="cold-ucard">
-    <div class="flex flex-col gap-4">
+  <UCard
+    class="cold-ucard overflow-hidden"
+    :ui="{
+      body: '!p-0',
+      header: 'border-b-0 px-4 py-5 sm:px-6',
+    }"
+  >
+    <template #header>
       <div class="flex justify-between">
-        <h3 class="comparison-title mb-4 text-xl font-semibold md:text-2xl">
-          Comparison
-        </h3>
-        <span class="mb-4 flex flex-wrap gap-2">
+        <h3 class="comparison-title">Comparison</h3>
+        <span class="flex flex-wrap gap-2">
           <NuxtLink to="/learn/methodology" type="button" class="action-button">
             <UIcon
               :name="'i-material-symbols:school-outline'"
@@ -22,7 +26,11 @@
           </NuxtLink>
         </span>
       </div>
+    </template>
 
+    <div class="gradient-top-border" />
+
+    <div class="flex flex-col gap-4 px-4 py-5 sm:px-6">
       <DetailRow label="Region">
         <div class="flex flex-wrap gap-2">
           <button

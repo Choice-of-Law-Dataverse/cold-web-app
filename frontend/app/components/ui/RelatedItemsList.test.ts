@@ -63,7 +63,7 @@ describe("RelatedItemsList", () => {
       },
     });
 
-    expect(wrapper.text()).toContain("Show more");
+    expect(wrapper.findComponent({ name: "ShowMoreLess" }).exists()).toBe(true);
   });
 
   it("does not show button when 10 or fewer items", () => {
@@ -74,7 +74,9 @@ describe("RelatedItemsList", () => {
       },
     });
 
-    expect(wrapper.text()).not.toContain("Show more");
+    expect(wrapper.findComponent({ name: "ShowMoreLess" }).exists()).toBe(
+      false,
+    );
   });
 
   it("toggles to show all items when clicking show more", async () => {
@@ -92,12 +94,12 @@ describe("RelatedItemsList", () => {
 
     expect(wrapper.text()).not.toContain("Item 11");
 
-    const button = wrapper.find("button");
+    const showMoreLess = wrapper.findComponent({ name: "ShowMoreLess" });
+    const button = showMoreLess.find("button");
     await button.trigger("click");
 
     expect(wrapper.text()).toContain("Item 11");
     expect(wrapper.text()).toContain("Item 15");
-    expect(wrapper.text()).toContain("Show less");
   });
 
   it("hides extra items when clicking show less", async () => {
@@ -113,12 +115,11 @@ describe("RelatedItemsList", () => {
       },
     });
 
-    const button = wrapper.find("button");
-    await button.trigger("click"); // Show all
-    await button.trigger("click"); // Show less
+    const showMoreLess = wrapper.findComponent({ name: "ShowMoreLess" });
+    await showMoreLess.find("button").trigger("click"); // Show all
+    await showMoreLess.find("button").trigger("click"); // Show less
 
     expect(wrapper.text()).not.toContain("Item 11");
-    expect(wrapper.text()).toContain("Show more");
   });
 
   it("constructs correct link paths with basePath", () => {
@@ -207,7 +208,8 @@ describe("RelatedItemsList", () => {
       },
     });
 
-    expect(wrapper.html()).toContain("link-chip--action");
+    const showMoreLess = wrapper.findComponent({ name: "ShowMoreLess" });
+    expect(showMoreLess.props("buttonClass")).toBe("link-chip--action");
   });
 
   it("applies link-chip--neutral regardless of entity type", () => {

@@ -22,18 +22,14 @@
       <template #item="{ item }">
         <div class="flex items-center">
           <template v-if="showAvatars && isObjectOptions && item.avatar">
-            <UAvatar
+            <img
               :src="item.avatar"
               :style="{
-                borderRadius: '0',
-                boxSizing: 'border-box',
-                width: 'auto',
-                height: '16px',
                 filter: isCovered(item.alpha3Code)
                   ? undefined
                   : 'grayscale(0.9)',
               }"
-              class="mr-2 self-center"
+              class="mr-2 h-auto w-5 flex-shrink-0 object-contain"
             />
           </template>
           <span
@@ -53,19 +49,15 @@
               v-if="showAvatars"
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
             >
-              <UAvatar
+              <img
                 v-if="internalValue.avatar"
                 :src="internalValue.avatar"
                 :style="{
-                  borderRadius: '0',
-                  boxSizing: 'border-box',
-                  width: 'auto',
-                  height: '16px',
                   filter: isCovered(internalValue.alpha3Code)
                     ? undefined
                     : 'grayscale(0.9)',
                 }"
-                class="mr-1.5 self-center"
+                class="mr-1.5 h-auto w-5 flex-shrink-0 object-contain"
               />
               <span
                 class="truncate"
@@ -110,19 +102,15 @@
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
             >
               <template v-for="(selected, index) in internalValue" :key="index">
-                <UAvatar
+                <img
                   v-if="selected.avatar"
                   :src="selected.avatar"
                   :style="{
-                    borderRadius: '0',
-                    boxSizing: 'border-box',
-                    width: 'auto',
-                    height: '16px',
                     filter: isCovered(selected.alpha3Code)
                       ? undefined
                       : 'grayscale(0.9)',
                   }"
-                  class="mr-1.5 self-center"
+                  class="mr-1.5 h-auto w-5 flex-shrink-0 object-contain"
                 />
                 <span
                   class="mr-2 inline-block truncate"

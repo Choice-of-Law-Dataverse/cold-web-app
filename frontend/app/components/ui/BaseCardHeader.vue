@@ -47,8 +47,13 @@
         >
           {{ family }}
         </span>
-        <!-- Display 'source_table' or a type selector when in 'new' mode -->
-        <template v-if="adjustedSourceTable">
+        <!-- Display 'source_table' or a type selector when in 'new' mode (never show for Jurisdiction pages) -->
+        <template
+          v-if="
+            adjustedSourceTable &&
+            !['Jurisdiction', 'Jurisdictions'].includes(adjustedSourceTable)
+          "
+        >
           <!-- In 'new' mode, show the data type label style and a link to reveal the dropdown -->
           <div v-if="headerMode === 'new'" class="flex items-center">
             <span :class="['label', labelColorClass, '']">
@@ -255,10 +260,14 @@
 </template>
 
 <script setup>
-import { onMounted, ref, computed, watch } from "vue";
+import { onMounted, ref, computed, watch, defineAsyncComponent } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
+
+const LazyCiteModal = defineAsyncComponent(
+  () => import("@/components/ui/CiteModal.vue"),
+);
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
@@ -344,6 +353,7 @@ const adjustedSourceTable = computed(() => {
     case "Arbitral Award":
       return "Arbitral Award";
     case "Jurisdiction":
+    case "Jurisdictions":
       return "Jurisdiction";
     default:
       return formattedSourceTable.value || "";

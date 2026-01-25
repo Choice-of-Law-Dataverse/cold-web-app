@@ -1,6 +1,10 @@
 <template>
-  <UCard class="cold-ucard gradient-top-border flex h-full w-full flex-col">
-    <div class="flex w-full flex-col gap-4">
+  <UCard
+    class="cold-ucard flex h-full w-full flex-col overflow-hidden"
+    :ui="{ body: '!p-0' }"
+  >
+    <div class="gradient-top-border" />
+    <div class="flex w-full flex-col gap-4 p-4 sm:p-6">
       <div>
         <h2 class="card-title">Successful Legal Transplantations</h2>
         <p class="card-subtitle">
@@ -17,7 +21,7 @@
             v-for="(instrument, index) in domesticInstruments.slice(0, 9)"
             :key="index"
             :to="`/domestic-instrument/${instrument.ID}`"
-            class="landing-item-button w-full"
+            class="landing-item-button type-instrument w-full"
           >
             <div class="flag-wrapper">
               <img

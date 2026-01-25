@@ -2,9 +2,9 @@
   <div class="bg-cold-bg flex min-h-screen flex-col">
     <Nav />
 
-    <main class="mt-12 flex-1 px-6">
+    <main class="mt-6 flex-1 px-3 sm:mt-12 sm:px-6">
       <div class="max-w-container mx-auto w-full">
-        <div class="flex flex-col gap-6">
+        <div class="flex flex-col gap-4 sm:gap-6">
           <ErrorBoundary>
             <NuxtPage />
           </ErrorBoundary>

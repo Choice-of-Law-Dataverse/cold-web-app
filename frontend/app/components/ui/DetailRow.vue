@@ -1,7 +1,7 @@
 <template>
   <div
     class="detail-row flex flex-col gap-3 md:flex-row md:items-start md:gap-10"
-    :class="variant ? `detail-row--${variant}` : ''"
+    :class="variant ? `type-${variant}` : ''"
   >
     <div class="label-key md:w-48 md:flex-shrink-0">
       <span class="flex items-center gap-1.5">
@@ -50,51 +50,34 @@ defineProps({
 
 <style scoped>
 .detail-row {
-  padding: 0.75rem 2rem;
-  margin: 0 -1.5rem;
+  position: relative;
+  padding: 0.75rem 1rem;
+  margin: 0 -1rem;
   border-radius: 2px;
-  border-left: 2px solid transparent;
   transition: background 0.15s ease;
 
   @media (min-width: 640px) {
-    margin: 0 -2rem;
+    padding: 0.75rem 1.5rem;
+    margin: 0 -1.5rem;
   }
 }
 
-.detail-row:hover {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-cold-purple) 3%, white),
-    color-mix(in srgb, var(--color-cold-green) 2%, white)
+.detail-row::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: color-mix(
+    in srgb,
+    var(--type-color, transparent) 50%,
+    transparent
   );
 }
 
-.detail-row--court-decision {
-  border-left-color: var(--color-label-court-decision);
-}
-
-.detail-row--question {
-  border-left-color: var(--color-label-question);
-}
-
-.detail-row--instrument {
-  border-left-color: var(--color-label-instrument);
-}
-
-.detail-row--literature {
-  border-left-color: var(--color-label-literature);
-}
-
-.detail-row--oup {
-  border-left-color: var(--color-label-oup);
-}
-
-.detail-row--arbitration {
-  border-left-color: var(--color-label-arbitration);
-}
-
-.detail-row--jurisdiction {
-  border-left-color: var(--color-cold-purple);
+.detail-row:hover {
+  background: var(--gradient-subtle-hover);
 }
 
 .label-key {

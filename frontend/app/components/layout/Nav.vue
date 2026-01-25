@@ -1,9 +1,9 @@
 <template>
   <nav
-    class="border-cold-gray w-full border-b bg-white px-6"
+    class="border-cold-gray w-full border-b bg-white px-3 sm:px-6"
     :class="{ 'bg-purple-active': isExpanded }"
   >
-    <div class="max-w-container mx-auto w-full py-6 pt-8">
+    <div class="max-w-container mx-auto w-full py-3 sm:py-6 sm:pt-8">
       <div
         class="relative flex items-center justify-between space-x-4 sm:space-x-8"
       >
@@ -35,7 +35,6 @@
               size="xl"
               class="input-custom-purple placeholder-purple font-semibold"
               :placeholder="searchPlaceholder"
-              icon="i-material-symbols:search"
               autocomplete="off"
               :ui="{
                 icon: { trailing: { pointer: '' } },
@@ -57,16 +56,15 @@
               @blur="collapseSearch"
             >
               <template #trailing>
-                <UButton
+                <button
                   v-show="isExpanded"
-                  style="opacity: 1"
-                  class="!text-cold-night"
-                  variant="link"
-                  icon="i-material-symbols:close"
-                  :padded="false"
+                  type="button"
+                  class="text-cold-night hover:text-cold-purple flex items-center justify-center"
                   @mousedown.prevent
                   @click="clearSearch"
-                />
+                >
+                  <UIcon name="i-material-symbols:close" class="size-5" />
+                </button>
               </template>
             </UInput>
             <button v-if="!isMobile" class="icon-button" @click="emitSearch">
@@ -101,12 +99,12 @@
         <NuxtLink
           v-if="!isMobile && !isExpanded && !(isMobile && showMenu)"
           to="/"
-          class="desktop-logo absolute top-1/2 left-1/2 z-10 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center"
+          class="desktop-logo"
         >
           <img
             src="https://choiceoflaw.blob.core.windows.net/assets/cold_logo.svg"
             alt="CoLD Logo"
-            class="h-12 w-auto"
+            class="logo-img h-12 w-auto"
           />
         </NuxtLink>
         <!-- Inline mobile logo for horizontal arrangement -->
@@ -119,7 +117,7 @@
           <img
             src="https://choiceoflaw.blob.core.windows.net/assets/cold_logo.svg"
             alt="CoLD Logo"
-            class="h-10 w-auto"
+            class="h-8 w-auto"
           />
         </NuxtLink>
 
@@ -524,6 +522,10 @@ onUnmounted(() => {
   width: 100%;
 }
 
+.input-custom-purple :deep(input) {
+  padding-left: 2.5rem !important;
+}
+
 .icon-button {
   position: absolute;
   left: 10px;
@@ -539,6 +541,29 @@ onUnmounted(() => {
 
 .icon-button .iconify {
   font-size: 1.5rem;
+}
+
+.desktop-logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate(-50%, -50%);
+}
+
+.logo-img {
+  display: block;
+  transition:
+    filter 0.2s ease,
+    transform 0.2s ease;
+}
+
+.desktop-logo:hover .logo-img {
+  filter: hue-rotate(-20deg) saturate(1.5) brightness(1.1);
+  transform: scale(1.02);
 }
 
 a {
@@ -605,8 +630,15 @@ a {
 }
 
 nav {
-  min-height: 7rem;
-  max-height: 7rem;
+  min-height: 5rem;
+  max-height: 5rem;
+}
+
+@media (min-width: 640px) {
+  nav {
+    min-height: 7rem;
+    max-height: 7rem;
+  }
 }
 
 @media (max-width: 639px) {
@@ -614,7 +646,6 @@ nav {
     flex: 0 0 auto;
     margin-left: 0.3rem !important;
     margin-right: 0.5rem !important;
-    padding-bottom: 0.75rem;
   }
   .mobile-nav-group {
     gap: 0.75rem;

@@ -34,7 +34,6 @@
           :tooltip="regionalInstrumentTooltips['Literature']"
         >
           <LazyRelatedLiterature
-            hydrate-on-visible
             :literature-id="regionalInstrument?.Literature || ''"
             mode="id"
             :oup-filter="'noOup'"
@@ -80,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -92,6 +91,10 @@ import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import { regionalInstrumentLabels } from "@/config/labels";
 import { regionalInstrumentTooltips } from "@/config/tooltips";
+
+const LazyRelatedLiterature = defineAsyncComponent(
+  () => import("@/components/literature/RelatedLiterature.vue"),
+);
 
 const route = useRoute();
 

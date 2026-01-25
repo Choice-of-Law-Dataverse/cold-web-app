@@ -37,6 +37,23 @@ export default defineNuxtConfig({
   },
   vite: {
     plugins: [tailwindcss()],
+    // Suppress OpenTelemetry 'this' keyword warnings (ESM compatibility)
+    optimizeDeps: {
+      exclude: ["@opentelemetry/api"],
+    },
+    build: {
+      rollupOptions: {
+        onwarn(warning, warn) {
+          if (
+            warning.code === "THIS_IS_UNDEFINED" &&
+            warning.id?.includes("@opentelemetry")
+          ) {
+            return;
+          }
+          warn(warning);
+        },
+      },
+    },
   },
   modules: [
     "@nuxt/ui",

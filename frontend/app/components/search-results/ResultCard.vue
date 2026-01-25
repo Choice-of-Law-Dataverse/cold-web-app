@@ -6,13 +6,10 @@
       class="card-link-wrapper"
     >
       <UCard
-        class="cold-ucard"
+        class="cold-ucard overflow-hidden"
         :ui="{
-          base: 'overflow-hidden',
-          body: {
-            base: 'flex gradient-top-border',
-            padding: 'px-6 py-5',
-          },
+          body: '!p-0',
+          header: 'border-b-0 px-6 py-5',
         }"
       >
         <template #header>
@@ -27,7 +24,12 @@
           />
         </template>
 
-        <slot />
+        <!-- Gradient divider between header and content -->
+        <div class="gradient-top-border" />
+
+        <div class="flex px-6 py-5">
+          <slot />
+        </div>
       </UCard>
     </NuxtLink>
     <UCard v-else class="cold-ucard">
@@ -107,14 +109,11 @@ function getCardLink() {
 
 .cold-ucard {
   margin-bottom: 24px;
-  transition:
-    transform 0.2s ease,
-    box-shadow 0.2s ease;
+  transition: box-shadow 0.2s ease;
   cursor: pointer;
 }
 
 .card-link-wrapper:hover .cold-ucard {
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 

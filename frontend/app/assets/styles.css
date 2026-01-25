@@ -1,6 +1,73 @@
 @import "tailwindcss";
 @import "@nuxt/ui";
-@config "../../tailwind.config.js";
+
+/* Tailwind v4 Theme Configuration */
+@theme {
+  /* Colors */
+  --color-cold-purple: #6f4dfa;
+  --color-cold-purple-alpha: #6f4dfa0d;
+  --color-cold-purple-alpha-25: #6f4dfa40;
+  --color-cold-purple-fake-alpha: #f3f2fa;
+  --color-cold-green: #4dfab2;
+  --color-cold-green-alpha: #4dfab280;
+  --color-cold-green-alpha-10: #4dfab21a;
+  --color-cold-cream: #fff0d9;
+  --color-cold-night: #0f0035;
+  --color-cold-night-alpha: #0f003580;
+  --color-cold-night-alpha-25: #0f003540;
+  --color-cold-black: #262626;
+  --color-cold-bg: #fafafa;
+  --color-cold-gray: #e2e8f0;
+  --color-cold-gray-alpha: #e2e8f080;
+  --color-cold-dark-gray: #f1f3f7;
+  --color-cold-slate: #64748b;
+  --color-cold-teal: #0891b2;
+  --color-cold-charcoal: #6b7280;
+
+  /* Label colors */
+  --color-label-question: #0e7490;
+  --color-label-question-alpha: #0e74901a;
+  --color-label-court-decision: #b85a42;
+  --color-label-court-decision-alpha: #b85a421a;
+  --color-label-instrument: #2a7a5a;
+  --color-label-instrument-alpha: #2a7a5a1a;
+  --color-label-literature: #a07830;
+  --color-label-literature-alpha: #a078301a;
+  --color-label-arbitration: #5a6ab8;
+  --color-label-arbitration-alpha: #5a6ab81a;
+  --color-label-oup: #7c3aed;
+  --color-label-oup-alpha: #7c3aed1a;
+
+  /* Max width */
+  --max-width-container: var(--container-width);
+}
+
+/* Safelist for dynamic grid classes */
+@source "../**/*.{vue,js,ts}";
+
+/* Type Color Utilities --------------------------------- */
+/* These set --type-color for use in components that need entity-type coloring */
+.type-question {
+  --type-color: var(--color-label-question);
+}
+.type-court-decision {
+  --type-color: var(--color-label-court-decision);
+}
+.type-instrument {
+  --type-color: var(--color-label-instrument);
+}
+.type-literature {
+  --type-color: var(--color-label-literature);
+}
+.type-oup {
+  --type-color: var(--color-label-oup);
+}
+.type-arbitration {
+  --type-color: var(--color-label-arbitration);
+}
+.type-jurisdiction {
+  --type-color: var(--color-cold-purple);
+}
 
 /* Layout ----------------------------------------------- */
 
@@ -766,16 +833,6 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
 
 /* Gradient top border accent for special cards */
 .gradient-top-border {
-  position: relative;
-  overflow: hidden;
-}
-
-.gradient-top-border::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
   height: 6px;
   background: var(--gradient-theme);
 }
@@ -1244,6 +1301,7 @@ button.cold-toggle-btn[aria-pressed="true"] {
   background: white;
   border: 1.5px solid
     color-mix(in srgb, var(--color-cold-night) 25%, transparent);
+  cursor: pointer;
 }
 
 .action-button:hover {
@@ -1571,17 +1629,8 @@ button.cold-toggle-btn[aria-pressed="true"] {
   color: rgb(107 114 128);
 }
 
-.landing-card {
-  transition: box-shadow 200ms;
-}
-
-.landing-card:hover {
-  box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -2px rgb(0 0 0 / 0.1);
-}
-
 .landing-item-button {
+  position: relative;
   display: flex;
   cursor: pointer;
   align-items: center;
@@ -1593,7 +1642,9 @@ button.cold-toggle-btn[aria-pressed="true"] {
   background: var(--gradient-subtle);
   gap: 0.75rem;
   padding: 0.75rem 1rem;
+  padding-left: 1.25rem;
   width: 100%;
+  overflow: hidden;
 }
 
 .landing-item-button:hover {

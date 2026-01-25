@@ -110,7 +110,6 @@
           variant="question"
         >
           <LazyRelatedQuestions
-            hydrate-on-visible
             :jurisdiction-code="
               courtDecision?.['Jurisdictions Alpha-3 Code'] || ''
             "
@@ -125,7 +124,6 @@
           variant="literature"
         >
           <LazyRelatedLiterature
-            hydrate-on-visible
             :themes="courtDecision?.themes || ''"
             :mode="'themes'"
             :oup-filter="'noOup'"
@@ -143,32 +141,17 @@
           :label="courtDecisionLabels['Original Text']"
         >
           <div>
-            <div v-if="!showFullText && value.length > 400">
-              <p class="result-value-small">
-                {{ value.slice(0, 400)
-                }}<span v-if="value.length > 400">…</span>
-              </p>
-              <button
-                class="bg-cold-teal/5 text-cold-teal hover:bg-cold-teal/10 inline-flex items-center rounded-full px-3 py-1 text-sm transition-colors"
-                :style="{ fontWeight: '500' }"
-                @click="showFullText = true"
-              >
-                Show more
-              </button>
-            </div>
-            <div v-else>
-              <p class="result-value-small">
-                {{ value }}
-              </p>
-              <button
-                v-if="value.length > 400"
-                class="bg-cold-teal/5 text-cold-teal hover:bg-cold-teal/10 inline-flex items-center rounded-full px-3 py-1 text-sm transition-colors"
-                :style="{ fontWeight: '500' }"
-                @click="showFullText = false"
-              >
-                Show less
-              </button>
-            </div>
+            <p class="result-value-small">
+              {{
+                showFullText || value.length <= 400
+                  ? value
+                  : value.slice(0, 400) + "…"
+              }}
+            </p>
+            <ShowMoreLess
+              v-if="value.length > 400"
+              v-model:is-expanded="showFullText"
+            />
           </div>
         </DetailRow>
       </template>
@@ -176,7 +159,6 @@
       <template #footer>
         <LastModified :date="courtDecision?.['Last Modified']" />
         <LazyCountryReportBanner
-          hydrate-on-visible
           :jurisdiction-code="courtDecision?.['Jurisdictions Alpha-3 Code']"
         />
       </template>
@@ -201,7 +183,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, defineAsyncComponent } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -210,9 +192,20 @@ import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
 import { useCourtDecision } from "@/composables/useRecordDetails";
 import { courtDecisionLabels } from "@/config/labels";
 import { courtDecisionTooltips } from "@/config/tooltips";
+
+const LazyCountryReportBanner = defineAsyncComponent(
+  () => import("@/components/ui/CountryReportBanner.vue"),
+);
+const LazyRelatedLiterature = defineAsyncComponent(
+  () => import("@/components/literature/RelatedLiterature.vue"),
+);
+const LazyRelatedQuestions = defineAsyncComponent(
+  () => import("@/components/legal/RelatedQuestions.vue"),
+);
 
 defineProps({
   iconClass: {

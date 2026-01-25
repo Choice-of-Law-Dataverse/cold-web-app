@@ -1,13 +1,13 @@
 <template>
   <!-- Header Section -->
-  <div class="grid grid-cols-1 gap-6 md:grid-cols-12 md:gap-8">
+  <div class="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-6">
     <div class="col-span-12">
       <div
-        class="hero-gradient flex flex-col items-center justify-between gap-4 rounded-2xl px-3 py-6 md:flex-row md:px-6 md:py-12"
+        class="hero-gradient flex flex-col items-center justify-between gap-4 rounded-2xl px-3 py-4 md:flex-row md:px-6 md:py-12"
       >
         <div class="flex flex-col gap-4">
           <h1
-            class="hero-title mb-4 text-[56px] leading-[1.1] font-bold text-pretty sm:text-[64px] md:text-[81px]"
+            class="hero-title mb-2 text-[40px] leading-[1.1] font-bold text-pretty sm:mb-4 sm:text-[56px] md:text-[81px]"
           >
             Choice of Law Dataverse
           </h1>
@@ -96,7 +96,7 @@
 
     <!-- Number Cards Grid -->
     <div class="col-span-12">
-      <div class="grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+      <div class="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4">
         <NumberCard
           title="Available Court Decisions"
           button-text="See all"

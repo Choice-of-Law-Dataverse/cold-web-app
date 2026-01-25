@@ -1,6 +1,7 @@
 <template>
-  <UCard class="cold-ucard gradient-top-border h-full">
-    <div>
+  <UCard class="cold-ucard overflow-hidden" :ui="{ body: '!p-0' }">
+    <div class="gradient-top-border" />
+    <div class="p-4 sm:p-6">
       <!-- Map Container -->
       <div
         class="map-container"
@@ -21,60 +22,62 @@
         <div v-if="selectedRegion.value === 'Africa'" class="map-wrapper">
           <MapAfrica />
         </div>
-        <div v-if="selectedRegion.value === 'All Regions'" class="map-wrapper">
+        <div
+          v-else-if="selectedRegion.value === 'All Regions'"
+          class="map-wrapper"
+        >
           <MapAllRegions />
         </div>
-        <div v-if="selectedRegion.value === 'Arab States'" class="map-wrapper">
+        <div
+          v-else-if="selectedRegion.value === 'Arab States'"
+          class="map-wrapper"
+        >
           <MapArabStates />
         </div>
         <div
-          v-if="selectedRegion.value === 'Asia & Pacific'"
+          v-else-if="selectedRegion.value === 'Asia & Pacific'"
           class="map-wrapper"
         >
           <MapAsiaPacific />
         </div>
-        <div v-if="selectedRegion.value === 'Europe'" class="map-wrapper">
+        <div v-else-if="selectedRegion.value === 'Europe'" class="map-wrapper">
           <MapEurope />
         </div>
-        <div v-if="selectedRegion.value === 'Middle East'" class="map-wrapper">
+        <div
+          v-else-if="selectedRegion.value === 'Middle East'"
+          class="map-wrapper"
+        >
           <MapMiddleEast />
         </div>
         <div
-          v-if="selectedRegion.value === 'North America'"
+          v-else-if="selectedRegion.value === 'North America'"
           class="map-wrapper"
         >
           <MapNorthAmerica />
         </div>
         <div
-          v-if="selectedRegion.value === 'South & Latin America'"
+          v-else-if="selectedRegion.value === 'South & Latin America'"
           class="map-wrapper"
         >
           <MapSouthLatinAmerica />
         </div>
       </div>
-    </div>
-    <p
-      class="result-value-small flex items-start"
-      style="
-        margin: 0px 0px -14px -12px !important;
-        font-size: 12px !important;
-        line-height: 24px !important;
-      "
-    >
-      <UIcon
-        name="i-material-symbols:info-outline"
-        size="18"
-        class="text-cold-purple mr-2 shrink-0 cursor-pointer pt-6"
-        @click="isDisclaimerVisible = !isDisclaimerVisible"
-      />
-      <span class="flex-1">
-        <ContentRenderer
-          v-if="isDisclaimerVisible && disclaimer"
-          :value="disclaimer"
-          class="inline-block"
+      <p class="result-value-small mt-4 flex items-start text-xs">
+        <UIcon
+          name="i-material-symbols:info-outline"
+          size="18"
+          class="text-cold-purple mr-2 shrink-0 cursor-pointer"
+          @click="isDisclaimerVisible = !isDisclaimerVisible"
         />
-      </span>
-    </p>
+        <span class="flex-1">
+          <ContentRenderer
+            v-if="isDisclaimerVisible && disclaimer"
+            :value="disclaimer"
+            class="inline-block"
+          />
+        </span>
+      </p>
+    </div>
   </UCard>
 </template>
 

@@ -1,43 +1,49 @@
 <template>
-  <UCard class="cold-ucard gradient-top-border flex h-full w-full flex-col">
-    <h2 class="card-title">Court Decisions by Jurisdiction</h2>
-    <p class="card-subtitle">
-      Explore countries with the highest case law volume
-    </p>
+  <UCard
+    class="cold-ucard flex h-full w-full flex-col overflow-hidden"
+    :ui="{ body: '!p-0' }"
+  >
+    <div class="gradient-top-border" />
+    <div class="flex flex-col gap-4 p-4 sm:p-6">
+      <h2 class="card-title">Court Decisions by Jurisdiction</h2>
+      <p class="card-subtitle">
+        Explore countries with the highest case law volume
+      </p>
 
-    <div v-if="isLoading" class="loading-state">
-      <LoadingLandingPageCard />
-    </div>
+      <div v-if="isLoading" class="loading-state">
+        <LoadingLandingPageCard />
+      </div>
 
-    <InlineError v-else-if="error" :error="error" />
+      <InlineError v-else-if="error" :error="error" />
 
-    <div v-else-if="data && chartData.length > 0" class="chart-container">
-      <div class="chart-bars">
-        <NuxtLink
-          v-for="(item, index) in chartData"
-          :key="index"
-          :to="item.url"
-          class="bar-row hover-row no-underline"
-          @mouseenter="() => handleBarHover(index, true)"
-          @mouseleave="() => handleBarHover(index, false)"
-        >
-          <div class="bar-label">{{ item.jurisdiction }}</div>
-          <div class="bar-container">
-            <div
-              class="bar"
-              :class="{ 'bar-hovered': hoveredIndex === index }"
-              :style="{ width: item.percentage + '%' }"
-            >
-              <img
-                v-if="item.flagUrl"
-                :src="item.flagUrl"
-                :alt="item.jurisdiction"
-                class="bar-flag"
-              />
-              <span class="bar-value">{{ item.count }}</span>
+      <div v-else-if="data && chartData.length > 0" class="chart-container">
+        <div class="chart-bars">
+          <NuxtLink
+            v-for="(item, index) in chartData"
+            :key="index"
+            :to="item.url"
+            class="bar-row hover-row no-underline"
+            @mouseenter="() => handleBarHover(index, true)"
+            @mouseleave="() => handleBarHover(index, false)"
+          >
+            <div class="bar-label">{{ item.jurisdiction }}</div>
+            <div class="bar-container">
+              <div
+                class="bar"
+                :class="{ 'bar-hovered': hoveredIndex === index }"
+                :style="{ width: item.percentage + '%' }"
+              >
+                <img
+                  v-if="item.flagUrl"
+                  :src="item.flagUrl"
+                  :alt="item.jurisdiction"
+                  class="bar-flag"
+                />
+                <span class="bar-value">{{ item.count }}</span>
+              </div>
             </div>
-          </div>
-        </NuxtLink>
+          </NuxtLink>
+        </div>
       </div>
     </div>
   </UCard>

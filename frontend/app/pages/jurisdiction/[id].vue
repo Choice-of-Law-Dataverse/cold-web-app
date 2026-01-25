@@ -47,7 +47,6 @@
 
         <DetailRow :label="jurisdictionLabels['OUP Chapter']" variant="oup">
           <LazyRelatedLiterature
-            hydrate-on-visible
             :literature-id="(jurisdictionData?.Literature as string) || ''"
             :mode="'both'"
             :oup-filter="'onlyOup'"
@@ -61,7 +60,6 @@
           variant="literature"
         >
           <LazyRelatedLiterature
-            hydrate-on-visible
             :literature-id="(jurisdictionData?.Literature as string) || ''"
             :jurisdiction="jurisdictionData?.Name as string"
             :mode="'both'"
@@ -71,34 +69,45 @@
       </template>
     </BaseDetailLayout>
     <ClientOnly>
-      <JurisdictionQuestions
-        v-if="jurisdictionData"
-        :primary-jurisdiction="jurisdictionData"
-      />
+      <div class="mt-8">
+        <JurisdictionQuestions
+          v-if="jurisdictionData"
+          :primary-jurisdiction="jurisdictionData"
+        />
+      </div>
       <template #fallback>
-        <div class="px-6">
+        <div class="mt-8 px-6">
           <div class="max-w-container mx-auto w-full">
             <div class="col-span-12">
-              <UCard class="cold-ucard">
-                <div>
+              <UCard
+                class="cold-ucard overflow-hidden"
+                :ui="{
+                  body: '!p-0',
+                  header: 'border-b-0 px-4 py-5 sm:px-6',
+                }"
+              >
+                <template #header>
                   <div class="flex justify-between">
-                    <h3
-                      class="comparison-title mb-4 text-xl font-semibold md:text-2xl"
-                    >
-                      Questionnaire
-                    </h3>
-                    <span
-                      class="text-cold-purple mb-4 flex flex-wrap gap-4 text-sm"
-                    >
-                      <NuxtLink to="/learn/methodology" class="hover:underline">
+                    <h3 class="comparison-title mb-4">Comparison</h3>
+                    <span class="mb-4 flex flex-wrap gap-2">
+                      <NuxtLink
+                        to="/learn/methodology"
+                        class="answer-button gap-2"
+                      >
                         Methodology
                       </NuxtLink>
-                      <NuxtLink to="/learn/glossary" class="hover:underline">
+                      <NuxtLink
+                        to="/learn/glossary"
+                        class="answer-button gap-2"
+                      >
                         Glossary
                       </NuxtLink>
                     </span>
                   </div>
-                  <div class="ml-8 flex flex-col space-y-3 py-8">
+                </template>
+                <div class="gradient-top-border" />
+                <div class="px-4 py-5 sm:px-6">
+                  <div class="flex flex-col space-y-3 py-8">
                     <LoadingBar />
                     <LoadingBar />
                     <LoadingBar />
@@ -119,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, defineAsyncComponent } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -132,6 +141,10 @@ import { useJurisdiction } from "@/composables/useJurisdictions";
 import { useSpecialists } from "@/composables/useSpecialists";
 import { jurisdictionLabels } from "@/config/labels";
 import { jurisdictionTooltips } from "@/config/tooltips";
+
+const LazyRelatedLiterature = defineAsyncComponent(
+  () => import("@/components/literature/RelatedLiterature.vue"),
+);
 
 const route = useRoute();
 

@@ -1,6 +1,10 @@
 <template>
-  <UCard class="cold-ucard gradient-top-border landing-card flex h-full w-full">
-    <div class="flex w-full flex-col gap-4">
+  <UCard
+    class="cold-ucard landing-card flex h-full w-full overflow-hidden"
+    :ui="{ body: '!p-0' }"
+  >
+    <div class="gradient-top-border" />
+    <div class="flex w-full flex-col gap-4 p-4 sm:p-6">
       <div>
         <h2 class="card-title">Leading Cases</h2>
         <p class="card-subtitle mb-0">Read top-ranked court decisions</p>
@@ -15,7 +19,7 @@
             v-for="(decision, index) in leadingCases.slice(0, 3)"
             :key="index"
             :to="`/court-decision/${decision.ID}`"
-            class="landing-item-button w-full"
+            class="landing-item-button type-court-decision w-full"
           >
             <div class="flag-wrapper">
               <img

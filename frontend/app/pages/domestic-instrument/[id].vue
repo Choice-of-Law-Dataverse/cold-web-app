@@ -116,7 +116,6 @@
       <template #footer>
         <LastModified :date="legalInstrument?.['Last Modified']" />
         <LazyCountryReportBanner
-          hydrate-on-visible
           :jurisdiction-code="legalInstrument?.['Jurisdictions Alpha-3 Code']"
         />
       </template>
@@ -131,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from "vue";
+import { ref, computed, defineAsyncComponent } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -146,6 +145,10 @@ import { useDomesticInstrument } from "@/composables/useRecordDetails";
 import { getSortedProvisionIds } from "@/utils/provision-sorting";
 import { domesticInstrumentLabels } from "@/config/labels";
 import { domesticInstrumentTooltips } from "@/config/tooltips";
+
+const LazyCountryReportBanner = defineAsyncComponent(
+  () => import("@/components/ui/CountryReportBanner.vue"),
+);
 
 const route = useRoute();
 const textType = ref("Full Text of the Provision (English Translation)");

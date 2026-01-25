@@ -16,13 +16,9 @@
           <img
             :src="item.avatar.src"
             :style="{
-              borderRadius: '0',
-              boxSizing: 'border-box',
-              width: 'auto',
-              height: '16px',
               filter: item.hasCoverage ? undefined : 'grayscale(0.9)',
             }"
-            class="mr-2 self-center"
+            class="mr-2 h-auto w-5 flex-shrink-0 object-contain"
           />
         </template>
         <span
@@ -41,15 +37,11 @@
         <img
           :src="internalSelected.avatar.src"
           :style="{
-            borderRadius: '0',
-            boxSizing: 'border-box',
-            width: 'auto',
-            height: '16px',
             filter: hasCoverage(internalSelected?.original?.answerCoverage)
               ? undefined
               : 'grayscale(0.9)',
           }"
-          class="mr-1.5 self-center"
+          class="mr-1.5 h-auto w-5 flex-shrink-0 object-contain"
         />
       </template>
     </template>

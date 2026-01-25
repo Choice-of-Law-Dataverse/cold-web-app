@@ -1,6 +1,10 @@
 <template>
-  <UCard class="cold-ucard gradient-top-border h-full w-full">
-    <div class="flex flex-col gap-4">
+  <UCard
+    class="cold-ucard h-full w-full overflow-hidden"
+    :ui="{ body: '!p-0' }"
+  >
+    <div class="gradient-top-border" />
+    <div class="flex flex-col gap-4 p-4 sm:p-6">
       <div>
         <h2 class="card-title text-left md:whitespace-nowrap">
           Top Literature Themes
@@ -12,7 +16,7 @@
         <button
           v-for="(suggestion, index) in searchSuggestions"
           :key="index"
-          class="landing-item-button w-full"
+          class="landing-item-button type-literature w-full"
           @click="handleSuggestionClick(suggestion)"
         >
           <Icon name="i-material-symbols:book-outline" class="item-icon" />

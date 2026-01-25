@@ -35,7 +35,6 @@
       <template #oup-chapter>
         <DetailRow :label="questionLabels['OUP Chapter']" variant="oup">
           <LazyRelatedLiterature
-            hydrate-on-visible
             :themes="answerData?.Themes"
             :literature-id="answerData?.['Jurisdictions Literature ID']"
             :jurisdiction="answerData?.Jurisdictions"
@@ -51,7 +50,6 @@
           variant="literature"
         >
           <LazyRelatedLiterature
-            hydrate-on-visible
             :themes="answerData?.Themes"
             :literature-id="answerData?.['Jurisdictions Literature ID']"
             :jurisdiction="answerData?.Jurisdictions"
@@ -64,15 +62,16 @@
       <template #footer>
         <LastModified :date="answerData?.['Last Modified']" />
         <LazyCountryReportBanner
-          hydrate-on-visible
           :jurisdiction-code="answerData?.JurisdictionCode"
         />
       </template>
     </BaseDetailLayout>
-    <QuestionJurisdictions
-      v-if="questionSuffix"
-      :question-suffix="questionSuffix"
-    />
+    <div class="mt-8">
+      <QuestionJurisdictions
+        v-if="questionSuffix"
+        :question-suffix="questionSuffix"
+      />
+    </div>
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
@@ -83,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, nextTick } from "vue";
+import { computed, onMounted, nextTick, defineAsyncComponent } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -95,6 +94,13 @@ import { useAnswer } from "@/composables/useRecordDetails";
 import LastModified from "@/components/ui/LastModified.vue";
 import { questionLabels } from "@/config/labels";
 import { questionTooltips } from "@/config/tooltips";
+
+const LazyCountryReportBanner = defineAsyncComponent(
+  () => import("@/components/ui/CountryReportBanner.vue"),
+);
+const LazyRelatedLiterature = defineAsyncComponent(
+  () => import("@/components/literature/RelatedLiterature.vue"),
+);
 
 const route = useRoute();
 

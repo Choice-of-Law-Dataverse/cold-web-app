@@ -1,7 +1,7 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <UModal :open="modelValue" @update:open="(v) => emit('update:modelValue', v)">
-    <div class="p-6">
+  <UModal v-model:open="isOpen" :ui="{ content: 'p-6' }">
+    <template #content>
       <h2 class="mb-4">Cite This Page</h2>
       <!-- eslint-disable-next-line vue/no-v-html -->
       <p
@@ -26,7 +26,7 @@
           {{ copied ? "Copied" : "Copy to Clipboard" }}
         </NuxtLink>
       </div>
-    </div>
+    </template>
   </UModal>
 </template>
 
@@ -39,6 +39,11 @@ const props = defineProps({
   title: { type: String, default: "" },
 });
 const emit = defineEmits(["update:modelValue"]);
+
+const isOpen = computed({
+  get: () => props.modelValue,
+  set: (v) => emit("update:modelValue", v),
+});
 
 const route = useRoute();
 

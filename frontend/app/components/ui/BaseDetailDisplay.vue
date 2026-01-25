@@ -26,17 +26,10 @@
   </template>
   <template v-else>
     <UCard
-      class="cold-ucard"
+      class="cold-ucard overflow-hidden"
       :ui="{
-        base: 'overflow-hidden',
-        body: {
-          base: '',
-          padding: '',
-        },
-        header: {
-          base: 'sticky-header border-bottom-0',
-          padding: 'px-6 py-5',
-        },
+        body: '!p-0',
+        header: 'sticky-header border-b-0 px-6 py-5',
       }"
     >
       <!-- Header section: render only when showHeader is true -->
@@ -61,10 +54,13 @@
 
       <slot name="full-width" />
 
+      <!-- Gradient divider between header and content -->
+      <div class="gradient-top-border" />
+
       <!-- Main content -->
-      <div class="gradient-top-border flex">
+      <div class="flex">
         <div
-          class="main-content flex w-full flex-col gap-2 px-6 py-6 sm:px-8 sm:py-8"
+          class="main-content flex w-full flex-col gap-2 px-4 py-4 sm:px-6 sm:py-6"
         >
           <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
           <slot />
@@ -344,7 +340,6 @@ const getDisplayValue = (item, value) => {
   top: 0;
   z-index: 10;
   background-color: white;
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
 }
 
 :deep(.dark .sticky-header) {
