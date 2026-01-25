@@ -46,7 +46,7 @@ export default defineNuxtPlugin((nuxt) => {
 
   const options: VueQueryPluginOptions = {
     queryClient,
-    enableDevtoolsV6Plugin: true,
+    enableDevtoolsV6Plugin: import.meta.client && import.meta.dev,
   };
 
   nuxt.vueApp.use(VueQueryPlugin, options);
@@ -60,4 +60,9 @@ export default defineNuxtPlugin((nuxt) => {
   if (import.meta.client) {
     hydrate(queryClient, vueQueryState.value);
   }
+
+  // Clean up on app close to prevent hanging processes
+  nuxt.hooks.hook("app:error", () => {
+    queryClient.clear();
+  });
 });

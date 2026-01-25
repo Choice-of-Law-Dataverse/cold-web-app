@@ -5,23 +5,24 @@ export default defineNuxtConfig({
   future: {
     compatibilityVersion: 4,
   },
-  devtools: { enabled: true },
+  devtools: { enabled: process.env.NODE_ENV === "development" },
   ssr: true,
   nitro: {
     prerender: {
-      crawlLinks: true,
+      crawlLinks: false,
+      routes: [],
     },
     experimental: {
       tasks: false,
     },
   },
   routeRules: {
-    // Prerender static pages
-    "/about/**": { prerender: true },
-    "/learn/**": { prerender: true },
-    "/disclaimer": { prerender: true },
-    "/contact": { prerender: true },
-    "/submit": { prerender: true },
+    // Static pages - prerender disabled temporarily to debug build hang
+    // "/about/**": { prerender: true },
+    // "/learn/**": { prerender: true },
+    // "/disclaimer": { prerender: true },
+    // "/contact": { prerender: true },
+    // "/submit": { prerender: true },
   },
   $production: {
     scripts: {
