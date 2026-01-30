@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import json
 import logging
@@ -271,32 +272,65 @@ async def analyze_document(
                 logger.error("Failed to fetch cached results for resume: %s", str(e))
 
         async def event_generator():
-            """Generate SSE events for each analysis step."""
+            """Generate SSE events for each analysis step with heartbeats to prevent timeouts."""
+            HEARTBEAT_INTERVAL_SECONDS = 15
             step_name: str | None = None
+            next_task: asyncio.Task[dict[str, Any]] | None = None
+
             with logfire.span(
                 "case_analysis_stream",
                 resume=body.resume,
                 draft_id=draft_id,
             ):
                 try:
-                    async for result in analyze_case_streaming(text, jurisdiction_data, cached_results):
-                        step_name = result.get("step")
+                    async_gen = analyze_case_streaming(text, jurisdiction_data, cached_results)
 
-                        if result.get("status") == "completed" and result.get("data"):
-                            if not step_name:
-                                continue
-                            try:
-                                step_payload = result.get("data")
-                                if step_payload and isinstance(step_payload, dict):
-                                    with logfire.span("persist_case_analyzer_step", step=step_name, draft_id=draft_id):
-                                        # Store step_payload directly - it already contains the result data
-                                        # with confidence/reasoning inside if applicable
-                                        service.update_analyzer_step(draft_id, step_name, step_payload)
-                            except Exception as e:
-                                logger.error("Failed to update step %s in database: %s", step_name, str(e))
+                    while True:
+                        # Create task for getting next item from generator
+                        next_task = asyncio.create_task(async_gen.__anext__())
 
-                        event_data = json.dumps(result)
-                        yield f"data: {event_data}\n\n"
+                        # Wait for task with periodic heartbeats
+                        while True:
+                            done, _ = await asyncio.wait(
+                                {next_task},
+                                timeout=HEARTBEAT_INTERVAL_SECONDS,
+                            )
+
+                            if done:
+                                # Task completed - get result (may raise StopAsyncIteration)
+                                try:
+                                    result = next_task.result()
+                                except StopAsyncIteration:
+                                    # Generator exhausted - exit outer loop
+                                    next_task = None
+                                    break
+
+                                next_task = None
+                                step_name = result.get("step")
+
+                                if result.get("status") == "completed" and result.get("data"):
+                                    if step_name:
+                                        try:
+                                            step_payload = result.get("data")
+                                            if step_payload and isinstance(step_payload, dict):
+                                                with logfire.span(
+                                                    "persist_case_analyzer_step", step=step_name, draft_id=draft_id
+                                                ):
+                                                    service.update_analyzer_step(draft_id, step_name, step_payload)
+                                        except Exception as e:
+                                            logger.error("Failed to update step %s in database: %s", step_name, str(e))
+
+                                event_data = json.dumps(result)
+                                yield f"data: {event_data}\n\n"
+                                break  # Exit inner loop, get next item
+                            else:
+                                # Timeout - send heartbeat to keep connection alive
+                                yield ": heartbeat\n\n"
+                        else:
+                            # Inner while completed normally (break from inner)
+                            continue
+                        # StopAsyncIteration caught - break outer loop
+                        break
 
                     try:
                         with logfire.span("finalize_case_analyzer_draft", draft_id=draft_id):
@@ -310,9 +344,20 @@ async def analyze_document(
                         "data": {"done": True},
                     }
                     yield f"data: {json.dumps(done_payload)}\n\n"
+
+                except asyncio.CancelledError:
+                    # Client disconnected - clean up gracefully
+                    logger.info("Analysis stream cancelled for draft %d (client disconnected)", draft_id)
+                    if next_task and not next_task.done():
+                        next_task.cancel()
+                    raise
+
                 except Exception as e:
                     logger.error("Analysis workflow failed: %s", str(e))
                     logger.error("Traceback: %s", traceback.format_exc())
+
+                    if next_task and not next_task.done():
+                        next_task.cancel()
 
                     try:
                         with logfire.span("fail_case_analyzer_draft", draft_id=draft_id):
