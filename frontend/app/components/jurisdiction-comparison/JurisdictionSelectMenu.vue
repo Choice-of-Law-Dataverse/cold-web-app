@@ -2,7 +2,7 @@
   <USelectMenu
     v-model="internalSelected"
     :search-input="{ placeholder: 'Search a Jurisdiction...' }"
-    class="cold-uselectmenu z-200 w-72 lg:w-96"
+    class="cold-uselectmenu z-200 w-full"
     :placeholder="placeholder"
     :items="selectItems"
     :disabled="disabled"
