@@ -88,7 +88,7 @@
                 <div class="flex flex-wrap gap-3">
                   <a
                     :href="`/auth/login?returnTo=/court-decision/new`"
-                    class="bg-cold-night hover:bg-cold-night/90 inline-flex items-center gap-2 rounded-lg px-4 py-2 font-semibold !text-white transition-colors"
+                    class="bg-cold-purple hover:bg-cold-purple/90 inline-flex items-center gap-2 rounded-lg px-4 py-2 font-semibold !text-white transition-colors"
                   >
                     <UIcon name="i-heroicons-arrow-right-on-rectangle" />
                     Login
