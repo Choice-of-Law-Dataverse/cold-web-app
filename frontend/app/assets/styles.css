@@ -909,6 +909,12 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
 
 /* Form Inputs ----------------------------------------------- */
 
+/* Ensure all form textareas and inputs take full width by default */
+textarea,
+[data-slot="control"] textarea {
+  width: 100% !important;
+}
+
 /* Base input style: apply to inputs by adding the `cold-input` class. */
 .cold-input,
 input.cold-input,
