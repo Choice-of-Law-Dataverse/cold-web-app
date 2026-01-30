@@ -825,6 +825,12 @@ ul[role="listbox"] li[aria-selected="true"] .iconify {
 ul[role="listbox"] input {
   padding: 0.75rem !important;
   border-color: rgb(229 231 235) !important;
+  background-color: white !important;
+}
+
+/* USelectMenu content wrapper - ensure white background */
+.cold-uselectmenu [data-slot="content"] {
+  background-color: white !important;
 }
 
 /* Popper Hover & Active States */
