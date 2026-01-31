@@ -825,6 +825,12 @@ ul[role="listbox"] li[aria-selected="true"] .iconify {
 ul[role="listbox"] input {
   padding: 0.75rem !important;
   border-color: rgb(229 231 235) !important;
+  background-color: white !important;
+}
+
+/* USelectMenu content wrapper - ensure white background */
+.cold-uselectmenu [data-slot="content"] {
+  background-color: white !important;
 }
 
 /* Popper Hover & Active States */
@@ -902,6 +908,12 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
 }
 
 /* Form Inputs ----------------------------------------------- */
+
+/* Ensure all form textareas and inputs take full width by default */
+textarea,
+[data-slot="control"] textarea {
+  width: 100% !important;
+}
 
 /* Base input style: apply to inputs by adding the `cold-input` class. */
 .cold-input,

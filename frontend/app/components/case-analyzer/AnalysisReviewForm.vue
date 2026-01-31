@@ -62,7 +62,7 @@
           v-model="localForm.choiceOfLawSections"
           :disabled="isFieldDisabled('choiceOfLawSections')"
           :rows="6"
-          class="print:hidden"
+          class="w-full print:hidden"
         />
         <div class="print-field-value">
           {{ localForm.choiceOfLawSections }}
@@ -81,7 +81,7 @@
           v-model="localForm.themes"
           :disabled="isFieldDisabled('themes')"
           :rows="1"
-          class="print:hidden"
+          class="w-full print:hidden"
         />
         <div class="print-field-value">
           {{ localForm.themes }}
@@ -100,7 +100,7 @@
           v-model="localForm.caseCitation"
           :disabled="isFieldDisabled('caseCitation')"
           :rows="2"
-          class="print:hidden"
+          class="w-full print:hidden"
         />
         <div class="print-field-value">
           {{ localForm.caseCitation }}
@@ -119,7 +119,7 @@
           v-model="localForm.caseRelevantFacts"
           :disabled="isFieldDisabled('caseRelevantFacts')"
           :rows="6"
-          class="print:hidden"
+          class="w-full print:hidden"
         />
         <div class="print-field-value">
           {{ localForm.caseRelevantFacts }}
@@ -138,7 +138,7 @@
           v-model="localForm.casePILProvisions"
           :disabled="isFieldDisabled('casePILProvisions')"
           :rows="2"
-          class="print:hidden"
+          class="w-full print:hidden"
         />
         <div class="print-field-value">
           {{ localForm.casePILProvisions }}
@@ -157,7 +157,7 @@
           v-model="localForm.caseChoiceofLawIssue"
           :disabled="isFieldDisabled('caseChoiceofLawIssue')"
           :rows="6"
-          class="print:hidden"
+          class="w-full print:hidden"
         />
         <div class="print-field-value">
           {{ localForm.caseChoiceofLawIssue }}
@@ -176,7 +176,7 @@
           v-model="localForm.caseCourtsPosition"
           :disabled="isFieldDisabled('caseCourtsPosition')"
           :rows="6"
-          class="print:hidden"
+          class="w-full print:hidden"
         />
         <div class="print-field-value">
           {{ localForm.caseCourtsPosition }}
@@ -195,7 +195,7 @@
           v-model="localForm.caseObiterDicta"
           :disabled="isFieldDisabled('caseObiterDicta')"
           :rows="3"
-          class="print:hidden"
+          class="w-full print:hidden"
         />
         <div class="print-field-value">
           {{ localForm.caseObiterDicta }}
@@ -214,7 +214,7 @@
           v-model="localForm.caseDissentingOpinions"
           :disabled="isFieldDisabled('caseDissentingOpinions')"
           :rows="3"
-          class="print:hidden"
+          class="w-full print:hidden"
         />
         <div class="print-field-value">
           {{ localForm.caseDissentingOpinions }}
@@ -233,7 +233,7 @@
           v-model="localForm.caseAbstract"
           :disabled="isFieldDisabled('caseAbstract')"
           :rows="6"
-          class="print:hidden"
+          class="w-full print:hidden"
         />
         <div class="print-field-value">
           {{ localForm.caseAbstract }}
