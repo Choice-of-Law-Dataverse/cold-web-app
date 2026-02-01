@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useLiterature } from "@/composables/useRecordDetails";
@@ -103,7 +103,8 @@ import { literatureTooltips } from "@/config/tooltips";
 
 const route = useRoute();
 
-const id = computed(() => route.params.id as string);
+// Capture the ID once at setup to prevent flash during page transitions
+const id = ref(route.params.id as string);
 
 const { data: literature, isLoading: loading, error } = useLiterature(id);
 

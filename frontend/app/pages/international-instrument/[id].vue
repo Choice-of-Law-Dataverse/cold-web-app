@@ -19,7 +19,7 @@
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
                 :pdf-field="internationalInstrument?.Attachment"
-                :record-id="route.params.id as string"
+                :record-id="instrumentId"
                 folder-name="international-instruments"
               />
               <SourceExternalLink :source-url="internationalInstrument?.URL" />
@@ -93,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent } from "vue";
+import { computed, defineAsyncComponent, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -114,11 +114,14 @@ const LazyRelatedLiterature = defineAsyncComponent(
 
 const route = useRoute();
 
+// Capture the ID once at setup to prevent flash during page transitions
+const instrumentId = ref(route.params.id as string);
+
 const {
   data: internationalInstrument,
   isLoading: loading,
   error,
-} = useInternationalInstrument(computed(() => route.params.id as string));
+} = useInternationalInstrument(instrumentId);
 
 const {
   data: provisions,
