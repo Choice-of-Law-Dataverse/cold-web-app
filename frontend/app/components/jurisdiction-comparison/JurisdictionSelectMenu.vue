@@ -2,7 +2,7 @@
   <USelectMenu
     v-model="internalSelected"
     :search-input="{ placeholder: 'Search a Jurisdiction...' }"
-    class="cold-uselectmenu z-200 w-72 lg:w-96"
+    class="cold-uselectmenu z-200 w-full"
     :placeholder="placeholder"
     :items="selectItems"
     :disabled="disabled"
@@ -69,6 +69,8 @@ const props = withDefaults(
   },
 );
 
+const hasCoverage = (coverage?: number) => (coverage ?? 0) > 0;
+
 const availableJurisdictions = computed(() => {
   if (!props.excludedCodes.length) {
     return props.jurisdictions;
@@ -128,6 +130,4 @@ const onInternalSelect = (value: SelectItem | undefined) => {
   emit("update:modelValue", jurisdiction);
   emit("jurisdiction-selected", jurisdiction);
 };
-
-const hasCoverage = (coverage?: number) => (coverage ?? 0) > 0;
 </script>

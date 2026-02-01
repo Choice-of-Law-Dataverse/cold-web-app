@@ -79,7 +79,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent } from "vue";
+import { defineAsyncComponent, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -98,9 +98,12 @@ const LazyRelatedLiterature = defineAsyncComponent(
 
 const route = useRoute();
 
+// Capture the ID once at setup to prevent flash during page transitions
+const instrumentId = ref(route.params.id as string);
+
 const {
   data: regionalInstrument,
   isLoading: loading,
   error,
-} = useRegionalInstrument(computed(() => route.params.id as string));
+} = useRegionalInstrument(instrumentId);
 </script>

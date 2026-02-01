@@ -185,20 +185,4 @@ const isRelativeLink = computed(() => {
   justify-content: center;
   margin-top: auto;
 }
-
-.connect-button {
-  color: var(--color-cold-purple) !important;
-  font-size: 1rem !important;
-  font-weight: 600 !important;
-  transition: color 0.2s ease;
-  padding: 0.5rem !important;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.connect-button:hover {
-  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
-}
 </style>

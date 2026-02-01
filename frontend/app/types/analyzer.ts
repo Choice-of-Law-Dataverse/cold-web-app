@@ -1,3 +1,5 @@
+import type { SSEEventStatus } from "~/composables/useSSEStream";
+
 export interface JurisdictionInfo {
   legal_system_type: string;
   precise_jurisdiction: string;
@@ -88,7 +90,7 @@ export interface StoredAnalyzerSnapshot {
 export interface AnalysisStep {
   name: string;
   label: string;
-  status: "pending" | "in_progress" | "completed" | "error";
+  status: SSEEventStatus;
   confidence: string | null;
   reasoning: string | null;
   error: string | null;

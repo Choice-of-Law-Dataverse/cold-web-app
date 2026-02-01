@@ -6,85 +6,81 @@
     :key-label-pairs="computedKeyLabelPairs"
   >
     <template #full-width>
-      <div class="gradient-top-border w-full">
-        <div class="px-6 py-6">
-          <h1 class="mb-6">Arbitral Awards</h1>
-          <div class="awards-table">
-            <UTable :columns="columns" :data="rows">
-              <template #caseNumber-cell="{ row }">
-                <NuxtLink
-                  v-if="row.original.coldId"
-                  :to="`/arbitral-award/${row.original.coldId}`"
-                  class="table-row-link"
-                >
-                  <span
-                    class="result-value-small block truncate whitespace-nowrap"
-                    >{{ row.original.caseNumber }}</span
-                  >
-                </NuxtLink>
+      <div class="gradient-top-border" />
+      <div class="w-full px-6 py-6">
+        <div class="awards-table">
+          <UTable :columns="columns" :data="rows">
+            <template #caseNumber-cell="{ row }">
+              <NuxtLink
+                v-if="row.original.coldId"
+                :to="`/arbitral-award/${row.original.coldId}`"
+                class="table-row-link"
+              >
                 <span
-                  v-else
                   class="result-value-small block truncate whitespace-nowrap"
                   >{{ row.original.caseNumber }}</span
                 >
-              </template>
-              <template #year-cell="{ row }">
-                <NuxtLink
-                  v-if="row.original.coldId"
-                  :to="`/arbitral-award/${row.original.coldId}`"
-                  class="table-row-link"
-                >
-                  <span class="result-value-small">{{
-                    row.original.year
-                  }}</span>
-                </NuxtLink>
-                <span v-else class="result-value-small">{{
-                  row.original.year
-                }}</span>
-              </template>
-              <template #seatTown-cell="{ row }">
-                <NuxtLink
-                  v-if="row.original.coldId"
-                  :to="`/arbitral-award/${row.original.coldId}`"
-                  class="table-row-link"
-                >
-                  <span class="result-value-small">{{
-                    row.original.seatTown
-                  }}</span>
-                </NuxtLink>
-                <span v-else class="result-value-small">{{
+              </NuxtLink>
+              <span
+                v-else
+                class="result-value-small block truncate whitespace-nowrap"
+                >{{ row.original.caseNumber }}</span
+              >
+            </template>
+            <template #year-cell="{ row }">
+              <NuxtLink
+                v-if="row.original.coldId"
+                :to="`/arbitral-award/${row.original.coldId}`"
+                class="table-row-link"
+              >
+                <span class="result-value-small">{{ row.original.year }}</span>
+              </NuxtLink>
+              <span v-else class="result-value-small">{{
+                row.original.year
+              }}</span>
+            </template>
+            <template #seatTown-cell="{ row }">
+              <NuxtLink
+                v-if="row.original.coldId"
+                :to="`/arbitral-award/${row.original.coldId}`"
+                class="table-row-link"
+              >
+                <span class="result-value-small">{{
                   row.original.seatTown
                 }}</span>
-              </template>
-              <template #source-cell="{ row }">
-                <NuxtLink
-                  v-if="row.original.coldId"
-                  :to="`/arbitral-award/${row.original.coldId}`"
-                  class="table-row-link"
-                >
-                  <span class="result-value-small">{{
-                    row.original.source
-                  }}</span>
-                </NuxtLink>
-                <span v-else class="result-value-small">{{
+              </NuxtLink>
+              <span v-else class="result-value-small">{{
+                row.original.seatTown
+              }}</span>
+            </template>
+            <template #source-cell="{ row }">
+              <NuxtLink
+                v-if="row.original.coldId"
+                :to="`/arbitral-award/${row.original.coldId}`"
+                class="table-row-link"
+              >
+                <span class="result-value-small">{{
                   row.original.source
                 }}</span>
-              </template>
-              <template #open-cell="{ row }">
-                <NuxtLink
-                  v-if="row.original.coldId"
-                  :to="`/arbitral-award/${row.original.coldId}`"
-                  class="table-row-link arrow-cell"
-                >
-                  <UIcon
-                    name="i-material-symbols:arrow-forward"
-                    class="arrow-icon"
-                  />
-                </NuxtLink>
-                <span v-else class="text-gray-400">—</span>
-              </template>
-            </UTable>
-          </div>
+              </NuxtLink>
+              <span v-else class="result-value-small">{{
+                row.original.source
+              }}</span>
+            </template>
+            <template #open-cell="{ row }">
+              <NuxtLink
+                v-if="row.original.coldId"
+                :to="`/arbitral-award/${row.original.coldId}`"
+                class="table-row-link arrow-cell"
+              >
+                <UIcon
+                  name="i-material-symbols:arrow-forward"
+                  class="arrow-icon"
+                />
+              </NuxtLink>
+              <span v-else class="text-gray-400">—</span>
+            </template>
+          </UTable>
         </div>
       </div>
     </template>

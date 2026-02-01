@@ -143,13 +143,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watchEffect, onMounted } from "vue";
+import { ref, watch, onMounted } from "vue";
 import type { JurisdictionOption, AnalysisStepPayload } from "~/types/analyzer";
 import { useAnalyzerForm } from "~/composables/useAnalyzerForm";
 import { useAnalysisSteps } from "~/composables/useAnalysisSteps";
 import { useDocumentUpload } from "~/composables/useDocumentUpload";
 import { useCaseAnalyzer } from "~/composables/useCaseAnalyzer";
-import { useJurisdictions } from "@/composables/useJurisdictions";
+import { useJurisdictionLookup } from "@/composables/useJurisdictions";
 import FileUploadCard from "@/components/case-analyzer/FileUploadCard.vue";
 import JurisdictionConfirmCard from "@/components/case-analyzer/JurisdictionConfirmCard.vue";
 import AnalysisReviewForm from "@/components/case-analyzer/AnalysisReviewForm.vue";
@@ -161,10 +161,7 @@ definePageMeta({});
 
 useHead({ title: "AI Case Analyzer — CoLD" });
 
-// Check if user is authenticated
 const user = useUser();
-
-// Route for draft recovery
 const route = useRoute();
 
 // State
@@ -173,13 +170,13 @@ const error = ref<string | null>(null);
 const analysisResults = ref<Record<string, AnalysisStepPayload>>({});
 const selectedJurisdiction = ref<JurisdictionOption | undefined>(undefined);
 
-// Jurisdictions for selector
-const { data: jurisdictions } = useJurisdictions();
-
 // Composables
+const { findJurisdictionByName } = useJurisdictionLookup();
+
 const {
   selectedFile,
   isUploading,
+  currentStep: uploadStep,
   draftId,
   jurisdictionInfo,
   uploadDocument: performUpload,
@@ -188,12 +185,16 @@ const {
 
 const {
   analysisSteps,
+  stepsMap,
   getFieldStatus,
   isFieldLoading,
+  updateStepStatus,
+  handleUploadStepChange,
   hydrateAnalysisStepsFromResults,
+  resetAnalysisSteps,
 } = useAnalysisSteps();
 
-const analysis = useCaseAnalyzer(analysisSteps, analysisResults, () =>
+const analysis = useCaseAnalyzer(analysisSteps, stepsMap, analysisResults, () =>
   populateEditableForm(),
 );
 
@@ -204,70 +205,45 @@ const {
   resetEditableForm,
 } = useAnalyzerForm(jurisdictionInfo, analysisResults);
 
-// Helper to update a specific step's status
-function updateStepStatus(
-  stepName: string,
-  status: "pending" | "in_progress" | "completed" | "error",
-  data?: { confidence?: string; reasoning?: string },
-) {
-  const step = analysisSteps.value.find((s) => s.name === stepName);
-  if (step) {
-    step.status = status;
-    if (data) {
-      step.confidence = data.confidence || null;
-      step.reasoning = data.reasoning || null;
-    }
-  }
-}
-
-// Populate form when analysis completes
-watchEffect(() => {
-  if (currentStep.value === "analyzing" && !analysis.isAnalyzing.value) {
-    populateEditableForm();
-  }
+// Watch upload step to update step tracker
+watch(uploadStep, (step) => {
+  handleUploadStepChange(step, jurisdictionInfo.value);
 });
 
 // Initialize selectedJurisdiction when jurisdictionInfo changes
-watchEffect(() => {
-  if (jurisdictionInfo.value && jurisdictions.value) {
-    const match = jurisdictions.value.find(
-      (j: JurisdictionOption) =>
-        j.Name === jurisdictionInfo.value?.precise_jurisdiction,
-    );
-    if (match) {
-      selectedJurisdiction.value = match;
+watch(
+  () => jurisdictionInfo.value?.precise_jurisdiction,
+  (preciseJurisdiction) => {
+    if (preciseJurisdiction) {
+      const match = findJurisdictionByName(preciseJurisdiction);
+      if (match) {
+        selectedJurisdiction.value = match;
+      }
     }
-  }
-});
+  },
+  { immediate: true },
+);
 
-// Document upload handler
+// Populate form when analysis completes
+watch(
+  () => analysis.isAnalyzing.value,
+  (isAnalyzing, wasAnalyzing) => {
+    if (wasAnalyzing && !isAnalyzing && currentStep.value === "analyzing") {
+      populateEditableForm();
+    }
+  },
+);
+
 async function uploadDocument() {
   error.value = null;
   updateStepStatus("document_upload", "in_progress");
 
-  const result = await performUpload(
-    () => updateStepStatus("document_upload", "in_progress"),
-    () => {
-      updateStepStatus("document_upload", "completed");
-      updateStepStatus("jurisdiction_detection", "in_progress");
-    },
-    () => {
-      if (jurisdictionInfo.value) {
-        updateStepStatus("jurisdiction_detection", "completed", {
-          confidence: jurisdictionInfo.value.confidence,
-          reasoning: jurisdictionInfo.value.reasoning,
-        });
-      }
-    },
-  );
+  const result = await performUpload();
 
   if (result.success) {
     currentStep.value = "confirm";
-    // Add draft_id to URL for bookmarking/returning to draft
     if (draftId.value) {
-      await navigateTo({
-        query: { draft: draftId.value.toString() },
-      });
+      await navigateTo({ query: { draft: draftId.value.toString() } });
     }
   } else {
     error.value = result.error || "Upload failed";
@@ -295,16 +271,8 @@ async function confirmAndAnalyze(resume = false) {
   currentStep.value = "analyzing";
   error.value = null;
 
-  // Reset only analysis steps (not upload/jurisdiction) if not resuming
   if (!resume) {
-    analysisSteps.value.forEach((step) => {
-      if (!["document_upload", "jurisdiction_detection"].includes(step.name)) {
-        step.status = "pending";
-        step.confidence = null;
-        step.reasoning = null;
-        step.error = null;
-      }
-    });
+    resetAnalysisSteps(new Set(["document_upload", "jurisdiction_detection"]));
   }
 
   const result = await analysis.startAnalysis(
@@ -348,12 +316,7 @@ function resetAnalysis() {
   resetUpload();
   resetEditableForm();
   analysis.reset();
-  analysisSteps.value.forEach((step) => {
-    step.status = "pending";
-    step.confidence = null;
-    step.reasoning = null;
-    step.error = null;
-  });
+  resetAnalysisSteps();
   navigateTo("/court-decision/new", { replace: true });
 }
 
@@ -364,7 +327,6 @@ onMounted(async () => {
     const result = await analysis.recoverDraft(draftParam);
 
     if (result.success && result.data) {
-      // Restore useDocumentUpload state
       draftId.value = result.data.draftId;
       if (result.data.fileName) {
         selectedFile.value = new File([], result.data.fileName, {
@@ -375,7 +337,6 @@ onMounted(async () => {
         jurisdictionInfo.value = result.data.jurisdictionInfo;
       }
 
-      // Hydrate analysis steps from recovered data
       if (Object.keys(result.data.analyzerData).length > 0) {
         hydrateAnalysisStepsFromResults(result.data.analyzerData);
       }
@@ -387,7 +348,6 @@ onMounted(async () => {
         });
       }
 
-      // Determine which step to show based on status and data
       if (
         result.data.status === "completed" ||
         result.data.status === "analyzing"
@@ -401,7 +361,6 @@ onMounted(async () => {
       }
     } else {
       error.value = result.error || "Failed to recover draft";
-      // Reset to upload step and clear URL to provide a clean starting point
       currentStep.value = "upload";
       navigateTo("/court-decision/new", { replace: true });
     }

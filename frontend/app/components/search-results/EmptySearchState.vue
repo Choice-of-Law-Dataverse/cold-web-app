@@ -1,29 +1,27 @@
 <template>
-  <div class="flex h-full w-full items-center justify-center py-12">
-    <UCard class="cold-ucard w-full max-w-2xl">
-      <div class="flex flex-col gap-8">
-        <div>
-          <h2 class="text-left text-2xl font-semibold md:whitespace-nowrap">
-            Try searching for something
-          </h2>
-          <p class="mt-2 text-gray-600">
-            Here are some popular searches to get you started:
-          </p>
-        </div>
-
-        <div class="flex flex-col gap-2">
-          <UButton
-            v-for="(suggestion, index) in searchSuggestions"
-            :key="index"
-            class="suggestion-button"
-            variant="link"
-            @click="handleSuggestionClick(suggestion)"
-          >
-            <span class="text-left break-words">{{ suggestion }}</span>
-          </UButton>
-        </div>
+  <div class="empty-state-container rounded-2xl px-6 py-8">
+    <div class="flex flex-col gap-5">
+      <div>
+        <h2 class="empty-state-title text-xl font-bold">
+          Try searching for something
+        </h2>
+        <p class="empty-state-subtitle mt-1 text-sm">
+          Here are some popular searches to get you started
+        </p>
       </div>
-    </UCard>
+
+      <div class="flex w-full flex-col gap-2">
+        <button
+          v-for="(suggestion, index) in searchSuggestions"
+          :key="index"
+          class="landing-item-button w-full"
+          @click="handleSuggestionClick(suggestion)"
+        >
+          <Icon name="i-material-symbols:search" class="item-icon" />
+          <span class="flex-1 text-left">{{ suggestion }}</span>
+        </button>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -53,13 +51,22 @@ function handleSuggestionClick(suggestion) {
 </script>
 
 <style scoped>
-.suggestion-button {
-  width: 100%;
-  justify-content: flex-start;
-  text-align: left;
+.empty-state-container {
+  background: var(--gradient-subtle-emphasis);
 }
 
-.suggestion-button:hover {
-  text-decoration: underline;
+.empty-state-title {
+  background: linear-gradient(
+    135deg,
+    var(--color-cold-night),
+    var(--color-cold-purple)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.empty-state-subtitle {
+  color: var(--color-cold-slate);
 }
 </style>

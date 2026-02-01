@@ -29,7 +29,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from "vue";
+import { ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useArbitralAward } from "@/composables/useRecordDetails";
@@ -39,9 +39,12 @@ import { arbitralAwardLabels } from "@/config/labels";
 
 const route = useRoute();
 
+// Capture the ID once at setup to prevent flash during page transitions
+const awardId = ref(route.params.id as string);
+
 const {
   data: arbitralAward,
   isLoading: loading,
   error,
-} = useArbitralAward(computed(() => route.params.id as string));
+} = useArbitralAward(awardId);
 </script>

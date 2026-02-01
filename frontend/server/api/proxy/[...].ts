@@ -64,7 +64,9 @@ export default defineEventHandler(async (event) => {
   }
 
   try {
-    const result = await proxyRequest(event, url, { headers });
+    const result = await proxyRequest(event, url, {
+      headers,
+    });
 
     return result;
   } catch (error) {

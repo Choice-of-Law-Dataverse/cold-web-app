@@ -25,7 +25,7 @@
                   legalInstrument?.['Official Source (PDF)'] ||
                   legalInstrument?.['Source (PDF)']
                 "
-                :record-id="route.params.id as string"
+                :record-id="instrumentId"
                 folder-name="domestic-instruments"
               />
               <SourceExternalLink
@@ -130,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, defineAsyncComponent } from "vue";
+import { ref, defineAsyncComponent } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -154,11 +154,14 @@ const route = useRoute();
 const textType = ref("Full Text of the Provision (English Translation)");
 const hasEnglishTranslation = ref(false);
 
+// Capture the ID once at setup to prevent flash during page transitions
+const instrumentId = ref(route.params.id as string);
+
 const {
   data: legalInstrument,
   isLoading: loading,
   error,
-} = useDomesticInstrument(computed(() => route.params.id as string));
+} = useDomesticInstrument(instrumentId);
 
 const isCompatible = (
   field:

@@ -82,7 +82,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, nextTick, defineAsyncComponent } from "vue";
+import { computed, onMounted, nextTick, defineAsyncComponent, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -104,19 +104,18 @@ const LazyRelatedLiterature = defineAsyncComponent(
 
 const route = useRoute();
 
-const {
-  data: answerData,
-  isLoading,
-  error,
-} = useAnswer(computed(() => route.params.id as string));
+// Capture the ID once at setup to prevent flash during page transitions
+const answerId = ref(route.params.id as string);
+
+const { data: answerData, isLoading, error } = useAnswer(answerId);
 
 const questionSuffix = computed(() => {
   // Extract question suffix from the answer ID (route param)
   // Answer ID format: {ISO3_CODE}_{QUESTION_SUFFIX}
-  const answerId = route.params.id as string;
-  if (!answerId || typeof answerId !== "string") return null;
+  const id = answerId.value;
+  if (!id || typeof id !== "string") return null;
 
-  const parts = answerId.split("_");
+  const parts = id.split("_");
   if (parts.length > 1) {
     // Return everything after the first underscore (the question suffix)
     return "_" + parts.slice(1).join("_");

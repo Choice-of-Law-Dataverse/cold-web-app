@@ -1,137 +1,140 @@
 <template>
-  <NotificationBanner
-    v-if="showNotificationBanner"
-    :notification-banner-message="notificationBannerMessage"
-    :icon="icon"
-  />
+  <article>
+    <NotificationBanner
+      v-if="showNotificationBanner"
+      :notification-banner-message="notificationBannerMessage"
+      :icon="icon"
+    />
 
-  <template v-if="loading">
-    <LoadingCard />
-  </template>
-  <template v-else-if="error">
-    <InlineError :error="error" />
-  </template>
-  <template v-else>
-    <UCard
-      class="cold-ucard overflow-hidden"
-      :ui="{
-        body: '!p-0',
-        header: 'sticky-header border-b-0 px-6 py-5',
-      }"
-    >
-      <!-- Header section: render only when showHeader is true -->
-      <template v-if="showHeader" #header>
-        <BaseCardHeader
-          :result-data="resultData"
-          :card-type="formattedSourceTable"
-          :show-suggest-edit="showSuggestEdit"
-          :show-open-link="showOpenLink"
-          :formatted-jurisdiction="formattedJurisdiction"
-          :formatted-theme="formattedTheme"
-          :header-mode="headerMode"
-          @save="emit('save')"
-          @open-save-modal="emit('open-save-modal')"
-          @open-cancel-modal="emit('open-cancel-modal')"
-        >
-          <template v-for="(_, name) in $slots" :key="name" #[name]="slotData">
-            <slot :name="name" v-bind="slotData" />
-          </template>
-        </BaseCardHeader>
-      </template>
-
-      <slot name="full-width" />
-
-      <!-- Gradient divider between header and content -->
-      <div class="gradient-top-border" />
-
-      <!-- Main content -->
-      <div class="flex">
-        <div
-          class="main-content flex w-full flex-col gap-2 px-4 py-4 sm:px-6 sm:py-6"
-        >
-          <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
-          <slot />
-          <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
-          <template v-for="(item, index) in keyLabelPairs" :key="index">
-            <section
-              v-if="shouldDisplayValue(item, resultData?.[item.key])"
-              class="detail-section"
+    <LoadingCard v-if="loading" />
+    <InlineError v-else-if="error" :error="error" />
+    <template v-else>
+      <UCard
+        class="cold-ucard overflow-hidden"
+        :ui="{
+          body: '!p-0',
+          header: 'sticky-header border-b-0 px-6 py-5',
+        }"
+      >
+        <!-- Header section: render only when showHeader is true -->
+        <template v-if="showHeader" #header>
+          <BaseCardHeader
+            :result-data="resultData"
+            :card-type="formattedSourceTable"
+            :show-suggest-edit="showSuggestEdit"
+            :show-open-link="showOpenLink"
+            :formatted-jurisdiction="formattedJurisdiction"
+            :formatted-theme="formattedTheme"
+            :header-mode="headerMode"
+            @save="emit('save')"
+            @open-save-modal="emit('open-save-modal')"
+            @open-cancel-modal="emit('open-cancel-modal')"
+          >
+            <template
+              v-for="(_, name) in $slots"
+              :key="name"
+              #[name]="slotData"
             >
-              <!-- Check if it's the special 'Specialist' key -->
-              <template v-if="item.key === 'Region'">
-                <slot />
-              </template>
-              <!-- Check for slot first -->
-              <template
-                v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
-              >
-                <slot
-                  :name="item.key.replace(/ /g, '-').toLowerCase()"
-                  :value="resultData?.[item.key]"
-                />
-              </template>
-              <!-- If no slot, use default display -->
-              <template v-else>
-                <!-- Conditionally render the label and value container -->
-                <DetailRow :label="item.label" :tooltip="item.tooltip">
-                  <template #label-actions>
-                    <slot
-                      :name="item.key + '-header-actions'"
-                      :value="resultData?.[item.key]"
-                    />
-                  </template>
+              <slot :name="name" v-bind="slotData" />
+            </template>
+          </BaseCardHeader>
+        </template>
 
-                  <!-- Conditionally render bullet list if Answer or Specialists is an array -->
-                  <template
-                    v-if="
-                      (item.key === 'Answer' || item.key === 'Specialists') &&
-                      Array.isArray(
-                        getDisplayValue(item, resultData?.[item.key]),
-                      )
-                    "
-                  >
-                    <div class="mt-0 flex flex-col gap-2">
-                      <div
-                        v-for="(line, i) in getDisplayValue(
-                          item,
-                          resultData?.[item.key],
-                        )"
-                        :key="i"
-                        :class="
-                          props.valueClassMap[item.key] || 'result-value-small'
-                        "
-                      >
-                        {{ line }}
-                      </div>
-                    </div>
-                  </template>
-                  <template v-else>
-                    <p
-                      :class="[
-                        props.valueClassMap[item.key] ||
-                          'result-value-small whitespace-pre-line',
-                        'mt-0',
-                      ]"
+        <slot name="full-width" />
+
+        <!-- Gradient divider between header and content -->
+        <div class="gradient-top-border" />
+
+        <!-- Main content -->
+        <div class="flex">
+          <div
+            class="main-content flex w-full flex-col gap-2 px-4 py-4 sm:px-6 sm:py-6"
+          >
+            <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
+            <slot />
+            <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
+            <template v-for="(item, index) in keyLabelPairs" :key="index">
+              <section
+                v-if="shouldDisplayValue(item, resultData?.[item.key])"
+                class="detail-section"
+              >
+                <!-- Check if it's the special 'Specialist' key -->
+                <template v-if="item.key === 'Region'">
+                  <slot />
+                </template>
+                <!-- Check for slot first -->
+                <template
+                  v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
+                >
+                  <slot
+                    :name="item.key.replace(/ /g, '-').toLowerCase()"
+                    :value="resultData?.[item.key]"
+                  />
+                </template>
+                <!-- If no slot, use default display -->
+                <template v-else>
+                  <!-- Conditionally render the label and value container -->
+                  <DetailRow :label="item.label" :tooltip="item.tooltip">
+                    <template #label-actions>
+                      <slot
+                        :name="item.key + '-header-actions'"
+                        :value="resultData?.[item.key]"
+                      />
+                    </template>
+
+                    <!-- Conditionally render bullet list if Answer or Specialists is an array -->
+                    <template
+                      v-if="
+                        (item.key === 'Answer' || item.key === 'Specialists') &&
+                        Array.isArray(
+                          getDisplayValue(item, resultData?.[item.key]),
+                        )
+                      "
                     >
-                      {{ getDisplayValue(item, resultData?.[item.key]) }}
-                    </p>
-                  </template>
-                </DetailRow>
-              </template>
-            </section>
-          </template>
-          <slot name="search-links" />
+                      <div class="mt-0 flex flex-col gap-2">
+                        <div
+                          v-for="(line, i) in getDisplayValue(
+                            item,
+                            resultData?.[item.key],
+                          )"
+                          :key="i"
+                          :class="
+                            props.valueClassMap[item.key] ||
+                            'result-value-small'
+                          "
+                        >
+                          {{ line }}
+                        </div>
+                      </div>
+                    </template>
+                    <template v-else>
+                      <p
+                        :class="[
+                          props.valueClassMap[item.key] ||
+                            'result-value-small whitespace-pre-line',
+                          'mt-0',
+                        ]"
+                      >
+                        {{ getDisplayValue(item, resultData?.[item.key]) }}
+                      </p>
+                    </template>
+                  </DetailRow>
+                </template>
+              </section>
+            </template>
+            <slot name="search-links" />
+          </div>
         </div>
-      </div>
-      <!-- Contribute banner for uncovered jurisdictions -->
-      <ContributeBanner
-        v-if="shouldShowContributeBanner"
-        :jurisdiction-name="contributeBannerJurisdictionName"
-      />
-      <!-- Footer slot for full-width content like country report banner -->
-      <slot name="footer" />
-    </UCard>
-  </template>
+        <!-- Contribute banner for uncovered jurisdictions -->
+        <ContributeBanner
+          v-if="shouldShowContributeBanner"
+          :jurisdiction-name="contributeBannerJurisdictionName"
+        />
+        <!-- Footer slot for full-width content like country report banner -->
+        <slot name="footer" />
+      </UCard>
+    </template>
+  </article>
 </template>
 
 <script setup>

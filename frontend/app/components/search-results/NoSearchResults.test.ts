@@ -9,13 +9,13 @@ const mockRoute = {
   path: "/search",
 };
 
-const mockReplace = vi.fn();
+const mockNavigateTo = vi.fn();
+
+// Mock navigateTo global (Nuxt auto-import)
+vi.stubGlobal("navigateTo", mockNavigateTo);
 
 vi.mock("vue-router", () => ({
   useRoute: () => mockRoute,
-  useRouter: () => ({
-    replace: mockReplace,
-  }),
 }));
 
 // Mock jurisdiction lookup composable
@@ -54,7 +54,7 @@ describe("NoSearchResults", () => {
   beforeEach(() => {
     mockRoute.query = {};
     mockRoute.path = "/search";
-    mockReplace.mockClear();
+    mockNavigateTo.mockClear();
   });
 
   it("renders no results message", () => {
@@ -143,10 +143,13 @@ describe("NoSearchResults", () => {
     const button = wrapper.find(".suggestion-button");
     await button.trigger("click");
 
-    expect(mockReplace).toHaveBeenCalledWith({
-      path: "/search",
-      query: { q: "court decisions in France" },
-    });
+    expect(mockNavigateTo).toHaveBeenCalledWith(
+      {
+        path: "/search",
+        query: { q: "court decisions in France" },
+      },
+      { replace: true },
+    );
   });
 
   it("handles empty jurisdiction filter gracefully", () => {

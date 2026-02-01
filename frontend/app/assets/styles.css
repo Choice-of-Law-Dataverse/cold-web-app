@@ -825,6 +825,12 @@ ul[role="listbox"] li[aria-selected="true"] .iconify {
 ul[role="listbox"] input {
   padding: 0.75rem !important;
   border-color: rgb(229 231 235) !important;
+  background-color: white !important;
+}
+
+/* USelectMenu content wrapper - ensure white background */
+.cold-uselectmenu [data-slot="content"] {
+  background-color: white !important;
 }
 
 /* Popper Hover & Active States */
@@ -902,6 +908,12 @@ ul[role="listbox"] li[data-headlessui-state="selected"]:hover {
 }
 
 /* Form Inputs ----------------------------------------------- */
+
+/* Ensure all form textareas and inputs take full width by default */
+textarea,
+[data-slot="control"] textarea {
+  width: 100% !important;
+}
 
 /* Base input style: apply to inputs by adding the `cold-input` class. */
 .cold-input,
@@ -2441,6 +2453,15 @@ button.cold-toggle-btn[aria-pressed="true"] {
   margin-bottom: 1.25rem;
 }
 
+/* Images - constrain to reasonable size */
+.content-page-prose img {
+  max-width: 200px;
+  height: auto;
+  border-radius: 0.375rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 /* Footer styles */
 .footer-container {
   background: var(--gradient-footer);
@@ -2553,4 +2574,55 @@ button.cold-toggle-btn[aria-pressed="true"] {
   .page-back-leave-to {
     transform: none;
   }
+}
+
+/* Hero Buttons ----------------------------------------------- */
+.hero-cta {
+  background: linear-gradient(
+    135deg,
+    var(--color-cold-purple),
+    var(--color-cold-teal)
+  ) !important;
+  color: white !important;
+  font-weight: 600 !important;
+  border: none !important;
+  cursor: pointer !important;
+  box-shadow:
+    0 4px 6px -1px rgb(0 0 0 / 0.1),
+    0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+}
+
+.hero-cta:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    0 10px 15px -3px rgb(0 0 0 / 0.1),
+    0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+}
+
+.hero-cta-secondary {
+  border-color: var(--color-cold-purple) !important;
+  color: var(--color-cold-purple) !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+}
+
+.hero-cta-secondary:hover {
+  background: color-mix(
+    in srgb,
+    var(--color-cold-purple) 8%,
+    transparent
+  ) !important;
+  transform: translateY(-2px);
+}
+
+/* Connect Card Button ----------------------------------------------- */
+.connect-button {
+  color: var(--color-cold-purple) !important;
+  font-size: 1rem !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+}
+
+.connect-button:hover {
+  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
 }

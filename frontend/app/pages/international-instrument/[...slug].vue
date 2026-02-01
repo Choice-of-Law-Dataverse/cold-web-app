@@ -103,11 +103,8 @@
       </div>
     </BaseDetailLayout>
     <ClientOnly>
-      <LazyCancelModal
-        v-model="showCancelModal"
-        @confirm-cancel="confirmCancel"
-      />
-      <LazySaveModal
+      <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
+      <SaveModal
         v-model="showSaveModal"
         :email="email"
         :comments="comments"
@@ -135,6 +132,8 @@ import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
+import SaveModal from "@/components/ui/SaveModal.vue";
+import CancelModal from "@/components/ui/CancelModal.vue";
 import { format, parseISO } from "date-fns";
 import { useHead } from "#imports";
 import { internationalInstrumentTooltips } from "@/config/tooltips";
@@ -245,12 +244,15 @@ function confirmCancel() {
 
 function handleEditSave() {
   showSaveModal.value = false;
-  router.replace({
-    path: "/confirmation",
-    query: {
-      message: "Thanks, we have received your edit suggestions.",
+  navigateTo(
+    {
+      path: "/confirmation",
+      query: {
+        message: "Thanks, we have received your edit suggestions.",
+      },
     },
-  });
+    { replace: true },
+  );
 }
 
 async function fetchInstrument() {

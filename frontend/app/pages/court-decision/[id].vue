@@ -22,7 +22,7 @@
             <div class="flex flex-shrink-0 items-center gap-3">
               <PdfLink
                 :pdf-field="courtDecision?.['Official Source (PDF)']"
-                :record-id="route.params.id as string"
+                :record-id="courtDecisionId"
                 folder-name="court-decisions"
               />
               <SourceExternalLink
@@ -183,7 +183,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, defineAsyncComponent } from "vue";
+import { ref, defineAsyncComponent } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -216,11 +216,14 @@ defineProps({
 
 const route = useRoute();
 
+// Capture the ID once at setup to prevent flash during page transitions
+const courtDecisionId = ref(route.params.id as string);
+
 const {
   data: courtDecision,
   isLoading,
   error,
-} = useCourtDecision(computed(() => route.params.id as string));
+} = useCourtDecision(courtDecisionId);
 
 const showEnglishQuote = ref(true);
 const showFullText = ref(false);

@@ -6,57 +6,55 @@
     :key-label-pairs="computedKeyLabelPairs"
   >
     <template #full-width>
-      <div class="gradient-top-border w-full">
-        <div class="px-6 py-6">
-          <h1 class="mb-6">Arbitral Rules</h1>
-          <div class="rules-table" :style="{ '--set-col-width': setColWidth }">
-            <UTable :columns="columns" :data="rows">
-              <template #setofRules-cell="{ row }">
-                <NuxtLink
-                  v-if="row.original.coldId"
-                  :to="`/arbitral-rule/${row.original.coldId}`"
-                  class="table-row-link"
-                >
-                  <span
-                    class="result-value-small block truncate whitespace-nowrap"
-                    >{{ row.original.setofRules }}</span
-                  >
-                </NuxtLink>
+      <div class="gradient-top-border" />
+      <div class="w-full px-6 py-6">
+        <div class="rules-table" :style="{ '--set-col-width': setColWidth }">
+          <UTable :columns="columns" :data="rows">
+            <template #setofRules-cell="{ row }">
+              <NuxtLink
+                v-if="row.original.coldId"
+                :to="`/arbitral-rule/${row.original.coldId}`"
+                class="table-row-link"
+              >
                 <span
-                  v-else
                   class="result-value-small block truncate whitespace-nowrap"
                   >{{ row.original.setofRules }}</span
                 >
-              </template>
-              <template #inForceFrom-cell="{ row }">
-                <NuxtLink
-                  v-if="row.original.coldId"
-                  :to="`/arbitral-rule/${row.original.coldId}`"
-                  class="table-row-link"
-                >
-                  <span class="result-value-small">{{
-                    formatDate(row.original.inForceFrom) || ""
-                  }}</span>
-                </NuxtLink>
-                <span v-else class="result-value-small">{{
+              </NuxtLink>
+              <span
+                v-else
+                class="result-value-small block truncate whitespace-nowrap"
+                >{{ row.original.setofRules }}</span
+              >
+            </template>
+            <template #inForceFrom-cell="{ row }">
+              <NuxtLink
+                v-if="row.original.coldId"
+                :to="`/arbitral-rule/${row.original.coldId}`"
+                class="table-row-link"
+              >
+                <span class="result-value-small">{{
                   formatDate(row.original.inForceFrom) || ""
                 }}</span>
-              </template>
-              <template #open-cell="{ row }">
-                <NuxtLink
-                  v-if="row.original.coldId"
-                  :to="`/arbitral-rule/${row.original.coldId}`"
-                  class="table-row-link arrow-cell"
-                >
-                  <UIcon
-                    name="i-material-symbols:arrow-forward"
-                    class="arrow-icon"
-                  />
-                </NuxtLink>
-                <span v-else class="text-gray-400">—</span>
-              </template>
-            </UTable>
-          </div>
+              </NuxtLink>
+              <span v-else class="result-value-small">{{
+                formatDate(row.original.inForceFrom) || ""
+              }}</span>
+            </template>
+            <template #open-cell="{ row }">
+              <NuxtLink
+                v-if="row.original.coldId"
+                :to="`/arbitral-rule/${row.original.coldId}`"
+                class="table-row-link arrow-cell"
+              >
+                <UIcon
+                  name="i-material-symbols:arrow-forward"
+                  class="arrow-icon"
+                />
+              </NuxtLink>
+              <span v-else class="text-gray-400">—</span>
+            </template>
+          </UTable>
         </div>
       </div>
     </template>

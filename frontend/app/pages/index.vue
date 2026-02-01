@@ -1,5 +1,4 @@
 <template>
-  <!-- Header Section -->
   <div class="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-6">
     <div class="col-span-12">
       <div
@@ -54,9 +53,6 @@
         <div
           class="hidden min-w-[100px] items-center justify-center gap-3 sm:flex-col md:flex lg:flex-row"
         >
-          <!-- <HCCHApproved />
-              <OpenScienceBadge /> -->
-
           <UTooltip
             text="Winner of Swiss National ORD Prize 2025 for Legal Sciences"
           >
@@ -328,43 +324,5 @@ h2 {
 .hero-link:hover {
   color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
   text-decoration: underline !important;
-}
-
-.hero-cta {
-  background: linear-gradient(
-    135deg,
-    var(--color-cold-purple),
-    var(--color-cold-teal)
-  ) !important;
-  color: white !important;
-  font-weight: 600 !important;
-  border: none !important;
-  transition: all 0.2s ease !important;
-  box-shadow:
-    0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
-}
-
-.hero-cta:hover {
-  transform: translateY(-2px);
-  box-shadow:
-    0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
-}
-
-.hero-cta-secondary {
-  border-color: var(--color-cold-purple) !important;
-  color: var(--color-cold-purple) !important;
-  font-weight: 600 !important;
-  transition: all 0.2s ease !important;
-}
-
-.hero-cta-secondary:hover {
-  background: color-mix(
-    in srgb,
-    var(--color-cold-purple) 8%,
-    transparent
-  ) !important;
-  transform: translateY(-2px);
 }
 </style>
