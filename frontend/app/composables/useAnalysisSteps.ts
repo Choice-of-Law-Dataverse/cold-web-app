@@ -1,9 +1,11 @@
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import type {
   AnalysisStep,
   AnalysisStepPayload,
   EditedAnalysisValues,
+  JurisdictionInfo,
 } from "~/types/analyzer";
+import type { SSEEventStatus } from "~/composables/useSSEStream";
 
 export function useAnalysisSteps() {
   // Steps ordered by workflow dependency chain
@@ -113,6 +115,11 @@ export function useAnalysisSteps() {
 
   const isAnalyzing = ref(false);
 
+  // O(1) lookup map
+  const stepsMap = computed(
+    () => new Map(analysisSteps.value.map((s) => [s.name, s])),
+  );
+
   const formFieldAnalysisStepMap: Record<string, string> = {
     caseCitation: "case_citation",
     choiceOfLawSections: "col_extraction",
@@ -126,10 +133,50 @@ export function useAnalysisSteps() {
     caseDissentingOpinions: "dissenting_opinions",
   };
 
+  function updateStepStatus(
+    stepName: string,
+    status: SSEEventStatus,
+    data?: { confidence?: string; reasoning?: string },
+  ) {
+    const step = stepsMap.value.get(stepName);
+    if (step) {
+      step.status = status;
+      if (data) {
+        step.confidence = data.confidence || null;
+        step.reasoning = data.reasoning || null;
+      }
+    }
+  }
+
+  /**
+   * Maps upload SSE steps to analysis step tracker updates
+   */
+  function handleUploadStepChange(
+    uploadStep: string | null,
+    jurisdictionInfo?: JurisdictionInfo | null,
+  ) {
+    if (!uploadStep) return;
+
+    if (
+      uploadStep === "uploading_to_storage" ||
+      uploadStep === "extracting_text"
+    ) {
+      updateStepStatus("document_upload", "in_progress");
+    } else if (uploadStep === "detecting_jurisdiction") {
+      updateStepStatus("document_upload", "completed");
+      updateStepStatus("jurisdiction_detection", "in_progress");
+    } else if (uploadStep === "upload_complete" && jurisdictionInfo) {
+      updateStepStatus("jurisdiction_detection", "completed", {
+        confidence: jurisdictionInfo.confidence,
+        reasoning: jurisdictionInfo.reasoning,
+      });
+    }
+  }
+
   function getFieldStatus(fieldName: keyof EditedAnalysisValues) {
     const stepName = formFieldAnalysisStepMap[fieldName];
-    const step = analysisSteps.value.find((s) => s.name === stepName);
-    return step || null;
+    if (!stepName) return null;
+    return stepsMap.value.get(stepName) || null;
   }
 
   function isFieldLoading(fieldName: keyof EditedAnalysisValues): boolean {
@@ -147,44 +194,38 @@ export function useAnalysisSteps() {
   function hydrateAnalysisStepsFromResults(
     results: Record<string, AnalysisStepPayload>,
   ) {
-    analysisSteps.value.forEach((step) => {
+    for (const step of analysisSteps.value) {
       const result = results[step.name];
       if (result) {
-        // Only mark as completed if we have actual result data
         step.status = "completed";
         step.confidence =
-          typeof result.confidence === "string"
-            ? (result.confidence as string)
-            : null;
+          typeof result.confidence === "string" ? result.confidence : null;
         step.reasoning =
-          typeof result.reasoning === "string"
-            ? (result.reasoning as string)
-            : null;
+          typeof result.reasoning === "string" ? result.reasoning : null;
         step.error = null;
       }
-      // Steps without results stay in their current state (pending)
-      // Don't mark them as completed - they weren't executed
-    });
+    }
   }
 
   function markStepsCompleteWithoutResults() {
-    analysisSteps.value.forEach((step) => {
+    for (const step of analysisSteps.value) {
       if (step.status !== "error") {
         step.status = "completed";
         step.confidence = null;
         step.reasoning = null;
         step.error = null;
       }
-    });
+    }
   }
 
-  function resetAnalysisSteps() {
-    analysisSteps.value.forEach((step) => {
+  function resetAnalysisSteps(excludeSteps?: Set<string>) {
+    for (const step of analysisSteps.value) {
+      if (excludeSteps?.has(step.name)) continue;
       step.status = "pending";
       step.confidence = null;
       step.reasoning = null;
       step.error = null;
-    });
+    }
   }
 
   function getConfidenceColor(
@@ -204,7 +245,10 @@ export function useAnalysisSteps() {
 
   return {
     analysisSteps,
+    stepsMap,
     isAnalyzing,
+    updateStepStatus,
+    handleUploadStepChange,
     getFieldStatus,
     isFieldLoading,
     isFieldDisabled,

@@ -1,14 +1,16 @@
-import { ref, type Ref } from "vue";
+import { ref, type Ref, type ComputedRef } from "vue";
 import type {
   JurisdictionInfo,
   AnalysisStepPayload,
   EditedAnalysisValues,
   SubmitForApprovalResponse,
+  AnalysisStep,
 } from "~/types/analyzer";
 import {
   buildCaseAnalyzerPayload,
   extractErrorMessage,
 } from "~/utils/analyzerPayloadParser";
+import { streamSSE, type SSEEvent } from "~/composables/useSSEStream";
 
 export interface DraftRecoveryData {
   draftId: number;
@@ -18,15 +20,6 @@ export interface DraftRecoveryData {
   analyzerData: Record<string, AnalysisStepPayload>;
 }
 
-interface AnalysisStep {
-  name: string;
-  status: "pending" | "in_progress" | "completed" | "error";
-  confidence: string | null;
-  reasoning: string | null;
-  error: string | null;
-}
-
-// Step label mapping for toast notifications
 const stepLabels: Record<string, string> = {
   col_extraction: "Choice of Law Extraction",
   theme_classification: "Theme Classification",
@@ -42,6 +35,7 @@ const stepLabels: Record<string, string> = {
 
 export function useCaseAnalyzer(
   analysisSteps: Ref<AnalysisStep[]>,
+  stepsMap: ComputedRef<Map<string, AnalysisStep>>,
   analysisResults: Ref<Record<string, AnalysisStepPayload>>,
   onStepUpdate?: (stepName: string, data: AnalysisStepPayload) => void,
 ) {
@@ -59,81 +53,32 @@ export function useCaseAnalyzer(
     isAnalyzing.value = true;
 
     try {
-      const response = await fetch("/api/proxy/case-analyzer/analyze", {
+      await streamSSE<AnalysisStepPayload>({
+        url: "/api/proxy/case-analyzer/analyze",
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
+        body: {
           draft_id: draftId,
           jurisdiction: jurisdictionInfo,
           resume,
-        }),
-      });
-
-      // Check for HTTP error status
-      if (!response.ok) {
-        const errorText = await response.text();
-        let errorMessage = "Analysis request failed";
-        try {
-          const errorJson = JSON.parse(errorText);
-          errorMessage = errorJson.detail || errorJson.message || errorMessage;
-        } catch {
-          if (errorText) errorMessage = errorText;
-        }
-        throw new Error(errorMessage);
-      }
-
-      const reader = response.body?.getReader();
-      const decoder = new TextDecoder();
-
-      if (!reader) {
-        throw new Error("No response body");
-      }
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        const chunk = decoder.decode(value);
-        const lines = chunk.split("\n");
-
-        for (const line of lines) {
-          if (line.startsWith("data: ")) {
-            try {
-              const data = JSON.parse(line.slice(6));
-              const step = analysisSteps.value.find(
-                (s) => s.name === data.step,
-              );
-              if (step) {
-                const prevStatus = step.status;
-                step.status = data.status;
-                if (data.data) {
-                  step.confidence = data.data.confidence || null;
-                  step.reasoning = data.data.reasoning || null;
-                  analysisResults.value[data.step] = data.data;
-                  onStepUpdate?.(data.step, data.data);
-                }
-                if (data.error) {
-                  step.error = data.error;
-                }
-                // Show toast when step completes
-                if (data.status === "completed" && prevStatus !== "completed") {
-                  toast.add({
-                    title: stepLabels[data.step] || data.step,
-                    description: "Completed",
-                    color: "info",
-                    icon: "i-heroicons-check-circle",
-                    duration: 2000,
-                  });
-                }
-              }
-            } catch (e) {
-              console.error("Failed to parse SSE data:", e);
+        },
+        stepLabels,
+        onEvent: (event: SSEEvent<AnalysisStepPayload>) => {
+          const step = stepsMap.value.get(event.step);
+          if (step) {
+            step.status = event.status;
+            if (event.data) {
+              step.confidence =
+                (event.data.confidence as string | null) || null;
+              step.reasoning = (event.data.reasoning as string | null) || null;
+              analysisResults.value[event.step] = event.data;
+              onStepUpdate?.(event.step, event.data);
+            }
+            if (event.error) {
+              step.error = event.error;
             }
           }
-        }
-      }
+        },
+      });
 
       return { success: true };
     } catch (err: unknown) {

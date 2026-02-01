@@ -51,8 +51,8 @@
       </div>
 
       <UFormField>
-        <template #label>
-          Choice of Law Sections
+        <template #label>Choice of Law Sections</template>
+        <template #hint>
           <ConfidenceIndicator
             :is-loading="isFieldLoading('choiceOfLawSections')"
             :field-status="getFieldStatus('choiceOfLawSections')"
@@ -61,7 +61,7 @@
         <UTextarea
           v-model="localForm.choiceOfLawSections"
           :disabled="isFieldDisabled('choiceOfLawSections')"
-          :rows="6"
+          :rows="9"
           class="w-full print:hidden"
         />
         <div class="print-field-value">
@@ -70,8 +70,8 @@
       </UFormField>
 
       <UFormField>
-        <template #label>
-          Themes
+        <template #label>Themes</template>
+        <template #hint>
           <ConfidenceIndicator
             :is-loading="isFieldLoading('themes')"
             :field-status="getFieldStatus('themes')"
@@ -89,14 +89,14 @@
       </UFormField>
 
       <UFormField>
-        <template #label>
-          Case Citation
+        <template #label>Case Citation</template>
+        <template #hint>
           <ConfidenceIndicator
             :is-loading="isFieldLoading('caseCitation')"
             :field-status="getFieldStatus('caseCitation')"
           />
         </template>
-        <UInput
+        <UTextarea
           v-model="localForm.caseCitation"
           :disabled="isFieldDisabled('caseCitation')"
           :rows="2"
@@ -108,8 +108,8 @@
       </UFormField>
 
       <UFormField>
-        <template #label>
-          Relevant Facts
+        <template #label>Relevant Facts</template>
+        <template #hint>
           <ConfidenceIndicator
             :is-loading="isFieldLoading('caseRelevantFacts')"
             :field-status="getFieldStatus('caseRelevantFacts')"
@@ -118,7 +118,7 @@
         <UTextarea
           v-model="localForm.caseRelevantFacts"
           :disabled="isFieldDisabled('caseRelevantFacts')"
-          :rows="6"
+          :rows="9"
           class="w-full print:hidden"
         />
         <div class="print-field-value">
@@ -127,8 +127,8 @@
       </UFormField>
 
       <UFormField>
-        <template #label>
-          PIL Provisions
+        <template #label>PIL Provisions</template>
+        <template #hint>
           <ConfidenceIndicator
             :is-loading="isFieldLoading('casePILProvisions')"
             :field-status="getFieldStatus('casePILProvisions')"
@@ -146,8 +146,8 @@
       </UFormField>
 
       <UFormField>
-        <template #label>
-          Choice of Law Issue
+        <template #label>Choice of Law Issue</template>
+        <template #hint>
           <ConfidenceIndicator
             :is-loading="isFieldLoading('caseChoiceofLawIssue')"
             :field-status="getFieldStatus('caseChoiceofLawIssue')"
@@ -165,8 +165,8 @@
       </UFormField>
 
       <UFormField>
-        <template #label>
-          Court's Position
+        <template #label>Court's Position</template>
+        <template #hint>
           <ConfidenceIndicator
             :is-loading="isFieldLoading('caseCourtsPosition')"
             :field-status="getFieldStatus('caseCourtsPosition')"
@@ -175,7 +175,7 @@
         <UTextarea
           v-model="localForm.caseCourtsPosition"
           :disabled="isFieldDisabled('caseCourtsPosition')"
-          :rows="6"
+          :rows="9"
           class="w-full print:hidden"
         />
         <div class="print-field-value">
@@ -184,8 +184,8 @@
       </UFormField>
 
       <UFormField v-if="isCommonLawJurisdiction">
-        <template #label>
-          Obiter Dicta
+        <template #label>Obiter Dicta</template>
+        <template #hint>
           <ConfidenceIndicator
             :is-loading="isFieldLoading('caseObiterDicta')"
             :field-status="getFieldStatus('caseObiterDicta')"
@@ -194,7 +194,7 @@
         <UTextarea
           v-model="localForm.caseObiterDicta"
           :disabled="isFieldDisabled('caseObiterDicta')"
-          :rows="3"
+          :rows="6"
           class="w-full print:hidden"
         />
         <div class="print-field-value">
@@ -203,8 +203,8 @@
       </UFormField>
 
       <UFormField v-if="isCommonLawJurisdiction">
-        <template #label>
-          Dissenting Opinions
+        <template #label>Dissenting Opinions</template>
+        <template #hint>
           <ConfidenceIndicator
             :is-loading="isFieldLoading('caseDissentingOpinions')"
             :field-status="getFieldStatus('caseDissentingOpinions')"
@@ -213,7 +213,7 @@
         <UTextarea
           v-model="localForm.caseDissentingOpinions"
           :disabled="isFieldDisabled('caseDissentingOpinions')"
-          :rows="3"
+          :rows="6"
           class="w-full print:hidden"
         />
         <div class="print-field-value">
@@ -222,8 +222,8 @@
       </UFormField>
 
       <UFormField>
-        <template #label>
-          Abstract
+        <template #label>Abstract</template>
+        <template #hint>
           <ConfidenceIndicator
             :is-loading="isFieldLoading('caseAbstract')"
             :field-status="getFieldStatus('caseAbstract')"
@@ -232,7 +232,7 @@
         <UTextarea
           v-model="localForm.caseAbstract"
           :disabled="isFieldDisabled('caseAbstract')"
-          :rows="6"
+          :rows="9"
           class="w-full print:hidden"
         />
         <div class="print-field-value">
@@ -292,13 +292,14 @@ import type {
   EditedAnalysisValues,
   JurisdictionOption,
 } from "~/types/analyzer";
+import type { SSEEventStatus } from "~/composables/useSSEStream";
 import ConfidenceIndicator from "@/components/case-analyzer/ConfidenceIndicator.vue";
 import DocumentDisplay from "@/components/case-analyzer/DocumentDisplay.vue";
 
 interface FieldStatus {
   confidence: string | null;
   reasoning: string | null;
-  status: "pending" | "in_progress" | "completed" | "error";
+  status: SSEEventStatus;
 }
 
 const props = defineProps<{
@@ -328,7 +329,9 @@ const localForm = computed({
 
 function isFieldDisabled(fieldName: keyof EditedAnalysisValues): boolean {
   if (props.isSubmitted) return true;
-  return props.isFieldLoading(fieldName);
+  const status = props.getFieldStatus(fieldName);
+  // Only editable when status is completed
+  return status?.status !== "completed";
 }
 
 function handlePrint() {
