@@ -53,12 +53,11 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { computed } from "vue";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
 
 const route = useRoute();
-const router = useRouter();
 
 const { data: jurisdictions, isJurisdictionTerm } = useJurisdictionLookup();
 
@@ -79,7 +78,7 @@ const queryContainsJurisdiction = computed(() => {
 function removeJurisdictionFilter() {
   const newQuery = { ...route.query };
   delete newQuery.jurisdiction;
-  router.replace({ path: route.path, query: newQuery });
+  navigateTo({ path: route.path, query: newQuery }, { replace: true });
 }
 </script>
 

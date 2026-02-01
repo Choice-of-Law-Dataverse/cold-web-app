@@ -244,12 +244,15 @@ function confirmCancel() {
 
 function handleEditSave() {
   showSaveModal.value = false;
-  router.replace({
-    path: "/confirmation",
-    query: {
-      message: "Thanks, we have received your edit suggestions.",
+  navigateTo(
+    {
+      path: "/confirmation",
+      query: {
+        message: "Thanks, we have received your edit suggestions.",
+      },
     },
-  });
+    { replace: true },
+  );
 }
 
 async function fetchInstrument() {

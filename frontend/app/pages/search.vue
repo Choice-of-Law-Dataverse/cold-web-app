@@ -22,7 +22,7 @@
 
 <script setup>
 import { ref, onMounted, watch, computed, nextTick } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import SearchResults from "@/components/search-results/SearchResults.vue";
 import { useSearch } from "@/composables/useSearch";
 import { useHead, useSeoMeta } from "#imports";
@@ -32,7 +32,6 @@ useSeoMeta({
 });
 
 const route = useRoute();
-const router = useRouter();
 const searchQuery = ref(route.query.q || "");
 
 const filter = ref({
@@ -102,7 +101,8 @@ watch(
 watch(
   filter,
   (newFilters, oldFilters) => {
-    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return; // Avoid redundant updates
+    if (route.name !== "search") return;
+    if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return;
 
     const query = {
       ...route.query,
@@ -120,10 +120,8 @@ watch(
       Object.entries(query).filter(([_, value]) => value !== undefined),
     );
 
-    router.replace({
-      name: "search",
-      query: cleanedQuery,
-    });
+    // Use navigateTo with replace option as recommended by Nuxt docs
+    navigateTo({ path: "/search", query: cleanedQuery }, { replace: true });
   },
   { deep: true },
 );
