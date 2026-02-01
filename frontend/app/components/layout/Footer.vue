@@ -5,7 +5,7 @@ const user = useUser();
 </script>
 
 <template>
-  <footer class="footer-container mt-24 min-h-[300px] px-6 py-12">
+  <footer class="footer-container mt-6 min-h-[300px] px-6 py-12">
     <div class="max-w-container mx-auto">
       <!-- Logo and Tagline - horizontal on desktop, stacked on mobile -->
       <div
