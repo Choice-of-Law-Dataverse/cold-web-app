@@ -69,6 +69,8 @@ const props = withDefaults(
   },
 );
 
+const hasCoverage = (coverage?: number) => (coverage ?? 0) > 0;
+
 const availableJurisdictions = computed(() => {
   if (!props.excludedCodes.length) {
     return props.jurisdictions;
@@ -128,6 +130,4 @@ const onInternalSelect = (value: SelectItem | undefined) => {
   emit("update:modelValue", jurisdiction);
   emit("jurisdiction-selected", jurisdiction);
 };
-
-const hasCoverage = (coverage?: number) => (coverage ?? 0) > 0;
 </script>
