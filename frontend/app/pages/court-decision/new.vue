@@ -88,17 +88,10 @@
                 <div class="flex flex-wrap gap-3">
                   <a
                     :href="`/auth/login?returnTo=/court-decision/new`"
-                    class="bg-cold-purple hover:bg-cold-purple/90 inline-flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-semibold text-white transition-colors"
+                    class="bg-cold-purple hover:bg-cold-purple/90 inline-flex items-center gap-2 rounded-lg px-4 py-2 font-semibold !text-white transition-colors"
                   >
                     <UIcon name="i-heroicons-arrow-right-on-rectangle" />
                     Login
-                  </a>
-                  <a
-                    :href="`/auth/login?screen_hint=signup&returnTo=/court-decision/new`"
-                    class="border-cold-purple text-cold-purple hover:bg-cold-purple/5 inline-flex items-center gap-2 rounded-lg border px-4 py-2 text-sm font-semibold transition-colors"
-                  >
-                    <UIcon name="i-heroicons-user-plus" />
-                    Create Free Account
                   </a>
                 </div>
               </div>
