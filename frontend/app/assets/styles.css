@@ -2453,6 +2453,15 @@ button.cold-toggle-btn[aria-pressed="true"] {
   margin-bottom: 1.25rem;
 }
 
+/* Images - constrain to reasonable size */
+.content-page-prose img {
+  max-width: 200px;
+  height: auto;
+  border-radius: 0.375rem;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 /* Footer styles */
 .footer-container {
   background: var(--gradient-footer);
