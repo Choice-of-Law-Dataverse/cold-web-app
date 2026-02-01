@@ -69,5 +69,4 @@ function handleSuggestionClick(suggestion) {
 .empty-state-subtitle {
   color: var(--color-cold-slate);
 }
-
 </style>

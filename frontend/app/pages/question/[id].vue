@@ -107,11 +107,7 @@ const route = useRoute();
 // Capture the ID once at setup to prevent flash during page transitions
 const answerId = ref(route.params.id as string);
 
-const {
-  data: answerData,
-  isLoading,
-  error,
-} = useAnswer(answerId);
+const { data: answerData, isLoading, error } = useAnswer(answerId);
 
 const questionSuffix = computed(() => {
   // Extract question suffix from the answer ID (route param)

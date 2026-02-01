@@ -185,5 +185,4 @@ const isRelativeLink = computed(() => {
   justify-content: center;
   margin-top: auto;
 }
-
 </style>

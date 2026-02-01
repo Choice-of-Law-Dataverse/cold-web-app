@@ -325,5 +325,4 @@ h2 {
   color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
   text-decoration: underline !important;
 }
-
 </style>
