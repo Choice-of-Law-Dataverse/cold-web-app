@@ -1,5 +1,4 @@
 <template>
-  <!-- Header Section -->
   <div class="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-6">
     <div class="col-span-12">
       <div
@@ -54,9 +53,6 @@
         <div
           class="hidden min-w-[100px] items-center justify-center gap-3 sm:flex-col md:flex lg:flex-row"
         >
-          <!-- <HCCHApproved />
-              <OpenScienceBadge /> -->
-
           <UTooltip
             text="Winner of Swiss National ORD Prize 2025 for Legal Sciences"
           >
