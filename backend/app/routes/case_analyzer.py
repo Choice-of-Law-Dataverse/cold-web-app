@@ -18,11 +18,9 @@ from app.case_analyzer import (
 )
 from app.schemas.case_analyzer import (
     ConfirmAnalysisRequest,
-    JurisdictionInfo,
     SubmitForApprovalRequest,
     SubmitForApprovalResponse,
     UploadDocumentRequest,
-    UploadDocumentResponse,
 )
 from app.services.azure_storage import (
     download_blob_with_managed_identity,
@@ -48,10 +46,9 @@ def get_suggestion_service() -> SuggestionService:
     summary="Upload court decision document for initial analysis",
     description=(
         "Upload a PDF court decision document. The system will extract text, "
-        "detect jurisdiction and legal system type, save as draft in database, "
-        "and return a draft ID for tracking the analysis."
+        "detect jurisdiction and legal system type, save as draft in database. "
+        "Returns a stream of SSE events with progress updates and heartbeats."
     ),
-    response_model=UploadDocumentResponse,
 )
 async def upload_document(
     body: UploadDocumentRequest,
@@ -60,102 +57,191 @@ async def upload_document(
     service: SuggestionService = Depends(get_suggestion_service),
 ):
     """
-    Upload and process a court decision document.
+    Upload and process a court decision document with streaming progress.
 
-    Steps:
-    1. Decode base64 PDF content
-    2. Extract text using pymupdf4llm
-    3. Detect jurisdiction and legal system type
-    4. Save draft to database with full text and PDF URL
-    5. Return draft_id, extracted_text, and jurisdiction info
+    Streams SSE events for each step:
+    1. uploading_to_storage - Decode and upload PDF to Azure
+    2. extracting_text - Extract text using pymupdf4llm
+    3. detecting_jurisdiction - Detect jurisdiction (LLM call, can be slow)
+    4. saving_draft - Save draft to database
+    5. upload_complete - Final result with draft_id and jurisdiction
 
     Returns:
-        UploadDocumentResponse with draft_id, extracted_text, and jurisdiction info
+        StreamingResponse with SSE events for each processing step
     """
-    with logfire.span("upload_document", file_name=body.file_name, blob_url=body.blob_url[:100]):
-        azure_blob_url: str
+    file_name = body.file_name
+    blob_url = body.blob_url
 
-        try:
-            if body.blob_url.startswith("data:application/pdf;base64,"):
-                base64_content = body.blob_url.replace("data:application/pdf;base64,", "")
-                pdf_bytes = base64.b64decode(base64_content)
+    async def event_generator():
+        HEARTBEAT_INTERVAL_SECONDS = 15
 
-                if len(pdf_bytes) > MAX_PDF_SIZE_BYTES:
-                    raise HTTPException(
-                        status_code=413,
-                        detail=f"PDF file too large ({len(pdf_bytes) / 1024 / 1024:.1f}MB). Maximum size is {MAX_PDF_SIZE_BYTES / 1024 / 1024}MB",
-                    )
+        with logfire.span("upload_document", file_name=file_name, blob_url=blob_url[:100]):
+            # Yield immediately so the client knows the stream is connected
+            init_event = json.dumps({"step": "initializing", "status": "in_progress"})
+            yield f"data: {init_event}\n\n"
 
-                try:
-                    azure_blob_url = upload_blob_with_managed_identity(pdf_bytes, body.file_name)
-                except Exception as upload_error:
-                    logger.error("Failed to upload PDF to Azure: %s", str(upload_error))
-                    raise HTTPException(
-                        status_code=500, detail="Failed to upload PDF to storage. Please try again or contact support."
-                    ) from upload_error
-            else:
-                pdf_bytes = download_blob_with_managed_identity(body.blob_url)
-                azure_blob_url = body.blob_url
-        except HTTPException:
-            raise
-        except Exception as e:
-            logger.error("Failed to get PDF content: %s", str(e))
-            raise HTTPException(status_code=400, detail="Failed to get PDF content") from e
+            # Step 1: Upload to storage
+            yield f"data: {json.dumps({'step': 'uploading_to_storage', 'status': 'in_progress'})}\n\n"
 
-        try:
-            extracted_text = extract_text_from_pdf(pdf_bytes)
-        except Exception as e:
-            logger.error("Failed to extract text from PDF: %s", str(e))
-            raise HTTPException(status_code=422, detail=f"Failed to extract text from PDF: {str(e)}") from e
+            try:
+                if blob_url.startswith("data:application/pdf;base64,"):
+                    base64_content = blob_url.replace("data:application/pdf;base64,", "")
+                    pdf_bytes = base64.b64decode(base64_content)
 
-        try:
-            jurisdiction_result: JurisdictionOutput = await detect_jurisdiction(extracted_text)
-        except Exception as e:
-            logger.error("Failed to detect jurisdiction: %s", str(e))
-            raise HTTPException(status_code=500, detail=f"Failed to detect jurisdiction: {str(e)}") from e
+                    if len(pdf_bytes) > MAX_PDF_SIZE_BYTES:
+                        error_event = json.dumps(
+                            {
+                                "step": "error",
+                                "status": "error",
+                                "error": f"PDF file too large ({len(pdf_bytes) / 1024 / 1024:.1f}MB). Maximum size is {MAX_PDF_SIZE_BYTES / 1024 / 1024}MB",
+                            }
+                        )
+                        yield f"data: {error_event}\n\n"
+                        return
 
-        jurisdiction_data = {
-            "legal_system_type": jurisdiction_result.legal_system_type,
-            "precise_jurisdiction": jurisdiction_result.precise_jurisdiction,
-            "jurisdiction_code": jurisdiction_result.jurisdiction_code,
-            "confidence": jurisdiction_result.confidence,
-            "reasoning": jurisdiction_result.reasoning,
-        }
+                    try:
+                        # Run blocking I/O in thread pool
+                        azure_blob_url = await asyncio.to_thread(upload_blob_with_managed_identity, pdf_bytes, file_name)
+                    except Exception as upload_error:
+                        logger.error("Failed to upload PDF to Azure: %s", str(upload_error))
+                        error_event = json.dumps(
+                            {
+                                "step": "error",
+                                "status": "error",
+                                "error": "Failed to upload PDF to storage. Please try again or contact support.",
+                            }
+                        )
+                        yield f"data: {error_event}\n\n"
+                        return
+                else:
+                    # Run blocking I/O in thread pool
+                    pdf_bytes = await asyncio.to_thread(download_blob_with_managed_identity, blob_url)
+                    azure_blob_url = blob_url
+            except Exception as e:
+                logger.error("Failed to get PDF content: %s", str(e))
+                error_event = json.dumps({"step": "error", "status": "error", "error": "Failed to get PDF content"})
+                yield f"data: {error_event}\n\n"
+                return
 
-        draft_payload = {
-            "file_name": body.file_name,
-            "pdf_url": azure_blob_url,
-            "moderation_status": "draft",
-        }
+            yield f"data: {json.dumps({'step': 'uploading_to_storage', 'status': 'completed'})}\n\n"
 
-        try:
-            draft_id = service.save_suggestion(
-                payload=draft_payload,
-                table="case_analyzer",
-                client_ip=request.client.host if request.client else None,
-                user_agent=request.headers.get("User-Agent"),
-                source="case_analyzer_workflow",
-                user=user,
+            # Step 2: Extract text
+            yield f"data: {json.dumps({'step': 'extracting_text', 'status': 'in_progress'})}\n\n"
+
+            try:
+                # Run blocking I/O in thread pool
+                extracted_text = await asyncio.to_thread(extract_text_from_pdf, pdf_bytes)
+            except Exception as e:
+                logger.error("Failed to extract text from PDF: %s", str(e))
+                error_event = json.dumps(
+                    {
+                        "step": "error",
+                        "status": "error",
+                        "error": f"Failed to extract text from PDF: {str(e)}",
+                    }
+                )
+                yield f"data: {error_event}\n\n"
+                return
+
+            yield f"data: {json.dumps({'step': 'extracting_text', 'status': 'completed'})}\n\n"
+
+            # Step 3: Detect jurisdiction (LLM call - use heartbeats)
+            yield f"data: {json.dumps({'step': 'detecting_jurisdiction', 'status': 'in_progress'})}\n\n"
+
+            try:
+                # Run jurisdiction detection with heartbeats
+                jurisdiction_task = asyncio.create_task(detect_jurisdiction(extracted_text))
+
+                while True:
+                    done, _ = await asyncio.wait({jurisdiction_task}, timeout=HEARTBEAT_INTERVAL_SECONDS)
+                    if done:
+                        jurisdiction_result: JurisdictionOutput = jurisdiction_task.result()
+                        break
+                    else:
+                        yield 'data: {"step": "heartbeat", "status": "in_progress"}\n\n'
+
+            except Exception as e:
+                logger.error("Failed to detect jurisdiction: %s", str(e))
+                error_event = json.dumps(
+                    {
+                        "step": "error",
+                        "status": "error",
+                        "error": f"Failed to detect jurisdiction: {str(e)}",
+                    }
+                )
+                yield f"data: {error_event}\n\n"
+                return
+
+            jurisdiction_data = {
+                "legal_system_type": jurisdiction_result.legal_system_type,
+                "precise_jurisdiction": jurisdiction_result.precise_jurisdiction,
+                "jurisdiction_code": jurisdiction_result.jurisdiction_code,
+                "confidence": jurisdiction_result.confidence,
+                "reasoning": jurisdiction_result.reasoning,
+            }
+
+            yield f"data: {json.dumps({'step': 'detecting_jurisdiction', 'status': 'completed', 'data': jurisdiction_data})}\n\n"
+
+            # Step 4: Save draft
+            yield f"data: {json.dumps({'step': 'saving_draft', 'status': 'in_progress'})}\n\n"
+
+            draft_payload = {
+                "file_name": file_name,
+                "pdf_url": azure_blob_url,
+                "moderation_status": "draft",
+            }
+
+            try:
+                # Run blocking DB calls in thread pool
+                client_ip = request.client.host if request.client else None
+                user_agent = request.headers.get("User-Agent")
+                draft_id = await asyncio.to_thread(
+                    service.save_suggestion,
+                    payload=draft_payload,
+                    table="case_analyzer",
+                    client_ip=client_ip,
+                    user_agent=user_agent,
+                    source="case_analyzer_workflow",
+                    user=user,
+                )
+
+                await asyncio.to_thread(service.update_analyzer_step, draft_id, "jurisdiction", jurisdiction_data)
+            except Exception as e:
+                logger.error("Failed to save draft to database: %s", str(e))
+                error_event = json.dumps(
+                    {
+                        "step": "error",
+                        "status": "error",
+                        "error": "Failed to save draft to database",
+                    }
+                )
+                yield f"data: {error_event}\n\n"
+                return
+
+            yield f"data: {json.dumps({'step': 'saving_draft', 'status': 'completed'})}\n\n"
+
+            # Final: Upload complete with all data
+            complete_event = json.dumps(
+                {
+                    "step": "upload_complete",
+                    "status": "completed",
+                    "data": {
+                        "draft_id": draft_id,
+                        "jurisdiction": jurisdiction_data,
+                    },
+                }
             )
+            yield f"data: {complete_event}\n\n"
 
-            # Store jurisdiction_data directly - it already contains all fields
-            # (legal_system_type, precise_jurisdiction, jurisdiction_code, confidence, reasoning)
-            service.update_analyzer_step(draft_id, "jurisdiction", jurisdiction_data)
-        except Exception as e:
-            logger.error("Failed to save draft to database: %s", str(e))
-            raise HTTPException(status_code=500, detail="Failed to save draft to database") from e
-
-        return UploadDocumentResponse(
-            draft_id=draft_id,
-            extracted_text=extracted_text,
-            jurisdiction=JurisdictionInfo(
-                legal_system_type=jurisdiction_result.legal_system_type,
-                precise_jurisdiction=jurisdiction_result.precise_jurisdiction,
-                jurisdiction_code=jurisdiction_result.jurisdiction_code,
-                confidence=jurisdiction_result.confidence,
-                reasoning=jurisdiction_result.reasoning,
-            ),
-        )
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "X-Accel-Buffering": "no",
+            "Connection": "keep-alive",
+        },
+    )
 
 
 @router.post(
@@ -194,88 +280,104 @@ async def analyze_document(
         StreamingResponse with analysis steps as SSE
     """
     draft_id = body.draft_id
+    jurisdiction_data = {
+        "legal_system_type": body.jurisdiction.legal_system_type,
+        "precise_jurisdiction": body.jurisdiction.precise_jurisdiction,
+        "jurisdiction_code": body.jurisdiction.jurisdiction_code,
+        "confidence": body.jurisdiction.confidence,
+        "reasoning": body.jurisdiction.reasoning,
+    }
 
-    with logfire.span("analyze_document", draft_id=draft_id):
-        # Get the draft record to retrieve full_text and pdf_url
-        record = service.get_case_analyzer_full(draft_id)
-        if not record:
-            logger.error("Draft not found: %d", draft_id)
-            raise HTTPException(status_code=404, detail="Draft not found")
+    async def event_generator():
+        """Generate SSE events for each analysis step with heartbeats to prevent timeouts."""
+        HEARTBEAT_INTERVAL_SECONDS = 15
+        step_name: str | None = None
+        next_task: asyncio.Task[dict[str, Any]] | None = None
 
-        # Get full text from Azure blob storage
-        legacy_data = record.get("data", {})
-        pdf_url = legacy_data.get("pdf_url")
-        if not pdf_url:
-            logger.error("No pdf_url found for draft: %d", draft_id)
-            raise HTTPException(
-                status_code=400,
-                detail="No document available for analysis. Please upload the document again.",
-            )
-        try:
-            text = get_text_from_blob(pdf_url)
-        except Exception as e:
-            logger.error("Failed to extract text from PDF blob: %s", str(e))
-            raise HTTPException(
-                status_code=500,
-                detail="Failed to retrieve document from storage. The document may have been deleted. Please upload the document again.",
-            ) from e
+        with logfire.span("analyze_document", draft_id=draft_id):
+            # Yield immediately so the client knows the stream is connected
+            init_event = json.dumps({"step": "initializing", "status": "in_progress"})
+            yield f"data: {init_event}\n\n"
 
-        jurisdiction_data = {
-            "legal_system_type": body.jurisdiction.legal_system_type,
-            "precise_jurisdiction": body.jurisdiction.precise_jurisdiction,
-            "jurisdiction_code": body.jurisdiction.jurisdiction_code,
-            "confidence": body.jurisdiction.confidence,
-            "reasoning": body.jurisdiction.reasoning,
-        }
+            # Get the draft record to retrieve full_text and pdf_url
+            record = service.get_case_analyzer_full(draft_id)
+            if not record:
+                logger.error("Draft not found: %d", draft_id)
+                error_event = json.dumps({"step": "error", "status": "error", "error": "Draft not found"})
+                yield f"data: {error_event}\n\n"
+                return
 
-        try:
-            service.update_moderation_status(draft_id, "analyzing")
+            # Get full text from Azure blob storage
+            legacy_data = record.get("data", {})
+            pdf_url = legacy_data.get("pdf_url")
+            if not pdf_url:
+                logger.error("No pdf_url found for draft: %d", draft_id)
+                error_event = json.dumps(
+                    {
+                        "step": "error",
+                        "status": "error",
+                        "error": "No document available for analysis. Please upload the document again.",
+                    }
+                )
+                yield f"data: {error_event}\n\n"
+                return
 
-            # Store jurisdiction_data directly with user_confirmed flag
-            # The data already contains confidence/reasoning fields
-            service.update_analyzer_step(
-                draft_id,
-                "jurisdiction",
-                {
-                    **jurisdiction_data,
-                    "user_confirmed": True,
-                },
-            )
-        except Exception as e:
-            logger.error("Failed to update jurisdiction in database: %s", str(e))
-
-        cached_results: dict[str, Any] | None = None
-        if body.resume:
             try:
-                analyzer_data = service.get_analyzer_data(draft_id)
-                if analyzer_data:
-                    cached_results = {}
-                    for step_key in [
-                        "col_extraction",
-                        "theme_classification",
-                        "case_citation",
-                        "relevant_facts",
-                        "pil_provisions",
-                        "col_issue",
-                        "courts_position",
-                        "obiter_dicta",
-                        "dissenting_opinions",
-                        "abstract",
-                    ]:
-                        if step_key in analyzer_data and analyzer_data[step_key]:
-                            step_result = analyzer_data[step_key]
-                            if isinstance(step_result, dict) and "result" in step_result:
-                                cached_results[step_key] = step_result["result"]
-                            else:
-                                cached_results[step_key] = step_result
+                text = get_text_from_blob(pdf_url)
             except Exception as e:
-                logger.error("Failed to fetch cached results for resume: %s", str(e))
+                logger.error("Failed to extract text from PDF blob: %s", str(e))
+                error_event = json.dumps(
+                    {
+                        "step": "error",
+                        "status": "error",
+                        "error": "Failed to retrieve document from storage. The document may have been deleted. Please upload the document again.",
+                    }
+                )
+                yield f"data: {error_event}\n\n"
+                return
 
-        async def event_generator():
-            """Generate SSE events for each analysis step with heartbeats to prevent timeouts."""
-            HEARTBEAT_INTERVAL_SECONDS = 15
-            step_name: str | None = None
-            next_task: asyncio.Task[dict[str, Any]] | None = None
+            try:
+                service.update_moderation_status(draft_id, "analyzing")
+
+                # Store jurisdiction_data directly with user_confirmed flag
+                # The data already contains confidence/reasoning fields
+                service.update_analyzer_step(
+                    draft_id,
+                    "jurisdiction",
+                    {
+                        **jurisdiction_data,
+                        "user_confirmed": True,
+                    },
+                )
+            except Exception as e:
+                logger.error("Failed to update jurisdiction in database: %s", str(e))
+
+            cached_results: dict[str, Any] | None = None
+            if body.resume:
+                try:
+                    analyzer_data = service.get_analyzer_data(draft_id)
+                    if analyzer_data:
+                        cached_results = {}
+                        for step_key in [
+                            "col_extraction",
+                            "theme_classification",
+                            "case_citation",
+                            "relevant_facts",
+                            "pil_provisions",
+                            "col_issue",
+                            "courts_position",
+                            "obiter_dicta",
+                            "dissenting_opinions",
+                            "abstract",
+                        ]:
+                            if step_key in analyzer_data and analyzer_data[step_key]:
+                                step_result = analyzer_data[step_key]
+                                if isinstance(step_result, dict) and "result" in step_result:
+                                    cached_results[step_key] = step_result["result"]
+                                else:
+                                    cached_results[step_key] = step_result
+                except Exception as e:
+                    logger.error("Failed to fetch cached results for resume: %s", str(e))
 
             with logfire.span(
                 "case_analysis_stream",
@@ -284,8 +386,9 @@ async def analyze_document(
             ):
                 try:
                     async_gen = analyze_case_streaming(text, jurisdiction_data, cached_results)
+                    generator_exhausted = False
 
-                    while True:
+                    while not generator_exhausted:
                         # Create task for getting next item from generator
                         next_task = asyncio.create_task(async_gen.__anext__())
 
@@ -303,6 +406,7 @@ async def analyze_document(
                                 except StopAsyncIteration:
                                     # Generator exhausted - exit outer loop
                                     next_task = None
+                                    generator_exhausted = True
                                     break
 
                                 next_task = None
@@ -325,12 +429,7 @@ async def analyze_document(
                                 break  # Exit inner loop, get next item
                             else:
                                 # Timeout - send heartbeat to keep connection alive
-                                yield ": heartbeat\n\n"
-                        else:
-                            # Inner while completed normally (break from inner)
-                            continue
-                        # StopAsyncIteration caught - break outer loop
-                        break
+                                yield 'data: {"step": "heartbeat", "status": "in_progress"}\n\n'
 
                     try:
                         with logfire.span("finalize_case_analyzer_draft", draft_id=draft_id):
@@ -373,7 +472,15 @@ async def analyze_document(
                     error_event = json.dumps({"step": "error", "status": "error", "error": str(e)})
                     yield f"data: {error_event}\n\n"
 
-        return StreamingResponse(event_generator(), media_type="text/event-stream")
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache, no-store, must-revalidate",
+            "X-Accel-Buffering": "no",  # Disable nginx buffering
+            "Connection": "keep-alive",
+        },
+    )
 
 
 @router.post(
