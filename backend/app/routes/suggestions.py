@@ -398,6 +398,7 @@ async def approve_suggestion(
                 "source_pdf",
                 "attachment",
                 "category",
+                "edit_entity_id",
             }
             payload_for_writer = {k: v for k, v in original_payload.items() if k not in _reserved}
 

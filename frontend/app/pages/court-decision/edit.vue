@@ -2,7 +2,7 @@
   <div>
     <BaseDetailLayout
       table="Court Decisions"
-      :loading="false"
+      :loading="isLoadingEntity"
       :data="{}"
       header-mode="new"
       :show-notification-banner="true"
@@ -11,19 +11,8 @@
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
-      <h3 class="mb-12">
-        The CoLD Case Analyzer extracts information from court cases
-        <NuxtLink
-          to="https://case-analyzer.cold.global/"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Open the Case Analyzer now
-          <UIcon
-            name="i-material-symbols:open-in-new"
-            class="relative top-[2px]"
-          />
-        </NuxtLink>
+      <h3 class="mb-4 text-lg font-semibold">
+        Suggest edits to this Court Decision
       </h3>
       <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
         <UFormField size="lg" hint="Required" :error="errors.case_citation">
@@ -100,7 +89,7 @@
           </div>
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label">Full Text</span>
           </template>
@@ -111,7 +100,7 @@
           />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label">English Translation of Full Text</span>
           </template>
@@ -122,14 +111,14 @@
           />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label">Case Rank</span>
           </template>
           <UInput v-model="caseRank" class="cold-input mt-2" />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label">Jurisdiction</span>
           </template>
@@ -142,7 +131,7 @@
           />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Abstract
@@ -156,7 +145,7 @@
           />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Relevant Facts
@@ -170,7 +159,7 @@
           />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               PIL Provisions
@@ -180,7 +169,7 @@
           <UInput v-model="casePILProvisions" class="cold-input mt-2" />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Choice of Law Issue
@@ -194,7 +183,7 @@
           />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Court's Position
@@ -208,7 +197,7 @@
           />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center"
               >Translated Excerpt</span
@@ -221,7 +210,7 @@
           />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center"
               >Text of the Relevant Legal Provisions</span
@@ -234,7 +223,7 @@
           />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Quote
@@ -269,7 +258,7 @@
           </UPopover>
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Case Title
@@ -279,7 +268,7 @@
           <UInput v-model="caseTitle" class="cold-input mt-2" />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center">
               Instance
@@ -289,7 +278,7 @@
           <UInput v-model="caseInstance" class="cold-input mt-2" />
         </UFormField>
 
-        <UFormField size="lg" :error="errors.case_title">
+        <UFormField size="lg">
           <template #label>
             <span class="label flex flex-row items-center"
               >Official Keywords</span
@@ -307,7 +296,7 @@
             class="bg-cold-purple hover:bg-cold-purple/90 text-white"
             @click="openSaveModal"
           >
-            Submit your data
+            Submit your edits
           </UButton>
         </div>
       </div>
@@ -325,15 +314,15 @@
         @update:email="(val) => (email = val)"
         @update:comments="(val) => (comments = val)"
         @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
-        @save="handleNewSave"
+        @save="handleEditSave"
       />
     </ClientOnly>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
-import { useHead, useRouter } from "#imports";
+import { ref, onMounted, watch } from "vue";
+import { useHead, useRouter, useRoute } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
@@ -341,8 +330,9 @@ import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 import { courtDecisionTooltips } from "@/config/tooltips";
+import { useCourtDecision } from "@/composables/useRecordDetails";
 
 const tooltipAbstract = courtDecisionTooltips["Abstract"];
 const tooltipCaseCitation = courtDecisionTooltips["Case Citation"];
@@ -359,6 +349,14 @@ const tooltipRelevantFacts = courtDecisionTooltips["Relevant Facts"];
 definePageMeta({
   middleware: ["auth"],
 });
+
+const route = useRoute();
+const router = useRouter();
+const entityId = ref(route.query.id);
+
+// Fetch existing entity data
+const { data: entityData, isLoading: isLoadingEntity } =
+  useCourtDecision(entityId);
 
 const caseCitation = ref("");
 const caseTitle = ref("");
@@ -385,6 +383,57 @@ const comments = ref("");
 
 const selectedJurisdiction = ref([]);
 const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
+
+function safeParseDateString(dateStr) {
+  if (!dateStr) return null;
+  try {
+    const parsed = parseISO(dateStr);
+    return isNaN(parsed.getTime()) ? null : parsed;
+  } catch {
+    return null;
+  }
+}
+
+// Pre-populate form when entity data loads
+watch(
+  entityData,
+  (data) => {
+    if (!data) return;
+    caseCitation.value = data["Case Citation"] || "";
+    caseTitle.value =
+      data["Case Title"] === "Not found" ? "" : data["Case Title"] || "";
+    caseFullText.value = data["Original Text"] || "";
+    caseEnglishTranslation.value = data["English Translation"] || "";
+    caseRank.value = data["Case Rank"] || "";
+    caseAbstract.value = data["Abstract"] || "";
+    caseRelevantFacts.value = data["Relevant Facts"] || "";
+    casePILProvisions.value = data["PIL Provisions"] || "";
+    caseChoiceofLawIssue.value = data["Choice of Law Issue"] || "";
+    caseCourtsPosition.value = data["Court's Position"] || "";
+    caseTranslatedExcerpt.value = data["Translated Excerpt"] || "";
+    caseTextofRelevantLegalProvisions.value =
+      data["Text of the Relevant Legal Provisions"] ||
+      data["Text_of_the_Relevant_Legal_Provisions"] ||
+      "";
+    caseQuote.value = data["Quote"] || "";
+    caseInstance.value = data["Instance"] || "";
+    caseOfficialKeywords.value = data["Official Keywords"] || "";
+    officialSourceUrl.value = data["Official Source (URL)"] || "";
+
+    const pubDate = safeParseDateString(data["Publication Date ISO"]);
+    if (pubDate) datePublication.value = pubDate;
+
+    const judgDate = safeParseDateString(data["Date of Judgment"]);
+    if (judgDate) dateJudgment.value = judgDate;
+
+    // Pre-select jurisdiction if available
+    const jurisdictionName = data["Jurisdictions"] || data["Jurisdiction"];
+    if (jurisdictionName) {
+      selectedJurisdiction.value = [{ label: jurisdictionName }];
+    }
+  },
+  { immediate: true },
+);
 
 const loadJurisdictions = async () => {
   try {
@@ -431,13 +480,12 @@ const formSchema = z.object({
 const errors = ref({});
 const saveModalErrors = ref({});
 
-const router = useRouter();
 const showSaveModal = ref(false);
 const showCancelModal = ref(false);
 const notificationBannerMessage =
-  "Please back up your data when working here. Leaving, closing or reloading this window will delete everything. Data is only saved after you submit.";
+  "You are editing an existing Court Decision. Your changes will be submitted as a suggestion for review.";
 
-useHead({ title: "New Court Decision — CoLD" });
+useHead({ title: "Edit Court Decision — CoLD" });
 
 function validateForm() {
   try {
@@ -446,27 +494,6 @@ function validateForm() {
       date_publication: datePublication.value,
       official_source_url: officialSourceUrl.value,
       copyright_issues: copyrightIssues.value,
-      full_text: caseFullText.value,
-      english_translation: caseEnglishTranslation.value,
-      case_rank: caseRank.value,
-      jurisdiction:
-        (Array.isArray(selectedJurisdiction.value) &&
-          selectedJurisdiction.value[0]?.label) ||
-        undefined,
-      abstract: caseAbstract.value,
-      relevant_facts: caseRelevantFacts.value,
-      pil_provisions: casePILProvisions.value,
-      choice_of_law_issue: caseChoiceofLawIssue.value,
-      courts_position: caseCourtsPosition.value,
-      translated_excerpt: caseTranslatedExcerpt.value,
-      text_of_relevant_legal_provisions:
-        caseTextofRelevantLegalProvisions.value,
-      quote: caseQuote.value,
-      date_judgment: dateJudgment.value,
-      case_title: caseTitle.value,
-      instance: caseInstance.value,
-      official_keywords: caseOfficialKeywords.value,
-      source: "cold.global",
     };
     formSchema.parse(formData);
     errors.value = {};
@@ -490,11 +517,12 @@ function openSaveModal() {
 }
 
 function confirmCancel() {
-  router.push("/");
+  router.push(`/court-decision/${entityId.value}`);
 }
 
-function handleNewSave() {
+function handleEditSave() {
   const payload = {
+    edit_entity_id: entityId.value,
     case_citation: caseCitation.value,
     date_publication: format(datePublication.value, "yyyy-MM-dd"),
     official_source_url: officialSourceUrl.value,
@@ -537,7 +565,9 @@ function handleNewSave() {
       showSaveModal.value = false;
       router.push({
         path: "/confirmation",
-        query: { message: "Thanks, we have received your submission." },
+        query: {
+          message: "Thanks, we have received your edit suggestion for review.",
+        },
       });
     } catch (err) {
       saveModalErrors.value = {
@@ -556,9 +586,5 @@ function handleNewSave() {
 }
 :deep(.card-header [class*="actions"]) {
   display: none !important;
-}
-
-h3 a {
-  color: var(--color-cold-purple) !important;
 }
 </style>

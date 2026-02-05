@@ -158,15 +158,8 @@
               <div
                 class="actions-container hidden flex-row items-center gap-1.5 sm:flex"
               >
-                <!-- All actions except the International Instrument Edit link -->
                 <template
-                  v-for="(action, index) in suggestEditActions.filter(
-                    (a) =>
-                      !(
-                        props.cardType === 'International Instrument' &&
-                        a.label === 'Edit'
-                      ),
-                  )"
+                  v-for="(action, index) in suggestEditActions"
                   :key="index"
                 >
                   <button
@@ -205,6 +198,20 @@
                     />
                     {{ action.label }}
                   </button>
+                  <!-- In-app edit link (no target="_blank") -->
+                  <NuxtLink
+                    v-else-if="action.label === 'Edit' && isInAppEdit"
+                    class="action-button"
+                    :class="action.class"
+                    :to="action.to"
+                  >
+                    <UIcon
+                      :name="action.icon"
+                      class="inline-block text-[1.2em]"
+                    />
+                    {{ action.label }}
+                  </NuxtLink>
+                  <!-- External edit link (Airtable fallback) -->
                   <NuxtLink
                     v-else
                     class="action-button"
@@ -220,26 +227,6 @@
                     {{ action.label }}
                   </NuxtLink>
                 </template>
-                <!-- The Edit link for International Instrument only, no target/rel -->
-                <NuxtLink
-                  v-for="(action, index) in suggestEditActions.filter(
-                    (a) =>
-                      props.cardType === 'International Instrument' &&
-                      a.label === 'Edit',
-                  )"
-                  :key="'edit-' + index"
-                  class="action-button"
-                  :class="action.class"
-                  v-bind="action.to ? { to: action.to } : {}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <UIcon
-                    :name="action.icon"
-                    class="inline-block text-[1.2em]"
-                  />
-                  {{ action.label }}
-                </NuxtLink>
               </div>
             </template>
             <template v-else-if="showOpenLink">
@@ -456,7 +443,11 @@ const mobileMenuItems = computed(() => {
         label: "Suggest Edit",
         icon: "i-material-symbols:edit-square-outline",
         onSelect: () => {
-          window.open(suggestEditLink.value, "_blank");
+          if (isInAppEdit.value) {
+            router.push(suggestEditLink.value);
+          } else {
+            window.open(suggestEditLink.value, "_blank");
+          }
         },
       },
     ],
@@ -464,11 +455,40 @@ const mobileMenuItems = computed(() => {
 });
 
 const suggestEditLink = ref("");
-const airtableFormID = "appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form";
+
+const editableTypeSlugs = {
+  "Court Decision": "court-decision",
+  "Court Decisions": "court-decision",
+  "Domestic Instrument": "domestic-instrument",
+  "Domestic Instruments": "domestic-instrument",
+  "International Instrument": "international-instrument",
+  "International Instruments": "international-instrument",
+  Literature: "literature",
+  "Regional Instrument": "regional-instrument",
+  "Regional Instruments": "regional-instrument",
+};
+
+const isInAppEdit = computed(() => {
+  return props.cardType in editableTypeSlugs;
+});
+
+function buildEditLink() {
+  const slug = editableTypeSlugs[props.cardType];
+  if (slug) {
+    const segments = route.path.split("/").filter(Boolean);
+    const entityId = segments[segments.length - 1];
+    if (entityId && entityId !== "new" && entityId !== "edit") {
+      return `/${slug}/edit?id=${encodeURIComponent(entityId)}`;
+    }
+  }
+  // Fallback to Airtable for unsupported types
+  const currentURL = typeof window !== "undefined" ? window.location.href : "";
+  const airtableFormID = "appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form";
+  return `https://airtable.com/${airtableFormID}?prefill_URL=${encodeURIComponent(currentURL)}&hide_URL=true`;
+}
 
 onMounted(() => {
-  const currentURL = window.location.href;
-  suggestEditLink.value = `https://airtable.com/${airtableFormID}?prefill_URL=${encodeURIComponent(currentURL)}&hide_URL=true`;
+  suggestEditLink.value = buildEditLink();
 });
 
 const legalFamily = computed(() => {
