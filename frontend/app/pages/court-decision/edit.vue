@@ -122,13 +122,11 @@
           <template #label>
             <span class="label">Jurisdiction</span>
           </template>
-          <SearchFilters
-            v-model="selectedJurisdiction"
-            :options="jurisdictionOptions"
-            class="mt-2 w-full"
-            :show-avatars="true"
-            :multiple="false"
-          />
+          <p
+            class="result-value-small mt-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-gray-500"
+          >
+            {{ jurisdictionDisplay || "—" }}
+          </p>
         </UFormField>
 
         <UFormField size="lg">
@@ -321,12 +319,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, watch } from "vue";
 import { useHead, useRouter, useRoute } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
-import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
@@ -381,8 +378,7 @@ const dateJudgment = ref(null);
 const email = ref("");
 const comments = ref("");
 
-const selectedJurisdiction = ref([]);
-const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
+const jurisdictionDisplay = ref("");
 
 function safeParseDateString(dateStr) {
   if (!dateStr) return null;
@@ -426,47 +422,13 @@ watch(
     const judgDate = safeParseDateString(data["Date of Judgment"]);
     if (judgDate) dateJudgment.value = judgDate;
 
-    // Pre-select jurisdiction if available
-    const jurisdictionName = data["Jurisdictions"] || data["Jurisdiction"];
-    if (jurisdictionName) {
-      selectedJurisdiction.value = [{ label: jurisdictionName }];
-    }
+    // Display jurisdiction (read-only)
+    jurisdictionDisplay.value =
+      data["Jurisdictions"] || data["Jurisdiction"] || "";
   },
   { immediate: true },
 );
 
-const loadJurisdictions = async () => {
-  try {
-    const response = await fetch(`/api/proxy/search/full_table`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ table: "Jurisdictions", filters: [] }),
-    });
-
-    if (!response.ok) throw new Error("Failed to load jurisdictions");
-
-    const jurisdictionsData = await response.json();
-    jurisdictionOptions.value = [
-      { label: "Select Jurisdiction" },
-      ...jurisdictionsData
-        .filter((entry) => entry["Irrelevant?"] === false)
-        .map((entry) => ({
-          label: entry.Name,
-          alpha3Code: entry["Alpha-3 Code"],
-          avatar: entry["Alpha-3 Code"]
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry["Alpha-3 Code"].toLowerCase()}.svg`
-            : undefined,
-        }))
-        .sort((a, b) => (a.label || "").localeCompare(b.label || "")),
-    ];
-  } catch (error) {
-    console.error("Error loading jurisdictions:", error);
-  }
-};
-
-onMounted(loadJurisdictions);
 const formSchema = z.object({
   case_citation: z
     .string()
@@ -530,10 +492,6 @@ function handleEditSave() {
     original_text: caseFullText.value,
     english_translation: caseEnglishTranslation.value,
     case_rank: caseRank.value,
-    jurisdiction:
-      (Array.isArray(selectedJurisdiction.value) &&
-        selectedJurisdiction.value[0]?.label) ||
-      undefined,
     abstract: caseAbstract.value,
     relevant_facts: caseRelevantFacts.value,
     pil_provisions: casePILProvisions.value,

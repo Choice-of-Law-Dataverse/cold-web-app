@@ -15,17 +15,15 @@
         Suggest edits to this Domestic Instrument
       </h3>
       <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
-        <UFormField size="lg" hint="Required" :error="errors.jurisdiction_link">
+        <UFormField size="lg">
           <template #label>
             <span class="label">Jurisdiction</span>
           </template>
-          <SearchFilters
-            v-model="selectedJurisdiction"
-            :options="jurisdictionOptions"
-            class="mt-2 w-full"
-            :show-avatars="true"
-            :multiple="false"
-          />
+          <p
+            class="result-value-small mt-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-gray-500"
+          >
+            {{ jurisdictionDisplay || "—" }}
+          </p>
         </UFormField>
 
         <UFormField size="lg" :error="errors.official_title" hint="Required">
@@ -222,12 +220,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, watch } from "vue";
 import { useHead, useRouter, useRoute } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
-import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
@@ -259,8 +256,7 @@ const { data: entityData, isLoading: isLoadingEntity } =
 
 const officialTitle = ref("");
 const titleEn = ref("");
-const selectedJurisdiction = ref([]);
-const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
+const jurisdictionDisplay = ref("");
 const entryIntoForce = ref(new Date());
 const sourceUrl = ref("");
 const themes = ref("");
@@ -313,51 +309,14 @@ watch(
       compatibleUncitralModelLaw.value = "No";
     }
 
-    const jurisdictionName = data["Jurisdictions"] || data["Jurisdiction"];
-    if (jurisdictionName) {
-      selectedJurisdiction.value = [{ label: jurisdictionName }];
-    }
+    // Display jurisdiction (read-only)
+    jurisdictionDisplay.value =
+      data["Jurisdictions"] || data["Jurisdiction"] || "";
   },
   { immediate: true },
 );
 
-const loadJurisdictions = async () => {
-  try {
-    const response = await fetch(`/api/proxy/search/full_table`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ table: "Jurisdictions", filters: [] }),
-    });
-
-    if (!response.ok) throw new Error("Failed to load jurisdictions");
-
-    const jurisdictionsData = await response.json();
-    jurisdictionOptions.value = [
-      { label: "Select Jurisdiction" },
-      ...jurisdictionsData
-        .filter((entry) => entry["Irrelevant?"] === false)
-        .map((entry) => ({
-          label: entry.Name,
-          alpha3Code: entry["Alpha-3 Code"],
-          avatar: entry["Alpha-3 Code"]
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry["Alpha-3 Code"].toLowerCase()}.svg`
-            : undefined,
-        }))
-        .sort((a, b) => (a.label || "").localeCompare(b.label || "")),
-    ];
-  } catch (error) {
-    console.error("Error loading jurisdictions:", error);
-  }
-};
-
-onMounted(loadJurisdictions);
-
 const formSchema = z.object({
-  jurisdiction_link: z
-    .string()
-    .min(1, { message: "Selected jurisdiction is required" }),
   official_title: z
     .string()
     .min(1, { message: "Official title is required" })
@@ -385,10 +344,6 @@ useHead({ title: "Edit Domestic Instrument — CoLD" });
 function validateForm() {
   try {
     const formData = {
-      jurisdiction_link:
-        (Array.isArray(selectedJurisdiction.value) &&
-          selectedJurisdiction.value[0]?.label) ||
-        "",
       official_title: officialTitle.value,
       title_en: titleEn.value,
       entry_into_force: entryIntoForce.value,
@@ -422,10 +377,7 @@ function confirmCancel() {
 function handleEditSave() {
   const payload = {
     edit_entity_id: entityId.value,
-    jurisdiction_link:
-      (Array.isArray(selectedJurisdiction.value) &&
-        selectedJurisdiction.value[0]?.label) ||
-      undefined,
+    jurisdiction_link: jurisdictionDisplay.value || undefined,
     official_title: officialTitle.value,
     title_en: titleEn.value,
     entry_into_force: format(entryIntoForce.value, "yyyy-MM-dd"),

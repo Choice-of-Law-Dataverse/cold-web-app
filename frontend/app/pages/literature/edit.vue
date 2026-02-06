@@ -47,18 +47,16 @@
           <UInput v-model="publicationTitle" class="cold-input mt-2" />
         </UFormField>
 
-        <!-- Jurisdiction (optional) -->
+        <!-- Jurisdiction (read-only in edit mode) -->
         <UFormField size="lg">
           <template #label>
             <span class="label">Jurisdiction</span>
           </template>
-          <SearchFilters
-            v-model="selectedJurisdiction"
-            :options="jurisdictionOptions"
-            class="mt-2 w-full"
-            :show-avatars="true"
-            :multiple="false"
-          />
+          <p
+            class="result-value-small mt-2 rounded-lg border border-gray-200 bg-gray-50 px-3 py-2.5 text-gray-500"
+          >
+            {{ jurisdictionDisplay || "—" }}
+          </p>
         </UFormField>
 
         <!-- URL (optional) -->
@@ -148,12 +146,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue";
+import { ref, watch } from "vue";
 import { useHead, useRouter, useRoute } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DatePicker from "@/components/ui/DatePicker.vue";
-import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import { format, parseISO } from "date-fns";
@@ -181,8 +178,7 @@ const isbn = ref("");
 const issn = ref("");
 const theme = ref("");
 
-const selectedJurisdiction = ref([]);
-const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
+const jurisdictionDisplay = ref("");
 
 const comments = ref("");
 
@@ -214,46 +210,11 @@ watch(
     const pubDate = safeParseDateString(data["Date"]);
     if (pubDate) publicationDate.value = pubDate;
 
-    const jurisdictionName = data["Jurisdiction"];
-    if (jurisdictionName) {
-      selectedJurisdiction.value = [{ label: jurisdictionName }];
-    }
+    // Display jurisdiction (read-only)
+    jurisdictionDisplay.value = data["Jurisdiction"] || "";
   },
   { immediate: true },
 );
-
-const loadJurisdictions = async () => {
-  try {
-    const response = await fetch(`/api/proxy/search/full_table`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ table: "Jurisdictions", filters: [] }),
-    });
-
-    if (!response.ok) throw new Error("Failed to load jurisdictions");
-
-    const jurisdictionsData = await response.json();
-    jurisdictionOptions.value = [
-      { label: "Select Jurisdiction" },
-      ...jurisdictionsData
-        .filter((entry) => entry["Irrelevant?"] === false)
-        .map((entry) => ({
-          label: entry.Name,
-          alpha3Code: entry["Alpha-3 Code"],
-          avatar: entry["Alpha-3 Code"]
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry["Alpha-3 Code"].toLowerCase()}.svg`
-            : undefined,
-        }))
-        .sort((a, b) => (a.label || "").localeCompare(b.label || "")),
-    ];
-  } catch (error) {
-    console.error("Error loading jurisdictions:", error);
-  }
-};
-
-onMounted(loadJurisdictions);
 
 const formSchema = z.object({
   author: z
@@ -326,10 +287,6 @@ function handleEditSave() {
         : undefined,
     isbn: isbn.value || undefined,
     issn: issn.value || undefined,
-    jurisdiction:
-      (Array.isArray(selectedJurisdiction.value) &&
-        selectedJurisdiction.value[0]?.label) ||
-      undefined,
     theme: theme.value || undefined,
     submitter_comments: comments.value || undefined,
   };
