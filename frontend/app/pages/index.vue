@@ -1,5 +1,7 @@
 <template>
-  <div class="grid grid-cols-1 gap-4 md:grid-cols-12 md:gap-6">
+  <div
+    class="grid grid-cols-1 gap-x-4 gap-y-12 md:grid-cols-12 md:gap-x-6 md:gap-y-16"
+  >
     <div class="col-span-12">
       <div
         class="hero-gradient flex flex-col items-center justify-between gap-4 rounded-2xl px-3 py-4 md:flex-row md:px-6 md:py-12"

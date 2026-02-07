@@ -1,5 +1,5 @@
 <template>
-  <div class="section-header mb-6">
+  <div class="section-header">
     <h2 class="section-title">
       <Icon v-if="icon" :name="icon" class="section-icon" />
       {{ title }}
