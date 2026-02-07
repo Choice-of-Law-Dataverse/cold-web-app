@@ -1,0 +1,436 @@
+--
+-- PostgreSQL database dump
+--
+
+\restrict Sr4wccodfSckY8hYONbOEKEp24Esg23z6N3qSbyAi3gPDedaXoZpgaw17X0YvHT
+
+-- Dumped from database version 16.10
+-- Dumped by pg_dump version 16.11 (Homebrew)
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- Name: suggestions_case_analyzer; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.suggestions_case_analyzer (
+    id integer NOT NULL,
+    created_at timestamp without time zone DEFAULT CURRENT_TIMESTAMP,
+    username text,
+    model text,
+    case_citation text,
+    user_email text,
+    data jsonb,
+    moderation_status character varying(32)
+);
+
+
+--
+-- Name: suggestions_case_analyzer_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.suggestions_case_analyzer_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: suggestions_case_analyzer_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.suggestions_case_analyzer_id_seq OWNED BY public.suggestions_case_analyzer.id;
+
+
+--
+-- Name: suggestions_court_decisions; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.suggestions_court_decisions (
+    id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    payload jsonb NOT NULL,
+    client_ip character varying(64),
+    user_agent text,
+    source character varying(256),
+    token_sub character varying(256),
+    moderation_status character varying(32)
+);
+
+
+--
+-- Name: suggestions_court_decisions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.suggestions_court_decisions_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: suggestions_court_decisions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.suggestions_court_decisions_id_seq OWNED BY public.suggestions_court_decisions.id;
+
+
+--
+-- Name: suggestions_domestic_instruments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.suggestions_domestic_instruments (
+    id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    payload jsonb NOT NULL,
+    client_ip character varying(64),
+    user_agent text,
+    source character varying(256),
+    token_sub character varying(256),
+    moderation_status character varying(32)
+);
+
+
+--
+-- Name: suggestions_domestic_instruments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.suggestions_domestic_instruments_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: suggestions_domestic_instruments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.suggestions_domestic_instruments_id_seq OWNED BY public.suggestions_domestic_instruments.id;
+
+
+--
+-- Name: suggestions_generic; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.suggestions_generic (
+    id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    payload jsonb NOT NULL,
+    client_ip character varying(64),
+    user_agent text,
+    source character varying(256),
+    token_sub character varying(256),
+    moderation_status character varying(32)
+);
+
+
+--
+-- Name: suggestions_generic_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.suggestions_generic_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: suggestions_generic_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.suggestions_generic_id_seq OWNED BY public.suggestions_generic.id;
+
+
+--
+-- Name: suggestions_international_instruments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.suggestions_international_instruments (
+    id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    payload jsonb NOT NULL,
+    client_ip character varying(64),
+    user_agent text,
+    source character varying(256),
+    token_sub character varying(256),
+    moderation_status character varying(32)
+);
+
+
+--
+-- Name: suggestions_international_instruments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.suggestions_international_instruments_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: suggestions_international_instruments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.suggestions_international_instruments_id_seq OWNED BY public.suggestions_international_instruments.id;
+
+
+--
+-- Name: suggestions_literature; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.suggestions_literature (
+    id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    payload jsonb NOT NULL,
+    client_ip character varying(64),
+    user_agent text,
+    source character varying(256),
+    token_sub character varying(256),
+    moderation_status character varying(32)
+);
+
+
+--
+-- Name: suggestions_literature_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.suggestions_literature_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: suggestions_literature_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.suggestions_literature_id_seq OWNED BY public.suggestions_literature.id;
+
+
+--
+-- Name: suggestions_regional_instruments; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.suggestions_regional_instruments (
+    id integer NOT NULL,
+    created_at timestamp with time zone DEFAULT now() NOT NULL,
+    payload jsonb NOT NULL,
+    client_ip character varying(64),
+    user_agent text,
+    source character varying(256),
+    token_sub character varying(256),
+    moderation_status character varying(32)
+);
+
+
+--
+-- Name: suggestions_regional_instruments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.suggestions_regional_instruments_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: suggestions_regional_instruments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.suggestions_regional_instruments_id_seq OWNED BY public.suggestions_regional_instruments.id;
+
+
+--
+-- Name: suggestions_case_analyzer id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_case_analyzer ALTER COLUMN id SET DEFAULT nextval('public.suggestions_case_analyzer_id_seq'::regclass);
+
+
+--
+-- Name: suggestions_court_decisions id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_court_decisions ALTER COLUMN id SET DEFAULT nextval('public.suggestions_court_decisions_id_seq'::regclass);
+
+
+--
+-- Name: suggestions_domestic_instruments id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_domestic_instruments ALTER COLUMN id SET DEFAULT nextval('public.suggestions_domestic_instruments_id_seq'::regclass);
+
+
+--
+-- Name: suggestions_generic id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_generic ALTER COLUMN id SET DEFAULT nextval('public.suggestions_generic_id_seq'::regclass);
+
+
+--
+-- Name: suggestions_international_instruments id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_international_instruments ALTER COLUMN id SET DEFAULT nextval('public.suggestions_international_instruments_id_seq'::regclass);
+
+
+--
+-- Name: suggestions_literature id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_literature ALTER COLUMN id SET DEFAULT nextval('public.suggestions_literature_id_seq'::regclass);
+
+
+--
+-- Name: suggestions_regional_instruments id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_regional_instruments ALTER COLUMN id SET DEFAULT nextval('public.suggestions_regional_instruments_id_seq'::regclass);
+
+
+--
+-- Name: suggestions_case_analyzer suggestions_case_analyzer_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_case_analyzer
+    ADD CONSTRAINT suggestions_case_analyzer_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: suggestions_court_decisions suggestions_court_decisions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_court_decisions
+    ADD CONSTRAINT suggestions_court_decisions_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: suggestions_domestic_instruments suggestions_domestic_instruments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_domestic_instruments
+    ADD CONSTRAINT suggestions_domestic_instruments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: suggestions_generic suggestions_generic_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_generic
+    ADD CONSTRAINT suggestions_generic_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: suggestions_international_instruments suggestions_international_instruments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_international_instruments
+    ADD CONSTRAINT suggestions_international_instruments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: suggestions_literature suggestions_literature_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_literature
+    ADD CONSTRAINT suggestions_literature_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: suggestions_regional_instruments suggestions_regional_instruments_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.suggestions_regional_instruments
+    ADD CONSTRAINT suggestions_regional_instruments_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: idx_suggestions_case_analyzer_moderation_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_suggestions_case_analyzer_moderation_status ON public.suggestions_case_analyzer USING btree (moderation_status);
+
+
+--
+-- Name: idx_suggestions_court_decisions_moderation_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_suggestions_court_decisions_moderation_status ON public.suggestions_court_decisions USING btree (moderation_status);
+
+
+--
+-- Name: idx_suggestions_domestic_instruments_moderation_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_suggestions_domestic_instruments_moderation_status ON public.suggestions_domestic_instruments USING btree (moderation_status);
+
+
+--
+-- Name: idx_suggestions_generic_moderation_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_suggestions_generic_moderation_status ON public.suggestions_generic USING btree (moderation_status);
+
+
+--
+-- Name: idx_suggestions_international_instruments_moderation_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_suggestions_international_instruments_moderation_status ON public.suggestions_international_instruments USING btree (moderation_status);
+
+
+--
+-- Name: idx_suggestions_literature_moderation_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_suggestions_literature_moderation_status ON public.suggestions_literature USING btree (moderation_status);
+
+
+--
+-- Name: idx_suggestions_regional_instruments_moderation_status; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE INDEX idx_suggestions_regional_instruments_moderation_status ON public.suggestions_regional_instruments USING btree (moderation_status);
+
+
+--
+-- PostgreSQL database dump complete
+--
+
+\unrestrict Sr4wccodfSckY8hYONbOEKEp24Esg23z6N3qSbyAi3gPDedaXoZpgaw17X0YvHT
+

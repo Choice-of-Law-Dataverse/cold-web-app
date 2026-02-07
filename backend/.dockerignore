@@ -1,0 +1,16 @@
+.vscode
+.git
+
+.venv/
+venv/
+
+__pycache__/
+*.py[cod]
+
+.ruff_cache
+.pytest_cache
+
+cicd/
+deployment/
+infrastructure/
+tests/

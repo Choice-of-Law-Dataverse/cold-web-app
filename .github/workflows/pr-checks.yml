@@ -1,0 +1,150 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches:
+      - "**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  path-filter:
+    runs-on: ubuntu-latest
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      frontend: ${{ steps.filter.outputs.frontend }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for file changes
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            backend:
+              - 'backend/**'
+            frontend:
+              - 'frontend/**'
+
+  backend-checks:
+    runs-on: ubuntu-latest
+    needs: path-filter
+    if: needs.path-filter.outputs.backend == 'true'
+    outputs:
+      ruff: ${{ steps.ruff.outcome }}
+      pyright: ${{ steps.pyright.outcome }}
+      pytest: ${{ steps.pytest.outcome }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: backend/.python-version
+
+      - name: Set up environment
+        working-directory: backend
+        run: cp .blueprint.env .env
+
+      - name: Install dependencies
+        working-directory: backend
+        run: uv sync --all-extras --all-packages --group dev
+
+      - name: Run ruff linter
+        id: ruff
+        working-directory: backend
+        run: uv run ruff check
+        continue-on-error: true
+
+      - name: Run pyright type checker
+        id: pyright
+        working-directory: backend
+        run: uv run pyright .
+        continue-on-error: true
+
+      - name: Run pytest
+        id: pytest
+        working-directory: backend
+        run: uv run pytest
+        continue-on-error: true
+
+      - name: Check all backend steps
+        if: always()
+        run: |
+          if [ "${{ steps.ruff.outcome }}" != "success" ] || \
+             [ "${{ steps.pyright.outcome }}" != "success" ] || \
+             [ "${{ steps.pytest.outcome }}" != "success" ]; then
+            echo "One or more backend checks failed"
+            exit 1
+          fi
+
+  frontend-checks:
+    runs-on: ubuntu-latest
+    needs: path-filter
+    if: needs.path-filter.outputs.frontend == 'true'
+    outputs:
+      prettier: ${{ steps.prettier.outcome }}
+      eslint: ${{ steps.eslint.outcome }}
+      test: ${{ steps.test.outcome }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: frontend/.nvmrc
+          cache: "npm"
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Set up environment
+        working-directory: frontend
+        run: cp .blueprint.env .env
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Run prettier check
+        id: prettier
+        working-directory: frontend
+        run: npm run format:check
+        continue-on-error: true
+
+      - name: Run eslint
+        id: eslint
+        working-directory: frontend
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Run typecheck
+        id: typecheck
+        working-directory: frontend
+        run: npm run typecheck
+        continue-on-error: true
+
+      - name: Run tests
+        id: test
+        working-directory: frontend
+        run: npm run test:run
+        continue-on-error: true
+
+      - name: Check all frontend steps
+        if: always()
+        run: |
+          if [ "${{ steps.prettier.outcome }}" != "success" ] || \
+             [ "${{ steps.eslint.outcome }}" != "success" ] || \
+             [ "${{ steps.typecheck.outcome }}" != "success" ] || \
+             [ "${{ steps.test.outcome }}" != "success" ]; then
+            echo "One or more frontend checks failed"
+            exit 1
+          fi

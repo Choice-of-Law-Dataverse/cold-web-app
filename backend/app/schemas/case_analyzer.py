@@ -1,0 +1,87 @@
+from typing import Literal
+
+from pydantic import BaseModel, Field
+
+
+class UploadDocumentRequest(BaseModel):
+    """Request to upload and process a court decision document."""
+
+    file_name: str = Field(..., description="Original filename of the uploaded document")
+    blob_url: str = Field(..., description="Azure Blob Storage URL of the uploaded PDF")
+
+
+class JurisdictionInfo(BaseModel):
+    """Detected jurisdiction information."""
+
+    legal_system_type: str = Field(..., description="Type of legal system (Civil-law, Common-law, or No court decision)")
+    precise_jurisdiction: str = Field(..., description="Specific jurisdiction (e.g., 'Switzerland')")
+    jurisdiction_code: str = Field(..., description="ISO country code (e.g., 'CH')")
+    confidence: Literal["low", "medium", "high"] = Field(..., description="Confidence level of detection")
+    reasoning: str = Field(..., description="Explanation of jurisdiction detection")
+
+
+class UploadDocumentResponse(BaseModel):
+    """Response from document upload containing initial analysis."""
+
+    draft_id: int = Field(..., description="Database ID of the draft suggestion")
+    extracted_text: str = Field(..., description="Extracted text from the document")
+    jurisdiction: JurisdictionInfo = Field(..., description="Detected jurisdiction information")
+
+
+class ConfirmAnalysisRequest(BaseModel):
+    """Request to confirm jurisdiction and continue analysis."""
+
+    draft_id: int = Field(..., description="Draft ID from upload response")
+    jurisdiction: JurisdictionInfo = Field(..., description="Confirmed or corrected jurisdiction information")
+    resume: bool = Field(False, description="Whether to resume from last successful step (for error recovery)")
+
+
+class AnalysisStep(BaseModel):
+    """Intermediate step in the analysis workflow."""
+
+    step_name: str = Field(..., description="Name of the analysis step")
+    status: Literal["in_progress", "completed", "error"] = Field(..., description="Status of this step")
+    data: dict | None = Field(None, description="Step result data")
+    error: str | None = Field(None, description="Error message if status is 'error'")
+
+
+class AnalysisResult(BaseModel):
+    """Complete analysis result for court decision."""
+
+    draft_id: int
+    case_citation: str | None = None
+    abstract: str | None = None
+    relevant_facts: str | None = None
+    pil_provisions: list[str] | None = None
+    choice_of_law_issue: str | None = None
+    courts_position: str | None = None
+    themes: list[str] | None = None
+    confidence_scores: dict[str, str] | None = None
+
+
+class SubmitForApprovalRequest(BaseModel):
+    """Request to submit user-edited data for moderation approval."""
+
+    draft_id: int = Field(..., description="Database ID of the case analyzer draft")
+    submitted_data: dict = Field(
+        ...,
+        description="User-edited data to submit for approval",
+        json_schema_extra={
+            "example": {
+                "case_citation": "BGE 150 III 123",
+                "jurisdiction": "CHE",
+                "decision_date": "2024-03-15",
+                "abstract": "Edited abstract...",
+                "relevant_facts": "Edited facts...",
+                "courts_position": "Edited position...",
+            }
+        },
+    )
+
+
+class SubmitForApprovalResponse(BaseModel):
+    """Response after submitting for approval."""
+
+    draft_id: int = Field(..., description="Database ID of the submitted draft")
+    status: str = Field("pending", description="New moderation status")
+    message: str = Field(..., description="Success message")

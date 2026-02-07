@@ -1,0 +1,116 @@
+#!/usr/bin/env python3
+
+"""
+Test script for the new search_for_entry function integration
+
+NOTE: These are integration tests that require a real database connection.
+They are skipped in CI without access to test databases.
+"""
+
+import logging
+import os
+import sys
+
+import pytest
+
+# Add the backend directory to Python path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
+from app.services.search import SearchService
+
+logger = logging.getLogger(__name__)
+
+# Skip these tests in CI or when database is not available
+pytestmark = pytest.mark.skip(reason="Integration tests requiring real database - run manually with test DB")
+
+
+def test_search_for_entry_integration():
+    """
+    Test the updated curated_details_search method that uses search_for_entry SQL function
+    and includes hop1_relations by default
+    """
+    search_service = SearchService()
+
+    # Test with a known CoLD_ID (you'll need to replace with actual test data)
+    test_cases = [
+        {"table": "Answers", "cold_id": "CHE_01.1-P"},
+        {"table": "Court Decisions", "cold_id": "CD-CHE-1020"},
+        {"table": "Questions", "cold_id": "Q-01.1"},
+    ]
+
+    for test_case in test_cases:
+        table = test_case["table"]
+        cold_id = test_case["cold_id"]
+
+        logger.debug(f"\nTesting {table} with CoLD_ID: {cold_id}")
+
+        # Test the updated method
+        result = search_service.curated_details_search(table, cold_id)
+
+        if "error" in result:
+            logger.debug(f"Error (might be expected if test data doesn't exist): {result['error']}")
+        else:
+            logger.debug(f"Success! Found record with ID: {result.get('id')}")
+            logger.debug(f"Source table: {result.get('source_table')}")
+            logger.debug(f"Has hop1_relations: {'hop1_relations' in result}")
+            logger.debug(f"Data structure similar to full_text_search: {bool(result.get('source_table') and result.get('id'))}")
+            if "hop1_relations" in result:
+                relations = result["hop1_relations"]
+                if isinstance(relations, dict) and relations:
+                    logger.debug(f"Relations found: {list(relations.keys())}")
+                else:
+                    logger.debug("  No relations for this record")
+
+
+def test_data_structure_consistency():
+    """
+    Verify that the curated_details_search returns data in a structure similar to full_text_search
+    """
+    search_service = SearchService()
+
+    table = "Answers"
+    test_id = "CHE_01.1-P"  # Replace with actual test data
+
+    logger.debug(f"\nTesting data structure consistency for {table} {test_id}")
+
+    # Test curated details
+    curated_result = search_service.curated_details_search(table, test_id)
+
+    if "error" not in curated_result:
+        logger.debug("Curated details structure:")
+        logger.debug(f"- source_table: {'source_table' in curated_result}")
+        logger.debug(f"- id: {'id' in curated_result}")
+        logger.debug(f"- hop1_relations: {'hop1_relations' in curated_result}")
+        logger.debug(f"- transformed by DataTransformerFactory: {hasattr(curated_result, 'get')}")
+
+        # Check if it has similar fields to full text search results
+        expected_fields = ["source_table", "id"]
+        missing_fields = [field for field in expected_fields if field not in curated_result]
+        if missing_fields:
+            logger.debug(f"Missing expected fields: {missing_fields}")
+        else:
+            logger.debug("  ✅ Has all expected fields for consistency with full_text_search")
+    else:
+        logger.debug(f"Error in curated details: {curated_result['error']}")
+
+
+if __name__ == "__main__":
+    logger.debug("Testing updated search_for_entry integration...")
+
+    try:
+        test_search_for_entry_integration()
+        logger.debug("\n✅ Basic integration test completed")
+    except Exception as e:
+        logger.debug(f"\n❌ Integration test failed: {e}")
+        import traceback
+
+        traceback.print_exc()
+
+    try:
+        test_data_structure_consistency()
+        logger.debug("\n✅ Data structure consistency test completed")
+    except Exception as e:
+        logger.debug(f"\n❌ Data structure consistency test failed: {e}")
+        import traceback
+
+        traceback.print_exc()

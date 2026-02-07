@@ -1,0 +1,22 @@
+[
+  {
+    "jurisdiction": "South Africa",
+    "n": 65,
+    "url": "/search?jurisdiction=South+Africa&type=Court+Decisions"
+  },
+  {
+    "jurisdiction": "European Union",
+    "n": 76,
+    "url": "/search?jurisdiction=European+Union&type=Court+Decisions"
+  },
+  {
+    "jurisdiction": "Australia",
+    "n": 84,
+    "url": "/search?jurisdiction=Australia&type=Court+Decisions"
+  },
+  {
+    "jurisdiction": "United Kingdom",
+    "n": 97,
+    "url": "/search?jurisdiction=United+Kingdom&type=Court+Decisions"
+  }
+]

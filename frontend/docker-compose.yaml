@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  nuxt-frontend:
+    build: .
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      API_BASE_URL: ${API_BASE_URL}
+      FASTAPI_API_TOKEN: ${FASTAPI_API_TOKEN}
