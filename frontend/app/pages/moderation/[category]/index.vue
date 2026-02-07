@@ -47,7 +47,7 @@
         @click="handleCardClick(suggestion)"
       >
         <template #header>
-          <div class="flex items-start justify-between">
+          <div class="flex items-start justify-between px-6 py-4">
             <div class="flex-1">
               <h3 class="text-lg font-semibold">
                 {{ getSuggestionTitle(suggestion) }}
