@@ -329,6 +329,7 @@ const filteredPayload = computed(() => {
     "raw_data",
     "draft_id",
     "notes",
+    "edit_entity_id",
   ]);
 
   const filtered: Record<string, unknown> = {};
