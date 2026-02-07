@@ -144,59 +144,65 @@
 
     <!-- Success modal -->
     <UModal v-model:open="showSuccessModal">
-      <UCard>
-        <template #header>
-          <h3 class="text-lg font-semibold">Success</h3>
-        </template>
-        <p class="text-gray-700">{{ successMessage }}</p>
-        <template #footer>
-          <div class="flex justify-end">
-            <UButton @click="goToList"> Back to List </UButton>
-          </div>
-        </template>
-      </UCard>
+      <template #content>
+        <UCard>
+          <template #header>
+            <h3 class="text-lg font-semibold">Success</h3>
+          </template>
+          <p class="text-gray-700">{{ successMessage }}</p>
+          <template #footer>
+            <div class="flex justify-end">
+              <UButton @click="goToList"> Back to List </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
     </UModal>
 
     <!-- Error modal -->
     <UModal v-model:open="showErrorModal">
-      <UCard>
-        <template #header>
-          <h3 class="text-lg font-semibold text-red-600">Error</h3>
-        </template>
-        <p class="text-gray-700">{{ errorMessage }}</p>
-        <template #footer>
-          <div class="flex justify-end">
-            <UButton @click="showErrorModal = false"> Close </UButton>
-          </div>
-        </template>
-      </UCard>
+      <template #content>
+        <UCard>
+          <template #header>
+            <h3 class="text-lg font-semibold text-red-600">Error</h3>
+          </template>
+          <p class="text-gray-700">{{ errorMessage }}</p>
+          <template #footer>
+            <div class="flex justify-end">
+              <UButton @click="showErrorModal = false"> Close </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
     </UModal>
 
     <!-- Delete confirmation modal -->
     <UModal v-model:open="showDeleteConfirm">
-      <UCard>
-        <template #header>
-          <h3 class="text-lg font-semibold text-red-600">Confirm Delete</h3>
-        </template>
-        <p class="text-gray-700">
-          Are you sure you want to permanently delete this analysis? This action
-          cannot be undone.
-        </p>
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <UButton
-              variant="ghost"
-              color="neutral"
-              @click="showDeleteConfirm = false"
-            >
-              Cancel
-            </UButton>
-            <UButton color="error" :loading="deleting" @click="handleDelete">
-              Delete
-            </UButton>
-          </div>
-        </template>
-      </UCard>
+      <template #content>
+        <UCard>
+          <template #header>
+            <h3 class="text-lg font-semibold text-red-600">Confirm Delete</h3>
+          </template>
+          <p class="text-gray-700">
+            Are you sure you want to permanently delete this analysis? This
+            action cannot be undone.
+          </p>
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                variant="ghost"
+                color="neutral"
+                @click="showDeleteConfirm = false"
+              >
+                Cancel
+              </UButton>
+              <UButton color="error" :loading="deleting" @click="handleDelete">
+                Delete
+              </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
     </UModal>
   </div>
 </template>

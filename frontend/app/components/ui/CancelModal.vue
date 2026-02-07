@@ -1,19 +1,21 @@
 <template>
   <UModal v-model:open="modelValueProxy" :dismissible="false">
-    <slot name="cancel-modal" :close="closeModal">
-      <div class="p-6 text-center">
-        <h2 class="mb-4 text-lg font-bold">Discard changes?</h2>
-        <p class="mb-6">
-          Are you sure you want to cancel? All unsaved changes will be lost.
-        </p>
-        <div class="flex justify-center gap-4">
-          <UButton color="neutral" variant="outline" @click="closeModal"
-            >Go Back</UButton
-          >
-          <UButton color="error" @click="onDiscard">Discard</UButton>
+    <template #content>
+      <slot name="cancel-modal" :close="closeModal">
+        <div class="p-6 text-center">
+          <h2 class="mb-4 text-lg font-bold">Discard changes?</h2>
+          <p class="mb-6">
+            Are you sure you want to cancel? All unsaved changes will be lost.
+          </p>
+          <div class="flex justify-center gap-4">
+            <UButton color="neutral" variant="outline" @click="closeModal"
+              >Go Back</UButton
+            >
+            <UButton color="error" @click="onDiscard">Discard</UButton>
+          </div>
         </div>
-      </div>
-    </slot>
+      </slot>
+    </template>
   </UModal>
 </template>
 

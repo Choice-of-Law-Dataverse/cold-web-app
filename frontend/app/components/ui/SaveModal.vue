@@ -1,40 +1,42 @@
 <template>
   <UModal v-model:open="modelValueProxy" :dismissible="false">
-    <div class="p-6">
-      <h2 class="mb-4 text-center text-lg font-bold">Ready to submit?</h2>
-      <p class="mb-6 text-center">
-        Review your submission and add optional comments if needed.
-      </p>
+    <template #content>
+      <div class="p-6">
+        <h2 class="mb-4 text-center text-lg font-bold">Ready to submit?</h2>
+        <p class="mb-6 text-center">
+          Review your submission and add optional comments if needed.
+        </p>
 
-      <!-- Comments Field -->
-      <UFormField size="lg" class="mb-6">
-        <template #label>
-          <span class="label">Comments</span>
-        </template>
-        <UTextarea
-          v-model="commentsProxy"
-          placeholder="Optional comments about your submission"
-          class="cold-input mt-2"
-          :rows="3"
-        />
-      </UFormField>
-
-      <div class="flex flex-col items-center gap-2">
-        <h2
-          class="submit-heading mb-4 flex cursor-pointer items-center p-0"
-          @click.prevent="handleSubmit()"
-        >
-          Submit Your Data Now
-          <UIcon
-            name="i-material-symbols:add-notes-outline"
-            class="relative ml-1 inline-block text-[1.2em]"
+        <!-- Comments Field -->
+        <UFormField size="lg" class="mb-6">
+          <template #label>
+            <span class="label">Comments</span>
+          </template>
+          <UTextarea
+            v-model="commentsProxy"
+            placeholder="Optional comments about your submission"
+            class="cold-input mt-2"
+            :rows="3"
           />
-        </h2>
-        <NuxtLink class="gray-link cursor-pointer" @click="closeModal"
-          >Go Back</NuxtLink
-        >
+        </UFormField>
+
+        <div class="flex flex-col items-center gap-2">
+          <h2
+            class="submit-heading mb-4 flex cursor-pointer items-center p-0"
+            @click.prevent="handleSubmit()"
+          >
+            Submit Your Data Now
+            <UIcon
+              name="i-material-symbols:add-notes-outline"
+              class="relative ml-1 inline-block text-[1.2em]"
+            />
+          </h2>
+          <NuxtLink class="gray-link cursor-pointer" @click="closeModal"
+            >Go Back</NuxtLink
+          >
+        </div>
       </div>
-    </div>
+    </template>
   </UModal>
 </template>
 
