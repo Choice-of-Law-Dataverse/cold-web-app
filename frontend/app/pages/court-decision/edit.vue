@@ -400,7 +400,7 @@ watch(
       data["Case Title"] === "Not found" ? "" : data["Case Title"] || "";
     caseFullText.value = data["Original Text"] || "";
     caseEnglishTranslation.value = data["English Translation"] || "";
-    caseRank.value = data["Case Rank"] || "";
+    caseRank.value = String(data["Case Rank"] ?? "");
     caseAbstract.value = data["Abstract"] || "";
     caseRelevantFacts.value = data["Relevant Facts"] || "";
     casePILProvisions.value = data["PIL Provisions"] || "";

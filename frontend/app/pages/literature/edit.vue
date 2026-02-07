@@ -7,7 +7,7 @@
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"
-      :icon="'i-material-symbols:warning-outline'"
+      :icon="'i-heroicons-pencil-square'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
@@ -200,7 +200,7 @@ watch(
     author.value = data["Author"] || "";
     title.value = data["Title"] || "";
     publicationTitle.value = data["Publication Title"] || "";
-    publicationYear.value = data["Publication Year"] || "";
+    publicationYear.value = String(data["Publication Year"] ?? "");
     url.value = data["Url"] || data["Open Access URL"] || "";
     doi.value = data["DOI"] || "";
     isbn.value = data["ISBN"] || "";
