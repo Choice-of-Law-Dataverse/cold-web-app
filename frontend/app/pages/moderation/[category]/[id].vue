@@ -31,6 +31,26 @@
 
     <!-- Suggestion detail -->
     <div v-else-if="suggestion">
+      <!-- Edit suggestion banner -->
+      <UAlert
+        v-if="isEditSuggestion"
+        color="warning"
+        variant="subtle"
+        icon="i-heroicons-pencil-square"
+        title="Edit of existing record"
+        class="mb-6"
+      >
+        <template #description>
+          This suggestion proposes changes to an existing record.
+          <NuxtLink
+            :to="`/${getCategoryEntityRoute(category)}/${suggestion.payload.edit_entity_id}`"
+            class="font-medium underline hover:opacity-80"
+          >
+            View original record
+          </NuxtLink>
+        </template>
+      </UAlert>
+
       <!-- Metadata card -->
       <UCard class="mb-6" :ui="{ body: 'p-0' }">
         <template #header>
@@ -94,6 +114,7 @@
         <!-- Approve/Reject - only show for pending status -->
         <template v-if="isPending">
           <UButton
+            v-if="!isEditSuggestion"
             color="success"
             size="lg"
             :loading="approving"
@@ -102,6 +123,15 @@
           >
             Approve
           </UButton>
+          <UAlert
+            v-else
+            color="info"
+            variant="subtle"
+            icon="i-heroicons-information-circle"
+            title="Approval not available"
+            description="Approval for edit suggestions is not yet supported. You can still reject this suggestion."
+            class="flex-1"
+          />
           <UButton
             color="error"
             size="lg"
@@ -257,6 +287,21 @@ const isPending = computed(() => {
   // Consider null/undefined as pending (legacy records) or explicit "pending"
   return !status || status === "pending";
 });
+
+const isEditSuggestion = computed(
+  () => !!suggestion.value?.payload?.edit_entity_id,
+);
+
+const getCategoryEntityRoute = (cat: string): string => {
+  const mapping: Record<string, string> = {
+    "court-decisions": "court-decision",
+    "domestic-instruments": "domestic-instrument",
+    "regional-instruments": "regional-instrument",
+    "international-instruments": "international-instrument",
+    literature: "literature",
+  };
+  return mapping[cat] ?? cat;
+};
 
 const filteredPayload = computed(() => {
   if (!suggestion.value?.payload) return {};

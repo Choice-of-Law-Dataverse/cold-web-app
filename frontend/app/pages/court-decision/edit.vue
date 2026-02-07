@@ -7,7 +7,7 @@
       header-mode="new"
       :show-notification-banner="true"
       :notification-banner-message="notificationBannerMessage"
-      :icon="'i-material-symbols:warning-outline'"
+      :icon="'i-heroicons-pencil-square'"
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
