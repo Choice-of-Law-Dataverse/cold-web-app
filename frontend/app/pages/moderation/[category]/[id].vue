@@ -54,7 +54,9 @@
       <!-- Metadata card -->
       <UCard class="mb-6" :ui="{ body: 'p-0' }">
         <template #header>
-          <h2 class="text-xl font-semibold">Submission Information</h2>
+          <h2 class="px-6 py-4 text-xl font-semibold">
+            Submission Information
+          </h2>
         </template>
 
         <div class="flex flex-col gap-4 px-6 py-8">
@@ -88,7 +90,7 @@
       <!-- Data fields card -->
       <UCard class="mb-6" :ui="{ body: 'p-0' }">
         <template #header>
-          <h2 class="text-xl font-semibold">Submitted Data</h2>
+          <h2 class="px-6 py-4 text-xl font-semibold">Submitted Data</h2>
         </template>
 
         <div class="flex flex-col gap-4 px-6 py-8">
