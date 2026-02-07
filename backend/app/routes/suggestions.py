@@ -1,7 +1,7 @@
 import logging
 from typing import Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, status
+from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Request, status
 
 from app.auth import require_editor_or_admin, require_user, verify_frontend_request
 from app.schemas.suggestions import (
@@ -13,6 +13,7 @@ from app.schemas.suggestions import (
     SuggestionPayload,
     SuggestionResponse,
 )
+from app.services.email_notifications import send_new_suggestion_notification
 from app.services.moderation_writer import MainDBWriter
 from app.services.suggestion_approval import (
     approve_case_analyzer,
@@ -46,6 +47,7 @@ def get_suggestion_service() -> SuggestionService:
 async def submit_suggestion(
     body: SuggestionPayload,
     request: Request,
+    background_tasks: BackgroundTasks,
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
 ):
@@ -63,6 +65,7 @@ async def submit_suggestion(
             source=body.source,
             user=user,
         )
+        background_tasks.add_task(send_new_suggestion_notification, "generic", new_id, payload)
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -77,6 +80,7 @@ async def submit_suggestion(
 async def submit_court_decision(
     body: CourtDecisionSuggestion,
     request: Request,
+    background_tasks: BackgroundTasks,
     user: dict = Depends(require_user),
     source: str | None = Header(None),
     service: SuggestionService = Depends(get_suggestion_service),
@@ -91,6 +95,7 @@ async def submit_court_decision(
             source=source,
             user=user,
         )
+        background_tasks.add_task(send_new_suggestion_notification, "court_decisions", new_id, payload)
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -105,6 +110,7 @@ async def submit_court_decision(
 async def submit_domestic_instrument(
     body: DomesticInstrumentSuggestion,
     request: Request,
+    background_tasks: BackgroundTasks,
     user: dict = Depends(require_user),
     source: str | None = Header(None),
     service: SuggestionService = Depends(get_suggestion_service),
@@ -119,6 +125,7 @@ async def submit_domestic_instrument(
             source=source,
             user=user,
         )
+        background_tasks.add_task(send_new_suggestion_notification, "domestic_instruments", new_id, payload)
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -133,6 +140,7 @@ async def submit_domestic_instrument(
 async def submit_regional_instrument(
     body: RegionalInstrumentSuggestion,
     request: Request,
+    background_tasks: BackgroundTasks,
     user: dict = Depends(require_user),
     source: str | None = Header(None),
     service: SuggestionService = Depends(get_suggestion_service),
@@ -147,6 +155,7 @@ async def submit_regional_instrument(
             source=source,
             user=user,
         )
+        background_tasks.add_task(send_new_suggestion_notification, "regional_instruments", new_id, payload)
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -161,6 +170,7 @@ async def submit_regional_instrument(
 async def submit_international_instrument(
     body: InternationalInstrumentSuggestion,
     request: Request,
+    background_tasks: BackgroundTasks,
     user: dict = Depends(require_user),
     source: str | None = Header(None),
     service: SuggestionService = Depends(get_suggestion_service),
@@ -175,6 +185,7 @@ async def submit_international_instrument(
             source=source,
             user=user,
         )
+        background_tasks.add_task(send_new_suggestion_notification, "international_instruments", new_id, payload)
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -189,6 +200,7 @@ async def submit_international_instrument(
 async def submit_literature(
     body: LiteratureSuggestion,
     request: Request,
+    background_tasks: BackgroundTasks,
     user: dict = Depends(require_user),
     source: str | None = Header(None),
     service: SuggestionService = Depends(get_suggestion_service),
@@ -203,6 +215,7 @@ async def submit_literature(
             source=source,
             user=user,
         )
+        background_tasks.add_task(send_new_suggestion_notification, "literature", new_id, payload)
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
