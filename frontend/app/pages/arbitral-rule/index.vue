@@ -62,7 +62,7 @@
 </template>
 
 <script setup lang="ts">
-import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import { ref, onMounted } from "vue";
 import { formatDate } from "@/utils/format";
 import csvRaw from "./all-arbitral-rules.csv?raw";

@@ -191,7 +191,7 @@
 <script setup lang="ts">
 import { ref, defineAsyncComponent } from "vue";
 import { useRoute } from "vue-router";
-import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
