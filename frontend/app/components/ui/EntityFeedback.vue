@@ -67,30 +67,24 @@ async function handleSubmit() {
   }
 }
 
-function openFeedback() {
-  if (window.innerWidth >= 1024) {
-    popoverOpen.value = true;
-  } else {
-    modalOpen.value = true;
-  }
-}
 </script>
 
 <template>
   <div class="fixed right-6 bottom-6 z-40">
-    <UPopover
-      v-model:open="popoverOpen"
-      :content="{ side: 'top', align: 'end', sideOffset: 8 }"
-      class="hidden lg:block"
-    >
-      <UButton
-        icon="i-material-symbols:rate-review-outline"
-        size="xl"
-        color="primary"
-        class="shadow-lg"
-        aria-label="Give feedback"
-        @click.stop
-      />
+    <div class="hidden lg:block">
+      <UPopover
+        v-model:open="popoverOpen"
+        :content="{ side: 'top', align: 'end', sideOffset: 8 }"
+      >
+        <UButton
+          icon="i-material-symbols:rate-review-outline"
+          size="xl"
+          color="neutral"
+          variant="ghost"
+          :ui="{ base: 'size-14 justify-center feedback-fab text-white' }"
+          class="shadow-lg"
+          aria-label="Give feedback"
+        />
 
       <template #content>
         <div class="w-80 p-4">
@@ -135,15 +129,18 @@ function openFeedback() {
           </div>
         </div>
       </template>
-    </UPopover>
+      </UPopover>
+    </div>
 
     <UButton
       icon="i-material-symbols:rate-review-outline"
       size="xl"
-      color="primary"
+      color="neutral"
+      variant="ghost"
+      :ui="{ base: 'size-14 justify-center feedback-fab text-white' }"
       class="shadow-lg lg:hidden"
       aria-label="Give feedback"
-      @click="openFeedback"
+      @click="modalOpen = true"
     />
 
     <UModal v-model:open="modalOpen">
@@ -201,3 +198,23 @@ function openFeedback() {
     </UModal>
   </div>
 </template>
+
+<style scoped>
+.feedback-fab {
+  border-radius: 9999px;
+  background: linear-gradient(
+    135deg,
+    var(--color-cold-purple),
+    color-mix(in srgb, var(--color-cold-purple) 60%, var(--color-cold-green))
+  );
+  cursor: pointer;
+}
+
+.feedback-fab:hover {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 85%, #000),
+    color-mix(in srgb, var(--color-cold-purple) 50%, var(--color-cold-green))
+  );
+}
+</style>
