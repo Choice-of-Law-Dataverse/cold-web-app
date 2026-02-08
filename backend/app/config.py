@@ -1,4 +1,3 @@
-from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,11 +22,6 @@ class Config(BaseSettings):
     NOCODB_POSTGRES_SCHEMA: str | None = None
     # Suggestions storage configuration
     SUGGESTIONS_SQL_CONN_STRING: str | None = None
-    # Moderation UI credentials (basic form login)
-    MODERATION_USERNAME: str | None = None
-    MODERATION_PASSWORD: str | None = None
-    # MODERATION_SECRET: falls back to API_KEY if not set, then to 'secret'
-    MODERATION_SECRET: str | None = None
     # Auth0 configuration
     AUTH0_DOMAIN: str | None = None
     AUTH0_AUDIENCE: str | None = None
@@ -40,13 +34,5 @@ class Config(BaseSettings):
     RESEND_API_KEY: str | None = None
     NOTIFICATION_SENDER_EMAIL: str = "CoLD <notifications@mail.cold.global>"
     ADMIN_NOTIFICATION_EMAILS: str | None = None
-
-    @model_validator(mode="after")
-    def set_moderation_secret_fallback(self) -> "Config":
-        """Set MODERATION_SECRET to API_KEY if not explicitly provided, fallback to 'secret'."""
-        if self.MODERATION_SECRET is None:
-            self.MODERATION_SECRET = self.API_KEY or "secret"
-        return self
-
 
 config = Config()
