@@ -683,45 +683,45 @@ li::marker {
 /* UI Elements ----------------------------------------------- */
 
 .suggestion-button {
-  color: var(--color-cold-purple) !important;
-  font-size: 1.25rem !important;
-  font-weight: 500 !important;
-  line-height: 1.6em !important;
-  text-decoration: none !important;
-  padding: 0 !important;
+  color: var(--color-cold-purple);
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.6em;
+  text-decoration: none;
+  padding: 0;
   transition: color 0.2s ease;
 }
 
 .suggestion-button:hover {
-  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
+  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
 }
 
 .link-button {
-  color: var(--color-cold-purple) !important;
-  font-size: 0.875rem !important;
-  font-weight: 400 !important;
-  line-height: 1.6em !important;
-  text-decoration: none !important;
-  padding: 0 !important;
+  color: var(--color-cold-purple);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.6em;
+  text-decoration: none;
+  padding: 0;
   transition: color 0.2s ease;
 }
 
 .link-button:hover {
-  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
+  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
 }
 
 .link-button-night {
-  color: var(--color-cold-night) !important;
-  font-size: 0.875rem !important;
-  font-weight: 400 !important;
-  line-height: 1.6em !important;
-  text-decoration: none !important;
-  padding: 0 !important;
+  color: var(--color-cold-night);
+  font-size: 0.875rem;
+  font-weight: 400;
+  line-height: 1.6em;
+  text-decoration: none;
+  padding: 0;
   transition: color 0.2s ease;
 }
 
 .link-button-night:hover {
-  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
+  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
 }
 
 /* Info Box in Jurisdiction Map */
@@ -2351,45 +2351,41 @@ button.cold-toggle-btn[aria-pressed="true"] {
     var(--color-cold-teal)
   ) !important;
   color: white !important;
-  font-weight: 600 !important;
-  border: none !important;
-  cursor: pointer !important;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
   box-shadow:
     0 4px 6px -1px rgb(0 0 0 / 0.1),
-    0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+    0 2px 4px -2px rgb(0 0 0 / 0.1);
 }
 
 .hero-cta:hover {
   transform: translateY(-2px);
   box-shadow:
     0 10px 15px -3px rgb(0 0 0 / 0.1),
-    0 4px 6px -4px rgb(0 0 0 / 0.1) !important;
+    0 4px 6px -4px rgb(0 0 0 / 0.1);
 }
 
 .hero-cta-secondary {
-  border-color: var(--color-cold-purple) !important;
-  color: var(--color-cold-purple) !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
+  border-color: var(--color-cold-purple);
+  color: var(--color-cold-purple);
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .hero-cta-secondary:hover {
-  background: color-mix(
-    in srgb,
-    var(--color-cold-purple) 8%,
-    transparent
-  ) !important;
+  background: color-mix(in srgb, var(--color-cold-purple) 8%, transparent);
   transform: translateY(-2px);
 }
 
 /* Connect Card Button ----------------------------------------------- */
 .connect-button {
-  color: var(--color-cold-purple) !important;
-  font-size: 1rem !important;
-  font-weight: 600 !important;
-  cursor: pointer !important;
+  color: var(--color-cold-purple);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .connect-button:hover {
-  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
+  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
 }
