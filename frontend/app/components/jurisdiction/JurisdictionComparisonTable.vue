@@ -204,7 +204,7 @@
                 </button>
               </div>
 
-              <template v-for="row in rows" :key="row.id">
+              <div v-for="row in rows" :key="row.id" class="comparison-row">
                 <div
                   :id="`question-${row.id}`"
                   class="comparison-cell comparison-cell--question text-sm whitespace-pre-line"
@@ -263,7 +263,7 @@
                   </UTooltip>
                   <span v-else class="text-gray-400">—</span>
                 </div>
-              </template>
+              </div>
             </div>
           </div>
 
@@ -597,6 +597,16 @@ const rows = computed(() => {
   margin: 0 -1rem;
   padding-left: 1rem !important;
   padding-right: 1rem !important;
+  border-radius: 2px;
+  transition: background 0.15s ease;
+}
+
+.question-row:hover {
+  background: linear-gradient(
+    315deg,
+    color-mix(in srgb, var(--color-cold-purple) 2%, white),
+    color-mix(in srgb, var(--color-cold-green) 1%, white)
+  );
 }
 
 .comparison-grid {
@@ -610,6 +620,22 @@ const rows = computed(() => {
     color-mix(in srgb, var(--color-cold-purple) 10%, transparent);
   box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
   z-index: 5;
+}
+
+.comparison-row {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: subgrid;
+  border-radius: 2px;
+  transition: background 0.15s ease;
+}
+
+.comparison-row:hover {
+  background: linear-gradient(
+    315deg,
+    color-mix(in srgb, var(--color-cold-purple) 2%, white),
+    color-mix(in srgb, var(--color-cold-green) 1%, white)
+  );
 }
 
 .comparison-cell {
@@ -633,6 +659,11 @@ const rows = computed(() => {
   left: 0;
   z-index: 30;
   background: white;
+}
+
+.comparison-row:hover .sticky-col-1,
+.comparison-row:hover .sticky-col-2 {
+  background: inherit;
 }
 
 .sticky-col-2 {
