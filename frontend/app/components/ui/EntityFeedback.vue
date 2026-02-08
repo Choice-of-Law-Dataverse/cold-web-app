@@ -66,7 +66,6 @@ async function handleSubmit() {
     modalOpen.value = false;
   }
 }
-
 </script>
 
 <template>
@@ -79,66 +78,84 @@ async function handleSubmit() {
         <UButton
           icon="i-material-symbols:rate-review-outline"
           size="xl"
+          square
           color="neutral"
           variant="ghost"
-          :ui="{ base: 'size-14 justify-center feedback-fab text-white' }"
-          class="shadow-lg"
+          class="feedback-btn shadow-lg"
+          :ui="{ base: 'rounded-full' }"
+          :style="{
+            background:
+              'linear-gradient(135deg, var(--color-cold-purple), color-mix(in srgb, var(--color-cold-purple) 60%, var(--color-cold-green)))',
+            color: 'white',
+            width: '3.5rem',
+            height: '3.5rem',
+            justifyContent: 'center',
+          }"
           aria-label="Give feedback"
         />
 
-      <template #content>
-        <div class="w-80 p-4">
-          <h3 class="mb-3 text-base font-semibold">Give Feedback</h3>
+        <template #content>
+          <div class="w-80 p-4">
+            <h3 class="mb-3 text-base font-semibold">Give Feedback</h3>
 
-          <div class="flex flex-col gap-3">
-            <UFormField label="Feedback type">
-              <USelect
-                v-model="feedbackType"
-                :items="feedbackTypeOptions"
-                placeholder="Select type..."
-                class="w-full"
-              />
-            </UFormField>
+            <div class="flex flex-col gap-3">
+              <UFormField label="Feedback type">
+                <USelect
+                  v-model="feedbackType"
+                  :items="feedbackTypeOptions"
+                  placeholder="Select type..."
+                  class="w-full"
+                />
+              </UFormField>
 
-            <UFormField label="Message">
-              <UTextarea
-                v-model="message"
-                placeholder="Describe what you'd like to report..."
-                :rows="3"
-                class="w-full"
-              />
-            </UFormField>
+              <UFormField label="Message">
+                <UTextarea
+                  v-model="message"
+                  placeholder="Describe what you'd like to report..."
+                  :rows="3"
+                  class="w-full"
+                />
+              </UFormField>
 
-            <UFormField label="Email">
-              <UInput
-                v-model="email"
-                type="email"
-                placeholder="your@email.com"
-                class="w-full"
-              />
-            </UFormField>
+              <UFormField label="Email">
+                <UInput
+                  v-model="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  class="w-full"
+                />
+              </UFormField>
 
-            <UButton
-              block
-              :loading="isSubmitting"
-              :disabled="!canSubmit"
-              @click="handleSubmit"
-            >
-              Submit Feedback
-            </UButton>
+              <UButton
+                block
+                :loading="isSubmitting"
+                :disabled="!canSubmit"
+                @click="handleSubmit"
+              >
+                Submit Feedback
+              </UButton>
+            </div>
           </div>
-        </div>
-      </template>
+        </template>
       </UPopover>
     </div>
 
     <UButton
       icon="i-material-symbols:rate-review-outline"
       size="xl"
+      square
       color="neutral"
       variant="ghost"
-      :ui="{ base: 'size-14 justify-center feedback-fab text-white' }"
-      class="shadow-lg lg:hidden"
+      class="feedback-btn shadow-lg lg:hidden"
+      :ui="{ base: 'rounded-full' }"
+      :style="{
+        background:
+          'linear-gradient(135deg, var(--color-cold-purple), color-mix(in srgb, var(--color-cold-purple) 60%, var(--color-cold-green)))',
+        color: 'white',
+        width: '3.5rem',
+        height: '3.5rem',
+        justifyContent: 'center',
+      }"
       aria-label="Give feedback"
       @click="modalOpen = true"
     />
@@ -200,21 +217,17 @@ async function handleSubmit() {
 </template>
 
 <style scoped>
-.feedback-fab {
-  border-radius: 9999px;
-  background: linear-gradient(
-    135deg,
-    var(--color-cold-purple),
-    color-mix(in srgb, var(--color-cold-purple) 60%, var(--color-cold-green))
-  );
+.feedback-btn {
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.feedback-fab:hover {
+.feedback-btn:hover {
   background: linear-gradient(
     135deg,
     color-mix(in srgb, var(--color-cold-purple) 85%, #000),
     color-mix(in srgb, var(--color-cold-purple) 50%, var(--color-cold-green))
-  );
+  ) !important;
+  transform: scale(1.05);
 }
 </style>

@@ -25,7 +25,7 @@
         </UBadge>
       </div>
 
-      <UCard class="cold-ucard-no-padding mb-6">
+      <UCard class="mb-6" :ui="{ body: 'p-0' }">
         <template #header>
           <h2 class="px-6 py-4 text-xl font-semibold">Entity</h2>
         </template>
@@ -46,7 +46,7 @@
         </div>
       </UCard>
 
-      <UCard class="cold-ucard-no-padding mb-6">
+      <UCard class="mb-6" :ui="{ body: 'p-0' }">
         <template #header>
           <h2 class="px-6 py-4 text-xl font-semibold">Feedback</h2>
         </template>

@@ -15,14 +15,14 @@
           <UTextarea
             v-model="commentsProxy"
             placeholder="Optional comments about your submission"
-            class="cold-input mt-2"
+            class="mt-2"
             :rows="3"
           />
         </UFormField>
 
         <div class="flex flex-col items-center gap-2">
           <h2
-            class="submit-heading mb-4 flex cursor-pointer items-center p-0"
+            class="mb-4 flex cursor-pointer items-center p-0 text-[var(--color-cold-purple)]"
             @click.prevent="handleSubmit()"
           >
             Submit Your Data Now

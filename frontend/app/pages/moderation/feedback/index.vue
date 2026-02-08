@@ -28,7 +28,8 @@
       <UCard
         v-for="item in feedbackItems"
         :key="item.id"
-        class="cold-ucard-no-padding cursor-pointer transition-shadow hover:shadow-lg"
+        class="cursor-pointer transition-shadow hover:shadow-lg"
+        :ui="{ body: 'p-0' }"
         @click="navigateTo(`/moderation/feedback/${item.id}`)"
       >
         <template #header>
