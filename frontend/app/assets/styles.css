@@ -293,7 +293,7 @@ li::marker {
 }
 
 .label-key-provision-article {
-  font-size: 0.875rem !important;
+  font-size: 0.875rem;
   font-weight: 500;
   text-transform: none;
   color: var(--color-cold-night-alpha);
@@ -304,8 +304,8 @@ li::marker {
 }
 
 .label-key-provision-toggle {
-  font-size: 0.625rem !important;
-  font-weight: 600 !important;
+  font-size: 0.625rem;
+  font-weight: 600;
   text-transform: capitalize;
   color: var(--color-cold-night-alpha);
   letter-spacing: 0.05em;
@@ -647,7 +647,7 @@ li::marker {
 
 /* Results */
 .result-value {
-  font-weight: 500 !important;
+  font-weight: 500;
   color: var(--color-cold-night);
   word-wrap: break-word;
   word-break: break-word;
@@ -655,26 +655,26 @@ li::marker {
 }
 
 .result-value-small {
-  font-weight: 500 !important;
+  font-weight: 500;
   color: var(--color-cold-night);
   word-wrap: break-word;
   word-break: break-word;
-  font-size: 0.875rem !important;
-  line-height: 1.7 !important;
+  font-size: 0.875rem;
+  line-height: 1.7;
   white-space: normal;
 }
 
 .result-value-small-citation {
-  font-weight: 500 !important;
+  font-weight: 500;
   color: var(--color-cold-night);
   word-wrap: break-word;
   word-break: break-word;
-  font-size: 0.8125rem !important;
-  line-height: 1.6 !important;
+  font-size: 0.8125rem;
+  line-height: 1.6;
   white-space: normal;
   font-family: "IBM Plex Mono", monospace;
   background: var(--gradient-gray);
-  padding: 1em 1.25em !important;
+  padding: 1em 1.25em;
   border-radius: 0.5rem;
   border: 1px solid var(--color-cold-gray);
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.03);
@@ -789,7 +789,7 @@ li::marker {
 /* Ensure all form textareas and inputs take full width by default */
 textarea,
 [data-slot="control"] textarea {
-  width: 100% !important;
+  width: 100%;
 }
 
 /* Base styles for input buttons (date triggers, toggles) */
@@ -1011,7 +1011,6 @@ button.cold-toggle-btn[aria-pressed="true"] {
   button,
   .no-print,
   [class*="UButton"],
-  [class*="u-button"],
   footer,
   .arrow-container,
   .arrow-icon {
@@ -1082,7 +1081,7 @@ button.cold-toggle-btn[aria-pressed="true"] {
   }
 
   /* Remove card shadows/borders for cleaner print */
-  .u-card,
+  [data-slot="root"],
   [class*="UCard"] {
     box-shadow: none !important;
     border: 1px solid #e5e7eb !important;
@@ -1173,7 +1172,7 @@ button.cold-toggle-btn[aria-pressed="true"] {
   vertical-align: middle;
   width: 1em;
   height: 1em;
-  margin: 0 0 0 0.25em !important;
+  margin: 0 0 0 0.25em;
 }
 
 /* Modern UI Components ----------------------------------------------- */
@@ -1529,8 +1528,8 @@ button.cold-toggle-btn[aria-pressed="true"] {
 
 /* Label link pattern - color inherits from label type, search icon on hover */
 .label-link {
-  font-weight: 500 !important;
-  text-decoration: none !important;
+  font-weight: 500;
+  text-decoration: none;
   transition: all 0.15s ease;
   position: relative;
   display: inline-flex;
@@ -1569,11 +1568,11 @@ button.cold-toggle-btn[aria-pressed="true"] {
 
 /* Jurisdiction link - default night to purple */
 .label-link.label-jurisdiction {
-  color: var(--color-cold-night) !important;
+  color: var(--color-cold-night);
 }
 
 .label-link.label-jurisdiction:hover {
-  color: var(--color-cold-purple) !important;
+  color: var(--color-cold-purple);
 }
 
 /* Flag icon with subtle lift on hover */
@@ -2130,11 +2129,11 @@ button.cold-toggle-btn[aria-pressed="true"] {
 
 /* Links - subtle purple */
 .content-page-prose a {
-  color: var(--color-cold-purple) !important;
+  color: var(--color-cold-purple);
 }
 
 .content-page-prose a:hover {
-  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
+  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
 }
 
 .content-page-prose a:focus-visible {
@@ -2236,12 +2235,12 @@ button.cold-toggle-btn[aria-pressed="true"] {
 }
 
 .footer-title {
-  color: white !important;
-  font-weight: 700 !important;
+  color: white;
+  font-weight: 700;
 }
 
 .footer-heading {
-  color: white !important;
+  color: white;
   font-size: 1rem;
   font-weight: 700;
 }
@@ -2254,14 +2253,14 @@ button.cold-toggle-btn[aria-pressed="true"] {
 .footer-link {
   font-size: 0.875rem;
   transition: all 150ms;
-  color: white !important;
-  font-weight: 600 !important;
-  text-decoration: none !important;
+  color: white;
+  font-weight: 600;
+  text-decoration: none;
 }
 
 .footer-link:hover {
-  color: var(--color-cold-green) !important;
-  text-decoration: none !important;
+  color: var(--color-cold-green);
+  text-decoration: none;
 }
 
 /* Page Transitions ----------------------------------------------- */
