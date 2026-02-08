@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard overflow-visible">
+  <UCard :ui="{ root: 'overflow-visible' }">
     <div class="flex flex-col items-stretch gap-8 md:flex-row md:items-center">
       <h3 v-if="label" class="text-left md:whitespace-nowrap">{{ label }}</h3>
 

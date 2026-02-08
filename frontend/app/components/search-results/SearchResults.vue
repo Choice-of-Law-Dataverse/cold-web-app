@@ -325,20 +325,10 @@ onMounted(async () => {
 }
 
 .result-value-small {
-  font-weight: 600 !important;
+  font-weight: 600;
 }
 
 .results-margin-fix {
-  margin-top: 1.5rem !important;
-}
-
-::v-deep(
-  .u-select .u-select__icon,
-  .u-select .u-select__caret,
-  .u-select .n-base-suffix .n-base-suffix__arrow,
-  .u-select .n-base-suffix__arrow
-) {
-  color: var(--color-cold-purple) !important;
-  fill: var(--color-cold-purple) !important;
+  margin-top: 1.5rem;
 }
 </style>

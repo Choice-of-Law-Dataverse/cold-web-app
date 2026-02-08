@@ -10,7 +10,6 @@
     <InlineError v-else-if="error" :error="error" />
     <template v-else>
       <UCard
-        class="cold-ucard overflow-hidden"
         :ui="{
           body: '!p-0',
           header: 'sticky-header border-b-0 px-6 py-5',

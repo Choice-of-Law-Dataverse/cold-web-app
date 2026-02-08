@@ -80,7 +80,6 @@
           <div class="max-w-container mx-auto w-full">
             <div class="col-span-12">
               <UCard
-                class="cold-ucard overflow-hidden"
                 :ui="{
                   body: '!p-0',
                   header: 'border-b-0 px-4 py-5 sm:px-6',

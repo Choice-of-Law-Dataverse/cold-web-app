@@ -67,12 +67,11 @@
                 :items="typeOptions"
                 value-key="value"
                 label-key="label"
-                :class="[
-                  'no-caret-select',
-                  'leading-none',
-                  'new-select-label',
-                  '!text-[var(--color-cold-purple)]',
-                ]"
+                class="leading-none"
+                :ui="{
+                  base: 'h-[22px] min-h-[22px] py-0 text-xs font-bold uppercase text-[var(--color-cold-purple)] leading-none',
+                  trailingIcon: 'hidden',
+                }"
               >
                 <!-- Custom caret (replaces default chevron) -->
                 <template #trailing>
@@ -696,128 +695,11 @@ a.label-arbitration {
   color: var(--color-label-arbitration) !important;
 }
 
-.no-caret-select :deep([class*="i-heroicons-chevron"]) {
-  display: none !important;
-}
-.no-caret-select :deep([class*="i-heroicons-chevron"]) svg {
-  display: none !important;
-}
-
-.no-caret-select :deep([class*="i-material-symbols\:arrow-drop-down"]) {
-  display: none !important;
-}
-
-.no-caret-select :deep([class*="i-heroicons-chevron-up-down"]) {
-  display: none !important;
-}
-
-.no-caret-select :deep(.ui-input-trailing),
-.no-caret-select :deep(.u-input-trailing) {
-  color: inherit !important;
-}
-
-.no-caret-select :deep(.u-input-trailing),
-.no-caret-select :deep(.ui-input-trailing) {
-  display: inline-flex !important;
-  align-items: center !important;
-}
-
 .custom-caret {
   display: inline-flex;
   align-items: center;
   margin-left: 0.25rem;
   pointer-events: none;
-}
-
-.no-caret-select :deep(select) {
-  -webkit-appearance: none !important;
-  -moz-appearance: none !important;
-  appearance: none !important;
-  background-image: none !important;
-  background: none !important;
-}
-
-.no-caret-select :deep(select::-ms-expand) {
-  display: none !important;
-}
-
-.no-caret-select :deep(.ui-input),
-.no-caret-select :deep(.u-input),
-.no-caret-select :deep([role="button"]),
-.no-caret-select :deep([role="combobox"]) {
-  height: 22px !important;
-  min-height: 22px !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-  line-height: 1 !important;
-}
-.no-caret-select :deep(.ui-input-trailing),
-.no-caret-select :deep(.u-input-trailing) {
-  height: 22px !important;
-}
-
-.no-caret-select.label :deep(button[role="combobox"]) {
-  color: inherit !important;
-  font-weight: inherit !important;
-  font-size: inherit !important;
-  text-transform: inherit !important;
-}
-.no-caret-select.label :deep(.ui-input),
-.no-caret-select.label :deep(.u-input) {
-  color: inherit !important;
-  font-weight: inherit !important;
-  font-size: inherit !important;
-  text-transform: inherit !important;
-}
-
-.no-caret-select.label :deep(.u-input *),
-.no-caret-select.label :deep(.ui-input *),
-.no-caret-select.label :deep(button[role="combobox"] *) {
-  font-size: inherit !important;
-  text-transform: inherit !important;
-}
-
-.no-caret-select :deep(button[role="combobox"]) {
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  color: var(--color-cold-purple) !important;
-}
-.no-caret-select :deep(button[role="combobox"] span),
-.no-caret-select :deep(button[role="combobox"] div),
-.no-caret-select :deep(.u-input .u-input-value),
-.no-caret-select :deep(.ui-input .ui-input-value) {
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  text-transform: uppercase !important;
-  color: var(--color-cold-purple) !important;
-}
-
-.no-caret-select :deep(.u-select),
-.no-caret-select :deep(.ui-select),
-.no-caret-select :deep(.u-input-wrapper),
-.no-caret-select :deep(.ui-input-wrapper) {
-  height: 22px !important;
-}
-.no-caret-select :deep(button[role="combobox"]) {
-  height: 22px !important;
-  min-height: 22px !important;
-  padding-top: 0 !important;
-  padding-bottom: 0 !important;
-}
-
-.new-select-label :deep(button[role="combobox"]),
-.new-select-label :deep(button[role="combobox"] *),
-.new-select-label :deep(.u-input .u-input-value),
-.new-select-label :deep(.ui-input .ui-input-value),
-.no-caret-select.new-select-label :deep(button[role="combobox"]),
-.no-caret-select.new-select-label :deep(button[role="combobox"] *),
-.no-caret-select.new-select-label :deep(.u-input .u-input-value),
-.no-caret-select.new-select-label :deep(.ui-input .ui-input-value) {
-  font-size: 12px !important;
-  text-transform: uppercase !important;
-  font-weight: 600 !important;
-  color: var(--color-cold-purple) !important;
 }
 
 .arrow-container {

@@ -58,7 +58,7 @@
         </UButton>
       </div>
 
-      <UCard class="cold-ucard-no-padding">
+      <UCard :ui="{ body: 'p-0' }">
         <table class="w-full">
           <thead>
             <tr class="border-b border-gray-200 dark:border-gray-700">

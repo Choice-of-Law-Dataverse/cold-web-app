@@ -85,11 +85,11 @@ function removeJurisdictionFilter() {
 <style scoped>
 .no-results {
   text-align: center;
-  font-weight: 600 !important;
+  font-weight: 600;
 }
 
 .suggestion-button {
-  font-weight: 600 !important;
+  font-weight: 600;
 }
 
 .icon-container {

@@ -16,7 +16,7 @@
           <template #label>
             <span class="label">Title</span>
           </template>
-          <UInput v-model="name" class="cold-input mt-2" />
+          <UInput v-model="name" class="mt-2" />
         </UFormField>
         <UFormField size="lg" hint="Required" :error="errors.link">
           <template #label>
@@ -25,11 +25,7 @@
               <InfoPopover :text="tooltipInternationalInstrumentLink" />
             </span>
           </template>
-          <UInput
-            v-model="link"
-            class="cold-input mt-2"
-            placeholder="https://…"
-          />
+          <UInput v-model="link" class="mt-2" placeholder="https://…" />
         </UFormField>
         <UFormField size="lg" hint="Required" :error="errors.instrument_date">
           <template #label>

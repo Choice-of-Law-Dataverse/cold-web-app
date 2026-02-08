@@ -24,7 +24,7 @@
             />
           </svg>
         </button>
-        <UCard class="cold-ucard">
+        <UCard>
           <div class="flex flex-col gap-8">
             <div>
               <div class="flex items-center justify-center md:justify-between">
@@ -463,7 +463,7 @@ function splitIntoLines(items, rows) {
 }
 
 /* Ensure UCard fills the fixed height and internal content scrolls if needed */
-.card-container .cold-ucard {
+.card-container :deep([data-slot="root"]) {
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -472,7 +472,7 @@ function splitIntoLines(items, rows) {
 
 /* Ensure the UCard fills the container width so the component doesn't shrink/expand
    based on its internal content */
-.card-container .cold-ucard {
+.card-container :deep([data-slot="root"]) {
   width: 100%;
   box-sizing: border-box;
   min-width: 0; /* allow card to shrink within its container and prevent children from forcing expansion */

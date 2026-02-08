@@ -1,8 +1,5 @@
 <template>
-  <UCard
-    class="cold-ucard connect-card h-full w-full overflow-hidden"
-    :ui="{ body: '!p-0' }"
-  >
+  <UCard class="connect-card h-full w-full" :ui="{ body: '!p-0' }">
     <div v-if="showTopBorder" class="gradient-top-border" />
     <div class="flex h-full flex-col justify-between gap-4 p-4 sm:p-6">
       <div>
