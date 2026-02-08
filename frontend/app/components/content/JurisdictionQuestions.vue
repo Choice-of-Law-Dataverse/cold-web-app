@@ -51,7 +51,10 @@
               :error="jurisdictionsError"
             />
 
-            <div v-else class="flex flex-col gap-4 md:flex-row md:items-center">
+            <div
+              v-else
+              class="flex flex-1 flex-col gap-4 md:flex-row md:items-center"
+            >
               <JurisdictionSelectMenu
                 v-model="selectedJurisdiction"
                 :jurisdictions="allJurisdictionsData || []"
@@ -86,21 +89,32 @@
             :style="{ paddingLeft: `${row.level * 2}em` }"
           >
             <div
-              class="text-sm whitespace-pre-line md:w-[60%]"
+              class="min-w-0 flex-1 text-sm whitespace-pre-line"
               :class="{ 'font-semibold': isBoldQuestion(row.id) }"
             >
-              {{ row.question }}
+              <span class="inline-block max-w-[72ch]">{{ row.question }}</span>
             </div>
 
-            <div class="flex justify-end md:w-[40%] md:text-right">
+            <div class="flex shrink-0 justify-end">
+              <UTooltip
+                v-if="row.answer && !shouldShowDash(row.answer)"
+                :text="row.answer"
+              >
+                <NuxtLink
+                  :to="row.answerLink"
+                  class="answer-button max-w-[200px] overflow-hidden"
+                >
+                  <span class="truncate">{{ row.answer }}</span>
+                </NuxtLink>
+              </UTooltip>
               <NuxtLink
-                v-if="row.answer"
+                v-else-if="row.answer"
                 :to="row.answerLink"
                 class="answer-button"
               >
-                {{ shouldShowDash(row.answer) ? "—" : row.answer }}
+                —
               </NuxtLink>
-              <span v-else class="text-gray-400">—</span>
+              <span v-else class="answer-button text-gray-400">—</span>
             </div>
           </div>
         </div>
@@ -145,7 +159,7 @@
           >
             <div class="divide-y divide-gray-100">
               <div
-                class="comparison-header sticky top-0 z-10 flex gap-4 border-b-2 border-gray-200 bg-white py-4 font-semibold"
+                class="comparison-header sticky top-0 z-10 flex gap-2 border-b-2 border-gray-200 bg-white py-4 font-semibold"
               >
                 <div
                   class="shrink-0"
@@ -204,7 +218,7 @@
                 v-for="row in rows"
                 :id="`question-${row.id}`"
                 :key="row.id"
-                class="comparison-row hover-row--emphasis flex gap-4 py-4"
+                class="comparison-row hover-row--emphasis flex gap-2 py-4"
               >
                 <div
                   class="sticky-col shrink-0 text-sm whitespace-pre-line"
@@ -225,26 +239,35 @@
                 <div
                   v-for="(jurisdiction, jIndex) in jurisdictions"
                   :key="jurisdiction.alpha3Code || jurisdiction.Name"
-                  class="min-w-[100px] text-center"
-                  :class="[
-                    isScrollable ? 'shrink-0' : 'min-w-0 flex-1',
-                    jIndex === 0 && isScrollable
-                      ? 'sticky-col sticky z-10 bg-white shadow-[1rem_0_0_0_white]'
-                      : '',
-                  ]"
-                  :style="
-                    jIndex === 0 && isScrollable ? { left: primaryColLeft } : {}
-                  "
+                  class="comparison-cell flex items-center justify-center overflow-hidden"
+                  :class="{ 'sticky-col-2': jIndex === 0 && isScrollable }"
+                  :style="jIndex === 0 && isScrollable ? { left: stickyColLeft } : {}"
                 >
                   <div
                     v-if="
                       answersLoading &&
                       !hasAnswersForJurisdiction(jurisdiction.alpha3Code)
                     "
-                    class="flex justify-center"
                   >
                     <USkeleton class="h-4 w-16" />
                   </div>
+                  <UTooltip
+                    v-else-if="
+                      jurisdiction.alpha3Code &&
+                      row.answers?.[jurisdiction.alpha3Code] &&
+                      !shouldShowDash(row.answers[jurisdiction.alpha3Code])
+                    "
+                    :text="row.answers[jurisdiction.alpha3Code]"
+                  >
+                    <NuxtLink
+                      :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
+                      class="answer-button max-w-full leading-tight"
+                    >
+                      <span class="line-clamp-3">{{
+                        row.answers[jurisdiction.alpha3Code]
+                      }}</span>
+                    </NuxtLink>
+                  </UTooltip>
                   <NuxtLink
                     v-else-if="
                       jurisdiction.alpha3Code &&
@@ -253,15 +276,11 @@
                     :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
                     class="answer-button"
                   >
-                    {{
-                      shouldShowDash(row.answers[jurisdiction.alpha3Code])
-                        ? "—"
-                        : row.answers[jurisdiction.alpha3Code]
-                    }}
+                    —
                   </NuxtLink>
                   <span v-else class="text-gray-400">—</span>
                 </div>
-              </div>
+              </template>
             </div>
           </div>
 
@@ -301,6 +320,31 @@
                     />
                     <USkeleton class="h-4 w-16" />
                   </div>
+                  <UTooltip
+                    v-else-if="
+                      jurisdiction.alpha3Code &&
+                      row.answers?.[jurisdiction.alpha3Code] &&
+                      !shouldShowDash(row.answers[jurisdiction.alpha3Code])
+                    "
+                    :text="row.answers[jurisdiction.alpha3Code]"
+                  >
+                    <div class="w-full max-w-[200px]">
+                      <NuxtLink
+                        :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
+                        class="answer-button flex w-full items-center gap-2 overflow-hidden"
+                      >
+                        <img
+                          v-if="jurisdiction.avatar"
+                          :src="jurisdiction.avatar"
+                          :alt="`${jurisdiction.Name} flag`"
+                          class="h-2 w-3 flex-shrink-0 object-cover"
+                        />
+                        <span class="block min-w-0 flex-1 truncate">{{
+                          row.answers[jurisdiction.alpha3Code]
+                        }}</span>
+                      </NuxtLink>
+                    </div>
+                  </UTooltip>
                   <NuxtLink
                     v-else-if="
                       jurisdiction.alpha3Code &&
@@ -315,11 +359,7 @@
                       :alt="`${jurisdiction.Name} flag`"
                       class="h-2 w-3 object-cover"
                     />
-                    {{
-                      shouldShowDash(row.answers[jurisdiction.alpha3Code])
-                        ? "—"
-                        : row.answers[jurisdiction.alpha3Code]
-                    }}
+                    —
                   </NuxtLink>
                   <span v-else class="text-gray-400">—</span>
                 </div>
@@ -570,17 +610,41 @@ const rows = computed(() => {
 <style scoped>
 @reference "tailwindcss";
 
-.question-row,
-.comparison-row {
+.question-row {
   margin: 0 -1rem;
   padding-left: 1rem !important;
   padding-right: 1rem !important;
 }
 
-.comparison-header {
-  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
+.comparison-grid {
+  display: grid;
+  gap: 0;
+}
+
+.comparison-header-cell {
+  padding-inline: 0.25rem;
   border-bottom: 2px solid
-    color-mix(in srgb, var(--color-cold-purple) 10%, transparent) !important;
+    color-mix(in srgb, var(--color-cold-purple) 10%, transparent);
+  box-shadow: 0 2px 4px 0 rgb(0 0 0 / 0.05);
+  z-index: 5;
+}
+
+.comparison-cell {
+  padding: 0.75rem 0.25rem;
+  border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+}
+
+.sticky-col-1 {
+  position: sticky;
+  left: 0;
+  z-index: 30;
+  background: white;
+}
+
+.sticky-col-2 {
+  position: sticky;
+  z-index: 20;
+  background: white;
 }
 
 .jurisdiction-action-button {
@@ -606,11 +670,14 @@ const rows = computed(() => {
 }
 
 .answer-button {
-  @apply inline-flex min-w-14 items-center justify-center rounded-lg px-3 py-2 font-medium shadow-sm transition-all duration-150;
+  @apply inline-flex items-center justify-center rounded-lg px-2 py-1 text-sm font-medium shadow-sm transition-all duration-150;
+  min-width: 3.5rem;
   background: var(--gradient-subtle);
   color: var(--color-cold-night);
   cursor: pointer;
+  text-align: center;
 }
+
 
 .answer-button:hover {
   @apply shadow;
