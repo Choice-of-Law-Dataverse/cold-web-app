@@ -1,12 +1,15 @@
 <template>
-  <BaseLegalLink :to="`/court-decision/${caseId}`" :class="props.class">
-    {{ caseId }}
-  </BaseLegalLink>
+  <div>
+    <NuxtLink
+      :to="`/court-decision/${caseId}`"
+      :class="['result-value-small', props.class]"
+    >
+      {{ caseId }}
+    </NuxtLink>
+  </div>
 </template>
 
 <script setup lang="ts">
-import BaseLegalLink from "@/components/legal/BaseLegalLink.vue";
-
 const props = defineProps<{
   caseId: string;
   class?: string;

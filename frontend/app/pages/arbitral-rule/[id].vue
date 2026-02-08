@@ -30,7 +30,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute } from "vue-router";
-import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import { useArbitralRule } from "@/composables/useRecordDetails";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";

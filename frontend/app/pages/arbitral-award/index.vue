@@ -88,7 +88,7 @@
 </template>
 
 <script setup lang="ts">
-import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import csvRaw from "./all-arbitral-awards.csv?raw";
 
 useHead({

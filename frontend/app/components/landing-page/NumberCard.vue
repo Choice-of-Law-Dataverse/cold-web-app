@@ -9,7 +9,21 @@
           <span v-if="!loading && !error" class="number-display">
             {{ number ?? props.overrideNumber ?? 0 }}
           </span>
-          <span v-else-if="loading"><LoadingNumber /></span>
+          <span v-else-if="loading">
+            <span
+              class="flex items-center justify-center"
+              role="status"
+              aria-live="polite"
+              aria-label="Loading"
+            >
+              <span class="loading-digits">
+                <span class="digit" style="animation-delay: 0ms">0</span>
+                <span class="digit" style="animation-delay: 100ms">0</span>
+                <span class="digit" style="animation-delay: 200ms">0</span>
+              </span>
+              <span class="sr-only">Loading content</span>
+            </span>
+          </span>
           <span v-else>Error</span>
         </div>
       </div>
@@ -20,7 +34,7 @@
 <script setup>
 import { computed } from "vue";
 import { useNumberCount } from "~/composables/useNumberCount";
-import LoadingNumber from "@/components/layout/LoadingNumber.vue";
+
 const props = defineProps({
   title: { type: String, required: true },
   buttonText: { type: String, required: true },
@@ -84,5 +98,42 @@ a:hover .number-card {
 
 a:hover .number-display {
   filter: brightness(0.85);
+}
+
+.loading-digits {
+  display: flex;
+  gap: 2px;
+}
+
+.digit {
+  font-size: 64px;
+  font-weight: 700;
+  background: linear-gradient(
+    135deg,
+    var(--color-cold-purple),
+    var(--color-cold-green)
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  opacity: 0.3;
+  animation: pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .digit {
+    animation: none;
+    opacity: 0.5;
+  }
 }
 </style>

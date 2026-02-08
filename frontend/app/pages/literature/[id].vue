@@ -96,7 +96,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
-import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
+import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import { useLiterature } from "@/composables/useRecordDetails";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";

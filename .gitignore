@@ -196,3 +196,6 @@ backend/bruno/*
 backend/*.csv
 
 .DS_Store
+
+# agents artifacts
+.playwright-mcp

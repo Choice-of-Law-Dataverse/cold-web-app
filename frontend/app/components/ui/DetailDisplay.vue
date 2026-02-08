@@ -140,7 +140,7 @@
 import { useSlots, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useCoveredCountries } from "@/composables/useJurisdictions";
-import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
+import BaseCardHeader from "@/components/ui/CardHeader.vue";
 import ContributeBanner from "@/components/ui/ContributeBanner.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";

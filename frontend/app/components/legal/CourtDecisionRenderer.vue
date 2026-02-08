@@ -1,35 +1,58 @@
 <template>
-  <BaseLegalRenderer
-    :items="value"
-    :value-class-map="valueClassMap"
-    :empty-value-behavior="emptyValueBehavior"
-    default-class="result-value-small"
-    wrapper-class="flex flex-wrap gap-2"
-  >
-    <template #default="{ item }">
-      <NuxtLink
-        class="link-chip--neutral"
-        :to="`/court-decision/${item as string}`"
+  <div>
+    <div v-if="hasContent">
+      <div
+        v-if="normalizedItems.length > 1"
+        :class="props.valueClassMap || 'result-value-small'"
+        class="flex flex-wrap gap-2"
       >
-        <template v-if="decisionsById.get(item as string)">
-          {{ decisionsById.get(item as string)!.displayTitle }}
-        </template>
-        <template v-else-if="decisionsError">
-          {{ item }}
-        </template>
-        <template v-else>
-          <LoadingBar />
-        </template>
-      </NuxtLink>
-    </template>
-  </BaseLegalRenderer>
+        <NuxtLink
+          v-for="(item, index) in normalizedItems"
+          :key="index"
+          class="link-chip--neutral"
+          :to="`/court-decision/${item}`"
+        >
+          <template v-if="decisionsById.get(item)">
+            {{ decisionsById.get(item)!.displayTitle }}
+          </template>
+          <template v-else-if="decisionsError">
+            {{ item }}
+          </template>
+          <template v-else>
+            <LoadingBar />
+          </template>
+        </NuxtLink>
+      </div>
+      <div v-else :class="props.valueClassMap || 'result-value-small'">
+        <NuxtLink
+          class="link-chip--neutral"
+          :to="`/court-decision/${normalizedItems[0]!}`"
+        >
+          <template v-if="decisionsById.get(normalizedItems[0]!)">
+            {{ decisionsById.get(normalizedItems[0]!)!.displayTitle }}
+          </template>
+          <template v-else-if="decisionsError">
+            {{ normalizedItems[0] }}
+          </template>
+          <template v-else>
+            <LoadingBar />
+          </template>
+        </NuxtLink>
+      </div>
+    </div>
+    <div
+      v-else-if="displayValue"
+      :class="props.valueClassMap || 'result-value-small'"
+    >
+      {{ displayValue }}
+    </div>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { computed } from "vue";
 import { useCourtDecisionsList } from "@/composables/useRecordDetails";
 import type { CourtDecision } from "@/types/entities/court-decision";
-import BaseLegalRenderer from "./BaseLegalRenderer.vue";
 import { NuxtLink } from "#components";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 
@@ -51,10 +74,20 @@ const props = withDefaults(
   },
 );
 
-const decisionIds = computed(() => {
+const normalizedItems = computed(() => {
   const items = Array.isArray(props.value) ? props.value : [props.value];
-  return [...new Set(items.filter(Boolean))];
+  return items.filter(Boolean);
 });
+
+const hasContent = computed(() => normalizedItems.value.length > 0);
+
+const displayValue = computed(() => {
+  if (hasContent.value) return null;
+  if (props.emptyValueBehavior.action === "hide") return null;
+  return props.emptyValueBehavior.fallback;
+});
+
+const decisionIds = computed(() => [...new Set(normalizedItems.value)]);
 
 const { data: decisions, error: decisionsError } =
   useCourtDecisionsList(decisionIds);
