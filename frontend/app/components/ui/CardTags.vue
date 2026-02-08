@@ -250,6 +250,11 @@ a {
   }
 }
 
+.jurisdiction-label-link:hover .flag-wrapper {
+  width: 0;
+  opacity: 0;
+}
+
 .jurisdiction-label-link::after {
   mask-image: var(--icon-search);
   -webkit-mask-image: var(--icon-search);

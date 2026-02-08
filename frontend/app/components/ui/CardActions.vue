@@ -119,7 +119,7 @@ function printPage() {
 }
 
 .actions-container :deep(button) {
-  margin-right: 1rem;
+  margin-right: 1.25rem;
   transition: margin-right 0.2s ease;
 }
 
@@ -128,7 +128,11 @@ function printPage() {
 }
 
 .actions-container :deep(button:hover) {
-  margin-right: 0.25rem;
+  margin-right: 0.125rem;
+}
+
+.actions-container :deep(button:last-child:hover) {
+  margin-right: -1.125rem;
 }
 
 .arrow-container {
