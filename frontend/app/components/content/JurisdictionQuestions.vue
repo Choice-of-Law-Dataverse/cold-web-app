@@ -139,16 +139,16 @@
             </UBadge>
           </div>
 
-          <div class="hidden md:block">
-            <div class="divide-y divide-gray-100">
+          <div class="hidden md:block overflow-x-auto">
+            <div class="divide-y divide-gray-100 min-w-fit">
               <div
                 class="comparison-header sticky top-0 z-10 flex gap-4 border-b-2 border-gray-200 bg-white py-4 font-semibold"
               >
-                <div class="w-[40%]">Question</div>
+                <div :class="questionColumnWidth">Question</div>
                 <div
                   v-for="(jurisdiction, index) in jurisdictions"
                   :key="jurisdiction.alpha3Code || jurisdiction.Name"
-                  class="min-w-0 flex-1 text-center"
+                  class="min-w-[80px] flex-1 text-center"
                 >
                   <button
                     type="button"
@@ -186,8 +186,8 @@
                 class="comparison-row hover-row--emphasis flex gap-4 py-4"
               >
                 <div
-                  class="w-[40%] text-sm whitespace-pre-line"
-                  :class="{ 'font-semibold': isBoldQuestion(row.id) }"
+                  class="text-sm whitespace-pre-line"
+                  :class="[questionColumnWidth, { 'font-semibold': isBoldQuestion(row.id) }]"
                   :style="{ paddingLeft: `${row.level * 2}em` }"
                 >
                   {{ row.question }}
@@ -196,7 +196,7 @@
                 <div
                   v-for="jurisdiction in jurisdictions"
                   :key="jurisdiction.alpha3Code || jurisdiction.Name"
-                  class="flex-1 text-center"
+                  class="min-w-[80px] flex-1 text-center"
                 >
                   <div
                     v-if="
@@ -449,6 +449,13 @@ const loading = computed(() => questionsLoading.value);
 const isSingleJurisdiction = computed(() => jurisdictions.value.length === 1);
 
 const useShortLabels = computed(() => jurisdictions.value.length >= 4);
+
+const questionColumnWidth = computed(() => {
+  const count = jurisdictions.value.length;
+  if (count >= 7) return "w-[25%] min-w-[200px]";
+  if (count >= 5) return "w-[30%] min-w-[200px]";
+  return "w-[40%]";
+});
 
 const jurisdictionLabel = (j: JurisdictionOption) =>
   useShortLabels.value && j.alpha3Code ? j.alpha3Code : j.Name;
