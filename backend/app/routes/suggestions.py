@@ -65,7 +65,7 @@ async def submit_suggestion(
             source=body.source,
             user=user,
         )
-        background_tasks.add_task(send_new_suggestion_notification, "generic", new_id, payload)
+        background_tasks.add_task(send_new_suggestion_notification, "generic", new_id, payload, user)
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -95,7 +95,7 @@ async def submit_court_decision(
             source=source,
             user=user,
         )
-        background_tasks.add_task(send_new_suggestion_notification, "court_decisions", new_id, payload)
+        background_tasks.add_task(send_new_suggestion_notification, "court_decisions", new_id, payload, user)
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -125,7 +125,7 @@ async def submit_domestic_instrument(
             source=source,
             user=user,
         )
-        background_tasks.add_task(send_new_suggestion_notification, "domestic_instruments", new_id, payload)
+        background_tasks.add_task(send_new_suggestion_notification, "domestic_instruments", new_id, payload, user)
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -155,7 +155,7 @@ async def submit_regional_instrument(
             source=source,
             user=user,
         )
-        background_tasks.add_task(send_new_suggestion_notification, "regional_instruments", new_id, payload)
+        background_tasks.add_task(send_new_suggestion_notification, "regional_instruments", new_id, payload, user)
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -185,7 +185,7 @@ async def submit_international_instrument(
             source=source,
             user=user,
         )
-        background_tasks.add_task(send_new_suggestion_notification, "international_instruments", new_id, payload)
+        background_tasks.add_task(send_new_suggestion_notification, "international_instruments", new_id, payload, user)
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
@@ -215,7 +215,7 @@ async def submit_literature(
             source=source,
             user=user,
         )
-        background_tasks.add_task(send_new_suggestion_notification, "literature", new_id, payload)
+        background_tasks.add_task(send_new_suggestion_notification, "literature", new_id, payload, user)
         return SuggestionResponse(id=new_id)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e

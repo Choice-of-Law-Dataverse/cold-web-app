@@ -57,10 +57,17 @@ def _build_moderation_url(category: str, suggestion_id: int) -> str:
     return f"https://cold.global/moderation/{slug}/{suggestion_id}"
 
 
+def _extract_user_email(user: dict[str, Any] | None) -> str | None:
+    if not user:
+        return None
+    return user.get("https://cold.global/email") or user.get("email") or user.get("sub")
+
+
 def send_new_suggestion_notification(
     category: str,
     suggestion_id: int,
     payload: dict[str, Any],
+    user: dict[str, Any] | None = None,
 ) -> None:
     if not config.RESEND_API_KEY:
         logger.debug("RESEND_API_KEY not configured — skipping email notification")
@@ -78,7 +85,7 @@ def send_new_suggestion_notification(
     label = CATEGORY_LABELS.get(category, category)
     summary = _extract_summary(category, payload)
     moderation_url = _build_moderation_url(category, suggestion_id)
-    submitter_email = payload.get("submitter_email", "Not provided")
+    submitter_email = payload.get("submitter_email") or _extract_user_email(user) or "Not provided"
     submitter_comments = payload.get("submitter_comments")
 
     subject = f"[CoLD] {action}: {label}"

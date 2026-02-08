@@ -38,7 +38,7 @@ class Config(BaseSettings):
     AZURE_STORAGE_CONTAINER: str = "cold-case-analysis"
     # Email notification configuration (Resend)
     RESEND_API_KEY: str | None = None
-    NOTIFICATION_SENDER_EMAIL: str = "CoLD <notifications@cold.global>"
+    NOTIFICATION_SENDER_EMAIL: str = "CoLD <notifications@mail.cold.global>"
     ADMIN_NOTIFICATION_EMAILS: str | None = None
 
     @model_validator(mode="after")

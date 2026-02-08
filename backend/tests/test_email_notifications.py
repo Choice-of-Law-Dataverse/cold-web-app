@@ -152,7 +152,7 @@ class TestSendNewSuggestionNotification:
         with patch("app.services.email_notifications.config") as mock_config:
             mock_config.RESEND_API_KEY = "re_test_key"
             mock_config.ADMIN_NOTIFICATION_EMAILS = "admin@cold.global"
-            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@cold.global>"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@mail.cold.global>"
             with patch("app.services.email_notifications.resend") as mock_resend:
                 send_new_suggestion_notification(
                     "court_decisions",
@@ -161,7 +161,7 @@ class TestSendNewSuggestionNotification:
                 )
                 mock_resend.Emails.send.assert_called_once()
                 call_args = mock_resend.Emails.send.call_args[0][0]
-                assert call_args["from"] == "CoLD <notifications@cold.global>"
+                assert call_args["from"] == "CoLD <notifications@mail.cold.global>"
                 assert call_args["to"] == ["admin@cold.global"]
                 assert "[CoLD] New Suggestion: Court Decision" in call_args["subject"]
                 assert "Doe v. Smith" in call_args["text"]
@@ -172,7 +172,7 @@ class TestSendNewSuggestionNotification:
         with patch("app.services.email_notifications.config") as mock_config:
             mock_config.RESEND_API_KEY = "re_test_key"
             mock_config.ADMIN_NOTIFICATION_EMAILS = "admin@cold.global"
-            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@cold.global>"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@mail.cold.global>"
             with patch("app.services.email_notifications.resend") as mock_resend:
                 send_new_suggestion_notification(
                     "literature",
@@ -188,7 +188,7 @@ class TestSendNewSuggestionNotification:
         with patch("app.services.email_notifications.config") as mock_config:
             mock_config.RESEND_API_KEY = "re_test_key"
             mock_config.ADMIN_NOTIFICATION_EMAILS = "a@cold.global,b@cold.global"
-            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@cold.global>"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@mail.cold.global>"
             with patch("app.services.email_notifications.resend") as mock_resend:
                 send_new_suggestion_notification("literature", 1, {"author": "X", "title": "Y"})
                 call_args = mock_resend.Emails.send.call_args[0][0]
@@ -198,7 +198,7 @@ class TestSendNewSuggestionNotification:
         with patch("app.services.email_notifications.config") as mock_config:
             mock_config.RESEND_API_KEY = "re_test_key"
             mock_config.ADMIN_NOTIFICATION_EMAILS = "admin@cold.global"
-            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@cold.global>"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@mail.cold.global>"
             with patch("app.services.email_notifications.resend") as mock_resend:
                 send_new_suggestion_notification(
                     "domestic_instruments",
@@ -213,7 +213,7 @@ class TestSendNewSuggestionNotification:
         with patch("app.services.email_notifications.config") as mock_config:
             mock_config.RESEND_API_KEY = "re_test_key"
             mock_config.ADMIN_NOTIFICATION_EMAILS = "admin@cold.global"
-            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@cold.global>"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@mail.cold.global>"
             with patch("app.services.email_notifications.resend") as mock_resend:
                 send_new_suggestion_notification(
                     "domestic_instruments",
@@ -227,7 +227,7 @@ class TestSendNewSuggestionNotification:
         with patch("app.services.email_notifications.config") as mock_config:
             mock_config.RESEND_API_KEY = "re_test_key"
             mock_config.ADMIN_NOTIFICATION_EMAILS = "admin@cold.global"
-            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@cold.global>"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@mail.cold.global>"
             with patch("app.services.email_notifications.resend") as mock_resend:
                 mock_resend.Emails.send.side_effect = Exception("Resend API error")
                 send_new_suggestion_notification("court_decisions", 1, {"case_citation": "Test"})
@@ -236,9 +236,69 @@ class TestSendNewSuggestionNotification:
         with patch("app.services.email_notifications.config") as mock_config:
             mock_config.RESEND_API_KEY = "re_test_key"
             mock_config.ADMIN_NOTIFICATION_EMAILS = "admin@cold.global"
-            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@cold.global>"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@mail.cold.global>"
             with patch("app.services.email_notifications.resend") as mock_resend:
                 send_new_suggestion_notification("regional_instruments", 15, {"abbreviation": "EU-Rome I"})
                 call_args = mock_resend.Emails.send.call_args[0][0]
                 assert "https://cold.global/moderation/regional-instruments/15" in call_args["html"]
                 assert "EU-Rome I" in call_args["html"]
+
+    def test_submitter_falls_back_to_user_token_email(self):
+        with patch("app.services.email_notifications.config") as mock_config:
+            mock_config.RESEND_API_KEY = "re_test_key"
+            mock_config.ADMIN_NOTIFICATION_EMAILS = "admin@cold.global"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@mail.cold.global>"
+            with patch("app.services.email_notifications.resend") as mock_resend:
+                send_new_suggestion_notification(
+                    "domestic_instruments",
+                    5,
+                    {"official_title": "Test Act", "submitter_email": None},
+                    user={"https://cold.global/email": "token-user@example.com"},
+                )
+                call_args = mock_resend.Emails.send.call_args[0][0]
+                assert "token-user@example.com" in call_args["text"]
+                assert "None" not in call_args["text"]
+
+    def test_submitter_falls_back_to_user_email_field(self):
+        with patch("app.services.email_notifications.config") as mock_config:
+            mock_config.RESEND_API_KEY = "re_test_key"
+            mock_config.ADMIN_NOTIFICATION_EMAILS = "admin@cold.global"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@mail.cold.global>"
+            with patch("app.services.email_notifications.resend") as mock_resend:
+                send_new_suggestion_notification(
+                    "domestic_instruments",
+                    5,
+                    {"official_title": "Test Act"},
+                    user={"email": "fallback@example.com"},
+                )
+                call_args = mock_resend.Emails.send.call_args[0][0]
+                assert "fallback@example.com" in call_args["text"]
+
+    def test_submitter_not_provided_when_no_user(self):
+        with patch("app.services.email_notifications.config") as mock_config:
+            mock_config.RESEND_API_KEY = "re_test_key"
+            mock_config.ADMIN_NOTIFICATION_EMAILS = "admin@cold.global"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@mail.cold.global>"
+            with patch("app.services.email_notifications.resend") as mock_resend:
+                send_new_suggestion_notification(
+                    "domestic_instruments",
+                    5,
+                    {"official_title": "Test Act", "submitter_email": None},
+                )
+                call_args = mock_resend.Emails.send.call_args[0][0]
+                assert "Not provided" in call_args["text"]
+
+    def test_payload_submitter_email_takes_precedence(self):
+        with patch("app.services.email_notifications.config") as mock_config:
+            mock_config.RESEND_API_KEY = "re_test_key"
+            mock_config.ADMIN_NOTIFICATION_EMAILS = "admin@cold.global"
+            mock_config.NOTIFICATION_SENDER_EMAIL = "CoLD <notifications@mail.cold.global>"
+            with patch("app.services.email_notifications.resend") as mock_resend:
+                send_new_suggestion_notification(
+                    "domestic_instruments",
+                    5,
+                    {"official_title": "Test Act", "submitter_email": "form@example.com"},
+                    user={"https://cold.global/email": "token@example.com"},
+                )
+                call_args = mock_resend.Emails.send.call_args[0][0]
+                assert "form@example.com" in call_args["text"]
