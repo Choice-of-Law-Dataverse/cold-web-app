@@ -191,35 +191,36 @@
 
 /* Fonts ----------------------------------------------- */
 
-body {
-  font-family: "Inter", sans-serif;
-  color: var(--color-cold-night);
-}
+@layer base {
+  body {
+    font-family: "Inter", sans-serif;
+    color: var(--color-cold-night);
+  }
 
-a {
-  color: var(--color-cold-purple);
-  text-decoration: none !important;
-  font-weight: 400;
-  transition: all 0.2s ease;
-  position: relative;
-}
+  a {
+    color: var(--color-cold-purple);
+    text-decoration: none !important;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    position: relative;
+  }
 
-a:hover {
-  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
-}
+  a:hover {
+    color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
+  }
 
-a:focus-visible {
-  outline: 2px solid var(--color-cold-purple);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
+  a:focus-visible {
+    outline: 2px solid var(--color-cold-purple);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 
-/* Subtle underline on hover for prose links */
-.prose a:hover {
-  text-decoration: underline !important;
-  text-decoration-color: var(--color-cold-purple);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+  .prose a:hover {
+    text-decoration: underline !important;
+    text-decoration-color: var(--color-cold-purple);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
 }
 
 .markdown-body h2 > a,

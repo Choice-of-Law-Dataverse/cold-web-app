@@ -2,7 +2,7 @@ export default defineAppConfig({
   ui: {
     colors: {
       primary: "violet",
-      secondary: "cyan",
+      secondary: "teal",
       neutral: "slate",
     },
     button: {
@@ -22,9 +22,11 @@ export default defineAppConfig({
           color: "secondary" as const,
           variant: "subtle" as const,
           class: {
-            base: "group cursor-pointer uppercase py-[0.375rem] px-3 ring-0 bg-secondary/5 hover:bg-secondary/10 border border-secondary/20 hover:border-secondary/35 hover:shadow-sm focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary",
+            base: "group cursor-pointer uppercase gap-0 py-[0.375rem] px-3 bg-secondary/5 hover:bg-secondary/10 border border-secondary/20 hover:border-secondary/35",
+            leadingIcon:
+              "size-3 mr-1.5 opacity-100 transition-all duration-200 group-hover:size-0 group-hover:mr-0 group-hover:opacity-0",
             trailingIcon:
-              "w-0 opacity-0 transition-all duration-200 group-hover:w-4 group-hover:opacity-100",
+              "size-0 ml-0 opacity-0 transition-all duration-200 group-hover:size-3 group-hover:ml-1.5 group-hover:opacity-100",
           },
         },
         {
@@ -33,6 +35,21 @@ export default defineAppConfig({
           class: {
             base: "landing-item-button flex w-full overflow-hidden rounded-lg shadow-xs [background:var(--gradient-subtle)] gap-3 py-3 px-4 pl-5 text-left font-medium transition-all duration-150 hover:shadow-sm hover:[background:var(--gradient-subtle-emphasis)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-cold-purple)]",
             label: "contents",
+            leadingIcon:
+              "size-3 mr-1.5 opacity-100 transition-all duration-200 group-hover:size-0 group-hover:mr-0 group-hover:opacity-0",
+            trailingIcon:
+              "size-0 ml-0 opacity-0 transition-all duration-200 group-hover:size-3 group-hover:ml-1.5 group-hover:opacity-100",
+          },
+        },
+        {
+          color: "primary" as const,
+          variant: "ghost" as const,
+          class: {
+            base: "group cursor-pointer gap-0 rounded-lg px-3 py-1.5 text-sm font-medium shadow-xs ring-0 [background:var(--gradient-subtle)] text-[var(--color-cold-night)] transition-all duration-150 hover:[background:white] hover:shadow-sm hover:text-[var(--color-cold-purple)] hover:ring-0",
+            leadingIcon:
+              "size-4 mr-2 shrink-0 opacity-100 transition-all duration-200 group-hover:size-0 group-hover:mr-0 group-hover:opacity-0",
+            trailingIcon:
+              "size-0 ml-0 shrink-0 opacity-0 transition-all duration-200 group-hover:size-4 group-hover:ml-2 group-hover:opacity-100",
           },
         },
         {

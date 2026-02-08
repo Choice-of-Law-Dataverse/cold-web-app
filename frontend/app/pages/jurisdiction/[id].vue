@@ -89,18 +89,26 @@
                   <div class="flex justify-between">
                     <h3 class="comparison-title mb-4">Comparison</h3>
                     <span class="mb-4 flex flex-wrap gap-2">
-                      <NuxtLink
+                      <UButton
                         to="/learn/methodology"
-                        class="answer-button gap-2"
+                        color="primary"
+                        variant="ghost"
+                        size="xs"
+                        leading-icon="i-material-symbols:school-outline"
+                        trailing-icon="i-material-symbols:arrow-forward"
                       >
                         Methodology
-                      </NuxtLink>
-                      <NuxtLink
+                      </UButton>
+                      <UButton
                         to="/learn/glossary"
-                        class="answer-button gap-2"
+                        color="primary"
+                        variant="ghost"
+                        size="xs"
+                        leading-icon="i-material-symbols:dictionary-outline"
+                        trailing-icon="i-material-symbols:arrow-forward"
                       >
                         Glossary
-                      </NuxtLink>
+                      </UButton>
                     </span>
                   </div>
                 </template>

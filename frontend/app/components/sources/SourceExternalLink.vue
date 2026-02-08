@@ -5,9 +5,10 @@
       :to="sourceUrl as string"
       target="_blank"
       variant="subtle"
-      color="neutral"
-      size="xs"
+      color="secondary"
+      size="sm"
       :icon="openAccess ? undefined : 'i-material-symbols:open-in-new'"
+      :trailing-icon="openAccess ? undefined : 'i-material-symbols:open-in-new'"
       @click.stop
     >
       <template v-if="openAccess" #leading>

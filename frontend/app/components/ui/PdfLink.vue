@@ -4,9 +4,10 @@
       :to="finalPdfUrl"
       target="_blank"
       variant="subtle"
-      color="neutral"
-      size="xs"
+      color="secondary"
+      size="sm"
       icon="i-material-symbols:picture-as-pdf-outline"
+      trailing-icon="i-material-symbols:picture-as-pdf-outline"
       aria-label="Download PDF for record"
       @click.stop
     >
