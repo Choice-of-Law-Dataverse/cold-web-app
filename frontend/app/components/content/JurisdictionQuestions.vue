@@ -129,7 +129,7 @@
                   :alt="`${jurisdiction.Name} flag`"
                   class="h-3.5 w-5 rounded-sm object-cover"
                 />
-                <span>{{ jurisdiction.Name }}</span>
+                <span>{{ jurisdictionLabel(jurisdiction) }}</span>
                 <UIcon
                   v-if="index > 0"
                   name="i-heroicons-x-mark-20-solid"
@@ -169,7 +169,7 @@
                       class="h-3.5 w-5 flex-shrink-0 rounded-sm object-cover"
                     />
                     <span class="min-w-0 truncate">{{
-                      jurisdiction.Name
+                      jurisdictionLabel(jurisdiction)
                     }}</span>
                     <UIcon
                       v-if="index > 0"
@@ -447,6 +447,11 @@ const {
 const loading = computed(() => questionsLoading.value);
 
 const isSingleJurisdiction = computed(() => jurisdictions.value.length === 1);
+
+const useShortLabels = computed(() => jurisdictions.value.length >= 4);
+
+const jurisdictionLabel = (j: JurisdictionOption) =>
+  useShortLabels.value && j.alpha3Code ? j.alpha3Code : j.Name;
 
 const getAnswerLink = (alpha3Code: string, questionId: string) => {
   return `/question/${alpha3Code}_${questionId}`;
