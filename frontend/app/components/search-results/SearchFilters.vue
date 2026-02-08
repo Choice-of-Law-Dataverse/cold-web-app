@@ -2,12 +2,8 @@
   <div class="w-full">
     <USelectMenu
       v-model="internalValue"
-      class="cold-uselectmenu w-full"
-      :class="{
-        'non-all-selected': multiple
-          ? internalValue?.length > 0
-          : !!internalValue,
-      }"
+      class="w-full"
+      :ui="filterUi"
       :placeholder="
         props.placeholder ||
         (isObjectOptions ? options?.[0].label : options?.[0])
@@ -18,7 +14,7 @@
       :search-input="searchable ? { placeholder: 'Search...' } : false"
       :multiple="multiple"
       :loading="loading"
-      :content="!searchable ? { class: 'no-scroll-dropdown' } : undefined"
+      :content="!searchable ? { class: 'max-h-none' } : undefined"
     >
       <template #item="{ item }">
         <div class="flex items-center">
@@ -170,6 +166,16 @@ const isCovered = (alpha3Code) => {
 };
 
 const isObjectOptions = computed(() => typeof props.options?.[0] === "object");
+
+const hasActiveFilter = computed(() =>
+  props.multiple ? internalValue.value?.length > 0 : !!internalValue.value,
+);
+
+const filterUi = computed(() => ({
+  base: hasActiveFilter.value
+    ? "border-[var(--color-cold-purple)] text-[var(--color-cold-purple)] bg-[var(--gradient-subtle)]"
+    : "",
+}));
 
 const internalValue = computed({
   get() {

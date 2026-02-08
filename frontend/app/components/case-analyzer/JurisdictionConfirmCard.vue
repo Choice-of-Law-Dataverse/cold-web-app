@@ -18,7 +18,7 @@
           :items="legalSystemOptions"
           placeholder="Select legal system"
           size="xl"
-          class="cold-uselectmenu w-full"
+          class="w-full"
           :disabled="isLoading"
           @update:model-value="
             (value) => handleLegalSystemUpdate(value as string)
