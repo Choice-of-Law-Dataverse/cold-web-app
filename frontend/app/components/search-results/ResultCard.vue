@@ -48,7 +48,7 @@
 
 <script setup>
 import { UCard } from "#components";
-import BaseCardHeader from "@/components/ui/BaseCardHeader.vue";
+import BaseCardHeader from "@/components/ui/CardHeader.vue";
 
 const props = defineProps({
   resultData: {

@@ -50,195 +50,107 @@
         </div>
       </div>
 
-      <UFormField>
-        <template #label>Choice of Law Sections</template>
-        <template #hint>
-          <ConfidenceIndicator
-            :is-loading="isFieldLoading('choiceOfLawSections')"
-            :field-status="getFieldStatus('choiceOfLawSections')"
-          />
-        </template>
-        <UTextarea
-          v-model="localForm.choiceOfLawSections"
-          :disabled="isFieldDisabled('choiceOfLawSections')"
-          :rows="9"
-          class="w-full print:hidden"
-        />
-        <div class="print-field-value">
-          {{ localForm.choiceOfLawSections }}
-        </div>
-      </UFormField>
+      <AnalysisFormField
+        label="Choice of Law Sections"
+        :model-value="localForm.choiceOfLawSections"
+        :field-status="getFieldStatus('choiceOfLawSections')"
+        :is-field-loading="isFieldLoading('choiceOfLawSections')"
+        :disabled="isFieldDisabled('choiceOfLawSections')"
+        :rows="9"
+        @update:model-value="localForm.choiceOfLawSections = $event"
+      />
 
-      <UFormField>
-        <template #label>Themes</template>
-        <template #hint>
-          <ConfidenceIndicator
-            :is-loading="isFieldLoading('themes')"
-            :field-status="getFieldStatus('themes')"
-          />
-        </template>
-        <UTextarea
-          v-model="localForm.themes"
-          :disabled="isFieldDisabled('themes')"
-          :rows="1"
-          class="w-full print:hidden"
-        />
-        <div class="print-field-value">
-          {{ localForm.themes }}
-        </div>
-      </UFormField>
+      <AnalysisFormField
+        label="Themes"
+        :model-value="localForm.themes"
+        :field-status="getFieldStatus('themes')"
+        :is-field-loading="isFieldLoading('themes')"
+        :disabled="isFieldDisabled('themes')"
+        :rows="1"
+        @update:model-value="localForm.themes = $event"
+      />
 
-      <UFormField>
-        <template #label>Case Citation</template>
-        <template #hint>
-          <ConfidenceIndicator
-            :is-loading="isFieldLoading('caseCitation')"
-            :field-status="getFieldStatus('caseCitation')"
-          />
-        </template>
-        <UTextarea
-          v-model="localForm.caseCitation"
-          :disabled="isFieldDisabled('caseCitation')"
-          :rows="2"
-          class="w-full print:hidden"
-        />
-        <div class="print-field-value">
-          {{ localForm.caseCitation }}
-        </div>
-      </UFormField>
+      <AnalysisFormField
+        label="Case Citation"
+        :model-value="localForm.caseCitation"
+        :field-status="getFieldStatus('caseCitation')"
+        :is-field-loading="isFieldLoading('caseCitation')"
+        :disabled="isFieldDisabled('caseCitation')"
+        :rows="2"
+        @update:model-value="localForm.caseCitation = $event"
+      />
 
-      <UFormField>
-        <template #label>Relevant Facts</template>
-        <template #hint>
-          <ConfidenceIndicator
-            :is-loading="isFieldLoading('caseRelevantFacts')"
-            :field-status="getFieldStatus('caseRelevantFacts')"
-          />
-        </template>
-        <UTextarea
-          v-model="localForm.caseRelevantFacts"
-          :disabled="isFieldDisabled('caseRelevantFacts')"
-          :rows="9"
-          class="w-full print:hidden"
-        />
-        <div class="print-field-value">
-          {{ localForm.caseRelevantFacts }}
-        </div>
-      </UFormField>
+      <AnalysisFormField
+        label="Relevant Facts"
+        :model-value="localForm.caseRelevantFacts"
+        :field-status="getFieldStatus('caseRelevantFacts')"
+        :is-field-loading="isFieldLoading('caseRelevantFacts')"
+        :disabled="isFieldDisabled('caseRelevantFacts')"
+        :rows="9"
+        @update:model-value="localForm.caseRelevantFacts = $event"
+      />
 
-      <UFormField>
-        <template #label>PIL Provisions</template>
-        <template #hint>
-          <ConfidenceIndicator
-            :is-loading="isFieldLoading('casePILProvisions')"
-            :field-status="getFieldStatus('casePILProvisions')"
-          />
-        </template>
-        <UTextarea
-          v-model="localForm.casePILProvisions"
-          :disabled="isFieldDisabled('casePILProvisions')"
-          :rows="2"
-          class="w-full print:hidden"
-        />
-        <div class="print-field-value">
-          {{ localForm.casePILProvisions }}
-        </div>
-      </UFormField>
+      <AnalysisFormField
+        label="PIL Provisions"
+        :model-value="localForm.casePILProvisions"
+        :field-status="getFieldStatus('casePILProvisions')"
+        :is-field-loading="isFieldLoading('casePILProvisions')"
+        :disabled="isFieldDisabled('casePILProvisions')"
+        :rows="2"
+        @update:model-value="localForm.casePILProvisions = $event"
+      />
 
-      <UFormField>
-        <template #label>Choice of Law Issue</template>
-        <template #hint>
-          <ConfidenceIndicator
-            :is-loading="isFieldLoading('caseChoiceofLawIssue')"
-            :field-status="getFieldStatus('caseChoiceofLawIssue')"
-          />
-        </template>
-        <UTextarea
-          v-model="localForm.caseChoiceofLawIssue"
-          :disabled="isFieldDisabled('caseChoiceofLawIssue')"
-          :rows="6"
-          class="w-full print:hidden"
-        />
-        <div class="print-field-value">
-          {{ localForm.caseChoiceofLawIssue }}
-        </div>
-      </UFormField>
+      <AnalysisFormField
+        label="Choice of Law Issue"
+        :model-value="localForm.caseChoiceofLawIssue"
+        :field-status="getFieldStatus('caseChoiceofLawIssue')"
+        :is-field-loading="isFieldLoading('caseChoiceofLawIssue')"
+        :disabled="isFieldDisabled('caseChoiceofLawIssue')"
+        :rows="6"
+        @update:model-value="localForm.caseChoiceofLawIssue = $event"
+      />
 
-      <UFormField>
-        <template #label>Court's Position</template>
-        <template #hint>
-          <ConfidenceIndicator
-            :is-loading="isFieldLoading('caseCourtsPosition')"
-            :field-status="getFieldStatus('caseCourtsPosition')"
-          />
-        </template>
-        <UTextarea
-          v-model="localForm.caseCourtsPosition"
-          :disabled="isFieldDisabled('caseCourtsPosition')"
-          :rows="9"
-          class="w-full print:hidden"
-        />
-        <div class="print-field-value">
-          {{ localForm.caseCourtsPosition }}
-        </div>
-      </UFormField>
+      <AnalysisFormField
+        label="Court's Position"
+        :model-value="localForm.caseCourtsPosition"
+        :field-status="getFieldStatus('caseCourtsPosition')"
+        :is-field-loading="isFieldLoading('caseCourtsPosition')"
+        :disabled="isFieldDisabled('caseCourtsPosition')"
+        :rows="9"
+        @update:model-value="localForm.caseCourtsPosition = $event"
+      />
 
-      <UFormField v-if="isCommonLawJurisdiction">
-        <template #label>Obiter Dicta</template>
-        <template #hint>
-          <ConfidenceIndicator
-            :is-loading="isFieldLoading('caseObiterDicta')"
-            :field-status="getFieldStatus('caseObiterDicta')"
-          />
-        </template>
-        <UTextarea
-          v-model="localForm.caseObiterDicta"
-          :disabled="isFieldDisabled('caseObiterDicta')"
-          :rows="6"
-          class="w-full print:hidden"
-        />
-        <div class="print-field-value">
-          {{ localForm.caseObiterDicta }}
-        </div>
-      </UFormField>
+      <AnalysisFormField
+        v-if="isCommonLawJurisdiction"
+        label="Obiter Dicta"
+        :model-value="localForm.caseObiterDicta"
+        :field-status="getFieldStatus('caseObiterDicta')"
+        :is-field-loading="isFieldLoading('caseObiterDicta')"
+        :disabled="isFieldDisabled('caseObiterDicta')"
+        :rows="6"
+        @update:model-value="localForm.caseObiterDicta = $event"
+      />
 
-      <UFormField v-if="isCommonLawJurisdiction">
-        <template #label>Dissenting Opinions</template>
-        <template #hint>
-          <ConfidenceIndicator
-            :is-loading="isFieldLoading('caseDissentingOpinions')"
-            :field-status="getFieldStatus('caseDissentingOpinions')"
-          />
-        </template>
-        <UTextarea
-          v-model="localForm.caseDissentingOpinions"
-          :disabled="isFieldDisabled('caseDissentingOpinions')"
-          :rows="6"
-          class="w-full print:hidden"
-        />
-        <div class="print-field-value">
-          {{ localForm.caseDissentingOpinions }}
-        </div>
-      </UFormField>
+      <AnalysisFormField
+        v-if="isCommonLawJurisdiction"
+        label="Dissenting Opinions"
+        :model-value="localForm.caseDissentingOpinions"
+        :field-status="getFieldStatus('caseDissentingOpinions')"
+        :is-field-loading="isFieldLoading('caseDissentingOpinions')"
+        :disabled="isFieldDisabled('caseDissentingOpinions')"
+        :rows="6"
+        @update:model-value="localForm.caseDissentingOpinions = $event"
+      />
 
-      <UFormField>
-        <template #label>Abstract</template>
-        <template #hint>
-          <ConfidenceIndicator
-            :is-loading="isFieldLoading('caseAbstract')"
-            :field-status="getFieldStatus('caseAbstract')"
-          />
-        </template>
-        <UTextarea
-          v-model="localForm.caseAbstract"
-          :disabled="isFieldDisabled('caseAbstract')"
-          :rows="9"
-          class="w-full print:hidden"
-        />
-        <div class="print-field-value">
-          {{ localForm.caseAbstract }}
-        </div>
-      </UFormField>
+      <AnalysisFormField
+        label="Abstract"
+        :model-value="localForm.caseAbstract"
+        :field-status="getFieldStatus('caseAbstract')"
+        :is-field-loading="isFieldLoading('caseAbstract')"
+        :disabled="isFieldDisabled('caseAbstract')"
+        :rows="9"
+        @update:model-value="localForm.caseAbstract = $event"
+      />
     </div>
 
     <template #footer>
@@ -293,7 +205,7 @@ import type {
   JurisdictionOption,
 } from "~/types/analyzer";
 import type { SSEEventStatus } from "~/composables/useSSEStream";
-import ConfidenceIndicator from "@/components/case-analyzer/ConfidenceIndicator.vue";
+import AnalysisFormField from "@/components/case-analyzer/AnalysisFormField.vue";
 import DocumentDisplay from "@/components/case-analyzer/DocumentDisplay.vue";
 
 interface FieldStatus {
@@ -330,7 +242,6 @@ const localForm = computed({
 function isFieldDisabled(fieldName: keyof EditedAnalysisValues): boolean {
   if (props.isSubmitted) return true;
   const status = props.getFieldStatus(fieldName);
-  // Only editable when status is completed
   return status?.status !== "completed";
 }
 

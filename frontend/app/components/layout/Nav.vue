@@ -7,102 +7,17 @@
       <div
         class="relative flex items-center justify-between space-x-4 sm:space-x-8"
       >
-        <!-- Search Input -->
-        <div
-          v-show="!(isMobile && showMenu)"
-          class="search-container"
-          :class="{ expanded: isExpanded }"
-        >
-          <div class="search-input-row">
-            <!-- Collapsed mobile search icon -->
-            <button
-              v-if="isMobile && !isExpanded"
-              class="collapsed-search-icon"
-              type="button"
-              aria-label="Open search"
-              :aria-expanded="isExpanded.toString()"
-              @click="handleSearchIconClick"
-            >
-              <span
-                class="iconify i-material-symbols:search"
-                aria-hidden="true"
-              />
-            </button>
-            <UInput
-              v-show="!isMobile || isExpanded"
-              ref="searchInput"
-              v-model="searchText"
-              size="xl"
-              class="placeholder-purple search-input w-full font-semibold"
-              :class="{ 'search-input-scrolled': isScrolled }"
-              :placeholder="searchPlaceholder"
-              autocomplete="off"
-              :ui="{
-                base: 'placeholder:text-[var(--color-cold-purple)] placeholder:opacity-100',
-              }"
-              :style="{
-                width: '100%',
-                borderRadius: '0',
-                boxShadow: 'none',
-                border: 'none',
-                backgroundColor: isExpanded
-                  ? 'transparent'
-                  : 'var(--color-cold-purple-alpha)',
-              }"
-              @keyup.enter="emitSearch"
-              @keydown.esc="clearSearch"
-              @focus="expandSearch"
-              @blur="collapseSearch"
-            >
-              <template #leading>
-                <button
-                  type="button"
-                  class="flex cursor-pointer items-center justify-center"
-                  @click="emitSearch"
-                >
-                  <UIcon
-                    name="i-material-symbols:search"
-                    class="text-cold-purple size-6"
-                  />
-                </button>
-              </template>
-              <template #trailing>
-                <button
-                  v-show="isExpanded"
-                  type="button"
-                  class="text-cold-night hover:text-cold-purple flex items-center justify-center"
-                  @mousedown.prevent
-                  @click="clearSearch"
-                >
-                  <UIcon name="i-material-symbols:close" class="size-5" />
-                </button>
-              </template>
-            </UInput>
-          </div>
+        <NavSearchBar
+          :search-text="searchText"
+          :is-mobile="isMobile"
+          :is-scrolled="isScrolled"
+          :hidden="isMobile && navMenu?.showMenu"
+          @update:search-text="searchText = $event"
+          @update:is-expanded="isExpanded = $event"
+        />
 
-          <!-- Suggestions -->
-          <div
-            v-if="isSearchFocused && showSuggestions"
-            class="suggestions border-cold-gray w-full border-b"
-          >
-            <div class="suggestions-inner">
-              <div
-                v-for="suggestion in suggestions"
-                :key="suggestion"
-                class="suggestion-item"
-                @click="handleSuggestionClick(suggestion)"
-              >
-                <span class="suggestion-text"
-                  >Only show results from {{ suggestion }}</span
-                >
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Desktop centered logo -->
         <NuxtLink
-          v-if="!isMobile && !isExpanded && !(isMobile && showMenu)"
+          v-if="!isMobile && !isExpanded && !(isMobile && navMenu?.showMenu)"
           to="/"
           class="desktop-logo"
         >
@@ -112,9 +27,8 @@
             class="logo-img h-12 w-auto"
           />
         </NuxtLink>
-        <!-- Inline mobile logo for horizontal arrangement -->
         <NuxtLink
-          v-if="isMobile && !isExpanded && !showMenu"
+          v-if="isMobile && !isExpanded && !navMenu?.showMenu"
           to="/"
           class="mobile-inline-logo flex items-center justify-center"
           aria-label="Home"
@@ -126,321 +40,33 @@
           />
         </NuxtLink>
 
-        <!-- Menu/Links Row -->
-        <div
-          v-if="!isExpanded"
-          class="mobile-nav-group flex items-center space-x-4"
-        >
-          <!-- Mobile: Show menu button and collapsible menu -->
-          <template v-if="isMobile">
-            <template v-if="!showMenu">
-              <button class="menu-button custom-nav-links" @click="openMenu">
-                Menu
-              </button>
-            </template>
-            <template v-else>
-              <div
-                class="flex items-center space-x-3 sm:space-x-6"
-                :class="{ 'mobile-menu-links': isMobile }"
-              >
-                <ULink
-                  v-for="(link, i) in links"
-                  :key="i"
-                  :to="link.to"
-                  :class="[
-                    'custom-nav-links',
-                    { active: route.path.startsWith(link.to) },
-                  ]"
-                  @click="closeMenu"
-                >
-                  <span>{{ link.label }}</span>
-                </ULink>
-                <button
-                  class="close-menu-button ml-2"
-                  aria-label="Close menu"
-                  style="
-                    background: none;
-                    border: none;
-                    cursor: pointer;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    height: 2.5rem;
-                    width: 2.5rem;
-                    min-width: 2.5rem;
-                    min-height: 2.5rem;
-                    z-index: 10;
-                  "
-                  @click="closeMenu"
-                >
-                  <span>
-                    <UIcon
-                      name="i-material-symbols:close"
-                      class="mt-[0.3em] ml-[1em] text-[1.3em]"
-                    />
-                  </span>
-                </button>
-              </div>
-            </template>
-          </template>
-          <!-- Desktop: Always show menu links -->
-          <template v-else>
-            <div class="flex items-center space-x-6">
-              <ULink
-                v-for="(link, i) in links"
-                :key="i"
-                :to="link.to"
-                :class="[
-                  'custom-nav-links',
-                  { active: route.path.startsWith(link.to) },
-                ]"
-              >
-                <span>{{ link.label }}</span>
-              </ULink>
-            </div>
-          </template>
-        </div>
+        <NavMenu v-if="!isExpanded" ref="navMenu" :is-mobile="isMobile" />
       </div>
     </div>
   </nav>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
-import { useRouter, useRoute } from "vue-router";
+import { ref, onMounted, onUnmounted, watch } from "vue";
+import { useRoute } from "vue-router";
 import eventBus from "@/eventBus";
-import { useJurisdictionLookup } from "@/composables/useJurisdictions";
-import { aboutNavLinks, learnNavLinks } from "@/config/navigation";
+import NavSearchBar from "@/components/layout/NavSearchBar.vue";
+import NavMenu from "@/components/layout/NavMenu.vue";
 
-const router = useRouter();
 const route = useRoute();
-
-const basePath = (arr) => `/${arr[0].path.split("/")[1]}`;
-
-const links = [
-  { label: "About", to: basePath(aboutNavLinks) },
-  { label: "Learn", to: basePath(learnNavLinks) },
-  { label: "Contact", to: "/contact" },
-];
-
-const showMenu = ref(false);
-
-function openMenu() {
-  showMenu.value = true;
-  if (isMobile.value) {
-    isExpanded.value = false;
-    isSearchFocused.value = false;
-    showSuggestions.value = false;
-  }
-  document.addEventListener("mousedown", handleClickAway);
-}
-
-function closeMenu() {
-  showMenu.value = false;
-  document.removeEventListener("mousedown", handleClickAway);
-}
-
-function handleClickAway(e) {
-  if (!showMenu.value) return;
-  const nav = document.querySelector("nav");
-  if (nav && !nav.contains(e.target)) {
-    closeMenu();
-  }
-}
-
-function handleClickOutsideMenu(event) {
-  if (!showMenu.value) return;
-  const nav = document.querySelector("nav");
-  if (nav && !nav.contains(event.target)) {
-    closeMenu();
-  }
-}
-
-onMounted(() => {
-  document.addEventListener("mousedown", handleClickOutsideMenu);
-});
-
-onUnmounted(() => {
-  document.removeEventListener("mousedown", handleClickOutsideMenu);
-});
 
 const searchText = ref("");
 const isExpanded = ref(false);
-const isSmallScreen = ref(false);
 const isMobile = ref(false);
-const suggestions = ref([]);
-const showSuggestions = ref(false);
-const isSearchFocused = ref(false);
-const enableJurisdictionFetch = ref(false);
 const isScrolled = ref(false);
+const navMenu = ref(null);
 
 function handleScroll() {
   isScrolled.value = window.scrollY > 20;
 }
 
-const searchInput = ref(null);
-
-// Minimum search length for jurisdiction suggestions
-const MIN_SEARCH_LENGTH = 3;
-
-// Lazily load jurisdiction data - only fetch when user starts typing
-const jurisdictionLookup = useJurisdictionLookup(enableJurisdictionFetch);
-const { error: jurisdictionError } = jurisdictionLookup;
-
-function updateSuggestions() {
-  // Start loading jurisdiction data on first input
-  if (!enableJurisdictionFetch.value) {
-    enableJurisdictionFetch.value = true;
-  }
-
-  if (!searchText.value || searchText.value.trim().length < MIN_SEARCH_LENGTH) {
-    suggestions.value = [];
-    showSuggestions.value = false;
-    return;
-  }
-
-  // Don't show suggestions if there's an API error or no data
-  if (jurisdictionError.value || !jurisdictionLookup.data.value) {
-    suggestions.value = [];
-    showSuggestions.value = false;
-    return;
-  }
-
-  const words = searchText.value
-    .toLowerCase()
-    .split(/\s+/)
-    .filter((word) => word.length >= MIN_SEARCH_LENGTH);
-
-  const filtered = jurisdictionLookup.findMatchingJurisdictions?.(words) ?? [];
-
-  suggestions.value = filtered.slice(0, 5);
-  showSuggestions.value = suggestions.value.length > 0;
-}
-
-function handleSuggestionClick(selected) {
-  const record = jurisdictionLookup.findJurisdictionByName?.(selected);
-  const keywords = record
-    ? [
-        record.Name?.toLowerCase().trim(),
-        ...(record.alpha3Code ? [record.alpha3Code.toLowerCase().trim()] : []),
-      ].filter(Boolean)
-    : [selected?.toLowerCase().trim()].filter(Boolean);
-
-  const remainingWords = searchText.value
-    .split(/\s+/)
-    .map((word) => word.trim())
-    .filter(
-      (word) =>
-        !keywords.some((keyword) => keyword.includes(word.toLowerCase())),
-    );
-
-  const newSearchText = remainingWords.join(" ");
-  searchText.value = newSearchText;
-
-  isExpanded.value = false;
-  isSearchFocused.value = false;
-  showSuggestions.value = false;
-
-  const query = { ...route.query };
-  if (newSearchText.trim()) {
-    query.q = newSearchText.trim();
-  } else {
-    delete query.q;
-  }
-  query.jurisdiction = selected;
-  router.push({
-    name: "search",
-    query,
-  });
-
-  nextTick().then(() => {
-    const inputEl = searchInput.value?.$el.querySelector("input");
-    if (inputEl) {
-      inputEl.blur();
-    }
-  });
-}
-
-watch(searchText, () => {
-  try {
-    updateSuggestions();
-  } catch (e) {
-    console.error("Error updating suggestions:", e);
-    suggestions.value = [];
-    showSuggestions.value = false;
-  }
-});
-
-function emitSearch() {
-  const query = { ...route.query };
-
-  if (searchText.value.trim()) {
-    query.q = searchText.value.trim();
-  } else {
-    delete query.q;
-  }
-
-  router.push({
-    name: "search",
-    query,
-  });
-  collapseSearch();
-  nextTick().then(() => {
-    const inputEl = searchInput.value?.$el.querySelector("input");
-    if (inputEl) {
-      inputEl.blur();
-    }
-  });
-}
-
-function expandSearch() {
-  isExpanded.value = true;
-  isSearchFocused.value = true;
-  // Start loading jurisdiction data when user focuses search
-  enableJurisdictionFetch.value = true;
-}
-
-function handleSearchIconClick() {
-  if (isMobile.value && !isExpanded.value) {
-    expandSearch();
-    nextTick(() => {
-      const inputEl = searchInput.value?.$el.querySelector("input");
-      if (inputEl) inputEl.focus();
-    });
-  }
-}
-
-function collapseSearch() {
-  isExpanded.value = false;
-
-  // Delay closing suggestions to allow click handlers to complete
-  setTimeout(() => {
-    if (isSearchFocused.value) {
-      isSearchFocused.value = false;
-      showSuggestions.value = false;
-    } else if (!isSearchFocused.value && showSuggestions.value) {
-      showSuggestions.value = false;
-    }
-  }, 200);
-}
-
-const clearSearch = async () => {
-  searchText.value = "";
-  collapseSearch();
-  await nextTick();
-  const inputEl = searchInput.value?.$el.querySelector("input");
-  if (inputEl) {
-    inputEl.blur();
-  }
-};
-
-const searchPlaceholder = computed(() =>
-  isSmallScreen.value ? "Search" : "Search",
-);
-
 function checkScreenSize() {
   const width = window.innerWidth;
-  isSmallScreen.value = width < 640;
   isMobile.value = width < 640;
 }
 
@@ -448,31 +74,6 @@ const updateSearchFromEvent = (query) => {
   searchText.value = query;
 };
 
-function handleGlobalKeydown(e) {
-  if (
-    e.key === "s" &&
-    !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
-  ) {
-    e.preventDefault();
-    expandSearch();
-    nextTick(() => {
-      const inputEl = searchInput.value?.$el.querySelector("input");
-      if (inputEl) {
-        inputEl.focus();
-      }
-    });
-  }
-}
-
-onMounted(() => {
-  window.addEventListener("keydown", handleGlobalKeydown);
-});
-
-onUnmounted(() => {
-  window.removeEventListener("keydown", handleGlobalKeydown);
-});
-
-// Watch route.query.q to keep searchText in sync with URL
 watch(
   () => route.query.q,
   (newQ) => {
@@ -482,10 +83,9 @@ watch(
 
 onMounted(() => {
   checkScreenSize();
-
   window.addEventListener("resize", checkScreenSize);
   window.addEventListener("scroll", handleScroll, { passive: true });
-  handleScroll(); // Check initial scroll position
+  handleScroll();
 
   if (route.query.q) {
     searchText.value = route.query.q;
@@ -498,37 +98,10 @@ onUnmounted(() => {
   window.removeEventListener("resize", checkScreenSize);
   window.removeEventListener("scroll", handleScroll);
   eventBus.off("update-search", updateSearchFromEvent);
-  document.removeEventListener("mousedown", handleClickAway);
 });
 </script>
 
 <style scoped>
-.search-container {
-  position: relative !important;
-  width: calc(var(--column-width) * 3 + var(--gutter-width) * 2);
-  transition: none !important;
-}
-
-.search-container.expanded {
-  width: 100%;
-  padding-bottom: 0.625rem;
-}
-
-.search-input-row {
-  position: relative;
-  display: flex;
-  align-items: center;
-}
-
-:deep(.search-input input) {
-  height: 3rem;
-  transition: height 0.2s ease;
-}
-
-:deep(.search-input-scrolled input) {
-  height: 2.5rem;
-}
-
 .desktop-logo {
   position: absolute;
   top: 50%;
@@ -558,66 +131,12 @@ a {
   text-decoration: none !important;
 }
 
-:deep(.custom-nav-links) {
-  color: var(--color-cold-night) !important;
-  text-decoration: none !important;
-  font-weight: 600 !important;
-}
-
-:deep(.custom-nav-links.active) {
-  text-decoration: underline !important;
-  text-underline-offset: 6px !important;
-  text-decoration-thickness: 2px !important;
-  text-decoration-color: var(--color-cold-purple) !important;
-}
-
-:deep(.custom-nav-links:hover) {
-  text-decoration: underline !important;
-  text-underline-offset: 6px !important;
-  text-decoration-thickness: 2px !important;
-  text-decoration-color: var(--color-cold-purple) !important;
-}
-
 .bg-purple-active {
   background-color: color-mix(
     in srgb,
     var(--color-cold-purple) 5%,
     white
   ) !important;
-}
-
-.suggestions {
-  position: absolute;
-  top: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100vw;
-  z-index: 1000;
-  background-color: var(--color-cold-purple-fake-alpha);
-}
-
-.suggestions-inner {
-  width: 100%;
-  padding: 0 1.5rem;
-  box-sizing: border-box;
-}
-
-.suggestion-item {
-  padding: 12px 16px;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: background-color 0.2s;
-}
-
-.suggestion-item:hover {
-  background-color: rgba(0, 0, 0, 0.05);
-}
-
-.suggestion-text {
-  font-weight: 500;
-  color: var(--color-cold-night);
 }
 
 nav {
@@ -666,66 +185,6 @@ nav.nav-scrolled .mobile-inline-logo img {
     flex: 0 0 auto;
     margin-left: 0.3rem !important;
     margin-right: 0.5rem !important;
-  }
-  .mobile-nav-group {
-    gap: 0.75rem;
-  }
-  .search-container {
-    flex: 0 0 auto;
-  }
-
-  .mobile-nav-group > * + * {
-    margin-left: 0rem !important;
-  }
-
-  .mobile-menu-links {
-    margin-left: 3rem;
-    margin-top: 0.4rem;
-    width: 100%;
-    display: flex;
-  }
-
-  .mobile-menu-links a:not(:last-of-type) {
-    margin-right: 1.1rem;
-  }
-
-  .mobile-menu-links .close-menu-button {
-    margin-left: auto !important;
-  }
-  .menu-button.custom-nav-links {
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
-  }
-}
-
-.collapsed-search-icon {
-  display: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  color: var(--color-cold-purple);
-  height: 2.5rem;
-  width: 2.5rem;
-  align-items: center;
-  justify-content: center;
-}
-
-@media (max-width: 639px) {
-  .collapsed-search-icon {
-    display: inline-flex;
-    height: 2.5rem;
-    width: 2.5rem;
-  }
-  .collapsed-search-icon .iconify {
-    font-size: 1.5rem;
-    line-height: 1;
-  }
-  .search-container:not(.expanded) .icon-button {
-    display: none;
-  }
-  .search-container {
-    width: auto;
   }
 }
 </style>
