@@ -15,8 +15,8 @@
       <h2>
         Maybe try
         <UButton
-          class="suggestion-button"
           variant="link"
+          :ui="{ base: 'p-0 text-xl font-semibold' }"
           @click="removeJurisdictionFilter"
         >
           <span>removing {{ jurisdictionFilter }}</span>
@@ -44,7 +44,7 @@
     </p>
     <div class="link-container">
       <NuxtLink to="/submit">
-        <UButton class="suggestion-button" variant="link">
+        <UButton variant="link" :ui="{ base: 'p-0 text-xl font-semibold' }">
           Submit your data
         </UButton>
       </NuxtLink>
@@ -85,10 +85,6 @@ function removeJurisdictionFilter() {
 <style scoped>
 .no-results {
   text-align: center;
-  font-weight: 600;
-}
-
-.suggestion-button {
   font-weight: 600;
 }
 

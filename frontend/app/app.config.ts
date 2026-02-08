@@ -4,7 +4,16 @@ export default defineAppConfig({
       primary: "violet",
       neutral: "slate",
     },
-    button: {},
+    button: {
+      compoundVariants: [
+        {
+          color: "neutral" as const,
+          variant: "outline" as const,
+          class:
+            "uppercase ring ring-inset ring-accented text-default bg-default hover:bg-inverted hover:text-inverted hover:ring-inverted active:bg-inverted active:text-inverted disabled:bg-default aria-disabled:bg-default focus:outline-none focus-visible:ring-2 focus-visible:ring-inverted",
+        },
+      ],
+    },
     input: {
       slots: {
         root: "w-full",
