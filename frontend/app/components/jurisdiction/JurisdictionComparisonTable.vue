@@ -342,7 +342,7 @@ import {
   processAnswerText,
 } from "~/composables/useAnswers";
 import { useJurisdictions } from "@/composables/useJurisdictions";
-import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
+import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import type { JurisdictionOption } from "@/types/analyzer";

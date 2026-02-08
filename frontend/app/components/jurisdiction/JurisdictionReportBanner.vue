@@ -61,7 +61,7 @@
 import { computed, toRef } from "vue";
 import { useRoute } from "vue-router";
 import { useJurisdiction } from "@/composables/useJurisdictions";
-import JurisdictionFlagWithCoverage from "@/components/ui/JurisdictionFlagWithCoverage.vue";
+import JurisdictionFlagWithCoverage from "@/components/jurisdiction/JurisdictionFlagWithCoverage.vue";
 
 const route = useRoute();
 
