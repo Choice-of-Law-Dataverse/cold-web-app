@@ -34,7 +34,7 @@
           </template>
           <UInput
             v-model="officialTitle"
-            class="cold-input mt-2"
+            class="mt-2"
             placeholder="e.g. Bundesgesetz über das Internationale Privatrecht"
           />
         </UFormField>
@@ -48,7 +48,7 @@
           </template>
           <UInput
             v-model="titleEn"
-            class="cold-input mt-2"
+            class="mt-2"
             placeholder="e.g. Swiss Private International Law Act"
           />
         </UFormField>
@@ -76,25 +76,21 @@
           <template #label>
             <span class="label">Source (URL)</span>
           </template>
-          <UInput
-            v-model="sourceUrl"
-            class="cold-input mt-2"
-            placeholder="https://…"
-          />
+          <UInput v-model="sourceUrl" class="mt-2" placeholder="https://…" />
         </UFormField>
 
         <UFormField size="lg">
           <template #label>
             <span class="label">Themes</span>
           </template>
-          <UInput v-model="themes" class="cold-input mt-2" />
+          <UInput v-model="themes" class="mt-2" />
         </UFormField>
 
         <UFormField size="lg">
           <template #label>
             <span class="label">Status</span>
           </template>
-          <UInput v-model="status" class="cold-input mt-2" />
+          <UInput v-model="status" class="mt-2" />
         </UFormField>
 
         <UFormField size="lg">
@@ -127,7 +123,7 @@
               <InfoPopover :text="tooltipAbbreviation" />
             </span>
           </template>
-          <UInput v-model="abbreviation" class="cold-input mt-2" />
+          <UInput v-model="abbreviation" class="mt-2" />
         </UFormField>
 
         <UFormField size="lg">

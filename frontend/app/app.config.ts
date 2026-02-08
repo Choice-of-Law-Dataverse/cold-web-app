@@ -5,8 +5,18 @@ export default defineAppConfig({
       neutral: "slate",
     },
     button: {},
-    input: {},
-    textarea: {},
+    input: {
+      slots: {
+        root: "w-full",
+        base: "h-[42px] px-3 border border-gray-200 rounded-lg bg-white text-[var(--color-cold-night)] text-sm leading-[1.4] shadow-xs transition-all duration-150 placeholder:text-[var(--color-cold-night-alpha-50,#8193a8)] hover:border-gray-300 hover:shadow-sm focus:border-[var(--color-cold-purple)] focus:bg-white focus:shadow-sm disabled:bg-[var(--color-cold-gray-alpha)] disabled:text-[var(--color-cold-night-alpha)] disabled:cursor-not-allowed",
+      },
+    },
+    textarea: {
+      slots: {
+        root: "w-full",
+        base: "min-h-24 px-3 py-2.5 border border-gray-200 rounded-lg bg-white text-[var(--color-cold-night)] text-sm leading-[1.4] shadow-xs transition-all duration-150 resize-y placeholder:text-[var(--color-cold-night-alpha-50,#8193a8)] hover:border-gray-300 hover:shadow-sm focus:border-[var(--color-cold-purple)] focus:bg-white focus:shadow-sm disabled:bg-[var(--color-cold-gray-alpha)] disabled:text-[var(--color-cold-night-alpha)] disabled:cursor-not-allowed",
+      },
+    },
     select: {
       variants: {
         variant: {

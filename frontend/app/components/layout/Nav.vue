@@ -33,13 +33,11 @@
               ref="searchInput"
               v-model="searchText"
               size="xl"
-              class="input-custom-purple placeholder-purple font-semibold"
+              class="placeholder-purple w-full font-semibold"
               :placeholder="searchPlaceholder"
               autocomplete="off"
               :ui="{
-                icon: { trailing: { pointer: '' } },
-                wrapper: { base: 'h-12' },
-                input: { base: 'h-12' },
+                base: 'h-12 ps-10 placeholder:text-[var(--color-cold-purple)] placeholder:opacity-100',
               }"
               :style="{
                 width: '100%',
@@ -498,25 +496,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.input-custom-purple ::v-deep(.placeholder) {
-  color: var(--color-cold-purple) !important;
-}
-
-.input-custom-purple ::v-deep(.u-input__icon) {
-  color: white !important;
-  opacity: 0 !important;
-}
-
-.input-custom-purple ::v-deep(.u-button .iconify) {
-  opacity: 1 !important;
-  color: var(--color-cold-purple) !important;
-}
-
-.input-custom-purple ::placeholder {
-  color: var(--color-cold-purple) !important;
-  opacity: 1;
-}
-
 .search-container {
   position: relative !important;
   width: calc(var(--column-width) * 3 + var(--gutter-width) * 2);
@@ -532,14 +511,6 @@ onUnmounted(() => {
   position: relative;
   display: flex;
   align-items: center;
-}
-
-.input-custom-purple {
-  width: 100%;
-}
-
-.input-custom-purple :deep(input) {
-  padding-left: 2.5rem !important;
 }
 
 .icon-button {
@@ -745,9 +716,6 @@ nav.nav-scrolled .mobile-inline-logo img {
   }
   .collapsed-search-icon .iconify {
     font-size: 1.5rem;
-  }
-  .search-container:not(.expanded) :deep(.u-input) {
-    display: none !important;
   }
   .search-container:not(.expanded) .icon-button {
     display: none;

@@ -17,7 +17,7 @@
           <template #label>
             <span class="label">Title</span>
           </template>
-          <UInput v-model="title" class="cold-input mt-2" />
+          <UInput v-model="title" class="mt-2" />
         </UFormField>
 
         <!-- Year (required) -->
@@ -25,7 +25,7 @@
           <template #label>
             <span class="label">Year</span>
           </template>
-          <UInput v-model="publicationYear" class="cold-input mt-2" />
+          <UInput v-model="publicationYear" class="mt-2" />
         </UFormField>
 
         <!-- Author(s) (required) -->
@@ -33,7 +33,7 @@
           <template #label>
             <span class="label">Author</span>
           </template>
-          <UInput v-model="author" class="cold-input mt-2" />
+          <UInput v-model="author" class="mt-2" />
         </UFormField>
 
         <!-- Publication (optional) -->
@@ -41,7 +41,7 @@
           <template #label>
             <span class="label">Publication title</span>
           </template>
-          <UInput v-model="publicationTitle" class="cold-input mt-2" />
+          <UInput v-model="publicationTitle" class="mt-2" />
         </UFormField>
 
         <!-- Jurisdiction (optional) -->
@@ -63,7 +63,7 @@
           <template #label>
             <span class="label">URL</span>
           </template>
-          <UInput v-model="url" class="cold-input mt-2" />
+          <UInput v-model="url" class="mt-2" />
         </UFormField>
 
         <!-- DOI (optional) -->
@@ -71,7 +71,7 @@
           <template #label>
             <span class="label">DOI</span>
           </template>
-          <UInput v-model="doi" class="cold-input mt-2" />
+          <UInput v-model="doi" class="mt-2" />
         </UFormField>
 
         <!-- Date (optional) -->
@@ -100,7 +100,7 @@
           <template #label>
             <span class="label">ISBN</span>
           </template>
-          <UInput v-model="isbn" class="cold-input mt-2" />
+          <UInput v-model="isbn" class="mt-2" />
         </UFormField>
 
         <!-- ISSN (optional) -->
@@ -108,14 +108,14 @@
           <template #label>
             <span class="label">ISSN</span>
           </template>
-          <UInput v-model="issn" class="cold-input mt-2" />
+          <UInput v-model="issn" class="mt-2" />
         </UFormField>
 
         <UFormField size="lg">
           <template #label>
             <span class="label">Theme</span>
           </template>
-          <UInput v-model="theme" class="cold-input mt-2" />
+          <UInput v-model="theme" class="mt-2" />
         </UFormField>
 
         <div class="flex justify-end md:col-span-2">

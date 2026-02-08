@@ -17,25 +17,21 @@
           <template #label>
             <span class="label">Abbreviation</span>
           </template>
-          <UInput v-model="abbreviation" class="cold-input mt-2" />
+          <UInput v-model="abbreviation" class="mt-2" />
         </UFormField>
 
         <UFormField size="lg">
           <template #label>
             <span class="label">Title</span>
           </template>
-          <UInput v-model="title" class="cold-input mt-2" />
+          <UInput v-model="title" class="mt-2" />
         </UFormField>
 
         <UFormField size="lg">
           <template #label>
             <span class="label">URL</span>
           </template>
-          <UInput
-            v-model="url"
-            placeholder="https://…"
-            class="cold-input mt-2"
-          />
+          <UInput v-model="url" placeholder="https://…" class="mt-2" />
         </UFormField>
 
         <UFormField size="lg">
