@@ -10,6 +10,7 @@ from app.config import config
 from app.routes import (
     ai,
     case_analyzer,
+    feedback,
     landing_page,
     search,
     sitemap,
@@ -134,6 +135,10 @@ app = FastAPI(
             "name": "Suggestions",
             "description": "User-submitted data suggestions storage.",
         },
+        {
+            "name": "Feedback",
+            "description": "Entity feedback from users.",
+        },
     ],
     openapi_url="/api/v1/openapi.json",
     docs_url="/api/v1/docs",
@@ -163,6 +168,7 @@ api_router.include_router(landing_page.router)
 api_router.include_router(statistics.router)
 
 api_router.include_router(suggestions_router.router)
+api_router.include_router(feedback.router)
 
 
 app.include_router(api_router)

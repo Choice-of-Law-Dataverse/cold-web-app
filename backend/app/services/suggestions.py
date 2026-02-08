@@ -7,7 +7,7 @@ import sqlalchemy as sa
 
 from app.config import config
 from app.services.db_manager import suggestions_db_manager
-from app.services.suggestions_schema import SUGGESTION_TABLES, SUGGESTIONS_METADATA
+from app.services.suggestions_schema import SUGGESTION_TABLES, SUGGESTIONS_METADATA, entity_feedback
 
 
 class SuggestionService:
@@ -931,5 +931,90 @@ class SuggestionService:
         target = self.tables["case_analyzer"]
         with suggestions_db_manager.get_session() as session:
             result = session.execute(sa.delete(target).where(target.c.id == draft_id))
+            session.commit()
+            return result.rowcount > 0
+
+    def save_entity_feedback(
+        self,
+        *,
+        entity_type: str,
+        entity_id: str,
+        entity_title: str | None,
+        feedback_type: str,
+        message: str,
+        submitter_email: str,
+        token_sub: str | None = None,
+        client_ip: str | None = None,
+        user_agent: str | None = None,
+    ) -> int:
+        with suggestions_db_manager.get_session() as session:
+            stmt = (
+                entity_feedback.insert()
+                .values(
+                    entity_type=entity_type,
+                    entity_id=entity_id,
+                    entity_title=entity_title,
+                    feedback_type=feedback_type,
+                    message=message,
+                    submitter_email=submitter_email,
+                    token_sub=token_sub,
+                    client_ip=client_ip,
+                    user_agent=user_agent,
+                    moderation_status="pending",
+                )
+                .returning(entity_feedback.c.id)
+            )
+            result = session.execute(stmt)
+            session.commit()
+            return int(result.scalar_one())
+
+    def list_pending_feedback(self, limit: int = 100) -> list[dict]:
+        with suggestions_db_manager.get_session() as session:
+            query = (
+                sa.select(
+                    entity_feedback.c.id,
+                    entity_feedback.c.created_at,
+                    entity_feedback.c.entity_type,
+                    entity_feedback.c.entity_id,
+                    entity_feedback.c.entity_title,
+                    entity_feedback.c.feedback_type,
+                    entity_feedback.c.message,
+                    entity_feedback.c.submitter_email,
+                    entity_feedback.c.moderation_status,
+                )
+                .where(entity_feedback.c.moderation_status == "pending")
+                .order_by(entity_feedback.c.created_at.desc())
+                .limit(limit)
+            )
+            rows = session.execute(query).mappings().all()
+            return [dict(r) for r in rows]
+
+    def get_feedback_by_id(self, feedback_id: int) -> dict | None:
+        with suggestions_db_manager.get_session() as session:
+            query = sa.select(
+                entity_feedback.c.id,
+                entity_feedback.c.created_at,
+                entity_feedback.c.entity_type,
+                entity_feedback.c.entity_id,
+                entity_feedback.c.entity_title,
+                entity_feedback.c.feedback_type,
+                entity_feedback.c.message,
+                entity_feedback.c.submitter_email,
+                entity_feedback.c.token_sub,
+                entity_feedback.c.moderation_status,
+            ).where(entity_feedback.c.id == feedback_id)
+            row = session.execute(query).mappings().first()
+            if not row:
+                return None
+            return dict(row)
+
+    def update_feedback_status(self, feedback_id: int, status: str) -> bool:
+        valid = {"pending", "reviewed", "dismissed"}
+        if status not in valid:
+            raise ValueError(f"Invalid feedback status '{status}'. Must be one of: {valid}")
+        with suggestions_db_manager.get_session() as session:
+            result = session.execute(
+                sa.update(entity_feedback).where(entity_feedback.c.id == feedback_id).values(moderation_status=status)
+            )
             session.commit()
             return result.rowcount > 0

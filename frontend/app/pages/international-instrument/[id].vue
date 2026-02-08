@@ -89,6 +89,12 @@
       :title-candidates="[internationalInstrument?.Name]"
       fallback="International Instrument"
     />
+
+    <EntityFeedback
+      entity-type="international_instrument"
+      :entity-id="instrumentId"
+      :entity-title="internationalInstrument?.Name as string"
+    />
   </div>
 </template>
 
@@ -104,6 +110,7 @@ import { useInternationalInstrument } from "@/composables/useRecordDetails";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import { useInternationalLegalProvisions } from "@/composables/useFullTable";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import { internationalInstrumentLabels } from "@/config/labels";
 import { internationalInstrumentTooltips } from "@/config/tooltips";

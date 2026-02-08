@@ -115,6 +115,23 @@ suggestions_case_analyzer = sa.Table(
     sa.Column("moderation_status", sa.String(32)),
 )
 
+entity_feedback = sa.Table(
+    "entity_feedback",
+    SUGGESTIONS_METADATA,
+    sa.Column("id", sa.Integer, primary_key=True, autoincrement=True),
+    _timestamp_column(),
+    sa.Column("entity_type", sa.String(64), nullable=False),
+    sa.Column("entity_id", sa.String(256), nullable=False),
+    sa.Column("entity_title", sa.String(512)),
+    sa.Column("feedback_type", sa.String(64), nullable=False),
+    sa.Column("message", sa.Text, nullable=False),
+    sa.Column("submitter_email", sa.String(256), nullable=False),
+    sa.Column("token_sub", sa.String(256)),
+    sa.Column("client_ip", sa.String(64)),
+    sa.Column("user_agent", sa.Text),
+    sa.Column("moderation_status", sa.String(32), server_default=sa.text("'pending'"), nullable=False),
+)
+
 SUGGESTION_TABLES: dict[str, sa.Table] = {
     "generic": suggestions_generic,
     "court_decisions": suggestions_court_decisions,
@@ -147,3 +164,7 @@ sa.Index(
 )
 sa.Index("idx_suggestions_literature_moderation_status", suggestions_literature.c.moderation_status)
 sa.Index("idx_suggestions_case_analyzer_moderation_status", suggestions_case_analyzer.c.moderation_status)
+
+sa.Index("idx_entity_feedback_moderation_status", entity_feedback.c.moderation_status)
+sa.Index("idx_entity_feedback_entity_type", entity_feedback.c.entity_type)
+sa.Index("idx_entity_feedback_entity_id", entity_feedback.c.entity_id)

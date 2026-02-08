@@ -134,6 +134,21 @@ def require_user(authorization: str = Header(None)) -> dict:
     return verify_auth0_token(token)
 
 
+def optional_user(authorization: str = Header(None)) -> dict | None:
+    """Return user payload if a valid Bearer token is present, None otherwise."""
+    if not authorization:
+        return None
+    parts = authorization.split()
+    if len(parts) != 2 or parts[0].lower() != "bearer":
+        return None
+    if not config.AUTH0_DOMAIN or not config.AUTH0_AUDIENCE:
+        return None
+    try:
+        return verify_auth0_token(parts[1])
+    except HTTPException:
+        return None
+
+
 def require_editor_or_admin(authorization: str = Header(None)) -> dict:
     """
     Require user to have editor or admin role.

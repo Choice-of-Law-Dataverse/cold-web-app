@@ -23,6 +23,27 @@ CATEGORY_URL_SLUGS: dict[str, str] = {
     "regional_instruments": "regional-instruments",
     "international_instruments": "international-instruments",
     "literature": "literature",
+    "feedback": "feedback",
+}
+
+ENTITY_TYPE_LABELS: dict[str, str] = {
+    "court_decision": "Court Decision",
+    "domestic_instrument": "Domestic Instrument",
+    "regional_instrument": "Regional Instrument",
+    "international_instrument": "International Instrument",
+    "literature": "Literature",
+    "arbitral_award": "Arbitral Award",
+    "arbitral_rule": "Arbitral Rule",
+    "question": "Question",
+    "jurisdiction": "Jurisdiction",
+}
+
+FEEDBACK_TYPE_LABELS: dict[str, str] = {
+    "improve": "Suggest Improvement",
+    "missing_data": "Missing Data",
+    "wrong_info": "Wrong Information",
+    "outdated": "Outdated Information",
+    "other": "Other",
 }
 
 
@@ -130,3 +151,68 @@ def send_new_suggestion_notification(
         logger.info("Notification email sent for %s suggestion #%d", category, suggestion_id)
     except Exception:
         logger.exception("Failed to send notification email for %s suggestion #%d", category, suggestion_id)
+
+
+def send_feedback_notification(
+    feedback_id: int,
+    entity_type: str,
+    entity_id: str,
+    entity_title: str | None,
+    feedback_type: str,
+    message: str,
+    submitter_email: str,
+) -> None:
+    if not config.RESEND_API_KEY:
+        logger.debug("RESEND_API_KEY not configured — skipping feedback notification")
+        return
+
+    recipients = _get_admin_emails()
+    if not recipients:
+        logger.debug("ADMIN_NOTIFICATION_EMAILS not configured — skipping feedback notification")
+        return
+
+    resend.api_key = config.RESEND_API_KEY
+
+    entity_label = ENTITY_TYPE_LABELS.get(entity_type, entity_type)
+    feedback_label = FEEDBACK_TYPE_LABELS.get(feedback_type, feedback_type)
+    title_display = entity_title or entity_id
+    moderation_url = f"https://cold.global/moderation/feedback/{feedback_id}"
+    entity_url = f"https://cold.global/{entity_type.replace('_', '-')}/{entity_id}"
+
+    subject = f"[CoLD] Entity Feedback: {entity_label}"
+
+    text_body = "\n".join(
+        [
+            f"New feedback submitted on a {entity_label}.",
+            "",
+            f"Entity: {title_display}",
+            f"Entity URL: {entity_url}",
+            f"Feedback type: {feedback_label}",
+            f"Message: {message}",
+            f"Submitter: {submitter_email}",
+            "",
+            f"Review: {moderation_url}",
+        ]
+    )
+
+    html_body = f"""\
+<h2>Entity Feedback: {entity_label}</h2>
+<p><strong>Entity:</strong> <a href="{entity_url}">{title_display}</a></p>
+<p><strong>Feedback type:</strong> {feedback_label}</p>
+<p><strong>Message:</strong> {message}</p>
+<p><strong>Submitter:</strong> {submitter_email}</p>
+<p><a href="{moderation_url}">Review this feedback</a></p>"""
+
+    try:
+        resend.Emails.send(
+            {
+                "from": config.NOTIFICATION_SENDER_EMAIL,
+                "to": recipients,
+                "subject": subject,
+                "text": text_body,
+                "html": html_body,
+            }
+        )
+        logger.info("Feedback notification email sent for feedback #%d", feedback_id)
+    except Exception:
+        logger.exception("Failed to send feedback notification email for #%d", feedback_id)

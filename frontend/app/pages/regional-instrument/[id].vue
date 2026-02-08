@@ -75,6 +75,12 @@
       :title-candidates="[regionalInstrument?.Abbreviation]"
       fallback="Regional Instrument"
     />
+
+    <EntityFeedback
+      entity-type="regional_instrument"
+      :entity-id="instrumentId"
+      :entity-title="regionalInstrument?.Abbreviation as string"
+    />
   </div>
 </template>
 
@@ -88,6 +94,7 @@ import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import { useRegionalInstrument } from "@/composables/useRecordDetails";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import { regionalInstrumentLabels } from "@/config/labels";
 import { regionalInstrumentTooltips } from "@/config/tooltips";

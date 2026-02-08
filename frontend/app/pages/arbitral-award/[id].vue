@@ -25,6 +25,16 @@
       ]"
       fallback="Arbitral Award"
     />
+
+    <EntityFeedback
+      entity-type="arbitral_award"
+      :entity-id="awardId"
+      :entity-title="
+        arbitralAward?.['Case Number']
+          ? `Case Number ${arbitralAward['Case Number']}`
+          : undefined
+      "
+    />
   </div>
 </template>
 
@@ -34,6 +44,7 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import { useArbitralAward } from "@/composables/useRecordDetails";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import { arbitralAwardLabels } from "@/config/labels";
 
