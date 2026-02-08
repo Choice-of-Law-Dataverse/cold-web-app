@@ -12,8 +12,10 @@ export default defineAppConfig({
           variant: "outline" as const,
           class: {
             base: "group cursor-pointer uppercase gap-0 py-[0.375rem] px-3 hover:bg-inverted hover:text-inverted hover:ring-inverted active:bg-inverted active:text-inverted",
+            leadingIcon:
+              "size-3 mr-1.5 opacity-100 transition-all duration-200 group-hover:size-0 group-hover:mr-0 group-hover:opacity-0",
             trailingIcon:
-              "size-0 opacity-0 transition-all duration-200 group-hover:size-3 group-hover:ml-1.5 group-hover:opacity-100",
+              "size-0 ml-0 opacity-0 transition-all duration-200 group-hover:size-3 group-hover:ml-1.5 group-hover:opacity-100",
           },
         },
         {

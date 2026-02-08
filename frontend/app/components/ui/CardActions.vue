@@ -12,6 +12,7 @@
             variant="outline"
             color="neutral"
             size="xs"
+            leading-icon="i-material-symbols:verified-outline"
             trailing-icon="i-material-symbols:verified-outline"
             @click.prevent="isCiteOpen = true"
           >
@@ -21,6 +22,7 @@
             variant="outline"
             color="neutral"
             size="xs"
+            leading-icon="i-material-symbols:data-object"
             trailing-icon="i-material-symbols:data-object"
             @click.prevent="exportJSON"
           >
@@ -30,6 +32,7 @@
             variant="outline"
             color="neutral"
             size="xs"
+            leading-icon="i-material-symbols:print-outline"
             trailing-icon="i-material-symbols:print-outline"
             @click.prevent="printPage"
           >
@@ -116,23 +119,7 @@ function printPage() {
 <style scoped>
 .actions-container {
   align-items: center;
-}
-
-.actions-container :deep(button) {
-  margin-right: 1.25rem;
-  transition: margin-right 0.2s ease;
-}
-
-.actions-container :deep(button:last-child) {
-  margin-right: 0;
-}
-
-.actions-container :deep(button:hover) {
-  margin-right: 0.125rem;
-}
-
-.actions-container :deep(button:last-child:hover) {
-  margin-right: -1.125rem;
+  gap: 0.75rem;
 }
 
 .arrow-container {
