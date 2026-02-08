@@ -47,7 +47,7 @@
         @click="handleCardClick(suggestion)"
       >
         <template #header>
-          <div class="flex items-start justify-between">
+          <div class="flex items-start justify-between px-6 py-4">
             <div class="flex-1">
               <h3 class="text-lg font-semibold">
                 {{ getSuggestionTitle(suggestion) }}
@@ -56,12 +56,21 @@
                 {{ getSuggestionMeta(suggestion) }}
               </p>
             </div>
-            <UBadge
-              :color="getStatusBadgeColor(suggestion.moderation_status)"
-              variant="subtle"
-            >
-              {{ getStatusLabel(suggestion.moderation_status) }}
-            </UBadge>
+            <div class="flex items-center gap-2">
+              <UBadge
+                v-if="suggestion.payload?.edit_entity_id"
+                color="warning"
+                variant="subtle"
+              >
+                Edit
+              </UBadge>
+              <UBadge
+                :color="getStatusBadgeColor(suggestion.moderation_status)"
+                variant="subtle"
+              >
+                {{ getStatusLabel(suggestion.moderation_status) }}
+              </UBadge>
+            </div>
           </div>
         </template>
 

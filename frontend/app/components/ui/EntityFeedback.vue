@@ -1,0 +1,233 @@
+<script setup lang="ts">
+import { ref, computed } from "vue";
+import { useFeedback } from "@/composables/useFeedback";
+
+const props = defineProps<{
+  entityType: string;
+  entityId: string;
+  entityTitle?: string;
+}>();
+
+const user = useUser();
+const { isSubmitting, submitFeedback } = useFeedback();
+
+const feedbackType = ref("");
+const message = ref("");
+const email = ref("");
+const popoverOpen = ref(false);
+const modalOpen = ref(false);
+
+const feedbackTypeOptions = [
+  { label: "Suggest improvement", value: "improve" },
+  { label: "Missing data", value: "missing_data" },
+  { label: "Wrong information", value: "wrong_info" },
+  { label: "Outdated information", value: "outdated" },
+  { label: "Other", value: "other" },
+];
+
+const userEmail = computed(() => {
+  const u = user.value;
+  if (!u) return "";
+  return ((u as Record<string, unknown>).email as string) || "";
+});
+
+if (userEmail.value) {
+  email.value = userEmail.value;
+}
+
+watchEffect(() => {
+  if (userEmail.value && !email.value) {
+    email.value = userEmail.value;
+  }
+});
+
+const canSubmit = computed(
+  () => feedbackType.value && message.value.trim() && email.value.trim(),
+);
+
+function resetForm() {
+  feedbackType.value = "";
+  message.value = "";
+  email.value = userEmail.value;
+}
+
+async function handleSubmit() {
+  const success = await submitFeedback({
+    entity_type: props.entityType,
+    entity_id: props.entityId,
+    entity_title: props.entityTitle,
+    feedback_type: feedbackType.value,
+    message: message.value,
+    submitter_email: email.value,
+  });
+  if (success) {
+    resetForm();
+    popoverOpen.value = false;
+    modalOpen.value = false;
+  }
+}
+</script>
+
+<template>
+  <div class="fixed right-6 bottom-6 z-40">
+    <div class="hidden lg:block">
+      <UPopover
+        v-model:open="popoverOpen"
+        :content="{ side: 'top', align: 'end', sideOffset: 8 }"
+      >
+        <UButton
+          icon="i-material-symbols:rate-review-outline"
+          size="xl"
+          square
+          color="neutral"
+          variant="ghost"
+          class="feedback-btn shadow-lg"
+          :ui="{ base: 'rounded-full' }"
+          :style="{
+            background:
+              'linear-gradient(135deg, var(--color-cold-purple), color-mix(in srgb, var(--color-cold-purple) 60%, var(--color-cold-green)))',
+            color: 'white',
+            width: '3.5rem',
+            height: '3.5rem',
+            justifyContent: 'center',
+          }"
+          aria-label="Give feedback"
+        />
+
+        <template #content>
+          <div class="w-80 p-4">
+            <h3 class="mb-3 text-base font-semibold">Give Feedback</h3>
+
+            <div class="flex flex-col gap-3">
+              <UFormField label="Feedback type">
+                <USelect
+                  v-model="feedbackType"
+                  :items="feedbackTypeOptions"
+                  placeholder="Select type..."
+                  class="w-full"
+                />
+              </UFormField>
+
+              <UFormField label="Message">
+                <UTextarea
+                  v-model="message"
+                  placeholder="Describe what you'd like to report..."
+                  :rows="3"
+                  class="w-full"
+                />
+              </UFormField>
+
+              <UFormField label="Email">
+                <UInput
+                  v-model="email"
+                  type="email"
+                  placeholder="your@email.com"
+                  class="w-full"
+                />
+              </UFormField>
+
+              <UButton
+                block
+                :loading="isSubmitting"
+                :disabled="!canSubmit"
+                @click="handleSubmit"
+              >
+                Submit Feedback
+              </UButton>
+            </div>
+          </div>
+        </template>
+      </UPopover>
+    </div>
+
+    <UButton
+      icon="i-material-symbols:rate-review-outline"
+      size="xl"
+      square
+      color="neutral"
+      variant="ghost"
+      class="feedback-btn shadow-lg lg:hidden"
+      :ui="{ base: 'rounded-full' }"
+      :style="{
+        background:
+          'linear-gradient(135deg, var(--color-cold-purple), color-mix(in srgb, var(--color-cold-purple) 60%, var(--color-cold-green)))',
+        color: 'white',
+        width: '3.5rem',
+        height: '3.5rem',
+        justifyContent: 'center',
+      }"
+      aria-label="Give feedback"
+      @click="modalOpen = true"
+    />
+
+    <UModal v-model:open="modalOpen">
+      <template #content>
+        <div class="p-6">
+          <h3 class="mb-4 text-lg font-semibold">Give Feedback</h3>
+
+          <div class="flex flex-col gap-4">
+            <UFormField label="Feedback type">
+              <USelect
+                v-model="feedbackType"
+                :items="feedbackTypeOptions"
+                placeholder="Select type..."
+                class="w-full"
+              />
+            </UFormField>
+
+            <UFormField label="Message">
+              <UTextarea
+                v-model="message"
+                placeholder="Describe what you'd like to report..."
+                :rows="4"
+                class="w-full"
+              />
+            </UFormField>
+
+            <UFormField label="Email">
+              <UInput
+                v-model="email"
+                type="email"
+                placeholder="your@email.com"
+                class="w-full"
+              />
+            </UFormField>
+
+            <div class="flex justify-end gap-2">
+              <UButton
+                variant="ghost"
+                color="neutral"
+                @click="modalOpen = false"
+              >
+                Cancel
+              </UButton>
+              <UButton
+                :loading="isSubmitting"
+                :disabled="!canSubmit"
+                @click="handleSubmit"
+              >
+                Submit Feedback
+              </UButton>
+            </div>
+          </div>
+        </div>
+      </template>
+    </UModal>
+  </div>
+</template>
+
+<style scoped>
+.feedback-btn {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.feedback-btn:hover {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-cold-purple) 85%, #000),
+    color-mix(in srgb, var(--color-cold-purple) 50%, var(--color-cold-green))
+  ) !important;
+  transform: scale(1.05);
+}
+</style>

@@ -126,6 +126,12 @@
       :title-candidates="[legalInstrument?.['Title (in English)']]"
       fallback="Domestic Instrument"
     />
+
+    <EntityFeedback
+      entity-type="domestic_instrument"
+      :entity-id="instrumentId"
+      :entity-title="legalInstrument?.['Title (in English)'] as string"
+    />
   </div>
 </template>
 
@@ -141,6 +147,7 @@ import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useDomesticInstrument } from "@/composables/useRecordDetails";
 import { getSortedProvisionIds } from "@/utils/provision-sorting";
 import { domesticInstrumentLabels } from "@/config/labels";

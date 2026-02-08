@@ -28,7 +28,7 @@ export function useApiClient() {
       method = "POST",
       timeout = 30000,
       responseType = "json",
-      ...otherOptions
+      headers: customHeaders,
     } = options;
 
     const controller = new AbortController();
@@ -39,11 +39,10 @@ export function useApiClient() {
         method,
         headers: {
           "Content-Type": "application/json",
-          ...otherOptions.headers,
+          ...customHeaders,
         },
         signal: controller.signal,
         body: body ? JSON.stringify(body) : undefined,
-        ...otherOptions,
       };
 
       const proxiedPath = `/api/proxy/${endpoint.replace(/^\/+/, "")}`;

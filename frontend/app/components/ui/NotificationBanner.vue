@@ -1,19 +1,24 @@
 <template>
-  <div class="notification-banner result-value-small">
-    <UIcon :name="icon" size="18" class="icon-adjust" />
-    <span v-if="notificationBannerMessage && notificationBannerMessage.length">
-      {{ notificationBannerMessage }}
-    </span>
-    <span v-else-if="jurisdictionName">
-      {{ fallbackMessage.replace("{jurisdiction}", jurisdictionName) }}
-      <NuxtLink to="/contact" class="contact-link">Contact us</NuxtLink> if you
-      want to contribute.
-    </span>
-    <span v-else>{{ fallbackMessage }}</span>
-  </div>
+  <UAlert :icon="icon" color="neutral" variant="subtle" class="mb-6">
+    <template #description>
+      <span
+        v-if="notificationBannerMessage && notificationBannerMessage.length"
+      >
+        {{ notificationBannerMessage }}
+      </span>
+      <span v-else-if="jurisdictionName">
+        {{ fallbackMessage.replace("{jurisdiction}", jurisdictionName) }}
+        <NuxtLink to="/contact" class="underline hover:opacity-80"
+          >Contact us</NuxtLink
+        >
+        if you want to contribute.
+      </span>
+      <span v-else>{{ fallbackMessage }}</span>
+    </template>
+  </UAlert>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   jurisdictionName: {
     type: String,
@@ -28,7 +33,7 @@ defineProps({
   fallbackMessage: {
     type: String,
     required: false,
-    default: "We don’t have data for {jurisdiction}.",
+    default: "We don't have data for {jurisdiction}.",
   },
   icon: {
     type: String,
@@ -37,17 +42,3 @@ defineProps({
   },
 });
 </script>
-
-<style scoped>
-.notification-banner {
-  background: var(--color-cold-cream);
-  padding: 1rem;
-  outline: 1px solid var(--color-cold-cream);
-  margin-bottom: 24px !important;
-}
-
-.icon-adjust {
-  transform: translateY(3px);
-  margin-right: 4px;
-}
-</style>

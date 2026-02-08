@@ -179,6 +179,12 @@
       ]"
       fallback="Court Decision"
     />
+
+    <EntityFeedback
+      entity-type="court_decision"
+      :entity-id="courtDecisionId"
+      :entity-title="courtDecision?.['Case Title'] as string"
+    />
   </div>
 </template>
 
@@ -193,6 +199,7 @@ import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
+import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useCourtDecision } from "@/composables/useRecordDetails";
 import { courtDecisionLabels } from "@/config/labels";
 import { courtDecisionTooltips } from "@/config/tooltips";

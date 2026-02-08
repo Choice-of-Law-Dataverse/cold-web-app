@@ -31,10 +31,32 @@
 
     <!-- Suggestion detail -->
     <div v-else-if="suggestion">
+      <!-- Edit suggestion banner -->
+      <UAlert
+        v-if="isEditSuggestion"
+        color="warning"
+        variant="subtle"
+        icon="i-heroicons-pencil-square"
+        title="Edit of existing record"
+        class="mb-6"
+      >
+        <template #description>
+          This suggestion proposes changes to an existing record.
+          <NuxtLink
+            :to="`/${getCategoryEntityRoute(category)}/${suggestion.payload.edit_entity_id}`"
+            class="font-medium underline hover:opacity-80"
+          >
+            View original record
+          </NuxtLink>
+        </template>
+      </UAlert>
+
       <!-- Metadata card -->
       <UCard class="mb-6" :ui="{ body: 'p-0' }">
         <template #header>
-          <h2 class="text-xl font-semibold">Submission Information</h2>
+          <h2 class="px-6 py-4 text-xl font-semibold">
+            Submission Information
+          </h2>
         </template>
 
         <div class="flex flex-col gap-4 px-6 py-8">
@@ -68,7 +90,7 @@
       <!-- Data fields card -->
       <UCard class="mb-6" :ui="{ body: 'p-0' }">
         <template #header>
-          <h2 class="text-xl font-semibold">Submitted Data</h2>
+          <h2 class="px-6 py-4 text-xl font-semibold">Submitted Data</h2>
         </template>
 
         <div class="flex flex-col gap-4 px-6 py-8">
@@ -94,6 +116,7 @@
         <!-- Approve/Reject - only show for pending status -->
         <template v-if="isPending">
           <UButton
+            v-if="!isEditSuggestion"
             color="success"
             size="lg"
             :loading="approving"
@@ -102,6 +125,15 @@
           >
             Approve
           </UButton>
+          <UAlert
+            v-else
+            color="info"
+            variant="subtle"
+            icon="i-heroicons-information-circle"
+            title="Approval not available"
+            description="Approval for edit suggestions is not yet supported. You can still reject this suggestion."
+            class="flex-1"
+          />
           <UButton
             color="error"
             size="lg"
@@ -144,59 +176,65 @@
 
     <!-- Success modal -->
     <UModal v-model:open="showSuccessModal">
-      <UCard>
-        <template #header>
-          <h3 class="text-lg font-semibold">Success</h3>
-        </template>
-        <p class="text-gray-700">{{ successMessage }}</p>
-        <template #footer>
-          <div class="flex justify-end">
-            <UButton @click="goToList"> Back to List </UButton>
-          </div>
-        </template>
-      </UCard>
+      <template #content>
+        <UCard>
+          <template #header>
+            <h3 class="text-lg font-semibold">Success</h3>
+          </template>
+          <p class="text-gray-700">{{ successMessage }}</p>
+          <template #footer>
+            <div class="flex justify-end">
+              <UButton @click="goToList"> Back to List </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
     </UModal>
 
     <!-- Error modal -->
     <UModal v-model:open="showErrorModal">
-      <UCard>
-        <template #header>
-          <h3 class="text-lg font-semibold text-red-600">Error</h3>
-        </template>
-        <p class="text-gray-700">{{ errorMessage }}</p>
-        <template #footer>
-          <div class="flex justify-end">
-            <UButton @click="showErrorModal = false"> Close </UButton>
-          </div>
-        </template>
-      </UCard>
+      <template #content>
+        <UCard>
+          <template #header>
+            <h3 class="text-lg font-semibold text-red-600">Error</h3>
+          </template>
+          <p class="text-gray-700">{{ errorMessage }}</p>
+          <template #footer>
+            <div class="flex justify-end">
+              <UButton @click="showErrorModal = false"> Close </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
     </UModal>
 
     <!-- Delete confirmation modal -->
     <UModal v-model:open="showDeleteConfirm">
-      <UCard>
-        <template #header>
-          <h3 class="text-lg font-semibold text-red-600">Confirm Delete</h3>
-        </template>
-        <p class="text-gray-700">
-          Are you sure you want to permanently delete this analysis? This action
-          cannot be undone.
-        </p>
-        <template #footer>
-          <div class="flex justify-end gap-2">
-            <UButton
-              variant="ghost"
-              color="neutral"
-              @click="showDeleteConfirm = false"
-            >
-              Cancel
-            </UButton>
-            <UButton color="error" :loading="deleting" @click="handleDelete">
-              Delete
-            </UButton>
-          </div>
-        </template>
-      </UCard>
+      <template #content>
+        <UCard>
+          <template #header>
+            <h3 class="text-lg font-semibold text-red-600">Confirm Delete</h3>
+          </template>
+          <p class="text-gray-700">
+            Are you sure you want to permanently delete this analysis? This
+            action cannot be undone.
+          </p>
+          <template #footer>
+            <div class="flex justify-end gap-2">
+              <UButton
+                variant="ghost"
+                color="neutral"
+                @click="showDeleteConfirm = false"
+              >
+                Cancel
+              </UButton>
+              <UButton color="error" :loading="deleting" @click="handleDelete">
+                Delete
+              </UButton>
+            </div>
+          </template>
+        </UCard>
+      </template>
     </UModal>
   </div>
 </template>
@@ -252,6 +290,21 @@ const isPending = computed(() => {
   return !status || status === "pending";
 });
 
+const isEditSuggestion = computed(
+  () => !!suggestion.value?.payload?.edit_entity_id,
+);
+
+const getCategoryEntityRoute = (cat: string): string => {
+  const mapping: Record<string, string> = {
+    "court-decisions": "court-decision",
+    "domestic-instruments": "domestic-instrument",
+    "regional-instruments": "regional-instrument",
+    "international-instruments": "international-instrument",
+    literature: "literature",
+  };
+  return mapping[cat] ?? cat;
+};
+
 const filteredPayload = computed(() => {
   if (!suggestion.value?.payload) return {};
 
@@ -276,6 +329,7 @@ const filteredPayload = computed(() => {
     "raw_data",
     "draft_id",
     "notes",
+    "edit_entity_id",
   ]);
 
   const filtered: Record<string, unknown> = {};

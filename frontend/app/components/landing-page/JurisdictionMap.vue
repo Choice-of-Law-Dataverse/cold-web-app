@@ -175,6 +175,7 @@ const updateSelectedRegion = (option: RegionOption) => {
   width: 100%;
   position: relative;
   overflow: hidden;
+  isolation: isolate;
 }
 
 @media (max-width: 640px) {

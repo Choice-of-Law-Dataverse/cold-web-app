@@ -78,6 +78,12 @@
       :title-candidates="[answerData?.Jurisdictions, answerData?.Question]"
       fallback="Question"
     />
+
+    <EntityFeedback
+      entity-type="question"
+      :entity-id="answerId"
+      :entity-title="answerData?.Question as string"
+    />
   </div>
 </template>
 
@@ -90,6 +96,7 @@ import CourtDecisionRenderer from "@/components/legal/CourtDecisionRenderer.vue"
 import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";
 import QuestionJurisdictions from "@/components/ui/QuestionJurisdictions.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useAnswer } from "@/composables/useRecordDetails";
 import LastModified from "@/components/ui/LastModified.vue";
 import { questionLabels } from "@/config/labels";

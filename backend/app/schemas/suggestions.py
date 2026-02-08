@@ -42,6 +42,9 @@ class SuggestionResponse(BaseModel):
 
 
 class CourtDecisionSuggestion(BaseModel):
+    # Edit mode: if set, this suggestion is an edit of an existing entity
+    edit_entity_id: str | None = Field(None, description="ID of the existing entity being edited (None for new submissions)")
+
     # Required
     case_citation: str = Field(..., description="Case Citation")
     date_publication: date = Field(..., description="Date [of Publication]")
@@ -94,6 +97,9 @@ class CourtDecisionSuggestion(BaseModel):
 
 
 class DomesticInstrumentSuggestion(BaseModel):
+    # Edit mode: if set, this suggestion is an edit of an existing entity
+    edit_entity_id: str | None = Field(None, description="ID of the existing entity being edited (None for new submissions)")
+
     # Required
     jurisdiction_link: str = Field(..., description="Jurisdiction Link")
     official_title: str = Field(
@@ -149,6 +155,9 @@ class DomesticInstrumentSuggestion(BaseModel):
 
 
 class RegionalInstrumentSuggestion(BaseModel):
+    # Edit mode: if set, this suggestion is an edit of an existing entity
+    edit_entity_id: str | None = Field(None, description="ID of the existing entity being edited (None for new submissions)")
+
     # Required
     abbreviation: str = Field(..., description="Abbreviation")
 
@@ -176,6 +185,9 @@ class RegionalInstrumentSuggestion(BaseModel):
 
 
 class InternationalInstrumentSuggestion(BaseModel):
+    # Edit mode: if set, this suggestion is an edit of an existing entity
+    edit_entity_id: str | None = Field(None, description="ID of the existing entity being edited (None for new submissions)")
+
     # Required
     name: str = Field(..., description="Name")
     url: str = Field(..., description="URL")
@@ -199,6 +211,9 @@ class InternationalInstrumentSuggestion(BaseModel):
 
 
 class LiteratureSuggestion(BaseModel):
+    # Edit mode: if set, this suggestion is an edit of an existing entity
+    edit_entity_id: str | None = Field(None, description="ID of the existing entity being edited (None for new submissions)")
+
     # All optional
     jurisdiction: str | None = Field(None, description="Jurisdiction")
     publication_year: int | None = Field(None, description="Publication Year")

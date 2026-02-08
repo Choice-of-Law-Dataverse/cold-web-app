@@ -1,7 +1,7 @@
 # ============================================
 # Build Stage - Contains secrets (discarded)
 # ============================================
-FROM node:22-alpine AS builder
+FROM node:22.18-alpine AS builder
 
 # Build arguments for Auth0 configuration
 ARG AUTH0_AUDIENCE
@@ -35,7 +35,7 @@ RUN NODE_OPTIONS="--max_old_space_size=4096" npm run build
 # ============================================
 # Production Stage - No secrets, only output
 # ============================================
-FROM node:22-alpine
+FROM node:22.18-alpine
 
 # Set working directory
 WORKDIR /app

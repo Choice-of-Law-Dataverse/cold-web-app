@@ -4,7 +4,7 @@ Nuxt 3 frontend application for CoLD. This file provides essential context for A
 
 ## Tech Stack
 
-- **Framework**: Nuxt 3 (Vue.js SSR meta-framework)
+- **Framework**: Nuxt 3 (Vue.js SSR meta-framework, SSR enabled)
 - **Language**: TypeScript (strict mode, never JavaScript)
 - **Styling**: TailwindCSS + SCSS
 - **Components**: Nuxt UI library
@@ -12,6 +12,18 @@ Nuxt 3 frontend application for CoLD. This file provides essential context for A
 - **Testing**: Vitest
 - **Formatting**: Prettier
 - **Linting**: ESLint
+- **Auth**: Auth0 (@auth0/auth0-nuxt)
+- **Maps**: Leaflet (@nuxtjs/leaflet)
+- **Content**: Nuxt Content (@nuxt/content)
+
+### Key Configuration Notes
+
+- **Auto-imports**: Restricted to `vue` preset only (configured in nuxt.config.ts)
+  - Vue/Nuxt built-ins (ref, computed, useRoute, etc.) are auto-imported
+  - Custom components, composables, utils, and third-party libraries require explicit imports
+- **Color mode**: Light mode only (no dark mode)
+- **Type checking**: Disabled in nuxt.config (typeCheck: false) - run `npm run check` separately
+- **Runtime config**: Uses environment variables for API, Auth0, R2 storage, and Logfire
 
 ## Environment Setup
 

@@ -5,7 +5,9 @@ export type ModerationStatus =
   | "completed"
   | "failed"
   | "approved"
-  | "rejected";
+  | "rejected"
+  | "reviewed"
+  | "dismissed";
 
 export type BadgeColor =
   | "info"
@@ -32,6 +34,10 @@ export function getStatusBadgeColor(status?: string): BadgeColor {
       return "success";
     case "rejected":
       return "error";
+    case "reviewed":
+      return "success";
+    case "dismissed":
+      return "neutral";
     default:
       return "neutral";
   }
@@ -56,6 +62,10 @@ export function getStatusLabel(status?: string): string {
       return "Approved";
     case "rejected":
       return "Rejected";
+    case "reviewed":
+      return "Reviewed";
+    case "dismissed":
+      return "Dismissed";
     default:
       return status || "Unknown";
   }

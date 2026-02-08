@@ -84,6 +84,12 @@
       :title-candidates="[literature?.Title as string]"
       fallback="Literature"
     />
+
+    <EntityFeedback
+      entity-type="literature"
+      :entity-id="id"
+      :entity-title="literature?.Title as string"
+    />
   </div>
 </template>
 
@@ -96,6 +102,7 @@ import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import { generateBibTeX, sanitizeFilename, downloadFile } from "@/utils/bibtex";
 import { literatureLabels } from "@/config/labels";

@@ -14,6 +14,7 @@ export const MODERATION_CATEGORIES: CategoryConfig[] = [
   { id: "regional-instruments", label: "Regional Instruments" },
   { id: "international-instruments", label: "International Instruments" },
   { id: "literature", label: "Literature" },
+  { id: "feedback", label: "Entity Feedback" },
 ];
 
 export const CATEGORY_LABELS: Record<string, string> = Object.fromEntries(

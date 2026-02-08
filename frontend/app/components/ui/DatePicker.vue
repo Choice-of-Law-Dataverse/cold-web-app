@@ -69,6 +69,13 @@ function onDayClick(_: Date, event: MouseEvent): void {
   --vc-gray-900: rgb(var(--color-gray-900));
 }
 
+.vc-nav-popover-container {
+  isolation: isolate;
+  background: white;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
+}
+
 .vc-primary {
   --vc-accent-50: rgb(var(--color-primary-50));
   --vc-accent-100: rgb(var(--color-primary-100));

@@ -3,7 +3,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
 
   // Check if user is logged in
   if (!session.value) {
-    return navigateTo(`/auth/login?returnTo=${to.path}`, { external: true });
+    return navigateTo(
+      `/auth/login?returnTo=${encodeURIComponent(to.fullPath)}`,
+      { external: true },
+    );
   }
 
   const roles = session.value["https://cold.global/roles"] || [];

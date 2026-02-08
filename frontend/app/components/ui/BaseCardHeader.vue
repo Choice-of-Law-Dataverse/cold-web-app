@@ -158,15 +158,8 @@
               <div
                 class="actions-container hidden flex-row items-center gap-1.5 sm:flex"
               >
-                <!-- All actions except the International Instrument Edit link -->
                 <template
-                  v-for="(action, index) in suggestEditActions.filter(
-                    (a) =>
-                      !(
-                        props.cardType === 'International Instrument' &&
-                        a.label === 'Edit'
-                      ),
-                  )"
+                  v-for="(action, index) in suggestEditActions"
                   :key="index"
                 >
                   <button
@@ -205,41 +198,7 @@
                     />
                     {{ action.label }}
                   </button>
-                  <NuxtLink
-                    v-else
-                    class="action-button"
-                    :class="action.class"
-                    v-bind="action.to ? { to: action.to } : {}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <UIcon
-                      :name="action.icon"
-                      class="inline-block text-[1.2em]"
-                    />
-                    {{ action.label }}
-                  </NuxtLink>
                 </template>
-                <!-- The Edit link for International Instrument only, no target/rel -->
-                <NuxtLink
-                  v-for="(action, index) in suggestEditActions.filter(
-                    (a) =>
-                      props.cardType === 'International Instrument' &&
-                      a.label === 'Edit',
-                  )"
-                  :key="'edit-' + index"
-                  class="action-button"
-                  :class="action.class"
-                  v-bind="action.to ? { to: action.to } : {}"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <UIcon
-                    :name="action.icon"
-                    class="inline-block text-[1.2em]"
-                  />
-                  {{ action.label }}
-                </NuxtLink>
               </div>
             </template>
             <template v-else-if="showOpenLink">
@@ -423,12 +382,6 @@ const suggestEditActions = computed(() => {
     icon: "i-material-symbols:print-outline",
   });
 
-  const editLink = suggestEditLink.value;
-  actions.push({
-    label: "Edit",
-    icon: "i-material-symbols:edit-square-outline",
-    to: editLink,
-  });
   return actions;
 });
 
@@ -452,23 +405,8 @@ const mobileMenuItems = computed(() => {
         icon: "i-material-symbols:print-outline",
         onSelect: printPage,
       },
-      {
-        label: "Suggest Edit",
-        icon: "i-material-symbols:edit-square-outline",
-        onSelect: () => {
-          window.open(suggestEditLink.value, "_blank");
-        },
-      },
     ],
   ];
-});
-
-const suggestEditLink = ref("");
-const airtableFormID = "appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form";
-
-onMounted(() => {
-  const currentURL = window.location.href;
-  suggestEditLink.value = `https://airtable.com/${airtableFormID}?prefill_URL=${encodeURIComponent(currentURL)}&hide_URL=true`;
 });
 
 const legalFamily = computed(() => {

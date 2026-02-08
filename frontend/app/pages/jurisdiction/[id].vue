@@ -123,6 +123,12 @@
       :title-candidates="[jurisdictionData?.Name as string]"
       fallback="Country Report"
     />
+
+    <EntityFeedback
+      entity-type="jurisdiction"
+      :entity-id="jurisdictionId"
+      :entity-title="jurisdictionData?.Name as string"
+    />
   </div>
 </template>
 
@@ -136,6 +142,7 @@ import RelatedCourtDecisions from "@/components/sources/RelatedCourtDecisions.vu
 import RelatedDomesticInstruments from "@/components/sources/RelatedDomesticInstruments.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
+import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useJurisdiction } from "@/composables/useJurisdictions";
 import { useSpecialists } from "@/composables/useSpecialists";
 import { jurisdictionLabels } from "@/config/labels";
