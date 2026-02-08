@@ -169,10 +169,3 @@ function handleSubmit() {
   }
 }
 </script>
-
-<style scoped>
-/* Local purple heading for the Submit action */
-.submit-heading {
-  color: var(--color-cold-purple) !important;
-}
-</style>
