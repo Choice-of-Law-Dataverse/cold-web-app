@@ -580,7 +580,11 @@ a {
 }
 
 .bg-purple-active {
-  background-color: color-mix(in srgb, var(--color-cold-purple) 5%, white) !important;
+  background-color: color-mix(
+    in srgb,
+    var(--color-cold-purple) 5%,
+    white
+  ) !important;
 }
 
 .suggestions {
