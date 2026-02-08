@@ -14,7 +14,7 @@
             variant="outline"
             color="neutral"
             size="xs"
-            icon="i-material-symbols:verified-outline"
+            trailing-icon="i-material-symbols:verified-outline"
             @click.prevent="isCiteOpen = true"
           >
             Cite
@@ -23,7 +23,7 @@
             variant="outline"
             color="neutral"
             size="xs"
-            icon="i-material-symbols:data-object"
+            trailing-icon="i-material-symbols:data-object"
             @click.prevent="exportJSON"
           >
             JSON
@@ -32,7 +32,7 @@
             variant="outline"
             color="neutral"
             size="xs"
-            icon="i-material-symbols:print-outline"
+            trailing-icon="i-material-symbols:print-outline"
             @click.prevent="printPage"
           >
             Print

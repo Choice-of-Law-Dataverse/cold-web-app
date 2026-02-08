@@ -82,24 +82,6 @@
   --nav-height: 5rem;
   --nav-height-scrolled: 3.5rem;
 
-  /* Teal soft button colors */
-  --color-teal-soft-bg: color-mix(in srgb, var(--color-cold-teal) 6%, white);
-  --color-teal-soft-bg-hover: color-mix(
-    in srgb,
-    var(--color-cold-teal) 12%,
-    white
-  );
-  --color-teal-soft-border: color-mix(
-    in srgb,
-    var(--color-cold-teal) 20%,
-    transparent
-  );
-  --color-teal-soft-border-hover: color-mix(
-    in srgb,
-    var(--color-cold-teal) 35%,
-    transparent
-  );
-
   /* Gradient variables - reusable linear gradient definitions */
   /* Purple-Green gradients with white */
   --gradient-subtle: linear-gradient(
@@ -408,17 +390,52 @@ li::marker {
   background: var(--gradient-subtle-emphasis);
 }
 
-.label-jurisdiction:focus-visible {
-  outline: 2px solid var(--color-cold-purple);
-  outline-offset: 2px;
-}
-
 .label-jurisdiction .flag-wrapper {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
   width: 1rem;
+  overflow: hidden;
+  transition:
+    width 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.label-jurisdiction:hover .flag-wrapper {
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.label-jurisdiction::after {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 1rem;
+  background-color: currentColor;
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m12 5 7 7-7 7'/%3E%3C/svg%3E");
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m12 5 7 7-7 7'/%3E%3C/svg%3E");
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  opacity: 0;
+  transition:
+    width 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.label-jurisdiction:hover::after {
+  width: 1rem;
+  opacity: 1;
+}
+
+.label-jurisdiction:focus-visible {
+  outline: 2px solid var(--color-cold-purple);
+  outline-offset: 2px;
 }
 
 .label-jurisdiction .item-flag {
@@ -1092,7 +1109,83 @@ button.cold-toggle-btn[aria-pressed="true"] {
   }
 }
 
-/* External link button styling now handled by UButton neutral+subtle variant in app.config.ts */
+/* Action button - for internal actions (cite, json, print, edit, copy, download) */
+.action-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  transition: all;
+  color: var(--color-cold-night);
+  background: white;
+  border: 1.5px solid
+    color-mix(in srgb, var(--color-cold-night) 25%, transparent);
+  cursor: pointer;
+}
+
+.action-button:hover {
+  background: var(--color-cold-night);
+  color: white;
+  border-color: var(--color-cold-night);
+}
+
+.action-button:focus-visible {
+  outline: 2px solid var(--color-cold-purple);
+  outline-offset: 2px;
+}
+
+.action-button svg,
+.action-button .iconify {
+  font-size: 1.1em;
+  transition: transform 0.15s ease;
+}
+
+.action-button:hover svg,
+.action-button:hover .iconify {
+  transform: scale(1.05);
+}
+
+/* External link button - for links that open in new tab (link, pdf) */
+.action-link-external {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  transition: all;
+  color: var(--color-cold-teal);
+  background: color-mix(in srgb, var(--color-cold-teal) 6%, white);
+  border: 1px solid color-mix(in srgb, var(--color-cold-teal) 20%, transparent);
+}
+
+.action-link-external:hover {
+  background: color-mix(in srgb, var(--color-cold-teal) 12%, white);
+  border-color: color-mix(in srgb, var(--color-cold-teal) 35%, transparent);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+}
+
+.action-link-external:focus-visible {
+  outline: 2px solid var(--color-cold-teal);
+  outline-offset: 2px;
+}
+
+.action-link-external svg,
+.action-link-external .iconify {
+  font-size: 1.1em;
+  transition: transform 0.15s ease;
+}
+
+.action-link-external:hover svg,
+.action-link-external:hover .iconify {
+  transform: scale(1.05);
+}
 
 /* External link icon for markdown content - keeps icon inline with link text */
 .external-link-icon {
@@ -1359,7 +1452,35 @@ button.cold-toggle-btn[aria-pressed="true"] {
   color: rgb(107 114 128);
 }
 
-/* Landing item button base styling handled by UButton neutral+soft variant in app.config.ts */
+.landing-item-button {
+  position: relative;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  border-radius: 0.5rem;
+  text-align: left;
+  font-weight: 500;
+  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  transition: all 150ms;
+  background: var(--gradient-subtle);
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  padding-left: 1.25rem;
+  width: 100%;
+  overflow: hidden;
+}
+
+.landing-item-button:hover {
+  box-shadow:
+    0 1px 3px 0 rgb(0 0 0 / 0.1),
+    0 1px 2px -1px rgb(0 0 0 / 0.1);
+  background: var(--gradient-subtle-emphasis);
+}
+
+.landing-item-button:focus-visible {
+  outline: 2px solid var(--color-cold-purple);
+  outline-offset: 2px;
+}
 
 .landing-item-button .flag-wrapper {
   display: inline-flex;
@@ -1891,6 +2012,7 @@ button.cold-toggle-btn[aria-pressed="true"] {
     0 1px 3px 0 rgb(0 0 0 / 0.1),
     0 1px 2px -1px rgb(0 0 0 / 0.1);
   background: var(--gradient-subtle-emphasis);
+  margin-right: -0.75rem;
 }
 
 .link-chip--neutral::after {
@@ -1916,14 +2038,20 @@ button.cold-toggle-btn[aria-pressed="true"] {
 }
 
 .link-chip--neutral:hover::after {
-  width: 12px;
-  margin-left: 4px;
+  width: 10px;
+  margin-left: 2px;
   opacity: 1;
 }
 
 .link-chip--neutral:focus-visible {
   outline: 2px solid var(--color-cold-purple);
   outline-offset: 2px;
+}
+
+.link-chip--neutral > span {
+  overflow: visible;
+  white-space: normal;
+  text-overflow: unset;
 }
 
 /* Non-interactive chip variant (for display-only items like specialists) */

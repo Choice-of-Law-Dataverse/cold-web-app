@@ -8,7 +8,7 @@
       class="label-jurisdiction label-link jurisdiction-label-link cursor-pointer"
       :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString).replace(/%20/g, '+')}`"
     >
-      <span class="hover-flag">
+      <span class="flag-wrapper">
         <JurisdictionFlag
           :iso3="getJurisdictionISO(jurisdictionString)"
           class="flag-icon"
@@ -231,15 +231,24 @@ a {
 .jurisdiction-label-link {
   font-weight: 600 !important;
 
-  .hover-flag {
-    margin-right: 0.375rem;
-    margin-bottom: 0.125rem;
+  .flag-wrapper {
+    width: 1.125rem;
   }
 
   .flag-icon {
     height: 11px;
     width: auto;
   }
+}
+
+.jurisdiction-label-link::after {
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+  height: 0.75rem;
+}
+
+.jurisdiction-label-link:hover::after {
+  width: 1.125rem;
 }
 
 .label-court-decision,

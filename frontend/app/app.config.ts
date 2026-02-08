@@ -2,6 +2,7 @@ export default defineAppConfig({
   ui: {
     colors: {
       primary: "violet",
+      secondary: "cyan",
       neutral: "slate",
     },
     button: {
@@ -9,14 +10,20 @@ export default defineAppConfig({
         {
           color: "neutral" as const,
           variant: "outline" as const,
-          class:
-            "cursor-pointer uppercase py-[0.375rem] px-3 ring ring-inset ring-accented text-default bg-default hover:bg-inverted hover:text-inverted hover:ring-inverted active:bg-inverted active:text-inverted disabled:bg-default aria-disabled:bg-default focus:outline-none focus-visible:ring-2 focus-visible:ring-inverted",
+          class: {
+            base: "group cursor-pointer uppercase py-[0.375rem] px-3 hover:bg-inverted hover:text-inverted hover:ring-inverted active:bg-inverted active:text-inverted",
+            trailingIcon:
+              "w-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100",
+          },
         },
         {
-          color: "neutral" as const,
+          color: "secondary" as const,
           variant: "subtle" as const,
-          class:
-            "cursor-pointer uppercase py-[0.375rem] px-3 ring-0 !text-[var(--color-cold-teal)] !bg-[var(--color-teal-soft-bg)] border border-[var(--color-teal-soft-border)] hover:!bg-[var(--color-teal-soft-bg-hover)] hover:border-[var(--color-teal-soft-border-hover)] hover:shadow-sm focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-cold-teal)]",
+          class: {
+            base: "group cursor-pointer uppercase py-[0.375rem] px-3 ring-0 bg-secondary/5 hover:bg-secondary/10 border border-secondary/20 hover:border-secondary/35 hover:shadow-sm focus-visible:ring-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-secondary",
+            trailingIcon:
+              "w-0 opacity-0 transition-all duration-200 group-hover:w-4 group-hover:opacity-100",
+          },
         },
         {
           color: "neutral" as const,
