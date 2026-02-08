@@ -1526,6 +1526,16 @@ button.cold-toggle-btn[aria-pressed="true"] {
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.05);
 }
 
+.sticky-col {
+  background: white;
+  box-shadow: 1rem 0 0 0 white;
+}
+
+.hover-row--emphasis:hover > .sticky-col {
+  background: inherit;
+  box-shadow: none;
+}
+
 /* Label link pattern - color inherits from label type, search icon on hover */
 .label-link {
   font-weight: 500;
