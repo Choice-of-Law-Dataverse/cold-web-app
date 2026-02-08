@@ -16,10 +16,9 @@
             v-for="(decision, index) in leadingCases.slice(0, 3)"
             :key="index"
             :to="`/court-decision/${decision.ID}`"
-            variant="ghost"
+            variant="soft"
             color="neutral"
-            class="landing-item-button type-court-decision"
-            :ui="{ base: 'flex rounded-lg', label: 'contents' }"
+            class="type-court-decision"
           >
             <div class="flag-wrapper">
               <JurisdictionFlag

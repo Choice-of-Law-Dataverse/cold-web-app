@@ -1092,43 +1092,7 @@ button.cold-toggle-btn[aria-pressed="true"] {
   }
 }
 
-/* External link button - for links that open in new tab (link, pdf) */
-.action-link-external {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  border-radius: 0.375rem;
-  padding: 0.375rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  transition: all;
-  color: var(--color-cold-teal);
-  background: color-mix(in srgb, var(--color-cold-teal) 6%, white);
-  border: 1px solid color-mix(in srgb, var(--color-cold-teal) 20%, transparent);
-}
-
-.action-link-external:hover {
-  background: color-mix(in srgb, var(--color-cold-teal) 12%, white);
-  border-color: color-mix(in srgb, var(--color-cold-teal) 35%, transparent);
-  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
-}
-
-.action-link-external:focus-visible {
-  outline: 2px solid var(--color-cold-teal);
-  outline-offset: 2px;
-}
-
-.action-link-external svg,
-.action-link-external .iconify {
-  font-size: 1.1em;
-  transition: transform 0.15s ease;
-}
-
-.action-link-external:hover svg,
-.action-link-external:hover .iconify {
-  transform: scale(1.05);
-}
+/* External link button styling now handled by UButton neutral+subtle variant in app.config.ts */
 
 /* External link icon for markdown content - keeps icon inline with link text */
 .external-link-icon {
@@ -1395,35 +1359,7 @@ button.cold-toggle-btn[aria-pressed="true"] {
   color: rgb(107 114 128);
 }
 
-.landing-item-button {
-  position: relative;
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-  border-radius: 0.5rem;
-  text-align: left;
-  font-weight: 500;
-  box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  transition: all 150ms;
-  background: var(--gradient-subtle);
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  padding-left: 1.25rem;
-  width: 100%;
-  overflow: hidden;
-}
-
-.landing-item-button:hover {
-  box-shadow:
-    0 1px 3px 0 rgb(0 0 0 / 0.1),
-    0 1px 2px -1px rgb(0 0 0 / 0.1);
-  background: var(--gradient-subtle-emphasis);
-}
-
-.landing-item-button:focus-visible {
-  outline: 2px solid var(--color-cold-purple);
-  outline-offset: 2px;
-}
+/* Landing item button base styling handled by UButton neutral+soft variant in app.config.ts */
 
 .landing-item-button .flag-wrapper {
   display: inline-flex;

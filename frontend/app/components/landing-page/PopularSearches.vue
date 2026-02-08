@@ -11,10 +11,8 @@
         <UButton
           v-for="(item, index) in searchSuggestions"
           :key="index"
-          variant="ghost"
+          variant="soft"
           color="neutral"
-          class="landing-item-button"
-          :ui="{ base: 'flex rounded-lg', label: 'contents' }"
           @click="handleSuggestionClick(item.query)"
         >
           <Icon name="i-material-symbols:search" class="item-icon" />

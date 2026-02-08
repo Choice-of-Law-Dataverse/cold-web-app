@@ -18,10 +18,9 @@
             v-for="(instrument, index) in domesticInstruments.slice(0, 9)"
             :key="index"
             :to="`/domestic-instrument/${instrument.ID}`"
-            variant="ghost"
+            variant="soft"
             color="neutral"
-            class="landing-item-button type-instrument"
-            :ui="{ base: 'flex rounded-lg', label: 'contents' }"
+            class="type-instrument"
           >
             <div class="flag-wrapper">
               <JurisdictionFlag
