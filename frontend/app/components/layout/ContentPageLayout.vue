@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard">
+  <UCard>
     <div class="px-6 pt-6">
       <SectionNav v-if="navLinks" :links="navLinks" />
       <SectionNav v-else />

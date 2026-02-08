@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard overflow-hidden" :ui="{ body: '!p-0' }">
+  <UCard :ui="{ body: '!p-0' }">
     <div class="gradient-top-border" />
     <div class="p-4 sm:p-6">
       <!-- Map Container -->

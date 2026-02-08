@@ -1,5 +1,5 @@
 <template>
-  <UCard class="cold-ucard overflow-visible">
+  <UCard :ui="{ root: 'overflow-visible' }">
     <div class="flex flex-col gap-6 md:flex-row md:items-center">
       <h2 class="card-title whitespace-nowrap">Open a Jurisdiction Report</h2>
       <div v-if="isLoading" class="suggestions w-full">

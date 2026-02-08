@@ -38,6 +38,10 @@ export default defineAppConfig({
         input: "border-b border-gray-200 bg-white",
       },
     },
-    card: {},
+    card: {
+      slots: {
+        root: "rounded-lg overflow-hidden relative bg-white border-0 ring-0",
+      },
+    },
   },
 });

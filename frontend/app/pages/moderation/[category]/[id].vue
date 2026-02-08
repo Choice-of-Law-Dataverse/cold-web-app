@@ -32,7 +32,7 @@
     <!-- Suggestion detail -->
     <div v-else-if="suggestion">
       <!-- Metadata card -->
-      <UCard class="cold-ucard-no-padding mb-6">
+      <UCard class="mb-6" :ui="{ body: 'p-0' }">
         <template #header>
           <h2 class="text-xl font-semibold">Submission Information</h2>
         </template>
@@ -66,7 +66,7 @@
       </UCard>
 
       <!-- Data fields card -->
-      <UCard class="cold-ucard-no-padding mb-6">
+      <UCard class="mb-6" :ui="{ body: 'p-0' }">
         <template #header>
           <h2 class="text-xl font-semibold">Submitted Data</h2>
         </template>

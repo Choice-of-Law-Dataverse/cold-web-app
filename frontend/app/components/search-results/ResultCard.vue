@@ -6,7 +6,7 @@
       class="card-link-wrapper"
     >
       <UCard
-        class="cold-ucard overflow-hidden"
+        class="result-card"
         :ui="{
           body: '!p-0',
           header: 'border-b-0 px-6 py-5',
@@ -32,7 +32,7 @@
         </div>
       </UCard>
     </NuxtLink>
-    <UCard v-else class="cold-ucard">
+    <UCard v-else class="result-card">
       <template #header>
         <USkeleton
           class="mt-0.5 mb-0.5 h-5 w-[100px] rounded-none"
@@ -107,13 +107,13 @@ function getCardLink() {
   color: inherit;
 }
 
-.cold-ucard {
+.result-card {
   margin-bottom: 24px;
   transition: box-shadow 0.2s ease;
   cursor: pointer;
 }
 
-.card-link-wrapper:hover .cold-ucard {
+.card-link-wrapper:hover .result-card {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 

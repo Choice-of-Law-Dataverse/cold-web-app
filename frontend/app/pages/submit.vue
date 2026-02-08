@@ -124,7 +124,7 @@ useHead({
 
 <style scoped>
 /* Ensure cards have consistent height */
-:deep(.cold-ucard) {
+:deep([data-slot="root"]) {
   height: 100%;
   display: flex;
   flex-direction: column;

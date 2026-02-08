@@ -765,27 +765,6 @@ li::marker {
   background: var(--gradient-theme);
 }
 
-/* CoLD Card */
-.cold-ucard {
-  overflow-x: hidden;
-  margin-left: 1px;
-  margin-right: 1px;
-  border-radius: 0.5rem;
-  position: relative;
-  background: #fff;
-  border: none !important;
-}
-
-/* When UCard is a flex container, ensure body takes full width */
-.cold-ucard.flex > * {
-  width: 100%;
-}
-
-/* No padding card body - for tables and custom layouts */
-.cold-ucard-no-padding > div {
-  padding: 0 !important;
-}
-
 @keyframes gradient-slide {
   0% {
     background-position: 0% 0%;

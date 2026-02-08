@@ -43,7 +43,7 @@
             ? 'cursor-pointer hover:shadow-lg'
             : 'cursor-not-allowed opacity-60',
         ]"
-        class="cold-ucard-no-padding"
+        :ui="{ body: 'p-0' }"
         @click="handleCardClick(suggestion)"
       >
         <template #header>
