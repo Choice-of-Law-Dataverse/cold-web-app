@@ -32,8 +32,16 @@
                 <UButton
                   to="/search"
                   size="lg"
-                  class="hero-cta"
+                  class="hero-cta group"
                   icon="i-material-symbols:search"
+                  trailing-icon="i-material-symbols:arrow-forward"
+                  :ui="{
+                    base: 'gap-0',
+                    leadingIcon:
+                      'h-5 w-5 mr-2 opacity-100 transition-[width,margin,opacity] duration-200 group-hover:w-0 group-hover:mr-0 group-hover:opacity-0',
+                    trailingIcon:
+                      'h-5 w-0 ml-0 opacity-0 transition-[width,margin,opacity] duration-200 group-hover:w-5 group-hover:ml-2 group-hover:opacity-100',
+                  }"
                 >
                   Start Exploring
                 </UButton>
@@ -41,8 +49,16 @@
                   to="/court-decision/new"
                   size="lg"
                   variant="outline"
-                  class="hero-cta-secondary"
+                  class="hero-cta-secondary group"
                   icon="i-material-symbols:category-search-outline"
+                  trailing-icon="i-material-symbols:arrow-forward"
+                  :ui="{
+                    base: 'gap-0',
+                    leadingIcon:
+                      'h-5 w-5 mr-2 opacity-100 transition-[width,margin,opacity] duration-200 group-hover:w-0 group-hover:mr-0 group-hover:opacity-0',
+                    trailingIcon:
+                      'h-5 w-0 ml-0 opacity-0 transition-[width,margin,opacity] duration-200 group-hover:w-5 group-hover:ml-2 group-hover:opacity-100',
+                  }"
                 >
                   Analyze Case
                 </UButton>
