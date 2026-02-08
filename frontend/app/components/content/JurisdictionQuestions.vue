@@ -95,24 +95,14 @@
               <span class="inline-block max-w-[72ch]">{{ row.question }}</span>
             </div>
 
-            <div class="flex shrink-0 justify-end">
-              <UTooltip
-                v-if="row.answer && !shouldShowDash(row.answer)"
-                :text="row.answer"
-              >
-                <NuxtLink
-                  :to="row.answerLink"
-                  class="answer-button max-w-[200px] overflow-hidden"
-                >
-                  <span class="truncate">{{ row.answer }}</span>
-                </NuxtLink>
-              </UTooltip>
+            <div class="flex shrink-0 items-center md:w-[200px] md:justify-end">
               <NuxtLink
-                v-else-if="row.answer"
+                v-if="row.answer"
                 :to="row.answerLink"
-                class="answer-button"
+                class="answer-button max-w-full truncate"
               >
-                —
+                <template v-if="shouldShowDash(row.answer)">—</template>
+                <span v-else class="truncate">{{ row.answer }}</span>
               </NuxtLink>
               <span v-else class="answer-button text-gray-400">—</span>
             </div>
@@ -157,81 +147,60 @@
             class="hidden md:block"
             :class="{ 'overflow-x-auto': isScrollable }"
           >
-            <div class="divide-y divide-gray-100">
+            <div class="comparison-grid" :style="{ gridTemplateColumns }">
               <div
-                class="comparison-header sticky top-0 z-10 flex gap-2 border-b-2 border-gray-200 bg-white py-4 font-semibold"
+                class="comparison-header-cell sticky top-0 bg-white py-3 font-semibold"
+                :class="isScrollable ? 'sticky-col-1' : ''"
               >
-                <div
-                  class="shrink-0"
-                  :class="{
-                    'sticky left-0 z-20 bg-white shadow-[1rem_0_0_0_white]':
-                      isScrollable,
-                  }"
-                  :style="{ width: questionColWidth }"
-                >
-                  Question
-                </div>
-                <div
-                  v-for="(jurisdiction, index) in jurisdictions"
-                  :key="jurisdiction.alpha3Code || jurisdiction.Name"
-                  class="min-w-[100px] text-center"
-                  :class="[
-                    isScrollable ? 'shrink-0' : 'min-w-0 flex-1',
-                    index === 0 && isScrollable
-                      ? 'sticky z-10 bg-white shadow-[1rem_0_0_0_white]'
-                      : '',
-                  ]"
-                  :style="
-                    index === 0 && isScrollable ? { left: primaryColLeft } : {}
-                  "
-                >
-                  <button
-                    type="button"
-                    class="jurisdiction-action-button"
-                    :class="{ removable: index > 0 }"
-                    :title="jurisdiction.Name"
-                    :disabled="index === 0"
-                    @click="
-                      index > 0
-                        ? removeJurisdiction(jurisdiction.alpha3Code)
-                        : null
-                    "
-                  >
-                    <img
-                      v-if="jurisdiction.avatar"
-                      :src="jurisdiction.avatar"
-                      :alt="`${jurisdiction.Name} flag`"
-                      class="h-3.5 w-5 flex-shrink-0 rounded-sm object-cover"
-                    />
-                    <span class="min-w-0 truncate">{{
-                      jurisdictionLabel(jurisdiction)
-                    }}</span>
-                    <UIcon
-                      v-if="index > 0"
-                      name="i-heroicons-x-mark-20-solid"
-                      class="h-4 w-4 flex-shrink-0"
-                    />
-                  </button>
-                </div>
+                Question
               </div>
               <div
-                v-for="row in rows"
-                :id="`question-${row.id}`"
-                :key="row.id"
-                class="comparison-row hover-row--emphasis flex gap-2 py-4"
+                v-for="(jurisdiction, index) in jurisdictions"
+                :key="'h-' + (jurisdiction.alpha3Code || jurisdiction.Name)"
+                class="comparison-header-cell sticky top-0 bg-white py-3 text-center"
+                :class="index === 0 && isScrollable ? 'sticky-col-2' : ''"
+                :style="
+                  index === 0 && isScrollable ? { left: stickyColLeft } : {}
+                "
               >
+                <button
+                  type="button"
+                  class="jurisdiction-action-button"
+                  :class="{ removable: index > 0 }"
+                  :title="jurisdiction.Name"
+                  :disabled="index === 0"
+                  @click="
+                    index > 0
+                      ? removeJurisdiction(jurisdiction.alpha3Code)
+                      : null
+                  "
+                >
+                  <img
+                    v-if="jurisdiction.avatar"
+                    :src="jurisdiction.avatar"
+                    :alt="`${jurisdiction.Name} flag`"
+                    class="h-3.5 w-5 flex-shrink-0 rounded-sm object-cover"
+                  />
+                  <span class="min-w-0 truncate">{{
+                    jurisdictionLabel(jurisdiction)
+                  }}</span>
+                  <UIcon
+                    v-if="index > 0"
+                    name="i-heroicons-x-mark-20-solid"
+                    class="h-4 w-4 flex-shrink-0"
+                  />
+                </button>
+              </div>
+
+              <template v-for="row in rows" :key="row.id">
                 <div
-                  class="sticky-col shrink-0 text-sm whitespace-pre-line"
+                  :id="`question-${row.id}`"
+                  class="comparison-cell comparison-cell--question text-sm whitespace-pre-line"
                   :class="[
                     { 'font-semibold': isBoldQuestion(row.id) },
-                    isScrollable
-                      ? 'sticky left-0 z-20 bg-white shadow-[1rem_0_0_0_white]'
-                      : '',
+                    { 'sticky-col-1': isScrollable },
                   ]"
-                  :style="{
-                    width: questionColWidth,
-                    paddingLeft: `${row.level * 2}em`,
-                  }"
+                  :style="{ paddingLeft: `${row.level * 2}em` }"
                 >
                   {{ row.question }}
                 </div>
@@ -239,9 +208,11 @@
                 <div
                   v-for="(jurisdiction, jIndex) in jurisdictions"
                   :key="jurisdiction.alpha3Code || jurisdiction.Name"
-                  class="comparison-cell flex items-center justify-center overflow-hidden"
+                  class="comparison-cell comparison-cell--answer"
                   :class="{ 'sticky-col-2': jIndex === 0 && isScrollable }"
-                  :style="jIndex === 0 && isScrollable ? { left: stickyColLeft } : {}"
+                  :style="
+                    jIndex === 0 && isScrollable ? { left: stickyColLeft } : {}
+                  "
                 >
                   <div
                     v-if="
@@ -251,23 +222,6 @@
                   >
                     <USkeleton class="h-4 w-16" />
                   </div>
-                  <UTooltip
-                    v-else-if="
-                      jurisdiction.alpha3Code &&
-                      row.answers?.[jurisdiction.alpha3Code] &&
-                      !shouldShowDash(row.answers[jurisdiction.alpha3Code])
-                    "
-                    :text="row.answers[jurisdiction.alpha3Code]"
-                  >
-                    <NuxtLink
-                      :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
-                      class="answer-button max-w-full leading-tight"
-                    >
-                      <span class="line-clamp-3">{{
-                        row.answers[jurisdiction.alpha3Code]
-                      }}</span>
-                    </NuxtLink>
-                  </UTooltip>
                   <NuxtLink
                     v-else-if="
                       jurisdiction.alpha3Code &&
@@ -276,7 +230,16 @@
                     :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
                     class="answer-button"
                   >
-                    —
+                    <template
+                      v-if="
+                        shouldShowDash(row.answers[jurisdiction.alpha3Code])
+                      "
+                    >
+                      —
+                    </template>
+                    <span v-else class="line-clamp-2">{{
+                      row.answers[jurisdiction.alpha3Code]
+                    }}</span>
                   </NuxtLink>
                   <span v-else class="text-gray-400">—</span>
                 </div>
@@ -320,46 +283,30 @@
                     />
                     <USkeleton class="h-4 w-16" />
                   </div>
-                  <UTooltip
-                    v-else-if="
-                      jurisdiction.alpha3Code &&
-                      row.answers?.[jurisdiction.alpha3Code] &&
-                      !shouldShowDash(row.answers[jurisdiction.alpha3Code])
-                    "
-                    :text="row.answers[jurisdiction.alpha3Code]"
-                  >
-                    <div class="w-full max-w-[200px]">
-                      <NuxtLink
-                        :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
-                        class="answer-button flex w-full items-center gap-2 overflow-hidden"
-                      >
-                        <img
-                          v-if="jurisdiction.avatar"
-                          :src="jurisdiction.avatar"
-                          :alt="`${jurisdiction.Name} flag`"
-                          class="h-2 w-3 flex-shrink-0 object-cover"
-                        />
-                        <span class="block min-w-0 flex-1 truncate">{{
-                          row.answers[jurisdiction.alpha3Code]
-                        }}</span>
-                      </NuxtLink>
-                    </div>
-                  </UTooltip>
                   <NuxtLink
                     v-else-if="
                       jurisdiction.alpha3Code &&
                       row.answers?.[jurisdiction.alpha3Code]
                     "
                     :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
-                    class="answer-button gap-2"
+                    class="answer-button !inline-flex max-w-[10rem] items-center gap-2"
                   >
                     <img
                       v-if="jurisdiction.avatar"
                       :src="jurisdiction.avatar"
                       :alt="`${jurisdiction.Name} flag`"
-                      class="h-2 w-3 object-cover"
+                      class="h-2 w-3 flex-shrink-0 object-cover"
                     />
-                    —
+                    <template
+                      v-if="
+                        shouldShowDash(row.answers[jurisdiction.alpha3Code])
+                      "
+                    >
+                      —
+                    </template>
+                    <span v-else class="min-w-0 truncate">{{
+                      row.answers[jurisdiction.alpha3Code]
+                    }}</span>
                   </NuxtLink>
                   <span v-else class="text-gray-400">—</span>
                 </div>
@@ -530,14 +477,30 @@ const useShortLabels = computed(() => jurisdictions.value.length >= 4);
 
 const isScrollable = computed(() => jurisdictions.value.length >= 5);
 
-const questionColWidth = computed(() => {
+const gridTemplateColumns = computed(() => {
+  const count = jurisdictions.value.length;
+  let questionCol: string;
+  let answerCol: string;
+  if (count >= 7) {
+    questionCol = "220px";
+    answerCol = "140px";
+  } else if (count >= 5) {
+    questionCol = "280px";
+    answerCol = "160px";
+  } else {
+    questionCol = "minmax(0, 2fr)";
+    answerCol = "minmax(0, 1fr)";
+  }
+  const answerCols = Array(count).fill(answerCol).join(" ");
+  return `${questionCol} ${answerCols}`;
+});
+
+const stickyColLeft = computed(() => {
   const count = jurisdictions.value.length;
   if (count >= 7) return "220px";
   if (count >= 5) return "280px";
-  return "40%";
+  return "0";
 });
-
-const primaryColLeft = computed(() => `calc(${questionColWidth.value} + 1rem)`);
 
 const jurisdictionLabel = (j: JurisdictionOption) =>
   useShortLabels.value && j.alpha3Code ? j.alpha3Code : j.Name;
@@ -632,6 +595,17 @@ const rows = computed(() => {
 .comparison-cell {
   padding: 0.75rem 0.25rem;
   border-bottom: 1px solid var(--color-gray-100, #f3f4f6);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.comparison-cell--question {
+  align-content: center;
+}
+
+.comparison-cell--answer {
+  text-align: center;
+  align-content: center;
 }
 
 .sticky-col-1 {
@@ -670,20 +644,16 @@ const rows = computed(() => {
 }
 
 .answer-button {
-  @apply inline-flex items-center justify-center rounded-lg px-2 py-1 text-sm font-medium shadow-sm transition-all duration-150;
+  @apply rounded-lg px-2 py-1 text-sm font-medium shadow-sm transition-all duration-150;
+  display: inline-block;
   min-width: 3.5rem;
+  max-width: 100%;
+  overflow: hidden;
   background: var(--gradient-subtle);
   color: var(--color-cold-night);
   cursor: pointer;
   text-align: center;
-}
-
-
-.answer-button--long {
-  max-width: 100%;
-  overflow: hidden;
-  leading-trim: both;
-  line-height: 1.25;
+  vertical-align: middle;
 }
 
 .answer-button:hover {
