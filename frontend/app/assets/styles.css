@@ -2044,6 +2044,7 @@ button.cold-toggle-btn[aria-pressed="true"] {
     0 1px 2px -1px rgb(0 0 0 / 0.1);
   background: var(--gradient-subtle-emphasis);
   margin-right: -1rem;
+  color: var(--color-cold-purple);
 }
 
 .link-chip--neutral::after {
