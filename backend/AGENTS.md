@@ -54,7 +54,6 @@ backend/
 │   │   ├── search.py        # Search endpoints
 │   │   ├── ai.py            # AI query classification
 │   │   ├── suggestions.py   # User suggestions
-│   │   ├── moderation.py    # Admin moderation
 │   │   └── ...              # sitemap, statistics, landing_page, submarine
 │   ├── services/            # Business logic layer
 │   │   ├── search.py
@@ -174,7 +173,7 @@ Key vars (see [README.md](README.md) for complete list):
 
 ## API & Auth
 
-**Routes**: `/api/v1/{search,ai,suggestions,sitemap,landing_page,statistics,submarine}` + `/moderation`
+**Routes**: `/api/v1/{search,ai,suggestions,sitemap,landing_page,statistics,submarine}`
 
 **Auth**: Most endpoints need `X-API-Key` header. User endpoints (suggestions) need Auth0 JWT. Admin endpoints need Auth0 JWT with roles.
 
