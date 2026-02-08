@@ -132,6 +132,24 @@ This runs:
 - No console.log statements in production code
 - Build must succeed: `npm run build`
 
+## Component Map
+
+Quick reference for finding components by feature area:
+
+| Feature                 | Components                                      | Page                                       |
+| ----------------------- | ----------------------------------------------- | ------------------------------------------ |
+| Jurisdiction report     | `jurisdiction/JurisdictionComparisonTable.vue`  | `pages/jurisdiction/[id].vue`              |
+| Jurisdiction picker     | `jurisdiction/JurisdictionSelectMenu.vue`       | multiple pages                             |
+| Answer→jurisdiction map | `jurisdiction/QuestionAnswerMap.vue`            | `pages/question/[id].vue`                  |
+| Jurisdiction banner     | `jurisdiction/JurisdictionReportBanner.vue`     | question, instrument, court decision pages |
+| Flag with coverage      | `jurisdiction/JurisdictionFlagWithCoverage.vue` | used by JurisdictionReportBanner           |
+| Flag primitive          | `ui/JurisdictionFlag.vue`                       | 22+ usages across codebase                 |
+| Case analyzer           | `case-analyzer/`                                | `pages/case-analyzer.vue`                  |
+| Search                  | `search/`                                       | `pages/search.vue`                         |
+| Landing page            | `landing-page/`                                 | `pages/index.vue`                          |
+| Legal provisions        | `legal/`                                        | instrument and court decision pages        |
+| Literature              | `literature/`                                   | multiple detail pages                      |
+
 ## Common Tasks
 
 - **Page**: Add to `pages/` (file-based routing)
