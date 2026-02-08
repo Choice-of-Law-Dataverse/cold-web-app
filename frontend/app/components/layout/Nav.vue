@@ -33,11 +33,12 @@
               ref="searchInput"
               v-model="searchText"
               size="xl"
-              class="placeholder-purple w-full font-semibold"
+              class="placeholder-purple search-input w-full font-semibold"
+              :class="{ 'search-input-scrolled': isScrolled }"
               :placeholder="searchPlaceholder"
               autocomplete="off"
               :ui="{
-                base: 'h-12 ps-10 placeholder:text-[var(--color-cold-purple)] placeholder:opacity-100',
+                base: 'placeholder:text-[var(--color-cold-purple)] placeholder:opacity-100',
               }"
               :style="{
                 width: '100%',
@@ -53,6 +54,18 @@
               @focus="expandSearch"
               @blur="collapseSearch"
             >
+              <template #leading>
+                <button
+                  type="button"
+                  class="flex cursor-pointer items-center justify-center"
+                  @click="emitSearch"
+                >
+                  <UIcon
+                    name="i-material-symbols:search"
+                    class="text-cold-purple size-6"
+                  />
+                </button>
+              </template>
               <template #trailing>
                 <button
                   v-show="isExpanded"
@@ -65,12 +78,6 @@
                 </button>
               </template>
             </UInput>
-            <button v-if="!isMobile" class="icon-button" @click="emitSearch">
-              <span
-                class="iconify i-material-symbols:search"
-                aria-hidden="true"
-              />
-            </button>
           </div>
 
           <!-- Suggestions -->
@@ -513,21 +520,13 @@ onUnmounted(() => {
   align-items: center;
 }
 
-.icon-button {
-  position: absolute;
-  left: 10px;
-  top: 50%;
-  transform: translateY(-39%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--color-cold-purple);
-  padding: 0;
-  padding-left: 4px;
+:deep(.search-input input) {
+  height: 3rem;
+  transition: height 0.2s ease;
 }
 
-.icon-button .iconify {
-  font-size: 1.5rem;
+:deep(.search-input-scrolled input) {
+  height: 2.5rem;
 }
 
 .desktop-logo {
@@ -704,7 +703,7 @@ nav.nav-scrolled .mobile-inline-logo img {
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0 0.25rem 0 0;
+  padding: 0;
   color: var(--color-cold-purple);
   height: 2.5rem;
   width: 2.5rem;
@@ -715,11 +714,12 @@ nav.nav-scrolled .mobile-inline-logo img {
 @media (max-width: 639px) {
   .collapsed-search-icon {
     display: inline-flex;
-    height: 3rem;
-    width: 3rem;
+    height: 2.5rem;
+    width: 2.5rem;
   }
   .collapsed-search-icon .iconify {
     font-size: 1.5rem;
+    line-height: 1;
   }
   .search-container:not(.expanded) .icon-button {
     display: none;

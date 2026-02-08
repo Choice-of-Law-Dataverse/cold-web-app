@@ -2,7 +2,7 @@
   <div class="bg-cold-bg flex min-h-dvh flex-col">
     <Nav />
 
-    <main class="main-content mt-6 flex-1 px-3 sm:mt-12 sm:px-6">
+    <main class="main-content flex-1 px-3 py-6 sm:px-6 sm:py-12">
       <div class="max-w-container mx-auto w-full">
         <div class="flex flex-col gap-4 sm:gap-6">
           <ErrorBoundary>
@@ -56,6 +56,6 @@ import ErrorBoundary from "@/components/ui/ErrorBoundary.vue";
  * Formula: 100dvh - nav - main-margin - footer-margin
  */
 .main-content {
-  min-height: calc(100dvh - var(--nav-height) - 13rem);
+  min-height: calc(100dvh - var(--nav-height) - 10rem);
 }
 </style>
