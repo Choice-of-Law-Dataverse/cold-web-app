@@ -8,16 +8,19 @@
       </div>
 
       <div class="flex w-full flex-col gap-2">
-        <button
+        <UButton
           v-for="(item, index) in searchSuggestions"
           :key="index"
-          class="landing-item-button w-full"
+          variant="ghost"
+          color="neutral"
+          class="landing-item-button"
+          :ui="{ base: 'flex rounded-lg', label: 'contents' }"
           @click="handleSuggestionClick(item.query)"
         >
           <Icon name="i-material-symbols:search" class="item-icon" />
           <span class="flex-1 text-left break-words">{{ item.query }}</span>
           <span class="result-count">{{ item.count }}+</span>
-        </button>
+        </UButton>
       </div>
     </div>
   </UCard>

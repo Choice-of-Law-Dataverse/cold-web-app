@@ -82,6 +82,24 @@
   --nav-height: 5rem;
   --nav-height-scrolled: 3.5rem;
 
+  /* Teal soft button colors */
+  --color-teal-soft-bg: color-mix(in srgb, var(--color-cold-teal) 6%, white);
+  --color-teal-soft-bg-hover: color-mix(
+    in srgb,
+    var(--color-cold-teal) 12%,
+    white
+  );
+  --color-teal-soft-border: color-mix(
+    in srgb,
+    var(--color-cold-teal) 20%,
+    transparent
+  );
+  --color-teal-soft-border-hover: color-mix(
+    in srgb,
+    var(--color-cold-teal) 35%,
+    transparent
+  );
+
   /* Gradient variables - reusable linear gradient definitions */
   /* Purple-Green gradients with white */
   --gradient-subtle: linear-gradient(

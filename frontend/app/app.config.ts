@@ -10,7 +10,26 @@ export default defineAppConfig({
           color: "neutral" as const,
           variant: "outline" as const,
           class:
-            "uppercase ring ring-inset ring-accented text-default bg-default hover:bg-inverted hover:text-inverted hover:ring-inverted active:bg-inverted active:text-inverted disabled:bg-default aria-disabled:bg-default focus:outline-none focus-visible:ring-2 focus-visible:ring-inverted",
+            "uppercase py-[0.375rem] px-3 ring ring-inset ring-accented text-default bg-default hover:bg-inverted hover:text-inverted hover:ring-inverted active:bg-inverted active:text-inverted disabled:bg-default aria-disabled:bg-default focus:outline-none focus-visible:ring-2 focus-visible:ring-inverted",
+        },
+        {
+          color: "neutral" as const,
+          variant: "subtle" as const,
+          class:
+            "uppercase py-[0.375rem] px-3 text-[var(--color-cold-teal)] bg-[var(--color-teal-soft-bg)] border border-[var(--color-teal-soft-border)] hover:bg-[var(--color-teal-soft-bg-hover)] hover:border-[var(--color-teal-soft-border-hover)] hover:shadow-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-cold-teal)]",
+        },
+        {
+          color: "neutral" as const,
+          variant: "soft" as const,
+          class: {
+            base: "landing-item-button w-full overflow-hidden rounded-lg shadow-xs [background:var(--gradient-subtle)] gap-3 py-3 px-4 pl-5 text-left font-medium transition-all duration-150 hover:shadow-sm hover:[background:var(--gradient-subtle-emphasis)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-cold-purple)]",
+            label: "contents",
+          },
+        },
+        {
+          color: "primary" as const,
+          variant: "link" as const,
+          class: "font-medium",
         },
       ],
     },

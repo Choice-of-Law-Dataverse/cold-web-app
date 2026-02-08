@@ -20,11 +20,13 @@
       <InlineError v-else-if="error" :error="error" />
       <template v-else-if="domesticInstruments">
         <div class="flex w-full flex-col gap-2">
-          <NuxtLink
+          <UButton
             v-for="(instrument, index) in domesticInstruments.slice(0, 3)"
             :key="index"
             :to="`/domestic-instrument/${instrument.ID}`"
-            class="landing-item-button type-instrument w-full"
+            variant="soft"
+            color="neutral"
+            class="type-instrument"
           >
             <div class="flag-wrapper">
               <JurisdictionFlag
@@ -42,7 +44,7 @@
                   : instrument["Date"]
               }}
             </span>
-          </NuxtLink>
+          </UButton>
         </div>
       </template>
     </div>

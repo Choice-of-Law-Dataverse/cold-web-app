@@ -43,11 +43,13 @@
       systematization?
     </p>
     <div class="link-container">
-      <NuxtLink to="/submit">
-        <UButton variant="link" :ui="{ base: 'p-0 text-xl font-semibold' }">
-          Submit your data
-        </UButton>
-      </NuxtLink>
+      <UButton
+        to="/submit"
+        variant="link"
+        :ui="{ base: 'p-0 text-xl font-semibold' }"
+      >
+        Submit your data
+      </UButton>
     </div>
   </div>
 </template>

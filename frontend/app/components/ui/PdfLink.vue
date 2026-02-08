@@ -1,16 +1,17 @@
 <template>
   <div v-if="hasPdf" class="flex-shrink-0">
-    <a
-      :href="finalPdfUrl"
+    <UButton
+      :to="finalPdfUrl"
       target="_blank"
-      rel="noopener noreferrer"
-      class="action-link-external"
+      variant="subtle"
+      color="neutral"
+      size="xs"
+      icon="i-material-symbols:picture-as-pdf-outline"
       aria-label="Download PDF for record"
       @click.stop
     >
-      <UIcon name="i-material-symbols:picture-as-pdf-outline" />
-      <span>PDF</span>
-    </a>
+      PDF
+    </UButton>
   </div>
 </template>
 
