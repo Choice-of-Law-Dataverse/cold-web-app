@@ -7,9 +7,7 @@
     </template>
     <template v-else>
       <template v-if="showSuggestEdit">
-        <div
-          class="actions-container hidden flex-row items-center gap-1.5 sm:flex"
-        >
+        <div class="actions-container hidden flex-row items-center sm:flex">
           <UButton
             variant="outline"
             color="neutral"
@@ -118,7 +116,19 @@ function printPage() {
 <style scoped>
 .actions-container {
   align-items: center;
-  gap: 0.5rem;
+}
+
+.actions-container :deep(button) {
+  margin-right: 1rem;
+  transition: margin-right 0.2s ease;
+}
+
+.actions-container :deep(button:last-child) {
+  margin-right: 0;
+}
+
+.actions-container :deep(button:hover) {
+  margin-right: 0.25rem;
 }
 
 .arrow-container {

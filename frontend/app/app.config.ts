@@ -13,7 +13,7 @@ export default defineAppConfig({
           class: {
             base: "group cursor-pointer uppercase py-[0.375rem] px-3 hover:bg-inverted hover:text-inverted hover:ring-inverted active:bg-inverted active:text-inverted",
             trailingIcon:
-              "w-4 opacity-0 transition-opacity duration-200 group-hover:opacity-100",
+              "w-0 opacity-0 transition-all duration-200 group-hover:w-3 group-hover:opacity-100",
           },
         },
         {

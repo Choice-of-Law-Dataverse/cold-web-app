@@ -1,12 +1,13 @@
 <template>
   <div
-    class="tags-container scrollbar-hidden flex flex-1 flex-wrap items-center gap-2.5 overflow-x-auto"
+    class="tags-container scrollbar-hidden flex flex-1 flex-wrap items-center overflow-x-auto"
   >
     <NuxtLink
       v-for="(jurisdictionString, index) in formattedJurisdiction"
       :key="`jurisdiction-${index}`"
-      class="label-jurisdiction label-link jurisdiction-label-link cursor-pointer"
+      class="label-jurisdiction jurisdiction-label-link"
       :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString).replace(/%20/g, '+')}`"
+      @click.stop
     >
       <span class="flag-wrapper">
         <JurisdictionFlag
@@ -215,6 +216,14 @@ function getSourceTablePlural(label) {
   padding-top: 0.25rem;
 }
 
+.tags-container > * {
+  margin-right: 0.625rem;
+}
+
+.tags-container > *:last-child {
+  margin-right: 0;
+}
+
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
 }
@@ -242,8 +251,8 @@ a {
 }
 
 .jurisdiction-label-link::after {
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+  mask-image: var(--icon-search);
+  -webkit-mask-image: var(--icon-search);
   height: 0.75rem;
 }
 
