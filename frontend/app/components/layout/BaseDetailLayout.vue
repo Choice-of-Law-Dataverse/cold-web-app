@@ -27,7 +27,7 @@
 <script setup lang="ts" generic="T extends TableName">
 import { computed } from "vue";
 import type { TableName, TableProcessedMap } from "@/types/api";
-import DetailDisplay from "@/components/ui/BaseDetailDisplay.vue";
+import DetailDisplay from "@/components/ui/DetailDisplay.vue";
 
 const props = withDefaults(
   defineProps<{
@@ -66,7 +66,7 @@ const props = withDefaults(
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
-// Convert typed props to legacy format for BaseDetailDisplay
+// Convert typed props to legacy format for DetailDisplay
 // Fields are derived from labels keys (order preserved in modern JS)
 const computedKeyLabelPairs = computed(() => {
   // If labels are provided, derive fields from them
