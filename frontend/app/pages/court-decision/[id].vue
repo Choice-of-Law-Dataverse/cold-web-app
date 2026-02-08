@@ -205,7 +205,7 @@ import { courtDecisionLabels } from "@/config/labels";
 import { courtDecisionTooltips } from "@/config/tooltips";
 
 const LazyJurisdictionReportBanner = defineAsyncComponent(
-  () => import("@/components/ui/JurisdictionReportBanner.vue"),
+  () => import("@/components/jurisdiction/JurisdictionReportBanner.vue"),
 );
 const LazyRelatedLiterature = defineAsyncComponent(
   () => import("@/components/literature/RelatedLiterature.vue"),

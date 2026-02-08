@@ -18,7 +18,7 @@
 
 <script setup>
 import { useRouter } from "vue-router";
-import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
+import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 

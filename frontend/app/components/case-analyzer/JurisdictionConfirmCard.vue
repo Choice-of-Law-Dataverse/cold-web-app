@@ -73,7 +73,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { JurisdictionInfo, JurisdictionOption } from "~/types/analyzer";
-import JurisdictionSelectMenu from "@/components/jurisdiction-comparison/JurisdictionSelectMenu.vue";
+import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
 import DocumentDisplay from "@/components/case-analyzer/DocumentDisplay.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 

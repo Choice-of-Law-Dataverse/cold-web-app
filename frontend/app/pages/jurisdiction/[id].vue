@@ -70,7 +70,7 @@
     </BaseDetailLayout>
     <ClientOnly>
       <div class="mt-8">
-        <JurisdictionQuestions
+        <JurisdictionComparisonTable
           v-if="jurisdictionData"
           :primary-jurisdiction="jurisdictionData"
         />
@@ -137,7 +137,7 @@ import { computed, defineAsyncComponent, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
-import JurisdictionQuestions from "@/components/content/JurisdictionQuestions.vue";
+import JurisdictionComparisonTable from "@/components/jurisdiction/JurisdictionComparisonTable.vue";
 import RelatedCourtDecisions from "@/components/sources/RelatedCourtDecisions.vue";
 import RelatedDomesticInstruments from "@/components/sources/RelatedDomesticInstruments.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
