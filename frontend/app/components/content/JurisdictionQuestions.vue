@@ -679,6 +679,13 @@ const rows = computed(() => {
 }
 
 
+.answer-button--long {
+  max-width: 100%;
+  overflow: hidden;
+  leading-trim: both;
+  line-height: 1.25;
+}
+
 .answer-button:hover {
   @apply shadow;
   background: var(--gradient-subtle-emphasis);
