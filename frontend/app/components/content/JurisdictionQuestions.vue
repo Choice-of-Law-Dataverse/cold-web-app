@@ -139,17 +139,20 @@
             </UBadge>
           </div>
 
-          <div class="hidden overflow-x-auto md:block">
-            <div
-              class="divide-y divide-gray-100"
-              :class="{ 'min-w-max': isScrollable }"
-            >
+          <div
+            class="hidden md:block"
+            :class="{ 'overflow-x-auto': isScrollable }"
+          >
+            <div class="divide-y divide-gray-100">
               <div
                 class="comparison-header sticky top-0 z-10 flex gap-4 border-b-2 border-gray-200 bg-white py-4 font-semibold"
               >
                 <div
                   class="shrink-0"
-                  :class="{ 'sticky left-0 z-20 bg-white': isScrollable }"
+                  :class="{
+                    'sticky left-0 z-20 bg-white shadow-[1rem_0_0_0_white]':
+                      isScrollable,
+                  }"
                   :style="{ width: questionColWidth }"
                 >
                   Question
@@ -159,9 +162,9 @@
                   :key="jurisdiction.alpha3Code || jurisdiction.Name"
                   class="min-w-[100px] text-center"
                   :class="[
-                    isScrollable ? 'shrink-0' : 'flex-1 min-w-0',
+                    isScrollable ? 'shrink-0' : 'min-w-0 flex-1',
                     index === 0 && isScrollable
-                      ? 'sticky z-10 bg-white'
+                      ? 'sticky z-10 bg-white shadow-[1rem_0_0_0_white]'
                       : '',
                   ]"
                   :style="
@@ -204,10 +207,12 @@
                 class="comparison-row hover-row--emphasis flex gap-4 py-4"
               >
                 <div
-                  class="shrink-0 text-sm whitespace-pre-line"
+                  class="sticky-col shrink-0 text-sm whitespace-pre-line"
                   :class="[
                     { 'font-semibold': isBoldQuestion(row.id) },
-                    isScrollable ? 'sticky left-0 z-20 bg-white' : '',
+                    isScrollable
+                      ? 'sticky left-0 z-20 bg-white shadow-[1rem_0_0_0_white]'
+                      : '',
                   ]"
                   :style="{
                     width: questionColWidth,
@@ -222,15 +227,13 @@
                   :key="jurisdiction.alpha3Code || jurisdiction.Name"
                   class="min-w-[100px] text-center"
                   :class="[
-                    isScrollable ? 'shrink-0' : 'flex-1 min-w-0',
+                    isScrollable ? 'shrink-0' : 'min-w-0 flex-1',
                     jIndex === 0 && isScrollable
-                      ? 'sticky z-10 bg-white'
+                      ? 'sticky-col sticky z-10 bg-white shadow-[1rem_0_0_0_white]'
                       : '',
                   ]"
                   :style="
-                    jIndex === 0 && isScrollable
-                      ? { left: primaryColLeft }
-                      : {}
+                    jIndex === 0 && isScrollable ? { left: primaryColLeft } : {}
                   "
                 >
                   <div
@@ -494,9 +497,7 @@ const questionColWidth = computed(() => {
   return "40%";
 });
 
-const primaryColLeft = computed(() =>
-  `calc(${questionColWidth.value} + 1rem)`,
-);
+const primaryColLeft = computed(() => `calc(${questionColWidth.value} + 1rem)`);
 
 const jurisdictionLabel = (j: JurisdictionOption) =>
   useShortLabels.value && j.alpha3Code ? j.alpha3Code : j.Name;
