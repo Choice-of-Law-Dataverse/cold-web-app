@@ -721,6 +721,20 @@ li::marker {
 
 /* UI Elements ----------------------------------------------- */
 
+.suggestion-button {
+  color: var(--color-cold-purple);
+  font-size: 1.25rem;
+  font-weight: 500;
+  line-height: 1.6em;
+  text-decoration: none;
+  padding: 0;
+  transition: color 0.2s ease;
+}
+
+.suggestion-button:hover {
+  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
+}
+
 .link-button {
   color: var(--color-cold-purple);
   font-size: 0.875rem;
@@ -2015,7 +2029,10 @@ button.cold-toggle-btn[aria-pressed="true"] {
   font-size: 0.875rem;
   font-weight: 500;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  transition: all 150ms;
+  transition:
+    background 150ms,
+    box-shadow 150ms,
+    margin-right 0.2s ease;
   margin-left: -0.75rem;
   background: var(--gradient-subtle);
   color: var(--color-cold-night);
@@ -2457,4 +2474,16 @@ button.cold-toggle-btn[aria-pressed="true"] {
 .hero-cta-secondary:hover {
   background: color-mix(in srgb, var(--color-cold-purple) 8%, transparent);
   transform: translateY(-2px);
+}
+
+/* Connect Card Button ----------------------------------------------- */
+.connect-button {
+  color: var(--color-cold-purple);
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.connect-button:hover {
+  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
 }
