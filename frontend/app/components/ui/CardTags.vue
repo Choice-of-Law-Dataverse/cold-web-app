@@ -1,14 +1,15 @@
 <template>
   <div
-    class="tags-container scrollbar-hidden flex flex-1 flex-wrap items-center gap-2.5 overflow-x-auto"
+    class="tags-container scrollbar-hidden flex flex-1 flex-wrap items-center overflow-x-auto"
   >
     <NuxtLink
       v-for="(jurisdictionString, index) in formattedJurisdiction"
       :key="`jurisdiction-${index}`"
-      class="label-jurisdiction label-link jurisdiction-label-link cursor-pointer"
+      class="label-jurisdiction jurisdiction-label-link"
       :to="`/search?jurisdiction=${encodeURIComponent(jurisdictionString).replace(/%20/g, '+')}`"
+      @click.stop
     >
-      <span class="hover-flag">
+      <span class="flag-wrapper">
         <JurisdictionFlag
           :iso3="getJurisdictionISO(jurisdictionString)"
           class="flag-icon"
@@ -215,6 +216,14 @@ function getSourceTablePlural(label) {
   padding-top: 0.25rem;
 }
 
+.tags-container > * {
+  margin-right: 0.625rem;
+}
+
+.tags-container > *:last-child {
+  margin-right: 0;
+}
+
 .scrollbar-hidden::-webkit-scrollbar {
   display: none;
 }
@@ -231,15 +240,29 @@ a {
 .jurisdiction-label-link {
   font-weight: 600 !important;
 
-  .hover-flag {
-    margin-right: 0.375rem;
-    margin-bottom: 0.125rem;
+  .flag-wrapper {
+    width: 1.125rem;
   }
 
   .flag-icon {
     height: 11px;
     width: auto;
   }
+}
+
+.jurisdiction-label-link:hover .flag-wrapper {
+  width: 0;
+  opacity: 0;
+}
+
+.jurisdiction-label-link::after {
+  mask-image: var(--icon-search);
+  -webkit-mask-image: var(--icon-search);
+  height: 0.75rem;
+}
+
+.jurisdiction-label-link:hover::after {
+  width: 1.125rem;
 }
 
 .label-court-decision,

@@ -72,6 +72,9 @@
 /* Layout ----------------------------------------------- */
 
 :root {
+  --icon-arrow-right: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12h14'/%3E%3Cpath d='m12 5 7 7-7 7'/%3E%3C/svg%3E");
+  --icon-search: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+
   --column-width: 72px;
   --gutter-width: 24px;
   --container-width: calc(
@@ -188,35 +191,36 @@
 
 /* Fonts ----------------------------------------------- */
 
-body {
-  font-family: "Inter", sans-serif;
-  color: var(--color-cold-night);
-}
+@layer base {
+  body {
+    font-family: "Inter", sans-serif;
+    color: var(--color-cold-night);
+  }
 
-a {
-  color: var(--color-cold-purple);
-  text-decoration: none !important;
-  font-weight: 400;
-  transition: all 0.2s ease;
-  position: relative;
-}
+  a {
+    color: var(--color-cold-purple);
+    text-decoration: none !important;
+    font-weight: 400;
+    transition: all 0.2s ease;
+    position: relative;
+  }
 
-a:hover {
-  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
-}
+  a:hover {
+    color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
+  }
 
-a:focus-visible {
-  outline: 2px solid var(--color-cold-purple);
-  outline-offset: 2px;
-  border-radius: 2px;
-}
+  a:focus-visible {
+    outline: 2px solid var(--color-cold-purple);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 
-/* Subtle underline on hover for prose links */
-.prose a:hover {
-  text-decoration: underline !important;
-  text-decoration-color: var(--color-cold-purple);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
+  .prose a:hover {
+    text-decoration: underline !important;
+    text-decoration-color: var(--color-cold-purple);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
 }
 
 .markdown-body h2 > a,
@@ -390,17 +394,52 @@ li::marker {
   background: var(--gradient-subtle-emphasis);
 }
 
-.label-jurisdiction:focus-visible {
-  outline: 2px solid var(--color-cold-purple);
-  outline-offset: 2px;
-}
-
 .label-jurisdiction .flag-wrapper {
   display: inline-flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
   width: 1rem;
+  overflow: hidden;
+  transition:
+    width 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.label-jurisdiction:hover .flag-wrapper {
+  width: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+.label-jurisdiction::after {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 1rem;
+  background-color: currentColor;
+  mask-image: var(--icon-arrow-right);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: var(--icon-arrow-right);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  opacity: 0;
+  transition:
+    width 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.label-jurisdiction:hover::after {
+  width: 1rem;
+  opacity: 1;
+}
+
+.label-jurisdiction:focus-visible {
+  outline: 2px solid var(--color-cold-purple);
+  outline-offset: 2px;
 }
 
 .label-jurisdiction .item-flag {
@@ -1540,11 +1579,18 @@ button.cold-toggle-btn[aria-pressed="true"] {
 .label-link {
   font-weight: 500;
   text-decoration: none;
-  transition: all 0.15s ease;
+  transition:
+    color 0.15s ease,
+    padding-right 0.2s ease;
   position: relative;
   display: inline-flex;
   align-items: center;
   gap: 0;
+  padding-right: 1rem;
+}
+
+.label-link:hover {
+  padding-right: 0;
 }
 
 /* Search icon that slides in on hover (uses mask for currentColor support) */
@@ -1555,11 +1601,14 @@ button.cold-toggle-btn[aria-pressed="true"] {
   height: 12px;
   margin-left: 0;
   background-color: currentColor;
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+  mask-image: var(--icon-search);
   mask-size: contain;
   mask-repeat: no-repeat;
   mask-position: center;
-  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.3-4.3'/%3E%3C/svg%3E");
+  -webkit-mask-image: var(--icon-search);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
   -webkit-mask-size: contain;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-position: center;
@@ -1980,7 +2029,10 @@ button.cold-toggle-btn[aria-pressed="true"] {
   font-size: 0.875rem;
   font-weight: 500;
   box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  transition: all 150ms;
+  transition:
+    background 150ms,
+    box-shadow 150ms,
+    margin-right 0.2s ease;
   margin-left: -0.75rem;
   background: var(--gradient-subtle);
   color: var(--color-cold-night);
@@ -1991,11 +2043,49 @@ button.cold-toggle-btn[aria-pressed="true"] {
     0 1px 3px 0 rgb(0 0 0 / 0.1),
     0 1px 2px -1px rgb(0 0 0 / 0.1);
   background: var(--gradient-subtle-emphasis);
+  margin-right: -1rem;
+  color: var(--color-cold-purple);
+}
+
+.link-chip--neutral::after {
+  content: "";
+  display: inline-block;
+  width: 0;
+  height: 12px;
+  margin-left: 0;
+  background-color: currentColor;
+  mask-image: var(--icon-arrow-right);
+  mask-size: contain;
+  mask-repeat: no-repeat;
+  mask-position: center;
+  -webkit-mask-image: var(--icon-arrow-right);
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  opacity: 0;
+  transition:
+    width 0.2s ease,
+    margin-left 0.2s ease,
+    opacity 0.15s ease;
+}
+
+.link-chip--neutral:hover::after {
+  width: 1rem;
+  opacity: 1;
 }
 
 .link-chip--neutral:focus-visible {
   outline: 2px solid var(--color-cold-purple);
   outline-offset: 2px;
+}
+
+.link-chip--neutral > span {
+  overflow: visible;
+  white-space: normal;
+  text-overflow: unset;
 }
 
 /* Non-interactive chip variant (for display-only items like specialists) */

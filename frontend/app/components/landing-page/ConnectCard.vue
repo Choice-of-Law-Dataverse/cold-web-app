@@ -41,31 +41,16 @@
       </div>
 
       <div class="link-container">
-        <NuxtLink v-if="isRelativeLink" :to="buttonLink">
-          <UButton
-            class="connect-button"
-            variant="link"
-            :icon="buttonIcon"
-            trailing
-          >
-            {{ buttonText }}
-          </UButton>
-        </NuxtLink>
-        <a
-          v-else
-          :href="buttonLink"
-          :target="newTab ? '_blank' : '_self'"
-          :rel="newTab ? 'noopener noreferrer' : ''"
+        <UButton
+          variant="link"
+          :to="buttonLink"
+          :target="!isRelativeLink && newTab ? '_blank' : undefined"
+          :icon="buttonIcon"
+          trailing
+          :ui="{ base: 'text-base font-semibold' }"
         >
-          <UButton
-            class="connect-button"
-            variant="link"
-            :icon="buttonIcon"
-            trailing
-          >
-            {{ buttonText }}
-          </UButton>
-        </a>
+          {{ buttonText }}
+        </UButton>
       </div>
     </div>
   </UCard>

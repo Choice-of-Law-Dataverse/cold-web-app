@@ -9,20 +9,24 @@
       <div class="flex justify-between">
         <h3 class="comparison-title">Comparison</h3>
         <span class="flex flex-wrap gap-2">
-          <NuxtLink to="/learn/methodology" type="button" class="action-button">
-            <UIcon
-              :name="'i-material-symbols:school-outline'"
-              class="inline-block text-[1.2em]"
-            />
+          <UButton
+            to="/learn/methodology"
+            variant="outline"
+            color="neutral"
+            size="xs"
+            icon="i-material-symbols:school-outline"
+          >
             Methodology
-          </NuxtLink>
-          <NuxtLink to="/learn/glossary" type="button" class="action-button">
-            <UIcon
-              :name="'i-material-symbols:dictionary-outline'"
-              class="inline-block text-[1.2em]"
-            />
+          </UButton>
+          <UButton
+            to="/learn/glossary"
+            variant="outline"
+            color="neutral"
+            size="xs"
+            icon="i-material-symbols:dictionary-outline"
+          >
             Glossary
-          </NuxtLink>
+          </UButton>
         </span>
       </div>
     </template>

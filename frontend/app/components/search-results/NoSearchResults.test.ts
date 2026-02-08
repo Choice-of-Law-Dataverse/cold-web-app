@@ -140,7 +140,8 @@ describe("NoSearchResults", () => {
     };
     const wrapper = mount(NoSearchResults);
 
-    const button = wrapper.find(".suggestion-button");
+    const removeSection = wrapper.find(".no-results.mt-4");
+    const button = removeSection.find('[variant="link"]');
     await button.trigger("click");
 
     expect(mockNavigateTo).toHaveBeenCalledWith(

@@ -15,8 +15,8 @@
       <h2>
         Maybe try
         <UButton
-          class="suggestion-button"
           variant="link"
+          :ui="{ base: 'p-0 text-xl font-semibold' }"
           @click="removeJurisdictionFilter"
         >
           <span>removing {{ jurisdictionFilter }}</span>
@@ -43,11 +43,13 @@
       systematization?
     </p>
     <div class="link-container">
-      <NuxtLink to="/submit">
-        <UButton class="suggestion-button" variant="link">
-          Submit your data
-        </UButton>
-      </NuxtLink>
+      <UButton
+        to="/submit"
+        variant="link"
+        :ui="{ base: 'p-0 text-xl font-semibold' }"
+      >
+        Submit your data
+      </UButton>
     </div>
   </div>
 </template>
@@ -85,10 +87,6 @@ function removeJurisdictionFilter() {
 <style scoped>
 .no-results {
   text-align: center;
-  font-weight: 600;
-}
-
-.suggestion-button {
   font-weight: 600;
 }
 

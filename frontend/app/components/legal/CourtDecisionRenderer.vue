@@ -6,9 +6,11 @@
         :class="props.valueClassMap || 'result-value-small'"
         class="flex flex-wrap gap-2"
       >
-        <NuxtLink
+        <UButton
           v-for="(item, index) in normalizedItems"
           :key="index"
+          variant="ghost"
+          color="neutral"
           class="link-chip--neutral"
           :to="`/court-decision/${item}`"
         >
@@ -21,10 +23,12 @@
           <template v-else>
             <LoadingBar />
           </template>
-        </NuxtLink>
+        </UButton>
       </div>
       <div v-else :class="props.valueClassMap || 'result-value-small'">
-        <NuxtLink
+        <UButton
+          variant="ghost"
+          color="neutral"
           class="link-chip--neutral"
           :to="`/court-decision/${normalizedItems[0]!}`"
         >
@@ -37,7 +41,7 @@
           <template v-else>
             <LoadingBar />
           </template>
-        </NuxtLink>
+        </UButton>
       </div>
     </div>
     <div
@@ -53,7 +57,6 @@
 import { computed } from "vue";
 import { useCourtDecisionsList } from "@/composables/useRecordDetails";
 import type { CourtDecision } from "@/types/entities/court-decision";
-import { NuxtLink } from "#components";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 
 const props = withDefaults(

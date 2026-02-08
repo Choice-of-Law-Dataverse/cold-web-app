@@ -1,17 +1,15 @@
 <template>
-  <UCard class="flex h-full w-full" :ui="{ body: '!p-0' }">
+  <UCard class="flex h-full w-full" :ui="{ body: '!p-0 w-full' }">
     <div class="gradient-top-border" />
     <div class="flex w-full flex-col gap-4 p-4 sm:p-6">
       <NuxtLink
         :to="`/search?type=Domestic+Instruments&sortBy=date`"
-        class="no-underline"
+        class="w-full no-underline"
       >
-        <div>
-          <h2 class="card-title cursor-pointer text-left md:whitespace-nowrap">
-            Recent Domestic Instruments
-          </h2>
-          <p class="card-subtitle">Newly added legislation</p>
-        </div>
+        <h2 class="card-title cursor-pointer text-left md:whitespace-nowrap">
+          Recent Domestic Instruments
+        </h2>
+        <p class="card-subtitle">Newly added legislation</p>
       </NuxtLink>
 
       <div v-if="isLoading">
@@ -20,11 +18,13 @@
       <InlineError v-else-if="error" :error="error" />
       <template v-else-if="domesticInstruments">
         <div class="flex w-full flex-col gap-2">
-          <NuxtLink
+          <UButton
             v-for="(instrument, index) in domesticInstruments.slice(0, 3)"
             :key="index"
             :to="`/domestic-instrument/${instrument.ID}`"
-            class="landing-item-button type-instrument w-full"
+            variant="soft"
+            color="neutral"
+            class="type-instrument"
           >
             <div class="flag-wrapper">
               <JurisdictionFlag
@@ -42,7 +42,7 @@
                   : instrument["Date"]
               }}
             </span>
-          </NuxtLink>
+          </UButton>
         </div>
       </template>
     </div>

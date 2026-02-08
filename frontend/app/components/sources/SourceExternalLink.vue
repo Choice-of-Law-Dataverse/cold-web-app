@@ -1,25 +1,25 @@
 <template>
   <div v-if="sourceUrl" class="flex-shrink-0">
-    <a
+    <UButton
       v-if="sourceUrl"
-      :href="sourceUrl as string"
+      :to="sourceUrl as string"
       target="_blank"
-      rel="noopener noreferrer"
-      class="action-link-external"
+      variant="subtle"
+      color="secondary"
+      size="sm"
+      :icon="openAccess ? undefined : 'i-material-symbols:open-in-new'"
+      :trailing-icon="openAccess ? undefined : 'i-material-symbols:open-in-new'"
       @click.stop
     >
-      <template v-if="openAccess">
+      <template v-if="openAccess" #leading>
         <img
           class="h-4 w-4"
           src="https://choiceoflaw.blob.core.windows.net/assets/Open_Access_logo_PLoS_transparent.svg"
           alt="Open Access Logo"
         />
       </template>
-      <template v-else>
-        <UIcon name="i-material-symbols:open-in-new" />
-      </template>
-      <span>{{ label }}</span>
-    </a>
+      {{ label }}
+    </UButton>
   </div>
 </template>
 

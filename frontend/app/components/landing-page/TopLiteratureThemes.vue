@@ -10,15 +10,17 @@
       </div>
 
       <div class="flex w-full flex-col gap-2">
-        <button
+        <UButton
           v-for="(suggestion, index) in searchSuggestions"
           :key="index"
-          class="landing-item-button type-literature w-full"
+          variant="soft"
+          color="neutral"
+          class="type-literature"
           @click="handleSuggestionClick(suggestion)"
         >
           <Icon name="i-material-symbols:book-outline" class="item-icon" />
           <span class="text-left break-words">{{ suggestion }}</span>
-        </button>
+        </UButton>
       </div>
     </div>
   </UCard>

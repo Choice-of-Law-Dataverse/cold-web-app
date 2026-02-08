@@ -29,25 +29,23 @@
                 </span>
               </h2>
               <div class="flex flex-wrap gap-3">
-                <NuxtLink to="/search">
-                  <UButton
-                    size="lg"
-                    class="hero-cta"
-                    icon="i-material-symbols:search"
-                  >
-                    Start Exploring
-                  </UButton>
-                </NuxtLink>
-                <NuxtLink to="/court-decision/new">
-                  <UButton
-                    size="lg"
-                    variant="outline"
-                    class="hero-cta-secondary"
-                    icon="i-material-symbols:category-search-outline"
-                  >
-                    Analyze Case
-                  </UButton>
-                </NuxtLink>
+                <UButton
+                  to="/search"
+                  size="lg"
+                  class="hero-cta"
+                  icon="i-material-symbols:search"
+                >
+                  Start Exploring
+                </UButton>
+                <UButton
+                  to="/court-decision/new"
+                  size="lg"
+                  variant="outline"
+                  class="hero-cta-secondary"
+                  icon="i-material-symbols:category-search-outline"
+                >
+                  Analyze Case
+                </UButton>
               </div>
             </div>
           </div>

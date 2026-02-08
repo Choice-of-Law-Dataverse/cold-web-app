@@ -7,14 +7,13 @@
     </template>
     <template v-else>
       <template v-if="showSuggestEdit">
-        <div
-          class="actions-container hidden flex-row items-center gap-1.5 sm:flex"
-        >
+        <div class="actions-container hidden flex-row items-center sm:flex">
           <UButton
             variant="outline"
             color="neutral"
             size="xs"
-            icon="i-material-symbols:verified-outline"
+            leading-icon="i-material-symbols:verified-outline"
+            trailing-icon="i-material-symbols:verified-outline"
             @click.prevent="isCiteOpen = true"
           >
             Cite
@@ -23,7 +22,8 @@
             variant="outline"
             color="neutral"
             size="xs"
-            icon="i-material-symbols:data-object"
+            leading-icon="i-material-symbols:data-object"
+            trailing-icon="i-material-symbols:data-object"
             @click.prevent="exportJSON"
           >
             JSON
@@ -32,7 +32,8 @@
             variant="outline"
             color="neutral"
             size="xs"
-            icon="i-material-symbols:print-outline"
+            leading-icon="i-material-symbols:print-outline"
+            trailing-icon="i-material-symbols:print-outline"
             @click.prevent="printPage"
           >
             Print
@@ -118,7 +119,7 @@ function printPage() {
 <style scoped>
 .actions-container {
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
 }
 
 .arrow-container {

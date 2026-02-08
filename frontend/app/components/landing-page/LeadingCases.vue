@@ -12,11 +12,13 @@
       <InlineError v-else-if="error" :error="error" />
       <template v-else-if="leadingCases">
         <div class="flex w-full flex-col gap-2">
-          <NuxtLink
+          <UButton
             v-for="(decision, index) in leadingCases.slice(0, 3)"
             :key="index"
             :to="`/court-decision/${decision.ID}`"
-            class="landing-item-button type-court-decision w-full"
+            variant="soft"
+            color="neutral"
+            class="type-court-decision"
           >
             <div class="flag-wrapper">
               <JurisdictionFlag
@@ -34,7 +36,7 @@
                   : decision["Date"]
               }}
             </span>
-          </NuxtLink>
+          </UButton>
         </div>
       </template>
     </div>
