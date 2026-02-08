@@ -70,7 +70,7 @@ function onDayClick(_: Date, event: MouseEvent): void {
 }
 
 .vc-nav-popover-container {
-  z-index: 100;
+  isolation: isolate;
   background: white;
   border-radius: 0.5rem;
   box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);
