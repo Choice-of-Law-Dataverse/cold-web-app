@@ -96,14 +96,20 @@
             </div>
 
             <div class="flex shrink-0 items-center md:w-[200px] md:justify-end">
-              <NuxtLink
+              <UTooltip
                 v-if="row.answer"
-                :to="row.answerLink"
-                class="answer-button max-w-full truncate"
+                :text="row.answer"
+                :disabled="shouldShowDash(row.answer)"
+                :delay-duration="300"
               >
-                <template v-if="shouldShowDash(row.answer)">—</template>
-                <span v-else class="truncate">{{ row.answer }}</span>
-              </NuxtLink>
+                <NuxtLink
+                  :to="row.answerLink"
+                  class="answer-button max-w-full truncate"
+                >
+                  <template v-if="shouldShowDash(row.answer)">—</template>
+                  <span v-else class="truncate">{{ row.answer }}</span>
+                </NuxtLink>
+              </UTooltip>
               <span v-else class="answer-button text-gray-400">—</span>
             </div>
           </div>
@@ -222,25 +228,33 @@
                   >
                     <USkeleton class="h-4 w-16" />
                   </div>
-                  <NuxtLink
+                  <UTooltip
                     v-else-if="
                       jurisdiction.alpha3Code &&
                       row.answers?.[jurisdiction.alpha3Code]
                     "
-                    :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
-                    class="answer-button"
+                    :text="row.answers[jurisdiction.alpha3Code]"
+                    :disabled="
+                      shouldShowDash(row.answers[jurisdiction.alpha3Code])
+                    "
+                    :delay-duration="300"
                   >
-                    <template
-                      v-if="
-                        shouldShowDash(row.answers[jurisdiction.alpha3Code])
-                      "
+                    <NuxtLink
+                      :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
+                      class="answer-button"
                     >
-                      —
-                    </template>
-                    <span v-else class="line-clamp-2">{{
-                      row.answers[jurisdiction.alpha3Code]
-                    }}</span>
-                  </NuxtLink>
+                      <template
+                        v-if="
+                          shouldShowDash(row.answers[jurisdiction.alpha3Code])
+                        "
+                      >
+                        —
+                      </template>
+                      <span v-else class="line-clamp-2">{{
+                        row.answers[jurisdiction.alpha3Code]
+                      }}</span>
+                    </NuxtLink>
+                  </UTooltip>
                   <span v-else class="text-gray-400">—</span>
                 </div>
               </template>
