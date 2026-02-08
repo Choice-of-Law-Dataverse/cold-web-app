@@ -135,27 +135,30 @@ onUnmounted(() => {
 defineExpose({ showMenu });
 </script>
 
-<style scoped>
-:deep(.custom-nav-links) {
+<style>
+/* Unscoped so styles reliably apply through ULink component boundary */
+.custom-nav-links {
   color: var(--color-cold-night) !important;
   text-decoration: none !important;
   font-weight: 600 !important;
 }
 
-:deep(.custom-nav-links.active) {
+.custom-nav-links.active {
   text-decoration: underline !important;
   text-underline-offset: 6px !important;
   text-decoration-thickness: 2px !important;
   text-decoration-color: var(--color-cold-purple) !important;
 }
 
-:deep(.custom-nav-links:hover) {
+.custom-nav-links:hover {
   text-decoration: underline !important;
   text-underline-offset: 6px !important;
   text-decoration-thickness: 2px !important;
   text-decoration-color: var(--color-cold-purple) !important;
 }
+</style>
 
+<style scoped>
 @media (max-width: 639px) {
   .mobile-nav-group {
     gap: 0.75rem;

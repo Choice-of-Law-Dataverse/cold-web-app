@@ -8,7 +8,9 @@
       color="secondary"
       size="sm"
       :icon="openAccess ? undefined : 'i-material-symbols:open-in-new'"
-      :trailing-icon="openAccess ? undefined : 'i-material-symbols:open-in-new'"
+      :trailing-icon="
+        openAccess ? undefined : 'i-material-symbols:arrow-forward'
+      "
       @click.stop
     >
       <template v-if="openAccess" #leading>

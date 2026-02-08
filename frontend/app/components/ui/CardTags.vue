@@ -100,14 +100,23 @@
       </template>
     </template>
 
-    <NuxtLink
+    <UButton
       v-for="(theme, index) in formattedTheme"
       :key="`theme-${index}`"
-      class="label-theme label-link cursor-pointer"
       :to="'/search?theme=' + encodeURIComponent(theme).replace(/%20/g, '+')"
+      variant="link"
+      color="neutral"
+      trailing-icon="i-material-symbols:arrow-forward"
+      class="label-theme group"
+      :ui="{
+        base: 'gap-0 transition-[margin-right] duration-200 hover:mr-[-1rem]',
+        trailingIcon:
+          'h-3 w-0 ml-0 shrink-0 opacity-0 transition-[width,margin,opacity] duration-200 group-hover:w-3 group-hover:ml-1 group-hover:opacity-100',
+      }"
+      @click.stop
     >
       {{ theme }}
-    </NuxtLink>
+    </UButton>
   </div>
 </template>
 

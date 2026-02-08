@@ -6,14 +6,17 @@
     <InlineError v-else-if="error" :error="error" />
     <div v-else-if="displayedItems.length" class="result-value-small">
       <div class="mb-2 flex flex-row flex-wrap gap-x-6 gap-y-2">
-        <NuxtLink
+        <UButton
           v-for="item in displayedItems"
           :key="item.id"
+          variant="ghost"
+          color="neutral"
           class="link-chip--neutral"
+          trailing-icon="i-material-symbols:arrow-forward"
           :to="item.id.startsWith('/') ? item.id : `${basePath}/${item.id}`"
         >
           {{ item.title }}
-        </NuxtLink>
+        </UButton>
       </div>
       <ShowMoreLess
         v-if="items.length > 10"

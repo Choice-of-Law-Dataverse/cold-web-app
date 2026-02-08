@@ -53,6 +53,15 @@ export default defineAppConfig({
           },
         },
         {
+          color: "neutral" as const,
+          variant: "ghost" as const,
+          class: {
+            base: "group cursor-pointer gap-0",
+            trailingIcon:
+              "h-3 w-0 ml-0 shrink-0 opacity-0 transition-[width,margin,opacity] duration-200 group-hover:w-3 group-hover:ml-1 group-hover:opacity-100",
+          },
+        },
+        {
           color: "primary" as const,
           variant: "link" as const,
           class: "font-medium",
