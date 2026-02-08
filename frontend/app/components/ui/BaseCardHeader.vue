@@ -198,34 +198,6 @@
                     />
                     {{ action.label }}
                   </button>
-                  <!-- In-app edit link (no target="_blank") -->
-                  <NuxtLink
-                    v-else-if="action.label === 'Edit' && isInAppEdit"
-                    class="action-button"
-                    :class="action.class"
-                    :to="action.to"
-                  >
-                    <UIcon
-                      :name="action.icon"
-                      class="inline-block text-[1.2em]"
-                    />
-                    {{ action.label }}
-                  </NuxtLink>
-                  <!-- External edit link (Airtable fallback) -->
-                  <NuxtLink
-                    v-else
-                    class="action-button"
-                    :class="action.class"
-                    v-bind="action.to ? { to: action.to } : {}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <UIcon
-                      :name="action.icon"
-                      class="inline-block text-[1.2em]"
-                    />
-                    {{ action.label }}
-                  </NuxtLink>
                 </template>
               </div>
             </template>
@@ -410,12 +382,6 @@ const suggestEditActions = computed(() => {
     icon: "i-material-symbols:print-outline",
   });
 
-  const editLink = suggestEditLink.value;
-  actions.push({
-    label: "Edit",
-    icon: "i-material-symbols:edit-square-outline",
-    to: editLink,
-  });
   return actions;
 });
 
@@ -439,56 +405,8 @@ const mobileMenuItems = computed(() => {
         icon: "i-material-symbols:print-outline",
         onSelect: printPage,
       },
-      {
-        label: "Suggest Edit",
-        icon: "i-material-symbols:edit-square-outline",
-        onSelect: () => {
-          if (isInAppEdit.value) {
-            router.push(suggestEditLink.value);
-          } else {
-            window.open(suggestEditLink.value, "_blank");
-          }
-        },
-      },
     ],
   ];
-});
-
-const suggestEditLink = ref("");
-
-const editableTypeSlugs = {
-  "Court Decision": "court-decision",
-  "Court Decisions": "court-decision",
-  "Domestic Instrument": "domestic-instrument",
-  "Domestic Instruments": "domestic-instrument",
-  "International Instrument": "international-instrument",
-  "International Instruments": "international-instrument",
-  Literature: "literature",
-  "Regional Instrument": "regional-instrument",
-  "Regional Instruments": "regional-instrument",
-};
-
-const isInAppEdit = computed(() => {
-  return props.cardType in editableTypeSlugs;
-});
-
-function buildEditLink() {
-  const slug = editableTypeSlugs[props.cardType];
-  if (slug) {
-    const segments = route.path.split("/").filter(Boolean);
-    const entityId = segments[segments.length - 1];
-    if (entityId && entityId !== "new" && entityId !== "edit") {
-      return `/${slug}/edit?id=${encodeURIComponent(entityId)}`;
-    }
-  }
-  // Fallback to Airtable for unsupported types
-  const currentURL = typeof window !== "undefined" ? window.location.href : "";
-  const airtableFormID = "appQ32aUep05DxTJn/pagmgHV1lW4UIZVXS/form";
-  return `https://airtable.com/${airtableFormID}?prefill_URL=${encodeURIComponent(currentURL)}&hide_URL=true`;
-}
-
-onMounted(() => {
-  suggestEditLink.value = buildEditLink();
 });
 
 const legalFamily = computed(() => {
