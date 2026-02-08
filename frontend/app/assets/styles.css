@@ -682,30 +682,6 @@ li::marker {
 
 /* UI Elements ----------------------------------------------- */
 
-/* Show more/less buttons - using teal as secondary action color */
-/* Exclude [role="switch"] to avoid styling USwitch component */
-button.inline-flex.items-center.rounded-full:not([role="switch"]) {
-  background: color-mix(
-    in srgb,
-    var(--color-cold-teal) 8%,
-    transparent
-  ) !important;
-  color: var(--color-cold-teal) !important;
-  border: 1px solid color-mix(in srgb, var(--color-cold-teal) 20%, transparent);
-  transition: all 0.15s ease;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-}
-
-button.inline-flex.items-center.rounded-full:not([role="switch"]):hover {
-  background: color-mix(
-    in srgb,
-    var(--color-cold-teal) 12%,
-    transparent
-  ) !important;
-  border-color: color-mix(in srgb, var(--color-cold-teal) 35%, transparent);
-}
-
 .suggestion-button {
   color: var(--color-cold-purple) !important;
   font-size: 1.25rem !important;

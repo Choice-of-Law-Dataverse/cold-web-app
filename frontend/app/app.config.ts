@@ -4,5 +4,11 @@ export default defineAppConfig({
       primary: "violet",
       neutral: "slate",
     },
+    button: {},
+    input: {},
+    textarea: {},
+    select: {},
+    selectMenu: {},
+    card: {},
   },
 });
