@@ -67,7 +67,7 @@
       </template>
     </BaseDetailLayout>
     <div class="mt-8">
-      <QuestionJurisdictions
+      <QuestionAnswerMap
         v-if="questionSuffix"
         :question-suffix="questionSuffix"
       />
@@ -94,7 +94,7 @@ import BaseDetailLayout from "@/components/layouts/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import CourtDecisionRenderer from "@/components/legal/CourtDecisionRenderer.vue";
 import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";
-import QuestionJurisdictions from "@/components/ui/QuestionJurisdictions.vue";
+import QuestionAnswerMap from "@/components/jurisdiction/QuestionAnswerMap.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useAnswer } from "@/composables/useRecordDetails";
@@ -103,7 +103,7 @@ import { questionLabels } from "@/config/labels";
 import { questionTooltips } from "@/config/tooltips";
 
 const LazyJurisdictionReportBanner = defineAsyncComponent(
-  () => import("@/components/ui/JurisdictionReportBanner.vue"),
+  () => import("@/components/jurisdiction/JurisdictionReportBanner.vue"),
 );
 const LazyRelatedLiterature = defineAsyncComponent(
   () => import("@/components/literature/RelatedLiterature.vue"),

@@ -154,7 +154,7 @@ import { domesticInstrumentLabels } from "@/config/labels";
 import { domesticInstrumentTooltips } from "@/config/tooltips";
 
 const LazyJurisdictionReportBanner = defineAsyncComponent(
-  () => import("@/components/ui/JurisdictionReportBanner.vue"),
+  () => import("@/components/jurisdiction/JurisdictionReportBanner.vue"),
 );
 
 const route = useRoute();

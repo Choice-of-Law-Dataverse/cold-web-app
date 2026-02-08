@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { mount } from "@vue/test-utils";
-import QuestionJurisdictions from "./QuestionJurisdictions.vue";
+import QuestionAnswerMap from "./QuestionAnswerMap.vue";
 import { ref } from "vue";
 import type {
   QuestionJurisdictionsData,
@@ -50,7 +50,7 @@ function createQuestionData(
   return { questionTitle: "Test Question", answers, answerGroups };
 }
 
-describe("QuestionJurisdictions", () => {
+describe("QuestionAnswerMap", () => {
   beforeEach(() => {
     mockQuestionData.value = null;
     mockIsLoading.value = false;
@@ -58,7 +58,7 @@ describe("QuestionJurisdictions", () => {
   });
 
   it("renders all region buttons", () => {
-    const wrapper = mount(QuestionJurisdictions, {
+    const wrapper = mount(QuestionAnswerMap, {
       props: {
         questionSuffix: "/test-question",
       },
@@ -74,7 +74,7 @@ describe("QuestionJurisdictions", () => {
   });
 
   it("starts with 'All' region selected by default", () => {
-    const wrapper = mount(QuestionJurisdictions, {
+    const wrapper = mount(QuestionAnswerMap, {
       props: {
         questionSuffix: "/test-question",
       },
@@ -84,7 +84,7 @@ describe("QuestionJurisdictions", () => {
   });
 
   it("changes selected region when clicking different region button", async () => {
-    const wrapper = mount(QuestionJurisdictions, {
+    const wrapper = mount(QuestionAnswerMap, {
       props: {
         questionSuffix: "/test-question",
       },
@@ -96,7 +96,7 @@ describe("QuestionJurisdictions", () => {
 
   it("shows loading state when data is loading", () => {
     mockIsLoading.value = true;
-    const wrapper = mount(QuestionJurisdictions, {
+    const wrapper = mount(QuestionAnswerMap, {
       props: {
         questionSuffix: "/test-question",
       },
@@ -106,7 +106,7 @@ describe("QuestionJurisdictions", () => {
 
   it("shows error state when there is an error", () => {
     mockError.value = new Error("Failed to load");
-    const wrapper = mount(QuestionJurisdictions, {
+    const wrapper = mount(QuestionAnswerMap, {
       props: {
         questionSuffix: "/test-question",
       },
@@ -119,7 +119,7 @@ describe("QuestionJurisdictions", () => {
     mockQuestionData.value = createQuestionData([
       { answer: "Yes", jurisdictions: [{ name: "France", code: "FRA" }] },
     ]);
-    const wrapper = mount(QuestionJurisdictions, {
+    const wrapper = mount(QuestionAnswerMap, {
       props: {
         questionSuffix: "/test-question",
       },
@@ -141,7 +141,7 @@ describe("QuestionJurisdictions", () => {
       },
       { answer: "Maybe", jurisdictions: [{ name: "Country1", code: "C01" }] },
     ]);
-    const wrapper = mount(QuestionJurisdictions, {
+    const wrapper = mount(QuestionAnswerMap, {
       props: {
         questionSuffix: "/test-question",
       },
@@ -159,7 +159,7 @@ describe("QuestionJurisdictions", () => {
       { answer: "Apple", jurisdictions: [{ name: "Country2", code: "C02" }] },
       { answer: "Zebra", jurisdictions: [{ name: "Country1", code: "C01" }] },
     ]);
-    const wrapper = mount(QuestionJurisdictions, {
+    const wrapper = mount(QuestionAnswerMap, {
       props: {
         questionSuffix: "/test-question",
       },
@@ -180,7 +180,7 @@ describe("QuestionJurisdictions", () => {
         ],
       },
     ]);
-    const wrapper = mount(QuestionJurisdictions, {
+    const wrapper = mount(QuestionAnswerMap, {
       props: {
         questionSuffix: "/test-question",
       },
@@ -212,7 +212,7 @@ describe("QuestionJurisdictions", () => {
         ],
       },
     ]);
-    const wrapper = mount(QuestionJurisdictions, {
+    const wrapper = mount(QuestionAnswerMap, {
       props: {
         questionSuffix: "/test-question",
       },
@@ -236,7 +236,7 @@ describe("QuestionJurisdictions", () => {
         jurisdictions: [{ name: "France", code: "FRA", region: "Europe" }],
       },
     ]);
-    const wrapper = mount(QuestionJurisdictions, {
+    const wrapper = mount(QuestionAnswerMap, {
       props: {
         questionSuffix: "/test-question",
       },
@@ -256,7 +256,7 @@ describe("QuestionJurisdictions", () => {
     mockQuestionData.value = createQuestionData([
       { answer: "Yes", jurisdictions: [{ name: "France", code: "FRA" }] },
     ]);
-    const wrapper = mount(QuestionJurisdictions, {
+    const wrapper = mount(QuestionAnswerMap, {
       props: {
         questionSuffix: "/test-question",
       },
