@@ -139,16 +139,34 @@
             </UBadge>
           </div>
 
-          <div class="hidden md:block overflow-x-auto">
-            <div class="divide-y divide-gray-100 min-w-fit">
+          <div class="hidden overflow-x-auto md:block">
+            <div
+              class="divide-y divide-gray-100"
+              :class="{ 'min-w-max': isScrollable }"
+            >
               <div
                 class="comparison-header sticky top-0 z-10 flex gap-4 border-b-2 border-gray-200 bg-white py-4 font-semibold"
               >
-                <div :class="questionColumnWidth">Question</div>
+                <div
+                  class="shrink-0"
+                  :class="{ 'sticky left-0 z-20 bg-white': isScrollable }"
+                  :style="{ width: questionColWidth }"
+                >
+                  Question
+                </div>
                 <div
                   v-for="(jurisdiction, index) in jurisdictions"
                   :key="jurisdiction.alpha3Code || jurisdiction.Name"
-                  class="min-w-[80px] flex-1 text-center"
+                  class="min-w-[100px] text-center"
+                  :class="[
+                    isScrollable ? 'shrink-0' : 'flex-1 min-w-0',
+                    index === 0 && isScrollable
+                      ? 'sticky z-10 bg-white'
+                      : '',
+                  ]"
+                  :style="
+                    index === 0 && isScrollable ? { left: primaryColLeft } : {}
+                  "
                 >
                   <button
                     type="button"
@@ -186,17 +204,34 @@
                 class="comparison-row hover-row--emphasis flex gap-4 py-4"
               >
                 <div
-                  class="text-sm whitespace-pre-line"
-                  :class="[questionColumnWidth, { 'font-semibold': isBoldQuestion(row.id) }]"
-                  :style="{ paddingLeft: `${row.level * 2}em` }"
+                  class="shrink-0 text-sm whitespace-pre-line"
+                  :class="[
+                    { 'font-semibold': isBoldQuestion(row.id) },
+                    isScrollable ? 'sticky left-0 z-20 bg-white' : '',
+                  ]"
+                  :style="{
+                    width: questionColWidth,
+                    paddingLeft: `${row.level * 2}em`,
+                  }"
                 >
                   {{ row.question }}
                 </div>
 
                 <div
-                  v-for="jurisdiction in jurisdictions"
+                  v-for="(jurisdiction, jIndex) in jurisdictions"
                   :key="jurisdiction.alpha3Code || jurisdiction.Name"
-                  class="min-w-[80px] flex-1 text-center"
+                  class="min-w-[100px] text-center"
+                  :class="[
+                    isScrollable ? 'shrink-0' : 'flex-1 min-w-0',
+                    jIndex === 0 && isScrollable
+                      ? 'sticky z-10 bg-white'
+                      : '',
+                  ]"
+                  :style="
+                    jIndex === 0 && isScrollable
+                      ? { left: primaryColLeft }
+                      : {}
+                  "
                 >
                   <div
                     v-if="
@@ -450,12 +485,18 @@ const isSingleJurisdiction = computed(() => jurisdictions.value.length === 1);
 
 const useShortLabels = computed(() => jurisdictions.value.length >= 4);
 
-const questionColumnWidth = computed(() => {
+const isScrollable = computed(() => jurisdictions.value.length >= 5);
+
+const questionColWidth = computed(() => {
   const count = jurisdictions.value.length;
-  if (count >= 7) return "w-[25%] min-w-[200px]";
-  if (count >= 5) return "w-[30%] min-w-[200px]";
-  return "w-[40%]";
+  if (count >= 7) return "220px";
+  if (count >= 5) return "280px";
+  return "40%";
 });
+
+const primaryColLeft = computed(() =>
+  `calc(${questionColWidth.value} + 1rem)`,
+);
 
 const jurisdictionLabel = (j: JurisdictionOption) =>
   useShortLabels.value && j.alpha3Code ? j.alpha3Code : j.Name;
