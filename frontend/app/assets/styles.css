@@ -199,7 +199,7 @@
 
   a {
     color: var(--color-cold-purple);
-    text-decoration: none !important;
+    text-decoration: none;
     font-weight: 400;
     transition: all 0.2s ease;
     position: relative;
@@ -216,7 +216,7 @@
   }
 
   .prose a:hover {
-    text-decoration: underline !important;
+    text-decoration: underline;
     text-decoration-color: var(--color-cold-purple);
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
@@ -229,7 +229,7 @@
 .prose h3 > a,
 .content h2 > a,
 .content h3 > a {
-  color: inherit !important;
+  color: inherit;
   text-decoration: none;
 }
 
@@ -239,39 +239,39 @@ h3 > a,
 h4 > a,
 h5 > a,
 h6 > a {
-  font-weight: inherit !important;
-  color: inherit !important;
-  text-decoration: none !important;
+  font-weight: inherit;
+  color: inherit;
+  text-decoration: none;
 }
 
 li::marker {
-  color: var(--color-cold-night) !important;
+  color: var(--color-cold-night);
 }
 
 .prose {
-  font-size: 0.9375rem !important;
-  line-height: 1.7 !important;
-  color: var(--color-cold-night) !important;
-  font-weight: 400 !important;
+  font-size: 0.9375rem;
+  line-height: 1.7;
+  color: var(--color-cold-night);
+  font-weight: 400;
 }
 
 .prose li {
-  margin-bottom: 0.5em !important;
-  color: var(--color-cold-night) !important;
+  margin-bottom: 0.5em;
+  color: var(--color-cold-night);
 }
 
 .prose strong,
 .prose b {
   color: inherit;
-  font-weight: 600 !important;
+  font-weight: 600;
 }
 
 .prose p {
-  margin-bottom: 1em !important;
+  margin-bottom: 1em;
 }
 
 .prose p:last-child {
-  margin-bottom: 0 !important;
+  margin-bottom: 0;
 }
 
 /* Labels */
@@ -2448,8 +2448,8 @@ button.cold-toggle-btn[aria-pressed="true"] {
     135deg,
     var(--color-cold-purple),
     var(--color-cold-teal)
-  ) !important;
-  color: white !important;
+  );
+  color: white;
   font-weight: 600;
   border: none;
   cursor: pointer;

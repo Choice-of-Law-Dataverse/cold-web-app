@@ -595,8 +595,8 @@ const rows = computed(() => {
 
 .question-row {
   margin: 0 -1rem;
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
+  padding-left: 1rem;
+  padding-right: 1rem;
   border-radius: 2px;
   transition: background 0.15s ease;
 }

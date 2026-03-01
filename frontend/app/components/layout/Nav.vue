@@ -127,16 +127,12 @@ onUnmounted(() => {
 }
 
 a {
-  color: var(--color-cold-night) !important;
-  text-decoration: none !important;
+  color: var(--color-cold-night);
+  text-decoration: none;
 }
 
 .bg-purple-active {
-  background-color: color-mix(
-    in srgb,
-    var(--color-cold-purple) 5%,
-    white
-  ) !important;
+  background-color: color-mix(in srgb, var(--color-cold-purple) 5%, white);
 }
 
 nav {
@@ -183,8 +179,8 @@ nav.nav-scrolled .mobile-inline-logo img {
 @media (max-width: 639px) {
   .mobile-inline-logo {
     flex: 0 0 auto;
-    margin-left: 0.3rem !important;
-    margin-right: 0.5rem !important;
+    margin-left: 0.3rem;
+    margin-right: 0.5rem;
   }
 }
 </style>

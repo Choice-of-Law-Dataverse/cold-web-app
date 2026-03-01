@@ -195,55 +195,50 @@ onMounted(() => {
 .rules-table :deep(th),
 .rules-table :deep(td) {
   box-sizing: border-box;
-  width: 125px !important;
-  min-width: 125px !important;
-  max-width: 125px !important;
+  width: 125px;
+  min-width: 125px;
+  max-width: 125px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-right: 16px !important; /* column gutter */
+  padding-right: 16px;
 }
 
-/* Make the first column (Set of Rules) width match the longest string */
 .rules-table :deep(th:first-child),
 .rules-table :deep(td:first-child) {
-  width: var(--set-col-width) !important;
-  min-width: var(--set-col-width) !important;
-  max-width: var(--set-col-width) !important;
+  width: var(--set-col-width);
+  min-width: var(--set-col-width);
+  max-width: var(--set-col-width);
 }
 
-/* Make the Source column 100px wider (125px + 100px = 225px) */
 .rules-table :deep(th:nth-child(4)),
 .rules-table :deep(td:nth-child(4)) {
-  width: 225px !important;
-  min-width: 225px !important;
-  max-width: 225px !important;
+  width: 225px;
+  min-width: 225px;
+  max-width: 225px;
 }
 
 .rules-table :deep(th:last-child),
 .rules-table :deep(td:last-child) {
-  padding-right: 16px !important; /* Add padding to prevent animation cutoff */
-  text-align: right !important; /* align Open column to the right */
+  padding-right: 16px;
+  text-align: right;
 }
 
-/* Ensure the "Open" link uses font-weight 600 even if .label sets 700 */
 .rules-table :deep(td:last-child a.label) {
-  font-weight: 600 !important;
-  font-size: 12px !important;
+  font-weight: 600;
+  font-size: 12px;
 }
 
-/* Increase data row height to 72px and vertically center content */
 .rules-table :deep(tbody tr) {
-  height: 72px !important;
+  height: 72px;
 }
 .rules-table :deep(tbody td) {
-  height: 72px !important;
-  vertical-align: top !important;
+  height: 72px;
+  vertical-align: top;
 }
 
-/* Remove top padding from the first column (Set of Rules) to avoid visual offset */
 .rules-table :deep(tbody td:first-child) {
-  padding-top: 10px !important;
+  padding-top: 10px;
 }
 
 /* Row hover effects */
@@ -259,34 +254,33 @@ onMounted(() => {
 
 /* Style header titles to visually resemble `.label` without breaking sorting */
 .rules-table :deep(thead th) {
-  font-weight: 700 !important; /* similar to .label */
-  font-size: 12px !important; /* similar sizing */
+  font-weight: 700;
+  font-size: 12px;
   letter-spacing: 0.01em;
-  text-transform: uppercase !important;
-  color: var(--color-cold-night);
-}
-/* Stronger override for frameworks that style inner elements */
-.rules-table :deep(thead th span),
-.rules-table :deep(thead th button),
-.rules-table :deep(thead th button span) {
-  font-weight: 700 !important;
-  font-size: 12px !important;
-  letter-spacing: 0.01em !important;
-  text-transform: uppercase !important;
+  text-transform: uppercase;
   color: var(--color-cold-night);
 }
 
-/* Remove hover effect on header titles but keep sorting clickable */
+.rules-table :deep(thead th span),
+.rules-table :deep(thead th button),
+.rules-table :deep(thead th button span) {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--color-cold-night);
+}
+
 .rules-table :deep(thead th button:hover),
 .rules-table :deep(thead th a:hover) {
-  background-color: transparent !important;
-  color: inherit !important;
-  text-decoration: none !important;
-  box-shadow: none !important;
+  background-color: transparent;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: none;
 }
 .rules-table :deep(thead th button:hover span),
 .rules-table :deep(thead th a:hover span) {
-  color: inherit !important;
-  text-decoration: none !important;
+  color: inherit;
+  text-decoration: none;
 }
 </style>

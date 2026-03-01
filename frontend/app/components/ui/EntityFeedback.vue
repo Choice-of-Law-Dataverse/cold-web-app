@@ -83,14 +83,6 @@ async function handleSubmit() {
           variant="ghost"
           class="feedback-btn shadow-lg"
           :ui="{ base: 'rounded-full' }"
-          :style="{
-            background:
-              'linear-gradient(135deg, var(--color-cold-purple), color-mix(in srgb, var(--color-cold-purple) 60%, var(--color-cold-green)))',
-            color: 'white',
-            width: '3.5rem',
-            height: '3.5rem',
-            justifyContent: 'center',
-          }"
           aria-label="Give feedback"
         />
 
@@ -148,14 +140,6 @@ async function handleSubmit() {
       variant="ghost"
       class="feedback-btn shadow-lg lg:hidden"
       :ui="{ base: 'rounded-full' }"
-      :style="{
-        background:
-          'linear-gradient(135deg, var(--color-cold-purple), color-mix(in srgb, var(--color-cold-purple) 60%, var(--color-cold-green)))',
-        color: 'white',
-        width: '3.5rem',
-        height: '3.5rem',
-        justifyContent: 'center',
-      }"
       aria-label="Give feedback"
       @click="modalOpen = true"
     />
@@ -218,6 +202,15 @@ async function handleSubmit() {
 
 <style scoped>
 .feedback-btn {
+  background: linear-gradient(
+    135deg,
+    var(--color-cold-purple),
+    color-mix(in srgb, var(--color-cold-purple) 60%, var(--color-cold-green))
+  );
+  color: white;
+  width: 3.5rem;
+  height: 3.5rem;
+  justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -227,7 +220,7 @@ async function handleSubmit() {
     135deg,
     color-mix(in srgb, var(--color-cold-purple) 85%, #000),
     color-mix(in srgb, var(--color-cold-purple) 50%, var(--color-cold-green))
-  ) !important;
+  );
   transform: scale(1.05);
 }
 </style>

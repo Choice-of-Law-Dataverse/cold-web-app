@@ -206,6 +206,6 @@ function handleNewSave() {
 /* Hide the back button and all right-side card header buttons */
 :deep(.card-header__actions),
 :deep(.card-header [class*="actions"]) {
-  display: none !important;
+  display: none;
 }
 </style>
