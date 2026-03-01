@@ -1,32 +1,27 @@
 <template>
-  <UCard class="h-full w-full" :ui="{ body: '!p-0' }">
-    <div class="gradient-top-border" />
-    <div class="flex flex-col gap-4 p-4 sm:p-6">
-      <div>
-        <h2 class="card-title text-left">Popular Searches</h2>
-        <p class="card-subtitle">Start with frequent queries</p>
-      </div>
-
-      <div class="flex w-full flex-col gap-2">
-        <UButton
-          v-for="(item, index) in searchSuggestions"
-          :key="index"
-          variant="soft"
-          color="neutral"
-          @click="handleSuggestionClick(item.query)"
-        >
-          <Icon name="i-material-symbols:search" class="item-icon" />
-          <span class="flex-1 text-left break-words">{{ item.query }}</span>
-          <span class="result-count">{{ item.count }}+</span>
-        </UButton>
-      </div>
-    </div>
-  </UCard>
+  <LandingCardShell
+    title="Popular Searches"
+    subtitle="Start with frequent queries"
+    header-class="text-left"
+  >
+    <UButton
+      v-for="(item, index) in searchSuggestions"
+      :key="index"
+      variant="soft"
+      color="neutral"
+      @click="handleSuggestionClick(item.query)"
+    >
+      <Icon name="i-material-symbols:search" class="item-icon" />
+      <span class="flex-1 text-left break-words">{{ item.query }}</span>
+      <span class="result-count">{{ item.count }}+</span>
+    </UButton>
+  </LandingCardShell>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRouter } from "vue-router";
 import { ref } from "vue";
+import LandingCardShell from "@/components/landing-page/LandingCardShell.vue";
 import eventBus from "@/eventBus";
 
 const router = useRouter();
@@ -37,7 +32,7 @@ const searchSuggestions = ref([
   { query: "Public Policy in India", count: 28 },
 ]);
 
-function handleSuggestionClick(suggestion) {
+function handleSuggestionClick(suggestion: string) {
   eventBus.emit("update-search", suggestion);
 
   router.push({

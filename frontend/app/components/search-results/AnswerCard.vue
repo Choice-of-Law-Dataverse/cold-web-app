@@ -1,7 +1,6 @@
 <template>
   <ResultCard :result-data="resultData" card-type="Answers">
     <div class="flex flex-col gap-0">
-      <!-- Question section -->
       <DetailRow :label="getLabel('Question')">
         <div
           :class="computeTextClasses('Question', config.valueClassMap.Question)"
@@ -10,7 +9,6 @@
         </div>
       </DetailRow>
 
-      <!-- Answer section -->
       <DetailRow :label="getLabel('Answer')">
         <div
           :class="
@@ -20,20 +18,19 @@
             )
           "
         >
-          <template v-if="Array.isArray(getValue('Answer'))">
+          <template v-if="Array.isArray(answerValue)">
             <div class="flex flex-col gap-2">
-              <div v-for="(line, i) in getValue('Answer')" :key="i">
+              <div v-for="(line, i) in answerValue" :key="i">
                 {{ line }}
               </div>
             </div>
           </template>
           <template v-else>
-            {{ getValue("Answer") }}
+            {{ answerValue }}
           </template>
         </div>
       </DetailRow>
 
-      <!-- More Information section -->
       <DetailRow
         v-if="hasMoreInformation"
         :label="getLabel('More Information')"
@@ -85,7 +82,6 @@
         </div>
       </DetailRow>
 
-      <!-- Last Modified section -->
       <DetailRow v-if="lastUpdatedDisplay" label="Last Updated">
         <div
           :class="
@@ -111,6 +107,7 @@ import { literatureCache } from "@/utils/literatureCache";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import LegalProvisionRenderer from "@/components/legal/LegalProvisionRenderer.vue";
 import { formatYear } from "@/utils/format";
+import { useCardFields } from "@/composables/useCardFields";
 
 const props = defineProps({
   resultData: {
@@ -120,6 +117,19 @@ const props = defineProps({
 });
 
 const config = answerCardConfig;
+
+const { getLabel, getValue, computeTextClasses } = useCardFields(
+  config,
+  props.resultData,
+);
+
+const answerValue = computed(() => {
+  const value = props.resultData["Answer"];
+  if (typeof value === "string" && value.includes(",")) {
+    return value.split(",").map((part) => part.trim());
+  }
+  return getValue("Answer");
+});
 
 const literatureTitles = ref([]);
 
@@ -213,56 +223,11 @@ const lastUpdatedDisplay = computed(() => {
   const y = formatYear(raw);
   return y ? String(y) : "";
 });
-
-const getLabel = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  return pair?.label || key;
-};
-
-const getValue = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  const value = props.resultData[key];
-
-  if (key === "Answer" && typeof value === "string" && value.includes(",")) {
-    return value.split(",").map((part) => part.trim());
-  }
-
-  if (!value && pair?.emptyValueBehavior) {
-    if (pair.emptyValueBehavior.action === "display") {
-      return pair.emptyValueBehavior.fallback;
-    }
-    return "";
-  }
-
-  return value;
-};
-
-const computeTextClasses = (key, baseClass) => {
-  const pair = config.keyLabelPairs.find((p) => p.key === key);
-  const isEmpty = !props.resultData[key] || props.resultData[key] === "NA";
-  const emptyClass =
-    isEmpty && pair?.emptyValueBehavior?.action === "display"
-      ? "text-gray-400"
-      : "";
-  return [baseClass, "text-sm leading-relaxed whitespace-pre-line", emptyClass];
-};
 </script>
 
 <style scoped>
-.answer-card-grid {
-  display: grid;
-  grid-template-columns: repeat(12, var(--column-width));
-  column-gap: var(--gutter-width);
-  align-items: start;
-}
-
-.grid-item {
-  display: flex;
-  flex-direction: column;
-}
-
 .result-value-small li {
-  list-style-type: disc; /* Forces bullet points */
-  margin-left: 20px; /* Ensures proper indentation */
+  list-style-type: disc;
+  margin-left: 20px;
 }
 </style>
