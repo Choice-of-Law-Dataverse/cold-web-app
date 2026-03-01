@@ -13,9 +13,9 @@
       <template #title="{ value }">
         <section v-if="value" class="section-gap">
           <DetailRow :label="literatureLabels['Title']">
-            <div class="flex items-start justify-between gap-4">
-              <div class="result-value-small flex-1">{{ value }}</div>
-              <div class="flex flex-shrink-0 items-center gap-3">
+            <TitleWithActions>
+              {{ value }}
+              <template #actions>
                 <PdfLink
                   :pdf-field="literature?.['Official Source (PDF)']"
                   :record-id="id"
@@ -26,8 +26,8 @@
                   :label="sourceLinkLabel"
                   :open-access="!!literature?.['Open Access URL']"
                 />
-              </div>
-            </div>
+              </template>
+            </TitleWithActions>
           </DetailRow>
         </section>
       </template>
@@ -110,6 +110,7 @@ import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import { useLiterature } from "@/composables/useRecordDetails";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
+import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";

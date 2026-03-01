@@ -1,55 +1,30 @@
 <template>
-  <UCard class="flex h-full w-full flex-col" :ui="{ body: '!p-0' }">
-    <div class="gradient-top-border" />
-    <div class="flex w-full flex-col gap-4 p-4 sm:p-6">
-      <div>
-        <h2 class="card-title">Successful Legal Transplantations</h2>
-        <p class="card-subtitle">
-          Domestic Instruments compatible with the HCCH Principles
-        </p>
-      </div>
-      <div v-if="isLoading">
-        <LoadingLandingPageCard />
-      </div>
-      <InlineError v-else-if="error" :error="error" />
-      <template v-else-if="domesticInstruments">
-        <div class="flex w-full flex-col gap-2">
-          <UButton
-            v-for="(instrument, index) in domesticInstruments.slice(0, 9)"
-            :key="index"
-            :to="`/domestic-instrument/${instrument.ID}`"
-            variant="soft"
-            color="neutral"
-            class="type-instrument"
-          >
-            <div class="flag-wrapper">
-              <JurisdictionFlag
-                :iso3="instrument['Jurisdictions Alpha-3 Code']"
-                class="item-flag"
-              />
-            </div>
-            <span class="item-title">
-              {{ instrument["Title (in English)"] }}
-            </span>
-            <span class="item-year">
-              {{
-                instrument["Entry Into Force"]
-                  ? formatYear(instrument["Entry Into Force"])
-                  : instrument["Date"]
-              }}
-            </span>
-          </UButton>
-        </div>
-      </template>
-    </div>
-  </UCard>
+  <LandingCardShell
+    title="Successful Legal Transplantations"
+    subtitle="Domestic Instruments compatible with the HCCH Principles"
+    :loading="isLoading"
+    :error="error"
+  >
+    <FlagTitleYearItem
+      v-for="(instrument, index) in domesticInstruments?.slice(0, 9)"
+      :key="index"
+      :to="`/domestic-instrument/${instrument.ID}`"
+      :iso3="instrument['Jurisdictions Alpha-3 Code'] || ''"
+      :title="instrument['Title (in English)'] || ''"
+      :year="
+        instrument['Entry Into Force']
+          ? String(formatYear(instrument['Entry Into Force']))
+          : instrument['Date'] || ''
+      "
+      type-class="type-instrument"
+    />
+  </LandingCardShell>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
-import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
-import InlineError from "@/components/ui/InlineError.vue";
-import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+import LandingCardShell from "@/components/landing-page/LandingCardShell.vue";
+import FlagTitleYearItem from "@/components/landing-page/FlagTitleYearItem.vue";
 import { useDomesticInstruments } from "@/composables/useDomesticInstruments";
 import { formatYear } from "@/utils/format";
 

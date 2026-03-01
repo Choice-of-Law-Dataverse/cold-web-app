@@ -1,56 +1,30 @@
 <template>
   <ResultCard
-    :result-data="processedResultData"
+    :result-data="processedData ?? {}"
     card-type="Regional Instrument"
   >
     <div class="flex w-full flex-col gap-0">
-      <!-- Abbreviation section -->
       <DetailRow :label="getLabel('Abbreviation')">
-        <div class="flex w-full items-start justify-between gap-4">
-          <div
-            :class="[
-              config.valueClassMap['Abbreviation'],
-              'text-sm leading-relaxed whitespace-pre-line',
-              (!processedResultData['Abbreviation'] ||
-                processedResultData['Abbreviation'] === 'NA') &&
-              config.keyLabelPairs.find((pair) => pair.key === 'Abbreviation')
-                ?.emptyValueBehavior?.action === 'display'
-                ? 'text-gray-400'
-                : '',
-            ]"
-          >
-            {{ getValue("Abbreviation") }}
-          </div>
-
-          <PdfLink
-            :pdf-field="resultData['Attachment']"
-            :record-id="resultData.id"
-            folder-name="regional-instruments"
-          />
-        </div>
+        <TitleWithActions :title-class="fieldClasses('Abbreviation')">
+          {{ getValue("Abbreviation") }}
+          <template #actions>
+            <PdfLink
+              :pdf-field="resultData['Attachment']"
+              :record-id="resultData.id"
+              folder-name="regional-instruments"
+            />
+          </template>
+        </TitleWithActions>
       </DetailRow>
 
-      <!-- Date section -->
       <DetailRow v-if="shouldDisplay('Date')" :label="getLabel('Date')">
-        <div :class="config.valueClassMap['Date']">
-          {{ format.formatDate(getValue("Date")) }}
+        <div :class="fieldClasses('Date')">
+          {{ format.formatDate(getValue("Date") as string) }}
         </div>
       </DetailRow>
 
-      <!-- Title section -->
       <DetailRow v-if="shouldDisplay('Title')" :label="getLabel('Title')">
-        <div
-          :class="[
-            config.valueClassMap['Title'],
-            'text-sm leading-relaxed whitespace-pre-line',
-            (!processedResultData['Title'] ||
-              processedResultData['Title'] === 'NA') &&
-            config.keyLabelPairs.find((pair) => pair.key === 'Title')
-              ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-400'
-              : '',
-          ]"
-        >
+        <div :class="fieldClasses('Title')">
           {{ getValue("Title") }}
         </div>
       </DetailRow>
@@ -58,13 +32,14 @@
   </ResultCard>
 </template>
 
-<script setup>
-import { computed } from "vue";
+<script setup lang="ts">
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import { regionalInstrumentCardConfig } from "@/config/cardConfigs";
 import * as format from "@/utils/format";
+import { useCardFields } from "@/composables/useCardFields";
 
 const props = defineProps({
   resultData: {
@@ -73,48 +48,6 @@ const props = defineProps({
   },
 });
 
-const config = regionalInstrumentCardConfig;
-
-const processedResultData = computed(() => {
-  return props.resultData;
-});
-
-const getLabel = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  return pair?.label || key;
-};
-
-const getValue = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  const value = processedResultData.value?.[key];
-  if (!value && pair?.emptyValueBehavior) {
-    if (pair.emptyValueBehavior.action === "display") {
-      return pair.emptyValueBehavior.fallback;
-    }
-    return "";
-  }
-  return value;
-};
-
-const shouldDisplay = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  return (
-    pair?.emptyValueBehavior?.action === "display" ||
-    processedResultData.value?.[key]
-  );
-};
+const { getLabel, getValue, shouldDisplay, fieldClasses, processedData } =
+  useCardFields(regionalInstrumentCardConfig, props.resultData);
 </script>
-
-<style scoped>
-.legislation-card-grid {
-  display: grid;
-  grid-template-columns: repeat(12, var(--column-width));
-  column-gap: var(--gutter-width);
-  align-items: start;
-}
-
-.grid-item {
-  display: flex;
-  flex-direction: column;
-}
-</style>
