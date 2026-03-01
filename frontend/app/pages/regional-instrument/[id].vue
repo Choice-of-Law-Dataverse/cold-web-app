@@ -12,19 +12,17 @@
       <!-- Abbreviation with PDF and Source Link -->
       <template #abbreviation="{ value }">
         <DetailRow :label="regionalInstrumentLabels['Abbreviation']">
-          <div class="flex items-start justify-between gap-4">
-            <div class="result-value-small flex-1">
-              {{ value }}
-            </div>
-            <div class="flex flex-shrink-0 items-center gap-3">
+          <TitleWithActions>
+            {{ value }}
+            <template #actions>
               <PdfLink
                 :pdf-field="regionalInstrument?.Attachment"
                 :record-id="route.params.id as string"
                 folder-name="regional-instruments"
               />
               <SourceExternalLink :source-url="regionalInstrument?.URL" />
-            </div>
-          </div>
+            </template>
+          </TitleWithActions>
         </DetailRow>
       </template>
 
@@ -90,6 +88,7 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
+import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import { useRegionalInstrument } from "@/composables/useRecordDetails";
 import LegalProvision from "@/components/legal/LegalProvision.vue";

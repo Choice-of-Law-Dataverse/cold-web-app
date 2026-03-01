@@ -1,22 +1,10 @@
 <template>
-  <ResultCard :result-data="processedResultData" card-type="Literature">
+  <ResultCard :result-data="processedData ?? {}" card-type="Literature">
     <div class="flex flex-col gap-0">
-      <!-- Title section -->
       <DetailRow :label="getLabel('Title')">
-        <div
-          :class="[
-            config.valueClassMap.Title,
-            'text-sm leading-relaxed whitespace-pre-line',
-            (!processedResultData.Title ||
-              processedResultData.Title === 'NA') &&
-            config.keyLabelPairs.find((pair) => pair.key === 'Title')
-              ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-400'
-              : '',
-          ]"
-        >
+        <div :class="fieldClasses('Title')">
           {{ getValue("Title") }}
-          <span v-if="processedResultData?.['Open Access']"
+          <span v-if="processedData?.['Open Access']"
             ><img
               class="ml-1 inline-flex w-3"
               src="https://choiceoflaw.blob.core.windows.net/assets/Open_Access_logo_PLoS_transparent.svg"
@@ -25,87 +13,36 @@
         </div>
       </DetailRow>
 
-      <!-- Author section -->
       <DetailRow :label="getLabel('Author')">
-        <div
-          :class="[
-            config.valueClassMap.Author,
-            'text-sm leading-relaxed whitespace-pre-line',
-            (!processedResultData.Author ||
-              processedResultData.Author === 'NA') &&
-            config.keyLabelPairs.find((pair) => pair.key === 'Author')
-              ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-400'
-              : '',
-          ]"
-        >
+        <div :class="fieldClasses('Author')">
           {{ getValue("Author") }}
         </div>
       </DetailRow>
 
-      <!-- Publication Year section -->
       <DetailRow :label="getLabel('Publication Year')">
-        <div
-          :class="[
-            config.valueClassMap['Publication Year'],
-            'text-sm leading-relaxed whitespace-pre-line',
-            (!processedResultData['Publication Year'] ||
-              processedResultData['Publication Year'] === 'NA') &&
-            config.keyLabelPairs.find((pair) => pair.key === 'Publication Year')
-              ?.emptyValueBehavior?.action === 'display'
-              ? 'text-gray-400'
-              : '',
-          ]"
-        >
+        <div :class="fieldClasses('Publication Year')">
           {{ getValue("Publication Year") }}
         </div>
       </DetailRow>
 
-      <!-- Publication Title section -->
       <template
         v-if="
           shouldDisplay('Publication Title') &&
-          processedResultData['Publication Title']
+          processedData?.['Publication Title']
         "
       >
         <DetailRow :label="getLabel('Publication Title')">
-          <div
-            :class="[
-              config.valueClassMap['Publication Title'],
-              'text-sm leading-relaxed whitespace-pre-line',
-              (!processedResultData['Publication Title'] ||
-                processedResultData['Publication Title'] === 'NA') &&
-              config.keyLabelPairs.find(
-                (pair) => pair.key === 'Publication Title',
-              )?.emptyValueBehavior?.action === 'display'
-                ? 'text-gray-400'
-                : '',
-            ]"
-          >
+          <div :class="fieldClasses('Publication Title')">
             {{ getValue("Publication Title") }}
           </div>
         </DetailRow>
       </template>
 
-      <!-- Publisher section -->
       <template
-        v-else-if="
-          shouldDisplay('Publisher') && processedResultData['Publisher']
-        "
+        v-else-if="shouldDisplay('Publisher') && processedData?.['Publisher']"
       >
         <DetailRow :label="getLabel('Publisher')">
-          <div
-            :class="[
-              config.valueClassMap['Publisher'],
-              'text-sm leading-relaxed whitespace-pre-line',
-              (!processedResultData['Publisher'] ||
-                processedResultData['Publisher'] === 'NA') &&
-              config.keyLabelPairs.find((pair) => pair.key === 'Publisher')
-                ?.emptyValueBehavior?.action === 'display'
-                ? 'text-gray-400'
-                : '',
-            ]"
-          >
+          <div :class="fieldClasses('Publisher')">
             {{ getValue("Publisher") }}
           </div>
         </DetailRow>
@@ -114,11 +51,11 @@
   </ResultCard>
 </template>
 
-<script setup>
-import { computed } from "vue";
+<script setup lang="ts">
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import { literatureCardConfig } from "@/config/cardConfigs";
+import { useCardFields } from "@/composables/useCardFields";
 
 const props = defineProps({
   resultData: {
@@ -127,48 +64,6 @@ const props = defineProps({
   },
 });
 
-const config = literatureCardConfig;
-
-const processedResultData = computed(() => {
-  return config.processData(props.resultData);
-});
-
-const getLabel = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  return pair?.label || key;
-};
-
-const shouldDisplay = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  if (!pair?.emptyValueBehavior?.shouldDisplay) return true;
-  return pair.emptyValueBehavior.shouldDisplay(processedResultData.value);
-};
-
-const getValue = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  const value = processedResultData.value?.[key];
-
-  if (!value && pair?.emptyValueBehavior) {
-    if (pair.emptyValueBehavior.action === "display") {
-      return pair.emptyValueBehavior.fallback;
-    }
-    return "";
-  }
-
-  return value;
-};
+const { getLabel, getValue, shouldDisplay, fieldClasses, processedData } =
+  useCardFields(literatureCardConfig, props.resultData);
 </script>
-
-<style scoped>
-.literature-card-grid {
-  display: grid;
-  grid-template-columns: repeat(12, var(--column-width));
-  column-gap: var(--gutter-width);
-  align-items: start;
-}
-
-.grid-item {
-  display: flex;
-  flex-direction: column;
-}
-</style>

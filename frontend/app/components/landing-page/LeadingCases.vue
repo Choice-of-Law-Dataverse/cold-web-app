@@ -1,52 +1,29 @@
 <template>
-  <UCard class="landing-card flex h-full w-full" :ui="{ body: '!p-0' }">
-    <div class="gradient-top-border" />
-    <div class="flex w-full flex-col gap-4 p-4 sm:p-6">
-      <div>
-        <h2 class="card-title">Leading Cases</h2>
-        <p class="card-subtitle mb-0">Read top-ranked court decisions</p>
-      </div>
-      <div v-if="isLoading">
-        <LoadingLandingPageCard />
-      </div>
-      <InlineError v-else-if="error" :error="error" />
-      <template v-else-if="leadingCases">
-        <div class="flex w-full flex-col gap-2">
-          <UButton
-            v-for="(decision, index) in leadingCases.slice(0, 3)"
-            :key="index"
-            :to="`/court-decision/${decision.ID}`"
-            variant="soft"
-            color="neutral"
-            class="type-court-decision"
-          >
-            <div class="flag-wrapper">
-              <JurisdictionFlag
-                :iso3="decision['Jurisdictions Alpha-3 Code']"
-                class="item-flag"
-              />
-            </div>
-            <span class="item-title">
-              {{ decision["Case Title"] }}
-            </span>
-            <span class="item-year">
-              {{
-                decision["Publication Date ISO"]
-                  ? formatYear(decision["Publication Date ISO"])
-                  : decision["Date"]
-              }}
-            </span>
-          </UButton>
-        </div>
-      </template>
-    </div>
-  </UCard>
+  <LandingCardShell
+    title="Leading Cases"
+    subtitle="Read top-ranked court decisions"
+    :loading="isLoading"
+    :error="error"
+  >
+    <FlagTitleYearItem
+      v-for="(decision, index) in leadingCases?.slice(0, 3)"
+      :key="index"
+      :to="`/court-decision/${decision.ID}`"
+      :iso3="decision['Jurisdictions Alpha-3 Code'] || ''"
+      :title="decision['Case Title'] || ''"
+      :year="
+        decision['Publication Date ISO']
+          ? String(formatYear(decision['Publication Date ISO']))
+          : decision['Date'] || ''
+      "
+      type-class="type-court-decision"
+    />
+  </LandingCardShell>
 </template>
 
-<script setup>
-import LoadingLandingPageCard from "@/components/layout/LoadingLandingPageCard.vue";
-import InlineError from "@/components/ui/InlineError.vue";
-import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+<script setup lang="ts">
+import LandingCardShell from "@/components/landing-page/LandingCardShell.vue";
+import FlagTitleYearItem from "@/components/landing-page/FlagTitleYearItem.vue";
 import { useLeadingCases } from "@/composables/useFullTable";
 import { formatYear } from "@/utils/format";
 

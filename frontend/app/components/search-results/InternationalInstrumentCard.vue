@@ -1,56 +1,43 @@
 <template>
   <ResultCard
-    :result-data="processedResultData"
+    :result-data="processedData ?? {}"
     card-type="International Instrument"
   >
     <div class="flex w-full flex-col gap-0">
-      <!-- Title section -->
       <DetailRow :label="getLabel('Name')">
-        <div class="flex w-full items-start justify-between gap-4">
-          <div
-            :class="[
-              config.valueClassMap['Name'],
-              'text-sm leading-relaxed whitespace-pre-line',
-              (!processedResultData['Name'] ||
-                processedResultData['Name'] === 'NA') &&
-              config.keyLabelPairs.find((pair) => pair.key === 'Name')
-                ?.emptyValueBehavior?.action === 'display'
-                ? 'text-gray-400'
-                : '',
-            ]"
-          >
-            {{ getValue("Name") }}
-          </div>
-
-          <PdfLink
-            :pdf-field="
-              resultData['Official Source (PDF)'] ||
-              resultData['Source (PDF)'] ||
-              resultData['Attachment']
-            "
-            :record-id="resultData.id"
-            folder-name="international-instruments"
-          />
-        </div>
+        <TitleWithActions :title-class="fieldClasses('Name')">
+          {{ getValue("Name") }}
+          <template #actions>
+            <PdfLink
+              :pdf-field="
+                resultData['Official Source (PDF)'] ||
+                resultData['Source (PDF)'] ||
+                resultData['Attachment']
+              "
+              :record-id="resultData.id"
+              folder-name="international-instruments"
+            />
+          </template>
+        </TitleWithActions>
       </DetailRow>
 
-      <!-- Date section -->
       <DetailRow v-if="shouldDisplay('Date')" :label="getLabel('Date')">
-        <div :class="config.valueClassMap['Date']">
-          {{ format.formatDate(getValue("Date")) }}
+        <div :class="fieldClasses('Date')">
+          {{ format.formatDate(getValue("Date") as string) }}
         </div>
       </DetailRow>
     </div>
   </ResultCard>
 </template>
 
-<script setup>
-import { computed } from "vue";
+<script setup lang="ts">
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import { internationalInstrumentCardConfig } from "@/config/cardConfigs";
 import * as format from "@/utils/format.js";
+import { useCardFields } from "@/composables/useCardFields";
 
 const props = defineProps({
   resultData: {
@@ -59,48 +46,6 @@ const props = defineProps({
   },
 });
 
-const config = internationalInstrumentCardConfig;
-
-const processedResultData = computed(() => {
-  return props.resultData;
-});
-
-const getLabel = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  return pair?.label || key;
-};
-
-const getValue = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  const value = processedResultData.value?.[key];
-  if (!value && pair?.emptyValueBehavior) {
-    if (pair.emptyValueBehavior.action === "display") {
-      return pair.emptyValueBehavior.fallback;
-    }
-    return "";
-  }
-  return value;
-};
-
-const shouldDisplay = (key) => {
-  const pair = config.keyLabelPairs.find((pair) => pair.key === key);
-  return (
-    pair?.emptyValueBehavior?.action === "display" ||
-    processedResultData.value?.[key]
-  );
-};
+const { getLabel, getValue, shouldDisplay, fieldClasses, processedData } =
+  useCardFields(internationalInstrumentCardConfig, props.resultData);
 </script>
-
-<style scoped>
-.legislation-card-grid {
-  display: grid;
-  grid-template-columns: repeat(12, var(--column-width));
-  column-gap: var(--gutter-width);
-  align-items: start;
-}
-
-.grid-item {
-  display: flex;
-  flex-direction: column;
-}
-</style>
