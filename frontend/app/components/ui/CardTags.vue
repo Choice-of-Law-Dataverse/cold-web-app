@@ -233,12 +233,12 @@ function getSourceTablePlural(label) {
 }
 
 a {
-  font-weight: 500 !important;
-  text-decoration: none !important;
+  font-weight: 500;
+  text-decoration: none;
 }
 
 .jurisdiction-label-link {
-  font-weight: 600 !important;
+  font-weight: 600;
 
   .flag-wrapper {
     width: 1.125rem;
@@ -267,23 +267,23 @@ a {
 
 .label-court-decision,
 a.label-court-decision {
-  color: var(--color-label-court-decision) !important;
+  color: var(--color-label-court-decision);
 }
 .label-question,
 a.label-question {
-  color: var(--color-label-question) !important;
+  color: var(--color-label-question);
 }
 .label-instrument,
 a.label-instrument {
-  color: var(--color-label-instrument) !important;
+  color: var(--color-label-instrument);
 }
 .label-literature,
 a.label-literature {
-  color: var(--color-label-literature) !important;
+  color: var(--color-label-literature);
 }
 .label-arbitration,
 a.label-arbitration {
-  color: var(--color-label-arbitration) !important;
+  color: var(--color-label-arbitration);
 }
 
 .custom-caret {

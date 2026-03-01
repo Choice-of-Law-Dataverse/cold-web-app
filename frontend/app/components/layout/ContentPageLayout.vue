@@ -52,7 +52,7 @@ defineProps({
 
   ::v-deep(ol > li) {
     counter-increment: list-counter;
-    padding-inline-start: 0px !important;
+    padding-inline-start: 0px;
   }
 
   ::v-deep(ol > li::before) {

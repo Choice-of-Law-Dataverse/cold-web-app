@@ -222,7 +222,7 @@ const mobileMenuItems = computed(() => {
 }
 
 .gray-link {
-  color: var(--color-cold-night-alpha-25) !important;
+  color: var(--color-cold-night-alpha-25);
 }
 
 :deep(.mobile-menu-item) {
