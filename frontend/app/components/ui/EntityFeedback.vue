@@ -144,7 +144,7 @@ async function handleSubmit() {
       @click="modalOpen = true"
     />
 
-    <UModal v-model:open="modalOpen">
+    <UModal v-model:open="modalOpen" title="Give Feedback">
       <template #content>
         <div class="p-6">
           <h3 class="mb-4 text-lg font-semibold">Give Feedback</h3>

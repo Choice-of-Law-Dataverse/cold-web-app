@@ -1,5 +1,9 @@
 <template>
-  <UModal v-model:open="modelValueProxy" :dismissible="false">
+  <UModal
+    v-model:open="modelValueProxy"
+    :dismissible="false"
+    title="Discard changes?"
+  >
     <template #content>
       <slot name="cancel-modal" :close="closeModal">
         <div class="p-6 text-center">

@@ -81,7 +81,7 @@ a:hover .number-card {
 }
 
 .number-display {
-  font-size: 64px;
+  font-size: clamp(2.5rem, 8vw, 4rem);
   font-weight: 700;
   background: linear-gradient(
     135deg,
@@ -106,7 +106,7 @@ a:hover .number-display {
 }
 
 .digit {
-  font-size: 64px;
+  font-size: clamp(2.5rem, 8vw, 4rem);
   font-weight: 700;
   background: linear-gradient(
     135deg,

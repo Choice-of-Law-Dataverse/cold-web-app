@@ -1,5 +1,8 @@
 <template>
   <div>
+    <h1 v-if="regionalInstrument?.Abbreviation" class="sr-only">
+      {{ regionalInstrument.Abbreviation }}
+    </h1>
     <BaseDetailLayout
       table="Regional Instruments"
       :loading="loading"

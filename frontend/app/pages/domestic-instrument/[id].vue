@@ -1,5 +1,8 @@
 <template>
   <div>
+    <h1 v-if="legalInstrument?.['Title (in English)']" class="sr-only">
+      {{ legalInstrument["Title (in English)"] }}
+    </h1>
     <BaseDetailLayout
       table="Domestic Instruments"
       :loading="loading"

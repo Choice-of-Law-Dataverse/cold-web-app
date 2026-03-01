@@ -1,8 +1,12 @@
 <template>
   <div class="bg-cold-bg flex min-h-dvh flex-col">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <Nav />
 
-    <main class="main-content isolate flex-1 px-3 py-6 sm:px-6 sm:py-12">
+    <main
+      id="main-content"
+      class="main-content isolate flex-1 px-3 py-6 sm:px-6 sm:py-12"
+    >
       <div class="max-w-container mx-auto w-full">
         <div class="flex flex-col gap-4 sm:gap-6">
           <ErrorBoundary>
@@ -14,6 +18,10 @@
     </main>
 
     <Footer />
+
+    <div aria-live="polite" aria-atomic="true" class="sr-only">
+      {{ announcement }}
+    </div>
   </div>
 </template>
 
@@ -21,6 +29,9 @@
 import Nav from "@/components/layout/Nav.vue";
 import Footer from "@/components/layout/Footer.vue";
 import ErrorBoundary from "@/components/ui/ErrorBoundary.vue";
+import { useAnnouncer } from "@/composables/useAnnouncer";
+
+const { announcement } = useAnnouncer();
 // import { useNavigationDirection } from "@/composables/useNavigationDirection";
 
 // const { direction } = useNavigationDirection();

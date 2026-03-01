@@ -20,6 +20,15 @@
         ref="searchInput"
         :model-value="searchText"
         size="xl"
+        role="combobox"
+        :aria-expanded="(isSearchFocused && showSuggestions).toString()"
+        aria-controls="search-suggestions"
+        aria-autocomplete="list"
+        :aria-activedescendant="
+          activeSuggestionIndex >= 0
+            ? `suggestion-${activeSuggestionIndex}`
+            : undefined
+        "
         class="placeholder-purple search-input w-full font-semibold"
         :class="{ 'search-input-scrolled': isScrolled }"
         placeholder="Search"
@@ -37,14 +46,17 @@
             : 'var(--color-cold-purple-alpha)',
         }"
         @update:model-value="$emit('update:searchText', $event)"
-        @keyup.enter="emitSearch"
+        @keyup.enter="handleEnterKey"
         @keydown.esc="clearSearch"
+        @keydown.down.prevent="handleArrowDown"
+        @keydown.up.prevent="handleArrowUp"
         @focus="expandSearch"
         @blur="collapseSearch"
       >
         <template #leading>
           <button
             type="button"
+            aria-label="Submit search"
             class="flex cursor-pointer items-center justify-center"
             @click="emitSearch"
           >
@@ -58,6 +70,7 @@
           <button
             v-show="isExpanded"
             type="button"
+            aria-label="Clear search"
             class="text-cold-night hover:text-cold-purple flex items-center justify-center"
             @mousedown.prevent
             @click="clearSearch"
@@ -70,14 +83,20 @@
 
     <div
       v-if="isSearchFocused && showSuggestions"
+      id="search-suggestions"
+      role="listbox"
       class="suggestions border-cold-gray w-full border-b"
     >
       <div class="suggestions-inner">
         <div
-          v-for="suggestion in suggestions"
+          v-for="(suggestion, index) in suggestions"
+          :id="`suggestion-${index}`"
           :key="suggestion"
+          role="option"
+          :aria-selected="index === activeSuggestionIndex"
           class="suggestion-item"
-          @click="handleSuggestionClick(suggestion)"
+          :class="{ 'suggestion-item-active': index === activeSuggestionIndex }"
+          @mousedown.prevent="handleSuggestionClick(suggestion)"
         >
           <span class="suggestion-text"
             >Only show results from {{ suggestion }}</span
@@ -123,6 +142,7 @@ const suggestions = ref([]);
 const showSuggestions = ref(false);
 const enableJurisdictionFetch = ref(false);
 const searchInput = ref(null);
+const activeSuggestionIndex = ref(-1);
 
 const MIN_SEARCH_LENGTH = 3;
 
@@ -155,6 +175,7 @@ function updateSuggestions() {
 
   suggestions.value = filtered.slice(0, 5);
   showSuggestions.value = suggestions.value.length > 0;
+  activeSuggestionIndex.value = -1;
 }
 
 function handleSuggestionClick(selected) {
@@ -214,6 +235,30 @@ watch(
     }
   },
 );
+
+function handleArrowDown() {
+  if (!showSuggestions.value || suggestions.value.length === 0) return;
+  activeSuggestionIndex.value =
+    activeSuggestionIndex.value < suggestions.value.length - 1
+      ? activeSuggestionIndex.value + 1
+      : 0;
+}
+
+function handleArrowUp() {
+  if (!showSuggestions.value || suggestions.value.length === 0) return;
+  activeSuggestionIndex.value =
+    activeSuggestionIndex.value > 0
+      ? activeSuggestionIndex.value - 1
+      : suggestions.value.length - 1;
+}
+
+function handleEnterKey() {
+  if (activeSuggestionIndex.value >= 0 && showSuggestions.value) {
+    handleSuggestionClick(suggestions.value[activeSuggestionIndex.value]);
+    return;
+  }
+  emitSearch();
+}
 
 function emitSearch() {
   const query = { ...route.query };
@@ -336,6 +381,8 @@ onUnmounted(() => {
   left: 50%;
   transform: translateX(-50%);
   width: 100vw;
+  max-width: 100vw;
+  box-sizing: border-box;
   z-index: 1000;
   background-color: var(--color-cold-purple-fake-alpha);
 }
@@ -355,7 +402,8 @@ onUnmounted(() => {
   transition: background-color 0.2s;
 }
 
-.suggestion-item:hover {
+.suggestion-item:hover,
+.suggestion-item-active {
   background-color: rgba(0, 0, 0, 0.05);
 }
 
@@ -371,8 +419,8 @@ onUnmounted(() => {
   cursor: pointer;
   padding: 0;
   color: var(--color-cold-purple);
-  height: 2.5rem;
-  width: 2.5rem;
+  height: 2.75rem;
+  width: 2.75rem;
   align-items: center;
   justify-content: center;
 }
@@ -380,8 +428,8 @@ onUnmounted(() => {
 @media (max-width: 639px) {
   .collapsed-search-icon {
     display: inline-flex;
-    height: 2.5rem;
-    width: 2.5rem;
+    height: 2.75rem;
+    width: 2.75rem;
   }
   .collapsed-search-icon .iconify {
     font-size: 1.5rem;

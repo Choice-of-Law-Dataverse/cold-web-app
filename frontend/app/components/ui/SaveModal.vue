@@ -1,5 +1,9 @@
 <template>
-  <UModal v-model:open="modelValueProxy" :dismissible="false">
+  <UModal
+    v-model:open="modelValueProxy"
+    :dismissible="false"
+    title="Ready to submit?"
+  >
     <template #content>
       <div class="p-6">
         <h2 class="mb-4 text-center text-lg font-bold">Ready to submit?</h2>
@@ -21,19 +25,24 @@
         </UFormField>
 
         <div class="flex flex-col items-center gap-2">
-          <h2
-            class="mb-4 flex cursor-pointer items-center p-0 text-[var(--color-cold-purple)]"
-            @click.prevent="handleSubmit()"
+          <button
+            type="button"
+            class="mb-4 flex cursor-pointer items-center p-0 font-bold text-[var(--color-cold-purple)]"
+            @click="handleSubmit()"
           >
             Submit Your Data Now
             <UIcon
               name="i-material-symbols:add-notes-outline"
               class="relative ml-1 inline-block text-[1.2em]"
             />
-          </h2>
-          <NuxtLink class="gray-link cursor-pointer" @click="closeModal"
-            >Go Back</NuxtLink
+          </button>
+          <button
+            type="button"
+            class="gray-link cursor-pointer"
+            @click="closeModal"
           >
+            Go Back
+          </button>
         </div>
       </div>
     </template>

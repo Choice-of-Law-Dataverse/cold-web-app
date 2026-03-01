@@ -1,5 +1,8 @@
 <template>
   <div>
+    <h1 v-if="courtDecision?.['Case Title']" class="sr-only">
+      {{ courtDecision["Case Title"] }}
+    </h1>
     <BaseDetailLayout
       table="Court Decisions"
       :loading="isLoading"

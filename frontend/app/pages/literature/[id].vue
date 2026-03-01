@@ -1,5 +1,8 @@
 <template>
   <div>
+    <h1 v-if="literature?.Title" class="sr-only">
+      {{ literature.Title }}
+    </h1>
     <BaseDetailLayout
       table="Literature"
       :loading="loading"

@@ -96,6 +96,7 @@ import importedThemeOptions from "@/assets/themeOptions.json";
 import importedTypeOptions from "@/assets/typeOptions.json";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
+import { useAnnouncer } from "@/composables/useAnnouncer";
 
 const props = defineProps({
   filters: {
@@ -146,6 +147,16 @@ const resultLabel = computed(() =>
 );
 
 const { data: jurisdictions } = useJurisdictions();
+const { announce } = useAnnouncer();
+
+watch(
+  () => [props.totalMatches, props.loading],
+  ([total, loading]) => {
+    if (!loading && total !== undefined) {
+      announce(`${total} ${total === 1 ? "result" : "results"} found`);
+    }
+  },
+);
 
 const updateFilters = async (filters) => {
   emit("update:filters", filters);

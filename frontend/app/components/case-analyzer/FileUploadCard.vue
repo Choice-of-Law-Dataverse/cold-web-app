@@ -48,13 +48,13 @@
         @change="handleFileSelect"
       />
 
-      <div class="relative px-8 py-12">
+      <div class="relative px-4 py-8 sm:px-8 sm:py-12">
         <!-- Upload illustration -->
         <div class="mb-6 flex justify-center">
           <div class="relative">
             <!-- Main icon container -->
             <div
-              class="relative flex h-20 w-20 items-center justify-center rounded-2xl transition-all duration-300"
+              class="relative flex h-14 w-14 items-center justify-center rounded-2xl transition-all duration-300 sm:h-20 sm:w-20"
               :class="[
                 selectedFile
                   ? 'from-cold-teal to-cold-green shadow-cold-teal/25 bg-gradient-to-br shadow-lg'
