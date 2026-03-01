@@ -305,9 +305,9 @@ onUnmounted(() => {
 
 <style scoped>
 .search-container {
-  position: relative !important;
+  position: relative;
   width: calc(var(--column-width) * 3 + var(--gutter-width) * 2);
-  transition: none !important;
+  transition: none;
 }
 
 .search-container.expanded {

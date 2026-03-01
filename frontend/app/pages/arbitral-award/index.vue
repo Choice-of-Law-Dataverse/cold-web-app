@@ -191,47 +191,43 @@ const rows: Row[] = (csvRows.slice(1) || [])
 .awards-table :deep(th),
 .awards-table :deep(td) {
   box-sizing: border-box;
-  width: 125px !important;
-  min-width: 125px !important;
-  max-width: 125px !important;
+  width: 125px;
+  min-width: 125px;
+  max-width: 125px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  padding-right: 16px !important; /* column gutter */
+  padding-right: 16px;
 }
 
-/* Make the Source column 100px wider (125px + 100px = 225px) */
 .awards-table :deep(th:nth-child(4)),
 .awards-table :deep(td:nth-child(4)) {
-  width: 225px !important;
-  min-width: 225px !important;
-  max-width: 225px !important;
+  width: 225px;
+  min-width: 225px;
+  max-width: 225px;
 }
 
 .awards-table :deep(th:last-child),
 .awards-table :deep(td:last-child) {
-  padding-right: 16px !important; /* Add padding to prevent animation cutoff */
-  text-align: right !important; /* align Open column to the right */
+  padding-right: 16px;
+  text-align: right;
 }
 
-/* Ensure the "Open" link uses font-weight 600 even if .label sets 700 */
 .awards-table :deep(td:last-child a.label) {
-  font-weight: 600 !important;
-  font-size: 12px !important;
+  font-weight: 600;
+  font-size: 12px;
 }
 
-/* Increase data row height to 72px and vertically center content */
 .awards-table :deep(tbody tr) {
-  height: 72px !important;
+  height: 72px;
 }
 .awards-table :deep(tbody td) {
-  height: 72px !important;
-  vertical-align: top !important;
+  height: 72px;
+  vertical-align: top;
 }
 
-/* Remove top padding from the first column (Case Number) to avoid visual offset */
 .awards-table :deep(tbody td:first-child) {
-  padding-top: 10px !important;
+  padding-top: 10px;
 }
 
 /* Row hover effects */
@@ -247,34 +243,33 @@ const rows: Row[] = (csvRows.slice(1) || [])
 
 /* Style header titles to visually resemble `.label` without breaking sorting */
 .awards-table :deep(thead th) {
-  font-weight: 700 !important; /* similar to .label */
-  font-size: 12px !important; /* similar sizing */
+  font-weight: 700;
+  font-size: 12px;
   letter-spacing: 0.01em;
-  text-transform: uppercase !important;
-  color: var(--color-cold-night);
-}
-/* Stronger override for frameworks that style inner elements */
-.awards-table :deep(thead th span),
-.awards-table :deep(thead th button),
-.awards-table :deep(thead th button span) {
-  font-weight: 700 !important;
-  font-size: 12px !important;
-  letter-spacing: 0.01em !important;
-  text-transform: uppercase !important;
+  text-transform: uppercase;
   color: var(--color-cold-night);
 }
 
-/* Remove hover effect on header titles but keep sorting clickable */
+.awards-table :deep(thead th span),
+.awards-table :deep(thead th button),
+.awards-table :deep(thead th button span) {
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.01em;
+  text-transform: uppercase;
+  color: var(--color-cold-night);
+}
+
 .awards-table :deep(thead th button:hover),
 .awards-table :deep(thead th a:hover) {
-  background-color: transparent !important;
-  color: inherit !important;
-  text-decoration: none !important;
-  box-shadow: none !important;
+  background-color: transparent;
+  color: inherit;
+  text-decoration: none;
+  box-shadow: none;
 }
 .awards-table :deep(thead th button:hover span),
 .awards-table :deep(thead th a:hover span) {
-  color: inherit !important;
-  text-decoration: none !important;
+  color: inherit;
+  text-decoration: none;
 }
 </style>

@@ -307,7 +307,7 @@ useHead({
 
 <style scoped>
 h2 {
-  font-weight: 500 !important;
+  font-weight: 500;
 }
 
 .hero-gradient {
@@ -331,14 +331,14 @@ h2 {
 }
 
 .hero-link {
-  color: var(--color-cold-purple) !important;
-  font-weight: 600 !important;
+  color: var(--color-cold-purple);
+  font-weight: 600;
   transition: color 0.2s ease;
-  text-decoration: none !important;
+  text-decoration: none;
 }
 
 .hero-link:hover {
-  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000) !important;
-  text-decoration: underline !important;
+  color: color-mix(in srgb, var(--color-cold-purple) 85%, #000);
+  text-decoration: underline;
 }
 </style>

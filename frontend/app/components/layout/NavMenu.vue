@@ -135,26 +135,25 @@ onUnmounted(() => {
 defineExpose({ showMenu });
 </script>
 
-<style>
-/* Unscoped so styles reliably apply through ULink component boundary */
-.custom-nav-links {
-  color: var(--color-cold-night) !important;
-  text-decoration: none !important;
-  font-weight: 600 !important;
+<style scoped>
+:deep(.custom-nav-links) {
+  color: var(--color-cold-night);
+  text-decoration: none;
+  font-weight: 600;
 }
 
-.custom-nav-links.active {
-  text-decoration: underline !important;
-  text-underline-offset: 6px !important;
-  text-decoration-thickness: 2px !important;
-  text-decoration-color: var(--color-cold-purple) !important;
+:deep(.custom-nav-links.active) {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--color-cold-purple);
 }
 
-.custom-nav-links:hover {
-  text-decoration: underline !important;
-  text-underline-offset: 6px !important;
-  text-decoration-thickness: 2px !important;
-  text-decoration-color: var(--color-cold-purple) !important;
+:deep(.custom-nav-links:hover) {
+  text-decoration: underline;
+  text-underline-offset: 6px;
+  text-decoration-thickness: 2px;
+  text-decoration-color: var(--color-cold-purple);
 }
 </style>
 
@@ -165,7 +164,7 @@ defineExpose({ showMenu });
   }
 
   .mobile-nav-group > * + * {
-    margin-left: 0rem !important;
+    margin-left: 0rem;
   }
 
   .mobile-menu-links {
@@ -180,7 +179,7 @@ defineExpose({ showMenu });
   }
 
   .mobile-menu-links .close-menu-button {
-    margin-left: auto !important;
+    margin-left: auto;
   }
   .menu-button.custom-nav-links {
     padding-left: 0.25rem;
