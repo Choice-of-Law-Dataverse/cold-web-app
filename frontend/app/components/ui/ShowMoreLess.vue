@@ -2,6 +2,7 @@
   <div class="mt-[-2px] list-none">
     <button
       v-if="!isExpanded"
+      aria-expanded="false"
       :class="['link-button-night', 'cursor-pointer']"
       @click.prevent="emit('update:isExpanded', true)"
     >
@@ -10,6 +11,7 @@
     </button>
     <button
       v-else
+      aria-expanded="true"
       :class="['link-button-night', 'cursor-pointer']"
       @click="emit('update:isExpanded', false)"
     >

@@ -1,5 +1,8 @@
 <template>
   <div>
+    <h1 v-if="answerData?.Question" class="sr-only">
+      {{ answerData.Question }}
+    </h1>
     <BaseDetailLayout
       table="Questions"
       :loading="isLoading"

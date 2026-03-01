@@ -1,6 +1,6 @@
 <!-- eslint-disable vue/no-v-html -->
 <template>
-  <UModal v-model:open="isOpen" :ui="{ content: 'p-6' }">
+  <UModal v-model:open="isOpen" title="Cite This Page" :ui="{ content: 'p-6' }">
     <template #content>
       <h2 class="mb-4">Cite This Page</h2>
       <!-- eslint-disable-next-line vue/no-v-html -->
@@ -9,11 +9,11 @@
         v-html="citationTextDisplay"
       />
       <div class="mt-2">
-        <NuxtLink
-          :to="route.fullPath"
+        <button
+          type="button"
           class="link-button !mb-2 no-underline"
-          :aria-disabled="copying ? 'true' : 'false'"
-          @click.prevent="!copying && copyToClipboard()"
+          :disabled="copying"
+          @click="copyToClipboard()"
         >
           <UIcon
             :name="
@@ -24,7 +24,7 @@
             class="relative top-[1px] inline-block"
           />
           {{ copied ? "Copied" : "Copy to Clipboard" }}
-        </NuxtLink>
+        </button>
       </div>
     </template>
   </UModal>

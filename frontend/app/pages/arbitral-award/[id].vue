@@ -1,5 +1,8 @@
 <template>
   <div>
+    <h1 v-if="arbitralAward?.['Case Number']" class="sr-only">
+      Arbitral Award: {{ arbitralAward["Case Number"] }}
+    </h1>
     <BaseDetailLayout
       table="Arbitral Awards"
       :loading="loading"

@@ -9,9 +9,13 @@
       base: 'overflow-hidden',
     }"
   >
-    <span class="icon cursor-pointer px-1">
+    <button
+      type="button"
+      class="icon cursor-pointer px-1"
+      aria-label="More information"
+    >
       <Icon name="i-material-symbols:info-outline" />
-    </span>
+    </button>
 
     <template #content>
       <div class="content p-3">

@@ -1,5 +1,8 @@
 <template>
   <div>
+    <h1 v-if="arbitralRule?.['Set of Rules']" class="sr-only">
+      {{ arbitralRule["Set of Rules"] }}
+    </h1>
     <BaseDetailLayout
       table="Arbitral Rules"
       :loading="loading"

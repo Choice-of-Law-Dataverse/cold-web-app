@@ -1,5 +1,6 @@
 <template>
   <nav
+    aria-label="Main navigation"
     class="border-cold-gray sticky top-0 z-50 w-full border-b bg-white px-3 sm:px-6"
     :class="{ 'bg-purple-active': isExpanded, 'nav-scrolled': isScrolled }"
   >

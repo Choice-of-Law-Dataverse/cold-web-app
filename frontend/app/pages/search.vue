@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div v-if="apiError" class="error-message">
+    <h1 class="sr-only">Search Results</h1>
+    <div v-if="apiError" role="alert" class="error-message">
       <p>
         We're sorry, but we encountered an error while processing your search.
         Please try again later.

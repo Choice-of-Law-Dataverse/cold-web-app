@@ -2,19 +2,27 @@
   <div v-if="!hidden" class="mobile-nav-group flex items-center space-x-4">
     <template v-if="isMobile">
       <template v-if="!showMenu">
-        <button class="menu-button custom-nav-links" @click="openMenu">
+        <button
+          class="menu-button custom-nav-links"
+          :aria-expanded="showMenu.toString()"
+          aria-controls="mobile-nav-menu"
+          @click="openMenu"
+        >
           Menu
         </button>
       </template>
       <template v-else>
         <div
+          id="mobile-nav-menu"
           class="flex items-center space-x-3 sm:space-x-6"
           :class="{ 'mobile-menu-links': isMobile }"
+          @keydown.esc="closeMenu"
         >
           <ULink
             v-for="(link, i) in links"
             :key="i"
             :to="link.to"
+            :aria-current="route.path.startsWith(link.to) ? 'page' : undefined"
             :class="[
               'custom-nav-links',
               { active: route.path.startsWith(link.to) },
@@ -33,10 +41,10 @@
               display: flex;
               align-items: center;
               justify-content: center;
-              height: 2.5rem;
-              width: 2.5rem;
-              min-width: 2.5rem;
-              min-height: 2.5rem;
+              height: 2.75rem;
+              width: 2.75rem;
+              min-width: 2.75rem;
+              min-height: 2.75rem;
               z-index: 10;
             "
             @click="closeMenu"
@@ -57,6 +65,7 @@
           v-for="(link, i) in links"
           :key="i"
           :to="link.to"
+          :aria-current="route.path.startsWith(link.to) ? 'page' : undefined"
           :class="[
             'custom-nav-links',
             { active: route.path.startsWith(link.to) },

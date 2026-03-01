@@ -1,5 +1,8 @@
 <template>
   <div>
+    <h1 v-if="internationalInstrument?.Name" class="sr-only">
+      {{ internationalInstrument.Name }}
+    </h1>
     <BaseDetailLayout
       table="International Instruments"
       :loading="loading"
