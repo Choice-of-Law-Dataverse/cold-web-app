@@ -7,7 +7,7 @@
       color="secondary"
       size="sm"
       icon="i-material-symbols:picture-as-pdf-outline"
-      trailing-icon="i-material-symbols:picture-as-pdf-outline"
+      trailing-icon="i-material-symbols:arrow-forward"
       aria-label="Download PDF for record"
       @click.stop
     >

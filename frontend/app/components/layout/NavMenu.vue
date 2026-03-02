@@ -164,7 +164,9 @@ defineExpose({ showMenu });
   text-decoration-thickness: 2px;
   text-decoration-color: var(--color-cold-purple);
 }
+</style>
 
+<style scoped>
 @media (max-width: 639px) {
   .mobile-nav-group {
     gap: 0.75rem;

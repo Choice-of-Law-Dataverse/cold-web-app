@@ -12,6 +12,7 @@
           variant="ghost"
           color="neutral"
           class="link-chip--neutral"
+          trailing-icon="i-material-symbols:arrow-forward"
           :to="`/court-decision/${item}`"
         >
           <template v-if="decisionsById.get(item)">
@@ -30,6 +31,7 @@
           variant="ghost"
           color="neutral"
           class="link-chip--neutral"
+          trailing-icon="i-material-symbols:arrow-forward"
           :to="`/court-decision/${normalizedItems[0]!}`"
         >
           <template v-if="decisionsById.get(normalizedItems[0]!)">
