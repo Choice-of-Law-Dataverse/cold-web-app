@@ -1,57 +1,30 @@
-"""Initial materialized views migration.
-
-Revision ID: 202603071000
-Revises:
-Create Date: 2026-03-07 10:00:00.000000
-"""
-
 from __future__ import annotations
 
-from alembic import op as alembic_op
+from alembic import op
 
-revision = "202603071000"
-down_revision = None
+revision = "202603071100"
+down_revision = "202603071000"
 branch_labels = None
 depends_on = None
 
 
-def upgrade() -> None:
-    alembic_op.execute("CREATE SCHEMA IF NOT EXISTS data_views")
-
-    alembic_op.execute("""
-CREATE OR REPLACE FUNCTION data_views.refresh_all_materialized_views()
-RETURNS void AS $$
-DECLARE
-    view_name TEXT;
-    has_unique_index BOOLEAN;
-BEGIN
-    FOR view_name IN
-        SELECT matviewname FROM pg_matviews WHERE schemaname = 'data_views'
-    LOOP
-        SELECT EXISTS (
-            SELECT 1 FROM pg_indexes
-            WHERE schemaname = 'data_views'
-            AND tablename = view_name
-            AND indexdef LIKE '%UNIQUE%'
-        ) INTO has_unique_index;
-
-        IF has_unique_index THEN
-            EXECUTE format('REFRESH MATERIALIZED VIEW CONCURRENTLY data_views.%I', view_name);
-        ELSE
-            EXECUTE format('REFRESH MATERIALIZED VIEW data_views.%I', view_name);
-            RAISE NOTICE 'Materialized view data_views.% refreshed non-concurrently (no unique index)', view_name;
-        END IF;
-    END LOOP;
-END;
-$$ LANGUAGE plpgsql
-""")
-
-    alembic_op.execute("""
+QUESTIONS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.questions_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.questions_complete AS
 SELECT
-    q.*,
-    (q."Question_Number" || '-' || q."Primary_Theme") AS "CoLD_ID",
+    q.id,
+    q."Question" AS question,
+    q."Question_Number" AS question_number,
+    q."Primary_Theme" AS primary_theme,
+    q."Answering_Options" AS answering_options,
+    q."Created" AS created,
+    q."ncRecordId" AS nc_record_id,
+    q."created_at" AS created_at,
+    q."updated_at" AS updated_at,
+    q."created_by" AS created_by,
+    q."updated_by" AS updated_by,
+    q."nc_order" AS nc_order,
+    (q."Question_Number" || '-' || q."Primary_Theme") AS cold_id,
     (
         SELECT jsonb_agg(t.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Themes_Questions" tq
@@ -76,18 +49,30 @@ SELECT
         JOIN p1q5x3pj29vkrdr."Domestic_Instruments" di ON di.id = qdi."Domestic_Instruments_id"
         WHERE qdi."Questions_id" = q.id
     ) AS related_domestic_instruments
-FROM p1q5x3pj29vkrdr."Questions" q
-""")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_questions_complete_id ON data_views.questions_complete(id)")
+FROM p1q5x3pj29vkrdr."Questions" q;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_questions_complete_id ON data_views.questions_complete(id);
+"""
+
+ANSWERS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.answers_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.answers_complete AS
 SELECT
-    a.*,
-    jcodes."Alpha_3_Code" AS "Jurisdictions_Alpha_3_Code",
-    qcold."CoLD_ID" AS "Question_CoLD_ID",
-    (COALESCE(jcodes."Alpha_3_Code", '') || '_' || COALESCE(qcold."CoLD_ID", '')) AS "CoLD_ID",
+    a.id,
+    a."Answer" AS answer,
+    a."More_Information" AS more_information,
+    a."To_Review_" AS to_review,
+    a."OUP_Book_Quote" AS oup_book_quote,
+    a."Created" AS created,
+    a."ncRecordId" AS nc_record_id,
+    a."created_at" AS created_at,
+    a."updated_at" AS updated_at,
+    a."created_by" AS created_by,
+    a."updated_by" AS updated_by,
+    a."nc_order" AS nc_order,
+    jcodes."Alpha_3_Code" AS jurisdictions_alpha_3_code,
+    qcold."CoLD_ID" AS question_cold_id,
+    (COALESCE(jcodes."Alpha_3_Code", '') || '_' || COALESCE(qcold."CoLD_ID", '')) AS cold_id,
     (
         SELECT jsonb_agg(q.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Questions_Answers" qa
@@ -192,17 +177,27 @@ LEFT JOIN LATERAL (
     JOIN p1q5x3pj29vkrdr."Questions" q ON q.id = qa."Questions_id"
     WHERE qa."Answers_id" = a.id
     LIMIT 1
-) qcold ON true
-""")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_answers_complete_id ON data_views.answers_complete(id)")
+) qcold ON true;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_answers_complete_id ON data_views.answers_complete(id);
+"""
+
+HCCH_ANSWERS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.hcch_answers_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.hcch_answers_complete AS
 SELECT
-    ha.*,
-    qcold."CoLD_ID" AS "Question_CoLD_ID",
-    ('HCCH-' || COALESCE(qcold."CoLD_ID", '')) AS "CoLD_ID",
+    ha.id,
+    ha."Adapted_Question" AS adapted_question,
+    ha."Position" AS position,
+    ha."Created" AS created,
+    ha."ncRecordId" AS nc_record_id,
+    ha."created_at" AS created_at,
+    ha."updated_at" AS updated_at,
+    ha."created_by" AS created_by,
+    ha."updated_by" AS updated_by,
+    ha."nc_order" AS nc_order,
+    qcold."CoLD_ID" AS question_cold_id,
+    ('HCCH-' || COALESCE(qcold."CoLD_ID", '')) AS cold_id,
     (
         SELECT jsonb_agg(t.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Themes_HCCH_Answers" tha
@@ -222,17 +217,39 @@ LEFT JOIN LATERAL (
     JOIN p1q5x3pj29vkrdr."Questions" q ON q.id = qa."Questions_id"
     WHERE qa."Answers_id" = ha.id
     LIMIT 1
-) qcold ON true
-""")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_hcch_answers_complete_id ON data_views.hcch_answers_complete(id)")
+) qcold ON true;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_hcch_answers_complete_id ON data_views.hcch_answers_complete(id);
+"""
+
+DOMESTIC_INSTRUMENTS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.domestic_instruments_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.domestic_instruments_complete AS
 SELECT
-    di.*,
-    jcodes."Alpha_3_Code" AS "Jurisdictions_Alpha_3_Code",
-    ('DI-' || COALESCE(jcodes."Alpha_3_Code", '') || '-' || di."ID_Number") AS "CoLD_ID",
+    di.id,
+    di."ID_Number" AS id_number,
+    di."Title__in_English_" AS title_in_english,
+    di."Official_Title" AS official_title,
+    di."Date" AS date,
+    di."Status" AS status,
+    di."Abbreviation" AS abbreviation,
+    di."Relevant_Provisions" AS relevant_provisions,
+    di."Full_Text_of_the_Provisions" AS full_text_of_the_provisions,
+    di."Publication_Date" AS publication_date,
+    di."Entry_Into_Force" AS entry_into_force,
+    di."Source__URL_" AS source_url,
+    di."Source__PDF_" AS source_pdf,
+    di."Compatible_With_the_HCCH_Principles_" AS compatible_with_the_hcch_principles,
+    di."Compatible_With_the_UNCITRAL_Model_Law_" AS compatible_with_the_uncitral_model_law,
+    di."Created" AS created,
+    di."ncRecordId" AS nc_record_id,
+    di."created_at" AS created_at,
+    di."updated_at" AS updated_at,
+    di."created_by" AS created_by,
+    di."updated_by" AS updated_by,
+    di."nc_order" AS nc_order,
+    jcodes."Alpha_3_Code" AS jurisdictions_alpha_3_code,
+    ('DI-' || COALESCE(jcodes."Alpha_3_Code", '') || '-' || di."ID_Number") AS cold_id,
     (
         SELECT jsonb_agg(j.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Domestic_Instru" jdi
@@ -264,19 +281,29 @@ LEFT JOIN LATERAL (
     JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = jdi."Jurisdictions_id"
     WHERE jdi."Domestic_Instruments_id" = di.id
     LIMIT 1
-) jcodes ON true
-""")
-    alembic_op.execute(
-        "CREATE UNIQUE INDEX idx_domestic_instruments_complete_id ON data_views.domestic_instruments_complete(id)"
-    )
+) jcodes ON true;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_domestic_instruments_complete_id ON data_views.domestic_instruments_complete(id);
+"""
+
+DOMESTIC_LEGAL_PROVISIONS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.domestic_legal_provisions_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.domestic_legal_provisions_complete AS
 SELECT
-    dlp.*,
-    di_cold."CoLD_ID" AS "Domestic_Instrument_CoLD_ID",
-    (COALESCE(di_cold."CoLD_ID", '') || ' ' || dlp."Article") AS "CoLD_ID",
+    dlp.id,
+    dlp."Article" AS article,
+    dlp."Full_Text_of_the_Provision__Original_Language_" AS full_text_of_the_provision_original_language,
+    dlp."Full_Text_of_the_Provision__English_Translation_" AS full_text_of_the_provision_english_translation,
+    dlp."Ranking__Display_Order_" AS ranking_display_order,
+    dlp."Created" AS created,
+    dlp."ncRecordId" AS nc_record_id,
+    dlp."created_at" AS created_at,
+    dlp."updated_at" AS updated_at,
+    dlp."created_by" AS created_by,
+    dlp."updated_by" AS updated_by,
+    dlp."nc_order" AS nc_order,
+    di_cold."CoLD_ID" AS domestic_instrument_cold_id,
+    (COALESCE(di_cold."CoLD_ID", '') || ' ' || dlp."Article") AS cold_id,
     (
         SELECT jsonb_agg(di.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Domestic_Instru_Domestic_Legal_" didlp
@@ -293,18 +320,30 @@ LEFT JOIN LATERAL (
     LEFT JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = jdi."Jurisdictions_id"
     WHERE didlp."Domestic_Legal_Provisions_id" = dlp.id
     LIMIT 1
-) di_cold ON true
-""")
-    alembic_op.execute(
-        "CREATE UNIQUE INDEX idx_domestic_legal_provisions_complete_id ON data_views.domestic_legal_provisions_complete(id)"
-    )
+) di_cold ON true;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_domestic_legal_provisions_complete_id ON data_views.domestic_legal_provisions_complete(id);
+"""
+
+REGIONAL_INSTRUMENTS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.regional_instruments_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.regional_instruments_complete AS
 SELECT
-    ri.*,
-    ('RI-' || LEFT(ri."Abbreviation", 3) || '-' || ri."ID_Number") AS "CoLD_ID",
+    ri.id,
+    ri."ID_Number" AS id_number,
+    ri."Title" AS title,
+    ri."Abbreviation" AS abbreviation,
+    ri."Date" AS date,
+    ri."URL" AS url,
+    ri."Attachment" AS attachment,
+    ri."Created" AS created,
+    ri."ncRecordId" AS nc_record_id,
+    ri."created_at" AS created_at,
+    ri."updated_at" AS updated_at,
+    ri."created_by" AS created_by,
+    ri."updated_by" AS updated_by,
+    ri."nc_order" AS nc_order,
+    ('RI-' || LEFT(ri."Abbreviation", 3) || '-' || ri."ID_Number") AS cold_id,
     (
         SELECT jsonb_agg(s.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Regional_Instru_Specialists" ris
@@ -323,19 +362,28 @@ SELECT
         JOIN p1q5x3pj29vkrdr."Regional_Legal_Provisions" rlp ON rlp.id = mirl."Regional_Legal_Provisions_id"
         WHERE mirl."Regional_Instruments_id" = ri.id
     ) AS related_legal_provisions
-FROM p1q5x3pj29vkrdr."Regional_Instruments" ri
-""")
-    alembic_op.execute(
-        "CREATE UNIQUE INDEX idx_regional_instruments_complete_id ON data_views.regional_instruments_complete(id)"
-    )
+FROM p1q5x3pj29vkrdr."Regional_Instruments" ri;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_regional_instruments_complete_id ON data_views.regional_instruments_complete(id);
+"""
+
+REGIONAL_LEGAL_PROVISIONS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.regional_legal_provisions_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.regional_legal_provisions_complete AS
 SELECT
-    rlp.*,
-    ri_cold."CoLD_ID" AS "Instrument_CoLD_ID",
-    (COALESCE(ri_cold."CoLD_ID", '') || ' ' || rlp."Provision") AS "CoLD_ID",
+    rlp.id,
+    rlp."Provision" AS provision,
+    rlp."Title_of_the_Provision" AS title_of_the_provision,
+    rlp."Full_Text" AS full_text,
+    rlp."Created" AS created,
+    rlp."ncRecordId" AS nc_record_id,
+    rlp."created_at" AS created_at,
+    rlp."updated_at" AS updated_at,
+    rlp."created_by" AS created_by,
+    rlp."updated_by" AS updated_by,
+    rlp."nc_order" AS nc_order,
+    ri_cold."CoLD_ID" AS instrument_cold_id,
+    (COALESCE(ri_cold."CoLD_ID", '') || ' ' || rlp."Provision") AS cold_id,
     (
         SELECT jsonb_agg(ri.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Regional_Instru_Regional_Legal_" mirl2
@@ -349,18 +397,37 @@ LEFT JOIN LATERAL (
     JOIN p1q5x3pj29vkrdr."Regional_Instruments" ri ON ri.id = mirl."Regional_Instruments_id"
     WHERE mirl."Regional_Legal_Provisions_id" = rlp.id
     LIMIT 1
-) ri_cold ON true
-""")
-    alembic_op.execute(
-        "CREATE UNIQUE INDEX idx_regional_legal_provisions_complete_id ON data_views.regional_legal_provisions_complete(id)"
-    )
+) ri_cold ON true;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_regional_legal_provisions_complete_id ON data_views.regional_legal_provisions_complete(id);
+"""
+
+INTERNATIONAL_INSTRUMENTS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.international_instruments_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.international_instruments_complete AS
 SELECT
-    ii.*,
-    ('II-' || LEFT(ii."Name", 3) || '-' || ii."ID_Number") AS "CoLD_ID",
+    ii.id,
+    ii."ID_Number" AS id_number,
+    ii."Name" AS name,
+    ii."Title" AS title,
+    ii."Title__in_English_" AS title_in_english,
+    ii."Abbreviation" AS abbreviation,
+    ii."Date" AS date,
+    ii."Status" AS status,
+    ii."URL" AS url,
+    ii."Attachment" AS attachment,
+    ii."Entry_Into_Force" AS entry_into_force,
+    ii."Publication_Date" AS publication_date,
+    ii."Relevant_Provisions" AS relevant_provisions,
+    ii."Full_Text_of_the_Provisions" AS full_text_of_the_provisions,
+    ii."Created" AS created,
+    ii."ncRecordId" AS nc_record_id,
+    ii."created_at" AS created_at,
+    ii."updated_at" AS updated_at,
+    ii."created_by" AS created_by,
+    ii."updated_by" AS updated_by,
+    ii."nc_order" AS nc_order,
+    ('II-' || LEFT(ii."Name", 3) || '-' || ii."ID_Number") AS cold_id,
     (
         SELECT jsonb_agg(s.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_International_I_Specialists" iis
@@ -397,19 +464,29 @@ SELECT
         JOIN p1q5x3pj29vkrdr."Literature" l ON l.id = mil."Literature_id"
         WHERE mil."International_Instruments_id" = ii.id
     ) AS related_literature
-FROM p1q5x3pj29vkrdr."International_Instruments" ii
-""")
-    alembic_op.execute(
-        "CREATE UNIQUE INDEX idx_international_instruments_complete_id ON data_views.international_instruments_complete(id)"
-    )
+FROM p1q5x3pj29vkrdr."International_Instruments" ii;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_international_instruments_complete_id ON data_views.international_instruments_complete(id);
+"""
+
+INTERNATIONAL_LEGAL_PROVISIONS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.international_legal_provisions_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.international_legal_provisions_complete AS
 SELECT
-    ilp.*,
-    ii_cold."CoLD_ID" AS "Instrument_CoLD_ID",
-    (COALESCE(ii_cold."CoLD_ID", '') || ' ' || ilp."Provision") AS "CoLD_ID"
+    ilp.id,
+    ilp."Provision" AS provision,
+    ilp."Title_of_the_Provision" AS title_of_the_provision,
+    ilp."Full_Text" AS full_text,
+    ilp."Ranking__Display_Order_" AS ranking_display_order,
+    ilp."Created" AS created,
+    ilp."ncRecordId" AS nc_record_id,
+    ilp."created_at" AS created_at,
+    ilp."updated_at" AS updated_at,
+    ilp."created_by" AS created_by,
+    ilp."updated_by" AS updated_by,
+    ilp."nc_order" AS nc_order,
+    ii_cold."CoLD_ID" AS instrument_cold_id,
+    (COALESCE(ii_cold."CoLD_ID", '') || ' ' || ilp."Provision") AS cold_id
 FROM p1q5x3pj29vkrdr."International_Legal_Provisions" ilp
 LEFT JOIN LATERAL (
     SELECT ('II-' || LEFT(ii."Name", 3) || '-' || ii."ID_Number") AS "CoLD_ID"
@@ -417,19 +494,47 @@ LEFT JOIN LATERAL (
     JOIN p1q5x3pj29vkrdr."International_Instruments" ii ON ii.id = miil."International_Instruments_id"
     WHERE miil."International_Legal_Provisions_id" = ilp.id
     LIMIT 1
-) ii_cold ON true
-""")
-    alembic_op.execute(
-        "CREATE UNIQUE INDEX idx_international_legal_provisions_complete_id ON data_views.international_legal_provisions_complete(id)"
-    )
+) ii_cold ON true;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_international_legal_provisions_complete_id ON data_views.international_legal_provisions_complete(id);
+"""
+
+COURT_DECISIONS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.court_decisions_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.court_decisions_complete AS
 SELECT
-    cd.*,
-    jcodes."Alpha_3_Code" AS "Jurisdictions_Alpha_3_Code",
-    ('CD-' || COALESCE(jcodes."Alpha_3_Code", '') || '-' || cd."ID_Number") AS "CoLD_ID",
+    cd.id,
+    cd."ID_Number" AS id_number,
+    cd."Case_Citation" AS case_citation,
+    cd."Case_Title" AS case_title,
+    cd."Instance" AS instance,
+    cd."Date" AS date,
+    cd."Abstract" AS abstract,
+    cd."Case_Rank" AS case_rank,
+    cd."English_Translation" AS english_translation,
+    cd."Choice_of_Law_Issue" AS choice_of_law_issue,
+    cd."Court's_Position" AS court_s_position,
+    cd."Translated_Excerpt" AS translated_excerpt,
+    cd."Relevant_Facts" AS relevant_facts,
+    cd."Date_of_Judgment" AS date_of_judgment,
+    cd."PIL_Provisions" AS pil_provisions,
+    cd."Original_Text" AS original_text,
+    cd."Quote" AS quote,
+    cd."Text_of_the_Relevant_Legal_Provisions" AS text_of_the_relevant_legal_provisions,
+    cd."Official_Source__URL_" AS official_source_url,
+    cd."Official_Source__PDF_" AS official_source_pdf,
+    cd."Answers_Link" AS answers_link,
+    cd."Answers_Question" AS answers_question,
+    cd."Publication_Date_ISO" AS publication_date_iso,
+    cd."Created" AS created,
+    cd."ncRecordId" AS nc_record_id,
+    cd."created_at" AS created_at,
+    cd."updated_at" AS updated_at,
+    cd."created_by" AS created_by,
+    cd."updated_by" AS updated_by,
+    cd."nc_order" AS nc_order,
+    jcodes."Alpha_3_Code" AS jurisdictions_alpha_3_code,
+    ('CD-' || COALESCE(jcodes."Alpha_3_Code", '') || '-' || cd."ID_Number") AS cold_id,
     (
         SELECT jsonb_agg(j.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Court_Decisions" jcd
@@ -467,16 +572,67 @@ LEFT JOIN LATERAL (
     JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = jcd."Jurisdictions_id"
     WHERE jcd."Court_Decisions_id" = cd.id
     LIMIT 1
-) jcodes ON true
-""")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_court_decisions_complete_id ON data_views.court_decisions_complete(id)")
+) jcodes ON true;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_court_decisions_complete_id ON data_views.court_decisions_complete(id);
+"""
+
+LITERATURE_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.literature_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.literature_complete AS
 SELECT
-    l.*,
-    ('L-' || l."ID_Number") AS "CoLD_ID",
+    l.id,
+    l."ID_Number" AS id_number,
+    l."Key" AS key,
+    l."Item_Type" AS item_type,
+    l."Publication_Year" AS publication_year,
+    l."Author" AS author,
+    l."Title" AS title,
+    l."Publication_Title" AS publication_title,
+    l."Abstract_Note" AS abstract_note,
+    l."ISBN" AS isbn,
+    l."ISSN" AS issn,
+    l."DOI" AS doi,
+    l."Url" AS url,
+    l."Date" AS date,
+    l."Date_Added" AS date_added,
+    l."Date_Modified" AS date_modified,
+    l."Publisher" AS publisher,
+    l."Language" AS language,
+    l."Extra" AS extra,
+    l."Manual_Tags" AS manual_tags,
+    l."Editor" AS editor,
+    l."Issue" AS issue,
+    l."Volume" AS volume,
+    l."Pages" AS pages,
+    l."Library_Catalog" AS library_catalog,
+    l."Access_Date" AS access_date,
+    l."Open_Access" AS open_access,
+    l."Open_Access_URL" AS open_access_url,
+    l."Journal_Abbreviation" AS journal_abbreviation,
+    l."Short_Title" AS short_title,
+    l."Place" AS place,
+    l."Num_Pages" AS num_pages,
+    l."Type" AS type,
+    l."OUP_JD_Chapter" AS oup_jd_chapter,
+    l."Contributor" AS contributor,
+    l."Automatic_Tags" AS automatic_tags,
+    l."Number" AS number,
+    l."Series" AS series,
+    l."Series_Number" AS series_number,
+    l."Series_Editor" AS series_editor,
+    l."Edition" AS edition,
+    l."Call_Number" AS call_number,
+    l."Jurisdiction_Summary" AS jurisdiction_summary,
+    l."Answers" AS answers,
+    l."Created" AS created,
+    l."ncRecordId" AS nc_record_id,
+    l."created_at" AS created_at,
+    l."updated_at" AS updated_at,
+    l."created_by" AS created_by,
+    l."updated_by" AS updated_by,
+    l."nc_order" AS nc_order,
+    ('L-' || l."ID_Number") AS cold_id,
     (
         SELECT jsonb_agg(j.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Literature" jl
@@ -489,16 +645,32 @@ SELECT
         JOIN p1q5x3pj29vkrdr."Themes" t ON t.id = tl."Themes_id"
         WHERE tl."Literature_id" = l.id
     ) AS related_themes
-FROM p1q5x3pj29vkrdr."Literature" l
-""")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_literature_complete_id ON data_views.literature_complete(id)")
+FROM p1q5x3pj29vkrdr."Literature" l;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_literature_complete_id ON data_views.literature_complete(id);
+"""
+
+ARBITRAL_AWARDS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_awards_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.arbitral_awards_complete AS
 SELECT
-    aa.*,
-    ('AA-' || aa."ID_Number") AS "CoLD_ID",
+    aa.id,
+    aa."ID_Number" AS id_number,
+    aa."Case_Number" AS case_number,
+    aa."Context" AS context,
+    aa."Award_Summary" AS award_summary,
+    aa."Year" AS year,
+    aa."Nature_of_the_Award" AS nature_of_the_award,
+    aa."Seat__Town_" AS seat_town,
+    aa."Source" AS source,
+    aa."Created" AS created,
+    aa."ncRecordId" AS nc_record_id,
+    aa."created_at" AS created_at,
+    aa."updated_at" AS updated_at,
+    aa."created_by" AS created_by,
+    aa."updated_by" AS updated_by,
+    aa."nc_order" AS nc_order,
+    ('AA-' || aa."ID_Number") AS cold_id,
     (
         SELECT jsonb_agg(ai.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral_Instit_Arbitral_Awards" m
@@ -529,15 +701,25 @@ SELECT
         JOIN p1q5x3pj29vkrdr."Themes" t ON t.id = m."Themes_id"
         WHERE m."Arbitral_Awards_id" = aa.id
     ) AS related_themes
-FROM p1q5x3pj29vkrdr."Arbitral_Awards" aa
-""")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_arbitral_awards_complete_id ON data_views.arbitral_awards_complete(id)")
+FROM p1q5x3pj29vkrdr."Arbitral_Awards" aa;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_arbitral_awards_complete_id ON data_views.arbitral_awards_complete(id);
+"""
+
+ARBITRAL_INSTITUTIONS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_institutions_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.arbitral_institutions_complete AS
 SELECT
-    ai.*,
+    ai.id,
+    ai."Institution" AS institution,
+    ai."Abbreviation" AS abbreviation,
+    ai."Created" AS created,
+    ai."ncRecordId" AS nc_record_id,
+    ai."created_at" AS created_at,
+    ai."updated_at" AS updated_at,
+    ai."created_by" AS created_by,
+    ai."updated_by" AS updated_by,
+    ai."nc_order" AS nc_order,
     (
         SELECT jsonb_agg(aa.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral_Instit_Arbitral_Awards" m
@@ -562,18 +744,28 @@ SELECT
         JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = m."Jurisdictions_id"
         WHERE m."Arbitral_Institutions_id" = ai.id
     ) AS related_jurisdictions
-FROM p1q5x3pj29vkrdr."Arbitral_Institutions" ai
-""")
-    alembic_op.execute(
-        "CREATE UNIQUE INDEX idx_arbitral_institutions_complete_id ON data_views.arbitral_institutions_complete(id)"
-    )
+FROM p1q5x3pj29vkrdr."Arbitral_Institutions" ai;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_arbitral_institutions_complete_id ON data_views.arbitral_institutions_complete(id);
+"""
+
+ARBITRAL_RULES_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_rules_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.arbitral_rules_complete AS
 SELECT
-    ar.*,
-    ('AR-' || COALESCE(ar."ID_Number"::text, ar.id::text)) AS "CoLD_ID",
+    ar.id,
+    ar."ID_Number" AS id_number,
+    ar."Set_of_Rules" AS set_of_rules,
+    ar."In_Force_From" AS in_force_from,
+    ar."Official_Source__URL_" AS official_source_url,
+    ar."Created" AS created,
+    ar."ncRecordId" AS nc_record_id,
+    ar."created_at" AS created_at,
+    ar."updated_at" AS updated_at,
+    ar."created_by" AS created_by,
+    ar."updated_by" AS updated_by,
+    ar."nc_order" AS nc_order,
+    ('AR-' || COALESCE(ar."ID_Number"::text, ar.id::text)) AS cold_id,
     (
         SELECT jsonb_agg(ai.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral_Instit_Arbitral_Rules" m
@@ -585,27 +777,40 @@ SELECT
         FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral Provis_Arbitral_Rules" m
         JOIN p1q5x3pj29vkrdr."Arbitral Provisions" ap ON ap.id = m."Arbitral Provisions_id"
         WHERE m."Arbitral_Rules_id" = ar.id
-        ) AS related_arbitral_provisions,
-        (
-                SELECT jsonb_agg(DISTINCT to_jsonb(j))
-                FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral_Instit_Arbitral_Rules" air
-                JOIN p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Arbitral_Instit" jai
-                    ON jai."Arbitral_Institutions_id" = air."Arbitral_Institutions_id"
-                JOIN p1q5x3pj29vkrdr."Jurisdictions" j
-                    ON j.id = jai."Jurisdictions_id"
-                WHERE air."Arbitral_Rules_id" = ar.id
-        ) AS related_jurisdictions
-FROM p1q5x3pj29vkrdr."Arbitral_Rules" ar
-""")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_arbitral_rules_complete_id ON data_views.arbitral_rules_complete(id)")
+    ) AS related_arbitral_provisions,
+    (
+        SELECT jsonb_agg(DISTINCT to_jsonb(j))
+        FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral_Instit_Arbitral_Rules" air
+        JOIN p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Arbitral_Instit" jai
+            ON jai."Arbitral_Institutions_id" = air."Arbitral_Institutions_id"
+        JOIN p1q5x3pj29vkrdr."Jurisdictions" j
+            ON j.id = jai."Jurisdictions_id"
+        WHERE air."Arbitral_Rules_id" = ar.id
+    ) AS related_jurisdictions
+FROM p1q5x3pj29vkrdr."Arbitral_Rules" ar;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_arbitral_rules_complete_id ON data_views.arbitral_rules_complete(id);
+"""
+
+ARBITRAL_PROVISIONS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_provisions_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.arbitral_provisions_complete AS
 SELECT
-    ap.*,
-    ar_cold."CoLD_ID" AS "Arbitral_Rules_CoLD_ID",
-    (COALESCE(ar_cold."CoLD_ID", '') || ' ' || COALESCE(ap."Article", '')) AS "CoLD_ID",
+    ap.id,
+    ap."Article" AS article,
+    ap."Full_Text_of_the_Provision__Original_Language_" AS full_text_original_language,
+    ap."Full_Text_of_the_Provision__English_Translation_" AS full_text_english_translation,
+    ap."Arbitration_method_type" AS arbitration_method_type,
+    ap."Non_State_law_allowed_in_AoC_" AS non_state_law_allowed_in_aoc,
+    ap."Created" AS created,
+    ap."ncRecordId" AS nc_record_id,
+    ap."created_at" AS created_at,
+    ap."updated_at" AS updated_at,
+    ap."created_by" AS created_by,
+    ap."updated_by" AS updated_by,
+    ap."nc_order" AS nc_order,
+    ar_cold."CoLD_ID" AS arbitral_rules_cold_id,
+    (COALESCE(ar_cold."CoLD_ID", '') || ' ' || COALESCE(ap."Article", '')) AS cold_id,
     (
         SELECT jsonb_agg(aa.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral Provis_Arbitral_Awards" m
@@ -631,16 +836,35 @@ LEFT JOIN LATERAL (
     JOIN p1q5x3pj29vkrdr."Arbitral_Rules" ar ON ar.id = m."Arbitral_Rules_id"
     WHERE m."Arbitral Provisions_id" = ap.id
     LIMIT 1
-) ar_cold ON true
-""")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_arbitral_provisions_complete_id ON data_views.arbitral_provisions_complete(id)")
+) ar_cold ON true;
 
-    alembic_op.execute("""
+CREATE UNIQUE INDEX idx_arbitral_provisions_complete_id ON data_views.arbitral_provisions_complete(id);
+"""
+
+JURISDICTIONS_COMPLETE = """
 DROP MATERIALIZED VIEW IF EXISTS data_views.jurisdictions_complete CASCADE;
 CREATE MATERIALIZED VIEW data_views.jurisdictions_complete AS
 SELECT
-    j.*,
-    j."Alpha_3_Code" AS "CoLD_ID",
+    j.id,
+    j."Name" AS name,
+    j."Alpha_3_Code" AS alpha_3_code,
+    j."Type" AS type,
+    j."Region" AS region,
+    j."North_South_Divide" AS north_south_divide,
+    j."Jurisdictional_Differentiator" AS jurisdictional_differentiator,
+    j."Legal_Family" AS legal_family,
+    j."Jurisdiction_Summary" AS jurisdiction_summary,
+    j."Answer_Coverage" AS answer_coverage,
+    j."Irrelevant_" AS irrelevant,
+    j."Done" AS done,
+    j."Created" AS created,
+    j."ncRecordId" AS nc_record_id,
+    j."created_at" AS created_at,
+    j."updated_at" AS updated_at,
+    j."created_by" AS created_by,
+    j."updated_by" AS updated_by,
+    j."nc_order" AS nc_order,
+    j."Alpha_3_Code" AS cold_id,
     (
         SELECT jsonb_agg(a.*)
         FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Answers" ja
@@ -671,369 +895,15 @@ SELECT
         JOIN p1q5x3pj29vkrdr."Specialists" s ON s.id = js."Specialists_id"
         WHERE js."Jurisdictions_id" = j.id
     ) AS related_specialists
-FROM p1q5x3pj29vkrdr."Jurisdictions" j
-""")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_jurisdictions_complete_id ON data_views.jurisdictions_complete(id)")
+FROM p1q5x3pj29vkrdr."Jurisdictions" j;
 
-    alembic_op.execute("""
-DROP MATERIALIZED VIEW IF EXISTS data_views.answers CASCADE;
-CREATE MATERIALIZED VIEW data_views.answers AS
-WITH jurisdiction_agg AS (
-    SELECT
-        m2m."Answers_id",
-        STRING_AGG(j."Name", ' | ' ORDER BY j."Name") AS "Jurisdictions",
-        STRING_AGG(j."Legal_Family", ' | ' ORDER BY j."Legal_Family") AS "Legal_Families",
-        MIN(j."Alpha_3_Code") AS "Alpha_3_Code"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Answers" m2m
-    JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = m2m."Jurisdictions_id"
-    GROUP BY m2m."Answers_id"
-),
-questions_agg AS (
-    SELECT
-        m2m."Answers_id",
-        STRING_AGG(q."Question", ' | ' ORDER BY q.id) AS "Questions",
-        STRING_AGG(DISTINCT t."Theme", ' | ' ORDER BY t."Theme") AS "Themes",
-        MIN(q."Question_Number" || '-' || q."Primary_Theme") AS "CoLD_ID"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_Questions_Answers" m2m
-    JOIN p1q5x3pj29vkrdr."Questions" q ON q.id = m2m."Questions_id"
-    LEFT JOIN p1q5x3pj29vkrdr."_nc_m2m_Themes_Questions" tq ON tq."Questions_id" = q.id
-    LEFT JOIN p1q5x3pj29vkrdr."Themes" t ON t.id = tq."Themes_id"
-    GROUP BY m2m."Answers_id"
-)
-SELECT
-    a.id,
-    a."Answer",
-    a."More_Information",
-    'Answers Answer Response' AS "Table_Synonyms",
-    COALESCE(ja."Jurisdictions", '') AS "Jurisdictions",
-    COALESCE(ja."Legal_Families", '') AS "Legal_Families",
-    COALESCE(qa."Questions", '') AS "Questions",
-    COALESCE(qa."Themes", '') AS "Themes",
-    (COALESCE(ja."Alpha_3_Code",'') || '_' || COALESCE(qa."CoLD_ID",'')) AS "CoLD_ID",
-    a."updated_at"::date AS sort_date,
-    to_tsvector('english',
-        'Answers Answer Response' || ' ' ||
-        COALESCE(a."Answer", '') || ' ' ||
-        COALESCE(a."More_Information", '') || ' ' ||
-        COALESCE(ja."Jurisdictions", '') || ' ' ||
-        COALESCE(ja."Legal_Families", '') || ' ' ||
-        COALESCE(qa."Questions", '') || ' ' ||
-        COALESCE(qa."Themes", '') || ' ' ||
-        COALESCE((COALESCE(ja."Alpha_3_Code",'') || '_' || COALESCE(qa."CoLD_ID",'')), '')
-    ) AS document
-FROM p1q5x3pj29vkrdr."Answers" a
-LEFT JOIN jurisdiction_agg ja ON ja."Answers_id" = a.id
-LEFT JOIN questions_agg qa ON qa."Answers_id" = a.id
-""")
-    alembic_op.execute("CREATE INDEX idx_fts_answers ON data_views.answers USING GIN(document)")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_answers_id ON data_views.answers(id)")
+CREATE UNIQUE INDEX idx_jurisdictions_complete_id ON data_views.jurisdictions_complete(id);
+"""
 
-    alembic_op.execute("""
-DROP MATERIALIZED VIEW IF EXISTS data_views.hcch_answers CASCADE;
-CREATE MATERIALIZED VIEW data_views.hcch_answers AS
-WITH themes_agg AS (
-    SELECT
-        m2m."HCCH_Answers_id",
-        STRING_AGG(t."Theme", ' | ' ORDER BY t."Theme") AS "Themes"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_Themes_HCCH_Answers" m2m
-    JOIN p1q5x3pj29vkrdr."Themes" t ON t.id = m2m."Themes_id"
-    GROUP BY m2m."HCCH_Answers_id"
-),
-international_instruments_agg AS (
-    SELECT
-        m2m."HCCH_Answers_id",
-        STRING_AGG(ii."Name", ' | ' ORDER BY ii."Name") AS "International_Instruments"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_HCCH_Answers_International_I" m2m
-    JOIN p1q5x3pj29vkrdr."International_Instruments" ii ON ii.id = m2m."International_Instruments_id"
-    GROUP BY m2m."HCCH_Answers_id"
-),
-questions_cold_agg AS (
-    SELECT
-        qa."Answers_id",
-        MIN(q."Question_Number" || '-' || q."Primary_Theme") AS "Question_CoLD_ID"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_Questions_Answers" qa
-    JOIN p1q5x3pj29vkrdr."Questions" q ON q.id = qa."Questions_id"
-    GROUP BY qa."Answers_id"
-)
-SELECT
-    ha.id,
-    ha."Adapted_Question",
-    ha."Position",
-    'HCCH Answers' AS "Table_Synonyms",
-    COALESCE(ta."Themes", '') AS "Themes",
-    COALESCE(iia."International_Instruments", '') AS "International_Instruments",
-    ('HCCH-' || COALESCE(qca."Question_CoLD_ID",'')) AS "CoLD_ID",
-    ha."updated_at"::date AS sort_date,
-    to_tsvector('english',
-        'HCCH Answers' || ' ' ||
-        COALESCE(ha."Adapted_Question", '') || ' ' ||
-        COALESCE(ha."Position", '') || ' ' ||
-        COALESCE(ta."Themes", '') || ' ' ||
-        COALESCE(iia."International_Instruments", '') || ' ' ||
-        COALESCE(('HCCH-' || COALESCE(qca."Question_CoLD_ID",'')), '')
-    ) AS document
-FROM p1q5x3pj29vkrdr."HCCH_Answers" ha
-LEFT JOIN themes_agg ta ON ta."HCCH_Answers_id" = ha.id
-LEFT JOIN international_instruments_agg iia ON iia."HCCH_Answers_id" = ha.id
-LEFT JOIN questions_cold_agg qca ON qca."Answers_id" = ha.id
-""")
-    alembic_op.execute("CREATE INDEX idx_fts_hcch_answers ON data_views.hcch_answers USING GIN(document)")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_hcch_answers_id ON data_views.hcch_answers(id)")
+SEARCH_ALL_FUNCTION = """
+DROP FUNCTION IF EXISTS data_views.search_all(text, text[], text[], text[], integer, integer);
+DROP FUNCTION IF EXISTS data_views.search_all(text, text[], text[], text[], integer, integer, boolean);
 
-    alembic_op.execute(r"""
-DROP MATERIALIZED VIEW IF EXISTS data_views.court_decisions CASCADE;
-CREATE MATERIALIZED VIEW data_views.court_decisions AS
-WITH jurisdiction_agg AS (
-    SELECT
-        m2m."Court_Decisions_id",
-        STRING_AGG(j."Name", ' | ' ORDER BY j."Name") AS "Jurisdictions",
-        STRING_AGG(j."Legal_Family", ' | ' ORDER BY j."Legal_Family") AS "Legal_Families",
-        MIN(j."Alpha_3_Code") AS "Alpha_3_Code"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Court_Decisions" m2m
-    JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = m2m."Jurisdictions_id"
-    GROUP BY m2m."Court_Decisions_id"
-),
-themes_agg AS (
-    SELECT
-        m2m."Court_Decisions_id",
-        STRING_AGG(DISTINCT t."Theme", ' | ' ORDER BY t."Theme") AS "Themes"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_Questions_Court_Decisions" m2m
-    JOIN p1q5x3pj29vkrdr."_nc_m2m_Themes_Questions" tq ON tq."Questions_id" = m2m."Questions_id"
-    JOIN p1q5x3pj29vkrdr."Themes" t ON t.id = tq."Themes_id"
-    GROUP BY m2m."Court_Decisions_id"
-)
-SELECT
-    cd.id,
-    cd."Case_Citation",
-    cd."Case_Rank"::text AS "Case_Rank",
-    cd."English_Translation",
-    'Court Decisions Case Precedent' AS "Table_Synonyms",
-    COALESCE(ja."Jurisdictions", '') AS "Jurisdictions",
-    COALESCE(ja."Legal_Families", '') AS "Legal_Families",
-    COALESCE(ta."Themes", '') AS "Themes",
-    ('CD-' || COALESCE(ja."Alpha_3_Code", '') || '-' || cd."ID_Number") AS "CoLD_ID",
-    CASE
-      WHEN cd."Date" ~ '^[0-9]{4}$'
-        THEN to_date(cd."Date", 'YYYY')
-      WHEN cd."Date" ~ '^[0-9]{2}\.[0-9]{2}\.[0-9]{4}$'
-        THEN to_date(cd."Date", 'DD.MM.YYYY')
-      ELSE NULL
-    END AS sort_date,
-    to_tsvector('english',
-        'Court Decisions Case Precedent' || ' ' ||
-        COALESCE(cd."Case_Citation", '') || ' ' ||
-        COALESCE(cd."Case_Rank"::text, '') || ' ' ||
-        COALESCE(cd."English_Translation", '') || ' ' ||
-        COALESCE(ja."Jurisdictions", '') || ' ' ||
-        COALESCE(ja."Legal_Families", '') || ' ' ||
-        COALESCE(ta."Themes", '') || ' ' ||
-        COALESCE(('CD-' || COALESCE(ja."Alpha_3_Code", '') || '-' || cd."ID_Number"), '')
-    ) AS document
-FROM p1q5x3pj29vkrdr."Court_Decisions" cd
-LEFT JOIN jurisdiction_agg ja ON ja."Court_Decisions_id" = cd.id
-LEFT JOIN themes_agg ta ON ta."Court_Decisions_id" = cd.id
-""")
-    alembic_op.execute("CREATE INDEX idx_fts_court_decisions ON data_views.court_decisions USING GIN(document)")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_court_decisions_id ON data_views.court_decisions(id)")
-
-    alembic_op.execute("""
-DROP MATERIALIZED VIEW IF EXISTS data_views.domestic_instruments CASCADE;
-CREATE MATERIALIZED VIEW data_views.domestic_instruments AS
-WITH jurisdiction_agg AS (
-    SELECT
-        m2m."Domestic_Instruments_id",
-        STRING_AGG(j."Name", ' | ' ORDER BY j."Name") AS "Jurisdictions",
-        MIN(j."Alpha_3_Code") AS "Alpha_3_Code"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Domestic_Instru" m2m
-    JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = m2m."Jurisdictions_id"
-    GROUP BY m2m."Domestic_Instruments_id"
-),
-domestic_legal_provisions_agg AS (
-    SELECT
-        m2m."Domestic_Instruments_id",
-        STRING_AGG(dlp."Full_Text_of_the_Provision__Original_Language_", ' | ' ORDER BY dlp.id) AS "Original_Language_Provisions",
-        STRING_AGG(dlp."Full_Text_of_the_Provision__English_Translation_", ' | ' ORDER BY dlp.id) AS "English_Translation_Provisions"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_Domestic_Instru_Domestic_Legal_" m2m
-    JOIN p1q5x3pj29vkrdr."Domestic_Legal_Provisions" dlp ON dlp.id = m2m."Domestic_Legal_Provisions_id"
-    GROUP BY m2m."Domestic_Instruments_id"
-),
-questions_agg AS (
-    SELECT
-        m2m."Domestic_Instruments_id",
-        STRING_AGG(q."Question", ' | ' ORDER BY q.id) AS "Questions"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_Questions_Domestic_Instru" m2m
-    JOIN p1q5x3pj29vkrdr."Questions" q ON q.id = m2m."Questions_id"
-    GROUP BY m2m."Domestic_Instruments_id"
-)
-SELECT
-    di.id,
-    di."Title__in_English_",
-    di."Official_Title",
-    di."Relevant_Provisions",
-    di."Full_Text_of_the_Provisions",
-    di."Publication_Date",
-    di."Entry_Into_Force",
-    di."Abbreviation",
-    'Domestic Instruments Law Statute' AS "Table_Synonyms",
-    COALESCE(ja."Jurisdictions", '') AS "Jurisdictions",
-    COALESCE(dlpa."Original_Language_Provisions", '') AS "Legal_Provisions_Original",
-    COALESCE(dlpa."English_Translation_Provisions", '') AS "Legal_Provisions_English",
-    ('DI-' || COALESCE(ja."Alpha_3_Code", '') || '-' || di."ID_Number") AS "CoLD_ID",
-    CASE
-      WHEN di."Date" ~ '^[0-9]{4}$'
-        THEN to_date(di."Date", 'YYYY')
-      ELSE NULL
-    END AS sort_date,
-    to_tsvector('english',
-        'Domestic Instruments Law Statute' || ' ' ||
-        COALESCE(di."Title__in_English_", '') || ' ' ||
-        COALESCE(di."Official_Title", '') || ' ' ||
-        COALESCE(di."Relevant_Provisions", '') || ' ' ||
-        COALESCE(di."Full_Text_of_the_Provisions", '') || ' ' ||
-        COALESCE(di."Abbreviation", '') || ' ' ||
-        COALESCE(ja."Jurisdictions", '') || ' ' ||
-        COALESCE(dlpa."Original_Language_Provisions", '') || ' ' ||
-        COALESCE(dlpa."English_Translation_Provisions", '') || ' ' ||
-        COALESCE(qa."Questions", '') || ' ' ||
-        COALESCE(('DI-' || COALESCE(ja."Alpha_3_Code", '') || '-' || di."ID_Number"), '')
-    ) AS document
-FROM p1q5x3pj29vkrdr."Domestic_Instruments" di
-LEFT JOIN jurisdiction_agg ja ON ja."Domestic_Instruments_id" = di.id
-LEFT JOIN domestic_legal_provisions_agg dlpa ON dlpa."Domestic_Instruments_id" = di.id
-LEFT JOIN questions_agg qa ON qa."Domestic_Instruments_id" = di.id
-""")
-    alembic_op.execute("CREATE INDEX idx_fts_domestic_instruments ON data_views.domestic_instruments USING GIN(document)")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_domestic_instruments_id ON data_views.domestic_instruments(id)")
-
-    alembic_op.execute("""
-DROP MATERIALIZED VIEW IF EXISTS data_views.regional_instruments CASCADE;
-CREATE MATERIALIZED VIEW data_views.regional_instruments AS
-WITH specialists_agg AS (
-    SELECT
-        m2m."Regional_Instruments_id",
-        STRING_AGG(s."Specialist", ' | ' ORDER BY s."Specialist") AS "Specialists"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_Regional_Instru_Specialists" m2m
-    JOIN p1q5x3pj29vkrdr."Specialists" s ON s.id = m2m."Specialists_id"
-    GROUP BY m2m."Regional_Instruments_id"
-)
-SELECT
-    ri.id,
-    ri."Abbreviation",
-    ri."Title",
-    COALESCE(sa."Specialists", '') AS "Specialists",
-    'Regional Instruments Regional Agreement Protocol' AS "Table_Synonyms",
-    ('RI-' || LEFT(ri."Abbreviation", 3) || '-' || ri."ID_Number") AS "CoLD_ID",
-    ri."Date" AS sort_date,
-    to_tsvector('english',
-        'Regional Instruments Regional Agreement Protocol' || ' ' ||
-        COALESCE(ri."Abbreviation", '') || ' ' ||
-        COALESCE(ri."Title", '') || ' ' ||
-        COALESCE(sa."Specialists", '') || ' ' ||
-        COALESCE(ri."Date"::text, '') || ' ' ||
-        ('RI-' || LEFT(ri."Abbreviation", 3) || '-' || ri."ID_Number")
-    ) AS document
-FROM p1q5x3pj29vkrdr."Regional_Instruments" ri
-LEFT JOIN specialists_agg sa ON sa."Regional_Instruments_id" = ri.id
-""")
-    alembic_op.execute("CREATE INDEX idx_fts_regional_instruments ON data_views.regional_instruments USING GIN(document)")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_regional_instruments_id ON data_views.regional_instruments(id)")
-
-    alembic_op.execute("""
-DROP MATERIALIZED VIEW IF EXISTS data_views.international_instruments CASCADE;
-CREATE MATERIALIZED VIEW data_views.international_instruments AS
-WITH specialists_agg AS (
-    SELECT
-        m2m."International_Instruments_id",
-        STRING_AGG(s."Specialist", ' | ' ORDER BY s."Specialist") AS "Specialists"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_International_I_Specialists" m2m
-    JOIN p1q5x3pj29vkrdr."Specialists" s ON s.id = m2m."Specialists_id"
-    GROUP BY m2m."International_Instruments_id"
-)
-SELECT
-    ii.id,
-    ii."Name",
-    COALESCE(sa."Specialists", '') AS "Specialists",
-    'International Instruments Treaty Convention' AS "Table_Synonyms",
-    ('II-' || LEFT(ii."Name", 3) || '-' || ii."ID_Number") AS "CoLD_ID",
-    ii."Date" AS sort_date,
-    to_tsvector('english',
-        'International Instruments Treaty Convention' || ' ' ||
-        COALESCE(ii."Name", '') || ' ' ||
-        COALESCE(sa."Specialists", '') || ' ' ||
-        COALESCE(ii."Date"::text, '') || ' ' ||
-        ('II-' || LEFT(ii."Name", 3) || '-' || ii."ID_Number")
-    ) AS document
-FROM p1q5x3pj29vkrdr."International_Instruments" ii
-LEFT JOIN specialists_agg sa ON sa."International_Instruments_id" = ii.id
-""")
-    alembic_op.execute(
-        "CREATE INDEX idx_fts_international_instruments ON data_views.international_instruments USING GIN(document)"
-    )
-    alembic_op.execute("CREATE UNIQUE INDEX idx_international_instruments_id ON data_views.international_instruments(id)")
-
-    alembic_op.execute("""
-DROP MATERIALIZED VIEW IF EXISTS data_views.literature CASCADE;
-CREATE MATERIALIZED VIEW data_views.literature AS
-WITH jurisdiction_agg AS (
-    SELECT
-        m2m."Literature_id",
-        STRING_AGG(j."Name", ' | ' ORDER BY j."Name") AS "Jurisdictions"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Literature" m2m
-    JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = m2m."Jurisdictions_id"
-    GROUP BY m2m."Literature_id"
-),
-themes_agg AS (
-    SELECT
-        m2m."Literature_id",
-        STRING_AGG(t."Theme", ' | ' ORDER BY t."Theme") AS "Themes"
-    FROM p1q5x3pj29vkrdr."_nc_m2m_Themes_Literature" m2m
-    JOIN p1q5x3pj29vkrdr."Themes" t ON t.id = m2m."Themes_id"
-    GROUP BY m2m."Literature_id"
-)
-SELECT
-    l.id,
-    l."Title",
-    l."Author",
-    l."Publication_Year",
-    l."Item_Type",
-    l."Publication_Title",
-    l."Abstract_Note",
-    l."ISBN",
-    l."ISSN",
-    l."DOI",
-    l."Url",
-    l."Publisher",
-    COALESCE(ja."Jurisdictions", '') AS "Jurisdictions",
-    COALESCE(ta."Themes", '') AS "Themes",
-    ('L-' || l."ID_Number") AS "CoLD_ID",
-    CASE
-      WHEN l."Publication_Year"::text ~ '^[0-9]{4}$'
-        THEN to_date(l."Publication_Year"::text, 'YYYY')
-      ELSE NULL
-    END AS sort_date,
-    'Literature Publication Article' AS "Table_Synonyms",
-    to_tsvector('english',
-        'Literature Publication Article' || ' ' ||
-        COALESCE(l."Title", '') || ' ' ||
-        COALESCE(l."Author", '') || ' ' ||
-        COALESCE(l."Publication_Title", '') || ' ' ||
-        COALESCE(l."Abstract_Note", '') || ' ' ||
-        COALESCE(l."Publisher", '') || ' ' ||
-        COALESCE(ja."Jurisdictions", '') || ' ' ||
-        COALESCE(ta."Themes", '') || ' ' ||
-        ('L-' || l."ID_Number")
-    ) AS document
-FROM p1q5x3pj29vkrdr."Literature" l
-LEFT JOIN jurisdiction_agg ja ON ja."Literature_id" = l.id
-LEFT JOIN themes_agg ta ON ta."Literature_id" = l.id
-""")
-    alembic_op.execute("CREATE INDEX idx_fts_literature ON data_views.literature USING GIN(document)")
-    alembic_op.execute("CREATE UNIQUE INDEX idx_literature_id ON data_views.literature(id)")
-
-    alembic_op.execute("DROP FUNCTION IF EXISTS data_views.search_all(text, text[], text[], text[], integer, integer)")
-    alembic_op.execute("DROP FUNCTION IF EXISTS data_views.search_all(text, text[], text[], text[], integer, integer, boolean)")
-
-    alembic_op.execute("""
 CREATE OR REPLACE FUNCTION data_views.search_all(
     search_term TEXT,
     filter_tables TEXT[] DEFAULT NULL,
@@ -1069,10 +939,10 @@ BEGIN
         JOIN data_views.answers search_view ON search_view.id = a.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'Answers' = ANY(filter_tables))
-        AND NOT EXISTS (
-            SELECT 1 FROM jsonb_array_elements(a.related_jurisdictions) AS elem
-            WHERE COALESCE((elem->>'Irrelevant_')::boolean, FALSE) = TRUE
-        )
+          AND NOT EXISTS (
+              SELECT 1 FROM jsonb_array_elements(a.related_jurisdictions) AS elem
+              WHERE COALESCE((elem->>'Irrelevant_')::boolean, FALSE) = TRUE
+          )
           AND (filter_jurisdictions IS NULL OR EXISTS (
                SELECT 1 FROM unnest(filter_jurisdictions) AS jf
                WHERE search_view."Jurisdictions" ILIKE '%'||jf||'%'
@@ -1200,55 +1070,29 @@ BEGIN
     ORDER BY
         CASE
             WHEN sub.table_name = 'Answers'
-                 AND btrim(COALESCE(sub.complete_record->>'Answer', '')) ILIKE '%no data%'
+                 AND btrim(COALESCE(sub.complete_record->>'answer', '')) ILIKE '%no data%'
             THEN 2
             WHEN sub.table_name = 'Court Decisions'
-                 AND COALESCE((sub.complete_record->>'Case_Rank')::numeric, 1000000) <= 5
+                 AND COALESCE((sub.complete_record->>'case_rank')::numeric, 1000000) <= 5
             THEN 1
             ELSE 0
         END ASC,
         CASE
             WHEN sub.table_name = 'Court Decisions'
-                 AND COALESCE((sub.complete_record->>'Case_Rank')::numeric, 1000000) <= 5
-            THEN COALESCE((sub.complete_record->>'Case_Rank')::numeric, -1)
+                 AND COALESCE((sub.complete_record->>'case_rank')::numeric, 1000000) <= 5
+            THEN COALESCE((sub.complete_record->>'case_rank')::numeric, -1)
         END DESC NULLS LAST,
         CASE WHEN sort_by_date THEN sub.result_date ELSE NULL END DESC NULLS LAST,
         sub.rank DESC,
         sub.table_name
     LIMIT page_size OFFSET offset_val;
 END;
-$$ LANGUAGE plpgsql
-""")
+$$ LANGUAGE plpgsql;
+"""
 
-    alembic_op.execute("""
-COMMENT ON FUNCTION data_views.search_all IS
-'Search across all data_views materialized views and return complete records.
-Parameters:
-- search_term: Text to search for
-- filter_tables: Array of table names to search within
-- filter_jurisdictions: Array of jurisdictions to filter by
-- filter_themes: Array of themes to filter by
-- page: Page number (starting at 1)
-- page_size: Number of results per page
-- sort_by_date: Whether to sort by date (true) or relevance (false)
+SEARCH_FOR_ENTRY_FUNCTION = """
+DROP FUNCTION IF EXISTS data_views.search_for_entry(TEXT, TEXT);
 
-Usage example:
-SELECT * FROM data_views.search_all(
-   search_term => ''''::text,
-   filter_tables => ARRAY[''Literature'']::text[],
-   filter_jurisdictions => ARRAY[''Switzerland'',''France'']::text[],
-   filter_themes => ARRAY[''Public policy'',''Party autonomy'']::text[],
-   page => 1,
-   page_size => 10,
-   sort_by_date => FALSE
-);
-
-Created by: simonweigold on 2025-07-26 14:33:15 UTC'
-""")
-
-    alembic_op.execute("DROP FUNCTION IF EXISTS data_views.search_for_entry(TEXT, TEXT)")
-
-    alembic_op.execute("""
 CREATE OR REPLACE FUNCTION data_views.search_for_entry(
     table_name TEXT,
     cold_id TEXT
@@ -1268,7 +1112,7 @@ BEGIN
         SELECT id, to_jsonb(a.*)
         INTO rec_id, rec
         FROM data_views.answers_complete a
-        WHERE a."CoLD_ID" = cold_id
+        WHERE a.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1283,7 +1127,7 @@ BEGIN
             )
         INTO hop1
         FROM data_views.answers_complete a
-        WHERE a."CoLD_ID" = cold_id
+        WHERE a.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Answers', rec_id, rec, hop1;
@@ -1292,7 +1136,7 @@ BEGIN
         SELECT id, to_jsonb(ha.*)
         INTO rec_id, rec
         FROM data_views.hcch_answers_complete ha
-        WHERE ha."CoLD_ID" = cold_id
+        WHERE ha.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1302,7 +1146,7 @@ BEGIN
             )
         INTO hop1
         FROM data_views.hcch_answers_complete ha
-        WHERE ha."CoLD_ID" = cold_id
+        WHERE ha.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'HCCH Answers', rec_id, rec, hop1;
@@ -1311,7 +1155,7 @@ BEGIN
         SELECT id, to_jsonb(cd.*)
         INTO rec_id, rec
         FROM data_views.court_decisions_complete cd
-        WHERE cd."CoLD_ID" = cold_id
+        WHERE cd.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1323,7 +1167,7 @@ BEGIN
             )
         INTO hop1
         FROM data_views.court_decisions_complete cd
-        WHERE cd."CoLD_ID" = cold_id
+        WHERE cd.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Court Decisions', rec_id, rec, hop1;
@@ -1332,7 +1176,7 @@ BEGIN
         SELECT id, to_jsonb(di.*)
         INTO rec_id, rec
         FROM data_views.domestic_instruments_complete di
-        WHERE di."CoLD_ID" = cold_id
+        WHERE di.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1343,7 +1187,7 @@ BEGIN
             )
         INTO hop1
         FROM data_views.domestic_instruments_complete di
-        WHERE di."CoLD_ID" = cold_id
+        WHERE di.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Domestic Instruments', rec_id, rec, hop1;
@@ -1352,7 +1196,7 @@ BEGIN
         SELECT id, to_jsonb(dlp.*)
         INTO rec_id, rec
         FROM data_views.domestic_legal_provisions_complete dlp
-        WHERE dlp."CoLD_ID" = cold_id
+        WHERE dlp.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1361,7 +1205,7 @@ BEGIN
             )
         INTO hop1
         FROM data_views.domestic_legal_provisions_complete dlp
-        WHERE dlp."CoLD_ID" = cold_id
+        WHERE dlp.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Domestic Legal Provisions', rec_id, rec, hop1;
@@ -1370,7 +1214,7 @@ BEGIN
         SELECT id, to_jsonb(ri.*)
         INTO rec_id, rec
         FROM data_views.regional_instruments_complete ri
-        WHERE ri."CoLD_ID" = cold_id
+        WHERE ri.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1380,7 +1224,7 @@ BEGIN
             )
         INTO hop1
         FROM data_views.regional_instruments_complete ri
-        WHERE ri."CoLD_ID" = cold_id
+        WHERE ri.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Regional Instruments', rec_id, rec, hop1;
@@ -1389,17 +1233,17 @@ BEGIN
         SELECT id, to_jsonb(rlp.*)
         INTO rec_id, rec
         FROM data_views.regional_legal_provisions_complete rlp
-        WHERE rlp."CoLD_ID" = cold_id
+        WHERE rlp.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
             jsonb_build_object(
-                'Instrument_CoLD_ID', rlp."Instrument_CoLD_ID",
+                'instrument_cold_id', rlp.instrument_cold_id,
                 'related_regional_instruments', rlp.related_regional_instruments
             )
         INTO hop1
         FROM data_views.regional_legal_provisions_complete rlp
-        WHERE rlp."CoLD_ID" = cold_id
+        WHERE rlp.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Regional Legal Provisions', rec_id, rec, hop1;
@@ -1408,7 +1252,7 @@ BEGIN
         SELECT id, to_jsonb(ii.*)
         INTO rec_id, rec
         FROM data_views.international_instruments_complete ii
-        WHERE ii."CoLD_ID" = cold_id
+        WHERE ii.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1420,7 +1264,7 @@ BEGIN
             )
         INTO hop1
         FROM data_views.international_instruments_complete ii
-        WHERE ii."CoLD_ID" = cold_id
+        WHERE ii.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'International Instruments', rec_id, rec, hop1;
@@ -1429,16 +1273,16 @@ BEGIN
         SELECT id, to_jsonb(ilp.*)
         INTO rec_id, rec
         FROM data_views.international_legal_provisions_complete ilp
-        WHERE ilp."CoLD_ID" = cold_id
+        WHERE ilp.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
             jsonb_build_object(
-                'Instrument_CoLD_ID', ilp."Instrument_CoLD_ID"
+                'instrument_cold_id', ilp.instrument_cold_id
             )
         INTO hop1
         FROM data_views.international_legal_provisions_complete ilp
-        WHERE ilp."CoLD_ID" = cold_id
+        WHERE ilp.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'International Legal Provisions', rec_id, rec, hop1;
@@ -1447,7 +1291,7 @@ BEGIN
         SELECT id, to_jsonb(l.*)
         INTO rec_id, rec
         FROM data_views.literature_complete l
-        WHERE l."CoLD_ID" = cold_id
+        WHERE l.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1457,7 +1301,7 @@ BEGIN
             )
         INTO hop1
         FROM data_views.literature_complete l
-        WHERE l."CoLD_ID" = cold_id
+        WHERE l.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Literature', rec_id, rec, hop1;
@@ -1466,7 +1310,7 @@ BEGIN
         SELECT id, to_jsonb(aa.*)
         INTO rec_id, rec
         FROM data_views.arbitral_awards_complete aa
-        WHERE aa."CoLD_ID" = cold_id
+        WHERE aa.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1479,7 +1323,7 @@ BEGIN
             )
         INTO hop1
         FROM data_views.arbitral_awards_complete aa
-        WHERE aa."CoLD_ID" = cold_id
+        WHERE aa.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Arbitral Awards', rec_id, rec, hop1;
@@ -1488,8 +1332,8 @@ BEGIN
         SELECT id, to_jsonb(ai.*)
         INTO rec_id, rec
         FROM data_views.arbitral_institutions_complete ai
-        WHERE ai.id::text = cold_id
-           OR ('AI-' || ai.id::text) = cold_id
+        WHERE ai.id::text = search_for_entry.cold_id
+           OR ('AI-' || ai.id::text) = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1500,9 +1344,9 @@ BEGIN
                 'related_jurisdictions', ai.related_jurisdictions
             )
         INTO hop1
-    FROM data_views.arbitral_institutions_complete ai
-    WHERE ai.id::text = cold_id
-       OR ('AI-' || ai.id::text) = cold_id
+        FROM data_views.arbitral_institutions_complete ai
+        WHERE ai.id::text = search_for_entry.cold_id
+           OR ('AI-' || ai.id::text) = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Arbitral Institutions', rec_id, rec, hop1;
@@ -1511,7 +1355,7 @@ BEGIN
         SELECT id, to_jsonb(ar.*)
         INTO rec_id, rec
         FROM data_views.arbitral_rules_complete ar
-        WHERE ar."CoLD_ID" = cold_id
+        WHERE ar.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1522,7 +1366,7 @@ BEGIN
             )
         INTO hop1
         FROM data_views.arbitral_rules_complete ar
-        WHERE ar."CoLD_ID" = cold_id
+        WHERE ar.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Arbitral Rules', rec_id, rec, hop1;
@@ -1531,7 +1375,7 @@ BEGIN
         SELECT id, to_jsonb(ap.*)
         INTO rec_id, rec
         FROM data_views.arbitral_provisions_complete ap
-        WHERE ap."CoLD_ID" = cold_id
+        WHERE ap.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1542,7 +1386,7 @@ BEGIN
             )
         INTO hop1
         FROM data_views.arbitral_provisions_complete ap
-        WHERE ap."CoLD_ID" = cold_id
+        WHERE ap.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Arbitral Provisions', rec_id, rec, hop1;
@@ -1551,7 +1395,7 @@ BEGIN
         SELECT id, to_jsonb(j.*)
         INTO rec_id, rec
         FROM data_views.jurisdictions_complete j
-        WHERE j."Alpha_3_Code" = cold_id
+        WHERE j.alpha_3_code = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT jsonb_build_object(
@@ -1563,7 +1407,7 @@ BEGIN
         )
         INTO hop1
         FROM data_views.jurisdictions_complete j
-        WHERE j."Alpha_3_Code" = cold_id
+        WHERE j.alpha_3_code = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Jurisdictions', rec_id, rec, hop1;
@@ -1572,7 +1416,7 @@ BEGIN
         SELECT id, to_jsonb(q.*)
         INTO rec_id, rec
         FROM data_views.questions_complete q
-        WHERE q."CoLD_ID" = cold_id
+        WHERE q.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         SELECT
@@ -1584,7 +1428,7 @@ BEGIN
             )
         INTO hop1
         FROM data_views.questions_complete q
-        WHERE q."CoLD_ID" = cold_id
+        WHERE q.cold_id = search_for_entry.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Questions', rec_id, rec, hop1;
@@ -1593,16 +1437,41 @@ BEGIN
         RAISE EXCEPTION 'Unsupported table_name: %', table_name;
     END IF;
 END;
-$$ LANGUAGE plpgsql STABLE
-""")
+$$ LANGUAGE plpgsql STABLE;
+"""
 
-    alembic_op.execute("""
-COMMENT ON FUNCTION data_views.search_for_entry IS
-'Given a table name and a CoLD_ID value, returns the complete record (from the *_complete materialized view) and all first-degree (hop-1) related entries as JSONB, following the structure of *_complete views. The returned column found_table avoids parameter collision.'
-""")
+REFRESH_VIEWS = """
+SELECT data_views.refresh_all_materialized_views();
+"""
 
-    alembic_op.execute("SELECT data_views.refresh_all_materialized_views()")
+
+def upgrade() -> None:
+    op.execute(QUESTIONS_COMPLETE)
+    op.execute(ANSWERS_COMPLETE)
+    op.execute(HCCH_ANSWERS_COMPLETE)
+    op.execute(DOMESTIC_INSTRUMENTS_COMPLETE)
+    op.execute(DOMESTIC_LEGAL_PROVISIONS_COMPLETE)
+    op.execute(REGIONAL_INSTRUMENTS_COMPLETE)
+    op.execute(REGIONAL_LEGAL_PROVISIONS_COMPLETE)
+    op.execute(INTERNATIONAL_INSTRUMENTS_COMPLETE)
+    op.execute(INTERNATIONAL_LEGAL_PROVISIONS_COMPLETE)
+    op.execute(COURT_DECISIONS_COMPLETE)
+    op.execute(LITERATURE_COMPLETE)
+    op.execute(ARBITRAL_AWARDS_COMPLETE)
+    op.execute(ARBITRAL_INSTITUTIONS_COMPLETE)
+    op.execute(ARBITRAL_RULES_COMPLETE)
+    op.execute(ARBITRAL_PROVISIONS_COMPLETE)
+    op.execute(JURISDICTIONS_COMPLETE)
+    op.execute(SEARCH_ALL_FUNCTION)
+    op.execute(SEARCH_FOR_ENTRY_FUNCTION)
+    op.execute(REFRESH_VIEWS)
 
 
 def downgrade() -> None:
-    alembic_op.execute("DROP SCHEMA IF EXISTS data_views CASCADE")
+    from pathlib import Path
+
+    initial_path = Path(__file__).parent / "202603071000_initial_views.py"
+    source = initial_path.read_text()
+    start = source.index('SETUP_SQL = """') + len('SETUP_SQL = """')
+    end = source.index('"""', start)
+    op.execute(source[start:end])
