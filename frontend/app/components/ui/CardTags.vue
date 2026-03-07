@@ -65,7 +65,7 @@
                     stroke="currentColor"
                     stroke-width="3"
                     stroke-linecap="square"
-                    stroke-linejoin="square"
+                    stroke-linejoin="miter"
                   />
                 </svg>
               </span>
@@ -111,38 +111,30 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
 
-const props = defineProps({
-  formattedJurisdiction: {
-    type: Array,
-    default: () => [],
+const props = withDefaults(
+  defineProps<{
+    formattedJurisdiction?: string[];
+    formattedTheme?: string[];
+    legalFamily?: string[];
+    sourceTableLabel?: string;
+    labelColorClass?: string;
+    headerMode?: string;
+  }>(),
+  {
+    formattedJurisdiction: () => [],
+    formattedTheme: () => [],
+    legalFamily: () => [],
+    sourceTableLabel: "",
+    labelColorClass: "",
+    headerMode: "default",
   },
-  formattedTheme: {
-    type: Array,
-    default: () => [],
-  },
-  legalFamily: {
-    type: Array,
-    default: () => [],
-  },
-  sourceTableLabel: {
-    type: String,
-    default: "",
-  },
-  labelColorClass: {
-    type: String,
-    default: "",
-  },
-  headerMode: {
-    type: String,
-    default: "default",
-  },
-});
+);
 
 const route = useRoute();
 const router = useRouter();
@@ -173,7 +165,7 @@ watch(
   },
 );
 
-function typeToNewPath(label) {
+function typeToNewPath(label: string): string {
   const slug =
     label === "Court Decision"
       ? "court-decision"
@@ -195,7 +187,7 @@ watch(selectedType, (val, old) => {
   }
 });
 
-function getSourceTablePlural(label) {
+function getSourceTablePlural(label: string): string {
   if (label === "Court Decision") return "Court Decisions";
   if (label === "Domestic Instrument") return "Domestic Instruments";
   if (label === "Regional Instrument") return "Regional Instruments";

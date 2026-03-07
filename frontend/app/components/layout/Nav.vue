@@ -47,7 +47,7 @@
   </nav>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import { useRoute } from "vue-router";
 import eventBus from "@/eventBus";
@@ -60,25 +60,25 @@ const searchText = ref("");
 const isExpanded = ref(false);
 const isMobile = ref(false);
 const isScrolled = ref(false);
-const navMenu = ref(null);
+const navMenu = ref<InstanceType<typeof NavMenu> | null>(null);
 
-function handleScroll() {
+function handleScroll(): void {
   isScrolled.value = window.scrollY > 20;
 }
 
-function checkScreenSize() {
+function checkScreenSize(): void {
   const width = window.innerWidth;
   isMobile.value = width < 640;
 }
 
-const updateSearchFromEvent = (query) => {
-  searchText.value = query;
-};
+function updateSearchFromEvent(query: unknown): void {
+  searchText.value = typeof query === "string" ? query : "";
+}
 
 watch(
   () => route.query.q,
   (newQ) => {
-    searchText.value = newQ || "";
+    searchText.value = typeof newQ === "string" ? newQ : "";
   },
 );
 
@@ -88,8 +88,9 @@ onMounted(() => {
   window.addEventListener("scroll", handleScroll, { passive: true });
   handleScroll();
 
-  if (route.query.q) {
-    searchText.value = route.query.q;
+  const q = route.query.q;
+  if (typeof q === "string") {
+    searchText.value = q;
   }
 
   eventBus.on("update-search", updateSearchFromEvent);

@@ -10,7 +10,7 @@
         class="collapsed-search-icon"
         type="button"
         aria-label="Open search"
-        :aria-expanded="isExpanded.toString()"
+        :aria-expanded="isExpanded"
         @click="handleSearchIconClick"
       >
         <span class="iconify i-material-symbols:search" aria-hidden="true" />
@@ -107,41 +107,40 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch, nextTick, onMounted, onUnmounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
 
-const props = defineProps({
-  searchText: {
-    type: String,
-    default: "",
-  },
-  isMobile: {
-    type: Boolean,
-    default: false,
-  },
-  isScrolled: {
-    type: Boolean,
-    default: false,
-  },
-  hidden: {
-    type: Boolean,
-    default: false,
-  },
+interface Props {
+  searchText?: string;
+  isMobile?: boolean;
+  isScrolled?: boolean;
+  hidden?: boolean;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  searchText: "",
+  isMobile: false,
+  isScrolled: false,
+  hidden: false,
 });
 
-const emit = defineEmits(["update:searchText", "update:isExpanded", "search"]);
+const emit = defineEmits<{
+  "update:searchText": [value: string];
+  "update:isExpanded": [value: boolean];
+  search: [];
+}>();
 
 const router = useRouter();
 const route = useRoute();
 
 const isExpanded = ref(false);
 const isSearchFocused = ref(false);
-const suggestions = ref([]);
+const suggestions = ref<string[]>([]);
 const showSuggestions = ref(false);
 const enableJurisdictionFetch = ref(false);
-const searchInput = ref(null);
+const searchInput = ref<{ $el: HTMLElement } | null>(null);
 const activeSuggestionIndex = ref(-1);
 
 const MIN_SEARCH_LENGTH = 3;
@@ -178,7 +177,7 @@ function updateSuggestions() {
   activeSuggestionIndex.value = -1;
 }
 
-function handleSuggestionClick(selected) {
+function handleSuggestionClick(selected: string): void {
   const record = jurisdictionLookup.findJurisdictionByName?.(selected);
   const keywords = record
     ? [
@@ -252,9 +251,10 @@ function handleArrowUp() {
       : suggestions.value.length - 1;
 }
 
-function handleEnterKey() {
-  if (activeSuggestionIndex.value >= 0 && showSuggestions.value) {
-    handleSuggestionClick(suggestions.value[activeSuggestionIndex.value]);
+function handleEnterKey(): void {
+  const selected = suggestions.value[activeSuggestionIndex.value];
+  if (activeSuggestionIndex.value >= 0 && showSuggestions.value && selected) {
+    handleSuggestionClick(selected);
     return;
   }
   emitSearch();
@@ -323,10 +323,10 @@ const clearSearch = async () => {
   }
 };
 
-function handleGlobalKeydown(e) {
+function handleGlobalKeydown(e: KeyboardEvent): void {
   if (
     e.key === "s" &&
-    !["INPUT", "TEXTAREA"].includes(document.activeElement.tagName)
+    !["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName ?? "")
   ) {
     e.preventDefault();
     expandSearch();

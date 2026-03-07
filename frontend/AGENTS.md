@@ -1,13 +1,13 @@
 # AGENTS.md - Frontend
 
-Nuxt 3 frontend application for CoLD. This file provides essential context for AI agents. Human developers should refer to [README.md](README.md).
+Nuxt 4 frontend application for CoLD. This file provides essential context for AI agents. Human developers should refer to [README.md](README.md).
 
 ## Tech Stack
 
-- **Framework**: Nuxt 3 (Vue.js SSR meta-framework, SSR enabled)
+- **Framework**: Nuxt 4 (Vue.js SSR meta-framework, SSR enabled)
 - **Language**: TypeScript (strict mode, never JavaScript)
 - **Styling**: TailwindCSS + SCSS
-- **Components**: Nuxt UI library
+- **Components**: Nuxt UI 4
 - **State**: Vue Composition API + composables pattern
 - **Testing**: Vitest
 - **Formatting**: Prettier

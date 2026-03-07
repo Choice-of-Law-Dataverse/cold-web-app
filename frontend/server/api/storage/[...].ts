@@ -18,11 +18,10 @@ export default defineEventHandler(async (event) => {
   const host = getHeader(event, "host");
 
   const allowedOrigins = [
-    `http://localhost:3000`,
     `https://${host}`,
     `http://${host}`,
     config.public.siteUrl,
-  ];
+  ].filter(Boolean);
 
   const isValidOrigin =
     !origin ||
@@ -81,8 +80,9 @@ export default defineEventHandler(async (event) => {
       Key: path,
     });
 
+    const PRESIGNED_URL_TTL_SECONDS = 3_600;
     const presignedUrl = await getSignedUrl(s3Client, command, {
-      expiresIn: 3600,
+      expiresIn: PRESIGNED_URL_TTL_SECONDS,
     });
 
     return sendRedirect(event, presignedUrl, 302);

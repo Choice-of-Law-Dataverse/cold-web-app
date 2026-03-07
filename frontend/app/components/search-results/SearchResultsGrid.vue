@@ -16,7 +16,7 @@
           class="result-item"
         >
           <component
-            :is="getResultComponent(resultData.source_table)"
+            :is="getResultComponent(resultData.source_table as string)"
             :result-data="resultData"
           />
         </div>
@@ -57,7 +57,8 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { Component } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import LegislationCard from "@/components/search-results/LegislationCard.vue";
 import RegionalInstrumentCard from "@/components/search-results/RegionalInstrumentCard.vue";
@@ -69,28 +70,18 @@ import NoSearchResults from "@/components/search-results/NoSearchResults.vue";
 import EmptySearchState from "@/components/search-results/EmptySearchState.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 
-defineProps({
-  results: {
-    type: Array,
-    default: () => [],
-  },
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  canLoadMore: {
-    type: Boolean,
-    default: false,
-  },
-  hasQuery: {
-    type: Boolean,
-    default: false,
-  },
-});
+defineProps<{
+  results: Record<string, unknown>[];
+  loading: boolean;
+  canLoadMore: boolean;
+  hasQuery: boolean;
+}>();
 
-defineEmits(["load-more"]);
+defineEmits<{
+  (e: "load-more"): void;
+}>();
 
-const resultComponentMap = {
+const resultComponentMap: Record<string, Component> = {
   "Domestic Instruments": LegislationCard,
   "Regional Instruments": RegionalInstrumentCard,
   "International Instruments": InternationalInstrumentCard,
@@ -99,6 +90,6 @@ const resultComponentMap = {
   Literature: LiteratureCard,
 };
 
-const getResultComponent = (source_table) =>
-  resultComponentMap[source_table] || ResultCard;
+const getResultComponent = (sourceTable: string) =>
+  resultComponentMap[sourceTable] || ResultCard;
 </script>

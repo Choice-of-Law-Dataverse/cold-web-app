@@ -4,7 +4,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useSeoMeta, useHead, useRoute } from "#imports";
+import { useSeoMeta, useHead, useRoute, useRuntimeConfig } from "#imports";
 
 interface Props {
   titleCandidates: (string | null | undefined)[];
@@ -13,6 +13,7 @@ interface Props {
 
 const props = defineProps<Props>();
 const route = useRoute();
+const config = useRuntimeConfig();
 
 const pageTitle = computed(() => {
   const validParts = props.titleCandidates
@@ -39,7 +40,7 @@ useHead({
   link: [
     {
       rel: "canonical",
-      href: `https://cold.global${route.fullPath}`,
+      href: `${config.public.siteUrl}${route.fullPath}`,
     },
   ],
 });

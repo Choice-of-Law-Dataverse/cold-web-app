@@ -10,7 +10,7 @@
         type="button"
         class="provision-header"
         :aria-controls="`${anchorId}-content`"
-        :aria-expanded="isOpen.toString()"
+        :aria-expanded="isOpen"
         @click="toggleOpen"
       >
         <span class="provision-title">{{ displayTitle }}</span>
@@ -49,32 +49,24 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from "vue";
 
-const props = defineProps({
-  title: {
-    type: String,
-    required: false,
-    default: "Loading...",
+const props = withDefaults(
+  defineProps<{
+    title?: string;
+    anchorId: string;
+    class?: string;
+    loading?: boolean;
+    error?: string | null;
+  }>(),
+  {
+    title: "Loading...",
+    class: "",
+    loading: false,
+    error: null,
   },
-  anchorId: {
-    type: String,
-    required: true,
-  },
-  class: {
-    type: String,
-    default: "",
-  },
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  error: {
-    type: String,
-    default: null,
-  },
-});
+);
 
 const customClass = computed(() => props.class || "");
 const displayTitle = computed(() => (props.loading ? "" : props.title || ""));
@@ -84,7 +76,7 @@ const toggleOpen = () => {
   isOpen.value = !isOpen.value;
 };
 
-const rootEl = ref(null);
+const rootEl = ref<HTMLElement | null>(null);
 const isFirstProvision = ref(false);
 const evaluateIsFirst = () => {
   const el = rootEl.value;
@@ -100,7 +92,6 @@ const evaluateIsFirst = () => {
 const scrollToAnchor = async () => {
   const hash = window.location.hash.slice(1);
   if (hash === props.anchorId) {
-    // If navigated directly via hash, auto-expand for visibility
     isOpen.value = true;
     await nextTick();
     const anchorElement = document.getElementById(hash);

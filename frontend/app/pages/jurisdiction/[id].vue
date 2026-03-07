@@ -7,7 +7,7 @@
       :data="jurisdictionData || {}"
       :labels="jurisdictionLabels"
       :tooltips="jurisdictionTooltips"
-      :formatted-jurisdiction="[jurisdictionData?.Name as {}]"
+      :formatted-jurisdiction="[jurisdictionData?.Name as string]"
       :show-suggest-edit="true"
     >
       <DetailRow label="">

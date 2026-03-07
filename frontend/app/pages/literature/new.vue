@@ -133,18 +133,22 @@
       <CancelModal v-model="showCancelModal" @confirm-cancel="confirmCancel" />
       <SaveModal
         v-model="showSaveModal"
+        :email="email"
         :comments="comments"
         :save-modal-errors="saveModalErrors"
         :name="title"
-        @update:comments="(val) => (comments = val)"
-        @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
+        @update:email="(val: string) => (email = val)"
+        @update:comments="(val: string) => (comments = val)"
+        @update:save-modal-errors="
+          (val: Record<string, string>) => (saveModalErrors = val)
+        "
         @save="handleNewSave"
       />
     </ClientOnly>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useHead, useRouter } from "#imports";
 import { z } from "zod";
@@ -154,6 +158,19 @@ import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
+import { flagUrl } from "@/config/assets";
+
+interface JurisdictionEntry {
+  Name: string;
+  "Alpha-3 Code"?: string;
+  "Irrelevant?"?: boolean;
+}
+
+interface JurisdictionOption {
+  label: string;
+  alpha3Code?: string;
+  avatar?: string;
+}
 
 definePageMeta({
   middleware: ["auth"],
@@ -165,14 +182,17 @@ const publicationTitle = ref("");
 const publicationYear = ref("");
 const url = ref("");
 const doi = ref("");
-const publicationDate = ref(null);
+const publicationDate = ref<Date | undefined>(undefined);
 const isbn = ref("");
 const issn = ref("");
 const theme = ref("");
 
-const selectedJurisdiction = ref([]);
-const jurisdictionOptions = ref([{ label: "All Jurisdictions" }]);
+const selectedJurisdiction = ref<JurisdictionOption[]>([]);
+const jurisdictionOptions = ref<JurisdictionOption[]>([
+  { label: "All Jurisdictions" },
+]);
 
+const email = ref("");
 const comments = ref("");
 
 const loadJurisdictions = async () => {
@@ -187,22 +207,22 @@ const loadJurisdictions = async () => {
 
     if (!response.ok) throw new Error("Failed to load jurisdictions");
 
-    const jurisdictionsData = await response.json();
+    const jurisdictionsData: JurisdictionEntry[] = await response.json();
     jurisdictionOptions.value = [
       { label: "Select Jurisdiction" },
       ...jurisdictionsData
-        .filter((entry) => entry["Irrelevant?"] === false)
-        .map((entry) => ({
+        .filter((entry: JurisdictionEntry) => entry["Irrelevant?"] === false)
+        .map((entry: JurisdictionEntry) => ({
           label: entry.Name,
           alpha3Code: entry["Alpha-3 Code"],
           avatar: entry["Alpha-3 Code"]
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry["Alpha-3 Code"].toLowerCase()}.svg`
+            ? flagUrl(entry["Alpha-3 Code"])
             : undefined,
         }))
         .sort((a, b) => (a.label || "").localeCompare(b.label || "")),
     ];
-  } catch (error) {
-    console.error("Error loading jurisdictions:", error);
+  } catch {
+    /* jurisdiction load is best-effort */
   }
 };
 
@@ -222,8 +242,8 @@ const formSchema = z.object({
     .regex(/^\d{4}$/u, { message: "Year must be 4 digits (e.g., 2024)" }),
 });
 
-const errors = ref({});
-const saveModalErrors = ref({});
+const errors = ref<Record<string, string>>({});
+const saveModalErrors = ref<Record<string, string>>({});
 
 const router = useRouter();
 const showSaveModal = ref(false);
@@ -246,9 +266,10 @@ function validateForm() {
   } catch (error) {
     if (error instanceof z.ZodError) {
       errors.value = {};
-      error.errors.forEach((err) => {
-        errors.value[err.path[0]] = err.message;
-      });
+      for (const err of error.errors) {
+        const field = String(err.path[0]);
+        errors.value[field] = err.message;
+      }
     }
     return false;
   }
@@ -302,12 +323,11 @@ function handleNewSave() {
         path: "/confirmation",
         query: { message: "Thanks, we have received your submission." },
       });
-    } catch (err) {
+    } catch {
       saveModalErrors.value = {
         general:
           "There was a problem submitting your suggestion. Please try again.",
       };
-      console.error("Submission failed:", err);
     }
   })();
 }

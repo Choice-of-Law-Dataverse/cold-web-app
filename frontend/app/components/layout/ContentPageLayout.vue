@@ -14,19 +14,23 @@
   </UCard>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import SectionNav from "@/components/layout/SectionNav.vue";
 
-defineProps({
-  navLinks: {
-    type: Array,
-    default: null,
-    required: false,
-  },
-  enableHierarchicalNumbering: {
-    type: Boolean,
-    default: false,
-  },
+interface NavLink {
+  label: string;
+  key: string;
+  path: string;
+}
+
+interface Props {
+  navLinks?: NavLink[] | null;
+  enableHierarchicalNumbering?: boolean;
+}
+
+withDefaults(defineProps<Props>(), {
+  navLinks: null,
+  enableHierarchicalNumbering: false,
 });
 </script>
 

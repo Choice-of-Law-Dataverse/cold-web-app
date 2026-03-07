@@ -59,7 +59,7 @@
         >
           <div class="flex flex-wrap items-center gap-4">
             <NuxtLink
-              v-for="jurisdiction in getJurisdictionsForAnswer(answer)"
+              v-for="jurisdiction in filteredAnswerGroups.get(answer)"
               :key="jurisdiction.code"
               class="label-jurisdiction"
               :to="`/question/${jurisdiction.code}${questionSuffix}`"
@@ -83,10 +83,8 @@
 
 <script setup lang="ts">
 import { ref, computed } from "vue";
-import {
-  useQuestionJurisdictions,
-  type Jurisdiction,
-} from "@/composables/useQuestionJurisdictions";
+import type { Jurisdiction } from "@/composables/useQuestionJurisdictions";
+import { useQuestionJurisdictions } from "@/composables/useQuestionJurisdictions";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
@@ -113,23 +111,25 @@ const {
   error,
 } = useQuestionJurisdictions(computed(() => props.questionSuffix));
 
-const answersWithJurisdictions = computed(() => {
-  const answers = questionData.value?.answers || [];
-  return answers.filter(
-    (answer) => getJurisdictionsForAnswer(answer).length > 0,
-  );
+const filteredAnswerGroups = computed(() => {
+  const groups = new Map<string, Jurisdiction[]>();
+  for (const answer of questionData.value?.answers || []) {
+    const all = questionData.value?.answerGroups?.get(answer) || [];
+    const filtered =
+      selectedRegion.value === "All"
+        ? all
+        : all.filter((j) => j.region === selectedRegion.value);
+    if (filtered.length > 0) groups.set(answer, filtered);
+  }
+  return groups;
 });
+
+const answersWithJurisdictions = computed(() => [
+  ...filteredAnswerGroups.value.keys(),
+]);
 
 function selectRegion(region: string) {
   selectedRegion.value = region;
-}
-
-function getJurisdictionsForAnswer(answer: string): Jurisdiction[] {
-  const jurisdictions = questionData.value?.answerGroups?.get(answer) || [];
-  if (selectedRegion.value === "All") {
-    return jurisdictions;
-  }
-  return jurisdictions.filter((j) => j.region === selectedRegion.value);
 }
 </script>
 

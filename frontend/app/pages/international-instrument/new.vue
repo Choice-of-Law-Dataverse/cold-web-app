@@ -70,16 +70,18 @@
         :date="date"
         :pdf-file="pdfFile"
         :link="link"
-        @update:email="(val) => (email = val)"
-        @update:comments="(val) => (comments = val)"
-        @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
+        @update:email="(val: string) => (email = val)"
+        @update:comments="(val: string) => (comments = val)"
+        @update:save-modal-errors="
+          (val: Record<string, string>) => (saveModalErrors = val)
+        "
         @save="handleNewSave"
       />
     </ClientOnly>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useHead, useRouter } from "#imports";
 import { z } from "zod";
@@ -105,7 +107,7 @@ const date = ref(new Date());
 const name = ref("");
 const link = ref("");
 const specialists = ref([""]);
-const pdfFile = ref(null);
+const pdfFile = ref<File | null>(null);
 const email = ref("");
 const comments = ref("");
 
@@ -121,8 +123,8 @@ const formSchema = z.object({
   instrument_date: z.date({ required_error: "Date is required" }),
 });
 
-const errors = ref({});
-const saveModalErrors = ref({});
+const errors = ref<Record<string, string>>({});
+const saveModalErrors = ref<Record<string, string>>({});
 
 const router = useRouter();
 const showSaveModal = ref(false);
@@ -146,9 +148,10 @@ function validateForm() {
   } catch (error) {
     if (error instanceof z.ZodError) {
       errors.value = {};
-      error.errors.forEach((err) => {
-        errors.value[err.path[0]] = err.message;
-      });
+      for (const err of error.errors) {
+        const field = String(err.path[0]);
+        errors.value[field] = err.message;
+      }
     }
     return false;
   }
@@ -170,7 +173,7 @@ function handleNewSave() {
   const payload = {
     name: name.value,
     url: link.value,
-    attachment: "", // ignored for now
+    attachment: "",
     instrument_date:
       date.value && date.value ? format(date.value, "yyyy-MM-dd") : undefined,
     submitter_comments: comments.value || undefined,
@@ -181,7 +184,7 @@ function handleNewSave() {
       const { useApiClient } = await import("@/composables/useApiClient");
       const { apiClient } = useApiClient();
       await apiClient("/suggestions/international-instruments", {
-        body: payload,
+        body: payload as unknown as import("~/types/api").ApiRequestBody,
         headers: {
           source: "cold.global",
         },
@@ -192,12 +195,11 @@ function handleNewSave() {
         path: "/confirmation",
         query: { message: "Thanks, we have received your submission." },
       });
-    } catch (err) {
+    } catch {
       saveModalErrors.value = {
         general:
           "There was a problem submitting your suggestion. Please try again.",
       };
-      console.error("Submission failed:", err);
     }
   })();
 }

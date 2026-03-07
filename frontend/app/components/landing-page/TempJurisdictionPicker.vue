@@ -16,18 +16,24 @@
   </UCard>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRouter } from "vue-router";
 import JurisdictionSelectMenu from "@/components/jurisdiction/JurisdictionSelectMenu.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
+import type { JurisdictionOption } from "@/types/analyzer";
 
 const router = useRouter();
 
 const { data: jurisdictions, isLoading, error } = useJurisdictions();
 
-const navigateToJurisdiction = async (jurisdiction) =>
-  router.push(`/jurisdiction/${jurisdiction.alpha3Code.toLowerCase()}`);
+const navigateToJurisdiction = async (
+  jurisdiction: JurisdictionOption | undefined,
+) => {
+  if (jurisdiction?.alpha3Code) {
+    await router.push(`/jurisdiction/${jurisdiction.alpha3Code.toLowerCase()}`);
+  }
+};
 </script>
 
 <style scoped>

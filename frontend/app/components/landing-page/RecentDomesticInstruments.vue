@@ -8,8 +8,8 @@
     header-class="cursor-pointer text-left md:whitespace-nowrap"
   >
     <FlagTitleYearItem
-      v-for="(instrument, index) in domesticInstruments?.slice(0, 3)"
-      :key="index"
+      v-for="instrument in domesticInstruments?.slice(0, 3)"
+      :key="instrument.ID"
       :to="`/domestic-instrument/${instrument.ID}`"
       :iso3="instrument['Jurisdictions Alpha-3 Code'] || ''"
       :title="instrument['Title (in English)'] || ''"

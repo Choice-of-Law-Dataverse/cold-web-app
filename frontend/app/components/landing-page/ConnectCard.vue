@@ -56,55 +56,32 @@
   </UCard>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 
-const props = defineProps({
-  title: {
-    type: String,
-    required: true,
+const props = withDefaults(
+  defineProps<{
+    title: string;
+    subtitle?: string;
+    buttonText: string;
+    buttonLink: string;
+    iconName?: string;
+    imageSrc?: string;
+    newTab?: boolean;
+    buttonIcon?: string;
+    centerTitle?: boolean;
+    showTopBorder?: boolean;
+  }>(),
+  {
+    subtitle: "",
+    iconName: "",
+    imageSrc: "",
+    newTab: true,
+    buttonIcon: "",
+    centerTitle: true,
+    showTopBorder: false,
   },
-  subtitle: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  buttonText: {
-    type: String,
-    required: true,
-  },
-  buttonLink: {
-    type: String,
-    required: true,
-  },
-  iconName: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  imageSrc: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  newTab: {
-    type: Boolean,
-    default: true,
-  },
-  buttonIcon: {
-    type: String,
-    required: false,
-    default: "",
-  },
-  centerTitle: {
-    type: Boolean,
-    default: true,
-  },
-  showTopBorder: {
-    type: Boolean,
-    default: false,
-  },
-});
+);
 
 const isRelativeLink = computed(() => {
   return (

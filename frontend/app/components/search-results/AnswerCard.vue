@@ -14,7 +14,7 @@
           :class="
             computeTextClasses(
               'Answer',
-              config.getAnswerClass(resultData.Answer),
+              config.getAnswerClass(resultData.Answer as string),
             )
           "
         >
@@ -45,22 +45,22 @@
           <template v-if="hasDomesticValue">
             <template v-if="resultData['Domestic Legal Provisions']">
               <LegalProvisionRenderer
-                :value="getValue('Domestic Legal Provisions')"
+                :value="String(getValue('Domestic Legal Provisions') ?? '')"
               />
             </template>
             <template v-else-if="resultData['Domestic Instruments ID']">
               <LegalProvisionRenderer
                 skip-article
-                :value="getValue('Domestic Instruments ID')"
+                :value="String(getValue('Domestic Instruments ID') ?? '')"
               />
             </template>
             <template v-else>
-              <div v-if="isLoadingLiterature">
+              <div v-if="literatureLoading">
                 <LoadingBar class="pt-[11px]" />
               </div>
               <template v-else>
-                <template v-if="Array.isArray(domesticValue)">
-                  <div v-for="(item, index) in domesticValue" :key="index">
+                <template v-if="literatureItems.length > 0">
+                  <div v-for="item in literatureItems" :key="item.id">
                     <NuxtLink
                       class="text-cold-purple"
                       :to="`/literature/L-${item.id}`"
@@ -69,7 +69,7 @@
                   </div>
                 </template>
                 <div v-else>
-                  {{ domesticValue }}
+                  {{ getValue("Literature") }}
                 </div>
               </template>
             </template>
@@ -98,23 +98,20 @@
   </ResultCard>
 </template>
 
-<script setup>
-import { computed, ref, watch } from "vue";
+<script setup lang="ts">
+import { computed } from "vue";
 import ResultCard from "@/components/search-results/ResultCard.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import { answerCardConfig } from "@/config/cardConfigs";
-import { literatureCache } from "@/utils/literatureCache";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import LegalProvisionRenderer from "@/components/legal/LegalProvisionRenderer.vue";
 import { formatYear } from "@/utils/format";
 import { useCardFields } from "@/composables/useCardFields";
+import { useRecordDetailsList } from "@/composables/useRecordDetails";
 
-const props = defineProps({
-  resultData: {
-    type: Object,
-    required: true,
-  },
-});
+const props = defineProps<{
+  resultData: Record<string, unknown>;
+}>();
 
 const config = answerCardConfig;
 
@@ -131,67 +128,39 @@ const answerValue = computed(() => {
   return getValue("Answer");
 });
 
-const literatureTitles = ref([]);
-
-async function fetchLiteratureTitles(idStr) {
-  const ids = idStr.split(",").map((id) => id.trim());
-  const promises = ids.map(async (id) => {
-    if (literatureCache[id]) return { id, title: literatureCache[id] };
-    try {
-      const response = await fetch(`/api/proxy/search/details`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ table: "Literature", id }),
-      });
-      if (!response.ok) throw new Error("Failed to fetch literature title");
-      const data = await response.json();
-      const title = data["Title"];
-      const finalTitle = title && title !== "NA" ? title : id;
-      literatureCache[id] = finalTitle;
-      return { id, title: finalTitle };
-    } catch (err) {
-      console.error("Error fetching literature title:", err);
-      return { id, title: id };
-    }
-  });
-  literatureTitles.value = await Promise.all(promises);
-}
-
-watch(
-  () => props.resultData["Literature"],
-  (newId) => {
-    if (newId) fetchLiteratureTitles(newId);
-  },
-  { immediate: true },
-);
-
-const domesticValue = computed(() => {
-  if (props.resultData["Domestic Legal Provisions"] != null) {
-    return getValue("Domestic Legal Provisions");
-  } else if (props.resultData["Domestic Instruments ID"] != null) {
-    return getValue("Domestic Instruments ID");
-  } else if (props.resultData["Literature"] != null) {
-    return literatureTitles.value;
-  } else {
-    return "";
-  }
+const literatureIdStr = computed(() => {
+  const raw = props.resultData["Literature"];
+  return typeof raw === "string" ? raw : "";
 });
 
-const isLoadingLiterature = computed(() => {
-  return (
-    props.resultData["Literature"] != null &&
-    (!literatureTitles.value ||
-      literatureTitles.value.length === 0 ||
-      literatureTitles.value.includes(null))
-  );
+const literatureIds = computed(() =>
+  literatureIdStr.value
+    ? literatureIdStr.value
+        .split(",")
+        .map((id: string) => id.trim())
+        .filter((id: string) => id)
+    : [],
+);
+
+const { data: literatureData, isLoading: literatureLoading } =
+  useRecordDetailsList("Literature", literatureIds);
+
+const literatureItems = computed(() => {
+  if (!literatureData.value) return [];
+  return literatureIds.value
+    .map((id, i) => {
+      const record = literatureData.value[i];
+      const title = record?.Title;
+      const finalTitle = title && title !== "NA" ? title : id;
+      return { id, title: finalTitle as string };
+    })
+    .filter((item) => item.title);
 });
 
 const relatedCasesCount = computed(() => {
   const links = props.resultData["Court Decisions Link"];
-  if (!links) return 0;
-  return links.split(",").filter((link) => link.trim() !== "").length;
+  if (!links || typeof links !== "string") return 0;
+  return links.split(",").filter((link: string) => link.trim() !== "").length;
 });
 
 const relatedDecisionsLink = computed(() => {
@@ -200,7 +169,7 @@ const relatedDecisionsLink = computed(() => {
 });
 
 const hasDomesticValue = computed(() => {
-  return (
+  return !!(
     props.resultData["Domestic Legal Provisions"] ||
     props.resultData["Domestic Instruments ID"] ||
     props.resultData["Literature"]
@@ -220,7 +189,7 @@ const hasMoreInformation = computed(() => {
 
 const lastUpdatedDisplay = computed(() => {
   const raw = props.resultData["Last Modified"] || props.resultData["Created"];
-  const y = formatYear(raw);
+  const y = formatYear(raw as string | null | undefined);
   return y ? String(y) : "";
 });
 </script>

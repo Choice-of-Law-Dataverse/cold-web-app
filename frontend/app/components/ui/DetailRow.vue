@@ -19,7 +19,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import InfoPopover from "@/components/ui/InfoPopover.vue";
 
 defineProps({
@@ -34,7 +34,7 @@ defineProps({
   variant: {
     type: String,
     default: undefined,
-    validator: (value) =>
+    validator: (value: string) =>
       [
         "court-decision",
         "question",

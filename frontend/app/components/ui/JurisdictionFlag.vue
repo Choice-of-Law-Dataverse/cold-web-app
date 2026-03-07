@@ -11,8 +11,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-
-const FLAG_BASE_URL = "https://choiceoflaw.blob.core.windows.net/assets/flags/";
+import { FLAG_BASE_URL } from "@/config/assets";
 
 type FlagSize = "xs" | "sm" | "md" | "lg";
 

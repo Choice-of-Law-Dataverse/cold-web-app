@@ -2,12 +2,14 @@
   <DetailDisplay
     :loading="props.loading"
     :error="props.error ?? undefined"
-    :result-data="props.data"
-    :key-label-pairs="computedKeyLabelPairs"
+    :result-data="resultDataForDisplay"
+    :key-label-pairs="keyLabelPairsForDisplay"
     :value-class-map="{}"
     :formatted-source-table="props.table"
     :formatted-jurisdiction="props.formattedJurisdiction"
     :formatted-theme="props.formattedTheme"
+    :show-header="true"
+    :show-open-link="false"
     :show-suggest-edit="props.showSuggestEdit"
     :header-mode="props.headerMode"
     :show-notification-banner="props.showNotificationBanner"
@@ -42,8 +44,8 @@ const props = withDefaults(
     // Legacy props for index pages with full-width slot
     keyLabelPairs?: Record<string, unknown>[];
     // Props passed to child components
-    formattedJurisdiction?: Record<string, unknown>[];
-    formattedTheme?: Record<string, unknown>[];
+    formattedJurisdiction?: string[];
+    formattedTheme?: string[];
     headerMode?: string;
     showNotificationBanner?: boolean;
     notificationBannerMessage?: string;
@@ -58,6 +60,7 @@ const props = withDefaults(
     formattedJurisdiction: () => [],
     formattedTheme: () => [],
     headerMode: "default",
+    showNotificationBanner: false,
     notificationBannerMessage: "",
     icon: "",
     showSuggestEdit: false,
@@ -66,8 +69,17 @@ const props = withDefaults(
 
 const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
 
-// Convert typed props to legacy format for DetailDisplay
-// Fields are derived from labels keys (order preserved in modern JS)
+interface KeyLabelPair {
+  key: string;
+  label: string;
+  tooltip?: string;
+  emptyValueBehavior?: { action: string };
+}
+
+const resultDataForDisplay = computed(
+  () => props.data as Record<string, unknown>,
+);
+
 const computedKeyLabelPairs = computed(() => {
   // If labels are provided, derive fields from them
   if (props.labels && Object.keys(props.labels).length > 0) {
@@ -82,4 +94,8 @@ const computedKeyLabelPairs = computed(() => {
   // Fallback to keyLabelPairs for legacy index pages
   return props.keyLabelPairs ?? [];
 });
+
+const keyLabelPairsForDisplay = computed(
+  () => computedKeyLabelPairs.value as KeyLabelPair[],
+);
 </script>
