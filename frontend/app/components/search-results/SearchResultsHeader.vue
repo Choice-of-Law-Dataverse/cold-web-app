@@ -89,7 +89,7 @@
 </template>
 
 <script setup lang="ts">
-import { type Ref, computed, ref, watch, onMounted, nextTick } from "vue";
+import { computed, ref, watch, onMounted, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useSearchFilters } from "@/composables/useSearchFilters";
 import importedThemeOptions from "@/assets/themeOptions.json";
@@ -98,8 +98,6 @@ import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 import { useAnnouncer } from "@/composables/useAnnouncer";
 import type { SearchFilters as SearchFiltersType } from "@/types/api";
-
-type FilterOption = { label: string; alpha3Code?: string } | string;
 
 const props = withDefaults(
   defineProps<{
@@ -131,21 +129,7 @@ const {
   buildFilterObject,
   resetFilters: resetFilterValues,
   syncFiltersFromQuery,
-} = useSearchFilters(route.query) as {
-  currentJurisdictionFilter: Ref<FilterOption[]>;
-  currentThemeFilter: Ref<FilterOption[]>;
-  currentTypeFilter: Ref<FilterOption[]>;
-  selectValue: Ref<string>;
-  hasActiveFilters: Ref<boolean>;
-  buildFilterObject: (
-    jurisdiction: FilterOption[],
-    theme: FilterOption[],
-    type: FilterOption[],
-    sort: string,
-  ) => SearchFiltersType;
-  resetFilters: () => void;
-  syncFiltersFromQuery: (query: Record<string, unknown>) => void;
-};
+} = useSearchFilters(route.query);
 
 const selectWidth = ref("auto");
 const measureRef = ref<HTMLElement | null>(null);
@@ -183,7 +167,7 @@ const updateFilters = async (filters: SearchFiltersType) => {
 const handleSortChange = async (val: string) => {
   const sortValue = (val || "relevance") as SearchFiltersType["sortBy"];
   selectValue.value = sortValue ?? "relevance";
-  emit("update:filters", { ...props.filters, sortBy: sortValue });
+  await updateFilters({ ...props.filters, sortBy: sortValue });
   updateSelectWidth();
 };
 
@@ -210,7 +194,7 @@ const updateSelectWidth = () => {
 watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
   async ([jurisdiction, theme, type]) => {
-    if (!jurisdiction && !theme && !type) return;
+    if (!jurisdiction.length && !theme.length && !type.length) return;
     await updateFilters(
       buildFilterObject(jurisdiction, theme, type, selectValue.value),
     );
