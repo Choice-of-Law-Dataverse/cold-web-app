@@ -85,12 +85,12 @@ const formattedJurisdiction = computed(() => {
     return props.formattedJurisdiction;
   }
   const jurisdictionString =
-    props.resultData["Jurisdiction name"] ||
-    props.resultData["Jurisdiction Names"] ||
-    props.resultData["Name (from Jurisdiction)"] ||
-    props.resultData["Jurisdiction"] ||
-    props.resultData["Jurisdictions"] ||
-    props.resultData["Instrument"] ||
+    props.resultData.jurisdictionName ||
+    props.resultData.jurisdictionNames ||
+    props.resultData.nameFromJurisdiction ||
+    props.resultData.Jurisdiction ||
+    props.resultData.Jurisdictions ||
+    props.resultData.Instrument ||
     "";
 
   if (!jurisdictionString) {
@@ -101,7 +101,7 @@ const formattedJurisdiction = computed(() => {
 });
 
 const formattedSourceTable = computed(() => {
-  return props.cardType || props.resultData?.source_table || "";
+  return props.cardType || props.resultData?.sourceTable || "";
 });
 
 const adjustedSourceTable = computed(() => {
@@ -159,12 +159,12 @@ const formattedTheme = computed(() => {
     return props.formattedTheme;
   }
 
-  if (props.cardType === "Literature" && props.resultData["Themes"]) {
-    return props.resultData["Themes"].split(",").map((theme) => theme.trim());
+  if (props.cardType === "Literature" && props.resultData.themes) {
+    return props.resultData.themes.split(",").map((theme) => theme.trim());
   }
 
   const themes =
-    props.resultData["Title of the Provision"] ?? props.resultData.Themes;
+    props.resultData.titleOfTheProvision ?? props.resultData.themes;
 
   if (!themes || themes === "None") {
     return [];
@@ -176,9 +176,9 @@ const formattedTheme = computed(() => {
 const legalFamily = computed(() => {
   if (
     props.resultData &&
-    (props.cardType === "Jurisdiction" || props.resultData["Legal Family"])
+    (props.cardType === "Jurisdiction" || props.resultData.legalFamily)
   ) {
-    const value = props.resultData["Legal Family"] || "";
+    const value = props.resultData.legalFamily || "";
     if (!value || value === "N/A") return [];
     return value
       .split(",")

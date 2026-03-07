@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1 v-if="legalInstrument?.['Title (in English)']" class="sr-only">
-      {{ legalInstrument["Title (in English)"] }}
+    <h1 v-if="legalInstrument?.titleInEnglish" class="sr-only">
+      {{ legalInstrument.titleInEnglish }}
     </h1>
     <BaseDetailLayout
       table="Domestic Instruments"
@@ -13,54 +13,49 @@
       :show-suggest-edit="true"
     >
       <!-- Title with PDF and Source Link -->
-      <template #title-(in-english)="{ value }">
+      <template #titleinenglish="{ value }">
         <DetailRow
-          :label="domesticInstrumentLabels['Title (in English)']"
-          :tooltip="domesticInstrumentTooltips['Title (in English)']"
+          :label="domesticInstrumentLabels.titleInEnglish"
+          :tooltip="domesticInstrumentTooltips.titleInEnglish"
         >
           <TitleWithActions>
             {{ value }}
             <template #actions>
               <PdfLink
                 :pdf-field="
-                  legalInstrument?.['Official Source (PDF)'] ||
-                  legalInstrument?.['Source (PDF)']
+                  legalInstrument?.officialSourcePdf ||
+                  legalInstrument?.sourcePdf
                 "
                 :record-id="instrumentId"
                 folder-name="domestic-instruments"
               />
-              <SourceExternalLink
-                :source-url="legalInstrument?.['Source (URL)']"
-              />
+              <SourceExternalLink :source-url="legalInstrument?.sourceUrl" />
             </template>
           </TitleWithActions>
         </DetailRow>
       </template>
 
       <!-- Slot for Amended by -->
-      <template #amended-by="{ value }">
-        <DetailRow v-if="value" :label="domesticInstrumentLabels['Amended by']">
+      <template #amendedby="{ value }">
+        <DetailRow v-if="value" :label="domesticInstrumentLabels.amendedBy">
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
       </template>
       <!-- Slot for Amends -->
       <template #amends="{ value }">
-        <DetailRow v-if="value" :label="domesticInstrumentLabels['Amends']">
+        <DetailRow v-if="value" :label="domesticInstrumentLabels.Amends">
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
       </template>
       <!-- Slot for Replaced by -->
-      <template #replaced-by="{ value }">
-        <DetailRow
-          v-if="value"
-          :label="domesticInstrumentLabels['Replaced by']"
-        >
+      <template #replacedby="{ value }">
+        <DetailRow v-if="value" :label="domesticInstrumentLabels.replacedBy">
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
       </template>
       <!-- Slot for Replaces -->
       <template #replaces="{ value }">
-        <DetailRow v-if="value" :label="domesticInstrumentLabels['Replaces']">
+        <DetailRow v-if="value" :label="domesticInstrumentLabels.Replaces">
           <InstrumentLink :id="value" table="Domestic Instruments" />
         </DetailRow>
       </template>
@@ -69,31 +64,31 @@
         <DetailRow
           v-if="
             value &&
-            (isCompatible('Compatible With the UNCITRAL Model Law') ||
-              isCompatible('Compatible With the HCCH Principles'))
+            (isCompatible('compatibleWithTheUncitralModelLaw') ||
+              isCompatible('compatibleWithTheHcchPrinciples'))
           "
-          :label="domesticInstrumentLabels['Compatibility']"
-          :tooltip="domesticInstrumentTooltips['Compatibility']"
+          :label="domesticInstrumentLabels.Compatibility"
+          :tooltip="domesticInstrumentTooltips.Compatibility"
         >
           <div class="result-value-small flex gap-2">
             <CompatibleLabel
-              v-if="isCompatible('Compatible With the UNCITRAL Model Law')"
+              v-if="isCompatible('compatibleWithTheUncitralModelLaw')"
               label="UNCITRAL Model Law"
             />
             <CompatibleLabel
-              v-if="isCompatible('Compatible With the HCCH Principles')"
+              v-if="isCompatible('compatibleWithTheHcchPrinciples')"
               label="HCCH Principles"
             />
           </div>
         </DetailRow>
       </template>
       <!-- Slot for Legal provisions -->
-      <template #domestic-legal-provisions="{ value }">
+      <template #domesticlegalprovisions="{ value }">
         <!-- Only render if value exists and is not "N/A" -->
         <DetailRow
           v-if="value && value.trim() && value.trim() !== 'N/A'"
-          :label="domesticInstrumentLabels['Domestic Legal Provisions']"
-          :tooltip="domesticInstrumentTooltips['Domestic Legal Provisions']"
+          :label="domesticInstrumentLabels.domesticLegalProvisions"
+          :tooltip="domesticInstrumentTooltips.domesticLegalProvisions"
         >
           <div class="provisions-container">
             <LegalProvision
@@ -105,7 +100,7 @@
               :text-type="textType"
               :instrument-title="
                 legalInstrument?.Abbreviation ||
-                legalInstrument?.['Title (in English)'] ||
+                legalInstrument?.titleInEnglish ||
                 ''
               "
               @update:has-english-translation="hasEnglishTranslation = $event"
@@ -115,23 +110,23 @@
       </template>
 
       <template #footer>
-        <LastModified :date="legalInstrument?.['Last Modified']" />
+        <LastModified :date="legalInstrument?.lastModified" />
         <LazyJurisdictionReportBanner
-          :jurisdiction-code="legalInstrument?.['Jurisdictions Alpha-3 Code']"
+          :jurisdiction-code="legalInstrument?.jurisdictionsAlpha3Code"
         />
       </template>
     </BaseDetailLayout>
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[legalInstrument?.['Title (in English)']]"
+      :title-candidates="[legalInstrument?.titleInEnglish]"
       fallback="Domestic Instrument"
     />
 
     <EntityFeedback
       entity-type="domestic_instrument"
       :entity-id="instrumentId"
-      :entity-title="legalInstrument?.['Title (in English)'] as string"
+      :entity-title="legalInstrument?.titleInEnglish as string"
     />
   </div>
 </template>
@@ -160,7 +155,7 @@ const LazyJurisdictionReportBanner = defineAsyncComponent(
 );
 
 const route = useRoute();
-const textType = ref("Full Text of the Provision (English Translation)");
+const textType = ref("fullTextOfTheProvisionEnglishTranslation");
 const hasEnglishTranslation = ref(false);
 
 // Capture the ID once at setup to prevent flash during page transitions
@@ -174,8 +169,8 @@ const {
 
 const isCompatible = (
   field:
-    | "Compatible With the UNCITRAL Model Law"
-    | "Compatible With the HCCH Principles",
+    | "compatibleWithTheUncitralModelLaw"
+    | "compatibleWithTheHcchPrinciples",
 ): boolean => {
   if (!legalInstrument.value) return false;
   const value = legalInstrument.value[field];
@@ -185,7 +180,7 @@ const isCompatible = (
 const getSortedProvisionIdsForInstrument = (rawValue: string): string[] => {
   return getSortedProvisionIds(
     rawValue,
-    legalInstrument.value?.["Ranking (Display Order)"],
+    legalInstrument.value?.rankingDisplayOrder,
   );
 };
 </script>

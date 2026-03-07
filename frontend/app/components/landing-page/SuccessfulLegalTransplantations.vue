@@ -9,11 +9,11 @@
       v-for="(instrument, index) in domesticInstruments?.slice(0, 9)"
       :key="index"
       :to="`/domestic-instrument/${instrument.ID}`"
-      :iso3="instrument['Jurisdictions Alpha-3 Code'] || ''"
-      :title="instrument['Title (in English)'] || ''"
+      :iso3="instrument.jurisdictionsAlpha3Code || ''"
+      :title="instrument.titleInEnglish || ''"
       :year="
-        instrument['Entry Into Force']
-          ? String(formatYear(instrument['Entry Into Force']))
+        instrument.entryIntoForce
+          ? String(formatYear(instrument.entryIntoForce))
           : instrument['Date'] || ''
       "
       type-class="type-instrument"

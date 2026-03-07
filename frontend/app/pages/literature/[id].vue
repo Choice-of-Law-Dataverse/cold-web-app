@@ -15,19 +15,19 @@
       <!-- Title with PDF and Source Link -->
       <template #title="{ value }">
         <section v-if="value" class="section-gap">
-          <DetailRow :label="literatureLabels['Title']">
+          <DetailRow :label="literatureLabels.Title">
             <TitleWithActions>
               {{ value }}
               <template #actions>
                 <PdfLink
-                  :pdf-field="literature?.['Official Source (PDF)']"
+                  :pdf-field="literature?.officialSourcePdf"
                   :record-id="id"
                   folder-name="literatures"
                 />
                 <SourceExternalLink
                   :source-url="sourceUrl"
                   :label="sourceLinkLabel"
-                  :open-access="!!literature?.['Open Access URL']"
+                  :open-access="!!literature?.openAccessUrl"
                 />
               </template>
             </TitleWithActions>
@@ -35,9 +35,9 @@
         </section>
       </template>
 
-      <template #publication-title="{ value }">
+      <template #publicationtitle="{ value }">
         <section v-if="value" class="section-gap">
-          <DetailRow :label="literatureLabels['Publication Title']">
+          <DetailRow :label="literatureLabels.publicationTitle">
             <span class="result-value-small">{{ value }}</span>
           </DetailRow>
         </section>
@@ -46,8 +46,8 @@
       <template #publisher="{ value }">
         <section v-if="value" class="section-gap">
           <DetailRow
-            :label="literatureLabels['Publisher']"
-            :tooltip="literatureTooltips['Publisher']"
+            :label="literatureLabels.Publisher"
+            :tooltip="literatureTooltips.Publisher"
           >
             <span class="result-value-small">{{ value }}</span>
           </DetailRow>
@@ -55,7 +55,7 @@
       </template>
 
       <!-- BibTeX Export Section -->
-      <template #abstract-note>
+      <template #abstractnote>
         <section class="section-gap">
           <DetailRow label="BibTeX Citation">
             <div class="flex flex-col gap-3">
@@ -89,7 +89,7 @@
       </template>
 
       <template #footer>
-        <LastModified :date="literature?.['Last Modified'] as string" />
+        <LastModified :date="literature?.lastModified as string" />
       </template>
     </BaseDetailLayout>
 
@@ -132,14 +132,14 @@ const { data: literature, isLoading: loading, error } = useLiterature(id);
 // Source URL logic
 const sourceUrl = computed(() => {
   if (!literature.value) return "";
-  if (literature.value["Open Access URL"]) {
-    return literature.value["Open Access URL"] as string;
+  if (literature.value.openAccessUrl) {
+    return literature.value.openAccessUrl as string;
   }
-  return (literature.value["Url"] || "") as string;
+  return (literature.value.Url || "") as string;
 });
 
 const sourceLinkLabel = computed(() => {
-  if (literature.value?.["Open Access URL"]) {
+  if (literature.value?.openAccessUrl) {
     return "Open Access Link";
   }
   return "Link";

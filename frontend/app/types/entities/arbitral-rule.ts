@@ -1,38 +1,29 @@
-/**
- * Arbitral Rule entity type definitions
- */
-
-/** Raw API response */
 export interface ArbitralRuleResponse {
   id: string;
-  source_table?: string;
+  sourceTable?: string;
   rank?: number;
   ID?: string;
-  "Record ID"?: string;
-  "Set of Rules"?: string;
-  "In Force From"?: string;
-  "Official Source (URL)"?: string;
+  recordId?: string;
+  setOfRules?: string;
+  inForceFrom?: string;
+  officialSourceUrl?: string;
   Created?: string;
-  "Last Modified"?: string;
-  // Nested mappings
-  "Arbitral Institutions"?: string;
-  "Arbitral Institutions Abbrev"?: string;
-  "Arbitral Institutions Link"?: string;
-  "Arbitral Provisions (Articles)"?: string;
-  "Arbitral Provisions Link"?: string;
+  lastModified?: string;
+  arbitralInstitutions?: string;
+  arbitralInstitutionsAbbrev?: string;
+  arbitralInstitutionsLink?: string;
+  arbitralProvisionsArticles?: string;
+  arbitralProvisionsLink?: string;
   Jurisdictions?: string;
-  "Jurisdictions Alpha-3 Code"?: string;
-  "Jurisdictions Link"?: string;
-  // Legacy fields
+  jurisdictionsAlpha3Code?: string;
+  jurisdictionsLink?: string;
   related_arbitral_institutions?: Array<{ Institution?: string }>;
 }
 
-/** Processed type with normalized fields */
 export interface ArbitralRule extends ArbitralRuleResponse {
-  "Arbitral Institution"?: string;
+  arbitralInstitution?: string;
 }
 
-/** Transform raw response to processed type */
 export function processArbitralRule(raw: ArbitralRuleResponse): ArbitralRule {
   const arbitralInstitution = Array.isArray(raw.related_arbitral_institutions)
     ? raw.related_arbitral_institutions
@@ -43,6 +34,6 @@ export function processArbitralRule(raw: ArbitralRuleResponse): ArbitralRule {
 
   return {
     ...raw,
-    "Arbitral Institution": arbitralInstitution,
+    arbitralInstitution,
   };
 }

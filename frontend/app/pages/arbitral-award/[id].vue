@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1 v-if="arbitralAward?.['Case Number']" class="sr-only">
-      Arbitral Award: {{ arbitralAward["Case Number"] }}
+    <h1 v-if="arbitralAward?.caseNumber" class="sr-only">
+      Arbitral Award: {{ arbitralAward.caseNumber }}
     </h1>
     <BaseDetailLayout
       table="Arbitral Awards"
@@ -14,16 +14,15 @@
       :show-suggest-edit="true"
     >
       <template #footer>
-        <LastModified :date="arbitralAward?.['Last Modified']" />
+        <LastModified :date="arbitralAward?.lastModified" />
       </template>
     </BaseDetailLayout>
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
       :title-candidates="[
-        arbitralAward?.['Case Number'] &&
-        String(arbitralAward['Case Number']).trim()
-          ? `Case Number ${arbitralAward['Case Number']}`
+        arbitralAward?.caseNumber && String(arbitralAward.caseNumber).trim()
+          ? `Case Number ${arbitralAward.caseNumber}`
           : null,
       ]"
       fallback="Arbitral Award"
@@ -33,8 +32,8 @@
       entity-type="arbitral_award"
       :entity-id="awardId"
       :entity-title="
-        arbitralAward?.['Case Number']
-          ? `Case Number ${arbitralAward['Case Number']}`
+        arbitralAward?.caseNumber
+          ? `Case Number ${arbitralAward.caseNumber}`
           : undefined
       "
     />

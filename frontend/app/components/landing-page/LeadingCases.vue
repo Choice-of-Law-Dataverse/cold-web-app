@@ -9,11 +9,11 @@
       v-for="(decision, index) in leadingCases?.slice(0, 3)"
       :key="index"
       :to="`/court-decision/${decision.ID}`"
-      :iso3="decision['Jurisdictions Alpha-3 Code'] || ''"
-      :title="decision['Case Title'] || ''"
+      :iso3="decision.jurisdictionsAlpha3Code || ''"
+      :title="decision.caseTitle || ''"
       :year="
-        decision['Publication Date ISO']
-          ? String(formatYear(decision['Publication Date ISO']))
+        decision.publicationDateIso
+          ? String(formatYear(decision.publicationDateIso))
           : decision['Date'] || ''
       "
       type-class="type-court-decision"

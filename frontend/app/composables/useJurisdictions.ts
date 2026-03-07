@@ -12,9 +12,7 @@ const EMPTY_MAP = new Map<string, ProcessedJurisdiction>();
 
 export interface ProcessedJurisdiction extends JurisdictionWithAnswerCoverage {
   label: string;
-  alpha3Code: string | undefined;
   avatar: string | undefined;
-  answerCoverage: number | undefined;
 }
 
 interface JurisdictionsData {
@@ -34,20 +32,19 @@ function processJurisdiction(
   return {
     ...record,
     Name: record?.Name || "N/A",
-    "Jurisdiction Summary": record?.["Jurisdiction Summary"] || "N/A",
-    "Jurisdictional Differentiator":
-      record?.["Jurisdictional Differentiator"] || "N/A",
-    "Legal Family": record?.["Legal Family"] || "N/A",
+    jurisdictionSummary: record?.jurisdictionSummary || "N/A",
+    jurisdictionalDifferentiator: record?.jurisdictionalDifferentiator || "N/A",
+    legalFamily: record?.legalFamily || "N/A",
     Specialists: record?.Specialists || "",
     Literature: record?.Literature,
     label: record.Name as string,
-    alpha3Code: record["Alpha-3 Code"] as string | undefined,
-    avatar: record["Alpha-3 Code"]
+    alpha3Code: record.alpha3Code,
+    avatar: record.alpha3Code
       ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${String(
-          record["Alpha-3 Code"],
+          record.alpha3Code,
         ).toLowerCase()}.svg`
       : undefined,
-    answerCoverage: record["Answer Coverage"],
+    answerCoverage: record.answerCoverage,
   };
 }
 
@@ -60,7 +57,7 @@ async function fetchAndProcessJurisdictions(): Promise<JurisdictionsData> {
   );
 
   const jurisdictions = rawData
-    .filter((record) => record["Irrelevant?"] === false)
+    .filter((record) => record.irrelevant === false)
     .map(processJurisdiction);
 
   const knownJurisdictionTerms = new Set<string>();

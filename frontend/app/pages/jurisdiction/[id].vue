@@ -45,7 +45,7 @@
           />
         </DetailRow>
 
-        <DetailRow :label="jurisdictionLabels['OUP Chapter']" variant="oup">
+        <DetailRow :label="jurisdictionLabels.oupChapter" variant="oup">
           <LazyRelatedLiterature
             :literature-id="(jurisdictionData?.Literature as string) || ''"
             :mode="'both'"
@@ -55,8 +55,8 @@
         </DetailRow>
 
         <DetailRow
-          :label="jurisdictionLabels['Literature']"
-          :tooltip="jurisdictionTooltips['Literature']"
+          :label="jurisdictionLabels.Literature"
+          :tooltip="jurisdictionTooltips.Literature"
           variant="literature"
         >
           <LazyRelatedLiterature

@@ -229,16 +229,15 @@ import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { domesticInstrumentTooltips } from "@/config/tooltips";
 
-const tooltipAbbreviation = domesticInstrumentTooltips["Abbreviation"];
-const tooltipCompatibleWithHCCH = domesticInstrumentTooltips["Compatibility"];
-const tooltipCompatibleWithUNCITRAL =
-  domesticInstrumentTooltips["Compatibility"];
-const tooltipEntryIntoForce = domesticInstrumentTooltips["Entry Into Force"];
-const tooltipOfficialTitle = domesticInstrumentTooltips["Official Title"];
+const tooltipAbbreviation = domesticInstrumentTooltips.Abbreviation;
+const tooltipCompatibleWithHCCH = domesticInstrumentTooltips.Compatibility;
+const tooltipCompatibleWithUNCITRAL = domesticInstrumentTooltips.Compatibility;
+const tooltipEntryIntoForce = domesticInstrumentTooltips.entryIntoForce;
+const tooltipOfficialTitle = domesticInstrumentTooltips.officialTitle;
 const tooltipDomesticInstrumentPublicationDate =
-  domesticInstrumentTooltips["Publication Date"];
+  domesticInstrumentTooltips.publicationDate;
 const tooltipDomesticInstrumentTitle =
-  domesticInstrumentTooltips["Title (in English)"];
+  domesticInstrumentTooltips.titleInEnglish;
 
 definePageMeta({
   middleware: ["auth"],
@@ -278,12 +277,12 @@ const loadJurisdictions = async () => {
     jurisdictionOptions.value = [
       { label: "Select Jurisdiction" },
       ...jurisdictionsData
-        .filter((entry) => entry["Irrelevant?"] === false)
+        .filter((entry) => entry.irrelevant === false)
         .map((entry) => ({
           label: entry.Name,
-          alpha3Code: entry["Alpha-3 Code"],
-          avatar: entry["Alpha-3 Code"]
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry["Alpha-3 Code"].toLowerCase()}.svg`
+          alpha3Code: entry.alpha3Code,
+          avatar: entry.alpha3Code
+            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry.alpha3Code.toLowerCase()}.svg`
             : undefined,
         }))
         .sort((a, b) => (a.label || "").localeCompare(b.label || "")),

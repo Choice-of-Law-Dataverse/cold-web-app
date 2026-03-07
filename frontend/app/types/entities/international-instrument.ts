@@ -7,57 +7,53 @@ import { formatDate } from "@/utils/format";
 /** Raw API response */
 export interface InternationalInstrumentResponse {
   id: string;
-  source_table?: string;
+  sourceTable?: string;
   rank?: number;
   ID?: string;
-  "ID Number"?: string;
+  idNumber?: string;
   Title?: string;
   Abbreviation?: string;
   Date?: string;
   Status?: string;
   URL?: string;
   Attachment?: string;
-  "Record ID"?: string;
+  recordId?: string;
   Created?: string;
-  "Last Modified"?: string;
-  "Entry Into Force"?: string;
-  "Publication Date"?: string;
-  "Relevant Provisions"?: string;
-  "Full Text of the Provisions"?: string;
+  lastModified?: string;
+  entryIntoForce?: string;
+  publicationDate?: string;
+  relevantProvisions?: string;
+  fullTextOfTheProvisions?: string;
   Name?: string;
-  sort_date?: string;
-  "Title (in English)"?: string;
-  "Source (URL)"?: string;
-  "Source (PDF)"?: string;
-  // Nested mappings
+  sortDate?: string;
+  titleInEnglish?: string;
+  sourceUrl?: string;
+  sourcePdf?: string;
   Specialists?: string;
-  "Specialists Link"?: string;
-  "International Legal Provisions"?: string;
-  "International Legal Provisions Link"?: string;
+  specialistsLink?: string;
+  internationalLegalProvisions?: string;
+  internationalLegalProvisionsLink?: string;
   Literature?: string;
-  "Literature Link"?: string;
-  "HCCH Answers"?: string;
-  "HCCH Answers Link"?: string;
-  // Legacy fields
+  literatureLink?: string;
+  hcchAnswers?: string;
+  hcchAnswersLink?: string;
   Link?: string;
-  "OUP Chapter"?: string;
-  "Selected Provisions"?: string;
+  oupChapter?: string;
+  selectedProvisions?: string;
 }
 
-/** Processed type with normalized fields */
 export interface InternationalInstrument extends InternationalInstrumentResponse {
-  "Title (in English)": string;
+  titleInEnglish: string;
   URL: string;
 }
 
-/** Transform raw response to processed type */
 export function processInternationalInstrument(
   raw: InternationalInstrumentResponse,
 ): InternationalInstrument {
   return {
     ...raw,
-    "Publication Date": formatDate(raw["Publication Date"] || raw.Date),
-    "Title (in English)": raw["Title (in English)"] || raw.Name || "",
+    publicationDate: formatDate(raw.publicationDate || raw.Date),
+    titleInEnglish: raw.titleInEnglish || raw.Name || "",
     URL: raw.URL || raw.Link || "",
   };
 }

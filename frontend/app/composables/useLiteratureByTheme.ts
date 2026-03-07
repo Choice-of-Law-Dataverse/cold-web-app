@@ -7,7 +7,7 @@ interface LiteratureSearchResult {
   id: string;
   Title?: string;
   title?: string;
-  "OUP JD Chapter"?: boolean;
+  oupJdChapter?: boolean;
 }
 
 function processToLiterature(item: LiteratureSearchResult): Literature {
@@ -16,7 +16,7 @@ function processToLiterature(item: LiteratureSearchResult): Literature {
     id: item.id,
     Title: item.Title,
     displayTitle,
-    isOupChapter: Boolean(item["OUP JD Chapter"]),
+    isOupChapter: Boolean(item.oupJdChapter),
   } as Literature;
 }
 

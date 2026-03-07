@@ -18,7 +18,7 @@ export function useDomesticInstruments({
         // Filter by compatibility if enabled
         if (filterCompatible.value) {
           return sorted.filter(
-            (item) => item["Compatible With the HCCH Principles"] === true,
+            (item) => item.compatibleWithTheHcchPrinciples === true,
           );
         }
         return sorted;

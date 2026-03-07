@@ -14,7 +14,7 @@
     >
       <!-- Name (Title) with PDF and Source Link -->
       <template #name="{ value }">
-        <DetailRow :label="internationalInstrumentLabels['Name']">
+        <DetailRow :label="internationalInstrumentLabels.Name">
           <TitleWithActions>
             {{ value }}
             <template #actions>
@@ -31,8 +31,8 @@
 
       <template #literature>
         <DetailRow
-          :label="internationalInstrumentLabels['Literature']"
-          :tooltip="internationalInstrumentTooltips['Literature']"
+          :label="internationalInstrumentLabels.Literature"
+          :tooltip="internationalInstrumentTooltips.Literature"
         >
           <LazyRelatedLiterature
             :literature-id="internationalInstrument?.Literature || ''"
@@ -42,10 +42,10 @@
         </DetailRow>
       </template>
 
-      <template #selected-provisions>
+      <template #selectedprovisions>
         <DetailRow
-          :label="internationalInstrumentLabels['Selected Provisions']"
-          :tooltip="internationalInstrumentTooltips['Selected Provisions']"
+          :label="internationalInstrumentLabels.selectedProvisions"
+          :tooltip="internationalInstrumentTooltips.selectedProvisions"
         >
           <div class="provisions-container">
             <div v-if="provisionsLoading">
@@ -57,21 +57,19 @@
                 v-for="(provision, index) in provisions"
                 :key="index"
                 :title="
-                  provision['Title of the Provision'] +
+                  provision.titleOfTheProvision +
                   (internationalInstrument
                     ? ', ' +
                       (internationalInstrument.Abbreviation ||
-                        internationalInstrument['Title (in English)'])
+                        internationalInstrument.titleInEnglish)
                     : '')
                 "
                 :anchor-id="
-                  normalizeAnchorId(
-                    String(provision['Title of the Provision'] || ''),
-                  )
+                  normalizeAnchorId(String(provision.titleOfTheProvision || ''))
                 "
               >
                 <template #default>
-                  {{ provision["Full Text"] }}
+                  {{ provision.fullText }}
                 </template>
               </BaseLegalContent>
             </div>
@@ -81,7 +79,7 @@
       </template>
 
       <template #footer>
-        <LastModified :date="internationalInstrument?.['Last Modified']" />
+        <LastModified :date="internationalInstrument?.lastModified" />
       </template>
     </BaseDetailLayout>
 

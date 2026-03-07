@@ -1,15 +1,12 @@
 <template>
   <ResultCard :result-data="resultData" card-type="Court Decisions">
     <div class="flex w-full flex-col gap-0">
-      <DetailRow :label="getLabel('Case Title')">
-        <TitleWithActions :title-class="fieldClasses('Case Title')">
-          {{ getValue("Case Title") }}
+      <DetailRow :label="getLabel('caseTitle')">
+        <TitleWithActions :title-class="fieldClasses('caseTitle')">
+          {{ getValue("caseTitle") }}
           <template #actions>
             <PdfLink
-              :pdf-field="
-                resultData['Official Source (PDF)'] ||
-                resultData['Source (PDF)']
-              "
+              :pdf-field="resultData.officialSourcePdf || resultData.sourcePdf"
               :record-id="resultData.id"
               folder-name="court-decisions"
             />
@@ -19,34 +16,33 @@
 
       <DetailRow
         v-if="
-          resultData['Publication Date ISO'] &&
-          resultData['Publication Date ISO'] !== 'NA'
+          resultData.publicationDateIso &&
+          resultData.publicationDateIso !== 'NA'
         "
-        :label="getLabel('Publication Date ISO')"
+        :label="getLabel('publicationDateIso')"
       >
-        <div :class="fieldClasses('Publication Date ISO')">
-          {{ extractYear(resultData["Publication Date ISO"]) }}
+        <div :class="fieldClasses('publicationDateIso')">
+          {{ extractYear(resultData.publicationDateIso) }}
         </div>
       </DetailRow>
 
       <DetailRow
-        v-if="resultData['Instance'] && resultData['Instance'] !== 'NA'"
-        :label="getLabel('Instance')"
+        v-if="resultData.instance && resultData.instance !== 'NA'"
+        :label="getLabel('instance')"
       >
-        <div :class="fieldClasses('Instance')">
-          {{ getValue("Instance") }}
+        <div :class="fieldClasses('instance')">
+          {{ getValue("instance") }}
         </div>
       </DetailRow>
 
       <DetailRow
         v-if="
-          resultData['Choice of Law Issue'] &&
-          resultData['Choice of Law Issue'] !== 'NA'
+          resultData.choiceOfLawIssue && resultData.choiceOfLawIssue !== 'NA'
         "
-        :label="getLabel('Choice of Law Issue')"
+        :label="getLabel('choiceOfLawIssue')"
       >
-        <div :class="fieldClasses('Choice of Law Issue')">
-          {{ getValue("Choice of Law Issue") }}
+        <div :class="fieldClasses('choiceOfLawIssue')">
+          {{ getValue("choiceOfLawIssue") }}
         </div>
       </DetailRow>
     </div>

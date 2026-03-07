@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1 v-if="answerData?.Question" class="sr-only">
-      {{ answerData.Question }}
+    <h1 v-if="answerData?.question" class="sr-only">
+      {{ answerData.question }}
     </h1>
     <BaseDetailLayout
       table="Questions"
@@ -13,49 +13,49 @@
       :show-suggest-edit="true"
     >
       <!-- Custom rendering for Legal provision articles -->
-      <template #domestic-legal-provisions>
+      <template #domesticlegalprovisions>
         <DetailRow
-          :label="questionLabels['Domestic Legal Provisions']"
-          :tooltip="questionTooltips['Domestic Legal Provisions']"
+          :label="questionLabels.domesticLegalProvisions"
+          :tooltip="questionTooltips.domesticLegalProvisions"
         >
           <QuestionSourceList v-if="answerData" :data="answerData" />
         </DetailRow>
       </template>
 
       <!-- Custom rendering for Court Decisions ID -->
-      <template #court-decisions-id="{ value }">
+      <template #courtdecisionsid="{ value }">
         <DetailRow
           v-if="value?.length"
           id="related-court-decisions"
-          :label="questionLabels['Court Decisions ID']"
-          :tooltip="questionTooltips['Court Decisions ID']"
+          :label="questionLabels.courtDecisionsId"
+          :tooltip="questionTooltips.courtDecisionsId"
           variant="court-decision"
         >
           <CourtDecisionRenderer :value="value" />
         </DetailRow>
       </template>
 
-      <template #oup-chapter>
-        <DetailRow :label="questionLabels['OUP Chapter']" variant="oup">
+      <template #oupchapter>
+        <DetailRow :label="questionLabels.oupChapter" variant="oup">
           <LazyRelatedLiterature
-            :themes="answerData?.Themes"
-            :literature-id="answerData?.['Jurisdictions Literature ID']"
-            :jurisdiction="answerData?.Jurisdictions"
+            :themes="answerData?.themes"
+            :literature-id="answerData?.jurisdictionsLiteratureId"
+            :jurisdiction="answerData?.jurisdictions"
             :mode="'both'"
             :oup-filter="'onlyOup'"
           />
         </DetailRow>
       </template>
 
-      <template #related-literature>
+      <template #relatedliterature>
         <DetailRow
-          :label="questionLabels['Related Literature']"
+          :label="questionLabels.relatedLiterature"
           variant="literature"
         >
           <LazyRelatedLiterature
-            :themes="answerData?.Themes"
-            :literature-id="answerData?.['Jurisdictions Literature ID']"
-            :jurisdiction="answerData?.Jurisdictions"
+            :themes="answerData?.themes"
+            :literature-id="answerData?.jurisdictionsLiteratureId"
+            :jurisdiction="answerData?.jurisdictions"
             :mode="'both'"
             :oup-filter="'noOup'"
           />
@@ -63,7 +63,7 @@
       </template>
 
       <template #footer>
-        <LastModified :date="answerData?.['Last Modified']" />
+        <LastModified :date="answerData?.lastModified" />
         <LazyJurisdictionReportBanner
           :jurisdiction-code="answerData?.JurisdictionCode"
         />
@@ -78,14 +78,14 @@
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[answerData?.Jurisdictions, answerData?.Question]"
+      :title-candidates="[answerData?.jurisdictions, answerData?.question]"
       fallback="Question"
     />
 
     <EntityFeedback
       entity-type="question"
       :entity-id="answerId"
-      :entity-title="answerData?.Question as string"
+      :entity-title="answerData?.question as string"
     />
   </div>
 </template>

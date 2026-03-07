@@ -6,8 +6,8 @@ import type { LiteratureResponse } from "@/types/entities/literature";
 export function generateBibTeX(data: LiteratureResponse): string {
   const authors = data.Author || "";
   const title = data.Title || "";
-  const year = data["Publication Year"] || "";
-  const journal = data["Publication Title"] || "";
+  const year = data.publicationYear || "";
+  const journal = data.publicationTitle || "";
   const publisher = data.Publisher || "";
   const url = data.Url || "";
   const volume = data.Volume || "";

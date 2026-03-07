@@ -188,7 +188,7 @@ export function useRelatedQuestions(
       const record = dataById.get(id);
       return {
         id,
-        title: record?.Question || id,
+        title: record?.question || id,
       };
     });
   });

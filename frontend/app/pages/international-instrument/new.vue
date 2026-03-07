@@ -91,8 +91,7 @@ import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { internationalInstrumentTooltips } from "@/config/tooltips";
 
-const tooltipInternationalInstrumentDate =
-  internationalInstrumentTooltips["Date"];
+const tooltipInternationalInstrumentDate = internationalInstrumentTooltips.Date;
 const tooltipInternationalInstrumentLink =
   "Link to the official source or full text of the instrument.";
 

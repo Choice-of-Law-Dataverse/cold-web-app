@@ -1,12 +1,12 @@
 <template>
   <div class="prose flex flex-col gap-2">
-    <template v-if="data['Domestic Legal Provisions']">
-      <LegalProvisionRenderer :value="data['Domestic Legal Provisions']" />
+    <template v-if="data.domesticLegalProvisions">
+      <LegalProvisionRenderer :value="data.domesticLegalProvisions" />
     </template>
-    <template v-else-if="data['Domestic Instruments ID']">
+    <template v-else-if="data.domesticInstrumentsId">
       <LegalProvisionRenderer
         skip-article
-        :value="data['Domestic Instruments ID']"
+        :value="data.domesticInstrumentsId"
       />
     </template>
     <template v-else>

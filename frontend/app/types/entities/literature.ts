@@ -6,68 +6,66 @@ import { formatDate } from "@/utils/format";
 /** Raw API response */
 export interface LiteratureResponse {
   id: string;
-  source_table?: string;
-  "Record ID"?: string;
-  CoLD_ID?: string;
+  sourceTable?: string;
+  recordId?: string;
+  coldId?: string;
   ID?: string;
   Key?: string;
-  "Item Type"?: string;
-  "Publication Year"?: string;
+  itemType?: string;
+  publicationYear?: string;
   Author?: string;
   Title?: string;
   ISBN?: string;
   ISSN?: string;
   Url?: string;
   Date?: string;
-  "Date Added"?: string;
-  "Date Modified"?: string;
+  dateAdded?: string;
+  dateModified?: string;
   Publisher?: string;
   Language?: string;
   Extra?: string;
-  "Manual Tags"?: string;
+  manualTags?: string;
   Editor?: string;
-  "Last Modified"?: string;
+  lastModified?: string;
   Created?: string;
-  "Publication Title"?: string;
+  publicationTitle?: string;
   Issue?: string;
   Volume?: string;
   Pages?: string;
-  "Abstract Note"?: string;
-  "Library Catalog"?: string;
+  abstractNote?: string;
+  libraryCatalog?: string;
   DOI?: string;
-  "Access Date"?: string;
-  "Open Access"?: string;
-  "Open Access URL"?: string;
-  "Journal Abbreviation"?: string;
-  "Short Title"?: string;
+  accessDate?: string;
+  openAccess?: string;
+  openAccessUrl?: string;
+  journalAbbreviation?: string;
+  shortTitle?: string;
   Place?: string;
-  "Num Pages"?: string;
+  numPages?: string;
   Type?: string;
-  "OUP JD Chapter"?: string;
+  oupJdChapter?: string;
   Contributor?: string;
-  "Automatic Tags"?: string;
+  automaticTags?: string;
   Number?: string;
   Series?: string;
-  "Series Number"?: string;
-  "Series Editor"?: string;
+  seriesNumber?: string;
+  seriesEditor?: string;
   Edition?: string;
-  "Call Number"?: string;
-  "Jurisdiction Summary"?: string;
+  callNumber?: string;
+  jurisdictionSummary?: string;
   Answers?: string;
-  sort_date?: string;
-  // Nested mappings
-  "Jurisdiction Link"?: string;
+  sortDate?: string;
+  jurisdictionLink?: string;
   Jurisdiction?: string;
-  Themes?: string;
-  "Themes Link"?: string;
-  "International Instruments"?: string;
-  "International Instruments Link"?: string;
-  "International Legal Provisions"?: string;
-  "International Legal Provisions Link"?: string;
-  "Regional Instruments"?: string;
-  "Regional Instruments Link"?: string;
-  // Legacy/additional fields
-  "Official Source (PDF)"?: string;
+  themes?: string;
+  themesLink?: string;
+  internationalInstruments?: string;
+  internationalInstrumentsLink?: string;
+  internationalLegalProvisions?: string;
+  internationalLegalProvisionsLink?: string;
+  regionalInstruments?: string;
+  regionalInstrumentsLink?: string;
+  officialSourcePdf?: string;
 }
 
 /** Processed type with normalized fields */
@@ -83,7 +81,7 @@ export function processLiterature(raw: LiteratureResponse): Literature {
   return {
     ...raw,
     displayTitle: raw.Title || "Untitled",
-    isOupChapter: Boolean(raw["OUP JD Chapter"]),
-    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
+    isOupChapter: Boolean(raw.oupJdChapter),
+    lastModified: formatDate(raw.lastModified || raw.Created),
   };
 }

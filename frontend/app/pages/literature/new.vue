@@ -191,12 +191,12 @@ const loadJurisdictions = async () => {
     jurisdictionOptions.value = [
       { label: "Select Jurisdiction" },
       ...jurisdictionsData
-        .filter((entry) => entry["Irrelevant?"] === false)
+        .filter((entry) => entry.irrelevant === false)
         .map((entry) => ({
           label: entry.Name,
-          alpha3Code: entry["Alpha-3 Code"],
-          avatar: entry["Alpha-3 Code"]
-            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry["Alpha-3 Code"].toLowerCase()}.svg`
+          alpha3Code: entry.alpha3Code,
+          avatar: entry.alpha3Code
+            ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${entry.alpha3Code.toLowerCase()}.svg`
             : undefined,
         }))
         .sort((a, b) => (a.label || "").localeCompare(b.label || "")),

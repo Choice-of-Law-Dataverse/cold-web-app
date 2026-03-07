@@ -146,16 +146,12 @@ class TestCamelCaseSerialization:
 
 class TestCamelCaseInput:
     def test_accept_camel_case_fields(self):
-        record = AnswerRecord.model_validate(
-            {"sourceTable": "Answers", "id": "X", "answer": "Yes", "themes": "PIL"}
-        )
+        record = AnswerRecord.model_validate({"sourceTable": "Answers", "id": "X", "answer": "Yes", "themes": "PIL"})
         assert record.source_table == "Answers"
         assert record.answer == "Yes"
 
     def test_court_decision_camel_input(self):
-        record = CourtDecisionRecord.model_validate(
-            {"caseCitation": "[2020] UKSC 1", "caseTitle": "Test v Test"}
-        )
+        record = CourtDecisionRecord.model_validate({"caseCitation": "[2020] UKSC 1", "caseTitle": "Test v Test"})
         assert record.case_citation == "[2020] UKSC 1"
         assert record.case_title == "Test v Test"
 

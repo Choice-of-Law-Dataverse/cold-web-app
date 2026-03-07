@@ -61,12 +61,11 @@ const displayTitle = computed(() => {
     result += articlePart.value;
   }
   const rec = record.value || {};
-  let derivedTitle =
-    rec["Abbreviation"] || rec["Title (in English)"] || rec["Title"] || "";
+  let derivedTitle = rec.abbreviation || rec.titleInEnglish || rec.title || "";
   if (!derivedTitle) {
-    const ct = rec["Case Title"];
+    const ct = rec.caseTitle;
     derivedTitle =
-      ct && ct !== "NA" && ct !== "Not found" ? ct : rec["Case Citation"] || "";
+      ct && ct !== "NA" && ct !== "Not found" ? ct : rec.caseCitation || "";
   }
   if (derivedTitle) {
     if (result) result += ", ";

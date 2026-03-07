@@ -16,7 +16,7 @@
           class="result-item"
         >
           <component
-            :is="getResultComponent(resultData.source_table)"
+            :is="getResultComponent(resultData.sourceTable)"
             :result-data="resultData"
           />
         </div>
@@ -99,6 +99,6 @@ const resultComponentMap = {
   Literature: LiteratureCard,
 };
 
-const getResultComponent = (source_table) =>
-  resultComponentMap[source_table] || ResultCard;
+const getResultComponent = (sourceTable) =>
+  resultComponentMap[sourceTable] || ResultCard;
 </script>

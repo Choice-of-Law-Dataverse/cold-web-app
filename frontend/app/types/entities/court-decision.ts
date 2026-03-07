@@ -1,62 +1,51 @@
-/**
- * Court Decision entity type definitions
- */
-
 import { formatDate } from "@/utils/format";
 
-/** Raw API response */
 export interface CourtDecisionResponse {
   id: string;
-  source_table?: string;
+  sourceTable?: string;
   rank?: number;
   ID?: string;
-  "Case Citation"?: string;
-  "Case Title"?: string;
+  caseCitation?: string;
+  caseTitle?: string;
   Instance?: string;
   Date?: string;
   Abstract?: string;
   Created?: string;
-  "Record ID"?: string;
-  "ID-number"?: string;
-  "Last Modified"?: string;
-  "Answers Link"?: string;
-  "Answers Question"?: string;
-  Text_of_the_Relevant_Legal_Provisions?: string;
+  recordId?: string;
+  idNumber?: string;
+  lastModified?: string;
+  answersLink?: string;
+  answersQuestion?: string;
+  textOfTheRelevantLegalProvisions?: string;
   Quote?: string;
-  "Case Rank"?: string;
-  "English Translation"?: string;
-  "Choice of Law Issue"?: string;
-  "Court's Position"?: string;
-  "Translated Excerpt"?: string;
-  "Relevant Facts"?: string;
-  "Date of Judgment"?: string;
-  "PIL Provisions"?: string;
-  "Original Text"?: string;
-  sort_date?: string;
-  "Publication Date ISO"?: string;
-  "Official Source (URL)"?: string;
-  "Official Source (PDF)"?: string;
-  // Nested mappings
-  Questions?: string;
-  "Jurisdictions Link"?: string;
-  "Jurisdictions Alpha-3 Code"?: string;
-  Jurisdictions?: string;
-  "Region (from Jurisdictions)"?: string;
-  Themes?: string;
-  // Legacy fields for backwards compatibility
+  caseRank?: string;
+  englishTranslation?: string;
+  choiceOfLawIssue?: string;
+  courtSPosition?: string;
+  translatedExcerpt?: string;
+  relevantFacts?: string;
+  dateOfJudgment?: string;
+  pilProvisions?: string;
+  originalText?: string;
+  sortDate?: string;
+  publicationDateIso?: string;
+  officialSourceUrl?: string;
+  officialSourcePdf?: string;
+  questions?: string;
+  jurisdictionsLink?: string;
+  jurisdictionsAlpha3Code?: string;
+  jurisdictions?: string;
+  regionFromJurisdictions?: string;
   themes?: string;
-  "Text of the Relevant Legal Provisions"?: string;
-  "Domestic Legal Provisions"?: string;
-  "Related Questions"?: string;
-  "Related Literature"?: string;
-  "OUP Chapter"?: string;
-  "Country Report"?: string;
+  domesticLegalProvisions?: string;
+  relatedQuestions?: string;
+  relatedLiterature?: string;
+  oupChapter?: string;
+  countryReport?: string;
 }
 
-/** Processed type with normalized fields */
 export interface CourtDecision extends CourtDecisionResponse {
   hasEnglishQuoteTranslation: boolean;
-  /** Pre-computed display title with fallback: Case Title → Case Citation → id */
   displayTitle: string;
 }
 
@@ -67,37 +56,26 @@ function isValidTitle(title: string | undefined): title is string {
   return !EXCLUDED_TITLES.has(title.toLowerCase());
 }
 
-/** Transform raw response to processed type */
 export function processCourtDecision(
   raw: CourtDecisionResponse,
 ): CourtDecision {
-  const themes = raw.themes || raw.Themes;
-  const questions = raw.Questions;
-
-  // Compute display title with fallbacks
   const caseTitle =
-    raw["Case Title"] === "Not found"
-      ? raw["Case Citation"]
-      : raw["Case Title"];
+    raw.caseTitle === "Not found" ? raw.caseCitation : raw.caseTitle;
   const displayTitle = isValidTitle(caseTitle)
     ? caseTitle
-    : isValidTitle(raw["Case Citation"])
-      ? raw["Case Citation"]
+    : isValidTitle(raw.caseCitation)
+      ? raw.caseCitation
       : raw.id;
 
   return {
     ...raw,
-    "Case Title": caseTitle,
-    "Related Literature": themes,
+    caseTitle,
     Date: formatDate(raw.Date),
-    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
-    Themes: themes,
-    Questions: questions,
-    "Related Questions": questions,
-    "Publication Date ISO": formatDate(raw["Publication Date ISO"]),
-    "Date of Judgment": formatDate(raw["Date of Judgment"]),
+    lastModified: formatDate(raw.lastModified || raw.Created),
+    publicationDateIso: formatDate(raw.publicationDateIso),
+    dateOfJudgment: formatDate(raw.dateOfJudgment),
     hasEnglishQuoteTranslation: Boolean(
-      raw["Translated Excerpt"] && raw["Translated Excerpt"].trim() !== "",
+      raw.translatedExcerpt && raw.translatedExcerpt.trim() !== "",
     ),
     displayTitle,
   };

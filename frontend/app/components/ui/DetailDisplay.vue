@@ -84,7 +84,7 @@
                     <!-- Conditionally render bullet list if Answer or Specialists is an array -->
                     <template
                       v-if="
-                        (item.key === 'Answer' || item.key === 'Specialists') &&
+                        (item.key === 'answer' || item.key === 'Specialists') &&
                         Array.isArray(
                           getDisplayValue(item, resultData?.[item.key]),
                         )
@@ -294,7 +294,7 @@ const getDisplayValue = (item, value) => {
     return item.valueTransform(value);
   }
   if (
-    (item.key === "Answer" || item.key === "Specialists") &&
+    (item.key === "answer" || item.key === "Specialists") &&
     typeof value === "string" &&
     value.includes(",")
   ) {

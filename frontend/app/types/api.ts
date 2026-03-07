@@ -40,10 +40,10 @@ export { ApiError } from "./errors";
  * Question item data structure as returned from API
  */
 export interface QuestionItem {
-  "CoLD ID"?: string;
+  coldId?: string;
   ID?: string;
-  Question: string;
-  Themes?: string;
+  question: string;
+  themes?: string;
   [key: string]: unknown;
 }
 
@@ -284,9 +284,9 @@ export interface SearchResponse {
 export interface JurisdictionWithAnswerCoverage {
   id: number;
   Name: string;
-  "Alpha-3 Code": string;
-  "Answer Coverage": number;
-  [key: string]: unknown; // Allows for additional jurisdiction fields
+  alpha3Code: string;
+  answerCoverage: number;
+  [key: string]: unknown;
 }
 
 /**
