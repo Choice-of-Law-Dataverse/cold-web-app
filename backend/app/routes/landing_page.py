@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from app.auth import verify_frontend_request
+from app.schemas.responses import LandingPageJurisdiction
 from app.services.landing_page import LandingPageService
 
 
@@ -26,7 +27,6 @@ router = APIRouter(prefix="/landing-page", tags=["LandingPage"], dependencies=[D
 )
 def get_jurisdictions(
     landing_page_service: LandingPageService = Depends(get_landing_page_service),
-):
-    """Returns list of Alpha-3 codes with has_data flag (1 or 0) based on Answers table."""
+) -> list[LandingPageJurisdiction]:
     results = landing_page_service.get_jurisdictions()
     return results

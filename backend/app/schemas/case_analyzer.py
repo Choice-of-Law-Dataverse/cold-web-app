@@ -80,8 +80,25 @@ class SubmitForApprovalRequest(BaseModel):
 
 
 class SubmitForApprovalResponse(BaseModel):
-    """Response after submitting for approval."""
-
     draft_id: int = Field(..., description="Database ID of the submitted draft")
     status: str = Field("pending", description="New moderation status")
     message: str = Field(..., description="Success message")
+
+
+class UserAnalysisSummary(BaseModel):
+    id: int
+    created_at: str | None = None
+    case_citation: str | None = None
+    file_name: str | None = None
+    moderation_status: str
+
+
+class DraftRecoveryResponse(BaseModel):
+    draft_id: int
+    status: str
+    file_name: str | None = None
+    pdf_url: str | None = None
+    jurisdiction_info: JurisdictionInfo | None = None
+    analyzer_data: dict[str, object] = Field(default_factory=dict)
+    case_citation: str | None = None
+    created_at: str | None = None

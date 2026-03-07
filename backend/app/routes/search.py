@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
 
 from app.auth import verify_frontend_request
+from app.schemas.records import RecordBase
 from app.schemas.requests import (
     CuratedDetailsRequest,
     FullTableRequest,
     FullTextSearchRequest,
 )
-from app.schemas.responses import SpecialistResponse
+from app.schemas.responses import CuratedDetailsRecord, FullTextSearchResponse, SpecialistResponse
 from app.services.search import SearchService
 
 
@@ -61,7 +62,7 @@ router = APIRouter(
 def handle_full_text_search(
     body: FullTextSearchRequest,
     search_service: SearchService = Depends(get_search_service),
-):
+) -> FullTextSearchResponse:
     search_string = body.search_string
     filters = body.filters or []
     page = body.page
@@ -77,7 +78,7 @@ def handle_full_text_search(
         sort_by_date,
         response_type=response_type,
     )
-    return results
+    return FullTextSearchResponse(**results)
 
 
 @router.post(
@@ -104,13 +105,13 @@ def handle_full_text_search(
 def handle_curated_details_search(
     body: CuratedDetailsRequest,
     search_service: SearchService = Depends(get_search_service),
-):
+) -> CuratedDetailsRecord:
     table = body.table
     record_id = body.id
     response_type = getattr(body, "response_type", "parsed")
 
     results = search_service.curated_details_search(table, record_id, response_type=response_type)
-    return results
+    return CuratedDetailsRecord.model_validate(results)
 
 
 @router.post(
@@ -142,7 +143,7 @@ def handle_curated_details_search(
 def return_full_table(
     body: FullTableRequest,
     search_service: SearchService = Depends(get_search_service),
-):
+) -> list[RecordBase]:
     table = body.table
     filters = body.filters or []
     response_type = getattr(body, "response_type", "parsed")
@@ -158,7 +159,7 @@ def return_full_table(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
-    return results
+    return [RecordBase(**r) for r in results]
 
 
 @router.get(
@@ -195,9 +196,9 @@ def return_full_table(
 def get_specialists_by_jurisdiction(
     jurisdiction_alpha_code: str,
     search_service: SearchService = Depends(get_search_service),
-):
+) -> list[SpecialistResponse]:
     try:
         results = search_service.get_specialists_by_jurisdiction(jurisdiction_alpha_code)
-        return results
+        return [SpecialistResponse(**r) for r in results]
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e

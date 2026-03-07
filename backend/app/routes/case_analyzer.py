@@ -18,9 +18,12 @@ from app.case_analyzer import (
 )
 from app.schemas.case_analyzer import (
     ConfirmAnalysisRequest,
+    DraftRecoveryResponse,
+    JurisdictionInfo,
     SubmitForApprovalRequest,
     SubmitForApprovalResponse,
     UploadDocumentRequest,
+    UserAnalysisSummary,
 )
 from app.services.azure_storage import (
     download_blob_with_managed_identity,
@@ -55,7 +58,7 @@ async def upload_document(
     request: Request,
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
-):
+) -> StreamingResponse:
     """
     Upload and process a court decision document with streaming progress.
 
@@ -257,7 +260,7 @@ async def analyze_document(
     body: ConfirmAnalysisRequest,
     _: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
-):
+) -> StreamingResponse:
     """
     Execute full case analysis workflow with streaming results.
 
@@ -497,7 +500,7 @@ async def submit_for_approval(
     body: SubmitForApprovalRequest,
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
-):
+) -> SubmitForApprovalResponse:
     """
     Submit user-edited case analysis data for moderation approval.
 
@@ -563,17 +566,13 @@ async def submit_for_approval(
 async def list_my_analyses(
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
-) -> list[dict[str, Any]]:
-    """
-    List all case analyses for the authenticated user.
-
-    Returns a list of analyses with id, created_at, case_citation, and moderation_status.
-    """
+) -> list[UserAnalysisSummary]:
     user_email = service._get_token_sub(user)
     if not user_email:
         raise HTTPException(status_code=401, detail="Unable to identify user")
 
-    return service.list_user_case_analyses(user_email)
+    results = service.list_user_case_analyses(user_email)
+    return [UserAnalysisSummary(**r) for r in results]
 
 
 @router.get(
@@ -588,17 +587,7 @@ async def get_draft_for_recovery(
     draft_id: int,
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
-) -> dict[str, Any]:
-    """
-    Get draft data to recover form state.
-
-    Only returns data if:
-    - Draft exists
-    - User owns the draft
-    - Status is recoverable (draft, analyzing, completed, failed)
-
-    Does not return data if status is pending, approved, or rejected.
-    """
+) -> DraftRecoveryResponse:
     record = service.get_case_analyzer_full(draft_id)
     if not record:
         raise HTTPException(status_code=404, detail="Draft not found")
@@ -632,40 +621,31 @@ async def get_draft_for_recovery(
     analyzer_data = _parse_json(record.get("analyzer")) or {}
 
     # Extract jurisdiction info - first from analyzer data, then legacy data
-    jurisdiction_info = None
-    if analyzer_data.get("jurisdiction"):
-        # Jurisdiction stored in analyzer column (new format)
-        jurisdiction_info = analyzer_data["jurisdiction"]
-    elif legacy_data.get("jurisdiction"):
-        # Jurisdiction stored in data column as nested object
-        jurisdiction_info = legacy_data["jurisdiction"]
+    jurisdiction_info: JurisdictionInfo | None = None
+    raw_jurisdiction = analyzer_data.get("jurisdiction") or legacy_data.get("jurisdiction")
+    if raw_jurisdiction and isinstance(raw_jurisdiction, dict):
+        jurisdiction_info = JurisdictionInfo(**raw_jurisdiction)
     elif legacy_data.get("precise_jurisdiction"):
-        # Jurisdiction stored in data column as flat fields (legacy)
-        jurisdiction_info = {
-            "precise_jurisdiction": legacy_data.get("precise_jurisdiction"),
-            "jurisdiction_code": legacy_data.get("jurisdiction_code"),
-            "legal_system_type": legacy_data.get("legal_system_type"),
-            "confidence": legacy_data.get("jurisdiction_confidence"),
-            "reasoning": legacy_data.get("jurisdiction_reasoning"),
-        }
+        jurisdiction_info = JurisdictionInfo(
+            precise_jurisdiction=legacy_data.get("precise_jurisdiction", ""),
+            jurisdiction_code=legacy_data.get("jurisdiction_code", ""),
+            legal_system_type=legacy_data.get("legal_system_type", ""),
+            confidence=legacy_data.get("jurisdiction_confidence", "low"),
+            reasoning=legacy_data.get("jurisdiction_reasoning", ""),
+        )
 
-    # Get file info
-    file_name = legacy_data.get("file_name")
-    pdf_url = legacy_data.get("pdf_url")
-
-    # Format created_at safely
     created_at = record.get("created_at")
     created_at_str = None
     if created_at and hasattr(created_at, "isoformat"):
         created_at_str = created_at.isoformat()
 
-    return {
-        "draft_id": draft_id,
-        "status": status or "draft",
-        "file_name": file_name,
-        "pdf_url": pdf_url,
-        "jurisdiction_info": jurisdiction_info,
-        "analyzer_data": analyzer_data,
-        "case_citation": record.get("case_citation"),
-        "created_at": created_at_str,
-    }
+    return DraftRecoveryResponse(
+        draft_id=draft_id,
+        status=status or "draft",
+        file_name=legacy_data.get("file_name"),
+        pdf_url=legacy_data.get("pdf_url"),
+        jurisdiction_info=jurisdiction_info,
+        analyzer_data=analyzer_data,
+        case_citation=record.get("case_citation"),
+        created_at=created_at_str,
+    )
