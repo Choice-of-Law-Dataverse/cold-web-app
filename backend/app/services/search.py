@@ -53,22 +53,22 @@ class SearchService:
             raise ValueError(f"Unsupported table for full/filtered query: {table}")
 
         mapping = {
-            "Answers": "data_views.answers_complete",
-            "HCCH Answers": "data_views.hcch_answers_complete",
-            "Court Decisions": "data_views.court_decisions_complete",
-            "Domestic Instruments": "data_views.domestic_instruments_complete",
-            "Domestic Legal Provisions": "data_views.domestic_legal_provisions_complete",
-            "Regional Instruments": "data_views.regional_instruments_complete",
-            "Regional Legal Provisions": "data_views.regional_legal_provisions_complete",
-            "International Instruments": "data_views.international_instruments_complete",
-            "International Legal Provisions": "data_views.international_legal_provisions_complete",
-            "Literature": "data_views.literature_complete",
-            "Arbitral Awards": "data_views.arbitral_awards_complete",
-            "Arbitral Institutions": "data_views.arbitral_institutions_complete",
-            "Arbitral Rules": "data_views.arbitral_rules_complete",
-            "Arbitral Provisions": "data_views.arbitral_provisions_complete",
-            "Jurisdictions": "data_views.jurisdictions_complete",
-            "Questions": "data_views.questions_complete",
+            "Answers": "data_views.answers_complete_v2",
+            "HCCH Answers": "data_views.hcch_answers_complete_v2",
+            "Court Decisions": "data_views.court_decisions_complete_v2",
+            "Domestic Instruments": "data_views.domestic_instruments_complete_v2",
+            "Domestic Legal Provisions": "data_views.domestic_legal_provisions_complete_v2",
+            "Regional Instruments": "data_views.regional_instruments_complete_v2",
+            "Regional Legal Provisions": "data_views.regional_legal_provisions_complete_v2",
+            "International Instruments": "data_views.international_instruments_complete_v2",
+            "International Legal Provisions": "data_views.international_legal_provisions_complete_v2",
+            "Literature": "data_views.literature_complete_v2",
+            "Arbitral Awards": "data_views.arbitral_awards_complete_v2",
+            "Arbitral Institutions": "data_views.arbitral_institutions_complete_v2",
+            "Arbitral Rules": "data_views.arbitral_rules_complete_v2",
+            "Arbitral Provisions": "data_views.arbitral_provisions_complete_v2",
+            "Jurisdictions": "data_views.jurisdictions_complete_v2",
+            "Questions": "data_views.questions_complete_v2",
         }
 
         view = mapping.get(table_key)
@@ -80,7 +80,7 @@ class SearchService:
         try:
             sql = """
             SELECT found_table, record_id, complete_record, hop1_relations
-            FROM data_views.search_for_entry(:table_name, :cold_id)
+            FROM data_views.search_for_entry_v2(:table_name, :cold_id)
             """
             params = {"table_name": table, "cold_id": cold_id}
 
@@ -236,7 +236,7 @@ class SearchService:
             "sort_by_date": sort_by_date,
         }
         count_sql = (
-            "SELECT data_views.search_all_count("
+            "SELECT data_views.search_all_count_v2("
             "search_term := CAST(:search_term AS text), "
             "filter_tables := CAST(:filter_tables AS text[]), "
             "filter_jurisdictions := CAST(:filter_jurisdictions AS text[]), "
@@ -248,7 +248,7 @@ class SearchService:
         logger.debug("Performing full-text search with params: %s", params)
         sql = (
             "SELECT table_name AS source_table, record_id AS id, complete_record AS complete_record, rank, result_date "
-            "FROM data_views.search_all("
+            "FROM data_views.search_all_v2("
             "search_term := CAST(:search_term AS text), "
             "filter_tables := CAST(:filter_tables AS text[]), "
             "filter_jurisdictions := CAST(:filter_jurisdictions AS text[]), "

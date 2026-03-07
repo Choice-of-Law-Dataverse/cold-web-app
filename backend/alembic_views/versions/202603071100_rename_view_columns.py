@@ -9,8 +9,8 @@ depends_on = None
 
 
 QUESTIONS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.questions_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.questions_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.questions_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.questions_complete_v2 AS
 SELECT
     q.id,
     q."Question" AS question,
@@ -51,13 +51,13 @@ SELECT
     ) AS related_domestic_instruments
 FROM p1q5x3pj29vkrdr."Questions" q;
 
-CREATE UNIQUE INDEX idx_questions_complete_id ON data_views.questions_complete(id);
-CREATE INDEX idx_questions_complete_cold_id ON data_views.questions_complete(cold_id);
+CREATE UNIQUE INDEX idx_questions_complete_v2_id ON data_views.questions_complete_v2(id);
+CREATE INDEX idx_questions_complete_v2_cold_id ON data_views.questions_complete_v2(cold_id);
 """
 
 ANSWERS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.answers_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.answers_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.answers_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.answers_complete_v2 AS
 SELECT
     a.id,
     a."Answer" AS answer,
@@ -185,13 +185,13 @@ LEFT JOIN LATERAL (
     LIMIT 1
 ) qcold ON true;
 
-CREATE UNIQUE INDEX idx_answers_complete_id ON data_views.answers_complete(id);
-CREATE INDEX idx_answers_complete_cold_id ON data_views.answers_complete(cold_id);
+CREATE UNIQUE INDEX idx_answers_complete_v2_id ON data_views.answers_complete_v2(id);
+CREATE INDEX idx_answers_complete_v2_cold_id ON data_views.answers_complete_v2(cold_id);
 """
 
 HCCH_ANSWERS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.hcch_answers_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.hcch_answers_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.hcch_answers_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.hcch_answers_complete_v2 AS
 SELECT
     ha.id,
     ha."Adapted_Question" AS adapted_question,
@@ -227,13 +227,13 @@ LEFT JOIN LATERAL (
     LIMIT 1
 ) qcold ON true;
 
-CREATE UNIQUE INDEX idx_hcch_answers_complete_id ON data_views.hcch_answers_complete(id);
-CREATE INDEX idx_hcch_answers_complete_cold_id ON data_views.hcch_answers_complete(cold_id);
+CREATE UNIQUE INDEX idx_hcch_answers_complete_v2_id ON data_views.hcch_answers_complete_v2(id);
+CREATE INDEX idx_hcch_answers_complete_v2_cold_id ON data_views.hcch_answers_complete_v2(cold_id);
 """
 
 DOMESTIC_INSTRUMENTS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.domestic_instruments_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.domestic_instruments_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.domestic_instruments_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.domestic_instruments_complete_v2 AS
 SELECT
     di.id,
     di."ID_Number" AS id_number,
@@ -293,13 +293,13 @@ LEFT JOIN LATERAL (
     LIMIT 1
 ) jcodes ON true;
 
-CREATE UNIQUE INDEX idx_domestic_instruments_complete_id ON data_views.domestic_instruments_complete(id);
-CREATE INDEX idx_domestic_instruments_complete_cold_id ON data_views.domestic_instruments_complete(cold_id);
+CREATE UNIQUE INDEX idx_domestic_instruments_complete_v2_id ON data_views.domestic_instruments_complete_v2(id);
+CREATE INDEX idx_domestic_instruments_complete_v2_cold_id ON data_views.domestic_instruments_complete_v2(cold_id);
 """
 
 DOMESTIC_LEGAL_PROVISIONS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.domestic_legal_provisions_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.domestic_legal_provisions_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.domestic_legal_provisions_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.domestic_legal_provisions_complete_v2 AS
 SELECT
     dlp.id,
     dlp."Article" AS article,
@@ -334,13 +334,13 @@ LEFT JOIN LATERAL (
     LIMIT 1
 ) di_cold ON true;
 
-CREATE UNIQUE INDEX idx_domestic_legal_provisions_complete_id ON data_views.domestic_legal_provisions_complete(id);
-CREATE INDEX idx_domestic_legal_provisions_complete_cold_id ON data_views.domestic_legal_provisions_complete(cold_id);
+CREATE UNIQUE INDEX idx_domestic_legal_provisions_complete_v2_id ON data_views.domestic_legal_provisions_complete_v2(id);
+CREATE INDEX idx_domestic_legal_provisions_complete_v2_cold_id ON data_views.domestic_legal_provisions_complete_v2(cold_id);
 """
 
 REGIONAL_INSTRUMENTS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.regional_instruments_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.regional_instruments_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.regional_instruments_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.regional_instruments_complete_v2 AS
 SELECT
     ri.id,
     ri."ID_Number" AS id_number,
@@ -377,13 +377,13 @@ SELECT
     ) AS related_legal_provisions
 FROM p1q5x3pj29vkrdr."Regional_Instruments" ri;
 
-CREATE UNIQUE INDEX idx_regional_instruments_complete_id ON data_views.regional_instruments_complete(id);
-CREATE INDEX idx_regional_instruments_complete_cold_id ON data_views.regional_instruments_complete(cold_id);
+CREATE UNIQUE INDEX idx_regional_instruments_complete_v2_id ON data_views.regional_instruments_complete_v2(id);
+CREATE INDEX idx_regional_instruments_complete_v2_cold_id ON data_views.regional_instruments_complete_v2(cold_id);
 """
 
 REGIONAL_LEGAL_PROVISIONS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.regional_legal_provisions_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.regional_legal_provisions_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.regional_legal_provisions_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.regional_legal_provisions_complete_v2 AS
 SELECT
     rlp.id,
     rlp."Provision" AS provision,
@@ -414,13 +414,13 @@ LEFT JOIN LATERAL (
     LIMIT 1
 ) ri_cold ON true;
 
-CREATE UNIQUE INDEX idx_regional_legal_provisions_complete_id ON data_views.regional_legal_provisions_complete(id);
-CREATE INDEX idx_regional_legal_provisions_complete_cold_id ON data_views.regional_legal_provisions_complete(cold_id);
+CREATE UNIQUE INDEX idx_regional_legal_provisions_complete_v2_id ON data_views.regional_legal_provisions_complete_v2(id);
+CREATE INDEX idx_regional_legal_provisions_complete_v2_cold_id ON data_views.regional_legal_provisions_complete_v2(cold_id);
 """
 
 INTERNATIONAL_INSTRUMENTS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.international_instruments_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.international_instruments_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.international_instruments_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.international_instruments_complete_v2 AS
 SELECT
     ii.id,
     ii."ID_Number" AS id_number,
@@ -482,13 +482,13 @@ SELECT
     ) AS related_literature
 FROM p1q5x3pj29vkrdr."International_Instruments" ii;
 
-CREATE UNIQUE INDEX idx_international_instruments_complete_id ON data_views.international_instruments_complete(id);
-CREATE INDEX idx_international_instruments_complete_cold_id ON data_views.international_instruments_complete(cold_id);
+CREATE UNIQUE INDEX idx_international_instruments_complete_v2_id ON data_views.international_instruments_complete_v2(id);
+CREATE INDEX idx_international_instruments_complete_v2_cold_id ON data_views.international_instruments_complete_v2(cold_id);
 """
 
 INTERNATIONAL_LEGAL_PROVISIONS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.international_legal_provisions_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.international_legal_provisions_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.international_legal_provisions_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.international_legal_provisions_complete_v2 AS
 SELECT
     ilp.id,
     ilp."Provision" AS provision,
@@ -514,13 +514,13 @@ LEFT JOIN LATERAL (
     LIMIT 1
 ) ii_cold ON true;
 
-CREATE UNIQUE INDEX idx_international_legal_provisions_complete_id ON data_views.international_legal_provisions_complete(id);
-CREATE INDEX idx_international_legal_provisions_complete_cold_id ON data_views.international_legal_provisions_complete(cold_id);
+CREATE UNIQUE INDEX idx_international_legal_provisions_complete_v2_id ON data_views.international_legal_provisions_complete_v2(id);
+CREATE INDEX idx_international_legal_provisions_complete_v2_cold_id ON data_views.international_legal_provisions_complete_v2(cold_id);
 """
 
 COURT_DECISIONS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.court_decisions_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.court_decisions_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.court_decisions_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.court_decisions_complete_v2 AS
 SELECT
     cd.id,
     cd."ID_Number" AS id_number,
@@ -594,13 +594,13 @@ LEFT JOIN LATERAL (
     LIMIT 1
 ) jcodes ON true;
 
-CREATE UNIQUE INDEX idx_court_decisions_complete_id ON data_views.court_decisions_complete(id);
-CREATE INDEX idx_court_decisions_complete_cold_id ON data_views.court_decisions_complete(cold_id);
+CREATE UNIQUE INDEX idx_court_decisions_complete_v2_id ON data_views.court_decisions_complete_v2(id);
+CREATE INDEX idx_court_decisions_complete_v2_cold_id ON data_views.court_decisions_complete_v2(cold_id);
 """
 
 LITERATURE_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.literature_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.literature_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.literature_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.literature_complete_v2 AS
 SELECT
     l.id,
     l."ID_Number" AS id_number,
@@ -668,13 +668,13 @@ SELECT
     ) AS related_themes
 FROM p1q5x3pj29vkrdr."Literature" l;
 
-CREATE UNIQUE INDEX idx_literature_complete_id ON data_views.literature_complete(id);
-CREATE INDEX idx_literature_complete_cold_id ON data_views.literature_complete(cold_id);
+CREATE UNIQUE INDEX idx_literature_complete_v2_id ON data_views.literature_complete_v2(id);
+CREATE INDEX idx_literature_complete_v2_cold_id ON data_views.literature_complete_v2(cold_id);
 """
 
 ARBITRAL_AWARDS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_awards_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.arbitral_awards_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_awards_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.arbitral_awards_complete_v2 AS
 SELECT
     aa.id,
     aa."ID_Number" AS id_number,
@@ -725,13 +725,13 @@ SELECT
     ) AS related_themes
 FROM p1q5x3pj29vkrdr."Arbitral_Awards" aa;
 
-CREATE UNIQUE INDEX idx_arbitral_awards_complete_id ON data_views.arbitral_awards_complete(id);
-CREATE INDEX idx_arbitral_awards_complete_cold_id ON data_views.arbitral_awards_complete(cold_id);
+CREATE UNIQUE INDEX idx_arbitral_awards_complete_v2_id ON data_views.arbitral_awards_complete_v2(id);
+CREATE INDEX idx_arbitral_awards_complete_v2_cold_id ON data_views.arbitral_awards_complete_v2(cold_id);
 """
 
 ARBITRAL_INSTITUTIONS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_institutions_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.arbitral_institutions_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_institutions_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.arbitral_institutions_complete_v2 AS
 SELECT
     ai.id,
     ai."Institution" AS institution,
@@ -769,12 +769,12 @@ SELECT
     ) AS related_jurisdictions
 FROM p1q5x3pj29vkrdr."Arbitral_Institutions" ai;
 
-CREATE UNIQUE INDEX idx_arbitral_institutions_complete_id ON data_views.arbitral_institutions_complete(id);
+CREATE UNIQUE INDEX idx_arbitral_institutions_complete_v2_id ON data_views.arbitral_institutions_complete_v2(id);
 """
 
 ARBITRAL_RULES_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_rules_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.arbitral_rules_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_rules_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.arbitral_rules_complete_v2 AS
 SELECT
     ar.id,
     ar."ID_Number" AS id_number,
@@ -812,13 +812,13 @@ SELECT
     ) AS related_jurisdictions
 FROM p1q5x3pj29vkrdr."Arbitral_Rules" ar;
 
-CREATE UNIQUE INDEX idx_arbitral_rules_complete_id ON data_views.arbitral_rules_complete(id);
-CREATE INDEX idx_arbitral_rules_complete_cold_id ON data_views.arbitral_rules_complete(cold_id);
+CREATE UNIQUE INDEX idx_arbitral_rules_complete_v2_id ON data_views.arbitral_rules_complete_v2(id);
+CREATE INDEX idx_arbitral_rules_complete_v2_cold_id ON data_views.arbitral_rules_complete_v2(cold_id);
 """
 
 ARBITRAL_PROVISIONS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_provisions_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.arbitral_provisions_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.arbitral_provisions_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.arbitral_provisions_complete_v2 AS
 SELECT
     ap.id,
     ap."Article" AS article,
@@ -863,13 +863,13 @@ LEFT JOIN LATERAL (
     LIMIT 1
 ) ar_cold ON true;
 
-CREATE UNIQUE INDEX idx_arbitral_provisions_complete_id ON data_views.arbitral_provisions_complete(id);
-CREATE INDEX idx_arbitral_provisions_complete_cold_id ON data_views.arbitral_provisions_complete(cold_id);
+CREATE UNIQUE INDEX idx_arbitral_provisions_complete_v2_id ON data_views.arbitral_provisions_complete_v2(id);
+CREATE INDEX idx_arbitral_provisions_complete_v2_cold_id ON data_views.arbitral_provisions_complete_v2(cold_id);
 """
 
 JURISDICTIONS_COMPLETE = """
-DROP MATERIALIZED VIEW IF EXISTS data_views.jurisdictions_complete CASCADE;
-CREATE MATERIALIZED VIEW data_views.jurisdictions_complete AS
+DROP MATERIALIZED VIEW IF EXISTS data_views.jurisdictions_complete_v2 CASCADE;
+CREATE MATERIALIZED VIEW data_views.jurisdictions_complete_v2 AS
 SELECT
     j.id,
     j."Name" AS name,
@@ -923,15 +923,15 @@ SELECT
     ) AS related_specialists
 FROM p1q5x3pj29vkrdr."Jurisdictions" j;
 
-CREATE UNIQUE INDEX idx_jurisdictions_complete_id ON data_views.jurisdictions_complete(id);
-CREATE INDEX idx_jurisdictions_complete_alpha3 ON data_views.jurisdictions_complete(alpha_3_code);
+CREATE UNIQUE INDEX idx_jurisdictions_complete_v2_id ON data_views.jurisdictions_complete_v2(id);
+CREATE INDEX idx_jurisdictions_complete_v2_alpha3 ON data_views.jurisdictions_complete_v2(alpha_3_code);
 """
 
 SEARCH_ALL_FUNCTION = """
-DROP FUNCTION IF EXISTS data_views.search_all(text, text[], text[], text[], integer, integer);
-DROP FUNCTION IF EXISTS data_views.search_all(text, text[], text[], text[], integer, integer, boolean);
+DROP FUNCTION IF EXISTS data_views.search_all_v2(text, text[], text[], text[], integer, integer);
+DROP FUNCTION IF EXISTS data_views.search_all_v2(text, text[], text[], text[], integer, integer, boolean);
 
-CREATE OR REPLACE FUNCTION data_views.search_all(
+CREATE OR REPLACE FUNCTION data_views.search_all_v2(
     search_term TEXT,
     filter_tables TEXT[] DEFAULT NULL,
     filter_jurisdictions TEXT[] DEFAULT NULL,
@@ -962,7 +962,7 @@ BEGIN
                  ELSE ts_rank(search_view.document, plainto_tsquery('english', search_term))
             END AS rank,
             search_view.sort_date AS result_date
-        FROM data_views.answers_complete a
+        FROM data_views.answers_complete_v2 a
         JOIN data_views.answers search_view ON search_view.id = a.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'Answers' = ANY(filter_tables))
@@ -989,7 +989,7 @@ BEGIN
                  ELSE ts_rank(search_view.document, plainto_tsquery('english', search_term))
             END AS rank,
             search_view.sort_date AS result_date
-        FROM data_views.hcch_answers_complete ha
+        FROM data_views.hcch_answers_complete_v2 ha
         JOIN data_views.hcch_answers search_view ON search_view.id = ha.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'HCCH Answers' = ANY(filter_tables))
@@ -1008,7 +1008,7 @@ BEGIN
                  ELSE ts_rank(search_view.document, plainto_tsquery('english', search_term))
             END AS rank,
             search_view.sort_date AS result_date
-        FROM data_views.court_decisions_complete cd
+        FROM data_views.court_decisions_complete_v2 cd
         JOIN data_views.court_decisions search_view ON search_view.id = cd.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'Court Decisions' = ANY(filter_tables))
@@ -1031,7 +1031,7 @@ BEGIN
                  ELSE ts_rank(search_view.document, plainto_tsquery('english', search_term))
             END AS rank,
             search_view.sort_date AS result_date
-        FROM data_views.domestic_instruments_complete di
+        FROM data_views.domestic_instruments_complete_v2 di
         JOIN data_views.domestic_instruments search_view ON search_view.id = di.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'Domestic Instruments' = ANY(filter_tables))
@@ -1050,7 +1050,7 @@ BEGIN
                  ELSE ts_rank(search_view.document, plainto_tsquery('english', search_term))
             END AS rank,
             search_view.sort_date AS result_date
-        FROM data_views.regional_instruments_complete ri
+        FROM data_views.regional_instruments_complete_v2 ri
         JOIN data_views.regional_instruments search_view ON search_view.id = ri.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'Regional Instruments' = ANY(filter_tables))
@@ -1065,7 +1065,7 @@ BEGIN
                  ELSE ts_rank(search_view.document, plainto_tsquery('english', search_term))
             END AS rank,
             search_view.sort_date AS result_date
-        FROM data_views.international_instruments_complete ii
+        FROM data_views.international_instruments_complete_v2 ii
         JOIN data_views.international_instruments search_view ON search_view.id = ii.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'International Instruments' = ANY(filter_tables))
@@ -1080,7 +1080,7 @@ BEGIN
                  ELSE ts_rank(search_view.document, plainto_tsquery('english', search_term))
             END AS rank,
             search_view.sort_date AS result_date
-        FROM data_views.literature_complete l
+        FROM data_views.literature_complete_v2 l
         JOIN data_views.literature search_view ON search_view.id = l.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'Literature' = ANY(filter_tables))
@@ -1118,9 +1118,9 @@ $$ LANGUAGE plpgsql;
 """
 
 SEARCH_FOR_ENTRY_FUNCTION = """
-DROP FUNCTION IF EXISTS data_views.search_for_entry(TEXT, TEXT);
+DROP FUNCTION IF EXISTS data_views.search_for_entry_v2(TEXT, TEXT);
 
-CREATE OR REPLACE FUNCTION data_views.search_for_entry(
+CREATE OR REPLACE FUNCTION data_views.search_for_entry_v2(
     table_name TEXT,
     cold_id TEXT
 )
@@ -1147,8 +1147,8 @@ BEGIN
                 'related_domestic_legal_provisions', a.related_domestic_legal_provisions
             )
         INTO rec_id, rec, hop1
-        FROM data_views.answers_complete a
-        WHERE a.cold_id = search_for_entry.cold_id
+        FROM data_views.answers_complete_v2 a
+        WHERE a.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Answers', rec_id, rec, hop1;
@@ -1160,8 +1160,8 @@ BEGIN
                 'related_international_instruments', ha.related_international_instruments
             )
         INTO rec_id, rec, hop1
-        FROM data_views.hcch_answers_complete ha
-        WHERE ha.cold_id = search_for_entry.cold_id
+        FROM data_views.hcch_answers_complete_v2 ha
+        WHERE ha.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'HCCH Answers', rec_id, rec, hop1;
@@ -1175,8 +1175,8 @@ BEGIN
                 'related_themes', cd.related_themes
             )
         INTO rec_id, rec, hop1
-        FROM data_views.court_decisions_complete cd
-        WHERE cd.cold_id = search_for_entry.cold_id
+        FROM data_views.court_decisions_complete_v2 cd
+        WHERE cd.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Court Decisions', rec_id, rec, hop1;
@@ -1189,8 +1189,8 @@ BEGIN
                 'related_questions', di.related_questions
             )
         INTO rec_id, rec, hop1
-        FROM data_views.domestic_instruments_complete di
-        WHERE di.cold_id = search_for_entry.cold_id
+        FROM data_views.domestic_instruments_complete_v2 di
+        WHERE di.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Domestic Instruments', rec_id, rec, hop1;
@@ -1201,8 +1201,8 @@ BEGIN
                 'related_domestic_instruments', dlp.related_domestic_instruments
             )
         INTO rec_id, rec, hop1
-        FROM data_views.domestic_legal_provisions_complete dlp
-        WHERE dlp.cold_id = search_for_entry.cold_id
+        FROM data_views.domestic_legal_provisions_complete_v2 dlp
+        WHERE dlp.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Domestic Legal Provisions', rec_id, rec, hop1;
@@ -1214,8 +1214,8 @@ BEGIN
                 'related_legal_provisions', ri.related_legal_provisions
             )
         INTO rec_id, rec, hop1
-        FROM data_views.regional_instruments_complete ri
-        WHERE ri.cold_id = search_for_entry.cold_id
+        FROM data_views.regional_instruments_complete_v2 ri
+        WHERE ri.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Regional Instruments', rec_id, rec, hop1;
@@ -1227,8 +1227,8 @@ BEGIN
                 'related_regional_instruments', rlp.related_regional_instruments
             )
         INTO rec_id, rec, hop1
-        FROM data_views.regional_legal_provisions_complete rlp
-        WHERE rlp.cold_id = search_for_entry.cold_id
+        FROM data_views.regional_legal_provisions_complete_v2 rlp
+        WHERE rlp.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Regional Legal Provisions', rec_id, rec, hop1;
@@ -1242,8 +1242,8 @@ BEGIN
                 'related_literature', ii.related_literature
             )
         INTO rec_id, rec, hop1
-        FROM data_views.international_instruments_complete ii
-        WHERE ii.cold_id = search_for_entry.cold_id
+        FROM data_views.international_instruments_complete_v2 ii
+        WHERE ii.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'International Instruments', rec_id, rec, hop1;
@@ -1254,8 +1254,8 @@ BEGIN
                 'instrument_cold_id', ilp.instrument_cold_id
             )
         INTO rec_id, rec, hop1
-        FROM data_views.international_legal_provisions_complete ilp
-        WHERE ilp.cold_id = search_for_entry.cold_id
+        FROM data_views.international_legal_provisions_complete_v2 ilp
+        WHERE ilp.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'International Legal Provisions', rec_id, rec, hop1;
@@ -1267,8 +1267,8 @@ BEGIN
                 'related_themes', l.related_themes
             )
         INTO rec_id, rec, hop1
-        FROM data_views.literature_complete l
-        WHERE l.cold_id = search_for_entry.cold_id
+        FROM data_views.literature_complete_v2 l
+        WHERE l.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Literature', rec_id, rec, hop1;
@@ -1283,8 +1283,8 @@ BEGIN
                 'related_themes', aa.related_themes
             )
         INTO rec_id, rec, hop1
-        FROM data_views.arbitral_awards_complete aa
-        WHERE aa.cold_id = search_for_entry.cold_id
+        FROM data_views.arbitral_awards_complete_v2 aa
+        WHERE aa.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Arbitral Awards', rec_id, rec, hop1;
@@ -1298,9 +1298,9 @@ BEGIN
                 'related_jurisdictions', ai.related_jurisdictions
             )
         INTO rec_id, rec, hop1
-        FROM data_views.arbitral_institutions_complete ai
-        WHERE ai.id::text = search_for_entry.cold_id
-           OR ('AI-' || ai.id::text) = search_for_entry.cold_id
+        FROM data_views.arbitral_institutions_complete_v2 ai
+        WHERE ai.id::text = search_for_entry_v2.cold_id
+           OR ('AI-' || ai.id::text) = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Arbitral Institutions', rec_id, rec, hop1;
@@ -1313,8 +1313,8 @@ BEGIN
                 'related_jurisdictions', ar.related_jurisdictions
             )
         INTO rec_id, rec, hop1
-        FROM data_views.arbitral_rules_complete ar
-        WHERE ar.cold_id = search_for_entry.cold_id
+        FROM data_views.arbitral_rules_complete_v2 ar
+        WHERE ar.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Arbitral Rules', rec_id, rec, hop1;
@@ -1327,8 +1327,8 @@ BEGIN
                 'related_arbitral_rules', ap.related_arbitral_rules
             )
         INTO rec_id, rec, hop1
-        FROM data_views.arbitral_provisions_complete ap
-        WHERE ap.cold_id = search_for_entry.cold_id
+        FROM data_views.arbitral_provisions_complete_v2 ap
+        WHERE ap.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Arbitral Provisions', rec_id, rec, hop1;
@@ -1343,8 +1343,8 @@ BEGIN
                 'related_specialists', j.related_specialists
             )
         INTO rec_id, rec, hop1
-        FROM data_views.jurisdictions_complete j
-        WHERE j.alpha_3_code = search_for_entry.cold_id
+        FROM data_views.jurisdictions_complete_v2 j
+        WHERE j.alpha_3_code = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Jurisdictions', rec_id, rec, hop1;
@@ -1358,8 +1358,8 @@ BEGIN
                 'related_domestic_instruments', q.related_domestic_instruments
             )
         INTO rec_id, rec, hop1
-        FROM data_views.questions_complete q
-        WHERE q.cold_id = search_for_entry.cold_id
+        FROM data_views.questions_complete_v2 q
+        WHERE q.cold_id = search_for_entry_v2.cold_id
         LIMIT 1;
 
         RETURN QUERY SELECT 'Questions', rec_id, rec, hop1;
@@ -1372,9 +1372,9 @@ $$ LANGUAGE plpgsql STABLE;
 """
 
 SEARCH_ALL_COUNT_FUNCTION = """
-DROP FUNCTION IF EXISTS data_views.search_all_count(text, text[], text[], text[]);
+DROP FUNCTION IF EXISTS data_views.search_all_count_v2(text, text[], text[], text[]);
 
-CREATE OR REPLACE FUNCTION data_views.search_all_count(
+CREATE OR REPLACE FUNCTION data_views.search_all_count_v2(
     search_term TEXT,
     filter_tables TEXT[] DEFAULT NULL,
     filter_jurisdictions TEXT[] DEFAULT NULL,
@@ -1388,7 +1388,7 @@ BEGIN
     SELECT COUNT(*) INTO total
     FROM (
         SELECT 1
-        FROM data_views.answers_complete a
+        FROM data_views.answers_complete_v2 a
         JOIN data_views.answers search_view ON search_view.id = a.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'Answers' = ANY(filter_tables))
@@ -1408,7 +1408,7 @@ BEGIN
         UNION ALL
 
         SELECT 1
-        FROM data_views.hcch_answers_complete ha
+        FROM data_views.hcch_answers_complete_v2 ha
         JOIN data_views.hcch_answers search_view ON search_view.id = ha.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'HCCH Answers' = ANY(filter_tables))
@@ -1420,7 +1420,7 @@ BEGIN
         UNION ALL
 
         SELECT 1
-        FROM data_views.court_decisions_complete cd
+        FROM data_views.court_decisions_complete_v2 cd
         JOIN data_views.court_decisions search_view ON search_view.id = cd.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'Court Decisions' = ANY(filter_tables))
@@ -1436,7 +1436,7 @@ BEGIN
         UNION ALL
 
         SELECT 1
-        FROM data_views.domestic_instruments_complete di
+        FROM data_views.domestic_instruments_complete_v2 di
         JOIN data_views.domestic_instruments search_view ON search_view.id = di.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'Domestic Instruments' = ANY(filter_tables))
@@ -1448,7 +1448,7 @@ BEGIN
         UNION ALL
 
         SELECT 1
-        FROM data_views.regional_instruments_complete ri
+        FROM data_views.regional_instruments_complete_v2 ri
         JOIN data_views.regional_instruments search_view ON search_view.id = ri.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'Regional Instruments' = ANY(filter_tables))
@@ -1456,7 +1456,7 @@ BEGIN
         UNION ALL
 
         SELECT 1
-        FROM data_views.international_instruments_complete ii
+        FROM data_views.international_instruments_complete_v2 ii
         JOIN data_views.international_instruments search_view ON search_view.id = ii.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'International Instruments' = ANY(filter_tables))
@@ -1464,7 +1464,7 @@ BEGIN
         UNION ALL
 
         SELECT 1
-        FROM data_views.literature_complete l
+        FROM data_views.literature_complete_v2 l
         JOIN data_views.literature search_view ON search_view.id = l.id
         WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
           AND (filter_tables IS NULL OR 'Literature' = ANY(filter_tables))
@@ -1544,7 +1544,26 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
-    import importlib
-
-    initial = importlib.import_module("alembic_views.versions.202603071000_initial_views")
-    initial.upgrade()
+    views = [
+        "questions_complete_v2",
+        "answers_complete_v2",
+        "hcch_answers_complete_v2",
+        "domestic_instruments_complete_v2",
+        "domestic_legal_provisions_complete_v2",
+        "regional_instruments_complete_v2",
+        "regional_legal_provisions_complete_v2",
+        "international_instruments_complete_v2",
+        "international_legal_provisions_complete_v2",
+        "court_decisions_complete_v2",
+        "literature_complete_v2",
+        "arbitral_awards_complete_v2",
+        "arbitral_institutions_complete_v2",
+        "arbitral_rules_complete_v2",
+        "arbitral_provisions_complete_v2",
+        "jurisdictions_complete_v2",
+    ]
+    for view in views:
+        op.execute(f"DROP MATERIALIZED VIEW IF EXISTS data_views.{view} CASCADE;")
+    op.execute("DROP FUNCTION IF EXISTS data_views.search_all_v2(text, text[], text[], text[], integer, integer, boolean);")
+    op.execute("DROP FUNCTION IF EXISTS data_views.search_for_entry_v2(TEXT, TEXT);")
+    op.execute("DROP FUNCTION IF EXISTS data_views.search_all_count_v2(text, text[], text[], text[]);")
