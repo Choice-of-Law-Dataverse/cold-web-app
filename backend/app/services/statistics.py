@@ -1,7 +1,6 @@
 from app.config import config
 from app.schemas.responses import JurisdictionCount
 from app.services.database import Database
-from app.services.transformers import DataTransformerFactory
 
 
 class StatisticsService:
@@ -37,15 +36,7 @@ class StatisticsService:
         if not results:
             return []
 
-        # Transform each jurisdiction record using DataTransformerFactory
-        # This will convert field names like Alpha_3_Code to "Alpha-3 Code"
-        # and Answer_Coverage to "Answer Coverage" using the mapping config
-        transformed_results = []
-        for row in results:
-            transformed = DataTransformerFactory.transform_result("Jurisdictions", row)
-            transformed_results.append(transformed)
-
-        return transformed_results
+        return results
 
     def count_by_jurisdiction(self, table_name: str, limit: int | None = None) -> list[JurisdictionCount]:
         """
