@@ -9,7 +9,7 @@ router = APIRouter(prefix="/submarine", tags=["Submarine"])
     summary="Animated submarine easter egg",
     response_class=HTMLResponse,
 )
-def submarine():
+def submarine() -> HTMLResponse:
     html_content = """
     <!DOCTYPE html>
     <html lang="en">

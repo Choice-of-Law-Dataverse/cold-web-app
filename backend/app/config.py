@@ -35,4 +35,5 @@ class Config(BaseSettings):
     NOTIFICATION_SENDER_EMAIL: str = "CoLD <notifications@mail.cold.global>"
     ADMIN_NOTIFICATION_EMAILS: str | None = None
 
+
 config = Config()

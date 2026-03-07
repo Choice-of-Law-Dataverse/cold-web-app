@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 
 from app.auth import verify_frontend_request
 from app.schemas.requests import ClassifyQueryRequest
@@ -28,7 +28,9 @@ router = APIRouter(prefix="/ai", tags=["AI"], dependencies=[Depends(verify_front
 def classify_query(
     body: ClassifyQueryRequest,
     gpt: GPT = Depends(get_gpt),
-):
+) -> str:
     query = body.query
     classification = gpt.classify_user_query(query)
+    if isinstance(classification, dict):
+        raise HTTPException(status_code=502, detail=classification.get("error", "Upstream AI service error"))
     return classification

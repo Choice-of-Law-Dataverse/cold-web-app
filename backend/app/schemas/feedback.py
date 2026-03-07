@@ -56,5 +56,17 @@ class FeedbackDetail(BaseModel):
     moderation_status: str
 
 
+class FeedbackPendingItem(BaseModel):
+    id: int
+    created_at: datetime
+    entity_type: str
+    entity_id: str
+    entity_title: str | None
+    feedback_type: str
+    message: str
+    submitter_email: str
+    moderation_status: str
+
+
 class FeedbackUpdate(BaseModel):
     moderation_status: FeedbackModerationStatus

@@ -1,11 +1,65 @@
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel, Field
 
+from app.schemas.records import RecordBase
+
+
+class FullTextSearchResponse(BaseModel):
+    test: bool
+    total_matches: int
+    page: int
+    page_size: int
+    results: list[RecordBase]
+
+
+class CuratedDetailsRecord(RecordBase):
+    cold_id: str | None = None
+    hop1_relations: dict[str, list[dict[str, str | None]]] | None = None
+
+
+class JurisdictionCoverage(BaseModel):
+    id: int
+    Name: str
+
+    model_config = {"extra": "allow"}
+
+
+class PendingSuggestionItem(BaseModel):
+    id: int
+    created_at: datetime | None = None
+    payload: dict[str, Any] = Field(default_factory=dict)
+    source: str | None = None
+
+    model_config = {"extra": "allow"}
+
+
+class SuggestionDetailItem(BaseModel):
+    id: int
+    created_at: datetime | None = None
+    payload: dict[str, Any] = Field(default_factory=dict)
+    moderation_status: str | None = None
+
+    model_config = {"extra": "allow"}
+
+
+class SitemapEntry(BaseModel):
+    loc: str
+    lastmod: str
+
+
+class LandingPageJurisdiction(BaseModel):
+    code: str
+    has_data: int
+
+
+class StatusMessage(BaseModel):
+    status: str
+    message: str
+
 
 class JurisdictionCount(BaseModel):
-    """Response model for jurisdiction count statistics."""
-
     jurisdiction: str = Field(..., description="Name of the jurisdiction")
     n: int = Field(..., ge=0, description="Count of records for this jurisdiction")
 
@@ -22,8 +76,6 @@ class JurisdictionCount(BaseModel):
 
 
 class SpecialistResponse(BaseModel):
-    """Response model for a specialist record."""
-
     id: int = Field(..., description="Unique identifier for the specialist")
     created_at: datetime | None = Field(None, description="Timestamp when the record was created")
     updated_at: datetime | None = Field(None, description="Timestamp when the record was last updated")

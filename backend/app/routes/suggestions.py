@@ -4,6 +4,7 @@ from typing import Any
 from fastapi import APIRouter, BackgroundTasks, Depends, Header, HTTPException, Request, status
 
 from app.auth import require_editor_or_admin, require_user, verify_frontend_request
+from app.schemas.responses import PendingSuggestionItem, StatusMessage, SuggestionDetailItem
 from app.schemas.suggestions import (
     CourtDecisionSuggestion,
     DomesticInstrumentSuggestion,
@@ -50,7 +51,7 @@ async def submit_suggestion(
     background_tasks: BackgroundTasks,
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
-):
+) -> SuggestionResponse:
     try:
         payload = {
             **body.data,
@@ -84,7 +85,7 @@ async def submit_court_decision(
     user: dict = Depends(require_user),
     source: str | None = Header(None),
     service: SuggestionService = Depends(get_suggestion_service),
-):
+) -> SuggestionResponse:
     try:
         payload = {"category": "court_decision", **body.model_dump()}
         new_id = service.save_suggestion(
@@ -114,7 +115,7 @@ async def submit_domestic_instrument(
     user: dict = Depends(require_user),
     source: str | None = Header(None),
     service: SuggestionService = Depends(get_suggestion_service),
-):
+) -> SuggestionResponse:
     try:
         payload = {"category": "domestic_instrument", **body.model_dump()}
         new_id = service.save_suggestion(
@@ -144,7 +145,7 @@ async def submit_regional_instrument(
     user: dict = Depends(require_user),
     source: str | None = Header(None),
     service: SuggestionService = Depends(get_suggestion_service),
-):
+) -> SuggestionResponse:
     try:
         payload = {"category": "regional_instrument", **body.model_dump()}
         new_id = service.save_suggestion(
@@ -174,7 +175,7 @@ async def submit_international_instrument(
     user: dict = Depends(require_user),
     source: str | None = Header(None),
     service: SuggestionService = Depends(get_suggestion_service),
-):
+) -> SuggestionResponse:
     try:
         payload = {"category": "international_instrument", **body.model_dump()}
         new_id = service.save_suggestion(
@@ -204,7 +205,7 @@ async def submit_literature(
     user: dict = Depends(require_user),
     source: str | None = Header(None),
     service: SuggestionService = Depends(get_suggestion_service),
-):
+) -> SuggestionResponse:
     try:
         payload = {"category": "literature", **body.model_dump()}
         new_id = service.save_suggestion(
@@ -261,12 +262,7 @@ async def list_pending_suggestions(
     show_all: bool = False,
     _: dict = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(get_suggestion_service),
-) -> list[dict[str, Any]]:
-    """List suggestions for a specific category.
-
-    For case-analyzer, use show_all=true to return all records regardless of status.
-    Default behavior returns only pending records.
-    """
+) -> list[PendingSuggestionItem]:
     table = _table_key(category)
     if not table:
         raise HTTPException(
@@ -276,10 +272,12 @@ async def list_pending_suggestions(
     try:
         if category == "case-analyzer":
             if show_all:
-                return service.list_all_case_analyzer()
-            return service.list_pending_case_analyzer()
+                rows = service.list_all_case_analyzer()
+            else:
+                rows = service.list_pending_case_analyzer()
         else:
-            return service.list_pending(table)
+            rows = service.list_pending(table)
+        return [PendingSuggestionItem(**r) for r in rows]
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
@@ -300,8 +298,7 @@ async def get_suggestion_detail(
     suggestion_id: int,
     user: dict = Depends(require_user),
     service: SuggestionService = Depends(get_suggestion_service),
-) -> dict[str, Any]:
-    """Get detailed information about a specific suggestion."""
+) -> SuggestionDetailItem:
     table = _table_key(category)
     if not table:
         raise HTTPException(
@@ -333,7 +330,7 @@ async def get_suggestion_detail(
             )
         if not is_moderator:
             item.pop("token_sub", None)
-        return item
+        return SuggestionDetailItem(**item)
     except HTTPException:
         raise
     except Exception as e:
@@ -354,8 +351,7 @@ async def approve_suggestion(
     request: Request,
     user: dict = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(get_suggestion_service),
-) -> dict[str, str]:
-    """Approve a suggestion and process it for persistent storage."""
+) -> StatusMessage:
     table = _table_key(category)
     if not table:
         raise HTTPException(
@@ -414,7 +410,7 @@ async def approve_suggestion(
                 merged_id=merged_id,
             )
 
-        return {"status": "success", "message": "Suggestion approved successfully"}
+        return StatusMessage(status="success", message="Suggestion approved successfully")
 
     except HTTPException:
         raise
@@ -435,7 +431,7 @@ async def reject_suggestion(
     suggestion_id: int,
     user: dict = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(get_suggestion_service),
-) -> dict[str, str]:
+) -> StatusMessage:
     """Reject a suggestion."""
     table = _table_key(category)
     if not table:
@@ -456,7 +452,7 @@ async def reject_suggestion(
             note="",
         )
 
-        return {"status": "success", "message": "Suggestion rejected successfully"}
+        return StatusMessage(status="success", message="Suggestion rejected successfully")
 
     except Exception as e:
         raise HTTPException(
@@ -475,7 +471,7 @@ async def delete_suggestion(
     suggestion_id: int,
     _: dict = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(get_suggestion_service),
-) -> dict[str, str]:
+) -> StatusMessage:
     """Delete a suggestion permanently."""
     if category != "case-analyzer":
         raise HTTPException(
@@ -491,7 +487,7 @@ async def delete_suggestion(
                 detail="Suggestion not found",
             )
 
-        return {"status": "success", "message": "Suggestion deleted successfully"}
+        return StatusMessage(status="success", message="Suggestion deleted successfully")
 
     except HTTPException:
         raise

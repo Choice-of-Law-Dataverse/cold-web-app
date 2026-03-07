@@ -3,7 +3,8 @@ import logging
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, status
 
 from app.auth import optional_user, require_editor_or_admin, verify_frontend_request
-from app.schemas.feedback import FeedbackDetail, FeedbackResponse, FeedbackSubmit, FeedbackUpdate
+from app.schemas.feedback import FeedbackDetail, FeedbackPendingItem, FeedbackResponse, FeedbackSubmit, FeedbackUpdate
+from app.schemas.responses import StatusMessage
 from app.services.email_notifications import send_feedback_notification
 from app.services.suggestions import SuggestionService
 
@@ -74,8 +75,9 @@ async def submit_feedback(
 async def list_pending(
     _: dict = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(_get_service),
-) -> list[dict]:
-    return service.list_pending_feedback()
+) -> list[FeedbackPendingItem]:
+    results = service.list_pending_feedback()
+    return [FeedbackPendingItem(**r) for r in results]
 
 
 @router.get(
@@ -103,8 +105,8 @@ async def update_feedback(
     body: FeedbackUpdate,
     _: dict = Depends(require_editor_or_admin),
     service: SuggestionService = Depends(_get_service),
-) -> dict:
+) -> StatusMessage:
     updated = service.update_feedback_status(feedback_id, body.moderation_status)
     if not updated:
         raise HTTPException(status_code=404, detail="Feedback not found")
-    return {"status": "ok", "message": f"Feedback #{feedback_id} marked as {body.moderation_status}"}
+    return StatusMessage(status="ok", message=f"Feedback #{feedback_id} marked as {body.moderation_status}")
