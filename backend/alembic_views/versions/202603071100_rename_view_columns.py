@@ -52,6 +52,7 @@ SELECT
 FROM p1q5x3pj29vkrdr."Questions" q;
 
 CREATE UNIQUE INDEX idx_questions_complete_id ON data_views.questions_complete(id);
+CREATE INDEX idx_questions_complete_cold_id ON data_views.questions_complete(cold_id);
 """
 
 ANSWERS_COMPLETE = """
@@ -95,7 +96,7 @@ SELECT
     (
         SELECT jsonb_agg(
             to_jsonb(cd) || jsonb_build_object(
-                'CoLD_ID', ('CD-' || COALESCE(jcodes."Alpha_3_Code", '') || '-' || COALESCE(cd."ID_Number"::text, ''))
+                'CoLD_ID', ('CD-' || COALESCE(cd_jcodes."Alpha_3_Code", '') || '-' || COALESCE(cd."ID_Number"::text, ''))
             )
         )
         FROM p1q5x3pj29vkrdr."_nc_m2m_Answers_Court_Decisions" acd
@@ -105,8 +106,9 @@ SELECT
             FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Court_Decisions" jcd
             JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = jcd."Jurisdictions_id"
             WHERE jcd."Court_Decisions_id" = cd.id
+            ORDER BY j.id
             LIMIT 1
-        ) jcodes ON true
+        ) cd_jcodes ON true
         WHERE acd."Answers_id" = a.id
     ) AS related_court_decisions,
     (
@@ -119,7 +121,7 @@ SELECT
         SELECT jsonb_agg(
             to_jsonb(di) || jsonb_build_object(
                 'CoLD_ID', (
-                    'DI-' || COALESCE(jdi."Alpha_3_Code", '') || '-' || COALESCE(di."ID_Number"::text, '')
+                    'DI-' || COALESCE(di_jcodes."Alpha_3_Code", '') || '-' || COALESCE(di."ID_Number"::text, '')
                 )
             )
         )
@@ -130,15 +132,16 @@ SELECT
             FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Domestic_Instru" jdi
             JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = jdi."Jurisdictions_id"
             WHERE jdi."Domestic_Instruments_id" = di.id
+            ORDER BY j.id
             LIMIT 1
-        ) jdi ON true
+        ) di_jcodes ON true
         WHERE adi."Answers_id" = a.id
     ) AS related_domestic_instruments,
     (
         SELECT jsonb_agg(
             to_jsonb(dlp) || jsonb_build_object(
                 'CoLD_ID', (
-                    'DI-' || COALESCE(jdi."Alpha_3_Code", '') || '-' || COALESCE(di."ID_Number"::text, '') || ' ' || COALESCE(dlp."Article", '')
+                    'DI-' || COALESCE(dlp_jcodes."Alpha_3_Code", '') || '-' || COALESCE(di."ID_Number"::text, '') || ' ' || COALESCE(dlp."Article", '')
                 )
             )
         )
@@ -160,8 +163,9 @@ SELECT
             FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Domestic_Instru" jdi
             JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = jdi."Jurisdictions_id"
             WHERE jdi."Domestic_Instruments_id" = di.id
+            ORDER BY j.id
             LIMIT 1
-        ) jdi ON true
+        ) dlp_jcodes ON true
     ) AS related_domestic_legal_provisions
 FROM p1q5x3pj29vkrdr."Answers" a
 LEFT JOIN LATERAL (
@@ -169,6 +173,7 @@ LEFT JOIN LATERAL (
     FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Answers" ja
     JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = ja."Jurisdictions_id"
     WHERE ja."Answers_id" = a.id
+    ORDER BY j.id
     LIMIT 1
 ) jcodes ON true
 LEFT JOIN LATERAL (
@@ -176,10 +181,12 @@ LEFT JOIN LATERAL (
     FROM p1q5x3pj29vkrdr."_nc_m2m_Questions_Answers" qa
     JOIN p1q5x3pj29vkrdr."Questions" q ON q.id = qa."Questions_id"
     WHERE qa."Answers_id" = a.id
+    ORDER BY q.id
     LIMIT 1
 ) qcold ON true;
 
 CREATE UNIQUE INDEX idx_answers_complete_id ON data_views.answers_complete(id);
+CREATE INDEX idx_answers_complete_cold_id ON data_views.answers_complete(cold_id);
 """
 
 HCCH_ANSWERS_COMPLETE = """
@@ -216,10 +223,12 @@ LEFT JOIN LATERAL (
     FROM p1q5x3pj29vkrdr."_nc_m2m_Questions_Answers" qa
     JOIN p1q5x3pj29vkrdr."Questions" q ON q.id = qa."Questions_id"
     WHERE qa."Answers_id" = ha.id
+    ORDER BY q.id
     LIMIT 1
 ) qcold ON true;
 
 CREATE UNIQUE INDEX idx_hcch_answers_complete_id ON data_views.hcch_answers_complete(id);
+CREATE INDEX idx_hcch_answers_complete_cold_id ON data_views.hcch_answers_complete(cold_id);
 """
 
 DOMESTIC_INSTRUMENTS_COMPLETE = """
@@ -280,10 +289,12 @@ LEFT JOIN LATERAL (
     FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Domestic_Instru" jdi
     JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = jdi."Jurisdictions_id"
     WHERE jdi."Domestic_Instruments_id" = di.id
+    ORDER BY j.id
     LIMIT 1
 ) jcodes ON true;
 
 CREATE UNIQUE INDEX idx_domestic_instruments_complete_id ON data_views.domestic_instruments_complete(id);
+CREATE INDEX idx_domestic_instruments_complete_cold_id ON data_views.domestic_instruments_complete(cold_id);
 """
 
 DOMESTIC_LEGAL_PROVISIONS_COMPLETE = """
@@ -319,10 +330,12 @@ LEFT JOIN LATERAL (
     LEFT JOIN p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Domestic_Instru" jdi ON jdi."Domestic_Instruments_id" = di.id
     LEFT JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = jdi."Jurisdictions_id"
     WHERE didlp."Domestic_Legal_Provisions_id" = dlp.id
+    ORDER BY di.id
     LIMIT 1
 ) di_cold ON true;
 
 CREATE UNIQUE INDEX idx_domestic_legal_provisions_complete_id ON data_views.domestic_legal_provisions_complete(id);
+CREATE INDEX idx_domestic_legal_provisions_complete_cold_id ON data_views.domestic_legal_provisions_complete(cold_id);
 """
 
 REGIONAL_INSTRUMENTS_COMPLETE = """
@@ -365,6 +378,7 @@ SELECT
 FROM p1q5x3pj29vkrdr."Regional_Instruments" ri;
 
 CREATE UNIQUE INDEX idx_regional_instruments_complete_id ON data_views.regional_instruments_complete(id);
+CREATE INDEX idx_regional_instruments_complete_cold_id ON data_views.regional_instruments_complete(cold_id);
 """
 
 REGIONAL_LEGAL_PROVISIONS_COMPLETE = """
@@ -396,10 +410,12 @@ LEFT JOIN LATERAL (
     FROM p1q5x3pj29vkrdr."_nc_m2m_Regional_Instru_Regional_Legal_" mirl
     JOIN p1q5x3pj29vkrdr."Regional_Instruments" ri ON ri.id = mirl."Regional_Instruments_id"
     WHERE mirl."Regional_Legal_Provisions_id" = rlp.id
+    ORDER BY ri.id
     LIMIT 1
 ) ri_cold ON true;
 
 CREATE UNIQUE INDEX idx_regional_legal_provisions_complete_id ON data_views.regional_legal_provisions_complete(id);
+CREATE INDEX idx_regional_legal_provisions_complete_cold_id ON data_views.regional_legal_provisions_complete(cold_id);
 """
 
 INTERNATIONAL_INSTRUMENTS_COMPLETE = """
@@ -467,6 +483,7 @@ SELECT
 FROM p1q5x3pj29vkrdr."International_Instruments" ii;
 
 CREATE UNIQUE INDEX idx_international_instruments_complete_id ON data_views.international_instruments_complete(id);
+CREATE INDEX idx_international_instruments_complete_cold_id ON data_views.international_instruments_complete(cold_id);
 """
 
 INTERNATIONAL_LEGAL_PROVISIONS_COMPLETE = """
@@ -493,10 +510,12 @@ LEFT JOIN LATERAL (
     FROM p1q5x3pj29vkrdr."_nc_m2m_International_I_International_L" miil
     JOIN p1q5x3pj29vkrdr."International_Instruments" ii ON ii.id = miil."International_Instruments_id"
     WHERE miil."International_Legal_Provisions_id" = ilp.id
+    ORDER BY ii.id
     LIMIT 1
 ) ii_cold ON true;
 
 CREATE UNIQUE INDEX idx_international_legal_provisions_complete_id ON data_views.international_legal_provisions_complete(id);
+CREATE INDEX idx_international_legal_provisions_complete_cold_id ON data_views.international_legal_provisions_complete(cold_id);
 """
 
 COURT_DECISIONS_COMPLETE = """
@@ -571,10 +590,12 @@ LEFT JOIN LATERAL (
     FROM p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Court_Decisions" jcd
     JOIN p1q5x3pj29vkrdr."Jurisdictions" j ON j.id = jcd."Jurisdictions_id"
     WHERE jcd."Court_Decisions_id" = cd.id
+    ORDER BY j.id
     LIMIT 1
 ) jcodes ON true;
 
 CREATE UNIQUE INDEX idx_court_decisions_complete_id ON data_views.court_decisions_complete(id);
+CREATE INDEX idx_court_decisions_complete_cold_id ON data_views.court_decisions_complete(cold_id);
 """
 
 LITERATURE_COMPLETE = """
@@ -648,6 +669,7 @@ SELECT
 FROM p1q5x3pj29vkrdr."Literature" l;
 
 CREATE UNIQUE INDEX idx_literature_complete_id ON data_views.literature_complete(id);
+CREATE INDEX idx_literature_complete_cold_id ON data_views.literature_complete(cold_id);
 """
 
 ARBITRAL_AWARDS_COMPLETE = """
@@ -704,6 +726,7 @@ SELECT
 FROM p1q5x3pj29vkrdr."Arbitral_Awards" aa;
 
 CREATE UNIQUE INDEX idx_arbitral_awards_complete_id ON data_views.arbitral_awards_complete(id);
+CREATE INDEX idx_arbitral_awards_complete_cold_id ON data_views.arbitral_awards_complete(cold_id);
 """
 
 ARBITRAL_INSTITUTIONS_COMPLETE = """
@@ -790,6 +813,7 @@ SELECT
 FROM p1q5x3pj29vkrdr."Arbitral_Rules" ar;
 
 CREATE UNIQUE INDEX idx_arbitral_rules_complete_id ON data_views.arbitral_rules_complete(id);
+CREATE INDEX idx_arbitral_rules_complete_cold_id ON data_views.arbitral_rules_complete(cold_id);
 """
 
 ARBITRAL_PROVISIONS_COMPLETE = """
@@ -835,10 +859,12 @@ LEFT JOIN LATERAL (
     FROM p1q5x3pj29vkrdr."_nc_m2m_Arbitral Provis_Arbitral_Rules" m
     JOIN p1q5x3pj29vkrdr."Arbitral_Rules" ar ON ar.id = m."Arbitral_Rules_id"
     WHERE m."Arbitral Provisions_id" = ap.id
+    ORDER BY ar.id
     LIMIT 1
 ) ar_cold ON true;
 
 CREATE UNIQUE INDEX idx_arbitral_provisions_complete_id ON data_views.arbitral_provisions_complete(id);
+CREATE INDEX idx_arbitral_provisions_complete_cold_id ON data_views.arbitral_provisions_complete(cold_id);
 """
 
 JURISDICTIONS_COMPLETE = """
@@ -898,6 +924,7 @@ SELECT
 FROM p1q5x3pj29vkrdr."Jurisdictions" j;
 
 CREATE UNIQUE INDEX idx_jurisdictions_complete_id ON data_views.jurisdictions_complete(id);
+CREATE INDEX idx_jurisdictions_complete_alpha3 ON data_views.jurisdictions_complete(alpha_3_code);
 """
 
 SEARCH_ALL_FUNCTION = """
@@ -1109,13 +1136,7 @@ DECLARE
     hop1 JSONB;
 BEGIN
     IF table_name = 'Answers' THEN
-        SELECT id, to_jsonb(a.*)
-        INTO rec_id, rec
-        FROM data_views.answers_complete a
-        WHERE a.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(a.*),
             jsonb_build_object(
                 'related_questions', a.related_questions,
                 'related_jurisdictions', a.related_jurisdictions,
@@ -1125,7 +1146,7 @@ BEGIN
                 'related_domestic_instruments', a.related_domestic_instruments,
                 'related_domestic_legal_provisions', a.related_domestic_legal_provisions
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.answers_complete a
         WHERE a.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1133,18 +1154,12 @@ BEGIN
         RETURN QUERY SELECT 'Answers', rec_id, rec, hop1;
 
     ELSIF table_name = 'HCCH Answers' THEN
-        SELECT id, to_jsonb(ha.*)
-        INTO rec_id, rec
-        FROM data_views.hcch_answers_complete ha
-        WHERE ha.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(ha.*),
             jsonb_build_object(
                 'related_themes', ha.related_themes,
                 'related_international_instruments', ha.related_international_instruments
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.hcch_answers_complete ha
         WHERE ha.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1152,20 +1167,14 @@ BEGIN
         RETURN QUERY SELECT 'HCCH Answers', rec_id, rec, hop1;
 
     ELSIF table_name = 'Court Decisions' THEN
-        SELECT id, to_jsonb(cd.*)
-        INTO rec_id, rec
-        FROM data_views.court_decisions_complete cd
-        WHERE cd.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(cd.*),
             jsonb_build_object(
                 'related_jurisdictions', cd.related_jurisdictions,
                 'related_questions', cd.related_questions,
                 'related_answers', cd.related_answers,
                 'related_themes', cd.related_themes
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.court_decisions_complete cd
         WHERE cd.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1173,19 +1182,13 @@ BEGIN
         RETURN QUERY SELECT 'Court Decisions', rec_id, rec, hop1;
 
     ELSIF table_name = 'Domestic Instruments' THEN
-        SELECT id, to_jsonb(di.*)
-        INTO rec_id, rec
-        FROM data_views.domestic_instruments_complete di
-        WHERE di.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(di.*),
             jsonb_build_object(
                 'related_jurisdictions', di.related_jurisdictions,
                 'related_legal_provisions', di.related_legal_provisions,
                 'related_questions', di.related_questions
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.domestic_instruments_complete di
         WHERE di.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1193,17 +1196,11 @@ BEGIN
         RETURN QUERY SELECT 'Domestic Instruments', rec_id, rec, hop1;
 
     ELSIF table_name = 'Domestic Legal Provisions' THEN
-        SELECT id, to_jsonb(dlp.*)
-        INTO rec_id, rec
-        FROM data_views.domestic_legal_provisions_complete dlp
-        WHERE dlp.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(dlp.*),
             jsonb_build_object(
                 'related_domestic_instruments', dlp.related_domestic_instruments
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.domestic_legal_provisions_complete dlp
         WHERE dlp.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1211,18 +1208,12 @@ BEGIN
         RETURN QUERY SELECT 'Domestic Legal Provisions', rec_id, rec, hop1;
 
     ELSIF table_name = 'Regional Instruments' THEN
-        SELECT id, to_jsonb(ri.*)
-        INTO rec_id, rec
-        FROM data_views.regional_instruments_complete ri
-        WHERE ri.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(ri.*),
             jsonb_build_object(
                 'related_specialists', ri.related_specialists,
                 'related_legal_provisions', ri.related_legal_provisions
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.regional_instruments_complete ri
         WHERE ri.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1230,18 +1221,12 @@ BEGIN
         RETURN QUERY SELECT 'Regional Instruments', rec_id, rec, hop1;
 
     ELSIF table_name = 'Regional Legal Provisions' THEN
-        SELECT id, to_jsonb(rlp.*)
-        INTO rec_id, rec
-        FROM data_views.regional_legal_provisions_complete rlp
-        WHERE rlp.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(rlp.*),
             jsonb_build_object(
                 'instrument_cold_id', rlp.instrument_cold_id,
                 'related_regional_instruments', rlp.related_regional_instruments
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.regional_legal_provisions_complete rlp
         WHERE rlp.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1249,20 +1234,14 @@ BEGIN
         RETURN QUERY SELECT 'Regional Legal Provisions', rec_id, rec, hop1;
 
     ELSIF table_name = 'International Instruments' THEN
-        SELECT id, to_jsonb(ii.*)
-        INTO rec_id, rec
-        FROM data_views.international_instruments_complete ii
-        WHERE ii.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(ii.*),
             jsonb_build_object(
                 'related_specialists', ii.related_specialists,
                 'related_hcch_answers', ii.related_hcch_answers,
                 'related_legal_provisions', ii.related_legal_provisions,
                 'related_literature', ii.related_literature
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.international_instruments_complete ii
         WHERE ii.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1270,17 +1249,11 @@ BEGIN
         RETURN QUERY SELECT 'International Instruments', rec_id, rec, hop1;
 
     ELSIF table_name = 'International Legal Provisions' THEN
-        SELECT id, to_jsonb(ilp.*)
-        INTO rec_id, rec
-        FROM data_views.international_legal_provisions_complete ilp
-        WHERE ilp.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(ilp.*),
             jsonb_build_object(
                 'instrument_cold_id', ilp.instrument_cold_id
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.international_legal_provisions_complete ilp
         WHERE ilp.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1288,18 +1261,12 @@ BEGIN
         RETURN QUERY SELECT 'International Legal Provisions', rec_id, rec, hop1;
 
     ELSIF table_name = 'Literature' THEN
-        SELECT id, to_jsonb(l.*)
-        INTO rec_id, rec
-        FROM data_views.literature_complete l
-        WHERE l.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(l.*),
             jsonb_build_object(
                 'related_jurisdictions', l.related_jurisdictions,
                 'related_themes', l.related_themes
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.literature_complete l
         WHERE l.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1307,13 +1274,7 @@ BEGIN
         RETURN QUERY SELECT 'Literature', rec_id, rec, hop1;
 
     ELSIF table_name = 'Arbitral Awards' THEN
-        SELECT id, to_jsonb(aa.*)
-        INTO rec_id, rec
-        FROM data_views.arbitral_awards_complete aa
-        WHERE aa.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(aa.*),
             jsonb_build_object(
                 'related_arbitral_institutions', aa.related_arbitral_institutions,
                 'related_arbitral_provisions', aa.related_arbitral_provisions,
@@ -1321,7 +1282,7 @@ BEGIN
                 'related_jurisdictions', aa.related_jurisdictions,
                 'related_themes', aa.related_themes
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.arbitral_awards_complete aa
         WHERE aa.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1329,21 +1290,14 @@ BEGIN
         RETURN QUERY SELECT 'Arbitral Awards', rec_id, rec, hop1;
 
     ELSIF table_name = 'Arbitral Institutions' THEN
-        SELECT id, to_jsonb(ai.*)
-        INTO rec_id, rec
-        FROM data_views.arbitral_institutions_complete ai
-        WHERE ai.id::text = search_for_entry.cold_id
-           OR ('AI-' || ai.id::text) = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(ai.*),
             jsonb_build_object(
                 'related_arbitral_awards', ai.related_arbitral_awards,
                 'related_arbitral_rules', ai.related_arbitral_rules,
                 'related_arbitral_provisions', ai.related_arbitral_provisions,
                 'related_jurisdictions', ai.related_jurisdictions
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.arbitral_institutions_complete ai
         WHERE ai.id::text = search_for_entry.cold_id
            OR ('AI-' || ai.id::text) = search_for_entry.cold_id
@@ -1352,19 +1306,13 @@ BEGIN
         RETURN QUERY SELECT 'Arbitral Institutions', rec_id, rec, hop1;
 
     ELSIF table_name = 'Arbitral Rules' THEN
-        SELECT id, to_jsonb(ar.*)
-        INTO rec_id, rec
-        FROM data_views.arbitral_rules_complete ar
-        WHERE ar.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(ar.*),
             jsonb_build_object(
                 'related_arbitral_institutions', ar.related_arbitral_institutions,
                 'related_arbitral_provisions', ar.related_arbitral_provisions,
                 'related_jurisdictions', ar.related_jurisdictions
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.arbitral_rules_complete ar
         WHERE ar.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1372,19 +1320,13 @@ BEGIN
         RETURN QUERY SELECT 'Arbitral Rules', rec_id, rec, hop1;
 
     ELSIF table_name = 'Arbitral Provisions' THEN
-        SELECT id, to_jsonb(ap.*)
-        INTO rec_id, rec
-        FROM data_views.arbitral_provisions_complete ap
-        WHERE ap.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(ap.*),
             jsonb_build_object(
                 'related_arbitral_awards', ap.related_arbitral_awards,
                 'related_arbitral_institutions', ap.related_arbitral_institutions,
                 'related_arbitral_rules', ap.related_arbitral_rules
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.arbitral_provisions_complete ap
         WHERE ap.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1392,20 +1334,15 @@ BEGIN
         RETURN QUERY SELECT 'Arbitral Provisions', rec_id, rec, hop1;
 
     ELSIF table_name = 'Jurisdictions' THEN
-        SELECT id, to_jsonb(j.*)
-        INTO rec_id, rec
-        FROM data_views.jurisdictions_complete j
-        WHERE j.alpha_3_code = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT jsonb_build_object(
-            'related_answers', j.related_answers,
-            'related_domestic_instruments', j.related_domestic_instruments,
-            'related_court_decisions', j.related_court_decisions,
-            'related_literature', j.related_literature,
-            'related_specialists', j.related_specialists
-        )
-        INTO hop1
+        SELECT id, to_jsonb(j.*),
+            jsonb_build_object(
+                'related_answers', j.related_answers,
+                'related_domestic_instruments', j.related_domestic_instruments,
+                'related_court_decisions', j.related_court_decisions,
+                'related_literature', j.related_literature,
+                'related_specialists', j.related_specialists
+            )
+        INTO rec_id, rec, hop1
         FROM data_views.jurisdictions_complete j
         WHERE j.alpha_3_code = search_for_entry.cold_id
         LIMIT 1;
@@ -1413,20 +1350,14 @@ BEGIN
         RETURN QUERY SELECT 'Jurisdictions', rec_id, rec, hop1;
 
     ELSIF table_name = 'Questions' THEN
-        SELECT id, to_jsonb(q.*)
-        INTO rec_id, rec
-        FROM data_views.questions_complete q
-        WHERE q.cold_id = search_for_entry.cold_id
-        LIMIT 1;
-
-        SELECT
+        SELECT id, to_jsonb(q.*),
             jsonb_build_object(
                 'related_themes', q.related_themes,
                 'related_answers', q.related_answers,
                 'related_court_decisions', q.related_court_decisions,
                 'related_domestic_instruments', q.related_domestic_instruments
             )
-        INTO hop1
+        INTO rec_id, rec, hop1
         FROM data_views.questions_complete q
         WHERE q.cold_id = search_for_entry.cold_id
         LIMIT 1;
@@ -1440,12 +1371,156 @@ END;
 $$ LANGUAGE plpgsql STABLE;
 """
 
+SEARCH_ALL_COUNT_FUNCTION = """
+DROP FUNCTION IF EXISTS data_views.search_all_count(text, text[], text[], text[]);
+
+CREATE OR REPLACE FUNCTION data_views.search_all_count(
+    search_term TEXT,
+    filter_tables TEXT[] DEFAULT NULL,
+    filter_jurisdictions TEXT[] DEFAULT NULL,
+    filter_themes TEXT[] DEFAULT NULL
+)
+RETURNS INTEGER AS $$
+DECLARE
+    empty_term BOOLEAN := (search_term IS NULL OR btrim(search_term) = '');
+    total INTEGER;
+BEGIN
+    SELECT COUNT(*) INTO total
+    FROM (
+        SELECT 1
+        FROM data_views.answers_complete a
+        JOIN data_views.answers search_view ON search_view.id = a.id
+        WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
+          AND (filter_tables IS NULL OR 'Answers' = ANY(filter_tables))
+          AND NOT EXISTS (
+              SELECT 1 FROM jsonb_array_elements(a.related_jurisdictions) AS elem
+              WHERE COALESCE((elem->>'Irrelevant_')::boolean, FALSE) = TRUE
+          )
+          AND (filter_jurisdictions IS NULL OR EXISTS (
+               SELECT 1 FROM unnest(filter_jurisdictions) AS jf
+               WHERE search_view."Jurisdictions" ILIKE '%'||jf||'%'
+          ))
+          AND (filter_themes IS NULL OR EXISTS (
+               SELECT 1 FROM unnest(filter_themes) AS tf
+               WHERE search_view."Themes" ILIKE '%'||tf||'%'
+          ))
+
+        UNION ALL
+
+        SELECT 1
+        FROM data_views.hcch_answers_complete ha
+        JOIN data_views.hcch_answers search_view ON search_view.id = ha.id
+        WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
+          AND (filter_tables IS NULL OR 'HCCH Answers' = ANY(filter_tables))
+          AND (filter_themes IS NULL OR EXISTS (
+               SELECT 1 FROM unnest(filter_themes) AS tf
+               WHERE search_view."Themes" ILIKE '%'||tf||'%'
+          ))
+
+        UNION ALL
+
+        SELECT 1
+        FROM data_views.court_decisions_complete cd
+        JOIN data_views.court_decisions search_view ON search_view.id = cd.id
+        WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
+          AND (filter_tables IS NULL OR 'Court Decisions' = ANY(filter_tables))
+          AND (filter_jurisdictions IS NULL OR EXISTS (
+               SELECT 1 FROM unnest(filter_jurisdictions) AS jf
+               WHERE search_view."Jurisdictions" ILIKE '%'||jf||'%'
+          ))
+          AND (filter_themes IS NULL OR EXISTS (
+               SELECT 1 FROM unnest(filter_themes) AS tf
+               WHERE search_view."Themes" ILIKE '%'||tf||'%'
+          ))
+
+        UNION ALL
+
+        SELECT 1
+        FROM data_views.domestic_instruments_complete di
+        JOIN data_views.domestic_instruments search_view ON search_view.id = di.id
+        WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
+          AND (filter_tables IS NULL OR 'Domestic Instruments' = ANY(filter_tables))
+          AND (filter_jurisdictions IS NULL OR EXISTS (
+               SELECT 1 FROM unnest(filter_jurisdictions) AS jf
+               WHERE search_view."Jurisdictions" ILIKE '%'||jf||'%'
+          ))
+
+        UNION ALL
+
+        SELECT 1
+        FROM data_views.regional_instruments_complete ri
+        JOIN data_views.regional_instruments search_view ON search_view.id = ri.id
+        WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
+          AND (filter_tables IS NULL OR 'Regional Instruments' = ANY(filter_tables))
+
+        UNION ALL
+
+        SELECT 1
+        FROM data_views.international_instruments_complete ii
+        JOIN data_views.international_instruments search_view ON search_view.id = ii.id
+        WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
+          AND (filter_tables IS NULL OR 'International Instruments' = ANY(filter_tables))
+
+        UNION ALL
+
+        SELECT 1
+        FROM data_views.literature_complete l
+        JOIN data_views.literature search_view ON search_view.id = l.id
+        WHERE (empty_term OR search_view.document @@ plainto_tsquery('english', search_term))
+          AND (filter_tables IS NULL OR 'Literature' = ANY(filter_tables))
+          AND (filter_jurisdictions IS NULL OR EXISTS (
+               SELECT 1 FROM unnest(filter_jurisdictions) AS jf
+               WHERE search_view."Jurisdictions" ILIKE '%'||jf||'%'
+          ))
+          AND (filter_themes IS NULL OR EXISTS (
+               SELECT 1 FROM unnest(filter_themes) AS tf
+               WHERE search_view."Themes" ILIKE '%'||tf||'%'
+          ))
+    ) AS sub;
+
+    RETURN total;
+END;
+$$ LANGUAGE plpgsql STABLE;
+"""
+
+REFRESH_FUNCTION = """
+CREATE OR REPLACE FUNCTION data_views.refresh_all_materialized_views()
+RETURNS void AS $$
+DECLARE
+    view_name TEXT;
+    has_unique_index BOOLEAN;
+BEGIN
+    FOR view_name IN
+        SELECT matviewname FROM pg_matviews WHERE schemaname = 'data_views'
+    LOOP
+        SELECT EXISTS (
+            SELECT 1 FROM pg_index i
+            JOIN pg_class c ON c.oid = i.indexrelid
+            JOIN pg_class t ON t.oid = i.indrelid
+            JOIN pg_namespace n ON n.oid = t.relnamespace
+            WHERE n.nspname = 'data_views'
+            AND t.relname = view_name
+            AND i.indisunique
+        ) INTO has_unique_index;
+
+        IF has_unique_index THEN
+            EXECUTE format('REFRESH MATERIALIZED VIEW CONCURRENTLY data_views.%I', view_name);
+        ELSE
+            EXECUTE format('REFRESH MATERIALIZED VIEW data_views.%I', view_name);
+            RAISE NOTICE 'Materialized view data_views.% refreshed non-concurrently (no unique index)', view_name;
+        END IF;
+    END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+"""
+
 REFRESH_VIEWS = """
 SELECT data_views.refresh_all_materialized_views();
 """
 
 
 def upgrade() -> None:
+    op.execute(REFRESH_FUNCTION)
     op.execute(QUESTIONS_COMPLETE)
     op.execute(ANSWERS_COMPLETE)
     op.execute(HCCH_ANSWERS_COMPLETE)
@@ -1462,16 +1537,14 @@ def upgrade() -> None:
     op.execute(ARBITRAL_RULES_COMPLETE)
     op.execute(ARBITRAL_PROVISIONS_COMPLETE)
     op.execute(JURISDICTIONS_COMPLETE)
+    op.execute(SEARCH_ALL_COUNT_FUNCTION)
     op.execute(SEARCH_ALL_FUNCTION)
     op.execute(SEARCH_FOR_ENTRY_FUNCTION)
     op.execute(REFRESH_VIEWS)
 
 
 def downgrade() -> None:
-    from pathlib import Path
+    import importlib
 
-    initial_path = Path(__file__).parent / "202603071000_initial_views.py"
-    source = initial_path.read_text()
-    start = source.index('SETUP_SQL = """') + len('SETUP_SQL = """')
-    end = source.index('"""', start)
-    op.execute(source[start:end])
+    initial = importlib.import_module("alembic_views.versions.202603071000_initial_views")
+    initial.upgrade()

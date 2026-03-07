@@ -236,15 +236,12 @@ class SearchService:
             "sort_by_date": sort_by_date,
         }
         count_sql = (
-            "SELECT COUNT(*) AS total_matches FROM data_views.search_all("
+            "SELECT data_views.search_all_count("
             "search_term := CAST(:search_term AS text), "
             "filter_tables := CAST(:filter_tables AS text[]), "
             "filter_jurisdictions := CAST(:filter_jurisdictions AS text[]), "
-            "filter_themes := CAST(:filter_themes AS text[]), "
-            "page := CAST(1 AS integer), "
-            "page_size := CAST(2147483647 AS integer), "
-            "sort_by_date := CAST(:sort_by_date AS boolean)"
-            ")"
+            "filter_themes := CAST(:filter_themes AS text[])"
+            ") AS total_matches"
         )
         count_result = self.db.execute_query(count_sql, params)
         total_matches = count_result[0].get("total_matches", 0) if count_result else 0

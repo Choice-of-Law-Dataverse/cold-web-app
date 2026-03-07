@@ -29,10 +29,13 @@ BEGIN
         SELECT matviewname FROM pg_matviews WHERE schemaname = 'data_views'
     LOOP
         SELECT EXISTS (
-            SELECT 1 FROM pg_indexes
-            WHERE schemaname = 'data_views'
-            AND tablename = view_name
-            AND indexdef LIKE '%UNIQUE%'
+            SELECT 1 FROM pg_index i
+            JOIN pg_class c ON c.oid = i.indexrelid
+            JOIN pg_class t ON t.oid = i.indrelid
+            JOIN pg_namespace n ON n.oid = t.relnamespace
+            WHERE n.nspname = 'data_views'
+            AND t.relname = view_name
+            AND i.indisunique
         ) INTO has_unique_index;
 
         IF has_unique_index THEN
