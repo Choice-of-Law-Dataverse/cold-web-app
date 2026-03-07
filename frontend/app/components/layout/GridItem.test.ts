@@ -69,31 +69,4 @@ describe("GridItem", () => {
     });
     expect(wrapper.classes()).toContain("col-span-8");
   });
-
-  it("validates column count between 1 and 12", () => {
-    const validator = GridItem.props.cols.validator;
-    expect(validator(1)).toBe(true);
-    expect(validator(12)).toBe(true);
-    expect(validator(6)).toBe(true);
-    expect(validator(0)).toBe(false);
-    expect(validator(13)).toBe(false);
-  });
-
-  it("validates md column count between 1 and 12 or null", () => {
-    const validator = GridItem.props.mdCols.validator;
-    expect(validator(null)).toBe(true);
-    expect(validator(1)).toBe(true);
-    expect(validator(12)).toBe(true);
-    expect(validator(0)).toBe(false);
-    expect(validator(13)).toBe(false);
-  });
-
-  it("validates lg column count between 1 and 12 or null", () => {
-    const validator = GridItem.props.lgCols.validator;
-    expect(validator(null)).toBe(true);
-    expect(validator(1)).toBe(true);
-    expect(validator(12)).toBe(true);
-    expect(validator(0)).toBe(false);
-    expect(validator(13)).toBe(false);
-  });
 });

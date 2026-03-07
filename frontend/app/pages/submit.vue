@@ -104,7 +104,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useHead } from "#imports";
 import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import GridContainer from "@/components/layout/GridContainer.vue";

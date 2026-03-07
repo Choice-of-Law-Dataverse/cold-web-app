@@ -88,7 +88,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed, ref, watch, onMounted, nextTick } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useSearchFilters } from "@/composables/useSearchFilters";
@@ -97,27 +97,25 @@ import importedTypeOptions from "@/assets/typeOptions.json";
 import SearchFilters from "@/components/search-results/SearchFilters.vue";
 import { useJurisdictions } from "@/composables/useJurisdictions";
 import { useAnnouncer } from "@/composables/useAnnouncer";
+import type { SearchFilters as SearchFiltersType } from "@/types/api";
 
-const props = defineProps({
-  filters: {
-    type: Object,
-    required: true,
+const props = withDefaults(
+  defineProps<{
+    filters: SearchFiltersType;
+    totalMatches?: number;
+    loading?: boolean;
+    hasQuery?: boolean;
+  }>(),
+  {
+    totalMatches: 0,
+    loading: false,
+    hasQuery: false,
   },
-  totalMatches: {
-    type: Number,
-    default: 0,
-  },
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  hasQuery: {
-    type: Boolean,
-    default: false,
-  },
-});
+);
 
-const emit = defineEmits(["update:filters"]);
+const emit = defineEmits<{
+  "update:filters": [filters: SearchFiltersType];
+}>();
 
 const route = useRoute();
 const router = useRouter();
@@ -134,7 +132,7 @@ const {
 } = useSearchFilters(route.query);
 
 const selectWidth = ref("auto");
-const measureRef = ref(null);
+const measureRef = ref<HTMLElement | null>(null);
 
 const themeOptions = importedThemeOptions;
 const typeOptions = importedTypeOptions;
@@ -158,7 +156,7 @@ watch(
   },
 );
 
-const updateFilters = async (filters) => {
+const updateFilters = async (filters: SearchFiltersType) => {
   emit("update:filters", filters);
   await router.push({
     path: route.path,
@@ -166,19 +164,22 @@ const updateFilters = async (filters) => {
   });
 };
 
-const handleSortChange = async (val) => {
-  const sortValue = val || "relevance";
-  selectValue.value = sortValue;
-  emit("update:filters", { ...props.filters, sortBy: sortValue });
+const handleSortChange = async (val: string) => {
+  const sortValue = (val || "relevance") as SearchFiltersType["sortBy"];
+  selectValue.value = sortValue ?? "relevance";
+  await updateFilters({ ...props.filters, sortBy: sortValue });
   updateSelectWidth();
 };
 
 const resetFilters = async () => {
   resetFilterValues();
-  emit("update:filters", { sortBy: route.query.sortBy || "relevance" });
+  const sortBy = String(
+    route.query.sortBy || "relevance",
+  ) as SearchFiltersType["sortBy"];
+  emit("update:filters", { sortBy });
   await router.push({
     path: route.path,
-    query: { sortBy: route.query.sortBy || "relevance" },
+    query: { sortBy },
   });
 };
 
@@ -193,7 +194,7 @@ const updateSelectWidth = () => {
 watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
   async ([jurisdiction, theme, type]) => {
-    if (!jurisdiction && !theme && !type) return;
+    if (!jurisdiction.length && !theme.length && !type.length) return;
     await updateFilters(
       buildFilterObject(jurisdiction, theme, type, selectValue.value),
     );

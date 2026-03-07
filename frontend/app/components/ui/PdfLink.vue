@@ -24,6 +24,7 @@ import {
   buildProxyUrl,
 } from "@/utils/storage";
 import { useCheckTarget } from "@/composables/useCheckTarget";
+import { BLOB_STORAGE_BASE_URL } from "@/config/assets";
 
 const props = defineProps<{
   recordId?: string;
@@ -33,12 +34,10 @@ const props = defineProps<{
 }>();
 
 const pdfUrl = computed(() => {
-  // If a pdfField is provided, convert it to internal proxy URL
   if (props.pdfField !== undefined && props.pdfField !== null) {
     return getPdfProxyUrl(props.pdfField) || "";
   }
 
-  // If a URL is provided directly, convert it to internal proxy URL (backward compatibility)
   if (props.url) {
     const storagePath = extractStoragePath(props.url);
     return storagePath ? buildProxyUrl(storagePath) : "";
@@ -47,10 +46,9 @@ const pdfUrl = computed(() => {
   return "";
 });
 
-// Azure blob fallback URL
 const azureBlobUrl = computed(() => {
   if (props.recordId && props.folderName) {
-    return `https://choiceoflaw.blob.core.windows.net/${props.folderName}/${props.recordId}.pdf`;
+    return `${BLOB_STORAGE_BASE_URL}/${props.folderName}/${props.recordId}.pdf`;
   }
   return "";
 });

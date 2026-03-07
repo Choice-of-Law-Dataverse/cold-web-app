@@ -129,8 +129,6 @@ export class NotFoundError extends Error {
     this.originalError = originalError;
 
     Object.setPrototypeOf(this, NotFoundError.prototype);
-
-    console.error(this.toJSON());
   }
 
   toJSON() {
@@ -191,8 +189,6 @@ export class ApiError extends Error {
     this.originalError = originalError;
 
     Object.setPrototypeOf(this, ApiError.prototype);
-
-    console.error(this.toJSON());
   }
 
   /**

@@ -251,7 +251,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import PopularSearches from "@/components/landing-page/PopularSearches.vue";
 import TopLiteratureThemes from "@/components/landing-page/TopLiteratureThemes.vue";
 import JurisdictionMap from "@/components/landing-page/JurisdictionMap.vue";
@@ -259,24 +259,23 @@ import CountrySelectMenu from "@/components/landing-page/TempJurisdictionPicker.
 import ConnectCard from "@/components/landing-page/ConnectCard.vue";
 import NumberCard from "@/components/landing-page/NumberCard.vue";
 import CompareJurisdictionsCard from "@/components/landing-page/CompareJurisdictionsCard.vue";
-// import OpenScienceBadge from "@/components/ui/OpenScienceBadge.vue";
-// import HCCHApproved from "@/components/ui/HCCHApproved.vue";
 import SectionHeader from "@/components/ui/SectionHeader.vue";
 import { externalLinks } from "@/utils/externalLinks";
 import RecentDomesticInstruments from "@/components/landing-page/RecentDomesticInstruments.vue";
 import SuccessfulLegalTransplantations from "@/components/landing-page/SuccessfulLegalTransplantations.vue";
 import LeadingCases from "@/components/landing-page/LeadingCases.vue";
-import { useHead } from "#imports";
+import { useHead, useRuntimeConfig } from "#imports";
 import PlotCourtDecisionsJurisdiction from "@/components/landing-page/PlotCourtDecisionsJurisdiction.vue";
 
 const links = externalLinks;
+const config = useRuntimeConfig();
 
 useHead({
   title: "Choice of Law Dataverse — CoLD",
   link: [
     {
       rel: "canonical",
-      href: "https://cold.global/",
+      href: `${config.public.siteUrl}/`,
     },
   ],
   meta: [

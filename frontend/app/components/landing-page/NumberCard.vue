@@ -31,24 +31,29 @@
   </NuxtLink>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { useNumberCount } from "~/composables/useNumberCount";
+import type { TableName } from "@/types/api";
 
-const props = defineProps({
-  title: { type: String, required: true },
-  buttonText: { type: String, required: true },
-  buttonLink: { type: String, required: true },
-  tableName: { type: String, required: true },
-  overrideNumber: { type: [Number, String], required: false, default: null },
-});
+const props = defineProps<{
+  title: string;
+  buttonText: string;
+  buttonLink: string;
+  tableName: TableName;
+  overrideNumber?: number | string | null;
+}>();
 
 const {
   data: number,
   isLoading: loading,
   error,
 } = useNumberCount(
-  computed(() => (props.overrideNumber ? undefined : props.tableName)),
+  computed(() =>
+    props.overrideNumber
+      ? (undefined as unknown as TableName)
+      : props.tableName,
+  ),
 );
 </script>
 

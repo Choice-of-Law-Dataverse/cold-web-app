@@ -6,8 +6,8 @@
     :error="error"
   >
     <FlagTitleYearItem
-      v-for="(decision, index) in leadingCases?.slice(0, 3)"
-      :key="index"
+      v-for="decision in leadingCases?.slice(0, 3)"
+      :key="decision.ID"
       :to="`/court-decision/${decision.ID}`"
       :iso3="decision['Jurisdictions Alpha-3 Code'] || ''"
       :title="decision['Case Title'] || ''"

@@ -21,25 +21,22 @@
   </div>
 </template>
 
-<script setup>
-defineProps({
-  isExpanded: {
-    type: Boolean,
-    required: true,
+<script setup lang="ts">
+withDefaults(
+  defineProps<{
+    isExpanded: boolean;
+    label?: string;
+    buttonClass?: string;
+    iconClass?: string;
+  }>(),
+  {
+    label: "",
+    buttonClass: "link-button-night",
+    iconClass: "text-base translate-y-[3px]",
   },
-  label: {
-    type: String,
-    default: "",
-  },
-  buttonClass: {
-    type: String,
-    default: "link-button-night",
-  },
-  iconClass: {
-    type: String,
-    default: "text-base translate-y-[3px]",
-  },
-});
+);
 
-const emit = defineEmits(["update:isExpanded"]);
+const emit = defineEmits<{
+  "update:isExpanded": [value: boolean];
+}>();
 </script>

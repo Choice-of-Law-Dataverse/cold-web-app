@@ -1,7 +1,8 @@
+import { AUTH0_ROLES_CLAIM, MODERATOR_ROLES } from "@/config/auth";
+
 export default defineNuxtRouteMiddleware(async (to) => {
   const session = useUser();
 
-  // Check if user is logged in
   if (!session.value) {
     return navigateTo(
       `/auth/login?returnTo=${encodeURIComponent(to.fullPath)}`,
@@ -9,17 +10,17 @@ export default defineNuxtRouteMiddleware(async (to) => {
     );
   }
 
-  const roles = session.value["https://cold.global/roles"] || [];
+  const roles = session.value[AUTH0_ROLES_CLAIM] || [];
 
   const hasRequiredRole =
     Array.isArray(roles) &&
-    roles.some(
-      (role) =>
-        role.toLowerCase() === "editor" || role.toLowerCase() === "admin",
+    roles.some((role) =>
+      MODERATOR_ROLES.includes(
+        role.toLowerCase() as (typeof MODERATOR_ROLES)[number],
+      ),
     );
 
   if (!hasRequiredRole) {
-    // User is logged in but doesn't have the required role
     throw createError({
       statusCode: 403,
       statusMessage: "Access Denied",

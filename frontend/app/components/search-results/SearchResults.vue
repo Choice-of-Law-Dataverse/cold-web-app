@@ -16,42 +16,41 @@
   />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import SearchResultsHeader from "@/components/search-results/SearchResultsHeader.vue";
 import SearchResultsGrid from "@/components/search-results/SearchResultsGrid.vue";
+import type { SearchFilters } from "@/types/api";
 
-const props = defineProps({
-  data: {
-    type: Object,
-    default: () => ({ tables: {} }),
-  },
-  filters: {
-    type: Object,
-    required: true,
-  },
-  totalMatches: {
-    type: Number,
-    default: 0,
-  },
-  loading: {
-    type: Boolean,
-    default: false,
-  },
-  canLoadMore: {
-    type: Boolean,
-    default: false,
-  },
-  hasQuery: {
-    type: Boolean,
-    default: false,
-  },
-});
+interface SearchData {
+  tables: Record<string, unknown>[];
+}
 
-const emit = defineEmits(["update:filters", "load-more"]);
+const props = withDefaults(
+  defineProps<{
+    data?: SearchData;
+    filters: SearchFilters;
+    totalMatches?: number;
+    loading?: boolean;
+    canLoadMore?: boolean;
+    hasQuery?: boolean;
+  }>(),
+  {
+    data: () => ({ tables: [] }),
+    totalMatches: 0,
+    loading: false,
+    canLoadMore: false,
+    hasQuery: false,
+  },
+);
 
-const allResults = computed(() => {
+const emit = defineEmits<{
+  "update:filters": [filters: SearchFilters];
+  "load-more": [];
+}>();
+
+const allResults = computed((): Record<string, unknown>[] => {
   if (!props.data?.tables) return [];
-  return Object.values(props.data.tables);
+  return props.data.tables;
 });
 </script>

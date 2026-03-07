@@ -6,7 +6,7 @@
         class="mx-auto flex min-h-[50vh] flex-col items-center justify-center text-center"
         style="max-width: var(--container-width); width: 100%"
       >
-        <h2>{{ error.message || "Item not found" }}</h2>
+        <h2>{{ error?.message || "Item not found" }}</h2>
 
         <NuxtLink class="mt-6 cursor-pointer" @click="handleGoBack">
           Go back
@@ -21,26 +21,32 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
+import type { ComponentPublicInstance } from "vue";
 import { ref, computed, onErrorCaptured, provide } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "#imports";
 
-const props = defineProps({
-  onError: {
-    type: Function,
-    default: undefined,
-  },
-  entityType: {
-    type: String,
-    default: "Entity",
-  },
-});
+interface AppError extends Error {
+  statusCode?: number;
+  data?: { name?: string };
+}
+
+type ErrorHandler = (
+  err: Error,
+  instance: ComponentPublicInstance | null,
+  info: string,
+) => void;
+
+const props = defineProps<{
+  onError?: ErrorHandler;
+  entityType?: string;
+}>();
 
 const router = useRouter();
 const toast = useToast();
 
-const error = ref(null);
+const error = ref<AppError | null>(null);
 
 const isNotFoundError = computed(() => {
   return (
@@ -50,28 +56,29 @@ const isNotFoundError = computed(() => {
   );
 });
 
-const retry = () => {
+function retry(): void {
   error.value = null;
-};
+}
 
-const handleGoBack = () => {
+function handleGoBack(): void {
   error.value = null;
   router.back();
-};
+}
 
-const handleGoHome = () => {
+function handleGoHome(): void {
   error.value = null;
   router.push("/");
-};
+}
 
-onErrorCaptured((err, instance, info) => {
+onErrorCaptured((err: Error, instance, info) => {
+  const appErr = err as AppError;
   const isNotFound =
-    err?.statusCode === 404 ||
-    err?.data?.name === "NotFoundError" ||
-    err?.name === "NotFoundError";
+    appErr.statusCode === 404 ||
+    appErr.data?.name === "NotFoundError" ||
+    appErr.name === "NotFoundError";
 
   if (isNotFound) {
-    error.value = err;
+    error.value = appErr;
   } else {
     toast.add({
       title: "Error",

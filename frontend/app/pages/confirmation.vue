@@ -14,7 +14,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRoute } from "vue-router";
 import { useHead } from "#imports";
 
@@ -22,25 +22,25 @@ useHead({
   title: "Confirmed — CoLD",
 });
 
-const route = useRoute();
-const confirmationMessage =
-  route.query.message || "We have received your submission.";
+interface ConfirmationLink {
+  text: string;
+  to: string;
+}
 
-let links = [{ text: "Take me back to Home", to: "/" }];
+const route = useRoute();
+const confirmationMessage = String(
+  route.query.message || "We have received your submission.",
+);
+
+let links: ConfirmationLink[] = [{ text: "Take me back to Home", to: "/" }];
 if (route.query.links) {
   try {
-    const parsed = JSON.parse(route.query.links);
+    const parsed = JSON.parse(String(route.query.links));
     if (Array.isArray(parsed)) {
-      links = parsed.filter((l) => l && l.text && l.to);
+      links = parsed.filter((l: ConfirmationLink) => l && l.text && l.to);
     }
   } catch {
-    // noop
+    /* noop */
   }
 }
-</script>
-
-<script>
-export default {
-  layout: "default",
-};
 </script>

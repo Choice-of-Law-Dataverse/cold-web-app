@@ -40,7 +40,7 @@
           :label="courtDecisionLabels['Domestic Legal Provisions']"
           :tooltip="courtDecisionTooltips['Domestic Legal Provisions']"
         >
-          <InstrumentLink :id="value" table="Domestic Instruments" />
+          <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
 
@@ -114,7 +114,7 @@
             :jurisdiction-code="
               courtDecision?.['Jurisdictions Alpha-3 Code'] || ''
             "
-            :questions="value"
+            :questions="value as string"
           />
         </DetailRow>
       </template>
@@ -138,19 +138,19 @@
 
       <template #original-text="{ value }">
         <DetailRow
-          v-if="value && value.trim() !== ''"
+          v-if="value && (value as string).trim() !== ''"
           :label="courtDecisionLabels['Original Text']"
         >
           <div>
             <p class="result-value-small">
               {{
-                showFullText || value.length <= 400
+                showFullText || (value as string).length <= 400
                   ? value
-                  : value.slice(0, 400) + "…"
+                  : (value as string).slice(0, 400) + "…"
               }}
             </p>
             <ShowMoreLess
-              v-if="value.length > 400"
+              v-if="(value as string).length > 400"
               v-model:is-expanded="showFullText"
             />
           </div>

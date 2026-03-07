@@ -46,13 +46,17 @@
       <template #regional-legal-provisions="{ value }">
         <!-- Only render if value exists and is not "N/A" -->
         <DetailRow
-          v-if="value && value.trim() && value.trim() !== 'N/A'"
+          v-if="
+            value &&
+            (value as string).trim() &&
+            (value as string).trim() !== 'N/A'
+          "
           :label="regionalInstrumentLabels['Regional Legal Provisions']"
           :tooltip="regionalInstrumentTooltips['Regional Legal Provisions']"
         >
           <div class="provisions-container">
             <LegalProvision
-              v-for="(provisionId, index) in value.split(',')"
+              v-for="(provisionId, index) in (value as string).split(',')"
               :key="index"
               :provision-id="provisionId"
               :instrument-title="

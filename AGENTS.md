@@ -1,6 +1,6 @@
 # AGENTS.md
 
-The Choice of Law Dataverse (CoLD) is a monorepo with a Nuxt 3 frontend and FastAPI backend.
+The Choice of Law Dataverse (CoLD) is a monorepo with a Nuxt 4 frontend and FastAPI backend.
 
 ## For AI Coding Agents
 
@@ -8,7 +8,7 @@ This file provides essential context for AI agents working on this codebase. Hum
 
 ## Project Structure
 
-- **[frontend/](frontend/)**: Nuxt 3 application (Vue.js, TypeScript, TailwindCSS) - see [frontend/AGENTS.md](frontend/AGENTS.md)
+- **[frontend/](frontend/)**: Nuxt 4 application (Vue.js, TypeScript, TailwindCSS) - see [frontend/AGENTS.md](frontend/AGENTS.md)
 - **[backend/](backend/)**: FastAPI application (Python, SQLAlchemy, Pydantic) - see [backend/AGENTS.md](backend/AGENTS.md)
 
 ## Environment Setup

@@ -127,6 +127,13 @@ export interface SearchFilters {
   sortBy?: "date" | "relevance";
 }
 
+export interface FilterObjectOption {
+  label: string;
+  alpha3Code?: string;
+}
+
+export type FilterOption = FilterObjectOption | string;
+
 /**
  * Search parameters interface for the useSearch hook
  */

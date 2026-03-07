@@ -187,10 +187,6 @@ export function useAnalysisSteps() {
     );
   }
 
-  function isFieldDisabled(_fieldName: keyof EditedAnalysisValues): boolean {
-    return isAnalyzing.value;
-  }
-
   function hydrateAnalysisStepsFromResults(
     results: Record<string, AnalysisStepPayload>,
   ) {
@@ -202,17 +198,6 @@ export function useAnalysisSteps() {
           typeof result.confidence === "string" ? result.confidence : null;
         step.reasoning =
           typeof result.reasoning === "string" ? result.reasoning : null;
-        step.error = null;
-      }
-    }
-  }
-
-  function markStepsCompleteWithoutResults() {
-    for (const step of analysisSteps.value) {
-      if (step.status !== "error") {
-        step.status = "completed";
-        step.confidence = null;
-        step.reasoning = null;
         step.error = null;
       }
     }
@@ -251,9 +236,7 @@ export function useAnalysisSteps() {
     handleUploadStepChange,
     getFieldStatus,
     isFieldLoading,
-    isFieldDisabled,
     hydrateAnalysisStepsFromResults,
-    markStepsCompleteWithoutResults,
     resetAnalysisSteps,
     getConfidenceColor,
   };

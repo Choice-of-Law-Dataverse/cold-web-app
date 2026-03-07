@@ -25,13 +25,13 @@
       <!-- Custom rendering for Court Decisions ID -->
       <template #court-decisions-id="{ value }">
         <DetailRow
-          v-if="value?.length"
+          v-if="(value as string[])?.length"
           id="related-court-decisions"
           :label="questionLabels['Court Decisions ID']"
           :tooltip="questionTooltips['Court Decisions ID']"
           variant="court-decision"
         >
-          <CourtDecisionRenderer :value="value" />
+          <CourtDecisionRenderer :value="value as string[]" />
         </DetailRow>
       </template>
 
