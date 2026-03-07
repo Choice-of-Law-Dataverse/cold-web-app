@@ -256,8 +256,8 @@ const slots = useSlots();
 
 // Slots that fetch their own data and should always be shown
 const selfFetchingSlots = new Set([
-  "oup-chapter",
-  "related-literature",
+  "oupchapter",
+  "relatedliterature",
   "literature",
 ]);
 
