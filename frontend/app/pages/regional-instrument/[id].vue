@@ -14,7 +14,7 @@
     >
       <!-- Abbreviation with PDF and Source Link -->
       <template #abbreviation="{ value }">
-        <DetailRow :label="regionalInstrumentLabels['Abbreviation']">
+        <DetailRow :label="regionalInstrumentLabels.Abbreviation">
           <TitleWithActions>
             {{ value }}
             <template #actions>
@@ -31,8 +31,8 @@
 
       <template #literature>
         <DetailRow
-          :label="regionalInstrumentLabels['Literature']"
-          :tooltip="regionalInstrumentTooltips['Literature']"
+          :label="regionalInstrumentLabels.Literature"
+          :tooltip="regionalInstrumentTooltips.Literature"
         >
           <LazyRelatedLiterature
             :literature-id="regionalInstrument?.Literature || ''"
@@ -43,7 +43,7 @@
       </template>
 
       <!-- Slot for Legal provisions -->
-      <template #regional-legal-provisions="{ value }">
+      <template #regionallegalprovisions="{ value }">
         <!-- Only render if value exists and is not "N/A" -->
         <DetailRow
           v-if="
@@ -51,8 +51,8 @@
             (value as string).trim() &&
             (value as string).trim() !== 'N/A'
           "
-          :label="regionalInstrumentLabels['Regional Legal Provisions']"
-          :tooltip="regionalInstrumentTooltips['Regional Legal Provisions']"
+          :label="regionalInstrumentLabels.regionalLegalProvisions"
+          :tooltip="regionalInstrumentTooltips.regionalLegalProvisions"
         >
           <div class="provisions-container">
             <LegalProvision
@@ -71,7 +71,7 @@
       </template>
 
       <template #footer>
-        <LastModified :date="regionalInstrument?.['Last Modified']" />
+        <LastModified :date="regionalInstrument?.lastModified" />
       </template>
     </BaseDetailLayout>
 

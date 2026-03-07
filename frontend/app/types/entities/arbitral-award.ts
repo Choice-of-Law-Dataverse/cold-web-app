@@ -5,35 +5,33 @@
 /** Raw API response */
 export interface ArbitralAwardResponse {
   id: string;
-  source_table?: string;
+  sourceTable?: string;
   rank?: number;
   ID?: string;
-  "Record ID"?: string;
-  "Case Number"?: string;
+  recordId?: string;
+  caseNumber?: string;
   Context?: string;
-  "Award Summary"?: string;
+  awardSummary?: string;
   Year?: string;
-  "Nature of the Award"?: string;
-  "Seat (Town)"?: string;
+  natureOfTheAward?: string;
+  seatTown?: string;
   Source?: string;
   Created?: string;
-  "Last Modified"?: string;
-  sort_date?: string;
-  // Nested mappings
-  "Arbitral Institutions"?: string;
-  "Arbitral Institutions Abbrev"?: string;
-  "Arbitral Institutions Link"?: string;
-  "Arbitral Provisions (Articles)"?: string;
-  "Arbitral Provisions Link"?: string;
-  "Court Decisions"?: string;
-  "Court Decisions Link"?: string;
-  Jurisdictions?: string;
-  "Jurisdictions Alpha-3 Code"?: string;
-  "Jurisdictions Link"?: string;
-  Themes?: string;
-  // Legacy fields
-  "Award Title"?: string;
-  "Case Title"?: string;
+  lastModified?: string;
+  sortDate?: string;
+  arbitralInstitutions?: string;
+  arbitralInstitutionsAbbrev?: string;
+  arbitralInstitutionsLink?: string;
+  arbitralProvisionsArticles?: string;
+  arbitralProvisionsLink?: string;
+  courtDecisions?: string;
+  courtDecisionsLink?: string;
+  jurisdictions?: string;
+  jurisdictionsAlpha3Code?: string;
+  jurisdictionsLink?: string;
+  themes?: string;
+  awardTitle?: string;
+  caseTitle?: string;
   Title?: string;
   Name?: string;
   related_arbitral_institutions?: Array<{ Institution?: string }>;
@@ -44,7 +42,7 @@ export interface ArbitralAwardResponse {
 /** Processed type with normalized fields */
 export interface ArbitralAward extends ArbitralAwardResponse {
   Title: string;
-  "Arbitral Institution"?: string;
+  arbitralInstitution?: string;
   formattedJurisdictions: Array<{ Name: string }>;
   formattedThemes: Array<{ Theme: string }>;
 }
@@ -54,7 +52,7 @@ export function processArbitralAward(
   raw: ArbitralAwardResponse,
 ): ArbitralAward {
   const derivedTitle =
-    raw["Award Title"] || raw["Case Title"] || raw.Title || raw.Name || "";
+    raw.awardTitle || raw.caseTitle || raw.Title || raw.Name || "";
 
   const arbitralInstitution = Array.isArray(raw.related_arbitral_institutions)
     ? raw.related_arbitral_institutions
@@ -86,7 +84,7 @@ export function processArbitralAward(
   return {
     ...raw,
     Title: derivedTitle,
-    "Arbitral Institution": arbitralInstitution,
+    arbitralInstitution,
     formattedJurisdictions,
     formattedThemes,
   };

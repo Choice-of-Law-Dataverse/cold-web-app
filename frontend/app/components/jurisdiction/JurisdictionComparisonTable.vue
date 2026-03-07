@@ -563,7 +563,7 @@ const rows = computed(() => {
 
       return {
         id,
-        question: item.Question,
+        question: item.question,
         answer: answerDisplay,
         answerLink: `/question/${iso3}_${id}`,
         level,
@@ -582,7 +582,7 @@ const rows = computed(() => {
 
     return {
       id,
-      question: item.Question,
+      question: item.question,
       answers,
       level,
     };

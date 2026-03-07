@@ -99,7 +99,7 @@ import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { regionalInstrumentTooltips } from "@/config/tooltips";
 
-const tooltipRegionalInstrumentDate = regionalInstrumentTooltips["Date"];
+const tooltipRegionalInstrumentDate = regionalInstrumentTooltips.Date;
 
 definePageMeta({
   middleware: ["auth"],

@@ -1,20 +1,20 @@
 <template>
   <ResultCard :result-data="resultData" card-type="Answers">
     <div class="flex flex-col gap-0">
-      <DetailRow :label="getLabel('Question')">
+      <DetailRow :label="getLabel('question')">
         <div
-          :class="computeTextClasses('Question', config.valueClassMap.Question)"
+          :class="computeTextClasses('question', config.valueClassMap.question)"
         >
-          {{ getValue("Question") }}
+          {{ getValue("question") }}
         </div>
       </DetailRow>
 
-      <DetailRow :label="getLabel('Answer')">
+      <DetailRow :label="getLabel('answer')">
         <div
           :class="
             computeTextClasses(
-              'Answer',
-              config.getAnswerClass(resultData.Answer as string),
+              'answer',
+              config.getAnswerClass(resultData.answer as string),
             )
           "
         >
@@ -31,27 +31,24 @@
         </div>
       </DetailRow>
 
-      <DetailRow
-        v-if="hasMoreInformation"
-        :label="getLabel('More Information')"
-      >
+      <DetailRow v-if="hasMoreInformation" :label="getLabel('moreInformation')">
         <div class="prose mb-2 flex flex-col gap-2">
-          <div v-if="resultData['More Information']">
-            {{ getValue("More Information") }}
+          <div v-if="resultData.moreInformation">
+            {{ getValue("moreInformation") }}
           </div>
-          <div v-else-if="resultData['OUP Book Quote']">
-            {{ getValue("OUP Book Quote") }}
+          <div v-else-if="resultData.oupBookQuote">
+            {{ getValue("oupBookQuote") }}
           </div>
           <template v-if="hasDomesticValue">
-            <template v-if="resultData['Domestic Legal Provisions']">
+            <template v-if="resultData.domesticLegalProvisions">
               <LegalProvisionRenderer
-                :value="String(getValue('Domestic Legal Provisions') ?? '')"
+                :value="String(getValue('domesticLegalProvisions') ?? '')"
               />
             </template>
-            <template v-else-if="resultData['Domestic Instruments ID']">
+            <template v-else-if="resultData.domesticInstrumentsId">
               <LegalProvisionRenderer
                 skip-article
-                :value="String(getValue('Domestic Instruments ID') ?? '')"
+                :value="String(getValue('domesticInstrumentsId') ?? '')"
               />
             </template>
             <template v-else>
@@ -86,8 +83,8 @@
         <div
           :class="
             computeTextClasses(
-              resultData['Last Modified'] ? 'Last Modified' : 'Created',
-              config.valueClassMap['Last Modified'],
+              resultData.lastModified ? 'lastModified' : 'created',
+              config.valueClassMap.lastModified,
             )
           "
         >
@@ -121,15 +118,15 @@ const { getLabel, getValue, computeTextClasses } = useCardFields(
 );
 
 const answerValue = computed(() => {
-  const value = props.resultData["Answer"];
+  const value = props.resultData.answer;
   if (typeof value === "string" && value.includes(",")) {
     return value.split(",").map((part) => part.trim());
   }
-  return getValue("Answer");
+  return getValue("answer");
 });
 
 const literatureIdStr = computed(() => {
-  const raw = props.resultData["Literature"];
+  const raw = props.resultData.literature;
   return typeof raw === "string" ? raw : "";
 });
 
@@ -158,7 +155,7 @@ const literatureItems = computed(() => {
 });
 
 const relatedCasesCount = computed(() => {
-  const links = props.resultData["Court Decisions Link"];
+  const links = props.resultData.courtDecisionsLink;
   if (!links || typeof links !== "string") return 0;
   return links.split(",").filter((link: string) => link.trim() !== "").length;
 });
@@ -170,25 +167,24 @@ const relatedDecisionsLink = computed(() => {
 
 const hasDomesticValue = computed(() => {
   return !!(
-    props.resultData["Domestic Legal Provisions"] ||
-    props.resultData["Domestic Instruments ID"] ||
-    props.resultData["Literature"]
+    props.resultData.domesticLegalProvisions ||
+    props.resultData.domesticInstrumentsId ||
+    props.resultData.literature
   );
 });
 
 const hasMoreInformation = computed(() => {
   return (
-    (props.resultData["More Information"] &&
-      props.resultData["More Information"] !== "") ||
-    (props.resultData["OUP Book Quote"] &&
-      props.resultData["OUP Book Quote"] !== "") ||
+    (props.resultData.moreInformation &&
+      props.resultData.moreInformation !== "") ||
+    (props.resultData.oupBookQuote && props.resultData.oupBookQuote !== "") ||
     hasDomesticValue.value ||
     relatedCasesCount.value > 0
   );
 });
 
 const lastUpdatedDisplay = computed(() => {
-  const raw = props.resultData["Last Modified"] || props.resultData["Created"];
+  const raw = props.resultData.lastModified || props.resultData.created;
   const y = formatYear(raw as string | null | undefined);
   return y ? String(y) : "";
 });

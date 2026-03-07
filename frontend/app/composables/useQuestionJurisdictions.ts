@@ -35,19 +35,19 @@ function processAnswers(
     (item) =>
       typeof item.ID === "string" &&
       item.ID.endsWith(suffix) &&
-      item["Jurisdictions Irrelevant"] !== "Yes",
+      item.jurisdictionsIrrelevant !== "Yes",
   );
 
   if (relevantRecords.length === 0) {
     return { questionTitle: "", answers: [], answerGroups: new Map() };
   }
 
-  const questionTitle = relevantRecords[0]?.Question || "Missing Question";
+  const questionTitle = relevantRecords[0]?.question || "Missing Question";
   const answerGroups = new Map<string, Jurisdiction[]>();
   const uniqueAnswers = new Set<string>();
 
   for (const record of relevantRecords) {
-    const answer = record.Answer;
+    const answer = record.answer;
     if (!answer || !answer.trim() || EXCLUDED_ANSWERS.has(answer)) {
       continue;
     }
@@ -59,9 +59,9 @@ function processAnswers(
     }
 
     answerGroups.get(answer)!.push({
-      name: record.Jurisdictions || "",
-      code: record["Jurisdictions Alpha-3 Code"] || "",
-      region: record["Jurisdictions Region"] || "",
+      name: record.jurisdictions || "",
+      code: record.jurisdictionsAlpha3Code || "",
+      region: record.jurisdictionsRegion || "",
     });
   }
 

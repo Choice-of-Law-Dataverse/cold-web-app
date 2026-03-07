@@ -57,7 +57,7 @@ interface UseFullTableOptions<
  * @example
  * // With type-safe filters
  * const { data } = useFullTable("Court Decisions", {
- *   filters: [{ column: "Case Rank", value: 10 }],
+ *   filters: [{ column: "caseRank", value: 10 }],
  * });
  */
 export function useFullTable<
@@ -128,8 +128,8 @@ export function useInternationalLegalProvisions() {
   return useFullTable("International Legal Provisions", {
     select: (data) => {
       return data.slice().sort((a, b) => {
-        const aOrder = Number(a["Ranking__Display_Order_"]) || 0;
-        const bOrder = Number(b["Ranking__Display_Order_"]) || 0;
+        const aOrder = Number(a.rankingDisplayOrder) || 0;
+        const bOrder = Number(b.rankingDisplayOrder) || 0;
         return aOrder - bOrder;
       });
     },
@@ -138,17 +138,16 @@ export function useInternationalLegalProvisions() {
 
 export function useLeadingCases() {
   return useFullTable("Court Decisions", {
-    filters: [{ column: "Case Rank", value: 10 }],
+    filters: [{ column: "caseRank", value: 10 }],
     select: (data) => {
       return data
         .filter(
-          (entry) =>
-            entry["Case Rank"] === "10" || Number(entry["Case Rank"]) === 10,
+          (entry) => entry.caseRank === "10" || Number(entry.caseRank) === 10,
         )
         .sort(
           (a, b) =>
-            Number(formatYear(b["Publication Date ISO"] || "")) -
-            Number(formatYear(a["Publication Date ISO"] || "")),
+            Number(formatYear(b.publicationDateIso || "")) -
+            Number(formatYear(a.publicationDateIso || "")),
         );
     },
   });

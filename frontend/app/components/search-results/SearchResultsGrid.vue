@@ -16,7 +16,7 @@
           class="result-item"
         >
           <component
-            :is="getResultComponent(resultData.source_table as string)"
+            :is="getResultComponent(resultData.sourceTable as string)"
             :result-data="resultData"
           />
         </div>

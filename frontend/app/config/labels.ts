@@ -17,69 +17,68 @@ import type { ArbitralRule } from "@/types/entities/arbitral-rule";
 import type { ArbitralAward } from "@/types/entities/arbitral-award";
 
 export const jurisdictionLabels = {
-  "Jurisdiction Summary": "Summary",
-  "Jurisdictional Differentiator": "Jurisdictional Differentiator",
+  jurisdictionSummary: "Summary",
+  jurisdictionalDifferentiator: "Jurisdictional Differentiator",
   Literature: "Related Literature",
-  "OUP Chapter": "OUP Chapter",
-  "Related Data": "Related Data",
+  oupChapter: "OUP Chapter",
+  relatedData: "Related Data",
 } as const satisfies Partial<Record<keyof JurisdictionResponse, string>>;
 
 export const questionLabels = {
-  Question: "Question",
-  Answer: "Answer",
-  "More Information": "More Information",
-  "Domestic Legal Provisions": "Source",
-  "OUP Chapter": "OUP Chapter",
-  "OUP Book Quote": "OUP Book Quote",
-  "Court Decisions ID": "Related Court Decisions",
-  "Related Literature": "Related Literature",
+  question: "Question",
+  answer: "Answer",
+  moreInformation: "More Information",
+  domesticLegalProvisions: "Source",
+  oupChapter: "OUP Chapter",
+  oupBookQuote: "OUP Book Quote",
+  courtDecisionsId: "Related Court Decisions",
+  relatedLiterature: "Related Literature",
 } as const satisfies Partial<Record<keyof Question, string>>;
 
 export const courtDecisionLabels = {
-  "Case Title": "Case Title",
-  "Case Citation": "Suggested Case Citation",
-  "Publication Date ISO": "Publication Date",
-  "Date of Judgment": "Judgment Date",
+  caseTitle: "Case Title",
+  caseCitation: "Suggested Case Citation",
+  publicationDateIso: "Publication Date",
+  dateOfJudgment: "Judgment Date",
   Instance: "Instance",
   Abstract: "Abstract",
-  "Relevant Facts": "Relevant Facts",
-  "PIL Provisions": "PIL Provisions",
-  "Domestic Legal Provisions": "Domestic Legal Provisions",
-  "Text of the Relevant Legal Provisions":
-    "Text of the Relevant Legal Provisions",
-  "Choice of Law Issue": "Choice of Law Issue",
-  "Court's Position": "Court's Position",
+  relevantFacts: "Relevant Facts",
+  pilProvisions: "PIL Provisions",
+  domesticLegalProvisions: "Domestic Legal Provisions",
+  textOfTheRelevantLegalProvisions: "Text of the Relevant Legal Provisions",
+  choiceOfLawIssue: "Choice of Law Issue",
+  courtSPosition: "Court's Position",
   Quote: "Quote",
-  "Original Text": "Full Text",
-  "Related Questions": "Related Questions",
-  "Related Literature": "Related Literature",
-  "OUP Chapter": "OUP Chapter",
+  originalText: "Full Text",
+  relatedQuestions: "Related Questions",
+  relatedLiterature: "Related Literature",
+  oupChapter: "OUP Chapter",
 } as const satisfies Partial<Record<keyof CourtDecision, string>>;
 
 export const literatureLabels = {
   Title: "Title",
   Author: "Author(s)",
   Editor: "Editor(s)",
-  "Publication Year": "Year",
-  "Publication Title": "Publication",
+  publicationYear: "Year",
+  publicationTitle: "Publication",
   Publisher: "Publisher",
-  "Abstract Note": "Abstract",
+  abstractNote: "Abstract",
 } as const satisfies Partial<Record<keyof LiteratureResponse, string>>;
 
 export const domesticInstrumentLabels = {
-  "Title (in English)": "Name",
+  titleInEnglish: "Name",
   Compatibility: "Compatible with",
-  "Amended by": "Amended by",
+  amendedBy: "Amended by",
   Amends: "Amends",
   Replaces: "Replaces",
-  "Replaced by": "Replaced by",
-  "Official Title": "Official Title",
+  replacedBy: "Replaced by",
+  officialTitle: "Official Title",
   Abbreviation: "Abbreviation",
   Date: "Date",
-  "Entry Into Force": "Entry Into Force",
-  "Publication Date": "Publication Date",
-  "Domestic Legal Provisions": "Selected Provisions",
-  "OUP Chapter": "OUP Chapter",
+  entryIntoForce: "Entry Into Force",
+  publicationDate: "Publication Date",
+  domesticLegalProvisions: "Selected Provisions",
+  oupChapter: "OUP Chapter",
 } as const satisfies Partial<Record<keyof DomesticInstrument, string>>;
 
 export const regionalInstrumentLabels = {
@@ -88,8 +87,8 @@ export const regionalInstrumentLabels = {
   Date: "Date",
   Specialists: "Specialists",
   Literature: "Related Literature",
-  "OUP Chapter": "OUP Chapter",
-  "Regional Legal Provisions": "Selected Provisions",
+  oupChapter: "OUP Chapter",
+  regionalLegalProvisions: "Selected Provisions",
 } as const satisfies Partial<Record<keyof RegionalInstrument, string>>;
 
 export const internationalInstrumentLabels = {
@@ -97,25 +96,25 @@ export const internationalInstrumentLabels = {
   Date: "Date",
   Specialists: "Specialists",
   Literature: "Related Literature",
-  "OUP Chapter": "OUP Chapter",
-  "Selected Provisions": "Selected Provisions",
+  oupChapter: "OUP Chapter",
+  selectedProvisions: "Selected Provisions",
 } as const satisfies Partial<Record<keyof InternationalInstrument, string>>;
 
 export const arbitralRuleLabels = {
-  "Set of Rules": "Set of Rules",
-  "Arbitral Institutions": "Arbitral Institutions",
-  "In Force From": "In Force From",
+  setOfRules: "Set of Rules",
+  arbitralInstitutions: "Arbitral Institutions",
+  inForceFrom: "In Force From",
 } as const satisfies Partial<Record<keyof ArbitralRule, string>>;
 
 export const arbitralAwardLabels = {
-  "Case Number": "Case Number",
-  "Arbitral Institutions": "Arbitral Institutions",
+  caseNumber: "Case Number",
+  arbitralInstitutions: "Arbitral Institutions",
   Source: "Source",
   Year: "Year",
-  "Nature of the Award": "Nature of the Award",
+  natureOfTheAward: "Nature of the Award",
   Context: "Context",
-  "Seat (Town)": "Seat (Town)",
-  "Award Summary": "Award Summary",
+  seatTown: "Seat (Town)",
+  awardSummary: "Award Summary",
 } as const satisfies Partial<Record<keyof ArbitralAward, string>>;
 
 // Derive field types from labels (now narrow literal unions)

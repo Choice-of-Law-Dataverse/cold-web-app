@@ -17,16 +17,16 @@ export { processAnswerText };
 const fetchAnswersForJurisdiction = async (jurisdiction: string) => {
   const data = await fetchFullTableData("Answers", [
     {
-      column: "Jurisdictions Alpha-3 Code",
+      column: "jurisdictionsAlpha3Code",
       value: jurisdiction?.toUpperCase(),
     },
   ]);
 
   const entries = data
     .map((row) => {
-      const rawQuestionId = row["Question ID"] || row["CoLD ID"] || row.ID;
-      const rawColdId = row["CoLD ID"] || row["Answer ID"] || rawQuestionId;
-      const answerValue = row.Answer || "";
+      const rawQuestionId = row.questionId || row.coldId || row.ID;
+      const rawColdId = row.coldId || row.answerId || rawQuestionId;
+      const answerValue = row.answer || "";
 
       // Store by base question ID (without ISO3 prefix)
       const baseQuestionId = rawColdId

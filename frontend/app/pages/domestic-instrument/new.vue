@@ -244,16 +244,15 @@ interface JurisdictionOption {
   avatar?: string;
 }
 
-const tooltipAbbreviation = domesticInstrumentTooltips["Abbreviation"];
-const tooltipCompatibleWithHCCH = domesticInstrumentTooltips["Compatibility"];
-const tooltipCompatibleWithUNCITRAL =
-  domesticInstrumentTooltips["Compatibility"];
-const tooltipEntryIntoForce = domesticInstrumentTooltips["Entry Into Force"];
-const tooltipOfficialTitle = domesticInstrumentTooltips["Official Title"];
+const tooltipAbbreviation = domesticInstrumentTooltips.Abbreviation;
+const tooltipCompatibleWithHCCH = domesticInstrumentTooltips.Compatibility;
+const tooltipCompatibleWithUNCITRAL = domesticInstrumentTooltips.Compatibility;
+const tooltipEntryIntoForce = domesticInstrumentTooltips.entryIntoForce;
+const tooltipOfficialTitle = domesticInstrumentTooltips.officialTitle;
 const tooltipDomesticInstrumentPublicationDate =
-  domesticInstrumentTooltips["Publication Date"];
+  domesticInstrumentTooltips.publicationDate;
 const tooltipDomesticInstrumentTitle =
-  domesticInstrumentTooltips["Title (in English)"];
+  domesticInstrumentTooltips.titleInEnglish;
 
 definePageMeta({
   middleware: ["auth"],

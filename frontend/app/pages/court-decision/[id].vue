@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1 v-if="courtDecision?.['Case Title']" class="sr-only">
-      {{ courtDecision["Case Title"] }}
+    <h1 v-if="courtDecision?.caseTitle" class="sr-only">
+      {{ courtDecision.caseTitle }}
     </h1>
     <BaseDetailLayout
       table="Court Decisions"
@@ -13,32 +13,32 @@
       :show-suggest-edit="true"
     >
       <!-- Case Title with PDF and Source Link -->
-      <template #case-title="{ value }">
+      <template #casetitle="{ value }">
         <DetailRow
-          :label="courtDecisionLabels['Case Title']"
-          :tooltip="courtDecisionTooltips['Case Title']"
+          :label="courtDecisionLabels.caseTitle"
+          :tooltip="courtDecisionTooltips.caseTitle"
         >
           <TitleWithActions>
             {{ value }}
             <template #actions>
               <PdfLink
-                :pdf-field="courtDecision?.['Official Source (PDF)']"
+                :pdf-field="courtDecision?.officialSourcePdf"
                 :record-id="courtDecisionId"
                 folder-name="court-decisions"
               />
               <SourceExternalLink
-                :source-url="courtDecision?.['Official Source (URL)'] || ''"
+                :source-url="courtDecision?.officialSourceUrl || ''"
               />
             </template>
           </TitleWithActions>
         </DetailRow>
       </template>
 
-      <template #domestic-legal-provisions="{ value }">
+      <template #domesticlegalprovisions="{ value }">
         <DetailRow
           v-if="value"
-          :label="courtDecisionLabels['Domestic Legal Provisions']"
-          :tooltip="courtDecisionTooltips['Domestic Legal Provisions']"
+          :label="courtDecisionLabels.domesticLegalProvisions"
+          :tooltip="courtDecisionTooltips.domesticLegalProvisions"
         >
           <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
@@ -48,10 +48,10 @@
         <DetailRow
           v-if="
             courtDecision &&
-            (courtDecision['Quote'] || courtDecision['Translated Excerpt'])
+            (courtDecision['Quote'] || courtDecision.translatedExcerpt)
           "
-          :label="courtDecisionLabels['Quote']"
-          :tooltip="courtDecisionTooltips['Quote']"
+          :label="courtDecisionLabels.Quote"
+          :tooltip="courtDecisionTooltips.Quote"
         >
           <div>
             <div
@@ -93,9 +93,8 @@
                   courtDecision?.hasEnglishQuoteTranslation &&
                   courtDecision?.Quote &&
                   courtDecision.Quote.trim() !== ""
-                    ? courtDecision["Translated Excerpt"]
-                    : courtDecision?.Quote ||
-                      courtDecision?.["Translated Excerpt"]
+                    ? courtDecision.translatedExcerpt
+                    : courtDecision?.Quote || courtDecision?.translatedExcerpt
                 }}
               </p>
             </div>
@@ -103,25 +102,23 @@
         </DetailRow>
       </template>
       <!-- Custom rendering for Related Questions section -->
-      <template #related-questions="{ value }">
+      <template #relatedquestions="{ value }">
         <DetailRow
           v-if="value"
-          :label="courtDecisionLabels['Related Questions']"
-          :tooltip="courtDecisionTooltips['Related Questions']"
+          :label="courtDecisionLabels.relatedQuestions"
+          :tooltip="courtDecisionTooltips.relatedQuestions"
           variant="question"
         >
           <LazyRelatedQuestions
-            :jurisdiction-code="
-              courtDecision?.['Jurisdictions Alpha-3 Code'] || ''
-            "
+            :jurisdiction-code="courtDecision?.jurisdictionsAlpha3Code || ''"
             :questions="value as string"
           />
         </DetailRow>
       </template>
-      <template #related-literature>
+      <template #relatedliterature>
         <DetailRow
-          :label="courtDecisionLabels['Related Literature']"
-          :tooltip="courtDecisionTooltips['Related Literature']"
+          :label="courtDecisionLabels.relatedLiterature"
+          :tooltip="courtDecisionTooltips.relatedLiterature"
           variant="literature"
         >
           <LazyRelatedLiterature
@@ -136,10 +133,10 @@
         </DetailRow>
       </template>
 
-      <template #original-text="{ value }">
+      <template #originaltext="{ value }">
         <DetailRow
           v-if="value && (value as string).trim() !== ''"
-          :label="courtDecisionLabels['Original Text']"
+          :label="courtDecisionLabels.originalText"
         >
           <div>
             <p class="result-value-small">
@@ -158,9 +155,9 @@
       </template>
 
       <template #footer>
-        <LastModified :date="courtDecision?.['Last Modified']" />
+        <LastModified :date="courtDecision?.lastModified" />
         <LazyJurisdictionReportBanner
-          :jurisdiction-code="courtDecision?.['Jurisdictions Alpha-3 Code']"
+          :jurisdiction-code="courtDecision?.jurisdictionsAlpha3Code"
         />
       </template>
 
@@ -173,10 +170,10 @@
 
     <PageSeoMeta
       :title-candidates="[
-        courtDecision?.['Case Title'] !== 'Not found'
-          ? courtDecision?.['Case Title']
+        courtDecision?.caseTitle !== 'Not found'
+          ? courtDecision?.caseTitle
           : null,
-        courtDecision?.['Case Citation'],
+        courtDecision?.caseCitation,
       ]"
       fallback="Court Decision"
     />
@@ -184,7 +181,7 @@
     <EntityFeedback
       entity-type="court_decision"
       :entity-id="courtDecisionId"
-      :entity-title="courtDecision?.['Case Title'] as string"
+      :entity-title="courtDecision?.caseTitle as string"
     />
   </div>
 </template>

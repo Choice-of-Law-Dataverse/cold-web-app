@@ -74,7 +74,7 @@
 
                     <template
                       v-if="
-                        (item.key === 'Answer' || item.key === 'Specialists') &&
+                        (item.key === 'answer' || item.key === 'Specialists') &&
                         Array.isArray(
                           getDisplayValue(item, resultData?.[item.key]),
                         )
@@ -249,8 +249,8 @@ const contributeBannerJurisdictionName = computed((): string => {
 const slots = useSlots();
 
 const selfFetchingSlots = new Set([
-  "oup-chapter",
-  "related-literature",
+  "oupchapter",
+  "relatedliterature",
   "literature",
 ]);
 
@@ -286,7 +286,7 @@ function getDisplayValue(item: KeyLabelPair, value: unknown): unknown {
     return item.valueTransform(value);
   }
   if (
-    (item.key === "Answer" || item.key === "Specialists") &&
+    (item.key === "answer" || item.key === "Specialists") &&
     typeof value === "string" &&
     value.includes(",")
   ) {

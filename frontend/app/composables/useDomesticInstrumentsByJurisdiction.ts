@@ -5,7 +5,7 @@ import type { RelatedItem } from "@/types/ui";
 
 interface DomesticInstrumentSearchResult {
   id?: string;
-  "Title (in English)"?: string;
+  titleInEnglish?: string;
   Abbreviation?: string;
 }
 
@@ -20,7 +20,7 @@ function processToRelatedItems(
   const items: RelatedItem[] = [];
   for (const item of results) {
     if (!item.id) continue;
-    const title = item["Title (in English)"] || item.Abbreviation;
+    const title = item.titleInEnglish || item.Abbreviation;
     if (!isValidTitle(title)) continue;
     items.push({ id: item.id, title: title! });
   }

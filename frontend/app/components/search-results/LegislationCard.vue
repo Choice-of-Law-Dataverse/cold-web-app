@@ -4,15 +4,12 @@
     card-type="Domestic Instrument"
   >
     <div class="flex w-full flex-col gap-0">
-      <DetailRow :label="getLabel('Title (in English)')">
-        <TitleWithActions :title-class="fieldClasses('Title (in English)')">
-          {{ getValue("Title (in English)") }}
+      <DetailRow :label="getLabel('titleInEnglish')">
+        <TitleWithActions :title-class="fieldClasses('titleInEnglish')">
+          {{ getValue("titleInEnglish") }}
           <template #actions>
             <PdfLink
-              :pdf-field="
-                resultData['Official Source (PDF)'] ||
-                resultData['Source (PDF)']
-              "
+              :pdf-field="resultData.officialSourcePdf || resultData.sourcePdf"
               :record-id="resultData.id"
               folder-name="domestic-instruments"
             />
@@ -22,27 +19,25 @@
 
       <DetailRow
         v-if="
-          processedData &&
-          processedData['Date'] &&
-          processedData['Date'] !== 'NA'
+          processedData && processedData.date && processedData.date !== 'NA'
         "
-        :label="getLabel('Date')"
+        :label="getLabel('date')"
       >
-        <div :class="fieldClasses('Date')">
-          {{ getValue("Date") }}
+        <div :class="fieldClasses('date')">
+          {{ getValue("date") }}
         </div>
       </DetailRow>
 
       <DetailRow
         v-if="
           processedData &&
-          processedData['Abbreviation'] &&
-          processedData['Abbreviation'] !== 'NA'
+          processedData.abbreviation &&
+          processedData.abbreviation !== 'NA'
         "
-        :label="getLabel('Abbreviation')"
+        :label="getLabel('abbreviation')"
       >
-        <div :class="fieldClasses('Abbreviation')">
-          {{ getValue("Abbreviation") }}
+        <div :class="fieldClasses('abbreviation')">
+          {{ getValue("abbreviation") }}
         </div>
       </DetailRow>
     </div>

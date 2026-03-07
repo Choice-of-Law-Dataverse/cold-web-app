@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1 v-if="arbitralRule?.['Set of Rules']" class="sr-only">
-      {{ arbitralRule["Set of Rules"] }}
+    <h1 v-if="arbitralRule?.setOfRules" class="sr-only">
+      {{ arbitralRule.setOfRules }}
     </h1>
     <BaseDetailLayout
       table="Arbitral Rules"
@@ -12,20 +12,20 @@
       :show-suggest-edit="true"
     >
       <template #footer>
-        <LastModified :date="arbitralRule?.['Last Modified']" />
+        <LastModified :date="arbitralRule?.lastModified" />
       </template>
     </BaseDetailLayout>
 
     <!-- Handle SEO meta tags -->
     <PageSeoMeta
-      :title-candidates="[arbitralRule?.['Set of Rules']]"
+      :title-candidates="[arbitralRule?.setOfRules]"
       fallback="Arbitral Rule"
     />
 
     <EntityFeedback
       entity-type="arbitral_rule"
       :entity-id="ruleId"
-      :entity-title="arbitralRule?.['Set of Rules'] as string"
+      :entity-title="arbitralRule?.setOfRules as string"
     />
   </div>
 </template>

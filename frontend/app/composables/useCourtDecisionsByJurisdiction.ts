@@ -5,8 +5,8 @@ import type { RelatedItem } from "@/types/ui";
 
 interface CourtDecisionSearchResult {
   id?: string;
-  "Case Title"?: string;
-  "Case Citation"?: string;
+  caseTitle?: string;
+  caseCitation?: string;
 }
 
 function isValidTitle(title: string | undefined): boolean {
@@ -20,7 +20,7 @@ function processToRelatedItems(
   const items: RelatedItem[] = [];
   for (const item of results) {
     if (!item.id) continue;
-    const title = item["Case Title"] || item["Case Citation"];
+    const title = item.caseTitle || item.caseCitation;
     if (!isValidTitle(title)) continue;
     items.push({ id: item.id, title: title! });
   }
