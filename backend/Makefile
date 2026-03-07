@@ -69,6 +69,27 @@ revert_migration: ## Revert the last Alembic migration (use STEPS=n to revert n 
 	echo "$(YELLOW)Reverting $$STEPS migration(s)$(RESET)"; \
 	ALEMBIC_SQL_CONN_STRING="$$SUGGESTIONS_SQL_CONN_STRING" uv run alembic downgrade -$$STEPS
 
+.PHONY: migrate-views
+migrate-views: ## Apply Alembic migrations for materialized views (main DB)
+	@set -a; [ -f .env ] && . ./.env; set +a; \
+	if [ -z "$$SQL_CONN_STRING" ]; then \
+		echo "$(RED)SQL_CONN_STRING must be set (export it or add it to .env)$(RESET)"; \
+		exit 1; \
+	fi; \
+	echo "$(GREEN)Applying views migrations$(RESET)"; \
+	cd alembic_views && SQL_CONN_STRING="$$SQL_CONN_STRING" uv run alembic -c alembic.ini upgrade head
+
+.PHONY: revert-views
+revert-views: ## Revert the last views migration
+	@set -a; [ -f .env ] && . ./.env; set +a; \
+	if [ -z "$$SQL_CONN_STRING" ]; then \
+		echo "$(RED)SQL_CONN_STRING must be set (export it or add it to .env)$(RESET)"; \
+		exit 1; \
+	fi; \
+	STEPS=$${STEPS:-1}; \
+	echo "$(YELLOW)Reverting $$STEPS views migration(s)$(RESET)"; \
+	cd alembic_views && SQL_CONN_STRING="$$SQL_CONN_STRING" uv run alembic -c alembic.ini downgrade -$$STEPS
+
 .PHONY: coverage ## Run tests with coverage report
 coverage:
 	@echo "$(GREEN)Running tests with coverage$(RESET)"

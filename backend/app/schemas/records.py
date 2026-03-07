@@ -1,111 +1,435 @@
-import re
-from typing import Any
-
-from pydantic import BaseModel, ConfigDict, Field, create_model
-
-from app.mapping.configs import ALL_MAPPINGS
-from app.schemas.mapping_schema import MappingConfig
-
-_SKIP_FIELDS = {"source_table", "id", "rank", "ID"}
+from pydantic import BaseModel, ConfigDict
+from pydantic.alias_generators import to_camel
 
 
 class RecordBase(BaseModel):
-    model_config = ConfigDict(extra="allow", populate_by_name=True)
+    model_config = ConfigDict(
+        alias_generator=to_camel,
+        populate_by_name=True,
+        extra="allow",
+    )
 
     source_table: str | None = None
     id: str | int | None = None
     rank: float | None = None
 
 
-def _extract_output_fields(config: MappingConfig) -> dict[str, type]:
-    fields: dict[str, type] = {}
-    m = config.mappings
-
-    for name in m.direct_mappings:
-        if name not in _SKIP_FIELDS:
-            fields[name] = str
-
-    for name in m.conditional_mappings:
-        if name not in _SKIP_FIELDS:
-            fields[name] = str
-
-    for name in m.boolean_mappings:
-        fields[name] = bool
-
-    for name in m.complex_mappings:
-        fields[name] = str
-
-    for key, nested in m.nested_mappings.items():
-        if key.startswith("hop1_relations."):
-            continue
-        if nested.mappings:
-            for name in nested.mappings:
-                if name not in _SKIP_FIELDS:
-                    fields[name] = str
-        if nested.array_operations:
-            for name in nested.array_operations:
-                fields[name] = str
-        if nested.conditional_mappings:
-            for name in nested.conditional_mappings:
-                fields[name] = str
-        if nested.boolean_mappings:
-            for name in nested.boolean_mappings:
-                fields[name] = bool
-
-    for user_mapping in m.user_mappings.values():
-        for name in user_mapping.user_fields:
-            fields[name] = str
-
-    return fields
+class AnswerRecord(RecordBase):
+    answer: str | None = None
+    created: str | None = None
+    record_id: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    to_review: str | None = None
+    oup_book_quote: str | None = None
+    more_information: str | None = None
+    sort_date: str | None = None
+    question_link: str | None = None
+    question: str | None = None
+    number: str | None = None
+    questions_theme_code: str | None = None
+    jurisdictions_link: str | None = None
+    jurisdictions_alpha_3_code: str | None = None
+    jurisdictions: str | None = None
+    jurisdictions_region: str | None = None
+    jurisdictions_irrelevant: bool | None = None
+    themes: str | None = None
 
 
-def _to_python_name(name: str) -> str:
-    result = re.sub(r"[^a-zA-Z0-9]", "_", name)
-    result = re.sub(r"_+", "_", result)
-    result = result.strip("_").lower()
-    if not result or result[0].isdigit():
-        result = f"f_{result}"
-    return result
+class CourtDecisionRecord(RecordBase):
+    case_citation: str | None = None
+    case_title: str | None = None
+    instance: str | None = None
+    date: str | None = None
+    abstract: str | None = None
+    created: str | None = None
+    record_id: str | None = None
+    id_number: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    added_by_id: str | None = None
+    created_time: str | None = None
+    answers_link: str | None = None
+    answers_question: str | None = None
+    text_of_the_relevant_legal_provisions: str | None = None
+    quote: str | None = None
+    case_rank: str | None = None
+    english_translation: str | None = None
+    choice_of_law_issue: str | None = None
+    court_s_position: str | None = None
+    translated_excerpt: str | None = None
+    relevant_facts: str | None = None
+    date_of_judgment: str | None = None
+    pil_provisions: str | None = None
+    original_text: str | None = None
+    sort_date: str | None = None
+    publication_date_iso: str | None = None
+    official_source_url: str | None = None
+    questions: str | None = None
+    jurisdictions_link: str | None = None
+    jurisdictions_alpha_3_code: str | None = None
+    jurisdictions: str | None = None
+    region_from_jurisdictions: str | None = None
+    themes: str | None = None
+    official_source_pdf: str | None = None
+    last_modified_by_email: str | None = None
+    last_modified_by_name: str | None = None
+    added_by_email: str | None = None
+    added_by_name: str | None = None
+    created_by_email: str | None = None
+    created_by_name: str | None = None
 
 
-def _build_record_model(model_name: str, config: MappingConfig) -> type[RecordBase]:
-    output_fields = _extract_output_fields(config)
+class DomesticInstrumentRecord(RecordBase):
+    id_number: str | None = None
+    date: str | None = None
+    status: str | None = None
+    abbreviation: str | None = None
+    relevant_provisions: str | None = None
+    record_id: str | None = None
+    created: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    entry_into_force: str | None = None
+    publication_date: str | None = None
+    full_text_of_the_provisions: str | None = None
+    official_title: str | None = None
+    sort_date: str | None = None
+    title_in_english: str | None = None
+    source_url: str | None = None
+    source_pdf: str | None = None
+    compatible_with_the_hcch_principles: bool | None = None
+    compatible_with_the_uncitral_model_law: bool | None = None
+    jurisdictions_link: str | None = None
+    jurisdictions_alpha_3_code: str | None = None
+    jurisdictions: str | None = None
+    type_from_jurisdictions: str | None = None
+    question_id: str | None = None
+    answers_link: str | None = None
+    domestic_legal_provisions_link: str | None = None
+    domestic_legal_provisions_full_text_of_the_provision_english_t: str | None = None
+    domestic_legal_provisions_full_text_of_the_provision_original: str | None = None
+    domestic_legal_provisions: str | None = None
+    last_modified_by_email: str | None = None
+    last_modified_by_name: str | None = None
+    created_by_email: str | None = None
+    created_by_name: str | None = None
 
-    field_defs: dict[str, Any] = {}
-    seen: set[str] = {"source_table", "id", "rank"}
 
-    for field_name, field_type in sorted(output_fields.items()):
-        py_name = _to_python_name(field_name)
-        if py_name in seen:
-            continue
-        seen.add(py_name)
+class InternationalInstrumentRecord(RecordBase):
+    id_number: str | None = None
+    title: str | None = None
+    abbreviation: str | None = None
+    date: str | None = None
+    status: str | None = None
+    url: str | None = None
+    attachment: str | None = None
+    record_id: str | None = None
+    created: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    entry_into_force: str | None = None
+    publication_date: str | None = None
+    relevant_provisions: str | None = None
+    full_text_of_the_provisions: str | None = None
+    name: str | None = None
+    sort_date: str | None = None
+    title_in_english: str | None = None
+    source_url: str | None = None
+    source_pdf: str | None = None
+    specialists: str | None = None
+    specialists_link: str | None = None
+    international_legal_provisions: str | None = None
+    international_legal_provisions_link: str | None = None
+    literature: str | None = None
+    literature_link: str | None = None
+    hcch_answers: str | None = None
+    hcch_answers_link: str | None = None
+    last_modified_by_email: str | None = None
+    last_modified_by_name: str | None = None
+    created_by_email: str | None = None
+    created_by_name: str | None = None
 
-        optional_type = field_type | None
-        if py_name == field_name:
-            field_defs[py_name] = (optional_type, None)
-        else:
-            field_defs[py_name] = (optional_type, Field(None, alias=field_name))
 
-    return create_model(model_name, __base__=RecordBase, **field_defs)  # type: ignore[return-value]
+class RegionalInstrumentRecord(RecordBase):
+    id_number: str | None = None
+    title: str | None = None
+    abbreviation: str | None = None
+    date: str | None = None
+    url: str | None = None
+    attachment: str | None = None
+    record_id: str | None = None
+    created: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    sort_date: str | None = None
+    specialists: str | None = None
+    specialists_link: str | None = None
+    regional_legal_provisions: str | None = None
+    regional_legal_provisions_link: str | None = None
+    last_modified_by_email: str | None = None
+    last_modified_by_name: str | None = None
+    created_by_email: str | None = None
+    created_by_name: str | None = None
 
 
-AnswerRecord = _build_record_model("AnswerRecord", ALL_MAPPINGS["Answers"])
-CourtDecisionRecord = _build_record_model("CourtDecisionRecord", ALL_MAPPINGS["Court Decisions"])
-DomesticInstrumentRecord = _build_record_model("DomesticInstrumentRecord", ALL_MAPPINGS["Domestic Instruments"])
-InternationalInstrumentRecord = _build_record_model("InternationalInstrumentRecord", ALL_MAPPINGS["International Instruments"])
-RegionalInstrumentRecord = _build_record_model("RegionalInstrumentRecord", ALL_MAPPINGS["Regional Instruments"])
-LiteratureRecord = _build_record_model("LiteratureRecord", ALL_MAPPINGS["Literature"])
-ArbitralAwardRecord = _build_record_model("ArbitralAwardRecord", ALL_MAPPINGS["Arbitral Awards"])
-ArbitralInstitutionRecord = _build_record_model("ArbitralInstitutionRecord", ALL_MAPPINGS["Arbitral Institutions"])
-ArbitralProvisionRecord = _build_record_model("ArbitralProvisionRecord", ALL_MAPPINGS["Arbitral Provisions"])
-ArbitralRuleRecord = _build_record_model("ArbitralRuleRecord", ALL_MAPPINGS["Arbitral Rules"])
-DomesticLegalProvisionRecord = _build_record_model("DomesticLegalProvisionRecord", ALL_MAPPINGS["Domestic Legal Provisions"])
-InternationalLegalProvisionRecord = _build_record_model(
-    "InternationalLegalProvisionRecord", ALL_MAPPINGS["International Legal Provisions"]
-)
-RegionalLegalProvisionRecord = _build_record_model("RegionalLegalProvisionRecord", ALL_MAPPINGS["Regional Legal Provisions"])
-JurisdictionRecord = _build_record_model("JurisdictionRecord", ALL_MAPPINGS["Jurisdictions"])
-QuestionRecord = _build_record_model("QuestionRecord", ALL_MAPPINGS["Questions"])
+class LiteratureRecord(RecordBase):
+    record_id: str | None = None
+    cold_id: str | None = None
+    key: str | None = None
+    item_type: str | None = None
+    publication_year: str | None = None
+    author: str | None = None
+    title: str | None = None
+    isbn: str | None = None
+    issn: str | None = None
+    url: str | None = None
+    date: str | None = None
+    date_added: str | None = None
+    date_modified: str | None = None
+    publisher: str | None = None
+    language: str | None = None
+    extra: str | None = None
+    manual_tags: str | None = None
+    editor: str | None = None
+    last_modified: str | None = None
+    created: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    publication_title: str | None = None
+    issue: str | None = None
+    volume: str | None = None
+    pages: str | None = None
+    abstract_note: str | None = None
+    library_catalog: str | None = None
+    doi: str | None = None
+    access_date: str | None = None
+    open_access: str | None = None
+    open_access_url: str | None = None
+    journal_abbreviation: str | None = None
+    short_title: str | None = None
+    place: str | None = None
+    num_pages: str | None = None
+    type: str | None = None
+    oup_jd_chapter: str | None = None
+    contributor: str | None = None
+    automatic_tags: str | None = None
+    number: str | None = None
+    series: str | None = None
+    series_number: str | None = None
+    series_editor: str | None = None
+    edition: str | None = None
+    call_number: str | None = None
+    jurisdiction_summary: str | None = None
+    answers: str | None = None
+    sort_date: str | None = None
+    jurisdiction_link: str | None = None
+    jurisdiction: str | None = None
+    themes: str | None = None
+    themes_link: str | None = None
+    international_instruments: str | None = None
+    international_instruments_link: str | None = None
+    international_legal_provisions: str | None = None
+    international_legal_provisions_link: str | None = None
+    last_modified_by_email: str | None = None
+    last_modified_by_name: str | None = None
+    created_by_email: str | None = None
+    created_by_name: str | None = None
+
+
+class ArbitralAwardRecord(RecordBase):
+    record_id: str | None = None
+    case_number: str | None = None
+    context: str | None = None
+    award_summary: str | None = None
+    year: str | None = None
+    nature_of_the_award: str | None = None
+    seat_town: str | None = None
+    source: str | None = None
+    created: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    sort_date: str | None = None
+    arbitral_institutions: str | None = None
+    arbitral_institutions_abbrev: str | None = None
+    arbitral_institutions_link: str | None = None
+    arbitral_provisions_articles: str | None = None
+    arbitral_provisions_link: str | None = None
+    court_decisions: str | None = None
+    court_decisions_link: str | None = None
+    jurisdictions: str | None = None
+    jurisdictions_alpha_3_code: str | None = None
+    jurisdictions_link: str | None = None
+    themes: str | None = None
+
+
+class ArbitralInstitutionRecord(RecordBase):
+    record_id: str | None = None
+    institution: str | None = None
+    abbreviation: str | None = None
+    created: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    arbitral_awards: str | None = None
+    arbitral_awards_link: str | None = None
+    arbitral_rules: str | None = None
+    arbitral_rules_in_force_from: str | None = None
+    arbitral_rules_link: str | None = None
+    arbitral_provisions_articles: str | None = None
+    arbitral_provisions_link: str | None = None
+    jurisdictions: str | None = None
+    jurisdictions_alpha_3_code: str | None = None
+    jurisdictions_link: str | None = None
+
+
+class ArbitralProvisionRecord(RecordBase):
+    record_id: str | None = None
+    arbitral_rules_id: str | None = None
+    article: str | None = None
+    full_text_original_language: str | None = None
+    full_text_english_translation: str | None = None
+    arbitration_method_type: str | None = None
+    non_state_law_allowed_in_aoc: str | None = None
+    created: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    arbitral_awards: str | None = None
+    arbitral_awards_link: str | None = None
+    arbitral_institutions: str | None = None
+    arbitral_institutions_abbrev: str | None = None
+    arbitral_institutions_link: str | None = None
+    arbitral_rules: str | None = None
+    arbitral_rules_in_force_from: str | None = None
+    arbitral_rules_link: str | None = None
+
+
+class ArbitralRuleRecord(RecordBase):
+    record_id: str | None = None
+    set_of_rules: str | None = None
+    in_force_from: str | None = None
+    official_source_url: str | None = None
+    created: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    arbitral_institutions: str | None = None
+    arbitral_institutions_abbrev: str | None = None
+    arbitral_institutions_link: str | None = None
+    arbitral_provisions_articles: str | None = None
+    arbitral_provisions_link: str | None = None
+    jurisdictions: str | None = None
+    jurisdictions_alpha_3_code: str | None = None
+    jurisdictions_link: str | None = None
+
+
+class DomesticLegalProvisionRecord(RecordBase):
+    name: str | None = None
+    article: str | None = None
+    full_text_of_the_provision_original_language: str | None = None
+    full_text_of_the_provision_english_translation: str | None = None
+    record_id: str | None = None
+    last_modified: str | None = None
+    created: str | None = None
+    ranking_display_order: str | None = None
+    domestic_instruments_link: str | None = None
+    legislation_title: str | None = None
+    answers: str | None = None
+    questions: str | None = None
+    themes_link: str | None = None
+    jurisdictions_link: str | None = None
+    jurisdictions: str | None = None
+    last_modified_by_id: str | None = None
+    last_modified_by_email: str | None = None
+    last_modified_by_name: str | None = None
+    created_by_id: str | None = None
+    created_by_email: str | None = None
+    created_by_name: str | None = None
+
+
+class InternationalLegalProvisionRecord(RecordBase):
+    cold_id: str | None = None
+    title_of_the_provision: str | None = None
+    full_text: str | None = None
+    provision: str | None = None
+    record_id: str | None = None
+    created: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    ranking_display_order: str | None = None
+    nc_order: str | None = None
+    nc_record_hash: str | None = None
+    arbitral_awards: str | None = None
+    instrument_cold_id: str | None = None
+    international_instruments_copy: str | None = None
+    sort_date: str | None = None
+    instrument: str | None = None
+    last_modified_by_email: str | None = None
+    last_modified_by_name: str | None = None
+    created_by_email: str | None = None
+    created_by_name: str | None = None
+
+
+class RegionalLegalProvisionRecord(RecordBase):
+    title_of_the_provision: str | None = None
+    full_text: str | None = None
+    provision: str | None = None
+    record_id: str | None = None
+    created: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    sort_date: str | None = None
+    instrument: str | None = None
+    instrument_link: str | None = None
+    questions: str | None = None
+    last_modified_by_email: str | None = None
+    last_modified_by_name: str | None = None
+    created_by_email: str | None = None
+    created_by_name: str | None = None
+
+
+class JurisdictionRecord(RecordBase):
+    cold_id: str | None = None
+    name: str | None = None
+    alpha_3_code: str | None = None
+    type: str | None = None
+    region: str | None = None
+    north_south_divide: str | None = None
+    jurisdictional_differentiator: str | None = None
+    record_id: str | None = None
+    created: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    jurisdiction_summary: str | None = None
+    legal_family: str | None = None
+    answer_coverage: str | None = None
+    irrelevant: bool | None = None
+    done: bool | None = None
+
+
+class QuestionRecord(RecordBase):
+    question: str | None = None
+    question_number: str | None = None
+    created: str | None = None
+    record_id: str | None = None
+    theme_code: str | None = None
+    answering_options: str | None = None
+    last_modified: str | None = None
+    last_modified_by_id: str | None = None
+    created_by_id: str | None = None
+    sort_date: str | None = None
+    themes: str | None = None
+
 
 TABLE_RECORD_MODELS: dict[str, type[RecordBase]] = {
     "Answers": AnswerRecord,
