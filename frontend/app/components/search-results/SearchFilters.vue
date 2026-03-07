@@ -1,42 +1,47 @@
 <template>
   <div class="w-full">
     <USelectMenu
-      v-model="internalValue"
+      v-model="internalValue as any"
       class="w-full"
       :ui="filterUi"
-      :placeholder="
-        props.placeholder ||
-        (isObjectOptions ? options?.[0].label : options?.[0])
-      "
+      :placeholder="placeholderText"
       size="lg"
-      :items="options"
+      :items="options as any[]"
       value-key="label"
       :search-input="searchable ? { placeholder: 'Search...' } : false"
       :multiple="multiple"
       :loading="loading"
-      :content="!searchable ? { class: 'max-h-none' } : undefined"
+      :content="(!searchable ? { class: 'max-h-none' } : undefined) as any"
     >
-      <template #item="{ item }">
+      <template #item="{ item }: { item: any }">
         <div class="flex items-center">
           <JurisdictionFlag
-            v-if="showAvatars && isObjectOptions && item.alpha3Code"
+            v-if="
+              showAvatars &&
+              isObjectOptions &&
+              isObjectOption(item) &&
+              item.alpha3Code
+            "
             :iso3="item.alpha3Code"
             :faded="!isCovered(item.alpha3Code)"
             class="mr-2"
           />
           <span
             :style="{
-              color: isCovered(item?.alpha3Code) ? undefined : 'gray',
+              color: isCovered(
+                isObjectOption(item) ? item.alpha3Code : undefined,
+              )
+                ? undefined
+                : 'gray',
             }"
           >
-            {{ isObjectOptions ? item.label : item }}
+            {{ isObjectOption(item) ? item.label : item }}
           </span>
         </div>
       </template>
-      <template #label>
-        <!-- Single selection mode -->
+      <template #default>
         <div v-if="!multiple && internalValue" class="w-full">
-          <template v-if="isObjectOptions">
+          <template v-if="isObjectOptions && isObjectOption(internalValue)">
             <div
               v-if="showAvatars"
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
@@ -50,7 +55,7 @@
               <span
                 class="truncate"
                 :style="{
-                  color: isCovered(internalValue?.alpha3Code)
+                  color: isCovered(internalValue.alpha3Code)
                     ? undefined
                     : 'gray',
                 }"
@@ -65,7 +70,7 @@
               <span
                 class="truncate"
                 :style="{
-                  color: isCovered(internalValue?.alpha3Code)
+                  color: isCovered(internalValue.alpha3Code)
                     ? undefined
                     : 'gray',
                 }"
@@ -82,14 +87,21 @@
             </div>
           </template>
         </div>
-        <!-- Multiple selection mode -->
-        <div v-else-if="multiple && internalValue?.length" class="w-full">
+        <div
+          v-else-if="
+            multiple && isArrayValue(internalValue) && internalValue.length
+          "
+          class="w-full"
+        >
           <template v-if="isObjectOptions">
             <div
               v-if="showAvatars"
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
             >
-              <template v-for="(selected, index) in internalValue" :key="index">
+              <template
+                v-for="(selected, index) in asObjectArray(internalValue)"
+                :key="index"
+              >
                 <JurisdictionFlag
                   v-if="selected.alpha3Code"
                   :iso3="selected.alpha3Code"
@@ -99,7 +111,7 @@
                 <span
                   class="mr-2 inline-block truncate"
                   :style="{
-                    color: isCovered(selected?.alpha3Code) ? undefined : 'gray',
+                    color: isCovered(selected.alpha3Code) ? undefined : 'gray',
                   }"
                 >
                   {{ selected.label }}
@@ -111,7 +123,9 @@
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
             >
               <span class="truncate">{{
-                internalValue.map((item) => item.label).join(", ")
+                asObjectArray(internalValue)
+                  .map((item) => item.label)
+                  .join(", ")
               }}</span>
             </div>
           </template>
@@ -119,56 +133,97 @@
             <div
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
             >
-              <span class="truncate">{{ internalValue.join(", ") }}</span>
+              <span class="truncate">{{
+                asStringArray(internalValue).join(", ")
+              }}</span>
             </div>
           </template>
         </div>
-        <!-- Default placeholder -->
         <span v-else class="truncate">
-          {{
-            props.placeholder ||
-            (isObjectOptions ? options?.[0].label : options?.[0])
-          }}
+          {{ placeholderText }}
         </span>
       </template>
     </USelectMenu>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { useCoveredCountries } from "@/composables/useJurisdictions";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
-const props = defineProps({
-  options: { type: Array, required: true },
-  modelValue: { type: Array, default: () => [] },
-  showAvatars: { type: Boolean, default: false },
-  multiple: { type: Boolean, default: true },
-  loading: { type: Boolean, default: false },
-  highlightJurisdictions: { type: Boolean, default: false },
-  placeholder: { type: String, default: "" },
-  searchable: { type: Boolean, default: true },
+interface FilterObjectOption {
+  label: string;
+  alpha3Code?: string;
+}
+
+type FilterOption = FilterObjectOption | string;
+
+interface SearchFiltersProps {
+  options: FilterOption[];
+  modelValue?: FilterOption[];
+  showAvatars?: boolean;
+  multiple?: boolean;
+  loading?: boolean;
+  highlightJurisdictions?: boolean;
+  placeholder?: string;
+  searchable?: boolean;
+}
+
+const props = withDefaults(defineProps<SearchFiltersProps>(), {
+  modelValue: () => [],
+  showAvatars: false,
+  multiple: true,
+  loading: false,
+  highlightJurisdictions: false,
+  placeholder: "",
+  searchable: true,
 });
 
-const emit = defineEmits(["update:modelValue"]);
+const emit = defineEmits<{
+  "update:modelValue": [value: FilterOption[]];
+}>();
 
 const { data: coveredCountries } = useCoveredCountries();
 
-const isCovered = (alpha3Code) => {
+function isObjectOption(value: unknown): value is FilterObjectOption {
+  return typeof value === "object" && value !== null && "label" in value;
+}
+
+function isArrayValue(value: unknown): value is FilterOption[] {
+  return Array.isArray(value);
+}
+
+function asObjectArray(value: unknown): FilterObjectOption[] {
+  return value as FilterObjectOption[];
+}
+
+function asStringArray(value: unknown): string[] {
+  return value as string[];
+}
+
+function isCovered(alpha3Code: string | undefined): boolean {
   if (!props.highlightJurisdictions) {
     return true;
-  } else {
-    if (!alpha3Code) return true;
-    if (!coveredCountries.value) return true;
-    return coveredCountries.value.has(alpha3Code.toLowerCase());
   }
-};
+  if (!alpha3Code) return true;
+  if (!coveredCountries.value) return true;
+  return coveredCountries.value.has(alpha3Code.toLowerCase());
+}
 
 const isObjectOptions = computed(() => typeof props.options?.[0] === "object");
 
+const placeholderText = computed((): string => {
+  if (props.placeholder) return props.placeholder;
+  const firstOption = props.options?.[0];
+  if (!firstOption) return "";
+  return isObjectOption(firstOption) ? firstOption.label : firstOption;
+});
+
 const hasActiveFilter = computed(() =>
-  props.multiple ? internalValue.value?.length > 0 : !!internalValue.value,
+  props.multiple
+    ? Array.isArray(internalValue.value) && internalValue.value.length > 0
+    : !!internalValue.value,
 );
 
 const filterUi = computed(() => ({
@@ -186,9 +241,18 @@ const internalValue = computed({
         return item;
       }
       if (typeof item === "object") {
-        return props.options.find((o) => o.label === item.label) || item;
+        return (
+          props.options.find(
+            (o) =>
+              isObjectOption(o) &&
+              isObjectOption(item) &&
+              o.label === item.label,
+          ) || item
+        );
       }
-      return props.options.find((o) => o.label === item) || item;
+      return (
+        props.options.find((o) => isObjectOption(o) && o.label === item) || item
+      );
     }
 
     if (!isObjectOptions.value) {
@@ -196,54 +260,76 @@ const internalValue = computed({
     }
     return props.modelValue.map((item) => {
       if (typeof item === "object") {
-        return props.options.find((o) => o.label === item.label) || item;
+        return (
+          props.options.find(
+            (o) =>
+              isObjectOption(o) &&
+              isObjectOption(item) &&
+              o.label === item.label,
+          ) || item
+        );
       }
-      return props.options.find((o) => o.label === item) || item;
+      return (
+        props.options.find((o) => isObjectOption(o) && o.label === item) || item
+      );
     });
   },
-  set(newValue) {
+  set(newValue: FilterOption | FilterOption[] | null) {
     if (!props.multiple) {
       if (!newValue) {
         emit("update:modelValue", []);
       } else {
-        const firstLabel = isObjectOptions.value
-          ? props.options?.[0]?.label
-          : props.options?.[0];
-        const newLabel =
-          typeof newValue === "object" ? newValue?.label : newValue;
+        const singleValue = newValue as FilterOption;
+        const firstOption = props.options?.[0];
+        const firstLabel = isObjectOption(firstOption)
+          ? firstOption.label
+          : firstOption;
+        const newLabel = isObjectOption(singleValue)
+          ? singleValue.label
+          : singleValue;
         if (
           firstLabel &&
           newLabel &&
           firstLabel === newLabel &&
+          typeof firstLabel === "string" &&
           /^All(\s|\b)/.test(firstLabel)
         ) {
           emit("update:modelValue", []);
           return;
         }
-        const processed =
-          typeof newValue === "object"
-            ? props.options.find((o) => o.label === newValue.label) || newValue
-            : props.options.find((o) => o.label === newValue) || newValue;
+        const processed = isObjectOption(singleValue)
+          ? props.options.find(
+              (o) => isObjectOption(o) && o.label === singleValue.label,
+            ) || singleValue
+          : props.options.find(
+              (o) => isObjectOption(o) && o.label === singleValue,
+            ) || singleValue;
         emit("update:modelValue", [processed]);
       }
       return;
     }
 
+    if (!Array.isArray(newValue)) return;
+    const arrayValue = newValue as FilterOption[];
+
     if (!isObjectOptions.value) {
       const firstLabel = props.options?.[0];
       if (
-        firstLabel &&
+        typeof firstLabel === "string" &&
         /^All(\s|\b)/.test(firstLabel) &&
-        newValue.includes(firstLabel)
+        (arrayValue as string[]).includes(firstLabel)
       ) {
         emit("update:modelValue", []);
         return;
       }
-      emit("update:modelValue", newValue);
+      emit("update:modelValue", arrayValue);
     } else {
-      const firstLabel = props.options?.[0]?.label;
-      const containsAll = newValue.some((val) => {
-        const lbl = typeof val === "object" ? val.label : val;
+      const firstOption = props.options?.[0];
+      const firstLabel = isObjectOption(firstOption)
+        ? firstOption.label
+        : undefined;
+      const containsAll = arrayValue.some((val) => {
+        const lbl = isObjectOption(val) ? val.label : val;
         return (
           firstLabel && lbl === firstLabel && /^All(\s|\b)/.test(firstLabel)
         );
@@ -252,11 +338,17 @@ const internalValue = computed({
         emit("update:modelValue", []);
         return;
       }
-      const processed = newValue.map((val) => {
-        if (typeof val === "object") {
-          return props.options.find((o) => o.label === val.label) || val;
+      const processed = arrayValue.map((val) => {
+        if (isObjectOption(val)) {
+          return (
+            props.options.find(
+              (o) => isObjectOption(o) && o.label === val.label,
+            ) || val
+          );
         }
-        return props.options.find((o) => o.label === val) || val;
+        return (
+          props.options.find((o) => isObjectOption(o) && o.label === val) || val
+        );
       });
       emit("update:modelValue", processed);
     }

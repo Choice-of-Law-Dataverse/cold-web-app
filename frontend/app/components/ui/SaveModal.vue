@@ -49,45 +49,44 @@
   </UModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from "vue";
 import { z } from "zod";
 
-const props = defineProps({
-  modelValue: { type: Boolean, required: true },
-  email: { type: String, required: true },
-  comments: { type: String, required: true },
-  saveModalErrors: { type: Object, required: true },
-  name: { type: String, required: true },
-  specialists: { type: Array, required: false, default: () => [] },
-  date: { type: [String, Date], required: false, default: null },
-  pdfFile: { type: [Object, null], required: false, default: null },
-  instrumentId: {
-    type: [String, Number],
-    default: null,
-  },
-  link: { type: String, required: false, default: "" },
-  submitterEmail: { type: String, required: false, default: undefined },
-  submitterComments: { type: String, required: false, default: undefined },
-});
-const emit = defineEmits([
-  "update:modelValue",
-  "update:email",
-  "update:comments",
-  "update:submitter_email",
-  "update:submitter_comments",
-  "update:saveModalErrors",
-  "update:link",
-  "save",
-  "update:submitterEmail",
-  "update:submitterComments",
-]);
+const props = defineProps<{
+  modelValue: boolean;
+  email: string;
+  comments: string;
+  saveModalErrors: Record<string, string>;
+  name: string;
+  specialists?: string[];
+  date?: string | Date | null;
+  pdfFile?: File | null;
+  instrumentId?: string | number | null;
+  link?: string;
+  submitterEmail?: string;
+  submitterComments?: string;
+}>();
+const emit = defineEmits<{
+  "update:modelValue": [value: boolean];
+  "update:email": [value: string];
+  "update:comments": [value: string];
+  "update:submitter_email": [value: string];
+  "update:submitter_comments": [value: string];
+  "update:saveModalErrors": [value: Record<string, string>];
+  "update:link": [value: string];
+  save: [];
+  "update:submitterEmail": [value: string];
+  "update:submitterComments": [value: string];
+}>();
 
 const modelValueProxy = ref(props.modelValue);
 const emailProxy = ref(props.submitterEmail ?? props.email);
 const commentsProxy = ref(props.submitterComments ?? props.comments);
-const saveModalErrorsProxy = ref({ ...props.saveModalErrors });
-const linkProxy = ref(props.link);
+const saveModalErrorsProxy = ref<Record<string, string>>({
+  ...props.saveModalErrors,
+});
+const linkProxy = ref(props.link ?? "");
 
 watch(
   () => props.modelValue,
@@ -102,7 +101,7 @@ watch(modelValueProxy, (val) => {
 watch(
   () => [props.submitterEmail, props.email],
   ([newEmail, legacyEmail]) => {
-    emailProxy.value = newEmail ?? legacyEmail;
+    emailProxy.value = (newEmail ?? legacyEmail) as string;
   },
 );
 watch(emailProxy, (val) => {
@@ -113,7 +112,7 @@ watch(emailProxy, (val) => {
 watch(
   () => [props.submitterComments, props.comments],
   ([newVal, legacyVal]) => {
-    commentsProxy.value = newVal ?? legacyVal;
+    commentsProxy.value = (newVal ?? legacyVal) as string;
   },
 );
 watch(commentsProxy, (val) => {
@@ -134,7 +133,7 @@ watch(saveModalErrorsProxy, (val) => {
 watch(
   () => props.link,
   (val) => {
-    linkProxy.value = val;
+    linkProxy.value = val ?? "";
   },
 );
 watch(linkProxy, (val) => {
@@ -155,9 +154,12 @@ function validateSaveModal() {
     return true;
   } catch (error) {
     if (error instanceof z.ZodError) {
-      const errors = {};
+      const errors: Record<string, string> = {};
       error.errors.forEach((err) => {
-        errors[err.path[0]] = err.message;
+        const key = err.path[0];
+        if (key !== undefined) {
+          errors[String(key)] = err.message;
+        }
       });
       saveModalErrorsProxy.value = errors;
     }

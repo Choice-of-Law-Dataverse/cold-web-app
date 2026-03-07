@@ -23,16 +23,16 @@
   </UModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from "vue";
 
-const props = defineProps({
-  modelValue: {
-    type: Boolean,
-    required: true,
-  },
-});
-const emit = defineEmits(["update:modelValue", "confirm-cancel"]);
+const props = defineProps<{
+  modelValue: boolean;
+}>();
+const emit = defineEmits<{
+  "update:modelValue": [value: boolean];
+  "confirm-cancel": [];
+}>();
 
 const modelValueProxy = ref(props.modelValue);
 

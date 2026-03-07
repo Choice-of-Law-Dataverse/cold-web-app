@@ -1,6 +1,6 @@
 <template>
   <div
-    :key="formattedJurisdiction + formattedTheme + legalFamily"
+    :key="`${formattedJurisdiction.join()}-${formattedTheme.join()}-${legalFamily.join()}`"
     class="header-container flex flex-wrap items-center justify-between gap-3"
   >
     <template v-if="cardType === 'Loading'" />
@@ -39,59 +39,50 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { parseJurisdictionString } from "@/utils/jurisdictionParser";
 import CardTags from "@/components/ui/CardTags.vue";
 import CardActions from "@/components/ui/CardActions.vue";
 
-const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
+const emit = defineEmits<{
+  save: [];
+  "open-save-modal": [];
+  "open-cancel-modal": [];
+}>();
 
-const props = defineProps({
-  resultData: {
-    type: Object,
-    required: true,
+const props = withDefaults(
+  defineProps<{
+    resultData: Record<string, unknown>;
+    cardType: string;
+    showSuggestEdit?: boolean;
+    showOpenLink?: boolean;
+    formattedJurisdiction?: string[];
+    formattedTheme?: string[];
+    headerMode?: string;
+  }>(),
+  {
+    showSuggestEdit: true,
+    showOpenLink: true,
+    formattedJurisdiction: () => [],
+    formattedTheme: () => [],
+    headerMode: "default",
   },
-  cardType: {
-    type: String,
-    required: true,
-  },
-  showSuggestEdit: {
-    type: Boolean,
-    default: true,
-  },
-  showOpenLink: {
-    type: Boolean,
-    default: true,
-  },
-  formattedJurisdiction: {
-    type: Array,
-    required: false,
-    default: () => [],
-  },
-  formattedTheme: {
-    type: Array,
-    required: false,
-    default: () => [],
-  },
-  headerMode: {
-    type: String,
-    default: "default",
-  },
-});
+);
 
 const formattedJurisdiction = computed(() => {
   if (props.formattedJurisdiction.length > 0) {
     return props.formattedJurisdiction;
   }
-  const jurisdictionString =
+  const jurisdictionString = String(
     props.resultData.jurisdictionName ||
-    props.resultData.jurisdictionNames ||
-    props.resultData.nameFromJurisdiction ||
-    props.resultData.Jurisdiction ||
-    props.resultData.Jurisdictions ||
-    props.resultData.Instrument ||
-    "";
+      props.resultData.jurisdictionNames ||
+      props.resultData.nameFromJurisdiction ||
+      props.resultData.Jurisdiction ||
+      props.resultData.Jurisdictions ||
+      props.resultData.Instrument ||
+      "",
+  );
 
   if (!jurisdictionString) {
     return [];
@@ -101,7 +92,7 @@ const formattedJurisdiction = computed(() => {
 });
 
 const formattedSourceTable = computed(() => {
-  return props.cardType || props.resultData?.sourceTable || "";
+  return props.cardType || String(props.resultData?.sourceTable ?? "");
 });
 
 const adjustedSourceTable = computed(() => {
@@ -160,7 +151,9 @@ const formattedTheme = computed(() => {
   }
 
   if (props.cardType === "Literature" && props.resultData.themes) {
-    return props.resultData.themes.split(",").map((theme) => theme.trim());
+    return String(props.resultData.themes)
+      .split(",")
+      .map((theme: string) => theme.trim());
   }
 
   const themes =
@@ -170,7 +163,13 @@ const formattedTheme = computed(() => {
     return [];
   }
 
-  return [...new Set(themes.split(",").map((theme) => theme.trim()))];
+  return [
+    ...new Set(
+      String(themes)
+        .split(",")
+        .map((theme: string) => theme.trim()),
+    ),
+  ];
 });
 
 const legalFamily = computed(() => {
@@ -178,12 +177,12 @@ const legalFamily = computed(() => {
     props.resultData &&
     (props.cardType === "Jurisdiction" || props.resultData.legalFamily)
   ) {
-    const value = props.resultData.legalFamily || "";
+    const value = String(props.resultData.legalFamily || "");
     if (!value || value === "N/A") return [];
     return value
       .split(",")
-      .map((f) => f.trim())
-      .filter((f) => f);
+      .map((f: string) => f.trim())
+      .filter((f: string) => f);
   }
   return [];
 });

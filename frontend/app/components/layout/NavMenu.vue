@@ -4,7 +4,7 @@
       <template v-if="!showMenu">
         <button
           class="menu-button custom-nav-links"
-          :aria-expanded="showMenu.toString()"
+          :aria-expanded="showMenu"
           aria-controls="mobile-nav-menu"
           @click="openMenu"
         >
@@ -78,25 +78,26 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from "vue";
 import { useRoute } from "vue-router";
 import { aboutNavLinks, learnNavLinks } from "@/config/navigation";
 
-defineProps({
-  isMobile: {
-    type: Boolean,
-    default: false,
-  },
-  hidden: {
-    type: Boolean,
-    default: false,
-  },
+interface Props {
+  isMobile?: boolean;
+  hidden?: boolean;
+}
+
+withDefaults(defineProps<Props>(), {
+  isMobile: false,
+  hidden: false,
 });
 
 const route = useRoute();
 
-const basePath = (arr) => `/${arr[0].path.split("/")[1]}`;
+function basePath(arr: { path: string }[]): string {
+  return `/${arr[0]?.path.split("/")[1] ?? ""}`;
+}
 
 const links = [
   { label: "About", to: basePath(aboutNavLinks) },
@@ -106,28 +107,28 @@ const links = [
 
 const showMenu = ref(false);
 
-function openMenu() {
+function openMenu(): void {
   showMenu.value = true;
   document.addEventListener("mousedown", handleClickAway);
 }
 
-function closeMenu() {
+function closeMenu(): void {
   showMenu.value = false;
   document.removeEventListener("mousedown", handleClickAway);
 }
 
-function handleClickAway(e) {
+function handleClickAway(e: MouseEvent): void {
   if (!showMenu.value) return;
   const nav = document.querySelector("nav");
-  if (nav && !nav.contains(e.target)) {
+  if (nav && !nav.contains(e.target as Node)) {
     closeMenu();
   }
 }
 
-function handleClickOutsideMenu(event) {
+function handleClickOutsideMenu(event: MouseEvent): void {
   if (!showMenu.value) return;
   const nav = document.querySelector("nav");
-  if (nav && !nav.contains(event.target)) {
+  if (nav && !nav.contains(event.target as Node)) {
     closeMenu();
   }
 }

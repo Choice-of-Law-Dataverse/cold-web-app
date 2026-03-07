@@ -38,25 +38,25 @@
       <!-- Slot for Amended by -->
       <template #amendedby="{ value }">
         <DetailRow v-if="value" :label="domesticInstrumentLabels.amendedBy">
-          <InstrumentLink :id="value" table="Domestic Instruments" />
+          <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
       <!-- Slot for Amends -->
       <template #amends="{ value }">
         <DetailRow v-if="value" :label="domesticInstrumentLabels.Amends">
-          <InstrumentLink :id="value" table="Domestic Instruments" />
+          <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
       <!-- Slot for Replaced by -->
       <template #replacedby="{ value }">
         <DetailRow v-if="value" :label="domesticInstrumentLabels.replacedBy">
-          <InstrumentLink :id="value" table="Domestic Instruments" />
+          <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
       <!-- Slot for Replaces -->
       <template #replaces="{ value }">
         <DetailRow v-if="value" :label="domesticInstrumentLabels.Replaces">
-          <InstrumentLink :id="value" table="Domestic Instruments" />
+          <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
       <!-- Slot for Compatibility section -->
@@ -86,14 +86,18 @@
       <template #domesticlegalprovisions="{ value }">
         <!-- Only render if value exists and is not "N/A" -->
         <DetailRow
-          v-if="value && value.trim() && value.trim() !== 'N/A'"
+          v-if="
+            value &&
+            (value as string).trim() &&
+            (value as string).trim() !== 'N/A'
+          "
           :label="domesticInstrumentLabels.domesticLegalProvisions"
           :tooltip="domesticInstrumentTooltips.domesticLegalProvisions"
         >
           <div class="provisions-container">
             <LegalProvision
               v-for="(provisionId, index) in getSortedProvisionIdsForInstrument(
-                value,
+                value as string,
               )"
               :key="index"
               :provision-id="provisionId"

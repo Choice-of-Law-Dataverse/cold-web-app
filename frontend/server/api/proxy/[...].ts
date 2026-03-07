@@ -10,11 +10,10 @@ export default defineEventHandler(async (event) => {
   const host = getHeader(event, "host");
 
   const allowedOrigins = [
-    `http://localhost:3000`,
     `https://${host}`,
     `http://${host}`,
     config.public.siteUrl,
-  ];
+  ].filter(Boolean);
 
   const isValidOrigin =
     !origin ||

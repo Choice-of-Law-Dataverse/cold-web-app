@@ -11,7 +11,6 @@
       @open-save-modal="openSaveModal"
       @open-cancel-modal="showCancelModal = true"
     >
-      <!-- Always render this section, even if keyLabelPairs is empty -->
       <div class="section-gap m-0 grid grid-cols-1 gap-8 p-0 md:grid-cols-2">
         <UFormField size="lg" hint="Required" :error="errors.abbreviation">
           <template #label>
@@ -77,16 +76,18 @@
         :date="date || null"
         :pdf-file="pdfFile"
         :link="url"
-        @update:email="(val) => (email = val)"
-        @update:comments="(val) => (comments = val)"
-        @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
+        @update:email="(val: string) => (email = val)"
+        @update:comments="(val: string) => (comments = val)"
+        @update:save-modal-errors="
+          (val: Record<string, string>) => (saveModalErrors = val)
+        "
         @save="handleNewSave"
       />
     </ClientOnly>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useHead, useRouter } from "#imports";
 import { z } from "zod";
@@ -104,13 +105,13 @@ definePageMeta({
   middleware: ["auth"],
 });
 
-const date = ref(null);
+const date = ref<Date | undefined>(undefined);
 
 const abbreviation = ref("");
 const title = ref("");
 const url = ref("");
 const specialists = ref([""]);
-const pdfFile = ref(null);
+const pdfFile = ref<File | null>(null);
 const email = ref("");
 const comments = ref("");
 
@@ -121,8 +122,8 @@ const formSchema = z.object({
     .min(3, { message: "Abbreviation must be at least 3 characters long" }),
 });
 
-const errors = ref({});
-const saveModalErrors = ref({});
+const errors = ref<Record<string, string>>({});
+const saveModalErrors = ref<Record<string, string>>({});
 
 const router = useRouter();
 defineEmits(["close-cancel-modal", "close-save-modal"]);
@@ -145,9 +146,10 @@ function validateForm() {
   } catch (error) {
     if (error instanceof z.ZodError) {
       errors.value = {};
-      error.errors.forEach((err) => {
-        errors.value[err.path[0]] = err.message;
-      });
+      for (const err of error.errors) {
+        const field = String(err.path[0]);
+        errors.value[field] = err.message;
+      }
     }
     return false;
   }
@@ -170,7 +172,7 @@ function handleNewSave() {
     abbreviation: abbreviation.value,
     title: title.value || undefined,
     url: url.value || undefined,
-    attachment: "", // ignored for now
+    attachment: "",
     instrument_date: date.value ? format(date.value, "yyyy-MM-dd") : undefined,
     submitter_comments: comments.value || undefined,
   };
@@ -180,7 +182,7 @@ function handleNewSave() {
       const { useApiClient } = await import("@/composables/useApiClient");
       const { apiClient } = useApiClient();
       await apiClient("/suggestions/regional-instruments", {
-        body: payload,
+        body: payload as unknown as import("~/types/api").ApiRequestBody,
         headers: {
           source: "cold.global",
         },
@@ -191,19 +193,17 @@ function handleNewSave() {
         path: "/confirmation",
         query: { message: "Thanks, we have received your submission." },
       });
-    } catch (err) {
+    } catch {
       saveModalErrors.value = {
         general:
           "There was a problem submitting your suggestion. Please try again.",
       };
-      console.error("Submission failed:", err);
     }
   })();
 }
 </script>
 
 <style scoped>
-/* Hide the back button and all right-side card header buttons */
 :deep(.card-header__actions),
 :deep(.card-header [class*="actions"]) {
   display: none;

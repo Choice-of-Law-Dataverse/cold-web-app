@@ -26,7 +26,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRouter } from "vue-router";
 import { ref } from "vue";
 import eventBus from "@/eventBus";
@@ -41,7 +41,7 @@ const searchSuggestions = ref([
   "International Arbitration",
 ]);
 
-function handleSuggestionClick(suggestion) {
+function handleSuggestionClick(suggestion: string) {
   eventBus.emit("update-search", suggestion);
 
   router.push({

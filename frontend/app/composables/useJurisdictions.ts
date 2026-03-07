@@ -6,6 +6,7 @@ import type {
   JurisdictionCount,
   TableName,
 } from "@/types/api";
+import { flagUrl } from "@/config/assets";
 
 const EMPTY_SET = new Set<string>();
 const EMPTY_MAP = new Map<string, ProcessedJurisdiction>();
@@ -40,9 +41,7 @@ function processJurisdiction(
     label: record.Name as string,
     alpha3Code: record.alpha3Code,
     avatar: record.alpha3Code
-      ? `https://choiceoflaw.blob.core.windows.net/assets/flags/${String(
-          record.alpha3Code,
-        ).toLowerCase()}.svg`
+      ? flagUrl(String(record.alpha3Code))
       : undefined,
     answerCoverage: record.answerCoverage,
   };

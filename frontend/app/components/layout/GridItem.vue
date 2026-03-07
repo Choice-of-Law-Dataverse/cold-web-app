@@ -4,36 +4,19 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 
-const props = defineProps({
-  cols: {
-    type: [Number, String],
-    default: 12,
-    validator: (value) => {
-      const num = Number(value);
-      return num >= 1 && num <= 12;
-    },
-  },
-  mdCols: {
-    type: [Number, String],
-    default: null,
-    validator: (value) => {
-      if (value === null) return true;
-      const num = Number(value);
-      return num >= 1 && num <= 12;
-    },
-  },
-  lgCols: {
-    type: [Number, String],
-    default: null,
-    validator: (value) => {
-      if (value === null) return true;
-      const num = Number(value);
-      return num >= 1 && num <= 12;
-    },
-  },
+interface Props {
+  cols?: number | string;
+  mdCols?: number | string | null;
+  lgCols?: number | string | null;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  cols: 12,
+  mdCols: null,
+  lgCols: null,
 });
 
 const columnClasses = computed(() => {

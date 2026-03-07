@@ -50,44 +50,45 @@
   <LazyCiteModal v-model="isCiteOpen" />
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, defineAsyncComponent } from "vue";
 
 const LazyCiteModal = defineAsyncComponent(
   () => import("@/components/ui/CiteModal.vue"),
 );
 
-const props = defineProps({
-  resultData: {
-    type: Object,
-    required: true,
+const props = withDefaults(
+  defineProps<{
+    resultData: Record<string, unknown>;
+    showSuggestEdit?: boolean;
+    showOpenLink?: boolean;
+    headerMode?: string;
+  }>(),
+  {
+    showSuggestEdit: true,
+    showOpenLink: true,
+    headerMode: "default",
   },
-  showSuggestEdit: {
-    type: Boolean,
-    default: true,
-  },
-  showOpenLink: {
-    type: Boolean,
-    default: true,
-  },
-  headerMode: {
-    type: String,
-    default: "default",
-  },
-});
+);
 
-defineEmits(["open-save-modal"]);
+defineEmits<{
+  "open-save-modal": [];
+}>();
 
 const isCiteOpen = ref(false);
 
-function sanitizeFilename(filename) {
+function sanitizeFilename(filename: string): string {
   return filename
     .replace(/[<>:"/\\|?*]/g, "")
     .replace(/\s+/g, "_")
     .substring(0, 200);
 }
 
-function downloadFile(content, filename, mimeType) {
+function downloadFile(
+  content: string,
+  filename: string,
+  mimeType: string,
+): void {
   const blob = new Blob([content], { type: mimeType });
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
@@ -101,12 +102,13 @@ function downloadFile(content, filename, mimeType) {
 
 function exportJSON() {
   const json = JSON.stringify(props.resultData, null, 2);
-  const title =
+  const title = String(
     props.resultData.Title ||
     props.resultData.caseTitle ||
     props.resultData.Name ||
     props.resultData.caseCitation ||
-    "export";
+    "export",
+  );
   const filename = `${sanitizeFilename(title)}.json`;
   downloadFile(json, filename, "application/json");
 }

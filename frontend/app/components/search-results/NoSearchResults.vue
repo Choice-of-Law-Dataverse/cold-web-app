@@ -54,7 +54,7 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useRoute } from "vue-router";
 import { computed } from "vue";
 import { useJurisdictionLookup } from "@/composables/useJurisdictions";
@@ -70,11 +70,11 @@ const jurisdictionFilter = computed(() => {
 });
 
 const queryContainsJurisdiction = computed(() => {
-  const q = (route.query.q || "").toLowerCase();
+  const q = String(route.query.q || "").toLowerCase();
   if (!q || !jurisdictions.value) return false;
 
   const words = q.split(/\s+/);
-  return words.some((word) => isJurisdictionTerm(word));
+  return words.some((word: string) => isJurisdictionTerm(word));
 });
 
 function removeJurisdictionFilter() {

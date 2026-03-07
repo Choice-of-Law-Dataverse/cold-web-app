@@ -117,7 +117,7 @@
         :instrument-id="instrumentApiId"
         @update:email="(val) => (email = val)"
         @update:comments="(val) => (comments = val)"
-        @update:save-modal-errors="(val) => (saveModalErrors.value = val)"
+        @update:save-modal-errors="handleSaveModalErrorsUpdate"
         @save="handleEditSave"
       />
     </ClientOnly>
@@ -125,9 +125,9 @@
   <div v-else>Page not found</div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, watch } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute, useRouter, useRuntimeConfig, useHead } from "#imports";
 import { z } from "zod";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import InfoPopover from "@/components/ui/InfoPopover.vue";
@@ -135,7 +135,6 @@ import DatePicker from "@/components/ui/DatePicker.vue";
 import SaveModal from "@/components/ui/SaveModal.vue";
 import CancelModal from "@/components/ui/CancelModal.vue";
 import { format, parseISO } from "date-fns";
-import { useHead } from "#imports";
 import { internationalInstrumentTooltips } from "@/config/tooltips";
 
 const tooltipInternationalInstrumentSpecialist =
@@ -146,6 +145,7 @@ const tooltipInternationalInstrumentLink =
 
 const route = useRoute();
 const router = useRouter();
+const config = useRuntimeConfig();
 const isEditPage = computed(() => {
   const slug = route.params.slug;
   return Array.isArray(slug) && slug.length === 2 && slug[1] === "edit";
@@ -159,18 +159,18 @@ const loading = ref(true);
 const name = ref("");
 const link = ref("");
 const specialists = ref([""]);
-const pdfFile = ref(null);
+const pdfFile = ref<File | null>(null);
 const pdfFileName = ref("");
 const date = ref(new Date());
 const email = ref("");
 const comments = ref("");
-const errors = ref({});
-const saveModalErrors = ref({});
+const errors = ref<Record<string, string>>({});
+const saveModalErrors = ref<Record<string, string>>({});
 const showSaveModal = ref(false);
 const showCancelModal = ref(false);
 const notificationBannerMessage =
   "Please back up your data when working here. Closing or reloading this window will delete everything. Data is only saved after you submit.";
-const instrumentApiId = ref(null);
+const instrumentApiId = ref<string | null>(null);
 
 const formSchema = z.object({
   name: z
@@ -195,11 +195,12 @@ function validateForm() {
     formSchema.parse(formData);
     errors.value = {};
     return true;
-  } catch (error) {
-    if (error instanceof z.ZodError) {
+  } catch (zodError) {
+    if (zodError instanceof z.ZodError) {
       errors.value = {};
-      error.errors.forEach((err) => {
-        errors.value[err.path[0]] = err.message;
+      zodError.errors.forEach((err) => {
+        const key = String(err.path[0]);
+        errors.value[key] = err.message;
       });
     }
     return false;
@@ -213,14 +214,13 @@ function openSaveModal() {
   }
 }
 
-function onPdfChange(event) {
-  let file = null;
+function onPdfChange(event: Event | FileList) {
+  let file: File | null = null;
   if (event instanceof FileList) {
     file = event[0] || null;
-  } else if (event && event.target && event.target.files) {
-    file = event.target.files[0] || null;
-  } else if (event && event.files) {
-    file = event.files[0] || null;
+  } else if (event instanceof Event) {
+    const target = event.target as HTMLInputElement | null;
+    file = target?.files?.[0] || null;
   }
   pdfFile.value = file;
   pdfFileName.value = file ? file.name : "";
@@ -229,8 +229,12 @@ function onPdfChange(event) {
 function addSpecialist() {
   specialists.value.push("");
 }
-function removeSpecialist(idx) {
+function removeSpecialist(idx: number) {
   specialists.value.splice(idx, 1);
+}
+
+function handleSaveModalErrorsUpdate(val: Record<string, string>) {
+  saveModalErrors.value = val;
 }
 
 function confirmCancel() {
@@ -277,7 +281,7 @@ async function fetchInstrument() {
     const data = JSON.parse(responseText);
     name.value = data.Name || data.titleInEnglish || "";
     specialists.value = data.Specialists
-      ? data.Specialists.split(",").map((s) => s.trim())
+      ? data.Specialists.split(",").map((s: string) => s.trim())
       : [""];
     date.value = data.Date ? parseISO(data.Date) : new Date();
     link.value = data.URL || "";
@@ -313,7 +317,7 @@ watch(
         link: [
           {
             rel: "canonical",
-            href: `https://cold.global${route.fullPath}`,
+            href: `${config.public.siteUrl}${route.fullPath}`,
           },
         ],
         meta: [

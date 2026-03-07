@@ -15,7 +15,6 @@
           header: 'sticky-header border-b-0 px-6 py-5',
         }"
       >
-        <!-- Header section: render only when showHeader is true -->
         <template v-if="showHeader" #header>
           <BaseCardHeader
             :result-data="resultData"
@@ -41,27 +40,21 @@
 
         <slot name="full-width" />
 
-        <!-- Gradient divider between header and content -->
         <div class="gradient-top-border" />
 
-        <!-- Main content -->
         <div class="flex">
           <div
             class="main-content flex w-full flex-col gap-2 px-4 py-4 sm:px-6 sm:py-6"
           >
-            <!-- Render custom slot content (e.g., form fields) before keyLabelPairs -->
             <slot />
-            <!-- Loop over keyLabelPairs to display each key-value pair dynamically -->
             <template v-for="(item, index) in keyLabelPairs" :key="index">
               <section
                 v-if="shouldDisplayValue(item, resultData?.[item.key])"
                 class="detail-section"
               >
-                <!-- Check if it's the special 'Specialist' key -->
                 <template v-if="item.key === 'Region'">
                   <slot />
                 </template>
-                <!-- Check for slot first -->
                 <template
                   v-if="$slots[item.key.replace(/ /g, '-').toLowerCase()]"
                 >
@@ -70,9 +63,7 @@
                     :value="resultData?.[item.key]"
                   />
                 </template>
-                <!-- If no slot, use default display -->
                 <template v-else>
-                  <!-- Conditionally render the label and value container -->
                   <DetailRow :label="item.label" :tooltip="item.tooltip">
                     <template #label-actions>
                       <slot
@@ -81,7 +72,6 @@
                       />
                     </template>
 
-                    <!-- Conditionally render bullet list if Answer or Specialists is an array -->
                     <template
                       v-if="
                         (item.key === 'answer' || item.key === 'Specialists') &&
@@ -95,7 +85,7 @@
                           v-for="(line, i) in getDisplayValue(
                             item,
                             resultData?.[item.key],
-                          )"
+                          ) as string[]"
                           :key="i"
                           :class="
                             props.valueClassMap[item.key] ||
@@ -124,19 +114,17 @@
             <slot name="search-links" />
           </div>
         </div>
-        <!-- Contribute banner for uncovered jurisdictions -->
         <ContributeBanner
           v-if="shouldShowContributeBanner"
           :jurisdiction-name="contributeBannerJurisdictionName"
         />
-        <!-- Footer slot for full-width content like country report banner -->
         <slot name="footer" />
       </UCard>
     </template>
   </article>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { useSlots, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useCoveredCountries } from "@/composables/useJurisdictions";
@@ -147,71 +135,74 @@ import LoadingCard from "@/components/layout/LoadingCard.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 
-const props = defineProps({
-  loading: Boolean,
-  error: {
-    type: [Object, Error],
-    required: false,
-    default: null,
-  },
-  resultData: {
-    type: Object,
-    default: () => ({}),
-  },
-  keyLabelPairs: {
-    type: Array,
-    default: () => [],
-  },
-  valueClassMap: {
-    type: Object,
-    default: () => ({}),
-  },
-  formattedSourceTable: {
-    type: String,
-    default: "",
-  },
-  showHeader: {
-    type: Boolean,
-    default: true,
-  },
-  showOpenLink: {
-    type: Boolean,
-    default: false,
-  },
-  showSuggestEdit: {
-    type: Boolean,
-    default: false,
-  },
-  formattedJurisdiction: { type: Array, required: false, default: () => [] },
-  formattedTheme: { type: Array, required: false, default: () => [] },
-  headerMode: {
-    type: String,
-    default: "default",
-  },
-  showNotificationBanner: Boolean,
-  notificationBannerMessage: {
-    type: String,
-    default: "",
-  },
-  icon: {
-    type: String,
-    required: false,
-    default: "",
-  },
+interface EmptyValueBehavior {
+  action?: string;
+  fallback?: string;
+  getFallback?: (data: Record<string, unknown>) => string;
+  shouldDisplay?: (data: Record<string, unknown>) => boolean;
+  shouldHide?: (data: Record<string, unknown>) => boolean;
+}
+
+interface KeyLabelPair {
+  key: string;
+  label: string;
+  tooltip?: string;
+  emptyValueBehavior?: EmptyValueBehavior;
+  valueTransform?: (value: unknown) => unknown;
+}
+
+interface Props {
+  loading: boolean;
+  error?: Error | Record<string, unknown> | null;
+  resultData: Record<string, unknown>;
+  keyLabelPairs: KeyLabelPair[];
+  valueClassMap: Record<string, string>;
+  formattedSourceTable: string;
+  showHeader: boolean;
+  showOpenLink: boolean;
+  showSuggestEdit: boolean;
+  formattedJurisdiction: string[];
+  formattedTheme: string[];
+  headerMode: string;
+  showNotificationBanner: boolean;
+  notificationBannerMessage: string;
+  icon: string;
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  loading: false,
+  error: null,
+  resultData: () => ({}),
+  keyLabelPairs: () => [],
+  valueClassMap: () => ({}),
+  formattedSourceTable: "",
+  showHeader: true,
+  showOpenLink: false,
+  showSuggestEdit: false,
+  formattedJurisdiction: () => [],
+  formattedTheme: () => [],
+  headerMode: "default",
+  showNotificationBanner: false,
+  notificationBannerMessage: "",
+  icon: "",
 });
 
-const emit = defineEmits(["save", "open-save-modal", "open-cancel-modal"]);
+const emit = defineEmits<{
+  save: [];
+  "open-save-modal": [];
+  "open-cancel-modal": [];
+}>();
 
 const route = useRoute();
 const isJurisdictionPage = route.path.startsWith("/jurisdiction/");
 const isQuestionPage = route.path.startsWith("/question/");
-const jurisdictionCode = ref(null);
+const jurisdictionCode = ref<string | null>(null);
 const { data: coveredCountriesSet } = useCoveredCountries();
 const shouldShowBanner = ref(false);
 
 watch(
   () => props.resultData,
-  (newData) => {
+  (newData: Record<string, unknown>) => {
     if (!newData) return;
 
     const rawJurisdiction = isJurisdictionPage
@@ -240,31 +231,32 @@ watchEffect(() => {
   }
 });
 
-// Computed properties for contribute banner
-const shouldShowContributeBanner = computed(() => {
+const shouldShowContributeBanner = computed((): boolean => {
   return (
     shouldShowBanner.value &&
-    (props.resultData?.Name || props.resultData?.["Jurisdictions"])
+    !!(props.resultData?.Name || props.resultData?.["Jurisdictions"])
   );
 });
 
-const contributeBannerJurisdictionName = computed(() => {
-  return props.resultData?.Name || props.resultData?.["Jurisdictions"] || "";
+const contributeBannerJurisdictionName = computed((): string => {
+  return (
+    (props.resultData?.Name as string) ||
+    (props.resultData?.["Jurisdictions"] as string) ||
+    ""
+  );
 });
 
 const slots = useSlots();
 
-// Slots that fetch their own data and should always be shown
 const selfFetchingSlots = new Set([
   "oupchapter",
   "relatedliterature",
   "literature",
 ]);
 
-const shouldDisplayValue = (item, value) => {
+function shouldDisplayValue(item: KeyLabelPair, value: unknown): boolean {
   const slotName = item.key.replace(/ /g, "-").toLowerCase();
 
-  // Only bypass value check for slots that fetch their own data
   if (slots[slotName] && selfFetchingSlots.has(slotName)) return true;
 
   if (!item.emptyValueBehavior) return true;
@@ -287,9 +279,9 @@ const shouldDisplayValue = (item, value) => {
     return false;
   }
   return true;
-};
+}
 
-const getDisplayValue = (item, value) => {
+function getDisplayValue(item: KeyLabelPair, value: unknown): unknown {
   if (item.valueTransform) {
     return item.valueTransform(value);
   }
@@ -319,7 +311,7 @@ const getDisplayValue = (item, value) => {
     return "—";
   }
   return value;
-};
+}
 </script>
 
 <style scoped>

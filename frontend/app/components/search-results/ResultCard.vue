@@ -46,31 +46,23 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { UCard } from "#components";
 import BaseCardHeader from "@/components/ui/CardHeader.vue";
 
-const props = defineProps({
-  resultData: {
-    type: Object,
-    required: false,
-    default: () => ({}),
+const props = withDefaults(
+  defineProps<{
+    resultData?: Record<string, unknown>;
+    cardType: string;
+    formattedTheme?: string[];
+    formattedJurisdiction?: string[];
+  }>(),
+  {
+    resultData: () => ({}),
+    formattedTheme: () => [],
+    formattedJurisdiction: () => [],
   },
-  cardType: {
-    type: String,
-    required: true,
-  },
-  formattedTheme: {
-    type: Array,
-    required: false,
-    default: () => [],
-  },
-  formattedJurisdiction: {
-    type: Array,
-    required: false,
-    default: () => [],
-  },
-});
+);
 
 function getCardLink() {
   switch (props.cardType) {

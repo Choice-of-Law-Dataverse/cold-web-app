@@ -6,8 +6,8 @@
     :error="error"
   >
     <FlagTitleYearItem
-      v-for="(instrument, index) in domesticInstruments?.slice(0, 9)"
-      :key="index"
+      v-for="instrument in domesticInstruments?.slice(0, 9)"
+      :key="instrument.ID"
       :to="`/domestic-instrument/${instrument.ID}`"
       :iso3="instrument.jurisdictionsAlpha3Code || ''"
       :title="instrument.titleInEnglish || ''"

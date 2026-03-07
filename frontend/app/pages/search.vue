@@ -21,32 +21,33 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, watch, computed, nextTick } from "vue";
 import { useRoute } from "vue-router";
 import SearchResults from "@/components/search-results/SearchResults.vue";
 import { useSearch } from "@/composables/useSearch";
 import { useHead, useSeoMeta } from "#imports";
+import type { SearchFilters, SearchParams } from "@/types/api";
 
 useSeoMeta({
   robots: "noindex, follow",
 });
 
 const route = useRoute();
-const searchQuery = ref(route.query.q || "");
+const searchQuery = ref(String(route.query.q || ""));
 
-const filter = ref({
-  jurisdiction: route.query.jurisdiction,
-  sortBy: route.query.sortBy || "relevance",
-  theme: route.query.theme,
-  type: route.query.type,
+const filter = ref<SearchFilters>({
+  jurisdiction: route.query.jurisdiction as string | undefined,
+  sortBy: (route.query.sortBy as SearchFilters["sortBy"]) || "relevance",
+  theme: route.query.theme as string | undefined,
+  type: route.query.type as string | undefined,
 });
 
-const searchText = ref(route.query.q || "");
+const searchText = ref(String(route.query.q || ""));
 
 const isInitialized = ref(false);
 
-const searchParams = computed(() => {
+const searchParams = computed<SearchParams>(() => {
   if (!isInitialized.value) {
     return {
       filters: {},
@@ -85,15 +86,15 @@ const loading = computed(() => isLoading.value || isFetchingNextPage.value);
 const apiError = computed(() => error.value?.message || null);
 
 watch(searchQuery, (newQuery) => {
-  searchText.value = newQuery || "";
+  searchText.value = String(newQuery || "");
 });
 
 watch(
   searchQuery,
   (newQuery) => {
+    const q = String(newQuery || "");
     useHead({
-      title:
-        newQuery && newQuery.trim() ? `${newQuery} — CoLD` : "Search — CoLD",
+      title: q.trim() ? `${q} — CoLD` : "Search — CoLD",
     });
   },
   { immediate: true },
@@ -105,23 +106,25 @@ watch(
     if (route.name !== "search") return;
     if (JSON.stringify(newFilters) === JSON.stringify(oldFilters)) return;
 
-    const query = {
-      ...route.query,
+    const query: Record<string, string | undefined> = {
+      q: String(route.query.q || ""),
       jurisdiction: newFilters.jurisdiction,
       sortBy: newFilters.sortBy,
       theme: newFilters.theme,
       type: newFilters.type,
     };
 
-    if (!searchText.value.trim()) {
+    if (!String(searchText.value).trim()) {
       delete query.q;
     }
 
-    const cleanedQuery = Object.fromEntries(
-      Object.entries(query).filter(([_, value]) => value !== undefined),
-    );
+    const cleanedQuery: Record<string, string> = {};
+    for (const [key, value] of Object.entries(query)) {
+      if (value !== undefined) {
+        cleanedQuery[key] = value;
+      }
+    }
 
-    // Use navigateTo with replace option as recommended by Nuxt docs
     navigateTo({ path: "/search", query: cleanedQuery }, { replace: true });
   },
   { deep: true },
@@ -133,13 +136,15 @@ watch(
     // Don't update state if navigating away from search page
     if (route.name !== "search") return;
 
-    searchQuery.value = newQuery.q || "";
+    searchQuery.value = String(newQuery.q || "");
 
-    const newFilters = {};
-    if (newQuery.jurisdiction) newFilters.jurisdiction = newQuery.jurisdiction;
-    if (newQuery.sortBy) newFilters.sortBy = newQuery.sortBy;
-    if (newQuery.theme) newFilters.theme = newQuery.theme;
-    if (newQuery.type) newFilters.type = newQuery.type;
+    const newFilters: SearchFilters = {};
+    if (newQuery.jurisdiction)
+      newFilters.jurisdiction = String(newQuery.jurisdiction);
+    if (newQuery.sortBy)
+      newFilters.sortBy = String(newQuery.sortBy) as SearchFilters["sortBy"];
+    if (newQuery.theme) newFilters.theme = String(newQuery.theme);
+    if (newQuery.type) newFilters.type = String(newQuery.type);
 
     if (JSON.stringify(newFilters) !== JSON.stringify(filter.value)) {
       filter.value = newFilters;
@@ -161,7 +166,7 @@ function loadMoreResults() {
 }
 
 onMounted(() => {
-  searchText.value = route.query.q || "";
+  searchText.value = String(route.query.q || "");
 });
 </script>
 

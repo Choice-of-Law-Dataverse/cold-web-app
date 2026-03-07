@@ -30,15 +30,17 @@
   </UModal>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useRoute } from "vue-router";
 
-const props = defineProps({
-  modelValue: { type: Boolean, default: false },
-  title: { type: String, default: "" },
-});
-const emit = defineEmits(["update:modelValue"]);
+const props = defineProps<{
+  modelValue?: boolean;
+  title?: string;
+}>();
+const emit = defineEmits<{
+  "update:modelValue": [value: boolean];
+}>();
 
 const isOpen = computed({
   get: () => props.modelValue,
@@ -49,7 +51,7 @@ const route = useRoute();
 
 const pageTitle = ref("");
 const currentURL = ref("");
-let titleObserver;
+let titleObserver: MutationObserver | undefined;
 const copied = ref(false);
 const copying = ref(false);
 
@@ -82,7 +84,7 @@ onBeforeUnmount(() => {
   }
 });
 
-function slugToPageType(slug) {
+function slugToPageType(slug: string): string {
   switch (slug) {
     case "jurisdiction":
       return "Country Report";
@@ -106,7 +108,7 @@ function slugToPageType(slug) {
       if (!slug) return "Page";
       return slug
         .split("-")
-        .map((s) => s.charAt(0).toUpperCase() + s.slice(1))
+        .map((s: string) => s.charAt(0).toUpperCase() + s.slice(1))
         .join(" ");
     }
   }
@@ -125,22 +127,22 @@ const accessDate = computed(() => {
   return `${day} ${month} ${year}`;
 });
 
-const getTitle = (rawTitle, pageType) => {
+const getTitle = (rawTitle: string, pageType: string): string => {
   const tokens = rawTitle
     .split("—")
-    .map((s) => s.trim())
-    .filter((t) => t !== pageType);
+    .map((s: string) => s.trim())
+    .filter((t: string) => t !== pageType);
 
   let title = "";
   switch (pageType) {
     case "Question":
-      title = `'${tokens[1]}'  — ${tokens[0]}`;
+      title = `'${tokens[1] ?? ""}'  — ${tokens[0] ?? ""}`;
       break;
     case "Literature":
-      title = `'${tokens[0]}'`;
+      title = `'${tokens[0] ?? ""}'`;
       break;
     default:
-      title = tokens[0];
+      title = tokens[0] ?? "";
   }
   return `${title} — ${pageType}`;
 };

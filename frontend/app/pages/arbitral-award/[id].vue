@@ -9,8 +9,12 @@
       :error="error"
       :data="arbitralAward || {}"
       :labels="arbitralAwardLabels"
-      :formatted-jurisdiction="arbitralAward?.formattedJurisdictions || []"
-      :formatted-theme="arbitralAward?.formattedThemes || []"
+      :formatted-jurisdiction="
+        arbitralAward?.formattedJurisdictions?.map((j) => j.Name) || []
+      "
+      :formatted-theme="
+        arbitralAward?.formattedThemes?.map((t) => t.Theme) || []
+      "
       :show-suggest-edit="true"
     >
       <template #footer>

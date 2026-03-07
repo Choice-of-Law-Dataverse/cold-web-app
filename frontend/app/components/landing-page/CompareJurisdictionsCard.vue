@@ -41,17 +41,21 @@
   </UCard>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
-defineProps({
-  title: { type: String, default: "Compare Jurisdictions" },
-  comparisons: {
-    type: Array,
-    required: true,
-    validator: (value) => value.every((comp) => comp.left && comp.right),
-  },
-});
+interface Comparison {
+  left: string;
+  right: string;
+}
+
+withDefaults(
+  defineProps<{
+    title?: string;
+    comparisons: Comparison[];
+  }>(),
+  { title: "Compare Jurisdictions" },
+);
 </script>
 
 <style scoped>

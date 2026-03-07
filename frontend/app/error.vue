@@ -18,12 +18,13 @@
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import Nav from "@/components/layout/Nav.vue";
 import Footer from "@/components/layout/Footer.vue";
 import { useRoute } from "vue-router";
 
 const route = useRoute();
-const errorMessage =
-  route.query.message || "Sorry, we can’t find the page you’re looking for.";
+const errorMessage = String(
+  route.query.message || "Sorry, we can’t find the page you’re looking for.",
+);
 </script>

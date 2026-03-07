@@ -2,11 +2,7 @@
   <UPopover
     :popper="{ placement }"
     :ui="{
-      background: 'bg-cold-night',
-      ring: '',
-      rounded: 'rounded-lg',
-      shadow: 'shadow-lg',
-      base: 'overflow-hidden',
+      content: 'bg-cold-night rounded-lg shadow-lg overflow-hidden',
     }"
   >
     <button
@@ -25,7 +21,7 @@
   </UPopover>
 </template>
 
-<script setup>
+<script setup lang="ts">
 defineProps({
   text: {
     type: String,

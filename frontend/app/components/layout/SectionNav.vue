@@ -16,30 +16,36 @@
   </nav>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { aboutNavLinks } from "@/config/navigation";
 
-const props = defineProps({
-  links: {
-    type: Array,
-    default: () => aboutNavLinks,
-  },
+interface NavLink {
+  label: string;
+  key: string;
+  path: string;
+}
+
+interface Props {
+  links?: NavLink[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  links: () => aboutNavLinks,
 });
 
-const links = props.links;
 const router = useRouter();
 const route = useRoute();
 
 const activeTab = computed(() => {
   const segment = route.path.split("/").pop();
-  return segment || links[0].key;
+  return segment || props.links[0]?.key || "";
 });
 
-const setActiveTab = (path) => {
+function setActiveTab(path: string): void {
   router.push(path);
-};
+}
 </script>
 
 <style scoped>

@@ -6,10 +6,8 @@ import {
 } from "@/types/errors";
 import type { ApiRequestBody } from "~/types/api";
 
-/**
- * Shared API client hook for TanStack Query composables
- * Provides configured fetch function that uses server-side proxy for secure API calls
- */
+const DEFAULT_API_TIMEOUT_MS = 30_000;
+
 export function useApiClient() {
   const config = useRuntimeConfig();
 
@@ -26,7 +24,7 @@ export function useApiClient() {
     const {
       body,
       method = "POST",
-      timeout = 30000,
+      timeout = DEFAULT_API_TIMEOUT_MS,
       responseType = "json",
       headers: customHeaders,
     } = options;
