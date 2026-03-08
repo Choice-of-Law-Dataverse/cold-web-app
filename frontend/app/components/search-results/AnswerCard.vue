@@ -147,7 +147,7 @@ const literatureItems = computed(() => {
   return literatureIds.value
     .map((id, i) => {
       const record = literatureData.value[i];
-      const title = record?.Title;
+      const title = record?.title;
       const finalTitle = title && title !== "NA" ? title : id;
       return { id, title: finalTitle as string };
     })

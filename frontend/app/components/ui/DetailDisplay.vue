@@ -74,7 +74,7 @@
 
                     <template
                       v-if="
-                        (item.key === 'answer' || item.key === 'Specialists') &&
+                        (item.key === 'answer' || item.key === 'specialists') &&
                         Array.isArray(
                           getDisplayValue(item, resultData?.[item.key]),
                         )
@@ -208,7 +208,7 @@ watch(
     const rawJurisdiction = isJurisdictionPage
       ? route.params.id
       : isQuestionPage
-        ? newData.JurisdictionCode
+        ? newData.jurisdictionCode
         : null;
 
     jurisdictionCode.value =
@@ -234,14 +234,14 @@ watchEffect(() => {
 const shouldShowContributeBanner = computed((): boolean => {
   return (
     shouldShowBanner.value &&
-    !!(props.resultData?.Name || props.resultData?.["Jurisdictions"])
+    !!(props.resultData?.name || props.resultData?.jurisdictions)
   );
 });
 
 const contributeBannerJurisdictionName = computed((): string => {
   return (
-    (props.resultData?.Name as string) ||
-    (props.resultData?.["Jurisdictions"] as string) ||
+    (props.resultData?.name as string) ||
+    (props.resultData?.jurisdictions as string) ||
     ""
   );
 });

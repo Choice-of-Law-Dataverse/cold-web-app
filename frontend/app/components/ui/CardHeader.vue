@@ -78,9 +78,9 @@ const formattedJurisdiction = computed(() => {
     props.resultData.jurisdictionName ||
       props.resultData.jurisdictionNames ||
       props.resultData.nameFromJurisdiction ||
-      props.resultData.Jurisdiction ||
-      props.resultData.Jurisdictions ||
-      props.resultData.Instrument ||
+      props.resultData.jurisdiction ||
+      props.resultData.jurisdictions ||
+      props.resultData.instrument ||
       "",
   );
 

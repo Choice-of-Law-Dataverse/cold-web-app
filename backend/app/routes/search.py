@@ -1,14 +1,32 @@
+import re
+from typing import Any
+
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic.alias_generators import to_camel
 
 from app.auth import verify_frontend_request
+from app.schemas.details import TABLE_DETAIL_MODELS, AnyDetail, _DetailBase
 from app.schemas.records import AnyRecord, validate_record
 from app.schemas.requests import (
     CuratedDetailsRequest,
     FullTableRequest,
     FullTextSearchRequest,
 )
-from app.schemas.responses import CuratedDetailsRecord, FullTextSearchResponse, SpecialistResponse
+from app.schemas.responses import FullTextSearchResponse, SpecialistResponse
 from app.services.search import SearchService
+
+
+def _normalize_to_camel(key: str) -> str:
+    s = re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", key)
+    return to_camel(s.lower().rstrip("_"))
+
+
+def _camel_keys(obj: Any) -> Any:
+    if isinstance(obj, dict):
+        return {_normalize_to_camel(k): _camel_keys(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_camel_keys(item) for item in obj]
+    return obj
 
 
 def get_search_service() -> SearchService:
@@ -37,7 +55,8 @@ router = APIRouter(
             "content": {
                 "application/json": {
                     "example": {
-                        "test": False,
+                        "query": "example search",
+                        "filters": [{"column": "tables", "values": ["Answers"]}],
                         "total_matches": 2,
                         "page": 1,
                         "page_size": 2,
@@ -67,8 +86,8 @@ def handle_full_text_search(
     filters = body.filters or []
     page = body.page
     page_size = body.page_size
-    sort_by_date = getattr(body, "sort_by_date", False)
-    response_type = getattr(body, "response_type", "parsed")
+    sort_by_date = body.sort_by_date or False
+    response_type = body.response_type or "parsed"
 
     raw = search_service.full_text_search(
         search_string,
@@ -78,41 +97,26 @@ def handle_full_text_search(
         sort_by_date,
         response_type=response_type,
     )
-    validated_results = [validate_record(r) for r in raw.pop("results", [])]
+    validated_results = [validate_record(_camel_keys(r)) for r in raw.pop("results", [])]
     return FullTextSearchResponse(results=validated_results, **raw)
 
 
 @router.post(
     "/details",
-    summary="Fetch a curated record by CoLD ID including hop-1 relations",
-    description=("Given a user-facing table and a CoLD ID, returns the canonical record and its first-hop related entries."),
-    responses={
-        200: {
-            "description": "Flattened, mapping-transformed record.",
-            "content": {
-                "application/json": {
-                    "example": {
-                        "source_table": "Answers",
-                        "id": "CHE_15-TC",
-                        "Title": "…",
-                        "hop1_relations": {},
-                    }
-                }
-            },
-        },
-        404: {"description": "Record not found."},
-    },
+    summary="Fetch a curated record by CoLD ID including relations",
+    description="Given a table and a CoLD ID, returns the record with all first-hop relations in a standardized shape.",
+    response_model=AnyDetail,
+    responses={404: {"description": "Record not found."}},
 )
-def handle_curated_details_search(
+def handle_entity_detail(
     body: CuratedDetailsRequest,
     search_service: SearchService = Depends(get_search_service),
-) -> CuratedDetailsRecord:
-    table = body.table
-    record_id = body.id
-    response_type = getattr(body, "response_type", "parsed")
-
-    results = search_service.curated_details_search(table, record_id, response_type=response_type)
-    return CuratedDetailsRecord.model_validate(results)
+) -> AnyDetail:
+    result = search_service.get_entity_detail(body.table, body.id)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"No record found for {body.id} in {body.table}")
+    model = TABLE_DETAIL_MODELS.get(result.get("source_table", ""), _DetailBase)
+    return model.model_validate(result)
 
 
 @router.post(
@@ -160,7 +164,7 @@ def return_full_table(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e)) from e
 
-    return [validate_record(r) for r in results]
+    return [validate_record(_camel_keys(r)) for r in results]
 
 
 @router.get(

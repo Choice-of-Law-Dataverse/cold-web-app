@@ -1,35 +1,52 @@
-import type { AnswerResponse } from "./entities/answer";
+import type { AnswerResponse, AnswerDetailResponse } from "./entities/answer";
 import type {
   ArbitralAward,
   ArbitralAwardResponse,
+  ArbitralAwardDetailResponse,
 } from "./entities/arbitral-award";
 import type {
   ArbitralRule,
   ArbitralRuleResponse,
+  ArbitralRuleDetailResponse,
 } from "./entities/arbitral-rule";
 import type {
   CourtDecision,
   CourtDecisionResponse,
+  CourtDecisionDetailResponse,
 } from "./entities/court-decision";
 import type {
   DomesticInstrument,
   DomesticInstrumentResponse,
+  DomesticInstrumentDetailResponse,
 } from "./entities/domestic-instrument";
 import type {
   InternationalInstrument,
   InternationalInstrumentResponse,
+  InternationalInstrumentDetailResponse,
 } from "./entities/international-instrument";
-import type { JurisdictionResponse } from "./entities/jurisdiction";
+import type {
+  Jurisdiction,
+  JurisdictionResponse,
+  JurisdictionDetailResponse,
+} from "./entities/jurisdiction";
 import type {
   DomesticLegalProvisionResponse,
+  DomesticLegalProvisionDetailResponse,
   InternationalLegalProvisionResponse,
+  InternationalLegalProvisionDetailResponse,
   RegionalLegalProvisionResponse,
+  RegionalLegalProvisionDetailResponse,
 } from "./entities/legal-provision";
-import type { LiteratureResponse } from "./entities/literature";
+import type {
+  Literature,
+  LiteratureResponse,
+  LiteratureDetailResponse,
+} from "./entities/literature";
 import type { Question, QuestionResponse } from "./entities/question";
 import type {
   RegionalInstrument,
   RegionalInstrumentResponse,
+  RegionalInstrumentDetailResponse,
 } from "./entities/regional-instrument";
 
 export { ApiError } from "./errors";
@@ -115,21 +132,39 @@ export type TableResponseMap = {
   Specialists: Record<string, unknown>;
 };
 
+export type TableDetailMap = {
+  Answers: AnswerDetailResponse;
+  "Arbitral Awards": ArbitralAwardDetailResponse;
+  "Arbitral Rules": ArbitralRuleDetailResponse;
+  "Court Decisions": CourtDecisionDetailResponse;
+  "Domestic Instruments": DomesticInstrumentDetailResponse;
+  "Domestic Legal Provisions": DomesticLegalProvisionDetailResponse;
+  "International Instruments": InternationalInstrumentDetailResponse;
+  "International Legal Provisions": InternationalLegalProvisionDetailResponse;
+  Jurisdictions: JurisdictionDetailResponse;
+  "Leading Cases": CourtDecisionDetailResponse;
+  Literature: LiteratureDetailResponse;
+  Questions: AnswerDetailResponse;
+  "Regional Instruments": RegionalInstrumentDetailResponse;
+  "Regional Legal Provisions": RegionalLegalProvisionDetailResponse;
+  Specialists: Record<string, unknown>;
+};
+
 export type TableProcessedMap = {
-  Answers: AnswerResponse;
+  Answers: AnswerDetailResponse;
   "Arbitral Awards": ArbitralAward;
   "Arbitral Rules": ArbitralRule;
   "Court Decisions": CourtDecision;
   "Domestic Instruments": DomesticInstrument;
-  "Domestic Legal Provisions": DomesticLegalProvisionResponse;
+  "Domestic Legal Provisions": DomesticLegalProvisionDetailResponse;
   "International Instruments": InternationalInstrument;
-  "International Legal Provisions": InternationalLegalProvisionResponse;
-  Jurisdictions: JurisdictionResponse;
+  "International Legal Provisions": InternationalLegalProvisionDetailResponse;
+  Jurisdictions: Jurisdiction;
   "Leading Cases": CourtDecision;
-  Literature: LiteratureResponse;
+  Literature: Literature;
   Questions: Question;
   "Regional Instruments": RegionalInstrument;
-  "Regional Legal Provisions": RegionalLegalProvisionResponse;
+  "Regional Legal Provisions": RegionalLegalProvisionDetailResponse;
   Specialists: Record<string, unknown>;
 };
 

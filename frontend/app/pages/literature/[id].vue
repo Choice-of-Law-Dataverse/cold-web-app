@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1 v-if="literature?.Title" class="sr-only">
-      {{ literature.Title }}
+    <h1 v-if="literature?.title" class="sr-only">
+      {{ literature.title }}
     </h1>
     <BaseDetailLayout
       table="Literature"
@@ -15,12 +15,12 @@
       <!-- Title with PDF and Source Link -->
       <template #title="{ value }">
         <section v-if="value" class="section-gap">
-          <DetailRow :label="literatureLabels.Title">
+          <DetailRow :label="literatureLabels.title">
             <TitleWithActions>
               {{ value }}
               <template #actions>
                 <PdfLink
-                  :pdf-field="literature?.officialSourcePdf"
+                  :pdf-field="undefined"
                   :record-id="id"
                   folder-name="literatures"
                 />
@@ -46,8 +46,8 @@
       <template #publisher="{ value }">
         <section v-if="value" class="section-gap">
           <DetailRow
-            :label="literatureLabels.Publisher"
-            :tooltip="literatureTooltips.Publisher"
+            :label="literatureLabels.publisher"
+            :tooltip="literatureTooltips.publisher"
           >
             <span class="result-value-small">{{ value }}</span>
           </DetailRow>
@@ -89,19 +89,19 @@
       </template>
 
       <template #footer>
-        <LastModified :date="literature?.lastModified as string" />
+        <LastModified :date="literature?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
     <PageSeoMeta
-      :title-candidates="[literature?.Title as string]"
+      :title-candidates="[literature?.title as string]"
       fallback="Literature"
     />
 
     <EntityFeedback
       entity-type="literature"
       :entity-id="id"
-      :entity-title="literature?.Title as string"
+      :entity-title="literature?.title as string"
     />
   </div>
 </template>
@@ -135,7 +135,7 @@ const sourceUrl = computed(() => {
   if (literature.value.openAccessUrl) {
     return literature.value.openAccessUrl as string;
   }
-  return (literature.value.Url || "") as string;
+  return (literature.value.url || "") as string;
 });
 
 const sourceLinkLabel = computed(() => {
@@ -176,7 +176,7 @@ async function copyBibTeX() {
 
 function exportBibTeX() {
   const bibtex = bibtexContent.value;
-  const rawTitle = (literature.value?.Title || "literature") as string;
+  const rawTitle = (literature.value?.title || "literature") as string;
   const filename = `${sanitizeFilename(rawTitle)}.bib`;
   downloadFile(bibtex, filename, "application/x-bibtex");
 }

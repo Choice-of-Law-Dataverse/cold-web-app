@@ -9,8 +9,8 @@ import { useQuery } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
 import type { TableName, TableResponseMap, TypedFilter } from "@/types/api";
 import {
-  type Literature,
-  processLiterature,
+  type LiteratureDisplay,
+  processLiteratureRecord,
 } from "@/types/entities/literature";
 import { formatYear } from "@/utils/format";
 
@@ -138,11 +138,11 @@ export function useLiteratureByJurisdiction(jurisdiction: Ref<string>) {
     { column: "Jurisdiction" as const, value: jurisdiction.value },
   ]);
 
-  return useFullTableWithFilters<"Literature", Literature>(
+  return useFullTableWithFilters<"Literature", LiteratureDisplay>(
     "Literature",
     filters,
     {
-      process: processLiterature,
+      process: processLiteratureRecord,
       enabled: () => Boolean(jurisdiction.value),
     },
   );

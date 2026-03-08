@@ -56,7 +56,7 @@ migrate_suggestions: ## Apply Alembic migrations to the suggestions database
 		exit 1; \
 	fi; \
 	echo "$(GREEN)Applying suggestions migrations$(RESET)"; \
-	ALEMBIC_SQL_CONN_STRING="$$SUGGESTIONS_SQL_CONN_STRING" uv run alembic upgrade head
+	ALEMBIC_SQL_CONN_STRING="$$SUGGESTIONS_SQL_CONN_STRING" uv run alembic -c alembic_suggestions/alembic.ini upgrade head
 
 .PHONY: revert_migration
 revert_migration: ## Revert the last Alembic migration (use STEPS=n to revert n migrations)
@@ -67,7 +67,7 @@ revert_migration: ## Revert the last Alembic migration (use STEPS=n to revert n 
 	fi; \
 	STEPS=$${STEPS:-1}; \
 	echo "$(YELLOW)Reverting $$STEPS migration(s)$(RESET)"; \
-	ALEMBIC_SQL_CONN_STRING="$$SUGGESTIONS_SQL_CONN_STRING" uv run alembic downgrade -$$STEPS
+	ALEMBIC_SQL_CONN_STRING="$$SUGGESTIONS_SQL_CONN_STRING" uv run alembic -c alembic_suggestions/alembic.ini downgrade -$$STEPS
 
 .PHONY: migrate-views
 migrate-views: ## Apply Alembic migrations for materialized views (main DB)

@@ -25,8 +25,8 @@ class StatisticsService:
             j."North_South_Divide" AS north_south_divide,
             j."Jurisdictional_Differentiator" AS jurisdictional_differentiator,
             j."Jurisdiction_Summary" AS jurisdiction_summary,
-            j."Legal_Families" AS legal_family,
-            j."Irrelevant" AS irrelevant,
+            j."Legal_Family" AS legal_family,
+            j."Irrelevant_" AS irrelevant,
             j."Done" AS done,
             COALESCE(
                 ROUND(

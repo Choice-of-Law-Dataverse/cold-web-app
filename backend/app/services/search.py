@@ -1,4 +1,3 @@
-import json
 import logging
 from typing import Any
 
@@ -53,22 +52,22 @@ class SearchService:
             raise ValueError(f"Unsupported table for full/filtered query: {table}")
 
         mapping = {
-            "Answers": "data_views.answers_complete_v2",
-            "HCCH Answers": "data_views.hcch_answers_complete_v2",
-            "Court Decisions": "data_views.court_decisions_complete_v2",
-            "Domestic Instruments": "data_views.domestic_instruments_complete_v2",
-            "Domestic Legal Provisions": "data_views.domestic_legal_provisions_complete_v2",
-            "Regional Instruments": "data_views.regional_instruments_complete_v2",
-            "Regional Legal Provisions": "data_views.regional_legal_provisions_complete_v2",
-            "International Instruments": "data_views.international_instruments_complete_v2",
-            "International Legal Provisions": "data_views.international_legal_provisions_complete_v2",
-            "Literature": "data_views.literature_complete_v2",
-            "Arbitral Awards": "data_views.arbitral_awards_complete_v2",
-            "Arbitral Institutions": "data_views.arbitral_institutions_complete_v2",
-            "Arbitral Rules": "data_views.arbitral_rules_complete_v2",
-            "Arbitral Provisions": "data_views.arbitral_provisions_complete_v2",
-            "Jurisdictions": "data_views.jurisdictions_complete_v2",
-            "Questions": "data_views.questions_complete_v2",
+            "Answers": "data_views.base_answers",
+            "HCCH Answers": "data_views.base_hcch_answers",
+            "Court Decisions": "data_views.base_court_decisions",
+            "Domestic Instruments": "data_views.base_domestic_instruments",
+            "Domestic Legal Provisions": "data_views.base_domestic_legal_provisions",
+            "Regional Instruments": "data_views.base_regional_instruments",
+            "Regional Legal Provisions": "data_views.base_regional_legal_provisions",
+            "International Instruments": "data_views.base_international_instruments",
+            "International Legal Provisions": "data_views.base_international_legal_provisions",
+            "Literature": "data_views.base_literature",
+            "Arbitral Awards": "data_views.base_arbitral_awards",
+            "Arbitral Institutions": "data_views.base_arbitral_institutions",
+            "Arbitral Rules": "data_views.base_arbitral_rules",
+            "Arbitral Provisions": "data_views.base_arbitral_provisions",
+            "Jurisdictions": "data_views.base_jurisdictions",
+            "Questions": "data_views.base_questions",
         }
 
         view = mapping.get(table_key)
@@ -76,59 +75,27 @@ class SearchService:
             raise ValueError(f"Unsupported table for full/filtered query: {table}")
         return view
 
-    def curated_details_search(self, table, cold_id, response_type: str = "parsed"):
-        try:
-            sql = """
-            SELECT found_table, record_id, complete_record, hop1_relations
-            FROM data_views.search_for_entry_v2(:table_name, :cold_id)
-            """
-            params = {"table_name": table, "cold_id": cold_id}
+    def get_entity_detail(self, table: str, cold_id: str) -> dict[str, Any] | None:
+        sql = """
+        SELECT source_table, record_id, cold_id, base_record, relations
+        FROM data_views.get_entity_detail(:table_name, :cold_id)
+        """
+        params = {"table_name": table, "cold_id": cold_id}
+        results = self.db.execute_query(sql, params)
 
-            results = self.db.execute_query(sql, params)
+        if not results:
+            return None
 
-            if not results:
-                logger.warning("No record found for table %s with CoLD_ID %s", table, cold_id)
-                return {"error": f"No record found for {cold_id} in table {table}"}
+        row = results[0]
+        base_record = row.get("base_record") or {}
 
-            result = results[0]
-
-            found_table = result.get("found_table")
-            record_id = result.get("record_id")
-            complete_record = result.get("complete_record") or {}
-            hop1_relations = result.get("hop1_relations") or {}
-
-            flat_record: dict[str, Any] = {
-                "source_table": found_table,
-                "id": record_id,
-                "cold_id": cold_id,
-                "hop1_relations": hop1_relations,
-            }
-
-            for key, value in complete_record.items():
-                if key == "id":
-                    continue
-                flat_record[key] = value
-
-            for key, value in hop1_relations.items():
-                if key not in flat_record:
-                    flat_record[key] = value
-
-            raw_payload = {
-                "found_table": found_table,
-                "record_id": record_id,
-                "complete_record": complete_record,
-                "hop1_relations": hop1_relations,
-            }
-
-            if response_type == "raw":
-                return raw_payload
-            if response_type == "both":
-                return {"parsed": flat_record, "raw": raw_payload}
-            return flat_record
-
-        except Exception as e:
-            logger.error("Error fetching record %s from table %s: %s", cold_id, table, e)
-            return {"error": f"Could not fetch record {cold_id} from table {table}: {str(e)}"}
+        return {
+            "source_table": row.get("source_table"),
+            "id": row.get("record_id"),
+            "cold_id": row.get("cold_id"),
+            **base_record,
+            "relations": row.get("relations") or {},
+        }
 
     def full_table(self, table, response_type: str = "parsed"):
         try:
@@ -147,6 +114,8 @@ class SearchService:
                     if k == "id":
                         continue
                     flat[k] = v
+                if flat.get("cold_id"):
+                    flat["id"] = flat["cold_id"]
                 if response_type == "both":
                     results.append({"parsed": flat, "raw": complete})
                 else:
@@ -175,6 +144,8 @@ class SearchService:
                     if k == "id":
                         continue
                     flat[k] = v
+                if flat.get("cold_id"):
+                    flat["id"] = flat["cold_id"]
                 if response_type == "both":
                     results.append({"parsed": flat, "raw": complete})
                 else:
@@ -259,7 +230,9 @@ class SearchService:
             ")"
         )
         rows = self.db.execute_query(sql, params) or []
-        logger.debug("raw SQL results:\n%s", json.dumps(rows, indent=2, default=str))
+        logger.warning("search_all_v2 returned %d rows (total_matches=%d)", len(rows), total_matches)
+        if not rows and total_matches > 0:
+            logger.warning("search SQL:\n%s\nparams: %s", sql, params)
         parsed_results = []
         raw_results = []
         for row in rows:
@@ -275,6 +248,8 @@ class SearchService:
                     if key == "id":
                         continue
                     flat[key] = value
+                if flat.get("cold_id"):
+                    flat["id"] = flat["cold_id"]
                 parsed_results.append(flat)
 
             if response_type in ("raw", "both"):
@@ -290,7 +265,8 @@ class SearchService:
 
         if response_type == "raw":
             return {
-                "test": config.TEST,
+                "query": search_string,
+                "filters": filters,
                 "total_matches": total_matches,
                 "page": page,
                 "page_size": page_size,
@@ -299,7 +275,8 @@ class SearchService:
         if response_type == "both":
             combined = [{"parsed": p, "raw": r} for p, r in zip(parsed_results, raw_results, strict=False)]
             return {
-                "test": config.TEST,
+                "query": search_string,
+                "filters": filters,
                 "total_matches": total_matches,
                 "page": page,
                 "page_size": page_size,
@@ -307,7 +284,8 @@ class SearchService:
             }
 
         return {
-            "test": config.TEST,
+            "query": search_string,
+            "filters": filters,
             "total_matches": total_matches,
             "page": page,
             "page_size": page_size,

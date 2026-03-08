@@ -1,7 +1,7 @@
 import { computed, type ComputedRef, type Ref } from "vue";
 import { useQuery, useQueries } from "@tanstack/vue-query";
 import { useApiClient } from "@/composables/useApiClient";
-import type { TableName, TableResponseMap } from "@/types/api";
+import type { TableName, TableDetailMap } from "@/types/api";
 import { processDomesticInstrument } from "@/types/entities/domestic-instrument";
 import { processInternationalInstrument } from "@/types/entities/international-instrument";
 import { processRegionalInstrument } from "@/types/entities/regional-instrument";
@@ -10,31 +10,32 @@ import { type Question, processQuestion } from "@/types/entities/question";
 import { processLiterature } from "@/types/entities/literature";
 import { processArbitralAward } from "@/types/entities/arbitral-award";
 import { processArbitralRule } from "@/types/entities/arbitral-rule";
+import { processJurisdiction } from "@/types/entities/jurisdiction";
 
 async function fetchRecordDetails<
   T extends TableName,
-  TProcessed = TableResponseMap[T],
+  TProcessed = TableDetailMap[T],
 >(
   table: T,
   id: string | number,
-  process?: (raw: TableResponseMap[T]) => TProcessed,
+  process?: (raw: TableDetailMap[T]) => TProcessed,
 ) {
   const { client } = useApiClient();
   const { data, error } = await client.POST("/search/details", {
     body: { table, id: String(id), response_type: null },
   });
   if (error) throw error;
-  const raw = data as unknown as TableResponseMap[T];
+  const raw = data as unknown as TableDetailMap[T];
   return process ? process(raw) : (raw as unknown as TProcessed);
 }
 
 export function useRecordDetails<
   T extends TableName,
-  TProcessed = TableResponseMap[T],
+  TProcessed = TableDetailMap[T],
 >(
   table: T,
   id: Ref<string | number>,
-  process?: (raw: TableResponseMap[T]) => TProcessed,
+  process?: (raw: TableDetailMap[T]) => TProcessed,
 ) {
   return useQuery({
     queryKey: computed(() => [table, id.value]),
@@ -45,11 +46,11 @@ export function useRecordDetails<
 
 export function useRecordDetailsList<
   T extends TableName,
-  TProcessed = TableResponseMap[T],
+  TProcessed = TableDetailMap[T],
 >(
   table: T,
   ids: Ref<Array<string | number>>,
-  process?: (raw: TableResponseMap[T]) => TProcessed,
+  process?: (raw: TableDetailMap[T]) => TProcessed,
 ): {
   data: ComputedRef<(TProcessed | undefined)[]>;
   isLoading: ComputedRef<boolean>;
@@ -110,7 +111,7 @@ export function useAnswer(id: Ref<string | number>) {
 }
 
 export function useLiterature(id: Ref<string | number>) {
-  return useRecordDetails("Literature", id);
+  return useRecordDetails("Literature", id, processLiterature);
 }
 
 export function useArbitralAward(id: Ref<string | number>) {
@@ -119,6 +120,10 @@ export function useArbitralAward(id: Ref<string | number>) {
 
 export function useArbitralRule(id: Ref<string | number>) {
   return useRecordDetails("Arbitral Rules", id, processArbitralRule);
+}
+
+export function useJurisdictionDetail(id: Ref<string | number>) {
+  return useRecordDetails("Jurisdictions", id, processJurisdiction);
 }
 
 export function useCourtDecisionsList(ids: Ref<(string | number)[]>) {

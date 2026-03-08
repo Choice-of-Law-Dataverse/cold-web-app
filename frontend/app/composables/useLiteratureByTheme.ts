@@ -2,9 +2,9 @@ import { computed, type Ref } from "vue";
 import { useSearch } from "@/composables/useSearch";
 import type { SearchParams, SearchResponse } from "@/types/api";
 import {
-  type Literature,
+  type LiteratureDisplay,
   type LiteratureResponse,
-  processLiterature,
+  processLiteratureRecord,
 } from "@/types/entities/literature";
 
 export function useLiteratureByTheme(themes: Ref<string | undefined>) {
@@ -20,11 +20,11 @@ export function useLiteratureByTheme(themes: Ref<string | undefined>) {
 
   const { data: searchResults, isLoading } = useSearch(searchParams);
 
-  const data = computed<Literature[]>(() => {
+  const data = computed<LiteratureDisplay[]>(() => {
     if (!searchResults.value?.pages) return [];
     return searchResults.value.pages
       .flatMap((page: SearchResponse) => page.results)
-      .map((item) => processLiterature(item as LiteratureResponse));
+      .map((item) => processLiteratureRecord(item as LiteratureResponse));
   });
 
   return {

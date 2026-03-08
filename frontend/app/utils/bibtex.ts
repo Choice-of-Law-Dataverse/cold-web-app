@@ -1,9 +1,9 @@
-import type { LiteratureResponse } from "@/types/entities/literature";
+import type { LiteratureDetailResponse } from "@/types/entities/literature";
 
 /**
  * Generate BibTeX citation from literature record data
  */
-export function generateBibTeX(data: LiteratureResponse): string {
+export function generateBibTeX(data: LiteratureDetailResponse): string {
   const authors = data.author || "";
   const title = data.title || "";
   const year = data.publicationYear || "";

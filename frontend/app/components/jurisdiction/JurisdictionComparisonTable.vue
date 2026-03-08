@@ -546,13 +546,13 @@ const rows = computed(() => {
   }
 
   const sorted = questionsData.value.slice().sort((a, b) => {
-    const aId = String(a.ID ?? "");
-    const bId = String(b.ID ?? "");
+    const aId = String(a.id ?? "");
+    const bId = String(b.id ?? "");
     return aId.localeCompare(bId);
   });
 
   return sorted.map((item) => {
-    const id = String(item.ID ?? "");
+    const id = String(item.id ?? "");
     const level = typeof id === "string" ? id.match(/\./g)?.length || 0 : 0;
 
     // Backward compatible format for single jurisdiction

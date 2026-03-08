@@ -18,7 +18,7 @@
       :show-suggest-edit="true"
     >
       <template #footer>
-        <LastModified :date="arbitralAward?.lastModified ?? undefined" />
+        <LastModified :date="arbitralAward?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
@@ -49,9 +49,9 @@ import { ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import { useArbitralAward } from "@/composables/useRecordDetails";
+import LastModified from "@/components/ui/LastModified.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import LastModified from "@/components/ui/LastModified.vue";
 import { arbitralAwardLabels } from "@/config/labels";
 
 const route = useRoute();

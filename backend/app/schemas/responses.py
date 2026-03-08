@@ -5,12 +5,14 @@ from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 from app.schemas.records import AnyRecord, RecordBase
+from app.schemas.requests import FTSFilterOption
 
 
 class FullTextSearchResponse(BaseModel):
     model_config = ConfigDict(alias_generator=to_camel, populate_by_name=True)
 
-    test: bool
+    query: str | None = None
+    filters: list[FTSFilterOption] | None = None
     total_matches: int
     page: int
     page_size: int
@@ -19,7 +21,7 @@ class FullTextSearchResponse(BaseModel):
 
 class CuratedDetailsRecord(RecordBase):
     cold_id: str | None = None
-    hop1_relations: dict[str, list[dict[str, str | None]]] | None = None
+    hop1_relations: dict[str, list[dict[str, Any]] | None] | None = None
 
 
 class JurisdictionCoverage(BaseModel):

@@ -49,7 +49,7 @@ async function fetchAndProcessJurisdictions(): Promise<JurisdictionsData> {
   if (error) throw error;
 
   const jurisdictions = (data as JurisdictionWithAnswerCoverage[])
-    .filter((record) => record.irrelevant === false)
+    .filter((record) => record.irrelevant !== true)
     .map(processJurisdiction);
 
   const knownJurisdictionTerms = new Set<string>();

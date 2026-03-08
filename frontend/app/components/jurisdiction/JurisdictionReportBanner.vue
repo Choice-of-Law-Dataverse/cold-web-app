@@ -58,24 +58,20 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRef } from "vue";
+import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { useJurisdiction } from "@/composables/useJurisdictions";
 import JurisdictionFlagWithCoverage from "@/components/jurisdiction/JurisdictionFlagWithCoverage.vue";
 
 const route = useRoute();
 
 const props = defineProps<{
   jurisdictionCode?: string;
+  jurisdictionName?: string;
 }>();
 
-const jurisdictionCodeRef = toRef(() => props.jurisdictionCode || "");
-
-const { data: jurisdiction } = useJurisdiction(jurisdictionCodeRef);
-
-const jurisdictionName = computed(() => {
-  return jurisdiction.value?.name || "this jurisdiction";
-});
+const jurisdictionName = computed(
+  () => props.jurisdictionName || "this jurisdiction",
+);
 
 const questionId = computed(() => {
   // Extract question ID from the answer ID (route param)

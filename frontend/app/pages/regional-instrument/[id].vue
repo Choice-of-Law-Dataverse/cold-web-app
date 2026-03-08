@@ -34,10 +34,9 @@
           :label="regionalInstrumentLabels.literature"
           :tooltip="regionalInstrumentTooltips.literature"
         >
-          <LazyRelatedLiterature
-            :literature-id="String(regionalInstrument?.literature || '')"
-            mode="id"
-            :oup-filter="'noOup'"
+          <RelatedItemsList
+            :items="relatedLiterature"
+            base-path="/literature"
           />
         </DetailRow>
       </template>
@@ -71,7 +70,7 @@
       </template>
 
       <template #footer>
-        <LastModified :date="regionalInstrument?.lastModified ?? undefined" />
+        <LastModified :date="regionalInstrument?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
@@ -90,28 +89,24 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import PdfLink from "@/components/ui/PdfLink.vue";
 import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
+import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import { useRegionalInstrument } from "@/composables/useRecordDetails";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import LastModified from "@/components/ui/LastModified.vue";
 import { regionalInstrumentLabels } from "@/config/labels";
 import { regionalInstrumentTooltips } from "@/config/tooltips";
-
-const LazyRelatedLiterature = defineAsyncComponent(
-  () => import("@/components/literature/RelatedLiterature.vue"),
-);
+import type { RelatedItem } from "@/types/ui";
 
 const route = useRoute();
-
-// Capture the ID once at setup to prevent flash during page transitions
 const instrumentId = ref(route.params.id as string);
 
 const {
@@ -119,4 +114,13 @@ const {
   isLoading: loading,
   error,
 } = useRegionalInstrument(instrumentId);
+
+const relatedLiterature = computed<RelatedItem[]>(() =>
+  (regionalInstrument.value?.relations.literature ?? [])
+    .filter((lit) => !lit.oupJdChapter)
+    .map((lit) => ({
+      id: lit.coldId || String(lit.id),
+      title: lit.title || String(lit.id),
+    })),
+);
 </script>

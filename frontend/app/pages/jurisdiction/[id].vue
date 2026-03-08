@@ -4,27 +4,24 @@
       table="Jurisdictions"
       :loading="isLoading"
       :error="error"
-      :data="jurisdictionData || {}"
+      :data="data || {}"
       :labels="jurisdictionLabels"
       :tooltips="jurisdictionTooltips"
-      :formatted-jurisdiction="[jurisdictionData?.name as string]"
+      :formatted-jurisdiction="[data?.name as string]"
       :show-suggest-edit="true"
     >
       <DetailRow label="">
         <h1 class="mb-4 text-3xl font-semibold md:text-4xl">
-          Country Report for {{ jurisdictionData?.name || "N/A" }}
+          Country Report for {{ data?.name || "N/A" }}
         </h1>
       </DetailRow>
 
       <template #search-links>
         <DetailRow label="Specialists">
-          <div
-            v-if="specialistsData && specialistsData.length > 0"
-            class="result-value-small"
-          >
+          <div v-if="specialists.length > 0" class="result-value-small">
             <div class="mb-2 flex flex-row flex-wrap gap-2">
               <span
-                v-for="(specialist, i) in specialistsData"
+                v-for="(specialist, i) in specialists"
                 :key="i"
                 class="link-chip--static"
               >
@@ -35,44 +32,40 @@
           <div v-else class="prose mb-1">No specialists available</div>
         </DetailRow>
         <DetailRow label="Domestic Instruments" variant="instrument">
-          <RelatedDomesticInstruments
-            :jurisdiction="jurisdictionData?.name as string"
+          <RelatedItemsList
+            :items="domesticInstruments"
+            base-path="/domestic-instrument"
           />
         </DetailRow>
         <DetailRow label="Court Decisions" variant="court-decision">
-          <RelatedCourtDecisions
-            :jurisdiction="jurisdictionData?.name as string"
+          <RelatedItemsList
+            :items="courtDecisions"
+            base-path="/court-decision"
           />
         </DetailRow>
 
         <DetailRow :label="jurisdictionLabels.oupChapter" variant="oup">
-          <LazyRelatedLiterature
-            :literature-id="(jurisdictionData?.Literature as string) || ''"
-            :mode="'both'"
-            :oup-filter="'onlyOup'"
-            :jurisdiction="jurisdictionData?.name as string"
-          />
+          <RelatedItemsList :items="oupLiterature" base-path="/literature" />
         </DetailRow>
 
         <DetailRow
-          :label="jurisdictionLabels.Literature"
-          :tooltip="jurisdictionTooltips.Literature"
+          :label="jurisdictionLabels.literature"
+          :tooltip="jurisdictionTooltips.literature"
           variant="literature"
         >
-          <LazyRelatedLiterature
-            :literature-id="(jurisdictionData?.Literature as string) || ''"
-            :jurisdiction="jurisdictionData?.name as string"
-            :mode="'both'"
-            :oup-filter="'noOup'"
-          />
+          <RelatedItemsList :items="nonOupLiterature" base-path="/literature" />
         </DetailRow>
+      </template>
+
+      <template #footer>
+        <LastModified :date="data?.updatedAt" />
       </template>
     </BaseDetailLayout>
     <ClientOnly>
       <div class="mt-8">
         <JurisdictionComparisonTable
-          v-if="jurisdictionData"
-          :primary-jurisdiction="jurisdictionData"
+          v-if="jurisdictionOption"
+          :primary-jurisdiction="jurisdictionOption"
         />
       </div>
       <template #fallback>
@@ -128,51 +121,80 @@
     </ClientOnly>
 
     <PageSeoMeta
-      :title-candidates="[jurisdictionData?.name as string]"
+      :title-candidates="[data?.name as string]"
       fallback="Country Report"
     />
 
     <EntityFeedback
       entity-type="jurisdiction"
       :entity-id="jurisdictionId"
-      :entity-title="jurisdictionData?.name as string"
+      :entity-title="data?.name as string"
     />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, defineAsyncComponent, ref } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import JurisdictionComparisonTable from "@/components/jurisdiction/JurisdictionComparisonTable.vue";
-import RelatedCourtDecisions from "@/components/sources/RelatedCourtDecisions.vue";
-import RelatedDomesticInstruments from "@/components/sources/RelatedDomesticInstruments.vue";
+import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import { useJurisdiction } from "@/composables/useJurisdictions";
-import { useSpecialists } from "@/composables/useSpecialists";
+import { useJurisdictionDetail } from "@/composables/useRecordDetails";
 import { jurisdictionLabels } from "@/config/labels";
 import { jurisdictionTooltips } from "@/config/tooltips";
-
-const LazyRelatedLiterature = defineAsyncComponent(
-  () => import("@/components/literature/RelatedLiterature.vue"),
-);
+import type { RelatedItem } from "@/types/ui";
 
 const route = useRoute();
-
-// Capture the ID once at setup to prevent flash during page transitions
 const jurisdictionId = ref(route.params.id as string);
 
-const {
-  isLoading,
-  data: jurisdictionData,
-  error,
-} = useJurisdiction(jurisdictionId);
+const { isLoading, data, error } = useJurisdictionDetail(jurisdictionId);
 
-const jurisdictionAlphaCode = computed(
-  () => jurisdictionData.value?.alpha3Code as string,
+const specialists = computed(() => data.value?.relations.specialists ?? []);
+
+const courtDecisions = computed<RelatedItem[]>(() =>
+  (data.value?.relations.courtDecisions ?? []).map((cd) => ({
+    id: cd.coldId || String(cd.id),
+    title: cd.caseTitle || cd.caseCitation || String(cd.id),
+  })),
 );
-const { data: specialistsData } = useSpecialists(jurisdictionAlphaCode);
+
+const domesticInstruments = computed<RelatedItem[]>(() =>
+  (data.value?.relations.domesticInstruments ?? []).map((di) => ({
+    id: di.coldId || String(di.id),
+    title:
+      di.titleInEnglish || di.officialTitle || di.abbreviation || String(di.id),
+  })),
+);
+
+const oupLiterature = computed<RelatedItem[]>(() =>
+  (data.value?.relations.literature ?? [])
+    .filter((lit) => Boolean(lit.oupJdChapter))
+    .map((lit) => ({
+      id: lit.coldId || String(lit.id),
+      title: lit.title || String(lit.id),
+    })),
+);
+
+const nonOupLiterature = computed<RelatedItem[]>(() =>
+  (data.value?.relations.literature ?? [])
+    .filter((lit) => !lit.oupJdChapter)
+    .map((lit) => ({
+      id: lit.coldId || String(lit.id),
+      title: lit.title || String(lit.id),
+    })),
+);
+
+const jurisdictionOption = computed(() => {
+  if (!data.value) return null;
+  return {
+    name: data.value.name || "",
+    label: data.value.name || "",
+    alpha3Code: data.value.alpha3Code || "",
+  };
+});
 </script>

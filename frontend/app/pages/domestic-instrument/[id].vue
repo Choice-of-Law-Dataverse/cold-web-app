@@ -22,10 +22,7 @@
             {{ value }}
             <template #actions>
               <PdfLink
-                :pdf-field="
-                  legalInstrument?.officialSourcePdf ||
-                  legalInstrument?.sourcePdf
-                "
+                :pdf-field="legalInstrument?.sourcePdf"
                 :record-id="instrumentId"
                 folder-name="domestic-instruments"
               />
@@ -43,7 +40,7 @@
       </template>
       <!-- Slot for Amends -->
       <template #amends="{ value }">
-        <DetailRow v-if="value" :label="domesticInstrumentLabels.Amends">
+        <DetailRow v-if="value" :label="domesticInstrumentLabels.amends">
           <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
@@ -55,7 +52,7 @@
       </template>
       <!-- Slot for Replaces -->
       <template #replaces="{ value }">
-        <DetailRow v-if="value" :label="domesticInstrumentLabels.Replaces">
+        <DetailRow v-if="value" :label="domesticInstrumentLabels.replaces">
           <InstrumentLink :id="value as string" table="Domestic Instruments" />
         </DetailRow>
       </template>
@@ -67,8 +64,8 @@
             (isCompatible('compatibleWithTheUncitralModelLaw') ||
               isCompatible('compatibleWithTheHcchPrinciples'))
           "
-          :label="domesticInstrumentLabels.Compatibility"
-          :tooltip="domesticInstrumentTooltips.Compatibility"
+          :label="domesticInstrumentLabels.compatibility"
+          :tooltip="domesticInstrumentTooltips.compatibility"
         >
           <div class="result-value-small flex gap-2">
             <CompatibleLabel
@@ -114,12 +111,11 @@
       </template>
 
       <template #footer>
-        <LastModified :date="legalInstrument?.lastModified ?? undefined" />
-        <LazyJurisdictionReportBanner
-          :jurisdiction-code="
-            legalInstrument?.jurisdictionsAlpha3Code ?? undefined
-          "
+        <JurisdictionReportBanner
+          :jurisdiction-code="primaryJurisdiction?.alpha3Code ?? undefined"
+          :jurisdiction-name="primaryJurisdiction?.name ?? undefined"
         />
+        <LastModified :date="legalInstrument?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
@@ -138,7 +134,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineAsyncComponent } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -148,23 +144,20 @@ import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import LegalProvision from "@/components/legal/LegalProvision.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
 import CompatibleLabel from "@/components/ui/CompatibleLabel.vue";
-import LastModified from "@/components/ui/LastModified.vue";
+import JurisdictionReportBanner from "@/components/jurisdiction/JurisdictionReportBanner.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import { useDomesticInstrument } from "@/composables/useRecordDetails";
+import { isTruthy } from "@/types/entities/domestic-instrument";
 import { getSortedProvisionIds } from "@/utils/provision-sorting";
 import { domesticInstrumentLabels } from "@/config/labels";
 import { domesticInstrumentTooltips } from "@/config/tooltips";
-
-const LazyJurisdictionReportBanner = defineAsyncComponent(
-  () => import("@/components/jurisdiction/JurisdictionReportBanner.vue"),
-);
 
 const route = useRoute();
 const textType = ref("fullTextOfTheProvisionEnglishTranslation");
 const hasEnglishTranslation = ref(false);
 
-// Capture the ID once at setup to prevent flash during page transitions
 const instrumentId = ref(route.params.id as string);
 
 const {
@@ -173,14 +166,17 @@ const {
   error,
 } = useDomesticInstrument(instrumentId);
 
+const primaryJurisdiction = computed(
+  () => legalInstrument.value?.relations.jurisdictions[0] ?? null,
+);
+
 const isCompatible = (
   field:
     | "compatibleWithTheUncitralModelLaw"
     | "compatibleWithTheHcchPrinciples",
 ): boolean => {
   if (!legalInstrument.value) return false;
-  const value = legalInstrument.value[field];
-  return value === true;
+  return isTruthy(legalInstrument.value[field]);
 };
 
 const getSortedProvisionIdsForInstrument = (rawValue: string): string[] => {

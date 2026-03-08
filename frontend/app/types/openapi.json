@@ -50,7 +50,13 @@
                   "$ref": "#/components/schemas/FullTextSearchResponse"
                 },
                 "example": {
-                  "test": false,
+                  "query": "example search",
+                  "filters": [
+                    {
+                      "column": "tables",
+                      "values": ["Answers"]
+                    }
+                  ],
                   "total_matches": 2,
                   "page": 1,
                   "page_size": 2,
@@ -86,9 +92,9 @@
     "/search/details": {
       "post": {
         "tags": ["Search"],
-        "summary": "Fetch a curated record by CoLD ID including hop-1 relations",
-        "description": "Given a user-facing table and a CoLD ID, returns the canonical record and its first-hop related entries.",
-        "operationId": "handle_curated_details_search_api_v1_search_details_post",
+        "summary": "Fetch a curated record by CoLD ID including relations",
+        "description": "Given a table and a CoLD ID, returns the record with all first-hop relations in a standardized shape.",
+        "operationId": "handle_entity_detail_api_v1_search_details_post",
         "parameters": [
           {
             "name": "X-API-Key",
@@ -112,17 +118,67 @@
         },
         "responses": {
           "200": {
-            "description": "Flattened, mapping-transformed record.",
+            "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/CuratedDetailsRecord"
-                },
-                "example": {
-                  "source_table": "Answers",
-                  "id": "CHE_15-TC",
-                  "Title": "\u2026",
-                  "hop1_relations": {}
+                  "anyOf": [
+                    {
+                      "$ref": "#/components/schemas/AnswerDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/HcchAnswerDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/QuestionDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/JurisdictionDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/CourtDecisionDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DomesticInstrumentDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DomesticLegalProvisionDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RegionalInstrumentDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/RegionalLegalProvisionDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/InternationalInstrumentDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/InternationalLegalProvisionDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/LiteratureDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArbitralAwardDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArbitralInstitutionDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArbitralRuleDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ArbitralProvisionDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/SpecialistDetail"
+                    },
+                    {
+                      "$ref": "#/components/schemas/_DetailBase"
+                    }
+                  ],
+                  "title": "Response Handle Entity Detail Api V1 Search Details Post"
                 }
               }
             }
@@ -1977,6 +2033,165 @@
   },
   "components": {
     "schemas": {
+      "AnswerDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer"
+          },
+          "moreInformation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moreinformation"
+          },
+          "toReview": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Toreview"
+          },
+          "oupBookQuote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oupbookquote"
+          },
+          "jurisdictionsAlpha3Code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jurisdictionsalpha3Code"
+          },
+          "questionColdId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Questioncoldid"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "AnswerDetail"
+      },
       "AnswerRecord": {
         "properties": {
           "sourceTable": {
@@ -2327,6 +2542,231 @@
         "additionalProperties": true,
         "type": "object",
         "title": "AnswerRecord"
+      },
+      "AnswerRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "answer": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answer"
+          },
+          "moreInformation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Moreinformation"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "AnswerRelation"
+      },
+      "ArbitralAwardDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "idNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idnumber"
+          },
+          "caseNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Casenumber"
+          },
+          "context": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Context"
+          },
+          "awardSummary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Awardsummary"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          },
+          "natureOfTheAward": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Natureoftheaward"
+          },
+          "seatTown": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seattown"
+          },
+          "source": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "ArbitralAwardDetail"
       },
       "ArbitralAwardRecord": {
         "properties": {
@@ -2707,6 +3147,165 @@
         "type": "object",
         "title": "ArbitralAwardRecord"
       },
+      "ArbitralAwardRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "caseNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Casenumber"
+          },
+          "year": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Year"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "ArbitralAwardRelation"
+      },
+      "ArbitralInstitutionDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution"
+          },
+          "abbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abbreviation"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "ArbitralInstitutionDetail"
+      },
       "ArbitralInstitutionRecord": {
         "properties": {
           "sourceTable": {
@@ -2936,6 +3535,209 @@
         "additionalProperties": true,
         "type": "object",
         "title": "ArbitralInstitutionRecord"
+      },
+      "ArbitralInstitutionRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "institution": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Institution"
+          },
+          "abbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abbreviation"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "ArbitralInstitutionRelation"
+      },
+      "ArbitralProvisionDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "article": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article"
+          },
+          "fullTextOriginalLanguage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fulltextoriginallanguage"
+          },
+          "fullTextEnglishTranslation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fulltextenglishtranslation"
+          },
+          "arbitrationMethodType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arbitrationmethodtype"
+          },
+          "nonStateLawAllowedInAoc": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Nonstatelawallowedinaoc"
+          },
+          "arbitralRulesColdId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Arbitralrulescoldid"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "ArbitralProvisionDetail"
       },
       "ArbitralProvisionRecord": {
         "properties": {
@@ -3189,6 +3991,176 @@
         "type": "object",
         "title": "ArbitralProvisionRecord"
       },
+      "ArbitralProvisionRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "article": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "ArbitralProvisionRelation"
+      },
+      "ArbitralRuleDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "idNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idnumber"
+          },
+          "setOfRules": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Setofrules"
+          },
+          "inForceFrom": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inforcefrom"
+          },
+          "officialSourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officialsourceurl"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "ArbitralRuleDetail"
+      },
       "ArbitralRuleRecord": {
         "properties": {
           "sourceTable": {
@@ -3432,6 +4404,50 @@
         "type": "object",
         "title": "ArbitralRuleRecord"
       },
+      "ArbitralRuleRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "setOfRules": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Setofrules"
+          },
+          "inForceFrom": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Inforcefrom"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "ArbitralRuleRelation"
+      },
       "ClassifyQueryRequest": {
         "properties": {
           "query": {
@@ -3469,6 +4485,330 @@
         "type": "object",
         "required": ["draftId", "jurisdiction"],
         "title": "ConfirmAnalysisRequest"
+      },
+      "CourtDecisionDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "idNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idnumber"
+          },
+          "caseCitation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Casecitation"
+          },
+          "caseTitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Casetitle"
+          },
+          "instance": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instance"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "abstract": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstract"
+          },
+          "caseRank": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Caserank"
+          },
+          "englishTranslation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Englishtranslation"
+          },
+          "choiceOfLawIssue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Choiceoflawissue"
+          },
+          "courtSPosition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Courtsposition"
+          },
+          "translatedExcerpt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Translatedexcerpt"
+          },
+          "relevantFacts": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relevantfacts"
+          },
+          "dateOfJudgment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dateofjudgment"
+          },
+          "pilProvisions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pilprovisions"
+          },
+          "originalText": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Originaltext"
+          },
+          "quote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Quote"
+          },
+          "textOfTheRelevantLegalProvisions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Textoftherelevantlegalprovisions"
+          },
+          "officialSourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officialsourceurl"
+          },
+          "officialSourcePdf": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officialsourcepdf"
+          },
+          "publicationDateIso": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicationdateiso"
+          },
+          "jurisdictionsAlpha3Code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jurisdictionsalpha3Code"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "CourtDecisionDetail"
       },
       "CourtDecisionRecord": {
         "properties": {
@@ -3975,6 +5315,61 @@
         "type": "object",
         "title": "CourtDecisionRecord"
       },
+      "CourtDecisionRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "caseCitation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Casecitation"
+          },
+          "caseTitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Casetitle"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "CourtDecisionRelation"
+      },
       "CourtDecisionSuggestion": {
         "properties": {
           "edit_entity_id": {
@@ -4259,87 +5654,6 @@
           "submitter_email": "user@example.com"
         }
       },
-      "CuratedDetailsRecord": {
-        "properties": {
-          "sourceTable": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Sourcetable"
-          },
-          "id": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "integer"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Id"
-          },
-          "rank": {
-            "anyOf": [
-              {
-                "type": "number"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Rank"
-          },
-          "coldId": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Coldid"
-          },
-          "hop1Relations": {
-            "anyOf": [
-              {
-                "additionalProperties": {
-                  "items": {
-                    "additionalProperties": {
-                      "anyOf": [
-                        {
-                          "type": "string"
-                        },
-                        {
-                          "type": "null"
-                        }
-                      ]
-                    },
-                    "type": "object"
-                  },
-                  "type": "array"
-                },
-                "type": "object"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Hop1Relations"
-          }
-        },
-        "additionalProperties": true,
-        "type": "object",
-        "title": "CuratedDetailsRecord"
-      },
       "CuratedDetailsRequest": {
         "properties": {
           "table": {
@@ -4375,6 +5689,264 @@
             "table": "Answers"
           }
         ]
+      },
+      "DomesticInstrumentDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "idNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idnumber"
+          },
+          "titleInEnglish": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleinenglish"
+          },
+          "officialTitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officialtitle"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status"
+          },
+          "abbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abbreviation"
+          },
+          "relevantProvisions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Relevantprovisions"
+          },
+          "fullTextOfTheProvisions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fulltextoftheprovisions"
+          },
+          "publicationDate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicationdate"
+          },
+          "entryIntoForce": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Entryintoforce"
+          },
+          "sourceUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourceurl"
+          },
+          "sourcePdf": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sourcepdf"
+          },
+          "compatibleWithTheHcchPrinciples": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compatiblewiththehcchprinciples"
+          },
+          "compatibleWithTheUncitralModelLaw": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Compatiblewiththeuncitralmodellaw"
+          },
+          "jurisdictionsAlpha3Code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jurisdictionsalpha3Code"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "DomesticInstrumentDetail"
       },
       "DomesticInstrumentRecord": {
         "properties": {
@@ -4793,6 +6365,61 @@
         "type": "object",
         "title": "DomesticInstrumentRecord"
       },
+      "DomesticInstrumentRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "titleInEnglish": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleinenglish"
+          },
+          "officialTitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Officialtitle"
+          },
+          "abbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abbreviation"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "DomesticInstrumentRelation"
+      },
       "DomesticInstrumentSuggestion": {
         "properties": {
           "edit_entity_id": {
@@ -4972,6 +6599,154 @@
           "themes": ["contract", "choice-of-law"],
           "title_en": "Argentinian Private International Law Act"
         }
+      },
+      "DomesticLegalProvisionDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "article": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article"
+          },
+          "fullTextOfTheProvisionOriginalLanguage": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fulltextoftheprovisionoriginallanguage"
+          },
+          "fullTextOfTheProvisionEnglishTranslation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fulltextoftheprovisionenglishtranslation"
+          },
+          "rankingDisplayOrder": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rankingdisplayorder"
+          },
+          "domesticInstrumentColdId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Domesticinstrumentcoldid"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "DomesticLegalProvisionDetail"
       },
       "DomesticLegalProvisionRecord": {
         "properties": {
@@ -5247,6 +7022,50 @@
         "type": "object",
         "title": "DomesticLegalProvisionRecord"
       },
+      "DomesticLegalProvisionRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "article": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Article"
+          },
+          "rankingDisplayOrder": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rankingdisplayorder"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "DomesticLegalProvisionRelation"
+      },
       "DraftRecoveryResponse": {
         "properties": {
           "draftId": {
@@ -5320,6 +7139,156 @@
         "type": "object",
         "required": ["draftId", "status"],
         "title": "DraftRecoveryResponse"
+      },
+      "EntityRelations": {
+        "properties": {
+          "answers": {
+            "items": {
+              "$ref": "#/components/schemas/AnswerRelation"
+            },
+            "type": "array",
+            "title": "Answers",
+            "default": []
+          },
+          "hcchAnswers": {
+            "items": {
+              "$ref": "#/components/schemas/HcchAnswerRelation"
+            },
+            "type": "array",
+            "title": "Hcchanswers",
+            "default": []
+          },
+          "questions": {
+            "items": {
+              "$ref": "#/components/schemas/QuestionRelation"
+            },
+            "type": "array",
+            "title": "Questions",
+            "default": []
+          },
+          "jurisdictions": {
+            "items": {
+              "$ref": "#/components/schemas/JurisdictionRelation"
+            },
+            "type": "array",
+            "title": "Jurisdictions",
+            "default": []
+          },
+          "themes": {
+            "items": {
+              "$ref": "#/components/schemas/ThemeRelation"
+            },
+            "type": "array",
+            "title": "Themes",
+            "default": []
+          },
+          "courtDecisions": {
+            "items": {
+              "$ref": "#/components/schemas/CourtDecisionRelation"
+            },
+            "type": "array",
+            "title": "Courtdecisions",
+            "default": []
+          },
+          "domesticInstruments": {
+            "items": {
+              "$ref": "#/components/schemas/DomesticInstrumentRelation"
+            },
+            "type": "array",
+            "title": "Domesticinstruments",
+            "default": []
+          },
+          "domesticLegalProvisions": {
+            "items": {
+              "$ref": "#/components/schemas/DomesticLegalProvisionRelation"
+            },
+            "type": "array",
+            "title": "Domesticlegalprovisions",
+            "default": []
+          },
+          "regionalInstruments": {
+            "items": {
+              "$ref": "#/components/schemas/RegionalInstrumentRelation"
+            },
+            "type": "array",
+            "title": "Regionalinstruments",
+            "default": []
+          },
+          "regionalLegalProvisions": {
+            "items": {
+              "$ref": "#/components/schemas/RegionalLegalProvisionRelation"
+            },
+            "type": "array",
+            "title": "Regionallegalprovisions",
+            "default": []
+          },
+          "internationalInstruments": {
+            "items": {
+              "$ref": "#/components/schemas/InternationalInstrumentRelation"
+            },
+            "type": "array",
+            "title": "Internationalinstruments",
+            "default": []
+          },
+          "internationalLegalProvisions": {
+            "items": {
+              "$ref": "#/components/schemas/InternationalLegalProvisionRelation"
+            },
+            "type": "array",
+            "title": "Internationallegalprovisions",
+            "default": []
+          },
+          "literature": {
+            "items": {
+              "$ref": "#/components/schemas/LiteratureRelation"
+            },
+            "type": "array",
+            "title": "Literature",
+            "default": []
+          },
+          "arbitralAwards": {
+            "items": {
+              "$ref": "#/components/schemas/ArbitralAwardRelation"
+            },
+            "type": "array",
+            "title": "Arbitralawards",
+            "default": []
+          },
+          "arbitralInstitutions": {
+            "items": {
+              "$ref": "#/components/schemas/ArbitralInstitutionRelation"
+            },
+            "type": "array",
+            "title": "Arbitralinstitutions",
+            "default": []
+          },
+          "arbitralRules": {
+            "items": {
+              "$ref": "#/components/schemas/ArbitralRuleRelation"
+            },
+            "type": "array",
+            "title": "Arbitralrules",
+            "default": []
+          },
+          "arbitralProvisions": {
+            "items": {
+              "$ref": "#/components/schemas/ArbitralProvisionRelation"
+            },
+            "type": "array",
+            "title": "Arbitralprovisions",
+            "default": []
+          },
+          "specialists": {
+            "items": {
+              "$ref": "#/components/schemas/SpecialistRelation"
+            },
+            "type": "array",
+            "title": "Specialists",
+            "default": []
+          }
+        },
+        "type": "object",
+        "title": "EntityRelations"
       },
       "EntityType": {
         "type": "string",
@@ -5762,9 +7731,30 @@
       },
       "FullTextSearchResponse": {
         "properties": {
-          "test": {
-            "type": "boolean",
-            "title": "Test"
+          "query": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Query"
+          },
+          "filters": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/FTSFilterOption"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Filters"
           },
           "totalMatches": {
             "type": "integer",
@@ -5836,7 +7826,7 @@
           }
         },
         "type": "object",
-        "required": ["test", "totalMatches", "page", "pageSize", "results"],
+        "required": ["totalMatches", "page", "pageSize", "results"],
         "title": "FullTextSearchResponse"
       },
       "HTTPValidationError": {
@@ -5851,6 +7841,324 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "HcchAnswerDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "adaptedQuestion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adaptedquestion"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          },
+          "questionColdId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Questioncoldid"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "HcchAnswerDetail"
+      },
+      "HcchAnswerRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "adaptedQuestion": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Adaptedquestion"
+          },
+          "position": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Position"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "HcchAnswerRelation"
+      },
+      "InternationalInstrumentDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "idNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idnumber"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "attachment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attachment"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "InternationalInstrumentDetail"
       },
       "InternationalInstrumentRecord": {
         "properties": {
@@ -6258,6 +8566,39 @@
         "type": "object",
         "title": "InternationalInstrumentRecord"
       },
+      "InternationalInstrumentRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "InternationalInstrumentRelation"
+      },
       "InternationalInstrumentSuggestion": {
         "properties": {
           "edit_entity_id": {
@@ -6324,6 +8665,154 @@
           "submitter_email": "user@example.com",
           "url": "https://www.hcch.net/en/instruments/conventions/full-text/?cid=135"
         }
+      },
+      "InternationalLegalProvisionDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "provision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provision"
+          },
+          "titleOfTheProvision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleoftheprovision"
+          },
+          "fullText": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fulltext"
+          },
+          "rankingDisplayOrder": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rankingdisplayorder"
+          },
+          "instrumentColdId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrumentcoldid"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "InternationalLegalProvisionDetail"
       },
       "InternationalLegalProvisionRecord": {
         "properties": {
@@ -6599,6 +9088,72 @@
         "type": "object",
         "title": "InternationalLegalProvisionRecord"
       },
+      "InternationalLegalProvisionRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "provision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provision"
+          },
+          "titleOfTheProvision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleoftheprovision"
+          },
+          "fullText": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fulltext"
+          },
+          "rankingDisplayOrder": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rankingdisplayorder"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "InternationalLegalProvisionRelation"
+      },
       "JurisdictionCount": {
         "properties": {
           "jurisdiction": {
@@ -6720,6 +9275,209 @@
         "type": "object",
         "required": ["id", "name"],
         "title": "JurisdictionCoverage"
+      },
+      "JurisdictionDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "alpha3Code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alpha3Code"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          },
+          "northSouthDivide": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Northsouthdivide"
+          },
+          "jurisdictionalDifferentiator": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jurisdictionaldifferentiator"
+          },
+          "legalFamily": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legalfamily"
+          },
+          "jurisdictionSummary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jurisdictionsummary"
+          },
+          "irrelevant": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Irrelevant"
+          },
+          "done": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Done"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "JurisdictionDetail"
       },
       "JurisdictionInfo": {
         "properties": {
@@ -6990,6 +9748,72 @@
         "type": "object",
         "title": "JurisdictionRecord"
       },
+      "JurisdictionRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "alpha3Code": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Alpha3Code"
+          },
+          "region": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Region"
+          },
+          "legalFamily": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Legalfamily"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "JurisdictionRelation"
+      },
       "LandingPageJurisdiction": {
         "properties": {
           "code": {
@@ -7004,6 +9828,550 @@
         "type": "object",
         "required": ["code", "hasData"],
         "title": "LandingPageJurisdiction"
+      },
+      "LiteratureDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "idNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idnumber"
+          },
+          "itemType": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Itemtype"
+          },
+          "publicationYear": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicationyear"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "publicationTitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicationtitle"
+          },
+          "abstractNote": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abstractnote"
+          },
+          "isbn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Isbn"
+          },
+          "issn": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issn"
+          },
+          "doi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Doi"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "dateAdded": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Dateadded"
+          },
+          "dateModified": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Datemodified"
+          },
+          "publisher": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publisher"
+          },
+          "language": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Language"
+          },
+          "extra": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extra"
+          },
+          "manualTags": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Manualtags"
+          },
+          "editor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Editor"
+          },
+          "issue": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Issue"
+          },
+          "volume": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Volume"
+          },
+          "pages": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pages"
+          },
+          "libraryCatalog": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Librarycatalog"
+          },
+          "accessDate": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Accessdate"
+          },
+          "openAccess": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Openaccess"
+          },
+          "openAccessUrl": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Openaccessurl"
+          },
+          "journalAbbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Journalabbreviation"
+          },
+          "shortTitle": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Shorttitle"
+          },
+          "place": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place"
+          },
+          "numPages": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Numpages"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          },
+          "oupJdChapter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oupjdchapter"
+          },
+          "contributor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contributor"
+          },
+          "automaticTags": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Automatictags"
+          },
+          "number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Number"
+          },
+          "series": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Series"
+          },
+          "seriesNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seriesnumber"
+          },
+          "seriesEditor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Serieseditor"
+          },
+          "edition": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edition"
+          },
+          "callNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Callnumber"
+          },
+          "jurisdictionSummary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jurisdictionsummary"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "LiteratureDetail"
       },
       "LiteratureRecord": {
         "properties": {
@@ -7719,6 +11087,72 @@
         "type": "object",
         "title": "LiteratureRecord"
       },
+      "LiteratureRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "author": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Author"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "publicationYear": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Publicationyear"
+          },
+          "oupJdChapter": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Oupjdchapter"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "LiteratureRelation"
+      },
       "LiteratureSuggestion": {
         "properties": {
           "edit_entity_id": {
@@ -7999,6 +11433,143 @@
         "required": ["id"],
         "title": "PendingSuggestionItem"
       },
+      "QuestionDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "questionNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Questionnumber"
+          },
+          "primaryTheme": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primarytheme"
+          },
+          "answeringOptions": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Answeringoptions"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "QuestionDetail"
+      },
       "QuestionRecord": {
         "properties": {
           "sourceTable": {
@@ -8163,6 +11734,61 @@
         "type": "object",
         "title": "QuestionRecord"
       },
+      "QuestionRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "questionNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Questionnumber"
+          },
+          "primaryTheme": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Primarytheme"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "QuestionRelation"
+      },
       "RecordBase": {
         "properties": {
           "sourceTable": {
@@ -8205,6 +11831,165 @@
         "additionalProperties": true,
         "type": "object",
         "title": "RecordBase"
+      },
+      "RegionalInstrumentDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "idNumber": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idnumber"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "abbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abbreviation"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url"
+          },
+          "attachment": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Attachment"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "RegionalInstrumentDetail"
       },
       "RegionalInstrumentRecord": {
         "properties": {
@@ -8469,6 +12254,50 @@
         "type": "object",
         "title": "RegionalInstrumentRecord"
       },
+      "RegionalInstrumentRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "abbreviation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Abbreviation"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "RegionalInstrumentRelation"
+      },
       "RegionalInstrumentSuggestion": {
         "properties": {
           "edit_entity_id": {
@@ -8562,6 +12391,143 @@
           "title": "Regulation (EC) No 593/2008 (Rome I)",
           "url": "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32008R0593"
         }
+      },
+      "RegionalLegalProvisionDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "provision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provision"
+          },
+          "titleOfTheProvision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleoftheprovision"
+          },
+          "fullText": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fulltext"
+          },
+          "instrumentColdId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Instrumentcoldid"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "RegionalLegalProvisionDetail"
       },
       "RegionalLegalProvisionRecord": {
         "properties": {
@@ -8782,6 +12748,50 @@
         "type": "object",
         "title": "RegionalLegalProvisionRecord"
       },
+      "RegionalLegalProvisionRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "provision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Provision"
+          },
+          "titleOfTheProvision": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Titleoftheprovision"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "RegionalLegalProvisionRelation"
+      },
       "SitemapEntry": {
         "properties": {
           "loc": {
@@ -8796,6 +12806,198 @@
         "type": "object",
         "required": ["loc", "lastmod"],
         "title": "SitemapEntry"
+      },
+      "SpecialistDetail": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          },
+          "specialist": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Specialist"
+          },
+          "affiliation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Affiliation"
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact"
+          },
+          "bio": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bio"
+          },
+          "website": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Website"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "SpecialistDetail"
+      },
+      "SpecialistRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "specialist": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Specialist"
+          },
+          "affiliation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Affiliation"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "SpecialistRelation"
       },
       "SpecialistResponse": {
         "properties": {
@@ -9150,6 +13352,39 @@
         "required": ["id"],
         "title": "SuggestionResponse"
       },
+      "ThemeRelation": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "theme": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Theme"
+          }
+        },
+        "type": "object",
+        "required": ["id"],
+        "title": "ThemeRelation"
+      },
       "UploadDocumentRequest": {
         "properties": {
           "fileName": {
@@ -9243,6 +13478,99 @@
         "type": "object",
         "required": ["loc", "msg", "type"],
         "title": "ValidationError"
+      },
+      "_DetailBase": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
+          "sourceTable": {
+            "type": "string",
+            "title": "Sourcetable"
+          },
+          "relations": {
+            "$ref": "#/components/schemas/EntityRelations",
+            "default": {
+              "answers": [],
+              "hcchAnswers": [],
+              "questions": [],
+              "jurisdictions": [],
+              "themes": [],
+              "courtDecisions": [],
+              "domesticInstruments": [],
+              "domesticLegalProvisions": [],
+              "regionalInstruments": [],
+              "regionalLegalProvisions": [],
+              "internationalInstruments": [],
+              "internationalLegalProvisions": [],
+              "literature": [],
+              "arbitralAwards": [],
+              "arbitralInstitutions": [],
+              "arbitralRules": [],
+              "arbitralProvisions": [],
+              "specialists": []
+            }
+          },
+          "createdAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdat"
+          },
+          "updatedAt": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedat"
+          },
+          "createdBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Createdby"
+          },
+          "updatedBy": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updatedby"
+          }
+        },
+        "type": "object",
+        "required": ["id", "sourceTable"],
+        "title": "_DetailBase"
       }
     }
   },

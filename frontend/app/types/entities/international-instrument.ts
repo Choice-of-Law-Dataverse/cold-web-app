@@ -1,21 +1,42 @@
 import type { components } from "@/types/api-schema";
-import { formatDate } from "@/utils/format";
 
 export type InternationalInstrumentResponse =
   components["schemas"]["InternationalInstrumentRecord"];
+export type InternationalInstrumentDetailResponse =
+  components["schemas"]["InternationalInstrumentDetail"];
 
-export type InternationalInstrument = InternationalInstrumentResponse & {
+export type InternationalInstrument = InternationalInstrumentDetailResponse & {
   displayTitle: string;
   displayUrl: string;
+  literature?: string;
+  specialists?: string;
+  selectedProvisions?: string;
 };
 
 export function processInternationalInstrument(
-  raw: InternationalInstrumentResponse,
+  raw: InternationalInstrumentDetailResponse,
 ): InternationalInstrument {
+  const literature = raw.relations.literature
+    .map((l) => l.coldId)
+    .filter(Boolean)
+    .join(",");
+
+  const specialists = raw.relations.specialists
+    .map((s) => s.specialist)
+    .filter(Boolean)
+    .join(", ");
+
+  const selectedProvisions = raw.relations.internationalLegalProvisions
+    .map((p) => p.coldId)
+    .filter(Boolean)
+    .join(",");
+
   return {
     ...raw,
-    publicationDate: formatDate(raw.publicationDate || raw.date),
-    displayTitle: raw.titleInEnglish || raw.name || "",
+    displayTitle: raw.name || "",
     displayUrl: raw.url || "",
+    literature: literature || undefined,
+    specialists: specialists || undefined,
+    selectedProvisions: selectedProvisions || undefined,
   };
 }

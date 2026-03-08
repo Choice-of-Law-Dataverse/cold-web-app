@@ -22,27 +22,18 @@
         </DetailRow>
       </template>
 
-      <!-- Custom rendering for Court Decisions ID -->
-      <template #courtdecisionsid="{ value }">
+      <!-- Custom rendering for Court Decisions -->
+      <template #courtdecisionsid>
         <DetailRow
-          v-if="(value as string[])?.length"
+          v-if="relatedCourtDecisions.length"
           id="related-court-decisions"
           :label="questionLabels.courtDecisionsId"
           :tooltip="questionTooltips.courtDecisionsId"
           variant="court-decision"
         >
-          <CourtDecisionRenderer :value="value as string[]" />
-        </DetailRow>
-      </template>
-
-      <template #oupchapter>
-        <DetailRow :label="questionLabels.oupChapter" variant="oup">
-          <LazyRelatedLiterature
-            :themes="answerData?.themes || ''"
-            :literature-id="String(answerData?.jurisdictionsLiteratureId ?? '')"
-            :jurisdiction="answerData?.jurisdictions || ''"
-            :mode="'both'"
-            :oup-filter="'onlyOup'"
+          <RelatedItemsList
+            :items="relatedCourtDecisions"
+            base-path="/court-decision"
           />
         </DetailRow>
       </template>
@@ -52,21 +43,19 @@
           :label="questionLabels.relatedLiterature"
           variant="literature"
         >
-          <LazyRelatedLiterature
-            :themes="answerData?.themes || ''"
-            :literature-id="String(answerData?.jurisdictionsLiteratureId ?? '')"
-            :jurisdiction="answerData?.jurisdictions || ''"
-            :mode="'both'"
-            :oup-filter="'noOup'"
+          <RelatedItemsList
+            :items="relatedLiterature"
+            base-path="/literature"
           />
         </DetailRow>
       </template>
 
       <template #footer>
-        <LastModified :date="answerData?.lastModified ?? undefined" />
-        <LazyJurisdictionReportBanner
-          :jurisdiction-code="answerData?.jurisdictionCode"
+        <JurisdictionReportBanner
+          :jurisdiction-code="primaryJurisdiction?.alpha3Code ?? undefined"
+          :jurisdiction-name="primaryJurisdiction?.name ?? undefined"
         />
+        <LastModified :date="answerData?.updatedAt" />
       </template>
     </BaseDetailLayout>
     <div class="mt-8">
@@ -91,43 +80,53 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, nextTick, defineAsyncComponent, ref } from "vue";
+import { computed, onMounted, nextTick, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
-import CourtDecisionRenderer from "@/components/legal/CourtDecisionRenderer.vue";
+import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import JurisdictionReportBanner from "@/components/jurisdiction/JurisdictionReportBanner.vue";
 import QuestionSourceList from "@/components/sources/QuestionSourceList.vue";
 import QuestionAnswerMap from "@/components/jurisdiction/QuestionAnswerMap.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import { useAnswer } from "@/composables/useRecordDetails";
 import LastModified from "@/components/ui/LastModified.vue";
+import { useAnswer } from "@/composables/useRecordDetails";
 import { questionLabels } from "@/config/labels";
 import { questionTooltips } from "@/config/tooltips";
-
-const LazyJurisdictionReportBanner = defineAsyncComponent(
-  () => import("@/components/jurisdiction/JurisdictionReportBanner.vue"),
-);
-const LazyRelatedLiterature = defineAsyncComponent(
-  () => import("@/components/literature/RelatedLiterature.vue"),
-);
+import type { RelatedItem } from "@/types/ui";
 
 const route = useRoute();
-
-// Capture the ID once at setup to prevent flash during page transitions
 const answerId = ref(route.params.id as string);
 
 const { data: answerData, isLoading, error } = useAnswer(answerId);
 
+const primaryJurisdiction = computed(
+  () => answerData.value?.relations.jurisdictions[0] ?? null,
+);
+
+const relatedCourtDecisions = computed<RelatedItem[]>(() =>
+  (answerData.value?.relations.courtDecisions ?? []).map((cd) => ({
+    id: cd.coldId || String(cd.id),
+    title: cd.caseTitle || cd.caseCitation || String(cd.id),
+  })),
+);
+
+const relatedLiterature = computed<RelatedItem[]>(() =>
+  (answerData.value?.relations.literature ?? [])
+    .filter((lit) => !lit.oupJdChapter)
+    .map((lit) => ({
+      id: lit.coldId || String(lit.id),
+      title: lit.title || String(lit.id),
+    })),
+);
+
 const questionSuffix = computed(() => {
-  // Extract question suffix from the answer ID (route param)
-  // Answer ID format: {ISO3_CODE}_{QUESTION_SUFFIX}
   const id = answerId.value;
   if (!id || typeof id !== "string") return null;
 
   const parts = id.split("_");
   if (parts.length > 1) {
-    // Return everything after the first underscore (the question suffix)
     return "_" + parts.slice(1).join("_");
   }
   return null;

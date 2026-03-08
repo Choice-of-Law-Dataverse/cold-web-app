@@ -102,17 +102,14 @@
         </DetailRow>
       </template>
       <!-- Custom rendering for Related Questions section -->
-      <template #relatedquestions="{ value }">
+      <template #relatedquestions>
         <DetailRow
-          v-if="value"
+          v-if="relatedQuestions.length"
           :label="courtDecisionLabels.relatedQuestions"
           :tooltip="courtDecisionTooltips.relatedQuestions"
           variant="question"
         >
-          <LazyRelatedQuestions
-            :jurisdiction-code="courtDecision?.jurisdictionsAlpha3Code || ''"
-            :questions="value as string"
-          />
+          <RelatedItemsList :items="relatedQuestions" base-path="/question" />
         </DetailRow>
       </template>
       <template #relatedliterature>
@@ -121,10 +118,9 @@
           :tooltip="courtDecisionTooltips.relatedLiterature"
           variant="literature"
         >
-          <LazyRelatedLiterature
-            :themes="courtDecision?.themes || ''"
-            :mode="'themes'"
-            :oup-filter="'noOup'"
+          <RelatedItemsList
+            :items="relatedLiterature"
+            base-path="/literature"
             :empty-value-behavior="{
               action: 'display',
               fallback: 'No related literature available',
@@ -155,12 +151,11 @@
       </template>
 
       <template #footer>
-        <LastModified :date="courtDecision?.lastModified ?? undefined" />
-        <LazyJurisdictionReportBanner
-          :jurisdiction-code="
-            courtDecision?.jurisdictionsAlpha3Code ?? undefined
-          "
+        <JurisdictionReportBanner
+          :jurisdiction-code="primaryJurisdiction?.alpha3Code ?? undefined"
+          :jurisdiction-name="primaryJurisdiction?.name ?? undefined"
         />
+        <LastModified :date="courtDecision?.updatedAt" />
       </template>
 
       <template #search-links />
@@ -189,7 +184,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, defineAsyncComponent } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -197,23 +192,16 @@ import PdfLink from "@/components/ui/PdfLink.vue";
 import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import InstrumentLink from "@/components/legal/InstrumentLink.vue";
-import LastModified from "@/components/ui/LastModified.vue";
+import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import JurisdictionReportBanner from "@/components/jurisdiction/JurisdictionReportBanner.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import ShowMoreLess from "@/components/ui/ShowMoreLess.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useCourtDecision } from "@/composables/useRecordDetails";
 import { courtDecisionLabels } from "@/config/labels";
 import { courtDecisionTooltips } from "@/config/tooltips";
-
-const LazyJurisdictionReportBanner = defineAsyncComponent(
-  () => import("@/components/jurisdiction/JurisdictionReportBanner.vue"),
-);
-const LazyRelatedLiterature = defineAsyncComponent(
-  () => import("@/components/literature/RelatedLiterature.vue"),
-);
-const LazyRelatedQuestions = defineAsyncComponent(
-  () => import("@/components/legal/RelatedQuestions.vue"),
-);
+import type { RelatedItem } from "@/types/ui";
 
 defineProps({
   iconClass: {
@@ -223,8 +211,6 @@ defineProps({
 });
 
 const route = useRoute();
-
-// Capture the ID once at setup to prevent flash during page transitions
 const courtDecisionId = ref(route.params.id as string);
 
 const {
@@ -235,4 +221,24 @@ const {
 
 const showEnglishQuote = ref(true);
 const showFullText = ref(false);
+
+const primaryJurisdiction = computed(
+  () => courtDecision.value?.relations.jurisdictions[0] ?? null,
+);
+
+const relatedQuestions = computed<RelatedItem[]>(() =>
+  (courtDecision.value?.relations.questions ?? []).map((q) => ({
+    id: q.coldId || String(q.id),
+    title: q.question || q.coldId || String(q.id),
+  })),
+);
+
+const relatedLiterature = computed<RelatedItem[]>(() =>
+  (courtDecision.value?.relations.literature ?? [])
+    .filter((lit) => !lit.oupJdChapter)
+    .map((lit) => ({
+      id: lit.coldId || String(lit.id),
+      title: lit.title || String(lit.id),
+    })),
+);
 </script>

@@ -5,20 +5,12 @@
  * `satisfies` ensures keys exist on entity types while preserving literal types.
  */
 
-import type { JurisdictionResponse } from "@/types/entities/jurisdiction";
-import type { Question } from "@/types/entities/question";
-import type { CourtDecision } from "@/types/entities/court-decision";
-import type { LiteratureResponse } from "@/types/entities/literature";
-import type { DomesticInstrument } from "@/types/entities/domestic-instrument";
-import type { RegionalInstrument } from "@/types/entities/regional-instrument";
-import type { InternationalInstrument } from "@/types/entities/international-instrument";
-
 export const jurisdictionTooltips = {
   jurisdictionalDifferentiator:
     "Jurisdictional peculiarities, such as the judicial hierarchy. To be read before consulting jurisdictional information.",
-  Literature:
+  literature:
     "Academic literature relevant to this jurisdiction's choice of law framework.",
-} as const satisfies Partial<Record<keyof JurisdictionResponse, string>>;
+} as const;
 
 export const questionTooltips = {
   question: "Question pertaining to chosen topic and jurisdiction.",
@@ -31,7 +23,7 @@ export const questionTooltips = {
   courtDecisionsId:
     "Court decisions that have addressed the same legal issue, according to our database.",
   relatedLiterature: "Academic literature relevant to this question's topic.",
-} as const satisfies Partial<Record<keyof Question, string>>;
+} as const;
 
 export const courtDecisionTooltips = {
   caseTitle:
@@ -41,9 +33,9 @@ export const courtDecisionTooltips = {
     "Date of the decision's publication in the official reporter or official database of the respective jurisdiction.",
   dateOfJudgment:
     "Date on which the judgment was handed down. In some jurisdictions, this differs from the publication date.",
-  Instance:
+  instance:
     "Position of the deciding court within the hierarchy of the judiciary. Generally speaking, first instance refers to courts of first instance, second instance courts of appeal, third instance courts of last resort.",
-  Abstract: "Short summary of the case, similar to a headnote.",
+  abstract: "Short summary of the case, similar to a headnote.",
   relevantFacts:
     "Concise description of the factual background of the case, emphasising the facts that are relevant for the choice of law issue.",
   pilProvisions:
@@ -62,36 +54,34 @@ export const courtDecisionTooltips = {
     "Questions in our database that the court decision addresses.",
   relatedLiterature:
     "Academic literature relevant to this court decision's legal issues.",
-} as const satisfies Partial<Record<keyof CourtDecision, string>>;
+} as const;
 
 export const literatureTooltips = {
   publicationYear: "Year of publication.",
-  Publisher: "Publishing house.",
-} as const satisfies Partial<Record<keyof LiteratureResponse, string>>;
+  publisher: "Publishing house.",
+} as const;
 
 export const domesticInstrumentTooltips = {
   titleInEnglish:
     "English translation or accepted name of the instrument, typically a statute or regulation.",
-  Compatibility:
+  compatibility:
     "Statement as to whether an instrument is compatible with the HCCH Principles or UNCITRAL Model Law.",
   officialTitle: "Title of the instrument in the original language.",
-  Abbreviation: "Commonly used abbreviation for this instrument.",
-  Date: "Date of enactment, usually when signed into law.",
+  abbreviation: "Commonly used abbreviation for this instrument.",
+  date: "Date of enactment, usually when signed into law.",
   entryIntoForce: "Date on which the instrument came into effect.",
   publicationDate: "Date of publication in the official reporter or gazette.",
   domesticLegalProvisions:
     "Link to provisions of a particular relevance to Choice of Law, including key articles or sections.",
-} as const satisfies Partial<Record<keyof DomesticInstrument, string>>;
+} as const;
 
 export const regionalInstrumentTooltips = {
   date: "Date when the instrument was enacted or came into force.",
-  specialists:
-    "Academics who have published on or are otherwise associated with this instrument.",
   literature:
     "This button will open the CoLD search and return all literature pieces that are relevant for this instrument.",
   regionalLegalProvisions:
     "Key provisions within the instrument, selected for their relevance to choice of law.",
-} as const satisfies Partial<Record<keyof RegionalInstrument, string>>;
+} as const;
 
 export const internationalInstrumentTooltips = {
   date: "Date when the instrument was enacted or came into force.",
@@ -101,4 +91,4 @@ export const internationalInstrumentTooltips = {
     "This button will open the CoLD search and return all literature pieces that are relevant for this instrument.",
   selectedProvisions:
     "Key provisions within the instrument, selected for their relevance to choice of law.",
-} as const satisfies Partial<Record<keyof InternationalInstrument, string>>;
+} as const;

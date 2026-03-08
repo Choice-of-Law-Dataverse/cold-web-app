@@ -36,10 +36,9 @@
           :label="internationalInstrumentLabels.literature"
           :tooltip="internationalInstrumentTooltips.literature"
         >
-          <LazyRelatedLiterature
-            :literature-id="internationalInstrument?.literature || ''"
-            mode="id"
-            :oup-filter="'noOup'"
+          <RelatedItemsList
+            :items="relatedLiterature"
+            base-path="/literature"
           />
         </DetailRow>
       </template>
@@ -50,20 +49,14 @@
           :tooltip="internationalInstrumentTooltips.selectedProvisions"
         >
           <div class="provisions-container">
-            <div v-if="provisionsLoading">
-              <LoadingBar class="!mt-8" />
-            </div>
-            <div v-else-if="provisionsError">{{ provisionsError }}</div>
-            <div v-else-if="provisions && provisions.length">
+            <div v-if="sortedProvisions.length">
               <BaseLegalContent
-                v-for="(provision, index) in provisions"
+                v-for="(provision, index) in sortedProvisions"
                 :key="index"
                 :title="
                   provision.titleOfTheProvision +
                   (internationalInstrument
-                    ? ', ' +
-                      (internationalInstrument.abbreviation ||
-                        internationalInstrument.titleInEnglish)
+                    ? ', ' + (internationalInstrument.name || '')
                     : '')
                 "
                 :anchor-id="
@@ -75,15 +68,13 @@
                 </template>
               </BaseLegalContent>
             </div>
-            <div v-else>No provisions found.</div>
+            <div v-else-if="!loading">No provisions found.</div>
           </div>
         </DetailRow>
       </template>
 
       <template #footer>
-        <LastModified
-          :date="internationalInstrument?.lastModified ?? undefined"
-        />
+        <LastModified :date="internationalInstrument?.updatedAt" />
       </template>
     </BaseDetailLayout>
 
@@ -102,7 +93,7 @@
 </template>
 
 <script setup lang="ts">
-import { defineAsyncComponent, ref } from "vue";
+import { computed, ref } from "vue";
 import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
@@ -110,22 +101,16 @@ import PdfLink from "@/components/ui/PdfLink.vue";
 import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import SourceExternalLink from "@/components/sources/SourceExternalLink.vue";
 import BaseLegalContent from "@/components/legal/BaseLegalContent.vue";
+import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
+import LastModified from "@/components/ui/LastModified.vue";
 import { useInternationalInstrument } from "@/composables/useRecordDetails";
-import LoadingBar from "@/components/layout/LoadingBar.vue";
-import { useInternationalLegalProvisions } from "@/composables/useFullTable";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
 import EntityFeedback from "@/components/ui/EntityFeedback.vue";
-import LastModified from "@/components/ui/LastModified.vue";
 import { internationalInstrumentLabels } from "@/config/labels";
 import { internationalInstrumentTooltips } from "@/config/tooltips";
-
-const LazyRelatedLiterature = defineAsyncComponent(
-  () => import("@/components/literature/RelatedLiterature.vue"),
-);
+import type { RelatedItem } from "@/types/ui";
 
 const route = useRoute();
-
-// Capture the ID once at setup to prevent flash during page transitions
 const instrumentId = ref(route.params.id as string);
 
 const {
@@ -134,11 +119,25 @@ const {
   error,
 } = useInternationalInstrument(instrumentId);
 
-const {
-  data: provisions,
-  isLoading: provisionsLoading,
-  error: provisionsError,
-} = useInternationalLegalProvisions();
+const relatedLiterature = computed<RelatedItem[]>(() =>
+  (internationalInstrument.value?.relations.literature ?? [])
+    .filter((lit) => !lit.oupJdChapter)
+    .map((lit) => ({
+      id: lit.coldId || String(lit.id),
+      title: lit.title || String(lit.id),
+    })),
+);
+
+const sortedProvisions = computed(() =>
+  [
+    ...(internationalInstrument.value?.relations.internationalLegalProvisions ??
+      []),
+  ].sort(
+    (a, b) =>
+      (Number(a.rankingDisplayOrder) || 0) -
+      (Number(b.rankingDisplayOrder) || 0),
+  ),
+);
 
 function normalizeAnchorId(str: string): string {
   if (!str) return "";

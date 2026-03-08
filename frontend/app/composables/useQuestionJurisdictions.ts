@@ -33,8 +33,8 @@ function processAnswers(
   // Filter to relevant records
   const relevantRecords = records.filter(
     (item) =>
-      typeof item.ID === "string" &&
-      item.ID.endsWith(suffix) &&
+      typeof item.id === "string" &&
+      item.id.endsWith(suffix) &&
       item.jurisdictionsIrrelevant !== true,
   );
 
@@ -87,7 +87,7 @@ function processAnswers(
 
 export function useQuestionJurisdictions(suffix: Ref<string>) {
   const filters = computed(() => [
-    { column: "ID" as const, value: suffix.value },
+    { column: "coldId" as const, value: suffix.value },
   ]);
 
   return useFullTableWithFilters<

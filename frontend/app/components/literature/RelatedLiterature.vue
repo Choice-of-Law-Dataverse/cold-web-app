@@ -13,7 +13,7 @@ import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import { useLiteratures } from "@/composables/useRecordDetails";
 import { useLiteratureByTheme } from "@/composables/useLiteratureByTheme";
 import { useLiteratureByJurisdiction } from "@/composables/useFullTable";
-import type { Literature } from "@/types/entities/literature";
+import type { LiteratureDisplay } from "@/types/entities/literature";
 import type { RelatedItem, EmptyValueBehavior } from "@/types/ui";
 
 type LiteratureMode = "themes" | "id" | "both" | "jurisdiction";
@@ -66,11 +66,11 @@ const { data: literatureFromJurisdiction, isLoading: loadingJurisdiction } =
     ),
   );
 
-const mergedLiterature = computed<Literature[]>(() => {
+const mergedLiterature = computed<LiteratureDisplay[]>(() => {
   const idSet = new Set<string>();
-  const merged: Literature[] = [];
+  const merged: LiteratureDisplay[] = [];
 
-  const addIfNew = (item: Literature | undefined) => {
+  const addIfNew = (item: LiteratureDisplay | undefined) => {
     const itemId = String(item?.id || "");
     if (itemId && item?.displayTitle && !idSet.has(itemId)) {
       merged.push(item);
@@ -86,12 +86,12 @@ const mergedLiterature = computed<Literature[]>(() => {
 });
 
 const fullLiteratureList = computed<RelatedItem[]>(() => {
-  let items: Literature[] = [];
+  let items: LiteratureDisplay[] = [];
 
   switch (mode.value) {
     case "id":
       items = (literatureFromIds.value || []).filter(
-        (item): item is Literature => Boolean(item?.displayTitle),
+        (item): item is NonNullable<typeof item> => Boolean(item?.displayTitle),
       );
       break;
     case "themes":

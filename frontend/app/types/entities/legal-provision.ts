@@ -1,12 +1,17 @@
 import type { components } from "@/types/api-schema";
-import { formatDate } from "@/utils/format";
 
 export type DomesticLegalProvisionResponse =
   components["schemas"]["DomesticLegalProvisionRecord"];
+export type DomesticLegalProvisionDetailResponse =
+  components["schemas"]["DomesticLegalProvisionDetail"];
 export type RegionalLegalProvisionResponse =
   components["schemas"]["RegionalLegalProvisionRecord"];
+export type RegionalLegalProvisionDetailResponse =
+  components["schemas"]["RegionalLegalProvisionDetail"];
 export type InternationalLegalProvisionResponse =
   components["schemas"]["InternationalLegalProvisionRecord"];
+export type InternationalLegalProvisionDetailResponse =
+  components["schemas"]["InternationalLegalProvisionDetail"];
 
 export interface LegalProvision {
   id: string | number | null | undefined;
@@ -14,11 +19,10 @@ export interface LegalProvision {
   originalText: string;
   englishText?: string;
   hasEnglishTranslation: boolean;
-  lastModified?: string;
 }
 
 export function processDomesticLegalProvision(
-  raw: DomesticLegalProvisionResponse,
+  raw: DomesticLegalProvisionDetailResponse,
 ): LegalProvision {
   const englishText = raw.fullTextOfTheProvisionEnglishTranslation;
   return {
@@ -28,12 +32,11 @@ export function processDomesticLegalProvision(
       raw.fullTextOfTheProvisionOriginalLanguage || "No content available",
     englishText: englishText || undefined,
     hasEnglishTranslation: Boolean(englishText),
-    lastModified: formatDate(raw.lastModified || raw.created),
   };
 }
 
 export function processRegionalLegalProvision(
-  raw: RegionalLegalProvisionResponse,
+  raw: RegionalLegalProvisionDetailResponse,
 ): LegalProvision {
   return {
     id: raw.id,
@@ -41,6 +44,5 @@ export function processRegionalLegalProvision(
     originalText: raw.fullText || "No content available",
     englishText: undefined,
     hasEnglishTranslation: false,
-    lastModified: formatDate(raw.lastModified || raw.created),
   };
 }

@@ -2,8 +2,10 @@ import type { components } from "@/types/api-schema";
 
 export type ArbitralAwardResponse =
   components["schemas"]["ArbitralAwardRecord"];
+export type ArbitralAwardDetailResponse =
+  components["schemas"]["ArbitralAwardDetail"];
 
-export type ArbitralAward = ArbitralAwardResponse & {
+export type ArbitralAward = ArbitralAwardDetailResponse & {
   displayTitle: string;
   arbitralInstitution?: string;
   formattedJurisdictions: Array<{ name: string }>;
@@ -11,36 +13,29 @@ export type ArbitralAward = ArbitralAwardResponse & {
 };
 
 export function processArbitralAward(
-  raw: ArbitralAwardResponse,
+  raw: ArbitralAwardDetailResponse,
 ): ArbitralAward {
   const derivedTitle = raw.caseNumber || String(raw.id || "");
 
-  const arbitralInstitution = Array.isArray(raw.relatedArbitralInstitutions)
-    ? raw.relatedArbitralInstitutions
-        .map((inst) => inst?.Institution)
-        .filter((v): v is string => Boolean(v && String(v).trim()))
-        .join(", ")
-    : undefined;
+  const arbitralInstitution =
+    raw.relations.arbitralInstitutions
+      .map((inst) => inst.institution)
+      .filter((v): v is string => Boolean(v && String(v).trim()))
+      .join(", ") || undefined;
 
-  const formattedJurisdictions = (() => {
-    const list = raw.relatedJurisdictions;
-    if (!Array.isArray(list)) return [];
-    const names = list
-      .map((j) => j?.Name)
-      .filter((n): n is string => Boolean(n && String(n).trim()))
-      .map((n) => String(n).trim());
-    return [...new Set(names)].map((n) => ({ name: n }));
-  })();
+  const jurisdictionNames = raw.relations.jurisdictions
+    .map((j) => j.name)
+    .filter((n): n is string => Boolean(n && String(n).trim()))
+    .map((n) => String(n).trim());
+  const formattedJurisdictions = [...new Set(jurisdictionNames)].map((n) => ({
+    name: n,
+  }));
 
-  const formattedThemes = (() => {
-    const list = raw.relatedThemes;
-    if (!Array.isArray(list)) return [];
-    const themes = list
-      .map((t) => t?.Theme)
-      .filter((n): n is string => Boolean(n && String(n).trim()))
-      .map((n) => String(n).trim());
-    return [...new Set(themes)].map((t) => ({ theme: t }));
-  })();
+  const themeNames = raw.relations.themes
+    .map((t) => t.theme)
+    .filter((n): n is string => Boolean(n && String(n).trim()))
+    .map((n) => String(n).trim());
+  const formattedThemes = [...new Set(themeNames)].map((t) => ({ theme: t }));
 
   return {
     ...raw,

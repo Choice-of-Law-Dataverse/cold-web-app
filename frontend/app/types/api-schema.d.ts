@@ -34,10 +34,10 @@ export interface paths {
     get?: never;
     put?: never;
     /**
-     * Fetch a curated record by CoLD ID including hop-1 relations
-     * @description Given a user-facing table and a CoLD ID, returns the canonical record and its first-hop related entries.
+     * Fetch a curated record by CoLD ID including relations
+     * @description Given a table and a CoLD ID, returns the record with all first-hop relations in a standardized shape.
      */
-    post: operations["handle_curated_details_search_api_v1_search_details_post"];
+    post: operations["handle_entity_detail_api_v1_search_details_post"];
     delete?: never;
     options?: never;
     head?: never;
@@ -563,6 +563,58 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
   schemas: {
+    /** AnswerDetail */
+    AnswerDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Answer */
+      answer?: string | null;
+      /** Moreinformation */
+      moreInformation?: string | null;
+      /** Toreview */
+      toReview?: string | null;
+      /** Oupbookquote */
+      oupBookQuote?: string | null;
+      /** Jurisdictionsalpha3Code */
+      jurisdictionsAlpha3Code?: string | null;
+      /** Questioncoldid */
+      questionColdId?: string | null;
+    };
     /** AnswerRecord */
     AnswerRecord: {
       /** Sourcetable */
@@ -629,6 +681,73 @@ export interface components {
       domesticLegalProvisionsLink?: string | null;
     } & {
       [key: string]: unknown;
+    };
+    /** AnswerRelation */
+    AnswerRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Answer */
+      answer?: string | null;
+      /** Moreinformation */
+      moreInformation?: string | null;
+    };
+    /** ArbitralAwardDetail */
+    ArbitralAwardDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Idnumber */
+      idNumber?: string | null;
+      /** Casenumber */
+      caseNumber?: string | null;
+      /** Context */
+      context?: string | null;
+      /** Awardsummary */
+      awardSummary?: string | null;
+      /** Year */
+      year?: string | null;
+      /** Natureoftheaward */
+      natureOfTheAward?: string | null;
+      /** Seattown */
+      seatTown?: string | null;
+      /** Source */
+      source?: string | null;
     };
     /** ArbitralAwardRecord */
     ArbitralAwardRecord: {
@@ -707,6 +826,61 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /** ArbitralAwardRelation */
+    ArbitralAwardRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Casenumber */
+      caseNumber?: string | null;
+      /** Year */
+      year?: string | null;
+    };
+    /** ArbitralInstitutionDetail */
+    ArbitralInstitutionDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Institution */
+      institution?: string | null;
+      /** Abbreviation */
+      abbreviation?: string | null;
+    };
     /** ArbitralInstitutionRecord */
     ArbitralInstitutionRecord: {
       /** Sourcetable */
@@ -751,6 +925,69 @@ export interface components {
       jurisdictionsLink?: string | null;
     } & {
       [key: string]: unknown;
+    };
+    /** ArbitralInstitutionRelation */
+    ArbitralInstitutionRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Institution */
+      institution?: string | null;
+      /** Abbreviation */
+      abbreviation?: string | null;
+    };
+    /** ArbitralProvisionDetail */
+    ArbitralProvisionDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Article */
+      article?: string | null;
+      /** Fulltextoriginallanguage */
+      fullTextOriginalLanguage?: string | null;
+      /** Fulltextenglishtranslation */
+      fullTextEnglishTranslation?: string | null;
+      /** Arbitrationmethodtype */
+      arbitrationMethodType?: string | null;
+      /** Nonstatelawallowedinaoc */
+      nonStateLawAllowedInAoc?: string | null;
+      /** Arbitralrulescoldid */
+      arbitralRulesColdId?: string | null;
     };
     /** ArbitralProvisionRecord */
     ArbitralProvisionRecord: {
@@ -801,6 +1038,63 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /** ArbitralProvisionRelation */
+    ArbitralProvisionRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Article */
+      article?: string | null;
+    };
+    /** ArbitralRuleDetail */
+    ArbitralRuleDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Idnumber */
+      idNumber?: string | null;
+      /** Setofrules */
+      setOfRules?: string | null;
+      /** Inforcefrom */
+      inForceFrom?: string | null;
+      /** Officialsourceurl */
+      officialSourceUrl?: string | null;
+    };
     /** ArbitralRuleRecord */
     ArbitralRuleRecord: {
       /** Sourcetable */
@@ -850,6 +1144,17 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /** ArbitralRuleRelation */
+    ArbitralRuleRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Setofrules */
+      setOfRules?: string | null;
+      /** Inforcefrom */
+      inForceFrom?: string | null;
+    };
     /**
      * ClassifyQueryRequest
      * @example {
@@ -875,6 +1180,88 @@ export interface components {
        * @default false
        */
       resume: boolean;
+    };
+    /** CourtDecisionDetail */
+    CourtDecisionDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Idnumber */
+      idNumber?: string | null;
+      /** Casecitation */
+      caseCitation?: string | null;
+      /** Casetitle */
+      caseTitle?: string | null;
+      /** Instance */
+      instance?: string | null;
+      /** Date */
+      date?: string | null;
+      /** Abstract */
+      abstract?: string | null;
+      /** Caserank */
+      caseRank?: string | null;
+      /** Englishtranslation */
+      englishTranslation?: string | null;
+      /** Choiceoflawissue */
+      choiceOfLawIssue?: string | null;
+      /** Courtsposition */
+      courtSPosition?: string | null;
+      /** Translatedexcerpt */
+      translatedExcerpt?: string | null;
+      /** Relevantfacts */
+      relevantFacts?: string | null;
+      /** Dateofjudgment */
+      dateOfJudgment?: string | null;
+      /** Pilprovisions */
+      pilProvisions?: string | null;
+      /** Originaltext */
+      originalText?: string | null;
+      /** Quote */
+      quote?: string | null;
+      /** Textoftherelevantlegalprovisions */
+      textOfTheRelevantLegalProvisions?: string | null;
+      /** Officialsourceurl */
+      officialSourceUrl?: string | null;
+      /** Officialsourcepdf */
+      officialSourcePdf?: string | null;
+      /** Publicationdateiso */
+      publicationDateIso?: string | null;
+      /** Jurisdictionsalpha3Code */
+      jurisdictionsAlpha3Code?: string | null;
     };
     /** CourtDecisionRecord */
     CourtDecisionRecord: {
@@ -970,6 +1357,19 @@ export interface components {
       createdByName?: string | null;
     } & {
       [key: string]: unknown;
+    };
+    /** CourtDecisionRelation */
+    CourtDecisionRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Casecitation */
+      caseCitation?: string | null;
+      /** Casetitle */
+      caseTitle?: string | null;
+      /** Date */
+      date?: string | null;
     };
     /**
      * CourtDecisionSuggestion
@@ -1104,25 +1504,6 @@ export interface components {
        */
       submitter_comments?: string | null;
     };
-    /** CuratedDetailsRecord */
-    CuratedDetailsRecord: {
-      /** Sourcetable */
-      sourceTable?: string | null;
-      /** Id */
-      id?: string | number | null;
-      /** Rank */
-      rank?: number | null;
-      /** Coldid */
-      coldId?: string | null;
-      /** Hop1Relations */
-      hop1Relations?: {
-        [key: string]: {
-          [key: string]: string | null;
-        }[];
-      } | null;
-    } & {
-      [key: string]: unknown;
-    };
     /**
      * CuratedDetailsRequest
      * @example {
@@ -1142,6 +1523,76 @@ export interface components {
        * @default parsed
        */
       response_type: ("parsed" | "raw" | "both") | null;
+    };
+    /** DomesticInstrumentDetail */
+    DomesticInstrumentDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Idnumber */
+      idNumber?: string | null;
+      /** Titleinenglish */
+      titleInEnglish?: string | null;
+      /** Officialtitle */
+      officialTitle?: string | null;
+      /** Date */
+      date?: string | null;
+      /** Status */
+      status?: string | null;
+      /** Abbreviation */
+      abbreviation?: string | null;
+      /** Relevantprovisions */
+      relevantProvisions?: string | null;
+      /** Fulltextoftheprovisions */
+      fullTextOfTheProvisions?: string | null;
+      /** Publicationdate */
+      publicationDate?: string | null;
+      /** Entryintoforce */
+      entryIntoForce?: string | null;
+      /** Sourceurl */
+      sourceUrl?: string | null;
+      /** Sourcepdf */
+      sourcePdf?: string | null;
+      /** Compatiblewiththehcchprinciples */
+      compatibleWithTheHcchPrinciples?: string | null;
+      /** Compatiblewiththeuncitralmodellaw */
+      compatibleWithTheUncitralModelLaw?: string | null;
+      /** Jurisdictionsalpha3Code */
+      jurisdictionsAlpha3Code?: string | null;
     };
     /** DomesticInstrumentRecord */
     DomesticInstrumentRecord: {
@@ -1221,6 +1672,19 @@ export interface components {
       createdByName?: string | null;
     } & {
       [key: string]: unknown;
+    };
+    /** DomesticInstrumentRelation */
+    DomesticInstrumentRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Titleinenglish */
+      titleInEnglish?: string | null;
+      /** Officialtitle */
+      officialTitle?: string | null;
+      /** Abbreviation */
+      abbreviation?: string | null;
     };
     /**
      * DomesticInstrumentSuggestion
@@ -1316,6 +1780,56 @@ export interface components {
        */
       submitter_comments?: string | null;
     };
+    /** DomesticLegalProvisionDetail */
+    DomesticLegalProvisionDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Article */
+      article?: string | null;
+      /** Fulltextoftheprovisionoriginallanguage */
+      fullTextOfTheProvisionOriginalLanguage?: string | null;
+      /** Fulltextoftheprovisionenglishtranslation */
+      fullTextOfTheProvisionEnglishTranslation?: string | null;
+      /** Rankingdisplayorder */
+      rankingDisplayOrder?: string | null;
+      /** Domesticinstrumentcoldid */
+      domesticInstrumentColdId?: string | null;
+    };
     /** DomesticLegalProvisionRecord */
     DomesticLegalProvisionRecord: {
       /** Sourcetable */
@@ -1369,6 +1883,17 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /** DomesticLegalProvisionRelation */
+    DomesticLegalProvisionRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Article */
+      article?: string | null;
+      /** Rankingdisplayorder */
+      rankingDisplayOrder?: string | null;
+    };
     /** DraftRecoveryResponse */
     DraftRecoveryResponse: {
       /** Draftid */
@@ -1388,6 +1913,99 @@ export interface components {
       caseCitation?: string | null;
       /** Createdat */
       createdAt?: string | null;
+    };
+    /** EntityRelations */
+    EntityRelations: {
+      /**
+       * Answers
+       * @default []
+       */
+      answers: components["schemas"]["AnswerRelation"][];
+      /**
+       * Hcchanswers
+       * @default []
+       */
+      hcchAnswers: components["schemas"]["HcchAnswerRelation"][];
+      /**
+       * Questions
+       * @default []
+       */
+      questions: components["schemas"]["QuestionRelation"][];
+      /**
+       * Jurisdictions
+       * @default []
+       */
+      jurisdictions: components["schemas"]["JurisdictionRelation"][];
+      /**
+       * Themes
+       * @default []
+       */
+      themes: components["schemas"]["ThemeRelation"][];
+      /**
+       * Courtdecisions
+       * @default []
+       */
+      courtDecisions: components["schemas"]["CourtDecisionRelation"][];
+      /**
+       * Domesticinstruments
+       * @default []
+       */
+      domesticInstruments: components["schemas"]["DomesticInstrumentRelation"][];
+      /**
+       * Domesticlegalprovisions
+       * @default []
+       */
+      domesticLegalProvisions: components["schemas"]["DomesticLegalProvisionRelation"][];
+      /**
+       * Regionalinstruments
+       * @default []
+       */
+      regionalInstruments: components["schemas"]["RegionalInstrumentRelation"][];
+      /**
+       * Regionallegalprovisions
+       * @default []
+       */
+      regionalLegalProvisions: components["schemas"]["RegionalLegalProvisionRelation"][];
+      /**
+       * Internationalinstruments
+       * @default []
+       */
+      internationalInstruments: components["schemas"]["InternationalInstrumentRelation"][];
+      /**
+       * Internationallegalprovisions
+       * @default []
+       */
+      internationalLegalProvisions: components["schemas"]["InternationalLegalProvisionRelation"][];
+      /**
+       * Literature
+       * @default []
+       */
+      literature: components["schemas"]["LiteratureRelation"][];
+      /**
+       * Arbitralawards
+       * @default []
+       */
+      arbitralAwards: components["schemas"]["ArbitralAwardRelation"][];
+      /**
+       * Arbitralinstitutions
+       * @default []
+       */
+      arbitralInstitutions: components["schemas"]["ArbitralInstitutionRelation"][];
+      /**
+       * Arbitralrules
+       * @default []
+       */
+      arbitralRules: components["schemas"]["ArbitralRuleRelation"][];
+      /**
+       * Arbitralprovisions
+       * @default []
+       */
+      arbitralProvisions: components["schemas"]["ArbitralProvisionRelation"][];
+      /**
+       * Specialists
+       * @default []
+       */
+      specialists: components["schemas"]["SpecialistRelation"][];
     };
     /**
      * EntityType
@@ -1597,8 +2215,10 @@ export interface components {
     };
     /** FullTextSearchResponse */
     FullTextSearchResponse: {
-      /** Test */
-      test: boolean;
+      /** Query */
+      query?: string | null;
+      /** Filters */
+      filters?: components["schemas"]["FTSFilterOption"][] | null;
       /** Totalmatches */
       totalMatches: number;
       /** Page */
@@ -1629,6 +2249,113 @@ export interface components {
     HTTPValidationError: {
       /** Detail */
       detail?: components["schemas"]["ValidationError"][];
+    };
+    /** HcchAnswerDetail */
+    HcchAnswerDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Adaptedquestion */
+      adaptedQuestion?: string | null;
+      /** Position */
+      position?: string | null;
+      /** Questioncoldid */
+      questionColdId?: string | null;
+    };
+    /** HcchAnswerRelation */
+    HcchAnswerRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Adaptedquestion */
+      adaptedQuestion?: string | null;
+      /** Position */
+      position?: string | null;
+    };
+    /** InternationalInstrumentDetail */
+    InternationalInstrumentDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Idnumber */
+      idNumber?: string | null;
+      /** Name */
+      name?: string | null;
+      /** Date */
+      date?: string | null;
+      /** Url */
+      url?: string | null;
+      /** Attachment */
+      attachment?: string | null;
     };
     /** InternationalInstrumentRecord */
     InternationalInstrumentRecord: {
@@ -1707,6 +2434,15 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /** InternationalInstrumentRelation */
+    InternationalInstrumentRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Name */
+      name?: string | null;
+    };
     /**
      * InternationalInstrumentSuggestion
      * @example {
@@ -1749,6 +2485,56 @@ export interface components {
        * @description Submitter comments
        */
       submitter_comments?: string | null;
+    };
+    /** InternationalLegalProvisionDetail */
+    InternationalLegalProvisionDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Provision */
+      provision?: string | null;
+      /** Titleoftheprovision */
+      titleOfTheProvision?: string | null;
+      /** Fulltext */
+      fullText?: string | null;
+      /** Rankingdisplayorder */
+      rankingDisplayOrder?: string | null;
+      /** Instrumentcoldid */
+      instrumentColdId?: string | null;
     };
     /** InternationalLegalProvisionRecord */
     InternationalLegalProvisionRecord: {
@@ -1803,6 +2589,21 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /** InternationalLegalProvisionRelation */
+    InternationalLegalProvisionRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Provision */
+      provision?: string | null;
+      /** Titleoftheprovision */
+      titleOfTheProvision?: string | null;
+      /** Fulltext */
+      fullText?: string | null;
+      /** Rankingdisplayorder */
+      rankingDisplayOrder?: string | null;
+    };
     /**
      * JurisdictionCount
      * @example {
@@ -1849,6 +2650,66 @@ export interface components {
       region?: string | null;
     } & {
       [key: string]: unknown;
+    };
+    /** JurisdictionDetail */
+    JurisdictionDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Name */
+      name?: string | null;
+      /** Alpha3Code */
+      alpha3Code?: string | null;
+      /** Type */
+      type?: string | null;
+      /** Region */
+      region?: string | null;
+      /** Northsouthdivide */
+      northSouthDivide?: string | null;
+      /** Jurisdictionaldifferentiator */
+      jurisdictionalDifferentiator?: string | null;
+      /** Legalfamily */
+      legalFamily?: string | null;
+      /** Jurisdictionsummary */
+      jurisdictionSummary?: string | null;
+      /** Irrelevant */
+      irrelevant?: boolean | null;
+      /** Done */
+      done?: boolean | null;
     };
     /** JurisdictionInfo */
     JurisdictionInfo: {
@@ -1924,12 +2785,149 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /** JurisdictionRelation */
+    JurisdictionRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Name */
+      name?: string | null;
+      /** Alpha3Code */
+      alpha3Code?: string | null;
+      /** Region */
+      region?: string | null;
+      /** Legalfamily */
+      legalFamily?: string | null;
+    };
     /** LandingPageJurisdiction */
     LandingPageJurisdiction: {
       /** Code */
       code: string;
       /** Hasdata */
       hasData: number;
+    };
+    /** LiteratureDetail */
+    LiteratureDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Idnumber */
+      idNumber?: string | null;
+      /** Itemtype */
+      itemType?: string | null;
+      /** Publicationyear */
+      publicationYear?: string | null;
+      /** Author */
+      author?: string | null;
+      /** Title */
+      title?: string | null;
+      /** Publicationtitle */
+      publicationTitle?: string | null;
+      /** Abstractnote */
+      abstractNote?: string | null;
+      /** Isbn */
+      isbn?: string | null;
+      /** Issn */
+      issn?: string | null;
+      /** Doi */
+      doi?: string | null;
+      /** Url */
+      url?: string | null;
+      /** Date */
+      date?: string | null;
+      /** Dateadded */
+      dateAdded?: string | null;
+      /** Datemodified */
+      dateModified?: string | null;
+      /** Publisher */
+      publisher?: string | null;
+      /** Language */
+      language?: string | null;
+      /** Extra */
+      extra?: string | null;
+      /** Manualtags */
+      manualTags?: string | null;
+      /** Editor */
+      editor?: string | null;
+      /** Issue */
+      issue?: string | null;
+      /** Volume */
+      volume?: string | null;
+      /** Pages */
+      pages?: string | null;
+      /** Librarycatalog */
+      libraryCatalog?: string | null;
+      /** Accessdate */
+      accessDate?: string | null;
+      /** Openaccess */
+      openAccess?: string | null;
+      /** Openaccessurl */
+      openAccessUrl?: string | null;
+      /** Journalabbreviation */
+      journalAbbreviation?: string | null;
+      /** Shorttitle */
+      shortTitle?: string | null;
+      /** Place */
+      place?: string | null;
+      /** Numpages */
+      numPages?: string | null;
+      /** Type */
+      type?: string | null;
+      /** Oupjdchapter */
+      oupJdChapter?: string | null;
+      /** Contributor */
+      contributor?: string | null;
+      /** Automatictags */
+      automaticTags?: string | null;
+      /** Number */
+      number?: string | null;
+      /** Series */
+      series?: string | null;
+      /** Seriesnumber */
+      seriesNumber?: string | null;
+      /** Serieseditor */
+      seriesEditor?: string | null;
+      /** Edition */
+      edition?: string | null;
+      /** Callnumber */
+      callNumber?: string | null;
+      /** Jurisdictionsummary */
+      jurisdictionSummary?: string | null;
     };
     /** LiteratureRecord */
     LiteratureRecord: {
@@ -2064,6 +3062,21 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /** LiteratureRelation */
+    LiteratureRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Author */
+      author?: string | null;
+      /** Title */
+      title?: string | null;
+      /** Publicationyear */
+      publicationYear?: string | null;
+      /** Oupjdchapter */
+      oupJdChapter?: string | null;
+    };
     /**
      * LiteratureSuggestion
      * @example {
@@ -2173,6 +3186,54 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /** QuestionDetail */
+    QuestionDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Question */
+      question?: string | null;
+      /** Questionnumber */
+      questionNumber?: string | null;
+      /** Primarytheme */
+      primaryTheme?: string | null;
+      /** Answeringoptions */
+      answeringOptions?: string | null;
+    };
     /** QuestionRecord */
     QuestionRecord: {
       /** Sourcetable */
@@ -2206,6 +3267,19 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /** QuestionRelation */
+    QuestionRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Question */
+      question?: string | null;
+      /** Questionnumber */
+      questionNumber?: string | null;
+      /** Primarytheme */
+      primaryTheme?: string | null;
+    };
     /** RecordBase */
     RecordBase: {
       /** Sourcetable */
@@ -2216,6 +3290,58 @@ export interface components {
       rank?: number | null;
     } & {
       [key: string]: unknown;
+    };
+    /** RegionalInstrumentDetail */
+    RegionalInstrumentDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Idnumber */
+      idNumber?: string | null;
+      /** Title */
+      title?: string | null;
+      /** Abbreviation */
+      abbreviation?: string | null;
+      /** Date */
+      date?: string | null;
+      /** Url */
+      url?: string | null;
+      /** Attachment */
+      attachment?: string | null;
     };
     /** RegionalInstrumentRecord */
     RegionalInstrumentRecord: {
@@ -2268,6 +3394,17 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /** RegionalInstrumentRelation */
+    RegionalInstrumentRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Title */
+      title?: string | null;
+      /** Abbreviation */
+      abbreviation?: string | null;
+    };
     /**
      * RegionalInstrumentSuggestion
      * @example {
@@ -2316,6 +3453,54 @@ export interface components {
        */
       submitter_comments?: string | null;
     };
+    /** RegionalLegalProvisionDetail */
+    RegionalLegalProvisionDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Provision */
+      provision?: string | null;
+      /** Titleoftheprovision */
+      titleOfTheProvision?: string | null;
+      /** Fulltext */
+      fullText?: string | null;
+      /** Instrumentcoldid */
+      instrumentColdId?: string | null;
+    };
     /** RegionalLegalProvisionRecord */
     RegionalLegalProvisionRecord: {
       /** Sourcetable */
@@ -2359,12 +3544,84 @@ export interface components {
     } & {
       [key: string]: unknown;
     };
+    /** RegionalLegalProvisionRelation */
+    RegionalLegalProvisionRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Provision */
+      provision?: string | null;
+      /** Titleoftheprovision */
+      titleOfTheProvision?: string | null;
+    };
     /** SitemapEntry */
     SitemapEntry: {
       /** Loc */
       loc: string;
       /** Lastmod */
       lastmod: string;
+    };
+    /** SpecialistDetail */
+    SpecialistDetail: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+      /** Specialist */
+      specialist?: string | null;
+      /** Affiliation */
+      affiliation?: string | null;
+      /** Contact */
+      contact?: string | null;
+      /** Bio */
+      bio?: string | null;
+      /** Website */
+      website?: string | null;
+    };
+    /** SpecialistRelation */
+    SpecialistRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Specialist */
+      specialist?: string | null;
+      /** Affiliation */
+      affiliation?: string | null;
     };
     /**
      * SpecialistResponse
@@ -2551,6 +3808,15 @@ export interface components {
        */
       status: string;
     };
+    /** ThemeRelation */
+    ThemeRelation: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Theme */
+      theme?: string | null;
+    };
     /** UploadDocumentRequest */
     UploadDocumentRequest: {
       /**
@@ -2586,6 +3852,46 @@ export interface components {
       /** Error Type */
       type: string;
     };
+    /** _DetailBase */
+    _DetailBase: {
+      /** Id */
+      id: number;
+      /** Coldid */
+      coldId?: string | null;
+      /** Sourcetable */
+      sourceTable: string;
+      /**
+       * @default {
+       *       "answers": [],
+       *       "hcchAnswers": [],
+       *       "questions": [],
+       *       "jurisdictions": [],
+       *       "themes": [],
+       *       "courtDecisions": [],
+       *       "domesticInstruments": [],
+       *       "domesticLegalProvisions": [],
+       *       "regionalInstruments": [],
+       *       "regionalLegalProvisions": [],
+       *       "internationalInstruments": [],
+       *       "internationalLegalProvisions": [],
+       *       "literature": [],
+       *       "arbitralAwards": [],
+       *       "arbitralInstitutions": [],
+       *       "arbitralRules": [],
+       *       "arbitralProvisions": [],
+       *       "specialists": []
+       *     }
+       */
+      relations: components["schemas"]["EntityRelations"];
+      /** Createdat */
+      createdAt?: string | null;
+      /** Updatedat */
+      updatedAt?: string | null;
+      /** Createdby */
+      createdBy?: string | null;
+      /** Updatedby */
+      updatedBy?: string | null;
+    };
   };
   responses: never;
   parameters: never;
@@ -2618,7 +3924,15 @@ export interface operations {
         content: {
           /**
            * @example {
-           *       "test": false,
+           *       "query": "example search",
+           *       "filters": [
+           *         {
+           *           "column": "tables",
+           *           "values": [
+           *             "Answers"
+           *           ]
+           *         }
+           *       ],
            *       "total_matches": 2,
            *       "page": 1,
            *       "page_size": 2,
@@ -2650,7 +3964,7 @@ export interface operations {
       };
     };
   };
-  handle_curated_details_search_api_v1_search_details_post: {
+  handle_entity_detail_api_v1_search_details_post: {
     parameters: {
       query?: never;
       header?: {
@@ -2665,21 +3979,31 @@ export interface operations {
       };
     };
     responses: {
-      /** @description Flattened, mapping-transformed record. */
+      /** @description Successful Response */
       200: {
         headers: {
           [name: string]: unknown;
         };
         content: {
-          /**
-           * @example {
-           *       "source_table": "Answers",
-           *       "id": "CHE_15-TC",
-           *       "Title": "…",
-           *       "hop1_relations": {}
-           *     }
-           */
-          "application/json": components["schemas"]["CuratedDetailsRecord"];
+          "application/json":
+            | components["schemas"]["AnswerDetail"]
+            | components["schemas"]["HcchAnswerDetail"]
+            | components["schemas"]["QuestionDetail"]
+            | components["schemas"]["JurisdictionDetail"]
+            | components["schemas"]["CourtDecisionDetail"]
+            | components["schemas"]["DomesticInstrumentDetail"]
+            | components["schemas"]["DomesticLegalProvisionDetail"]
+            | components["schemas"]["RegionalInstrumentDetail"]
+            | components["schemas"]["RegionalLegalProvisionDetail"]
+            | components["schemas"]["InternationalInstrumentDetail"]
+            | components["schemas"]["InternationalLegalProvisionDetail"]
+            | components["schemas"]["LiteratureDetail"]
+            | components["schemas"]["ArbitralAwardDetail"]
+            | components["schemas"]["ArbitralInstitutionDetail"]
+            | components["schemas"]["ArbitralRuleDetail"]
+            | components["schemas"]["ArbitralProvisionDetail"]
+            | components["schemas"]["SpecialistDetail"]
+            | components["schemas"]["_DetailBase"];
         };
       };
       /** @description Record not found. */

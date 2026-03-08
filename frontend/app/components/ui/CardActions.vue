@@ -103,9 +103,9 @@ function downloadFile(
 function exportJSON() {
   const json = JSON.stringify(props.resultData, null, 2);
   const title = String(
-    props.resultData.Title ||
+    props.resultData.title ||
       props.resultData.caseTitle ||
-      props.resultData.Name ||
+      props.resultData.name ||
       props.resultData.caseCitation ||
       "export",
   );

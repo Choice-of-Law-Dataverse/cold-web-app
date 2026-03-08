@@ -233,9 +233,9 @@ import { domesticInstrumentTooltips } from "@/config/tooltips";
 import { flagUrl } from "@/config/assets";
 
 interface JurisdictionEntry {
-  Name: string;
-  "Alpha-3 Code"?: string;
-  "Irrelevant?"?: boolean;
+  name: string;
+  alpha3Code?: string;
+  irrelevant?: boolean;
 }
 
 interface JurisdictionOption {
@@ -244,9 +244,9 @@ interface JurisdictionOption {
   avatar?: string;
 }
 
-const tooltipAbbreviation = domesticInstrumentTooltips.Abbreviation;
-const tooltipCompatibleWithHCCH = domesticInstrumentTooltips.Compatibility;
-const tooltipCompatibleWithUNCITRAL = domesticInstrumentTooltips.Compatibility;
+const tooltipAbbreviation = domesticInstrumentTooltips.abbreviation;
+const tooltipCompatibleWithHCCH = domesticInstrumentTooltips.compatibility;
+const tooltipCompatibleWithUNCITRAL = domesticInstrumentTooltips.compatibility;
 const tooltipEntryIntoForce = domesticInstrumentTooltips.entryIntoForce;
 const tooltipOfficialTitle = domesticInstrumentTooltips.officialTitle;
 const tooltipDomesticInstrumentPublicationDate =
@@ -294,13 +294,11 @@ const loadJurisdictions = async () => {
     jurisdictionOptions.value = [
       { label: "Select Jurisdiction" },
       ...jurisdictionsData
-        .filter((entry: JurisdictionEntry) => entry["Irrelevant?"] === false)
+        .filter((entry: JurisdictionEntry) => entry.irrelevant !== true)
         .map((entry: JurisdictionEntry) => ({
-          label: entry.Name,
-          alpha3Code: entry["Alpha-3 Code"],
-          avatar: entry["Alpha-3 Code"]
-            ? flagUrl(entry["Alpha-3 Code"])
-            : undefined,
+          label: entry.name,
+          alpha3Code: entry.alpha3Code,
+          avatar: entry.alpha3Code ? flagUrl(entry.alpha3Code) : undefined,
         }))
         .sort((a, b) => (a.label || "").localeCompare(b.label || "")),
     ];
