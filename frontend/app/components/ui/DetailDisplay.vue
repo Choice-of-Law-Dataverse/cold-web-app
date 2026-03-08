@@ -206,7 +206,7 @@ watch(
     if (!newData) return;
 
     const rawJurisdiction = isJurisdictionPage
-      ? route.params.id
+      ? route.params.coldId
       : isQuestionPage
         ? newData.jurisdictionCode
         : null;
@@ -286,7 +286,7 @@ function getDisplayValue(item: KeyLabelPair, value: unknown): unknown {
     return item.valueTransform(value);
   }
   if (
-    (item.key === "answer" || item.key === "Specialists") &&
+    (item.key === "answer" || item.key === "specialists") &&
     typeof value === "string" &&
     value.includes(",")
   ) {

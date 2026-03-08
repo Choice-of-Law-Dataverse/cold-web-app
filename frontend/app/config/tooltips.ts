@@ -2,15 +2,25 @@
  * Tooltip content for entity detail pages
  * Only fields that need tooltips are included (Partial)
  *
- * `satisfies` ensures keys exist on entity types while preserving literal types.
+ * `satisfies` ensures keys match the corresponding label maps.
  */
+
+import type {
+  JurisdictionField,
+  QuestionField,
+  CourtDecisionField,
+  LiteratureField,
+  DomesticInstrumentField,
+  RegionalInstrumentField,
+  InternationalInstrumentField,
+} from "@/config/labels";
 
 export const jurisdictionTooltips = {
   jurisdictionalDifferentiator:
     "Jurisdictional peculiarities, such as the judicial hierarchy. To be read before consulting jurisdictional information.",
   literature:
     "Academic literature relevant to this jurisdiction's choice of law framework.",
-} as const;
+} as const satisfies Partial<Record<JurisdictionField, string>>;
 
 export const questionTooltips = {
   question: "Question pertaining to chosen topic and jurisdiction.",
@@ -23,7 +33,7 @@ export const questionTooltips = {
   courtDecisionsId:
     "Court decisions that have addressed the same legal issue, according to our database.",
   relatedLiterature: "Academic literature relevant to this question's topic.",
-} as const;
+} as const satisfies Partial<Record<QuestionField, string>>;
 
 export const courtDecisionTooltips = {
   caseTitle:
@@ -54,12 +64,12 @@ export const courtDecisionTooltips = {
     "Questions in our database that the court decision addresses.",
   relatedLiterature:
     "Academic literature relevant to this court decision's legal issues.",
-} as const;
+} as const satisfies Partial<Record<CourtDecisionField, string>>;
 
 export const literatureTooltips = {
   publicationYear: "Year of publication.",
   publisher: "Publishing house.",
-} as const;
+} as const satisfies Partial<Record<LiteratureField, string>>;
 
 export const domesticInstrumentTooltips = {
   titleInEnglish:
@@ -73,7 +83,7 @@ export const domesticInstrumentTooltips = {
   publicationDate: "Date of publication in the official reporter or gazette.",
   domesticLegalProvisions:
     "Link to provisions of a particular relevance to Choice of Law, including key articles or sections.",
-} as const;
+} as const satisfies Partial<Record<DomesticInstrumentField, string>>;
 
 export const regionalInstrumentTooltips = {
   date: "Date when the instrument was enacted or came into force.",
@@ -81,7 +91,7 @@ export const regionalInstrumentTooltips = {
     "This button will open the CoLD search and return all literature pieces that are relevant for this instrument.",
   regionalLegalProvisions:
     "Key provisions within the instrument, selected for their relevance to choice of law.",
-} as const;
+} as const satisfies Partial<Record<RegionalInstrumentField, string>>;
 
 export const internationalInstrumentTooltips = {
   date: "Date when the instrument was enacted or came into force.",
@@ -91,4 +101,4 @@ export const internationalInstrumentTooltips = {
     "This button will open the CoLD search and return all literature pieces that are relevant for this instrument.",
   selectedProvisions:
     "Key provisions within the instrument, selected for their relevance to choice of law.",
-} as const;
+} as const satisfies Partial<Record<InternationalInstrumentField, string>>;

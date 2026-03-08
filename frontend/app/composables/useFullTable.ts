@@ -29,7 +29,7 @@ export async function fetchFullTableData<T extends TableName>(
       filters: filters.length
         ? filters.map((f) => ({
             column: String(f.column),
-            value: String(f.value),
+            value: f.value,
           }))
         : null,
       response_type: null,
