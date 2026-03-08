@@ -18,21 +18,16 @@ Elaborate on facts including, but not limited to the following, as long as they 
 4.	Inclusion Standards:
 -	Include: Connecting factors, transactional geography, choice of law clauses, foreign law invocations, conflict triggers
 -	Exclude: Specific amounts, exact dates, individual names, procedural details, unrelated contract terms
-5.	OUTPUT FORMAT:
-[Single paragraph containing all essential facts in narrative form, explaining the international elements and circumstances that necessitated choice of law analysis. MAXIMUM 300 WORDS.]
-6.	CONSTRAINT:
-Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section. Use a maximum of four sentences.
+5.	CONSTRAINT:
+Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section.
 \nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe facts are:\n
 """
 
 # ===== PIL PROVISIONS =====
 PIL_PROVISIONS_PROMPT = """
 Your task is to extract rules related to choice of law cited in a court decision. Your response is a list of provisions sorted by the impact of the rules for the choice of law issue(s) present within the court decision. Your response consists of this list only, no explanations or other additional information. A relevant provision usually stems from the most prominent legislation dealing with private international law in the respective jurisdiction. In some countries, the relevant provisions are included in the civil code. Other countries have acts that include private international law provisions. In many cases, the relevant provisions can also be found in international treaties. If no legislative provision is found, double-check whether there is any other court decision cited as a choice of law precedent.
-OUTPUT FORMAT:
-- The output adheres to this format: ["<provision>, <abbreviated name of the instrument>", "<provision>, <abbreviated name of the instrument>", ...]
-- Example for Switzerland: ["Art. 187, PILA"]
-- If you do not find PIL provisions in the court decision or if you are not sure, return ["NA"]. If any language other than English is used to cite a provision, use their English abbreviation.
 LIMITATIONS:
+- If you do not find PIL provisions in the court decision or if you are not sure, use "NA". If any language other than English is used to cite a provision, use their English abbreviation.
 - No literature or other doctrinal remarks
 - Do not use the paragraph symbol (§). If necessary use the abbreviation "Para."
 
@@ -82,14 +77,7 @@ Synthesize a comprehensive abstract using the analytical components you have pre
 5.  Fallback Instruction:
 If an official “abstract”, “headnote”/ “case note” exists in the judgment text, extract it instead of synthesizing. Please translate it into English and state that it is a verbatim translation.
 
-6.	OUTPUT FORMAT:
-A.	**ABSTRACT WHEN NOTHING IS AVAILABLE IN THE DECISION:**
-[Single paragraph synthesizing facts, PIL issues, court's reasoning, and precedential outcome]
-B.	**ABSTRACT WHEN A SUMMARY IS AVAILABLE IN THE DECISION:**
-[Extracted and translated paragraph adding (verbatim) at the end].
-- Use a maximum of 300 words.
-
-7.	CONSTRAINT: Base the abstract on your previous analysis of this judgment's PIL components, ensuring it captures the essential choice of law elements for legal research and reference purposes. Use a maximum of four sentences.
+6.	CONSTRAINT: Base the abstract on your previous analysis of this judgment's PIL components, ensuring it captures the essential choice of law elements for legal research and reference purposes. Use a maximum of four sentences.
 
 Court Decision Text:\n{text}
 

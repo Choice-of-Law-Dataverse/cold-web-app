@@ -40,9 +40,6 @@ RESPONSE REQUIREMENTS:
 - If no clear jurisdiction can be determined, respond with "Unknown"
 - Provide clear reasoning for your identification
 
-Respond in the following format:
-/"Jurisdiction/"
-
 COURT DECISION TEXT:
 {text}
 """

@@ -18,9 +18,7 @@ Elaborate on facts including, but not limited to the following, as long as they 
 4.	Inclusion Standards:
 -	Include: Connecting factors, transactional geography, choice of law clauses, foreign law invocations, conflict triggers
 -	Exclude: Specific amounts, exact dates, individual names, procedural details, unrelated contract terms, conclusion of the case
-5.	OUTPUT FORMAT:
-[Single paragraph containing all essential facts in narrative form, explaining the international elements and circumstances that necessitated choice of law analysis. MAXIMUM 300 WORDS.]
-6.	CONSTRAINT:
+5.	CONSTRAINT:
 Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section.
 \nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe facts are:\n
 """
@@ -50,15 +48,7 @@ INSTRUCTIONS:
 -	Authorities cited but not used in the court's actual reasoning
 -	General legal background citations not supporting the specific decision
 -   Sources that do not have precedential value
-5.	OUTPUT FORMAT:
-**Judicial Precedents:**
--	[Case name 1]
--	[Case name 2]
-**Textbooks/Academic Sources:**
--	[Source]: [Brief explanation of how court used it]
-**Statutory Provisions:**
--	[Provision name/section]
-6.	CONSTRAINT: Extract only from the court's own reasoning in the provided judgment text, focusing on authorities that directly supported the choice of law analysis and conclusion.
+5.	CONSTRAINT: Extract only from the court's own reasoning in the provided judgment text, focusing on authorities that directly supported the choice of law analysis and conclusion.
 \nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe authorities are:\n
 """
 
@@ -84,10 +74,7 @@ Frame each issue as a precise legal question using "Whether..." format. Examples
 -	Ensure each question reflects a choice of law determination actually made by the court
 -	Order issues from primary to secondary based on their importance to the court's reasoning
 5.	Quality Check: Each identified issue should be answerable by pointing to specific court reasoning in the choice of law analysis.
-6.	OUTPUT FORMAT:
-1. Whether [specific choice of law question court resolved]
-2. Whether [additional issue if present]
-7.   CONSTRAINT: Base issue identification solely on the court's actual analysis and resolution, drawing from both the full judgment text and extracted choice of law section.
+6.   CONSTRAINT: Base issue identification solely on the court's actual analysis and resolution, drawing from both the full judgment text and extracted choice of law section.
 \nThe issue in this case is related to this theme/these themes:\n{classification_definitions}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe issue is:\n
 """
 
@@ -113,10 +100,7 @@ INSTRUCTIONS:
 -	Each ratio should be actionable as precedent in future PIL cases
 -	Principles should be neither too narrow (case-specific) nor too broad (unhelpful generalization)
 -	Focus on what the court held must be done, not what it suggested or considered
-5.	OUTPUT FORMAT:
-[Legal principle 1 - complete rule in 1-2 sentences]
-[Legal principle 2 - if applicable]
-6.	CONSTRAINT: Extract principles solely from the court's binding determinations in the provided judgment text, ensuring each principle was necessary for the court's choice of law conclusion.
+5.	CONSTRAINT: Extract principles solely from the court's binding determinations in the provided judgment text, ensuring each principle was necessary for the court's choice of law conclusion.
 \nYour output is a direct answer to the issue laid out here:\n{col_issue}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe court's position is:\n
 """
 
@@ -146,11 +130,7 @@ INSTRUCTIONS:
 -	Organize multiple obiter statements logically (by topic or sequence in judgment)
 -   Use a maximum of 300 words in total
 -   Do not include unnecessary titles, use only verbatim quotations, and do not display inversion test reasoning
-5.	OUTPUT FORMAT:
-[Legal observation 1 - court's non-essential commentary on PIL/choice of law]
-
-[Legal observation 2 - if applicable]
-6.	CONSTRAINT: Extract only judicial commentary from the provided judgment text that relates to PIL methodology or choice of law principles but was not necessary for the court's actual decision.
+5.	CONSTRAINT: Extract only judicial commentary from the provided judgment text that relates to PIL methodology or choice of law principles but was not necessary for the court's actual decision.
 \nYour output is a direct answer to the issue laid out here:\n{col_issue}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe obiter dicta is:\n
 """
 
@@ -174,11 +154,7 @@ INSTRUCTIONS:
 -	Provide concise but complete summary of each dissenting PIL position
 -	If multiple dissents exist, address each separately
 -	If partial agreement exists, specify areas of PIL agreement vs. disagreement
-5.	OUTPUT FORMAT:
-[Judge name (if provided)]: [Summary of PIL disagreement and alternative approach]
-OR
-"No dissenting opinion or minority opinion on the choice of law issue."
-6.	CONSTRAINT: Extract only from the provided judgment text, focusing exclusively on choice of law disagreements while ignoring dissents on other legal issues.
+5.	CONSTRAINT: Extract only from the provided judgment text, focusing exclusively on choice of law disagreements while ignoring dissents on other legal issues.
 \nYour output is a direct answer to the issue laid out here:\n{col_issue}\n\nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nClassified Theme(s):\n{classification}\n\nThe dissenting opinions are:\n
 """
 
@@ -206,13 +182,7 @@ Synthesize a comprehensive abstract using the analytical components you have pre
 5.	Fallback Instruction:
 If an official “abstract”, “headnote”/”case note” exists in the judgment text, extract it instead of synthesizing.
 
-6.	OUTPUT FORMAT:
-A.	**ABSTRACT WHEN NOTHING IS AVAILABLE IN THE DECISION:**
-[Single paragraph synthesizing facts, PIL issues, court's reasoning, and precedential outcome]
-B.	**ABSTRACT WHEN A CASE NOTE IS AVAILABLE IN THE DECISION:**
-[Extracted paragraph adding (verbatim) at the end].
-
-7.	CONSTRAINT: Base the abstract on your previous analysis of this judgment's PIL components, ensuring it captures the essential choice of law elements for legal research and reference purposes.
+6.	CONSTRAINT: Base the abstract on your previous analysis of this judgment's PIL components, ensuring it captures the essential choice of law elements for legal research and reference purposes.
 
 Court Decision Text:\n{text}
 

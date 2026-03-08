@@ -25,16 +25,11 @@ More specifically, when preparing the output, prioritize: (1) The court's direct
 -	Reproduce the court's exact language using quotation marks, abbreviating text using brackets [...] when necessary
 -	Extract complete sentences with essential context only
 -	Focus primarily on the court's own reasoning and analysis
-3.	Output Format:
-[Section 1:]
-"[Exact court language]"
-[Section 2:]
-"[Exact court language]"
-4.	Quality Check:
+3.	Quality Check:
 -	Ensure each extracted section shows the court's reasoning chain
 -	Break longer passages into separate sections if they address different choice of law issues
 -	If necessary, add brackets […] to abbreviate the text if it touches upon matters included in the exclusion list.
-5.	CONSTRAINT: Base extraction solely on the provided judgment text. Do not add interpretive commentary or external legal knowledge.”
+4.	CONSTRAINT: Base extraction solely on the provided judgment text. Do not add interpretive commentary or external legal knowledge.
 
 \nHere is the text of the Court Decision:\n{text}\n\nHere is the section of the Court Decision containing Choice of Law related information:\n
 """
