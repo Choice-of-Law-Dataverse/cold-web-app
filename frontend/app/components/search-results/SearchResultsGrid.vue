@@ -67,6 +67,8 @@ import InternationalInstrumentCard from "@/components/search-results/Internation
 import LiteratureCard from "@/components/search-results/LiteratureCard.vue";
 import CourtDecisionCard from "@/components/search-results/CourtDecisionCard.vue";
 import AnswerCard from "@/components/search-results/AnswerCard.vue";
+import ArbitralAwardCard from "@/components/search-results/ArbitralAwardCard.vue";
+import ArbitralRuleCard from "@/components/search-results/ArbitralRuleCard.vue";
 import NoSearchResults from "@/components/search-results/NoSearchResults.vue";
 import EmptySearchState from "@/components/search-results/EmptySearchState.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
@@ -89,6 +91,8 @@ const resultComponentMap: Record<string, Component> = {
   "Court Decisions": CourtDecisionCard,
   Answers: AnswerCard,
   Literature: LiteratureCard,
+  "Arbitral Awards": ArbitralAwardCard,
+  "Arbitral Rules": ArbitralRuleCard,
 };
 
 const getResultComponent = (sourceTable: string) =>
