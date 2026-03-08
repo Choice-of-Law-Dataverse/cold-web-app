@@ -53,6 +53,7 @@ class RecordBase(BaseModel):
 
 class AnswerRecord(RecordBase):
     answer: str | None = None
+    cold_id: str | None = None
     created: str | None = None
     record_id: str | None = None
     last_modified: str | None = None

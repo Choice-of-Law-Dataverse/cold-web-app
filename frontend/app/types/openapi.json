@@ -2241,6 +2241,17 @@
             ],
             "title": "Answer"
           },
+          "coldId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Coldid"
+          },
           "created": {
             "anyOf": [
               {
