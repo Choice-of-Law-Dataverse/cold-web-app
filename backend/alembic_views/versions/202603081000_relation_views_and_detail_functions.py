@@ -1296,7 +1296,7 @@ BEGIN
 
     ELSIF p_table_name = 'Specialists' THEN
         SELECT s.id,
-            NULL::TEXT,
+            ('SP-' || s.id),
             jsonb_build_object(
                 'specialist', s."Specialist",
                 'affiliation', s."Affiliation",
@@ -1307,6 +1307,7 @@ BEGIN
         INTO v_id, v_cold_id, v_base
         FROM {S}."Specialists" s
         WHERE s.id::text = p_cold_id
+           OR ('SP-' || s.id::text) = p_cold_id
         LIMIT 1;
 
         SELECT jsonb_build_object(

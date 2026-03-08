@@ -112,7 +112,10 @@ def handle_entity_detail(
     body: CuratedDetailsRequest,
     search_service: SearchService = Depends(get_search_service),
 ) -> AnyDetail:
-    result = search_service.get_entity_detail(body.table, body.id)
+    try:
+        result = search_service.get_entity_detail(body.table, body.id)
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e)) from e
     if not result:
         raise HTTPException(status_code=404, detail=f"No record found for {body.id} in {body.table}")
     model = TABLE_DETAIL_MODELS.get(result.get("source_table", ""), _DetailBase)

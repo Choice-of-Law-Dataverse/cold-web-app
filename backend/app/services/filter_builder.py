@@ -69,7 +69,7 @@ def build_filter_clause(
                 safe_col = re.sub(r"[^a-zA-Z0-9_]", "", snake_col)
                 col_sql = f'{alias}."{safe_col}"'
                 if isinstance(v, str):
-                    or_parts.append(f"{col_sql} ILIKE '%' || :{p_name} || '%'")
+                    or_parts.append(f"{col_sql}::text ILIKE '%' || :{p_name} || '%'")
                     params[p_name] = v
                 elif isinstance(v, bool):
                     or_parts.append(f"{col_sql} = :{p_name}")

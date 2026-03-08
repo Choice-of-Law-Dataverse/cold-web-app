@@ -75,7 +75,30 @@ class SearchService:
             raise ValueError(f"Unsupported table for full/filtered query: {table}")
         return view
 
+    VALID_DETAIL_TABLES: set[str] = {
+        "Answers",
+        "HCCH Answers",
+        "Questions",
+        "Court Decisions",
+        "Domestic Instruments",
+        "Domestic Legal Provisions",
+        "Regional Instruments",
+        "Regional Legal Provisions",
+        "International Instruments",
+        "International Legal Provisions",
+        "Literature",
+        "Arbitral Awards",
+        "Arbitral Institutions",
+        "Arbitral Rules",
+        "Arbitral Provisions",
+        "Jurisdictions",
+        "Specialists",
+    }
+
     def get_entity_detail(self, table: str, cold_id: str) -> dict[str, Any] | None:
+        if table not in self.VALID_DETAIL_TABLES:
+            raise ValueError(f"Unsupported table: {table}")
+
         sql = """
         SELECT source_table, record_id, cold_id, base_record, relations
         FROM data_views.get_entity_detail(:table_name, :cold_id)
@@ -233,7 +256,7 @@ class SearchService:
             ")"
         )
         rows = self.db.execute_query(sql, params) or []
-        logger.warning("search_all_v2 returned %d rows (total_matches=%d)", len(rows), total_matches)
+        logger.debug("search_all_v2 returned %d rows (total_matches=%d)", len(rows), total_matches)
         if not rows and total_matches > 0:
             logger.warning("search SQL:\n%s\nparams: %s", sql, params)
         parsed_results = []
@@ -296,12 +319,13 @@ class SearchService:
         }
 
     def get_specialists_by_jurisdiction(self, jurisdiction_alpha_code: str) -> list[dict[str, Any]]:
-        query = """
+        schema = config.NOCODB_POSTGRES_SCHEMA
+        query = f"""
             SELECT s.*
-            FROM p1q5x3pj29vkrdr."Specialists" s
-            INNER JOIN p1q5x3pj29vkrdr."_nc_m2m_Jurisdictions_Specialists" js
+            FROM {schema}."Specialists" s
+            INNER JOIN {schema}."_nc_m2m_Jurisdictions_Specialists" js
                 ON s.id = js."Specialists_id"
-            INNER JOIN p1q5x3pj29vkrdr."Jurisdictions" j
+            INNER JOIN {schema}."Jurisdictions" j
                 ON j.id = js."Jurisdictions_id"
             WHERE j."Alpha_3_Code" = :jurisdiction_alpha_code
             ORDER BY s."Specialist"

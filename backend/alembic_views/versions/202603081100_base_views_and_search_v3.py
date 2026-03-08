@@ -813,5 +813,9 @@ def upgrade() -> None:
 
 
 def downgrade() -> None:
+    op.execute(
+        "DROP FUNCTION IF EXISTS data_views.search_all_v2(text, text[], text[], text[], integer, integer, boolean) CASCADE;"
+    )
+    op.execute("DROP FUNCTION IF EXISTS data_views.search_all_count_v2(text, text[], text[], text[]) CASCADE;")
     for name in BASE_VIEW_NAMES:
         op.execute(f"DROP VIEW IF EXISTS data_views.{name} CASCADE;")

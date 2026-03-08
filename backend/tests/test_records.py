@@ -38,10 +38,10 @@ class TestRecordBase:
         record = RecordBase.model_validate({"sourceTable": "Answers", "id": "X"})
         assert record.source_table == "Answers"
 
-    def test_extra_fields_preserved(self):
+    def test_extra_fields_ignored(self):
         data = {"source_table": "Answers", "id": "X", "Custom": "value"}
         record = RecordBase.model_validate(data)
-        assert record.model_dump()["Custom"] == "value"
+        assert "Custom" not in record.model_dump()
 
 
 class TestTableRecordModels:

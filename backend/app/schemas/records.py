@@ -1,13 +1,47 @@
-from pydantic import BaseModel, ConfigDict
+from typing import Any
+
+from pydantic import BaseModel, ConfigDict, model_validator
 from pydantic.alias_generators import to_camel
+
+
+def _has_bool(annotation: Any) -> bool:
+    origin = getattr(annotation, "__origin__", None)
+    if origin is type(None):
+        return False
+    args = getattr(annotation, "__args__", ())
+    if bool in args:
+        return True
+    if annotation is bool:
+        return True
+    return any(_has_bool(a) for a in args)
 
 
 class RecordBase(BaseModel):
     model_config = ConfigDict(
         alias_generator=to_camel,
         populate_by_name=True,
-        extra="allow",
+        extra="ignore",
+        coerce_numbers_to_str=True,
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _coerce_bools_to_str(cls, data: Any) -> Any:
+        if not isinstance(data, dict):
+            return data
+        alias_to_field: dict[str, str] = {}
+        for name in cls.model_fields:
+            alias = to_camel(name)
+            if alias:
+                alias_to_field[alias] = name
+        for key, value in data.items():
+            if not isinstance(value, bool) or not isinstance(key, str):
+                continue
+            field_name: str = alias_to_field.get(key, key)
+            field = cls.model_fields.get(field_name)
+            if field and field.annotation and not _has_bool(field.annotation):
+                data[key] = str(value)
+        return data
 
     source_table: str | None = None
     id: str | int | None = None
@@ -482,6 +516,6 @@ AnyRecord = (
 
 
 def validate_record(data: dict) -> AnyRecord:
-    source_table = data.get("source_table", "")
+    source_table = data.get("source_table") or data.get("sourceTable") or ""
     model = TABLE_RECORD_MODELS.get(source_table, RecordBase)
     return model(**data)  # type: ignore[return-value]
