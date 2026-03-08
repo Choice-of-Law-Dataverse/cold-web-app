@@ -9,8 +9,7 @@
 export const jurisdictionLabels = {
   jurisdictionSummary: "Summary",
   jurisdictionalDifferentiator: "Jurisdictional Differentiator",
-  literature: "Related Literature",
-  oupChapter: "OUP Chapter",
+  literature: "Literature",
   relatedData: "Related Data",
 } as const;
 
@@ -21,7 +20,7 @@ export const questionLabels = {
   domesticLegalProvisions: "Source",
   oupBookQuote: "OUP Book Quote",
   courtDecisionsId: "Related Court Decisions",
-  relatedLiterature: "Related Literature",
+  relatedLiterature: "Literature",
 } as const;
 
 export const courtDecisionLabels = {
@@ -40,7 +39,7 @@ export const courtDecisionLabels = {
   quote: "Quote",
   originalText: "Full Text",
   relatedQuestions: "Related Questions",
-  relatedLiterature: "Related Literature",
+  relatedLiterature: "Literature",
 } as const;
 
 export const literatureLabels = {
@@ -72,7 +71,7 @@ export const regionalInstrumentLabels = {
   abbreviation: "Abbreviation",
   title: "Title",
   date: "Date",
-  literature: "Related Literature",
+  literature: "Literature",
   regionalLegalProvisions: "Selected Provisions",
 } as const;
 
@@ -80,7 +79,7 @@ export const internationalInstrumentLabels = {
   name: "Title",
   date: "Date",
   specialists: "Specialists",
-  literature: "Related Literature",
+  literature: "Literature",
   selectedProvisions: "Selected Provisions",
 } as const;
 

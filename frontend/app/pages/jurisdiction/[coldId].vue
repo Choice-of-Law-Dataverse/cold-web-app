@@ -44,16 +44,16 @@
           />
         </DetailRow>
 
-        <DetailRow :label="jurisdictionLabels.oupChapter" variant="oup">
-          <RelatedItemsList :items="oupLiterature" base-path="/literature" />
-        </DetailRow>
-
         <DetailRow
           :label="jurisdictionLabels.literature"
           :tooltip="jurisdictionTooltips.literature"
           variant="literature"
         >
-          <RelatedItemsList :items="nonOupLiterature" base-path="/literature" />
+          <RelatedItemsList
+            :items="allLiterature"
+            base-path="/literature"
+            :empty-value-behavior="{ action: 'hide' }"
+          />
         </DetailRow>
       </template>
 
@@ -171,22 +171,14 @@ const domesticInstruments = computed<RelatedItem[]>(() =>
   })),
 );
 
-const oupLiterature = computed<RelatedItem[]>(() =>
-  (data.value?.relations.literature ?? [])
-    .filter((lit) => Boolean(lit.oupJdChapter))
-    .map((lit) => ({
-      id: lit.coldId || String(lit.id),
-      title: lit.title || String(lit.id),
-    })),
-);
-
-const nonOupLiterature = computed<RelatedItem[]>(() =>
-  (data.value?.relations.literature ?? [])
-    .filter((lit) => !lit.oupJdChapter)
-    .map((lit) => ({
-      id: lit.coldId || String(lit.id),
-      title: lit.title || String(lit.id),
-    })),
+const allLiterature = computed<RelatedItem[]>(() =>
+  (data.value?.relations.literature ?? []).map((lit) => ({
+    id: lit.coldId || String(lit.id),
+    title: lit.title || String(lit.id),
+    ...(lit.oupJdChapter
+      ? { badge: { label: "OUP", color: "var(--color-label-oup)" } }
+      : {}),
+  })),
 );
 
 const jurisdictionOption = computed(() => {

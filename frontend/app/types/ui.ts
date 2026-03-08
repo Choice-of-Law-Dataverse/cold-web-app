@@ -6,6 +6,10 @@
 export interface RelatedItem {
   id: string;
   title: string;
+  badge?: {
+    label: string;
+    color: string;
+  };
 }
 
 /** Empty value behavior configuration */
