@@ -91,6 +91,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: path-filter
     if: needs.path-filter.outputs.frontend == 'true'
+    defaults:
+      run:
+        working-directory: frontend
     outputs:
       prettier: ${{ steps.prettier.outcome }}
       eslint: ${{ steps.eslint.outcome }}
@@ -112,34 +115,28 @@ jobs:
           cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Set up environment
-        working-directory: frontend
         run: cp .blueprint.env .env
 
       - name: Install dependencies
-        working-directory: frontend
         run: pnpm install --frozen-lockfile
 
       - name: Run prettier check
         id: prettier
-        working-directory: frontend
         run: pnpm run format:check
         continue-on-error: true
 
       - name: Run eslint
         id: eslint
-        working-directory: frontend
         run: pnpm run lint
         continue-on-error: true
 
       - name: Run typecheck
         id: typecheck
-        working-directory: frontend
         run: pnpm run typecheck
         continue-on-error: true
 
       - name: Run tests
         id: test
-        working-directory: frontend
         run: pnpm run test:run
         continue-on-error: true
 
