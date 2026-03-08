@@ -14,12 +14,13 @@
         {{ answer }}
       </p>
       <div class="flex flex-wrap items-center gap-4">
-        <a
+        <EntityLink
           v-for="jurisdiction in answerGroups.get(answer)"
           :key="jurisdiction.code"
-          :href="`/question/${jurisdiction.code}${questionSuffix}`"
-          class="label-jurisdiction"
-          @click="handleClick($event, jurisdiction.code)"
+          :id="`${jurisdiction.code}${questionSuffix}`"
+          :title="jurisdiction.code"
+          base-path="/question"
+          variant="jurisdiction"
         >
           <div class="flag-wrapper">
             <JurisdictionFlag
@@ -29,7 +30,7 @@
             />
           </div>
           {{ jurisdiction.code }}
-        </a>
+        </EntityLink>
       </div>
     </div>
   </div>
@@ -38,7 +39,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useQuestionJurisdictions } from "@/composables/useQuestionJurisdictions";
-import { useEntityDrawer } from "@/composables/useEntityDrawer";
+import EntityLink from "@/components/ui/EntityLink.vue";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
@@ -46,8 +47,6 @@ import InlineError from "@/components/ui/InlineError.vue";
 const props = defineProps<{
   questionSuffix: string;
 }>();
-
-const { openDrawer } = useEntityDrawer();
 
 const {
   data: questionData,
@@ -62,14 +61,4 @@ const answerGroups = computed(
 const answersWithJurisdictions = computed(
   () => questionData.value?.answers ?? [],
 );
-
-function handleClick(event: MouseEvent, jurisdictionCode: string) {
-  if (event.metaKey || event.ctrlKey) return;
-  event.preventDefault();
-  openDrawer(
-    `${jurisdictionCode}${props.questionSuffix}`,
-    "Answers",
-    "/question",
-  );
-}
 </script>

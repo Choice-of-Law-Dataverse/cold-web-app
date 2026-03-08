@@ -80,7 +80,22 @@ export function useCourtDecision(id: Ref<string | number>) {
 }
 
 export function useAnswer(id: Ref<string | number>) {
-  return useRecordDetails("Answers", id, processQuestion);
+  const { client } = useApiClient();
+  const table = computed(() =>
+    String(id.value).includes("_") ? "Answers" : "Questions",
+  );
+
+  return useQuery({
+    queryKey: computed(() => [table.value, id.value]),
+    queryFn: async () => {
+      const { data, error } = await client.POST("/search/details", {
+        body: { table: table.value, id: String(id.value) },
+      });
+      if (error) throw error;
+      return processQuestion(data as Parameters<typeof processQuestion>[0]);
+    },
+    enabled: computed(() => Boolean(id.value)),
+  });
 }
 
 export function useLiterature(id: Ref<string | number>) {

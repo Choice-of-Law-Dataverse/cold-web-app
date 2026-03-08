@@ -13,13 +13,23 @@
     <template #content>
       <div class="flex h-full flex-col">
         <div class="flex items-center justify-between gap-3 px-6 py-5">
-          <CardTags
-            :formatted-jurisdiction="headerJurisdictions"
-            :legal-family="headerLegalFamily"
-            :source-table-label="headerSourceTable"
-            :label-color-class="headerLabelColor"
-            :formatted-theme="[]"
-          />
+          <div class="flex min-w-0 items-center gap-2">
+            <UButton
+              v-if="canGoBack"
+              icon="i-lucide-arrow-left"
+              variant="ghost"
+              color="neutral"
+              size="xs"
+              @click="goBack"
+            />
+            <CardTags
+              :formatted-jurisdiction="headerJurisdictions"
+              :legal-family="headerLegalFamily"
+              :source-table-label="headerSourceTable"
+              :label-color-class="headerLabelColor"
+              :formatted-theme="[]"
+            />
+          </div>
           <div class="flex shrink-0 items-center gap-1">
             <UButton
               v-if="hasDetailPage"
@@ -120,13 +130,21 @@ import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
 import CardTags from "@/components/ui/CardTags.vue";
 
 const route = useRoute();
-const { isOpen, entity, closeDrawer } = useEntityDrawer();
+const { isOpen, entity, canGoBack, closeDrawer, goBack } = useEntityDrawer();
 
 const config = computed(() =>
   entity.value ? getEntityConfig(entity.value.basePath) : undefined,
 );
 
 const { client } = useApiClient();
+
+const resolvedTable = computed(() => {
+  if (!entity.value) return undefined;
+  if (entity.value.table === "Answers" && !entity.value.coldId.includes("_")) {
+    return "Questions" as const;
+  }
+  return entity.value.table;
+});
 
 const {
   data: rawData,
@@ -135,18 +153,18 @@ const {
 } = useQuery({
   queryKey: computed(() => [
     "entity-drawer",
-    entity.value?.table,
+    resolvedTable.value,
     entity.value?.coldId,
   ]),
   queryFn: async () => {
-    if (!entity.value || !config.value) return null;
+    if (!entity.value || !config.value || !resolvedTable.value) return null;
     const { data, error } = await client.POST("/search/details", {
-      body: { table: entity.value.table, id: entity.value.coldId },
+      body: { table: resolvedTable.value, id: entity.value.coldId },
     });
     if (error) throw error;
     return config.value.process(data);
   },
-  enabled: computed(() => Boolean(entity.value?.coldId && entity.value?.table)),
+  enabled: computed(() => Boolean(entity.value?.coldId && resolvedTable.value)),
 });
 
 const entityData = computed(() => {
@@ -315,7 +333,7 @@ const questionSuffix = computed(() => {
   const id = entity.value.coldId;
   const parts = id.split("_");
   if (parts.length > 1) return "_" + parts.slice(1).join("_");
-  return undefined;
+  return "_" + id;
 });
 
 function shouldDisplayValue(value: unknown): boolean {
