@@ -12,25 +12,14 @@
   >
     <template #content>
       <div class="flex h-full flex-col">
-        <div class="flex items-center justify-between px-6 py-5">
-          <EntityLink
-            v-if="headerJurisdiction"
-            :id="headerJurisdictionCode"
-            :title="headerJurisdiction"
-            base-path="/jurisdiction"
-            variant="jurisdiction"
-            class="mr-2 truncate"
-          >
-            <div class="flag-wrapper">
-              <JurisdictionFlag
-                :iso3="headerJurisdictionCode"
-                class="item-flag"
-                :alt="headerJurisdiction + ' flag'"
-              />
-            </div>
-            <span>{{ headerJurisdiction }}</span>
-          </EntityLink>
-          <span v-else />
+        <div class="flex items-center justify-between gap-3 px-6 py-5">
+          <CardTags
+            :formatted-jurisdiction="headerJurisdictions"
+            :legal-family="headerLegalFamily"
+            :source-table-label="headerSourceTable"
+            :label-color-class="headerLabelColor"
+            :formatted-theme="[]"
+          />
           <div class="flex shrink-0 items-center gap-1">
             <UButton
               v-if="hasDetailPage"
@@ -116,7 +105,6 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { useRoute } from "vue-router";
 import { useQuery } from "@tanstack/vue-query";
 import { useEntityDrawer } from "@/composables/useEntityDrawer";
 import { getEntityConfig, mapRelationToItem } from "@/config/entityRegistry";
@@ -125,12 +113,11 @@ import { useApiClient } from "@/composables/useApiClient";
 import type { RelatedItem } from "@/types/ui";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
-import EntityLink from "@/components/ui/EntityLink.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import InlineError from "@/components/ui/InlineError.vue";
 import JurisdictionDrawerQA from "@/components/jurisdiction/JurisdictionDrawerQA.vue";
 import DrawerAnswerMap from "@/components/jurisdiction/DrawerAnswerMap.vue";
-import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
+import CardTags from "@/components/ui/CardTags.vue";
 
 const route = useRoute();
 const { isOpen, entity, closeDrawer } = useEntityDrawer();
@@ -247,27 +234,70 @@ const pageJurisdictionCode = computed(() => {
   return undefined;
 });
 
-const firstJurisdiction = computed(() => {
-  if (!entityData.value) return undefined;
-  if (isJurisdiction.value) return undefined;
+const headerJurisdictions = computed<string[]>(() => {
+  if (!entityData.value || isJurisdiction.value) return [];
   const relations = entityData.value.relations as
     | Record<string, Record<string, unknown>[]>
     | undefined;
   const jurisdictions = relations?.jurisdictions;
-  if (!jurisdictions?.length) return undefined;
-  const j = jurisdictions[0]!;
-  const code = (j.coldId as string) || "";
-  const name = (j.name as string) || "";
-  if (!code || !name) return undefined;
-  if (code === pageJurisdictionCode.value) return undefined;
-  return { code, name };
+  if (!jurisdictions?.length) return [];
+  return jurisdictions
+    .filter((j) => (j.coldId as string) !== pageJurisdictionCode.value)
+    .map((j) => (j.name as string) || "")
+    .filter((name) => name);
 });
 
-const headerJurisdiction = computed(() => firstJurisdiction.value?.name);
+const headerSourceTable = computed(() => {
+  if (!config.value) return "";
+  const table = config.value.table;
+  const tableMap: Record<string, string> = {
+    "Court Decisions": "Court Decision",
+    Answers: "Question",
+    "Domestic Instruments": "Domestic Instrument",
+    "Regional Instruments": "Regional Instrument",
+    "International Instruments": "International Instrument",
+    Literature: "Literature",
+    "Arbitral Rules": "Arbitral Rule",
+    "Arbitral Awards": "Arbitral Award",
+    Specialists: "Specialist",
+    Jurisdictions: "Jurisdiction",
+  };
+  return tableMap[table] || table;
+});
 
-const headerJurisdictionCode = computed(
-  () => firstJurisdiction.value?.code || "",
-);
+const headerLabelColor = computed(() => {
+  switch (headerSourceTable.value) {
+    case "Court Decision":
+      return "label-court-decision";
+    case "Question":
+      return "label-question";
+    case "Domestic Instrument":
+    case "Regional Instrument":
+    case "International Instrument":
+      return "label-instrument";
+    case "Arbitral Rule":
+    case "Arbitral Award":
+      return "label-arbitration";
+    case "Literature":
+      return "label-literature";
+    case "Specialist":
+      return "label-specialist";
+    case "Jurisdiction":
+      return "hidden";
+    default:
+      return "";
+  }
+});
+
+const headerLegalFamily = computed<string[]>(() => {
+  if (!entityData.value) return [];
+  const value = String(entityData.value.legalFamily || "");
+  if (!value || value === "N/A") return [];
+  return value
+    .split(",")
+    .map((f: string) => f.trim())
+    .filter((f: string) => f);
+});
 
 const isJurisdiction = computed(
   () => entity.value?.basePath === "/jurisdiction",
@@ -306,3 +336,10 @@ function formatValue(value: unknown): string {
   return String(value);
 }
 </script>
+
+<style scoped>
+:deep(.tags-container) {
+  white-space: normal;
+  gap: 0.375rem 0;
+}
+</style>

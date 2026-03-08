@@ -694,6 +694,35 @@ li::marker {
   box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
 }
 
+.label-specialist {
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--color-cold-night);
+  letter-spacing: 0.05em;
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px 10px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #c2508a 8%, white),
+    color-mix(in srgb, #c2508a 4%, white)
+  );
+  border: 1px solid color-mix(in srgb, #c2508a 12%, transparent);
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.label-specialist:hover {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, #c2508a 14%, white),
+    color-mix(in srgb, #c2508a 8%, white)
+  );
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.06);
+}
+
 .label-theme {
   font-size: 0.75rem;
   font-weight: 500;

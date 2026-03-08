@@ -76,9 +76,12 @@
       <template v-else>
         <span
           v-if="
-            ['Arbitral Rule', 'Arbitral Award', 'Jurisdiction'].includes(
-              sourceTableLabel,
-            )
+            [
+              'Arbitral Rule',
+              'Arbitral Award',
+              'Jurisdiction',
+              'Specialist',
+            ].includes(sourceTableLabel)
           "
           :class="['label', labelColorClass]"
         >
@@ -276,6 +279,10 @@ a.label-literature {
 .label-arbitration,
 a.label-arbitration {
   color: var(--color-label-arbitration);
+}
+.label-specialist,
+a.label-specialist {
+  color: var(--color-label-specialist);
 }
 
 .custom-caret {
