@@ -252,6 +252,8 @@ const selfFetchingSlots = new Set([
   "oupchapter",
   "relatedliterature",
   "literature",
+  "domesticlegalprovisions",
+  "regionallegalprovisions",
 ]);
 
 function shouldDisplayValue(item: KeyLabelPair, value: unknown): boolean {

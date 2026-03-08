@@ -42,22 +42,17 @@
       </template>
 
       <!-- Slot for Legal provisions -->
-      <template #regionallegalprovisions="{ value }">
-        <!-- Only render if value exists and is not "N/A" -->
+      <template #regionallegalprovisions>
         <DetailRow
-          v-if="
-            value &&
-            (value as string).trim() &&
-            (value as string).trim() !== 'N/A'
-          "
+          v-if="sortedRegionalProvisions.length"
           :label="regionalInstrumentLabels.regionalLegalProvisions"
           :tooltip="regionalInstrumentTooltips.regionalLegalProvisions"
         >
           <div class="provisions-container">
             <LegalProvision
-              v-for="(provisionId, index) in (value as string).split(',')"
-              :key="index"
-              :provision-id="provisionId"
+              v-for="provision in sortedRegionalProvisions"
+              :key="provision.coldId ?? provision.id"
+              :provision-id="provision.coldId!"
               :instrument-title="
                 regionalInstrument?.abbreviation ||
                 regionalInstrument?.title ||
@@ -122,5 +117,11 @@ const relatedLiterature = computed<RelatedItem[]>(() =>
       id: lit.coldId || String(lit.id),
       title: lit.title || String(lit.id),
     })),
+);
+
+const sortedRegionalProvisions = computed(() =>
+  (regionalInstrument.value?.relations.regionalLegalProvisions ?? []).filter(
+    (p) => p.coldId,
+  ),
 );
 </script>

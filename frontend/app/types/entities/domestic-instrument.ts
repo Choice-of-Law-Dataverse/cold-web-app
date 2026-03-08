@@ -9,7 +9,6 @@ export type DomesticInstrumentDetailResponse =
 export type DomesticInstrument = DomesticInstrumentDetailResponse & {
   displayTitle: string;
   compatibility?: boolean;
-  domesticLegalProvisions?: string;
   rankingDisplayOrder?: string;
 };
 
@@ -30,11 +29,6 @@ export function processDomesticInstrument(
     raw.abbreviation || titleInEnglish || raw.officialTitle || String(raw.id);
 
   const provisions = raw.relations.domesticLegalProvisions;
-  const domesticLegalProvisions = provisions
-    .map((p) => p.coldId)
-    .filter(Boolean)
-    .join(",");
-
   const rankingOrders = provisions
     .filter((p) => p.rankingDisplayOrder)
     .map((p) => `${p.coldId}:${p.rankingDisplayOrder}`)
@@ -46,7 +40,6 @@ export function processDomesticInstrument(
     publicationDate: formatDate(raw.publicationDate),
     displayTitle,
     compatibility: hasCompatibility ? true : undefined,
-    domesticLegalProvisions: domesticLegalProvisions || undefined,
     rankingDisplayOrder: rankingOrders || undefined,
   };
 }

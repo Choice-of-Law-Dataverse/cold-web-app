@@ -80,24 +80,17 @@
         </DetailRow>
       </template>
       <!-- Slot for Legal provisions -->
-      <template #domesticlegalprovisions="{ value }">
-        <!-- Only render if value exists and is not "N/A" -->
+      <template #domesticlegalprovisions>
         <DetailRow
-          v-if="
-            value &&
-            (value as string).trim() &&
-            (value as string).trim() !== 'N/A'
-          "
+          v-if="sortedProvisions.length"
           :label="domesticInstrumentLabels.domesticLegalProvisions"
           :tooltip="domesticInstrumentTooltips.domesticLegalProvisions"
         >
           <div class="provisions-container">
             <LegalProvision
-              v-for="(provisionId, index) in getSortedProvisionIdsForInstrument(
-                value as string,
-              )"
-              :key="index"
-              :provision-id="provisionId"
+              v-for="provision in sortedProvisions"
+              :key="provision.coldId ?? provision.id"
+              :provision-id="provision.coldId!"
               :text-type="textType"
               :instrument-title="
                 legalInstrument?.abbreviation ||
@@ -150,7 +143,6 @@ import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import { useDomesticInstrument } from "@/composables/useRecordDetails";
 import { isTruthy } from "@/types/entities/domestic-instrument";
-import { getSortedProvisionIds } from "@/utils/provision-sorting";
 import { domesticInstrumentLabels } from "@/config/labels";
 import { domesticInstrumentTooltips } from "@/config/tooltips";
 
@@ -179,10 +171,28 @@ const isCompatible = (
   return isTruthy(legalInstrument.value[field]);
 };
 
-const getSortedProvisionIdsForInstrument = (rawValue: string): string[] => {
-  return getSortedProvisionIds(
-    rawValue,
-    legalInstrument.value?.rankingDisplayOrder,
-  );
-};
+const sortedProvisions = computed(() => {
+  const provisions =
+    legalInstrument.value?.relations.domesticLegalProvisions ?? [];
+  const filtered = provisions.filter((p) => p.coldId);
+  const rankingStr = legalInstrument.value?.rankingDisplayOrder;
+  if (!rankingStr) return filtered;
+
+  const rankingMap: Record<string, number> = {};
+  rankingStr.split(",").forEach((pair) => {
+    const [coldId, rank] = pair.split(/:(?=[^:]*$)/);
+    if (coldId && rank && !isNaN(Number(rank))) {
+      rankingMap[coldId.trim()] = Number(rank.trim());
+    }
+  });
+
+  return [...filtered].sort((a, b) => {
+    const ra = rankingMap[a.coldId!];
+    const rb = rankingMap[b.coldId!];
+    if (ra == null && rb == null) return 0;
+    if (ra == null) return 1;
+    if (rb == null) return -1;
+    return ra - rb;
+  });
+});
 </script>
