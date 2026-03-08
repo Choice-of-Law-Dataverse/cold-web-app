@@ -34,7 +34,11 @@
             base-path="/international-instrument"
           />
         </DetailRow>
-        <DetailRow label="Related Literature" variant="literature">
+        <DetailRow
+          v-if="literature.length > 0"
+          label="Literature"
+          variant="literature"
+        >
           <RelatedItemsList :items="literature" base-path="/literature" />
         </DetailRow>
       </template>
