@@ -138,9 +138,8 @@ import { format, parseISO } from "date-fns";
 import { internationalInstrumentTooltips } from "@/config/tooltips";
 
 const tooltipInternationalInstrumentSpecialist =
-  internationalInstrumentTooltips["Specialists"];
-const tooltipInternationalInstrumentDate =
-  internationalInstrumentTooltips["Date"];
+  internationalInstrumentTooltips.specialists;
+const tooltipInternationalInstrumentDate = internationalInstrumentTooltips.date;
 const tooltipInternationalInstrumentLink =
   "Link to the official source or full text of the instrument.";
 
@@ -280,14 +279,14 @@ async function fetchInstrument() {
     const responseText = await response.text();
     if (!response.ok) throw new Error("Failed to fetch instrument");
     const data = JSON.parse(responseText);
-    name.value = data["Name"] || data["Title (in English)"] || "";
-    specialists.value = data["Specialists"]
-      ? data["Specialists"].split(",").map((s: string) => s.trim())
+    name.value = data.name || data.titleInEnglish || "";
+    specialists.value = data.specialists
+      ? data.specialists.split(",").map((s: string) => s.trim())
       : [""];
-    date.value = data["Date"] ? parseISO(data["Date"]) : new Date();
-    link.value = data["URL"] || "";
-    pdfFileName.value = data["PDF"] || "";
-    instrumentApiId.value = data["ID"] || null;
+    date.value = data.date ? parseISO(data.date) : new Date();
+    link.value = data.url || "";
+    pdfFileName.value = data.sourcePdf || "";
+    instrumentApiId.value = data.id || null;
   } catch {
     // noop
   } finally {

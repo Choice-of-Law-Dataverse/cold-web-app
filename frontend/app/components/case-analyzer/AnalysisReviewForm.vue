@@ -42,7 +42,7 @@
             <span class="text-sm text-gray-700 dark:text-gray-300">
               {{
                 selectedJurisdiction?.label ||
-                selectedJurisdiction?.Name ||
+                selectedJurisdiction?.name ||
                 "Not selected"
               }}
             </span>

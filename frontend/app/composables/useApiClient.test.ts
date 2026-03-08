@@ -1,9 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 
-// Mock global fetch
 global.fetch = vi.fn();
 
-// Import after mocks are set up
 const { useApiClient } = await import("./useApiClient");
 
 describe("useApiClient", () => {
@@ -11,85 +9,43 @@ describe("useApiClient", () => {
     vi.clearAllMocks();
   });
 
-  it("returns an apiClient function", () => {
-    const client = useApiClient();
-    expect(client.apiClient).toBeTypeOf("function");
+  it("returns a client with typed HTTP methods", () => {
+    const { client } = useApiClient();
+    expect(client).toBeDefined();
+    expect(client.GET).toBeTypeOf("function");
+    expect(client.POST).toBeTypeOf("function");
+    expect(client.DELETE).toBeTypeOf("function");
   });
 
-  it("calls fetch with correct default parameters", async () => {
-    const mockResponse = { data: "test" };
-    global.fetch = vi.fn().mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockResponse,
-    });
-
-    const client = useApiClient();
-    await client.apiClient("/test-endpoint");
-
-    expect(fetch).toHaveBeenCalledWith(
-      "/api/proxy/test-endpoint",
-      expect.objectContaining({
-        method: "POST",
-        headers: expect.objectContaining({
-          "Content-Type": "application/json",
-        }),
+  it("makes requests through /api/proxy", async () => {
+    const mockBody = {
+      totalMatches: 0,
+      results: [],
+      test: false,
+      page: 1,
+      pageSize: 10,
+    };
+    global.fetch = vi.fn().mockResolvedValueOnce(
+      new Response(JSON.stringify(mockBody), {
+        status: 200,
+        headers: { "content-type": "application/json" },
       }),
     );
-  });
 
-  it("sends body as JSON string when provided", async () => {
-    const mockResponse = { data: "test" };
-    global.fetch = vi.fn().mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockResponse,
+    const { client } = useApiClient();
+    await client.POST("/search/", {
+      body: {
+        search_string: "test",
+        page: 1,
+        page_size: 10,
+        sort_by_date: false,
+        response_type: null,
+      },
     });
 
-    const client = useApiClient();
-    const body = { table: "Questions" } as const;
-    await client.apiClient("/test-endpoint", { body });
-
-    expect(fetch).toHaveBeenCalledWith(
-      "/api/proxy/test-endpoint",
-      expect.objectContaining({
-        body: JSON.stringify(body),
-      }),
-    );
-  });
-
-  it("throws NotFoundError for 404 responses", async () => {
-    global.fetch = vi.fn().mockResolvedValueOnce({
-      ok: false,
-      status: 404,
-      statusText: "Not Found",
-    });
-
-    const client = useApiClient();
-
-    await expect(client.apiClient("/test-endpoint")).rejects.toThrow();
-  });
-
-  it("throws ApiError for non-404 error responses", async () => {
-    global.fetch = vi.fn().mockResolvedValueOnce({
-      ok: false,
-      status: 500,
-      statusText: "Internal Server Error",
-    });
-
-    const client = useApiClient();
-
-    await expect(client.apiClient("/test-endpoint")).rejects.toThrow();
-  });
-
-  it("returns parsed JSON response on success", async () => {
-    const mockResponse = { data: "test", status: "success" };
-    global.fetch = vi.fn().mockResolvedValueOnce({
-      ok: true,
-      json: async () => mockResponse,
-    });
-
-    const client = useApiClient();
-    const result = await client.apiClient("/test-endpoint");
-
-    expect(result).toEqual(mockResponse);
+    expect(fetch).toHaveBeenCalledOnce();
+    const request = vi.mocked(fetch).mock.calls[0]![0] as Request;
+    expect(request.url).toContain("/api/proxy/search/");
+    expect(request.method).toBe("POST");
   });
 });

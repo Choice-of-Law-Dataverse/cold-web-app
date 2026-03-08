@@ -1,6 +1,6 @@
-# Frontend - Nuxt 3 Application
+# Frontend - Nuxt 4 Application
 
-Nuxt 3 frontend for the Choice of Law Dataverse (CoLD), built with Vue.js, TypeScript, and TailwindCSS.
+Nuxt 4 frontend for the Choice of Law Dataverse (CoLD), built with Vue.js, TypeScript, TailwindCSS, and Nuxt UI 4.
 
 > **For AI coding agents**: See [AGENTS.md](AGENTS.md) for agent-specific instructions.
 
@@ -11,32 +11,21 @@ Nuxt 3 frontend for the Choice of Law Dataverse (CoLD), built with Vue.js, TypeS
 
 ## Setup
 
-Install dependencies:
-
 ```bash
 npm install
 ```
 
 ## Development
 
-Start the development server on `http://localhost:3000`:
-
 ```bash
-npm run dev
+npm run dev      # http://localhost:3000
 ```
 
 ## Production
 
-Build the application for production:
-
 ```bash
-npm run build
-```
-
-Preview the production build:
-
-```bash
-npm run preview
+npm run build    # Build for production
+npm run preview  # Preview production build
 ```
 
 ## Before Committing
@@ -47,54 +36,62 @@ npm run preview
 npm run check
 ```
 
-This command runs:
+This runs (in order): Prettier format, ESLint fix, vue-tsc type check, Vitest tests.
 
-- **Build validation**: Ensures the application builds successfully
-- **Prettier**: Checks code formatting
-- **Linting**: Runs ESLint for code quality
-
-Individual validation commands:
+Individual commands:
 
 ```bash
-npm run format:check  # Check formatting
 npm run format        # Fix formatting
-npm run lint          # Check for issues
-npm run lint:fix      # Fix issues automatically
+npm run lint:fix      # Fix lint issues
+npm run typecheck     # Type check only
+npm run test:run      # Run tests only
 npm run build         # Verify build works
 ```
 
+## API Type Generation
+
+Types are generated from the backend's OpenAPI schema for end-to-end type safety:
+
+```bash
+npm run generate:api
+```
+
+This exports the backend's OpenAPI schema and generates `app/types/api-schema.d.ts`. Requires the backend Python environment. See [AGENTS.md](AGENTS.md) for details.
+
+## Architecture
+
+### Data Flow
+
+1. Detail pages use `[coldId]` route params (e.g., `/court-decision/CH_2023_001`)
+2. Data is fetched via typed composables (`useRecordDetails`, `useFullTable`) backed by TanStack Query
+3. Types flow end-to-end: backend Pydantic models → OpenAPI schema → generated TypeScript types → Vue components
+
+### Key Directories
+
+| Directory             | Purpose                                              |
+| --------------------- | ---------------------------------------------------- |
+| `app/pages/`          | File-based routing (`[coldId].vue` for detail pages) |
+| `app/components/`     | Vue components organized by feature                  |
+| `app/composables/`    | Shared logic (`useX.ts` pattern)                     |
+| `app/types/`          | TypeScript types including generated API schema      |
+| `app/types/entities/` | Per-entity types with processor functions            |
+| `app/config/`         | Labels, tooltips, navigation, card configs           |
+| `app/utils/`          | Pure utility functions                               |
+
 ## Code Standards
 
-- **TypeScript only**: Use `.ts` and `.vue` files with `<script setup lang="ts">`, never `.js`
-- **Composition API**: Use Vue Composition API with composables
+- **TypeScript only**: `.ts` and `.vue` with `<script setup lang="ts">`, never `.js`
+- **Composition API**: Vue Composition API with composables
 - **No barrel files**: Import directly from specific modules
-- **Conventional commits**: Follow semantic commit format
+- **Conventional commits**: `type(scope): description`
 
 See [AGENTS.md](AGENTS.md) for detailed coding conventions.
 
-Check out the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) and [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Docker (Production Only)
 
-## Additional Resources
-
-### Docker (Production Only)
-
-**Docker is only used for production deployment. Local and agentic development should use npm directly.**
-
-For production deployment:
+Docker is only used for production deployment. Local development should use npm directly.
 
 ```bash
 docker build -t cold-nuxt-frontend .
 docker run -p 3000:3000 cold-nuxt-frontend
 ```
-
-### Nuxt Leaflet
-
-Resources for landing page map:
-
-- https://nuxt.com/modules/leaflet
-- Interactive Choropleth Map: https://leafletjs.com/examples/choropleth/
-- https://leafletjs.com/reference.html
-- https://github.com/vue-leaflet/vue-leaflet/issues/153
-- https://stackoverflow.com/a/54857289/22393957
-- https://leaflet-extras.github.io/leaflet-providers/preview/
-- GeoJSON country vector maps: https://geojson-maps.kyd.au/

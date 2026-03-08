@@ -1,32 +1,21 @@
 import { ref } from "vue";
 import { useApiClient } from "@/composables/useApiClient";
-import type { ApiRequestBody } from "~/types/api";
+import type { components } from "@/types/api-schema";
 
-interface FeedbackPayload {
-  entity_type: string;
-  entity_id: string;
-  entity_title?: string;
-  feedback_type: string;
-  message: string;
-  submitter_email: string;
-}
-
-interface FeedbackResponse {
-  id: number;
-}
+type FeedbackPayload = components["schemas"]["FeedbackSubmit"];
 
 export function useFeedback() {
-  const { apiClient } = useApiClient();
+  const { client } = useApiClient();
   const isSubmitting = ref(false);
   const toast = useToast();
 
   async function submitFeedback(payload: FeedbackPayload): Promise<boolean> {
     isSubmitting.value = true;
     try {
-      await apiClient<FeedbackResponse>("feedback", {
-        method: "POST",
-        body: payload as unknown as ApiRequestBody,
+      const { error } = await client.POST("/feedback", {
+        body: payload,
       });
+      if (error) throw error;
       toast.add({
         title: "Feedback submitted",
         description: "Thank you for your feedback!",

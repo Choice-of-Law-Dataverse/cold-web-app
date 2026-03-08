@@ -1,18 +1,18 @@
-import type { LiteratureResponse } from "@/types/entities/literature";
+import type { LiteratureDetailResponse } from "@/types/entities/literature";
 
 /**
  * Generate BibTeX citation from literature record data
  */
-export function generateBibTeX(data: LiteratureResponse): string {
-  const authors = data.Author || "";
-  const title = data.Title || "";
-  const year = data["Publication Year"] || "";
-  const journal = data["Publication Title"] || "";
-  const publisher = data.Publisher || "";
-  const url = data.Url || "";
-  const volume = data.Volume || "";
-  const pages = data.Pages || "";
-  const doi = data.DOI || "";
+export function generateBibTeX(data: LiteratureDetailResponse): string {
+  const authors = data.author || "";
+  const title = data.title || "";
+  const year = data.publicationYear || "";
+  const journal = data.publicationTitle || "";
+  const publisher = data.publisher || "";
+  const url = data.url || "";
+  const volume = data.volume || "";
+  const pages = data.pages || "";
+  const doi = data.doi || "";
 
   // Generate citation key from first author's last name and year
   let citationKey = "cold_literature";

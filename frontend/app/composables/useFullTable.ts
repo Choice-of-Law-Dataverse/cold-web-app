@@ -6,24 +6,37 @@ import {
   toValue,
 } from "vue";
 import { useQuery } from "@tanstack/vue-query";
+import type createClient from "openapi-fetch";
 import { useApiClient } from "@/composables/useApiClient";
 import type { TableName, TableResponseMap, TypedFilter } from "@/types/api";
+import type { paths } from "@/types/api-schema";
 import {
-  type Literature,
-  processLiterature,
+  type LiteratureDisplay,
+  processLiteratureRecord,
 } from "@/types/entities/literature";
 import { formatYear } from "@/utils/format";
 
-/**
- * Fetch full table data directly (for use with useQueries or custom patterns).
- * Filters are type-safe - column names are validated against the table's response type.
- */
+type ApiClient = ReturnType<typeof createClient<paths>>;
+
 export async function fetchFullTableData<T extends TableName>(
+  client: ApiClient,
   table: T,
   filters: TypedFilter<T>[] = [],
 ): Promise<TableResponseMap[T][]> {
-  const { apiClient } = useApiClient();
-  return await apiClient("/search/full_table", { body: { table, filters } });
+  const { data, error } = await client.POST("/search/full_table", {
+    body: {
+      table,
+      filters: filters.length
+        ? filters.map((f) => ({
+            column: String(f.column),
+            value: f.value,
+          }))
+        : null,
+      response_type: null,
+    },
+  });
+  if (error) throw error;
+  return data as unknown as TableResponseMap[T][];
 }
 
 interface UseFullTableOptions<
@@ -31,40 +44,18 @@ interface UseFullTableOptions<
   TProcessed,
   TSelected = TProcessed[],
 > {
-  /** Type-safe filters - column names are validated against the table's response type */
   filters?: TypedFilter<T>[];
-  /** Transform each item from raw response to processed type (applied during fetch) */
   process?: (raw: TableResponseMap[T]) => TProcessed;
-  /** Post-process the entire result array (applied by TanStack Query's select) */
   select?: (data: TProcessed[]) => TSelected;
-  /** Whether the query is enabled */
   enabled?: MaybeRefOrGetter<boolean>;
 }
 
-/**
- * Fetch full table data with type-safe filters and optional processing.
- *
- * @example
- * // Basic usage - returns raw response type
- * const { data } = useFullTable("Court Decisions");
- *
- * @example
- * // With processing - transforms each item
- * const { data } = useFullTable("Court Decisions", {
- *   process: processCourtDecision,
- * });
- *
- * @example
- * // With type-safe filters
- * const { data } = useFullTable("Court Decisions", {
- *   filters: [{ column: "Case Rank", value: 10 }],
- * });
- */
 export function useFullTable<
   T extends TableName,
   TProcessed = TableResponseMap[T],
   TSelected = TProcessed[],
 >(table: T, options: UseFullTableOptions<T, TProcessed, TSelected> = {}) {
+  const { client } = useApiClient();
   const { filters, process, select, enabled } = options;
 
   return useQuery({
@@ -73,7 +64,7 @@ export function useFullTable<
       filters ? filters.map((f) => f.value).join(",") : undefined,
     ],
     queryFn: async () => {
-      const data = await fetchFullTableData(table, filters);
+      const data = await fetchFullTableData(client, table, filters);
       if (process) {
         return data.map(process);
       }
@@ -85,10 +76,6 @@ export function useFullTable<
   });
 }
 
-/**
- * Fetch full table data with reactive filters.
- * Use this when filters depend on reactive state.
- */
 export function useFullTableWithFilters<
   T extends TableName,
   TProcessed = TableResponseMap[T],
@@ -98,6 +85,7 @@ export function useFullTableWithFilters<
   filters: ComputedRef<TypedFilter<T>[]>,
   options: Omit<UseFullTableOptions<T, TProcessed, TSelected>, "filters"> = {},
 ) {
+  const { client } = useApiClient();
   const { process, select, enabled } = options;
 
   return useQuery({
@@ -106,7 +94,7 @@ export function useFullTableWithFilters<
       filters.value.map((f) => f.value).join(","),
     ]),
     queryFn: async () => {
-      const data = await fetchFullTableData(table, filters.value);
+      const data = await fetchFullTableData(client, table, filters.value);
       if (process) {
         return data.map(process);
       }
@@ -118,8 +106,6 @@ export function useFullTableWithFilters<
   });
 }
 
-// Entity-specific composables
-
 export function useQuestions() {
   return useFullTable("Questions");
 }
@@ -128,8 +114,8 @@ export function useInternationalLegalProvisions() {
   return useFullTable("International Legal Provisions", {
     select: (data) => {
       return data.slice().sort((a, b) => {
-        const aOrder = Number(a["Ranking__Display_Order_"]) || 0;
-        const bOrder = Number(b["Ranking__Display_Order_"]) || 0;
+        const aOrder = Number(a.rankingDisplayOrder) || 0;
+        const bOrder = Number(b.rankingDisplayOrder) || 0;
         return aOrder - bOrder;
       });
     },
@@ -138,17 +124,16 @@ export function useInternationalLegalProvisions() {
 
 export function useLeadingCases() {
   return useFullTable("Court Decisions", {
-    filters: [{ column: "Case Rank", value: 10 }],
+    filters: [{ column: "caseRank", value: 10 }],
     select: (data) => {
       return data
         .filter(
-          (entry) =>
-            entry["Case Rank"] === "10" || Number(entry["Case Rank"]) === 10,
+          (entry) => entry.caseRank === "10" || Number(entry.caseRank) === 10,
         )
         .sort(
           (a, b) =>
-            Number(formatYear(b["Publication Date ISO"] || "")) -
-            Number(formatYear(a["Publication Date ISO"] || "")),
+            Number(formatYear(b.publicationDateIso || "")) -
+            Number(formatYear(a.publicationDateIso || "")),
         );
     },
   });
@@ -159,11 +144,11 @@ export function useLiteratureByJurisdiction(jurisdiction: Ref<string>) {
     { column: "Jurisdiction" as const, value: jurisdiction.value },
   ]);
 
-  return useFullTableWithFilters<"Literature", Literature>(
+  return useFullTableWithFilters<"Literature", LiteratureDisplay>(
     "Literature",
     filters,
     {
-      process: processLiterature,
+      process: processLiteratureRecord,
       enabled: () => Boolean(jurisdiction.value),
     },
   );

@@ -36,14 +36,10 @@ const props = withDefaults(
     table: T;
     loading: boolean;
     error?: Error | null;
-    // Data accepts typed processed response or empty object for legacy/new pages
     data: TableProcessedMap[T] | Record<string, unknown>;
-    // Label/tooltip maps - keys must match the table's processed type
     labels?: Partial<Record<keyof TableProcessedMap[T], string>>;
     tooltips?: Partial<Record<keyof TableProcessedMap[T], string>>;
-    // Legacy props for index pages with full-width slot
     keyLabelPairs?: Record<string, unknown>[];
-    // Props passed to child components
     formattedJurisdiction?: string[];
     formattedTheme?: string[];
     headerMode?: string;
@@ -81,7 +77,6 @@ const resultDataForDisplay = computed(
 );
 
 const computedKeyLabelPairs = computed(() => {
-  // If labels are provided, derive fields from them
   if (props.labels && Object.keys(props.labels).length > 0) {
     const tooltips = props.tooltips as Record<string, string> | undefined;
     return Object.entries(props.labels).map(([key, label]) => ({
@@ -91,7 +86,6 @@ const computedKeyLabelPairs = computed(() => {
       emptyValueBehavior: { action: "hide" },
     }));
   }
-  // Fallback to keyLabelPairs for legacy index pages
   return props.keyLabelPairs ?? [];
 });
 

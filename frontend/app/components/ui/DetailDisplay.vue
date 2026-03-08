@@ -74,7 +74,7 @@
 
                     <template
                       v-if="
-                        (item.key === 'Answer' || item.key === 'Specialists') &&
+                        (item.key === 'answer' || item.key === 'specialists') &&
                         Array.isArray(
                           getDisplayValue(item, resultData?.[item.key]),
                         )
@@ -206,14 +206,14 @@ watch(
     if (!newData) return;
 
     const rawJurisdiction = isJurisdictionPage
-      ? route.params.id
+      ? route.params.coldId
       : isQuestionPage
-        ? newData.JurisdictionCode
+        ? newData.jurisdictionCode
         : null;
 
     jurisdictionCode.value =
       typeof rawJurisdiction === "string"
-        ? rawJurisdiction.toLowerCase()
+        ? rawJurisdiction.toUpperCase()
         : null;
   },
   { immediate: true },
@@ -234,14 +234,14 @@ watchEffect(() => {
 const shouldShowContributeBanner = computed((): boolean => {
   return (
     shouldShowBanner.value &&
-    !!(props.resultData?.Name || props.resultData?.["Jurisdictions"])
+    !!(props.resultData?.name || props.resultData?.jurisdictions)
   );
 });
 
 const contributeBannerJurisdictionName = computed((): string => {
   return (
-    (props.resultData?.Name as string) ||
-    (props.resultData?.["Jurisdictions"] as string) ||
+    (props.resultData?.name as string) ||
+    (props.resultData?.jurisdictions as string) ||
     ""
   );
 });
@@ -249,9 +249,11 @@ const contributeBannerJurisdictionName = computed((): string => {
 const slots = useSlots();
 
 const selfFetchingSlots = new Set([
-  "oup-chapter",
-  "related-literature",
+  "oupchapter",
+  "relatedliterature",
   "literature",
+  "domesticlegalprovisions",
+  "regionallegalprovisions",
 ]);
 
 function shouldDisplayValue(item: KeyLabelPair, value: unknown): boolean {
@@ -286,7 +288,7 @@ function getDisplayValue(item: KeyLabelPair, value: unknown): unknown {
     return item.valueTransform(value);
   }
   if (
-    (item.key === "Answer" || item.key === "Specialists") &&
+    (item.key === "answer" || item.key === "specialists") &&
     typeof value === "string" &&
     value.includes(",")
   ) {

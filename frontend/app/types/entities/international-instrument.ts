@@ -1,63 +1,42 @@
-/**
- * International Instrument entity type definitions
- */
+import type { components } from "@/types/api-schema";
 
-import { formatDate } from "@/utils/format";
+export type InternationalInstrumentResponse =
+  components["schemas"]["InternationalInstrumentRecord"];
+export type InternationalInstrumentDetailResponse =
+  components["schemas"]["InternationalInstrumentDetail"];
 
-/** Raw API response */
-export interface InternationalInstrumentResponse {
-  id: string;
-  source_table?: string;
-  rank?: number;
-  ID?: string;
-  "ID Number"?: string;
-  Title?: string;
-  Abbreviation?: string;
-  Date?: string;
-  Status?: string;
-  URL?: string;
-  Attachment?: string;
-  "Record ID"?: string;
-  Created?: string;
-  "Last Modified"?: string;
-  "Entry Into Force"?: string;
-  "Publication Date"?: string;
-  "Relevant Provisions"?: string;
-  "Full Text of the Provisions"?: string;
-  Name?: string;
-  sort_date?: string;
-  "Title (in English)"?: string;
-  "Source (URL)"?: string;
-  "Source (PDF)"?: string;
-  // Nested mappings
-  Specialists?: string;
-  "Specialists Link"?: string;
-  "International Legal Provisions"?: string;
-  "International Legal Provisions Link"?: string;
-  Literature?: string;
-  "Literature Link"?: string;
-  "HCCH Answers"?: string;
-  "HCCH Answers Link"?: string;
-  // Legacy fields
-  Link?: string;
-  "OUP Chapter"?: string;
-  "Selected Provisions"?: string;
-}
+export type InternationalInstrument = InternationalInstrumentDetailResponse & {
+  displayTitle: string;
+  displayUrl: string;
+  literature?: string;
+  specialists?: string;
+  selectedProvisions?: string;
+};
 
-/** Processed type with normalized fields */
-export interface InternationalInstrument extends InternationalInstrumentResponse {
-  "Title (in English)": string;
-  URL: string;
-}
-
-/** Transform raw response to processed type */
 export function processInternationalInstrument(
-  raw: InternationalInstrumentResponse,
+  raw: InternationalInstrumentDetailResponse,
 ): InternationalInstrument {
+  const literature = raw.relations.literature
+    .map((l) => l.coldId)
+    .filter(Boolean)
+    .join(",");
+
+  const specialists = raw.relations.specialists
+    .map((s) => s.specialist)
+    .filter(Boolean)
+    .join(", ");
+
+  const selectedProvisions = raw.relations.internationalLegalProvisions
+    .map((p) => p.coldId)
+    .filter(Boolean)
+    .join(",");
+
   return {
     ...raw,
-    "Publication Date": formatDate(raw["Publication Date"] || raw.Date),
-    "Title (in English)": raw["Title (in English)"] || raw.Name || "",
-    URL: raw.URL || raw.Link || "",
+    displayTitle: raw.name || "",
+    displayUrl: raw.url || "",
+    literature: literature || undefined,
+    specialists: specialists || undefined,
+    selectedProvisions: selectedProvisions || undefined,
   };
 }

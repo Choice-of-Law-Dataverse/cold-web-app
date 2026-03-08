@@ -13,6 +13,6 @@
 
 <script setup lang="ts">
 defineProps<{
-  date?: string;
+  date?: string | null;
 }>();
 </script>

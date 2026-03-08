@@ -91,20 +91,20 @@
               class="border-b border-gray-100 last:border-b-0 dark:border-gray-800"
             >
               <td class="px-4 py-3 text-sm text-gray-700 dark:text-gray-300">
-                {{ formatDateShort(analysis.created_at) }}
+                {{ formatDateShort(analysis.createdAt) }}
               </td>
               <td class="px-4 py-3">
                 <span
-                  v-if="analysis.case_citation"
+                  v-if="analysis.caseCitation"
                   class="text-sm font-medium text-gray-900 dark:text-gray-100"
                 >
-                  {{ analysis.case_citation }}
+                  {{ analysis.caseCitation }}
                 </span>
                 <span
-                  v-else-if="analysis.file_name"
+                  v-else-if="analysis.fileName"
                   class="text-sm text-gray-600 dark:text-gray-400"
                 >
-                  {{ analysis.file_name }}
+                  {{ analysis.fileName }}
                 </span>
                 <span v-else class="text-sm text-gray-400 italic">
                   No citation yet
@@ -112,37 +112,37 @@
               </td>
               <td class="px-4 py-3">
                 <UBadge
-                  :color="getStatusBadgeColor(analysis.moderation_status)"
+                  :color="getStatusBadgeColor(analysis.moderationStatus)"
                   variant="subtle"
                   size="sm"
                 >
-                  {{ getStatusLabelForUser(analysis.moderation_status) }}
+                  {{ getStatusLabelForUser(analysis.moderationStatus) }}
                 </UBadge>
               </td>
               <td class="px-4 py-3 text-right">
                 <UButton
-                  v-if="canRecoverAnalysis(analysis.moderation_status)"
+                  v-if="canRecoverAnalysis(analysis.moderationStatus)"
                   variant="outline"
                   color="neutral"
                   size="xs"
                   :to="`/court-decision/new?draft=${analysis.id}`"
                 >
                   {{
-                    analysis.moderation_status === "failed" ? "Retry" : "Resume"
+                    analysis.moderationStatus === "failed" ? "Retry" : "Resume"
                   }}
                 </UButton>
                 <span
                   v-else
                   class="text-xs text-gray-400"
                   :title="
-                    analysis.moderation_status === 'approved'
+                    analysis.moderationStatus === 'approved'
                       ? 'Analysis has been approved'
-                      : analysis.moderation_status === 'rejected'
+                      : analysis.moderationStatus === 'rejected'
                         ? 'Analysis was rejected'
                         : 'Awaiting moderation'
                   "
                 >
-                  {{ getAnalysisActionText(analysis.moderation_status) }}
+                  {{ getAnalysisActionText(analysis.moderationStatus) }}
                 </span>
               </td>
             </tr>
@@ -161,22 +161,21 @@ import {
   getAnalysisActionText,
 } from "@/utils/moderationStatus";
 import { formatDateShort } from "@/utils/format";
+import { useApiClient } from "@/composables/useApiClient";
 
 definePageMeta({
   middleware: ["auth"],
 });
 
-interface CaseAnalysis {
-  id: number;
-  created_at: string;
-  case_citation: string | null;
-  file_name: string | null;
-  moderation_status: string;
-}
+const { client } = useApiClient();
 
 const {
   data: analyses,
   pending,
   error,
-} = await useFetch<CaseAnalysis[]>("/api/proxy/case-analyzer/my-analyses");
+} = await useAsyncData("my-analyses", async () => {
+  const { data, error } = await client.GET("/case-analyzer/my-analyses");
+  if (error) throw error;
+  return data;
+});
 </script>

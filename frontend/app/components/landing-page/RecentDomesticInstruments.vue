@@ -9,14 +9,14 @@
   >
     <FlagTitleYearItem
       v-for="instrument in domesticInstruments?.slice(0, 3)"
-      :key="instrument.ID"
-      :to="`/domestic-instrument/${instrument.ID}`"
-      :iso3="instrument['Jurisdictions Alpha-3 Code'] || ''"
-      :title="instrument['Title (in English)'] || ''"
+      :key="String(instrument.id || '')"
+      :to="`/domestic-instrument/${instrument.id}`"
+      :iso3="instrument.jurisdictionsAlpha3Code || ''"
+      :title="instrument.titleInEnglish || ''"
       :year="
-        instrument['Entry Into Force']
-          ? String(formatYear(instrument['Entry Into Force']))
-          : instrument['Date'] || ''
+        instrument.entryIntoForce
+          ? String(formatYear(instrument.entryIntoForce))
+          : instrument.date || ''
       "
       type-class="type-instrument"
     />

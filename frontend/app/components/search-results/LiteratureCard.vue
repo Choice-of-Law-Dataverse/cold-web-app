@@ -1,10 +1,10 @@
 <template>
   <ResultCard :result-data="processedData ?? {}" card-type="Literature">
     <div class="flex flex-col gap-0">
-      <DetailRow :label="getLabel('Title')">
-        <div :class="fieldClasses('Title')">
-          {{ getValue("Title") }}
-          <span v-if="processedData?.['Open Access']"
+      <DetailRow :label="getLabel('title')">
+        <div :class="fieldClasses('title')">
+          {{ getValue("title") }}
+          <span v-if="processedData?.openAccess"
             ><img
               class="ml-1 inline-flex w-3"
               src="https://choiceoflaw.blob.core.windows.net/assets/Open_Access_logo_PLoS_transparent.svg"
@@ -13,37 +13,36 @@
         </div>
       </DetailRow>
 
-      <DetailRow :label="getLabel('Author')">
-        <div :class="fieldClasses('Author')">
-          {{ getValue("Author") }}
+      <DetailRow :label="getLabel('author')">
+        <div :class="fieldClasses('author')">
+          {{ getValue("author") }}
         </div>
       </DetailRow>
 
-      <DetailRow :label="getLabel('Publication Year')">
-        <div :class="fieldClasses('Publication Year')">
-          {{ getValue("Publication Year") }}
+      <DetailRow :label="getLabel('publicationYear')">
+        <div :class="fieldClasses('publicationYear')">
+          {{ getValue("publicationYear") }}
         </div>
       </DetailRow>
 
       <template
         v-if="
-          shouldDisplay('Publication Title') &&
-          processedData?.['Publication Title']
+          shouldDisplay('publicationTitle') && processedData?.publicationTitle
         "
       >
-        <DetailRow :label="getLabel('Publication Title')">
-          <div :class="fieldClasses('Publication Title')">
-            {{ getValue("Publication Title") }}
+        <DetailRow :label="getLabel('publicationTitle')">
+          <div :class="fieldClasses('publicationTitle')">
+            {{ getValue("publicationTitle") }}
           </div>
         </DetailRow>
       </template>
 
       <template
-        v-else-if="shouldDisplay('Publisher') && processedData?.['Publisher']"
+        v-else-if="shouldDisplay('publisher') && processedData?.publisher"
       >
-        <DetailRow :label="getLabel('Publisher')">
-          <div :class="fieldClasses('Publisher')">
-            {{ getValue("Publisher") }}
+        <DetailRow :label="getLabel('publisher')">
+          <div :class="fieldClasses('publisher')">
+            {{ getValue("publisher") }}
           </div>
         </DetailRow>
       </template>

@@ -20,17 +20,15 @@
               showAvatars &&
               isObjectOptions &&
               isObjectOption(item) &&
-              item.alpha3Code
+              item.coldId
             "
-            :iso3="item.alpha3Code"
-            :faded="!isCovered(item.alpha3Code)"
+            :iso3="item.coldId"
+            :faded="!isCovered(item.coldId)"
             class="mr-2"
           />
           <span
             :style="{
-              color: isCovered(
-                isObjectOption(item) ? item.alpha3Code : undefined,
-              )
+              color: isCovered(isObjectOption(item) ? item.coldId : undefined)
                 ? undefined
                 : 'gray',
             }"
@@ -47,17 +45,15 @@
               class="flex w-full items-center overflow-hidden whitespace-nowrap"
             >
               <JurisdictionFlag
-                v-if="internalValue.alpha3Code"
-                :iso3="internalValue.alpha3Code"
-                :faded="!isCovered(internalValue.alpha3Code)"
+                v-if="internalValue.coldId"
+                :iso3="internalValue.coldId"
+                :faded="!isCovered(internalValue.coldId)"
                 class="mr-1.5"
               />
               <span
                 class="truncate"
                 :style="{
-                  color: isCovered(internalValue.alpha3Code)
-                    ? undefined
-                    : 'gray',
+                  color: isCovered(internalValue.coldId) ? undefined : 'gray',
                 }"
               >
                 {{ internalValue.label }}
@@ -70,9 +66,7 @@
               <span
                 class="truncate"
                 :style="{
-                  color: isCovered(internalValue.alpha3Code)
-                    ? undefined
-                    : 'gray',
+                  color: isCovered(internalValue.coldId) ? undefined : 'gray',
                 }"
               >
                 {{ internalValue.label }}
@@ -103,15 +97,15 @@
                 :key="index"
               >
                 <JurisdictionFlag
-                  v-if="selected.alpha3Code"
-                  :iso3="selected.alpha3Code"
-                  :faded="!isCovered(selected.alpha3Code)"
+                  v-if="selected.coldId"
+                  :iso3="selected.coldId"
+                  :faded="!isCovered(selected.coldId)"
                   class="mr-1.5"
                 />
                 <span
                   class="mr-2 inline-block truncate"
                   :style="{
-                    color: isCovered(selected.alpha3Code) ? undefined : 'gray',
+                    color: isCovered(selected.coldId) ? undefined : 'gray',
                   }"
                 >
                   {{ selected.label }}
@@ -154,7 +148,7 @@ import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
 interface FilterObjectOption {
   label: string;
-  alpha3Code?: string;
+  coldId?: string;
 }
 
 type FilterOption = FilterObjectOption | string;
@@ -202,13 +196,13 @@ function asStringArray(value: unknown): string[] {
   return value as string[];
 }
 
-function isCovered(alpha3Code: string | undefined): boolean {
+function isCovered(coldId: string | undefined): boolean {
   if (!props.highlightJurisdictions) {
     return true;
   }
-  if (!alpha3Code) return true;
+  if (!coldId) return true;
   if (!coveredCountries.value) return true;
-  return coveredCountries.value.has(alpha3Code.toLowerCase());
+  return coveredCountries.value.has(coldId.toUpperCase());
 }
 
 const isObjectOptions = computed(() => typeof props.options?.[0] === "object");

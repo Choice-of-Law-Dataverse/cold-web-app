@@ -3,13 +3,13 @@ import type {
   JurisdictionInfo,
   AnalysisStepPayload,
   EditedAnalysisValues,
-  SubmitForApprovalResponse,
   AnalysisStep,
 } from "~/types/analyzer";
 import {
   buildCaseAnalyzerPayload,
   extractErrorMessage,
 } from "~/utils/analyzerPayloadParser";
+import { useApiClient } from "@/composables/useApiClient";
 import { streamSSE, type SSEEvent } from "~/composables/useSSEStream";
 
 export interface DraftRecoveryData {
@@ -39,6 +39,7 @@ export function useCaseAnalyzer(
   analysisResults: Ref<Record<string, AnalysisStepPayload>>,
   onStepUpdate?: (stepName: string, data: AnalysisStepPayload) => void,
 ) {
+  const { client } = useApiClient();
   const isAnalyzing = ref(false);
   const isSubmitting = ref(false);
   const isSubmitted = ref(false);
@@ -119,27 +120,29 @@ export function useCaseAnalyzer(
         draftId,
       );
 
-      const response = await $fetch<SubmitForApprovalResponse>(
-        "/api/proxy/case-analyzer/submit",
+      const { data: response, error } = await client.POST(
+        "/case-analyzer/submit",
         {
-          method: "POST",
           body: {
-            draft_id: draftId,
-            submitted_data: submittedData,
+            draftId,
+            submittedData: submittedData as Record<string, unknown>,
           },
         },
       );
 
+      if (error || !response)
+        throw error ?? new Error("Failed to submit suggestion");
+
       isSubmitted.value = true;
       toast.add({
         title: "Submission Successful",
-        description: `Suggestion #${response.draft_id} has been submitted for review.`,
+        description: `Suggestion #${response.draftId} has been submitted for review.`,
         color: "info",
         icon: "i-heroicons-check-circle",
         duration: 5000,
       });
 
-      return { success: true, suggestionId: response.draft_id };
+      return { success: true, suggestionId: response.draftId };
     } catch (err) {
       console.error("Suggestion submission failed:", err);
       return {
@@ -164,47 +167,44 @@ export function useCaseAnalyzer(
     isRecovering.value = true;
 
     try {
-      const draft = await $fetch<{
-        draft_id: number;
-        status: string;
-        file_name: string | null;
-        pdf_url: string | null;
-        jurisdiction_info: {
-          precise_jurisdiction?: string;
-          jurisdiction_code?: string;
-          legal_system_type?: string;
-          confidence?: string;
-          reasoning?: string;
-        } | null;
-        analyzer_data: Record<string, AnalysisStepPayload>;
-        case_citation: string | null;
-      }>(`/api/proxy/case-analyzer/draft/${draftIdNum}`);
+      const { data: draft, error } = await client.GET(
+        "/case-analyzer/draft/{draft_id}",
+        {
+          params: { path: { draft_id: draftIdNum } },
+        },
+      );
 
-      // Restore analysis results (step hydration handled by caller)
-      if (draft.analyzer_data && Object.keys(draft.analyzer_data).length > 0) {
-        analysisResults.value = draft.analyzer_data;
+      if (error || !draft) throw error ?? new Error("Failed to recover draft");
+
+      if (draft.analyzerData && Object.keys(draft.analyzerData).length > 0) {
+        analysisResults.value = draft.analyzerData as Record<
+          string,
+          AnalysisStepPayload
+        >;
       }
 
-      // Build jurisdiction info object
-      const jurisdictionInfo: JurisdictionInfo | null = draft.jurisdiction_info
+      const ji = draft.jurisdictionInfo;
+      const jurisdictionInfo: JurisdictionInfo | null = ji
         ? {
-            precise_jurisdiction:
-              draft.jurisdiction_info.precise_jurisdiction || "",
-            jurisdiction_code: draft.jurisdiction_info.jurisdiction_code || "",
-            legal_system_type: draft.jurisdiction_info.legal_system_type || "",
-            confidence: draft.jurisdiction_info.confidence || "",
-            reasoning: draft.jurisdiction_info.reasoning || "",
+            precise_jurisdiction: ji.preciseJurisdiction || "",
+            jurisdiction_code: ji.jurisdictionCode || "",
+            legal_system_type: ji.legalSystemType || "",
+            confidence: ji.confidence || "",
+            reasoning: ji.reasoning || "",
           }
         : null;
 
       return {
         success: true,
         data: {
-          draftId: draft.draft_id,
+          draftId: draft.draftId,
           status: draft.status,
-          fileName: draft.file_name,
+          fileName: draft.fileName ?? null,
           jurisdictionInfo,
-          analyzerData: draft.analyzer_data,
+          analyzerData: (draft.analyzerData ?? {}) as Record<
+            string,
+            AnalysisStepPayload
+          >,
         },
       };
     } catch (err: unknown) {

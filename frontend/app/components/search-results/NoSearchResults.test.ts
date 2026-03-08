@@ -21,16 +21,16 @@ vi.mock("vue-router", () => ({
 // Mock jurisdiction lookup composable
 const mockJurisdictions = ref([
   {
-    Name: "France",
-    alpha3Code: "FRA",
+    name: "France",
+    coldId: "FRA",
   },
   {
-    Name: "Germany",
-    alpha3Code: "DEU",
+    name: "Germany",
+    coldId: "DEU",
   },
   {
-    Name: "United States",
-    alpha3Code: "USA",
+    name: "United States",
+    coldId: "USA",
   },
 ]);
 
@@ -40,9 +40,9 @@ vi.mock("@/composables/useJurisdictions", () => ({
     isJurisdictionTerm: (word: string) => {
       const terms = new Set();
       mockJurisdictions.value.forEach((j) => {
-        terms.add(j.Name.toLowerCase());
-        if (j.alpha3Code) {
-          terms.add(j.alpha3Code.toLowerCase());
+        terms.add(j.name.toLowerCase());
+        if (j.coldId) {
+          terms.add(j.coldId.toLowerCase());
         }
       });
       return terms.has(word.toLowerCase());

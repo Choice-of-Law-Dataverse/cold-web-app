@@ -103,10 +103,10 @@ function downloadFile(
 function exportJSON() {
   const json = JSON.stringify(props.resultData, null, 2);
   const title = String(
-    props.resultData.Title ||
-      props.resultData["Case Title"] ||
-      props.resultData.Name ||
-      props.resultData["Case Citation"] ||
+    props.resultData.title ||
+      props.resultData.caseTitle ||
+      props.resultData.name ||
+      props.resultData.caseCitation ||
       "export",
   );
   const filename = `${sanitizeFilename(title)}.json`;

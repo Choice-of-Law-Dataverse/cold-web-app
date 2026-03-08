@@ -1,12 +1,17 @@
 import { computed, type Ref } from "vue";
 import { useQueries } from "@tanstack/vue-query";
+import type createClient from "openapi-fetch";
+import { useApiClient } from "@/composables/useApiClient";
 import { fetchFullTableData } from "@/composables/useFullTable";
+import type { paths } from "@/types/api-schema";
+
+type ApiClient = ReturnType<typeof createClient<paths>>;
 
 const processAnswerText = (answerText: string) => {
   if (typeof answerText === "string" && answerText.includes(",")) {
     return answerText
       .split(",")
-      .map((s) => s.trim())
+      .map((s: string) => s.trim())
       .join("; ");
   }
   return answerText;
@@ -14,38 +19,42 @@ const processAnswerText = (answerText: string) => {
 
 export { processAnswerText };
 
-const fetchAnswersForJurisdiction = async (jurisdiction: string) => {
-  const data = await fetchFullTableData("Answers", [
+const fetchAnswersForJurisdiction = async (
+  client: ApiClient,
+  jurisdiction: string,
+) => {
+  const data = await fetchFullTableData(client, "Answers", [
     {
-      column: "Jurisdictions Alpha-3 Code",
+      column: "jurisdictionsAlpha3Code",
       value: jurisdiction?.toUpperCase(),
     },
   ]);
 
   const entries = data
     .map((row) => {
-      const rawQuestionId = row["Question ID"] || row["CoLD ID"] || row.ID;
-      const rawColdId = row["CoLD ID"] || row["Answer ID"] || rawQuestionId;
-      const answerValue = row.Answer || "";
+      const rawQuestionId = row.questionId || row.coldId || row.id;
+      const rawColdId = row.coldId || row.answerId || rawQuestionId;
+      const answerValue = row.answer || "";
 
-      // Store by base question ID (without ISO3 prefix)
       const baseQuestionId = rawColdId
         ? String(rawColdId).replace(/^[A-Z]{3}_/, "")
         : String(rawQuestionId).replace(/^[A-Z]{3}_/, "");
 
       return [baseQuestionId, answerValue] as [string, string];
     })
-    .filter(([key]) => Boolean(key));
+    .filter(([key]: [string, string]) => Boolean(key));
 
   return new Map(entries);
 };
 
 export function useAnswersByJurisdictions(jurisdictions: Ref<string[]>) {
+  const { client } = useApiClient();
+
   const answersQueries = useQueries({
     queries: computed(() =>
       jurisdictions.value.map((jurisdiction) => ({
         queryKey: ["answers", jurisdiction.toUpperCase()],
-        queryFn: () => fetchAnswersForJurisdiction(jurisdiction),
+        queryFn: () => fetchAnswersForJurisdiction(client, jurisdiction),
       })),
     ),
   });

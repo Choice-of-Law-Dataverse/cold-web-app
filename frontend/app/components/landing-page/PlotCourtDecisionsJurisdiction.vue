@@ -64,8 +64,8 @@ const jurisdictionLookup = computed(() => {
   if (!jurisdictions.value) return new Map<string, string>();
   const lookup = new Map<string, string>();
   for (const j of jurisdictions.value) {
-    if (j.alpha3Code) {
-      lookup.set(j.Name.toLowerCase(), j.alpha3Code.toLowerCase());
+    if (j.coldId) {
+      lookup.set(j.name.toLowerCase(), j.coldId.toUpperCase());
     }
   }
   return lookup;

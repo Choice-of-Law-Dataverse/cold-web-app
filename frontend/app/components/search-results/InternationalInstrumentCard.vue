@@ -4,15 +4,15 @@
     card-type="International Instrument"
   >
     <div class="flex w-full flex-col gap-0">
-      <DetailRow :label="getLabel('Name')">
-        <TitleWithActions :title-class="fieldClasses('Name')">
-          {{ getValue("Name") }}
+      <DetailRow :label="getLabel('name')">
+        <TitleWithActions :title-class="fieldClasses('name')">
+          {{ getValue("name") }}
           <template #actions>
             <PdfLink
               :pdf-field="
-                resultData['Official Source (PDF)'] ||
-                resultData['Source (PDF)'] ||
-                resultData['Attachment']
+                resultData.officialSourcePdf ||
+                resultData.sourcePdf ||
+                resultData.attachment
               "
               :record-id="resultData.id"
               folder-name="international-instruments"
@@ -21,9 +21,9 @@
         </TitleWithActions>
       </DetailRow>
 
-      <DetailRow v-if="shouldDisplay('Date')" :label="getLabel('Date')">
-        <div :class="fieldClasses('Date')">
-          {{ format.formatDate(getValue("Date") as string) }}
+      <DetailRow v-if="shouldDisplay('date')" :label="getLabel('date')">
+        <div :class="fieldClasses('date')">
+          {{ format.formatDate(getValue("date") as string) }}
         </div>
       </DetailRow>
     </div>
@@ -36,7 +36,7 @@ import PdfLink from "@/components/ui/PdfLink.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import { internationalInstrumentCardConfig } from "@/config/cardConfigs";
-import * as format from "@/utils/format.js";
+import * as format from "@/utils/format";
 import { useCardFields } from "@/composables/useCardFields";
 
 const props = defineProps({

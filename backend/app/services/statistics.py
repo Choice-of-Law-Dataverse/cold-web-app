@@ -1,7 +1,6 @@
 from app.config import config
 from app.schemas.responses import JurisdictionCount
 from app.services.database import Database
-from app.services.transformers import DataTransformerFactory
 
 
 class StatisticsService:
@@ -18,34 +17,30 @@ class StatisticsService:
         """
         query = f"""
         SELECT
-            j.*,
+            j.id,
+            j."Name" AS name,
+            j."Alpha_3_Code" AS cold_id,
+            j."Legal_Family" AS legal_family,
+            j."Irrelevant_" AS irrelevant,
             COALESCE(
                 ROUND(
                     (COUNT(a.id) FILTER (WHERE LOWER(a."Answer") != 'no data') * 100.0) / NULLIF(COUNT(a.id), 0),
                     2
                 ),
                 0
-            ) AS "Answer_Coverage"
+            ) AS answer_coverage
         FROM "{self.schema}"."Jurisdictions" j
         LEFT JOIN "{self.schema}"."_nc_m2m_Jurisdictions_Answers" m ON j.id = m."Jurisdictions_id"
         LEFT JOIN "{self.schema}"."Answers" a ON a.id = m."Answers_id"
         GROUP BY j.id
-        ORDER BY j."Name"
+        ORDER BY name
         """
         results = self.db.execute_query(query)
 
         if not results:
             return []
 
-        # Transform each jurisdiction record using DataTransformerFactory
-        # This will convert field names like Alpha_3_Code to "Alpha-3 Code"
-        # and Answer_Coverage to "Answer Coverage" using the mapping config
-        transformed_results = []
-        for row in results:
-            transformed = DataTransformerFactory.transform_result("Jurisdictions", row)
-            transformed_results.append(transformed)
-
-        return transformed_results
+        return results
 
     def count_by_jurisdiction(self, table_name: str, limit: int | None = None) -> list[JurisdictionCount]:
         """

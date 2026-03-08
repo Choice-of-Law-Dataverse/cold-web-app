@@ -10,12 +10,11 @@ export interface JurisdictionInfo {
 
 export interface JurisdictionOption {
   id?: number;
-  Name: string;
+  name: string;
   label: string;
   avatar?: string;
-  alpha3Code?: string;
+  coldId?: string;
   answerCoverage?: number;
-  [key: string]: unknown;
 }
 
 export interface EditedAnalysisValues {
@@ -62,17 +61,6 @@ export interface CaseAnalyzerSuggestionPayload {
   abstract?: string;
   notes?: string;
   raw_data?: string | Record<string, unknown>;
-}
-
-export interface SuggestionResponse {
-  id: number;
-  status?: string;
-}
-
-export interface SubmitForApprovalResponse {
-  draft_id: number;
-  status: string;
-  message: string;
 }
 
 export interface CaseAnalyzerSuggestionRecord {

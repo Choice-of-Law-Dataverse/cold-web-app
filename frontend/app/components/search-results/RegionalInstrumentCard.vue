@@ -4,12 +4,12 @@
     card-type="Regional Instrument"
   >
     <div class="flex w-full flex-col gap-0">
-      <DetailRow :label="getLabel('Abbreviation')">
-        <TitleWithActions :title-class="fieldClasses('Abbreviation')">
-          {{ getValue("Abbreviation") }}
+      <DetailRow :label="getLabel('abbreviation')">
+        <TitleWithActions :title-class="fieldClasses('abbreviation')">
+          {{ getValue("abbreviation") }}
           <template #actions>
             <PdfLink
-              :pdf-field="resultData['Attachment']"
+              :pdf-field="resultData.attachment"
               :record-id="resultData.id"
               folder-name="regional-instruments"
             />
@@ -17,15 +17,15 @@
         </TitleWithActions>
       </DetailRow>
 
-      <DetailRow v-if="shouldDisplay('Date')" :label="getLabel('Date')">
-        <div :class="fieldClasses('Date')">
-          {{ format.formatDate(getValue("Date") as string) }}
+      <DetailRow v-if="shouldDisplay('date')" :label="getLabel('date')">
+        <div :class="fieldClasses('date')">
+          {{ format.formatDate(getValue("date") as string) }}
         </div>
       </DetailRow>
 
-      <DetailRow v-if="shouldDisplay('Title')" :label="getLabel('Title')">
-        <div :class="fieldClasses('Title')">
-          {{ getValue("Title") }}
+      <DetailRow v-if="shouldDisplay('title')" :label="getLabel('title')">
+        <div :class="fieldClasses('title')">
+          {{ getValue("title") }}
         </div>
       </DetailRow>
     </div>

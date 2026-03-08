@@ -1,83 +1,45 @@
-/**
- * Domestic Instrument entity type definitions
- */
-
+import type { components } from "@/types/api-schema";
 import { formatDate } from "@/utils/format";
 
-/** Raw API response */
-export interface DomesticInstrumentResponse {
-  id: string;
-  source_table?: string;
-  rank?: number;
-  ID?: string;
-  "ID-number"?: string;
-  Date?: string;
-  Status?: string;
-  Abbreviation?: string;
-  "Relevant Provisions"?: string;
-  "Record ID"?: string;
-  Created?: string;
-  "Last Modified"?: string;
-  "Entry Into Force"?: string;
-  "Publication Date"?: string;
-  "Full Text of the Provisions"?: string;
-  "Official Title"?: string;
-  sort_date?: string;
-  "Title (in English)"?: string;
-  "Source (URL)"?: string;
-  "Source (PDF)"?: string;
-  "Compatible With the HCCH Principles"?: boolean | string;
-  "Compatible With the UNCITRAL Model Law"?: boolean | string;
-  // Nested mappings
-  "Jurisdictions Link"?: string;
-  "Jurisdictions Alpha-3 Code"?: string;
-  Jurisdictions?: string;
-  "Type (from Jurisdictions)"?: string;
-  "Question ID"?: string;
-  "Answers Link"?: string;
-  "Domestic Legal Provisions Link"?: string;
-  "Domestic Legal Provisions Full Text of the Provision (English T"?: string;
-  "Domestic Legal Provisions Full Text of the Provision (Original "?: string;
-  "Domestic Legal Provisions"?: string;
-  // Legacy fields
-  "Amended by"?: string;
-  Amends?: string;
-  Replaces?: string;
-  "Replaced by"?: string;
-  "OUP Chapter"?: string;
-  "Country Report"?: string;
-  "Ranking (Display Order)"?: string;
-  "Official Source (PDF)"?: string;
-}
+export type DomesticInstrumentResponse =
+  components["schemas"]["DomesticInstrumentRecord"];
+export type DomesticInstrumentDetailResponse =
+  components["schemas"]["DomesticInstrumentDetail"];
 
-/** Processed type with normalized fields */
-export interface DomesticInstrument extends DomesticInstrumentResponse {
-  "Title (in English)": string;
-  Compatibility?: boolean;
-  /** Pre-computed display title with fallback: Abbreviation → Title (in English) → Official Title → id */
+export type DomesticInstrument = DomesticInstrumentDetailResponse & {
   displayTitle: string;
+  compatibility?: boolean;
+  rankingDisplayOrder?: string;
+};
+
+export function isTruthy(val: string | boolean | null | undefined): boolean {
+  if (typeof val === "boolean") return val;
+  return val === "true" || val === "1" || val === "Yes";
 }
 
-/** Transform raw response to processed type */
 export function processDomesticInstrument(
-  raw: DomesticInstrumentResponse,
+  raw: DomesticInstrumentDetailResponse,
 ): DomesticInstrument {
-  const hasCompatibility =
-    raw["Compatible With the UNCITRAL Model Law"] === true ||
-    raw["Compatible With the HCCH Principles"] === true;
+  const hcchCompat = isTruthy(raw.compatibleWithTheHcchPrinciples);
+  const uncitralCompat = isTruthy(raw.compatibleWithTheUncitralModelLaw);
+  const hasCompatibility = hcchCompat || uncitralCompat;
 
-  const titleInEnglish =
-    raw["Title (in English)"] || raw["Official Title"] || "";
+  const titleInEnglish = raw.titleInEnglish || raw.officialTitle || "";
   const displayTitle =
-    raw.Abbreviation || titleInEnglish || raw["Official Title"] || raw.id;
+    raw.abbreviation || titleInEnglish || raw.officialTitle || String(raw.id);
+
+  const provisions = raw.relations.domesticLegalProvisions;
+  const rankingOrders = provisions
+    .filter((p) => p.rankingDisplayOrder)
+    .map((p) => `${p.coldId}:${p.rankingDisplayOrder}`)
+    .join(",");
 
   return {
     ...raw,
-    Date: formatDate(raw.Date),
-    "Publication Date": formatDate(raw["Publication Date"]),
-    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
-    "Title (in English)": titleInEnglish,
-    Compatibility: hasCompatibility ? true : undefined,
+    date: formatDate(raw.date),
+    publicationDate: formatDate(raw.publicationDate),
     displayTitle,
+    compatibility: hasCompatibility ? true : undefined,
+    rankingDisplayOrder: rankingOrders || undefined,
   };
 }

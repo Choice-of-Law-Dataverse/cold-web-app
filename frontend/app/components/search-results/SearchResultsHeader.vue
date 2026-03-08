@@ -194,7 +194,6 @@ const updateSelectWidth = () => {
 watch(
   [currentJurisdictionFilter, currentThemeFilter, currentTypeFilter],
   async ([jurisdiction, theme, type]) => {
-    if (!jurisdiction.length && !theme.length && !type.length) return;
     await updateFilters(
       buildFilterObject(jurisdiction, theme, type, selectValue.value),
     );

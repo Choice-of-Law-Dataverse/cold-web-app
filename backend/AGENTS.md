@@ -51,29 +51,31 @@ backend/
 │   ├── config.py            # Environment config (loads from .env)
 │   ├── auth.py              # Auth0 JWT + API key validation
 │   ├── routes/              # API endpoints
-│   │   ├── search.py        # Search endpoints
+│   │   ├── search.py        # Search + detail endpoints
 │   │   ├── ai.py            # AI query classification
 │   │   ├── suggestions.py   # User suggestions
+│   │   ├── case_analyzer.py # Case analyzer endpoints
+│   │   ├── feedback.py      # User feedback endpoints
 │   │   └── ...              # sitemap, statistics, landing_page, submarine
 │   ├── services/            # Business logic layer
-│   │   ├── search.py
+│   │   ├── search.py        # Search, full_table, and detail queries
+│   │   ├── filter_builder.py # SQL WHERE clause builder for filters
 │   │   ├── ai.py
 │   │   ├── database.py
 │   │   ├── db_manager.py
-│   │   ├── transformers.py
-│   │   └── ...              # Domain-specific transformers
+│   │   └── ...              # nocodb, email, moderation, etc.
 │   ├── schemas/             # Pydantic models
+│   │   ├── records.py       # Per-table search/full_table record models
+│   │   ├── details.py       # Per-table detail endpoint models
+│   │   ├── relations.py     # Entity relation models
 │   │   ├── requests.py      # Request models
 │   │   ├── responses.py     # Response models
-│   │   └── suggestions.py   # Suggestions models
-│   ├── mapping/
-│   │   ├── configs/         # Python mapping configs (Pydantic models)
-│   │   │   ├── answers_mapping.py
-│   │   │   ├── court_decisions_mapping.py
-│   │   │   ├── arbitral_awards_mapping.py
-│   │   │   └── ...          # 15+ mapping files
-│   │   └── enums.py         # Mapping enums
+│   │   ├── suggestions.py   # Suggestions models
+│   │   └── feedback.py      # Feedback models
 │   └── sql/                 # SQL queries
+├── alembic_views/           # Alembic migrations for SQL views
+│   ├── env.py
+│   └── versions/            # View migration scripts
 ├── tests/                   # Test files (see tests/README.md)
 ├── pyproject.toml           # Project config + dependencies
 ├── uv.lock                  # Lock file (like package-lock.json)
@@ -185,9 +187,23 @@ See [README.md](README.md) for full API documentation.
 - **Command not found**: Use `uv run <command>` or `make <target>`
 - **Quality checks fail**: Run `make format` then `make check`
 
+## Data Architecture
+
+Data flows from NocoDB (PostgreSQL) through SQL views managed by Alembic migrations in `alembic_views/`:
+
+- **Base views** (`vw_*`): Flatten NocoDB tables into query-friendly columns
+- **Relation views** (`vw_*_relations`): Pre-compute entity relationships as JSONB arrays
+- **Search function** (`search_all_v2`): Full-text search across all base views
+- **Detail function** (`get_entity_detail`): Single-entity lookup returning base + relation data
+
+Pydantic schemas in `app/schemas/` validate and coerce DB output:
+
+- `records.py`: Search/full_table results — one model per table, with shared `coerce_bools_to_str` validator and `coerce_numbers_to_str` ConfigDict
+- `details.py`: Detail endpoint results — shares the same coercion from `records.py`
+- `relations.py`: Typed relation arrays (e.g., `RelatedJurisdiction`, `RelatedQuestion`)
+
 ## Notes
 
 - **Setup time**: ~60-90 seconds
-- **Data transformation**: Config-driven system in `app/mapping/configs/` (Python/Pydantic models) + transformer services in `app/services/`
 
 See [README.md](README.md) for full documentation.

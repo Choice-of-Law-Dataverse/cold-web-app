@@ -1,48 +1,24 @@
-/**
- * Arbitral Rule entity type definitions
- */
+import type { components } from "@/types/api-schema";
 
-/** Raw API response */
-export interface ArbitralRuleResponse {
-  id: string;
-  source_table?: string;
-  rank?: number;
-  ID?: string;
-  "Record ID"?: string;
-  "Set of Rules"?: string;
-  "In Force From"?: string;
-  "Official Source (URL)"?: string;
-  Created?: string;
-  "Last Modified"?: string;
-  // Nested mappings
-  "Arbitral Institutions"?: string;
-  "Arbitral Institutions Abbrev"?: string;
-  "Arbitral Institutions Link"?: string;
-  "Arbitral Provisions (Articles)"?: string;
-  "Arbitral Provisions Link"?: string;
-  Jurisdictions?: string;
-  "Jurisdictions Alpha-3 Code"?: string;
-  "Jurisdictions Link"?: string;
-  // Legacy fields
-  related_arbitral_institutions?: Array<{ Institution?: string }>;
-}
+export type ArbitralRuleResponse = components["schemas"]["ArbitralRuleRecord"];
+export type ArbitralRuleDetailResponse =
+  components["schemas"]["ArbitralRuleDetail"];
 
-/** Processed type with normalized fields */
-export interface ArbitralRule extends ArbitralRuleResponse {
-  "Arbitral Institution"?: string;
-}
+export type ArbitralRule = ArbitralRuleDetailResponse & {
+  arbitralInstitution?: string;
+};
 
-/** Transform raw response to processed type */
-export function processArbitralRule(raw: ArbitralRuleResponse): ArbitralRule {
-  const arbitralInstitution = Array.isArray(raw.related_arbitral_institutions)
-    ? raw.related_arbitral_institutions
-        .map((inst) => inst?.Institution)
-        .filter((v): v is string => Boolean(v && String(v).trim()))
-        .join(", ")
-    : undefined;
+export function processArbitralRule(
+  raw: ArbitralRuleDetailResponse,
+): ArbitralRule {
+  const arbitralInstitution =
+    raw.relations.arbitralInstitutions
+      .map((inst) => inst.institution)
+      .filter((v): v is string => Boolean(v && String(v).trim()))
+      .join(", ") || undefined;
 
   return {
     ...raw,
-    "Arbitral Institution": arbitralInstitution,
+    arbitralInstitution,
   };
 }

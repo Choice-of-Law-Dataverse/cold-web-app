@@ -30,8 +30,8 @@ const { data: jurisdictions, isLoading, error } = useJurisdictions();
 const navigateToJurisdiction = async (
   jurisdiction: JurisdictionOption | undefined,
 ) => {
-  if (jurisdiction?.alpha3Code) {
-    await router.push(`/jurisdiction/${jurisdiction.alpha3Code.toLowerCase()}`);
+  if (jurisdiction?.coldId) {
+    await router.push(`/jurisdiction/${jurisdiction.coldId.toUpperCase()}`);
   }
 };
 </script>

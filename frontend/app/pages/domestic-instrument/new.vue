@@ -233,27 +233,26 @@ import { domesticInstrumentTooltips } from "@/config/tooltips";
 import { flagUrl } from "@/config/assets";
 
 interface JurisdictionEntry {
-  Name: string;
-  "Alpha-3 Code"?: string;
-  "Irrelevant?"?: boolean;
+  name: string;
+  coldId?: string;
+  irrelevant?: boolean;
 }
 
 interface JurisdictionOption {
   label: string;
-  alpha3Code?: string;
+  coldId?: string;
   avatar?: string;
 }
 
-const tooltipAbbreviation = domesticInstrumentTooltips["Abbreviation"];
-const tooltipCompatibleWithHCCH = domesticInstrumentTooltips["Compatibility"];
-const tooltipCompatibleWithUNCITRAL =
-  domesticInstrumentTooltips["Compatibility"];
-const tooltipEntryIntoForce = domesticInstrumentTooltips["Entry Into Force"];
-const tooltipOfficialTitle = domesticInstrumentTooltips["Official Title"];
+const tooltipAbbreviation = domesticInstrumentTooltips.abbreviation;
+const tooltipCompatibleWithHCCH = domesticInstrumentTooltips.compatibility;
+const tooltipCompatibleWithUNCITRAL = domesticInstrumentTooltips.compatibility;
+const tooltipEntryIntoForce = domesticInstrumentTooltips.entryIntoForce;
+const tooltipOfficialTitle = domesticInstrumentTooltips.officialTitle;
 const tooltipDomesticInstrumentPublicationDate =
-  domesticInstrumentTooltips["Publication Date"];
+  domesticInstrumentTooltips.publicationDate;
 const tooltipDomesticInstrumentTitle =
-  domesticInstrumentTooltips["Title (in English)"];
+  domesticInstrumentTooltips.titleInEnglish;
 
 definePageMeta({
   middleware: ["auth"],
@@ -295,13 +294,11 @@ const loadJurisdictions = async () => {
     jurisdictionOptions.value = [
       { label: "Select Jurisdiction" },
       ...jurisdictionsData
-        .filter((entry: JurisdictionEntry) => entry["Irrelevant?"] === false)
+        .filter((entry: JurisdictionEntry) => entry.irrelevant !== true)
         .map((entry: JurisdictionEntry) => ({
-          label: entry.Name,
-          alpha3Code: entry["Alpha-3 Code"],
-          avatar: entry["Alpha-3 Code"]
-            ? flagUrl(entry["Alpha-3 Code"])
-            : undefined,
+          label: entry.name,
+          coldId: entry.coldId,
+          avatar: entry.coldId ? flagUrl(entry.coldId) : undefined,
         }))
         .sort((a, b) => (a.label || "").localeCompare(b.label || "")),
     ];

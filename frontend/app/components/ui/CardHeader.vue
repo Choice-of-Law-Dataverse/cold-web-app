@@ -75,12 +75,12 @@ const formattedJurisdiction = computed(() => {
     return props.formattedJurisdiction;
   }
   const jurisdictionString = String(
-    props.resultData["Jurisdiction name"] ||
-      props.resultData["Jurisdiction Names"] ||
-      props.resultData["Name (from Jurisdiction)"] ||
-      props.resultData["Jurisdiction"] ||
-      props.resultData["Jurisdictions"] ||
-      props.resultData["Instrument"] ||
+    props.resultData.jurisdictionName ||
+      props.resultData.jurisdictionNames ||
+      props.resultData.nameFromJurisdiction ||
+      props.resultData.jurisdiction ||
+      props.resultData.jurisdictions ||
+      props.resultData.instrument ||
       "",
   );
 
@@ -92,7 +92,7 @@ const formattedJurisdiction = computed(() => {
 });
 
 const formattedSourceTable = computed(() => {
-  return props.cardType || String(props.resultData?.source_table ?? "");
+  return props.cardType || String(props.resultData?.sourceTable ?? "");
 });
 
 const adjustedSourceTable = computed(() => {
@@ -150,14 +150,14 @@ const formattedTheme = computed(() => {
     return props.formattedTheme;
   }
 
-  if (props.cardType === "Literature" && props.resultData["Themes"]) {
-    return String(props.resultData["Themes"])
+  if (props.cardType === "Literature" && props.resultData.themes) {
+    return String(props.resultData.themes)
       .split(",")
       .map((theme: string) => theme.trim());
   }
 
   const themes =
-    props.resultData["Title of the Provision"] ?? props.resultData.Themes;
+    props.resultData.titleOfTheProvision ?? props.resultData.themes;
 
   if (!themes || themes === "None") {
     return [];
@@ -175,9 +175,9 @@ const formattedTheme = computed(() => {
 const legalFamily = computed(() => {
   if (
     props.resultData &&
-    (props.cardType === "Jurisdiction" || props.resultData["Legal Family"])
+    (props.cardType === "Jurisdiction" || props.resultData.legalFamily)
   ) {
-    const value = String(props.resultData["Legal Family"] || "");
+    const value = String(props.resultData.legalFamily || "");
     if (!value || value === "N/A") return [];
     return value
       .split(",")

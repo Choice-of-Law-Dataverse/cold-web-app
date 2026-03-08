@@ -99,7 +99,7 @@ import CancelModal from "@/components/ui/CancelModal.vue";
 import { format } from "date-fns";
 import { regionalInstrumentTooltips } from "@/config/tooltips";
 
-const tooltipRegionalInstrumentDate = regionalInstrumentTooltips["Date"];
+const tooltipRegionalInstrumentDate = regionalInstrumentTooltips.date;
 
 definePageMeta({
   middleware: ["auth"],
@@ -172,7 +172,6 @@ function handleNewSave() {
     abbreviation: abbreviation.value,
     title: title.value || undefined,
     url: url.value || undefined,
-    attachment: "",
     instrument_date: date.value ? format(date.value, "yyyy-MM-dd") : undefined,
     submitter_comments: comments.value || undefined,
   };
@@ -180,13 +179,11 @@ function handleNewSave() {
   (async () => {
     try {
       const { useApiClient } = await import("@/composables/useApiClient");
-      const { apiClient } = useApiClient();
-      await apiClient("/suggestions/regional-instruments", {
-        body: payload as unknown as import("~/types/api").ApiRequestBody,
-        headers: {
-          source: "cold.global",
-        },
+      const { client } = useApiClient();
+      const { error } = await client.POST("/suggestions/regional-instruments", {
+        body: payload,
       });
+      if (error) throw error;
 
       showSaveModal.value = false;
       router.push({

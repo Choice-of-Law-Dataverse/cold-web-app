@@ -1,89 +1,31 @@
-/**
- * Literature entity type definitions
- */
-import { formatDate } from "@/utils/format";
+import type { components } from "@/types/api-schema";
 
-/** Raw API response */
-export interface LiteratureResponse {
-  id: string;
-  source_table?: string;
-  "Record ID"?: string;
-  CoLD_ID?: string;
-  ID?: string;
-  Key?: string;
-  "Item Type"?: string;
-  "Publication Year"?: string;
-  Author?: string;
-  Title?: string;
-  ISBN?: string;
-  ISSN?: string;
-  Url?: string;
-  Date?: string;
-  "Date Added"?: string;
-  "Date Modified"?: string;
-  Publisher?: string;
-  Language?: string;
-  Extra?: string;
-  "Manual Tags"?: string;
-  Editor?: string;
-  "Last Modified"?: string;
-  Created?: string;
-  "Publication Title"?: string;
-  Issue?: string;
-  Volume?: string;
-  Pages?: string;
-  "Abstract Note"?: string;
-  "Library Catalog"?: string;
-  DOI?: string;
-  "Access Date"?: string;
-  "Open Access"?: string;
-  "Open Access URL"?: string;
-  "Journal Abbreviation"?: string;
-  "Short Title"?: string;
-  Place?: string;
-  "Num Pages"?: string;
-  Type?: string;
-  "OUP JD Chapter"?: string;
-  Contributor?: string;
-  "Automatic Tags"?: string;
-  Number?: string;
-  Series?: string;
-  "Series Number"?: string;
-  "Series Editor"?: string;
-  Edition?: string;
-  "Call Number"?: string;
-  "Jurisdiction Summary"?: string;
-  Answers?: string;
-  sort_date?: string;
-  // Nested mappings
-  "Jurisdiction Link"?: string;
-  Jurisdiction?: string;
-  Themes?: string;
-  "Themes Link"?: string;
-  "International Instruments"?: string;
-  "International Instruments Link"?: string;
-  "International Legal Provisions"?: string;
-  "International Legal Provisions Link"?: string;
-  "Regional Instruments"?: string;
-  "Regional Instruments Link"?: string;
-  // Legacy/additional fields
-  "Official Source (PDF)"?: string;
-}
+export type LiteratureResponse = components["schemas"]["LiteratureRecord"];
+export type LiteratureDetailResponse =
+  components["schemas"]["LiteratureDetail"];
 
-/** Processed type with normalized fields */
-export interface Literature extends LiteratureResponse {
-  /** Pre-computed display title */
+export interface LiteratureDisplay {
+  id: string | number | null | undefined;
   displayTitle: string;
-  /** Whether this is an OUP JD Chapter */
   isOupChapter: boolean;
 }
 
-/** Transform raw response to processed type */
-export function processLiterature(raw: LiteratureResponse): Literature {
+export type Literature = LiteratureDetailResponse & LiteratureDisplay;
+
+export function processLiterature(raw: LiteratureDetailResponse): Literature {
   return {
     ...raw,
-    displayTitle: raw.Title || "Untitled",
-    isOupChapter: Boolean(raw["OUP JD Chapter"]),
-    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
+    displayTitle: raw.title || "Untitled",
+    isOupChapter: Boolean(raw.oupJdChapter),
+  };
+}
+
+export function processLiteratureRecord(
+  raw: LiteratureResponse,
+): LiteratureDisplay {
+  return {
+    id: raw.id,
+    displayTitle: raw.title || "Untitled",
+    isOupChapter: Boolean(raw.oupJdChapter),
   };
 }

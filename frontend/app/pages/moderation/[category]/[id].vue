@@ -6,11 +6,11 @@
       </h1>
       <UBadge
         v-if="suggestion?.moderation_status"
-        :color="getStatusBadgeColor(suggestion.moderation_status)"
+        :color="getStatusBadgeColor(suggestion.moderationStatus)"
         variant="subtle"
         size="lg"
       >
-        {{ getStatusLabel(suggestion.moderation_status) }}
+        {{ getStatusLabel(suggestion.moderationStatus) }}
       </UBadge>
     </div>
 
@@ -43,7 +43,7 @@
         <template #description>
           This suggestion proposes changes to an existing record.
           <NuxtLink
-            :to="`/${getCategoryEntityRoute(category)}/${suggestion.payload.edit_entity_id}`"
+            :to="`/${getCategoryEntityRoute(category)}/${suggestion.payload?.edit_entity_id}`"
             class="font-medium underline hover:opacity-80"
           >
             View original record
@@ -62,21 +62,19 @@
         <div class="flex flex-col gap-4 px-6 py-8">
           <DetailRow
             v-if="
-              suggestion.username ||
-              suggestion.user_email ||
-              suggestion.token_sub
+              suggestion.username || suggestion.userEmail || suggestion.tokenSub
             "
             label="Submitted by"
           >
             {{
               suggestion.username ||
-              suggestion.user_email ||
-              suggestion.token_sub ||
+              suggestion.userEmail ||
+              suggestion.tokenSub ||
               "Unknown"
             }}
           </DetailRow>
-          <DetailRow v-if="suggestion.created_at" label="Created">
-            {{ formatDateLong(suggestion.created_at) }}
+          <DetailRow v-if="suggestion.createdAt" label="Created">
+            {{ formatDateLong(suggestion.createdAt) }}
           </DetailRow>
           <DetailRow v-if="suggestion.source" label="Source">
             {{ suggestion.source }}
@@ -152,7 +150,7 @@
           variant="subtle"
           icon="i-heroicons-eye"
           title="Read-only View"
-          :description="`This submission is in '${getStatusLabel(suggestion.moderation_status)}' status and cannot be approved or rejected.`"
+          :description="`This submission is in '${getStatusLabel(suggestion.moderationStatus)}' status and cannot be approved or rejected.`"
           class="flex-1"
         />
 
@@ -285,7 +283,7 @@ const isCaseAnalyzer = computed(() => category.value === "case-analyzer");
 
 // Check if the suggestion is in pending status
 const isPending = computed(() => {
-  const status = suggestion.value?.moderation_status;
+  const status = suggestion.value?.moderationStatus;
   // Consider null/undefined as pending (legacy records) or explicit "pending"
   return !status || status === "pending";
 });

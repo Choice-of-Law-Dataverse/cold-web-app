@@ -1,53 +1,35 @@
-/**
- * Regional Instrument entity type definitions
- */
-
+import type { components } from "@/types/api-schema";
 import { formatDate } from "@/utils/format";
 
-/** Raw API response */
-export interface RegionalInstrumentResponse {
-  id: string;
-  source_table?: string;
-  rank?: number;
-  ID?: string;
-  "ID Number"?: string;
-  Title?: string;
-  Abbreviation?: string;
-  Date?: string;
-  URL?: string;
-  Attachment?: string;
-  "Record ID"?: string;
-  Created?: string;
-  "Last Modified"?: string;
-  sort_date?: string;
-  // Nested mappings
-  Specialists?: string;
-  "Specialists Link"?: string;
-  "Regional Legal Provisions"?: string;
-  "Regional Legal Provisions Link"?: string;
-  // Legacy fields
-  "Title (in English)"?: string;
-  Name?: string;
-  Literature?: string;
-  "OUP Chapter"?: string;
-  Link?: string;
-}
+export type RegionalInstrumentResponse =
+  components["schemas"]["RegionalInstrumentRecord"];
+export type RegionalInstrumentDetailResponse =
+  components["schemas"]["RegionalInstrumentDetail"];
 
-/** Processed type with normalized fields */
-export interface RegionalInstrument extends RegionalInstrumentResponse {
-  "Title (in English)": string;
-  URL: string;
-}
+export type RegionalInstrument = RegionalInstrumentDetailResponse & {
+  displayTitle: string;
+  literature?: string;
+  regionalLegalProvisions?: string;
+};
 
-/** Transform raw response to processed type */
 export function processRegionalInstrument(
-  raw: RegionalInstrumentResponse,
+  raw: RegionalInstrumentDetailResponse,
 ): RegionalInstrument {
+  const literature = raw.relations.literature
+    .map((l) => l.coldId)
+    .filter(Boolean)
+    .join(",");
+
+  const regionalLegalProvisions = raw.relations.regionalLegalProvisions
+    .map((p) => p.coldId)
+    .filter(Boolean)
+    .join(",");
+
   return {
     ...raw,
-    "Title (in English)": raw["Title (in English)"] || raw.Name || "",
-    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
-    Date: formatDate(raw.Date),
-    URL: raw.URL || raw.Link || "",
+    date: formatDate(raw.date),
+    displayTitle: raw.title || "",
+    literature: literature || undefined,
+    regionalLegalProvisions: regionalLegalProvisions || undefined,
   };
 }

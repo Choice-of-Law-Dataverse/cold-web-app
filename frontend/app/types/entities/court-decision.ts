@@ -1,104 +1,66 @@
-/**
- * Court Decision entity type definitions
- */
-
+import type { components } from "@/types/api-schema";
 import { formatDate } from "@/utils/format";
 
-/** Raw API response */
-export interface CourtDecisionResponse {
-  id: string;
-  source_table?: string;
-  rank?: number;
-  ID?: string;
-  "Case Citation"?: string;
-  "Case Title"?: string;
-  Instance?: string;
-  Date?: string;
-  Abstract?: string;
-  Created?: string;
-  "Record ID"?: string;
-  "ID-number"?: string;
-  "Last Modified"?: string;
-  "Answers Link"?: string;
-  "Answers Question"?: string;
-  Text_of_the_Relevant_Legal_Provisions?: string;
-  Quote?: string;
-  "Case Rank"?: string;
-  "English Translation"?: string;
-  "Choice of Law Issue"?: string;
-  "Court's Position"?: string;
-  "Translated Excerpt"?: string;
-  "Relevant Facts"?: string;
-  "Date of Judgment"?: string;
-  "PIL Provisions"?: string;
-  "Original Text"?: string;
-  sort_date?: string;
-  "Publication Date ISO"?: string;
-  "Official Source (URL)"?: string;
-  "Official Source (PDF)"?: string;
-  // Nested mappings
-  Questions?: string;
-  "Jurisdictions Link"?: string;
-  "Jurisdictions Alpha-3 Code"?: string;
-  Jurisdictions?: string;
-  "Region (from Jurisdictions)"?: string;
-  Themes?: string;
-  // Legacy fields for backwards compatibility
-  themes?: string;
-  "Text of the Relevant Legal Provisions"?: string;
-  "Domestic Legal Provisions"?: string;
-  "Related Questions"?: string;
-  "Related Literature"?: string;
-  "OUP Chapter"?: string;
-  "Country Report"?: string;
-}
+export type CourtDecisionResponse =
+  components["schemas"]["CourtDecisionRecord"];
+export type CourtDecisionDetailResponse =
+  components["schemas"]["CourtDecisionDetail"];
 
-/** Processed type with normalized fields */
-export interface CourtDecision extends CourtDecisionResponse {
+export type CourtDecision = CourtDecisionDetailResponse & {
   hasEnglishQuoteTranslation: boolean;
-  /** Pre-computed display title with fallback: Case Title → Case Citation → id */
   displayTitle: string;
-}
+  themes?: string;
+  relatedQuestions?: string;
+  domesticLegalProvisions?: string;
+  relatedLiterature?: string;
+};
 
 const EXCLUDED_TITLES = new Set(["na", "not found", "n/a"]);
 
-function isValidTitle(title: string | undefined): title is string {
+function isValidTitle(title: string | undefined | null): title is string {
   if (!title) return false;
   return !EXCLUDED_TITLES.has(title.toLowerCase());
 }
 
-/** Transform raw response to processed type */
 export function processCourtDecision(
-  raw: CourtDecisionResponse,
+  raw: CourtDecisionDetailResponse,
 ): CourtDecision {
-  const themes = raw.themes || raw.Themes;
-  const questions = raw.Questions;
-
-  // Compute display title with fallbacks
   const caseTitle =
-    raw["Case Title"] === "Not found"
-      ? raw["Case Citation"]
-      : raw["Case Title"];
+    raw.caseTitle === "Not found" ? raw.caseCitation : raw.caseTitle;
   const displayTitle = isValidTitle(caseTitle)
     ? caseTitle
-    : isValidTitle(raw["Case Citation"])
-      ? raw["Case Citation"]
-      : raw.id;
+    : isValidTitle(raw.caseCitation)
+      ? raw.caseCitation
+      : String(raw.id || "");
+
+  const themes = raw.relations.themes
+    .map((t) => t.theme)
+    .filter(Boolean)
+    .join(", ");
+
+  const relatedQuestions = raw.relations.questions
+    .map((q) => q.coldId)
+    .filter(Boolean)
+    .join(",");
+
+  const domesticLegalProvisions = raw.relations.domesticLegalProvisions
+    .map((p) => p.coldId)
+    .filter(Boolean)
+    .join(",");
 
   return {
     ...raw,
-    "Case Title": caseTitle,
-    "Related Literature": themes,
-    Date: formatDate(raw.Date),
-    "Last Modified": formatDate(raw["Last Modified"] || raw.Created),
-    Themes: themes,
-    Questions: questions,
-    "Related Questions": questions,
-    "Publication Date ISO": formatDate(raw["Publication Date ISO"]),
-    "Date of Judgment": formatDate(raw["Date of Judgment"]),
+    caseTitle,
+    date: formatDate(raw.date),
+    publicationDateIso: formatDate(raw.publicationDateIso),
+    dateOfJudgment: formatDate(raw.dateOfJudgment),
     hasEnglishQuoteTranslation: Boolean(
-      raw["Translated Excerpt"] && raw["Translated Excerpt"].trim() !== "",
+      raw.translatedExcerpt && raw.translatedExcerpt.trim() !== "",
     ),
     displayTitle,
+    themes: themes || undefined,
+    relatedQuestions: relatedQuestions || undefined,
+    domesticLegalProvisions: domesticLegalProvisions || undefined,
+    relatedLiterature: raw.relations.literature.length > 0 ? "has" : undefined,
   };
 }

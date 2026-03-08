@@ -161,14 +161,14 @@ import { format } from "date-fns";
 import { flagUrl } from "@/config/assets";
 
 interface JurisdictionEntry {
-  Name: string;
-  "Alpha-3 Code"?: string;
-  "Irrelevant?"?: boolean;
+  name: string;
+  coldId?: string;
+  irrelevant?: boolean;
 }
 
 interface JurisdictionOption {
   label: string;
-  alpha3Code?: string;
+  coldId?: string;
   avatar?: string;
 }
 
@@ -211,13 +211,11 @@ const loadJurisdictions = async () => {
     jurisdictionOptions.value = [
       { label: "Select Jurisdiction" },
       ...jurisdictionsData
-        .filter((entry: JurisdictionEntry) => entry["Irrelevant?"] === false)
+        .filter((entry: JurisdictionEntry) => entry.irrelevant !== true)
         .map((entry: JurisdictionEntry) => ({
-          label: entry.Name,
-          alpha3Code: entry["Alpha-3 Code"],
-          avatar: entry["Alpha-3 Code"]
-            ? flagUrl(entry["Alpha-3 Code"])
-            : undefined,
+          label: entry.name,
+          coldId: entry.coldId,
+          avatar: entry.coldId ? flagUrl(entry.coldId) : undefined,
         }))
         .sort((a, b) => (a.label || "").localeCompare(b.label || "")),
     ];

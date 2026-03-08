@@ -9,7 +9,7 @@
 export const answerCardConfig = {
   keyLabelPairs: [
     {
-      key: "Question",
+      key: "question",
       label: "Question",
       emptyValueBehavior: {
         action: "display",
@@ -18,7 +18,7 @@ export const answerCardConfig = {
       },
     },
     {
-      key: "Answer",
+      key: "answer",
       label: "Answer",
       emptyValueBehavior: {
         action: "display",
@@ -27,35 +27,35 @@ export const answerCardConfig = {
       },
     },
     {
-      key: "More Information",
+      key: "moreInformation",
       label: "More Information",
       emptyValueBehavior: {
         action: "hide",
       },
     },
     {
-      key: "Domestic Legal Provisions",
+      key: "domesticLegalProvisions",
       label: "Domestic Legal Provisions",
       emptyValueBehavior: {
         action: "hide",
       },
     },
     {
-      key: "Domestic Instruments ID",
+      key: "domesticInstrumentsId",
       label: "Domestic Instruments ID",
       emptyValueBehavior: {
         action: "hide",
       },
     },
     {
-      key: "Literature",
+      key: "literature",
       label: "Literature",
       emptyValueBehavior: {
         action: "hide",
       },
     },
     {
-      key: "Last Modified",
+      key: "lastModified",
       label: "Last Modified",
       emptyValueBehavior: {
         action: "hide",
@@ -63,10 +63,10 @@ export const answerCardConfig = {
     },
   ],
   valueClassMap: {
-    Question: "result-value-medium",
-    Answer: "result-value-large",
-    "Last Modified": "result-value-small",
-    "More Information": "result-value-small",
+    question: "result-value-medium",
+    answer: "result-value-large",
+    lastModified: "result-value-small",
+    moreInformation: "result-value-small",
   },
   gridConfig: {
     question: {
@@ -96,21 +96,21 @@ export const answerCardConfig = {
 export const courtDecisionCardConfig = {
   keyLabelPairs: [
     {
-      key: "Case Title",
+      key: "caseTitle",
       label: "Case Title",
       emptyValueBehavior: {
         action: "display",
         fallback: "No case title available",
         getFallback: (data) => {
-          const title = data["Case Title"];
+          const title = data.caseTitle;
           return !title || title.trim() === "NA"
-            ? data["Case Citation"] || "No case citation available"
+            ? data.caseCitation || "No case citation available"
             : title;
         },
       },
     },
     {
-      key: "Publication Date ISO",
+      key: "publicationDateIso",
       label: "Date",
       emptyValueBehavior: {
         action: "display",
@@ -118,7 +118,7 @@ export const courtDecisionCardConfig = {
       },
     },
     {
-      key: "Instance",
+      key: "instance",
       label: "Instance",
       emptyValueBehavior: {
         action: "display",
@@ -126,7 +126,7 @@ export const courtDecisionCardConfig = {
       },
     },
     {
-      key: "Choice of Law Issue",
+      key: "choiceOfLawIssue",
       label: "Choice of Law Issue",
       emptyValueBehavior: {
         action: "hide",
@@ -134,10 +134,10 @@ export const courtDecisionCardConfig = {
     },
   ],
   valueClassMap: {
-    "Case Title": "result-value-medium",
-    "Publication Date ISO": "result-value-small",
-    Instance: "result-value-small",
-    "Choice of Law Issue": "result-value-small",
+    caseTitle: "result-value-medium",
+    publicationDateIso: "result-value-small",
+    instance: "result-value-small",
+    choiceOfLawIssue: "result-value-small",
   },
   gridConfig: {
     caseTitle: {
@@ -162,7 +162,7 @@ export const courtDecisionCardConfig = {
 export const legislationCardConfig = {
   keyLabelPairs: [
     {
-      key: "Title (in English)",
+      key: "titleInEnglish",
       label: "Name",
       emptyValueBehavior: {
         action: "display",
@@ -170,14 +170,14 @@ export const legislationCardConfig = {
       },
     },
     {
-      key: "Abbreviation",
+      key: "abbreviation",
       label: "Abbreviation",
       emptyValueBehavior: {
         action: "hide",
       },
     },
     {
-      key: "Date",
+      key: "date",
       label: "Date",
       emptyValueBehavior: {
         action: "hide",
@@ -185,9 +185,9 @@ export const legislationCardConfig = {
     },
   ],
   valueClassMap: {
-    "Title (in English)": "result-value-medium",
-    Abbreviation: "result-value-small",
-    Date: "result-value-small",
+    titleInEnglish: "result-value-medium",
+    abbreviation: "result-value-small",
+    date: "result-value-small",
   },
   gridConfig: {
     title: {
@@ -207,7 +207,7 @@ export const legislationCardConfig = {
     if (!data) return null;
     return {
       ...data,
-      Themes: data["Domestic Legal Provisions Themes"],
+      themes: data.domesticLegalProvisionsThemes,
     };
   },
 };
@@ -215,7 +215,7 @@ export const legislationCardConfig = {
 export const regionalInstrumentCardConfig = {
   keyLabelPairs: [
     {
-      key: "Abbreviation",
+      key: "abbreviation",
       label: "Abbreviation",
       emptyValueBehavior: {
         action: "display",
@@ -223,14 +223,14 @@ export const regionalInstrumentCardConfig = {
       },
     },
     {
-      key: "Date",
+      key: "date",
       label: "Date",
       emptyValueBehavior: {
         action: "hide",
       },
     },
     {
-      key: "Title",
+      key: "title",
       label: "Title",
       emptyValueBehavior: {
         action: "hide",
@@ -238,9 +238,9 @@ export const regionalInstrumentCardConfig = {
     },
   ],
   valueClassMap: {
-    Abbreviation: "result-value-medium",
-    Date: "result-value-small",
-    Title: "result-value-small",
+    abbreviation: "result-value-medium",
+    date: "result-value-small",
+    title: "result-value-small",
   },
   gridConfig: {
     abbreviation: {
@@ -261,7 +261,7 @@ export const regionalInstrumentCardConfig = {
 export const internationalInstrumentCardConfig = {
   keyLabelPairs: [
     {
-      key: "Name",
+      key: "name",
       label: "Title",
       emptyValueBehavior: {
         action: "display",
@@ -269,7 +269,7 @@ export const internationalInstrumentCardConfig = {
       },
     },
     {
-      key: "Date",
+      key: "date",
       label: "Date",
       emptyValueBehavior: {
         action: "hide",
@@ -277,8 +277,8 @@ export const internationalInstrumentCardConfig = {
     },
   ],
   valueClassMap: {
-    Name: "result-value-medium",
-    Date: "result-value-small",
+    name: "result-value-medium",
+    date: "result-value-small",
   },
   gridConfig: {
     name: {
@@ -295,7 +295,7 @@ export const internationalInstrumentCardConfig = {
 export const literatureCardConfig = {
   keyLabelPairs: [
     {
-      key: "Title",
+      key: "title",
       label: "Title",
       emptyValueBehavior: {
         action: "display",
@@ -303,7 +303,7 @@ export const literatureCardConfig = {
       },
     },
     {
-      key: "Author",
+      key: "author",
       label: "Author(s)",
       emptyValueBehavior: {
         action: "display",
@@ -311,7 +311,7 @@ export const literatureCardConfig = {
       },
     },
     {
-      key: "Publication Year",
+      key: "publicationYear",
       label: "Date",
       emptyValueBehavior: {
         action: "display",
@@ -319,30 +319,30 @@ export const literatureCardConfig = {
       },
     },
     {
-      key: "Publication Title",
+      key: "publicationTitle",
       label: "Publication",
       emptyValueBehavior: {
         action: "display",
         fallback: "No publication available",
-        shouldDisplay: (data) => data["Item Type"] !== "book",
+        shouldDisplay: (data) => data.itemType !== "book",
       },
     },
     {
-      key: "Publisher",
+      key: "publisher",
       label: "Publisher",
       emptyValueBehavior: {
         action: "display",
         fallback: "No publisher available",
-        shouldDisplay: (data) => data["Item Type"] === "book",
+        shouldDisplay: (data) => data.itemType === "book",
       },
     },
   ],
   valueClassMap: {
-    Title: "result-value-medium",
-    Author: "result-value-small",
-    "Publication Year": "result-value-small",
-    "Publication Title": "result-value-small",
-    Publisher: "result-value-small",
+    title: "result-value-medium",
+    author: "result-value-small",
+    publicationYear: "result-value-small",
+    publicationTitle: "result-value-small",
+    publisher: "result-value-small",
   },
   gridConfig: {
     title: {
@@ -358,7 +358,7 @@ export const literatureCardConfig = {
     if (!data) return null;
     return {
       ...data,
-      Themes: data["Themes"],
+      themes: data.themes,
     };
   },
 };
