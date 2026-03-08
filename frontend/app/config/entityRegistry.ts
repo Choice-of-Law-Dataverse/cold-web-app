@@ -47,6 +47,72 @@ export interface RelationConfig {
   variant?: string;
 }
 
+export interface RelationRendererConfig {
+  label: string;
+  basePath: string;
+  variant?: string;
+}
+
+export const RELATION_RENDERERS: Record<string, RelationRendererConfig> = {
+  specialists: {
+    label: "Specialists",
+    basePath: "/specialist",
+    variant: "specialist",
+  },
+  questions: {
+    label: "Questions",
+    basePath: "/question",
+    variant: "question",
+  },
+  courtDecisions: {
+    label: "Court Decisions",
+    basePath: "/court-decision",
+    variant: "court-decision",
+  },
+  domesticInstruments: {
+    label: "Domestic Instruments",
+    basePath: "/domestic-instrument",
+    variant: "instrument",
+  },
+  domesticLegalProvisions: {
+    label: "Domestic Legal Provisions",
+    basePath: "/domestic-legal-provision",
+  },
+  regionalInstruments: {
+    label: "Regional Instruments",
+    basePath: "/regional-instrument",
+    variant: "instrument",
+  },
+  regionalLegalProvisions: {
+    label: "Regional Legal Provisions",
+    basePath: "/regional-legal-provision",
+  },
+  internationalInstruments: {
+    label: "International Instruments",
+    basePath: "/international-instrument",
+    variant: "instrument",
+  },
+  internationalLegalProvisions: {
+    label: "International Legal Provisions",
+    basePath: "/international-legal-provision",
+  },
+  arbitralAwards: {
+    label: "Arbitral Awards",
+    basePath: "/arbitral-award",
+    variant: "arbitration",
+  },
+  arbitralRules: {
+    label: "Arbitral Rules",
+    basePath: "/arbitral-rule",
+    variant: "arbitration",
+  },
+  literature: {
+    label: "Literature",
+    basePath: "/literature",
+    variant: "literature",
+  },
+};
+
 export interface EntityConfig {
   table: TableName;
   labels: Record<string, string>;
@@ -69,6 +135,8 @@ export function mapRelationToItem(item: RelationItem): RelatedItem {
       item.title ||
       item.titleInEnglish ||
       item.officialTitle ||
+      item.titleOfTheProvision ||
+      item.article ||
       item.name ||
       item.specialist ||
       item.question ||

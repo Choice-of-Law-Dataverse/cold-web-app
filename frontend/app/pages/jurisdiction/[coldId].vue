@@ -8,6 +8,7 @@
       :labels="jurisdictionLabels"
       :tooltips="jurisdictionTooltips"
       :formatted-jurisdiction="[data?.name as string]"
+      :relations="data?.relations"
       :show-suggest-edit="true"
     >
       <DetailRow label="">
@@ -15,44 +16,6 @@
           Country Report for {{ data?.name || "N/A" }}
         </h1>
       </DetailRow>
-
-      <template #search-links>
-        <DetailRow
-          v-if="specialistItems.length"
-          label="Specialists"
-          variant="specialist"
-        >
-          <RelatedItemsList :items="specialistItems" base-path="/specialist" />
-        </DetailRow>
-        <DetailRow
-          v-if="domesticInstruments.length"
-          label="Domestic Instruments"
-          variant="instrument"
-        >
-          <RelatedItemsList
-            :items="domesticInstruments"
-            base-path="/domestic-instrument"
-          />
-        </DetailRow>
-        <DetailRow
-          v-if="courtDecisions.length"
-          label="Court Decisions"
-          variant="court-decision"
-        >
-          <RelatedItemsList
-            :items="courtDecisions"
-            base-path="/court-decision"
-          />
-        </DetailRow>
-        <DetailRow
-          v-if="allLiterature.length"
-          :label="jurisdictionLabels.literature"
-          :tooltip="jurisdictionTooltips.literature"
-          variant="literature"
-        >
-          <RelatedItemsList :items="allLiterature" base-path="/literature" />
-        </DetailRow>
-      </template>
 
       <template #footer>
         <LastModified :date="data?.updatedAt" />
@@ -136,7 +99,6 @@ import { useRoute } from "vue-router";
 import BaseDetailLayout from "@/components/layout/BaseDetailLayout.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import JurisdictionComparisonTable from "@/components/jurisdiction/JurisdictionComparisonTable.vue";
-import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import LastModified from "@/components/ui/LastModified.vue";
 import LoadingBar from "@/components/layout/LoadingBar.vue";
 import PageSeoMeta from "@/components/seo/PageSeoMeta.vue";
@@ -144,44 +106,11 @@ import EntityFeedback from "@/components/ui/EntityFeedback.vue";
 import { useJurisdictionDetail } from "@/composables/useRecordDetails";
 import { jurisdictionLabels } from "@/config/labels";
 import { jurisdictionTooltips } from "@/config/tooltips";
-import type { RelatedItem } from "@/types/ui";
 
 const route = useRoute();
 const jurisdictionId = ref((route.params.coldId as string).toUpperCase());
 
 const { isLoading, data, error } = useJurisdictionDetail(jurisdictionId);
-
-const specialistItems = computed<RelatedItem[]>(() =>
-  (data.value?.relations.specialists ?? []).map((s) => ({
-    id: s.coldId || String(s.id),
-    title: s.specialist || String(s.id),
-  })),
-);
-
-const courtDecisions = computed<RelatedItem[]>(() =>
-  (data.value?.relations.courtDecisions ?? []).map((cd) => ({
-    id: cd.coldId || String(cd.id),
-    title: cd.caseTitle || cd.caseCitation || String(cd.id),
-  })),
-);
-
-const domesticInstruments = computed<RelatedItem[]>(() =>
-  (data.value?.relations.domesticInstruments ?? []).map((di) => ({
-    id: di.coldId || String(di.id),
-    title:
-      di.titleInEnglish || di.officialTitle || di.abbreviation || String(di.id),
-  })),
-);
-
-const allLiterature = computed<RelatedItem[]>(() =>
-  (data.value?.relations.literature ?? []).map((lit) => ({
-    id: lit.coldId || String(lit.id),
-    title: lit.title || String(lit.id),
-    ...(lit.oupJdChapter
-      ? { badge: { label: "OUP", color: "var(--color-label-oup)" } }
-      : {}),
-  })),
-);
 
 const jurisdictionOption = computed(() => {
   if (!data.value) return null;

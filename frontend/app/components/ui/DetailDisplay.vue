@@ -112,6 +112,17 @@
               </section>
             </template>
             <slot name="search-links" />
+            <template
+              v-for="section in autoRelationSections"
+              :key="section.key"
+            >
+              <DetailRow :label="section.label" :variant="section.variant">
+                <RelatedItemsList
+                  :items="section.items"
+                  :base-path="section.basePath"
+                />
+              </DetailRow>
+            </template>
           </div>
         </div>
         <ContributeBanner
@@ -133,7 +144,10 @@ import ContributeBanner from "@/components/ui/ContributeBanner.vue";
 import NotificationBanner from "@/components/ui/NotificationBanner.vue";
 import LoadingCard from "@/components/layout/LoadingCard.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
+import RelatedItemsList from "@/components/ui/RelatedItemsList.vue";
 import InlineError from "@/components/ui/InlineError.vue";
+import { RELATION_RENDERERS, mapRelationToItem } from "@/config/entityRegistry";
+import type { RelatedItem } from "@/types/ui";
 
 interface EmptyValueBehavior {
   action?: string;
@@ -151,6 +165,8 @@ interface KeyLabelPair {
   valueTransform?: (value: unknown) => unknown;
 }
 
+type RelationRecord = Record<string, Record<string, unknown>[]>;
+
 interface Props {
   loading: boolean;
   error?: Error | Record<string, unknown> | null;
@@ -167,6 +183,8 @@ interface Props {
   showNotificationBanner: boolean;
   notificationBannerMessage: string;
   icon: string;
+  relations?: RelationRecord;
+  excludeRelations?: Set<string>;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -185,6 +203,37 @@ const props = withDefaults(defineProps<Props>(), {
   showNotificationBanner: false,
   notificationBannerMessage: "",
   icon: "",
+  relations: undefined,
+  excludeRelations: undefined,
+});
+
+interface AutoRelationSection {
+  key: string;
+  label: string;
+  basePath: string;
+  variant?: string;
+  items: RelatedItem[];
+}
+
+const autoRelationSections = computed<AutoRelationSection[]>(() => {
+  if (!props.relations) return [];
+  const exclude = props.excludeRelations ?? new Set<string>();
+  return Object.entries(RELATION_RENDERERS)
+    .filter(([key]) => !exclude.has(key))
+    .map(([key, config]) => {
+      const rawItems = props.relations?.[key] ?? [];
+      const sorted = [...rawItems].sort(
+        (a, b) =>
+          (Number(a.rankingDisplayOrder) || 0) -
+          (Number(b.rankingDisplayOrder) || 0),
+      );
+      return {
+        key,
+        ...config,
+        items: sorted.map(mapRelationToItem).filter((item) => item.id),
+      };
+    })
+    .filter((s) => s.items.length > 0);
 });
 
 const emit = defineEmits<{
