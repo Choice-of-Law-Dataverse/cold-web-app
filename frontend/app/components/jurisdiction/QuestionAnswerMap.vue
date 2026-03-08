@@ -58,11 +58,12 @@
           :label="answer"
         >
           <div class="flex flex-wrap items-center gap-4">
-            <NuxtLink
+            <a
               v-for="jurisdiction in filteredAnswerGroups.get(answer)"
               :key="jurisdiction.code"
               class="label-jurisdiction"
-              :to="`/question/${jurisdiction.code}${questionSuffix}`"
+              :href="`/question/${jurisdiction.code}${questionSuffix}`"
+              @click="handleJurisdictionClick($event, jurisdiction.code)"
             >
               <div class="flag-wrapper">
                 <JurisdictionFlag
@@ -73,7 +74,7 @@
               </div>
 
               {{ jurisdiction.code }}
-            </NuxtLink>
+            </a>
           </div>
         </DetailRow>
       </div>
@@ -85,6 +86,7 @@
 import { ref, computed } from "vue";
 import type { Jurisdiction } from "@/composables/useQuestionJurisdictions";
 import { useQuestionJurisdictions } from "@/composables/useQuestionJurisdictions";
+import { useEntityDrawer } from "@/composables/useEntityDrawer";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import JurisdictionFlag from "@/components/ui/JurisdictionFlag.vue";
 
@@ -103,6 +105,7 @@ const props = defineProps<{
   questionSuffix: string;
 }>();
 
+const { openDrawer } = useEntityDrawer();
 const selectedRegion = ref("All");
 
 const {
@@ -130,6 +133,16 @@ const answersWithJurisdictions = computed(() => [
 
 function selectRegion(region: string) {
   selectedRegion.value = region;
+}
+
+function handleJurisdictionClick(event: MouseEvent, jurisdictionCode: string) {
+  if (event.metaKey || event.ctrlKey) return;
+  event.preventDefault();
+  openDrawer(
+    `${jurisdictionCode}${props.questionSuffix}`,
+    "Answers",
+    "/question",
+  );
 }
 </script>
 

@@ -43,13 +43,13 @@
 
       <template #relatedliterature>
         <DetailRow
+          v-if="relatedLiterature.length"
           :label="questionLabels.relatedLiterature"
           variant="literature"
         >
           <RelatedItemsList
             :items="relatedLiterature"
             base-path="/literature"
-            :empty-value-behavior="{ action: 'hide' }"
           />
         </DetailRow>
       </template>
