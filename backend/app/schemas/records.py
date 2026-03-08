@@ -16,6 +16,26 @@ def _has_bool(annotation: Any) -> bool:
     return any(_has_bool(a) for a in args)
 
 
+@model_validator(mode="before")
+@classmethod
+def coerce_bools_to_str(cls, data: Any) -> Any:  # type: ignore[misc]
+    if not isinstance(data, dict):
+        return data
+    alias_to_field: dict[str, str] = {}
+    for name in cls.model_fields:
+        alias = to_camel(name)
+        if alias:
+            alias_to_field[alias] = name
+    for key, value in data.items():
+        if not isinstance(value, bool) or not isinstance(key, str):
+            continue
+        field_name: str = alias_to_field.get(key, key)
+        field = cls.model_fields.get(field_name)
+        if field and field.annotation and not _has_bool(field.annotation):
+            data[key] = str(value)
+    return data
+
+
 class RecordBase(BaseModel):
     model_config = ConfigDict(
         alias_generator=to_camel,
@@ -24,24 +44,7 @@ class RecordBase(BaseModel):
         coerce_numbers_to_str=True,
     )
 
-    @model_validator(mode="before")
-    @classmethod
-    def _coerce_bools_to_str(cls, data: Any) -> Any:
-        if not isinstance(data, dict):
-            return data
-        alias_to_field: dict[str, str] = {}
-        for name in cls.model_fields:
-            alias = to_camel(name)
-            if alias:
-                alias_to_field[alias] = name
-        for key, value in data.items():
-            if not isinstance(value, bool) or not isinstance(key, str):
-                continue
-            field_name: str = alias_to_field.get(key, key)
-            field = cls.model_fields.get(field_name)
-            if field and field.annotation and not _has_bool(field.annotation):
-                data[key] = str(value)
-        return data
+    _coerce_bools_to_str = coerce_bools_to_str
 
     source_table: str | None = None
     id: str | int | None = None
