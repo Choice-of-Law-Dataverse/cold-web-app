@@ -61,6 +61,28 @@ class AbstractOutput(ConfidenceReasoningModel):
     abstract: str = Field(description="Concise abstract of the case")
 
 
+AnalysisStep = Literal[
+    "theme_classification",
+    "relevant_facts",
+    "pil_provisions",
+    "col_issue",
+    "courts_position",
+    "obiter_dicta",
+    "dissenting_opinions",
+]
+
+
+class ConsistencyIssue(BaseModel):
+    step: AnalysisStep = Field(description="The analysis step that has an inconsistency")
+    description: str = Field(description="What is inconsistent and why")
+    severity: Literal["low", "medium", "high"] = Field(description="How severe the inconsistency is")
+
+
+class ConsistencyCheckOutput(BaseModel):
+    is_consistent: bool = Field(description="Whether the analysis outputs are internally consistent")
+    issues: list[ConsistencyIssue] = Field(default_factory=list, description="List of inconsistencies found")
+
+
 Theme = Literal[
     "Party autonomy",
     "Tacit choice",
