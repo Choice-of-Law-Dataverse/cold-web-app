@@ -124,12 +124,10 @@ import { literatureTooltips } from "@/config/tooltips";
 
 const route = useRoute();
 
-// Capture the ID once at setup to prevent flash during page transitions
 const id = ref(route.params.coldId as string);
 
 const { data: literature, isLoading: loading, error } = useLiterature(id);
 
-// Source URL logic
 const sourceUrl = computed(() => {
   if (!literature.value) return "";
   if (literature.value.openAccessUrl) {
@@ -145,7 +143,6 @@ const sourceLinkLabel = computed(() => {
   return "Link";
 });
 
-// BibTeX computed property and export function
 const bibtexContent = computed(() => {
   if (!literature.value) return "";
   return generateBibTeX(literature.value);

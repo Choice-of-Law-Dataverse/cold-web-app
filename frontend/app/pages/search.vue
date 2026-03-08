@@ -133,7 +133,6 @@ watch(
 watch(
   () => route.query,
   (newQuery) => {
-    // Don't update state if navigating away from search page
     if (route.name !== "search") return;
 
     searchQuery.value = String(newQuery.q || "");

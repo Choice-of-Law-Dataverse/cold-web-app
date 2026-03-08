@@ -101,7 +101,6 @@ export const arbitralAwardLabels = {
   awardSummary: "Award Summary",
 } as const;
 
-// Derive field types from labels (now narrow literal unions)
 export type JurisdictionField = keyof typeof jurisdictionLabels;
 export type QuestionField = keyof typeof questionLabels;
 export type CourtDecisionField = keyof typeof courtDecisionLabels;

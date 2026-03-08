@@ -52,18 +52,6 @@ import type {
 
 export { ApiError } from "./errors";
 
-export interface QuestionItem {
-  coldId?: string;
-  ID?: string;
-  question: string;
-  themes?: string;
-  [key: string]: unknown;
-}
-
-export interface AnswerItem {
-  [key: string]: string | unknown;
-}
-
 export interface QuestionWithAnswer {
   id: string;
   question: string;

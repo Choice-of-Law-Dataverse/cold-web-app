@@ -15,7 +15,6 @@ export interface JurisdictionOption {
   avatar?: string;
   coldId?: string;
   answerCoverage?: number;
-  [key: string]: unknown;
 }
 
 export interface EditedAnalysisValues {

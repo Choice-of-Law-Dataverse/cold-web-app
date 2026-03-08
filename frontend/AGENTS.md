@@ -138,9 +138,9 @@ Quick reference for finding components by feature area:
 
 | Feature                 | Components                                      | Page                                       |
 | ----------------------- | ----------------------------------------------- | ------------------------------------------ |
-| Jurisdiction report     | `jurisdiction/JurisdictionComparisonTable.vue`  | `pages/jurisdiction/[id].vue`              |
+| Jurisdiction report     | `jurisdiction/JurisdictionComparisonTable.vue`  | `pages/jurisdiction/[coldId].vue`          |
 | Jurisdiction picker     | `jurisdiction/JurisdictionSelectMenu.vue`       | multiple pages                             |
-| Answer→jurisdiction map | `jurisdiction/QuestionAnswerMap.vue`            | `pages/question/[id].vue`                  |
+| Answer→jurisdiction map | `jurisdiction/QuestionAnswerMap.vue`            | `pages/question/[coldId].vue`              |
 | Jurisdiction banner     | `jurisdiction/JurisdictionReportBanner.vue`     | question, instrument, court decision pages |
 | Flag with coverage      | `jurisdiction/JurisdictionFlagWithCoverage.vue` | used by JurisdictionReportBanner           |
 | Flag primitive          | `ui/JurisdictionFlag.vue`                       | 22+ usages across codebase                 |

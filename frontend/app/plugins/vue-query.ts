@@ -24,7 +24,7 @@ export default defineNuxtPlugin((nuxt) => {
       queries: {
         staleTime: 5 * 60 * 1000,
         gcTime: 10 * 60 * 1000,
-        retry: import.meta.server ? 1 : 3,
+        retry: import.meta.server ? 1 : import.meta.dev ? false : 3,
         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
         refetchOnWindowFocus:
           !import.meta.server && process.env.NODE_ENV === "production",
@@ -34,7 +34,7 @@ export default defineNuxtPlugin((nuxt) => {
         throwOnError: true,
       },
       mutations: {
-        retry: import.meta.server ? 0 : 1,
+        retry: import.meta.server ? 0 : import.meta.dev ? false : 1,
         throwOnError: true,
       },
     },

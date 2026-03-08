@@ -24,7 +24,6 @@ export interface ProcessedJurisdiction {
   answerCoverage: number;
   label: string;
   avatar: string | undefined;
-  [key: string]: unknown;
 }
 
 interface JurisdictionsData {
