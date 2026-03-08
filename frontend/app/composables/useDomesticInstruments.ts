@@ -14,7 +14,7 @@ export function useDomesticInstruments({
         // Sort by date descending
         const sorted = data
           .slice()
-          .sort((a, b) => Number(b.Date) - Number(a.Date));
+          .sort((a, b) => Number(b.date) - Number(a.date));
         // Filter by compatibility if enabled
         if (filterCompatible.value) {
           return sorted.filter(

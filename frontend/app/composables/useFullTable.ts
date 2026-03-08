@@ -141,7 +141,7 @@ export function useLeadingCases() {
 
 export function useLiteratureByJurisdiction(jurisdiction: Ref<string>) {
   const filters = computed(() => [
-    { column: "Jurisdiction" as const, value: jurisdiction.value },
+    { column: "jurisdiction" as const, value: jurisdiction.value },
   ]);
 
   return useFullTableWithFilters<"Literature", LiteratureDisplay>(

@@ -32,8 +32,8 @@ const fetchAnswersForJurisdiction = async (
 
   const entries = data
     .map((row) => {
-      const rawQuestionId = row.questionId || row.coldId || row.id;
-      const rawColdId = row.coldId || row.answerId || rawQuestionId;
+      const rawQuestionId = row.question || row.id;
+      const rawColdId = row.id || rawQuestionId;
       const answerValue = row.answer || "";
 
       const baseQuestionId = rawColdId
