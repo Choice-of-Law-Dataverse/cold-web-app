@@ -33,6 +33,8 @@ const fetchSearchResults = async (
     "Regional Instruments": "Regional Instruments",
     "International Instruments": "International Instruments",
     Literature: "Literature",
+    "Arbitral Awards": "Arbitral Awards",
+    "Arbitral Rules": "Arbitral Rules",
   };
 
   if (filters.type) {
