@@ -1,11 +1,13 @@
 import logging
 
 import logfire
-from agents import Agent, Runner
+from agents import Agent
 from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
+from ..guardrails import validate_obiter_dicta
 from ..prompts import get_prompt_module
+from ..runner import run_with_retry
 from ..utils import generate_system_prompt
 from .models import (
     ColIssueOutput,
@@ -51,5 +53,10 @@ async def extract_obiter_dicta(
                 openai_client=get_openai_client(),
             ),
         )
-        run_result = await Runner.run(agent, prompt, previous_response_id=previous_response_id)
-        return StepResult(output=run_result.final_output_as(ObiterDictaOutput), response_id=run_result.last_response_id)
+        return await run_with_retry(
+            agent,
+            prompt,
+            ObiterDictaOutput,
+            previous_response_id=previous_response_id,
+            validate=validate_obiter_dicta,
+        )

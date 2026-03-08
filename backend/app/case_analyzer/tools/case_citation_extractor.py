@@ -1,10 +1,12 @@
 import logging
 
 import logfire
-from agents import Agent, Runner, TResponseInputItem
+from agents import Agent, TResponseInputItem
 from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
+from ..guardrails import validate_case_citation
+from ..runner import run_with_retry
 from .models import CaseCitationOutput, StepResult
 
 logger = logging.getLogger(__name__)
@@ -39,7 +41,10 @@ async def extract_case_citation(
                 openai_client=get_openai_client(),
             ),
         )
-        run_result = await Runner.run(agent, prompt, previous_response_id=previous_response_id)
-        result = run_result.final_output_as(CaseCitationOutput)
-
-        return StepResult(output=result, response_id=run_result.last_response_id)
+        return await run_with_retry(
+            agent,
+            prompt,
+            CaseCitationOutput,
+            previous_response_id=previous_response_id,
+            validate=validate_case_citation,
+        )

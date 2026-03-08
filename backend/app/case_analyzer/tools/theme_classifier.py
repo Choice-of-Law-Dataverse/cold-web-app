@@ -1,11 +1,13 @@
 import logging
 
 import logfire
-from agents import Agent, Runner
+from agents import Agent
 from agents.models.openai_responses import OpenAIResponsesModel
 
 from ..config import get_model, get_openai_client
+from ..guardrails import validate_themes
 from ..prompts import get_prompt_module
+from ..runner import run_with_retry
 from ..utils import THEMES_TABLE_STR, generate_system_prompt
 from .models import StepResult, ThemeClassificationOutput
 
@@ -35,9 +37,13 @@ async def classify_themes(
                     openai_client=get_openai_client(),
                 ),
             )
-            run_result = await Runner.run(agent, prompt, previous_response_id=previous_response_id)
-            result = run_result.final_output_as(ThemeClassificationOutput)
-            return StepResult(output=result, response_id=run_result.last_response_id)
+            return await run_with_retry(
+                agent,
+                prompt,
+                ThemeClassificationOutput,
+                previous_response_id=previous_response_id,
+                validate=validate_themes,
+            )
         except Exception as e:
             logger.error("Error during theme classification: %s", e)
             fallback_reason = f"Classification failed: {str(e)}"
