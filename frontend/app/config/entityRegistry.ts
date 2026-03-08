@@ -11,6 +11,9 @@ import {
   arbitralRuleLabels,
   arbitralAwardLabels,
   jurisdictionLabels,
+  domesticLegalProvisionLabels,
+  regionalLegalProvisionLabels,
+  internationalLegalProvisionLabels,
 } from "@/config/labels";
 import {
   courtDecisionTooltips,
@@ -31,6 +34,11 @@ import { processInternationalInstrument } from "@/types/entities/international-i
 import { processArbitralRule } from "@/types/entities/arbitral-rule";
 import { processArbitralAward } from "@/types/entities/arbitral-award";
 import { processJurisdiction } from "@/types/entities/jurisdiction";
+import {
+  processDomesticLegalProvision,
+  processRegionalLegalProvision,
+  processInternationalLegalProvision,
+} from "@/types/entities/legal-provision";
 
 export interface RelationConfig {
   relationKey: string;
@@ -48,6 +56,7 @@ export interface EntityConfig {
   process: (raw: any) => any;
   skipLabelKeys: Set<string>;
   relations: RelationConfig[];
+  hasDetailPage?: boolean;
 }
 
 type RelationItem = Record<string, unknown>;
@@ -262,6 +271,33 @@ export const entityRegistry: Record<string, EntityConfig> = {
         variant: "literature",
       },
     ],
+  },
+  "/domestic-legal-provision": {
+    table: "Domestic Legal Provisions",
+    labels: domesticLegalProvisionLabels,
+    titleKey: "title",
+    process: processDomesticLegalProvision,
+    skipLabelKeys: new Set(),
+    relations: [],
+    hasDetailPage: false,
+  },
+  "/regional-legal-provision": {
+    table: "Regional Legal Provisions",
+    labels: regionalLegalProvisionLabels,
+    titleKey: "title",
+    process: processRegionalLegalProvision,
+    skipLabelKeys: new Set(),
+    relations: [],
+    hasDetailPage: false,
+  },
+  "/international-legal-provision": {
+    table: "International Legal Provisions",
+    labels: internationalLegalProvisionLabels,
+    titleKey: "title",
+    process: processInternationalLegalProvision,
+    skipLabelKeys: new Set(),
+    relations: [],
+    hasDetailPage: false,
   },
 };
 

@@ -63,8 +63,7 @@ const props = withDefaults(
     isLoading: false,
     error: undefined,
     emptyValueBehavior: () => ({
-      action: "display",
-      fallback: "No items available",
+      action: "hide" as const,
     }),
   },
 );
@@ -99,7 +98,8 @@ function handleItemClick(event: MouseEvent, item: RelatedItem) {
   if (!config) return;
 
   event.preventDefault();
-  openDrawer(item.id, config.table, props.basePath);
+  const forceDrawer = config.hasDetailPage === false;
+  openDrawer(item.id, config.table, props.basePath, forceDrawer);
 }
 </script>
 

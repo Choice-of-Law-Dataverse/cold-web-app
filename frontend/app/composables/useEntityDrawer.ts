@@ -13,8 +13,13 @@ const isOpen = ref(false);
 const entity = ref<DrawerEntity | null>(null);
 
 export function useEntityDrawer() {
-  function openDrawer(coldId: string, table: TableName, basePath: string) {
-    if (window.innerWidth < MOBILE_BREAKPOINT) {
+  function openDrawer(
+    coldId: string,
+    table: TableName,
+    basePath: string,
+    forceDrawer = false,
+  ) {
+    if (!forceDrawer && window.innerWidth < MOBILE_BREAKPOINT) {
       const path = coldId.startsWith("/") ? coldId : `${basePath}/${coldId}`;
       navigateTo(path);
       return;

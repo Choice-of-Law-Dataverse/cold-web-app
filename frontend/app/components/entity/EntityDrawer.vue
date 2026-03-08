@@ -31,6 +31,7 @@
           <span v-else />
           <div class="flex shrink-0 items-center gap-1">
             <UButton
+              v-if="hasDetailPage"
               :to="fullPagePath"
               leading-icon="i-lucide-external-link"
               trailing-icon="i-lucide-external-link"
@@ -72,6 +73,15 @@
                 </DetailRow>
               </section>
             </template>
+
+            <section v-if="domesticInstrumentItems.length">
+              <DetailRow label="Legal Provisions">
+                <RelatedItemsList
+                  :items="domesticInstrumentItems"
+                  base-path="/domestic-instrument"
+                />
+              </DetailRow>
+            </section>
 
             <template v-for="rel in relationSections" :key="rel.relationKey">
               <section v-if="rel.items.length > 0">
@@ -161,6 +171,8 @@ const fullPagePath = computed(() => {
   return id.startsWith("/") ? id : `${basePath}/${id}`;
 });
 
+const hasDetailPage = computed(() => config.value?.hasDetailPage !== false);
+
 const drawerVariant = computed(() => {
   if (!entity.value) return undefined;
   const variantMap: Record<string, string> = {
@@ -214,6 +226,15 @@ const relationSections = computed<RelationSection[]>(() => {
       return { ...rel, items };
     })
     .filter((rel) => rel.items.length > 0);
+});
+
+const domesticInstrumentItems = computed<RelatedItem[]>(() => {
+  if (!entityData.value) return [];
+  const relations = entityData.value.relations as
+    | Record<string, Record<string, unknown>[]>
+    | undefined;
+  if (!relations?.domesticInstruments) return [];
+  return relations.domesticInstruments.map(mapRelationToItem);
 });
 
 const pageJurisdictionCode = computed(() => {
