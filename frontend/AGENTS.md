@@ -38,17 +38,22 @@ npm run dev      # http://localhost:3000
 ## File Structure
 
 ```
-frontend/
-├── pages/           # File-based routing (add files here for new routes)
+frontend/app/
+├── pages/              # File-based routing ([coldId].vue for detail pages)
 ├── components/
-│   ├── ui/          # Reusable UI components
-│   ├── layout/      # Layout components (header, footer, etc.)
-│   └── [feature]/   # Feature-specific components
-├── composables/     # Shared logic (useX.ts pattern)
-├── types/           # TypeScript type definitions
-├── assets/          # Static assets, SCSS, data files
-├── public/          # Public static files
-└── utils/           # Utility functions
+│   ├── ui/             # Reusable UI components
+│   ├── layout/         # Layout components (header, footer, etc.)
+│   └── [feature]/      # Feature-specific components
+├── composables/        # Shared logic (useX.ts pattern)
+├── config/             # Labels, tooltips, navigation, card configs
+├── types/
+│   ├── entities/       # Per-entity types with processor functions
+│   ├── api.ts          # Type maps (TableName, TableResponseMap, etc.)
+│   ├── api-schema.d.ts # Generated from backend OpenAPI (do not edit)
+│   └── openapi.json    # Exported OpenAPI schema (do not edit)
+├── assets/             # Static assets, SCSS, data files
+├── public/             # Public static files
+└── utils/              # Pure utility functions
 ```
 
 ## Code Conventions
@@ -109,6 +114,51 @@ import { formatDate } from "@/utils"; // Barrel file
 ### Standards Reference
 
 See [root AGENTS.md](../AGENTS.md) for monorepo-wide standards (commits, barrel files, etc.).
+
+## Architecture
+
+### End-to-End Type Safety
+
+Types flow from backend to frontend without manual duplication:
+
+1. Backend Pydantic models define the API schema
+2. `npm run generate:api` exports the OpenAPI schema and generates `types/api-schema.d.ts`
+3. `openapi-fetch` creates a typed API client (`composables/useApiClient.ts`)
+4. Entity types in `types/entities/` define per-entity response types and processor functions
+5. Type maps in `types/api.ts` (`TableResponseMap`, `TableDetailMap`, `TableProcessedMap`) power generic composables
+
+### Data Fetching
+
+Data fetching uses TanStack Query (`@tanstack/vue-query`) via typed composables:
+
+- **`useRecordDetails(table, id, process?)`** — fetches a single record by table name and ID, with optional processor
+- **`useFullTable(table, filters?)`** — fetches paginated table data with typed filters
+- **Entity-specific composables** — convenience wrappers like `useCourtDecision(id)`, `useLiterature(id)`, etc.
+
+Retries are disabled in dev mode for faster feedback.
+
+### Entity Types (`types/entities/`)
+
+Each entity file exports three things:
+
+- **Response type** (e.g., `CourtDecisionResponse`) — list/table row shape from `api-schema.d.ts`
+- **Detail response type** (e.g., `CourtDecisionDetailResponse`) — full detail shape
+- **Processor function** (e.g., `processCourtDecision`) — transforms raw API response into display-ready form
+
+### Config Directory (`config/`)
+
+| File | Purpose |
+|------|---------|
+| `labels.ts` | Field label maps per entity; exports field union types used by tooltips |
+| `tooltips.ts` | Tooltip content per entity field, validated with `satisfies Partial<Record<FieldType, string>>` |
+| `navigation.ts` | App navigation structure |
+| `cardConfigs.js` | Card layout configurations |
+| `assets.ts` | Asset path helpers |
+| `auth.ts` | Auth0 configuration |
+
+### Route Params
+
+All detail pages use `[coldId]` as the route parameter (e.g., `/court-decision/CH_2023_001`). Access via `route.params.coldId`.
 
 ## Before Committing (CRITICAL)
 
@@ -172,9 +222,11 @@ This requires the backend Python environment to be set up locally. The script im
 
 ## Common Tasks
 
-- **Page**: Add to `pages/` (file-based routing)
-- **Component**: Add to `components/[feature]/` (PascalCase)
-- **Composable**: Add to `composables/` as `useFeatureName.ts`
-- **Types**: Define in `types/`
+- **New detail page**: Add `pages/[entity]/[coldId].vue`, create entity type in `types/entities/`, add labels in `config/labels.ts`
+- **New component**: Add to `components/[feature]/` (PascalCase)
+- **New composable**: Add to `composables/` as `useFeatureName.ts`
+- **New entity type**: Add to `types/entities/`, export response/detail types and processor function, register in `types/api.ts` type maps
+- **Add field labels/tooltips**: Update `config/labels.ts` and optionally `config/tooltips.ts`
+- **Backend schema changed**: Run `npm run generate:api` to regenerate types
 
 See [README.md](README.md) for full documentation.

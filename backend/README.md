@@ -68,10 +68,11 @@ API will be available at:
 
 ## Database Migrations
 
+### Suggestions Schema
+
 Alembic manages the suggestions schema. Apply migrations before running the app:
 
 ```bash
-# Uses SUGGESTIONS_SQL_CONN_STRING from .env (or ALEMBIC_SQL_CONN_STRING / -x sql-url override)
 uv run alembic upgrade head
 
 # Or via Makefile
@@ -89,6 +90,23 @@ Create new revisions after updating `app/services/suggestions_schema.py`:
 
 ```bash
 uv run alembic revision -m "short description"
+```
+
+### SQL Views (alembic_views)
+
+A separate Alembic environment in `alembic_views/` manages SQL views and functions used for search, full-table listings, and detail endpoints. These views flatten and join NocoDB tables into query-friendly structures.
+
+```bash
+uv run alembic -c alembic_views/alembic.ini upgrade head
+
+# Or via Makefile
+make migrate-views
+```
+
+Migrations use raw SQL (`op.execute()`) to create/replace views and functions. Create new revisions with:
+
+```bash
+uv run alembic -c alembic_views/alembic.ini revision -m "short description"
 ```
 
 ## Before Committing
