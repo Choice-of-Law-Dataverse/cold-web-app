@@ -138,6 +138,14 @@ const config = computed(() =>
 
 const { client } = useApiClient();
 
+const resolvedTable = computed(() => {
+  if (!entity.value) return undefined;
+  if (entity.value.table === "Answers" && !entity.value.coldId.includes("_")) {
+    return "Questions" as const;
+  }
+  return entity.value.table;
+});
+
 const {
   data: rawData,
   isLoading,
@@ -145,18 +153,18 @@ const {
 } = useQuery({
   queryKey: computed(() => [
     "entity-drawer",
-    entity.value?.table,
+    resolvedTable.value,
     entity.value?.coldId,
   ]),
   queryFn: async () => {
-    if (!entity.value || !config.value) return null;
+    if (!entity.value || !config.value || !resolvedTable.value) return null;
     const { data, error } = await client.POST("/search/details", {
-      body: { table: entity.value.table, id: entity.value.coldId },
+      body: { table: resolvedTable.value, id: entity.value.coldId },
     });
     if (error) throw error;
     return config.value.process(data);
   },
-  enabled: computed(() => Boolean(entity.value?.coldId && entity.value?.table)),
+  enabled: computed(() => Boolean(entity.value?.coldId && resolvedTable.value)),
 });
 
 const entityData = computed(() => {
@@ -290,7 +298,7 @@ const questionSuffix = computed(() => {
   const id = entity.value.coldId;
   const parts = id.split("_");
   if (parts.length > 1) return "_" + parts.slice(1).join("_");
-  return undefined;
+  return "_" + id;
 });
 
 function shouldDisplayValue(value: unknown): boolean {

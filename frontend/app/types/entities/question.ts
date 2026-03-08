@@ -2,6 +2,7 @@ import type { components } from "@/types/api-schema";
 import type { AnswerDetailResponse } from "@/types/entities/answer";
 
 export type QuestionResponse = components["schemas"]["AnswerRecord"];
+export type QuestionDetailResponse = components["schemas"]["QuestionDetail"];
 
 export type Question = AnswerDetailResponse & {
   question?: string;
@@ -15,7 +16,9 @@ export type Question = AnswerDetailResponse & {
   relatedLiterature?: string;
 };
 
-export function processQuestion(raw: AnswerDetailResponse): Question {
+type QuestionOrAnswerResponse = AnswerDetailResponse | QuestionDetailResponse;
+
+export function processQuestion(raw: QuestionOrAnswerResponse): Question {
   const courtDecisionsColdIds = raw.relations.courtDecisions
     .map((cd) => cd.coldId)
     .filter(Boolean) as string[];
@@ -25,7 +28,10 @@ export function processQuestion(raw: AnswerDetailResponse): Question {
     .filter(Boolean)
     .join(",");
 
-  const question = raw.relations.questions[0]?.question || undefined;
+  const question =
+    ("question" in raw && raw.question) ||
+    raw.relations.questions[0]?.question ||
+    undefined;
 
   const themes =
     raw.relations.themes

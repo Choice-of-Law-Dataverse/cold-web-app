@@ -233,12 +233,16 @@ const domesticInstrumentItems = computed<RelatedItem[]>(() =>
   })),
 );
 
-const relatedQuestions = computed<RelatedItem[]>(() =>
-  (courtDecision.value?.relations.questions ?? []).map((q) => ({
-    id: q.coldId || String(q.id),
+const relatedQuestions = computed<RelatedItem[]>(() => {
+  const jurisdictionCode = primaryJurisdiction.value?.coldId;
+  return (courtDecision.value?.relations.questions ?? []).map((q) => ({
+    id:
+      jurisdictionCode && q.coldId
+        ? `${jurisdictionCode}_${q.coldId}`
+        : q.coldId || String(q.id),
     title: q.question || q.coldId || String(q.id),
-  })),
-);
+  }));
+});
 
 const relatedLiterature = computed<RelatedItem[]>(() =>
   (courtDecision.value?.relations.literature ?? []).map((lit) => ({
