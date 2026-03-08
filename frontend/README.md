@@ -68,15 +68,15 @@ This exports the backend's OpenAPI schema and generates `app/types/api-schema.d.
 
 ### Key Directories
 
-| Directory | Purpose |
-|-----------|---------|
-| `app/pages/` | File-based routing (`[coldId].vue` for detail pages) |
-| `app/components/` | Vue components organized by feature |
-| `app/composables/` | Shared logic (`useX.ts` pattern) |
-| `app/types/` | TypeScript types including generated API schema |
-| `app/types/entities/` | Per-entity types with processor functions |
-| `app/config/` | Labels, tooltips, navigation, card configs |
-| `app/utils/` | Pure utility functions |
+| Directory             | Purpose                                              |
+| --------------------- | ---------------------------------------------------- |
+| `app/pages/`          | File-based routing (`[coldId].vue` for detail pages) |
+| `app/components/`     | Vue components organized by feature                  |
+| `app/composables/`    | Shared logic (`useX.ts` pattern)                     |
+| `app/types/`          | TypeScript types including generated API schema      |
+| `app/types/entities/` | Per-entity types with processor functions            |
+| `app/config/`         | Labels, tooltips, navigation, card configs           |
+| `app/utils/`          | Pure utility functions                               |
 
 ## Code Standards
 

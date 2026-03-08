@@ -147,14 +147,14 @@ Each entity file exports three things:
 
 ### Config Directory (`config/`)
 
-| File | Purpose |
-|------|---------|
-| `labels.ts` | Field label maps per entity; exports field union types used by tooltips |
-| `tooltips.ts` | Tooltip content per entity field, validated with `satisfies Partial<Record<FieldType, string>>` |
-| `navigation.ts` | App navigation structure |
-| `cardConfigs.js` | Card layout configurations |
-| `assets.ts` | Asset path helpers |
-| `auth.ts` | Auth0 configuration |
+| File             | Purpose                                                                                         |
+| ---------------- | ----------------------------------------------------------------------------------------------- |
+| `labels.ts`      | Field label maps per entity; exports field union types used by tooltips                         |
+| `tooltips.ts`    | Tooltip content per entity field, validated with `satisfies Partial<Record<FieldType, string>>` |
+| `navigation.ts`  | App navigation structure                                                                        |
+| `cardConfigs.js` | Card layout configurations                                                                      |
+| `assets.ts`      | Asset path helpers                                                                              |
+| `auth.ts`        | Auth0 configuration                                                                             |
 
 ### Route Params
 
