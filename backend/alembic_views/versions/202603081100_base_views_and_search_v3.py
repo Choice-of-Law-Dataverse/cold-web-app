@@ -74,9 +74,9 @@ SELECT
 FROM {SCHEMA}."HCCH_Answers" ha
 LEFT JOIN LATERAL (
     SELECT (q."Question_Number" || '-' || q."Primary_Theme") AS "CoLD_ID"
-    FROM {SCHEMA}."_nc_m2m_Questions_Answers" qa
+    FROM {SCHEMA}."_nc_m2m_Questions_HCCH_Answers" qa
     JOIN {SCHEMA}."Questions" q ON q.id = qa."Questions_id"
-    WHERE qa."Answers_id" = ha.id
+    WHERE qa."HCCH_Answers_id" = ha.id
     ORDER BY q.id
     LIMIT 1
 ) qcold ON true;

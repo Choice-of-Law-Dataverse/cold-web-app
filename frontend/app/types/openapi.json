@@ -2149,6 +2149,9 @@
                 "type": "string"
               },
               {
+                "type": "boolean"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -2681,6 +2684,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -2723,6 +2729,9 @@
             "anyOf": [
               {
                 "type": "string"
+              },
+              {
+                "type": "integer"
               },
               {
                 "type": "null"
@@ -3179,6 +3188,9 @@
             "anyOf": [
               {
                 "type": "string"
+              },
+              {
+                "type": "integer"
               },
               {
                 "type": "null"
@@ -4118,6 +4130,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -4580,6 +4595,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -4644,6 +4662,9 @@
             "anyOf": [
               {
                 "type": "string"
+              },
+              {
+                "type": "integer"
               },
               {
                 "type": "null"
@@ -5663,20 +5684,6 @@
           "id": {
             "type": "string",
             "title": "Id"
-          },
-          "response_type": {
-            "anyOf": [
-              {
-                "type": "string",
-                "enum": ["parsed", "raw", "both"]
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Response Type",
-            "description": "Select 'parsed' (default), 'raw', or 'both' for response data.",
-            "default": "parsed"
           }
         },
         "type": "object",
@@ -5685,7 +5692,6 @@
         "examples": [
           {
             "id": "CHE_15-TC",
-            "response_type": "parsed",
             "table": "Answers"
           }
         ]
@@ -5782,6 +5788,9 @@
             "anyOf": [
               {
                 "type": "string"
+              },
+              {
+                "type": "integer"
               },
               {
                 "type": "null"
@@ -5913,7 +5922,7 @@
           "compatibleWithTheHcchPrinciples": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "boolean"
               },
               {
                 "type": "null"
@@ -5924,7 +5933,7 @@
           "compatibleWithTheUncitralModelLaw": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "boolean"
               },
               {
                 "type": "null"
@@ -6727,6 +6736,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -7054,6 +7066,9 @@
             "anyOf": [
               {
                 "type": "string"
+              },
+              {
+                "type": "integer"
               },
               {
                 "type": "null"
@@ -8106,6 +8121,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -8793,6 +8811,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -9144,6 +9165,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -9188,7 +9212,7 @@
             "type": "string",
             "title": "Name"
           },
-          "alpha3Code": {
+          "coldId": {
             "anyOf": [
               {
                 "type": "string"
@@ -9197,45 +9221,7 @@
                 "type": "null"
               }
             ],
-            "title": "Alpha3Code"
-          },
-          "answerCoverage": {
-            "type": "number",
-            "title": "Answercoverage",
-            "default": 0
-          },
-          "irrelevant": {
-            "anyOf": [
-              {
-                "type": "boolean"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Irrelevant"
-          },
-          "jurisdictionSummary": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Jurisdictionsummary"
-          },
-          "jurisdictionalDifferentiator": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Jurisdictionaldifferentiator"
+            "title": "Coldid"
           },
           "legalFamily": {
             "anyOf": [
@@ -9248,30 +9234,23 @@
             ],
             "title": "Legalfamily"
           },
-          "type": {
+          "irrelevant": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "boolean"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Type"
+            "title": "Irrelevant"
           },
-          "region": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Region"
+          "answerCoverage": {
+            "type": "number",
+            "title": "Answercoverage",
+            "default": 0
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "required": ["id", "name"],
         "title": "JurisdictionCoverage"
@@ -9374,17 +9353,6 @@
               }
             ],
             "title": "Name"
-          },
-          "alpha3Code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Alpha3Code"
           },
           "type": {
             "anyOf": [
@@ -9776,17 +9744,6 @@
             ],
             "title": "Name"
           },
-          "alpha3Code": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Alpha3Code"
-          },
           "region": {
             "anyOf": [
               {
@@ -9923,6 +9880,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -9943,6 +9903,9 @@
             "anyOf": [
               {
                 "type": "string"
+              },
+              {
+                "type": "integer"
               },
               {
                 "type": "null"
@@ -10132,6 +10095,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -10141,6 +10107,9 @@
             "anyOf": [
               {
                 "type": "string"
+              },
+              {
+                "type": "integer"
               },
               {
                 "type": "null"
@@ -10185,6 +10154,9 @@
             "anyOf": [
               {
                 "type": "string"
+              },
+              {
+                "type": "boolean"
               },
               {
                 "type": "null"
@@ -10242,6 +10214,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -10262,6 +10237,9 @@
             "anyOf": [
               {
                 "type": "string"
+              },
+              {
+                "type": "boolean"
               },
               {
                 "type": "null"
@@ -10297,6 +10275,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -10317,6 +10298,9 @@
             "anyOf": [
               {
                 "type": "string"
+              },
+              {
+                "type": "integer"
               },
               {
                 "type": "null"
@@ -11132,6 +11116,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -11141,6 +11128,9 @@
             "anyOf": [
               {
                 "type": "string"
+              },
+              {
+                "type": "boolean"
               },
               {
                 "type": "null"
@@ -11538,6 +11528,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -11768,6 +11761,9 @@
                 "type": "string"
               },
               {
+                "type": "integer"
+              },
+              {
                 "type": "null"
               }
             ],
@@ -11924,6 +11920,9 @@
             "anyOf": [
               {
                 "type": "string"
+              },
+              {
+                "type": "integer"
               },
               {
                 "type": "null"

@@ -207,9 +207,9 @@ const answerCoverageMap = computed<Map<string, number>>(() => {
   if (!jurisdictions.value) return coverageMap;
 
   jurisdictions.value.forEach((jurisdiction) => {
-    if (jurisdiction.alpha3Code) {
+    if (jurisdiction.coldId) {
       coverageMap.set(
-        jurisdiction.alpha3Code.toLowerCase(),
+        jurisdiction.coldId.toUpperCase(),
         jurisdiction.answerCoverage || 0,
       );
     }
@@ -238,7 +238,7 @@ const mapOptions = computed<MapOptions>(() => {
 const getFeatureStyle = (feature: GeoJsonFeature): PathOptions => {
   const isoCode = feature.properties.iso_a3_eh;
   const answerCoverage =
-    answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
+    answerCoverageMap.value?.get(isoCode?.toUpperCase()) || 0;
   const isCovered = answerCoverage > 0;
 
   // Calculate opacity based on answer coverage (0-100 maps to 0.25-1.0)
@@ -255,7 +255,7 @@ const getFeatureStyle = (feature: GeoJsonFeature): PathOptions => {
 const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
   const isoCode = feature.properties.iso_a3_eh;
   const name = feature.properties.name;
-  const coverage = answerCoverageMap.value?.get(isoCode?.toLowerCase()) || 0;
+  const coverage = answerCoverageMap.value?.get(isoCode?.toUpperCase()) || 0;
   const isCovered = coverage > 0;
 
   const defaultStyle = getFeatureStyle(feature);
@@ -294,7 +294,7 @@ const onEachFeature = (feature: GeoJsonFeature, layer: Layer) => {
   });
 
   layer.on("click", () => {
-    navigateTo(`/jurisdiction/${isoCode.toLowerCase()}`);
+    navigateTo(`/jurisdiction/${isoCode.toUpperCase()}`);
   });
 };
 

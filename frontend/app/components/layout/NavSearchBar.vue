@@ -182,7 +182,7 @@ function handleSuggestionClick(selected: string): void {
   const keywords = record
     ? [
         record.name?.toLowerCase().trim(),
-        ...(record.alpha3Code ? [record.alpha3Code.toLowerCase().trim()] : []),
+        ...(record.coldId ? [record.coldId.toLowerCase().trim()] : []),
       ].filter(Boolean)
     : [selected?.toLowerCase().trim()].filter(Boolean);
 

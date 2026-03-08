@@ -255,7 +255,7 @@ function onJurisdictionSelected(jurisdiction: JurisdictionOption) {
   if (jurisdictionInfo.value) {
     jurisdictionInfo.value.precise_jurisdiction = jurisdiction.name || "";
     jurisdictionInfo.value.jurisdiction_code =
-      jurisdiction.alpha3Code || jurisdictionInfo.value.jurisdiction_code;
+      jurisdiction.coldId || jurisdictionInfo.value.jurisdiction_code;
   }
 }
 

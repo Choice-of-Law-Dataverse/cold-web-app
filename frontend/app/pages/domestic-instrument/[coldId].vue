@@ -112,7 +112,7 @@
 
       <template #footer>
         <JurisdictionReportBanner
-          :jurisdiction-code="primaryJurisdiction?.alpha3Code ?? undefined"
+          :jurisdiction-code="primaryJurisdiction?.coldId ?? undefined"
           :jurisdiction-name="primaryJurisdiction?.name ?? undefined"
         />
         <LastModified :date="legalInstrument?.updatedAt" />
@@ -158,7 +158,7 @@ const route = useRoute();
 const textType = ref("fullTextOfTheProvisionEnglishTranslation");
 const hasEnglishTranslation = ref(false);
 
-const instrumentId = ref(route.params.id as string);
+const instrumentId = ref(route.params.coldId as string);
 
 const {
   data: legalInstrument,

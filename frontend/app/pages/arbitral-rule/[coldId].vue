@@ -43,7 +43,7 @@ import { arbitralRuleLabels } from "@/config/labels";
 const route = useRoute();
 
 // Capture the ID once at setup to prevent flash during page transitions
-const ruleId = ref(route.params.id as string);
+const ruleId = ref(route.params.coldId as string);
 
 const {
   data: arbitralRule,

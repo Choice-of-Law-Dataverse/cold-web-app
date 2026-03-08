@@ -21,13 +21,12 @@ class HcchAnswerRelation(_RelationBase):
 
 class QuestionRelation(_RelationBase):
     question: str | None = None
-    question_number: str | None = None
+    question_number: str | int | None = None
     primary_theme: str | None = None
 
 
 class JurisdictionRelation(_RelationBase):
     name: str | None = None
-    alpha_3_code: str | None = None
     region: str | None = None
     legal_family: str | None = None
 
@@ -50,7 +49,7 @@ class DomesticInstrumentRelation(_RelationBase):
 
 class DomesticLegalProvisionRelation(_RelationBase):
     article: str | None = None
-    ranking_display_order: str | None = None
+    ranking_display_order: str | int | None = None
 
 
 class RegionalInstrumentRelation(_RelationBase):
@@ -71,19 +70,19 @@ class InternationalLegalProvisionRelation(_RelationBase):
     provision: str | None = None
     title_of_the_provision: str | None = None
     full_text: str | None = None
-    ranking_display_order: str | None = None
+    ranking_display_order: str | int | None = None
 
 
 class LiteratureRelation(_RelationBase):
     author: str | None = None
     title: str | None = None
-    publication_year: str | None = None
-    oup_jd_chapter: str | None = None
+    publication_year: str | int | None = None
+    oup_jd_chapter: str | bool | None = None
 
 
 class ArbitralAwardRelation(_RelationBase):
     case_number: str | None = None
-    year: str | None = None
+    year: str | int | None = None
 
 
 class ArbitralInstitutionRelation(_RelationBase):

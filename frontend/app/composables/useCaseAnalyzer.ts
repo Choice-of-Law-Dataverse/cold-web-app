@@ -39,6 +39,7 @@ export function useCaseAnalyzer(
   analysisResults: Ref<Record<string, AnalysisStepPayload>>,
   onStepUpdate?: (stepName: string, data: AnalysisStepPayload) => void,
 ) {
+  const { client } = useApiClient();
   const isAnalyzing = ref(false);
   const isSubmitting = ref(false);
   const isSubmitted = ref(false);
@@ -119,7 +120,6 @@ export function useCaseAnalyzer(
         draftId,
       );
 
-      const { client } = useApiClient();
       const { data: response, error } = await client.POST(
         "/case-analyzer/submit",
         {
@@ -167,7 +167,6 @@ export function useCaseAnalyzer(
     isRecovering.value = true;
 
     try {
-      const { client } = useApiClient();
       const { data: draft, error } = await client.GET(
         "/case-analyzer/draft/{draft_id}",
         {

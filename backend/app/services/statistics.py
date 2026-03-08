@@ -19,15 +19,9 @@ class StatisticsService:
         SELECT
             j.id,
             j."Name" AS name,
-            j."Alpha_3_Code" AS alpha_3_code,
-            j."Type" AS type,
-            j."Region" AS region,
-            j."North_South_Divide" AS north_south_divide,
-            j."Jurisdictional_Differentiator" AS jurisdictional_differentiator,
-            j."Jurisdiction_Summary" AS jurisdiction_summary,
+            j."Alpha_3_Code" AS cold_id,
             j."Legal_Family" AS legal_family,
             j."Irrelevant_" AS irrelevant,
-            j."Done" AS done,
             COALESCE(
                 ROUND(
                     (COUNT(a.id) FILTER (WHERE LOWER(a."Answer") != 'no data') * 100.0) / NULLIF(COUNT(a.id), 0),

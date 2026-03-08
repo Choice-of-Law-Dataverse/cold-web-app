@@ -1,48 +1,59 @@
 import { computed, ref, type Ref, type MaybeRefOrGetter } from "vue";
 import { useQuery } from "@tanstack/vue-query";
+import type createClient from "openapi-fetch";
 import { useApiClient } from "@/composables/useApiClient";
 import type {
   JurisdictionWithAnswerCoverage,
   JurisdictionCount,
   TableName,
 } from "@/types/api";
+import type { paths } from "@/types/api-schema";
 import { flagUrl } from "@/config/assets";
+
+type ApiClient = ReturnType<typeof createClient<paths>>;
 
 const EMPTY_SET = new Set<string>();
 const EMPTY_MAP = new Map<string, ProcessedJurisdiction>();
 
-export interface ProcessedJurisdiction extends JurisdictionWithAnswerCoverage {
+export interface ProcessedJurisdiction {
+  id: number;
+  name: string;
+  coldId: string;
+  legalFamily: string;
+  irrelevant?: boolean | null;
+  answerCoverage: number;
   label: string;
   avatar: string | undefined;
+  [key: string]: unknown;
 }
 
 interface JurisdictionsData {
   jurisdictions: ProcessedJurisdiction[];
   knownJurisdictionTerms: Set<string>;
   byName: Map<string, ProcessedJurisdiction>;
-  byAlpha3: Map<string, ProcessedJurisdiction>;
+  byColdId: Map<string, ProcessedJurisdiction>;
   coveredCountries: Set<string>;
 }
 
 function processJurisdiction(
   record: JurisdictionWithAnswerCoverage,
 ): ProcessedJurisdiction {
+  const coldId = record.coldId?.toUpperCase() || "";
   return {
-    ...record,
-    name: record?.name || "N/A",
-    jurisdictionSummary: record?.jurisdictionSummary || "N/A",
-    jurisdictionalDifferentiator: record?.jurisdictionalDifferentiator || "N/A",
-    legalFamily: record?.legalFamily || "N/A",
+    id: record.id,
+    name: record.name || "N/A",
+    coldId,
+    legalFamily: record.legalFamily || "N/A",
+    irrelevant: record.irrelevant,
+    answerCoverage: record.answerCoverage ?? 0,
     label: record.name,
-    alpha3Code: record.alpha3Code,
-    avatar: record.alpha3Code ? flagUrl(String(record.alpha3Code)) : undefined,
-    answerCoverage: record.answerCoverage,
+    avatar: coldId ? flagUrl(coldId) : undefined,
   };
 }
 
-async function fetchAndProcessJurisdictions(): Promise<JurisdictionsData> {
-  const { client } = useApiClient();
-
+async function fetchAndProcessJurisdictions(
+  client: ApiClient,
+): Promise<JurisdictionsData> {
   const { data, error } = await client.GET(
     "/statistics/jurisdictions-with-answer-percentage",
   );
@@ -54,7 +65,7 @@ async function fetchAndProcessJurisdictions(): Promise<JurisdictionsData> {
 
   const knownJurisdictionTerms = new Set<string>();
   const byName = new Map<string, ProcessedJurisdiction>();
-  const byAlpha3 = new Map<string, ProcessedJurisdiction>();
+  const byColdId = new Map<string, ProcessedJurisdiction>();
   const coveredCountries = new Set<string>();
 
   for (const j of jurisdictions) {
@@ -62,13 +73,12 @@ async function fetchAndProcessJurisdictions(): Promise<JurisdictionsData> {
     knownJurisdictionTerms.add(nameLower);
     byName.set(nameLower, j);
 
-    if (j.alpha3Code) {
-      const codeLower = j.alpha3Code.toLowerCase();
-      knownJurisdictionTerms.add(codeLower);
-      byAlpha3.set(codeLower, j);
+    if (j.coldId) {
+      knownJurisdictionTerms.add(j.coldId.toLowerCase());
+      byColdId.set(j.coldId, j);
 
-      if (j.answerCoverage && j.answerCoverage > 0) {
-        coveredCountries.add(codeLower);
+      if (j.answerCoverage > 0) {
+        coveredCountries.add(j.coldId);
       }
     }
   }
@@ -77,15 +87,17 @@ async function fetchAndProcessJurisdictions(): Promise<JurisdictionsData> {
     jurisdictions,
     knownJurisdictionTerms,
     byName,
-    byAlpha3,
+    byColdId,
     coveredCountries,
   };
 }
 
 export function useJurisdictions(enabled?: MaybeRefOrGetter<boolean>) {
+  const { client } = useApiClient();
+
   const { data, ...rest } = useQuery({
     queryKey: ["jurisdictions-with-answer-percentage"],
-    queryFn: fetchAndProcessJurisdictions,
+    queryFn: () => fetchAndProcessJurisdictions(client),
     enabled,
     staleTime: 1000 * 60 * 30,
     gcTime: 1000 * 60 * 60 * 2,
@@ -99,19 +111,19 @@ export function useJurisdictions(enabled?: MaybeRefOrGetter<boolean>) {
       () => data.value?.knownJurisdictionTerms ?? EMPTY_SET,
     ),
     byName: computed(() => data.value?.byName ?? EMPTY_MAP),
-    byAlpha3: computed(() => data.value?.byAlpha3 ?? EMPTY_MAP),
+    byColdId: computed(() => data.value?.byColdId ?? EMPTY_MAP),
     coveredCountries: computed(() => data.value?.coveredCountries ?? EMPTY_SET),
     ...rest,
   };
 }
 
-export function useJurisdiction(iso3: Ref<string>) {
-  const { byAlpha3, isLoading, error, isError, isFetching } =
+export function useJurisdiction(coldId: Ref<string>) {
+  const { byColdId, isLoading, error, isError, isFetching } =
     useJurisdictions();
 
   const data = computed(() => {
-    if (!iso3.value) return undefined;
-    return byAlpha3.value.get(iso3.value.toLowerCase());
+    if (!coldId.value) return undefined;
+    return byColdId.value.get(coldId.value.toUpperCase());
   });
 
   return {
@@ -128,14 +140,14 @@ export function useJurisdictionLookup(enabled?: MaybeRefOrGetter<boolean>) {
     data: jurisdictions,
     knownJurisdictionTerms,
     byName,
-    byAlpha3,
+    byColdId,
     ...rest
   } = useJurisdictions(enabled);
 
   const getJurisdictionISO = (name: string): string => {
     if (!name) return "default";
     const jurisdiction = byName.value.get(name.toLowerCase());
-    return jurisdiction?.alpha3Code?.toLowerCase() || "default";
+    return jurisdiction?.coldId?.toUpperCase() || "default";
   };
 
   const findMatchingJurisdictions = (words: string[]): string[] => {
@@ -145,7 +157,7 @@ export function useJurisdictionLookup(enabled?: MaybeRefOrGetter<boolean>) {
       .filter((j) =>
         words.some((word) => {
           const nameLower = j.name.toLowerCase();
-          const codeLower = j.alpha3Code?.toLowerCase() || "";
+          const codeLower = j.coldId?.toLowerCase() || "";
           return nameLower.includes(word) || codeLower.includes(word);
         }),
       )
@@ -159,7 +171,7 @@ export function useJurisdictionLookup(enabled?: MaybeRefOrGetter<boolean>) {
 
   const findJurisdictionByCode = (code: string) => {
     if (!code) return undefined;
-    return byAlpha3.value.get(code.toLowerCase());
+    return byColdId.value.get(code.toUpperCase());
   };
 
   const isJurisdictionTerm = (word: string): boolean => {
@@ -191,8 +203,11 @@ export function useCoveredCountries() {
   };
 }
 
-async function fetchCountByJurisdiction(tableName: TableName, limit?: number) {
-  const { client } = useApiClient();
+async function fetchCountByJurisdiction(
+  client: ApiClient,
+  tableName: TableName,
+  limit?: number,
+) {
   const { data, error } = await client.GET(
     "/statistics/count-by-jurisdiction",
     {
@@ -202,20 +217,23 @@ async function fetchCountByJurisdiction(tableName: TableName, limit?: number) {
     },
   );
   if (error) throw error;
-  return data as unknown as JurisdictionCount[];
+  return data as JurisdictionCount[];
 }
 
 function useCountByJurisdiction(
   tableName: Ref<TableName>,
   limit?: Ref<number | undefined>,
 ) {
+  const { client } = useApiClient();
+
   return useQuery({
     queryKey: computed(() => [
       "countByJurisdiction",
       tableName.value,
       limit?.value,
     ]),
-    queryFn: () => fetchCountByJurisdiction(tableName.value, limit?.value),
+    queryFn: () =>
+      fetchCountByJurisdiction(client, tableName.value, limit?.value),
     enabled: computed(() => Boolean(tableName.value)),
   });
 }

@@ -150,7 +150,7 @@ import { jurisdictionTooltips } from "@/config/tooltips";
 import type { RelatedItem } from "@/types/ui";
 
 const route = useRoute();
-const jurisdictionId = ref(route.params.id as string);
+const jurisdictionId = ref((route.params.coldId as string).toUpperCase());
 
 const { isLoading, data, error } = useJurisdictionDetail(jurisdictionId);
 
@@ -194,7 +194,7 @@ const jurisdictionOption = computed(() => {
   return {
     name: data.value.name || "",
     label: data.value.name || "",
-    alpha3Code: data.value.alpha3Code || "",
+    coldId: data.value.coldId || "",
   };
 });
 </script>

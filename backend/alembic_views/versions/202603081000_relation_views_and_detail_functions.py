@@ -26,7 +26,6 @@ SELECT
     j.id,
     j."Alpha_3_Code" AS cold_id,
     j."Name" AS name,
-    j."Alpha_3_Code" AS alpha_3_code,
     j."Region" AS region,
     j."Legal_Family" AS legal_family
 FROM {SCHEMA}."Jurisdictions" j;
@@ -75,9 +74,9 @@ SELECT
 FROM {SCHEMA}."HCCH_Answers" ha
 LEFT JOIN LATERAL (
     SELECT (q."Question_Number" || '-' || q."Primary_Theme") AS cold_id
-    FROM {SCHEMA}."_nc_m2m_Questions_Answers" qa
+    FROM {SCHEMA}."_nc_m2m_Questions_HCCH_Answers" qa
     JOIN {SCHEMA}."Questions" q ON q.id = qa."Questions_id"
-    WHERE qa."Answers_id" = ha.id
+    WHERE qa."HCCH_Answers_id" = ha.id
     ORDER BY q.id LIMIT 1
 ) q_lat ON true;
 """
@@ -385,9 +384,9 @@ BEGIN
         FROM {S}."HCCH_Answers" ha
         LEFT JOIN LATERAL (
             SELECT (q."Question_Number" || '-' || q."Primary_Theme") AS cold_id
-            FROM {S}."_nc_m2m_Questions_Answers" qa
+            FROM {S}."_nc_m2m_Questions_HCCH_Answers" qa
             JOIN {S}."Questions" q ON q.id = qa."Questions_id"
-            WHERE qa."Answers_id" = ha.id ORDER BY q.id LIMIT 1
+            WHERE qa."HCCH_Answers_id" = ha.id ORDER BY q.id LIMIT 1
         ) qcold ON true
         LEFT JOIN data_views.rel_hcch_answers hac ON hac.id = ha.id
         WHERE hac.cold_id = p_cold_id
@@ -406,6 +405,24 @@ BEGIN
                 JOIN {S}."_nc_m2m_HCCH_Answers_International_I" m ON m."International_Instruments_id" = r.id
                 WHERE m."HCCH_Answers_id" = v_id
             ), '[]'::jsonb),
+            'international_legal_provisions', COALESCE((
+                SELECT jsonb_agg(to_jsonb(r.*))
+                FROM data_views.rel_international_legal_provisions r
+                JOIN {S}."_nc_m2m_HCCH_Answers_International_L" m ON m."International_Legal_Provisions_id" = r.id
+                WHERE m."HCCH_Answers_id" = v_id
+            ), '[]'::jsonb),
+            'regional_instruments', COALESCE((
+                SELECT jsonb_agg(to_jsonb(r.*))
+                FROM data_views.rel_regional_instruments r
+                JOIN {S}."_nc_m2m_HCCH_Answers_Regional_Instru" m ON m."Regional_Instruments_id" = r.id
+                WHERE m."HCCH_Answers_id" = v_id
+            ), '[]'::jsonb),
+            'regional_legal_provisions', COALESCE((
+                SELECT jsonb_agg(to_jsonb(r.*))
+                FROM data_views.rel_regional_legal_provisions r
+                JOIN {S}."_nc_m2m_HCCH_Answers_Regional_Legal_" m ON m."Regional_Legal_Provisions_id" = r.id
+                WHERE m."HCCH_Answers_id" = v_id
+            ), '[]'::jsonb),
             'answers', '[]'::jsonb,
             'hcch_answers', '[]'::jsonb,
             'questions', '[]'::jsonb,
@@ -414,9 +431,6 @@ BEGIN
             'literature', '[]'::jsonb,
             'domestic_instruments', '[]'::jsonb,
             'domestic_legal_provisions', '[]'::jsonb,
-            'regional_instruments', '[]'::jsonb,
-            'regional_legal_provisions', '[]'::jsonb,
-            'international_legal_provisions', '[]'::jsonb,
             'arbitral_awards', '[]'::jsonb,
             'arbitral_institutions', '[]'::jsonb,
             'arbitral_rules', '[]'::jsonb,
@@ -1218,7 +1232,6 @@ BEGIN
             j."Alpha_3_Code",
             jsonb_build_object(
                 'name', j."Name",
-                'alpha_3_code', j."Alpha_3_Code",
                 'type', j."Type",
                 'region', j."Region",
                 'north_south_divide', j."North_South_Divide",

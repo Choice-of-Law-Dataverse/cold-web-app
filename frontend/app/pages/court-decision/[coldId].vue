@@ -152,7 +152,7 @@
 
       <template #footer>
         <JurisdictionReportBanner
-          :jurisdiction-code="primaryJurisdiction?.alpha3Code ?? undefined"
+          :jurisdiction-code="primaryJurisdiction?.coldId ?? undefined"
           :jurisdiction-name="primaryJurisdiction?.name ?? undefined"
         />
         <LastModified :date="courtDecision?.updatedAt" />
@@ -211,7 +211,7 @@ defineProps({
 });
 
 const route = useRoute();
-const courtDecisionId = ref(route.params.id as string);
+const courtDecisionId = ref(route.params.coldId as string);
 
 const {
   data: courtDecision,

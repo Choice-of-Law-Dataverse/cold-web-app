@@ -37,9 +37,10 @@ def build_filter_clause(
             p_name = f"p_{i}_{j}"
 
             if _is_jsonb_path(snake_col):
-                arr_name, field_name = snake_col.split(".", 1)
+                arr_name = re.sub(r"[^a-zA-Z0-9_]", "", snake_col.split(".", 1)[0])
+                field_name = re.sub(r"[^a-zA-Z0-9_]", "", snake_col.split(".", 1)[1])
                 arr_sql = f'{alias}."{arr_name}"'
-                field_literal = field_name.replace("'", "''")
+                field_literal = field_name
                 if isinstance(v, str):
                     or_parts.append(
                         f"EXISTS (SELECT 1 FROM jsonb_array_elements({arr_sql}) elem "

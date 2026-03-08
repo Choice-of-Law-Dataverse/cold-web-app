@@ -13,7 +13,8 @@ export type DomesticInstrument = DomesticInstrumentDetailResponse & {
   rankingDisplayOrder?: string;
 };
 
-export function isTruthy(val: string | null | undefined): boolean {
+export function isTruthy(val: string | boolean | null | undefined): boolean {
+  if (typeof val === "boolean") return val;
   return val === "true" || val === "1" || val === "Yes";
 }
 

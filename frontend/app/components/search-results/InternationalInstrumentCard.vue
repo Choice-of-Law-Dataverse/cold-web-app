@@ -36,7 +36,7 @@ import PdfLink from "@/components/ui/PdfLink.vue";
 import DetailRow from "@/components/ui/DetailRow.vue";
 import TitleWithActions from "@/components/ui/TitleWithActions.vue";
 import { internationalInstrumentCardConfig } from "@/config/cardConfigs";
-import * as format from "@/utils/format.js";
+import * as format from "@/utils/format";
 import { useCardFields } from "@/composables/useCardFields";
 
 const props = defineProps({

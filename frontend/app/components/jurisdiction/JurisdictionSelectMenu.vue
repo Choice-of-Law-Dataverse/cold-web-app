@@ -13,8 +13,8 @@
     <template #item="{ item }">
       <div class="flex items-center">
         <JurisdictionFlag
-          v-if="item.original?.alpha3Code"
-          :iso3="item.original.alpha3Code"
+          v-if="item.original?.coldId"
+          :iso3="item.original.coldId"
           :faded="!item.hasCoverage"
           class="mr-2"
         />
@@ -31,8 +31,8 @@
     <!-- Custom label rendering for selected value -->
     <template #leading>
       <JurisdictionFlag
-        v-if="internalSelected?.original?.alpha3Code"
-        :iso3="internalSelected.original.alpha3Code"
+        v-if="internalSelected?.original?.coldId"
+        :iso3="internalSelected.original.coldId"
         :faded="!hasCoverage(internalSelected?.original?.answerCoverage)"
         class="mr-1.5"
       />
@@ -83,7 +83,7 @@ const availableJurisdictions = computed(() => {
   );
 
   return props.jurisdictions.filter((jurisdiction) => {
-    const code = jurisdiction.alpha3Code;
+    const code = jurisdiction.coldId;
     return !code || !excludedSet.has(code.toUpperCase());
   });
 });
@@ -91,7 +91,7 @@ const availableJurisdictions = computed(() => {
 const selectItems = computed<SelectItem[]>(() => {
   return availableJurisdictions.value.map((jurisdiction) => ({
     label: jurisdiction.label,
-    value: jurisdiction.alpha3Code || jurisdiction.name,
+    value: jurisdiction.coldId || jurisdiction.name,
     avatar: jurisdiction.avatar ? { src: jurisdiction.avatar } : undefined,
     hasCoverage: hasCoverage(jurisdiction.answerCoverage),
     original: jurisdiction,
@@ -114,7 +114,7 @@ watch(
     if (newVal) {
       const found = selectItems.value.find(
         (item) =>
-          item.original.alpha3Code === newVal.alpha3Code ||
+          item.original.coldId === newVal.coldId ||
           item.original.name === newVal.name,
       );
       internalSelected.value = found;

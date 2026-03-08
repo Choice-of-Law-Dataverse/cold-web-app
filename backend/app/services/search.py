@@ -87,6 +87,9 @@ class SearchService:
             return None
 
         row = results[0]
+        if row.get("record_id") is None:
+            return None
+
         base_record = row.get("base_record") or {}
 
         return {

@@ -47,6 +47,6 @@ const shouldFade = computed(() => {
     // Coverage data not loaded yet - don't fade
     return false;
   }
-  return !coveredCountries.value.has(props.iso3.toLowerCase());
+  return !coveredCountries.value.has(props.iso3.toUpperCase());
 });
 </script>

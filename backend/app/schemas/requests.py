@@ -47,17 +47,12 @@ class FullTextSearchRequest(BaseModel):
 class CuratedDetailsRequest(BaseModel):
     table: str
     id: str
-    response_type: Literal["parsed", "raw", "both"] | None = Field(
-        "parsed",
-        description="Select 'parsed' (default), 'raw', or 'both' for response data.",
-    )
     model_config = {
         "json_schema_extra": {
             "examples": [
                 {
                     "table": "Answers",
                     "id": "CHE_15-TC",
-                    "response_type": "parsed",
                 },
             ]
         }

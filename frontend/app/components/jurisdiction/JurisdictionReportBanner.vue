@@ -89,7 +89,7 @@ const questionId = computed(() => {
 
 const jurisdictionReportLink = computed(() => {
   if (!props.jurisdictionCode) return null;
-  const baseLink = `/jurisdiction/${props.jurisdictionCode.toLowerCase()}`;
+  const baseLink = `/jurisdiction/${props.jurisdictionCode.toUpperCase()}`;
   if (questionId.value) {
     return `${baseLink}#question-${questionId.value}`;
   }

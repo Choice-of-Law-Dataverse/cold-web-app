@@ -1,7 +1,9 @@
 import { computed, type ComputedRef, type Ref } from "vue";
 import { useQuery, useQueries } from "@tanstack/vue-query";
+import type createClient from "openapi-fetch";
 import { useApiClient } from "@/composables/useApiClient";
 import type { TableName, TableDetailMap } from "@/types/api";
+import type { paths } from "@/types/api-schema";
 import { processDomesticInstrument } from "@/types/entities/domestic-instrument";
 import { processInternationalInstrument } from "@/types/entities/international-instrument";
 import { processRegionalInstrument } from "@/types/entities/regional-instrument";
@@ -12,17 +14,19 @@ import { processArbitralAward } from "@/types/entities/arbitral-award";
 import { processArbitralRule } from "@/types/entities/arbitral-rule";
 import { processJurisdiction } from "@/types/entities/jurisdiction";
 
+type ApiClient = ReturnType<typeof createClient<paths>>;
+
 async function fetchRecordDetails<
   T extends TableName,
   TProcessed = TableDetailMap[T],
 >(
+  client: ApiClient,
   table: T,
   id: string | number,
   process?: (raw: TableDetailMap[T]) => TProcessed,
 ) {
-  const { client } = useApiClient();
   const { data, error } = await client.POST("/search/details", {
-    body: { table, id: String(id), response_type: null },
+    body: { table, id: String(id) },
   });
   if (error) throw error;
   const raw = data as unknown as TableDetailMap[T];
@@ -37,9 +41,11 @@ export function useRecordDetails<
   id: Ref<string | number>,
   process?: (raw: TableDetailMap[T]) => TProcessed,
 ) {
+  const { client } = useApiClient();
+
   return useQuery({
     queryKey: computed(() => [table, id.value]),
-    queryFn: () => fetchRecordDetails(table, id.value, process),
+    queryFn: () => fetchRecordDetails(client, table, id.value, process),
     enabled: computed(() => Boolean(id.value)),
   });
 }
@@ -57,11 +63,13 @@ export function useRecordDetailsList<
   hasError: ComputedRef<boolean>;
   error: ComputedRef<unknown>;
 } {
+  const { client } = useApiClient();
+
   const queries = computed(() => {
     const list = ids.value || [];
     return list.map((id) => ({
       queryKey: [table, id],
-      queryFn: () => fetchRecordDetails(table, id, process),
+      queryFn: () => fetchRecordDetails(client, table, id, process),
       enabled: Boolean(id),
     }));
   });
@@ -136,19 +144,6 @@ export function useDomesticInstrumentsList(ids: Ref<(string | number)[]>) {
     ids,
     processDomesticInstrument,
   );
-}
-
-export function useLiteratures(ids: Ref<string>) {
-  const literatureIds = computed(() =>
-    ids.value
-      ? ids.value
-          .split(",")
-          .map((id: string) => id.trim())
-          .filter((id: string) => id)
-      : [],
-  );
-
-  return useRecordDetailsList("Literature", literatureIds, processLiterature);
 }
 
 export function useRelatedQuestions(

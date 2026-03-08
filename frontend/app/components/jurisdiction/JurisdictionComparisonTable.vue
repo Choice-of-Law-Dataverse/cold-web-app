@@ -125,7 +125,7 @@
           <div class="mb-6 flex flex-wrap gap-2 md:hidden">
             <UBadge
               v-for="(jurisdiction, index) in jurisdictions"
-              :key="jurisdiction.alpha3Code || jurisdiction.name"
+              :key="jurisdiction.coldId || jurisdiction.name"
               color="neutral"
               variant="soft"
               :class="
@@ -135,7 +135,7 @@
               "
               :title="jurisdiction.name"
               @click="
-                index > 0 ? removeJurisdiction(jurisdiction.alpha3Code) : null
+                index > 0 ? removeJurisdiction(jurisdiction.coldId) : null
               "
             >
               <div class="inline-flex items-center gap-2">
@@ -168,7 +168,7 @@
               </div>
               <div
                 v-for="(jurisdiction, index) in jurisdictions"
-                :key="'h-' + (jurisdiction.alpha3Code || jurisdiction.name)"
+                :key="'h-' + (jurisdiction.coldId || jurisdiction.name)"
                 class="comparison-header-cell sticky top-0 bg-white py-3 text-center"
                 :class="index === 0 && isScrollable ? 'sticky-col-2' : ''"
                 :style="
@@ -182,9 +182,7 @@
                   :title="jurisdiction.name"
                   :disabled="index === 0"
                   @click="
-                    index > 0
-                      ? removeJurisdiction(jurisdiction.alpha3Code)
-                      : null
+                    index > 0 ? removeJurisdiction(jurisdiction.coldId) : null
                   "
                 >
                   <img
@@ -219,7 +217,7 @@
 
                 <div
                   v-for="(jurisdiction, jIndex) in jurisdictions"
-                  :key="jurisdiction.alpha3Code || jurisdiction.name"
+                  :key="jurisdiction.coldId || jurisdiction.name"
                   class="comparison-cell comparison-cell--answer"
                   :class="{ 'sticky-col-2': jIndex === 0 && isScrollable }"
                   :style="
@@ -229,35 +227,30 @@
                   <div
                     v-if="
                       answersLoading &&
-                      !hasAnswersForJurisdiction(jurisdiction.alpha3Code)
+                      !hasAnswersForJurisdiction(jurisdiction.coldId)
                     "
                   >
                     <USkeleton class="h-4 w-16" />
                   </div>
                   <UTooltip
                     v-else-if="
-                      jurisdiction.alpha3Code &&
-                      row.answers?.[jurisdiction.alpha3Code]
+                      jurisdiction.coldId && row.answers?.[jurisdiction.coldId]
                     "
-                    :text="row.answers[jurisdiction.alpha3Code]"
-                    :disabled="
-                      shouldShowDash(row.answers[jurisdiction.alpha3Code])
-                    "
+                    :text="row.answers[jurisdiction.coldId]"
+                    :disabled="shouldShowDash(row.answers[jurisdiction.coldId])"
                     :delay-duration="300"
                   >
                     <NuxtLink
-                      :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
+                      :to="getAnswerLink(jurisdiction.coldId, row.id)"
                       class="answer-button"
                     >
                       <template
-                        v-if="
-                          shouldShowDash(row.answers[jurisdiction.alpha3Code])
-                        "
+                        v-if="shouldShowDash(row.answers[jurisdiction.coldId])"
                       >
                         —
                       </template>
                       <span v-else class="line-clamp-2">{{
-                        row.answers[jurisdiction.alpha3Code]
+                        row.answers[jurisdiction.coldId]
                       }}</span>
                     </NuxtLink>
                   </UTooltip>
@@ -285,13 +278,13 @@
               <div class="flex flex-wrap gap-4">
                 <div
                   v-for="jurisdiction in jurisdictions"
-                  :key="jurisdiction.alpha3Code || jurisdiction.name"
+                  :key="jurisdiction.coldId || jurisdiction.name"
                   class="flex items-center gap-2"
                 >
                   <div
                     v-if="
                       answersLoading &&
-                      !hasAnswersForJurisdiction(jurisdiction.alpha3Code)
+                      !hasAnswersForJurisdiction(jurisdiction.coldId)
                     "
                     class="flex items-center gap-2"
                   >
@@ -305,10 +298,9 @@
                   </div>
                   <NuxtLink
                     v-else-if="
-                      jurisdiction.alpha3Code &&
-                      row.answers?.[jurisdiction.alpha3Code]
+                      jurisdiction.coldId && row.answers?.[jurisdiction.coldId]
                     "
-                    :to="getAnswerLink(jurisdiction.alpha3Code, row.id)"
+                    :to="getAnswerLink(jurisdiction.coldId, row.id)"
                     class="answer-button !inline-flex max-w-[10rem] items-center gap-2"
                   >
                     <img
@@ -318,14 +310,12 @@
                       class="h-2 w-3 flex-shrink-0 object-cover"
                     />
                     <template
-                      v-if="
-                        shouldShowDash(row.answers[jurisdiction.alpha3Code])
-                      "
+                      v-if="shouldShowDash(row.answers[jurisdiction.coldId])"
                     >
                       —
                     </template>
                     <span v-else class="min-w-0 truncate">{{
-                      row.answers[jurisdiction.alpha3Code]
+                      row.answers[jurisdiction.coldId]
                     }}</span>
                   </NuxtLink>
                   <span v-else class="text-gray-400">—</span>
@@ -384,7 +374,7 @@ onMounted(() => {
       .filter((code) => code != null)
       .map((code) =>
         allJurisdictionsData.value?.find(
-          (j) => j.alpha3Code?.toUpperCase() === code.toString().toUpperCase(),
+          (j) => j.coldId?.toUpperCase() === code.toString().toUpperCase(),
         ),
       )
       .filter((j): j is NonNullable<typeof j> => Boolean(j));
@@ -398,7 +388,7 @@ watch(
   comparisonJurisdictions,
   async (newJurisdictions) => {
     const codes = newJurisdictions
-      .map((j) => j.alpha3Code)
+      .map((j) => j.coldId)
       .filter((code): code is string => Boolean(code));
 
     const url = new URL(window.location.href);
@@ -418,9 +408,9 @@ watch(
 
 // Primary + selected comparison jurisdictions
 const excludedJurisdictionCodes = computed(() => {
-  const codes = [props.primaryJurisdiction.alpha3Code];
+  const codes = [props.primaryJurisdiction.coldId];
   comparisonJurisdictions.value.forEach((j) => {
-    if (j.alpha3Code) codes.push(j.alpha3Code);
+    if (j.coldId) codes.push(j.coldId);
   });
   return codes.filter(Boolean);
 });
@@ -428,11 +418,10 @@ const excludedJurisdictionCodes = computed(() => {
 const handleAddJurisdiction = (
   jurisdiction: JurisdictionOption | undefined,
 ) => {
-  if (!jurisdiction?.alpha3Code) return;
+  if (!jurisdiction?.coldId) return;
 
   const alreadySelected = comparisonJurisdictions.value.some(
-    (j) =>
-      j.alpha3Code?.toUpperCase() === jurisdiction.alpha3Code?.toUpperCase(),
+    (j) => j.coldId?.toUpperCase() === jurisdiction.coldId?.toUpperCase(),
   );
 
   if (!alreadySelected) {
@@ -441,11 +430,11 @@ const handleAddJurisdiction = (
   }
 };
 
-const removeJurisdiction = (alpha3Code?: string) => {
-  if (!alpha3Code) return;
-  const codeToRemove = alpha3Code.toUpperCase();
+const removeJurisdiction = (coldId?: string) => {
+  if (!coldId) return;
+  const codeToRemove = coldId.toUpperCase();
   comparisonJurisdictions.value = comparisonJurisdictions.value.filter(
-    (j) => j.alpha3Code?.toUpperCase() !== codeToRemove,
+    (j) => j.coldId?.toUpperCase() !== codeToRemove,
   );
 };
 
@@ -473,7 +462,7 @@ const shouldShowDash = (answer: string | undefined) => {
 
 const jurisdictionCodes = computed(() =>
   jurisdictions.value
-    .map((j) => j.alpha3Code)
+    .map((j) => j.coldId)
     .filter((code): code is string => Boolean(code)),
 );
 
@@ -523,10 +512,10 @@ const stickyColLeft = computed(() => {
 });
 
 const jurisdictionLabel = (j: JurisdictionOption) =>
-  useShortLabels.value && j.alpha3Code ? j.alpha3Code : j.name;
+  useShortLabels.value && j.coldId ? j.coldId : j.name;
 
-const getAnswerLink = (alpha3Code: string, questionId: string) => {
-  return `/question/${alpha3Code}_${questionId}`;
+const getAnswerLink = (coldId: string, questionId: string) => {
+  return `/question/${coldId}_${questionId}`;
 };
 
 const loadedJurisdictions = computed(() => {
@@ -534,9 +523,9 @@ const loadedJurisdictions = computed(() => {
   return new Set(answersMap.value.keys());
 });
 
-const hasAnswersForJurisdiction = (alpha3Code?: string) => {
-  if (!alpha3Code) return false;
-  const upperCode = alpha3Code.toUpperCase();
+const hasAnswersForJurisdiction = (coldId?: string) => {
+  if (!coldId) return false;
+  const upperCode = coldId.toUpperCase();
   return loadedJurisdictions.value.has(upperCode);
 };
 
@@ -573,7 +562,7 @@ const rows = computed(() => {
     // Answers map for multiple jurisdictions
     const answers: Record<string, string> = {};
     for (const jurisdiction of jurisdictions.value) {
-      const iso3 = jurisdiction.alpha3Code?.toUpperCase();
+      const iso3 = jurisdiction.coldId?.toUpperCase();
       if (iso3) {
         const answerText = answersMap.value?.get(iso3)?.get(id) || "";
         answers[iso3] = processAnswerText(answerText);

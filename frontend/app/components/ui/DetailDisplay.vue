@@ -213,7 +213,7 @@ watch(
 
     jurisdictionCode.value =
       typeof rawJurisdiction === "string"
-        ? rawJurisdiction.toLowerCase()
+        ? rawJurisdiction.toUpperCase()
         : null;
   },
   { immediate: true },

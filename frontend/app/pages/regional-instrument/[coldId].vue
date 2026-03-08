@@ -20,7 +20,7 @@
             <template #actions>
               <PdfLink
                 :pdf-field="regionalInstrument?.attachment"
-                :record-id="route.params.id as string"
+                :record-id="route.params.coldId as string"
                 folder-name="regional-instruments"
               />
               <SourceExternalLink :source-url="regionalInstrument?.url" />
@@ -107,7 +107,7 @@ import { regionalInstrumentTooltips } from "@/config/tooltips";
 import type { RelatedItem } from "@/types/ui";
 
 const route = useRoute();
-const instrumentId = ref(route.params.id as string);
+const instrumentId = ref(route.params.coldId as string);
 
 const {
   data: regionalInstrument,

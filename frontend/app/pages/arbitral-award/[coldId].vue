@@ -57,7 +57,7 @@ import { arbitralAwardLabels } from "@/config/labels";
 const route = useRoute();
 
 // Capture the ID once at setup to prevent flash during page transitions
-const awardId = ref(route.params.id as string);
+const awardId = ref(route.params.coldId as string);
 
 const {
   data: arbitralAward,

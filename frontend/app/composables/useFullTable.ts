@@ -6,19 +6,23 @@ import {
   toValue,
 } from "vue";
 import { useQuery } from "@tanstack/vue-query";
+import type createClient from "openapi-fetch";
 import { useApiClient } from "@/composables/useApiClient";
 import type { TableName, TableResponseMap, TypedFilter } from "@/types/api";
+import type { paths } from "@/types/api-schema";
 import {
   type LiteratureDisplay,
   processLiteratureRecord,
 } from "@/types/entities/literature";
 import { formatYear } from "@/utils/format";
 
+type ApiClient = ReturnType<typeof createClient<paths>>;
+
 export async function fetchFullTableData<T extends TableName>(
+  client: ApiClient,
   table: T,
   filters: TypedFilter<T>[] = [],
 ): Promise<TableResponseMap[T][]> {
-  const { client } = useApiClient();
   const { data, error } = await client.POST("/search/full_table", {
     body: {
       table,
@@ -51,6 +55,7 @@ export function useFullTable<
   TProcessed = TableResponseMap[T],
   TSelected = TProcessed[],
 >(table: T, options: UseFullTableOptions<T, TProcessed, TSelected> = {}) {
+  const { client } = useApiClient();
   const { filters, process, select, enabled } = options;
 
   return useQuery({
@@ -59,7 +64,7 @@ export function useFullTable<
       filters ? filters.map((f) => f.value).join(",") : undefined,
     ],
     queryFn: async () => {
-      const data = await fetchFullTableData(table, filters);
+      const data = await fetchFullTableData(client, table, filters);
       if (process) {
         return data.map(process);
       }
@@ -80,6 +85,7 @@ export function useFullTableWithFilters<
   filters: ComputedRef<TypedFilter<T>[]>,
   options: Omit<UseFullTableOptions<T, TProcessed, TSelected>, "filters"> = {},
 ) {
+  const { client } = useApiClient();
   const { process, select, enabled } = options;
 
   return useQuery({
@@ -88,7 +94,7 @@ export function useFullTableWithFilters<
       filters.value.map((f) => f.value).join(","),
     ]),
     queryFn: async () => {
-      const data = await fetchFullTableData(table, filters.value);
+      const data = await fetchFullTableData(client, table, filters.value);
       if (process) {
         return data.map(process);
       }

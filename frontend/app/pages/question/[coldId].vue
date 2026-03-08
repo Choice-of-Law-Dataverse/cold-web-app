@@ -52,7 +52,7 @@
 
       <template #footer>
         <JurisdictionReportBanner
-          :jurisdiction-code="primaryJurisdiction?.alpha3Code ?? undefined"
+          :jurisdiction-code="primaryJurisdiction?.coldId ?? undefined"
           :jurisdiction-name="primaryJurisdiction?.name ?? undefined"
         />
         <LastModified :date="answerData?.updatedAt" />
@@ -97,7 +97,7 @@ import { questionTooltips } from "@/config/tooltips";
 import type { RelatedItem } from "@/types/ui";
 
 const route = useRoute();
-const answerId = ref(route.params.id as string);
+const answerId = ref(route.params.coldId as string);
 
 const { data: answerData, isLoading, error } = useAnswer(answerId);
 

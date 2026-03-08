@@ -1,3 +1,4 @@
+import type { components } from "./api-schema";
 import type { AnswerResponse, AnswerDetailResponse } from "./entities/answer";
 import type {
   ArbitralAward,
@@ -84,7 +85,7 @@ export interface SearchFilters {
 
 export interface FilterObjectOption {
   label: string;
-  alpha3Code?: string;
+  coldId?: string;
 }
 
 export type FilterOption = FilterObjectOption | string;
@@ -185,13 +186,8 @@ export interface SearchResponse {
   totalMatches: number;
 }
 
-export interface JurisdictionWithAnswerCoverage {
-  id: number;
-  name: string;
-  alpha3Code: string;
-  answerCoverage: number;
-  [key: string]: unknown;
-}
+export type JurisdictionWithAnswerCoverage =
+  components["schemas"]["JurisdictionCoverage"];
 
 export interface JurisdictionCount {
   jurisdiction: string;

@@ -26,21 +26,16 @@ class CuratedDetailsRecord(RecordBase):
 
 class JurisdictionCoverage(BaseModel):
     model_config = ConfigDict(
-        extra="allow",
         alias_generator=to_camel,
         populate_by_name=True,
     )
 
     id: int
     name: str
-    alpha_3_code: str | None = None
-    answer_coverage: float = 0
-    irrelevant: bool | None = None
-    jurisdiction_summary: str | None = None
-    jurisdictional_differentiator: str | None = None
+    cold_id: str | None = None
     legal_family: str | None = None
-    type: str | None = None
-    region: str | None = None
+    irrelevant: bool | None = None
+    answer_coverage: float = 0
 
 
 class PendingSuggestionItem(BaseModel):

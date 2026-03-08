@@ -1,7 +1,7 @@
 import type { components } from "@/types/api-schema";
+import type { AnswerDetailResponse } from "@/types/entities/answer";
 
 export type QuestionResponse = components["schemas"]["AnswerRecord"];
-export type AnswerDetailResponse = components["schemas"]["AnswerDetail"];
 
 export type Question = AnswerDetailResponse & {
   question?: string;
@@ -51,7 +51,7 @@ export function processQuestion(raw: AnswerDetailResponse): Question {
         .map((di) => di.coldId)
         .filter(Boolean)
         .join(",") || undefined,
-    jurisdictionCode: raw.jurisdictionsAlpha3Code || "",
+    jurisdictionCode: raw.relations.jurisdictions[0]?.coldId || "",
     domesticLegalProvisions: domesticLegalProvisions || undefined,
     relatedLiterature: raw.relations.literature.length > 0 ? "has" : undefined,
   };

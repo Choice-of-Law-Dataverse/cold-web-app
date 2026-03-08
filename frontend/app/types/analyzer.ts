@@ -13,7 +13,7 @@ export interface JurisdictionOption {
   name: string;
   label: string;
   avatar?: string;
-  alpha3Code?: string;
+  coldId?: string;
   answerCoverage?: number;
   [key: string]: unknown;
 }

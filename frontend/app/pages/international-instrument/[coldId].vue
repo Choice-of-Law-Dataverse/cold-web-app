@@ -111,7 +111,7 @@ import { internationalInstrumentTooltips } from "@/config/tooltips";
 import type { RelatedItem } from "@/types/ui";
 
 const route = useRoute();
-const instrumentId = ref(route.params.id as string);
+const instrumentId = ref(route.params.coldId as string);
 
 const {
   data: internationalInstrument,
