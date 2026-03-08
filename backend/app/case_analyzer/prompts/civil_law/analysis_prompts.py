@@ -21,7 +21,7 @@ Elaborate on facts including, but not limited to the following, as long as they 
 5.	OUTPUT FORMAT:
 [Single paragraph containing all essential facts in narrative form, explaining the international elements and circumstances that necessitated choice of law analysis. MAXIMUM 300 WORDS.]
 6.	CONSTRAINT:
-Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section. Use a maximum of four sentences.
+Base the factual narrative solely on the provided judgment text, synthesizing information from both the full text and extracted choice of law section.
 \nCourt Decision Text:\n{text}\n\nExtracted Choice of Law Section:\n{col_section}\n\nThe facts are:\n
 """
 

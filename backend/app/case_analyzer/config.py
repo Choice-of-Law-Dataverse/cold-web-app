@@ -44,4 +44,4 @@ TASK_MODELS = {
 
 def get_model(task: str) -> str:
     """Get the appropriate model for a specific task."""
-    return TASK_MODELS.get(task, "gpt-4o-mini")
+    return TASK_MODELS.get(task, "gpt-5-nano")

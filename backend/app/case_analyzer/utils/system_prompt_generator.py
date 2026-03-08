@@ -161,14 +161,3 @@ def generate_system_prompt(legal_system_type, specific_jurisdiction, phase):
         str: Appropriate system prompt for the analysis
     """
     return generate_jurisdiction_specific_prompt(specific_jurisdiction, legal_system_type)
-
-
-# Convenience function for backward compatibility
-def get_default_system_prompt():
-    """
-    Get the default system prompt (base prompt without jurisdiction specifics).
-
-    Returns:
-        str: Default system prompt
-    """
-    return generate_base_system_prompt()
