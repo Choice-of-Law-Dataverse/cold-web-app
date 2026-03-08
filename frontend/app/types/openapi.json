@@ -2149,9 +2149,6 @@
                 "type": "string"
               },
               {
-                "type": "boolean"
-              },
-              {
                 "type": "null"
               }
             ],
@@ -2542,7 +2539,6 @@
             "title": "Domesticlegalprovisionslink"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "AnswerRecord"
       },
@@ -2684,9 +2680,6 @@
                 "type": "string"
               },
               {
-                "type": "integer"
-              },
-              {
                 "type": "null"
               }
             ],
@@ -2729,9 +2722,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "type": "integer"
               },
               {
                 "type": "null"
@@ -3152,7 +3142,6 @@
             "title": "Relatedthemes"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "ArbitralAwardRecord"
       },
@@ -3544,7 +3533,6 @@
             "title": "Jurisdictionslink"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "ArbitralInstitutionRecord"
       },
@@ -3999,7 +3987,6 @@
             "title": "Arbitralruleslink"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "ArbitralProvisionRecord"
       },
@@ -4128,9 +4115,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "type": "integer"
               },
               {
                 "type": "null"
@@ -4415,7 +4399,6 @@
             "title": "Relatedarbitralinstitutions"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "ArbitralRuleRecord"
       },
@@ -4595,9 +4578,6 @@
                 "type": "string"
               },
               {
-                "type": "integer"
-              },
-              {
                 "type": "null"
               }
             ],
@@ -4662,9 +4642,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "type": "integer"
               },
               {
                 "type": "null"
@@ -5332,7 +5309,6 @@
             "title": "Createdbyname"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "CourtDecisionRecord"
       },
@@ -5788,9 +5764,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "type": "integer"
               },
               {
                 "type": "null"
@@ -6370,7 +6343,6 @@
             "title": "Createdbyname"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "DomesticInstrumentRecord"
       },
@@ -6736,9 +6708,6 @@
                 "type": "string"
               },
               {
-                "type": "integer"
-              },
-              {
                 "type": "null"
               }
             ],
@@ -7030,7 +6999,6 @@
             "title": "Createdbyname"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "DomesticLegalProvisionRecord"
       },
@@ -8121,9 +8089,6 @@
                 "type": "string"
               },
               {
-                "type": "integer"
-              },
-              {
                 "type": "null"
               }
             ],
@@ -8580,7 +8545,6 @@
             "title": "Createdbyname"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "InternationalInstrumentRecord"
       },
@@ -8809,9 +8773,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "type": "integer"
               },
               {
                 "type": "null"
@@ -9105,7 +9066,6 @@
             "title": "Createdbyname"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "InternationalLegalProvisionRecord"
       },
@@ -9712,7 +9672,6 @@
             "title": "Done"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "JurisdictionRecord"
       },
@@ -9880,9 +9839,6 @@
                 "type": "string"
               },
               {
-                "type": "integer"
-              },
-              {
                 "type": "null"
               }
             ],
@@ -9903,9 +9859,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "type": "integer"
               },
               {
                 "type": "null"
@@ -10095,9 +10048,6 @@
                 "type": "string"
               },
               {
-                "type": "integer"
-              },
-              {
                 "type": "null"
               }
             ],
@@ -10107,9 +10057,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "type": "integer"
               },
               {
                 "type": "null"
@@ -10154,9 +10101,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "type": "boolean"
               },
               {
                 "type": "null"
@@ -10214,9 +10158,6 @@
                 "type": "string"
               },
               {
-                "type": "integer"
-              },
-              {
                 "type": "null"
               }
             ],
@@ -10237,9 +10178,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "type": "boolean"
               },
               {
                 "type": "null"
@@ -10275,9 +10213,6 @@
                 "type": "string"
               },
               {
-                "type": "integer"
-              },
-              {
                 "type": "null"
               }
             ],
@@ -10298,9 +10233,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "type": "integer"
               },
               {
                 "type": "null"
@@ -11067,7 +10999,6 @@
             "title": "Createdbyname"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "LiteratureRecord"
       },
@@ -11528,9 +11459,6 @@
                 "type": "string"
               },
               {
-                "type": "integer"
-              },
-              {
                 "type": "null"
               }
             ],
@@ -11723,7 +11651,6 @@
             "title": "Themes"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "QuestionRecord"
       },
@@ -11824,7 +11751,6 @@
             "title": "Rank"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "RecordBase"
       },
@@ -11920,9 +11846,6 @@
             "anyOf": [
               {
                 "type": "string"
-              },
-              {
-                "type": "integer"
               },
               {
                 "type": "null"
@@ -12249,7 +12172,6 @@
             "title": "Createdbyname"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "RegionalInstrumentRecord"
       },
@@ -12743,7 +12665,6 @@
             "title": "Createdbyname"
           }
         },
-        "additionalProperties": true,
         "type": "object",
         "title": "RegionalLegalProvisionRecord"
       },

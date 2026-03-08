@@ -607,7 +607,7 @@ export interface components {
       /** Moreinformation */
       moreInformation?: string | null;
       /** Toreview */
-      toReview?: string | boolean | null;
+      toReview?: string | null;
       /** Oupbookquote */
       oupBookQuote?: string | null;
       /** Jurisdictionsalpha3Code */
@@ -679,8 +679,6 @@ export interface components {
       domesticLegalProvisions?: string | null;
       /** Domesticlegalprovisionslink */
       domesticLegalProvisionsLink?: string | null;
-    } & {
-      [key: string]: unknown;
     };
     /** AnswerRelation */
     AnswerRelation: {
@@ -733,7 +731,7 @@ export interface components {
       /** Updatedby */
       updatedBy?: string | null;
       /** Idnumber */
-      idNumber?: string | number | null;
+      idNumber?: string | null;
       /** Casenumber */
       caseNumber?: string | null;
       /** Context */
@@ -741,7 +739,7 @@ export interface components {
       /** Awardsummary */
       awardSummary?: string | null;
       /** Year */
-      year?: string | number | null;
+      year?: string | null;
       /** Natureoftheaward */
       natureOfTheAward?: string | null;
       /** Seattown */
@@ -823,8 +821,6 @@ export interface components {
             [key: string]: string | null;
           }[]
         | null;
-    } & {
-      [key: string]: unknown;
     };
     /** ArbitralAwardRelation */
     ArbitralAwardRelation: {
@@ -923,8 +919,6 @@ export interface components {
       jurisdictionsAlpha3Code?: string | null;
       /** Jurisdictionslink */
       jurisdictionsLink?: string | null;
-    } & {
-      [key: string]: unknown;
     };
     /** ArbitralInstitutionRelation */
     ArbitralInstitutionRelation: {
@@ -1035,8 +1029,6 @@ export interface components {
       arbitralRulesInForceFrom?: string | null;
       /** Arbitralruleslink */
       arbitralRulesLink?: string | null;
-    } & {
-      [key: string]: unknown;
     };
     /** ArbitralProvisionRelation */
     ArbitralProvisionRelation: {
@@ -1087,7 +1079,7 @@ export interface components {
       /** Updatedby */
       updatedBy?: string | null;
       /** Idnumber */
-      idNumber?: string | number | null;
+      idNumber?: string | null;
       /** Setofrules */
       setOfRules?: string | null;
       /** Inforcefrom */
@@ -1141,8 +1133,6 @@ export interface components {
             [key: string]: string | null;
           }[]
         | null;
-    } & {
-      [key: string]: unknown;
     };
     /** ArbitralRuleRelation */
     ArbitralRuleRelation: {
@@ -1221,7 +1211,7 @@ export interface components {
       /** Updatedby */
       updatedBy?: string | null;
       /** Idnumber */
-      idNumber?: string | number | null;
+      idNumber?: string | null;
       /** Casecitation */
       caseCitation?: string | null;
       /** Casetitle */
@@ -1233,7 +1223,7 @@ export interface components {
       /** Abstract */
       abstract?: string | null;
       /** Caserank */
-      caseRank?: string | number | null;
+      caseRank?: string | null;
       /** Englishtranslation */
       englishTranslation?: string | null;
       /** Choiceoflawissue */
@@ -1355,8 +1345,6 @@ export interface components {
       createdByEmail?: string | null;
       /** Createdbyname */
       createdByName?: string | null;
-    } & {
-      [key: string]: unknown;
     };
     /** CourtDecisionRelation */
     CourtDecisionRelation: {
@@ -1557,7 +1545,7 @@ export interface components {
       /** Updatedby */
       updatedBy?: string | null;
       /** Idnumber */
-      idNumber?: string | number | null;
+      idNumber?: string | null;
       /** Titleinenglish */
       titleInEnglish?: string | null;
       /** Officialtitle */
@@ -1663,8 +1651,6 @@ export interface components {
       createdByEmail?: string | null;
       /** Createdbyname */
       createdByName?: string | null;
-    } & {
-      [key: string]: unknown;
     };
     /** DomesticInstrumentRelation */
     DomesticInstrumentRelation: {
@@ -1819,7 +1805,7 @@ export interface components {
       /** Fulltextoftheprovisionenglishtranslation */
       fullTextOfTheProvisionEnglishTranslation?: string | null;
       /** Rankingdisplayorder */
-      rankingDisplayOrder?: string | number | null;
+      rankingDisplayOrder?: string | null;
       /** Domesticinstrumentcoldid */
       domesticInstrumentColdId?: string | null;
     };
@@ -1873,8 +1859,6 @@ export interface components {
       createdByEmail?: string | null;
       /** Createdbyname */
       createdByName?: string | null;
-    } & {
-      [key: string]: unknown;
     };
     /** DomesticLegalProvisionRelation */
     DomesticLegalProvisionRelation: {
@@ -2340,7 +2324,7 @@ export interface components {
       /** Updatedby */
       updatedBy?: string | null;
       /** Idnumber */
-      idNumber?: string | number | null;
+      idNumber?: string | null;
       /** Name */
       name?: string | null;
       /** Date */
@@ -2424,8 +2408,6 @@ export interface components {
       createdByEmail?: string | null;
       /** Createdbyname */
       createdByName?: string | null;
-    } & {
-      [key: string]: unknown;
     };
     /** InternationalInstrumentRelation */
     InternationalInstrumentRelation: {
@@ -2525,7 +2507,7 @@ export interface components {
       /** Fulltext */
       fullText?: string | null;
       /** Rankingdisplayorder */
-      rankingDisplayOrder?: string | number | null;
+      rankingDisplayOrder?: string | null;
       /** Instrumentcoldid */
       instrumentColdId?: string | null;
     };
@@ -2579,8 +2561,6 @@ export interface components {
       createdByEmail?: string | null;
       /** Createdbyname */
       createdByName?: string | null;
-    } & {
-      [key: string]: unknown;
     };
     /** InternationalLegalProvisionRelation */
     InternationalLegalProvisionRelation: {
@@ -2763,8 +2743,6 @@ export interface components {
       irrelevant?: boolean | null;
       /** Done */
       done?: boolean | null;
-    } & {
-      [key: string]: unknown;
     };
     /** JurisdictionRelation */
     JurisdictionRelation: {
@@ -2826,11 +2804,11 @@ export interface components {
       /** Updatedby */
       updatedBy?: string | null;
       /** Idnumber */
-      idNumber?: string | number | null;
+      idNumber?: string | null;
       /** Itemtype */
       itemType?: string | null;
       /** Publicationyear */
-      publicationYear?: string | number | null;
+      publicationYear?: string | null;
       /** Author */
       author?: string | null;
       /** Title */
@@ -2864,9 +2842,9 @@ export interface components {
       /** Editor */
       editor?: string | null;
       /** Issue */
-      issue?: string | number | null;
+      issue?: string | null;
       /** Volume */
-      volume?: string | number | null;
+      volume?: string | null;
       /** Pages */
       pages?: string | null;
       /** Librarycatalog */
@@ -2874,7 +2852,7 @@ export interface components {
       /** Accessdate */
       accessDate?: string | null;
       /** Openaccess */
-      openAccess?: string | boolean | null;
+      openAccess?: string | null;
       /** Openaccessurl */
       openAccessUrl?: string | null;
       /** Journalabbreviation */
@@ -2884,21 +2862,21 @@ export interface components {
       /** Place */
       place?: string | null;
       /** Numpages */
-      numPages?: string | number | null;
+      numPages?: string | null;
       /** Type */
       type?: string | null;
       /** Oupjdchapter */
-      oupJdChapter?: string | boolean | null;
+      oupJdChapter?: string | null;
       /** Contributor */
       contributor?: string | null;
       /** Automatictags */
       automaticTags?: string | null;
       /** Number */
-      number?: string | number | null;
+      number?: string | null;
       /** Series */
       series?: string | null;
       /** Seriesnumber */
-      seriesNumber?: string | number | null;
+      seriesNumber?: string | null;
       /** Serieseditor */
       seriesEditor?: string | null;
       /** Edition */
@@ -3038,8 +3016,6 @@ export interface components {
       createdByEmail?: string | null;
       /** Createdbyname */
       createdByName?: string | null;
-    } & {
-      [key: string]: unknown;
     };
     /** LiteratureRelation */
     LiteratureRelation: {
@@ -3207,7 +3183,7 @@ export interface components {
       /** Question */
       question?: string | null;
       /** Questionnumber */
-      questionNumber?: string | number | null;
+      questionNumber?: string | null;
       /** Primarytheme */
       primaryTheme?: string | null;
       /** Answeringoptions */
@@ -3243,8 +3219,6 @@ export interface components {
       sortDate?: string | null;
       /** Themes */
       themes?: string | null;
-    } & {
-      [key: string]: unknown;
     };
     /** QuestionRelation */
     QuestionRelation: {
@@ -3267,8 +3241,6 @@ export interface components {
       id?: string | number | null;
       /** Rank */
       rank?: number | null;
-    } & {
-      [key: string]: unknown;
     };
     /** RegionalInstrumentDetail */
     RegionalInstrumentDetail: {
@@ -3310,7 +3282,7 @@ export interface components {
       /** Updatedby */
       updatedBy?: string | null;
       /** Idnumber */
-      idNumber?: string | number | null;
+      idNumber?: string | null;
       /** Title */
       title?: string | null;
       /** Abbreviation */
@@ -3370,8 +3342,6 @@ export interface components {
       createdByEmail?: string | null;
       /** Createdbyname */
       createdByName?: string | null;
-    } & {
-      [key: string]: unknown;
     };
     /** RegionalInstrumentRelation */
     RegionalInstrumentRelation: {
@@ -3520,8 +3490,6 @@ export interface components {
       createdByEmail?: string | null;
       /** Createdbyname */
       createdByName?: string | null;
-    } & {
-      [key: string]: unknown;
     };
     /** RegionalLegalProvisionRelation */
     RegionalLegalProvisionRelation: {
